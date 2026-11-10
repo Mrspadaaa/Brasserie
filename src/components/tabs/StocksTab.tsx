@@ -3,7 +3,7 @@ import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucid
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { compareRecipeWithStock, computeStockLevel, shortfall, type RecipeStockComparison } from '../../domain/stockLevel';
+import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -26,6 +26,8 @@ import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
 import { canonicalStockCategory } from '../../services/stockLineMatching';
+import { formatLitres } from '../../domain/recipeMetrics';
+import { quantiteLue } from '../../domain/stock/regles';
 
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
@@ -157,7 +159,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       '',
       ...shoppingBySupplier.flatMap(([supplier, list]) => [
         `${supplier} :`,
-        ...list.map((l) => `  - ${l.item.name} : ${Units.format(l.missing, l.item.unit)}`),
+        ...list.map((l) => `  - ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`),
         ''
       ])
     ].join('\n');
@@ -231,7 +233,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     note?: string
   ) => {
     const result = StorageService.adjustInventory(typeOf(item), item.ref, countedQty, reason, note);
-    if (!result) return;
+    if (!result) {
+      onSuccessMessage?.(`${item.name} : correction refusée, le stock n’a pas changé.`);
+      return;
+    }
     onSuccessMessage?.(
       result.delta === 0
         ? `${item.name} : inventaire confirmé.`
@@ -242,10 +247,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     );
   };
 
-  const criticalCount = useMemo(
-    () => allItems.filter((i) => computeStockLevel(i, batches, allItems).band === 'rupture').length,
-    [allItems, batches]
-  );
+  // Le même compte que le badge de la barre et « À commander » (test en ligne n° 49, 08.11 : « Stock (1) » au-dessus de « À commander · 0 »).
+  const criticalCount = useMemo(() => articlesACommander(allItems, batches).length, [allItems, batches]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -254,15 +257,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const shoppingBySupplier = useMemo(() => {
     const map = new Map<string, Array<{ item: StockItem; missing: number }>>();
 
-    allItems.forEach((item) => {
-      const missing = shortfall(item, batches, allItems);
-      const belowMin = item.minStock > 0 && item.currentStock <= item.minStock;
-      if (missing <= 0 && !belowMin) return;
-
-      const toOrder =
-        missing > 0 ? missing : Units.round(item.minStock - item.currentStock, item.unit);
-      if (toOrder <= 0) return;
-
+    articlesACommander(allItems, batches).forEach(({ item, missing: toOrder }) => {
       const supplier = item.supplier?.trim() || 'Fournisseur à préciser';
       const arr = map.get(supplier) ?? [];
       arr.push({ item, missing: toOrder });
@@ -282,7 +277,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       `Commande — Brasserie L'Affinée`,
       `Fournisseur : ${supplier}`,
       '',
-      ...list.map((l) => `- ${l.item.name} : ${Units.format(l.missing, l.item.unit)}`)
+      ...list.map((l) => `- ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`)
     ].join('\n');
     navigator.clipboard.writeText(text);
     setCopiedSupplier(supplier);
@@ -312,7 +307,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   const tabs: Array<{ id: SubTab; label: string; Icon: typeof Boxes; badge?: number }> = [
-    { id: 'stock', label: 'Stock', Icon: Boxes, badge: criticalCount },
+    { id: 'stock', label: 'Articles', Icon: Boxes, badge: criticalCount },
     { id: 'courses', label: 'Courses', Icon: ShoppingCart, badge: totalToOrder },
     { id: 'futs', label: 'Fûts', Icon: Beer },
     { id: 'materiel', label: 'Matériel', Icon: Wrench },
@@ -355,12 +350,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </div>
 
       {subTab === 'hops' && <>
-        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="flex flex-wrap items-center justify-between gap-2 rounded-control border border-ebc-straw/30 bg-ebc-straw/5 p-2">
-          <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-cave-50">Explorer le catalogue</h2>
-            <p className="text-xs leading-snug text-cave-400">Ouvrir l’espace de travail houblon V5.5.</p>
-          </div>
-          <Button intent="primary" onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
+        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="shrink-0">
+          {/* BR-109 : une ligne, un bouton. Trois lignes de texte collées sous la barre prenaient 22 % de l'écran à 390. */}
+          <Button intent="secondary" size="sm" full onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
         </section>}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
       </>}
@@ -383,7 +375,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                   options={recipes.map(recipe => ({
                     value: recipe.id,
                     label: recipe.name,
-                    detail: [recipe.style, Number.isFinite(recipe.volumeL) ? `${recipe.volumeL} L` : ''].filter(Boolean).join(' · '),
+                    detail: [recipe.style, Number.isFinite(recipe.volumeL) ? formatLitres(recipe.volumeL) : ''].filter(Boolean).join(' · '),
                     keywords: recipe.style
                   }))}
                   placeholder="Choisir une recette…"
@@ -413,7 +405,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                       : <li key={comparison.key} className="border-b border-cave-800 py-1.5">
                           <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                             <span className="text-sm font-medium text-cave-50 break-words">{comparison.label}</span>
-                            <span className="shrink-0 font-mono text-sm text-cave-200">{comparison.quantity === null || !comparison.unit ? 'Inconnu' : Units.format(comparison.quantity, comparison.unit)}</span>
+                            <span className="shrink-0 font-mono text-sm text-cave-200">{comparison.quantity === null || !comparison.unit ? 'Inconnu' : quantiteLue(comparison.quantity, comparison.unit)}</span>
                           </div>
                           <p className="text-xs text-attention">{comparison.issue}</p>
                         </li>)}
@@ -429,6 +421,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           groupOrder={GROUP_ORDER}
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
+          resetKey={stockFilter}
           searchPlaceholder="Rechercher un article…"
           header={allItems.length > 0 && <SegmentedControl className={`stock-filters ${mobile ? 'pr-16' : ''}`} label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
             { value: 'all', label: `Tous · ${allItems.length}` },
@@ -508,7 +501,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                     >
                       <span className="text-sm text-cave-200 min-w-0 break-words">{item.name}</span>
                       <span className="font-mono text-sm text-ebc-straw shrink-0">
-                        {Units.format(missing, item.unit)}
+                        {missing > 0 ? Units.format(missing, item.unit) : 'à définir'}
                       </span>
                     </li>
                   ))}
@@ -519,7 +512,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </div>
       )}
 
-      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1" />}
+      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1"
+        toolbarAction={<Button intent="secondary" aria-label="Ajouter un fût" onClick={() => setCreatingKeg(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un fût</span></Button>} />}
 
       {subTab === 'materiel' && (
         <><MobileDetails title="Actions du matériel"><div className="flex flex-wrap gap-1"><Button intent="primary" size="sm" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" size="sm" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button>{onOpenEquipmentProjects&&<Button intent="ghost" size="sm" onClick={onOpenEquipmentProjects} icon={<Wrench size={14}/>}>Projets d’équipement</Button>}</div></MobileDetails><EquipmentList
@@ -549,6 +543,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       <KegSheet
         keg={kegSheet}
         batches={batches}
+        kegs={stocks.kegs}
         onClose={() => setKegSheet(null)}
         onSave={(keg) => {
           const exists = stocks.kegs.some((k) => k.id === keg.id);
@@ -570,8 +565,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           return comparison ? { recipeName: selectedRecipe.name, comparison } : null;
         })() : null}
         onClose={() => setSelected(null)}
-        onSave={(item) => StorageService.updateStockItem(typeOf(item), item)}
-        onDelete={(item) => StorageService.deleteStockItem(typeOf(item), item.ref)}
+        recipes={savedRecipes}
+        onSave={(item, base) => StorageService.saveStockItemFiche(typeOf(item), base, item)}
+        onDelete={(item) => {
+          const result = StorageService.deleteStockItem(typeOf(item), item.ref);
+          if (!result.ok && result.refus) onSuccessMessage?.(result.refus);
+        }}
         onCorrectInventory={(item) => {
           setSelected(null);
           setCorrecting(item);

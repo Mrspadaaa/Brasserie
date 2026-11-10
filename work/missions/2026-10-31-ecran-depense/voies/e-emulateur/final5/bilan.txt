@@ -1,0 +1,6 @@
+A [etats,doublon,doc5,finances,doc6] essai 1 : exit 0 (50 OK, 0 KO, 0 ARRÊT)
+B [autre-numero,rattacher,minuscules,doc1] essai 1 : exit 0 (10 OK, 0 KO, 0 ARRÊT)
+C [doc4,hors-ligne,doc3,doc2] essai 1 : exit 0 (14 OK, 0 KO, 0 ARRÊT)
+D [doc14] essai 1 : exit 1 (32 OK, 8 KO, 0 ARRÊT)
+E [drive-fond] essai 1 : exit 0 (68 OK, 0 KO, 0 ARRÊT)
+FIN

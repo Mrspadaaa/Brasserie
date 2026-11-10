@@ -2,6 +2,9 @@ import { Input } from '../ui/Input';
 import React, { useEffect, useState } from 'react';
 import { COMPANY_FALLBACK } from '../domain/companyDefaults';
 import { NumberInput } from '../ui/NumberInput';
+import { ChampNombre } from '../ui/depense/ChampNombre';
+import { BORNES_FINANCE } from '../domain/finance/bornesFinance';
+import { ibanCompact, ibanValide, MESSAGE_IBAN } from '../domain/finance/iban';
 import { 
   X, 
   Settings, 
@@ -18,7 +21,7 @@ import { DriveService } from '../services/driveService';
 import { ModalShell } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
 import { BrewhouseSettings } from '../ui/BrewhouseSettings';
-import { equipmentErrors } from '../domain/brewEquipment';
+import { equipmentErrors, profileVolumeErrors } from '../domain/brewEquipment';
 import { BackupPanel } from '../ui/BackupPanel';
 import { DriveStoragePanel } from '../ui/DriveStoragePanel';
 import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
@@ -26,6 +29,7 @@ import { brewingPreferenceErrors } from '../domain/brewPreferences';
 import { BrewSystemCalibration } from '../ui/BrewSystemCalibration';
 import { BrewSystemSource } from '../ui/BrewSystemSource';
 import '../ui/settings-compact.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -58,8 +62,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
+  /* AM-66 : un IBAN saisi doit être un IBAN ; vide, la facture dit que les coordonnées manquent. */
+  const ibanSaisi = formData.company.iban || COMPANY_FALLBACK.iban;
+  /* RL-14 : sans IBAN enregistré, le champ montre celui de la configuration de l'app (VITE_COMPANY_IBAN). S'il est faux, le dire : le brasseur n'a rien tapé, et croit son IBAN enregistré faux. */
+  const ibanDeConfig = !formData.company.iban && !!COMPANY_FALLBACK.iban;
+  const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi)
+    ? (ibanDeConfig ? 'Aucun IBAN n’est enregistré dans les Réglages : celui de la configuration de l’app s’affiche, et sa clé de contrôle est fausse. Saisis ici le bon IBAN, puis sauvegarde. ' : '') + MESSAGE_IBAN
+    : '';
+  /* Le message se montre toujours (un IBAN faux sur les factures doit se voir), mais seul un IBAN TAPÉ dans ce formulaire bloque l'enregistrement :
+     un IBAN déjà là (enregistré, ou celui de la configuration de l'app) ne doit jamais empêcher de sauver la cuverie ou un autre réglage (08.11). */
+  const ibanModifie = (formData.company.iban ?? '') !== (config.company?.iban ?? '');
+
   const handleSave = async () => {
-    if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length)) return;
+    if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length || profileVolumeErrors(b).length)) return;
+    if (ibanErreur && ibanModifie) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
     StorageService.saveConfig(formData);
@@ -86,7 +102,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="flex items-center justify-between px-2 py-1 border-b border-cave-800 bg-cave-900/90 shrink-0">
         <div className="flex items-center space-x-2">
           <Settings className="w-5 h-5 text-ebc-straw shrink-0" />
-          <h3 id="settings-modal-title" className="font-semibold text-sm text-cave-50">Paramètres & Évolutions</h3>
+          <h3 id="settings-modal-title" className="font-semibold text-sm text-cave-50">Réglages</h3>
         </div>
         <button
           type="button"
@@ -160,16 +176,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div>
                 <label htmlFor="settings-vat-reduced" className="text-cave-200 font-semibold block mb-1 text-xs">TVA réduite (denrées admissibles)</label>
                 <div className="flex items-center space-x-1">
-                  <NumberInput
+                  {/* AM-59 : un taux entre 0 et 15 %, refus visible au-delà ; un champ vidé garde son taux (plus de remplissage silencieux). */}
+                  <ChampNombre
                     id="settings-vat-reduced"
                     value={Math.round(formData.fiscal.tvaReducedRate * 1000) / 10}
-                    onValue={(v) =>
-                      setFormData({
-                        ...formData,
-                        fiscal: { ...formData.fiscal, tvaReducedRate: v / 100 }
-                      })}
-                    emptyValue={2.6}
-                    pad
+                    onValue={(v) => { if (v !== undefined) setFormData({ ...formData, fiscal: { ...formData.fiscal, tvaReducedRate: v / 100 } }); }}
+                    max={BORNES_FINANCE.tauxTvaPct.valeur}
                     className={`${inputClass} font-mono font-bold`}
                   />
                   <span className="text-cave-400 text-xs">%</span>
@@ -179,16 +191,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div>
                 <label htmlFor="settings-vat-normal" className="text-cave-200 font-semibold block mb-1 text-xs">TVA normale (bière alcoolisée, matériel)</label>
                 <div className="flex items-center space-x-1">
-                  <NumberInput
+                  <ChampNombre
                     id="settings-vat-normal"
                     value={Math.round(formData.fiscal.tvaNormalRate * 1000) / 10}
-                    onValue={(v) =>
-                      setFormData({
-                        ...formData,
-                        fiscal: { ...formData.fiscal, tvaNormalRate: v / 100 }
-                      })}
-                    emptyValue={8.1}
-                    pad
+                    onValue={(v) => { if (v !== undefined) setFormData({ ...formData, fiscal: { ...formData.fiscal, tvaNormalRate: v / 100 } }); }}
+                    max={BORNES_FINANCE.tauxTvaPct.valeur}
                     className={`${inputClass} font-mono font-bold`}
                   />
                   <span className="text-cave-400 text-xs">%</span>
@@ -240,6 +247,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 data-1p-ignore="true"
                 data-bwignore="true"
                 value={formData.company.iban || COMPANY_FALLBACK.iban}
+                aria-invalid={ibanErreur ? true : undefined}
+                aria-describedby={ibanErreur ? 'settings-company-iban-erreur' : undefined}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -248,6 +257,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 }
                 className={`${inputClass} font-mono`}
               />
+              {ibanErreur && <p id="settings-company-iban-erreur" role="alert" className="text-xs text-alert-strong">{ibanErreur}</p>}
             </div>
           </div>
         )}
@@ -264,22 +274,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-cave-50">{bh.name}</span>
                   <span className="text-footnote bg-ebc-straw/20 text-ebc-gold font-semibold px-2 py-0.5 rounded-full font-mono">
-                    {bh.volumeL} L visés
+                    {nombreFr(bh.volumeL, 1)} L visés
                   </span>
                 </div>
 
                 <dl className="grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <dt className="text-cave-400">Rendement</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.efficiencyPct}%</dd>
+                    <dt className="text-cave-400" title="Rendement en fermenteur : l’extrait mesuré dans le fermenteur, rapporté au potentiel des grains">Rendement fermenteur</dt>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{nombreFr(bh.efficiencyPct, 1)}%</dd>
                   </div>
                   <div>
                     <dt className="text-cave-400">Évaporation</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.equipment ? `${bh.equipment.boilOffLPerHour} L/h` : `${bh.boilOffRatePct}%/h`}</dd>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.equipment ? `${nombreFr(bh.equipment.boilOffLPerHour, 1)} L/h` : `${nombreFr(bh.boilOffRatePct, 1)}%/h`}</dd>
                   </div>
                   <div>
                     <dt className="text-cave-400">Pertes cuve</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.deadSpaceL} L</dd>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{nombreFr(bh.deadSpaceL, 1)} L</dd>
                   </div>
                 </dl>
 
@@ -309,7 +319,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="p-3 bg-cave-850/50 border border-cave-700 rounded-2xl flex items-center justify-between">
               <div>
                 <h4 className="font-bold text-cave-50 flex items-center text-xs sm:text-sm">
-                  <Shield className="w-4 h-4 text-hop mr-1.5" /> Journal d'Audit & Historique
+                  <Shield className="w-4 h-4 text-hop mr-1.5" /> Journal des modifications
                 </h4>
                 <p className="text-xs text-cave-400">Consulter les modifications</p>
               </div>

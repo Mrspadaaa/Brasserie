@@ -1,0 +1,191 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+ [31m❯[39m tests/unit/depense/n3-ht/lignes-ht.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+[31m   [31m×[31m (a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mpasse au TTC, au prorata, le reste à la plus grande ligne[39m[32m 5[2mms[22m[39m
+[31m     → expected 10000 to be 10810 // Object.is equality[39m
+[31m   [31m×[31m (a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mle prix unitaire suit le même rapport que sa ligne[39m[32m 0[2mms[22m[39m
+[31m     → expected 20 to be 21.615 // Object.is equality[39m
+[31m   [31m×[31m (a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mun reste de centimes va à la plus grande ligne (3 lignes de 33,33 → TTC au centime)[39m[32m 1[2mms[22m[39m
+[31m     → expected 10000 to be 10810 // Object.is equality[39m
+[31m   [31m×[31m (b) deux taux : chaque groupe est base + montant de sa rangée[2m > [22m2,6 % et 8,1 % avec vatCode et vat[][39m[32m 0[2mms[22m[39m
+[31m     → expected 5000 to be 5130 // Object.is equality[39m
+[31m   [31m×[31m (b) deux taux : chaque groupe est base + montant de sa rangée[2m > [22mune rangée qui ne retrouve pas la somme de son groupe : un seul rapport pour toutes les lignes[39m[32m 0[2mms[22m[39m
+[31m     → expected 10000 to be 10540 // Object.is equality[39m
+[31m   [31m×[31m (c) une remise suit le même rapport[2m > [22mla remise reste négative, la somme est le TTC[39m[32m 0[2mms[22m[39m
+[31m     → expected 9000 to be 9729 // Object.is equality[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(d) base TTC[32m 1[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(e) amountHT absent[32m 0[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(e bis) amountTTC absent[32m 0[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(e ter) une ligne sans montant[32m 0[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(e quater) la somme des lignes n’est pas le HT lu[32m 0[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22m(f) devise EUR[32m 0[2mms[22m[39m
+   [32m✓[39m (d) (e) (f) rien ne change quand la conversion n’est pas permise[2m > [22mrejouer la fonction sur son résultat ne convertit pas deux fois[32m 0[2mms[22m[39m
+[31m   [31m×[31m (g) le brouillon passe validatePurchase sans l’erreur « total TTC »[2m > [22mlignes HT converties : aucune erreur de total[39m[32m 1[2mms[22m[39m
+[31m     → expected 'Le détail des lignes doit correspondr…' not to contain 'total TTC'[39m
+   [32m✓[39m (g) le brouillon passe validatePurchase sans l’erreur « total TTC »[2m > [22mcontre-témoin : les mêmes lignes non converties (base TTC déclarée) sont refusées[32m 0[2mms[22m[39m
+   [32m✓[39m (h) le provisoire du flux et le final donnent les mêmes montants[2m > [22mdeux lectures de la même pièce, passées chacune par normalizeResult[32m 0[2mms[22m[39m
+[31m   [31m×[31m (i) l’indice de champ[2m > [22mune phrase courte sur amountTTC quand la conversion a eu lieu[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'Lignes imprimées hors taxe, passées a…' // Object.is equality[39m
+   [32m✓[39m (i) l’indice de champ[2m > [22mun indice plus grave déjà posé n’est pas remplacé[32m 0[2mms[22m[39m
+   [32m✓[39m (i) l’indice de champ[2m > [22mun avertissement du serveur sur le total reste celui qu’on lit[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mpasse au TTC, au prorata, le reste à la plus grande ligne
+[31m[1mAssertionError[22m: expected 10000 to be 10810 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 10810[39m
+[31m+ 10000[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m29:22[22m[39m
+    [90m 27| [39m  it('passe au TTC, au prorata, le reste à la plus grande ligne', () =…
+    [90m 28| [39m    [35mconst[39m r [33m=[39m [33mGeminiScannerService[39m[33m.[39m[34mnormalizeResult[39m([34mbrute[39m([34mtrois[39m()))[33m;[39m
+    [90m 29| [39m    [34mexpect[39m([34msomme[39m(r))[33m.[39m[34mtoBe[39m([34m10810[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 30| [39m    expect(r.items.map(i => i.amountTTC)).toEqual([43.23, 37.84, 27.03…
+    [90m 31| [39m    expect(r.amountHT).toBe(100); expect(r.amountTTC).toBe(108.1); // …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mle prix unitaire suit le même rapport que sa ligne
+[31m[1mAssertionError[22m: expected 20 to be 21.615 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 21.615[39m
+[31m+ 20[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m35:30[22m[39m
+    [90m 33| [39m  [34mit[39m([32m'le prix unitaire suit le même rapport que sa ligne'[39m[33m,[39m () [33m=>[39m {
+    [90m 34| [39m    [35mconst[39m r [33m=[39m [33mGeminiScannerService[39m[33m.[39m[34mnormalizeResult[39m([34mbrute[39m([34mtrois[39m()))[33m;[39m
+    [90m 35| [39m    expect(r.items[0].price).toBe(21.615); expect(r.items[1].price).to…
+    [90m   | [39m                             [31m^[39m
+    [90m 36| [39m  })[33m;[39m
+    [90m 37| [39m  it('un reste de centimes va à la plus grande ligne (3 lignes de 33,3…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(a) un taux, trois lignes hors taxe : la somme est le TTC au centime[2m > [22mun reste de centimes va à la plus grande ligne (3 lignes de 33,33 → TTC au centime)
+[31m[1mAssertionError[22m: expected 10000 to be 10810 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 10810[39m
+[31m+ 10000[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m39:22[22m[39m
+    [90m 37| [39m  it('un reste de centimes va à la plus grande ligne (3 lignes de 33,3…
+    [90m 38| [39m    const r = GeminiScannerService.normalizeResult(brute([ligneBrute(1…
+    [90m 39| [39m    [34mexpect[39m([34msomme[39m(r))[33m.[39m[34mtoBe[39m([34m10810[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 40| [39m    [34mexpect[39m(r[33m.[39mitems[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m3[39m)[33m;[39m
+    [90m 41| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(b) deux taux : chaque groupe est base + montant de sa rangée[2m > [22m2,6 % et 8,1 % avec vatCode et vat[]
+[31m[1mAssertionError[22m: expected 5000 to be 5130 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 5130[39m
+[31m+ 5000[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m50:25[22m[39m
+    [90m 48| [39m    const r = GeminiScannerService.normalizeResult(brute(items, { vat,…
+    [90m 49| [39m    const groupe = (code: string) => r.items.filter(i => i.vatCode ===…
+    [90m 50| [39m    [34mexpect[39m([34mgroupe[39m([32m'A'[39m))[33m.[39m[34mtoBe[39m([34m5130[39m)[33m;[39m
+    [90m   | [39m                        [31m^[39m
+    [90m 51| [39m    [34mexpect[39m([34mgroupe[39m([32m'B'[39m))[33m.[39m[34mtoBe[39m([34m5405[39m)[33m;[39m
+    [90m 52| [39m    [34mexpect[39m([34msomme[39m(r))[33m.[39m[34mtoBe[39m([34m10535[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(b) deux taux : chaque groupe est base + montant de sa rangée[2m > [22mune rangée qui ne retrouve pas la somme de son groupe : un seul rapport pour toutes les lignes
+[31m[1mAssertionError[22m: expected 10000 to be 10540 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 10540[39m
+[31m+ 10000[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m59:22[22m[39m
+    [90m 57| [39m    const vat = [{ code: 'A', rate: 2.6, base: 49, amount: 1.27 }, { c…
+    [90m 58| [39m    const r = GeminiScannerService.normalizeResult(brute(items, { vat,…
+    [90m 59| [39m    [34mexpect[39m([34msomme[39m(r))[33m.[39m[34mtoBe[39m([34m10540[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 60| [39m    [34mexpect[39m(r[33m.[39mitems[33m.[39m[34mmap[39m(i [33m=>[39m i[33m.[39mamountTTC))[33m.[39m[34mtoEqual[39m([[34m52.7[39m[33m,[39m [34m52.7[39m])[33m;[39m
+    [90m 61| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(c) une remise suit le même rapport[2m > [22mla remise reste négative, la somme est le TTC
+[31m[1mAssertionError[22m: expected 9000 to be 9729 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 9729[39m
+[31m+ 9000[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m68:22[22m[39m
+    [90m 66| [39m    const items = [ligneBrute(1, 'Pièce A', 4, 25, 100), { ...ligneBru…
+    [90m 67| [39m    const r = GeminiScannerService.normalizeResult(brute(items, { amou…
+    [90m 68| [39m    [34mexpect[39m([34msomme[39m(r))[33m.[39m[34mtoBe[39m([34m9729[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 69| [39m    [34mexpect[39m(r[33m.[39mitems[[34m1[39m][33m.[39mamountTTC)[33m.[39m[34mtoBe[39m([33m-[39m[34m10.81[39m)[33m;[39m
+    [90m 70| [39m    [34mexpect[39m(r[33m.[39mitems[[34m1[39m][33m.[39mprice)[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(g) le brouillon passe validatePurchase sans l’erreur « total TTC »[2m > [22mlignes HT converties : aucune erreur de total
+[31m[1mAssertionError[22m: expected 'Le détail des lignes doit correspondr…' not to contain 'total TTC'[39m
+
+Expected: [32m"total TTC"[39m
+Received: [31m"[7mLe détail des lignes doit correspondre exactement au [27mtotal TTC[7m.[27m"[39m
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m105:28[22m[39m
+    [90m103| [39m    const d = brouillonDe(GeminiScannerService.normalizeResult(brute(t…
+    [90m104| [39m    [34mexpect[39m(d[33m.[39mamount)[33m.[39m[34mtoBe[39m([34m108.1[39m)[33m;[39m
+    [90m105| [39m    [34mexpect[39m([34merreurs[39m(d))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'total TTC'[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m106| [39m  })[33m;[39m
+    [90m107| [39m  it('contre-témoin : les mêmes lignes non converties (base TTC déclar…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/n3-ht/lignes-ht.test.ts[2m > [22m(i) l’indice de champ[2m > [22mune phrase courte sur amountTTC quand la conversion a eu lieu
+[31m[1mAssertionError[22m: expected undefined to be 'Lignes imprimées hors taxe, passées a…' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"Lignes imprimées hors taxe, passées au TTC."
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/n3-ht/lignes-ht.test.ts:[2m124:95[22m[39m
+    [90m122| [39m[34mdescribe[39m([32m'(i) l’indice de champ'[39m[33m,[39m () [33m=>[39m {
+    [90m123| [39m  it('une phrase courte sur amountTTC quand la conversion a eu lieu', …
+    [90m124| [39m    expect(invoiceFieldHints(GeminiScannerService.normalizeResult(brut…
+    [90m   | [39m                                                                                              [31m^[39m
+    [90m125| [39m  })[33m;[39m
+    [90m126| [39m  [34mit[39m([32m'un indice plus grave déjà posé n’est pas remplacé'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 14:41:50
+[2m   Duration [22m 924ms[2m (transform 256ms, setup 186ms, collect 526ms, tests 11ms, environment 0ms, prepare 78ms)[22m
+

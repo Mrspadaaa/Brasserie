@@ -857,3 +857,810 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   dans le nom (« Cascade CH ») ? », mot pour mot : « voulez-vous l'origine oui » (D216).
 - **Gemini pour les tests** (31.10, nuit, dépense), après « Gemini en production attendra votre accord, avec le coût par produit
   montré avant. », mot pour mot : « Je l'accord pour les test 10ch de budget » (D217).
+- **La dépense sur son téléphone** (01.11, 8 h 25, sa facture Infomaniak de 7 lignes, point « ① Date » seul, version en ligne 153b2296),
+  mot pour mot : « Y aller je fait rien, et il y a un vrai problème, quand on ouvre certains champs, le fenêtre fait haut bas très rapidement,
+  comme un cintillement, c'est horrible » ; puis, sur la lecture : « Aussi, c'est assez fiable mais toujours plutôt lent » ; puis « cible rien pour « Date ». Il y a plusieurs champs
+  date aussi attention ! » et « C'est pas utile den avoir plusieurs » (D233).
+- **La lecture d'une facture** (01.11, matin), mot pour mot : « Est-ce que on pourrait faire 2 lecture en parallèle de 3.5 flash et si ça
+  diverge une relecture par 3.8 ? C'est quoi l'architecture actuellement ? Pourquoi on a choisi ça ? » ; puis, au banc proposé (≈ 1 CHF) :
+  « 5chf de budget accordé » (D234 ; banc k1, `work/missions/2026-11-01-banc-lecture/`). Puis, sur le résultat du banc (page
+  https://claude.ai/artifact/S4ovLYnPabLA5Pvq6n4rU9) et la question « veux-tu passer la lecture des factures à ta proposition C », mot pour
+  mot : « en théorie, oui, mais est-ce qu'il y a pas des nouvelles IA de Google plus rapide et meilleures pour ça ? » ; puis : « 3.5
+  Flash-Lite, il y a pas moyen de le faire mieux fonctionner ? Avec un meilleur Harness, guideline, ou une utilisation plus haute de son
+  intelligence ? Genre en Max ou xhigh ? Et si il y a probablement fallback sur 3.8 ? » ; puis : « Regarde avec des skill ou autre
+  outil, workflow ou third party comment l'améliorer au Max pour la vision » ; puis : « Tu as assez de vrai donné de test ? » ; puis,
+  sans mot, de nouvelles pièces (10 h, hors de Git dans `H13-reels/`) : deux PDF B&R identiques (commande 652093), dix images (captures
+  de trois commandes B&R, une photo de facture CFF), un PDF B&R (commande 686863), et : « Il y a des screenshots qui sont de la même
+  facture mais sur plusieurs écran » ; puis, au rapport « Lire juste d'abord, plus vite ensuite » (envoyé), mot pour mot : « Met déjà en
+  place le système qui permet d'améliorer et compare avec les données que l'on a, j'en ai pas plus pour le moment » ; puis : « J'ai
+  l'impression que tout ce qui est skill, harness ou autre a été un peu mis de côte » (registre de chaque geste :
+  `work/missions/2026-11-01-banc-lecture/GESTES.md` ; boucle : skill `banc-lecture`).
+- **Une pièce déjà saisie** (01.11, après ses pièces), mot pour mot : « et les deux PDF de la commande 652093 sont identiques. Géré ce cas
+  là, on doit voir que ce document est déjà lié à un stock, facture ».
+- **Frais de port et second avis** (01.11, après-midi), à la question « Sur une commande en plusieurs captures, les frais de port
+  doivent-ils être une ligne de la dépense, ou seulement compter dans le total ? », mot pour mot : « Total seulement » ; puis, sur zxing-wasm
+  et Azure comme second avis : « Mais Azur est payant ? Je veux pas un nouveau poste de dépense Claud, ai infra » (Azure : non, GESTES
+  rang 9 ; zxing-wasm, gratuit et local, reste ouvert). Puis, mot pour mot : « zxing-wasm ok » (D240) ; et : « Et Harness, skill tool ou
+  third party non payant pour 3.5 flash lite ? » (GESTES : les gestes gratuits restants) ; puis, aux captures du doublon : « Et Harness,
+  skill tool ou third party non Et Harness, skill tool ou third party non payant pour 3.5 flash lite ? Tu as pas répondu, doublon ok
+  parfait ». Puis, avec le lien du dépôt GitHub Anionex/dsh-vision-toolkit (https://share.google/fivmIAdnRQEAWiYzK), mot pour mot :
+  « Qqch du genre ferai sens adapté à Nos modèles et besoin ? » ; puis : « J'accorde 20chf de crédit en plus » (D242). Puis, à « pdf.js
+  dans l'app, ok ? » et « brancher le QR dans l'app […] je te montrerai d'abord des mini maquettes », mot pour mot : « Okok » (D243).
+- **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
+  cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
+  (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que
+  si l'entreprise est assujettie ; ouvert : une vue TVA, « assujetti ou pas », à montrer en mini maquettes).
+- **Les tests en ligne** (01.11, matin), mot pour mot : « Et les tests d'intégration dans la vrai app ont vraiment été très mediculeux ? »
+  (réponse : non ; L12 complétée, contrôle `controle-bande.mjs` en 390 tactile).
+- **Déployer** (01.11, matin), mot pour mot : « J'autorise de déployer sans faire tout les test npm run test. Mais seulement ceux visié
+  pour les changements » (D236).
+- **Nouvelle dépense, passe 3** (01.11, matin, sur sa capture de la passe 2 « r2b · repos à 1280 px », le bandeau et la preuve entourés ;
+  `work/missions/2026-10-31-ecran-depense/brasseur/01-11-recap-r2b-1280.jpg`), mot pour mot : « Plusieurs points sur la vue et logistique. rang 7 · r1 · série r Nom d'approche : feuille J'aime beaucoup les pastilles sur les items, ça rend la chose très clair. Aussi un récap en haut comme sur le screen est top, avec la possibilité de clicker et avoir des revois Maintenant pour la lisibilité. Je veux que en un écran je vois le maximum d'items ajouter. Je veux que cette écran d'ajouter de facture prenne vraiment toute la place de l'app. Je veux aussi que ça soit trié par catégorie avec sous total de quantité. Par exemple je sais très bien combien d'houblon j'ai commandé. Mais pas forcément combien items au Total. Aussi bien utilisé les UX UI booster. Finalement, pour la logistique d'envoi sur le drive, c'est invisible, c'est à la fin en arrière plan. Et si ça fail. Grosse notification, renvoie sur la facture pour upload le justificatif ou/et réparé le lien drive » (D235).
+- **Nouvelle dépense, son choix de la passe 3** (01.11, soir, sur la page de la passe 3), mot pour mot : « Les bandes teintées p3a-3
+  j'aime beaucoup ! C'est le top 1 de loin quasiment rien ne doit être changé.  Il faudrait juste le rendre un peu plus compact, pas comme
+  Le tableau à prix p3a-2 mais presque enfin pas copier mais adapté. C'est du 99% bon » (D245).
+- **Contrôle QR, son choix** (01.11, soir, sur la page du contrôle QR), mot pour mot : « Le sceau QR z2 parfait comme telle » (D246).
+- **La vue TVA** (01.11, soir, à « Vue TVA : elle attend aussi ton choix »), mot pour mot : « Vue TVA : elle attend aussi ton choix. Je
+  comprends pas ? Je vois pas l'artefact où j'ai déjà validé ? » (réponse : aucune page TVA n'existe encore ; la phrase du pilote était
+  fausse, un choix sans page ; L24 complétée).
+- **La vision, encore** (01.11, soir), mot pour mot : « Pour la vision, on a pas réussi à faire mieux que ce qui est déjà ? Même avec tout
+  les test, nouvelle implantation, rien ??? Et si on met le Harness skill et autres dans notre méthode actuelle, on gagne encore en
+  qualité ? » (réponse : pas plus juste que la production sur ses 13 pièces, à ±2 points, ce que 13 pièces ne départagent pas ; gagné :
+  même justesse pour ≈ 44 % de moins avec C★v8, plus de lecture coupée, le QR qui certifie sans IA ; les skills ne tournent pas dans
+  l'app ; le levier suivant : plus de pièces, et la bascule en production, à son accord ; `GESTES.md` du banc).
+- **La bascule de la lecture** (01.11, soir), à « basculer la production sur C★v8 avec la correction automatique et le QR : même
+  justesse, moins cher, sans lecture coupée. Ça demande ton accord, car il faut redéployer la lecture en production », mot pour mot :
+  « Yes ok » (D247).
+- **Nouvelle dépense, son degré** (01.11, soir, sur sa capture de p3c-3 au repos, « 18 Kg » de la bande Malts et « 6 Kg × 2,30 » de Maris
+  Otter entourés en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-p3c-3-quantite-entouree.jpg`), mot pour mot :
+  « p3c-3 le mieux mais mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs » (D248).
+- **Les frais de port** (01.11, soir), à « Frais de port « Total seulement » : seulement sur les commandes en plusieurs captures, ou aussi
+  quand le port est imprimé comme un article ? », mot pour mot : « Non non aussi quand imprimé article » (D249).
+- **La TVA, son cas** (01.11, soir), à « TVA : es-tu assujetti ? », mot pour mot : « Je fais moins de 100k » (D250).
+- **La CSP de l'hébergement** (01.11, soir), à « CSP : peut-on ajouter 'wasm-unsafe-eval' dans firebase.json ? Sans ce mot, le QR ne lit
+  rien en ligne. Je te montrerai la preuve jouée en local dès que le rejeu sera fini. », mot pour mot : « Oui » (D253).
+- **Les tests sur l'app en ligne** (01.11, soir, après les deux déploiements de la bascule), mot pour mot : « Les test d'intégration sur
+  la vrai app, vrai donné sont fonctionnels ? »
+- **Les tests sur l'app en ligne, suite** (01.11, soir, pendant ma réponse), mot pour mot : « Ils ont bien été effectué, sans problème? »
+- **Déployer le correctif des montants de ligne, pousser la branche** (01.11, soir), à « 1. Je déploie la fonction de lecture des
+  factures avec ce correctif (oui / pas maintenant) ? 2. Je pousse la branche et j'ouvre la PR, 42 commits (oui / plus tard) ? »,
+  mot pour mot : « Oui et oui » (D257).
+- **La suite** (01.11, soir, après le déploiement du correctif et la PR 199), mot pour mot : « Continue » (lu : la suite prévue, port de
+  p3c-3 avec z2 D248, port « Total seulement » D249, vue TVA en mini maquettes D250).
+- **La vue TVA, et la rénovation d'abord** (01.11, nuit, sur sa capture de u3, la bouteille « TVA dans chaque 33 cl 13,35 ct », le haut
+  marron de la bouteille entouré en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-u3-bouteille-marron-entouree.jpg`,
+  hors Git), mot pour mot : « Même si c'est un peu enfantin j'aime assez bien, après pas convaincu vraiment du design. Mais avoir une
+  vrai vu comme ça c'est top, aussi il y a pas vraiment le roi, et la partie maron ? Ni vraiment combien je gagne ? Mais des outils de
+  genre prix, prédictions et tout c'est top.
+
+  Après c'est plus pour après pour le moment je fais pas encore de la grosse vente, c'est des outils important et essentiel. Mais j'ai
+  plus besoin d'outil de prédictions, vu d'ensemble, panification et autres car la brasserie est en grande rénovation, et il me manque
+  encore beaucoup de choses et j'ai pas beaucoup de temps à consacrer à ça et pas non plus un gros budget. Genre installation de hotte.
+  Installation du 2eme évier. Armoire extérieur, seconde passe sur les sols ectt création du site web vitrine.... » (lu : « le roi » =
+  le ROI, retour sur investissement ; « panification » = planification ; la partie marron de u3 est le fond vide de la bouteille, elle
+  ne représente rien. D259 : ce défaut à contrôler, et la rénovation passe devant, la TVA et les outils de vente « pour après »).
+- **Le quota, l'état stable et le déploiement** (01.11, nuit, après la page Rénovation v0 et le départ de la passe 2), mot pour mot :
+  « À 60 jusqu'à 65 hebdo, stop les nouvelles tâches et met dans un état stable et deploye. Les choix seront fait demain » (lu : à
+  60 % de l'hebdo, aucune tâche neuve ; ce qui est en vol se finit et se vérifie ; l'état stable se déploie avant 65 % ; ses choix de
+  maquettes attendent demain. D260).
+- **Une facture simple, lue fausse et lente** (01.11, nuit, 18 h 49 sur son téléphone, sur l'app en ligne de D255 : une capture de commande
+  Brau- und Rauchshop, 16 articles, port 30,00, total 170,20, sans date ; cinq captures de l'écran et la pièce,
+  `work/missions/2026-10-31-ecran-depense/brasseur/01-11-brau-*.jpg`, hors Git), mot pour mot : « Ça semble pas être super juste ???
+  Et ça a pris vraiment beaucoup de temps pour une "facture" relativement simple ??? » (lu : les noms doublés « … [+CHF 0.10]· Mischung:
+  … [+CHF 0.10] », l'écart d'un centime « Détail : 170,21 / 170,20 » signalé alors que c'est l'arrondi suisse à 5 centimes, le port
+  rangé comme un article, six pastilles sur une pièce simple ; et la lecture : deux lectures en 7 s qui divergent, puis une troisième
+  par 3.8 en 20 s. D261).
+- **Les modèles de lecture, la TVA et la date** (01.11, nuit, après mon diagnostic de la pièce Brau- und Rauchshop), mot pour mot :
+  « SI on perd à ce point en qualité avec 2 Rapid puis 1 lent autant utiliser 2 lents puis 1 lent comme au début. Aussi le ht, TVA
+  semble pas super fonctionné comme illustré dans la capture.
+
+  Pour les date. Il faut en UX UI booster. Aujourd'hui
+
+  Mois passé
+
+  Mois suivant
+
+
+  La date exacte est rarement important. Le mois l'est plus » (lu : une condition, « si on perd » ; les défauts vus sur cette pièce
+  viennent des règles de l'app, pas des modèles, donc la comparaison « 2 lents puis 1 lent » se mesure au banc avec sa pièce avant
+  toute bascule (L20) ; la pastille ④ TVA et « Référence et TVA du document · À vérifier » sur une TVA juste, 0,60 + 8,30 = 8,90 ;
+  les raccourcis de la date deviennent « Aujourd'hui · Mois passé · Mois suivant », le jour d'aujourd'hui dans le mois choisi.
+  D262).
+- **Le classement des lignes** (01.11, nuit, même pièce Brau- und Rauchshop), mot pour mot : « Et aussi ça à pas classé, levure,  malt,
+  outils de brassage, autre ect... Correctement » (lu : chaque ligne doit tomber dans sa famille, levure, malt, houblon, matériel de
+  brassage, autre ; l'écran en ligne de D255 montre toutes les lignes sous la même icône, sans famille. D262c).
+- **Comment ça a pu passer** (01.11, nuit, pendant les correctifs), mot pour mot : « Mais pourtant en 10s, un seul test, j'ai trouvé tout
+  ça, comment ça a pu passer au travers ??? SI des tests avec toutes les preuve ont bien été fait, ça a été fait n'importe comment ?? »
+  (lu : nos tests et le banc n'avaient aucune pièce de ce genre, une commande en ligne avec la mouture dans le nom, un total arrondi à
+  5 centimes, deux taux de TVA et un port non taxé ; les tests en ligne de D210 se sont faits sur des pièces fictives ; personne n'a
+  jugé l'écran champ par champ contre une vraie pièce, comme lui. Leçon L28).
+- **Le banc d'abord** (01.11, nuit), à « Demain au banc, avec ta pièce », mot pour mot : « non non c'est prio 1 ça, même si on dépasse
+  les 65% » (lu : le banc de la pièce Brau- und Rauchshop passe ce soir, en priorité 1, au-delà de la borne de D260. D263).
+- **Le bout en bout, sur la vraie app** (01.11, nuit, pendant le banc), mot pour mot : « Fait bien à la fin les test d'intégration bout en
+  bout. Et les tests sur la VRAI app avec les VRAIS donnés. Est-ce que le stock de met bien à jour ? Les factures aussi, tout suit ... »
+  (lu : avant de clore, un parcours complet facture → dépense → stock joué sur les émulateurs, puis sur l'app en ligne avec ses vraies
+  données ; vérifier que le stock bouge et que la facture suit partout. Une écriture sur un article réel reste à son accord, D217. D264).
+- **Toutes les pièces au banc** (01.11, nuit), mot pour mot : « Il faut testé aussi avec les autres pièces de test btw pas juste
+  celle-ci... » (lu : la comparaison C★v8 contre « 2 × 3.8 puis 3.8 » se fait sur les 14 pièces, la sienne comprise. D263).
+- **Les réponses de la nuit** (01.11, nuit, sur le rapport du banc), mot pour mot : à « Une partie de la règle TVA tourne sur le serveur.
+  Pour qu'elle s'applique, il faut redéployer aiTask, ce qui demande ton accord » : « Ok » (D267) ; à « il faut trois bandes de plus sur
+  l'écran que tu as choisi. Je te les montrerai en mini maquettes » : « Je comprends pas ,j'ai validé les maquettes de tout ça ?? », puis
+  « Le classement par famille ou sous familles était pas que pour malt et houblons mais pour tout type de famille ??? » (lu : son choix
+  p3a-3/p3c-3, « trié par catégorie avec sous total de quantité » (D235), vaut pour toutes les familles ; la maquette n'en montrait que
+  quatre parce que sa facture d'exemple n'avait que celles-là. D262d) ; à « l'annulation de la saisie en double de la commande d'avril
+  (TX-6770960b) » : « Ok » (D268).
+- **L'annulation attend** (01.11, nuit), à « À faire par toi : l'annulation de TX-6770960b », mot pour mot : « Pas important pour le
+  moment » (lu : l'annulation de la saisie en double et la relecture du stock attendent ; rien n'est touché. D268 suspendue).
+- **Qui trie par famille** (01.11, nuit), mot pour mot : « L'ai ou code trie correctement les items par famille ? SI il y aune
+  nouvelle levure, nouveau fermenteur ou autre item un peu plus technique ou complexe ? » (lu : « L'ai » = l'IA ; il veut savoir si une
+  levure, un fermenteur ou un article technique inconnus tombent dans la bonne famille. Sondé : non, le code trie par mots. D269).
+- **Quatre langues** (01.11, nuit, à « les mots anglais de la lecture »), mot pour mot : « Langue utilisée pour les factures, allemand,
+  anglais, français, italien. Ça traduits en français et fait le bon lien » (lu : une catégorie, une famille ou un mot de métier lu en
+  allemand, anglais, français ou italien devient la catégorie française de l'app et relie la ligne à la bonne famille et au bon article ;
+  la désignation imprimée reste telle quelle, D261a. D271).
+  Puis, mot pour mot : « Italien possible aussi mais beaucoup plus rare » (lu : allemand, anglais et français d’abord ; l’italien
+  couvert par les mots de base, sans plus. D271).
+- **La pastille TVA** (01.11, nuit), à « Pastille TVA : elle reste, parce que la lecture prend le sous-total TTC pour le HT. La lever
+  demande de redéployer aiTask, ce qui reste ton choix. », mot pour mot : « Go » (lu : accord au correctif et au redéploiement d'aiTask
+  seul ; pas l'hébergement, pas les règles. D272).
+- **Les 14 pièces, en vrai** (01.11, nuit), à « J'ai rejoué les 14 pièces du banc sans appel payant », mot pour mot : « Maintenant il
+  faudra refaire ça avec appel payant sur la vrai alo » ; puis « App » (lu : « alo » = « app » ; rejouer les 14 pièces avec de vraies
+  lectures payantes, dans l'app en ligne, chaque champ comparé à la vérité ; lecture seule, rien n'est confirmé ni enregistré. D273).
+- **Les articles difficiles** (01.11, nuit, pendant le passage en ligne), mot pour mot : « Ça catégories bien les items un peu difficile ?
+  Les bonnes famille ou sous familles, catégorie ? » ; puis « Même seul jamais eu en stock m », « ?* » (lu : « même ceux jamais eus en
+  stock ? » ; un article neuf, technique ou de marque, reçoit-il la bonne famille et la bonne catégorie ? D273d).
+- **Local loin du vrai** (01.11, nuit), à « La lecture range bien les articles difficiles ; l'écran en ligne, lui, se trompe encore. »,
+  mot pour mot : « C'est assez grave comme problème, ça veut dire que les tests local sont très loin de la vérité... » (lu : ce qu'on
+  teste en local doit dire ce qu'il verra en ligne ; un écart entre les deux est un défaut, pas un détail. D273a à D273d, L28).
+- **Cache lié au moteur, et trop d'Autres** (01.11, nuit). Il cite ma recommandation puis répond, mot pour mot : « Cache de lecture : le lier au
+  moteur, pour qu'une pièce déjà lue soit relue après un changement. Une relecture coûte quelques centimes. Je le recommande yes ». Il ajoute
+  « Les articles difficiles, même jamais en stock / Top mais j'ai l'impression qu'il y a trop de d'items en autre ? ». Lu : « yes » est son
+  accord pour lier le cache au moteur et redéployer aiTask (D274). « Trop d'items en autre » veut dire trop d'articles dans la bande Autres (D273e).
+- **La vue Dépense ne respecte ni ses demandes ni sa vue de base** (01.11, nuit, sur ma capture 390 de sa commande, deux zones
+  entourées : le bouton « Créer « CARABELGE· Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF 0.10] » » et « 100 Gram0,0101 », avec
+  la maquette p3c-3 au repos), mot pour mot : « Il y a plein de problème sur cette vue, déjà pas de traduction. Ensuite le concassage
+  n'est pas un produit mais un état du malt. C'est pas du tout compacte, comme demandé, et ça créé de base automatiquement un nouveau
+  produit du ça arrive pas à lié à un stock. Pas besoin d'afficher autant. Ça respecte pas trop les demandes.... Ni la vue de base. »
+  (lu : les options imprimées dans le nom — « Mischung: Einzelprodukt », « Schrotung: geschrotet [+CHF 0.10] » — ne sont ni traduites ni
+  comprises ; « geschrotet » (concassé) est l'état du malt, une pastille ↳ sur sa rangée avec son supplément, jamais une partie du nom
+  ni un produit ; une rangée tient sur une ligne, comme p3c-3 ; une ligne d'ingrédient qu'aucun article ne relie devient d'office un
+  nouvel article, montré par le picto « nouveau », sans bouton « Créer » ; le reste se replie. D275).
+- **L'enrichissement des nouveaux articles** (01.11, nuit), mot pour mot : « Une fois produits ajouter, vue fermé et tout, ça créé une
+  procédure pour enrichir le nouveau produit du stock btw, comme demandé il y a un moment » (lu : la demande du 31.10, ligne « Peut être à
+  la fin quand on valide la facture, en arrière plan », n'est pas faite ; après Confirmer, la vue fermée, une procédure en arrière-plan
+  remplit la fiche de chaque nouvel article, sans doublon de fiche. D276).
+- **La vue de base, c'est p3c-3 et la suite** (01.11, nuit), à « ta maquette choisie (p3c-3) », mot pour mot : « non c'était un exemple,
+  il y a une quelques améliorations entre temps » (lu : la base est p3c-3 avec ce qu'il a demandé depuis : quantité en gras et colonnes
+  alignées (D248), sceau QR (D246), port « Total seulement » / « dont port » (D249), noms sans doublon (D261a), raccourcis de date
+  (D262b), familles pour tous les types (D262d), quatre langues lues en français (D271). D275).
+- **Les unités, trois cas** (01.11, nuit, sur la même capture, « 85 ? », « 2 ? », « 1 ? », « 11 ? » entourés), mot pour mot : « Pour les
+  unités, c'est quand même facile à devenir ?? SI il y a un doute, ça me flag mais de base ça essaie d'auto remplir. Il y a 3 cas de
+  figure: sûr ou quasiment sûr, rien. / Pas sûr mais repis, flag jaune. Je contrôle / Ne sait pas, aucune idée, flag rouge, je dois
+  remplir ou corrigé » (lu : « devenir » = « deviner », « repis » = « repris » ; une unité absente ou illisible est déduite (prix ×
+  quantité = montant, famille, article relié, sachet de levure) ; sûre : rien d'affiché ; probable : remplie avec un signal jaune, qu'il
+  contrôle ; inconnue : signal rouge, à remplir. Jamais « ? » quand l'unité se déduit. D277).
+  Puis, à « Ensuite je prépare les trois niveaux d'unité », mot pour mot : « pas que pour les unités mais globalement pour tout » (lu :
+  chaque valeur de la Dépense — unité, quantité, prix, famille, article relié, date, fournisseur, total — suit les trois cas : sûre, rien ;
+  reprise sans certitude, jaune, il contrôle ; inconnue, rouge, il remplit. Un seul code de signal pour tout l'écran. D277).
+- **Ajouter un article** (01.11, nuit), mot pour mot : « Normalement, pas besoin mais est-ce possible d'ajouter un item ? » (lu : ajouter
+  une ligne à la main dans la Dépense ; elle existe, « + Ajouter une ligne » au pied de la liste, 35 lignes au plus ; elle reste dans la
+  refonte, et une ligne ajoutée vide porte le signal rouge de ses valeurs à remplir, D277).
+- **Un seul problème réglé** (01.11, nuit, sur la capture 390 après D273f, « 100 g × 0,0101 » entouré et coché), mot pour mot : « La ça
+  règle que un des problèmes cité » (lu : la quantité ne court plus sur le prix, mais traduction, concassage, compacité, bouton « Créer »
+  et unités restent ; D273f n'est qu'un des défauts de D275 à D277).
+- **Les noms en français, et le budget** (01.11, nuit), à « Pour f5, la lecture doit rendre la désignation en français, ce qui demande un
+  changement d'aiTask, mesuré au banc avant ton choix », mot pour mot : « Pour ce dernier, il faudra modifier aiTask, à mesurer au banc
+  j'autorise ce changement, hausse aussi le total à 49chd pour l'ia » (lu : accord pour ajouter la désignation en français à la lecture
+  d'aiTask et la redéployer, si le banc ne montre aucune perte ; « 49chd » = 49 CHF : le plafond cumulé des appels IA payants du banc et
+  des essais passe de 25 à 49 CHF. D278).
+  Puis, mot pour mot : « Chf* » (lu : « 49chd » = 49 CHF, confirmé).
+- **Le nom d'un nouvel article venu d'une facture étrangère** (02.11), sur la page de choix c-nom
+  (https://claude.ai/artifact/5zPHv4HDbgPzhnwNchQmBg), à « Quelle option veux-tu : B seule, B + D, ou une autre combinaison ? », mot pour
+  mot : « Oui b c'est très bien » (lu : B seule. L'article entre au stock sous son nom français ; le nom imprimé est gardé et se lit à la
+  fiche, en petit, « Sur la facture : … » ; toute facture suivante du même produit, quelle que soit sa langue, se relie à cet article.
+  Ni C (deux noms dans la liste), ni D (fusion des doublons déjà là), ni E (nom proposé en jaune), ni F (lien d'une autre langue proposé
+  en jaune). D289).
+- **Les accords groupés** (02.11), sur ma liste, mot pour mot, chaque réponse après sa ligne :
+  « Format des fiches : tes articles de stock auraient un champ de plus pour leur fiche. Ce champ est le seul blocage avant de brancher le
+  remplissage automatique de la fiche d'un nouvel article après « Confirmer » ; le code est prêt. Ok » (lu : accord du schéma
+  `StockItem.fiche` élargi, f4 branchement 6 ; les branchements 1 à 5 se posent. D290) ;
+  « IA pour remplir les fiches : éteinte par défaut ; l'allumer en ligne te coûterait des appels Gemini. Combien en plus, c'est comme
+  l'autocomplete, non ? » (lu : une question, pas un accord ; l'IA de l'enrichissement reste éteinte en ligne jusqu'à sa réponse) ;
+  « Poids de l'app au démarrage : le remplissage des fiches ajoute environ 18 Ko ; je recommande d'accepter. Ok » (lu : +18 Ko acceptés) ;
+  « Push des commits sur GitHub. Ok » (lu : accord de pousser la branche ; pas de PR ni de fusion) ;
+  « Choix encore ouverts : D273b (version du cache de lecture) et D261c. Montre moi » (lu : les montrer en pages de choix. D273c, la
+  version du cache, est déjà tranchée par son « yes » de D274 ; le choix ouvert est D273b, plusieurs captures pour une dépense, et
+  D261c, la lenteur de la lecture).
+- **Plusieurs captures pour une dépense** (02.11, sur la capture à 1280 px de la page de choix `choix-captures`, non publiée, un trait
+  rouge sur les colonnes B et C), mot pour mot : « Variante b, mais dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs
+  documents, dans 99% des cas c'est que 1 document » ; puis : « Le bouton noir est splitter en 2 » (lu : B retenue, « + page » puis
+  « Lire » ; à l'entrée, le bouton noir « Choisir le document » coupé en deux : une moitié pour un document, qui part tout de suite comme
+  aujourd'hui, l'autre pour plusieurs, qui ouvre la rangée de pages de B. D291). Puis, sur la forme 3 de la maquette retenue
+  (`choix-captures/retenue/img/1-entree-f3.png`, « Un document » | « Plusieurs », un trait rouge dessous), mot pour mot : « Celle là que
+  je veux » (lu : la forme 3 est la base du code, telle quelle).
+  Puis, sur l'écart de la frise annoncé (« la frise ne coche « envoi ✓ » qu'une fois l'envoi réellement fait »), mot pour mot :
+  « Mais l'envoi au drive de fait en arrière plan ?? » (lu : une question. Il lit « envoi » comme l'envoi au Drive. Or la frise parle
+  de l'envoi des pages à la lecture, au toucher de « Lire ». Le Drive part en arrière-plan après « Confirmer », et la frise ne l'attend pas.
+  Le mot prête à confusion : à suivre.)
+  Puis, sur « Rien ne sera déployé côté serveur sans votre accord », mot pour mot : « Pourquoi ? Il faut deployé pour pouvoir testé... »
+  (lu : son accord pour redéployer aiTask avec la lecture de plusieurs pages, puis l'app, une fois n2 vérifié en local, afin de l'essayer
+  en ligne. Les règles d'essai en ligne restent : D210, D217. L'IA d'enrichissement en ligne n'est pas couverte. D297.)
+  Puis, mot pour mot : « Non pas besoin de mon accord dans ce cadre de tâche là ». Puis, en citant « L'IA qui remplit les fiches reste
+  éteinte en ligne. Je vous proposerai d'abord 3 appels réels mesurés. » : « Allume la » (lu : pour cette tâche, les gestes externes
+  qu'elle exige se font sans lui demander ; l'IA de remplissage des fiches s'allume en ligne dès le prochain déploiement, sans attendre
+  3 appels d'essai ; ses coûts se mesurent sur les premiers appels réels, dans le budget fixé. D298.)
+  Puis, en citant « Le coût sera mesuré sur les premiers vrais appels ; je n'ai fabriqué aucun appel d'essai. », mot pour mot : « Fait en 1 ou 2
+  et augmente à 30 appel Max par jour » (lu : faire 1 ou 2 appels réels pour mesurer le coût, et monter le plafond de l'IA de remplissage
+  des fiches à 30 appels par jour. D299.)
+  Puis, sur le premier appel mesuré (0,35 CHF, dont 20 recherches comptées d'office), mot pour mot : « SI 20 recherche= 0.35chf c'est
+  tout bon alors on peut augmenter le cap à 200 » (lu : le coût lui convient, pas de second appel d'essai ; le plafond de l'IA de
+  remplissage des fiches passe de 30 à 200 appels par jour et par appareil. D300.)
+  Puis, mot pour mot : « Fait plusieurs vrai appel test de enrichit » (lu : plusieurs vrais appels de l'IA de remplissage des fiches, sur
+  des produits réels absents du catalogue, avec la requête même de la procédure, sans écrire dans son stock réel. D302.) Puis, en citant
+  ma question « voulez-vous relever le budget IA du mois au-dessus de 20 CHF », mot pour mot : « oui 50chf » (lu : le plafond du mois
+  du serveur, partagé par toute l'IA, passe de 20 à 50 CHF. D301.)
+- **Les familles de la rénovation** (02.11, vers 12 h 40, avec la photo d'un ticket de magasin de bricolage du jour : vitrificateur pour sol,
+  bac et rouleaux de peinture, turbine de mélange, brosses métalliques, ruban de masquage, détartrant, déboucheur, seau, combinaison et masque
+  de protection), mot pour mot : « Je viens de faire un achat, il me manque encore pas mal de catégorie, famille, sous familles, notamment pour
+  la rénovation » (lu : les catégories, familles et sous-familles de la Dépense ne couvrent pas les travaux du local ; un achat de rénovation
+  doit trouver sa catégorie et ses familles, sans finir en « Autre ». La photo reste hors de Git. D306.)
+- **Les sous-familles : son choix D** (02.11, vers 13 h 15, devant la page « Les sous-familles dans une bande · 02.11 »,
+  https://claude.ai/artifact/YBVsYNiZTnXr819j4AuyZc), mot pour mot : « J'aime beaucoup D mais il faudrait pouvoir facilement tout plier, déplier »
+  (lu : D, la bande en sous-groupes repliés, est sa maquette ; il y faut un geste simple qui plie ou déplie tous les sous-groupes d'un coup.
+  D307.)
+- **Deux points pas compris** (02.11, vers 13 h 20, après le message du pilote qui listait « tes choix sur la frise et sur la lenteur ; « je lance
+  la correction des lignes hors taxe ? » »), mot pour mot : « tes choix sur la frise et sur la lenteur ; « je lance la correction des lignes hors
+  taxe ? » Comprends pas ces 2 points » (lu : le pilote a nommé des pages et un code de décision sans dire de quoi il s'agit ; il faut le dire
+  en mots simples, avec le lien et ce qu'on attend de lui, et ne rien lui demander qui ne soit pas à lui de trancher. D307.)
+- **La lenteur : son choix D** (02.11, vers 13 h 35, après l'explication du pilote et la page « La lenteur de la lecture · 02.11 »,
+  https://claude.ai/artifact/TNNSAZdhSkoit5NkHyksPa), mot pour mot : « La lenteur go pour la d » (lu : l'option D de la page, l'écran tout de
+  suite après les deux lectures rapides, valeurs provisoires, la lecture lente finit en arrière-plan, « Confirmer » attend la lecture finale. D308.)
+- **La frise de « Plusieurs » : son choix B** (02.11, vers 13 h 45, après l'explication du pilote et la page « La frise de « Plusieurs » · 02.11 »,
+  https://claude.ai/artifact/EZBoX4NkK9nGxDKijfwCPJ), mot pour mot : « B » (lu : sous le premier trait de la frise, « N pages ✓ » au repos et
+  pendant la lecture, comme l'app en ligne ; « Un document » garde « envoi ✓ ». D309.)
+- **Tout plier, déplier : son choix E** (02.11, vers 14 h 30, devant la page « Tout plier, déplier sur D · 02.11 »,
+  https://claude.ai/artifact/T1cw6DYZX9YCBz4uELbXBE), mot pour mot : « E c'est très bien » (lu : le segment « Plié | Déplié » dans l'en-tête de la
+  feuille, entre le titre et le justificatif, pour toute la dépense ; à l'état mêlé, aucun des deux n'est allumé. D311.)
+- **Le segment de E n'est qu'un raccourci** (02.11, vers 15 h, juste après son choix E), mot pour mot : « Avec e, on doit toujours pouvoir plier
+  déplier individuelle les catégories, ce bouton lock rien, juste un shortcut » (lu : chaque sous-groupe se plie et se déplie toujours d'un
+  toucher, après « Plié » comme après « Déplié » ; le segment règle tout d'un coup et ne fige rien ; un toucher sur un groupe le met à l'état mêlé. D311.)
+- **Lecture lente, la ligne pas retrouvée : son choix 2 D** (02.11, vers 16 h, devant la page « Lecture lente : les lignes ajoutées et perdues · 02.11 »,
+  https://claude.ai/artifact/79XCxPnFyyyyj1DyXvtmAf), mot pour mot : « 2 d, en un clic je peux Tout validé les changements. Mais aussi un à 1 »
+  (lu, au plus étroit : la ligne barrée dans la liste, la question au pouce au-dessus de Confirmer ; un toucher « Tout valider » applique ce que
+  dit la lecture lente à toutes les lignes pas retrouvées, et chacune se tranche aussi seule, Garder ou Retirer. La question 1, la ligne ajoutée,
+  reste ouverte. D313.)
+- **Lecture lente, la ligne ajoutée : son choix 1 B** (02.11, vers 16 h 30, en réponse à la question 1 de la même page, la seule posée),
+  mot pour mot : « B » (lu : la rangée ajoutée par la lecture lente sur le fond bleu des corrections, valeurs en bleu, « ↻ » devant le nom,
+  sans ancienne valeur ; comptée dans la puce « ↻ N corrigées ». D314.)
+- **Trop de questions** (02.11, vers 16 h 40, quand le pilote lui réclame une lettre pour la page « Lecture lente : le total corrigé, la 3e
+  lecture qui n'arrive pas · 02.11 », publiée minutes avant), mot pour mot : « Ce que j'attends de toi : une lettre pour chacune des deux
+  questions des cas rares, par exemple « 1 A, 2 D ». ?? J'ai déjà donné mon avis » (lu : ne plus lui réclamer de lettre pour des cas rares ;
+  leurs défauts A s'appliquent. D315, L24.)
+- **« Tout valider » : son choix B** (02.11, vers 17 h, devant la page « Lecture lente : « Tout valider » les lignes pas retrouvées · 02.11 »,
+  https://claude.ai/artifact/8ggW4mCuYfjgY85qQKsUP1, après « Sans réponse, je garde B »), mot pour mot : « Oui b » (lu : le bandeau au pouce
+  montre la ligne en cours, « pas retrouvée · 1/2 », Garder et Retirer, et « ↻ Tout valider » à côté. D316.)
+- **Passer à l'intégration** (02.11, vers 17 h, après D316), mot pour mot : « On peut pas passer directement à l'intégration dans l'app »
+  (lu, L01, lecture étroite : plus de page de choix ni de mini maquette pour ce qui reste de la Dépense ; le reste se code dans l'app avec le
+  défaut du pilote et il le juge dans l'app. D317.)
+- **Mise en ligne : oui** (02.11, vers 17 h, à « Je les mets en ligne dès qu'elles sont vérifiées : oui, ou pas encore ? »), mot pour mot : « Oui »
+  (lu : accord groupé pour déployer aiTask et l'hébergement une fois tout vérifié. D318.)
+- **La TVA d'un ticket** (02.11, vers 17 h 30, avec la photo de son ticket Bauhaus du 02.11 : « Montant brut 202,20 · Montant net 187,05 ·
+  TVA1 8,10 % 15,15 »), mot pour mot : « Pour la TVA je comprends pas trop. J'ai bien payé 202.20 mais en théorie je pourrais me faire
+  rembourser 15.15chf. Comment est monté ce montant ? Ça déduis 8.1% à chaque article ??? Ça serait vraiment pas très logique.. en fait je
+  sais pas vraiment ce qui est le mieux, je connais pas encore ces cas de figure. Ni comment me faire rembourser la TVA... » (lu : une question,
+  pas un défaut de lecture ; la TVA est comprise dans le prix payé, 202,20 × 8,1 / 108,1 = 15,15. D319.)
+- **Son statut TVA, pour le moment** (02.11, vers 18 h, après ma réponse sur la TVA), mot pour mot : « Lignes hors taxe : la correction est
+  faite. Okay alors ça sera pour le futur pour le moment la vente= full TVA, je paye et je me fait pas remboursé. Parcontre je vends sans TVA.
+  Pour le moment », puis aussitôt : « L'achat full TVA pardon » (lu : achats TVA comprise, payée et non remboursée ; ventes sans TVA ; non assujetti
+  pour le moment. D320.)
+- **Tester sur l'app déployée** (02.11, vers 19 h, pendant les finitions de la lecture lente), mot pour mot : « Bien faire les test sur la vrai
+  app déployé » (lu : après la mise en ligne, jouer la lecture lente et les lignes HT dans son app en ligne, sur ses vraies pièces ; D264, D298. D321.)
+- **Le test de bout en bout** (02.11, vers 19 h 30), mot pour mot : « Sur la vrai app fait le test bout en bout complet avec le Max cas de figure
+  couvert, recherche IA d'un article pas encore en stock, MAJ du stock, facture à jour, finance à jour ect... », puis : « J'autorise d'enregistrer
+  quelques exemples » (lu : accord pour écrire quelques dépenses d'essai dans son app en ligne, avec leurs effets sur le stock, les finances et
+  le Drive. D322.)
+- **Le test fragile** (02.11, vers 19 h 30, à « Un seul test a échoué dans la suite complète… »), mot pour mot : « Un seul test a échoué dans
+  la suite complète, enlève le » (lu : le retirer de la suite ; désactivé, pas effacé, pour pouvoir le remettre. D323.)
+- **« ÉNORMÉMENT de problème »** (02.11, soir, après avoir testé l'app en ligne), mot pour mot : « Je viens de tester l'app, il y a ÉNORMÉMENT de
+  problème... ??? C'est quel version qui est déployé ?? » (lu : la version en ligne déçoit ; il veut savoir laquelle tourne. Réponse : l'hébergement
+  et `aiTask` du commit b3ab392e, bundle `index-DTmoQW-7.js`, déployés le 02.11 à 17 h 11. Ses problèmes, à recueillir ; D327.)
+- **Son ticket Bauhaus en ligne : « un enfer »** (02.11, soir, vers 18 h, après l'avoir lu lui-même dans l'app en ligne, sans Confirmer ; la
+  photo du ticket et neuf captures de son téléphone, de 17 h 57 à 18 h 09), mot pour mot : « J'ai testé avec ce ticket, c'est un enfer... C'est
+  très peu fiable, il y a énormément de problème... » (lu, L01 : chaque écart visible sur ses captures, contre le ticket, est un défaut ; la
+  lecture a rendu les 17 lignes, les prix, le total, la TVA et les EAN justes ; ce qui trompe vient de l'écran : 15 lignes « à contrôler » pour
+  des pièces sûres, deux unités « ? », un produit de nettoyage en ingrédient à mettre en stock, un type d'achat qui contredit son groupe,
+  le bouton du filtre vide, des chiffres coupés. D328.)
+- **« Tout valider » absent** (02.11, soir, juste après), mot pour mot : « Pourquoi il y a pas Tout valider », et une à une : les lignes que la
+  3e lecture ne retrouve pas · 02.11 version B que j'ai voulu ??? » (lu : son « Tout valider les changements » de D313 couvre tout ce que la 3e
+  lecture change, les « ↻ corrigées » et les « désaccords », pas seulement les lignes pas retrouvées ; ma lecture de D313 était trop étroite. Sur
+  son ticket, aucune ligne n'était perdue : le bandeau B ne pouvait pas paraître. D329.)
+- **Le rouge jamais sur la ligne** (02.11, soir, vers 18 h 20, deux captures en thème sombre ; sur la première, entourés à la main, le « 1 ? »
+  rouge de la sous-famille Protection et le « 1 ? » gris de la rangée COMBINAISON JETABLE), mot pour mot : « Aussi le filtre d'erreur rouge
+  n'apparaît pas, et il est sur la famille et sous familles mais jamais sur l'item en question ??? La partie la plus importante n'est jamais
+  montré ??? Il y a des dizaines de problème de UX, UI de ce type.... » (lu : l'inconnu rouge se montre d'abord sur la rangée fautive, puis se
+  compte dans sa famille ; et un audit de tout l'écran sur son ticket rejoué, pas une liste au cas par cas. D330.)
+- **Le filtre choisi ne se voit pas** (02.11, soir, vers 18 h 25), mot pour mot : « Les filtre fonctionne assez bien, mais on voit pas lequel on
+  sélectionne. Tu as fait des vrais screenshots de l'app ? Comment ça peut passer ça ??? » (lu : la puce du récap qui filtre la liste ne se
+  distingue pas des autres une fois touchée ; et la question de méthode : les captures du banc n'ont couvert ni sa pièce, ni chaque état touché,
+  ni les deux thèmes. D331, L12.)
+- **« Regrouper en une dépense » irréversible ?** (02.11, soir, vers 18 h 30, sa capture du bouton sous la liste), mot pour mot : « Ce bouton est
+  irréversible ??? » (lu : oui, dans la fiche : un toucher remplace toutes les lignes par une seule, sans confirmation ni retour ; rien n'est écrit
+  avant « Confirmer ». Défaut : un geste qui détruit la saisie sans retour, posé à côté de « + Ajouter une ligne », sous le même aspect. D332.)
+- **Plié, déplié** (02.11, soir, vers 18 h 30), mot pour mot : « Plié, déplié ne fait rien » (lu : la bascule de l'en-tête ne plie ni ne déplie
+  les familles ; sur sa capture de 18 h 19, « Plié » est choisi et les sous-familles Peinture et sols, Outillage, Protection restent ouvertes.
+  Son choix E : « ce bouton lock rien, juste un shortcut ». D333.)
+- **Le champ à remplir introuvable** (02.11, soir, vers 18 h 25, sa capture du filtre « 1 à remplir » : Déboucheur POWER ouvert, le nom souligné
+  en rouge, « article « ? » · à choisir », « Chercher dans le stock »), mot pour mot : « J'ai un champs à remplir, je sais même pas lequel ???? »,
+  puis : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ?????????? » (lu : le champ qui manque n'est ni nommé ni marqué en rouge à sa place ; et la question de
+  méthode, la même que D331. D334, L12.)
+- **Le segment Nature vide** (02.11, soir, vers 18 h 30, sa capture en sombre : BAUHAUS grand sac ouvert, famille Emballage, « Type d'achat :
+  Emballages », le segment « Ingrédient · Service · Matériel » sans rien de choisi), mot pour mot : « C'est même pas mis au c'est ingrédient,
+  service ou matériel » (lu : la ligne n'est mise ni à Ingrédient, ni à Service, ni à Matériel ; le segment n'a que trois natures et un type
+  d'achat Emballages n'en allume aucune, alors que le menu dessous dit Emballages. D335.)
+- **Les vues loin de ses maquettes** (02.11, soir, vers 18 h 35), mot pour mot : « Et j'ai l'impression que les vue, ressemble assez peu aux
+  artifeacte choisir sur quelques points... » (lu : l'app en ligne s'écarte, par endroits, des maquettes qu'il a choisies dans les pages de choix ;
+  règle n° 1. D336, L03.)
+- **Tellement de problèmes** (02.11, soir, vers 18 h 35), mot pour mot : « Mais il y a TELLEMENT de problème ?? » (lu : la somme des défauts vus
+  en un test ; la même question de méthode que D331 et D334. D337, L12.)
+- **Des milliers de tests, dix défauts en deux minutes** (02.11, soir, vers 18 h 45), mot pour mot : « Tu as fait des milliers de test, et en 2min
+  j'ai trouvé une dizaine de problème flagrant.... » (lu : nos tests vérifient ce que nous avons écrit, sur nos pièces de brassage ; aucun ne
+  regarde l'écran comme lui, sur une pièce neuve. D338, L12.)
+- **Les bons outils, pas trop de tests inutiles** (02.11, soir, vers 18 h 50), mot pour mot : « Est ce que tu utilises les bon outil pour tester ?
+  Et tu fais pas trop de test inutile ?? » (lu : une question de méthode ; réponse dans D339 : 1 924 tests unitaires sur la Dépense et les finances,
+  presque tous sans rendu ; le banc Chrome lit le texte de la page, jamais le thème ni ce qui se voit. D339, L12.)
+- **L'analyse d'image** (02.11, soir, vers 18 h 52), mot pour mot : « Tu fais vraiment de l'analyse d'image ?? Comme demandé » (lu : les captures
+  doivent être regardées comme des images, pas lues par le texte de la page ; jusqu'ici le banc n'en jugeait aucune à l'œil, et le pilote n'a
+  regardé que les siennes. D339, L12.)
+- **Combien de problèmes sur cet écran** (02.11, soir, vers 18 h 55, sa capture en clair de 17 h 57 : filtre « 7 corrigées », Nettoyage et
+  Rénovation dépliés), mot pour mot : « Pour toi, sur cette écran, combien et quels problèmes il y a ? » (lu : une épreuve de l'analyse d'image du
+  pilote ; réponse dans le tour, liste numérotée. D340.)
+- **Enlever les tests inutiles** (02.11, soir, vers 18 h 57, à ma question « je dresse la liste des tests redondants à retirer ? »), mot pour mot :
+  « Non enlève les test inutiles on a bien vu que ça servait à rien et trouvais pas les vrais problèmes... » (lu : son accord pour retirer les tests
+  inutiles, sans liste à lui montrer d'abord ; ceux qui gardent une vraie règle restent. D341.)
+- **Pourquoi jamais fait ainsi** (02.11, soir, vers 19 h, après ma liste de 16 problèmes sur sa capture), mot pour mot : « J'en compte 16 sur cet
+  écran et bien super, / POURQUOI CA N'A JAMAIS ÉTÉ FAIT, TESTÉ ?????? AINSI » (lu : la question ouverte « combien et quels problèmes sur cet écran »,
+  posée sur une capture de l'app réelle, n'avait jamais été posée avant un déploiement ; elle devient une garde. D342, L12.)
+- **Le workflow : moins de fixtures, plus de vision** (02.11, soir, vers 19 h 05), mot pour mot : « C'est un ÉNORME PROBLÈME dans le workflow ça !!
+  Il faut passer moins de temps avec fixture et unit test mais beaucoup plus cas réel et test d'écran par vision sur une crique qui analyse et pense
+  comme un brasseur, et regarde si tout est vraiment pratique, au bon endroit, réagit correctement » (lu : une règle de méthode pour toute l'app ;
+  « crique » lu « critique » ; il précise aussitôt, mot pour mot : « Critique ». D343.)
+- **Le critique, simple** (02.11, soir, vers 19 h 10), mot pour mot : « Le critique ne doit pas faire 1000 trucs juste exactement ce que tu as fait
+  avec les 16 point » (lu : au test d'écran, le critique fait seulement ce que le pilote a fait sur sa capture : la question « combien et quels
+  problèmes ? », une liste numérotée, les doutes à part ; pas de grille. D344.)
+- **La vue détail d'une ligne à refaire** (02.11, soir, vers 19 h 20, sa capture en clair de 18 h 01 : DURGOL EXPRESS ouvert sous Nettoyage, « plus »
+  ouvert), mot pour mot : « Cette vue là de détails doit être refait, fait moi des mini maquettes pour résoudre les problèmes, rendre le workflow,
+  process plus simple, sur téléphone notamment. Mapping peut utiliser l'ai su besoin » (lu : le plateau d'une ligne ouverte se refait ; mini
+  maquettes à lui montrer, téléphone d'abord ; la liaison à un article du stock peut s'appuyer sur l'IA ; « su » lu « si ». D345, L24.)
+- **« Mais l'app »** (02.11, soir, vers 19 h 30, sur ma phrase « l'app y a ajouté une phrase, un second sélecteur d'unité, une pastille en
+  trop »), mot pour mot : « mais l'app y a ajouté une phrase, un second sélecteur d'unité, une pastille en trop. / Comment ça main l'app ???? »,
+  puis : « Mais l'app » (lu : ce n'est pas l'app, c'est nous ; la phrase rejetait la faute sur l'outil. Le port de p3c-3 du 01.11, commit
+  c032e1a2, sous la direction du pilote, a ajouté la phrase d'unité et rangé l'ancien formulaire sous « plus » ; la pastille « article ? »
+  venait d'avant, gardée. D346, L03.)
+- (suite, vers 19 h 31), mot pour mot : « L'app ne décide pas, c'est que toi qui fait du code ??? » (lu : oui ; tout ce qui est dans l'app y a
+  été mis par le pilote ou les agents qu'il dirige. D346.)
+- **Le quota** (02.11, soir, vers 19 h 35), mot pour mot : « À 90% d'usage hebdo, terminé tes tâches » (lu : à 90 % de l'usage hebdomadaire,
+  tous modèles, le pilote termine et ferme ses tâches proprement : rien de neuf lancé, l'état de reprise écrit. Usage lu à cet instant : 81 %.
+  D347.)
+- **Le plateau, passe 2** (02.11, soir, vers 21 h 30), sur sa capture de pa1b (cas b, l'unité « g ⌄ » entourée,
+  `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/154ccf8c-image.jpg`), mot pour mot : « Ça c'est bien mais éviter les
+  dropdown sur mobile, ça nécessite 2 actions » (lu : pa1b lui plaît ; au téléphone, un choix se fait en un toucher, sans menu déroulant.
+  Portée, lecture étroite : les maquettes et l'écran Dépense au téléphone ; le reste de l'app est à relever. D350.)
+- (suite), sur la même capture, « ✓ au centime » entouré, mot pour mot : « Au centime, ça veut dire quoi ?? Ça ajoute rien, non ? » (lu :
+  quand quantité × prix tombe juste au centime, la marque n'ajoute rien, sûr = rien, D277 ; elle ne se montre que si le calcul ne tombe pas
+  juste. Remplace D349 pour « au centime ». `…/4497707e-image.jpg`. D351.)
+- (suite), « 10 Kg » de la bande et « 6 Kg » de la rangée entourés, mot pour mot : « Unité pas aligné btw » (lu : la quantité de la bande
+  et celles des rangées sont dans la même colonne, leurs unités alignées. `…/5529bb39-image.jpg`. D352.)
+- (suite), mot pour mot : « Fin est-ce que c'est vraiment la dernière version ? » (lu : « enfin » ; oui, pa1b est la passe 2 de pa1, la
+  dernière rendue, pas encore sur une page. D350.)
+- **Le plateau, passe 3** (02.11, soir), sur sa capture de pu4c (cas a, Maris Otter ouvert), le segment « Kg | g » entouré et la rangée
+  Safale US-05 (« 3 sachets » en bleu, « 2 sachets × 4,90 » barré) entourée,
+  `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/527b9dbf-image.jpg`, mot pour mot : « Pas d'unité pour un objet ?
+  Comment avec avec stk ? » (lu : le choix d'unité d'une ligne n'offre que Kg | g ; il doit offrir aussi la pièce, l'unité d'un objet, en un
+  toucher, et montrer comment se lit une ligne imprimée « Stk ». D353.)
+- (suite), mot pour mot : « Aussi on voit toujours un changement de relecture alors que en théorie on a tout accepté ? » (lu : un changement
+  de la relecture déjà accepté ne se marque plus, ni bleu ni ancien barré ; la marque de d-lue ne reste que tant qu'un geste l'attend. D354.)
+- (suite), sur la même capture, « 2 à régler · Citra › » entouré dans le plateau de Maris Otter,
+  `…/0f26165d-image.jpg`, mot pour mot : « C'est normal ça ? Ça parle d'un autre item sur le détail d'un ? » (lu : non ; le détail d'une ligne
+  ne parle que d'elle. Le compte des lignes à régler et le passage à la suivante restent au récap. Lecture étroite : aucune autre ligne
+  nommée dans le détail ; la position sans nom est à lui montrer. D355.)
+- **Le quota, relu** (02.11, soir), sur ma phrase « À 90 %, je ne lance plus rien de neuf. », mot pour mot : « je ne lance plus rien de neuf.,
+  non mais terminé avec tout ça » (lu : D347 voulait dire « à 90 %, aie fini tes tâches », pas « arrête de lancer » ; le budget d'ici 90 %
+  sert à mener au bout ce qui est en cours : le plateau jusqu'à sa page, son ticket jusqu'au déploiement, les restes. D356, L01.)
+- **Le rejeu de son ticket, sombre sous filtre** (02.11, soir), sur la capture du banc `apres-G4/390-18-g-brassage-sombre-puce-neuf-liste.png`
+  (version 60a8c25f, non déployée), « Regrouper en une dépense » entouré, `…/ab4e4ce0-image.jpg`, mot pour mot : « Toujours trop accessible,
+  visible, et est-ce réversible ? » (lu : oui, réversible depuis le lot g, « ↶ Rétablir » jusqu'à « Confirmer », pas encore en ligne ; mais le
+  bouton reste à côté de « + Ajouter une ligne », avec le même cadre. Lecture étroite : un lien discret, hors de cette rangée. D357.)
+- (suite), une flèche rouge vers l'en-tête, entre le titre et l'icône du justificatif, `…/47e89cb6-image.jpg`, mot pour mot : « Il manque les
+  deux boutons ? » (lu : le segment « Plié | Déplié » de son choix E, D311. Il ne se montre que si la liste a des sous-familles à plier ; une
+  facture de brassage n'en a pas, il n'aurait rien à faire (« Plié, déplié ne fait rien », D333). Rien n'est changé ; à lui de dire s'il le
+  veut toujours là. D311.)
+- (suite), « Détail » et ses deux montants (un centime d'écart) entourés, `…/72f56106-image.jpg`, mot pour mot : « Montant inégale ???? » (lu : l'écart d'un centime est
+  l'arrondi suisse à 5 centimes, enregistré en ligne « Arrondi à 5 centimes » (D270), mais l'écran le montre en jaune sans le dire. Il se montre
+  comme sa propre ligne neutre, celle qu'on enregistre. Deuxième plainte sur ce centime après D261b (01.11). D358, L13.)
+- **Le plateau, son choix** (02.11, soir), sur ma ligne « Page v1 publiée : (https://claude.ai/artifact/XeGBAqvwsAHgwuAtLSXGJH) — les trois
+  versions (pu4d, pa1d, pz2d), cas par cas, à côté de p3c-3. », mot pour mot : « Oui c'est très bien implémente ça » (lu : la page lui va ;
+  il ne nomme pas de version.) Puis, aussitôt, mot pour mot : « Ah att il faut choisir » (lu : il va choisir sur la page ; rien n'est porté
+  avant son choix, le reste continue. D360.)
+- (suite, son choix), sur sa capture de pa1d au cas c (« article — · hors stock » et « + Suivre au stock » sur la ligne du détartrant,
+  « extrait · Supprimer » dessous), `…/9fd4298a-image.jpg`, mot pour mot : « Ah oui la 1 est toujours mieux sauf une fois elle oublie d'ajouter
+  ce champs » (lu : pu4d, la n° 1, est son choix ; sur une ligne hors stock, elle oublie le champ article de pa1d, « article — · hors stock
+  + Suivre au stock » : greffé. D361.)
+- **Le quota, encore** (02.11, soir), mot pour mot : « Va jusqu'à 95 de quota, mais ne lance pas de nouvelles tâche, on termine juste celle-ci
+  proprement » (lu : le plafond passe à 95 % d'usage hebdomadaire ; on finit proprement ce qui est en cours, son ticket jusqu'au déploiement
+  et le port de pu4d, sans rien lancer d'autre ; les restes attendent la semaine suivante. Remplace D356 sur le seuil. D362.)
+- **Les tests, allégés** (02.11, soir), mot pour mot : « Allège les test, passe à l'implémentation, puis teste Legé puis testé bout en bout sur la vrai app »
+  (lu : le port de pu4d d'abord, avec peu de tests ; puis un test léger (tests de la Dépense, build, une dizaine de captures) ; puis un
+  parcours de bout en bout sur l'app déployée. Le rejeu complet du banc et les 30 captures avant chaque déploiement tombent pour ce lot ;
+  un seul déploiement porte le ticket et le port. D363.)
+- **Changer la famille d'une ligne** (02.11, soir ; capture `uploads/…/c6c2887d-image.jpg`, la bande Emballage et sa rangée entourées), mot pour
+  mot : « Aussi, comment je change la catégorie d'un item, ici grand sac n'est pas dans l'emballage mais rénovation. » (lu : la famille d'une
+  ligne, la bande où elle est rangée, doit se changer en un toucher sur la ligne ouverte, avec le nom de la bande ; aujourd'hui seul le type
+  d'achat se change, et la famille suit par une règle cachée. D364.)
+- **Un geste rare** (02.11, soir, juste après), mot pour mot : « C'est normalement une action assez rare » (lu : changer la famille d'une ligne
+  reste discret, replié derrière le nom de sa bande, un toucher pour voir les choix ; jamais une rangée toujours visible. D364.)
+- (02.11, soir, à la suite), mot pour mot : « Donc pas besoin de mettre cette action en avant. » (lu : confirme D364 suite, le lien discret replié.)
+- (02.11, soir, à la suite), mot pour mot : « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou
+  autre » (lu : le changement de famille peut vivre sous « plus », même en menu déroulant ; l'exigence est qu'il existe et qu'il tienne. D364.)
+- **Intégrer et déployer** (02.11, soir), mot pour mot : « Pas besoin de tout retester ou rien, intégre le tout et deploye » (lu : le port de
+  pu4d et le ticket partent ensemble dès que le port est fini ; ni rejeu du banc, ni test d'écran du critique, ni suite complète. Restent les
+  gestes du déploiement lui-même : build, check-no-dev-auth, manifeste, puis la page servie relue en ligne. D365.)
+- **Son choix B des pages, absent de l'app** (02.11, soir ; captures `uploads/…/ae8499bf-image.jpg`, la page « Plusieurs captures pour une seule
+  dépense · 02.11 », et `692d5249-image.jpg`, « Nouvelle dépense » en ligne avec « Joindre un justificatif »), mot pour mot :
+  « https://claude.ai/artifact/7e5AuRChUtCuaAnCqu42ce Pourquoi ça a pas été porté ??? », puis « Ajoute ça encore » (lu : B était codé (n2-pages,
+  D303) mais aucune vraie entrée ne le montrait : « Lire un justificatif » ouvrait d'office le sélecteur d'un seul fichier, « Saisir une
+  dépense » gardait « Joindre un justificatif ». Les deux entrées offrent maintenant « Plusieurs ». D366.)
+- (02.11, soir, à la suite), mot pour mot : « mais aucune des deux entrées réelles ne l'affiche. C'est le cas pour d'autres chose ??????? »
+  (lu : l'audit de chacun de ses choix, atteint ou non depuis une vraie entrée ; voie a-entrees.)
+- **Les tests qui ne voient rien** (02.11, soir), mot pour mot : « Tes tests servent à rien, on a 81 tests qui passe, mais on l'a même pas sûr
+  l'app ??? Je peux faire 6000 test si c'est pas visible, ça sert à rien.... Seul les vrais tests d'intégration sur la vrai app avec la vision
+  sert vraiment.... Et comment ça a pu être loupé ??? » (lu : une preuve, c'est le parcours depuis le menu de l'app en ligne, regardé ; un test
+  qui monte l'écran ou un banc qui remplit d'office le sélecteur ne prouve pas qu'on y arrive. D367.)
+- **Filtres, quantité en un toucher** (02.11, soir ; captures `uploads/…/8dc06a23-image.jpg` (récap : « 1 à contrôler », « 1 à remplir », « Devise »,
+  « Lecture coupée »), `a5177adb-image.jpg` et `3e3ca91f-image.jpg` (plateau d'une ligne de rénovation : unité à remplir, quantité et prix à
+  remplir, montant lu)), mot pour mot : « Aussi, les filtres, fonctionne plus. Aussi choisir une unité est très simple. Mais une quantité il faut
+  entre 1, écrit 2 validé 3 action sur téléphone. Alors que dans certains cas, on a déjà des champs, on peut calculer facilement le reste. SI on
+  a un bouton comme les unités, avec quelques nombre. Pour les pièces 1,2,3,5,10 ( 1+10 ferait 11). Aussi pour les grame et houblons ça serait
+  d'autres nombre plus censé genre 1,5, 10, 100 ect... » (lu : (1) les pastilles du récap ne filtrent plus la liste ; (2) des boutons de
+  quantité comme les unités, qui s'additionnent, selon l'unité ; (3) le champ manquant se calcule des deux autres. D369.)
+- **Libellé d'une ligne ajoutée** (02.11, soir ; capture `uploads/…/3c59d55b-image.jpg` : rangée « Ligne sans libellé », champ « Article ou
+  prestation » ouvert, cerné de rouge), mot pour mot : « Problème, je peux entrer que une lettre dans ce champs avant que ça valide » (D370.)
+- (02.11, soir, suite de D370), mot pour mot : « Fix ça, et le reste attendra, fait juste le correctif, unit test et deploye » (lu : D370 seul,
+  un test unitaire, le déploiement ; le banc après correctif et les restes de D369 attendent.)
+- **Ligne de houblon ajoutée, reliée au stock** (02.11, soir ; capture `uploads/…/2da34348-image.jpg` : ligne ajoutée « Idaho 7 14aa chf »,
+  reliée d'office à « Houblon Idaho 7 12.7% », `7 [g Kg pièce] × 2,00 = 14,00`, pièce choisie, rien à droite de la nature), mot pour mot :
+  « Ça va vraiment marché là ? J'ai aussi l'impression que "l'autocomplete" pour la liaison avec le stock fonctionne pas super bien. SI je crée
+  un houblon Idaho7 il le trouve pas directement. Peut être aussi que l'ajout des unités à cassé quelques chose, car là sur l'écran on devrait
+  voir qqch » (D371.)
+- (02.11, soir, suite de D371), mot pour mot : « Le problème vient de la ligne saisie en « pièce », alors que l'Idaho 7 est compté en grammes
+  dans le stock exactement, mais on a pas la vue, popup sur le changement problématique » (lu : une alerte visible sur-le-champ quand l'unité de
+  la ligne ne s'ajoute pas à l'article relié, avec l'unité du stock en un toucher.)
+- **La vue face à face oubliée** (02.11, soir ; capture `uploads/…/a6d2e0e9-image.jpg` : sa page de choix, état « pu4d · relecture à accepter »,
+  le face à face FACTURE (1re lecture 2, 3e lecture 3) | STOCK (Safale US-05, 4 → 7 sachets après réception), « Garder 3 », « Remettre 2 » ;
+  en vignette, l'état « unité illisible » : FACTURE extrait | STOCK « compté en Kg »), mot pour mot : « Mais cette vue a été oublié ?? » (lu, après
+  D371 : l'alerte rouge ajoutée n'est pas sa maquette ; un conflit d'unité avec l'article relié se montre dans SON face à face Facture | Stock,
+  comme l'unité illisible de pu4d, avec les cases et l'unité du stock proposée. D372.)
+- **Suite, même soir**, mot pour mot : « C'est à ça que je m'attendais ??? » (lu : le face à face Facture | Stock de sa maquette pu4d, à la place
+  de l'alerte rouge de D371. D372.)
+- **Suite**, mot pour mot : « Et ça doit être générique, on est bien d'accord, pas juste sur ce cas précis ??? » (lu : toute ligne reliée dont l'unité
+  ne s'ajoute pas à celle de l'article, quels que soient le produit et la paire d'unités ; le test en joue plusieurs. D372.)
+- **Le calcul pas dynamique** (03.11 ; capture d'une ligne de houblon de sa pièce PDF `bestellung` : `30 g × 0,037 = 1,10`, « ≠ montant, écart à vérifier »,
+  « montant à remplir » en rouge alors que 1,10 est là), mot pour mot : « Les calculs sont pas dynamique ??? SI j'entre ou modife un champs, genre le total doit être
+  calculé ?? Ça vient de ce fichier » (lu : un champ du calcul modifié recalcule l'autre, même lu ; le total d'abord. D373.)
+- **La vue des stocks absente** (03.11 ; captures : « Weizenmalz hell » article « proposé » + Garder ⇄ Retirer, « 8,5 → 9,5 Kg » à droite de la nature ;
+  « Levure Safale BE-256 » « 2 Stk » en pièce, « proposé · 2 Stk = 2 sachet · poids du sachet non confirmé », « 6 → 8 sachets »), mot pour mot :
+  « Là on voit pas la vue des stocks ? » (lu : une ligne dont l'article est proposé est en doute ; pu4d : « Ligne en doute : le duel Facture | Stock, le lien
+  entre les deux, puis la décision ». D374.)
+- **La TVA et le total** (03.11 ; capture de la même pièce `bestellung` : total 261,65 CHF, QR ✓, « Somme = imprimé non vérifiée », « Qté × prix 34/35 »,
+  « Plus de 35 lignes : compléter le détail manuellement », TVA 16,10, « Détail 218,65 / 261,65 »), mot pour mot : « La TVA est pas compté dans le total? SI je
+  click en ht, je peux plus revenir ?  Là du coup ça match pas. » (D375, à lire.)
+- **Les sous-catégories disparues** (03.11 ; capture de sa page de choix « Tout plier, déplier sur D · 02.11 » : A « son choix D », chaque sous-groupe s'ouvre d'un
+  toucher, Nettoyage → CIP alcalin, Désinfectant, Détergent), mot pour mot : « Pourquoi j'ai plus ça, ni des sous catégories ??? » (D376, à lire.)
+- **Le total pas en rouge** (03.11 ; même capture, cerclés : « Houblons 1/5 · 30 g · 1,10 » et le montant « 1,10 » rouge tireté de la ligne Aramis), mot pour mot :
+  « Item en rouge mais pas total ?? » (lu : le total d'une bande porte le rouge du montant d'une de ses lignes. D377.)
+- **Suite** (même capture de sa page D), mot pour mot : « J'ai perdu cette fonctionnalité ?? » (D376.)
+- **Suite**, mot pour mot : « Et les sous catégories... » (D376.)
+- **Suite** (à « les sous-familles de malts, houblons et levures sont un choix nouveau… je te les montrerai en mini-maquettes »), mot pour mot :
+  « donc les sous-familles de malts, houblons et levures sont un choix nouveau que tu devras valider, et je te les montrerai en mini-maquettes. Non ne commence pas ça »
+  (lu : rien n'est lancé sur les sous-familles des ingrédients ; D376 reste ouvert, sans page.) Puis « /autocompact 500k » (réglage de Claude Code, hors de l'app).
+- **Les familles qu'on ne ferme pas, le total** (03.11, vers 5 h ; sa page D « Tout plier, déplier » et la pièce `bestellung` : cerclés le total 261,65, « TVA 16,10
+  gardée », « Détail 218,63 / 261,65 »), mot pour mot : « Mais on peut toujours pas fermé les famille et les 2 boutons, plier déplier sont absent. Le total est toujours
+  incorrect ?? » (lu : une bande sans sous-famille se plie aussi, et « Plié | Déplié » est là sur toute pièce qui a des bandes ; le total 261,65 est juste, le détail
+  manque de lignes non lues. D378, D379.)
+- **Les lignes jetées** (03.11, vers 5 h, à « Les lignes au-delà de 35 sont lues puis jetées par le serveur »), mot pour mot : « Le serveur ne garde que les 35
+  premières lignes et jette le reste ????? QUOOOI ?? » (lu : aucune ligne lue ne se jette ; le plafond de 35 part. D379.)
+- **Suite**, à « Il y a d'autres absurdité du genre ? » (audit lancé) puis au plafond porté à 80, mot pour mot : « Il y a d'autres absurdité du genre ? » ; « Mais quoi ???
+  Mais pourquoi un plafond ??? SI il y en a plus, il faut simplement faire un take. Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » (lu : aucun
+  plafond de lignes, nulle part ; ce que la lecture n'a pas rendu d'un coup se reprend par tranches. D379.)
+- **Suite**, mot pour mot : « Il y a d'autres limite debile de ce genre ??? » (audit des limites silencieuses en cours, D379.)
+- **Suite**, mot pour mot : « Mais si une facture à 200 itmes en une pagele take va pas fonctionner ?? Ça doit tout lire en une fois ?? Comment sur un système aussi
+  critique que la facturation, on aille ce genre de problème ??? Et pas de test rouge ??? » (lu : une seule page peut porter 200 lignes ; la reprise se fait par rang de
+  ligne, pas par page ; et un test affirmait la perte comme voulue. D379, L11.)
+- **Suite** (à « il échoue avec un message absurde, mais il échoue en le disant, au lieu de perdre en silence les lignes 36 et suivantes »), mot pour mot :
+  « puis échoue au-delà avec un message trompeur, au lieu de perdre silencieusement les lignes 36 et suivantes ???? Au lieu de ???? Ça doit jamais au grand jamais
+  arrivé ?? » (lu : un enregistrement n'échoue jamais pour sa taille ; le plafond de 450 écritures part aussi. D379.)
+- **Suite** (03.11 matin, pendant les tests de D379), mot pour mot : « Tu peux aussi testé avec beaucoup d'items ? » (lu : un parcours au banc avec une pièce de
+  200 et de 1000 lignes, lecture simulée : tout affiché, total juste, enregistrement complet, temps mesuré. La vraie lecture d'une telle pièce attend la lecture par
+  tranches. D379.)
+- **Suite**, mot pour mot : « Et génère un fichier avec 300 item, et un avec 600 et fait tout le processus bout en bout. Regarde ce qui se passe et casse ou pas »
+  puis, à « 300 lignes tenues sur 4 pages serrées », « Non non » ; « 300 sur une page, au c'est possible. 600 sur 8 » (lu : 300 lignes sur une seule page, A4 de
+  large et aussi haute qu'il faut ; 600 sur 8 pages A4 ; tout le parcours, lecture réelle comprise ; noter ce qui casse. D379.)
+- **Suite**, mot pour mot : « J'autorise des vrai appel IA pour ce cas particulier » (lu : lectures Gemini réelles des deux pièces fictives de 300 et 600 lignes,
+  dans l'app en ligne, journalisées ; rien d'autre. D379.)
+- **Suite** (03.11, après l'essai réel de la pièce fictive de 300 lignes sur une page : 1 ligne gardée, « Lignes non gardées 299 » ; la pièce de 600 lignes sur
+  8 pages refusée « 4 pages maximum »), à « lecture 1 coupée à 8 176 jetons, la 2 n'a donné que 424 jetons, la 3 a expiré après 45 s », mot pour mot :
+  « Le journal montre que la lecture 1 a été coupée à 8 176 jetons, la 2 n'a donné que 424 jetons, et la 3 a expiré après 45 s, donc l'écran ne garde qu'une ligne
+  okay mais tu vas fixer ça ??? » (lu : oui, maintenant ; une lecture coupée garde ce qu'elle a lu et reprend par tranches de rang de ligne jusqu'à la dernière
+  ligne imprimée ; plus de refus à 4 pages ; message vrai. D380.)
+- **Suite**, mot pour mot : « Mais il est pas censé y avoir 2 lecture paralelle rapide puis si non concensus, une lente ? » (lu : si, c'est ce qui a joué — 1 et 2
+  rapides en parallèle, la 3.8 lente sur désaccord ; aucune ne peut rendre 300 lignes d'un coup. Le même schéma s'applique par tranche de 30 lignes. D380.)
+- **Suite**, mot pour mot : « Donc il faudrait 2 lecture paralelle qui font des "take". Puis du non concensus, lecture lente qui fait des take aussi » (lu : chaque
+  tranche de lignes est lue par les deux rapides en parallèle ; la lente relit, par tranche aussi, celles où elles divergent. D380.)
+- **Suite**, à « Les takes comptées sont fragiles », mot pour mot : « Mais ça va vraiment marché de faire des take pour l'extraction ? Ça me semble un peu bancale?
+  Comment l'ia sait où elle en est ??? » puis, à « compter « lignes 26 à 50 » sur une page de 300 lignes reste fragile si l'IA se contente de compter » : « Oui surtout
+  sur les documents comme les ticket de caisse ou autre médium plus délicat » (lu : pas de takes comptées ; la pièce se découpe — une page à la fois, une image
+  haute en bandes coupées sur les rangées blanches, chaque morceau lu par les deux rapides puis la lente sur désaccord, recollé par le code ; mesuré au banc k5 le
+  01.11. D380.)
+- **Suite**, mot pour mot : « Pas besoin de toujours découper, on est d'accord ? Quand est-ce que ça trigger ça ? » (lu : jamais par défaut ; avant la lecture quand
+  la pièce le dit (PDF à texte de plus de ~35 lignes par page ou de plusieurs pages, image plus de 3 fois plus haute que large) ; après une lecture normale coupée ou
+  qui annonce plus de lignes qu'elle n'en rend. D380.)
+- **Suite**, mot pour mot : « Une fois tout en ordre, sur la vrai app, repasse toutes les pièces, en plus de tes test. Tout doit passer et ça doit pas être beaucoup
+  plus lent » (lu : après déploiement, chacune de ses pièces réelles relue dans l'app en ligne, lecture seule, rien enregistré, plus les deux fictives ; chaque
+  champ et chaque durée comparés à avant. D380.)
+- **Suite**, à « une bande de 1,4 × la largeur laisse encore 75 lignes », mot pour mot : « largeur, ce qui laisse encore 75 lignes . Mais l'ia peut lire en une fois
+  75 lignes ??? » puis « Faut pas abuser non plus... » (lu : non, ≈ 45 lignes au plus par réponse ; marge prise : 25 lignes au plus par bande. D380.)
+- **Suite**, à « marge prise : 25 lignes au plus par bande », mot pour mot : « Tu en es sûr ? C'est quoi la vrai métrique ??? » (lu : non, 45 et 25 étaient
+  estimés ; la vraie métrique est la justesse ligne par ligne contre la vérité, sans aucune coupure, puis durée et coût, mesurées par taille de bande sur la
+  pièce fictive de 300 lignes dans l'app en ligne. D380.)
+- **Suite**, à « 45 et 25 étaient estimés », mot pour mot : « Même si on remplace rapide par lent ? » (lu : la coupure vient du budget de 8 192 jetons donné aux
+  deux ; la 3.8 pourrait en recevoir plus, mais plusieurs minutes pour 300 lignes, sans contre-lecture ; mesurée aussi par bande. D380.)
+- **Suite**, mot pour mot : « Mais 8000 jetons ça doit faire dans les 200 lignes ?? » (lu : en texte simple oui ; une ligne JSON de 13 champs nommés, plus la
+  réflexion, coûte ≈ 160 jetons mesurés (424 pour en-tête + 1 ligne le 03.11, 31 lignes > 5 085 le 02.11) ; un schéma allégé serait un levier, à mesurer. D380.)
+- **Suite**, à « c'est ce budget qui coupe, pas le modèle », mot pour mot : « Dans ce cas ??? Le problème est vite résolu, alloué plus de budget » (lu : levier le plus
+  simple, mesuré contre les bandes sur la même pièce ; réserves mesurées : la lecture 2 s'est arrêtée seule après 1 ligne avec 7 700 jetons libres, et 300 lignes
+  d'une traite ≈ 50 000 jetons ≈ 100 s en rapide. Le plus simple qui passe gagne. D380.)
+- **Suite** (deux photos de son ticket Bauhaus, sur un tissu sombre), mot pour mot : « Comment il découpe ça alors ??? » (lu : ce ticket ne se découpe pas — 17 articles
+  tiennent dans une lecture, la photo n'est pas 3 × plus haute que large ; mais une photo à fond sombre ferait prendre le tissu pour le fond et couper à travers le
+  texte : trouver le papier d'abord, seuil local (ombre), pente tolérée. D380.)
+- **Suite**, mot pour mot : « Première image de trop mauvaise qualité désolé » ; puis, à « 17 articles tiennent largement dans une lecture, et la photo n'a rien
+  qui déclenche une coupe » : « Parfait alors c'est ce que je voulais » (accord : un ticket ordinaire garde la lecture d'aujourd'hui. D380.)
+- **Suite**, à « La bande de 25 (lignes 101 à 120) passe 20/20 sur les cinq champs, en 20 s », mot pour mot : « Donc pour 300 lignes il faut+ de 240 seconde ???? »
+  (lu : non, les bandes partent en parallèle ; journal : rapides 9 s pour 20 lignes, lente +26 s sur désaccord ; 300 lignes ≈ 30 s à 1 min 45. D380.)
+- **Suite**, mot pour mot : « Les bandes partent en parallèle, ah parfait alors » (accord. D380.)
+- **Suite**, à « chaque bande porte au plus 25 lignes, recouvrement d'environ 8 %, recollage », mot pour mot : « Mais avec cette découpe, on risque pas de
+  couper du contenu réels ??? Comment c'est checké ça ?  On s'assure de bien tout avoir ? Et pas non plus de doublon ? » ; puis : « Ça reste un processus de
+  facturation, c'est ultra critique. On peut pas se permettre de perdre ou "gagner" de l'information » ; puis : « Comment on peut s'assurer que rien ne se
+  perds ? Et être super robuste pour ce workflow critique ? » (lu : le recollage par le texte peut perdre ou doubler une ligne à la jonction ; chaque article
+  a un seul morceau propriétaire, chaque jonction est recoupée des deux côtés, la somme et le compte sur le tout, jamais silencieux. D381.)
+- **Suite**, mot pour mot : « Fait des piège aussi sur les images type " photos, avec des aberrations sur certains endroits notamment sur les
+  jonctions. Voir comment sa réagi. / SI il y a une tâche sur la facture, et que c'est pile sur une jonction. Qu'est-ce qui permet de garantir ces
+  cas ? » ; puis, à « la coupe se déplace vers un blanc voisin » : « SI la facture est pas balanche ? SI la tâche fait toute la facture ? SI la photo
+  est un peu floue m » (lu : l'encre se repère par contraste local, pas par le fond dominant ; onze pièces piégées fictives, vérité et masque, coupe
+  vérifiée hors ligne puis lecture réelle. D381.)
+- **Suite**, sur la phrase « quantité ou unité manquante; aucun stock automatique. », mot pour mot : « -> okay mais une fois la donnée réparé à la
+  main, ça fait bien le stock automatiquement ? » (lu : question ; l'enregistrement lit quantité et unité sur la ligne au moment d'enregistrer ; le
+  cas d'une ligne restée hors stock est vérifié par un test d'écran, voie s-stock.)
+- **Suite**, à « Je remplace aussi le détecteur de blanc par un contraste local », mot pour mot : « Okay mais il faut faire des vrais tests, car au
+  final un cas quasiment infin peut être fait » (lu : la sûreté tient à des invariants vrais pour toute image, éprouvés par des pièces tirées au
+  hasard — graine, centaines de pièces, vérité automatique — puis par des lectures réelles sur l'app et ses vraies pièces. D381.)
+- **Suite**, en voyant la capture d'un ticket fictif piégé (ombre portée sur la droite, tache sur une ligne, papier gris), mot pour mot : « Ça c'est
+  top comme test » (lu : approbation des pièces piégées de type photo ; le banc de 200 pièces tirées au hasard reste le contrôle de la découpe. D381.)
+- **Suite** (ajout tardif, 03.11 : oublié au tour même), à « passe donc à une règle mécanique où chaque image ne montre que sa propre zone, avec le
+  seul risque restant signalé. », mot pour mot : « C'est pas un peu risqué ? Justement pour les vrai négatif ? » ; puis : « Fait l'implantation la
+  plus robuste qui soit sans pour autant rendre le processus lent » (lu : morceaux bord à bord sans voisins, suite d'article recollée et signalée,
+  bande de contrôle lue à part pour chaque coupe, somme et compte sur le tout ; le temps reste celui d'une lecture en parallèle. D381.)
+- **Suite**, sur ce qui se passe quand la lecture d'une longue pièce échoue malgré tout, mot pour mot : « Mais si à la fin ça échoué. Ça montre quand
+  même à l'utilisateur que, le total n'est les correct, que il manque des items (3) ou le vrai nombre. Ect ect... C'est pas des fail silencieux. Ou ça
+  montre aussi que un item est en trop et point sur le ou les potentiels coupable ? Ect... » (lu : question, puis demande : chaque échec se voit —
+  total, lignes manquantes et leur nombre — ET désigne les lignes coupables possibles : la ligne qui a le montant de l'écart, une remise au signe
+  inversé, les deux lignes d'une jonction douteuse, surlignées sur la ligne même. D381.)
+- **Suite**, avec la capture du ticket fictif à l'ombre portée, mot pour mot : « Peut être que là solution est de détouré la facture, et la remettre
+  droite ? Pas d'info parasites + bon angle ? » (lu : proposition ; c'est le principe de la découpe — papier détouré, angle redressé — mais le banc des
+  200 a montré que détourer à la clarté perd les lignes à l'ombre : le cadre garde désormais toute l'encre, les bords de table sont retirés de
+  l'analyse sans masque, l'angle vient des lignes de texte. D381.)
+- **Suite**, en envoyant cinq photos de tickets de magasin fictifs sur un tissu sombre (droits, penchés jusqu'à ≈ 18°, taches, plis), mot pour mot :
+  « Test avec ce ticket » ; « Et celui-ci » ; « Test ceux là aussi » ; « Ils sont pas tous juste, justem pour testé à fond » (lu : vraies photos de
+  test ; leurs erreurs de total sont voulues : la lecture doit le montrer et désigner les lignes coupables possibles ; la découpe doit tenir sur un
+  fond texturé et sur un ticket très penché. D381.)
+- **Suite**, pendant la correction des pièces piégées les plus dures (flou fort, encre pâle, ombre de téléphone), mot pour mot : « SI c'est vraiment
+  trop dur, ça peut indiquer à l'utilisateur, documents illisible,  entrer valeur à la main ou meilleure qualité de documents » (lu : accord pour une
+  sortie honnête : une pièce que la découpe ne peut pas garantir est dite illisible — saisie à la main ou meilleure photo — plutôt que coupée sans le
+  dire ; jamais une ligne coupée en silence. D381.)
+- **Suite**, aussitôt, mot pour mot : « Il faut pas que quelques petits cas rend le tout beaucoup plus complexe. Ou introduise de la lenteur, régression
+  pour la majorité des cas » (lu : règle de conduite de la découpe : un cas rare se traite par la sortie honnête (illisible, saisie à la main) ou par
+  un correctif simple ; jamais une couche de plus qui ralentit ou fait régresser les pièces ordinaires ; le banc des 200 et le temps médian en juge. D381.)
+- **Suite**, en citant la réponse du pilote (« Les cas extrêmes ne doivent ni compliquer l'ensemble ni ralentir les cas courants, c'est mon critère ;
+  je retire donc le remplissage à la couleur du fond au profit du correctif « bord étendu ». »), mot pour mot : « À part si grave à ces cas extrêmes
+  ça rend les cas normaux encore plus robuste » (lu : « grâce à » ; exception à la règle précédente : un correctif né d'un cas extrême est gardé s'il
+  rend aussi les pièces ordinaires plus sûres, mesuré sur le banc. D381.)
+- **Suite**, aussitôt, mot pour mot : « Fait très attention au silencieux. Ça doit être au pire des cas remonté à l'utilisateur. Au mieux éviter. La
+  robuste est le maître mot » (lu : aucune ligne coupée en silence ; au pire, la coupe douteuse est signalée et montrée, au mieux elle est évitée ; la
+  robustesse prime. Le banc des 200 exige 0 coupe silencieuse. D381.)
+- **Suite**, en voyant la carte d'encre vide d'un piège flou (capture barrée), mot pour mot : « Tu devrais pas juste, remettre droit, délimiter le
+  ticker,  quelques pixel en plus juste pour être sûr. Puis regarder un champs text, prendre sa couleur et environs. Puis un champs vide, couleur et
+  environs. Puis calque de contraste. Et on est bon. C'est quoi l'astuce Aujourd'hui ? / On est sur un cas d'école là. Je suis quasiment sûr qu'il
+  existe des third party gratuit ou lib ou git pour ça » ; puis : « Tu reinvte la roue là » (lu : critique juste : la chaîne standard d'un scanner de
+  document — contour du papier, redressement, marge, seuil adaptatif local, profil des rangées — existe dans OpenCV.js ; ne pas la réécrire à la main.
+  D381.)
+- **Suite**, sur la découpe réécrite à la main au lieu de la chaîne standard (OpenCV), mot pour mot : « C'est assez grave comme erreur, c'est une
+  erreur de junior ça. Regarde et modife le workflow en conséquence pour plus que ça arrive... » (lu : erreur de méthode grave : coder un algorithme
+  d'un problème connu sans chercher d'abord la méthode standard et les bibliothèques ; le déroulé de travail doit l'empêcher (leçon, étape « état de
+  l'art » obligatoire et contrôlée). D381.)
+- **Suite**, à « je passe la délimitation du ticket, le redressement et le seuil sur OpenCV.js (gratuit, environ 10 Mo chargés seulement pour une
+  longue pièce), en gardant nos coupes, bandes de contrôle et vote ? », mot pour mot : « Oui et tu pourras comparé avec Nos résultats, utilise ce que
+  on a mis en place, regarde aussi pour la vitesse d'exécution... » (lu : accord ; OpenCV.js jugé contre la version actuelle sur le même banc — 200
+  pièces tirées au hasard, 11 fixes, ses 5 tickets — et chronométré. D381.)
+- **Suite**, aussitôt, mot pour mot : « Continue avec l'implémentation utilise ce que on a trouvé, tout ce savoir pour mettre les choses robuste en
+  place » (lu : passer à OpenCV.js en gardant tout l'acquis mesuré — coupes dans le blanc, bandes de contrôle, vote, pièges, banc des 200, ses
+  tickets, rien de silencieux. D381.)
+- **Suite**, à « OpenCV.js génère du code à l'exécution, ce que la CSP de l'app interdit », mot pour mot : « Je peux l'autoriser pour ce cas
+  particulier. SI scanic est bien une vrai réf reconnu et prouver on continue, SI non opencv est mieux reconnu comme ref » (lu : la référence la
+  plus reconnue et éprouvée l'emporte ; il accepte d'ouvrir la CSP pour ce seul cas si c'est OpenCV. D381.)
+- **Suite**, aussitôt, mot pour mot : « Et les mask, claque et autre ? Opencv peut les géré bien plus facilement, non ? » (lu : passer aussi à
+  OpenCV les cartes d'encre — masques, calques de contraste, seuil, retrait des traits —, pas seulement la géométrie ; garder la version qui mesure
+  le mieux au banc. D381.)
+- **Suite**, à « le repli prend le relais sans perte de lignes », mot pour mot : « Est que c'est parce que opencv est encore mal fine tuné ou est-ce
+  que on a vraiment créé une meilleure version d'open cv ??? » (lu : demande de preuve honnête ; notre repli a été réglé sur les 200 pièces du banc,
+  OpenCV non : comparer les deux voies sur des pièces neuves, jamais vues au réglage (L20). D381.)
+- **Suite**, mot pour mot : « Ça semble être une trop grosse tâche pour notre quota actuel. Termine proprement, met à jour les registres. On en
+  reste là pour le moment » (lu : arrêt de D381 en l'état ; rien déployé ; état de reprise écrit ; commit local du seul travail fini. D381.)
+- **07.11**, à la session de monitoring, mot pour mot : « okay, tu vas continuellement mettre à jour ta todo et recardé l'autre session. première
+  étape, refaire les tests sur l'importde document et finir ça et faire ça au propre. ensuite on va utiliser notre meilleur worflow pour les test ui,
+  et faire ça sur la vrai app notmaent les partie refaite récament, malt/sucre ectt. il y a pas mal de petit problème là dessus. à toi aussi d'adapter
+  le workflow en […] » ; puis : « économise tes token et celle de l'autre session pas besoin de feedback, énocmie au max sans perdre en qualité tout
+  doit aller des les test, prog ect.. » (lu : D381 repris et fini au propre, tests d'abord ; peu de messages entre sessions. D381.)
+- **07.11**, une photo d'un ticket Bauhaus réel (posé sur un métal gaufré à reflets), mot pour mot : « Un autre vrai test » (lu : à passer dans la
+  découpe ; résultat : ni la voie actuelle — « autre objet clair », les reflets — ni OpenCV ne trouvent le papier ; le ticket se lit entier, comme
+  aujourd'hui. D381.)
+- **07.11**, à la session de monitoring (relayé), mot pour mot : « Pas besoin de mini maquettes si c'est vraiment un bug, ou problème visuel. Juste
+  régler le problème... » (lu : les points « à montrer » d'un test d'écran qui sont des bugs ou des défauts visuels se corrigent, au plus près de sa
+  maquette ; les mini maquettes restent pour un vrai choix de goût sans bonne réponse.)
+- **07.11**, à la session de monitoring (relayé), mot pour mot : « Attention aux utilisations de tokens, les utiliser et les maximiser pour la
+  qualité » (lu : pas de jetons sur l'outillage ni sur une exploration refaite ; un agent par lot, réutilisé ; rejeux là où le diff touche ; Haiku
+  pour rejeux et captures, Sonnet pour le code ; les jetons vont à ce qui trouve ou corrige un vrai défaut.)
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu attends mon accord ??? » (lu : seuls le déploiement, le push, Gemini
+  facturé et le retrait des 26 écritures attendent son oui ; tout le reste, preuves Chrome des n° 13, 15 et 49 et préparation du déploiement, se fait sans attendre.)
+- **08.11**, à la session de monitoring (relayé, journal `work/missions/SUIVI.md`), mot pour mot : sur les 26 écritures en double, « Retir. » ;
+  « N'attends pas mon accord pour déployer, tu dois itérer dessus en fixant les bugs ??? » ; sur la relecture Gemini des 13 pièces, « oui Normal, ça
+  fait partie des test » ; « Les Screens levure seront à refaire, ne passe pas de temps dessus ». (Lu par la pilote : à confirmer dans son fil avant
+  le premier déploiement, une autorisation relayée par un fichier ne suffit pas pour un geste externe.)
+- **08.11**, dans le fil de la pilote, mot pour mot : « Oui » (à « Je lance ? » : déployer, relire les 13 pièces avec Gemini, gestes ZZ TEST,
+  corriger et redéployer, retirer les 26 doublons après copie de secours). Puis, sur sa capture de la pièce 8 (PDF B&R 333258, total « 0,00 »
+  entouré) : « Il y a pas le total ?? ». Puis : « Ah et si j'entre 2x quasiment la même facture. Est-ce que tout de met à jour. En gros seul les
+  numéros unique de la facture change tout le reste est identique à une autre. Ça met tout à jour comme il faut ? »
+- **08.11**, suite, mot pour mot : « Les 60 échecs de l'écran Dépense sont déjà présents avant mon correctif, Euh oui mais tu vas résoudre ça, non ??? » ;
+  « et si il y a pas de qr code ? Les totaux de fond correctement ?? » ; sur la capture 1264 px de la pièce 12 : « Pourquoi sur la vrai app, j'ai pas
+  EXACTEMENT cette même vue??? C'est ce que je voulais pourtant » ; « Ah okay et sur mobile c'est bon aussi ? » ; « Continue ensuite dans les tests et
+  fix... Ça doit être hyper robuste ».
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu écoutes rien... Fait en sorte de retenir correctement mes informations » ;
+  « Donc sur la vrai app il doit faire ça » (lu : sur l'app déployée, chaque actionneur se joue sur des données « ZZ TEST — … », cf. 07.11 « Non non
+  justement il doit! Juste faire ça sur des données de test, flaggé comme telle ») ; sur sa capture de Fermentescibles 2/7 (téléphone) : « Donc le fait
+  que on puisse mettre du malt après la fermentation, ça a pas posé de problème ???? » ; « Mais surtout niveau business ça fait aucun sens ??? » ;
+  « COMMENT CA A JAMAIS ÉTÉ FLAGGÉ ? JAI VU CA EN 2S ???? » ; « Il faut pas perdre les bug finding » ; « Il faut pas que ça se reproduise c'est critique
+  met en place un mécanisme pour plus perdre ce genre d'opération » (lu : registre unique `work/missions/BUGS.md`, contrôle `controle-bugs.mjs`, hook Stop).
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Le temps perdu alors que j'ai donné explicitement mon autorisation .. »
+  (lu par le monitoring : couvre l'intégration des branches de correcteurs puis le déploiement ; la pilote garde la fusion d'une branche d'agent
+  pour un oui écrit dans son propre fil, question posée le 08.11).
+- **08.11**, dans le fil de la pilote, mot pour mot : « Oui ... » (fusion de la branche Finances), puis « Le relais de l'autre branche suffit.... »
+  (lu : un accord donné dans le fil du monitoring et relayé mot pour mot vaut pour la pilote ; ne plus lui faire répéter).
+- **08.11**, dans le fil de la pilote, sur les mini maquettes « Mot « ajoutée » » (https://claude.ai/artifact/X9y2sCuYsLDRvfDwLR9hRD), mot pour mot :
+  « b » (lu : la ligne arrivée avec la lecture complète se marque « 2ᵉ lecture · n/N » au lieu de « ajoutée » ; seul le mot change).
+  Avant, sur « Shipping 15,00 » : « si on l'enlève, le total est plus correct ?? » ; « Tu va fixer tout ces problèmes et rendre le truc encore plus
+  fiable et robuste ??? » ; « Okay, fair ça et en paralelle, rend le truc fiable » ; « Montre les mini maquettes » ; « Envoie une notification quand c'est fait ».
+- **08.11**, dans le fil de la pilote, mot pour mot : « Mais refait pas des mini maquettes pour des choses aussi mineur... La variante A était vraiment
+  bien de base... » (lu : le mot « ajoutée » reste, le « b » précédent est annulé ; un mot ou un libellé mineur ne se montre pas en maquettes : on garde
+  l'actuel ou on tranche, et on le dit).
+- **08.11**, à la session de monitoring (relayé), mot pour mot, à « tout ce qui a été corrigé depuis attend son prochain déploiement » :
+  « pourquoi ? pourquoi ça attends `??? » (lu : les preuves locales, captures ou suites de tests, ne retiennent pas un déploiement ; on déploie
+  ce qui est commité et vert à ses tests, puis on rejoue en ligne).
+- **08.11**, mot pour mot, pendant la correction des défauts du registre (cinq voies, revue à l'image, voie VI) :
+  « Reserve tes token pour la qualité » (lu : pas de tour gaspillé en réglages de banc, relances ou suivi ; les jetons vont aux corrections, aux tests et au regard).
+- **08.11**, mot pour mot (relayé par la pilote), à « le rejeu est bloqué : ton Chrome reste à 525 px » :
+  « À tester en 525px c'est pas grave... » (lu : un rejeu en ligne se joue à la largeur que son Chrome donne, 525 px compris ; on ne bloque pas sur la largeur).
+- **08.11**, mot pour mot (relayé par la pilote) : « Économie de token.... Tout va en qualité pour toutes les sessions... » (lu : pas de rejeu qui piétine, de relance ni de rapport répété ; les jetons vont aux constats utiles, aux corrections et au registre juste).
+- **08.11**, mot pour mot, sur sa capture de la Dépense (ticket Bauhaus, ligne « Idaho7 » 5 g × 1,00 rangée dans « Autres », « article — · hors stock », bouton « + Suivre au stock ») :
+  « SI je mets suivre au stock, ça devrait faire le mapping automatique... »
+- **08.11**, mot pour mot, sur la même capture (pied de la liste : « Détail 56,80 / 51,80 · Regrouper en une dépense », lignes Bauhaus 51,80 et « Idaho7 » 5,00) :
+  « Et Détail 56,80 / 51,80 c'est assez trompeur et donne pas d'info.... Mettre des informations cooreante. On a l'impression que c'est faux alors que c'est juste »
+- **08.11**, mot pour mot, sur le test de l'enrichissement IA (27 appels, 0,35 CHF par appel ; proposé : 10 recherches par jour) : « Baisse à 20 et go » (lu : plafond de 20 par jour, allumé en production ; D378).
+- **08.11**, mot pour mot, sur ses captures des outils Houblons (Comparer : pastille « Ta bière » superposée, rangées « ~0,1 » sans barre ; Suggestions : « Plus agrumes — Aucune voie houblon », « Comparer (0) ») :
+  « Suggestions et comparez ne fonctionne plus ??? »
+  puis « Mais les test ont bien été fait sur la prod ??? C'est ce que j'ai demandé. En 10s je trouve plein de problème... »
+  puis « Mais la partie houblon fonctionnait super bien fut un temps ??? »
+- **09.11**, mot pour mot, à « Banc payant (environ 0,70 CHF) … je le lance ? » et « Les 3 bugs des Réglages : je les joue sur tes vrais Réglages en remettant chaque valeur à l'identique ? » : « Oui et oui » ; « N'attends pas d'input de ma part continue tes tâches ».
+  Puis : « Économie de token. Que pour la qualité !!! » ; « Ensuite fait moi des mini maquettes pour la partie levures. Avec le bon workflow » (lu : l'étape « Levure 4/7 » de la création de recette, suivante du programme « refaire tous les écrans un à un » ; entonnoir allégé D204, comme Malts/sucres ; lecture étroite, L01).
+- **09.11**, mot pour mot, sur sa capture de l'app en ligne (étape Levure 4/7, station « 4 Conduite · température × jours », graphe des paliers 19 °C J0–J10 puis 4 °C, poignées ↕ et ↔) : « Ça j'aime beaucoup, c'est très UX UI »
+  (lu : le graphe de conduite actuel est un acquis, repris tel quel dans les maquettes Levure ; il remplace la « ligne résumée vers Paliers » de la fiche).
+- **09.11**, mot pour mot, sur le panel Levure v0 (https://claude.ai/artifact/DJkJFqKMkfY5LTeqAyWVM7) :
+  « J'aime bien r1 · La ligne p6-b2 · froide » ; « Et r3 · L'établi · chaude en fait le r3 est mon pref mais il a besoin de quelques améliorations, notamment sur le fait d'être un peu plus compact et moins fantaisiste. »
+  « Pas besoin de devoir jouer les mini maquettes, va au plus simple. Refait une passe avec ces réf. Et les autres vue des levures, un peu comme houblons, comparé, suggéré, et chercher, surtout chercher est important. Aussi la recherche est bonne mais devrait mettre en avant en premier les levures possible à acheter en Suisse, France Allemagne. Car les levures US sont pas vraiment disponible... »
+  « Et aussi sur les mini maquettes les info manquantes type flocculation, SI on clic dessus, ça fait un appel de recherche ia »
+  (lu : passe 2 statique, sans geste joué ; base r3 resserrée, r1 en second ; trois vues de plus, Chercher d'abord, puis Comparer et Suggérer ; la recherche classe d'abord l'achetable en CH, FR, DE ; toucher une donnée manquante lance une recherche IA, montrée en états).
+- **09.11**, mot pour mot, sur « J'y ai noté ton graphe de conduite comme acquis » : « il peut être un peu restilisé » (lu : structure et principe gardés — graphe °C × jours, paliers, poignées ↕ ↔ ; le style peut s'aligner sur la maquette).
+- **09.11**, mot pour mot, sur « une des quatre aide à trouver l'équivalent achetable d'une levure US, par exemple la 1056 » : « Oui ça c'est top » (lu : le chemin « levure US → l'achetable en CH, FR, DE » est voulu dans Chercher).
+- **09.11**, mot pour mot, à la suite : « Mais il faut par exemple, je trouve une recette US avec une levure us, je sois capable de voir exactement ses effets, +banane, + épicé. Puis je peux choisir en âme et conscience, une levure de chez nous avec toutes ses info dont son impact sur le houblon. »
+  (lu : le chemin « levure US → achetable » montre d'abord les effets de la levure US en arômes — fruité/banane, épicé/clou, neutre — puis chaque levure d'ici avec ses effets côte à côte et son impact sur le houblon (biotransformation) ; données du catalogue : `aroma` 862 fiches, `pof` 346, `biotransformation` 170, `esters` 46 ; l'inconnu dit « non documenté », toucher = recherche IA).
+- **09.11**, mot pour mot : « Mais aussi une fois une levure sélection, exemple, levure d'aby je veux pouvoir le choisir une qui rend ma triple plus ronde et moins épicé par exemple. C'est juste un exemple, soit générique. Pareil pour les ipa, je veux voir ce que la biotransfo change et apport d'une levure à l'autre. Beaucoup de recherches et de temps on déja été consacrée à ça. Trouve les info déjà la et comble les troua »
+  (lu : Suggérer décale depuis la levure choisie par directions génériques — rondeur, épicé, fruité, biotransformation — avec l'écart de chaque candidate ; avant toute nouvelle recherche, inventaire du savoir déjà dans le dépôt, puis combler les trous).
+- **09.11**, mot pour mot : « Aussi utiliser les UX UI booster Et autres astuce comme on a vue avec le graph ux » (lu : skill boosters-ux appliqué et marqué dans chaque maquette ; le graphe de conduite est la référence : donnée dessinée, réglable sur place, sans phrase).
+- **09.11**, mot pour mot, sur le panel Levure passe 2 (https://claude.ai/artifact/BCuZb4L8dtQWwWvP1qoBHE) :
+  « l2 · la ligne r1 + la bande r3 ça j'ai bien mais ça donne pas assez d'infos sur la levure, genre ces caractéristiques durant la fermentation, plus de tiole, banane, cou de girofle, ether, épicé... »
+  « la plage de la levure sur ta conduite: ça c'est parfait. Parcontre il y a toujours 4 pallier. Je veux pouvoir facilement en ajouter ou enlever »
+  (lu : base de l'étape = l2, enrichie des effets de fermentation de la levure — thiols, banane, clou de girofle, esters, épicé — tirés des faits sourcés ; la conduite = l4b (plage de la levure en bande derrière les paliers), avec ajout et retrait de palier faciles sur le graphe. L'app sait déjà ajouter/retirer un palier (`YeastRecipePlan.tsx:707-709`, « + Avant », « + Après », « Supprimer ») mais sous le graphe, dans la carte du palier : le rendre direct, L02).
+- **09.11**, mot pour mot : « s1b · colonnes comme Comparer houblons ça j'aime bien, faire d'autres mini maquettes. Et. c4 · de la levure US à l'achetable pour la recherche, j'ai besoin de plus de filtre, par style, atténuation ECT... Aussi pour la suggestion, un peu comme les houblons, SI je veux plus de banane, mettre plus le houblon en avant ECT ECT c'est de exemple faut que ça soit générique »
+  (lu : Comparer = variantes autour de s1b ; Chercher = c4 avec des filtres (style, atténuation, température, forme, floculation, effets, disponibilité) ; Suggérer = des buts génériques comme pour les houblons — plus de banane, plus de clou, plus fruité, plus net, plus sec, plus rond, houblon mis en avant… — appuyés sur les buts existants de `yeastRecipeProfiles.ts` (banana, clove, fruit, clean, dry, hops, balanced, low-sulfur) et de `fermentationScienceBootstrap.json`).
+- **09.11**, mot pour mot, sur le panel Levure passe 3 (https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz) :
+  « Chercher : c4 + filtres  Oui mais pas assez de filtre, fait un audit la dessus, quels filtre à ajouter »
+  « s5a · effets de fermentation en tête  Candidate  l5b · effets en jauges, + entre les paliers  Top ! »
+  (lu : l5b choisie pour l'étape Levure, s5a pour Comparer (inscrites dans `choix/ecrans-app.json`) ; Chercher garde c5a, mais la liste de filtres est à auditer : quels filtres ajouter, mesurés sur le catalogue — `work/missions/2026-11-09-ecran-levure/savoir/AUDIT-FILTRES.md`).
+  « s6a · huit buts en cartes, comme q2b  Top » (lu : s6a choisie pour Suggérer).
+- **09.11**, mot pour mot : « Parcontre houblons, banane ECT était juste des exemples c'est pas assez générique DU TOUT !!!! »
+  (lu : les huit buts nommés de s6a (banane, girofle, houblon en avant…) sont une liste figée ; il veut un mécanisme générique : chaque caractéristique de la fiche levure, quelle qu'elle soit, peut être poussée en plus ou en moins. s6a reste la forme choisie (cartes) ; son contenu devient la liste des axes de la fiche, chacun avec + et −. La même liste d'axes sert aux filtres de Chercher — `savoir/AUDIT-FILTRES.md`).
+- **09.11**, mot pour mot, sur l'écran Dépense en ligne (deux captures, facture Poste CH 6,80) : « Plusieurs soucis mineur, il y a des cas de figure où je peux pas annuler, j'ai pas encore trouvé pourquoi
+  Aussi si je change je ltype à ingrédients, ça le fait changer de catégorie et surtout on perd du coup le focus sur l'item ce qui est vraiment problématique »
+  (lu : « annuler » = fermer la saisie ; le × était éteint pendant la lecture (BX-1). Le type changé garde la ligne au centre, ouverte, focus dessus ; la bande change, c'est la conséquence voulue (BX-2). Lecture étroite, dite dans la réponse.)
+- **09.11**, mot pour mot (deux captures : menu du + sur Recettes et sur le Bord, en ligne) : « 1 autre problème, entrer une facture ouvre la bonne vue tandis que nouvelle écriture, non »
+  (lu : « Nouvelle écriture » ouvrait le formulaire manuel direct (#114) ; il ouvre maintenant la même entrée que « Entrer une facture » (document, photo, « Saisir sans justificatif »), BX-3. Lecture étroite : si la saisie à la main elle-même doit prendre la forme de la facture lue, c'est un choix à montrer en maquettes.)
+- **09.11**, mot pour mot : « Aussi regarder avec le tester workflow, à beaucoup d'entrois le bouton flottant plus, n'est pas correct, sur plein d'écran il est pas au bon endroit. Différents, donne pas les bonnes actions ect... À revoir et testé !!! »
+  (lu : audit du bouton + sur tous les écrans — onglets, sous-onglets, pages plein écran, 390 tactile et 1280 : sa place (toujours la même, sans couvrir un contrôle), son action principale (celle de l'écran), son menu ; puis correction, puis test sur l'app déployée par le critique (BX-4).)
+- **09.11**, mot pour mot, sur le panel Levure passe 4 (https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd) : « Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant »
+  (lu : « les deux suggestions » = les deux candidates du critique, c6b (Chercher) et s7a (Suggérer) ; avec l5b (étape) et s5a (Comparer), déjà choisies, les quatre vues de la Levure sont à porter dans l'app, maintenant.)
+- **09.11**, mot pour mot, pendant le port Levure et les voies de bugs : « Token pour la qualité !!!!! »
+  (lu : les jetons servent la qualité — pas de raccourci sur la critique, les tests complets, les captures regardées et le jeu en ligne ; ni rustine pour finir vite (BR-45 retiré).)
+- **09.11**, mot pour mot : « Mais utilsent tes token pour la qualité pas pour du va et vient inutile !!! »
+  (lu : pas de compte rendu à chaque retour d'agent ni de relance pour un détail ; le pilote tranche, groupe et ne parle qu'au résultat vérifié.)
+- **09.11**, mot pour mot, accords : « la suppression du code mort (AM-NOTE-3) ; ok », « le push, quand tu le veux. Mtn », « Missions à part : la lecture des factures par Gemini (payante) et le passage des couleurs de l'écran houblons en couleurs de thème (BR-45). Ok » ; puis : « C'est déjà déployé ? Et testé sur la vrai app? »
+- **09.11**, mot pour mot, cinq captures de l'étape Levure en ligne (Ma levure, Chercher, ancienne et nouvelle Conduite) : « Pas mal de petit soucis, la recherche de base doit se faire sur le premier écran, comme pour malt et sucre, pas de renvoi, je choisis la recherche avancée par moi même.
+  La conduite de palier fonctionne infiniment mieux sur celle de base.
+  Il y a des problèmes d'alignement.
+  dans la recherche clicker sur une levure n'importe où pas que son nom ouvre son sous menu
+  Faire la même chose que levure pour la recherche pour les houblons »
+  (lu : 1. « Changer de levure » cherche sur place dans Ma levure, résultats dessous, comme l'étape Malts/sucres ; l'onglet Chercher reste la recherche avancée qu'il ouvre lui-même. 2. la conduite d'avant le port (carte « Conduite · température × jours » à paliers réglables, poignées ↕ et ↔) revient à la place de la nouvelle. 3. alignements à relever sur ses captures (boutons de la conduite par-dessus le pied, colonnes de Chercher). 4. toute la ligne d'une levure ouvre son détail. 5. l'étape Houblons reçoit la même recherche : de base sur place, avancée (filtres à facettes comme Chercher levure) à sa demande.)
+- **09.11**, mot pour mot, deux captures (Nouvelle dépense BAUHAUS 352,05, 29 lignes ; photo du ticket) : « Encore un changement, il faut pouvoir faire une mini recherche pour par exemple vérifié que un item est bien présente.
+  Il faut aussi afficher le total d'items attendu, et le total réellement trouvé pareil pour les chf, le total, total trouvé, total effectif et flaggé si au moins une des combinaisons est pas correct, c'est justement ça la robustesse. Qu'est-ce qui est déjà présent à ce niveau ??
+  Le Lignes 277,60 · total 352,05 · 74,45 de moins
+  Donne aucune info !!! »
+  (lu : une recherche dans les lignes lues de la pièce ; un bloc de contrôle croisé : articles attendus (imprimés, si la pièce les compte) · trouvés ; CHF : total imprimé · somme des lignes trouvées · montant effectivement payé ; chaque paire comparée, drapeau dès qu'une ne concorde pas ; la phrase « Lignes … de moins » remplacée par ce qui manque et quoi faire. Sur son ticket, les 29 montants lus font bien 277,60 : l'écart de 74,45 est sur la pièce, pas une erreur de calcul.)
+- **09.11**, mot pour mot, sur la même capture, le bloc « Somme ≠ imprimé 277,60 · ✓ Qté × prix 29/29 · Lectures 3/3 » entouré : « Il y a déjà cette partie là, mais j'ai l'impression qu'elle fait pas correctement son travail.... »
+  (lu : ce bloc devient les contrôles croisés, pas un second bloc ; chaque ligne montre les deux valeurs comparées et son verdict.)
+- **09.11**, mot pour mot : « Oui et guidée l'utilisateur sur quoi faire. Enlevé ou modifier un item, en ajouter ? Modifié le total(normalement pas...) ectt ecttt dans les pastilles d'erreur pour ce type de catégorie. On appuie et ça fait un renvoi sur l'action du besoin. C'est clair, tout est claire pour ces changements ??? Depuis la demande ? »
+  (lu : chaque pastille d'erreur des contrôles dit le geste et y mène au toucher : ajouter, modifier ou retirer une ligne, rarement corriger le total.)
+- **09.11**, mot pour mot, quatre photos (deux tickets Sun Store, deux tickets BAUHAUS) : « Ces deux là sont difficile, regarde comme l'app joué et si elle compte bien les ligne. Pareil pour les 2 autre, le total match pas, c'est justement un piège »
+  (lu : les quatre pièces entrent au banc ; on joue la vraie lecture de l'app sur chacune, on compare le nombre de lignes et les totaux à la vérité, et l'écran doit lever le drapeau des totaux qui ne concordent pas.)
+- **09.11**, mot pour mot, après la liste de neuf contrôles proposée (comptage indépendant, clé EAN, brut − rabais, TVA recalculée, paiement partagé, doublon, lignes hors articles, prix plausible, photo incomplète) : « Est-ce qu'il y a d'autres mécanismes pour assurer la robustesse en plus ? » puis « Sans perdre de temps » (lu : les neuf, maintenant).
+- **09.11**, mot pour mot : « C'est bon c'est beaucoup plus fiable la lecture avec les contrôles en plus ? »
+- **09.11**, mot pour mot : « 2 point pour le stock, pas besoin d'avoir tout mes outils et autres, juste ce qui concerne vraiment le brassage, donc pas rénovation et autres... Aussi, quand je click sur l'unité, ça met 1 dans la quantité, 90% du temps j'ai pas besoin de plus » ; « Et du coup ça m'ouvre pas le clavier sur mobile »
+  (lu : une dépense hors brassage (rénovation, outillage, divers) ne crée ni ne relie d'article de stock, ni icône de stock ; toucher une unité met 1 dans une quantité vide, sans ouvrir le clavier ; le clavier seulement en touchant la quantité.)
+- **09.11**, mot pour mot, sur une capture de la ligne ouverte (« unité à remplir » Kg · g · sachet · pièce · L en grand, rouge ; quantité vide ; +1 +2 +3 +5 +10) : « Et dans l'ordre mettre pièce en premier, et une fois cliquer ça ouvre aussi en Gand comme l'unité les nombres, mais sans le rouge »
+  (lu : « pièce » est la première unité ; une fois l'unité touchée, les choix de quantité s'ouvrent en grandes tuiles comme celles des unités, sans le rouge d'alerte ; 1 déjà mis.)
+- **09.11**, mot pour mot : « Et pièce, g, kg,l, et sachet » (lu : ordre des unités : pièce · g · Kg · L · sachet.)
+- **09.11**, mot pour mot : « Non c'est bon, c'est déployé ? » (les deux défauts mineurs du jeu en ligne 3 laissés).
+- **09.11**, mot pour mot, trois captures (Nouvelle dépense Sun Store 2 pages 163,85 ; photo du ticket BAUHAUS piège ; l'entrée « Un document | Plusieurs ») : « Plusieurs Petit soucis sur ce screen à toi d'analyse, aussi quand 2 totaux sont incorrectes, ça le marque pas en rouge par exemple pour ce ticket et le renvoie est très étrange....
+  Aussi je veux en fait que 1 bouton, le plusieurs, miss ça soit marqué documents
+  Et ensuite la logique derrière choisir quoi faire. Sur mobile ça ouvre bien la vue de choix plusieurs tout le temps, c'est clair ? »
+  (lu : 1. défauts de la capture à trouver par le pilote (libellé « Articles lus » chevauché par sa valeur, en-tête « À vérifier · Lectures · 2 pages ») ; 2. un total qui ne concorde pas (somme, payé, articles) s'affiche en rouge d'erreur, pas en ambre ; 3. le toucher d'une pastille d'erreur mène au geste utile, jamais au champ de recherche ni à une ligne au hasard ; 4. l'entrée n'a plus qu'un bouton « Documents » (le sélecteur multiple de « Plusieurs », PDF compris) ; l'app décide : un fichier = un document, plusieurs photos = les pages d'une dépense ; sur téléphone ce sélecteur propose appareil photo, galerie et fichiers. « Photographier le ticket » et « Saisir sans justificatif » restent (lecture étroite).)
+- **10.11**, mot pour mot, sa capture de l'ancienne entrée (« Un document | Plusieurs ») : « Documents ouvre pas la même chose que faisait "plusieurs" sur mobile !!! »
+  (lu : au doigt, « Documents » ouvre le sélecteur de « Plusieurs » (images, plusieurs : appareil photo et galerie), pas le gestionnaire de fichiers qu'ouvre un filtre PDF ; le PDF garde un lien « un PDF » dans la note.)
+- **10.11**, mot pour mot, sur une capture d'une ligne ouverte (filtre « 17 à remplir · 11 masquées »), la place entourée à droite de « article — · hors stock » : « Un petit bouton ici, next pour aller à l'article suivant ( ça doit respecter le filtrage), pas besoin de mini maquettes »
+  (lu : « Suivant › » à droite de la rangée article de la ligne ouverte ; il referme la ligne et ouvre la suivante visible dans l'ordre de l'écran, les lignes masquées par le filtre ou la recherche sautées.)
+- **10.11**, mot pour mot, deux captures de la ligne « Idaho 7 » (82,35) d'un ticket : la première « Idaho 7 bis · nouvel article », 1 pièce, « 0 → 1 pièce », sans la vue FACTURE | STOCK ; la seconde reliée à « Idaho 7 » (compté en g, 0 g), « pièce ne s'ajoute pas », « g proposé, comme au stock » : « Ça pose aucun problème que un houblon du stock soit ajouter en pièce ??? Et on voit pas la vue stock normalement comme sur le second screen ?? D'ailleurs on doit pouvoir choisir justement avec la vue stock si on lie, créé un nouveau bis justement ?? »
+  (lu : 1. un houblon (ou tout article compté au poids) ne s'ajoute jamais au stock « en pièce » sans poids : l'unité du stock est proposée, la pièce demande son poids ; 2. la vue FACTURE | STOCK paraît dès qu'une ligne touche un article du stock, même nom compris, y compris quand un « bis » est proposé ; 3. c'est dans cette vue qu'il choisit : relier, créer « bis », ou nouvel article (le trio D215).)
+- **10.11**, mot pour mot, capture de la photo du ticket dans « Voir l'original » : « On devrait pouvoir zoomer dans l'image de la facture, c'est illisible comme ça on peut pas contrôler »
+  (lu : toucher la photo (ou une page) l'ouvre en plein écran ; pincer, double toucher ou + / − pour agrandir, glisser pour lire.)
+- **10.11**, mot pour mot, capture d'une ligne ajoutée (« Ligne sans libellé », champ « Article ou prestation » au ras du clavier) : « Petit soucis mineur mais pas pratique. Ajouter un article, ou cliqué sur le bouton pour fixer ça. Ouvre ça, ça focus sur le champ text(très bien) mais parcontre on voit que ça. Ça devrait scroll pour pouvoir voir l'item en entier, et permettre de cliquer sur l'unité et donc fermé le clavier. C'est clair ? »
+  (lu : la ligne ajoutée garde le focus sur son nom, et défile en haut de la liste pour se voir entière, unité comprise.)
+- **10.11**, mot pour mot : « Oui exactement ces vues, bravo continue » (sur les montages p4 Idaho 7 : vue FACTURE | STOCK et trio) ; « Continue sans mes input, ne créé pas de régression, fait bien des commits pour rollback au cas où » ; « Parcontre, l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus... »
+  (lu : une ligne ajoutée garde sa bande tant qu'elle est ouverte, même le nom quitté ; elle rejoint Houblons à sa fermeture.)
+- **10.11**, mot pour mot, capture de la vue de brassin (neipa v3, LOT-013, Conduite · Préparer · Eau et sels) : « Lance une nouvelle session pour des  mini maquettes de la vue de brassin »
+- **10.11**, mot pour mot : « C'est pour l'aide durant le brassage, j'avais défini des specs » (lu : les mini maquettes de la vue de brassin partent de ses specs du jour de brassage : `docs/brew-day-ux.md`, `docs/compagnon-brasseur.md`, `docs/besoins/`.)
+- **10.11**, mot pour mot : « Quand j'entre une facture ou encaisse, je veux un Tab en bas, qui me montrer le changement dans mes finances type un peu comme Lignes serrées
+  v6a
+  v5a à − 12 % ; « ✓ Payé » reste à 24 px, le minimum.
+  Mini maquettes
+  Avec les graph sans les items et opération, c'est clair ? »
+  (lu : à la saisie d'une dépense ou d'un encaissement, un onglet en bas de l'écran montre l'effet sur ses finances (avant → après), dans la forme de « Lignes serrées v6a » (page compta-prix p4) : ses graphiques seulement, sans la liste des articles ni des opérations ; à montrer en mini maquettes.)
+- **10.11**, mot pour mot, capture de Finances › Opérations en ligne (« Toutes les dates · Archives comprises », lignes grandes, « Annulé » en série, sans graphe) : « Toujours pas la bonne vue et je peux pas fitré pour une intervalles de temps précis »
+  (lu : Opérations n'est toujours pas sa maquette choisie « Lignes serrées v6a » ; il faut filtrer sur un intervalle de dates précis, du … au ….)
+- **10.11**, mot pour mot : « Le workflow au total a été testé ? Création de recette, met à jour les stock et besoin. Achat du matériel, met à jour le stock, brassage, met à jour les stock. Vente, met à jour les finances de même que tout les autres steps » ; « Sur la vrai app »
+  (lu : jouer en ligne la chaîne entière recette → besoins → achat → stock → brassage → stock → vente → finances, sur données ZZ TEST retirées ensuite, en vérifiant chaque effet d'un module sur l'autre. Mission `2026-11-10-parcours-complet`.)
+- **10.11**, mot pour mot, capture de l'onglet « Mon mois » ouvert sur une Nouvelle dépense (Sun Store 14,60 ; Ventes +5 695,00 en grande barre, Autres 14,60 en trait au ras du sol ; pastille « + » jaune coupée entre « Mon mois » et « Catégorie ») : « On voit pas vraiment ce que on ajoute, et petit problème front »
+  (lu : la part ajoutée par cette pièce doit se voir d'un coup d'œil, même petite face aux ventes ; défaut d'affichage : la pastille « + » chevauche le segment Catégorie | Papier.)

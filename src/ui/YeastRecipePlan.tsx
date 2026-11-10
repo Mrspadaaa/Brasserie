@@ -214,7 +214,7 @@ function Contacts({ recipe }: { recipe: TrialRecipe }) {
 
 /** Recipe creation only. Every local setting belongs to a proposal until one atomic apply.
  * The local programme is the single truth for chart, phase fields, Paliers list and Apply. */
-export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, initialGoal, initialYeastId, initialForm, initialProgramme, trialYeast, onProgrammeChange, onIncompleteChange, onApplied, onDiscard, goalSlot, conductStep = 3, conductRequest, pitchRequest, onNavigate, onEditFacts, onEditObjectives }: {
+export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, initialGoal, initialYeastId, initialForm, initialProgramme, trialYeast, onProgrammeChange, onIncompleteChange, onApplied, onDiscard, goalSlot, conductStep = 3, initialConductOpen, conductRequest, pitchRequest, onNavigate, onEditFacts, onEditObjectives }: {
   recipe: TrialRecipe; refs: YeastReference[]; onChange: (value: TrialRecipe) => TrialRecipe | void;
   onCompare: () => void; onGoal: (goal: YeastRecipeGoal, explicit: boolean) => void; initialGoal?: YeastRecipeGoal; initialYeastId?: string;
   initialForm?: YeastRecipeDraft['form']; initialProgramme?: FermentationTimelineStep[]; trialYeast?: YeastSpec; onProgrammeChange?: (programme?: FermentationTimelineStep[]) => void;
@@ -224,6 +224,8 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
   goalSlot?: HTMLElement | null;
   /** Visible number of the conduct station: 2 while the parent shows no Objectives station, so no step reads as missing. */
   conductStep?: number;
+  /** Ouverte d'emblée, sans le défilement ni le focus d'une demande `conductRequest` (Ma levure, maquette l5b). */
+  initialConductOpen?: boolean;
   /** Incremented by the parent to open the conduct from a folded summary. */
   conductRequest?: number;
   /** Incremented by the parent to reach the pitch temperature field, e.g. after a strain change. */
@@ -263,7 +265,7 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
   const [newPhaseKind, setNewPhaseKind] = useState<FermentationTimelineStep['kind']>('garde');
   // Stations open folded; a tried candidate or a carried programme needs its conduct in view.
   const [goalOpen, setGoalOpen] = useState(false);
-  const [conductOpen, setConductOpen] = useState(!!initialYeastId || !!initialProgramme);
+  const [conductOpen, setConductOpen] = useState(!!initialConductOpen || !!initialYeastId || !!initialProgramme);
   useEffect(() => {
     if (trialYeast?.hopIndexId === local.draft.yeastId && trialYeast.form !== local.draft.form) {
       setLocal(previous => ({ ...previous, draft: { ...previous.draft, form: trialYeast.form, formYeastId: previous.draft.yeastId, quantityG: undefined } }));

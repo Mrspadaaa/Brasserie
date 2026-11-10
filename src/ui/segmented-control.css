@@ -1,0 +1,12 @@
+/* Segment sélectionné du SegmentedControl (VI-11, rejeu b47cd90b n° 11).
+   Avant : `bg-ebc-straw text-cave-950`. Au thème clair, `.bg-ebc-straw *` (themes.css) force du blanc sur tous les
+   descendants avec la même spécificité que les surcharges de contexte (.equipment-filters, .equipment-choice…), qui
+   ne changeaient que le fond : « Tous · 0 », « 30 L », « Propre » devenaient blancs sur gris clair (≈ 1,9:1).
+   Ici l'aplat et le texte sont posés ensemble, à partir des jetons ; sans la classe `.bg-ebc-straw`, aucun descendant
+   n'est forcé, et une surcharge de contexte (fond + `color` sur le bouton) est suivie par le libellé qu'il contient.
+   Défaut : action noire à texte blanc au clair, paille à texte sombre en cave (`--sur-paille`). */
+.seg-actif {
+  background-color: rgb(var(--ebc-straw));
+  color: rgb(var(--sur-paille));
+}
+.seg-actif .seg-indice { color: inherit; opacity: 0.7; }

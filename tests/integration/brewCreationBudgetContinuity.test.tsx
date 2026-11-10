@@ -55,8 +55,10 @@ describe('brew budget to doubled-volume batch creation', () => {
     expect(created).toHaveLength(1);
     const batch = created[0];
     expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 50, brewDate: '', plannedBrewDate: '', status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
-    expect(batch.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: 'R', parentRecipeId: 'R-base', version: 2, volumeL: 50, ogTarget: 1.05, fgTarget: 1.01, abvTarget: 5.2, preBoilL: 52, brewhouse: rig, notes: recipe.notes }));
-    expect(batch.recipeSnapshot.waterPlan).toEqual(expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 31.6, mash: { gypse: 2 }, sparge: { gypse: 4 }, acid: { id: 'lactique', mash: 4, sparge: 6 } }));
+    expect(batch.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: 'R', parentRecipeId: 'R-base', version: 2, volumeL: 50, ogTarget: 1.05, fgTarget: 1.01, abvTarget: 5.2, preBoilL: 50, /* volume avant ébullition à froid (CF-9) : 52 L chaud auparavant */ brewhouse: rig, notes: recipe.notes }));
+    expect(batch.recipeSnapshot.waterPlan).toEqual(expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 29.6, /* CF-9 : 31,6 L à chaud auparavant */
+      // Concentrations gardées : le rinçage suit son volume (×29,6/31,6), les sels de l'empâtage (tous en cuve, défaut) le volume total (×59,6/61,6).
+      mash: { gypse: 1.94 }, sparge: { gypse: 3.75 }, acid: { id: 'lactique', mash: 4, sparge: 5.62 } }));
     expect(batch.recipeSnapshot.fermentables.map(item => item.weightKg)).toEqual([10, 1]);
     expect(batch.recipeSnapshot.hops[0]).toEqual(expect.objectContaining({ weightG: 40, stage: 'dryHop', dayOffset: 4 }));
     expect(batch.recipeSnapshot.adjuncts[0]).toEqual(expect.objectContaining({ amount: 4, notes: recipe.adjuncts[0].notes }));
@@ -76,7 +78,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Paramètres → Brasserie');
+    expect(screen.getByRole('alert')).toHaveTextContent('Réglages → Brasserie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
     fireEvent.change(volume, { target: { value: '30' } });
@@ -92,7 +94,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     render(<ProductionTab batches={[]} recipes={[recipe]} brewhouses={[rig, target]} activeBrewhouseId={rig.id} globalTimeFilter="all" targetSubTab="scaler" onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} />);
     fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '50' } });
     expect(screen.getByRole('row', { name: /^Vanille\s*Fermenteur 4 gousse$/ })).toBeInTheDocument();
-    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent('31,6 L');
+    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent('29,6 L') /* CF-9 : avant ébullition à froid */;
     fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '300' } });
     const scientific = BrewingMath.scaleRecipe(recipe, 300, rig, target);
     const scenario = scaleBrewRecipeScenario(recipe, 300, rig, target);

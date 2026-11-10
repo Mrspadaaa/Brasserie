@@ -1,0 +1,14 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+ [32m✓[39m tests/integration/AppRoutePile.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 5600[2mms[22m[39m
+   [33m[2m✓[22m[39m App · pile de routes (#162)[2m > [22mwizard → quatre couches → retour niveau par niveau : même instance, même étape, brouillon intact, jamais DraftFreshnessChoice [33m 4948[2mms[22m[39m
+   [33m[2m✓[22m[39m App · pile de routes (#162)[2m > [22mRecipePage → atelier V5.5 → retour : la page recette garde son état ; → outil v4 → retour : idem [33m 651[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 14:13:50
+[2m   Duration [22m 7.38s[2m (transform 3.16s, setup 96ms, collect 919ms, tests 5.60s, environment 564ms, prepare 56ms)[22m
+

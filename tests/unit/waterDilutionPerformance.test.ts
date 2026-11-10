@@ -11,6 +11,7 @@ import { assessWaterProfile } from '../../src/domain/water/profileAssessment';
 import { raForGrist, raSaltCeilingForGrist, targetRaForGrist } from '../../src/domain/water/mashPh';
 import { waterProfileTarget, waterTreatmentTarget } from '../../src/domain/water/profileTarget';
 import { styleByCode } from '../../src/domain/waterStyles';
+import { nombreFr } from '../../src/domain/nombreAffiche';
 
 const style = styleByCode('20C');
 const grist = [{ kind: 'grain', use: 'empatage', weightKg: 2.2, colorEbc: 3.5 }];
@@ -71,7 +72,7 @@ function exhaustiveDilution(input: MinimalDilutionInput): MinimalDilution {
       reasons.push(`bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${hco3Max + HCO3_ACID_TOLERANCE_PPM} ppm pour limiter la charge d’acide`);
     const lactate = lactateInBeer(water.mashAcid.amount + water.spargeAcid.amount, input.beerVolumeL);
     if (input.acid === 'lactique' && input.beerVolumeL > 0 && lactate > LACTATE_TASTE_THRESHOLD)
-      reasons.push(`acide lactique à ${lactate} g/L de bière (seuil ${LACTATE_TASTE_THRESHOLD}) — ou passe au phosphorique, qui ne se goûte pas`);
+      reasons.push(`acide lactique à ${nombreFr(lactate, 2)} g/L de bière (seuil ${nombreFr(LACTATE_TASTE_THRESHOLD, 2)}) — ou passe au phosphorique, qui ne se goûte pas`);
     const acid = { mash: water.mashAcid.amount, sparge: water.spargeAcid.amount,
       unit: water.mashAcid.unit, name: water.mashAcid.name, hco3Left: start.hco3 };
     if (!reasons.length) return { feasible: true, pct, reasons: initialReasons, acid };

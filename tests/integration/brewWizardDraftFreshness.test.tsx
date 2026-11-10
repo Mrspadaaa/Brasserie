@@ -144,7 +144,7 @@ const hold = async (button: HTMLElement) => {
   fireEvent.click(button);
   await wait(0);
 };
-const allSteps = [/Fermentescibles/, /Houblons/, /Levure/, /^Paliers/, /Eau et sels/, /Récapitulatif/, /Identité/];
+const allSteps = [/Malts.sucres/, /Houblons/, /Levure/, /^Paliers/, /Eau et sels/, /Récapitulatif/, /Identité/];
 
 beforeAll(() => {
   // jsdom n'a pas la capture du pointeur ; le navigateur l'a.
@@ -177,7 +177,7 @@ describe('#97 B1-s — une saisie dont le rendu est lent crée quand même le br
 describe('#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)', () => {
   it('appui long sur « + » (QuantityStepper) : brouillon écrit, fermer ne perd pas la quantité', async () => {
     const view = wizard(saved());
-    allerEtape(/Fermentescibles/);
+    allerEtape(/Malts.sucres/);
     await waitFor(() => expect(malt()).toBeTruthy());
     const before = malt()!.value;
     // Trois touchers répétés remplacent l'appui long ; la fraîcheur du brouillon se vérifie comme avant.
@@ -349,7 +349,7 @@ describe('#97 V3 n°1 — un réglage automatique ne crée ni ne remplace de bro
     fireEvent.pointerUp(title()!, { button: 0 });
     fireEvent.click(title()!);
     for (const step of allSteps) { allerEtape(step); await wait(20); }
-    allerEtape(/Fermentescibles/);
+    allerEtape(/Malts.sucres/);
     await waitFor(() => expect(malt()).toBeTruthy());
     fireEvent.change(malt()!, { target: { value: '7' } });
     await wait(20);
@@ -516,7 +516,7 @@ describe('#97 ARB-97 — attribution sans horloge', () => {
 
   it('appui long relâché juste après le premier tic, fil bloqué 300 ms : le tic affiché est dans le brouillon', async () => {
     const view = wizard(saved());
-    allerEtape(/Fermentescibles/);
+    allerEtape(/Malts.sucres/);
     await waitFor(() => expect(malt()).toBeTruthy());
     const plus = maltPlus();
     const before = malt()!.value;

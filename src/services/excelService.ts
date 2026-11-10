@@ -76,7 +76,7 @@ export const ExcelService = {
     const clients = StorageService.getClients();
     const clientTxs = StorageService.getTransactions();
     const clientRows = clients.map((c) => {
-      const stats = ClientStatsService.forClient(c, clientTxs);
+      const stats = ClientStatsService.forClient(c, clientTxs, clients);
       return {
         'N° Client': c.id,
         'Nom / Raison sociale': c.name,

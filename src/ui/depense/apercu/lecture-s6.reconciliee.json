@@ -4,6 +4,7 @@
  "documentTypeRetenu": "invoice",
  "proForma": false,
  "paymentEvidence": "paid",
+ "paymentMethod": "unknown",
  "fieldWarnings": [],
  "vendor": "Fournisseur fictif",
  "date": "09.09.2026",

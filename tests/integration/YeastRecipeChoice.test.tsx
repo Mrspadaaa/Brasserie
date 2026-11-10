@@ -1029,10 +1029,10 @@ describe('Choix de levure réservé à la création de recette', () => {
     const original = personal(), onChange = vi.fn();
     const view = render(<YeastRecipeChoice recipe={original} onChange={onChange} quantityEditor={null} />);
     const projection = screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' });
-    expect(projection).toHaveTextContent('1,013'); expect(projection).toHaveTextContent('6,1');
+    expect(projection).toHaveTextContent('1,013'); expect(projection).toHaveTextContent('6,3'); // ASBC (CF-6) : 6,1 avec l'ancienne formule
     expect(projection).toHaveTextContent('hypothèse de recette');
     view.rerender(<YeastRecipeChoice recipe={{ ...original, yeast: { ...original.yeast, form: undefined } }} onChange={onChange} quantityEditor={null} />);
-    expect(projection).toHaveTextContent('1,013'); expect(projection).toHaveTextContent('6,1');
+    expect(projection).toHaveTextContent('1,013'); expect(projection).toHaveTextContent('6,3'); // ASBC (CF-6) : 6,1 avec l'ancienne formule
     expect(yeastStation()).toHaveTextContent('forme à préciser');
     openScenario();
     const primary = selectPhase(0);
@@ -1047,7 +1047,7 @@ describe('Choix de levure réservé à la création de recette', () => {
     openScenario(); openAdjustments(); changeNumber('Atténuation retenue pour le scénario', '85');
     const comparison = screen.getByRole('figure', { name: 'Densité finale' });
     expect(comparison).toHaveTextContent('1,013 SG'); expect(comparison).toHaveTextContent('1,009 SG');
-    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('6,7 % vol');
+    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('6,8 % vol'); // ASBC (CF-6)
     expect(changed).not.toHaveBeenCalled();
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('1,013');
     fireEvent.click(screen.getByRole('button', { name: 'Annuler l’essai' }));
@@ -1224,7 +1224,7 @@ describe('Choix de levure réservé à la création de recette', () => {
     expect(current).toHaveTextContent('1,013'); expect(current).toHaveTextContent('À préciser');
     expect(current).toHaveTextContent('Procédé acidulé non précisé');
     openScenario(); fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'preacidified' } });
-    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('6,1 % vol');
+    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('6,3 % vol'); // ASBC (CF-6)
     expect(changed).not.toHaveBeenCalled();
     fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'acidifying-yeast' } });
     expect(within(screen.getByRole('figure', { name: 'Alcool estimé' })).getAllByText('À renseigner')).toHaveLength(2);
@@ -1252,7 +1252,7 @@ describe('Choix de levure réservé à la création de recette', () => {
     const high = { ...personal(), style: 'Barleywine', ogTarget: 1.13,
       yeast: { ...personal().yeast, attenuationPct: 78, alcoholTolerancePct: 11 } };
     render(<Host initial={high} />);
-    expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('13,3');
+    expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('14,0'); // ASBC (CF-6) : 1,130 → 1,029 ; 13,3 avec (OG − FG) × 131,25
     const alerts = screen.getByRole('list', { name: 'Points à vérifier pour la levure choisie' });
     expect(alerts).toHaveTextContent('au-delà de la tolérance annoncée (11 % vol)'); expect(alerts).toBeVisible();
     expect(alerts.closest('details')).toBeNull();

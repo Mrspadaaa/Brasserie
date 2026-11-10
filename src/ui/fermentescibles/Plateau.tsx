@@ -4,8 +4,8 @@ import type { LearnIngredient } from '../../domain/ingredientFacts';
 import { ChampLigne } from './ChampLigne';
 import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
-import { Chevron, Corbeille, Cube, Moins, Plus16, Croix } from './icones';
-import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { Corbeille, Cube, Moins, Plus16, Croix, Tour } from './icones';
+import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -24,7 +24,9 @@ export const Plateau: React.FC<{
   onLearnIngredient?: LearnIngredient;
   /** Entrée dans la lecture : le focus repart vers le champ d'ajout. */
   versAjout: () => void;
-}> = ({ f, i, setKg, setJour, tourner, retirer, setCouleur, patch, onLearnIngredient, versAjout }) => {
+  /** Un nombre négatif refusé se dit dans les alertes de l'étape (N-4, BR-16). */
+  onRefus?: (message: string | null) => void;
+}> = ({ f, i, setKg, setJour, tourner, retirer, setCouleur, patch, onLearnIngredient, versAjout, onRefus }) => {
   const [saisieEbc, setSaisieEbc] = useState(false);
   const [fixe, setFixe] = useState<number | null>(null);
   const piste = useRef<HTMLDivElement | null>(null);
@@ -63,16 +65,23 @@ export const Plateau: React.FC<{
     <section className="fer-bal" id="fer-bal" data-role="bal" aria-label="Détail de l’ingrédient" data-booster="balance">
       <div className="fer-bh" data-role="bh">
         {sw}<b>{f.name}</b>{saisieEbc && <span className="fer-mo2">EBC, Entrée</span>}
-        <button type="button" className="fer-bmo" data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle" aria-label={`Moment de ${f.name}`}
-          onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Chevron /></button>
+        {/* Table famille × moment (AM 1 et 2, 08.11) : un grain bien placé n'a qu'un moment, dit sans la flèche qui tourne. */}
+        {momentTourne(f) ? (
+          <button type="button" className={`fer-bmo${momentPermis(f) ? '' : ' fer-bmo-hors'}`} data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle"
+            data-hors={momentPermis(f) ? undefined : 'moment'}
+            aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${momentPermis(f) ? '' : ', impossible pour cet ingrédient'}. Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f)]}`}
+            onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Tour /></button>
+        ) : (
+          <span className="fer-bmo fer-bmo-fixe" data-mom={i} data-m={MOT_MOMENT[f.use]}>{MOT_MOMENT[f.use]}</span>
+        )}
         <button type="button" className="fer-del" data-del={i} aria-label={`Supprimer ${f.name} de la recette`} onClick={() => retirer(i)}><Corbeille /></button>
       </div>
       <div className="fer-lect" data-role="lect">
-        <button type="button" className="fer-sb" data-pas="-1" aria-label="Retirer un cran" onClick={() => setKg(i, pas(f.weightKg, -1))}><Moins /></button>
+        <button type="button" className="fer-sb" data-pas="-1" aria-label="Retirer un cran" disabled={!(f.weightKg > 0)} onClick={() => setKg(i, pas(f.weightKg, -1))}><Moins /></button>
         <label className="fer-num">
           <ChampLigne valeur={f.weightKg} onValeur={(v) => setKg(i, v)} format={kgTxt} arrondi={arrondiKg} cran={(v, d) => pas(v, d)}
             libelle={`Masse de ${f.name}, en kg`} className="fer-bin" auContenu videVaut0 zeroAttention marques={{ 'data-role': 'bin' }}
-            onEntree={() => { versAjout(); return true; }} />
+            onEntree={() => { versAjout(); return true; }} unite="kg" onRefus={onRefus} />
           <span className="fer-bu">kg</span>
         </label>
         <button type="button" className="fer-sb" data-pas="1" aria-label="Ajouter un cran" onClick={() => setKg(i, pas(f.weightKg, 1))}><Plus16 /></button>
@@ -90,12 +99,12 @@ export const Plateau: React.FC<{
         <span style={{ left: '100%', transform: 'translateX(-100%)' }}>{fr(M, M % 1 ? 1 : 0)} ›</span>
       </div>
       <div data-role="jours">
-        {f.use === 'fermentation' && (
+        {f.use === 'fermentation' && !grain && (
           <div className="fer-jours">
             <label>J+
               <ChampLigne valeur={f.dayOffset ?? 0} onValeur={(v) => setJour(i, v)} format={(v) => String(v)} arrondi={(v) => Math.max(0, Math.round(v))}
                 cran={(v, d) => Math.max(0, v + d)} zeroValide entier repos={String(f.dayOffset ?? 0)} libelle={`Jour d’ajout de ${f.name}`}
-                className="fer-jin" marques={{ 'data-jour': i }} />
+                className="fer-jin" marques={{ 'data-jour': i }} onRefus={onRefus} />
             </label>
             <div className="fer-jp">
               <div className="fer-jt" />
@@ -108,7 +117,8 @@ export const Plateau: React.FC<{
           </div>
         )}
       </div>
-      {grain && <Fiche malt={f} onChange={(p) => patch(i, p)} onLearnIngredient={onLearnIngredient} />}
+      {/* Tout ingrédient a sa fiche : un fruit ou un extrait sans PPG n'a pas d'OG, et le PPG se renseigne ici (AM-6 : plus de potentiel inventé). */}
+      <Fiche malt={f} onChange={(p) => patch(i, p)} onLearnIngredient={onLearnIngredient} />
     </section>
   );
 };

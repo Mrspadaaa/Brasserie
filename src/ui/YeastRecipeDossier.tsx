@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type ReactNode } from 'react';
+import { FLOCCULATION_CATEGORIES, yeastCategoryKey } from '../domain/yeastFlocculation';
 import type { YeastSpec } from '../types';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
@@ -179,14 +180,8 @@ export function YeastObservationList({ facts, note, actions }: {
 export const yeastFlocculationTexts = (yeast: Pick<YeastSpec, 'technicalFacts' | 'technicalSelections'>) =>
   (readYeastTechnicalFacts(yeast.technicalFacts ?? []) ?? []).filter(fact => fact.key === 'flocculation' && !fact.range);
 
-const FLOCCULATION_CATEGORIES = ['Faible', 'Faible à moyenne', 'Moyenne', 'Moyenne à élevée', 'Élevée', 'Très élevée'];
-const FLOCCULATION_WORDS: Record<string, string> = {
-  low: 'Faible', faible: 'Faible', basse: 'Faible', 'low-medium': 'Faible à moyenne', 'medium-low': 'Faible à moyenne', 'faible a moyenne': 'Faible à moyenne',
-  medium: 'Moyenne', moyenne: 'Moyenne', moyen: 'Moyenne', 'medium-high': 'Moyenne à élevée', 'moyenne a elevee': 'Moyenne à élevée',
-  high: 'Élevée', elevee: 'Élevée', haute: 'Élevée', 'very high': 'Très élevée', 'tres elevee': 'Très élevée',
-};
-/** A translated manufacturer category is the same category; any other wording stays as published. */
-export const yeastCategoryKey = (text: string) => { const key = fold(text).replace(/\s*-\s*/g, '-'); return FLOCCULATION_WORDS[key] ?? key; };
+/** A translated manufacturer category is the same category; any other wording stays as published (`domain/yeastFlocculation.ts`). */
+export { yeastCategoryKey };
 
 type YeastHistoricalScalarReading = NonNullable<ReturnType<typeof resolveYeastDossier>['historicalScalarReading']>;
 export interface YeastRetainedValue {

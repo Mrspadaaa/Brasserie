@@ -19,6 +19,7 @@ export const SCAN_POINT_CODES = [
   'ht-tva-ttc',          // C4  HT + TVA ≠ TTC
   'lignes-perdues',      // P2  des lignes n'ont pas été conservées
   'lignes-annoncees',    // P2  le modèle annonce plus de lignes qu'il n'en a transcrit, mais la somme tombe juste
+  'lignes-absentes',     // LO-3  un total imprimé et aucune ligne lue (une page ou une partie du document manque peut-être)
   'pro-forma-non-payee', // A6  pro-forma sans paiement imprimé
   'type-deduit',         // A6  pro-forma payée lue « devis » : `documentTypeRetenu` = invoice, `documentType` reste tel que lu
   'devis',               // un vrai devis (pas une pro-forma) : à vérifier
@@ -41,7 +42,7 @@ export interface ScanValue { lecture: number; valeur: number | string | boolean 
  * `type-deduit` ne pèse pas (pro-forma payée retenue comme facture). `lectures-divergentes` pèse sauf quand une majorité a tranché. */
 export const PESE_PAR_CODE: Record<ScanPointCode, boolean> = {
   'ligne-montant': true, 'ligne-prix-par-lot': true, 'somme-ecart': true, 'somme-incomplete': true, 'tva-incoherente': true, 'ht-tva-ttc': true,
-  'lignes-perdues': true, 'lignes-annoncees': true, 'pro-forma-non-payee': true, 'type-deduit': false, 'devis': true, 'alpha-libelle': true,
+  'lignes-perdues': true, 'lignes-annoncees': true, 'lignes-absentes': true,'pro-forma-non-payee': true, 'type-deduit': false, 'devis': true, 'alpha-libelle': true,
   'unite-absente': true, 'forme-rejetee': true, 'date-absente': true, 'devise-non-chf': true, 'total-absent': true, 'taux-tva-hors-plage': true,
   'document-livraison': true, 'avoir': true, 'nature-a-preciser': true, 'ambiguite-ligne': true, 'lectures-divergentes': true,
   'lignes-non-rapprochees': true, 'lecture-coupee': true,
@@ -153,8 +154,25 @@ export function lineMathCheck(items: Array<Pick<CoreItem, 'id' | 'name' | 'kind'
   return { points, lines };
 }
 
+/**
+ * D381 — les lignes qui expliqueraient SEULES l'écart de la somme (« un item est en trop et point sur le ou les potentiels coupable ? ») : son montant
+ * est l'écart (ligne en trop, ou doublée), ou deux fois son montant l'est (signe inversé : une remise lue positive). `ecart` = total − somme, en
+ * centimes. Positions (base 1), au plus 5 chacune ; une ligne qui a une jumelle voisine (même désignation, même montant) passe en tête.
+ */
+export function coupablesDeLEcart(items: Array<{ amountTTC: number | null; name?: string }>, ecart: number): { enTrop: number[]; signe: number[] } {
+  const montants = items.map(item => toCents(item.amountTTC));
+  const jumelle = (i: number) => [i - 1, i + 1].some(j => montants[j] === montants[i] && (items[j]?.name ?? '').trim() === (items[i]?.name ?? '').trim());
+  const ranger = (positions: number[]) => [...positions.filter(n => jumelle(n - 1)), ...positions.filter(n => !jumelle(n - 1))].slice(0, 5);
+  const ou = (test: (m: number) => boolean) => ranger(montants.flatMap((m, i) => (m !== null && m !== 0 && test(m) ? [i + 1] : [])));
+  return { enTrop: ecart === 0 ? [] : ou(m => m === -ecart), signe: ecart === 0 || ecart % 2 !== 0 ? [] : ou(m => 2 * m === -ecart) };
+}
+const designer = (items: Array<{ amountTTC: number | null; name?: string }>, positions: number[]) => {
+  const noms = positions.slice(0, 3).map(n => { const nom = (items[n - 1]?.name ?? '').trim(); return nom ? `« ${nom.slice(0, 24)} »` : `ligne ${n}`; });
+  return positions.length > 3 ? `${noms.join(', ')} et ${positions.length - 3} autre(s)` : noms.join(', ');
+};
+
 /** C2 et P2 — somme des lignes = total, au centime. `ok` seulement si rien ne manque : lignes toutes lisibles, aucune perdue. */
-export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'>>, amountTTC: number | null, amountHT: number | null, linesLost: number): { points: ScanPoint[]; sum: ScanControls['sum'] } {
+export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'> & { name?: string }>, amountTTC: number | null, amountHT: number | null, linesLost: number): { points: ScanPoint[]; sum: ScanControls['sum'] } {
   const none = { points: [] as ScanPoint[], sum: { statut: 'non-verifiable' as ControlStatus, base: null } };
   const ttc = toCents(amountTTC);
   if (!items.length || ttc === null) return none;
@@ -174,12 +192,22 @@ export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'>>, amountTTC: n
   const ht = toCents(amountHT);
   if (ht !== null && sum === ht) return { points: [], sum: { statut: 'ok', base: 'HT' } };
   const gap = ttc - sum;
+  // D261b : un total imprimé multiple de 5 centimes qui est la somme des lignes arrondie au 5 centimes le plus proche (Rundung suisse) n'est pas un écart.
+  if (ttc % 5 === 0 && Math.abs(gap) <= 2 && Math.round(sum / 5) * 5 === ttc) return { points: [], sum: { statut: 'ok', base: 'TTC' } };
   const hint = Math.abs(gap) <= 5 ? ' (un arrondi imprimé, Rundung, est-il une ligne omise ?)' : '';
+  // D381 : les coupables possibles, nommés et surlignés (`lignes`) ; sans coupable, ce qui manquerait.
+  const { enTrop, signe } = Math.abs(gap) <= 5 ? { enTrop: [], signe: [] } : coupablesDeLEcart(items, gap);
+  const pistes = [
+    ...(enTrop.length ? [`En trop ? ${designer(items, enTrop)} : montant égal à l'écart.`] : []),
+    ...(signe.length ? [`Signe inversé ? ${designer(items, signe)}.`] : []),
+    ...(!enTrop.length && !signe.length && Math.abs(gap) > 5 ? [gap > 0 ? `Une ligne de ${chf(gap)} CHF manque peut-être.` : `Une remise de ${chf(-gap)} CHF manque peut-être.`] : []),
+  ];
+  const coupables = [...new Set([...enTrop, ...signe])];
   return {
     points: [makePoint('somme-ecart', 'ecart', 'amountTTC', null, {
       regle: 'somme des lignes = total TTC', unite: 'centimes', enjeu: 'argent', lu: ttc, calcule: sum, bloque: true,
-      champs: ['amountTTC', ...items.map((_, i) => `items.${i + 1}.amountTTC`)],
-      message: `La somme des lignes ne correspond pas au total TTC. Écart ${chf(gap)} CHF (lignes ${chf(sum)}, document ${chf(ttc)})${hint}.`,
+      champs: ['amountTTC', ...items.map((_, i) => `items.${i + 1}.amountTTC`)], ...(coupables.length ? { lignes: coupables } : {}),
+      message: `La somme des lignes ne correspond pas au total TTC. Écart ${chf(gap)} CHF (lignes ${chf(sum)}, document ${chf(ttc)})${hint}.${pistes.length ? ` ${pistes.join(' ')}` : ''}`,
     })], sum: { statut: 'ecart', base: 'TTC' },
   };
 }
@@ -196,6 +224,18 @@ export function totalsCheck(amountHT: number | null, tvaAmount: number | null, a
       message: 'Les totaux HT + TVA ne correspondent pas au TTC du document.',
     }),
   };
+}
+/** D272 — Un « HT » lu qui est un sous-total TTC. Sur une facture aux prix TVA comprise, la lecture prend parfois le sous-total des articles
+ * (avant port) pour le HT : HT + TVA ≠ TTC, et ce montant égale la somme des lignes hors port, elles-mêmes au TTC (leur somme est le TTC).
+ * Il n'est alors pas tenu pour lu (l'appelant le met à null) ; un HT n'est jamais calculé. Un HT faux d'une autre forme garde son écart
+ * (un HT égal au TTC aussi : le nullifier dans une seule des deux lectures créerait un désaccord qui paie une 3.8). */
+export function htEstUnSousTotalTTC(amountHT: number | null, tvaAmount: number | null, amountTTC: number | null, items: Array<Pick<CoreItem, 'kind' | 'amountTTC'>>): boolean {
+  const ht = toCents(amountHT), vatCents = toCents(tvaAmount), ttc = toCents(amountTTC);
+  if (ht === null || vatCents === null || ttc === null || vatCents <= 0 || Math.abs(ht + vatCents - ttc) <= 2) return false;
+  const lignes = items.map(item => ({ kind: item.kind, cents: toCents(item.amountTTC) }));
+  if (!lignes.some(l => l.kind === 'shipping') || lignes.some(l => l.cents === null)) return false;
+  const somme = lignes.reduce((s, l) => s + l.cents!, 0), horsPort = lignes.filter(l => l.kind !== 'shipping').reduce((s, l) => s + l.cents!, 0);
+  return Math.abs(somme - ttc) <= 2 && Math.abs(ht - horsPort) <= 2;
 }
 /** Le total TTC est absent ou non positif : le point (message identique à la phrase d'`issues` de `normalizeInvoiceScan`). */
 export function totalAbsentPoint(amountTTC: number | null): ScanPoint | null {

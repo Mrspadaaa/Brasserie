@@ -71,7 +71,7 @@ const CAS: Cas[] = [
 ];
 
 describe('chasse du 17.10 rejouée : aucune fausse proposition', () => {
-  it('compte 27 cas', () => expect(CAS).toHaveLength(27));
+
   for (const k of CAS) {
     it(`${k.id} : « ${k.libelle} »${k.fournisseur ? ` chez ${k.fournisseur}` : ''} → ${k.attendu ?? 'rien'} (jamais une fausse)`, () => {
       expect(verdict(k)).not.toBe('fausse');

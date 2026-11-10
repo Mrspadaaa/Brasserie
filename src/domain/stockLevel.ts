@@ -414,3 +414,28 @@ export function allocatedBatches(
     .map((b) => ({ id: b.id, name: b.name, qty: outstandingInBatch(item, b, stockItems) }))
     .filter((x) => x.qty > 0);
 }
+
+/** Un article à commander et la quantité qui manque. */
+export interface ArticleACommander {
+  item: StockItem;
+  /** Quantité à commander, dans l'unité de l'article ; 0 = seuil atteint, quantité à définir (jamais un « 0 » à afficher). */
+  missing: number;
+  /** Le stock est épuisé (≤ 0). */
+  rupture: boolean;
+}
+
+/**
+ * LE comptage du « manque » (test en ligne n° 49 : Stocks disait 12, le Bord et le badge 26).
+ * Un article est à commander s'il manque pour les brassins planifiés (`shortfall`), ou s'il est au seuil ou
+ * en dessous d'un seuil RENSEIGNÉ (`minStock` > 0 : un article sans seuil n'a pas de seuil à atteindre).
+ * Stocks (« À commander »), le Bord et le badge de la barre du bas appellent tous cette fonction.
+ */
+export function articlesACommander(items: StockItem[], batches: Batch[]): ArticleACommander[] {
+  return items.flatMap((item) => {
+    const missing = shortfall(item, batches, items);
+    const belowMin = item.minStock > 0 && item.currentStock <= item.minStock;
+    if (missing <= 0 && !belowMin) return [];
+    const toOrder = missing > 0 ? missing : Units.round(item.minStock - item.currentStock, item.unit);
+    return [{ item, missing: Math.max(0, toOrder), rupture: (item.currentStock ?? 0) <= 0 }];
+  });
+}

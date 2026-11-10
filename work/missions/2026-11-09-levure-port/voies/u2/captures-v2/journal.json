@@ -1,0 +1,139 @@
+{
+  "base": "http://127.0.0.1:5657",
+  "erreurs": [
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED"
+  ],
+  "bloques": [
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001"
+  ],
+  "captures": [
+    "c1-390-clair",
+    "c3-390-clair",
+    "m2-390-clair",
+    "s3-390-clair",
+    "c1-1280-clair",
+    "c3-1280-clair",
+    "m2-1280-clair",
+    "s3-1280-clair",
+    "c1-390-cave",
+    "c3-390-cave",
+    "m2-390-cave",
+    "s3-390-cave",
+    "c1-1280-cave",
+    "c3-1280-cave",
+    "m2-1280-cave",
+    "s3-1280-cave"
+  ],
+  "notes": {
+    "c1-390-clair": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "premier": "US-05"
+    },
+    "c3-390-clair": {
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "m2-390-clair": {
+      "phenolsUS05": "Service IA momentanément indisponible.OK",
+      "rognes": 0
+    },
+    "s3-390-clair": {
+      "phrase": "Plus de thiols · plus clair",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ]
+    },
+    "c1-1280-clair": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "premier": "US-05"
+    },
+    "c3-1280-clair": {
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "m2-1280-clair": {
+      "phenolsUS05": "Service IA momentanément indisponible.OK",
+      "rognes": 0
+    },
+    "s3-1280-clair": {
+      "phrase": "Plus de thiols · plus clair",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ]
+    },
+    "c1-390-cave": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "premier": "US-05"
+    },
+    "c3-390-cave": {
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "m2-390-cave": {
+      "phenolsUS05": "Service IA momentanément indisponible.OK",
+      "rognes": 0
+    },
+    "s3-390-cave": {
+      "phrase": "Plus de thiols · plus clair",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ]
+    },
+    "c1-1280-cave": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "premier": "US-05"
+    },
+    "c3-1280-cave": {
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "m2-1280-cave": {
+      "phenolsUS05": "Service IA momentanément indisponible.OK",
+      "rognes": 0
+    },
+    "s3-1280-cave": {
+      "phrase": "Plus de thiols · plus clair",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ]
+    }
+  }
+}

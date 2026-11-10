@@ -1,0 +1,211 @@
+{
+ "notes": [
+  {
+   "theme": "clair",
+   "vue": "ma-levure",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "cours",
+     "texte": "floculation ·recherche… 1/20",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "clair",
+   "vue": "ma-levure",
+   "temps": "a-confirmer",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "floculation ·moyenne (simulé) à confirmerRetenirÉcarter",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "clair",
+   "vue": "ma-levure-ligne",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "floculation ·moyenne (simulé) à confirmerRetenirÉcarter",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    },
+    {
+     "etat": "cours",
+     "texte": "recherche… 2/20",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "clair",
+   "vue": "comparer",
+   "clique": true
+  },
+  {
+   "theme": "clair",
+   "vue": "comparer",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "cours",
+     "texte": "recherche… 1/20",
+     "droite": 219,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "clair",
+   "vue": "comparer",
+   "temps": "a-confirmer",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "faible (simulé) à confirmerRetenirÉcarter",
+     "droite": 219,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "clair",
+   "vue": "ma-levure",
+   "temps": "issue",
+   "cellules": [
+    {
+     "etat": "erreur",
+     "texte": "floculation ·IA indisponibleOK",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "ma-levure",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "cours",
+     "texte": "floculation ·recherche… 1/20",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "ma-levure",
+   "temps": "a-confirmer",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "floculation ·moyenne (simulé) à confirmerRetenirÉcarter",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "ma-levure-ligne",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "floculation ·moyenne (simulé) à confirmerRetenirÉcarter",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    },
+    {
+     "etat": "cours",
+     "texte": "recherche… 2/20",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "comparer",
+   "clique": true
+  },
+  {
+   "theme": "cave",
+   "vue": "comparer",
+   "temps": "vol",
+   "cellules": [
+    {
+     "etat": "cours",
+     "texte": "recherche… 1/20",
+     "droite": 219,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "comparer",
+   "temps": "a-confirmer",
+   "cellules": [
+    {
+     "etat": "a-confirmer",
+     "texte": "faible (simulé) à confirmerRetenirÉcarter",
+     "droite": 219,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  },
+  {
+   "theme": "cave",
+   "vue": "ma-levure",
+   "temps": "issue",
+   "cellules": [
+    {
+     "etat": "erreur",
+     "texte": "floculation ·IA indisponibleOK",
+     "droite": 372,
+     "largeurEcran": 390,
+     "depasse": false,
+     "coupe": false
+    }
+   ]
+  }
+ ],
+ "erreurs": []
+}

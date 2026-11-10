@@ -1,4 +1,5 @@
 import { hopMeasurementError, type HopMeasurement, type HopSource } from '../../../functions/src/hopIndexSchema';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 /** Context states deliberately do not encode a strain name, aroma target or recipe default. */
 export type FermentationState = 'active' | 'finished' | 'noViableYeast' | 'unknown';
@@ -262,7 +263,7 @@ function additionDescriptions(additions: readonly HopAdditionContext[] | undefin
     const details = [
       addition.state === 'unknown' ? 'état de réalisation inconnu' : addition.state === 'planned' ? 'prévu' : 'réalisé',
       Number.isFinite(addition.contactHours) ? `contact déclaré ${addition.contactHours} h` : undefined,
-      Number.isFinite(addition.temperatureC) ? `température déclarée ${addition.temperatureC} °C` : undefined,
+      Number.isFinite(addition.temperatureC) ? `température déclarée ${nombreFr(addition.temperatureC, 1)} °C` : undefined,
     ].filter((value): value is string => !!value);
     return `Ajout ${index + 1} (${addition.kind}) : ${details.join(', ')}. Ces valeurs décrivent le contexte fourni, sans seuil de conversion.`;
   });

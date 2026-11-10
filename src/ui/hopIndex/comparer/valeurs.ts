@@ -81,7 +81,7 @@ export function acides(cle: string, quoi: 'alpha' | 'beta'): ValeurReelle | null
   const vals: Val[] = sourcesDeBarre(cle, quoi).map((s) => ({ plage: s.r, sources: [s.ref] }));
   const e = enveloppe(vals);
   if (!e) return null;
-  const lot = quoi === 'alpha' && h.stock?.alpha != null && h.stock.alphaFrom === 'fiche de stock' ? h.stock.alpha : undefined;
+  const lot = quoi === 'alpha' && h.stock?.alpha != null && h.stock.alphaFrom != null ? h.stock.alpha : undefined;
   return { ...e, ...(lot != null ? { lot } : {}) };
 }
 

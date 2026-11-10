@@ -80,6 +80,7 @@ describe('K1 : à un moment d\'amertume, l\'inconnu passe après le connu (D196)
     expect(out).toHaveLength(80);
     // D199 (c9, 31.10) : 033aba7b… → 17f1f88d… Les 76 ajouts sans amertume en ont retrouvé une (fiches croisées et recettes), 8 doublons sont fondus (497 variétés au lieu de 505) :
     // la règle de K1 n'a pas bougé, ce sont les données du catalogue plein qui ont changé.
-    expect(sha(out)).toBe('17f1f88d5ae63027b709e31b35fb6b180c0e8208ed293d7ee1a1ee2ad075cee3');
+    // CF-7 (08.11) : 17f1f88d… → 9877cd83… Le facteur de température du whirlpool suit Malowicki (0,17 à 80 °C au lieu de 0,25) : les IBU de wp changent, le dry hop et les ajouts à 10′ non.
+    expect(sha(out)).toBe('9877cd83c9090477c919988360fa98d4d6762783587bb439308a45bb08309e72');
   }, 120_000);
 });

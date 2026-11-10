@@ -12,6 +12,9 @@ interface AuditLogModalProps {
   logs: AuditLog[];
 }
 
+/** BE-59 : « REC-df46da79-dce9-4a7a-… » n'apprend rien au brasseur ; on garde le préfixe et le début, l'identifiant entier reste au survol et dans la recherche. */
+export const referenceCourte = (id: string): string => id.length > 15 ? id.slice(0, 12) + '…' : id;
+
 export const AuditLogModal: React.FC<AuditLogModalProps> = ({
   isOpen,
   onClose,
@@ -72,7 +75,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-cave-50">Journal d'Audit</h3>
+            <h3 className="font-bold text-base text-cave-50">Journal des modifications</h3>
             <p className="text-xs text-cave-400">Traçabilité des modifications</p>
           </div>
         </div>
@@ -194,7 +197,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                       {log.action}
                     </span>
                     <span className="text-footnote text-cave-400 font-medium">{log.category}</span>
-                    <span className="text-footnote font-mono text-ebc-straw font-bold whitespace-nowrap">{log.entityId}</span>
+                    <span title={log.entityId} className="text-footnote font-mono text-ebc-straw font-bold whitespace-nowrap">{referenceCourte(log.entityId)}</span>
                   </div>
                   <div className="flex items-center gap-2 text-footnote text-cave-400 shrink-0 ml-auto sm:ml-0">
                     <span className="flex items-center whitespace-nowrap">

@@ -30,10 +30,12 @@ afterEach(() => {
 });
 
 describe('Accessible fermentation follow-up in the active lot sheet', () => {
-  it.each(['annule', 'planifie'] as const)('preserves a legacy actual date when changing to %s', status => {
+  it.each(['annule'] as const)('preserves a legacy actual date when changing to %s', status => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: status } });
+    expect(update).not.toHaveBeenCalled(); // RJ-15 : l'abandon se confirme dans la page
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ status, brewDate: '01.09.2026', plannedBrewDate: '' }));
     expect(screen.queryByRole('button', { name: 'Planifier' })).not.toBeInTheDocument();
     expect(screen.getByText(`${status === 'planifie' ? 'Commencé' : 'Brassé'} le 01.09.2026`)).toBeInTheDocument();
@@ -43,6 +45,7 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={{ ...batch, status: 'planifie' }} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: 'annule' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '', plannedBrewDate: '01.09.2026' }));
     expect(screen.getByText('Était prévu le 01.09.2026')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Changer la date' })).not.toBeInTheDocument();
@@ -70,7 +73,18 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter un relevé de densité' }));
     fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: '1024' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('entre 0,900 et 1,300');
+    expect(screen.getByRole('alert')).toHaveTextContent('entre 0,990 et 1,200');
+    // AM-40 (08.11) : 0,9 et 1,3 étaient acceptés ; une température de 120 °C aussi.
+    for (const sg of ['0,9', '1,3']) {
+      fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: sg } });
+      fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
+      expect(screen.getByRole('alert')).toHaveTextContent('entre 0,990 et 1,200');
+    }
+    fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: '1,024' } });
+    fireEvent.change(screen.getByLabelText('Température du relevé'), { target: { value: '120' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('Saisis une température entre');
+    fireEvent.change(screen.getByLabelText('Température du relevé'), { target: { value: '' } });
     fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: '1,024' } });
     for (const date of ['2026-09-09', '2026-08-31']) {
       fireEvent.change(screen.getByLabelText('Date du relevé'), { target: { value: date } });

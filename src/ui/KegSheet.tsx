@@ -10,6 +10,8 @@ import { Trash2 } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 import './equipment-compact.css';
+import { nombreFr } from '../domain/nombreAffiche';
+import { brassinsAFuter, problemeLivraison, problemeRemplissage } from '../domain/stock/futs';
 
 /**
  * Fiche fût : créer, modifier, supprimer.
@@ -34,6 +36,8 @@ const CAPACITIES = [20, 30, 50];
 interface KegSheetProps {
   keg: KegItem | null;
   batches: Batch[];
+  /** Le parc de fûts, pour compter ce que les autres contiennent déjà du même brassin. */
+  kegs?: KegItem[];
   onClose: () => void;
   onSave: (keg: KegItem) => void;
   onDelete: (keg: KegItem) => void;
@@ -42,6 +46,7 @@ interface KegSheetProps {
 export const KegSheet: React.FC<KegSheetProps> = ({
   keg,
   batches,
+  kegs = [],
   onClose,
   onSave,
   onDelete
@@ -53,9 +58,12 @@ export const KegSheet: React.FC<KegSheetProps> = ({
 
   const isNew = !keg.beerName && keg.state === 'propre' && !keg.fillDate;
   const needsBeer = draft.state === 'plein' || draft.state === 'livre';
-  const canSave = Boolean(draft.id.trim()) && (!needsBeer || Boolean(draft.batchRef));
+  // AM-70 : seul un brassin fini se met en fût, la contenance des fûts reste sous ce qu'il a produit, un fût livré a son client.
+  const fillProblem = problemeRemplissage(draft, batches, kegs);
+  const deliveryProblem = problemeLivraison(draft);
+  const canSave = Boolean(draft.id.trim()) && (!needsBeer || Boolean(draft.batchRef)) && !fillProblem && !deliveryProblem;
   const capacities = CAPACITIES.includes(draft.capacityL) ? CAPACITIES : [...CAPACITIES, draft.capacityL];
-  const beerOptions = batches.filter(batch => batch.status !== 'annule').map(batch => ({
+  const beerOptions = brassinsAFuter(batches, keg.batchRef).map(batch => ({
     value: batch.id, label: `${batch.id} — ${batch.name}`,
     detail: [batch.style, batch.brewDate].filter(Boolean).join(' · ')
   }));
@@ -76,7 +84,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
         open={Boolean(keg)}
         onClose={onClose}
         title={isNew ? 'Nouveau fût' : `Fût ${keg.id}`}
-        subtitle={isNew ? undefined : `${keg.capacityL} L · ${keg.beerName ?? 'vide'}`}
+        subtitle={isNew ? undefined : `${nombreFr(keg.capacityL, 1)} L · ${keg.beerName ?? 'vide'}`}
         className="equipment-sheet"
         footer={
           <div className="equipment-footer">
@@ -104,7 +112,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
               className="equipment-choice"
               value={String(draft.capacityL)}
               onChange={(v) => setDraft({ ...draft, capacityL: parseInt(v, 10) })}
-              options={capacities.map((c) => ({ value: String(c), label: `${c} L` }))}
+              options={capacities.map((c) => ({ value: String(c), label: `${nombreFr(c, 1)} L` }))}
             />
           </Field>
           </div>
@@ -133,7 +141,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
 
           {needsBeer && (
             <>
-              <Field label="Bière" htmlFor="kg-beer" error={!draft.batchRef ? 'Choisis le brassin qui remplit ce fût.' : undefined}>
+              <Field label="Bière" htmlFor="kg-beer" error={!draft.batchRef ? 'Choisis le brassin qui remplit ce fût.' : fillProblem} hint="Un brassin planifié, annulé ou terminé ne peut pas remplir un fût.">
                 <Combobox
                   id="kg-beer"
                   ariaLabel="Bière du fût"
@@ -163,7 +171,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
           )}
 
           {draft.state === 'livre' && (
-            <Field label="Client" htmlFor="kg-client">
+            <Field label="Client" htmlFor="kg-client" hint={deliveryProblem}>
               <Input
                 id="kg-client"
                 name="keg_sheet_customer_label"
@@ -216,7 +224,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         title="Supprimer ce fût ?"
-        what={`Fût ${keg.id} — ${keg.capacityL} L${keg.beerName ? ` · ${keg.beerName}` : ''}`}
+        what={`Fût ${keg.id} — ${nombreFr(keg.capacityL, 1)} L${keg.beerName ? ` · ${keg.beerName}` : ''}`}
         consequence={
           keg.state === 'plein' || keg.state === 'livre'
             ? 'Ce fût est marqué comme rempli. Sa bière ne sera plus comptée dans le parc.'

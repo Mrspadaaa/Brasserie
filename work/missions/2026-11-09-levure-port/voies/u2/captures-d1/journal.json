@@ -1,0 +1,30 @@
+{
+  "base": "http://127.0.0.1:5657",
+  "api": "reelle",
+  "erreurs": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "bloques": [],
+  "captures": [
+    "m1-390-clair"
+  ],
+  "notes": {
+    "m1-390-clair": {
+      "tete": [
+        "US-05réf.FermentisCH DE",
+        "Verdant IPALallemandCH",
+        "1056WyeastEurope"
+      ],
+      "lignes": [
+        "esters",
+        "phenols",
+        "houblon",
+        "sucres",
+        "attenuation",
+        "temperature",
+        "floculation",
+        "fg"
+      ]
+    }
+  }
+}

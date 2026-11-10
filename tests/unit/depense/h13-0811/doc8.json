@@ -1,0 +1,2234 @@
+{
+ "documentType": "invoice",
+ "documentTypeLu": "invoice",
+ "documentTypeRetenu": "invoice",
+ "proForma": true,
+ "paymentEvidence": "paid",
+ "fieldWarnings": [],
+ "vendor": "Brasserie-Fourniture Fictive GmbH",
+ "date": "17.10.2024",
+ "currency": "CHF",
+ "invoiceNumber": "111111",
+ "orderNumber": "Onlinebestellung-100001",
+ "amountHT": null,
+ "tvaRate": null,
+ "tvaAmount": 16.1,
+ "amountTTC": 261.65,
+ "vat": [
+  {
+   "code": "N",
+   "rate": 0.081,
+   "base": 191.95,
+   "amount": 14.3
+  },
+  {
+   "code": "R",
+   "rate": 0.026,
+   "base": 69.7,
+   "amount": 1.8
+  }
+ ],
+ "printedLineCount": 35,
+ "linesLost": 2,
+ "category": "brassage",
+ "subcategory": "",
+ "description": "",
+ "items": [
+  {
+   "id": "line-1",
+   "name": "Gärtank 30 Liter rund mit Deckel",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 39,
+   "amountTTC": 39,
+   "reference": "REF-0001",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Gärtank 30 Liter rund mit Deckel",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-2",
+   "name": "Auslaufhahn zu Gärfass 10 mm",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 5,
+   "amountTTC": 5,
+   "reference": "REF-0002",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Auslaufhahn zu Gärfass 10 mm",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-3",
+   "name": "Gärglocke Duplex zu Gärfass",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 5,
+   "amountTTC": 5,
+   "reference": "REF-0003",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Gärglocke Duplex zu Gärfass",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-4",
+   "name": "Silikonstopfen gebohrt zu Gärfass",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 4.8,
+   "amountTTC": 4.8,
+   "reference": "REF-0004",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Silikonstopfen gebohrt zu Gärfass",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-5",
+   "name": "Verschlusskappe Speidel",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 2.5,
+   "amountTTC": 2.5,
+   "reference": "REF-0005",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Verschlusskappe Speidel",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-6",
+   "name": "Kronkorken 100 Kapseln Kupfer",
+   "kind": "packaging",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 2.2,
+   "amountTTC": 2.2,
+   "reference": "REF-0006",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Kronkorken 100 Kapseln Kupfer",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-7",
+   "name": "Hopfensack fein",
+   "kind": "stock",
+   "quantity": 5,
+   "unit": "Stk",
+   "price": 0.8,
+   "amountTTC": 4,
+   "reference": "REF-0007",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Hopfensack fein",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-8",
+   "name": "Hopfensack für Dolden",
+   "kind": "stock",
+   "quantity": 12,
+   "unit": "Stk",
+   "price": 0.45,
+   "amountTTC": 5.4,
+   "reference": "REF-0008",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Hopfensack für Dolden",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-9",
+   "name": "Siphon mit Ansaugpumpe",
+   "kind": "equipment",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 9.9,
+   "amountTTC": 9.9,
+   "reference": "REF-0009",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Siphon mit Ansaugpumpe",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-10",
+   "name": "Malzextraktpulver hell 1 Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 11.5,
+   "amountTTC": 11.5,
+   "reference": "REF-0010",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Malzextraktpulver hell 1 Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-11",
+   "name": "Silikonschlauch 5x8mm",
+   "kind": "equipment",
+   "quantity": 2,
+   "unit": "m",
+   "price": 3.6,
+   "amountTTC": 7.2,
+   "reference": "REF-0011",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Silikonschlauch 5x8mm",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-12",
+   "name": "Silikonschlauch 10x14mm",
+   "kind": "equipment",
+   "quantity": 2,
+   "unit": "m",
+   "price": 7.8,
+   "amountTTC": 15.6,
+   "reference": "REF-0012",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Silikonschlauch 10x14mm",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-13",
+   "name": "Lactose, Milchzucker 1 Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 12,
+   "amountTTC": 12,
+   "reference": "REF-0013",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Lactose, Milchzucker 1 Kg",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-14",
+   "name": "White Labs Nutrient",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 10.5,
+   "amountTTC": 10.5,
+   "reference": "REF-0014",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "White Labs Nutrient",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-15",
+   "name": "Safale BE-256 (Abbaye) 11.5 g",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Stk",
+   "price": 4,
+   "amountTTC": 8,
+   "reference": "REF-0015",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Safale BE-256 (Abbaye) 11.5 g",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-16",
+   "name": "French Saison M29, 10gr",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 4.35,
+   "amountTTC": 4.35,
+   "reference": "REF-0016",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "French Saison M29, 10gr",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-17",
+   "name": "Wyeast Hefenahrung-Nutrient Bier",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 9,
+   "amountTTC": 9,
+   "reference": "REF-0017",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Wyeast Hefenahrung-Nutrient Bier",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-18",
+   "name": "Sekt/Champagner Trockenhefe für 50 Liter",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Stk",
+   "price": 2.2,
+   "amountTTC": 4.4,
+   "reference": "REF-0018",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Sekt/Champagner Trockenhefe für 50 Liter",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-19",
+   "name": "Pilsner Malz / Schweiz, Kg",
+   "kind": "stock",
+   "quantity": 3,
+   "unit": "Kg",
+   "price": 2.5,
+   "amountTTC": 7.5,
+   "reference": "REF-0019",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Pilsner Malz / Schweiz, Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-20",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 3,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.3,
+   "reference": "REF-0020",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Zuschlag Schrotung",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-21",
+   "name": "Wiener Malz, Kg",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 1.55,
+   "amountTTC": 3.1,
+   "reference": "REF-0021",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Wiener Malz, Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-22",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.2,
+   "reference": "REF-0020",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Zuschlag Schrotung",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-23",
+   "name": "Weizenmalz hell / Schweiz, Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 2.8,
+   "amountTTC": 2.8,
+   "reference": "REF-0022",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Weizenmalz hell / Schweiz, Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-24",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.1,
+   "reference": "REF-0020",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Zuschlag Schrotung",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-25",
+   "name": "Nelson Sauvin 11.8%",
+   "kind": "stock",
+   "quantity": 50,
+   "unit": "g",
+   "price": 0.08,
+   "amountTTC": 4,
+   "reference": "REF-0023",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Nelson Sauvin 11.8%",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 11.8,
+   "alphaPctLu": 11.8
+  },
+  {
+   "id": "line-26",
+   "name": "Aramis 7.9%",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "g",
+   "price": 0.036,
+   "amountTTC": 1.1,
+   "reference": "REF-0024",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Aramis 7.9%",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 7.9,
+   "alphaPctLu": 7.9
+  },
+  {
+   "id": "line-27",
+   "name": "Barbe Rouge 8.6%",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "g",
+   "price": 0.07,
+   "amountTTC": 2.1,
+   "reference": "REF-0025",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Barbe Rouge 8.6%",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 8.6,
+   "alphaPctLu": 8.6
+  },
+  {
+   "id": "line-28",
+   "name": "Idaho 7 13.4%",
+   "kind": "stock",
+   "quantity": 140,
+   "unit": "g",
+   "price": 0.07,
+   "amountTTC": 9.8,
+   "reference": "REF-0026",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Idaho 7 13.4%",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 13.4,
+   "alphaPctLu": 13.4
+  },
+  {
+   "id": "line-29",
+   "name": "Pale Ale Malz, Kg",
+   "kind": "stock",
+   "quantity": 5,
+   "unit": "Kg",
+   "price": 1.55,
+   "amountTTC": 7.75,
+   "reference": "REF-0027",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Pale Ale Malz, Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-30",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 5,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.5,
+   "reference": "REF-0020",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Zuschlag Schrotung",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-31",
+   "name": "Weizenmalz hell, Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 1.55,
+   "amountTTC": 1.55,
+   "reference": "REF-0028",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Weizenmalz hell, Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-32",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.1,
+   "reference": "REF-0020",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Zuschlag Schrotung",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-33",
+   "name": "Maisflocken, 1 Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 2.5,
+   "amountTTC": 2.5,
+   "reference": "REF-0029",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Maisflocken, 1 Kg",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-34",
+   "name": "El Dorado 12.3%",
+   "kind": "stock",
+   "quantity": 20,
+   "unit": "g",
+   "price": 0.07,
+   "amountTTC": 1.4,
+   "reference": "REF-0030",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "El Dorado 12.3%",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 12.3,
+   "alphaPctLu": 12.3
+  },
+  {
+   "id": "line-35",
+   "name": "Wyeast 3944, Belgian Witbier",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 13.5,
+   "amountTTC": 13.5,
+   "reference": "REF-0031",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "Wyeast 3944, Belgian Witbier",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  }
+ ],
+ "issues": [
+  "Ligne 26 (Aramis 7.9%) : quantité × prix = 1,08 CHF, montant lu 1,10 CHF (lignes à vérifier).",
+  "Détail des lignes incomplet : 2 ligne(s) non conservée(s) (35 lignes au plus) ; le total des lignes n'est pas vérifié.",
+  "Plus de 35 lignes : compléter le détail manuellement.",
+  "Kronkorken 100 Kapseln Kupfer — taille ou variante : lectures divergentes (absent / Kupfer), vérifier les articles du justificatif.",
+  "Hopfensack fein — taille ou variante : lectures divergentes (absent / fein), vérifier les articles du justificatif.",
+  "Hopfensack für Dolden — taille ou variante : lectures divergentes (absent / für Dolden), vérifier les articles du justificatif.",
+  "Malzextraktpulver hell 1 Kg — taille ou variante : lectures divergentes (absent / hell 1 Kg), vérifier les articles du justificatif.",
+  "Malzextraktpulver hell 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Silikonschlauch 5x8mm — taille ou variante : lectures divergentes (absent / 5x8mm), vérifier les articles du justificatif.",
+  "Silikonschlauch 10x14mm — taille ou variante : lectures divergentes (absent / 10x14mm), vérifier les articles du justificatif.",
+  "Lactose, Milchzucker 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+  "Lactose, Milchzucker 1 Kg — catégorie de stock : lectures divergentes (absent / Zusatz), vérifier les articles du justificatif.",
+  "White Labs Nutrient — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+  "Safale BE-256 (Abbaye) 11.5 g — taille ou variante : lectures divergentes (absent / 11.5 g), vérifier les articles du justificatif.",
+  "Safale BE-256 (Abbaye) 11.5 g — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+  "French Saison M29, 10gr — taille ou variante : lectures divergentes (absent / 10gr), vérifier les articles du justificatif.",
+  "French Saison M29, 10gr — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+  "Wyeast Hefenahrung-Nutrient Bier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+  "Sekt/Champagner Trockenhefe für 50 Liter — taille ou variante : lectures divergentes (absent / für 50 Liter), vérifier les articles du justificatif.",
+  "Sekt/Champagner Trockenhefe für 50 Liter — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+  "Pilsner Malz / Schweiz, Kg — taille ou variante : lectures divergentes (absent / Schweiz, Kg), vérifier les articles du justificatif.",
+  "Pilsner Malz / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Wiener Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+  "Wiener Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Weizenmalz hell / Schweiz, Kg — taille ou variante : lectures divergentes (absent / hell / Schweiz, Kg), vérifier les articles du justificatif.",
+  "Weizenmalz hell / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Nelson Sauvin 11.8% — taille ou variante : lectures divergentes (absent / 11.8%), vérifier les articles du justificatif.",
+  "Nelson Sauvin 11.8% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+  "Aramis 7.9% — taille ou variante : lectures divergentes (absent / 7.9%), vérifier les articles du justificatif.",
+  "Aramis 7.9% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+  "Barbe Rouge 8.6% — taille ou variante : lectures divergentes (absent / 8.6%), vérifier les articles du justificatif.",
+  "Barbe Rouge 8.6% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+  "Idaho 7 13.4% — taille ou variante : lectures divergentes (absent / 13.4%), vérifier les articles du justificatif.",
+  "Idaho 7 13.4% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+  "Pale Ale Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+  "Pale Ale Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Weizenmalz hell, Kg — taille ou variante : lectures divergentes (absent / hell, Kg), vérifier les articles du justificatif.",
+  "Weizenmalz hell, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "Maisflocken, 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+  "Maisflocken, 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+  "El Dorado 12.3% — taille ou variante : lectures divergentes (absent / 12.3%), vérifier les articles du justificatif.",
+  "El Dorado 12.3% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+  "Wyeast 3944, Belgian Witbier — taille ou variante : lectures divergentes (absent / Belgian Witbier), vérifier les articles du justificatif.",
+  "Wyeast 3944, Belgian Witbier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif."
+ ],
+ "points": [
+  {
+   "code": "ligne-montant",
+   "gravite": "ecart",
+   "origine": "controle",
+   "enjeu": "argent",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.26.quantity",
+    "items.26.price",
+    "items.26.amountTTC"
+   ],
+   "ligne": 26,
+   "cle": "ligne-montant:26:items",
+   "regle": "quantité × prix unitaire = montant de la ligne",
+   "lu": 110,
+   "calcule": 108,
+   "ecart": 2,
+   "unite": "centimes",
+   "message": "Ligne 26 (Aramis 7.9%) : quantité × prix = 1,08 CHF, montant lu 1,10 CHF (lignes à vérifier).",
+   "source": "contrôle",
+   "pese": true,
+   "signature": "110|108||"
+  },
+  {
+   "code": "lignes-perdues",
+   "gravite": "ecart",
+   "origine": "controle",
+   "enjeu": "argent",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items"
+   ],
+   "ligne": null,
+   "cle": "lignes-perdues:-:items",
+   "regle": "toutes les lignes du document sont conservées (35 au plus)",
+   "lu": 35,
+   "calcule": 37,
+   "ecart": -2,
+   "unite": "lignes",
+   "message": "Détail des lignes incomplet : 2 ligne(s) non conservée(s) (35 lignes au plus) ; le total des lignes n'est pas vérifié.",
+   "source": "contrôle",
+   "pese": true,
+   "signature": "35|37||"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.6.variant"
+   ],
+   "ligne": 6,
+   "cle": "lectures-divergentes:6:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Kronkorken 100 Kapseln Kupfer — taille ou variante : lectures divergentes (absent / Kupfer), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Kupfer",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Kupfer"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.7.variant"
+   ],
+   "ligne": 7,
+   "cle": "lectures-divergentes:7:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Hopfensack fein — taille ou variante : lectures divergentes (absent / fein), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "fein",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:fein"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.8.variant"
+   ],
+   "ligne": 8,
+   "cle": "lectures-divergentes:8:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Hopfensack für Dolden — taille ou variante : lectures divergentes (absent / für Dolden), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "für Dolden",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:für Dolden"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.10.variant"
+   ],
+   "ligne": 10,
+   "cle": "lectures-divergentes:10:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Malzextraktpulver hell 1 Kg — taille ou variante : lectures divergentes (absent / hell 1 Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "hell 1 Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:hell 1 Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.10.stockCategory"
+   ],
+   "ligne": 10,
+   "cle": "lectures-divergentes:10:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Malzextraktpulver hell 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.11.variant"
+   ],
+   "ligne": 11,
+   "cle": "lectures-divergentes:11:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Silikonschlauch 5x8mm — taille ou variante : lectures divergentes (absent / 5x8mm), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "5x8mm",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:5x8mm"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.12.variant"
+   ],
+   "ligne": 12,
+   "cle": "lectures-divergentes:12:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Silikonschlauch 10x14mm — taille ou variante : lectures divergentes (absent / 10x14mm), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "10x14mm",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:10x14mm"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.13.variant"
+   ],
+   "ligne": 13,
+   "cle": "lectures-divergentes:13:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Lactose, Milchzucker 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "1 Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:1 Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.13.stockCategory"
+   ],
+   "ligne": 13,
+   "cle": "lectures-divergentes:13:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Lactose, Milchzucker 1 Kg — catégorie de stock : lectures divergentes (absent / Zusatz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Zusatz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Zusatz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.14.stockCategory"
+   ],
+   "ligne": 14,
+   "cle": "lectures-divergentes:14:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "White Labs Nutrient — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.15.variant"
+   ],
+   "ligne": 15,
+   "cle": "lectures-divergentes:15:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Safale BE-256 (Abbaye) 11.5 g — taille ou variante : lectures divergentes (absent / 11.5 g), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "11.5 g",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:11.5 g"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.15.stockCategory"
+   ],
+   "ligne": 15,
+   "cle": "lectures-divergentes:15:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Safale BE-256 (Abbaye) 11.5 g — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.16.variant"
+   ],
+   "ligne": 16,
+   "cle": "lectures-divergentes:16:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "French Saison M29, 10gr — taille ou variante : lectures divergentes (absent / 10gr), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "10gr",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:10gr"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.16.stockCategory"
+   ],
+   "ligne": 16,
+   "cle": "lectures-divergentes:16:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "French Saison M29, 10gr — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.17.stockCategory"
+   ],
+   "ligne": 17,
+   "cle": "lectures-divergentes:17:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Wyeast Hefenahrung-Nutrient Bier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.18.variant"
+   ],
+   "ligne": 18,
+   "cle": "lectures-divergentes:18:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Sekt/Champagner Trockenhefe für 50 Liter — taille ou variante : lectures divergentes (absent / für 50 Liter), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "für 50 Liter",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:für 50 Liter"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.18.stockCategory"
+   ],
+   "ligne": 18,
+   "cle": "lectures-divergentes:18:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Sekt/Champagner Trockenhefe für 50 Liter — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.19.variant"
+   ],
+   "ligne": 19,
+   "cle": "lectures-divergentes:19:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Pilsner Malz / Schweiz, Kg — taille ou variante : lectures divergentes (absent / Schweiz, Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Schweiz, Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Schweiz, Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.19.stockCategory"
+   ],
+   "ligne": 19,
+   "cle": "lectures-divergentes:19:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Pilsner Malz / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.21.variant"
+   ],
+   "ligne": 21,
+   "cle": "lectures-divergentes:21:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Wiener Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.21.stockCategory"
+   ],
+   "ligne": 21,
+   "cle": "lectures-divergentes:21:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Wiener Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.23.variant"
+   ],
+   "ligne": 23,
+   "cle": "lectures-divergentes:23:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Weizenmalz hell / Schweiz, Kg — taille ou variante : lectures divergentes (absent / hell / Schweiz, Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "hell / Schweiz, Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:hell / Schweiz, Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.23.stockCategory"
+   ],
+   "ligne": 23,
+   "cle": "lectures-divergentes:23:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Weizenmalz hell / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.25.variant"
+   ],
+   "ligne": 25,
+   "cle": "lectures-divergentes:25:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Nelson Sauvin 11.8% — taille ou variante : lectures divergentes (absent / 11.8%), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "11.8%",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:11.8%"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.25.stockCategory"
+   ],
+   "ligne": 25,
+   "cle": "lectures-divergentes:25:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Nelson Sauvin 11.8% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Houblon",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Houblon"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.26.variant"
+   ],
+   "ligne": 26,
+   "cle": "lectures-divergentes:26:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Aramis 7.9% — taille ou variante : lectures divergentes (absent / 7.9%), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "7.9%",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:7.9%"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.26.stockCategory"
+   ],
+   "ligne": 26,
+   "cle": "lectures-divergentes:26:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Aramis 7.9% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Houblon",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Houblon"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.27.variant"
+   ],
+   "ligne": 27,
+   "cle": "lectures-divergentes:27:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Barbe Rouge 8.6% — taille ou variante : lectures divergentes (absent / 8.6%), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "8.6%",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:8.6%"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.27.stockCategory"
+   ],
+   "ligne": 27,
+   "cle": "lectures-divergentes:27:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Barbe Rouge 8.6% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Houblon",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Houblon"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.28.variant"
+   ],
+   "ligne": 28,
+   "cle": "lectures-divergentes:28:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Idaho 7 13.4% — taille ou variante : lectures divergentes (absent / 13.4%), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "13.4%",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:13.4%"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.28.stockCategory"
+   ],
+   "ligne": 28,
+   "cle": "lectures-divergentes:28:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Idaho 7 13.4% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Houblon",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Houblon"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.29.variant"
+   ],
+   "ligne": 29,
+   "cle": "lectures-divergentes:29:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Pale Ale Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.29.stockCategory"
+   ],
+   "ligne": 29,
+   "cle": "lectures-divergentes:29:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Pale Ale Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.31.variant"
+   ],
+   "ligne": 31,
+   "cle": "lectures-divergentes:31:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Weizenmalz hell, Kg — taille ou variante : lectures divergentes (absent / hell, Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "hell, Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:hell, Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.31.stockCategory"
+   ],
+   "ligne": 31,
+   "cle": "lectures-divergentes:31:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Weizenmalz hell, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.33.variant"
+   ],
+   "ligne": 33,
+   "cle": "lectures-divergentes:33:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Maisflocken, 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "1 Kg",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:1 Kg"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.33.stockCategory"
+   ],
+   "ligne": 33,
+   "cle": "lectures-divergentes:33:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Maisflocken, 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Malz",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Malz"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.34.variant"
+   ],
+   "ligne": 34,
+   "cle": "lectures-divergentes:34:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "El Dorado 12.3% — taille ou variante : lectures divergentes (absent / 12.3%), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "12.3%",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:12.3%"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.34.stockCategory"
+   ],
+   "ligne": 34,
+   "cle": "lectures-divergentes:34:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "El Dorado 12.3% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Houblon",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Houblon"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.35.variant"
+   ],
+   "ligne": 35,
+   "cle": "lectures-divergentes:35:variant",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Wyeast 3944, Belgian Witbier — taille ou variante : lectures divergentes (absent / Belgian Witbier), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Belgian Witbier",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Belgian Witbier"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.35.stockCategory"
+   ],
+   "ligne": 35,
+   "cle": "lectures-divergentes:35:stockCategory",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "message": "Wyeast 3944, Belgian Witbier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": null,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "Hefe",
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "bloqueLiaison": true,
+   "signature": "|||1:null,2:Hefe"
+  }
+ ],
+ "controls": {
+  "lines": {
+   "checked": 35,
+   "failed": 1,
+   "skipped": 0,
+   "skippedIds": []
+  },
+  "sum": {
+   "statut": "incomplet",
+   "base": null
+  },
+  "vat": {
+   "statut": "ok",
+   "base": "TTC"
+  },
+  "totals": {
+   "statut": "non-verifiable"
+  }
+ },
+ "rejets": [],
+ "review": {
+  "status": "disputed",
+  "findings": [
+   "Kronkorken 100 Kapseln Kupfer — taille ou variante : lectures divergentes (absent / Kupfer), vérifier les articles du justificatif.",
+   "Hopfensack fein — taille ou variante : lectures divergentes (absent / fein), vérifier les articles du justificatif.",
+   "Hopfensack für Dolden — taille ou variante : lectures divergentes (absent / für Dolden), vérifier les articles du justificatif.",
+   "Malzextraktpulver hell 1 Kg — taille ou variante : lectures divergentes (absent / hell 1 Kg), vérifier les articles du justificatif.",
+   "Malzextraktpulver hell 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Silikonschlauch 5x8mm — taille ou variante : lectures divergentes (absent / 5x8mm), vérifier les articles du justificatif.",
+   "Silikonschlauch 10x14mm — taille ou variante : lectures divergentes (absent / 10x14mm), vérifier les articles du justificatif.",
+   "Lactose, Milchzucker 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+   "Lactose, Milchzucker 1 Kg — catégorie de stock : lectures divergentes (absent / Zusatz), vérifier les articles du justificatif.",
+   "White Labs Nutrient — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "Safale BE-256 (Abbaye) 11.5 g — taille ou variante : lectures divergentes (absent / 11.5 g), vérifier les articles du justificatif.",
+   "Safale BE-256 (Abbaye) 11.5 g — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "French Saison M29, 10gr — taille ou variante : lectures divergentes (absent / 10gr), vérifier les articles du justificatif.",
+   "French Saison M29, 10gr — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "Wyeast Hefenahrung-Nutrient Bier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "Sekt/Champagner Trockenhefe für 50 Liter — taille ou variante : lectures divergentes (absent / für 50 Liter), vérifier les articles du justificatif.",
+   "Sekt/Champagner Trockenhefe für 50 Liter — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "Pilsner Malz / Schweiz, Kg — taille ou variante : lectures divergentes (absent / Schweiz, Kg), vérifier les articles du justificatif.",
+   "Pilsner Malz / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Wiener Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+   "Wiener Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Weizenmalz hell / Schweiz, Kg — taille ou variante : lectures divergentes (absent / hell / Schweiz, Kg), vérifier les articles du justificatif.",
+   "Weizenmalz hell / Schweiz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Nelson Sauvin 11.8% — taille ou variante : lectures divergentes (absent / 11.8%), vérifier les articles du justificatif.",
+   "Nelson Sauvin 11.8% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "Aramis 7.9% — taille ou variante : lectures divergentes (absent / 7.9%), vérifier les articles du justificatif.",
+   "Aramis 7.9% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "Barbe Rouge 8.6% — taille ou variante : lectures divergentes (absent / 8.6%), vérifier les articles du justificatif.",
+   "Barbe Rouge 8.6% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "Idaho 7 13.4% — taille ou variante : lectures divergentes (absent / 13.4%), vérifier les articles du justificatif.",
+   "Idaho 7 13.4% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "Pale Ale Malz, Kg — taille ou variante : lectures divergentes (absent / Kg), vérifier les articles du justificatif.",
+   "Pale Ale Malz, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Weizenmalz hell, Kg — taille ou variante : lectures divergentes (absent / hell, Kg), vérifier les articles du justificatif.",
+   "Weizenmalz hell, Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "Maisflocken, 1 Kg — taille ou variante : lectures divergentes (absent / 1 Kg), vérifier les articles du justificatif.",
+   "Maisflocken, 1 Kg — catégorie de stock : lectures divergentes (absent / Malz), vérifier les articles du justificatif.",
+   "El Dorado 12.3% — taille ou variante : lectures divergentes (absent / 12.3%), vérifier les articles du justificatif.",
+   "El Dorado 12.3% — catégorie de stock : lectures divergentes (absent / Houblon), vérifier les articles du justificatif.",
+   "Wyeast 3944, Belgian Witbier — taille ou variante : lectures divergentes (absent / Belgian Witbier), vérifier les articles du justificatif.",
+   "Wyeast 3944, Belgian Witbier — catégorie de stock : lectures divergentes (absent / Hefe), vérifier les articles du justificatif.",
+   "Ligne 26 (Aramis 7.9%) : quantité × prix = 1,08 CHF, montant lu 1,10 CHF (lignes à vérifier).",
+   "Détail des lignes incomplet : 2 ligne(s) non conservée(s) (35 lignes au plus) ; le total des lignes n'est pas vérifié.",
+   "Plus de 35 lignes : compléter le détail manuellement."
+  ],
+  "readers": 2,
+  "correctedFields": []
+ },
+ "remarques": []
+}

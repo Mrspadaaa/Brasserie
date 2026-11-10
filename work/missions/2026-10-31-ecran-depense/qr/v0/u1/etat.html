@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u1 — Nouvelle dépense · le QR, une rangée de la vérification (01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attf:#FBF4E4;--ok:#2F6B45;--okf:#E7F3EA;--bleu:#2F5E9E;
+--malt:#A8781F;--mout:#E3CFA3;--houb:#5E9A52;--lev:#5C7FB8;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+[hidden]{display:none!important}
+svg{flex-shrink:0}
+.qru1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qru1-f{height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--page)}
+.qru1-hd{flex:none;height:44px;display:flex;align-items:center;gap:4px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qru1-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.qru1-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qru1-ib:active{background:var(--haut)}
+.qru1-corps{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+.qru1-g{padding:6px 10px 0;display:flex;flex-direction:column;gap:8px}
+.qru1-just{width:100%;text-align:left;display:flex;align-items:center;gap:6px;min-height:32px;font-size:14px;color:var(--t1);border-bottom:1px solid var(--bord)}
+.qru1-just span{flex:1}
+.qru1-bd{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qru1-l1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.qru1-four{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qru1-l2{display:flex;align-items:center;gap:8px}
+.qru1-tot{font-family:var(--mono);font-size:32px;line-height:1.05;font-weight:600;color:var(--t0);font-variant-numeric:tabular-nums}
+.qru1-tot.qru1-chg{animation:qru1-flash .6s ease-out}
+@keyframes qru1-flash{from{background:var(--okf)}to{background:transparent}}
+.qru1-chf{font-size:12px;color:var(--t2)}
+.qru1-nl{margin-left:auto;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.qru1-nl svg{color:var(--attt)}
+.qru1-barre{display:flex;height:10px;border-radius:10px;overflow:hidden;border:1px solid var(--bord);background:#fff}
+.qru1-barre i{height:100%;border-right:1.5px solid #fff}
+.qru1-barre i:last-child{border-right:0}
+.qru1-pv{border:1px solid var(--bord);border-radius:16px;padding:4px 10px 6px;background:#fff}
+.qru1-pv h2{font-size:14px;font-weight:600;color:var(--t0);min-height:24px;display:flex;align-items:center}
+.qru1-rg{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord);font-size:14px}
+.qru1-rg b{font-family:var(--mono);font-weight:500;color:var(--t0);font-variant-numeric:tabular-nums}
+.qru1-rg .qru1-ok{color:var(--ok)}
+.qru1-rg .qru1-pt{color:var(--t2);text-align:center}
+/* La rangée QR : un bouton de toute la rangée, qui déplie les quatre champs. */
+.qru1-qr{width:100%;text-align:left;border-radius:10px;margin:2px -4px;padding:2px 4px;width:calc(100% + 8px)}
+.qru1-qr .qru1-cases{display:flex;gap:4px;justify-content:flex-end}
+.qru1-case{display:inline-flex;align-items:center;gap:2px;font-size:12px;line-height:20px;padding:0 5px;border-radius:10px;border:1px solid var(--bord);color:var(--t1)}
+.qru1-case.qru1-v{border-color:#9CC3A8;background:var(--okf);color:var(--ok)}
+.qru1-case.qru1-x{border:1.5px dashed var(--attt);background:var(--attf);color:var(--attt);font-weight:600}
+.qru1-case.qru1-a{border-style:dotted;color:var(--t2)}
+.qru1-qr.qru1-att{background:var(--attf)}
+.qru1-qr .qru1-ic{color:var(--t0)}
+.qru1-qr:active{background:var(--haut)}
+.qru1-det{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:4px 0 6px 24px;font-size:14px;border-bottom:1px solid var(--bord)}
+.qru1-det span{color:var(--t2)}
+.qru1-det b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.qru1-det em{font-style:normal;font-size:12px;color:var(--ok);text-align:right}
+.qru1-det em.qru1-x{color:var(--attt);font-weight:600}
+.qru1-det em.qru1-a{color:var(--t2)}
+.qru1-sous{font-size:12px;color:var(--t2);padding:0 0 4px 24px}
+.qru1-rephoto{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:12px;color:var(--t0);background:#fff}
+.qru1-liens{display:flex;flex-wrap:wrap;gap:2px 10px;padding-top:4px;font-size:12px;color:var(--t1)}
+.qru1-liens span{display:inline-flex;align-items:center;gap:3px}
+.qru1-liens b{font-family:var(--mono);color:var(--t0)}
+.qru1-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qru1-tile{position:relative;border:1.5px dashed var(--attt);background:var(--attf);border-radius:16px;padding:4px 8px 6px 32px;text-align:left;min-height:46px;display:flex;flex-direction:column;justify-content:center}
+.qru1-tile.qru1-large{grid-column:1 / -1}
+.qru1-tile.qru1-fait{border:1px solid var(--bord);background:#fff}
+.qru1-k{font-size:12px;color:var(--t2)}
+.qru1-v{font-size:14px;color:var(--t0)}
+.qru1-v .qru1-m{font-weight:500}
+.qru1-sup{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 4px;margin-left:2px}
+.qru1-no{position:absolute;left:7px;top:8px;width:18px;height:18px;border-radius:50%;border:1.5px dashed var(--attt);color:var(--attt);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;background:#fff}
+.qru1-fait .qru1-no{border:0;background:var(--ok);color:#fff}
+.qru1-duel{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qru1-barr{text-decoration:line-through;color:var(--t2)}
+.qru1-prendre{min-height:28px;padding:0 10px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:4px}
+.qru1-prendre:active{transform:scale(.97)}
+.qru1-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qru1-chip{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 4px;border-radius:10px;border:1.5px dashed var(--attt);background:var(--attf);font-size:14px;color:var(--t0)}
+.qru1-chip .qru1-no{position:static}
+.qru1-lt{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border-top:1px solid var(--bord);margin-top:4px}
+.qru1-lt div{flex:1;font-size:14px;color:var(--t1)}
+.qru1-lt small{display:block;font-size:12px;color:var(--attt)}
+.qru1-d{padding:0 10px 12px}
+.qru1-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;min-height:50px;border-top:1px solid var(--bord)}
+.qru1-li b{font-size:16px;font-weight:600;color:var(--t0)}
+.qru1-li small{display:block;font-size:12px;color:var(--t2)}
+.qru1-li > .qru1-m{font-size:14px;color:var(--t0);text-align:right}
+.qru1-li.qru1-mo{min-height:32px;margin-left:16px;border-left:2px dashed #C9A15A;padding-left:6px;background:var(--panel)}
+.qru1-mot{font-size:12px;border:1.5px dashed var(--attt);border-radius:10px;padding:0 6px;color:var(--attt);font-weight:600;justify-self:start}
+.qru1-past{font-size:12px;background:var(--haut);border-radius:10px;padding:0 5px;color:var(--t1);margin-left:4px;font-weight:400}
+.qru1-sq{display:block;height:14px;border-radius:6px;background:linear-gradient(90deg,#EEE,#F7F7F7,#EEE);background-size:200% 100%;animation:qru1-sk 1.2s linear infinite}
+@keyframes qru1-sk{to{background-position:-200% 0}}
+.qru1-pied{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-top:1px solid var(--bord);background:var(--page)}
+.qru1-pied span{font-size:12px;color:var(--t2)}
+.qru1-conf{min-height:36px;padding:0 14px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.qru1-conf[disabled]{background:var(--bordm);color:#fff}
+@media (prefers-reduced-motion:reduce){.qru1-tot.qru1-chg,.qru1-sq{animation:none}}
+@media (min-width:900px){
+  body{display:flex;align-items:center;justify-content:center;height:100vh}
+  .qru1-f{width:980px;height:min(760px,94vh);border-radius:24px;border:1px solid var(--bord);overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.12)}
+  .qru1-corps{display:grid;grid-template-columns:390px 1fr;overflow:hidden}
+  .qru1-g{overflow:auto;padding-bottom:12px;border-right:1px solid var(--bord)}
+  .qru1-d{overflow:auto;padding-top:6px}
+  .qru1-lt{margin-top:0}
+}
+</style></head>
+<body>
+<div class="qru1-f" data-qr-ecran="u1">
+  <header class="qru1-hd"><h1>Nouvelle dépense</h1>
+    <button class="qru1-ib" aria-label="Justificatif"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11.5 2.5V6H15M7.5 10h5M7.5 13h5"/></svg></button>
+    <button class="qru1-ib" aria-label="Fermer"><svg width="20" height="20" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.5"><path d="M5 5l10 10M15 5 5 15"/></svg></button></header>
+  <div class="qru1-corps">
+    <div class="qru1-g">
+      <button class="qru1-just" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11.5 2.5V6H15"/></svg><span>Voir le justificatif</span><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 8l5 5 5-5"/></svg></button>
+      <section class="qru1-bd" aria-label="Bandeau">
+        <div class="qru1-l1"><span class="qru1-four" id="qru1-four">Brau- und Rauchshop GmbH</span><span class="qru1-m" id="qru1-date">27.04.2026</span></div>
+        <div class="qru1-l2"><span class="qru1-tot" id="qru1-tot">86,50</span><span class="qru1-chf">CHF</span>
+          <span class="qru1-nl" id="qru1-nl"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.3"/><path d="M8 4.6v4.2M8 10.8v.4"/></svg><span class="qru1-m">23</span>&nbsp;lignes</span></div>
+        <div class="qru1-barre" id="qru1-barre" aria-label="Les 23 lignes, à la largeur de leur montant"></div>
+      </section>
+      <section class="qru1-pv" aria-label="Vérification">
+        <h2 id="qru1-titre">Lecture à confirmer</h2>
+        <div id="qru1-rangs"></div>
+        <div class="qru1-liens" id="qru1-liens">
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><b>13</b> reliés</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><circle cx="15" cy="15" r="4.6" fill="#2F6B45" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/></svg><b>0</b> nouveaux</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#7F5B10" stroke-width="2.1" stroke-dasharray="2.4 1.6"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/></svg><b>1</b> unité ?</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="2.1"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg><b>5</b> moutures</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/></svg><b>4</b> sans stock</span></div>
+      </section>
+      <div class="qru1-tu" id="qru1-tu"></div>
+      <div class="qru1-chips" id="qru1-chips"></div>
+    </div>
+    <div class="qru1-d">
+      <div class="qru1-lt"><div>Lignes de la facture · <span class="qru1-m" id="qru1-nb">23</span><small id="qru1-prop">14 proposées par la lecture, à vérifier</small></div><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 12l5-5 5 5"/></svg></div>
+      <div id="qru1-lignes" data-mots="lignes"></div>
+    </div>
+  </div>
+  <footer class="qru1-pied"><span id="qru1-drive">Drive prêt</span><button class="qru1-conf" id="qru1-conf" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 10.5l4 4 8-9"/></svg>Confirmer</button></footer>
+</div>
+<script>
+(function () {
+  'use strict';
+  // Les données de la fixture (la facture B&R de 23 lignes, celle des captures en ligne) ; le QR de chaque état.
+  var LU = { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' };
+  var ETATS = {
+    confirme: { qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } },
+    contredit: { lu: { total: '85,60' }, qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } },
+    partiel: { qr: { total: '86,50', devise: 'CHF', numero: null, date: null } },
+    illisible: { illisible: true },
+    sans: { sans: true },
+    lecture: { lecture: true, qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } }
+  };
+  var params = new URLSearchParams(location.search);
+  var nom = ETATS[params.get('etat')] ? params.get('etat') : 'confirme';
+  var E = ETATS[nom];
+  var lu = { total: (E.lu && E.lu.total) || LU.total, devise: LU.devise, numero: LU.numero, date: LU.date };
+  var pris = false, ouvert = nom !== 'confirme' && nom !== 'sans';
+  var $ = function (id) { return document.getElementById('qru1-' + id); };
+  var QR = '<svg class="qru1-ic" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3.2" y="3.2" width="3" height="3" fill="currentColor"/><rect x="9.8" y="3.2" width="3" height="3" fill="currentColor"/><rect x="3.2" y="9.8" width="3" height="3" fill="currentColor"/><rect x="6.1" y="6.1" width="3.8" height="3.8" fill="currentColor"/><path d="M8 6.8v2.4M6.8 8h2.4" stroke="#fff" stroke-width="1.5"/></svg>';
+  var OK = '<svg class="qru1-ok" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5l3 3 7-7.5"/></svg>';
+  var LIGNES = [
+    ['Maris Otter', '6 Kg', '13,80', '+6 kg'], ['mouture', '', '0,60', 'm'], ['Gerstenflocken', '1 Kg', '2,40', '+1 kg'],
+    ['Röstgerste', '1 Kg', '1,80', '+1 kg'], ['mouture', '', '0,10', 'm'], ['Caramünch Typ 2', '1 Kg', '1,75', '+1 kg'],
+    ['mouture', '', '0,10', 'm'], ['Target', '40 g · α 11,3', '1,60', ''], ['Goldings East Kent', '20 g · α 5,5', '0,80', ''],
+    ['LALLEMAND Windsor', '2 Stk', '9,00', '= 2 sachets'], ['Safale BE-256', '1 Stk', '4,40', '= 1 sachet']
+  ];
+  var CUBE = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg>';
+  var FLECHE = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="1.5" aria-hidden="true"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg>';
+
+  function barre() {
+    var b = $('barre'), coul = ['var(--malt)', 'var(--mout)', 'var(--malt)', 'var(--malt)', 'var(--mout)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--houb)', 'var(--lev)', 'var(--lev)', 'var(--malt)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--lev)', 'var(--t0)', 'var(--t0)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--t0)', 'var(--malt)'];
+    var mt = [13.8, .6, 2.4, 1.8, .1, 1.75, .1, 1.6, .8, 9, 4.4, 7.5, 6.2, .5, 2.1, 6.8, 3, 2.5, 9.6, .4, 3.6, 2, 5.45];
+    b.innerHTML = '';
+    mt.forEach(function (m, i) { var x = document.createElement('i'); x.style.flexGrow = m; x.style.background = nom === 'lecture' ? '#E4E4E4' : coul[i]; b.appendChild(x); });
+  }
+
+  function lignes() {
+    var h = '';
+    if (nom === 'lecture') {
+      for (var i = 0; i < 6; i++) h += '<div class="qru1-li"><span class="qru1-sq" style="width:20px"></span><span><span class="qru1-sq" style="width:' + (50 + i * 7 % 30) + '%"></span></span><span class="qru1-sq" style="width:40px"></span></div>';
+      $('lignes').innerHTML = h; $('prop').textContent = 'Lecture des lignes en cours'; return;
+    }
+    LIGNES.forEach(function (l) {
+      if (l[3] === 'm') { h += '<div class="qru1-li qru1-mo">' + FLECHE + '<span class="qru1-mot">mouture</span><span class="qru1-m">' + l[2] + '</span></div>'; return; }
+      h += '<div class="qru1-li">' + CUBE + '<span><b>' + l[0] + '</b>' + (l[3] ? '<span class="qru1-past">' + l[3] + '</span>' : '') + '<small class="qru1-m">' + l[1] + '</small></span><span class="qru1-m">' + l[2] + '</span></div>';
+    });
+    $('lignes').innerHTML = h;
+  }
+
+  // La rangée QR de la vérification : quatre cases (montant, devise, n°, date), chacune confirmée, contredite ou absente.
+  function cases(q) {
+    var champs = [['total', 'montant'], ['devise', 'CHF'], ['numero', 'n°'], ['date', 'date']];
+    return champs.map(function (c) {
+      var v = q[c[0]];
+      if (v === null) return '<span class="qru1-case qru1-a">' + c[1] + ' —</span>';
+      if (c[0] === 'total' && v !== lu.total) return '<span class="qru1-case qru1-x">' + c[1] + ' ≠</span>';
+      return '<span class="qru1-case qru1-v">' + c[1] + ' ✓</span>';
+    }).join('');
+  }
+  function detail(q) {
+    var lignesDet = [['Montant', 'total'], ['Devise', 'devise'], ['N° de facture', 'numero'], ['Date', 'date']];
+    return '<div class="qru1-det" id="qru1-det">' + lignesDet.map(function (d) {
+      var v = q[d[1]];
+      if (v === null) return '<span>' + d[0] + '</span><b>—</b><em class="qru1-a">absent du QR</em>';
+      if (d[1] === 'total' && v !== lu.total) return '<span>' + d[0] + '</span><b>' + v + '</b><em class="qru1-x">lu ' + lu.total + '</em>';
+      return '<span>' + d[0] + '</span><b>' + v + '</b>' + (nom === 'lecture' ? '<em class="qru1-a">lecture en attente</em>' : '<em>= lu</em>');
+    }).join('') + '</div>';
+  }
+
+  function rangs() {
+    var h = '';
+    var sommeOk = lu.total === '86,50';
+    if (nom === 'lecture') {
+      h += '<button type="button" class="qru1-rg qru1-qr" data-booster="detail-qr" aria-expanded="true">' + QR + '<span>QR-facture lu</span><span class="qru1-cases"><span class="qru1-case qru1-v">0,6 s</span></span></button>' + detail(E.qr);
+      h += '<div class="qru1-rg"><span class="qru1-pt">·</span><span><span class="qru1-sq" style="width:70%"></span></span><b>…</b></div>';
+      h += '<div class="qru1-rg"><span class="qru1-pt">·</span><span><span class="qru1-sq" style="width:55%"></span></span><b>…</b></div>';
+      return h;
+    }
+    if (E.sans) {
+      h += '<div class="qru1-rg"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="2.5" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="2 1.6"/></svg><span>Pas de QR-facture sur la pièce</span><b></b></div>';
+    } else if (E.illisible) {
+      h += '<div class="qru1-rg qru1-qr qru1-att">' + QR + '<span>QR-facture vu, pas déchiffré</span><button type="button" class="qru1-rephoto" data-booster="rephoto">Photographier le QR</button></div>';
+      h += '<p class="qru1-sous">Rien n’est confirmé par le QR : montant, n° et date restent ceux de la lecture.</p>';
+    } else {
+      var q = E.qr, att = q.total !== lu.total;
+      h += '<button type="button" class="qru1-rg qru1-qr' + (att ? ' qru1-att' : '') + '" data-booster="detail-qr" aria-expanded="' + ouvert + '">' + QR + '<span>QR-facture</span><span class="qru1-cases">' + cases(q) + '</span></button>';
+      if (ouvert) h += detail(q);
+    }
+    h += '<div class="qru1-rg">' + (sommeOk ? OK : '<span class="qru1-pt">·</span>') + '<span>Somme des lignes = imprimé</span><b>' + (sommeOk ? '86,50' : '86,50 ≠ ' + lu.total) + '</b></div>';
+    h += '<div class="qru1-rg">' + OK + '<span>Quantité × prix, au centime</span><b>23/23</b></div>';
+    h += '<div class="qru1-rg"><span class="qru1-pt">·</span><span>Lectures : désaccord sur certains points</span><b>2</b></div>';
+    return h;
+  }
+
+  function tuiles() {
+    var h = '', n = 1;
+    if (nom === 'contredit') {
+      h += '<div class="qru1-tile qru1-large' + (pris ? ' qru1-fait' : '') + '"><span class="qru1-no">' + n + '</span><span class="qru1-k">Total · le QR dit</span>' +
+        (pris ? '<span class="qru1-v"><span class="qru1-m">86,50</span> pris du QR · <span class="qru1-barr qru1-m">85,60</span></span>'
+              : '<span class="qru1-duel"><span class="qru1-v"><span class="qru1-m">86,50</span> · lu <span class="qru1-m">85,60</span></span><button type="button" class="qru1-prendre" id="qru1-prendre" data-booster="prendre-qr" data-geste="1">Prendre 86,50</button></span>') + '</div>';
+      n++;
+    }
+    h += '<div class="qru1-tile"><span class="qru1-no">' + n++ + '</span><span class="qru1-k">TVA</span><span class="qru1-v qru1-m">2,80 · 4,15</span></div>';
+    h += '<div class="qru1-tile"><span class="qru1-no">' + n++ + '</span><span class="qru1-k">Règlement</span><span class="qru1-v">Payé le <span class="qru1-m">27.04</span><span class="qru1-sup">supposée</span></span></div>';
+    $('tu').innerHTML = h;
+    var c = '';
+    ['Sabro unité', 'mouture ×5 +1,50', 'Target α'].forEach(function (t) { c += '<button type="button" class="qru1-chip"><span class="qru1-no">' + n++ + '</span>' + t + '</button>'; });
+    $('chips').innerHTML = nom === 'lecture' ? '' : c;
+    if (nom === 'lecture') $('tu').innerHTML = '';
+  }
+
+  function rendre() {
+    $('tot').textContent = pris ? '86,50' : (nom === 'lecture' ? E.qr.total : lu.total);
+    if (nom === 'lecture') {
+      $('four').innerHTML = '<span class="qru1-sq" style="width:180px;display:inline-block"></span>';
+      $('liens').hidden = true; $('nl').hidden = true; $('nb').textContent = '…'; $('titre').textContent = 'Lecture en cours'; $('conf').disabled = true; $('drive').textContent = 'Lecture du justificatif…';
+    }
+    barre(); lignes(); $('rangs').innerHTML = rangs(); tuiles();
+  }
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest && ev.target.closest('[data-booster]');
+    if (!t) return;
+    if (t.getAttribute('data-booster') === 'detail-qr' && nom !== 'lecture') { ouvert = !ouvert; $('rangs').innerHTML = rangs(); }
+    if (t.getAttribute('data-booster') === 'prendre-qr') { pris = true; lu.total = '86,50'; rendre(); var tt = $('tot'); tt.classList.remove('qru1-chg'); void tt.offsetWidth; tt.classList.add('qru1-chg'); }
+  });
+  rendre();
+})();
+</script>
+</body></html>

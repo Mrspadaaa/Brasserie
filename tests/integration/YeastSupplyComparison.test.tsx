@@ -102,7 +102,7 @@ describe('Raccord de la comparaison des offres au choix de levure', () => {
     expect(table.querySelectorAll('colgroup col')).toHaveLength(4);
     const wort = document.querySelector<HTMLElement>('[data-supply-wort]');
     expect(wort).toHaveTextContent('20 L · mesuré');
-    expect(wort).toHaveTextContent('SG 1,050 · mesuré');
+    expect(wort).toHaveTextContent('Densité 1,050 · mesuré');
 
     const verdant = table.querySelector<HTMLElement>('[data-supply-product="lalbrew-verdant-11g"]');
     expect(verdant).not.toBeNull();
@@ -209,7 +209,7 @@ describe('Raccord de la comparaison des offres au choix de levure', () => {
     const table = await openComparison('1084');
     const wort = document.querySelector<HTMLElement>('[data-supply-wort]');
     expect(wort).toHaveTextContent('volume inconnu');
-    expect(wort).toHaveTextContent('SG inconnue');
+    expect(wort).toHaveTextContent('Densité inconnue');
     expect(wort).toHaveTextContent('Volume manquant');
     expect(wort).not.toHaveTextContent('1,050');
 

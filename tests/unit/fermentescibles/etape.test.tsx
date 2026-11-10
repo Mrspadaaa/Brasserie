@@ -120,6 +120,21 @@ describe('l\'étape Malts/sucres (s1)', () => {
     expect(masse(1).value).toBe('0');
   });
 
+  // VI-2 (rejeu b47cd90b n° 2) : la masse effacée, pas encore quittée, affichait « 0 » (le repère du champ) alors que la recette comptait encore la masse
+  // d'avant (« 63 % du grain », « Grain 8 kg », « 5,0 kg » au plateau) : trois chiffres pour une masse. Le repère est la valeur d'avant, jamais un 0 inventé.
+  it('une masse effacée, pas encore quittée, montre la valeur qui compte encore (placeholder), jamais un « 0 » inventé', async () => {
+    const u = userEvent.setup();
+    render(<Banc />);
+    await u.click(masse(1));
+    await u.clear(masse(1));
+    expect(masse(1).value).toBe('');
+    expect(masse(1).placeholder).toBe('1,5');
+    expect(courant[1].weightKg).toBe(1.5);
+    // Taper rend la main à la saisie ; Échap rend la valeur d'avant.
+    await u.type(masse(1), '2');
+    expect(courant[1].weightKg).toBe(2);
+  });
+
   it('« pils » dit « déjà 5,0 kg » et Entrée ne crée pas de doublon', async () => {
     const u = userEvent.setup();
     render(<Banc />);
@@ -208,21 +223,24 @@ describe('l\'étape Malts/sucres (s1)', () => {
     expect(lignes()[1].querySelector('[data-role="retirer"]')).not.toBeNull();
   });
 
-  it('le moment tourne d\'un toucher, J+3 en fermentation, et « Annuler » rend celui d\'avant', async () => {
+  // Audit métier du 08.11 (AM 1 et 2) : le moment tourne dans ceux que la famille permet. Un sucre : ébullition ⇄ fermentation ; un grain : l'empâtage seul.
+  it('le moment d\'un sucre tourne d\'un toucher, J+3 en fermentation, et « Annuler » rend celui d\'avant ; un grain reste à l\'empâtage', async () => {
     const u = userEvent.setup();
-    render(<Banc />);
-    const moment = () => lignes()[1].querySelector<HTMLElement>('[data-role="moment-ligne"]')!;
-    await u.click(moment());
-    expect(courant[1].use).toBe('ebullition');
+    render(<Banc depart="sucre" />);
+    const moment = (i = 3) => lignes()[i].querySelector<HTMLElement>('[data-role="moment-ligne"]')!;
     expect(moment().textContent).toBe('ébullition');
     await u.click(moment());
-    expect(courant[1].use).toBe('fermentation');
-    expect(courant[1].dayOffset).toBe(3);
+    expect(courant[3].use).toBe('fermentation');
+    expect(courant[3].dayOffset).toBe(3);
     expect(moment().textContent).toBe('J+');
-    const jour = lignes()[1].querySelector<HTMLInputElement>('[data-role="jour-ligne"]')!;
+    const jour = lignes()[3].querySelector<HTMLInputElement>('[data-role="jour-ligne"]')!;
     expect(jour.value).toBe('3');
-    await u.click(lignes()[1].querySelector('[data-role="annuler-moment"]')!);
+    await u.click(lignes()[3].querySelector('[data-role="annuler-moment"]')!);
+    expect(courant[3].use).toBe('ebullition');
+    expect(lignes()[3].querySelector('[data-role="annuler-moment"]')).toBeNull();
+    await u.click(moment(1));
     expect(courant[1].use).toBe('empatage');
+    expect(moment(1).tagName).toBe('SPAN');
     expect(lignes()[1].querySelector('[data-role="annuler-moment"]')).toBeNull();
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Fermentable, StockItem } from '../../../src/types';
 import {
-  chercher, cran, cranPas, decouper, kgPourPart, kgTxt, lireAjout, lit, nu, partN, pas, pmax, rang,
+  chercher, cran, cranPas, decouper, kgPourPart, kgTxt, lireAjout, lit, nomPossible, nu, partN, pas, pmax, rang,
 } from '../../../src/ui/fermentescibles/modele';
 import { apercuMalts, fermentablesApercu, stockApercu } from '../../../src/ui/fermentescibles/apercuDev';
 
@@ -39,6 +39,8 @@ describe('formats et crans de la masse', () => {
     expect(pmax(0.4)).toBe(2);
     expect(pmax(5)).toBe(8);
     expect(pmax(7)).toBe(12);
+    // Une masse absente (NaN, champ vidé au récapitulatif) garde la piste ordinaire : jamais « NaN › » sous la piste.
+    expect(pmax(Number.NaN)).toBe(2);
     expect(pmax(60)).toBe(90);
   });
 });
@@ -96,6 +98,27 @@ describe('recherche du champ d\'ajout', () => {
     expect(lireAjout('cara 0,3')).toEqual({ nom: 'cara', kg: 0.3 });
     expect(lireAjout('Abbey Malt')).toEqual({ nom: 'Abbey Malt', kg: null });
     expect(lireAjout('cara 0.3 kg')).toEqual({ nom: 'cara', kg: 0.3 });
+  });
+  it('un nom qui finit par un chiffre reste un nom (critique B1 n° 2 : « Crystal 60 » → 60 kg)', () => {
+    const connu = (n: string) => ['crystal 60', 'pils'].some((a) => a.startsWith(n.toLowerCase()));
+    expect(lireAjout('Crystal 60')).toEqual({ nom: 'Crystal 60', kg: null });
+    expect(lireAjout('Crystal 60', connu)).toEqual({ nom: 'Crystal 60', kg: null });
+    expect(lireAjout('pils 25', connu)).toEqual({ nom: 'pils', kg: 25 });
+    expect(lireAjout('Crystal 60 kg')).toEqual({ nom: 'Crystal', kg: 60 });
+  });
+  it('RO-2 : en mode Sucre, « sirop candi 1 » est 1 kg de sirop candi ; « Candi D 180 » reste un nom ; hors Sucre, rien ne change', () => {
+    expect(lireAjout('sirop candi 1', () => false, true)).toEqual({ nom: 'sirop candi', kg: 1 });
+    expect(lireAjout('dextrose 3', undefined, true)).toEqual({ nom: 'dextrose', kg: 3 });
+    expect(lireAjout('Candi D 180', () => false, true)).toEqual({ nom: 'Candi D 180', kg: null });
+    expect(lireAjout('Candi D2', () => false, true)).toEqual({ nom: 'Candi D2', kg: null });
+    expect(lireAjout('sirop candi 1', () => false)).toEqual({ nom: 'sirop candi 1', kg: null });
+    // Un article qui s'appelle vraiment ainsi garde son nom.
+    expect(lireAjout('Sucre 5', (n) => n.toLowerCase() === 'sucre 5', true)).toEqual({ nom: 'Sucre 5', kg: null });
+  });
+  it('un texte sans lettre n\'est pas un nom (critique B1 n° 3 : « 0,2 » créait un ingrédient)', () => {
+    expect(nomPossible('0,2')).toBe(false);
+    expect(nomPossible('60')).toBe(false);
+    expect(nomPossible('Crystal 60')).toBe(true);
   });
   it('met en gras les lettres tapées', () => {
     expect(decouper('Münchner Malz', 'nch')).toEqual(['Mü', 'nch', 'ner Malz']);

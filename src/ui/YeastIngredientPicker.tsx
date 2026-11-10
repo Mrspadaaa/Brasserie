@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type MouseEvent } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type MouseEvent } from 'react';
 import type { StockItem, YeastSpec } from '../types';
 import { yeastReferences, type YeastReference } from '../domain/yeastReferences';
 import { normalizedYeastText, yeastIdentitySearchIndex, yeastSearchIndex, yeastSearchScore, type YeastSearchIndex } from '../domain/yeastCatalogue';
@@ -8,6 +8,7 @@ import { normalize } from '../services/search';
 import { Units } from '../services/units';
 import { Combobox, type ComboOption } from './Combobox';
 import { Input } from './Input';
+import { NomLibreInitial } from './nomLibreLevure';
 
 type IndexedChoice = { option: ComboOption; identity: YeastSearchIndex };
 
@@ -35,7 +36,10 @@ export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCr
   onCreate: (name: string) => void;
   personalChoice?: boolean;
 }) {
-  const [manual, setManual] = useState(false), [name, setName] = useState('');
+  // Défini (même vide) : la saisie hors catalogue s'ouvre d'emblée, avec ce nom (« Hors catalogue » touché sans texte : champ vide).
+  const nomDonne = useContext(NomLibreInitial);
+  const nomInitial = nomDonne?.trim() || undefined;
+  const [manual, setManual] = useState(nomDonne !== undefined), [name, setName] = useState(nomInitial ?? '');
   const [searchQuery, setSearchQuery] = useState('');
   // Empty personal choice: the catalogue search sits just above, so this one opens on demand.
   const [searchOpen, setSearchOpen] = useState(false);
@@ -144,6 +148,6 @@ export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCr
       }} />}
     {currentIdentityNotice && <p className="mt-1 text-xs text-cave-400" role="status">{currentIdentityNotice}</p>}
     {personalChoice && !emptyChoice && manualToggle}
-    {personalChoice && manual && <div className="yc-personal-entry"><label>Nom de la souche<Input aria-label="Nom de la levure personnelle" value={name} onChange={e => setName(e.target.value)} placeholder="Nom exact, labo ou code…" /></label><button type="button" disabled={!name.trim()} onClick={() => { onCreate(name.trim()); setManual(false); }}>Utiliser cette levure</button></div>}
+    {personalChoice && manual && <div className="yc-personal-entry" data-lv="saisie-libre"><label><span className="yc-personal-label">Nom de la souche</span><Input aria-label="Nom de la levure personnelle" value={name} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && name.trim()) { e.preventDefault(); onCreate(name.trim()); setManual(false); } }} placeholder="Nom exact, labo ou code…" /></label><button type="button" className="yc-personal-ok" disabled={!name.trim()} onClick={() => { onCreate(name.trim()); setManual(false); }}>Utiliser cette levure</button></div>}
   </div>;
 }

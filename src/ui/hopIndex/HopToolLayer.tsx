@@ -19,7 +19,8 @@ const TITLES: Record<HopToolRoute['view'], string> = {
   hopSuggest: 'Suggérer',
   hopCompare: 'Comparer',
   hopTiming: 'Dryhopper',
-  hopSubstitute: 'Substituer'
+  hopSubstitute: 'Substituer',
+  hopSearch: 'Recherche avancée'
 };
 
 export const hopToolTitle = (route: HopToolRoute) =>
@@ -50,6 +51,9 @@ const EcranSuggerer = lazy(() => import('./suggerer/EcranApp'));
 const EcranTiming = lazy(() => import('./dryhopper/EcranApp'));
 // Substituer (T15c, #174) : l'écran u4, son choix, chargé à la demande, drapeau hopV4 allumé seulement.
 const EcranSubstituer = lazy(() => import('./substituer/EcranApp'));
+
+// La recherche avancée (mission 2026-11-09-levure-retours, r2) : la forme c6b de la levure sur le catalogue houblon, chargée à la demande.
+const EcranRecherche = lazy(() => import('./rechercheAvancee/EcranApp'));
 
 // Ma bière (p6, #174) : l'onglet de sa base v4.10, son choix (« Ça aussi »), chargé à la demande, drapeau hopV4 allumé seulement.
 const EcranBiere = lazy(() => import('./biere/EcranApp'));
@@ -84,6 +88,13 @@ export default function HopToolLayer({ route, level, onClose }: { route: HopTool
     return (
       <Suspense fallback={<PageShell title="Comparer" onClose={onCloseAll}><p data-hop-tool-layer="hopCompare" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Comparer…</p></PageShell>}>
         <EcranComparer houblons={route.hops} pin={route.pinned} recipeId={route.recipeId} onClose={onClose} onCloseAll={onCloseAll} />
+      </Suspense>
+    );
+  }
+  if (route.view === 'hopSearch' && comparerActif) {
+    return (
+      <Suspense fallback={<PageShell title="Recherche avancée" onClose={onClose}><p data-hop-tool-layer="hopSearch" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de la recherche…</p></PageShell>}>
+        <EcranRecherche recipeId={route.recipeId} onClose={onClose} />
       </Suspense>
     );
   }

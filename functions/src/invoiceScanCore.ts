@@ -1,8 +1,9 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
 import {
-  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
+  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, htEstUnSousTotalTTC, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
   type ControlStatus, type InvoiceField, type ScanControls, type ScanPoint, type ScanPointCode, type ScanPointDetail, type ScanRejet, type ScanVatRow,
 } from './invoiceControls.js';
 // Les règles de calcul vivent dans `invoiceControls.ts` (module pur, partagé avec le client) ; elles restent exportées d'ici.
@@ -10,14 +11,24 @@ export { INVOICE_FIELDS, SCAN_POINT_CODES, lineMathCheck, sumCheck, toCents };
 export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCode, ScanPointDetail, ScanRejet, ScanVatRow };
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
- * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. */
-export const INVOICE_SCAN_VERSION = 'invoice-v5';
+ * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. Le moteur, lui, entre par son empreinte (`invoiceScanIdFor`, D273c). */
+export const INVOICE_SCAN_VERSION = 'invoice-v6';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
-/** Pire cas du schéma invoice-v5 (35 lignes, tous champs, 6 rangées de TVA) : 4 050 jetons, soit 80 % (l1, 31.10). */
-export const SCAN_MAX_OUTPUT = 5100;
+/**
+ * Plafond de la 3.8. Le pire cas estimé du schéma invoice-v5 (35 lignes : 4 050 jetons, l1, 31.10) oubliait la réflexion, qui compte dans
+ * `maxOutputTokens` : en ligne le 02.11, une commande de 31 lignes sur 3 pages a été coupée à 5 085 jetons sous l'ancien plafond de 5 100.
+ * Même plafond que la Flash-Lite.
+ */
+export const SCAN_MAX_OUTPUT = 8192;
+/**
+ * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
+ * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 a le même depuis le 02.11.
+ */
+export const LITE_SCAN_MAX_OUTPUT = 8192;
 export const SCAN_MAX_CALLS = 3;
-export const SCAN_MAX_ITEMS = 35;
+/** D379 : « Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » : aucune ligne lue n'est jetée. Garde-fou seulement contre une réponse folle. */
+export const SCAN_MAX_ITEMS = 10000;
 export const SCAN_MAX_VAT_ROWS = 6;
 export const SCAN_KINDS = ['equipment', 'maintenance', 'stock', 'service', 'packaging', 'shipping', 'discount', 'other', 'unknown'] as const;
 export interface InvoiceFieldWarning { field: InvoiceField; message: string }
@@ -108,8 +119,42 @@ export function validateInvoiceFile(file: unknown): InvoiceFile {
   return value;
 }
 
+/**
+ * D273c : l'empreinte du moteur de lecture. Les modules que l'entrée de la lecture (`ai`) importe, de proche en proche : un changement de
+ * règle, de consigne, de vote, de réglage ou de modèle donne un autre identifiant, et une pièce déjà lue est relue (quelques centimes).
+ */
+export function engineDigestOf(read: (module: string) => string, entry = 'ai'): { digest: string; modules: string[] } {
+  const hash = createHash('sha256'), seen = new Set<string>(), todo = [entry];
+  while (todo.length) {
+    const module = todo.shift()!;
+    if (seen.has(module)) continue;
+    seen.add(module);
+    const text = read(module);
+    hash.update(module).update('\0').update(text).update('\0');
+    for (const [, next] of text.matchAll(/(?:from|import)\s*\(?\s*['"]\.\/([\w.-]+?)\.js['"]/g)) todo.push(next);
+  }
+  return { digest: hash.digest('hex').slice(0, 16), modules: [...seen] };
+}
+
+let engineDigest: string | undefined;
+/** Lue une fois par instance, à côté de ce module (`lib/*.js` déployés, `src/*.ts` sous Vitest). Illisible : une empreinte au hasard, rien n'est servi du cache. */
+export function invoiceEngineDigest(): string {
+  if (engineDigest) return engineDigest;
+  const extension = import.meta.url.endsWith('.ts') ? 'ts' : 'js';
+  try {
+    engineDigest = engineDigestOf(module => readFileSync(new URL(`./${module}.${extension}`, import.meta.url), 'utf8')).digest;
+  } catch (error) {
+    console.error('Empreinte du moteur de lecture illisible : le cache de lecture est ignoré sur cette instance.', error);
+    engineDigest = randomUUID();
+  }
+  return engineDigest;
+}
+
+export function invoiceScanIdFor(uid: string, file: InvoiceFile, engine: string): string {
+  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(engine).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+}
 export function invoiceScanId(uid: string, file: InvoiceFile): string {
-  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+  return invoiceScanIdFor(uid, file, invoiceEngineDigest());
 }
 export function invoiceDocumentHash(file: InvoiceFile): string {
   return createHash('sha256').update(Buffer.from(file.data, 'base64')).digest('hex');
@@ -125,11 +170,65 @@ export function invoiceDate(value: unknown): string {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// LT-2 (08.11.2026) : entre deux lectures qui ne diffèrent que par l'année (02.11.2026 / 02.11.2025 sur un ticket Bauhaus qui imprime
+// l'année à 4 chiffres dans le corps et à 2 chiffres au pied), le vote gardait 2025 : la dépense partait dans l'exercice clos.
+// Règle pure, sans IA : (1) l'année imprimée à 4 chiffres l'emporte sur celle à 2 chiffres ; (2) à défaut, la date plausible aujourd'hui
+// (ni future, ni plus de 11 mois dans le passé) l'emporte sur celle qui ne l'est pas. Tout autre désaccord (jour, mois) reste au vote.
+// ---------------------------------------------------------------------------------------------------------------------
+interface DateParsee { j: number; m: number; a: number; quatre: boolean }
+function dateParsee(valeur: unknown): DateParsee | null {
+  const lue = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})$/.exec(text(valeur));
+  if (!lue) return null;
+  const j = Number(lue[1]), m = Number(lue[2]), quatre = lue[3].length === 4, a = quatre ? Number(lue[3]) : 2000 + Number(lue[3]);
+  const at = new Date(Date.UTC(a, m - 1, j));
+  return a >= 1900 && a <= 2200 && at.getUTCFullYear() === a && at.getUTCMonth() === m - 1 && at.getUTCDate() === j ? { j, m, a, quatre } : null;
+}
+const deuxChiffres = (n: number) => String(n).padStart(2, '0');
+const dateEcrite = (p: DateParsee) => `${deuxChiffres(p.j)}.${deuxChiffres(p.m)}.${p.a}`;
+const jourUtc = (p: DateParsee) => Date.UTC(p.a, p.m - 1, p.j);
+/** La date du jour à Zurich, à minuit UTC. */
+function aujourdhuiZurich(): Date {
+  const [a, m, j] = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich', year: 'numeric', month: '2-digit', day: '2-digit' }).format(Date.now()).split('-').map(Number);
+  return new Date(Date.UTC(a, m - 1, j));
+}
+/** La date lue avec une année à 2 chiffres (`jj.mm.aa`), gardée à part : `invoiceDate` la refuse, mais le vote doit savoir ce qui était imprimé. */
+export function dateCourteLue(valeur: unknown): string {
+  const p = dateParsee(valeur);
+  return p && !p.quatre ? `${deuxChiffres(p.j)}.${deuxChiffres(p.m)}.${String(p.a).slice(2)}` : '';
+}
+/** Ce qu'une lecture a lu comme date : la date à 4 chiffres, sinon celle à 2 chiffres, sinon rien. */
+export const dateDeLecture = (lecture: { date?: string; dateCourte?: string }): string => lecture.date || lecture.dateCourte || '';
+/**
+ * `lues` : les dates des lectures (`jj.mm.aaaa`, ou `jj.mm.aa` pour une année imprimée à 2 chiffres) ; `parDefaut` : la date que le vote garde.
+ * Rend `parDefaut` sauf si les lectures ne diffèrent QUE par l'année et que l'une des deux règles tranche. `aujourdhui` : minuit UTC.
+ */
+export function choisirDate(lues: string[], parDefaut: string, aujourdhui: Date = aujourdhuiZurich()): string {
+  const parsees = lues.flatMap(v => { const p = dateParsee(v); return p ? [p] : []; });
+  if (!parsees.length || parsees.some(p => p.j !== parsees[0].j || p.m !== parsees[0].m)) return parDefaut;
+  const parAnnee = new Map<number, DateParsee>();
+  for (const p of parsees) { const connue = parAnnee.get(p.a); parAnnee.set(p.a, { ...p, quatre: p.quatre || !!connue?.quatre }); }
+  let restantes = [...parAnnee.values()];
+  if (restantes.length < 2) return parDefaut;
+  if (restantes.some(p => p.quatre)) restantes = restantes.filter(p => p.quatre);
+  if (restantes.length > 1) {
+    const haut = aujourdhui.getTime(), bas = Date.UTC(aujourdhui.getUTCFullYear(), aujourdhui.getUTCMonth() - 11, aujourdhui.getUTCDate());
+    const plausibles = restantes.filter(p => jourUtc(p) <= haut && jourUtc(p) >= bas);
+    if (plausibles.length) restantes = plausibles;
+  }
+  if (restantes.length === 1) return dateEcrite(restantes[0]);
+  const garde = dateParsee(parDefaut);
+  if (garde && restantes.some(p => p.a === garde.a && p.j === garde.j && p.m === garde.m)) return parDefaut;
+  return dateEcrite(restantes.reduce((a, b) => Math.abs(jourUtc(a) - aujourdhui.getTime()) <= Math.abs(jourUtc(b) - aujourdhui.getTime()) ? a : b));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Contrôles arithmétiques (C1 à C4, P2). Fonctions pures : aucune valeur lue n'est jamais modifiée.
 // ---------------------------------------------------------------------------------------------------------------------
 type CoreItem = {
   id: string; name: string; kind: typeof SCAN_KINDS[number]; quantity: number | null; unit: string; price: number | null; amountTTC: number | null;
   reference: string; variant: string; stockCategory: string; evidence: string; ambiguity: string; vatCode: string; alphaPct: number | null; alphaPctLu: number | null;
+  /** D381 : lecture d'un morceau seulement : la ligne n'est que la suite d'un article commencé sur la partie précédente. */
+  suite?: true;
 };
 
 type VatKey = { code: string; rate: number | null };
@@ -224,6 +323,47 @@ function readRejets(value: unknown): ScanRejet[] {
     ? [{ champ: text(entry.champ, 40), ligne: Number.isInteger(entry.ligne) ? entry.ligne as number : null, luTexte: text(entry.luTexte, 60), raison: text(entry.raison, 120) }] : []);
 }
 
+/**
+ * Une ligne qui n'a qu'UN montant (aucun en-tête de colonne) : les modèles le rangent parfois en `price`, `amountTTC` vide. Quand la
+ * quantité est vide ou vaut 1, ce montant est celui de la ligne : `amountTTC = price`. Rien d'autre ne change (la quantité reste vide :
+ * aucun stock automatique ; `price` reste). Une quantité > 1 (ou < 1) n'est jamais multipliée ; un `amountTTC` déjà lu n'est jamais touché ;
+ * sans `price` fini, rien n'est inventé. Appliquée à chaque lecture avant le vote, donc aussi à la 3.8 qui tranche (voie fn-montant-seul).
+ */
+export function montantDeLigne(amountTTC: number | null, price: number | null, quantity: number | null): number | null {
+  if (amountTTC !== null || price === null) return amountTTC;
+  return quantity === null || quantity === 1 ? price : null;
+}
+
+/**
+ * LT-3 : sur un ticket de caisse, le « 1 » imprimé après le prix est la quantité (1 = 1 pièce). Quand le modèle a laissé la quantité vide, on la reprend de l'extrait imprimé de la ligne
+ * (`evidence`, « désignation 86.95 1 p. 1 ») si, et seulement si, un entier de 1 à 99 suit EXACTEMENT le prix lu ou le montant lu de la ligne. Une quantité déjà lue n'est jamais réécrite,
+ * un autre type de document ni un extrait sans ce motif ne changent rien : jamais une quantité qui n'est pas imprimée.
+ */
+/**
+ * B1 (09.11, P5) : un entier court tout à droite d'une ligne, après le montant, est le CODE DE TVA (« 5.40 2 » : 2 = code), pas une quantité.
+ * Il est reconnu quand il est le code de la ligne (`vatCode`) ou un code du récapitulatif de TVA du document.
+ */
+export const estCodeTva = (entier: number, vatCode: string, codesTva: ReadonlySet<string>): boolean => vatCode === String(entier) || codesTva.has(String(entier));
+/**
+ * B1 : une quantité lue qui EST le code de TVA, quand l'extrait imprimé ne la montre qu'en fin de ligne après le montant, n'est pas une quantité : la quantité est
+ * le nombre imprimé en tête de ligne, sinon absente (null : le montant de la ligne reste alors le prix, jamais 2 × le prix). Toute autre quantité est gardée.
+ */
+export function quantiteSansCodeTva(quantity: number | null, evidence: string, vatCode: string, codesTva: ReadonlySet<string>): number | null {
+  if (quantity === null || !estCodeTva(quantity, vatCode, codesTva)) return quantity;
+  const fin = /(\d+[.,]\d{2})\s+(\d{1,2})\s*$/.exec(evidence.trim());
+  if (!fin || Number(fin[2]) !== quantity) return quantity;
+  const tete = /^\s*(\d{1,3})\s+\S/.exec(evidence);
+  return tete ? Number(tete[1]) : null;
+}
+export function quantiteDeTicket(quantity: number | null, documentType: unknown, evidence: string, price: number | null, amountTTC: number | null, vatCode = '', codesTva: ReadonlySet<string> = new Set()): number | null {
+  if (quantity !== null || documentType !== 'receipt') return quantity;
+  const m = /(\d+[.,]\d{2})\s+(\d{1,2})(?:\s+p\.?\s*\d+)?\s*$/i.exec(evidence.trim());
+  if (!m) return quantity;
+  const imprime = toCents(Number(m[1].replace(',', '.'))), entier = Number(m[2]);
+  const lus = [price, amountTTC].flatMap(v => (v === null ? [] : [toCents(v)]));
+  return entier >= 1 && lus.includes(imprime) && !estCodeTva(entier, vatCode, codesTva) ? entier : quantity;
+}
+
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -233,21 +373,28 @@ export function normalizeInvoiceScan(raw: any) {
     if (!rejets.some(r => r.champ === champ && r.ligne === ligne && r.luTexte === luTexte.slice(0, 60))) rejets.push({ champ, ligne, luTexte: luTexte.slice(0, 60), raison });
   };
   const sourceItems: any[] = Array.isArray(raw?.items) ? raw.items : [];
+  // B1 : les codes du récapitulatif de TVA imprimé, pour ne jamais lire un code de TVA comme une quantité.
+  const codesTva = new Set<string>((Array.isArray(raw?.vat) ? raw.vat : []).map((row: any) => text(row?.code, 10)).filter((c: string) => c !== ''));
   const items: CoreItem[] = sourceItems.slice(0, SCAN_MAX_ITEMS).map((item: any, index: number) => {
     const alphaRead = number(item?.alphaPctLu ?? item?.alphaPct), alphaPct = alphaRead !== null && alphaRead > 0 && alphaRead <= 30 ? alphaRead : null;
     if (alphaRead !== null && alphaPct === null) reject('alphaPct', index + 1, String(alphaRead), 'α hors de ]0 ; 30] %');
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
+    const price = number(item?.price), evidenceLue = text(item?.evidence, 250);
+    const quantity = quantiteDeTicket(quantiteSansCodeTva(number(item?.quantity), evidenceLue, code, codesTva), raw?.documentType, evidenceLue, price, number(item?.amountTTC), code, codesTva);
     return {
       id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
-      quantity: number(item?.quantity), unit: text(item?.unit, 30), price: number(item?.price), amountTTC: number(item?.amountTTC),
+      quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),
       reference: text(item?.reference, 70), variant: text(item?.variant, 80),
       stockCategory: text(item?.stockCategory, 60), evidence: text(item?.evidence, 250), ambiguity: text(item?.ambiguity, 200),
       vatCode: code.slice(0, 10), alphaPct, alphaPctLu: alphaRead,
+      ...(item?.suite === true ? { suite: true as const } : {}),
     };
   });
   const documentType: DocumentType = DOCUMENT_TYPES.includes(raw?.documentType) ? raw.documentType as DocumentType : 'other';
   const paymentEvidence = ['paid', 'unpaid', 'unknown'].includes(raw?.paymentEvidence) ? raw.paymentEvidence as 'paid'|'unpaid'|'unknown' : 'unknown' as const;
+  /** RL-8 : le moyen de paiement imprimé (« TWINT »). Non voté entre les lectures : celle qui passe en tête le porte. */
+  const paymentMethod = ['twint', 'cash', 'card', 'bank_transfer', 'other', 'unknown'].includes(raw?.paymentMethod) ? raw.paymentMethod as 'twint'|'cash'|'card'|'bank_transfer'|'other'|'unknown' : 'unknown' as const;
   const proForma = raw?.proForma === true;
   const rawVat: any[] = Array.isArray(raw?.vat) ? raw.vat : [];
   if (rawVat.length > SCAN_MAX_VAT_ROWS) reject('vat', null, `${rawVat.length} rangées`, `bloc TVA coupé à ${SCAN_MAX_VAT_ROWS} rangées`);
@@ -263,12 +410,38 @@ export function normalizeInvoiceScan(raw: any) {
   const lostCertain = Math.max(0, sourceItems.length - SCAN_MAX_ITEMS, Number.isInteger(raw?.linesLost) && raw.linesLost > 0 ? raw.linesLost : 0);
   const announcedGap = printedLineCount !== null ? Math.max(0, printedLineCount - items.length - lostCertain) : 0;
 
+  // c1 (09.11) : les champs des contrôles croisés. Un champ absent reste null / absent : l'inconnu n'est jamais 0.
+  const entierLu = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) && v >= 0 ? v : null);
+  const montantPaye = number(raw?.amountPaid), montantTerminal = number(raw?.terminalAmount);
+  const ignoredLines = Array.isArray(raw?.ignoredLines)
+    ? raw.ignoredLines.slice(0, 20).filter((l: any) => text(l?.label)).map((l: any) => ({
+      label: text(l.label, 80), amount: number(l.amount),
+      kind: ['foreign_currency', 'payment', 'subtotal', 'other'].includes(l?.kind) ? l.kind as 'foreign_currency' | 'payment' | 'subtotal' | 'other' : 'other' as const,
+    }))
+    : null;
+  const heureLue = /^([01]?\d|2[0-3])[:h.]([0-5]\d)$/.exec(text(raw?.printedTime, 8));
+  // Une clé n'existe que si la lecture la porte : un ancien résultat (cache, ancien serveur) sort comme avant, et l'absence reste « inconnu », jamais 0.
+  const controlesPiece = {
+    ...(montantPaye !== null && montantPaye >= 0 ? { amountPaid: montantPaye } : {}),
+    ...(montantTerminal !== null && montantTerminal >= 0 ? { terminalAmount: montantTerminal } : {}),
+    ...(entierLu(raw?.printedItemCount) !== null ? { printedItemCount: entierLu(raw?.printedItemCount)! } : {}),
+    ...(entierLu(raw?.countedAmounts) !== null ? { countedAmounts: entierLu(raw?.countedAmounts)! } : {}),
+    // Limite 2 : posé par le vote seulement, quand la 3.8 (3ᵉ lecture) confirme le comptage retenu.
+    ...(entierLu(raw?.countedAmounts) !== null && raw?.countedAmountsConfirmed === true ? { countedAmountsConfirmed: true as const } : {}),
+    ...(entierLu(raw?.countedEans) !== null ? { countedEans: entierLu(raw?.countedEans)! } : {}),
+    ...(heureLue ? { printedTime: `${heureLue[1].padStart(2, '0')}:${heureLue[2]}` } : {}),
+    ...(ignoredLines ? { ignoredLines } : {}),
+    ...(typeof raw?.photoIncomplete === 'boolean' ? { photoIncomplete: raw.photoIncomplete as boolean } : {}),
+    ...(text(raw?.photoIncompleteNote, 120) ? { photoIncompleteNote: text(raw?.photoIncompleteNote, 120) } : {}),
+  };
+
   const result = {
+    ...controlesPiece,
     documentType, documentTypeLu: DOCUMENT_TYPES.includes(raw?.documentTypeLu) ? raw.documentTypeLu as DocumentType : documentType,
     documentTypeRetenu: (proForma && paymentEvidence === 'paid' && documentType === 'quote' ? 'invoice' : documentType) as DocumentType, proForma,
-    paymentEvidence,
+    paymentEvidence, paymentMethod,
     fieldWarnings: (Array.isArray(raw?.fieldWarnings) ? raw.fieldWarnings : []).filter((warning: any) => INVOICE_FIELDS.includes(warning?.field) && text(warning?.message)).slice(0, 20).map((warning: any): InvoiceFieldWarning => ({ field: warning.field, message: text(warning.message, 200) })),
-    vendor: text(raw?.vendor), date: invoiceDate(raw?.date), currency: text(raw?.currency, 5).toUpperCase(), invoiceNumber: text(raw?.invoiceNumber, 70),
+    vendor: text(raw?.vendor), date: invoiceDate(raw?.date), ...(dateCourteLue(raw?.date) ? { dateCourte: dateCourteLue(raw?.date) } : {}), currency: text(raw?.currency, 5).toUpperCase(), invoiceNumber: text(raw?.invoiceNumber, 70),
     orderNumber: text(raw?.orderNumber, 70),
     amountHT: number(raw?.amountHT), tvaRate: number(raw?.tvaRate), tvaAmount: number(raw?.tvaAmount), amountTTC: number(raw?.amountTTC),
     vat, printedLineCount, linesLost: lostCertain,
@@ -286,6 +459,8 @@ export function normalizeInvoiceScan(raw: any) {
 
   // C4 — HT + TVA = TTC (comportement d'avant : 2 centimes de tolérance, chacun des trois arrondi séparément). Un HT n'est jamais calculé.
   // (la règle vit dans `invoiceControls.ts` : le client la refait avec la même fonction)
+  // D272 : un sous-total TTC lu comme HT n'est pas un HT.
+  if (htEstUnSousTotalTTC(result.amountHT, result.tvaAmount, result.amountTTC, items)) result.amountHT = null;
   const totals = totalsCheck(result.amountHT, result.tvaAmount, result.amountTTC);
   if (totals.point) { result.controls.totals = totals.totals; say(totals.point); }
   else if (totals.totals.statut === 'ok') result.controls.totals = totals.totals;
@@ -311,11 +486,20 @@ export function normalizeInvoiceScan(raw: any) {
   }
   result.linesLost = linesLost;
   result.controls.sum = summed.sum;
-  if (Array.isArray(raw?.items) && raw.items.length > SCAN_MAX_ITEMS) issues.push('Plus de 35 lignes : compléter le détail manuellement.');
+  if (Array.isArray(raw?.items) && raw.items.length > SCAN_MAX_ITEMS) issues.push(`Plus de ${SCAN_MAX_ITEMS} lignes : compléter le détail manuellement.`);
   if (linesLost > 0) {
     say(makePoint('lignes-perdues', 'ecart', 'items', null, {
-      regle: 'toutes les lignes du document sont conservées (35 au plus)', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
-      message: `Détail des lignes incomplet : ${linesLost} ligne(s) non conservée(s) (35 lignes au plus) ; le total des lignes n'est pas vérifié.`,
+      regle: 'toutes les lignes du document sont conservées', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
+      // D380 : la cause est une lecture qui n'a pas tout rendu, jamais un plafond (« (10000 lignes au plus) » accusait un plafond qui n'existe plus).
+      message: `Détail des lignes incomplet : ${linesLost} ligne(s) imprimée(s) non lue(s) ; le total des lignes n'est pas vérifié.`,
+    }));
+  }
+  // LO-3 (08.11) : un total imprimé et AUCUNE ligne lue, sans qu'aucune ligne ait été annoncée (sinon « lignes-perdues » parle déjà). Une lecture d'en-tête seul (une capture sur trois d'une commande :
+  // fournisseur, date, n° et total, sans le tableau des articles ni le bloc de TVA) sortait « checked », sans un mot. L'absence de lignes n'est pas « zéro ligne » : elle est dite, la lecture reste à confirmer.
+  if (items.length === 0 && sourceItems.length === 0 && linesLost === 0 && result.amountTTC !== null && result.amountTTC > 0) {
+    say(makePoint('lignes-absentes', 'inverifiable', 'items', null, {
+      regle: 'un document qui imprime un montant porte au moins une ligne lue', unite: 'lignes', enjeu: 'argent',
+      message: "Aucune ligne lue : seul l'en-tête du document l'est, le détail des lignes manque. Une page ou une partie manque peut-être : à vérifier sur le document.",
     }));
   }
   summed.points.forEach(say);

@@ -9,6 +9,7 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
+import { dateAffichee, montantChf, sensDeCategorie } from '../domain/finance/ledger';
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -101,7 +102,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       </div>
 
       {/* Form Body */}
-      <form onSubmit={handleSave} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
+      <form onSubmit={handleSave} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 pb-0 sm:pb-0 space-y-3.5 text-sm overscroll-contain" /* BE-68 : sans marge basse, la barre collante se pose au bord du cadre ; avec, le contenu défilait sous elle et dépassait en dessous */>
         {saveError&&<p role="alert" className="finance-error">{saveError}</p>}
         {moneyLocked&&<p className="text-sm text-cave-200">Les montants validés sont conservés. Pour une correction financière, utilise un avoir ou l’annulation de l’écriture.</p>}
         {/* Description */}
@@ -136,14 +137,17 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               onChange={(e) => field('category', e.target.value as FinanceCategory)}
               className={inputClass}
             >
-              <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
-              <option value="materiel">⚙️ Matériel & Équipement</option>
-              <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
-              <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
-              <option value="renovation">🔨 Local & Rénovation</option>
-              <option value="divers">📦 Frais Divers</option>
-              <option value="apports">💎 Apport Personnel</option>
-              <option value="recettes">💰 Recettes Ventes</option>
+              {/* AM-62 : seules les catégories du même sens que l'écriture d'origine ; une charge ne devient pas une recette. */}
+              {sensDeCategorie(transaction.category) === 'charge' && <>
+                <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
+                <option value="materiel">⚙️ Matériel & Équipement</option>
+                <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
+                <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
+                <option value="renovation">🔨 Local & Rénovation</option>
+                <option value="divers">📦 Frais Divers</option>
+              </>}
+              {sensDeCategorie(transaction.category) === 'apport' && <option value="apports">💎 Apport Personnel</option>}
+              {sensDeCategorie(transaction.category) === 'recette' && <option value="recettes">💰 Recettes Ventes</option>}
             </select>
           </div>
 
@@ -183,7 +187,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 data-1p-ignore="true"
                 data-bwignore="true"
                 required
-                value={date}
+                value={dateAffichee(date)}
                 onChange={(e) => field('date', e.target.value)}
                 placeholder="JJ.MM.AAAA"
                 className={`${inputClass} font-mono text-center px-2`}
@@ -230,7 +234,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             >
               <option value={0.0}>0.0% (Exonéré)</option>
               <option value={0.026}>2.6% (Réduit)</option>
-              <option value={0.081}>8.1% (Matériel)</option>
+              <option value={0.081}>8,1 % (Matériel, services, bière alcoolisée)</option>
             </select>
           </div>
         </div>
@@ -239,11 +243,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <div className="p-3 bg-cave-950/70 border border-cave-800 rounded-2xl flex justify-between items-center text-sm">
           <div>
             <span className="text-cave-400">TVA : </span>
-            <strong className="text-ebc-straw font-mono">{tvaAmount.toFixed(2)} CHF</strong>
+            <strong className="text-ebc-straw font-mono">{montantChf(tvaAmount)} CHF</strong>
           </div>
           <div className="text-right">
             <span className="text-cave-400">Total TTC : </span>
-            <strong className="text-base text-hop font-mono">{amountTTC.toFixed(2)} CHF</strong>
+            <strong className="text-base text-hop font-mono">{montantChf(amountTTC)} CHF</strong>
           </div>
         </div>
 
@@ -345,20 +349,20 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
         {/* Google Drive automatic path preview */}
         <div className="p-3 bg-water/10 border border-water/30 rounded-2xl space-y-1.5">
-          <div className="flex justify-between items-center text-xs sm:text-sm text-water font-semibold">
+          <div className="flex justify-between items-center text-xs sm:text-sm text-cave-50 font-semibold">
             <span className="flex items-center">
               <FileText className="w-3.5 h-3.5 mr-1" /> Dossier Google Drive :
             </span>
             <button
               type="button"
               onClick={handleCopyDrive}
-              className="text-footnote bg-water/20 hover:bg-water/30 text-water px-2 py-0.5 rounded transition flex items-center"
+              className="text-footnote bg-water/20 hover:bg-water/30 text-cave-50 px-2 py-0.5 rounded transition flex items-center"
             >
               {copiedDrive ? <Check className="w-3 h-3 mr-0.5" /> : <Copy className="w-3 h-3 mr-0.5" />}
               {copiedDrive ? 'Copié' : 'Copier'}
             </button>
           </div>
-          <p className="text-footnote text-water font-mono break-all bg-cave-900/60 p-1.5 rounded-lg border border-water/20">
+          <p className="text-footnote text-cave-200 font-mono break-all bg-cave-900/60 p-1.5 rounded-lg border border-water/20">
             {currentDrivePath}
           </p>
         </div>

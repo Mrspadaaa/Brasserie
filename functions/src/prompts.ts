@@ -34,7 +34,9 @@ export type TaskId =
   | 'reviewRecipe'
   | 'lookupIngredient'
   | 'lookupHopVariety'
-  | 'readHopCoa';
+  | 'readHopCoa'
+  /** D280 : la désignation en français des noms de base d'une facture (texte seul, appel à part de la lecture). */
+  | 'traduireNoms';
 
 export interface TaskDef {
   /** Consigne système, en français : les réponses sont lues par Gaëtan. */
@@ -183,25 +185,34 @@ Garde les montants et la TVA imprimés même s'ils sont étrangers, anciens, mul
 tvaRate est une fraction (8.1 % = 0.081), null si plusieurs taux ou taux non écrit ; avec plusieurs taux, recopie chaque taux dans vat. Ne recalcule aucun total.
 vat est le récapitulatif de TVA IMPRIMÉ par taux, tel quel : code (premier mot de la colonne, sans le taux : "N", "R"), rate (fraction), base (montant imprimé de la base) et amount (montant de TVA imprimé). vat vaut [] s'il n'y en a pas. Ne le complète ni ne le corrige jamais, même s'il ne se recoupe pas.
 proForma vaut true si le document est intitulé pro-forma (Pro-Forma Rechnung, facture proforma), false sinon. Une pro-forma dont le paiement est imprimé est une facture réglée : documentType invoice et paymentEvidence paid, jamais quote.
-printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA), même si tu n'en transcris que 35 ; null s'il n'est pas clair.
+printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA) ; null s'il n'est pas clair.
 currency est la devise ISO explicitement lue, vide sinon. date au format JJ.MM.AAAA si complète.
-La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran.
+La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran. Une date de période de service ou d’abonnement (« du … au … », « from … to … », « on … »), d’échéance ou de livraison n’est pas la date du document : sans date de facture, de ticket ou de commande imprimée, laisse date vide et ajoute un fieldWarning date qui cite la date vue.
 documentType distingue facture, ticket, bordereau de livraison, devis, avoir et autre document.
 Sur un bordereau, la somme des lignes n’est PAS un total final imprimé : amountTTC reste null si aucun total n’est écrit.
 Ne prends pas une quantité totale, une taille de vêtement, un numéro client ou un numéro de commande pour un montant ou un numéro de facture.
 paymentEvidence vaut paid seulement si le paiement est explicitement établi, unpaid si un solde à payer est explicite, unknown sinon. Un document livré n’atteste pas son paiement.
+paymentMethod est le moyen de paiement IMPRIMÉ sur le document (rejeu du 08.11, RL-8 : « TWINT CHF 165.20 Paye ») : twint, cash (espèces), card (carte, Maestro, Visa, Postcard), bank_transfer (virement, bulletin payé), other (un autre moyen écrit) ; unknown s’il n’est pas imprimé. Ne le devine jamais d’après le type de commerce.
+amountPaid est le montant que le ticket dit avoir reçu ou payé POUR CE TICKET (« Montant reçu », « Payé », « Bezahlt », « Reçu », espèces données moins rendu non comprises) ; null s’il n’est pas imprimé. Le montant du terminal de paiement (« Total EFT », « EFT CHF », « TWINT CHF », « Karte ») n’est PAS amountPaid : un seul paiement peut couvrir plusieurs tickets ; recopie-le dans terminalAmount, tel quel, sans jamais le remplacer par le total.
+terminalAmount est le montant imprimé par le terminal de paiement (Total EFT, TWINT, carte) ; null s’il n’est pas imprimé. C’est une information : il peut différer du total du ticket sans que rien ne soit faux.
+printedItemCount est le nombre d’articles que le document IMPRIME lui-même (« 3 articles », « Anzahl Artikel : 29 ») ; null s’il n’est pas imprimé : ne le compte jamais toi-même (c’est printedLineCount).
+Comptage indépendant, à faire AVANT de transcrire items, sans te servir d’items : countedAmounts est le nombre de montants d’ARTICLES et de REMISES imprimés dans la colonne des montants des lignes, et rien d’autre : ni le total, ni le montant reçu ou payé, ni le montant du terminal (EFT, TWINT), ni la TVA, ni un montant en devise étrangère. countedEans est le nombre de codes EAN (8 ou 13 chiffres) imprimés sur les lignes d’articles. null si tu ne peux pas compter.
+ignoredLines : chaque ligne imprimée qui n’est PAS un article, au lieu de la mettre dans items : un montant en devise étrangère (« Montant en EUR 370,92 », foreign_currency), une ligne de règlement (TWINT, EFT, carte, espèces, rendu ; payment), un sous-total ou un total intermédiaire (subtotal), toute autre ligne qui n’est pas un article (other). Recopie son libellé et son montant ; [] s’il n’y en a pas. Une remise (Rabais, Aktion, ligne négative sous un article) n’est pas un article : elle reste dans items, kind discount, montant négatif, rendue IMMÉDIATEMENT sous l’article qu’elle réduit, avec son libellé imprimé ; elle n’entre pas dans le nombre d’articles.
+printedTime est l’heure imprimée du ticket (HH:MM), "" si absente.
+photoIncomplete vaut true seulement si la zone des montants (colonne des prix, totaux, règlement) est coupée, pliée, tachée, floue ou masquée sur l’image ; photoIncompleteNote dit en quelques mots où. false si tout est lisible. Ne devine jamais un montant caché : null ou valeur absente.
 fieldWarnings : un avertissement par champ au plus, et seulement pour une valeur illisible, absente alors qu’elle est essentielle (date, total TTC, fournisseur), ou confondable avec une autre (par exemple deux numéros proches) ; la raison courte donne les deux valeurs en cause.
 N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour expliquer où elle est imprimée, ni pour un champ absent par nature : total HT non imprimé (amountHT = null), taux unique d'un document à plusieurs taux (porté par vat), intitulé pro-forma (porté par proForma).
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
-transport et remise (montant négatif). Maximum 35 lignes. price est le prix unitaire imprimé;
-amountTTC est le total TTC de la ligne uniquement s'il est imprimé, sinon null.
+transport et remise (montant négatif), sans en omettre aucune, quel que soit leur nombre. price est le prix unitaire imprimé;
+amountTTC est le montant de la ligne tel qu’imprimé dans la colonne des montants : remplis-le TOUJOURS quand il est imprimé, même si price est lu aussi et même sur un ticket qui n’imprime qu’un montant par ligne ; null seulement s’il n’est pas imprimé.
+Sur un ticket de caisse de magasin, un entier isolé imprimé après le prix d’une ligne (colonne « Qté » ou sans titre, par exemple « 86.95 1 ») est la quantité de la ligne : recopie-le dans quantity (« 1 » = 1 pièce) et laisse unit vide ; ne laisse pas quantity à null quand il est imprimé. Exception : un entier court tout à droite de la ligne, dans la colonne TVA / MWST / code de taxe (le même code que dans le récapitulatif de TVA, par exemple « 5.40 2 » où 2 est le code), est vatCode, JAMAIS la quantité ; la quantité est alors le nombre imprimé en tête de ligne, avant la désignation, ou null s’il n’y en a pas.
 name recopie exactement la désignation imprimée, sans la traduire, la résumer ni ajouter une explication.
 Conserve l'ordre des lignes et les lignes distinctes même si leurs désignations se répètent.
 kind : equipment = bien durable, maintenance = réparation/entretien, stock = ingrédient ou consommable,
 service = prestation, packaging = bouteille/capsule/emballage acheté, shipping = frais de livraison,
 discount = remise, other = article clairement identifié hors de ces catégories, unknown = nature incertaine. Un fût durable peut être equipment; un service de location reste service.
 Des vêtements ou achats personnels ne deviennent jamais du stock ou du matériel de brasserie : kind=other et category=divers.
-reference recopie la référence de chaque article et variant ses caractéristiques imprimées (taille, couleur), sans les ajouter artificiellement à name. orderNumber recopie le numéro de commande, séparément de invoiceNumber.
+reference recopie la référence de chaque article et variant ses caractéristiques imprimées (taille, couleur), sans les ajouter artificiellement à name. orderNumber recopie le numéro de commande, séparément de invoiceNumber, où qu’il soit imprimé : titre ou en-tête d’une page web de commande (« Commande 647304 », « Bestellung 647304 », « Onlinebestellung-686863 »), bandeau d’une capture d’écran, référence d’un récapitulatif ; sur plusieurs captures d’une même commande, recopie-le dès qu’une capture le montre.
 evidence contient un court extrait exact et la page. ambiguity expose uniquement une incertitude réelle
 de lecture ou de nature, jamais une simple explication affirmative; sinon ambiguity vaut "".
 unit recopie l'unité imprimée telle quelle (Kg, Stk, g), sans la convertir ni la normaliser ; "" si aucune unité n'est lisible. price est le prix tel qu'imprimé, pour l'unité imprimée : recopie-le même s'il est donné par 100 g ou par kg, sans le convertir.
@@ -214,6 +225,7 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
         vendor: str,
         documentType: { type:'STRING', enum:['invoice','receipt','delivery_note','quote','credit_note','other'] },
         paymentEvidence: { type:'STRING', enum:['paid','unpaid','unknown'] },
+        paymentMethod: { type:'STRING', enum:['twint','cash','card','bank_transfer','other','unknown'] },
         fieldWarnings: arr(S({field:{type:'STRING',enum:['vendor','date','currency','invoiceNumber','amountHT','amountTTC','tvaRate','tvaAmount','category','items','documentType','paymentEvidence']},message:str},['field','message'])),
         date: { ...str, description: 'Format JJ.MM.AAAA' },
         currency: str,
@@ -222,6 +234,16 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
         proForma: { type: 'BOOLEAN' },
         vat: arr(S({ code: str, rate: { ...num, nullable: true }, base: { ...num, nullable: true }, amount: { ...num, nullable: true } }, ['code', 'rate', 'base', 'amount'])),
         printedLineCount: { type: 'INTEGER', nullable: true },
+        // c1 (09.11) : contrôles croisés de la pièce ; hors `required`, jamais exigés (une lecture sans eux sort comme avant).
+        amountPaid: { ...num, nullable: true },
+        terminalAmount: { ...num, nullable: true },
+        printedItemCount: { type: 'INTEGER', nullable: true },
+        countedAmounts: { type: 'INTEGER', nullable: true },
+        countedEans: { type: 'INTEGER', nullable: true },
+        printedTime: str,
+        ignoredLines: arr(S({ label: str, amount: { ...num, nullable: true }, kind: { type: 'STRING', enum: ['foreign_currency', 'payment', 'subtotal', 'other'] } }, ['label', 'amount', 'kind'])),
+        photoIncomplete: { type: 'BOOLEAN', nullable: true },
+        photoIncompleteNote: str,
         amountHT: { ...num, nullable: true },
         tvaRate: { ...num, nullable: true },
         tvaAmount: { ...num, nullable: true },
@@ -994,15 +1016,112 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
       },
       ['found', 'name', 'source']
     )
+  },
+
+  // --- 15. Désignation en français des noms de base d'une facture ----------
+  /**
+   * D271, D275, D278, D280 (voie f5c-noms-prod) : « Ça traduits en français et fait le bon lien ». Un appel TEXTE SEUL, à part de la lecture
+   * (`scanInvoice` ne change pas d'un octet) : le client envoie, par pièce, les noms de base déjà débarrassés des options, de l'état et du suffixe
+   * d'unité (`lireOptions`), sans image, sans montant, sans quantité. Consigne et schéma sont ceux du banc mesuré (`scripts/banc-noms-fr.ts`,
+   * `SYSTEME_NOMS_FR` et `NOMS_SCHEMA`, mot pour mot : un test les égale) ; ne les retoucher qu'après un nouveau banc.
+   * Routage : aucune ligne dans `LITE_ROUTES` (models.ts), donc `gemini-3.8-flash`, réflexion `low` (Rapide), température 0, comme au banc ;
+   * la 3.5 Flash-Lite a fait des contresens au banc (« Gärglocke » rendu « Bonbonne »).
+   * Plafond de sortie : celui du banc (600 + 36 × noms) pour le plus gros ticket qu'une lecture rende (35 lignes, `SCAN_MAX_ITEMS`).
+   */
+  traduireNoms: {
+    defaultTier: 'fast',
+    tier: 'fast',
+    maxOutputTokens: 600 + 36 * 35,
+    acceptsFile: false,
+    system: `Tu traduis en français des désignations d'articles d'une facture de brasserie (allemand, anglais, français ou italien). Tu ne vois ni le document ni aucun montant.
+Entrée : une liste d'objets { i, base, kind, stockCategory }. Sortie : pour chaque entrée, { i, nameFr } avec le même i, dans le même ordre, et rien d'autre.
+nameFr est la désignation de base en français :
+- Traduis tous les mots ordinaires : matière, usage, forme, couleur, frais (Malz, Hopfen, Hefe, Schlauch, Deckel, Porto, Verpackung, Zuschlag…), même dans une désignation en partie en français ou en anglais.
+- Garde tels quels : marque et nom propre, variété de houblon, souche et code de levure, ® et ™, références, codes, nombres, dimensions et contenances (« 5x8mm », « 30 L »). Un chiffre ou un code qui suit un nom fait partie du nom : ne le coupe pas et ne l'abrège pas.
+- Une désignation déjà en français, ou faite seulement d'un nom propre ou d'un code, se rend à l'identique.
+- N'ajoute ni ne retire aucune information : pas d'option, d'état du produit, d'unité, d'explication ni de parenthèse.
+- La même désignation reçoit toujours la même traduction.
+- kind et stockCategory servent seulement à lever une ambiguïté de sens ; ne les recopie pas.
+Exemples inventés : « Flaschenbürste Neo-7 » → « Goupillon pour bouteilles Neo-7 » ; « Sirup-Pumpe mit Deckel 12x3mm » → « Pompe à sirop avec couvercle 12x3mm » ; « Brew Kettle Lid 40 cm » → « Couvercle de marmite 40 cm » ; « MALTEX® Edel 7 » → « MALTEX® Noble 7 » ; « Joint torique 12x2mm » → « Joint torique 12x2mm ».`,
+    schema: {
+      type: 'OBJECT',
+      properties: { noms: { type: 'ARRAY', items: { type: 'OBJECT', properties: { i: { type: 'INTEGER' }, nameFr: { type: 'STRING' } }, required: ['i', 'nameFr'] } } },
+      required: ['noms']
+    }
   }
 };
+
+/**
+ * Malts et sucres (D302 puis D303, 5 vrais appels du 02.11 deux fois) : un malteur publie une PLAGE de couleur et un extrait, presque jamais un
+ * point. Avec le schéma de base (houblon, levure, fermentation) et trois champs facultatifs ajoutés en fin, le modèle ne remplissait ni plage ni
+ * extrait, et rendait pour BEST Red X `tempMinC` −5 et `tempMaxC` 60 (les bornes du schéma : des champs de levure dans un malt). Le malt a donc
+ * sa consigne et son schéma à lui, comme la levure : seulement les champs d'un malt ou d'un sucre, et cinq nombres EXIGÉS et nullables, placés
+ * juste après `sourceUrl`. Ce que la fiche ne publie pas vaut `null` (jamais une moyenne, jamais une valeur supposée). Le modèle rend la plage
+ * et l'extrait tels que publiés ; le client en déduit le milieu et le potentiel (`deduireValeursMalt`, src/domain/ingredientFacts.ts), lit
+ * `null` comme absent et marque la valeur « déduit ». La consigne et le schéma des levures et des houblons ne sont pas touchés.
+ */
+const MALT_SORTIE = `On te donne le NOM d'un malt ou d'un sucre de brassage (sirop, candi, sucre
+brun, extrait) et son type. Retrouve ses caractéristiques PUBLIÉES par son
+malteur ou son fabricant, et remplis la fiche.
+
+Cherche la fiche officielle : Weyermann, Castle, Bestmalz, Simpsons, Crisp,
+Muntons pour les malts ; le fabricant lui-même pour un sucre ou un sirop.
+Les malteurs européens donnent l'EBC, les américains le degré Lovibond :
+EBC ≈ °L × 1.97 ; écris toujours l'EBC.
+
+SORTIE MALT ET SUCRE. Un malteur publie une plage de couleur et un extrait, pas
+un point. La fiche a cinq champs numériques, toujours présents :
+- colorEbc : un point unique de couleur, seulement si la fiche n'en publie
+  qu'un, en EBC ;
+- colorEbcMin et colorEbcMax : les deux bornes de la plage de couleur publiée,
+  en EBC. Jamais la moyenne de la plage dans colorEbc ;
+- extractPct : l'extrait (fine grind, dry basis) en %, tel que publié, sans le
+  convertir ;
+- potentialPpg : un potentiel publié en PPG, seulement s'il l'est. Ne le calcule
+  pas depuis l'extrait : le client calcule le milieu de la plage et le potentiel.
+Ce que la fiche ne publie pas vaut null (c'est la seule règle d'absence ici),
+jamais 0, jamais une moyenne, jamais une valeur supposée.
+
+RÈGLE ABSOLUE. Le champ source est obligatoire et nomme d'où vient la donnée
+(« Bestmalz — fiche technique BEST Red X »), sourceUrl son adresse directe.
+Si tu ne trouves rien du tout, renvoie found false, explique dans note et mets
+les cinq nombres à null. Un nom générique sans malteur ne permet pas
+d'attribuer la fiche d'un produit précis : demande le fabricant dans note et
+mets les cinq nombres à null. Les faits connus en contexte servent à identifier
+le produit.
+
+N'écris aucun nombre de malt ou de sucre dans usage ni dans note (usage dit
+l'emploi en mots), et rien sur la brasserie, la TVA ni la monnaie : seulement
+la fiche du produit.`;
+
+/** Les clés d'une fiche de malt ou de sucre, dans l'ordre de la sortie : les cinq nombres juste après `sourceUrl`. */
+export const MALT_SCHEMA_ORDRE = ['found', 'name', 'source', 'sourceUrl', 'colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg',
+  'retrievedAt', 'note', 'grainType', 'diastaticPower', 'usage', 'substitutes'];
+/** Les cinq nombres exigés (nullables) d'une fiche de malt ou de sucre. */
+export const MALT_NOMBRES = ['colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg'];
+
+function maltLookupDefinition(base: TaskDef, fields: Record<string, unknown>): TaskDef {
+  const nombre = (type: 'NUMBER', min: number, max: number, description: string) => ({ ...bounded(type, min, max), nullable: true, description });
+  const neufs: Record<string, unknown> = {
+    colorEbc: nombre('NUMBER', 0, 5000, 'Couleur publiée comme un point unique, en EBC ; null si la fiche publie une plage ou rien.'),
+    colorEbcMin: nombre('NUMBER', 0, 5000, 'Plage de couleur publiée, borne basse, en EBC ; null si non publiée.'),
+    colorEbcMax: nombre('NUMBER', 0, 5000, 'Plage de couleur publiée, borne haute, en EBC ; null si non publiée.'),
+    extractPct: nombre('NUMBER', 0, 100, 'Extrait fine grind dry basis publié, en % ; null si non publié.'),
+    potentialPpg: nombre('NUMBER', 1, 50, 'Potentiel publié en PPG ; null si non publié (ne pas le calculer).')
+  };
+  const properties = Object.fromEntries(MALT_SCHEMA_ORDRE.map(key => [key, key in neufs ? neufs[key]
+    : key === 'usage' ? { ...str, description: 'Emploi du malt ou du sucre en mots, sans aucun nombre.' } : fields[key]]));
+  return { ...base, system: `${BRASSERIE}\n\n${MALT_SORTIE}`,
+    schema: { ...S(properties, ['found', 'name', 'source', ...MALT_NOMBRES]), propertyOrdering: MALT_SCHEMA_ORDRE } as TaskDef['schema'] };
+}
 
 /** Yeast lookup must produce fields the recipe can actually retain, rather than
  * using the hop-only `usage` field as an unstructured substitute for its dossier. */
 export function ingredientLookupDefinition(kind: unknown): TaskDef {
   const base = TASKS.lookupIngredient;
-  if (kind !== 'levure') return base;
   const fields = base.schema.properties as Record<string, unknown>;
+  if (kind === 'malt') return maltLookupDefinition(base, fields);
+  if (kind !== 'levure') return base;
   const keys = ['found', 'name', 'source', 'sourceUrl', 'retrievedAt', 'note', 'lab', 'strain', 'form',
     'attenuationPct', 'tempMinC', 'tempMaxC', 'flocculation', 'alcoholTolerancePct', 'technicalFacts', 'fermentation'];
   return { ...base, system: `${base.system}

@@ -20,10 +20,11 @@ import { styleByCode, styleWaterForName, styleFromTargetIons } from './waterStyl
 import { waterProfileTarget, waterTreatmentTarget } from './water/profileTarget';
 import { describeTreatmentIssues } from './water/solverMessages';
 import { assessWaterProfile, PROFILE_IONS } from './water/profileAssessment';
-import { computeBeerColor } from './beerColor';
+import { recipeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
 import { noloScience } from './noloScience';
+import { nombreFr } from '../domain/nombreAffiche';
 type WaterRecipe = Pick<
   Recipe,
   | 'style'
@@ -106,7 +107,7 @@ export function recipeWaterCalculation(recipe: WaterRecipe) {
   if(recipe.nolo?.enabled && ratio>(recipe.nolo.scienceSnapshot??noloScience())!.waterMashMaxLKg.value)
     throw Error('Empâtage NOLO très dilué : mesurer ou titrer le moût. Le modèle de pH et sa marge standard ne sont pas validés ici.');
   const band = targetRaForGrist(
-    computeBeerColor(grains, recipe.volumeL)?.ebc ?? null,
+    recipeBeerColor(recipe.fermentables, recipe.volumeL)?.ebc ?? null,
     grains,
     ratio
   );
@@ -195,7 +196,7 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
   const warnings = describeTreatmentIssues(solved.issues ?? [], treatment, band);
   const assessment = assessWaterProfile(treatment.treatedTotal, ranges, PROFILE_IONS.filter(ion => !style.untargetedIons?.includes(ion)));
   for (const item of assessment.deviations)
-    warnings.push(`Profil non atteint : ${item.ion.toUpperCase()} à ${item.value} ppm pour ${item.min}–${item.max}. Vérifier les doses manuelles, les sels autorisés et la dilution.`);
+    warnings.push(`Profil non atteint : ${item.ion.toUpperCase()} à ${nombreFr(item.value, 1)} ppm pour ${item.min}–${item.max}. Vérifier les doses manuelles, les sels autorisés et la dilution.`);
   if (!p.acid)
     warnings.push(
       'Acidifiant non choisi : les sels sont calculés, l’acidification reste à préparer.'
@@ -249,7 +250,7 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
         range = style.ions[ion];
       if (value < range.min || value > range.max)
         warnings.push(
-          `Profil non atteint : ${ion.toUpperCase()} à ${value} mg/L, cible ${range.min}–${range.max}.`
+          `Profil non atteint : ${ion.toUpperCase()} à ${nombreFr(value, 1)} mg/L, cible ${range.min}–${range.max}.`
         );
     }
   } catch {
@@ -284,7 +285,7 @@ export function reconcileRecipeWater(recipe: Recipe, paths: string[], sources: W
       throw Error('Choisis le rapport eau/grain ou les volumes, pas les deux commandes ensemble.');
     const total = p.mashWaterL + p.spargeWaterL;
     const kg = next.fermentables
-      .filter((f) => f.kind === 'grain')
+      .filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage') // AM-7 : seul le grain empâté boit l'eau de la maische
       .reduce((sum, f) => sum + f.weightKg, 0);
     const mashL = kg * next.mash!.ratioLPerKg!;
     if (!(kg > 0) || mashL > total)

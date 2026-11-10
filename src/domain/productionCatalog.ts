@@ -1,9 +1,10 @@
 import { batchDisplayDate } from './batchSchedule';
 import type { Batch, Recipe, TimeFilterPeriod } from '../types';
-import { bandForEbc, computeBeerColor } from './beerColor';
+import { bandForEbc, recipeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
 import { DateUtils } from '../services/dateUtils';
-import { BrewingMath } from '../services/brewingMath';
+import { abvFromGravities, plausibleAbv } from './gravityBounds';
+import { ibuListe } from './recipeMetrics';
 import { inCatalogFolder, type CatalogFolder } from './catalogOrganization';
 
 export type CatalogKind = 'batches' | 'recipes';
@@ -134,10 +135,11 @@ function familyOf(recipe: Recipe, recipes: Recipe[]): string {
   }
   return item.id;
 }
-export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry[] {
+/** `defaultEfficiencyPct` : le rendement de la cuverie active, celui que la fiche applique à une recette qui n'a pas le sien. */
+export function recipeEntries(recipes: Recipe[], batches: Batch[], defaultEfficiencyPct = 75): CatalogEntry[] {
   return recipes.map((recipe) => {
-    const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : computeBeerColor(
-      (recipe.fermentables ?? recipe.malts ?? []).filter((f) => !f.kind || f.kind === 'grain'),
+    const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : recipeBeerColor(
+      recipe.fermentables ?? recipe.malts ?? [],
       recipe.volumeL
     );
     return {
@@ -147,8 +149,10 @@ export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry
       volumeL: recipe.volumeL,
       date: recipe.brewDate,
       timestamp: catalogDate(recipe.brewDate),
-      abv: catalogNumber(recipe.nolo?.enabled ? recipe.nolo.targetAbvPct : recipe.abvTarget),
-      ibu: catalogNumber(recipe.ibuTarget),
+      // Un degré d'alcool de 0 sur une bière non NOLO est un champ jamais rempli, pas une mesure : l'inconnu n'est jamais 0 (n° 21).
+      abv: recipe.nolo?.enabled ? catalogNumber(recipe.nolo.targetAbvPct) : (catalogNumber(recipe.abvTarget) || undefined),
+      // Le même IBU que la fiche (calculé), pas l'IBU « annoncé » de la recette (test en ligne du 07.11, n° 3).
+      ibu: catalogNumber(ibuListe(recipe, recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? defaultEfficiencyPct)),
       ebc: color?.ebc ?? recipe.colorEbc,
       swatch:
         color?.swatch ?? (recipe.colorEbc != null ? bandForEbc(recipe.colorEbc).swatch : undefined),
@@ -174,7 +178,7 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       (f) => !f.kind || f.kind === 'grain'
     );
     const nolo = batch.nolo ?? recipe?.nolo;
-    const color = nolo?.enabled && ['coldExtraction','secondRunnings'].includes(nolo.process) ? null : computeBeerColor(grain, recipe?.volumeL ?? batch.volumeL);
+    const color = nolo?.enabled && ['coldExtraction','secondRunnings'].includes(nolo.process) ? null : recipeBeerColor(recipe?.fermentables ?? recipe?.malts ?? batch.malts ?? [], recipe?.volumeL ?? batch.volumeL);
     const og = catalogNumber(batch.og),
       fg = catalogNumber(batch.fg);
     return {
@@ -186,9 +190,10 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       timestamp: catalogDate(batchDisplayDate(batch)),
       // NOLO alcohol is an analysis with its own context and uncertainty.
       // Neither an old scalar nor OG–FG can replace that reading in charts.
+      // Un alcool absurde (hors 0–18 % vol.) ou tiré de densités hors bornes ne part jamais au catalogue.
       abv: (batch.nolo ?? recipe?.nolo)?.enabled ? undefined :
-        catalogNumber(batch.abv) ??
-        (og && fg && og > 1 && fg >= 1 && og >= fg ? BrewingMath.calculateABV(og, fg) : undefined),
+        (plausibleAbv(catalogNumber(batch.abv)) ? catalogNumber(batch.abv) : undefined) ??
+        abvFromGravities(og ?? null, fg ?? null) ?? undefined,
       ibu: catalogNumber(recipe?.ibuTarget),
       ebc: color?.ebc ?? recipe?.colorEbc,
       swatch:
@@ -273,22 +278,28 @@ export function filterCatalog(
       !inRange(e.ebc, filters.colorMin, filters.colorMax)
     )
       return false;
+    // PD-3, PD-7 (08.11) : « Je viens de le créer et il n'est pas là ». Un brassin planifié sans date (« Date à définir ») est un travail à faire :
+    // une période ne peut pas le juger, sa date est inconnue. Il reste dans la liste sous toute période, sauf un intervalle choisi à la main.
+    const pendingUndated = e.batch?.status === 'planifie' && e.timestamp === undefined && filters.period !== 'custom';
     if (
       filters.period === 'global' &&
       globalPeriod !== 'all' &&
+      !pendingUndated &&
       (e.timestamp === undefined || !DateUtils.isDateInPeriod(e.date ?? '', globalPeriod))
     )
       return false;
     if (filters.period === '30' || filters.period === '90') {
       if (
-        e.timestamp === undefined ||
-        e.timestamp < today - (Number(filters.period) - 1) * 86400000 ||
-        e.timestamp > today
+        !pendingUndated &&
+          (e.timestamp === undefined ||
+            e.timestamp < today - (Number(filters.period) - 1) * 86400000 ||
+            e.timestamp > today)
       )
         return false;
     }
     if (
       filters.period === 'year' &&
+      !pendingUndated &&
       (e.timestamp === undefined || new Date(e.timestamp).getUTCFullYear() !== day.getFullYear())
     )
       return false;

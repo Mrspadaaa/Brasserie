@@ -1,6 +1,6 @@
 import { Input, type InputElement } from './Input';
 import React, { useRef } from 'react';
-import { useNumericDraft } from './numericInput';
+import { parseDecimal, useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
 
 /**
@@ -43,6 +43,16 @@ interface NumberInputProps {
   emptyValue?: number | undefined;
   /** Ouvre le pavé intégré au lieu du clavier du système, sur téléphone. */
   pad?: boolean;
+  /**
+   * Dit qu'une valeur tapée hors bornes a été ramenée (`{ saisi, retenu }`, à la sortie du champ), puis `null` à la frappe suivante.
+   * Une valeur refusée ne disparaît jamais en silence ; l'appelant choisit où l'écrire.
+   */
+  onRefus?: (refus: { saisi: number; retenu: number | undefined } | null) => void;
+  /**
+   * Hors bornes, la saisie est REFUSÉE au lieu d'être ramenée à la borne : le champ reprend la valeur qu'il avait à l'entrée, `onRefus` la dit
+   * (`retenu` = cette valeur ; `undefined` : le champ était vide) et le champ est `aria-invalid` tant que le message est là. Comme VI-9 (SaltDoseControl).
+   */
+  rejeter?: boolean;
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
@@ -62,6 +72,8 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
     max,
     integer = false,
     pad: _pad = false,
+    onRefus,
+    rejeter = false,
     placeholder,
     disabled,
     required,
@@ -74,7 +86,8 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<InputElement>(null);
   const coarse = useCoarsePointer();
-  const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue, fractionDigits: props.fractionDigits });
+  const avant = useRef<number | undefined>(value);
+  const { draft, push, settle, revert, onFocusChange } = useNumericDraft(value, onValue, { emptyValue, fractionDigits: props.fractionDigits });
 
   return (
     <Input
@@ -99,11 +112,22 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
       disabled={disabled}
       placeholder={placeholder}
       value={draft}
-      onFocus={(e) => e.currentTarget.select()}
+      onFocus={(e) => { avant.current = value; onFocusChange(true); e.currentTarget.select(); }}
       onBlur={() => {
-        settle({ min, max, integer });
+        // Une valeur ramenée dans les bornes se dit (RX-2) : le nombre tapé (arrondi si l'entier est demandé) et celui que la recette retient.
+        const saisi = parseDecimal(draft);
+        if (rejeter && saisi !== null && ((min !== undefined && saisi < min) || (max !== undefined && saisi > max))) {
+          revert(avant.current ?? emptyValue);
+          onRefus?.({ saisi, retenu: avant.current });
+          onFocusChange(false);
+          return;
+        }
+        const retenu = settle({ min, max, integer });
+        const voulu = saisi === null ? null : integer ? Math.round(saisi) : saisi;
+        if (onRefus && saisi !== null && retenu !== null && retenu !== undefined && voulu !== retenu) onRefus({ saisi, retenu });
+        onFocusChange(false);
       }}
-      onChange={(e) => push(e.target.value)}
+      onChange={(e) => { onRefus?.(null); push(e.target.value); }}
       className={className}
     />
   );

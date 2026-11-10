@@ -36,6 +36,21 @@ const L = (name: string, kind: FermentableKind, use: FermentableUse, weightKg: n
 export function fermentablesApercu(etat: string): Fermentable[] {
   const e = etat.replace(/^#/, '');
   if (e === 'vide') return [];
+  // Audit métier du 08.11 (AM 1 à 3), SIMULÉ : son cas (Pilsner Malz 1,8 kg à J+4, Caramünch 32,5 kg à J+3, une donnée ancienne mal placée),
+  // et une OG absurde (40 kg de grain empâté pour 30 L). Potentiel et couleur : valeurs typiques de fiche malterie, pour que l'OG se calcule.
+  if (e === 'absurde' || e === 'og') {
+    const stock = stockApercu();
+    const lien = (f: Fermentable) => ({ ...f, stockItemRef: stock.find((s) => s.name === f.name)?.ref });
+    return (e === 'absurde' ? [
+      L('Pale Ale Malz', 'grain', 'empatage', 5, { colorEbc: 6.5, potentialPpg: 37 }),
+      L('Pilsner Malz', 'grain', 'fermentation', 1.8, { colorEbc: 3.5, potentialPpg: 37, dayOffset: 4 }),
+      L('Caramünch II', 'grain', 'fermentation', 32.5, { colorEbc: 120, potentialPpg: 34 }),
+      L('Dextrose', 'sucre', 'fermentation', 0.4, { potentialPpg: 46, dayOffset: 2 }),
+    ] : [
+      L('Pilsner Malz', 'grain', 'empatage', 40, { colorEbc: 3.5, potentialPpg: 37 }),
+      L('Caramünch II', 'grain', 'empatage', 2, { colorEbc: 120, potentialPpg: 34 }),
+    ]).map(lien);
+  }
   const c = e === 'couleurs' || e === 'sucre' || e === 'fruit';
   const base = [
     L('Pilsner Malz', 'grain', 'empatage', 5, c ? { colorEbc: 3.5 } : {}),

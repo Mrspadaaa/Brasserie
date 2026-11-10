@@ -1,0 +1,13 @@
+doc1 : provisoire 7 lignes, final 7, rang null 0
+doc2 : provisoire 6 lignes, final 6, rang null 0
+doc3 : provisoire 1 lignes, final 2, rang null 1
+doc4 : provisoire 3 lignes, final 3, rang null 0
+doc5 : provisoire 26 lignes, final 26, rang null 0
+doc6 : provisoire 20 lignes, final 21, rang null 1
+doc9 : provisoire 26 lignes, final 26, rang null 0
+doc10 : provisoire 31 lignes, final 32, rang null 1
+doc11 : provisoire 24 lignes, final 25, rang null 1
+doc12 : provisoire 23 lignes, final 24, rang null 1
+doc13 : provisoire 1 lignes, final 1, rang null 0
+doc14 : provisoire 16 lignes, final 17, rang null 1
+RANGS 12/14 pièces avec provisoire : 184 lignes finales avec un rang sur 190 (6 nulles) ; 184 lignes provisoires dont 0 sans ligne finale ; rang différent de la position 0

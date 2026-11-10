@@ -16,6 +16,8 @@ un artefact neuf, jamais en mots seuls (24.10).
 - Partir de la demande et du code actuel. Préserver les changements en cours,
   le hors ligne et les données. Vérifier sur des fixtures ; pas de déploiement
   ni d'écriture sur les données réelles pour tester.
+- Avant tout algorithme non trivial : nommer le problème d'école, chercher la
+  méthode standard et les bibliothèques, écrire la décision (L29, « ## État de l'art »).
 - Lire les parties pertinentes de PRODUCT.md pour le métier. Les mémoires et
   anciens rapports sont des indices datés ; PRODUCT.md, DESIGN.md et les décisions
   récentes de l'utilisateur priment en cas de contradiction.
@@ -90,6 +92,15 @@ Système complet : `docs/agents/systeme.md`.
   contexte ciblé et résultat attendu. Réutiliser le même agent pour une suite liée.
   Les sous-agents consomment aussi du quota ; ne pas créer une équipe par défaut
   ni refaire leur exploration. Garder une revue indépendante quand le risque le justifie.
+- Jetons (09.11, « tout va dans la qualité ») : chaque appel relit tout le contexte en cache, donc
+  moins d'appels et un contexte léger. Un lot = un script préparé et un appel groupé, pas une exploration
+  pas à pas ; jamais un appel en échec relancé tel quel ; sorties filtrées (`head`, `grep`, champs
+  ciblés) ; pas d'outil ni de connecteur activé en cours de session (casse le cache) ; compacter ou
+  passer la main avant que les messages pèsent plus de 450 k ; un agent s'arrête à 200 k (hook) et rend
+  « REPRISE : <fichier> » ; un fichier inchangé ne se relit pas ; un agent générique nomme son modèle ; le pilote relance dans un agent neuf (10.11 : 82 % des 3,8 Md relus venaient d'agents > 250 k). Mesure : `node scripts/agents/jetons.mjs`.
+  Appliqué par hooks utilisateur (`~/.claude/hooks/`, source `.claude/hooks/economie.mjs` et `rc-sessions.mjs`) :
+  pas de relance d’un échec, allers-retours comptés, messages ≤ 700 car., aucun rapport de progrès,
+  un seul récapitulatif à la fin ; toute session lancée passe en /rc on.
 - Arrêter la recherche quand les preuves permettent la décision. Grouper les
   lectures indépendantes ; garder les longs journaux en fichiers et remonter
   résultats, erreurs utiles et références. Les tests déjà verts se rejouent pour
@@ -102,11 +113,11 @@ Système complet : `docs/agents/systeme.md`.
   V3/V4/V5.5 ou un test vert ne le prouvent pas. Classer l'existant fini /
   inachevé récupérable (manque précis) / inutilisable ; finir ou brancher plutôt
   qu'ajouter une couche parallèle ; ne rien supprimer sans accord.
-- Les tests d'intégration et les validations se font sur un vrai rendu de page
-  dans Chrome (parcours joué, captures regardées), pas seulement avec
-  Vitest/jsdom ou en lisant le code. D'abord en local : fixtures (scripts
-  `puppeteer-core`), puis émulateurs Firebase ; l'app en ligne plus tard, en
-  lecture seule.
+- Tester d'abord par la vision (D343) : vraies pièces, chaque état et geste
+  dans Chrome, deux thèmes, 390 tactile et 1280 ; le critique, puis le
+  pilote, fait seulement « combien et quels problèmes ? », liste numérotée
+  (D344). Vitest pour les règles de calcul ; peu de fixtures. Local, puis
+  émulateurs, puis en ligne, lecture seule.
 - Gemini jamais dans un test unitaire ni dans `npm test` : toujours simulé.
   Appels réels seulement dans des tests spéciaux dédiés, lancés explicitement,
   très limités et journalisés.

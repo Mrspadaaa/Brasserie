@@ -13,7 +13,8 @@ import {
   X
 } from 'lucide-react';
 import { BrewDayState, RecipeSnapshot } from '../types';
-import { READING, parseReading, readingKey } from '../domain/brewDay';
+import { READING, parseReading, readingKey, sg } from '../domain/brewDay';
+import { formatAmount, roundAmount } from '../../functions/src/brewAmount';
 import { brewIngredients, isBoilStep } from '../domain/brewCompanion';
 import { ACIDS } from '../domain/water';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
@@ -86,7 +87,7 @@ export function BrewJournal({
     ...entry,
     value:
       entry.kind === 'densite'
-        ? Number(entry.value).toFixed(3)
+        ? sg(Number(entry.value))
         : entry.type === 'notes'
           ? entry.value
           : entry.value.replace('.', ','),
@@ -110,10 +111,10 @@ export function BrewJournal({
       at: actual.doneAt,
       step: ingredient.stepId,
       label: actual.replacement?.name ?? ingredient.name,
-      value: String(actual.amount).replace('.', ','),
+      value: String(roundAmount(actual.amount, ingredient.unit)).replace('.', ','),
       unit: ingredient.unit,
       category: 'additions',
-      detail: `Ajout en cuve · prévu ${ingredient.planned} ${ingredient.unit}${ingredient.side ? (ingredient.side === 'mash' ? ' · eau d’empâtage' : ' · eau de rinçage') : ''}${actual.replacement ? ` · remplace ${ingredient.name}` : ''}`
+      detail: `Ajout en cuve · prévu ${formatAmount(ingredient.planned, ingredient.unit)}${ingredient.side ? (ingredient.side === 'mash' ? ' · eau d’empâtage' : ' · eau de rinçage') : ''}${actual.replacement ? ` · remplace ${ingredient.name}` : ''}`
     });
   }
   for (const step of state.steps.filter((s) => !isBoilStep(s))) {
@@ -250,7 +251,13 @@ export function BrewJournal({
         <div>
           <h2>Journal de cuve</h2>
         </div>
-        <button type="button" className="brew-export" onClick={download}>
+        <button
+          type="button"
+          className="brew-export"
+          onClick={download}
+          disabled={!events.length}
+          title={events.length ? undefined : 'Rien à exporter : le journal est vide.'}
+        >
           <Download size={17} />
           <span>Exporter .txt</span>
         </button>

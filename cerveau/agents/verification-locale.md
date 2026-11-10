@@ -2,7 +2,7 @@
 name: verification-locale
 description: Comment vérifier localement l'app Brasserie L'Affinée — contournement auth en dev sous ?dev-local, et scripts de contrôle.
 type: agents
-maj: 2026-10-24
+maj: 2026-11-02
 sources: mémoire locale affinee-verification-locale.md ; src/App.tsx ; scripts/check-no-dev-auth.mjs ; scripts/check-water.mjs ; vite.config.ts ; firebase.json ; firestore.rules ; src/ui/useViewport.ts ; src/data/seedData.ts
 ---
 
@@ -23,6 +23,7 @@ L'app est verrouillée derrière une authentification Google Firebase : sans con
 ```
 rm -rf dist && npx tsc --noEmit && node scripts/check-water.mjs && npx vitest run
 npx vite build && node scripts/check-no-dev-auth.mjs
+node scripts/agents/controle-avant-deploiement.mjs <sha>   # D342 : la Dépense ne part pas sans AVANT-DEPLOIEMENT OK
 npx firebase deploy --only hosting -m "…"
 ```
 Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` dans le bundle servi ; ouvrir l'URL de production avec `?dev-local`, qui doit montrer la vraie page de connexion. Règle d'or de Gaëtan : tout se développe et se valide en local avant tout déploiement, et on ne touche jamais `firebase.json`, `.firebaserc`, `firestore.rules`, `firestore.indexes.json`.
@@ -36,5 +37,9 @@ Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` d
 **Suite instable sous charge** : `monkey.test.tsx`, `fuzzSaisie.test.tsx`, `recipeWizardSafety`, `waterManualSparge` et les panneaux houblon dépassent le délai (15 s, 30 s pour une fuzz) de façon variable. Vérifié : le commit `2c38736` non modifié donne les mêmes échecs, avec un total qui bouge entre deux exécutions (8, 9, 11 ou 14 tests). Pour juger un changement, comparer la liste des fichiers en échec avec celle d'un worktree détaché sur le même commit de base, pas les compteurs bruts.
 
 **Banc du jour de brassage** : `?preview=brew&view=brassage` monte `BrewDayPage` sur la NEIPA de démonstration, sans authentification ni Firestore. `&hardware` passe sur la cuve Royal Catering 45 L, `&keyboard=300` simule le clavier. Les phases se sélectionnent par les boutons `.brew-phase`.
+
+**File d'envoi Drive (d3c, 01.11).** Une file sans minuterie exempte du délai anti-rafale tout essai qui n'a atteint aucun serveur et tout redémarrage ; sinon le job attend un événement qui ne vient pas. Seul le banc Chrome l'a montré (tests unitaires verts au temps factice). Copie de déploiement `%TEMP%/deploy-63130965` : son `.env.local` met les émulateurs à `true`, sans effet en production (`firebase.ts` exige `import.meta.env.DEV`).
+
+**Fixtures d'un banc Chrome sous `?dev-local` (dp-doublon, 01.11).** `import('/src/services/firestoreRepo.ts')` puis `FirestoreRepo.put` pose une donnée dans le cache mémoire seul ; `import('/src/services/geminiScanner.ts')` permet de remplacer `GeminiScannerService.scanDocument` par une lecture simulée comptée : même instance de module que l'app. Un filtre réseau sur « aiTask » se limite aux fetch/xhr vers l'extérieur : le module source `aiClient.ts` en importe un dont le nom contient « aiTask », et le bloquer casse le chargement.
 
 Voir [[socle-v01]] et [[chimie-eau]].

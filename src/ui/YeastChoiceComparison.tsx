@@ -196,7 +196,7 @@ function SupplyComparisonTable({ comparison, recipeProductCopyId, recipeOfferCop
   const wort = comparison.wort;
   const basis = (value?: string) => value === 'measured' ? 'mesuré' : value === 'recipe-estimate' ? 'estimé recette' : value === 'hypothesis' ? 'hypothèse' : 'inconnu';
   const volume = wort.volumeL !== undefined ? `${displayNumber(wort.volumeL)} L · ${basis(wort.volumeBasis ?? wort.basis)}` : 'volume inconnu';
-  const sg = wort.sg !== undefined ? `SG ${wort.sg.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} · ${basis(wort.sgBasis ?? wort.basis)}` : 'SG inconnue';
+  const sg = wort.sg !== undefined ? `Densité ${wort.sg.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} · ${basis(wort.sgBasis ?? wort.basis)}` : 'Densité inconnue';
   const missing = [wort.volumeL === undefined ? 'volume' : '', wort.sg === undefined ? 'densité' : ''].filter(Boolean);
   return <div className="yc-supply-comparison" data-supply-comparison>
     <h4>Produits, formats et offres</h4>

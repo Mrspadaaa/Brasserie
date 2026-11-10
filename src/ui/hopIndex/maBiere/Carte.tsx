@@ -11,7 +11,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Minus, Plus, RotateCw, X } from 'lucide-react';
 import { COULEURS, COURT, Inconnu, nombre } from './commun';
-import { useOuvrir } from './hote';
+import { useLectures, useOuvrir } from './hote';
 import { useNavigation } from './hote';
 import { useGestes } from './hote';
 import { placer, quandDe } from '../parcours/operations';
@@ -29,6 +29,7 @@ import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
 import { useModifier } from './Frise';
 import { MarquesCatalogue } from '../fiche/marques';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const SEUIL = 0.5;
 const COURT_SIGNAL: Partial<Record<FamilyId, string>> = { resin: 'résine', herbal: 'herbe', earthy: 'terre', spice: 'épice', stoneFruit: 'noyau', pomeFruit: 'pépins', tropical: 'tropical', citrus: 'agrumes' };
@@ -76,6 +77,8 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
   const gestes = useGestes();
   const modifier = useModifier();
   const h = houblon(a.hopKey);
+  const { lectures, lireNom } = useLectures();
+  const lecture = lectures?.[a.id];
   const sc = style(recette.styleCode);
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const q = quandDe(a, recette);
@@ -150,6 +153,14 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
     <div data-element="etape-carte-ajout" data-voie={a.id} data-houblon-ligne={a.hopKey} data-etat={premier ? 'etat-fiche-appui-long-carte etat-fiche-appui-en-cours etat-fiche-survol-1280' : undefined}
       {...gesteCarte}
       className={`pq-mb-corps pq-ma-biere-carte pq-ma-biere-sans-selection relative min-w-0 px-2.5 pt-1.5 pb-2 space-y-1 rounded-lg ${repere ? 'pq-ma-biere-change' : ''}`}>
+      {/* Test en ligne n° 9 : le mot du brasseur et la lecture qu'on en fait, avec un toucher pour confirmer ou refuser ; jamais un nom remplacé en silence. */}
+      {lecture && lireNom && (
+        <p data-role="lecture-nom" className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-attention">
+          <span><b className="font-semibold">{lecture.saisi}</b> · lu comme {lecture.lu}</span>
+          <button type="button" data-role="lecture-confirmer" onClick={() => { onGeste(); lireNom(a.id, true); }} className="underline underline-offset-2">Confirmer</button>
+          <button type="button" data-role="lecture-refuser" onClick={() => { onGeste(); lireNom(a.id, false); }} className="underline underline-offset-2">Refuser</button>
+        </p>
+      )}
       {repere && <p data-role="vient-de-changer" className="pq-mb-l2 pq-ma-biere-repere text-xs leading-none">{repere}</p>}
       {/* « Ça créé un slider horizontal ??? À enlever » (24.10, soir, Falconer's Flight) : un nom long renvoie la dose à la
           ligne, jamais au-delà de la carte. */}
@@ -166,10 +177,10 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           </button>
         </span>
         <span className="pq-mb-pas ml-auto inline-flex items-center gap-1 shrink-0" {...stop}>
-          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${PAS_DOSE} g de ${h.nom}`} {...repeterMoins} className={bouton}>
+          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${nombreFr(PAS_DOSE, 1)} g de ${h.nom}`} {...repeterMoins} className={bouton}>
             <Minus className="w-4 h-4" aria-hidden="true" /></button>
           <output data-role="dose" className="min-w-[2.5rem] text-center font-mono font-semibold text-base text-cave-50 tabular-nums">{nombre(a.grams, a.grams % 1 ? 1 : 0)}<span className="font-sans font-normal text-sm text-cave-400">{' '}g</span></output>
-          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${PAS_DOSE} g de ${h.nom}`} {...repeterPlus} className={bouton}>
+          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${nombreFr(PAS_DOSE, 1)} g de ${h.nom}`} {...repeterPlus} className={bouton}>
             <Plus className="w-4 h-4" aria-hidden="true" /></button>
           <button type="button" data-role="retirer" data-etat={premier ? 'etat-etape-retirer' : undefined} aria-label={`Retirer ${h.nom} de la recette`} onClick={() => { onGeste(); gestes.retirer('recette', a.id); }}
             className="w-6 h-7 inline-flex items-center justify-center text-cave-400"><X className="w-4 h-4" aria-hidden="true" /></button>
@@ -217,7 +228,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
             );
           })}
         </span>}
-        {nonSimule && q.type !== 'dryhop' && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme</span>}
+        {nonSimule && q.type !== 'dryhop' && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme non simulé</span>}
         {h.partSansFamille != null && h.partSansFamille >= 0.25 && <Autres h={h} largeur={48} petit />}
         <span className="ml-auto inline-flex items-center gap-1" {...stop}>
           {q.type === 'whirlpool' && (
@@ -266,7 +277,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
       <div id={idLegende} data-role="legende" hidden={!legende} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} className="pq-mb-lg-legende">
         <p className="pq-mb-lg-reste">
           <span><RotateCw className="w-3.5 h-3.5" aria-hidden="true" /> type</span>
-          <span><b>− g +</b> {PAS_DOSE} g</span>
+          <span><b>− g +</b> {nombreFr(PAS_DOSE, 1)} g</span>
           <span><b>×</b> retirer</span>
           <span><b className="pq-mb-lg-pill">{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} {signal ? `${h.familles[signal].fiches}/${h.familles[signal].sur}` : ''}</b> la plus citée</span>
           <span><b>α</b> du lot</span>

@@ -40,6 +40,10 @@ export interface HoteEtape {
   allerWizard?: (cible: 'duree-ebullition' | 'levure') => void;
   /** Les commandes de l'en-tête (maquette : thème et Recommencer ; app : aucune). */
   Actions?: ComponentType;
+  /** Test en ligne n° 9 : un nom saisi lu comme une variété voisine (« Nuget » → Nugget) : le mot du brasseur et la lecture, par ajout. App seulement. */
+  lectures?: Record<string, { saisi: string; lu: string }>;
+  /** Confirmer la lecture (la variété est reliée à la ligne, le nom reste celui du brasseur) ou la refuser (la ligne reste sans variété). */
+  lireNom?: (ajoutId: string, accepter: boolean) => void;
 }
 
 const Ctx = createContext<HoteEtape | null>(null);
@@ -63,6 +67,7 @@ export function useBiere(recette?: RecetteParcours): BiereLue {
 }
 export const useGestes = (): GestesEtape => useHote().gestes;
 export const useOuvrir = () => useHote().ouvrir;
+export const useLectures = () => { const h = useHote(); return { lectures: h.lectures, lireNom: h.lireNom }; };
 export function useNavigation() {
   const h = useHote();
   return { route: h.route, aller: h.aller };

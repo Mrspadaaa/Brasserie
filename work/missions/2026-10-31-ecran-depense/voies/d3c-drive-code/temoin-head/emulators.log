@@ -1,0 +1,250 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-jus", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-r5sBUc\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8113
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: aiTask, applyBrewerProposal, applyYeastDbCorrection, askBrewer, askBrewerHopAdviceV1, cleanupBreweryTransfers, cleanupFinancialSync, deliverBrewAlarm, dispatchBrewerHopAdviceV1, dispatchBrewerQuestion, driveAuthorization, exportBreweryData, getBrewAlertConfig, getBrewSession, getBrewerActivity, getBrewerAiBudget, getBrewerConversation, getBrewerHopAdviceActivityV1, getBrewerHopAdviceConversationV1, getFermentationResearch, hopReclasserIA, markBrewerHopAdviceReadV1, markBrewerRead, migrateFinanceDocuments, notifyBrewerAnswer, notifyBrewerHopAdviceAnswerV1, processBrewerHopAdviceV1, processBrewerQuestion, proposeYeastDbCorrection, readBrewingCatalogue, readBrewingScenario, recordDataChange, recordFinancialPaymentChange, recordFinancialTransactionChange, registerBrewDevice, registerBrewerNotifications, rescheduleBrewAlarms, resetBrewerConversation, resetBrewerHopAdviceConversationV1, restoreBreweryData, retryBrewerHopAdviceQuestionV1, retryBrewerQuestion, saveBrewSession, setBrewerAiBudget, syncBrewAlarms, syncFinancialLedger, transferBreweryData, writeBrewingCatalogue, writeBrewingScenario.
+[32m[1m+  functions[europe-west6-aiTask]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/aiTask).
+[32m[1m+  functions[europe-west6-applyBrewerProposal]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/applyBrewerProposal).
+[32m[1m+  functions[europe-west6-applyYeastDbCorrection]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/applyYeastDbCorrection).
+[32m[1m+  functions[europe-west6-askBrewer]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/askBrewer).
+[32m[1m+  functions[europe-west6-askBrewerHopAdviceV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/askBrewerHopAdviceV1).
+[36m[1mi  functions[europe-west6-cleanupBreweryTransfers]:[22m[39m function ignored because the pubsub emulator does not exist or is not running.
+[36m[1mi  functions[europe-west6-cleanupFinancialSync]:[22m[39m function ignored because the pubsub emulator does not exist or is not running.
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-deliverBrewAlarm
+[32m[1m+  functions[europe-west6-deliverBrewAlarm]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/deliverBrewAlarm).
+[32m[1m+  functions[europe-west6-dispatchBrewerHopAdviceV1]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-dispatchBrewerQuestion]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-driveAuthorization]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/driveAuthorization).
+[32m[1m+  functions[europe-west6-exportBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/exportBreweryData).
+[32m[1m+  functions[europe-west6-getBrewAlertConfig]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewAlertConfig).
+[32m[1m+  functions[europe-west6-getBrewSession]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewSession).
+[32m[1m+  functions[europe-west6-getBrewerActivity]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerActivity).
+[32m[1m+  functions[europe-west6-getBrewerAiBudget]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerAiBudget).
+[32m[1m+  functions[europe-west6-getBrewerConversation]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerConversation).
+[32m[1m+  functions[europe-west6-getBrewerHopAdviceActivityV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerHopAdviceActivityV1).
+[32m[1m+  functions[europe-west6-getBrewerHopAdviceConversationV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerHopAdviceConversationV1).
+[32m[1m+  functions[europe-west6-getFermentationResearch]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getFermentationResearch).
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/hopReclasserIA).
+[32m[1m+  functions[europe-west6-markBrewerHopAdviceReadV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/markBrewerHopAdviceReadV1).
+[32m[1m+  functions[europe-west6-markBrewerRead]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/markBrewerRead).
+[32m[1m+  functions[europe-west6-migrateFinanceDocuments]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/migrateFinanceDocuments).
+[32m[1m+  functions[europe-west6-notifyBrewerAnswer]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-notifyBrewerHopAdviceAnswerV1]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-processBrewerHopAdviceV1
+[32m[1m+  functions[europe-west6-processBrewerHopAdviceV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/processBrewerHopAdviceV1).
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-processBrewerQuestion
+[32m[1m+  functions[europe-west6-processBrewerQuestion]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/processBrewerQuestion).
+[32m[1m+  functions[europe-west6-proposeYeastDbCorrection]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/proposeYeastDbCorrection).
+[32m[1m+  functions[europe-west6-readBrewingCatalogue]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/readBrewingCatalogue).
+[32m[1m+  functions[europe-west6-readBrewingScenario]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/readBrewingScenario).
+[32m[1m+  functions[europe-west6-recordDataChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-recordFinancialPaymentChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-recordFinancialTransactionChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-registerBrewDevice]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/registerBrewDevice).
+[32m[1m+  functions[europe-west6-registerBrewerNotifications]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/registerBrewerNotifications).
+[32m[1m+  functions[europe-west6-rescheduleBrewAlarms]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-resetBrewerConversation]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/resetBrewerConversation).
+[32m[1m+  functions[europe-west6-resetBrewerHopAdviceConversationV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/resetBrewerHopAdviceConversationV1).
+[32m[1m+  functions[europe-west6-restoreBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/restoreBreweryData).
+[32m[1m+  functions[europe-west6-retryBrewerHopAdviceQuestionV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/retryBrewerHopAdviceQuestionV1).
+[32m[1m+  functions[europe-west6-retryBrewerQuestion]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/retryBrewerQuestion).
+[32m[1m+  functions[europe-west6-saveBrewSession]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/saveBrewSession).
+[32m[1m+  functions[europe-west6-setBrewerAiBudget]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/setBrewerAiBudget).
+[32m[1m+  functions[europe-west6-syncBrewAlarms]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/syncBrewAlarms).
+[32m[1m+  functions[europe-west6-syncFinancialLedger]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/syncFinancialLedger).
+[32m[1m+  functions[europe-west6-transferBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/transferBreweryData).
+[32m[1m+  functions[europe-west6-writeBrewingCatalogue]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/writeBrewingCatalogue).
+[32m[1m+  functions[europe-west6-writeBrewingScenario]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/writeBrewingScenario).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\check-invoice-journey-emulator.mjs" --inner[22m
+pids : vite 22144, chrome 11384
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 3.5097ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 133.0361ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 19.4263ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 12.1772ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 22.8458ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.0241ms
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+390 · connexion émulée
+OK  390 · banc : réécriture émulateur appliquée telle que prévue
+390 · semis du stock (dérivés de la lecture rejouée)
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 61.1549ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 8.3666ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.4433ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.1455ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.8515ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.4706ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.6713ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.3763ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.4534ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.7358ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 8.3498ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 2.0136ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1998ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 14.8293ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 15.7636ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 19.619ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1856ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3758ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 76.4658ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9769ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0196ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9006ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.8269ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.8973ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.8539ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9423ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.916ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.8579ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.8829ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1679ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0569ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1398ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0433ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9893ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.7657ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 7.2281ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.1341ms
+390 · cas drive-fond
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.2323ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 8.5642ms
+KO  390 · drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »
+KO  390 · drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)
+OK  390 · drive-fond 1 : aucune notification pendant que ça marche
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.7505ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 13.1003ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.8394ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 8.3785ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.8445ms
+390 · page rechargée en plein envoi
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.9284ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 7.5094ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.7876ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 6.4644ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 0.9137ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 8.0742ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 0.8132ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 6.6703ms
+KO  390 · drive-fond 7 : rechargement en plein envoi, la file reprend au démarrage, un seul fichier dans le Drive factice
+OK  390 · drive-fond 7 : aucune notification après la reprise
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.3062ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 6.1492ms
+KO  390 · drive-fond 2 : Drive plein, la feuille se ferme quand même
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.2486ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 8.4401ms
+KO  390 · drive-fond 2 : la notification d’échec paraît, dit la cause et propose « Renvoyer le justificatif »
+KO  390 · drive-fond 2 : elle est toujours là après 10 s (persistante)
+KO  390 · drive-fond 2 : le clavier (Tab) atteint ses boutons
+KO  390 · drive-fond 2 : elle est aussi sur Finances
+KO  390 · drive-fond 2 : elle est aussi sur le tableau de bord
+KO  390 · drive-fond 2 : l’état « failed / quota » est écrit sur la dépense (visible depuis tout appareil)
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.3084ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 5.3402ms
+390 · ARRÊT drive-fond
+390 · réseau rétabli
+3/13 contrôles du banc OK · 0 constats · 6 requêtes bloquées hors localhost
+[33m[1m! [22m[39m Script exited unsuccessfully (code 1)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+
+[1m[31mError:[39m[22m Script "[1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\check-invoice-journey-emulator.mjs" --inner[22m" exited with code 1

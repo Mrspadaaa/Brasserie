@@ -1,0 +1,238 @@
+{
+ "base": "http://127.0.0.1:5656",
+ "erreurs": [],
+ "bloques": [
+  "http://127.0.0.1:5001",
+  "http://127.0.0.1:5001",
+  "http://127.0.0.1:5001",
+  "http://127.0.0.1:5001"
+ ],
+ "captures": [
+  "1-repos-390-clair",
+  "1b-conduite-390-clair",
+  "2-plus-entre-390-clair",
+  "2-plus-fin-390-clair",
+  "2b-palier-2-touche-390-clair",
+  "3-croix-touchee-390-clair",
+  "4-sans-levure-390-clair",
+  "5-chercher-touche-390-clair",
+  "1-repos-1280-clair",
+  "1b-conduite-1280-clair",
+  "2-plus-entre-1280-clair",
+  "2-plus-fin-1280-clair",
+  "2b-palier-2-touche-1280-clair",
+  "3-croix-touchee-1280-clair",
+  "4-sans-levure-1280-clair",
+  "5-chercher-touche-1280-clair",
+  "1-repos-390-cave",
+  "1b-conduite-390-cave",
+  "2-plus-entre-390-cave",
+  "2-plus-fin-390-cave",
+  "2b-palier-2-touche-390-cave",
+  "3-croix-touchee-390-cave",
+  "4-sans-levure-390-cave",
+  "5-chercher-touche-390-cave",
+  "1-repos-1280-cave",
+  "1b-conduite-1280-cave",
+  "2-plus-entre-1280-cave",
+  "2-plus-fin-1280-cave",
+  "2b-palier-2-touche-1280-cave",
+  "3-croix-touchee-1280-cave",
+  "4-sans-levure-1280-cave",
+  "5-chercher-touche-1280-cave"
+ ],
+ "notes": [
+  {
+   "suffixe": "390-clair",
+   "repos": {
+    "effets": [
+     "esters:jauge:faible",
+     "phenols:inconnu:non documenté",
+     "thiols:inconnu:non documenté",
+     "terpenes:inconnu:non documenté",
+     "rondeur:nombre:11 g/L · mesure fabricant"
+    ],
+    "dose": "2–3sachets",
+    "plus": 5,
+    "moins": 1,
+    "paliers": "4 paliersfin J12US-05 · 18–26 °C"
+   }
+  },
+  {
+   "suffixe": "390-clair",
+   "nomEtat": "plus-entre",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J?|J?|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "390-clair",
+   "nomEtat": "plus-fin",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J9|J12|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "390-clair",
+   "apresCroix": {
+    "sous": "3 paliersfin J9US-05 · 18–26 °C",
+    "dit": "Palier 2 · Repos diacétyle retiré ; les autres durées sont conservées  Annuler"
+   }
+  },
+  {
+   "suffixe": "390-clair",
+   "recherche": [
+    "cours:recherche… 1/20"
+   ],
+   "vue": "ma-levure"
+  },
+  {
+   "suffixe": "1280-clair",
+   "repos": {
+    "effets": [
+     "esters:jauge:faible",
+     "phenols:inconnu:non documenté",
+     "thiols:inconnu:non documenté",
+     "terpenes:inconnu:non documenté",
+     "rondeur:nombre:11 g/L · mesure fabricant"
+    ],
+    "dose": "2–3sachets",
+    "plus": 5,
+    "moins": 1,
+    "paliers": "4 paliersfin J12US-05 · 18–26 °C"
+   }
+  },
+  {
+   "suffixe": "1280-clair",
+   "nomEtat": "plus-entre",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J?|J?|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "1280-clair",
+   "nomEtat": "plus-fin",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J9|J12|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "1280-clair",
+   "apresCroix": {
+    "sous": "3 paliersfin J9US-05 · 18–26 °C",
+    "dit": "Palier 2 · Repos diacétyle retiré ; les autres durées sont conservées  Annuler"
+   }
+  },
+  {
+   "suffixe": "1280-clair",
+   "recherche": [
+    "cours:recherche… 1/20"
+   ],
+   "vue": "ma-levure"
+  },
+  {
+   "suffixe": "390-cave",
+   "repos": {
+    "effets": [
+     "esters:jauge:faible",
+     "phenols:inconnu:non documenté",
+     "thiols:inconnu:non documenté",
+     "terpenes:inconnu:non documenté",
+     "rondeur:nombre:11 g/L · mesure fabricant"
+    ],
+    "dose": "2–3sachets",
+    "plus": 5,
+    "moins": 1,
+    "paliers": "4 paliersfin J12US-05 · 18–26 °C"
+   }
+  },
+  {
+   "suffixe": "390-cave",
+   "nomEtat": "plus-entre",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J?|J?|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "390-cave",
+   "nomEtat": "plus-fin",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J9|J12|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "390-cave",
+   "apresCroix": {
+    "sous": "3 paliersfin J9US-05 · 18–26 °C",
+    "dit": "Palier 2 · Repos diacétyle retiré ; les autres durées sont conservées  Annuler"
+   }
+  },
+  {
+   "suffixe": "390-cave",
+   "recherche": [
+    "cours:recherche… 1/20"
+   ],
+   "vue": "ma-levure"
+  },
+  {
+   "suffixe": "1280-cave",
+   "repos": {
+    "effets": [
+     "esters:jauge:faible",
+     "phenols:inconnu:non documenté",
+     "thiols:inconnu:non documenté",
+     "terpenes:inconnu:non documenté",
+     "rondeur:nombre:11 g/L · mesure fabricant"
+    ],
+    "dose": "2–3sachets",
+    "plus": 5,
+    "moins": 1,
+    "paliers": "4 paliersfin J12US-05 · 18–26 °C"
+   }
+  },
+  {
+   "suffixe": "1280-cave",
+   "nomEtat": "plus-entre",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J?|J?|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "1280-cave",
+   "nomEtat": "plus-fin",
+   "sous": {
+    "sous": "5 paliersfin ?US-05 · 18–26 °C",
+    "boite": "? °C? j",
+    "texteSvg": "0|5|10|15|20|25|30|19 °C|19 °C|19 °C|4 °C|? °C|? j|J0|J4|J7|J9|J12|fin ?|°C"
+   }
+  },
+  {
+   "suffixe": "1280-cave",
+   "apresCroix": {
+    "sous": "3 paliersfin J9US-05 · 18–26 °C",
+    "dit": "Palier 2 · Repos diacétyle retiré ; les autres durées sont conservées  Annuler"
+   }
+  },
+  {
+   "suffixe": "1280-cave",
+   "recherche": [
+    "cours:recherche… 1/20"
+   ],
+   "vue": "ma-levure"
+  }
+ ]
+}

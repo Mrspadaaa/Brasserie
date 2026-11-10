@@ -47,7 +47,15 @@ export default defineConfig(({ command }) => ({
   }] : [])] },
   // c8 : dans le build de l'application, composes-houblon.json sort du chunk des outils (chargement à part, budget B5) ; voir
   // src/domain/hopIndex/v4/composes.ts. Le serveur de dev, Vitest, vite-node et les builds des maquettes le gardent en synchrone.
-  ...(command === 'build' ? { define: { 'import.meta.env.VITE_COMPOSES_A_PART': JSON.stringify('on') } } : {}),
+  // D368 bis (08.11, « Pourquoi la vue des houblons est plus celui ci mais l'ancienne ???? ») : les écrans Houblons choisis par le brasseur sont
+  // allumés par le build lui-même, plus par une variable à ne pas oublier (oubliée le 02.11 puis le 08.11). `VITE_HOP_V4=off` les éteint exprès.
+  ...(command === 'build' ? { define: {
+    'import.meta.env.VITE_COMPOSES_A_PART': JSON.stringify('on'),
+    'import.meta.env.VITE_HOP_V4': JSON.stringify(process.env.VITE_HOP_V4 || 'on'),
+    // D378 (08.11, « Baisse à 20 et go ») : l'enrichissement des fiches par l'IA est allumé en production, 20 recherches par jour au plus
+    // (enrichissementReglages.ts). VITE_ENRICHISSEMENT_IA=eteinte au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
+    'import.meta.env.VITE_ENRICHISSEMENT_IA': JSON.stringify(process.env.VITE_ENRICHISSEMENT_IA || 'production'),
+  } } : {}),
   server: {
     // 3000 par défaut ; `PORT` permet de lancer un second serveur en parallèle
     // quand le premier occupe déjà le port.

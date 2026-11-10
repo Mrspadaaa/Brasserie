@@ -1,4 +1,4 @@
-import { normalizeInvoiceScan, INVOICE_FIELDS, type InvoiceFieldWarning } from './invoiceScanCore.js';
+import { normalizeInvoiceScan, INVOICE_FIELDS, choisirDate, dateDeLecture, invoiceDate, type InvoiceFieldWarning } from './invoiceScanCore.js';
 import { lineMathCheck, makePoint, peserPoint, signerPoint, toCents, totalAbsentPoint, type ScanPoint, type ScanValue } from './invoiceControls.js';
 
 export type InvoiceScanResult = ReturnType<typeof normalizeInvoiceScan>;
@@ -54,6 +54,18 @@ function comparisonKey(field: string, value: unknown): string {
   return `text:${normalized}`;
 }
 
+/**
+ * Vote d'un nombre de contrôle (payé, terminal, comptes) : la valeur lue par au moins deux lectures ; à défaut la 3ᵉ lecture (la 3.8 qui tranche) si elle en porte une ; sinon `undefined`
+ * (le champ reste absent : inconnu, jamais 0). Une lecture vide ne pèse pas contre deux lectures qui concordent.
+ */
+export function voterChampControle(valeurs: unknown[]): number | undefined {
+  const nombres = valeurs.map(x => (typeof x === 'number' && Number.isFinite(x) ? Math.round(x * 100) : null));
+  for (let k = 0; k < nombres.length; k++) {
+    if (nombres[k] !== null && nombres.filter(n => n === nombres[k]).length >= 2) return valeurs[k] as number;
+  }
+  if (valeurs.length === 3 && nombres[2] !== null) return valeurs[2] as number;
+  return undefined;
+}
 function majority<T>(values: T[], field: string): { value: T; index: number } | undefined {
   for (let index = 0; index < values.length; index++) {
     const key = comparisonKey(field, values[index]);
@@ -72,6 +84,9 @@ const montrer = (field: string, v: unknown): string => {
   if (typeof x === 'number') return moneyFields.has(field) ? x.toFixed(2).replace('.', ',') : String(x).replace('.', ',');
   return String(x);
 };
+
+/** La somme, en centimes, des montants de TVA imprimés par taux ; `null` si le bloc est vide ou si un montant manque (rien n'est complété). */
+const sommeBlocTva = (r: InvoiceScanResult): number | null => (r.vat.length && r.vat.every(row => toCents(row.amount) !== null) ? r.vat.reduce((s, row) => s + toCents(row.amount)!, 0) : null);
 
 interface Desaccord {
   field: string; ligne: number | null; vals: unknown[]; lectures: number[]; retenues: boolean[]; motifs?: Array<ScanValue['motif'] | undefined>;
@@ -142,6 +157,8 @@ function alignLines(base: Item[], other: Item[]): Pairing {
   }
   return { match, orphansBase: base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), orphansOther: other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi])) };
 }
+/** D308 : exportée sous ce nom pour rapprocher les lignes du premier écran (deux Flash-Lite) de celles de la lecture finale (`invoiceScanVote.ts`). */
+export { alignLines as alignerLignes };
 const complete = (p: Pairing) => !p.orphansBase.length && !p.orphansOther.length;
 const holdsProduct = (item: Item) => { const r = lineMathCheck([item]); return r.lines.checked === 1 && r.lines.failed === 0; };
 const lineSummary = (item: Item) => `${item.name || '?'} · ${item.quantity ?? '?'} ${item.unit} · ${item.amountTTC === null ? '?' : item.amountTTC.toFixed(2).replace('.', ',')}`;
@@ -261,6 +278,36 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     const unanime = vals.every(v => comparisonKey(field, v) === comparisonKey(field, vals[0]));
     const enjeu: ScanPoint['enjeu'] = field === 'amountHT' || field === 'amountTTC' ? 'argent' : 'info';
     if (!unanime && field === 'amountTTC') divergentCells.add('amountTTC');
+    // D262a : aucun total de TVA n'est imprimé quand le document donne une taxe par taux. Une lecture qui écrit la somme des rangées du bloc et une autre
+    // qui écrit null ne sont pas en désaccord : la valeur lue est recoupée par le bloc imprimé de sa propre lecture. Une valeur qui n'est NI null NI la
+    // somme de son bloc reste un désaccord (le vrai écart n'est pas masqué).
+    if (!decision && field === 'tvaAmount' && !unanime) {
+      const sommeBloc = sommeBlocTva;
+      if (vals.every((v, i) => v === null || (toCents(v) !== null && toCents(v) === sommeBloc(readings[i])))) {
+        const lu = vals.find(v => v !== null);
+        // pas de `correctedFields` : la valeur est recoupée, elle ne doit pas non plus poser « Valeur corrigée… À confirmer » (invoiceFieldHints)
+        if (lu !== undefined && lu !== null) merged[field] = lu;
+        continue;
+      }
+    }
+    // LT-2 : deux lectures de date qui ne diffèrent que par l'année : l'année à 4 chiffres, puis la date plausible aujourd'hui, priment sur le vote.
+    // Le désaccord reste un point visible (le brasseur peut changer) ; seule la valeur retenue change.
+    const dateChoisie = field === 'date' && !unanime ? choisirDate(readings.map(dateDeLecture), String(decision ? decision.value : first.date)) : undefined;
+    if (dateChoisie !== undefined && dateChoisie !== String(decision ? decision.value : first.date) && invoiceDate(dateChoisie)) {
+      const cle = comparisonKey(field, dateChoisie);
+      merged.date = dateChoisie; delete merged.dateCourte;
+      if (comparisonKey(field, first.date) !== cle) correctedFields.push(field);
+      const retenues = vals.map(v => comparisonKey(field, v) === cle);
+      const message = decision && settledHeader.has(field) ? `${labels[field]} : une lecture sur trois diffère (${vals.map(v => montrer(field, v)).join(' / ')}).`
+        : `${labels[field]} : lectures divergentes (${vals.map(v => montrer(field, v)).join(' / ')}), vérifier le justificatif.`;
+      if (!decision) {
+        findings.push(message);
+        warnings.push({ field: 'date', message: `Les lectures ne concordent pas (${vals.map(v => montrer(field, v)).join(' / ')}). ${NON_CONCORDANT}` });
+        triggered = true;
+      }
+      desaccords.push(pointDesaccord({ field, ligne: null, vals, lectures: numeros, retenues, pese: !decision, enjeu, message }));
+      continue;
+    }
     if (!decision) {
       const message = `${labels[field]} : lectures divergentes (${vals.map(v => montrer(field, v)).join(' / ')}), vérifier le justificatif.`;
       findings.push(message);
@@ -276,15 +323,24 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     if (!unanime && settledHeader.has(field)) {
       const key = comparisonKey(field, decision.value);
       desaccords.push(pointDesaccord({ field, ligne: null, vals, lectures: numeros, retenues: vals.map(v => comparisonKey(field, v) === key), pese: false, enjeu,
-        message: `${labels[field]} : une lecture sur trois diffère (${vals.map(v => montrer(field, v)).join(' / ')}).` }));
+        message: `${labels[field]} : une lecture diffère des autres (${vals.map(v => montrer(field, v)).join(' / ')}).` }));
     }
+  }
+  // LP-2 : un total de TVA absent (majorité de lectures à null) alors que le bloc imprimé par taux donne chaque montant. Une lecture dont le total est la somme de son propre bloc
+  // le garde (recoupé par le document) ; sinon, si toutes les lectures lisent le même bloc complet, la TVA en est la somme. Jamais une valeur qui n'est pas imprimée.
+  if (merged.tvaAmount === null || merged.tvaAmount === undefined) {
+    const sommes = readings.map(sommeBlocTva);
+    const recoupee = readings.find((r, i) => r.tvaAmount !== null && sommes[i] !== null && toCents(r.tvaAmount) === sommes[i]);
+    if (recoupee) merged.tvaAmount = recoupee.tvaAmount;
+    else if (sommes[0] !== null && sommes.every(somme => somme === sommes[0])) merged.tvaAmount = sommes[0]! / 100;
   }
   // This free-form editorial suggestion is not source transcription or a financial classification.
   merged.subcategory = majority(readings.map(reading => reading.subcategory), 'subcategory')?.value ?? '';
   merged.documentTypeLu = merged.documentType;
 
   // Bloc TVA : comparé trié par taux, en centimes. Un désaccord est un point, jamais une lecture payante (P5).
-  const vatKey = (r: InvoiceScanResult) => JSON.stringify([...r.vat].map(v => [v.code, v.rate, toCents(v.base), toCents(v.amount)]).sort((a, b) => ((a[1] as number ?? -1) - (b[1] as number ?? -1)) || String(a[0]).localeCompare(String(b[0]))));
+  // LT-5 (08.11, doc21) : le code imprimé n'est qu'un libellé (« N » et « %-TVA1 » pour la même rangée) ; seuls le taux, la base et le montant votent.
+  const vatKey = (r: InvoiceScanResult) => JSON.stringify([...r.vat].map(v => [v.rate, toCents(v.base), toCents(v.amount)]).sort((a, b) => ((a[0] ?? -1) - (b[0] ?? -1)) || ((a[1] ?? -1) - (b[1] ?? -1)) || ((a[2] ?? -1) - (b[2] ?? -1))));
   const vatKeys = readings.map(vatKey);
   if (!vatKeys.every(k => k === vatKeys[0])) {
     const vatDecision = majority(vatKeys, 'vat');
@@ -381,7 +437,7 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
         if (!unanime && settledItem.has(field)) {
           const key = comparisonKey(field, decision.value);
           desaccords.push(pointDesaccord({ ...commun, retenues: vals.map(v => comparisonKey(field, v) === key), pese: false,
-            message: `${baseItem.name || baseItem.id} — ${(field === 'amountTTC' ? 'montant de la ligne' : labels[field].toLowerCase())} : une lecture sur trois diffère.` }));
+            message: `${baseItem.name || baseItem.id} — ${(field === 'amountTTC' ? 'montant de la ligne' : labels[field].toLowerCase())} : une lecture diffère des autres.` }));
         }
       }
     }
@@ -393,11 +449,30 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     // aucune paire complète : la base reste la première lecture (signalé plus haut)
   }
 
+  // c1 : les champs des contrôles croisés ne se votent pas ; la lecture de base les porte, une valeur absente se prend dans une autre lecture (jamais inventée), une photo incomplète pour une lecture l'est.
+  // Comme le total : deux lectures qui concordent l'emportent (une 3.8 vide ne les efface pas) ; sans concordance, la 3.8 seule (la 3ᵉ lecture) ; sinon rien : jamais une valeur lue une seule fois par une Flash-Lite.
+  for (const champ of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans'] as const) {
+    const valeur = voterChampControle(readings.map((r: any) => r[champ]));
+    if (valeur !== undefined) merged[champ] = valeur;
+    // Limite 2 : un comptage de montants n'est « confirmé » que si la 3.8 (la 3ᵉ lecture) l'a lu aussi, au même nombre.
+    if (champ === 'countedAmounts') {
+      if (valeur !== undefined && readings.length === 3 && (readings[2] as any).countedAmounts === valeur) merged.countedAmountsConfirmed = true; else delete merged.countedAmountsConfirmed;
+    }
+  }
+  const heure = base.printedTime || readings.map((r: any) => r.printedTime).find((v: unknown) => v);
+  if (heure) merged.printedTime = heure;
+  const ecartees = Array.isArray(base.ignoredLines) ? base.ignoredLines : readings.map((r: any) => r.ignoredLines).find((v: unknown) => Array.isArray(v));
+  if (ecartees) merged.ignoredLines = ecartees;
+  const incompletes = readings.filter((r: any) => r.photoIncomplete === true);
+  if (incompletes.length) { merged.photoIncomplete = true; if (incompletes[0].photoIncompleteNote) merged.photoIncompleteNote = incompletes[0].photoIncompleteNote; }
+  else if (readings.some((r: any) => r.photoIncomplete === false)) merged.photoIncomplete = false;
+  // (sans lecture qui les porte, les clés restent absentes : un ancien résultat sort comme avant)
+
   // 4. Fusion : contrôles recalculés sur ce qui est retenu
   const normalized = normalizeInvoiceScan(merged);
   // Normalization has already capped each independent reading. A second normalization cannot
   // rediscover omitted source lines, so that incompleteness warning must survive reconciliation.
-  const truncationWarnings = readings.flatMap(reading => reading.issues.filter(issue => issue.startsWith('Plus de 35 lignes')));
+  const truncationWarnings = readings.flatMap(reading => reading.issues.filter(issue => /^Plus de \d+ lignes/.test(issue)));
   normalized.issues.push(...new Set(truncationWarnings));
   const result = finirResultat(normalized, desaccords, readings, warnings);
   // N1 : un point qui ne pèse pas (désaccord résolu, type déduit) vit dans `points` seulement, ni dans `issues` ni dans `findings`.

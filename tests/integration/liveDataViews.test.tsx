@@ -132,7 +132,7 @@ describe('Live records and unsaved forms', () => {
     fireEvent.change(document.querySelector('[name="tx_edit_label"]')!, { target: { value: 'Malt et livraison' } });
     rerender(view({ ...tx, amountHT: 200, tvaAmount: 16.2, amountTTC: 216.2 }));
     expect(document.querySelector('[name="tx_edit_label"]')).toHaveValue('Malt et livraison');
-    expect(screen.getByText('216.20 CHF')).toBeInTheDocument();
+    expect(screen.getByText('216,20 CHF')).toBeInTheDocument();
     const save = vi.spyOn(StorageService, 'updateTransaction').mockImplementation(() => {});
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ description: 'Malt et livraison', amountHT: 200, amountTTC: 216.2 }));

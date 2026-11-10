@@ -90,6 +90,7 @@ import { readingPrompt } from '../domain/brewAssist';
 import { ReadingKind } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface Props {
   batch: Batch;
@@ -100,6 +101,8 @@ interface Props {
   onFinish: (batch: Batch) => void;
   onOpenHopV55?: (journal: BrewDayState) => void;
 }
+/** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
+const fr = (n: number | string) => String(n).replace('.', ',');
 const AREA: Record<BrewArea, string> = {
   preparation: 'Préparer',
   mash: 'Empâter',
@@ -500,8 +503,28 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               : current.id === 'ensemencement'
                 ? 'Relève la densité et le volume du moût refroidi, puis ajoute la levure selon sa notice.'
                 : current.detail;
+  /**
+   * « Terminer et continuer » : idempotent (BR-49, BE-30). Un double toucher rejoue la même fermeture avec le même état affiché ; l'ancienne
+   * version rebasculait l'état (étape suivante cochée à son tour, deux étapes passées d'un coup). Ici l'étape quittée se marque faite
+   * seulement si l'état courant ne l'est pas encore, et l'on va à l'étape suivante par son identifiant.
+   */
   const finishAndContinue = () => {
-    if (!completed) toggleComplete();
+    const fromId = current.id;
+    const wasBoil = boiled;
+    update((s) => {
+      const i = s.steps.findIndex((x) => x.id === fromId);
+      if (i < 0) return s;
+      if (wasBoil) return s.boilFinishedAt != null ? s : { ...s, boilFinishedAt: brewNow() };
+      if (s.steps[i].doneAt != null) return s;
+      const at = brewNow();
+      return {
+        ...s,
+        thermalSegments: s.thermalSegments?.map((segment) =>
+          segment.stepId === fromId && segment.endedAt == null ? { ...segment, endedAt: at } : segment
+        ),
+        steps: s.steps.map((x, k) => (k === i ? { ...x, doneAt: at } : x))
+      };
+    });
     if (nextStep) choose(state.steps.indexOf(nextStep));
   };
   const isConsulting = view === 'recipe' || view === 'journal';
@@ -719,7 +742,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         Journal
       </button>
       <span className="brew-progress-label">
-        {doneCount}/{route.length} étapes
+        {doneCount}/{route.length} étapes faites
       </span>
     </nav>
   );
@@ -731,7 +754,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       subtitle={
         session.error
           ? 'Journal à synchroniser · brouillon conservé'
-          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`
+          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${String(recipe.volumeL ?? batch.volumeL ?? '—').replace('.', ',')} L`
       }
       onClose={() =>
         capture
@@ -1031,7 +1054,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <li key={s.id}>
                             <span>{isBoilStep(s) ? 'Ébullition' : s.label}</span>
                             <strong>
-                              {s.tempC != null ? `${s.tempC} °C` : ''}
+                              {s.tempC != null ? `${fr(s.tempC)} °C` : ''}
                               {isUsefulTimer(s)
                                 ? ` · ${s.durationMin} min`
                                 : isBoilStep(s)
@@ -1078,7 +1101,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 {f.note ? ` · ${f.note}` : ''}
                               </span>
                               <strong>
-                                {f.tempC} °C · {f.days} jours
+                                {fr(f.tempC)} °C · {f.days} jours
                               </strong>
                             </li>
                           ))}
@@ -1096,7 +1119,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         <div>
                           <div className="brew-step-meta">
                             <span className="brew-muted">
-                              Étape {Math.max(1, routeIndex + 1)} sur {route.length}
+                              Étape {Math.max(1, routeIndex + 1)}
                             </span>
                             {showTimer && <BrewTag tone={currentTag.tone}>{currentTag.label}</BrewTag>}
                             {/*
@@ -1123,7 +1146,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   value: String(i),
                                   label: isBoilStep(s) ? 'Ébullition' : s.label,
                                   detail: [
-                                    s.tempC != null ? `${s.tempC} °C` : '',
+                                    s.tempC != null ? `${fr(s.tempC)} °C` : '',
                                     isBoilStep(s)
                                       ? `${boilMinutes(state, recipe)} min`
                                       : s.durationMin > 0
@@ -1173,7 +1196,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 Consigne
                               </span>
                               <strong className="brew-digits">
-                                {thermalTarget}
+                                {fr(thermalTarget)}
                                 <small>°C</small>
                               </strong>
                             </div>
@@ -1229,7 +1252,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
                       {current.id === 'ensemencement' && state.pitchedAt == null && (
                         <label className="brew-thermal-coolant">Moût à l’ajout de levure (facultatif)
-                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-10} max={120} onValue={setPitchTemperature} /> °C</span>
+                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-5} max={45} onValue={setPitchTemperature} /> °C <small>(−5 à 45 °C : au-delà, la levure ne s’ajoute pas)</small></span>
                         </label>
                       )}
                       {showTimer && (
@@ -1357,7 +1380,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <details className="brew-bitterness">
                             <summary>
                               <span>
-                                ≈ {bitterness.projected} IBU{' '}
+                                ≈ {nombreFr(bitterness.projected, 1)} IBU{' '}
                                 <small>· recette {bitterness.planned}</small>
                               </span>
                               <ChevronDown size={16} />
@@ -1424,7 +1447,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         <strong>
                           {finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'} <small>L à froid</small>
                         </strong>
-                        <span>Cible {recipe.volumeL ?? '—'} L</span>
+                        <span>Cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</span>
                       </div>
                     </div>
                     {(!finishedReadings.gravity || !finishedReadings.volume) && (
@@ -1701,8 +1724,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         className="brew-confirm"
         onClose={() => setConfirmFinish(false)}
         title={state.pitchedAt != null ? 'Finaliser la synchronisation ?' : 'Confirmer l’ajout de levure ?'}
-        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${finishedReadings.volume.value} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
-        consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${pitchTemperature} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
+        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${nombreFr(finishedReadings.volume.value, 1)} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
+        consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${nombreFr(pitchTemperature, 1)} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
         confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
         onConfirm={async () => {
           if (finalizing.current) return;

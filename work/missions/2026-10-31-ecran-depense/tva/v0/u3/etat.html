@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u3 · TVA, ce qu'il y a dans chaque bouteille</title>
+<style>
+:root{--tvau3-line:#DDDDDD;--tvau3-surf:#F5F5F5;--tvau3-surf2:#EBEBEB;--tvau3-fin:#1F64A3;--tvau3-att:#8A5A00;--tvau3-etr:#6A4FB0;--tvau3-ok:#4C6B2A;--tvau3-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3;color:#111;background:#fff}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.tvau3-m{font-family:var(--tvau3-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tvau3-head{border-bottom:1px solid var(--tvau3-line)}
+.tvau3-head-in{max-width:880px;margin:0 auto;height:40px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.tvau3-logo{width:30px;height:30px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau3-brand{font-size:18px;font-weight:500;flex:1}
+.tvau3-hbtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#333}
+.tvau3-hbtn.tvau3-f{background:var(--tvau3-surf2);border:1px solid #BFBFBF}
+.tvau3-wrap{max-width:872px;margin:0 auto;padding:0 12px 76px}
+.tvau3-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--tvau3-line)}
+.tvau3-tabs button{height:34px;color:#333;border-bottom:2px solid transparent}
+.tvau3-tabs button[aria-selected=true]{color:var(--tvau3-fin);border-color:var(--tvau3-fin);background:rgba(31,100,163,.05);font-weight:600}
+.tvau3-bar{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--tvau3-line)}
+.tvau3-bar h2{font-size:16px;font-weight:600;margin:0}
+.tvau3-seg{display:flex;gap:2px}
+.tvau3-seg button{height:28px;padding:0 10px;border-radius:10px;border:1px solid transparent;font-size:13px;color:#333}
+.tvau3-seg button[aria-pressed=true]{background:var(--tvau3-surf2);border-color:#BFBFBF;color:var(--tvau3-fin);font-weight:600}
+.tvau3-gear{width:28px;height:28px;display:grid;place-items:center;color:#333}
+.tvau3-off{display:flex;gap:6px;align-items:center;margin:8px 0 0;padding:6px 10px;border-radius:10px;background:var(--tvau3-surf);font-size:13px;color:#333}
+.tvau3-per{display:flex;align-items:center;gap:6px;padding:8px 0 4px;flex-wrap:wrap}
+.tvau3-yr{display:flex;align-items:center}
+.tvau3-yr button{width:26px;height:28px;display:grid;place-items:center;color:#333;border-radius:10px}
+.tvau3-yr strong{font-family:var(--tvau3-mono);font-size:15px}
+.tvau3-units{display:flex;margin-left:auto;border:1px solid #BFBFBF;border-radius:10px;overflow:hidden}
+.tvau3-units button{height:28px;padding:0 9px;font-size:13px;font-family:var(--tvau3-mono);border-left:1px solid #DDDDDD}
+.tvau3-units button:first-child{border-left:0}
+.tvau3-units button[aria-pressed=true]{background:#111;color:#fff;font-weight:600}
+.tvau3-hero{display:grid;grid-template-columns:1fr;gap:0}
+.tvau3-ans{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:2px 0 0}
+.tvau3-big{font-family:var(--tvau3-mono);font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:32px;white-space:nowrap}
+.tvau3-big small{font-size:16px;font-weight:500}
+.tvau3-big.tvau3-rg{font-size:24px}
+.tvau3-ans .tvau3-q{font-size:15px;font-weight:600}
+.tvau3-ctx{font-size:13px;color:#333;margin:2px 0 0}
+.tvau3-ctx b{font-family:var(--tvau3-mono);font-weight:600}
+.tvau3-fig{position:relative;margin:4px auto 0;max-width:420px}
+.tvau3-fig > svg{display:block;width:100%;height:auto}
+.tvau3-tagde{position:absolute;left:150px;top:0;display:flex;flex-direction:column;gap:1px;padding:5px 8px;border-radius:10px;background:#EEE9F8;color:var(--tvau3-etr);font-size:12px;font-weight:600;max-width:150px}
+.tvau3-tagde b{font-family:var(--tvau3-mono)}
+.tvau3-row{display:grid;grid-template-columns:24px 1fr auto 16px;gap:8px;align-items:center;width:100%;min-height:44px;border-top:1px solid var(--tvau3-line);text-align:left}
+.tvau3-row strong{font-size:15px;display:block}
+.tvau3-row .tvau3-s{font-size:12px;color:#555;display:block}
+.tvau3-row .tvau3-v{font-family:var(--tvau3-mono);font-weight:600;font-size:14px;text-align:right}
+.tvau3-pick{display:flex;gap:6px;margin:4px 0 6px;flex-wrap:wrap}
+.tvau3-pick button{height:28px;padding:0 10px;border-radius:10px;border:1px solid #BFBFBF;font-size:13px}
+.tvau3-pick button.tvau3-k{background:#111;color:#fff;border-color:#111}
+.tvau3-warn{display:flex;gap:8px;align-items:flex-start;padding:8px 0 0;font-size:13px}
+.tvau3-warn b{font-family:var(--tvau3-mono)}
+.tvau3-pill{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:10px;font-size:12px;font-weight:600;flex:none}
+.tvau3-pa{background:#FBEFD5;color:var(--tvau3-att)}
+.tvau3-pu{background:var(--tvau3-surf2);color:#333}
+.tvau3-duo{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
+.tvau3-duo h4{margin:0;font-size:13px;text-align:center;font-weight:600}
+.tvau3-duo p{margin:0;text-align:center;font-size:12px;color:#333}
+.tvau3-duo p b{font-family:var(--tvau3-mono);font-size:16px;color:#111;display:block}
+.tvau3-verdict{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:var(--tvau3-surf);font-size:14px}
+.tvau3-verdict b{font-family:var(--tvau3-mono)}
+.tvau3-fine{font-size:12px;color:#555;margin:4px 0 6px}
+.tvau3-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 0;border-top:1px solid var(--tvau3-line);margin-top:6px}.tvau3-strip div{font-size:12px;color:#333}.tvau3-strip b{display:block;font-family:var(--tvau3-mono);font-size:15px;color:#111;margin-top:2px}
+.tvau3-comp{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;text-align:left;border-top:1px solid var(--tvau3-line)}
+.tvau3-comp strong{flex:1;font-size:15px;font-weight:500}
+.tvau3-comp span{font-size:13px;color:#555}
+.tvau3-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--tvau3-line);z-index:5}
+.tvau3-nav-in{max-width:872px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr) 76px;height:46px}
+.tvau3-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:#333;text-decoration:none}
+.tvau3-nav a.tvau3-on{background:rgba(31,100,163,.12);color:#111;box-shadow:inset 0 3px 0 var(--tvau3-fin)}
+.tvau3-fab{align-self:center;justify-self:center;width:64px;height:40px;border-radius:20px;background:#111;color:#fff;display:grid;place-items:center}
+@media (min-width:900px){.tvau3-hero{grid-template-columns:420px 1fr;gap:32px;align-items:start}.tvau3-head-in{padding:0}.tvau3-side{padding-top:40px}}
+</style>
+</head>
+<body>
+<div id="tvau3-root"></div>
+<script>
+(function(){
+  var etat=new URLSearchParams(location.search).get('etat')||'annee';
+  if(['annee','inconnues','douteuse','etrangere','vide','si','horsligne'].indexOf(etat)<0)etat='annee';
+  var P={
+    mug:'<path d="M6 7h9v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7c0-2 1.5-3 3-3 1 0 1.6.5 2 1 .5-.6 1.2-1 2-1 1.4 0 2 1 2 3"/>',
+    moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+    bulle:'<path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M9 9.5h6M9 12.5h4"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15 13.5h2"/>',
+    cubes:'<path d="M12 3 8 5v4l4 2 4-2V5z"/><path d="M8 11 4 13v4l4 2 4-2v-4z"/><path d="M16 11l-4 2v4l4 2 4-2v-4z"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M3 19c.7-3.4 3-5 6-5s5.3 1.6 6 5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.3c1.7.8 2.9 2.4 3.3 4.7"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    right:'<path d="m9 6 6 6-6 6"/>',
+    left:'<path d="m15 6-6 6 6 6"/>',
+    sliders:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    spark:'<path d="M12 4c.6 3.6 2.4 5.4 6 6-3.6.6-5.4 2.4-6 6-.6-3.6-2.4-5.4-6-6 3.6-.6 5.4-2.4 6-6z"/><path d="M18.5 3.5v3M17 5h3"/><circle cx="6" cy="18.5" r="1.5"/>',
+    cloud:'<path d="M7 18h10a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M4 4l16 16"/>',
+    balance:'<path d="M12 4v16M7 20h10M5 7h14"/><path d="m5 7-3 6h6zM19 7l-3 6h6z"/>',
+    tag:'<path d="M4 12V5a1 1 0 0 1 1-1h7l8 8-8 8z"/><circle cx="8.5" cy="8.5" r="1.5"/>',
+    alerte:'<path d="M12 4 3 19.5h18z"/><path d="M12 10v4.5M12 17v.5"/>'
+  };
+  function ico(n,s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(36/s).toFixed(3)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+  function ct(v){return v.toFixed(2).replace('.',',');}
+
+  var LITRES=2150;
+  // Postes, du fond de la bouteille vers le haut : d'abord ce qui fait la bière (2,6 %), puis le contenant (8,1 %).
+  var POSTES=[
+    {n:'Levures',t:'2,6',tva:7.91,c:'#E0C27A'},
+    {n:'Malt',t:'2,6',tva:86.67,c:'#C99A2E'},
+    {n:'Houblons',t:'2,6',tva:29.90,c:'#6E9B5B'},
+    {n:'CO₂ et nettoyage',t:'8,1',tva:40.46,c:'#A9C3EE'},
+    {n:'Étiquettes',t:'8,1',tva:64.44,c:'#7FA6E4'},
+    {n:'Verre et capsules',t:'8,1',tva:197.82,c:'#5B8BD8'},
+    {n:'Matériel',t:'8,1',tva:442.69,c:'#3F6FC0'}
+  ];
+  var UNITES=[['33 cl',0.33],['50 cl',0.5],['75 cl',0.75],['1 L',1]];
+  var u=0, si=etat==='si';
+
+  function bouteille(opts){
+    // opts : tot (CHF), unk (CHF inconnus), doubt (poste), pending, empty, w (largeur), mode
+    var W=opts.nolabels?180:366,H=318, bx=34, bw=110, top=12, neckW=38, bodyTop=104, bot=304;
+    var cx=bx+bw/2, nl=cx-neckW/2, nr=cx+neckW/2;
+    var path='M'+nl+' '+top+' h'+neckW+' v58 C'+nr+' 84 '+(bx+bw)+' 86 '+(bx+bw)+' '+bodyTop+' V'+(bot-12)+' Q'+(bx+bw)+' '+bot+' '+(bx+bw-12)+' '+bot+' H'+(bx+12)+' Q'+bx+' '+bot+' '+bx+' '+(bot-12)+' V'+bodyTop+' C'+bx+' 86 '+nl+' 84 '+nl+' '+(top+58)+' Z';
+    var fillH=172, y=bot, layers='', labels='', cid='tvau3-clip'+(opts.id||'');
+    var tot=opts.tot||869.89, list=opts.list||POSTES;
+    var slots=[];
+    if(!opts.empty){
+      list.forEach(function(p){
+        var h=Math.max(2.5,p.tva/(opts.scale||869.89)*fillH); y-=h;
+        var fill=p.c;
+        layers+='<rect x="'+bx+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" fill="'+fill+'"/>';
+        if(p.doubt)layers+='<rect x="'+bx+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" fill="url(#tvau3-pd)"/>';
+        slots.push({p:p,mid:y+h/2});
+      });
+      if(opts.unk){var hu=opts.unk/869.89*fillH;y-=hu;layers+='<rect x="'+bx+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+hu.toFixed(1)+'" fill="url(#tvau3-ph)"/><line x1="'+bx+'" x2="'+(bx+bw)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#666" stroke-dasharray="4 3"/>';slots.push({p:{n:'Sans TVA (6)',unk:true},mid:y+hu/2});}
+      if(opts.pending){layers+='<rect x="'+bx+'" y="'+(y-16)+'" width="'+bw+'" height="16" fill="url(#tvau3-ph)"/><line x1="'+bx+'" x2="'+(bx+bw)+'" y1="'+(y-16)+'" y2="'+(y-16)+'" stroke="#666" stroke-dasharray="4 3"/>';slots.push({p:{n:'2 photos pas lues',unk:true,pend:true},mid:y-8});}
+      if(opts.recup){var hr=opts.recup/(opts.scale||869.89)*fillH;layers+='<rect x="'+bx+'" y="'+(bot-hr).toFixed(1)+'" width="'+bw+'" height="'+hr.toFixed(1)+'" fill="url(#tvau3-pg)"/><line x1="'+bx+'" x2="'+(bx+bw)+'" y1="'+(bot-hr).toFixed(1)+'" y2="'+(bot-hr).toFixed(1)+'" stroke="#4C6B2A" stroke-width="2"/>';}
+      if(opts.nolabels)slots=[];
+      // Étiquettes à droite, réparties sans chevauchement, reliées à leur couche.
+      var n=slots.length, y0=bot-10, y1=bodyTop-30, step=(y0-y1)/(n-1||1);
+      slots.forEach(function(s,i){
+        var ly=y0-i*step, p=s.p;
+        var val=p.unk?(p.pend?'?':'≤ '+ct(opts.unk/LITRES*UNITES[u][1]*100)+' ct'):(p.part?'≥ ':'')+ct(p.tva/LITRES*UNITES[u][1]*100)+' ct';
+        labels+='<path d="M'+(bx+bw)+' '+s.mid.toFixed(1)+' H'+(bx+bw+14)+' L'+(bx+bw+30)+' '+ly.toFixed(1)+' H'+(bx+bw+38)+'" fill="none" stroke="#9E9E9E" stroke-width="1"/>'+
+          '<circle cx="'+(bx+bw+40)+'" cy="'+ly.toFixed(1)+'" r="4.5" fill="'+(p.unk?'#fff':p.c)+'" stroke="'+(p.unk?'#666':'none')+'" stroke-dasharray="'+(p.unk?'2 1.5':'')+'"/>'+
+          '<text x="'+(bx+bw+50)+'" y="'+(ly+4.5).toFixed(1)+'" font-size="14" fill="#111" font-weight="600">'+p.n+'</text>'+
+          '<text x="'+(W-4)+'" y="'+(ly+4.5).toFixed(1)+'" font-size="14" fill="'+(p.doubt?'#8A5A00':'#111')+'" text-anchor="end" font-family="IBM Plex Mono, Consolas, monospace" font-weight="600">'+val+'</text>';
+      });
+    }
+    var neck='<rect x="'+(nl-3)+'" y="'+(top-6)+'" width="'+(neckW+6)+'" height="9" fill="#111"/>';
+    return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(opts.aria||'Répartition de la TVA par poste dans une bouteille')+'">'+
+      '<defs><clipPath id="'+cid+'"><path d="'+path+'"/></clipPath>'+
+      '<pattern id="tvau3-ph" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fff"/><rect width="2.5" height="6" fill="#9E9E9E"/></pattern>'+
+      '<pattern id="tvau3-pg" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="6" height="6" fill="#8E79C9"/><rect width="3" height="6" fill="#6E9B5B"/></pattern><pattern id="tvau3-pd" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="6" fill="#E3B55D"/></pattern></defs>'+
+      '<g clip-path="url(#'+cid+')"><rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#3B2414"/>'+layers+'</g>'+
+      '<path d="'+path+'" fill="none" stroke="#111" stroke-width="2"/>'+neck+
+      (opts.empty?'<text x="'+cx+'" y="210" text-anchor="middle" font-size="14" fill="#F5F0EA">vide</text>':'')+
+      '<g data-mots="lignes">'+labels+'</g></svg>';
+  }
+
+  function chrome(){
+    var t=['Synthèse','Opérations','Prévisions','Annuel'];
+    return '<header class="tvau3-head"><div class="tvau3-head-in"><span class="tvau3-logo" aria-hidden="true">'+ico('mug',20)+'</span><span class="tvau3-brand">L’Affinée</span>'+
+      '<button class="tvau3-hbtn" aria-label="Thème sombre">'+ico('moon',18)+'</button><button class="tvau3-hbtn tvau3-f" aria-label="Rechercher">'+ico('search',18)+'</button><button class="tvau3-hbtn tvau3-f" aria-label="Compagnon">'+ico('bulle',18)+'</button></div></header>'+
+      '<main class="tvau3-wrap"><nav class="tvau3-tabs" role="tablist" aria-label="Finances">'+t.map(function(x,i){return '<button role="tab" aria-selected="'+(i===0)+'">'+x+'</button>';}).join('')+'</nav>'+
+      '<div class="tvau3-bar"><h2>Situation financière</h2><button class="tvau3-gear" aria-label="Solde et paramètres financiers">'+ico('sliders',16)+'</button><div class="tvau3-seg" role="group" aria-label="Lecture de la synthèse" style="margin-left:auto"><button aria-pressed="false">Situation</button><button aria-pressed="true">Coûts</button></div></div>'+
+      (etat==='horsligne'?'<div class="tvau3-off">'+ico('cloud',16)+'Hors ligne · chiffres de ce téléphone, 31.10 à 18:42</div>':'')+
+      '<div id="tvau3-body"></div></main>';
+  }
+  function nav(){
+    var it=[['grid','Bord','#333'],['wallet','Finances','#1F64A3'],['mug','Brassins','#9A4F1E'],['cubes','Stocks','#4C6B2A'],['users','Clients','#333']];
+    return '<nav class="tvau3-nav" aria-label="Navigation principale"><div class="tvau3-nav-in">'+it.map(function(x){return '<a href="#" class="'+(x[1]==='Finances'?'tvau3-on':'')+'"><span style="color:'+x[2]+'">'+ico(x[0],18)+'</span>'+x[1]+'</a>';}).join('')+
+      '<button class="tvau3-fab" data-commun aria-label="Actions rapides">'+ico('plus',22)+'</button></div></nav>';
+  }
+  function periode(){
+    return '<div class="tvau3-per"><span class="tvau3-yr"><button aria-label="Année précédente">'+ico('left',16)+'</button><strong>2026</strong><button aria-label="Année suivante">'+ico('right',16)+'</button></span>'+
+      '<span class="tvau3-units" role="group" aria-label="Par contenant">'+UNITES.map(function(x,i){return '<button data-u="'+i+'" aria-pressed="'+(i===u)+'">'+x[0]+'</button>';}).join('')+'</span></div>';
+  }
+  function strip(){var k=UNITES[u][1],a=etat==='inconnues'?'≤ ':etat==='douteuse'?'≈ ':'',z=etat==='horsligne'?' +?':'';return '<div class="tvau3-strip"><div>Brassin 120 L<b>'+a+ct(869.89/LITRES*120)+z+' CHF</b></div><div>Du prix<b>'+a+(869.89/LITRES*k/(4.79*k/0.33)*100).toFixed(1).replace('.',',')+z+' %</b></div><div>Par mois<b>'+a+ct(869.89/10)+z+' CHF</b></div></div>';}
+  function par(chf){return ct(chf/LITRES*UNITES[u][1]*100);}
+
+  function corps(){
+    var k=UNITES[u][1], lab=UNITES[u][0];
+    if(etat==='vide'){
+      return periode()+'<div class="tvau3-hero"><div><div class="tvau3-ans"><span class="tvau3-q">TVA dans chaque '+lab+'</span></div><p class="tvau3-ctx">Aucun achat ni litre brassé en 2026 : rien à répartir.</p>'+
+        '<div class="tvau3-fig">'+bouteille({empty:true,aria:'Bouteille vide'})+'</div></div><div class="tvau3-side">'+
+        '<button class="tvau3-row" data-mots="lignes"><span>'+ico('left',16)+'</span><span><strong>2025</strong><span class="tvau3-s">1 204,30 CHF de TVA · 2 600 L</span></span><span class="tvau3-v">15,28 ct</span><span>'+ico('right',16)+'</span></button>'+
+        '<button class="tvau3-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>Comprendre ma TVA</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button></div></div>';
+    }
+    if(si){
+      var a=ct(869.89/LITRES*k*100), v=ct(2340.83/LITRES*k*100), d=ct(1470.94/LITRES*k*100);
+      var vente=[{n:'TVA de la vente',t:'8,1',tva:2340.83,c:'#8E79C9'}];
+      return periode()+'<div class="tvau3-ans"><span class="tvau3-q">Me la faire rembourser ?</span></div>'+
+        '<div class="tvau3-verdict">Assujetti, chaque '+lab+' te coûterait <b>'+d+'</b> ct de plus : tu récupères la TVA d’achat, mais tu verses celle de la vente.</div>'+
+        '<div class="tvau3-duo"><div><h4>Aujourd’hui</h4>'+bouteille({id:'a',nolabels:true,scale:2340.83,aria:'Aujourd’hui : TVA des achats par bouteille'})+'<p><b>'+a+' ct</b>TVA d’achat, perdue</p></div>'+
+        '<div><h4>Assujetti volontaire</h4>'+bouteille({id:'b',nolabels:true,scale:2340.83,recup:869.89,list:[{n:'',t:'8,1',tva:2340.83,c:'#8E79C9'}],aria:'Assujetti : TVA de la vente par bouteille'})+'<p><b>'+v+' ct</b>TVA de la vente, '+a+' récupérés</p></div></div>'+
+        '<p class="tvau3-fine">Prix TTC inchangés (4,79 en moyenne la 33 cl), 31 240,00 de ventes, 8,1 % sur la bière. Gagnant seulement sous 11 609 CHF de ventes par an. À confirmer avec ta fiduciaire.</p>'+
+        '<button class="tvau3-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>En parler au compagnon</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button>';
+    }
+    var big='<span class="tvau3-big">'+par(869.89)+'<small> ct</small></span>', ctx='<b>869,89</b> CHF ÷ <b>2 150</b> L brassés', opts={}, extra='';
+    if(etat==='inconnues'){big='<span class="tvau3-big tvau3-rg">'+par(776.98)+' à '+par(869.89)+'<small> ct</small></span>';ctx='<b>776,98</b> lus + 6 pièces sans TVA (<b>1 240,00</b> d’achats)';
+      opts={list:POSTES.map(function(p){var q=Object.assign({},p);if(p.n==='Étiquettes')q.tva=11.99;if(p.n==='Étiquettes')q.part=true;return q;}).filter(function(p){return p.n!=='CO₂ et nettoyage';}),unk:92.91};}
+    if(etat==='douteuse'){big='<span class="tvau3-big tvau3-rg">'+par(869.89)+' ou '+par(901.98)+'<small> ct</small></span>';
+      opts={list:POSTES.map(function(p){var q=Object.assign({},p);if(p.n==='Verre et capsules')q.doubt=true;return q;})};
+      extra='<div class="tvau3-warn" data-mots="lignes"><span class="tvau3-pill tvau3-pa">'+ico('alerte',13)+'à vérifier</span><span>Vetropack 12.06 : TVA lue <b>128,00</b> (10 %), attendu <b>95,91</b> à 8,1 %.</span></div>'+
+        '<div class="tvau3-pick"><button class="tvau3-k">Garder <b class="tvau3-m">95,91</b></button><button>Garder <b class="tvau3-m">128,00</b></button><button>Voir la facture</button></div>';}
+    if(etat==='horsligne'){big='<span class="tvau3-big">'+par(869.89)+' + ?<small> ct</small></span>';opts={pending:true};}
+    var de=etat==='etrangere'?'<div class="tvau3-tagde">'+'<span>'+ico('tag',13)+' DE, à part</span><b>38,00 EUR</b><span>MwSt, pas suisse</span></div>':'';
+    return periode()+'<div class="tvau3-hero"><div><div class="tvau3-ans"><span class="tvau3-q">TVA dans chaque '+lab+'</span>'+big+'</div><p class="tvau3-ctx">'+ctx+'</p>'+extra+
+      '<div class="tvau3-fig">'+de+bouteille(opts)+'</div></div><div class="tvau3-side">'+strip()+
+      '<button class="tvau3-row" id="tvau3-si"><span style="color:#4C6B2A">'+ico('balance',20)+'</span><span><strong>Me la faire rembourser ?</strong></span><span></span><span>'+ico('right',16)+'</span></button>'+
+      (etat==='etrangere'?'<div class="tvau3-row" data-mots="lignes" style="grid-template-columns:24px 1fr auto"><span style="color:#6A4FB0">'+ico('tag',18)+'</span><span><strong>Brouwland via La Poste</strong><span class="tvau3-s">TVA suisse à l’importation, dans Matériel</span></span><span class="tvau3-v">47,20</span></div>':'')+
+      '<button class="tvau3-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>Comprendre ma TVA</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button></div></div>';
+  }
+  function rendre(){
+    document.getElementById('tvau3-body').innerHTML=corps();
+    [].forEach.call(document.querySelectorAll('[data-u]'),function(b){b.onclick=function(){u=+b.getAttribute('data-u');rendre();};});
+    var s=document.getElementById('tvau3-si');if(s)s.onclick=function(){si=true;rendre();};
+  }
+  document.getElementById('tvau3-root').innerHTML=chrome()+nav();
+  rendre();
+})();
+</script>
+</body>
+</html>

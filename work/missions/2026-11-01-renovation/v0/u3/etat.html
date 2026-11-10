@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u3 — La frise des mois (01.11)</title>
+<style>
+:root{--acc:#C8382F;--page:#fff;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666;--t1:#333;--t0:#111;
+--fin:#1F64A3;--prod:#9A4F1E;--stk:#4C6B2A;--agd:#6A4FB0;--att:#7F5B10;--att-f:#FBF3E1;--ok:#3F6B2E;--alert:#A8291F;--alert-f:#F8E4E2;
+--p1:#0F766E;--p1f:#DDF0EE;--p2:#2563A8;--p2f:#E1EAF5;--p3:#8E3B76;--p3f:#F3E3EE;--p4:#A35A0F;--p4f:#F7EADB;--p5:#5B5BA8;--p5f:#E7E7F4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--t1);font:14px/1.35 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+.renou3-mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.renou3-app{max-width:760px;margin:0 auto;padding-bottom:70px}
+.renou3-tete{display:flex;align-items:center;gap:8px;height:44px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.renou3-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.renou3-nom{font-weight:600;font-size:17px;color:var(--t0);flex:1}
+.renou3-ico{width:30px;height:30px;border-radius:10px;border:1px solid var(--bord);display:grid;place-items:center;background:var(--pan)}
+svg.renou3-s{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.renou3-titre{display:flex;align-items:center;gap:6px;padding:8px 10px 4px}
+.renou3-titre h1{font-size:18px;margin:0;color:var(--t0);flex:1}
+.renou3-retour{display:inline-flex;align-items:center;height:28px;padding:0 8px 0 2px;border-radius:999px;border:0;background:none;color:var(--t1);font:14px inherit;font-family:inherit}
+.renou3-noter{height:30px;padding:0 12px;border-radius:999px;border:0;background:#111;color:#fff;font:600 13px/1 inherit;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.renou3-resume{display:flex;gap:14px;padding:0 10px 8px;font-size:13px;color:var(--t2)}
+.renou3-resume b{color:var(--t0);font-size:15px}
+.renou3-bac{margin:0 10px 10px;padding:6px 8px 8px;border-radius:16px;border:1.5px dashed var(--bordm);background:var(--pan)}
+.renou3-bac>span{display:block;font-size:12px;font-weight:600;color:var(--t2);margin:0 2px 5px;text-transform:uppercase;letter-spacing:.04em}
+.renou3-bac div{display:flex;gap:6px;flex-wrap:wrap}
+.renou3-jeton{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 4px;border-radius:999px;background:#fff;border:1px solid var(--bordm);font-size:14px;color:var(--t0)}
+.renou3-jeton i{width:20px;height:20px;border-radius:50%;display:block}
+.renou3-jeton small{font-size:12px;color:var(--att);font-weight:600}
+.renou3-frise{position:relative;margin:0 10px}
+.renou3-mois{display:grid;grid-template-columns:46px 18px minmax(0,1fr);gap:0 8px;min-height:44px}
+.renou3-lab{padding-top:5px;text-align:right}
+.renou3-lab b{display:block;font-size:15px;color:var(--t0);line-height:1.1}
+.renou3-lab small{display:block;font-size:12px;color:var(--t2)}
+.renou3-rail{position:relative}
+.renou3-rail::before{content:"";position:absolute;left:7px;top:0;bottom:0;width:4px;background:#111}
+.renou3-mois:first-child .renou3-rail::before{top:10px}
+.renou3-mois:last-child .renou3-rail::before{bottom:auto;height:14px;background:linear-gradient(#111,#fff)}
+.renou3-rail i{position:absolute;left:2px;top:8px;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #111}
+.renou3-auj .renou3-rail i{background:#F2C14E;border-color:#111;width:18px;height:18px;left:0;top:6px}
+.renou3-corps{padding:4px 0 10px;min-width:0;border-bottom:1px solid var(--bord)}
+.renou3-mois:last-child .renou3-corps{border-bottom:0}
+.renou3-bloc{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 10px;border-radius:10px;margin-bottom:4px;border-left:5px solid;font-size:14px}
+.renou3-bloc strong{color:var(--t0);font-size:15px;font-weight:600}
+.renou3-bloc small{display:block;font-size:12px;color:var(--t1)}
+.renou3-bloc .renou3-mt{margin-left:auto;font-size:14px;color:var(--t0);white-space:nowrap}
+.renou3-argent{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);margin-top:2px}
+.renou3-piste{flex:1;height:8px;border-radius:999px;background:var(--sur);position:relative;overflow:visible}
+.renou3-piste i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--t1)}
+.renou3-piste em{position:absolute;top:-3px;bottom:-3px;width:2px;background:#111}
+.renou3-solde{font-size:13px;color:var(--t0);white-space:nowrap}
+.renou3-solde.renou3-bas{color:var(--alert);font-weight:600}
+.renou3-vide{font-size:13px;color:var(--t2);padding:6px 0}
+.renou3-detail{display:grid;grid-template-columns:1fr auto;gap:1px 10px;font-size:13px;padding:4px 10px 6px 15px;margin:-4px 0 6px;border-radius:0 0 10px 10px;background:var(--p4f)}
+.renou3-detail span:nth-child(odd){color:var(--t1)}
+.renou3-bandeau{margin:0 10px 8px;padding:6px 10px;border-radius:10px;background:var(--sur);display:flex;gap:6px;align-items:center;font-size:13px}
+.renou3-rg{background:var(--alert-f);color:var(--alert)}
+.renou3-feuille{position:fixed;left:0;right:0;bottom:56px;max-width:760px;margin:0 auto;background:var(--page);border-radius:24px 24px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.18);padding:10px 12px 12px;z-index:5}
+.renou3-feuille h2{margin:0 0 6px;font-size:16px;color:var(--t0)}
+.renou3-champ{height:36px;width:100%;border-radius:10px;border:2px solid var(--fin);padding:0 10px;font:16px inherit;font-family:inherit;color:var(--t0)}
+.renou3-puces{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.renou3-puces button{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--bordm);background:var(--page);font:13px/1 inherit;font-family:inherit;color:var(--t1)}
+.renou3-puces button[aria-pressed=true]{background:#111;color:#fff;border-color:#111;font-weight:600}
+.renou3-puces .renou3-noter{background:#111;color:#fff;font-weight:600;border:0;height:32px;padding:0 16px}
+.renou3-voile{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:4}
+.renou3-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--pan);border-top:1px solid var(--bord);display:flex;z-index:6}
+.renou3-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t1);text-decoration:none}
+.renou3-nav a.renou3-act{background:var(--sur);color:var(--t0);font-weight:600;box-shadow:inset 0 3px 0 #111}
+.renou3-plus{flex:none !important;width:64px;margin:6px 6px 6px 0;border-radius:999px;background:#111;color:#fff !important}
+@media (min-width:900px){.renou3-mois{grid-template-columns:80px 18px minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="renou3-app">
+  <header class="renou3-tete">
+    <span class="renou3-logo"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M15 9h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M6 6h9v3H6z" fill="#fff"/></svg></span>
+    <span class="renou3-nom">L'Affinée</span>
+    <span class="renou3-ico" aria-label="Thème"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+    <span class="renou3-ico" aria-label="Chercher"><svg class="renou3-s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+  </header>
+  <div class="renou3-titre">
+    <button class="renou3-retour" aria-label="Retour au Bord"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Bord</button>
+    <h1>Rénovation</h1>
+    <button class="renou3-noter"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Noter</button>
+  </div>
+  <main id="renou3-zone"></main>
+  <nav class="renou3-nav" aria-label="Navigation principale">
+    <a href="#" class="renou3-act"><svg class="renou3-s" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</a>
+    <a href="#" style="color:var(--fin)"><svg class="renou3-s" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg><span style="color:var(--t1)">Finances</span></a>
+    <a href="#" style="color:var(--prod)"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9 11v6M12 11v6"/></svg><span style="color:var(--t1)">Brassins</span></a>
+    <a href="#" style="color:var(--stk)"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M12 3l4 2.5v4.5l-4 2.5-4-2.5V5.5zM8 12.5l4 2.5v4.5l-4 2.5-4-2.5V15zM16 12.5l4 2.5v4.5l-4 2.5-4-2.5V15z"/></svg><span style="color:var(--t1)">Stocks</span></a>
+    <a href="#"><svg class="renou3-s" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>Clients</a>
+    <a href="#" class="renou3-plus" aria-label="Ajouter"><svg class="renou3-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+  </nav>
+</div>
+<script>
+(function () {
+  var etat = new URLSearchParams(location.search).get('etat') || 'encours';
+  var zone = document.getElementById('renou3-zone');
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function chf(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' CHF'; }
+  var NUAGE = '<svg class="renou3-s" viewBox="0 0 24 24"><path d="M3 3l18 18M8 8a5 5 0 0 0-1 0 4 4 0 0 0 0 8h9M20 15.5A3.5 3.5 0 0 0 17 10h-1a6 6 0 0 0-5.5-4"/></svg>';
+  var CHECK = '<svg class="renou3-s" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  // Les mois viennent du calendrier (aujourd'hui : novembre 2026) ; les projets n'y sont posés que si un mois est saisi.
+  var MOIS = [['nov.', '2026', true], ['déc.', '', false], ['janv.', '2027', false], ['févr.', '', false], ['mars', '', false]];
+  // Données fictives : ses cinq titres ; montants, artisans et heures inventés.
+  var P = {
+    hotte: { t: 'Hotte', c: 'p4', mt: 3610, qui: 'Sophie · 6 h', etape: 'Devis en cours' },
+    evier: { t: '2ᵉ évier', c: 'p2', mt: 380, partiel: true, qui: 'Marc', etape: 'À étudier' },
+    armoire: { t: 'Armoire extérieure', c: 'p3', mt: null, qui: null, etape: 'Idée' },
+    sols: { t: 'Sols, seconde passe', c: 'p1', mt: 460, qui: 'toi · 8 h', etape: 'Prêt à acheter' },
+    site: { t: 'Site web vitrine', c: 'p5', mt: null, qui: 'toi · 10 h', etape: 'Idée' }
+  };
+  var place = { 1: ['hotte'], 2: ['sols'] };
+  var bac = ['evier', 'armoire', 'site'];
+  if (etat === 'ouvert') { place = { 1: ['hotte', 'evier'], 2: ['sols'] }; bac = ['armoire', 'site']; }
+
+  function bloc(id, opts) {
+    opts = opts || {};
+    var p = P[id];
+    var b = el('div', 'renou3-bloc');
+    b.style.borderLeftColor = 'var(--' + p.c + ')'; b.style.background = 'var(--' + p.c + 'f)';
+    var mt = opts.mt != null ? opts.mt : p.mt;
+    b.innerHTML = (opts.fait ? '<span style="color:var(--ok)">' + CHECK + '</span>' : '') +
+      '<div><strong data-mots="lignes">' + p.t + '</strong><small data-mots="lignes">' + (opts.sous || [p.etape, p.qui].filter(Boolean).join(' · ')) + '</small></div>' +
+      '<span class="renou3-mt renou3-mono"' + (opts.rouge ? ' style="color:var(--alert);font-weight:600"' : '') + '>' + (mt == null ? '' : chf(mt) + (p.partiel && !opts.fait ? ' + ?' : '')) + '</span>';
+    if (opts.attente) b.style.outline = '1.5px dotted var(--fin)';
+    return b;
+  }
+  function jeton(id, opts) {
+    var p = P[id];
+    var manque = p.mt == null ? 'prix ?' : 'mois ?';
+    return '<span class="renou3-jeton"><i style="background:var(--' + p.c + ')"></i><span data-mots="lignes">' + p.t + '</span><small data-mots="lignes">' + manque + '</small></span>';
+  }
+
+  if (etat === 'horsligne') zone.appendChild(el('div', 'renou3-bandeau', NUAGE + 'Hors ligne. Tes notes restent sur ce téléphone.'));
+  if (etat === 'depasse') zone.appendChild(el('div', 'renou3-bandeau renou3-rg', '<b>Décembre : la hotte coûte 370 CHF de plus.</b>'));
+
+  // Résumé : ce que l'app sait faire de la somme et des heures notées.
+  if (etat === 'jour1') zone.appendChild(el('div', 'renou3-resume', '<span>Rien de noté</span>'));
+  else if (etat === 'fini') zone.appendChild(el('div', 'renou3-resume', '<span><b class="renou3-mono">5/5</b> faits</span><span><b class="renou3-mono">' + chf(6590) + '</b> facturés</span><span><b class="renou3-mono">18 h</b> de toi</span>'));
+  else zone.appendChild(el('div', 'renou3-resume', '<span><b class="renou3-mono">' + chf(etat === 'depasse' ? 4820 : 4450) + '</b> chiffrés</span><span><b class="renou3-mono">18 h</b> de toi</span><span><b class="renou3-mono">' + bac.length + '</b> sans mois</span>'));
+
+  // Le bac : ce qui n'a pas encore de mois.
+  if (etat !== 'fini') {
+    var b = el('div', 'renou3-bac');
+    var contenu = etat === 'jour1' ? '<span class="renou3-vide">Note ce qui te manque. Tu le poseras sur un mois quand tu sauras.</span>'
+      : bac.map(function (id) { return jeton(id); }).join('') + (etat === 'horsligne' ? '<span class="renou3-jeton"' + (etat === 'horsligne' ? ' style="border:1.5px dotted var(--fin)"' : '') + '><i style="background:#9E9E9E"></i><span data-mots="lignes">Lampes de la salle</span><small data-mots="lignes">' + (etat === 'horsligne' ? 'à envoyer' : 'prix ?') + '</small></span>' : '');
+    b.innerHTML = '<span>Sans mois · glisse sur la frise</span><div>' + contenu + '</div>';
+    zone.appendChild(b);
+  }
+
+  var frise = el('div', 'renou3-frise');
+  var solde = 6200;
+  MOIS.forEach(function (m, i) {
+    var row = el('div', 'renou3-mois' + (m[2] && etat !== 'fini' ? ' renou3-auj' : ''));
+    row.appendChild(el('div', 'renou3-lab', '<b>' + m[0] + '</b>' + (m[1] ? '<small>' + m[1] + '</small>' : '')));
+    row.appendChild(el('div', 'renou3-rail', '<i></i>'));
+    var corps = el('div', 'renou3-corps');
+    var ids = etat === 'jour1' ? [] : (place[i] || []);
+    if (etat === 'fini') ids = ({ 1: ['hotte', 'evier'], 2: ['sols'], 3: ['armoire'], 4: ['site'] })[i] || [];
+    var somme = 0;
+    ids.forEach(function (id) {
+      var o = {};
+      if (etat === 'fini') { o.fait = true; o.mt = { hotte: 3980, evier: 610, armoire: 1240, sols: 470, site: 290 }[id]; o.sous = 'Réalisé'; }
+      if (etat === 'depasse' && id === 'hotte') { o.mt = 3980; o.rouge = true; o.sous = 'Facturé · prévu ' + chf(3610); }
+      if (etat === 'horsligne' && id === 'sols') o.attente = true;
+      corps.appendChild(bloc(id, o));
+      if (etat === 'ouvert' && id === 'hotte') corps.appendChild(el('div', 'renou3-detail', '<span>Achat</span><span class="renou3-mono">' + chf(2850) + '</span><span>Livraison</span><span class="renou3-mono">' + chf(120) + '</span><span>Pose, Sophie 6 h</span><span class="renou3-mono">' + chf(640) + '</span>'));
+      somme += (o.mt != null ? o.mt : P[id].mt) || 0;
+    });
+    if (!ids.length) corps.appendChild(el('div', 'renou3-vide', m[2] ? (etat === 'fini' ? '' : 'Aujourd\'hui · rien de prévu ce mois') : ''));
+    if (etat === 'caisse' && ids.length) {
+      solde -= somme;
+      var a = el('div', 'renou3-argent');
+      a.innerHTML = '<span>Après</span><span class="renou3-piste" role="img" aria-label="Solde après ce mois"><i style="width:' + Math.round(solde / 6200 * 100) + '%;background:var(--fin)"></i></span><span class="renou3-solde renou3-mono'  + '">' + chf(solde) + '</span>';
+      corps.appendChild(a);
+    }
+    if (etat === 'caisse' && i === 0) corps.firstChild.textContent = 'Au compte aujourd\'hui : ' + chf(6200);
+    row.appendChild(corps);
+    frise.appendChild(row);
+  });
+  zone.appendChild(frise);
+  if (etat === 'caisse') zone.appendChild(el('div', 'renou3-bandeau', 'Pas compté : évier (sans mois), armoire et site (sans prix).'));
+
+  if (etat === 'ajout') {
+    document.body.appendChild(el('div', 'renou3-voile'));
+    var f = el('div', 'renou3-feuille');
+    f.setAttribute('role', 'dialog'); f.setAttribute('aria-label', 'Noter un manque');
+    f.innerHTML = '<h2>Ce qui te manque</h2><input class="renou3-champ" value="Lampes de la salle" aria-label="Ce qui te manque">' +
+      '<div class="renou3-puces"><button aria-pressed="true">sans mois</button><button aria-pressed="false">nov.</button><button aria-pressed="false">déc.</button><button aria-pressed="false">janv.</button><button aria-pressed="false">févr.</button><button aria-pressed="false">mars</button></div>' +
+      '<div class="renou3-puces" style="justify-content:flex-end"><button class="renou3-noter" style="border:0" aria-pressed="false">Noter</button></div>';
+    document.body.appendChild(f);
+  }
+})();
+</script>
+</body>
+</html>

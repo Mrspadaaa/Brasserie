@@ -86,7 +86,7 @@ function Valeur({ v, code, cle, nom, etape, famille, gris, etoile }: {
 function AlphaRef({ cle }: { cle: string }) {
   const a = houblon(cle).alpha;
   if (!a) return <span data-role="alpha" data-inconnu="" className="pq-comparer-et-al">α ?</span>;
-  const lot = hopRef(cle)?.stock?.alphaFrom === 'fiche de stock';
+  const lot = hopRef(cle)?.stock?.alphaFrom != null; // HX-6 : fiche de stock ou nom de l'article
   return (
     <span data-role="alpha" data-source={lot ? 'lot' : 'fiches'} data-nature="mesure" className="pq-comparer-et-al"
       aria-label={`α ${lot ? 'du lot en stock' : 'des fiches'} : ${nombre(a.valeur, 1)} %`}>α {nombre(a.valeur, 1)}%</span>

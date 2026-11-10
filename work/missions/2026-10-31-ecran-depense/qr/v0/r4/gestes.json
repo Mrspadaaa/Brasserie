@@ -1,0 +1,5 @@
+[
+  ["echeance-ouverte", "confirme", "#qrr4-ech"],
+  ["garde-qr", "contredit", "[data-garde=\"qr\"]"],
+  ["garde-lu", "contredit", "[data-garde=\"lu\"]"]
+]

@@ -1,0 +1,80 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Option B · 06</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--c950:#fff;--c900:#f5f5f5;--c850:#ebebeb;--c800:#ddd;--c700:#bfbfbf;--c600:#9e9e9e;--c400:#666;--c200:#333;--c50:#111;
+--att:rgb(156 112 32);--attT:rgb(127 91 16);--gold:#E0A02E;--hop:rgb(63 107 46);--lev:rgb(47 98 150);--suc:#c8742c;--rouge:#b3261e;--vise:#2d5f8a}
+*{box-sizing:border-box}
+body{margin:0;width:390px;height:700px;background:#fff;color:var(--c50);font:14px/1.25 "Source Sans 3",system-ui,"Segoe UI",sans-serif;overflow:hidden;position:relative}
+body.gris{background:var(--c900)}
+.m{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.cl-h{display:flex;align-items:center;gap:4px;height:40px;border-bottom:1px solid var(--c800);padding:0 4px;background:#fff}
+.cl-h h2{flex:1;margin:0;font-size:16px;font-weight:600}
+.cl-ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--c200);border-radius:10px}
+.cl-vise{outline:2.5px solid var(--vise);outline-offset:2px}
+/* état « lecture » d'aujourd'hui */
+.cl-lect{margin:8px;border:1px solid var(--c800);border-radius:14px;background:rgb(245 245 245/.6);padding:5px 10px 7px;display:grid;gap:4px}
+.cl-lect .nom{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cl-lect .nom b{font-size:16px;font-weight:600}
+.cl-lect .nom span{font-size:12px;color:var(--c400)}
+.cl-frise{display:flex;gap:6px;font-size:12px;color:var(--c400)}
+.cl-frise span{flex:1;display:flex;flex-direction:column;gap:3px}
+.cl-frise i{display:block;height:6px;border-radius:10px;background:var(--c800)}
+.cl-frise .f1{color:var(--c200)} .cl-frise .f1 i{background:var(--c200)}
+.cl-frise .f2{color:var(--c50);font-weight:600} .cl-frise .f2 i{background:repeating-linear-gradient(90deg,#333 0 6px,#ddd 6px 12px)}
+.cl-arrivent{margin:0 8px;height:118px;border:1px dashed var(--c600);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--c400);font-size:14px}
+.cl-ligne{margin:0 12px;display:flex;min-height:36px;align-items:center;border-bottom:1px solid var(--c800);font-size:14px;color:var(--c200)}
+.cl-ligne em{margin-left:auto;font-style:normal;font-size:12px;color:var(--c400)}
+/* la marque « vérification en cours » (D, E) : la frise d'aujourd'hui, réduite à un fil sous l'en-tête */
+.cl-fil{display:flex;align-items:center;gap:6px;height:22px;padding:0 10px;font-size:12px;color:var(--c50);font-weight:600;background:#fff;border-bottom:1px solid var(--c800)}
+.cl-fil i{display:block;height:4px;border-radius:4px;background:var(--c200);width:36px}
+.cl-fil i.cours{width:96px;background:repeating-linear-gradient(90deg,#333 0 6px,#ddd 6px 12px)}
+/* dépense lue */
+.cl-band{margin:8px 8px 0;border:1px solid var(--c800);border-radius:14px;background:rgb(245 245 245/.4);padding:5px 10px 7px;display:grid;gap:4px}
+.cl-band .r1{display:flex;align-items:baseline;justify-content:space-between}
+.cl-band .r1 b{font-size:16px;font-weight:600}
+.cl-band .r1 span{font-size:14px;color:var(--c200);border-bottom:1px dashed var(--c600)}
+.cl-band .r2{display:flex;align-items:center;gap:8px}
+.cl-band .tot{font-size:28px;font-weight:600;line-height:1.1}
+.cl-chip{margin-left:auto;min-height:28px;border:1px solid var(--c700);border-radius:10px;padding:0 8px;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--c200);background:#fff}
+.cl-barre{display:flex;height:10px;border:1px solid var(--c800);border-radius:999px;overflow:hidden}
+.cl-barre i{display:block;height:100%;border-right:1.5px solid #fff}
+.cl-preuve{margin:6px 8px 0;border:1px solid var(--c800);border-radius:14px;padding:2px 8px 6px;display:grid;grid-template-columns:1.12fr 1fr;column-gap:8px}
+.cl-preuve .rg{display:flex;align-items:center;gap:4px;min-height:26px;border-bottom:1px solid var(--c800);font-size:14px;color:var(--c200)}
+.cl-preuve .rg b{margin-left:auto;font-weight:500;color:var(--c50)}
+.cl-preuve .pu{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;padding-top:6px}
+.cl-pu{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 7px;border-radius:999px;font-size:13px;color:var(--c200);border:1px solid transparent}
+.cl-pu b{font-weight:600}
+.cl-pu.j{border:1.5px dashed var(--att);color:var(--attT);background:rgb(224 160 46/.08)}
+.cl-pu.r{border:1.5px dashed var(--rouge);color:var(--rouge);background:rgb(179 38 30/.06)}
+.cl-pu.c{border:1.5px solid var(--vise);color:var(--vise);background:rgb(45 95 138/.08)}
+.cl-pts{display:inline-flex;gap:3px;align-items:center;margin-left:auto}
+.cl-pts i{width:8px;height:8px;border-radius:50%;background:var(--c200)}
+.cl-pts i.att{background:none;border:1.5px dashed var(--c200)}
+.cl-duo{margin:6px 8px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cl-duo div{border:1px solid var(--c800);border-radius:14px;padding:3px 8px 5px;font-size:12px;color:var(--c400);display:grid;gap:1px}
+.cl-duo div b{font-size:14px;font-weight:500;color:var(--c50)}
+.cl-bande{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px}
+.cl-bande strong{font-weight:600}
+.cl-pt{width:10px;height:10px;border-radius:50%}
+.cl-nb{border:1px solid var(--c600);background:#fff;border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;color:var(--c200)}
+.cl-bande .q{margin-left:auto;margin-right:57px;font-size:12px;font-weight:600;color:var(--c200)}
+.cl-bande .t{min-width:54px;text-align:right;font-weight:600}
+.cl-li{display:flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-bottom:1px solid var(--c800);border-left:4px solid var(--gold)}
+.cl-li.haute{min-height:40px}
+.cl-li .n{flex:1;min-width:0;font-size:14px;display:flex;flex-direction:column;line-height:1.15}
+.cl-li .n small{font-size:12px;color:var(--c400)}
+.cl-li .n s{font-size:12px;color:var(--c400)}
+.cl-dq{flex:none;min-width:94px;display:inline-grid;grid-template-columns:minmax(37px,max-content) 7px 44px;column-gap:3px;font-size:12px;color:var(--c400);white-space:nowrap;align-items:center}
+.cl-dq b{text-align:right;font-weight:600} .cl-dq i{font-style:normal;text-align:center}
+.cl-dq .j{border:1.5px dashed var(--att);border-radius:6px;padding:0 3px;color:var(--attT)}
+.cl-dq .r{border:1.5px dashed var(--rouge);border-radius:6px;padding:0 3px;color:var(--rouge)}
+.cl-dq .c{background:rgb(45 95 138/.14);border-radius:6px;padding:0 3px;color:var(--vise)}
+.cl-mt{width:54px;flex:none;text-align:right;font-size:14px}
+.cl-pied{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:8px;border-top:1px solid var(--c800);background:#fff}
+.cl-seg{display:inline-flex;border:1px solid var(--c600);border-radius:10px;overflow:hidden}
+.cl-seg span{min-height:28px;display:flex;align-items:center;padding:0 10px;font-size:14px;color:var(--c200)}
+.cl-seg span.on{background:#111;color:#fff;font-weight:600}
+.cl-conf{margin-left:auto;height:36px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;padding:0 22px}
+.cl-conf.attente{background:var(--c700);color:#fff}
+.cl-conf.gris{background:#a6a6a6;height:36px;padding:0 18px}
+</style></head><body class="gris"><header class="cl-h"><span class="cl-ic" style="color:var(--c600)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span><h2>Nouvelle dépense</h2></header><div class="cl-lect"><div class="nom"><b>facture-brauhaus.pdf</b><span class="m">0,8 Mo</span></div><div class="cl-frise"><span class="f1"><i></i>envoi ✓</span><span class="f2"><i></i>lecture</span><span><i></i>vérification</span></div></div><div class="cl-arrivent">Les lignes arrivent ici</div><div style="padding:4px 0 0"><div class="cl-ligne">Pour quoi ?<em>après la lecture</em></div><div class="cl-ligne">Règlement<em>Déjà payé · À payer</em></div></div><div class="cl-pied" style="background:#f5f5f5"><span class="cl-conf gris" style="margin-left:auto">✓&nbsp;Enregistrer</span></div></body></html>

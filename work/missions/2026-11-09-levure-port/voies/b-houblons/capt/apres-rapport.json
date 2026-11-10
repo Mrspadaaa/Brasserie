@@ -1,0 +1,258 @@
+{
+ "390-clair": {
+  "bilan": "Amertume et répartition | 16D · style non reconnu | IBU à chaud · Tinseth | 60 | 0 | Plage du style non identifiée | 65,7 | Ébullition · 1 ajout | 46 g · 2,3 g/L | Précise le style dans Identité pour situer le rôle des houblons. Les calculs restent disponibles.",
+  "segment": {
+   "c": "rgb(17, 17, 17)",
+   "f": "rgb(191, 191, 191)"
+  },
+  "atelier": {
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Décider": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Explorer": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Historique": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "saisie": {
+   "saisie": {
+    "Masse du réglage": "champ absent",
+    "Temps d’ébullition restant": "champ absent",
+    "Température du réglage": "champ absent"
+   },
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "dossier": {
+   "clic": false,
+   "alertes": [
+    "Compagnon hors connexion · mode local",
+    "Aucun batch avec snapshot immuable reçu. La note peut rester qualitative dans le journal, sans ancre d’état physique ni chiffre déduit d’une recette."
+   ]
+  },
+  "erreurs": []
+ },
+ "390-cave": {
+  "bilan": "Amertume et répartition | 16D · style non reconnu | IBU à chaud · Tinseth | 60 | 0 | Plage du style non identifiée | 65,7 | Ébullition · 1 ajout | 46 g · 2,3 g/L | Précise le style dans Identité pour situer le rôle des houblons. Les calculs restent disponibles.",
+  "segment": {
+   "c": "rgb(245, 240, 234)",
+   "f": "rgb(61, 52, 46)"
+  },
+  "atelier": {
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Décider": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Explorer": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Historique": {
+   "clic": true,
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "saisie": {
+   "saisie": {
+    "Masse du réglage": "champ absent",
+    "Temps d’ébullition restant": "champ absent",
+    "Température du réglage": "champ absent"
+   },
+   "sw": 390,
+   "iw": 390,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "dossier": {
+   "clic": true,
+   "alertes": [
+    "Compagnon hors connexion · mode local",
+    "Dossier local prêt · Stout export. Les essais resteront séparés de la recette.",
+    "Couverture partielle : la comparaison utilise seulement les critères de l’intention transmise. Aucune lecture sémantique V4 archivée n’est jointe; les cibles qualitatives et constats de la question ne sont pas consultés.",
+    "Choisis une source et une alternative. Une recherche, une famille ou l’ordre du catalogue ne sélectionnent aucune fiche.",
+    "Aucun batch avec snapshot immuable reçu. La note peut rester qualitative dans le journal, sans ancre d’état physique ni chiffre déduit d’une recette."
+   ]
+  },
+  "erreurs": []
+ },
+ "1280-clair": {
+  "bilan": "Amertume et répartition | 16D · style non reconnu | IBU à chaud · Tinseth | 60 | 0 | Plage du style non identifiée | 65,7 | Ébullition · 1 ajout | 46 g · 2,3 g/L | Précise le style dans Identité pour situer le rôle des houblons. Les calculs restent disponibles.",
+  "segment": {
+   "c": "rgb(17, 17, 17)",
+   "f": "rgb(191, 191, 191)"
+  },
+  "atelier": {
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Décider": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Explorer": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Historique": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "saisie": {
+   "saisie": {
+    "Masse du réglage": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 800 g."
+    },
+    "Temps d’ébullition restant": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 240 min."
+    },
+    "Température du réglage": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 100 °C."
+    }
+   },
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "dossier": {
+   "clic": true,
+   "alertes": [
+    "Compagnon hors connexion · mode local",
+    "Dossier local prêt · Stout export. Les essais resteront séparés de la recette.",
+    "Couverture partielle : la comparaison utilise seulement les critères de l’intention transmise. Aucune lecture sémantique V4 archivée n’est jointe; les cibles qualitatives et constats de la question ne sont pas consultés.",
+    "Choisis une source et une alternative. Une recherche, une famille ou l’ordre du catalogue ne sélectionnent aucune fiche.",
+    "Aucun batch avec snapshot immuable reçu. La note peut rester qualitative dans le journal, sans ancre d’état physique ni chiffre déduit d’une recette."
+   ]
+  },
+  "erreurs": []
+ },
+ "1280-cave": {
+  "bilan": "Amertume et répartition | 16D · style non reconnu | IBU à chaud · Tinseth | 60 | 0 | Plage du style non identifiée | 65,7 | Ébullition · 1 ajout | 46 g · 2,3 g/L | Précise le style dans Identité pour situer le rôle des houblons. Les calculs restent disponibles.",
+  "segment": {
+   "c": "rgb(245, 240, 234)",
+   "f": "rgb(61, 52, 46)"
+  },
+  "atelier": {
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Décider": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Explorer": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "Historique": {
+   "clic": true,
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "saisie": {
+   "saisie": {
+    "Masse du réglage": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 800 g."
+    },
+    "Temps d’ébullition restant": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 240 min."
+    },
+    "Température du réglage": {
+     "invalide": "true",
+     "message": "Hors des bornes réalistes : entre 0 et 100 °C."
+    }
+   },
+   "sw": 1280,
+   "iw": 1280,
+   "hors": [],
+   "nbHors": 0,
+   "defilantes": 0
+  },
+  "dossier": {
+   "clic": false,
+   "alertes": [
+    "Compagnon hors connexion · mode local",
+    "Aucun batch avec snapshot immuable reçu. La note peut rester qualitative dans le journal, sans ancre d’état physique ni chiffre déduit d’une recette."
+   ]
+  },
+  "erreurs": []
+ }
+}

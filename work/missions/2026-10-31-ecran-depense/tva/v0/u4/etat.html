@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u4 · TVA, le ticket de l'année</title>
+<style>
+:root{--tvau4-line:#DDDDDD;--tvau4-surf:#F5F5F5;--tvau4-surf2:#EBEBEB;--tvau4-fin:#1F64A3;--tvau4-a:#7A5A12;--tvau4-af:#C99A2E;--tvau4-b:#2F5FB0;--tvau4-att:#8A5A00;--tvau4-etr:#6A4FB0;--tvau4-ok:#4C6B2A;--tvau4-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3;color:#111;background:#fff}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.tvau4-m{font-family:var(--tvau4-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tvau4-head{border-bottom:1px solid var(--tvau4-line)}
+.tvau4-head-in{max-width:880px;margin:0 auto;height:40px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.tvau4-logo{width:30px;height:30px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau4-brand{font-size:18px;font-weight:500;flex:1}
+.tvau4-hbtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#333}
+.tvau4-hbtn.tvau4-f{background:var(--tvau4-surf2);border:1px solid #BFBFBF}
+.tvau4-wrap{max-width:872px;margin:0 auto;padding:0 12px 76px}
+.tvau4-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--tvau4-line)}
+.tvau4-tabs button{height:34px;color:#333;border-bottom:2px solid transparent}
+.tvau4-tabs button[aria-selected=true]{color:var(--tvau4-fin);border-color:var(--tvau4-fin);background:rgba(31,100,163,.05);font-weight:600}
+.tvau4-bar{display:flex;align-items:center;gap:8px;padding:8px 0}
+.tvau4-bar h2{font-size:16px;font-weight:600;margin:0}
+.tvau4-seg{display:flex;gap:2px;margin-left:auto}
+.tvau4-seg button{height:28px;padding:0 10px;border-radius:10px;border:1px solid transparent;font-size:13px;color:#333}
+.tvau4-seg button[aria-pressed=true]{background:var(--tvau4-surf2);border-color:#BFBFBF;color:var(--tvau4-fin);font-weight:600}
+.tvau4-gear{width:28px;height:28px;display:grid;place-items:center;color:#333}
+.tvau4-off{display:flex;gap:6px;align-items:center;margin:0 0 8px;padding:6px 10px;border-radius:10px;background:var(--tvau4-surf);font-size:13px;color:#333}
+.tvau4-desk{display:block}
+.tvau4-comptoir{background:#D4D4D4;border-radius:16px;padding:10px 8px 12px;margin-top:4px}
+/* Le ticket */
+.tvau4-tk{position:relative;max-width:380px;margin:4px auto 0;background:#fff;border-left:1px solid #CFCFCF;border-right:1px solid #CFCFCF;box-shadow:0 8px 24px -12px rgba(0,0,0,.35);padding:4px 14px 6px}
+.tvau4-zz{display:block;width:calc(100% + 30px);height:8px;margin:0 -15px}
+.tvau4-tk-h{text-align:center;padding:4px 0 6px;border-bottom:1px dashed #9E9E9E}
+.tvau4-tk-h strong{display:block;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.tvau4-tk-h span{font-size:12px;color:#444}
+.tvau4-per{display:flex;justify-content:center;align-items:center;gap:2px;margin-top:2px}
+.tvau4-per button{width:24px;height:24px;display:grid;place-items:center;color:#333;border-radius:10px}
+.tvau4-per b{font-family:var(--tvau4-mono);font-size:13px}
+.tvau4-l{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:baseline;width:100%;min-height:26px;padding:2px 0;text-align:left}
+.tvau4-l .tvau4-n{display:flex;align-items:baseline;min-width:0;font-size:14px}
+.tvau4-l .tvau4-n span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvau4-l .tvau4-n i{flex:1;border-bottom:1.5px dotted #9E9E9E;margin:0 4px;transform:translateY(-3px);min-width:10px}
+.tvau4-l .tvau4-n small{color:#555;font-size:12px;margin-left:3px;white-space:nowrap}
+.tvau4-code{font-family:var(--tvau4-mono);font-size:12px;font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;color:#fff}
+.tvau4-ca{background:var(--tvau4-a)}
+.tvau4-cb{background:var(--tvau4-b)}
+.tvau4-cq{background:#fff;color:#333;border:1.5px dashed #666}
+.tvau4-v{font-family:var(--tvau4-mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;text-align:right;min-width:64px}
+.tvau4-sub{grid-column:1 / -1;font-size:12px;color:#555;margin-top:-2px}
+.tvau4-hl .tvau4-n>span,.tvau4-hl .tvau4-v{background:linear-gradient(transparent 15%,#F7DC8C 15%,#F7DC8C 90%,transparent 90%)}
+.tvau4-pick{grid-column:1 / -1;display:flex;gap:6px;margin:2px 0 4px}
+.tvau4-pick button{height:26px;padding:0 9px;border-radius:10px;border:1px solid #BFBFBF;font-size:13px;background:#fff}
+.tvau4-pick button.tvau4-k{background:#111;color:#fff;border-color:#111}
+.tvau4-rule{border-top:1px dashed #9E9E9E;margin:4px 0}
+.tvau4-rate{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:13px;min-height:22px}
+.tvau4-rate .tvau4-bar2{height:6px;border-radius:3px;background:var(--tvau4-surf2);overflow:hidden}
+.tvau4-rate .tvau4-bar2 i{display:block;height:100%}
+.tvau4-rate b{font-family:var(--tvau4-mono);font-weight:600}
+.tvau4-tot{position:relative;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#111;color:#fff;border-radius:10px;margin:8px -4px 0;min-height:52px}
+.tvau4-tot span{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tvau4-tot b{font-family:var(--tvau4-mono);font-size:26px;font-weight:600;letter-spacing:-.02em}
+.tvau4-tot b small{font-size:14px;font-weight:500}
+.tvau4-tot b.tvau4-rg{font-size:20px}
+.tvau4-stamp{position:relative;display:inline-block;color:var(--tvau4-etr);padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1.25;text-align:center;background:#fff}
+.tvau4-stw{text-align:center;padding:6px 0 0}
+.tvau4-stamp::before{content:"";position:absolute;inset:0;border:2px solid var(--tvau4-etr);border-radius:10px;transform:rotate(-4deg)}
+.tvau4-stamp em{display:block;font-style:normal;font-weight:600;letter-spacing:0;text-transform:none}
+.tvau4-foot{font-size:12px;color:#444;text-align:center;padding:4px 0 2px}
+.tvau4-cut{display:flex;align-items:center;gap:6px;margin:8px -14px 0;padding:0 8px;color:#666;font-size:12px}
+.tvau4-cut::before,.tvau4-cut::after{content:"";flex:1;border-top:1.5px dashed #9E9E9E}
+.tvau4-coupon{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;width:100%;min-height:44px;padding:4px 0 2px;text-align:left}
+.tvau4-coupon strong{font-size:15px;display:block}
+.tvau4-coupon span.tvau4-s{font-size:12px;color:#555}
+.tvau4-coupon .tvau4-go{font-size:13px;font-weight:600;color:var(--tvau4-ok);display:flex;align-items:center;gap:2px}
+/* Décompte (si) */
+.tvau4-dec{max-width:380px;margin:8px auto 0;border:1.5px solid #111;border-radius:10px;padding:8px 12px;transform:rotate(-1.2deg);background:#fff}
+.tvau4-dec h3{margin:0 0 4px;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.tvau4-dec .tvau4-ch{display:grid;grid-template-columns:34px 1fr auto;gap:6px;align-items:baseline;min-height:24px;font-size:13px;border-bottom:1px dotted #9E9E9E}
+.tvau4-dec .tvau4-ch b{font-family:var(--tvau4-mono);font-weight:600;font-size:14px}
+.tvau4-dec .tvau4-ch em{font-style:normal;font-family:var(--tvau4-mono);font-size:12px;color:#555}
+.tvau4-dec .tvau4-net{display:flex;justify-content:space-between;align-items:baseline;padding-top:6px}
+.tvau4-dec .tvau4-net b{font-family:var(--tvau4-mono);font-size:22px;color:var(--tvau4-etr)}
+.tvau4-dec p{margin:6px 0 0;font-size:12px;color:#444}
+.tvau4-verd{max-width:380px;margin:10px auto 0;font-size:15px;font-weight:600}
+.tvau4-verd b{font-family:var(--tvau4-mono)}
+/* Ticket agrafé (étranger) */
+.tvau4-staple{position:relative;max-width:250px;margin:-6px 0 0 auto;transform:rotate(3deg);background:#fff;border:1px solid #CFCFCF;box-shadow:0 8px 24px -12px rgba(0,0,0,.35);padding:12px 10px 6px;z-index:2}
+.tvau4-staple::before{content:"";position:absolute;top:4px;left:50%;width:30px;height:4px;margin-left:-15px;background:#9E9E9E;border-radius:2px}
+.tvau4-staple strong{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--tvau4-etr)}
+.tvau4-staple div{display:flex;justify-content:space-between;font-size:13px;margin-top:2px}
+.tvau4-staple div b{font-family:var(--tvau4-mono)}
+.tvau4-staple p{margin:2px 0 0;font-size:12px;color:#444}
+.tvau4-comp{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;text-align:left;border-top:1px solid var(--tvau4-line);margin-top:12px}
+.tvau4-comp strong{flex:1;font-size:15px;font-weight:500}
+.tvau4-comp span{font-size:13px;color:#555}
+.tvau4-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--tvau4-line);z-index:5}
+.tvau4-nav-in{max-width:872px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr) 76px;height:46px}
+.tvau4-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:#333;text-decoration:none}
+.tvau4-nav a.tvau4-on{background:rgba(31,100,163,.12);color:#111;box-shadow:inset 0 3px 0 var(--tvau4-fin)}
+.tvau4-fab{align-self:center;justify-self:center;width:64px;height:40px;border-radius:20px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau4-dk{display:none}
+@media (min-width:900px){.tvau4-dk{display:block}.tvau4-desk{display:grid;grid-template-columns:380px 380px;gap:40px;justify-content:center;align-items:start}.tvau4-head-in{padding:0}.tvau4-tk,.tvau4-dec,.tvau4-verd{margin-left:0;margin-right:0}}
+</style>
+</head>
+<body>
+<div id="tvau4-root"></div>
+<script>
+(function(){
+  var etat=new URLSearchParams(location.search).get('etat')||'annee';
+  if(['annee','inconnues','douteuse','etrangere','vide','si','horsligne'].indexOf(etat)<0)etat='annee';
+  var P={
+    mug:'<path d="M6 7h9v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7c0-2 1.5-3 3-3 1 0 1.6.5 2 1 .5-.6 1.2-1 2-1 1.4 0 2 1 2 3"/>',
+    moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+    bulle:'<path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M9 9.5h6M9 12.5h4"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15 13.5h2"/>',
+    cubes:'<path d="M12 3 8 5v4l4 2 4-2V5z"/><path d="M8 11 4 13v4l4 2 4-2v-4z"/><path d="M16 11l-4 2v4l4 2 4-2v-4z"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M3 19c.7-3.4 3-5 6-5s5.3 1.6 6 5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.3c1.7.8 2.9 2.4 3.3 4.7"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    right:'<path d="m9 6 6 6-6 6"/>',
+    left:'<path d="m15 6-6 6 6 6"/>',
+    sliders:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    spark:'<path d="M12 4c.6 3.6 2.4 5.4 6 6-3.6.6-5.4 2.4-6 6-.6-3.6-2.4-5.4-6-6 3.6-.6 5.4-2.4 6-6z"/><path d="M18.5 3.5v3M17 5h3"/><circle cx="6" cy="18.5" r="1.5"/>',
+    cloud:'<path d="M7 18h10a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M4 4l16 16"/>',
+    scissors:'<circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M8 8.5 20 17M8 15.5 20 7"/>',
+    globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.4 5.2 3.4 8.5s-1 6.1-3.4 8.5c-2.4-2.4-3.4-5.2-3.4-8.5s1-6.1 3.4-8.5z"/>'
+  };
+  function ico(n,s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(36/s).toFixed(3)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+  function zz(bas){var pts=[];for(var i=0;i<=48;i++)pts.push((i*8)+','+(i%2?(bas?0:8):(bas?8:0)));return '<svg class="tvau4-zz" viewBox="0 0 384 8" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,'+(bas?8:0)+' '+pts.join(' ')+' 384,'+(bas?8:0)+'" fill="#D4D4D4"/><polyline points="'+pts.join(' ')+'" fill="none" stroke="#CFCFCF" stroke-width="1"/></svg>';}
+
+  // Une ligne du ticket : fournisseur, nombre de pièces, code de taux (A 2,6 %, B 8,1 %), TVA.
+  function L(n,nb,code,v,o){o=o||{};
+    var c=code==='A'?'tvau4-ca':code==='B'?'tvau4-cb':'tvau4-cq';
+    var tg=o.pick?'div':'button';
+    return '<'+tg+' class="tvau4-l'+(o.hl?' tvau4-hl':'')+'" data-mots="lignes"><span class="tvau4-n"><span>'+n+'</span>'+(nb?'<small>×'+nb+'</small>':'')+'<i></i></span><span class="tvau4-code '+c+'" aria-label="'+(code==='A'?'taux 2,6 %':code==='B'?'taux 8,1 %':'taux inconnu')+'">'+code+'</span><span class="tvau4-v">'+v+'</span>'+(o.sub?'<span class="tvau4-sub">'+o.sub+'</span>':'')+(o.pick||'')+'</'+tg+'>';
+  }
+  var lignes, taux, total, tampon='Non récupérable<em>non assujetti</em>', pied='38 pièces lues · TTC 14 860,00';
+  if(etat==='vide'){
+    lignes='<p class="tvau4-foot" style="padding:18px 0">Aucune pièce en 2026.<br>Le bouton + enregistre un achat ; sa TVA s’imprime ici.</p>';
+    taux='';total='<div class="tvau4-tot"><span>Total TVA</span><b>—</b></div>';pied='0 pièce';
+  } else {
+    var inc=etat==='inconnues', dbt=etat==='douteuse';
+    lignes=L('Inox-Pro SA, fermenteur','','B','286,23')+
+      (dbt?L('Vetropack','9','B','197,82 ?',{hl:true,sub:'12.06 : lu 128,00 = 10 %, attendu 95,91 à 8,1 %',pick:'<span class="tvau4-pick"><button class="tvau4-k">Garder <b class="tvau4-m">95,91</b></button><button>Garder <b class="tvau4-m">128,00</b></button></span>'}):L('Vetropack','9','B','197,82'))+
+      L('Matériel divers','3','B','156,46',etat==='etrangere'?{sub:'dont TVA d’import suisse, Brouwland via La Poste : 47,20'}:{})+
+      L('Malterie du Léman','8','A','86,67')+
+      (inc?L('Imprimerie du Jura','3','?','11,99 + ?',{sub:'2 pièces sans TVA lue, 700,00 TTC : au plus 52,45'}):L('Imprimerie du Jura','3','B','64,44'))+
+      (inc?L('Landi, CO₂ et nettoyage','4','?','?',{sub:'tickets sans TVA, 540,00 TTC : au plus 40,46'}):L('Landi, CO₂ et nettoyage','6','B','40,46'))+
+      L('Houblons Seeland','5','A','29,90')+
+      L('Levures, divers','3','A','7,91')+
+      (etat==='horsligne'?L('Photos pas encore lues','2','?','?',{sub:'lues au retour du réseau ; pas comptées'}):'');
+    var b=inc?'652,50':dbt?'745,41 ou 777,50':'745,41', bw=inc?75:85.7;
+    taux='<div class="tvau4-rule"></div>'+
+      '<div class="tvau4-rate"><span><span class="tvau4-code tvau4-ca">A</span> 2,6 %</span><span class="tvau4-bar2"><i style="width:14.3%;background:#C99A2E"></i></span><b>124,48</b></div>'+
+      '<div class="tvau4-rate"><span><span class="tvau4-code tvau4-cb">B</span> 8,1 %</span><span class="tvau4-bar2"><i style="width:'+bw+'%;background:#4F7FD0"></i></span><b>'+b+'</b></div>'+
+      (inc?'<div class="tvau4-rate"><span><span class="tvau4-code tvau4-cq">?</span> inconnu</span><span class="tvau4-bar2"><i style="width:10.7%;background:repeating-linear-gradient(135deg,#9E9E9E 0 2px,#fff 2px 4px)"></i></span><b>≤ 92,91</b></div>':'');
+    var tv=inc?'<b class="tvau4-rg">776,98 + ?<small> CHF</small></b>':dbt?'<b class="tvau4-rg">869,89 ou 901,98</b>':etat==='horsligne'?'<b class="tvau4-rg">869,89 + ?<small> CHF</small></b>':'<b>869,89<small> CHF</small></b>';
+    total='<div class="tvau4-tot"><span>Total TVA</span>'+tv+'</div><div class="tvau4-stw"><span class="tvau4-stamp">'+tampon+'</span></div>';
+    if(inc)pied='32 pièces lues + 6 sans TVA · TTC 14 860,00';
+    if(etat==='horsligne')pied='Imprimé sur ce téléphone, hors ligne, 31.10 à 18:42';
+  }
+  var coupon=etat==='vide'?'':'<div class="tvau4-cut">'+ico('scissors',14)+'</div><button class="tvau4-coupon" id="tvau4-cp"><span style="color:#4C6B2A">'+ico('scissors',20)+'</span><span><strong>Me la faire rembourser ?</strong></span><span class="tvau4-go">Détacher'+ico('right',14)+'</span></button>';
+  var ticket='<div class="tvau4-tk" role="group" aria-label="Ticket de la TVA payée">'+zz(false)+
+    '<div class="tvau4-tk-h"><strong>TVA payée sur mes achats</strong><span class="tvau4-per"><button aria-label="Année précédente">'+ico('left',14)+'</button><b>2026</b><button aria-label="Année suivante">'+ico('right',14)+'</button></span></div>'+
+    lignes+taux+total+'<div class="tvau4-foot">'+pied+'</div>'+coupon+zz(true)+'</div>';
+  var dec='<p class="tvau4-verd">Non, pas sans être assujetti. Assujetti, 2026 t’aurait coûté <b>1 470,94</b> CHF de plus.</p>'+
+    '<div class="tvau4-dec" role="group" aria-label="Décompte TVA fictif"><h3>Décompte fictif 2026</h3>'+
+    '<div class="tvau4-ch"><em>200</em><span>Ventes de bière, TTC</span><b>31 240,00</b></div>'+
+    '<div class="tvau4-ch"><em>303</em><span>TVA due, 8,1 %</span><b>2 340,83</b></div>'+
+    '<div class="tvau4-ch"><em>400</em><span>Impôt préalable (ce ticket)</span><b style="color:#4C6B2A">−869,89</b></div>'+
+    '<div class="tvau4-net"><span>À verser</span><b>1 470,94</b></div>'+
+    '<p>Aujourd’hui tu ne verses rien et ces 869,89 restent un coût. Gagnant seulement sous 11 609 CHF de ventes par an, à prix TTC inchangés. Chiffres du formulaire AFC à titre indicatif ; à confirmer avec ta fiduciaire.</p></div>';
+  var agrafe=etat==='etrangere'?'<div class="tvau4-staple" data-mots="lignes"><strong>'+ico('globe',14)+'Brauzubehör, Konstanz</strong><div><span>MwSt 19 %, 07.08</span><b>38,00 EUR</b></div><p>TVA allemande : pas sur ce ticket, ni récupérable en Suisse.</p></div>':'';
+
+  var t=['Synthèse','Opérations','Prévisions','Annuel'];
+  var it=[['grid','Bord','#333'],['wallet','Finances','#1F64A3'],['mug','Brassins','#9A4F1E'],['cubes','Stocks','#4C6B2A'],['users','Clients','#333']];
+  function page(montrerDec){
+    return '<header class="tvau4-head"><div class="tvau4-head-in"><span class="tvau4-logo" aria-hidden="true">'+ico('mug',20)+'</span><span class="tvau4-brand">L’Affinée</span>'+
+      '<button class="tvau4-hbtn" aria-label="Thème sombre">'+ico('moon',18)+'</button><button class="tvau4-hbtn tvau4-f" aria-label="Rechercher">'+ico('search',18)+'</button><button class="tvau4-hbtn tvau4-f" aria-label="Compagnon">'+ico('bulle',18)+'</button></div></header>'+
+      '<main class="tvau4-wrap"><nav class="tvau4-tabs" role="tablist" aria-label="Finances">'+t.map(function(x,i){return '<button role="tab" aria-selected="'+(i===1)+'">'+x+'</button>';}).join('')+'</nav>'+
+      '<div class="tvau4-bar"><h2>Mes opérations</h2><button class="tvau4-gear" aria-label="Filtres et paramètres">'+ico('sliders',16)+'</button><div class="tvau4-seg" role="group" aria-label="Lecture des opérations"><button aria-pressed="false">Journal</button><button aria-pressed="true">Ticket TVA</button></div></div>'+
+      (etat==='horsligne'?'<div class="tvau4-off">'+ico('cloud',16)+'Hors ligne · chiffres de ce téléphone</div>':'')+
+      '<div class="tvau4-desk tvau4-comptoir">'+(montrerDec?'<div>'+dec+'</div><div>'+ticket+'</div>':'<div>'+ticket+agrafe+'</div><div>'+(etat==='vide'?'':'<div class="tvau4-dk">'+dec+'</div>')+
+        '<button class="tvau4-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>Comprendre ma TVA</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button></div>')+'</div></main>'+
+      '<nav class="tvau4-nav" aria-label="Navigation principale"><div class="tvau4-nav-in">'+it.map(function(x){return '<a href="#" class="'+(x[1]==='Finances'?'tvau4-on':'')+'"><span style="color:'+x[2]+'">'+ico(x[0],18)+'</span>'+x[1]+'</a>';}).join('')+
+      '<button class="tvau4-fab" data-commun aria-label="Actions rapides">'+ico('plus',22)+'</button></div></nav>';
+  }
+  var root=document.getElementById('tvau4-root');
+  function rendre(d){root.innerHTML=page(d);var c=document.getElementById('tvau4-cp');if(c)c.onclick=function(){rendre(!d);scrollTo(0,0);};}
+  rendre(etat==='si');
+})();
+</script>
+</body>
+</html>

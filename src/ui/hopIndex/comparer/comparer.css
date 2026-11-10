@@ -712,3 +712,7 @@ button.pq-comparer-et-r { min-height: 22px; }
 /* ---------- cmc2k : plus de cadre, la colonne retenue en bande teintée continue, du haut au bas ---------- */
 .cmc-col-fond { background: color-mix(in srgb, var(--pq-h) 9%, transparent); border-radius: 10px 10px 8px 8px; }
 .cmc-col-cadre { box-shadow: inset 0 3px 0 var(--pq-h); border-radius: 10px 10px 0 0; }
+/* 08.11 : aucun houblon à comparer. Le « + » se centre sur la hauteur de la cellule « Ta bière » (celle des colonnes) : sans colonne, elle garde la hauteur d'une tête et l'état se dit. */
+.pq-comparer[data-colonnes="0"] .pq-comparer-ta { min-height: 130px; }
+.pq-comparer[data-colonnes="0"] .pq-comparer-rad { min-height: 48px; } /* l'en-tête (« ~ simulé », Au style / Absolu) est posé sur le radar, absent ici */
+.pq-comparer-vide { grid-column: 2 / -1; align-self: center; margin: 0; padding: 0 4px; }

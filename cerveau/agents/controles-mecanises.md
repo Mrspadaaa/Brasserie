@@ -1,8 +1,8 @@
 ---
 name: controles-mecanises
-description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes, M11, M12, M14 sortis le 24.10) ; leur contrôle bloque seul, la ligne garde le pourquoi.
+description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes ; M11, M12, M14 sortis le 24.10, M10 le 01.11, M17 et M18 le 03.11) ; leur contrôle bloque seul, la ligne garde le pourquoi.
 type: agents
-maj: 2026-10-24
+maj: 2026-11-03
 sources: cerveau/LECONS.md (section Mécanisées, avant l'élagage du 22.10)
 ---
 
@@ -25,3 +25,8 @@ LECONS.md en leçon active.
 - M12 — Une variante rejetée est relancée ou écartée ; des écrans ne sont finis qu'une fois publiés, chaque version dans un artefact neuf et lisible (22.10 : 6 rejets en plan ; 23.10 : « chaque version devrait en créé des nouveaux »). `systeme.mjs voies` (« ## Pages »), `verifier-page.mjs`.
 - M14 — Un panel v0 vaut le lot 21 avant d'être trié : le 23.10, 56 concepts « minimalistes » (5 tours chacun, un squelette commun) étaient « vraiment moins quali », et 32 pictos sur 48 restaient sur ses exemples. Minimaliste = une idée, pas un écran vide ; la baseline est un vocabulaire, pas un gabarit ; ses exemples, un tiers du panel au plus. `controle-panel.mjs` (PANEL OK), exigé par `systeme.mjs mission` dans chaque tri. Le 24.10 (sept voies) : il ne voit ni les écarts sous 60 au fond ni un bloc commun à une série ; dire le seuil au brief, une masse propre par concept, et le jouer dès le premier concept.
 - M01 (complément, 24.10, fl-tri) — Le brief d'une série v0 cite D97 : `controle-valeurs-brutes` entre dans ses GATES et se rejoue sur le texte rendu, pas sur la NOTE.
+- M10 (sorti de LECONS le 01.11) — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert). Le 01.11, deux fois (dp-doublon, puis le pilote au banc QR) : un `\d` ou `\s` passé par un heredoc ou un `node -e` entre guillemets est devenu `d` ou `s`, et la date du QR jugée fausse. Une regex se pose avec l'outil d'édition, puis se relit dans le fichier.
+- M13 (sorti de LECONS le 01.11, nuit) — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
+- M17 (L10, sorti de LECONS le 03.11) — Un outil = un seul facteur libre, et la carte avant les variantes : le 20.10, 41 variantes v0 sans carte des outils ; le 22.10, « Quand ? » et « Quelle dose ? » laissaient libres houblon, dose et levure. Le seul facteur qui varie, les autres sur une ligne de contexte, la carte en fil de fer avant tout lot ([[outils-houblons]], [[2026-10-22-carte-outils-houblons]]). `controle-une-question.mjs` (D98).
+- M18 (L25, sorti de LECONS le 03.11) — Ce que le brasseur verra se conçoit avec Opus (`concepteur`) et se juge par le critique calibré (Fable) : le 22.10, la planche « épicé » de Sonnet, acceptée par relecteur et pilote, troisième refus (« Aucun me convient... ») ; « trop d'usage de sonnet et hiku ». Rappelé par CLAUDE.md ; `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique.
+- M16 (L03, sorti de LECONS le 02.11) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

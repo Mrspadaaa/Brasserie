@@ -14,6 +14,7 @@ import {
 } from '../../domain/brewingScenario';
 import type { PreparedBrewingScenarioContext } from '../../domain/brewingScenarioContext';
 import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export type HopV55PlanningField<T> =
   | { action: 'keep' }
@@ -463,7 +464,7 @@ export function applyHopV55PlanningEdits(input: ApplyHopV55PlanningEditsInput): 
   if (edits.fermentation?.action === 'set') assertExplicitFermentation(edits.fermentation.value);
 
   applyInputField({ branch, branchId, field: 'volumeL', path: 'recipe.volumeL', edit: edits.volumeL,
-    label: 'Volume futur', unit: 'L', valueDescription: value => `Volume final explicitement choisi : ${value} L. Aucune masse ni quantité n’est mise à l’échelle.` });
+    label: 'Volume futur', unit: 'L', valueDescription: value => `Volume final explicitement choisi : ${nombreFr(value, 1)} L. Aucune masse ni quantité n’est mise à l’échelle.` });
   if (edits.volumeL && edits.volumeL.action !== 'keep') {
     const programOverrides = { ...(branch.programOverrides ?? {}) };
     if (edits.volumeL.action === 'reset') {
@@ -494,7 +495,7 @@ export function applyHopV55PlanningEdits(input: ApplyHopV55PlanningEditsInput): 
       : { state: 'unknown', members: [], explanation: 'Souche non résolue explicitement pour cette projection; aucune identité n’est inventée.' };
   }
   applyInputField({ branch, branchId, field: 'pitchTempC', path: 'recipe.pitchTempC', edit: edits.pitchTempC,
-    label: 'Température d’ensemencement', unit: '°C', valueDescription: value => `Consigne d’ensemencement future explicitement choisie : ${value} °C.` });
+    label: 'Température d’ensemencement', unit: '°C', valueDescription: value => `Consigne d’ensemencement future explicitement choisie : ${nombreFr(value, 1)} °C.` });
   applyInputField({ branch, branchId, field: 'fermentation', path: 'recipe.fermentation', edit: edits.fermentation,
     label: 'Paliers de fermentation', valueDescription: value => `Paliers explicitement déclarés : ${JSON.stringify(value)}.` });
 

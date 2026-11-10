@@ -82,7 +82,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('button',{name:'Facturer',hidden:true})).not.toBeVisible();
     fireEvent.click(screen.getByText('Auberge du Lac'));
     expect(screen.getByRole('button',{name:'Facturer'})).toBeVisible();
-    expect(screen.getByRole('link',{name:'Appeler'})).toHaveAttribute('href','tel:+41 79 123 45 67');
+    expect(screen.getByRole('link',{name:'Appeler'})).toHaveAttribute('href','tel:+41791234567');
     fireEvent.change(screen.getByRole('searchbox'),{target:{value:'Introuvable'}});
     expect(screen.getByText('Aucun client ne correspond à ta recherche.')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Effacer la recherche'}));
@@ -108,7 +108,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     const navigation=within(screen.getByRole('tablist',{name:'Finances'}));
     expect(navigation.getAllByRole('tab').map(tab=>tab.textContent)).toEqual(['Synthèse','Opérations','Prévisions','Annuel']);
     expect(navigation.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
-    expect(screen.getByRole('heading',{name:'Situation financière'})).toBeVisible();
+    expect(screen.getByLabelText('Situation financière actuelle')).toBeVisible(); // la bande de position est une liste de définitions nommée, plus un titre (test périmé, 48987dab)
     fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
     expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
     expect(screen.getByLabelText('Période du journal')).toBeVisible();
@@ -122,7 +122,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     const plan=within(screen.getByRole('dialog',{name:'Prévoir une dépense'}));
     fireEvent.click(plan.getByRole('button',{name:'Fermer'}));
     fireEvent.click(navigation.getByRole('tab',{name:'Annuel'}));
-    expect(screen.getByRole('heading',{name:'Bilan et impôts'})).toBeVisible();
+    expect(screen.getByRole('heading',{name:'Annuel'})).toBeVisible(); // BE-63 : le titre reprend le nom de l'onglet (avant « Bilan et impôts »)
     fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
     expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toHaveValue('Cascade');
     expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();

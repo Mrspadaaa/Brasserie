@@ -1,24 +1,26 @@
 import {beforeEach,describe,it,expect,vi} from 'vitest';
-vi.mock('../../functions/src/monthlyAiBudget',()=>({runWithMonthlyAiBudget:(model:string,body:any,generate:any)=>{state.monthlyModels.push(model);state.beforeMonthly?.();return generate(body);}}));
-const state=vi.hoisted(()=>({docs:new Map<string,any>(),watchers:new Map<string,(snapshot:any)=>void>(),transactions:0,failAfter:0,transactionTail:Promise.resolve() as Promise<unknown>,monthlyModels:[] as string[],beforeMonthly:undefined as undefined|(()=>void),afterTransaction:undefined as undefined|((count:number)=>void)}));
+vi.mock('../../functions/src/monthlyAiBudget',()=>({runWithMonthlyAiBudget:(model:string,body:any,generate:any)=>{state.monthlyModels.push(model);state.monthlyBodies.push(body);state.beforeMonthly?.();return generate(body);}}));
+const state=vi.hoisted(()=>({docs:new Map<string,any>(),watchers:new Map<string,(snapshot:any)=>void>(),transactions:0,failAfter:0,transactionTail:Promise.resolve() as Promise<unknown>,monthlyModels:[] as string[],monthlyBodies:[] as any[],beforeMonthly:undefined as undefined|(()=>void),afterTransaction:undefined as undefined|((count:number)=>void)}));
 function update(path:string,patch:any){const result=structuredClone(state.docs.get(path));for(const [key,value] of Object.entries(patch)){const parts=key.split('.');let target=result;for(const part of parts.slice(0,-1))target=target[part]??={};target[parts.at(-1)!]=structuredClone(value);}state.docs.set(path,result);}
 function doc(path:string):any{return {path,get:async()=>({data:()=>structuredClone(state.docs.get(path))}),update:async(patch:any)=>update(path,patch),onSnapshot:(next:any)=>{state.watchers.set(path,next);next({data:()=>structuredClone(state.docs.get(path))});return ()=>state.watchers.delete(path);}};}
 // Firestore transactions serialize conflicting reservations. The in-memory fake must do the same
 // or parallel vision readers would observe a lost-update behavior that production does not have.
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js',()=>({getFirestore:()=>({doc,runTransaction:(fn:any)=>{const operation=state.transactionTail.then(async()=>{state.transactions++;const writes:Array<()=>void>=[];const result=await fn({get:(ref:any)=>ref.get(),set:(ref:any,value:any)=>writes.push(()=>state.docs.set(ref.path,structuredClone(value))),update:(ref:any,patch:any)=>writes.push(()=>update(ref.path,patch))});if(state.failAfter===state.transactions)throw Error('Storage unavailable');writes.forEach(write=>write());state.afterTransaction?.(state.transactions);return result;});state.transactionTail=operation.then(()=>undefined,()=>undefined);return operation;}})}));
 import {runBudgetedInvoiceScan,RUNNING_STALE_MS} from '../../functions/src/invoiceScanBudget';
-import {SCAN_MODEL} from '../../functions/src/invoiceScanCore';
+import {SCAN_MODEL,SCAN_MAX_OUTPUT,LITE_SCAN_MAX_OUTPUT} from '../../functions/src/invoiceScanCore';
+import {GEMINI_LITE_MODEL,GEMINI_MODEL} from '../../functions/src/models';
+import {quoteGeminiCost} from '../../functions/src/geminiCosts';
 import {BrewerBudgetError} from '../../functions/src/brewerLimits';
 import {GeminiApiError} from '../../functions/src/geminiErrors';
 const file={mimeType:'image/jpeg',data:Buffer.from([255,216,255,217]).toString('base64')};
 const request={contents:[{parts:[{text:'Test local'},{inlineData:file}]}]};
 const signal=()=>new AbortController().signal;
 const daily=()=>[...state.docs.entries()].find(([key])=>key.startsWith('brewerAiUsage/'))?.[1].usage;
-beforeEach(()=>{state.docs.clear();state.watchers.clear();state.transactions=0;state.failAfter=0;state.transactionTail=Promise.resolve();state.monthlyModels=[];state.beforeMonthly=undefined;state.afterTransaction=undefined;state.docs.set('brewerAiControls/current',{paused:false});});
+beforeEach(()=>{state.docs.clear();state.watchers.clear();state.transactions=0;state.failAfter=0;state.transactionTail=Promise.resolve();state.monthlyModels=[];state.monthlyBodies=[];state.beforeMonthly=undefined;state.afterTransaction=undefined;state.docs.set('brewerAiControls/current',{paused:false});});
 describe('Budget scan isolé, fournisseur simulé',()=>{
   it('réserve avant génération, partage le quota global, conserve les jobs du compagnon',async()=>{
     state.docs.set('brewerJobs/chat',{budget:{usage:{calls:7,tokens:321}}});
-    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(5100);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
+    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(SCAN_MAX_OUTPUT);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
     await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {amount:42};},provider);
     expect(daily()).toEqual({calls:1,proCalls:0,tokens:100});expect(state.docs.get('brewerJobs/chat')).toEqual({budget:{usage:{calls:7,tokens:321}}});expect(state.monthlyModels).toEqual([SCAN_MODEL]);expect(SCAN_MODEL).toBe('gemini-3.8-flash');
   });
@@ -214,5 +216,51 @@ describe('Budget scan isolé, fournisseur simulé',()=>{
       expect([a.status,b.status].sort()).toEqual(['fulfilled','rejected']);
       expect(p).toHaveBeenCalledTimes(2);
     });
+  });
+});
+
+// Voie fn-csv8 (D247) : le modèle se décide PAR APPEL. Deux Flash-Lite (8 192 jetons) puis la 3.8 (8 192 depuis le 02.11, D325) partagent le même registre de trois lectures.
+describe('Budget scan : un modèle par appel (C★v8)',()=>{
+  const config=(max:number)=>({...request,generationConfig:{maxOutputTokens:max}});
+  it('sans modèle donné, l\'appel reste celui de la 3.8 (comportement d\'avant)',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{await gen(config(5100),signal());},provider);
+    expect(state.monthlyModels).toEqual([GEMINI_MODEL]);expect(provider.mock.calls[0][2]).toBe(GEMINI_MODEL);
+  });
+  it('chaque appel est réservé, envoyé et réglé au modèle demandé',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{await Promise.all([gen(config(8192),signal(),GEMINI_LITE_MODEL),gen(config(8192),signal(),GEMINI_LITE_MODEL)]);await gen(config(5100),signal(),SCAN_MODEL);},provider);
+    expect(state.monthlyModels).toEqual([GEMINI_LITE_MODEL,GEMINI_LITE_MODEL,SCAN_MODEL]);
+    expect(provider.mock.calls.map(call=>call[2])).toEqual([GEMINI_LITE_MODEL,GEMINI_LITE_MODEL,SCAN_MODEL]);
+    const ledger=[...state.docs.entries()].find(([path])=>path.startsWith('invoiceScans/'))![1];
+    expect(ledger.calls).toBe(3);expect(Object.values(ledger.reservations).every((r:any)=>r.status==='completed')).toBe(true);
+  });
+  it('le plafond de sortie suit le modèle : 8 192 pour la Flash-Lite, 8 192 pour la 3.8 (D325), jamais plus',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{
+      await gen(config(8192),signal(),GEMINI_LITE_MODEL);await gen(config(20000),signal(),SCAN_MODEL);await gen(config(20000),signal(),GEMINI_LITE_MODEL);
+    },provider);
+    expect(provider.mock.calls.map((call:any)=>call[0].generationConfig.maxOutputTokens)).toEqual([LITE_SCAN_MAX_OUTPUT,SCAN_MAX_OUTPUT,LITE_SCAN_MAX_OUTPUT]);
+    expect([LITE_SCAN_MAX_OUTPUT,SCAN_MAX_OUTPUT]).toEqual([8192,8192]);
+  });
+  it('le coût réservé est celui du modèle de l\'appel : une Flash-Lite coûte moins cher que la 3.8, à plafond de sortie plus haut',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{await gen(config(8192),signal(),GEMINI_LITE_MODEL);await gen(config(5100),signal(),SCAN_MODEL);},provider);
+    const [lite,strong]=state.monthlyModels.map((model,index)=>quoteGeminiCost(model,state.monthlyBodies[index]));
+    expect([lite.model,strong.model]).toEqual([GEMINI_LITE_MODEL,GEMINI_MODEL]);
+    expect([lite.outputTokens,strong.outputTokens]).toEqual([8192,5100]);
+    expect(lite.reservedMicroChf).toBeLessThan(strong.reservedMicroChf);
+    // Contrôle contre la tarification de la 3.8 appliquée par erreur à la Flash-Lite : le même corps coûte plus au tarif 3.8.
+    expect(quoteGeminiCost(GEMINI_MODEL,state.monthlyBodies[0]).reservedMicroChf).toBeGreaterThan(lite.reservedMicroChf);
+  });
+  it('un modèle hors liste blanche est refusé avant toute réservation',async()=>{
+    const provider=vi.fn();
+    await expect(runBudgetedInvoiceScan('u',file,gen=>gen(config(5100),signal(),'gemini-3.1-pro-preview'),provider)).rejects.toThrow('Modèle Gemini refusé');
+    expect(provider).not.toHaveBeenCalled();expect(state.monthlyModels).toEqual([]);expect(daily()).toBeUndefined();
+  });
+  it('une pause globale arrête aussi la Flash-Lite : aucun appel',async()=>{
+    const provider=vi.fn();state.docs.set('brewerAiControls/current',{paused:true});
+    await expect(runBudgetedInvoiceScan('u',file,gen=>gen(config(8192),signal(),GEMINI_LITE_MODEL),provider)).rejects.toThrow('suspendue');
+    expect(provider).not.toHaveBeenCalled();
   });
 });

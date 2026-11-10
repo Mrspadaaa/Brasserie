@@ -10,6 +10,7 @@ import { calculateWaterTreatment } from './treatment';
 import type { MineralTargetMode } from './practice';
 import { assessWaterProfile } from './profileAssessment';
 import { completeWaterProposal } from './proposal';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 // --- Juste assez d'osmosée ----------------------------------------------------
 
@@ -139,7 +140,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
     if (input.profilePriority) {
       const result = assessWaterProfile(treatmentAt(pct).treatedTotal, input.ranges, input.targetedIons);
       for (const deviation of result.deviations)
-        reasons.push(`${ION_LABEL[deviation.ion]} après traitement : ${deviation.value} ppm pour ${deviation.min}–${deviation.max} visés`);
+        reasons.push(`${ION_LABEL[deviation.ion]} après traitement : ${nombreFr(deviation.value, 1)} ppm pour ${deviation.min}–${deviation.max} visés`);
     }
 
     (['ca', 'mg', 'na', 'so4', 'cl'] as Array<keyof WaterIons>).forEach((ion) => {
@@ -154,7 +155,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
     const hco3Max = input.ranges?.hco3?.max;
     if (hco3Max != null && Number.isFinite(hco3Max) && start.hco3 > hco3Max + HCO3_ACID_TOLERANCE_PPM) {
       reasons.push(
-        `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${hco3Max + HCO3_ACID_TOLERANCE_PPM} ppm pour limiter la charge d’acide`
+        `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${nombreFr(hco3Max + HCO3_ACID_TOLERANCE_PPM, 1)} ppm pour limiter la charge d’acide`
       );
     }
 
@@ -165,7 +166,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       const lactate = lactateInBeer(mash + sparge, input.beerVolumeL);
       if (lactate > LACTATE_TASTE_THRESHOLD) {
         reasons.push(
-          `acide lactique à ${lactate} g/L de bière (seuil ${LACTATE_TASTE_THRESHOLD}) — ou passe au phosphorique, qui ne se goûte pas`
+          `acide lactique à ${nombreFr(lactate, 2)} g/L de bière (seuil ${nombreFr(LACTATE_TASTE_THRESHOLD, 2)}) — ou passe au phosphorique, qui ne se goûte pas`
         );
       }
     }

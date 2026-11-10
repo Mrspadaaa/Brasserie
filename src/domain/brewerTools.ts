@@ -17,7 +17,7 @@ import {
   maltAlternatives,
   boilMinutes
 } from './brewCompanion';
-import { computeBeerColor } from './beerColor';
+import { recipeBeerColor } from './beerColor';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 export { normalizeRecipe } from './recipeSnapshot';
 export { loadBrewingCatalogueReferences } from './brewingCatalogueReferences';
@@ -61,6 +61,7 @@ import { noloToolContext } from './noloToolContext';
 import type { NoloOperation } from '../../functions/src/noloSchema';
 import { noloYeastCandidates } from './noloYeastSelection';
 import { prepareNoloRecipe, type NoloRecipeSettings } from './noloRecipeSolver';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const number = (
   a: Record<string, unknown>,
@@ -75,7 +76,7 @@ const number = (
   return v;
 };
 const fmt = (v: number | null | undefined, digits = 1) =>
-  v == null ? 'inconnu' : String(Number(v.toFixed(digits)));
+  v == null ? 'inconnu' : nombreFr(v, digits);
 const num = (description: string) => ({ type: 'NUMBER', description });
 const str = (description: string, values?: string[]) => ({
   type: 'STRING',
@@ -437,7 +438,7 @@ export function runBrewerTool(
       'Chauffe · minimum théorique',
       { idealMinutes, volumeL: volume, fromC: from, targetC: target, watts },
       [
-        `Au moins ${fmt(idealMinutes)} min pour ${volume} L, de ${from} à ${target} °C à ${watts} W.`
+        `Au moins ${fmt(idealMinutes)} min pour ${nombreFr(volume, 1)} L, de ${from} à ${nombreFr(target, 1)} °C à ${watts} W.`
       ],
       [
         'Eau seule, aucune perte : la cuve, le grain, la densité et les déperditions rallongent ce minimum. Une puissance trop faible peut ne jamais atteindre la consigne. Ne pas extrapoler l’évaporation depuis la puissance nominale.'
@@ -638,7 +639,7 @@ export function runBrewerTool(
     const fg = point(fermentationProjection.fg.range), abv = point(fermentationProjection.abv.range);
     const boil = yeastRecipeBoilOg(recipe, fermentationProjection);
     const ibu = recipeIbu(recipe.hops, volumeL, boil.og, recipe.boilMin);
-    const color = computeBeerColor(recipe.fermentables, volumeL);
+    const color = recipeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
     const recommendedWater = rig
       ? BrewingMath.waterVolumes(
@@ -693,10 +694,10 @@ export function runBrewerTool(
         preBoilHotL
       },
       [
-        `${volumeL} L · OG ${fmt(og, 3)} · FG ${fmt(fg, 3)} · ${fmt(ibu, 0)} IBU · ${fmt(color?.ebc)} EBC`,
+        `${nombreFr(volumeL, 1)} L · OG ${fmt(og, 3)} · FG ${fmt(fg, 3)} · ${fmt(ibu, 0)} IBU · ${fmt(color?.ebc)} EBC`,
         ...(equipment
           ? [
-              `Cuve à l’empâtage : ${equipment.occupiedL} L · espace libre fermenteur : ${equipment.headspaceL} L.`
+              `Cuve à l’empâtage : ${nombreFr(equipment.occupiedL, 1)} L · espace libre fermenteur : ${nombreFr(equipment.headspaceL, 1)} L.`
             ]
           : [])
       ],

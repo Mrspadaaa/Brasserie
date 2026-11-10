@@ -37,6 +37,7 @@ import type {
 } from './ObservationExplorer';
 import { HopV55ObservationExplorer } from './ObservationExplorer';
 import './observation-workbench.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopV55ObservationWorkbenchSupport {
   /** Exact requested sensory definition; unresolved labels do not select by name. */
@@ -319,7 +320,7 @@ export function HopV55ObservationWorkbench({ workspace, context, prepared, getWo
   const projectionEditor = useMemo<HopV55ObservationProjectionEditorOptions | undefined>(() => {
     if (!currentInput || !currentPreparation || currentPreparation.preparation.status !== 'prepared' || !sourceScopeMatches) return undefined;
     const realizedFactChoices = currentInput.used.map(row => ({ reference: row.factReference, materialId: row.materialId,
-      label: row.additionId, quantityLabel: `${row.grams} g · fait exact` }));
+      label: row.additionId, quantityLabel: `${nombreFr(row.grams, 1)} g · fait exact` }));
     const state = currentPreparation.preparation.state;
     const horizonChoices = [
       { reference: state?.physicalStateReference ?? '', label: `État physique · ${state ? instantLabel(state.asOf) : ''}` },

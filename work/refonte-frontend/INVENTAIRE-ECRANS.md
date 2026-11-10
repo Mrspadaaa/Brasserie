@@ -113,7 +113,7 @@ Voie e2-inventaire, mission 2026-10-31-systeme-ecrans (31.10). Après houblons, 
 
 ## Ce que l'inventaire fait remarquer
 
-- **Quatre modales ne sont importées par personne** : `modale-brassin-modifier` (457 lignes), `modale-article-modifier` (283), `modale-article-ajouter` (263), `modale-confirmation` (77), 1 080 lignes au total. À classer fini, inachevé récupérable ou inutilisable (CLAUDE.md) ; on ne supprime rien sans accord.
+- **Quatre modales ne sont importées par personne** : `modale-brassin-modifier` (457 lignes), `modale-article-modifier` (283), `modale-article-ajouter` (263), `modale-confirmation` (77), 1 080 lignes au total. À classer fini, inachevé récupérable ou inutilisable (CLAUDE.md) ; on ne supprime rien sans accord. Les trois premières sont supprimées le 09.11 (AM-NOTE-3, accord du brasseur).
 - **Un flux de saisie de dépense probablement mort dans `QuickActionModal.tsx`** : `rapide-matching` et `modale-saisie-ancienne` (l'ancien scan dans le modal). Le menu actuel ouvre `ExpenseSheet` avant que ce JSX ne soit atteint (ligne 604). Marqué « à confirmer en Chrome » : ce n'est pas vérifié par un parcours.
 - **L'atelier Houblons V5.5 pèse plus de 8 000 lignes** (90 fichiers dans `src/ui/hopV55/`), reste atteignable depuis la fiche de recette, le brassin du jour et l'onglet Brassins, et n'est pas refait. Décision à prendre : le garder, le masquer ou le retirer du programme.
 - **Le jour de brassage est le plus gros écran** (`page-brassin-du-jour`, plus de 6 000 lignes avec sa feuille de style de 2 600 lignes) et il est de cuverie, donc de haut usage et de haut risque : il demande de le découper par phases.
@@ -135,7 +135,7 @@ C'est une proposition ; le brasseur choisira. Critères : ce qu'il utilise le pl
 | 5, les clients | `onglet-clients`, `clients-carnet`, `clients-tarifs`, `clients-impot-biere`, `feuille-client`, `feuille-tarif`, `feuille-facture` | usage 2, petits écrans ; la facture QR est à risque élevé |
 | 6, la comptabilité | `onglet-finances`, `finances-synthese`, `finances-operations`, `finances-previsions`, `finances-annuel` et leurs feuilles | usage 3, volumineux, risque élevé (écritures, TVA, archives) : en dernier des écrans de saisie, quand le système est rodé |
 | 7, la coque et les modales | `en-tete`, `barre-navigation`, `bouton-actions`, `recherche-universelle`, `rapide-menu`, `rapide-scan`, `rapide-depense`, `rapide-vente`, `reglages`, `config-cloud`, `journal-audit`, `compagnon-brasseur` | usage 5 mais partagés par tous les écrans : à reprendre quand les écrans qu'ils portent sont refaits, pour ne pas les redessiner deux fois ; `compagnon-brasseur` et `config-cloud` touchent Gemini facturé |
-| Hors programme, à trancher | `atelier-houblons-v55`, `modale-brassin-modifier`, `modale-article-modifier`, `modale-article-ajouter`, `modale-confirmation`, `rapide-matching`, `modale-saisie-ancienne` | ancien ou non branché ; décider de garder, masquer ou retirer avant de refaire |
+| Hors programme, à trancher | `atelier-houblons-v55`, `modale-confirmation`, `rapide-matching`, `modale-saisie-ancienne` | ancien ou non branché ; décider de garder, masquer ou retirer avant de refaire |
 <!-- /ORDRE -->
 
 Les deux écrans de la vague 1 et 2 forment un essai de deux genres (saisie et lecture) avant de s'engager sur les gros écrans.

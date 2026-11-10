@@ -23,6 +23,17 @@
   background: rgb(var(--c-29221d));
   flex-shrink: 0;
 }
+/* BR-57, BE-38 (08.11) : l'étiquette neutre (« À faire », « Rattraper ») posait #666 sur #ddd en clair : 4,22:1 à 12 px. Le texte courant (#333) fait plus de 9:1. */
+:root:not([data-theme='cave']) .brew-tag.is-neutral {
+  color: rgb(var(--cave-texte-200));
+}
+/* BR-59, BE-40 (08.11) : les liens de sources faisaient 17 px de haut. Cible tactile d'au moins 24 px (WCAG 2.2, 2.5.8) sans changer la mise en ligne du texte. */
+.brew-page a:not(.brew-primary) {
+  display: inline-block;
+  box-sizing: border-box;
+  min-height: 24px;
+  padding-block: 4px;
+}
 .brew-tag.is-info {
   color: rgb(var(--ct-a7cee4));
   background: rgb(var(--c-a7cee4) / 0.08);
@@ -294,7 +305,8 @@
   min-height: 32px;
   padding: 8px 8px;
   background: rgb(var(--c-ffb49b));
-  color: rgb(var(--ct-21150e));
+  /* BR-47 : texte posé sur l'aplat d'action (DESIGN.md) : blanc sur #C8382F au clair (5,2:1), #12100E sur #FFB49B en cave (11:1). */
+  color: rgb(var(--sur-paille));
   border-radius: 7px;
   font-weight: 600;
   font-size: 15px;
@@ -1521,6 +1533,15 @@
     monospace;
   font-variant-numeric: tabular-nums;
 }
+/* RJ-14 : « À préciser » n'est pas un nombre : texte courant, à la ligne dans son cadre, jamais 20 px de chiffre à 106 px de large. */
+.brew-amount strong[data-sans-valeur] {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
 .brew-amount > span {
   font-size: 14px;
   color: var(--brew-muted);
@@ -1660,10 +1681,17 @@
     monospace;
   color: rgb(var(--cave-texte-50));
 }
+/* VI-8 : sur un écran tactile le champ est un <textarea> d'une ligne, dont le texte se pose en haut de sa boîte ; la hauteur de ligne
+   égale à celle du champ le centre sur l'axe du « g » et des boutons « − / + ». */
+.brew-dose-value :is(input, textarea:where([data-single-line])) { line-height: 32px; }
 .brew-dose-value > span {
   color: var(--brew-muted);
   font-size: 16px;
 }
+/* VI-8 : « Consigner à cette heure » : une action (bord franc, texte plein), pas un gris sur gris ; éteint, il reste lisible. */
+button.brew-consign { border-color: rgb(var(--cave-400)); color: rgb(var(--cave-texte-50)); font-weight: 600; }
+button.brew-consign:disabled { opacity: 0.6; }
+.brew-consign-hint { flex: 1 1 12rem; margin: 0; color: rgb(var(--cave-texte-400)); font-size: 0.75rem; line-height: 1rem; }
 .brew-extra-addition {
   display: block;
   color: var(--brew-muted);
@@ -1709,6 +1737,16 @@
   font-size: 15px;
   font-weight: 650;
   line-height: 1.25;
+}
+/* RJ-1 : en clair, l'aplat d'action (`--ebc-straw`) est noir et `--cave-texte-950` est la même encre noire : le bouton se lisait vide au repos. Un aplat d'action
+   noir porte un texte blanc (règle de themes.css pour `.bg-ebc-straw`, que ce bouton à classe propre ne reçoit pas). Au survol, l'aplat devient doré : texte foncé. */
+:root:not([data-theme='cave']) .brew-primary {
+  color: rgb(255 255 255);
+}
+@media (hover: hover) {
+  :root:not([data-theme='cave']) .brew-primary:hover {
+    color: rgb(var(--cave-texte-950));
+  }
 }
 .brew-primary > svg {
   display: none;

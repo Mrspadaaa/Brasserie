@@ -237,7 +237,7 @@ function build(recipe:TrialRecipe,strain:NoloStrain,science:NoloScience,settings
   next.ibuTarget=recipeIbu(next.hops,next.volumeL,next.ogTarget,next.boilMin)??undefined;
   const changes:NoloRecipeProposal['changes']=[];
   const number=(value:unknown,unit='')=>finite(value)?fmt(value,unit):'À renseigner';
-  const density=(value:unknown)=>finite(value)?value.toLocaleString('fr-FR',{minimumFractionDigits:4,maximumFractionDigits:4}):'À renseigner';
+  const density=(value:unknown)=>finite(value)?value.toLocaleString('fr-FR',{minimumFractionDigits:3,maximumFractionDigits:3}):'À renseigner';
   const change=(label:string,a:unknown,b:unknown,format:(x:any)=>string=(x)=>typeof x==='string'&&x.trim()?x:'À renseigner')=>{
     if(noloCanonical(a)===noloCanonical(b))return;
     const before=format(a),after=format(b);

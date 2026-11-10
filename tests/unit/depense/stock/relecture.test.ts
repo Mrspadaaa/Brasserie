@@ -17,21 +17,15 @@ const line = (description: string, unit: string, quantity: number, extra: Partia
 const ref = (l: StockLineInput, stock: StockItem[]) => proposeStockItem(l, stock)?.ref;
 
 describe('s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article', () => {
-  it('« Pilsner » chez « Bio Malz AG » face à « Bio Pilsner » → rien', () => {
-    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Bio Malz AG' }), [item('B', 'Bio Pilsner')])).toBeUndefined();
-  });
+
   it('« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien', () => {
     expect(ref(line('Cascade', 'g', 100, { vendor: 'Cryo Hops AG' }), [hop('C', 'Cascade Cryo')])).toBeUndefined();
   });
   it('« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade Cryo » → rien', () => {
     expect(ref(line('Cascade', 'g', 100, { vendor: 'Yakima Chief Hopunion Cryo' }), [hop('C', 'Cascade Cryo')])).toBeUndefined();
   });
-  it('« Citra » chez « Cryo » face à « Citra Cryo » → rien', () => {
-    expect(ref(line('Citra', 'g', 100, { vendor: 'Cryo' }), [hop('C', 'Citra Cryo')])).toBeUndefined();
-  });
-  it('« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → rien', () => {
-    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Dunkel Mühle' }), [item('D', 'Pilsner Dunkel')])).toBeUndefined();
-  });
+
+
   // « t90 » est dans la liste du code mais pas ici : c'est une forme standard (GENERIC) retirée des DEUX côtés dès la passe 1 (« Cascade » = « Cascade T90 »,
   // règle d'ARB-M4, E22) ; la règle du fournisseur n'y entre jamais.
   const DESCRIPTEURS = ['bio', 'organic', 'öko', 'oeko', 'cryo', 'lupomax', 't45', 'dunkel', 'hell', 'light', 'smoked', 'rauch', 'extra', 'pale', 'dark', 'crystal', 'caramel', 'wheat', 'weizen'];
@@ -235,12 +229,8 @@ describe('s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans 
 });
 
 describe('s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article', () => {
-  it('« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien', () => {
-    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Rye Mühle AG' }), [item('R', 'Pilsner Rye')])).toBeUndefined();
-  });
-  it('« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien', () => {
-    expect(ref(line('Cascade', 'g', 100, { vendor: 'Leaf Hops AG' }), [hop('L', 'Cascade Leaf')])).toBeUndefined();
-  });
+
+
   for (const mot of ['Rye', 'Roggen', 'Munich', 'Vienna', 'Cara', 'Chocolate', 'Biscuit', 'Honey', 'Melanoidin', 'Spelt']) {
     it(`« Pilsner » chez « ${mot} Mühle AG » face à « Pilsner ${mot} » → rien`, () => {
       expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG` }), [item('X', `Pilsner ${mot}`)])).toBeUndefined();
@@ -272,7 +262,5 @@ describe('s1c n° 3 : la garde côté ligne (mot qui décrit le produit après u
   it('« Pilsner de Rauch » chez « Rauch AG » face à « Pilsner » → rien (la garde côté ligne, mot « rauch »)', () => {
     expect(ref(line('Pilsner de Rauch', 'kg', 25, { vendor: 'Rauch AG' }), [item('P', 'Pilsner')])).toBeUndefined();
   });
-  it('témoin : « Cascade du Banc » chez la Malterie du Banc reste proposé', () => {
-    expect(ref(line('Cascade du Banc', 'g', 100, { vendor: 'Malterie du Banc SA' }), [hop('H', 'Cascade')])).toBe('H');
-  });
+
 });

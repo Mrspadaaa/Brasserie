@@ -1,0 +1,43 @@
+== mots
+r1 57 mots
+r2 60 mots
+r3 42 mots
+r4 44 mots
+MOTS OK
+== commun
+mots       OK
+couleurs   OK
+survol     OK
+blocs      OK
+contraste  OK
+standard   OK
+parlant    OK
+brutes     OK
+COMMUN OK
+== contraste
+r1 · 154 textes mesurés · pire « TVA » 5.17:1 · 6 sur fond d'image ou de dégradé, non mesurables
+r2 · 72 textes mesurés · pire « Synthèse » 5.63:1 · 7 sur fond d'image ou de dégradé, non mesurables
+r3 · 57 textes mesurés · pire « Annuel » 5.63:1 · 5 sur fond d'image ou de dégradé, non mesurables
+r4 · 142 textes mesurés · pire « N » 4.54:1 · 5 sur fond d'image ou de dégradé, non mesurables
+CONTRASTE OK
+== page r1
+PAGE OK (0 images chargées, 390 px, sans erreur)
+== choix r1
+CHOIX OK (0 écran(s) conforme(s) à son choix ; 0 ouvert(s))
+== page r2
+PAGE OK (0 images chargées, 390 px, sans erreur)
+== choix r2
+CHOIX OK (0 écran(s) conforme(s) à son choix ; 0 ouvert(s))
+== page r3
+PAGE OK (0 images chargées, 390 px, sans erreur)
+== choix r3
+CHOIX OK (0 écran(s) conforme(s) à son choix ; 0 ouvert(s))
+== page r4
+PAGE OK (0 images chargées, 390 px, sans erreur)
+== choix r4
+CHOIX OK (0 écran(s) conforme(s) à son choix ; 0 ouvert(s))
+== panel (indicatif)
+4 captures · remplissage médian 0,58, 1 sous 0,50 · ressemblance moyenne 0,91 · paires presque identiques 0/6 (0 %)
+  - REMPLISSAGE : 25 % des premiers écrans sous 0,50, 20 % au plus
+  - DIVERSITÉ : ressemblance moyenne 0,91 ≥ 0,90 (lot 21 : 0,88) : le panel partage un même squelette
+PANEL ECHEC

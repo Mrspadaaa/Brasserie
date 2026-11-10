@@ -209,18 +209,17 @@ describe('Deux visions indépendantes et correction par majorité', () => {
   });
 
   it('ignore uniquement le bruit binaire et ne masque pas un vrai écart inférieur au centime', () => {
-    const base = { amountHT: null, tvaAmount: null, items: [] };
-    expect(reconcileInvoiceVision([read({ ...base, amountTTC: .1 + .2 }), read({ ...base, amountTTC: .3 })]).review.status).toBe('checked');
-    expect(reconcileInvoiceVision([read({ ...base, amountTTC: 1.001 }), read({ ...base, amountTTC: 1.004 })]).review.status).toBe('disputed');
+    // Une ligne par lecture, au montant du total : un total sans aucune ligne dit « aucune ligne lue » (LO-3) et ne prouve plus rien ici.
+    const lu = (total: number) => ({ amountHT: null, tvaAmount: null, amountTTC: total, items: [item({ quantity: 1, price: total, amountTTC: total })] });
+    expect(reconcileInvoiceVision([read(lu(.1 + .2)), read(lu(.3))]).review.status).toBe('checked');
+    expect(reconcileInvoiceVision([read(lu(1.001)), read(lu(1.004))]).review.status).toBe('disputed');
   });
 
-  it('conserve la limite de lignes visible après une seconde normalisation', () => {
+  it('D379 : 36 lignes, deux normalisations : les 36 restent, aucune phrase de perte', () => {
     const first = read({ amountHT: 350, amountTTC: 350, items: Array.from({ length: 36 }, (_, index) => item({ name: `Article ${index}` })) });
     const result = reconcileInvoiceVision([first, structuredClone(first)]);
-    expect(result.result.items).toHaveLength(35);
-    expect(result.result.issues.join(' ')).toContain('Plus de 35 lignes');
-    expect(result.review.status).toBe('disputed');
-    expect(result.needsCorrection).toBe(false);
+    expect(result.result.items).toHaveLength(36);
+    expect(result.result.issues.join(' ')).not.toMatch(/Plus de \d+ lignes/);
   });
 
   it('ne dépense pas une correction pour une devise étrangère lue à l’identique', () => {

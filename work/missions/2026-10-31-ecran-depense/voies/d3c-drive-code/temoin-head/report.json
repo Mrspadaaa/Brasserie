@@ -1,0 +1,292 @@
+{
+  "project": "demo-jus",
+  "rulesSha": "a29dda39a7999991c19e5be00e1805d342451090658b08d837d91bfbbb41552f",
+  "widths": [
+    390
+  ],
+  "cases": [
+    "drive-fond"
+  ],
+  "startedAt": "2026-11-01T09:07:12.915Z",
+  "replay": {
+    "doc1": {
+      "fichier": "..\\doc1-facture-ecran.jpg",
+      "sha256": "b34c2807eba4"
+    },
+    "doc2": {
+      "fichier": "..\\doc2-facture-papier-2tva.jpg",
+      "sha256": "bc11da61aafa"
+    },
+    "doc3": {
+      "fichier": "..\\doc3-bulletins-qr-tournes.jpg",
+      "sha256": "1f3262d77203"
+    },
+    "doc4": {
+      "fichier": "..\\doc4-bordereau-livraison.jpg",
+      "sha256": "ee741f3f353f"
+    },
+    "doc5": {
+      "fichier": "..\\doc5-facture-fournisseur-3pages-qr.jpg",
+      "sha256": "c8a6241e22a8"
+    },
+    "doc6": {
+      "fichier": "..\\doc6-commande-en-ligne-ecran.jpg",
+      "sha256": "13865170131e"
+    }
+  },
+  "seeds": {
+    "derivesDeLaLecture": [
+      {
+        "id": "jus0-existant-accent",
+        "unit": "kg",
+        "category": "Malt"
+      },
+      {
+        "id": "jus0-existant-houblon",
+        "unit": "g",
+        "category": "Houblon"
+      },
+      {
+        "id": "jus0-existant-levure",
+        "unit": "sachet",
+        "category": "Levure"
+      }
+    ],
+    "accentTrouve": true
+  },
+  "runs": [
+    {
+      "width": 390,
+      "steps": [
+        {
+          "label": "connexion émulée",
+          "at": "2026-11-01T09:08:04.772Z",
+          "uid": "ZGHGzFakFG3ltDaWl9YakQPJQB7F"
+        },
+        {
+          "label": "semis du stock (dérivés de la lecture rejouée)",
+          "at": "2026-11-01T09:08:04.946Z",
+          "seeds": [
+            "jus0-existant-accent",
+            "jus0-existant-houblon",
+            "jus0-existant-levure"
+          ]
+        },
+        {
+          "label": "cas drive-fond",
+          "at": "2026-11-01T09:08:06.780Z"
+        },
+        {
+          "label": "page rechargée en plein envoi",
+          "at": "2026-11-01T09:09:45.079Z"
+        },
+        {
+          "label": "ARRÊT drive-fond",
+          "at": "2026-11-01T09:17:01.437Z",
+          "error": "Error: Aucun élément visible : [data-proof-notice] button « Renvoyer le justificatif »\n    at click (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/scripts/check-invoice-journey-emulator.mjs:383:45)\n    at async Object.caseDriveFond [as drive-fond] (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/scripts/check-invoice-journey-emulator.mjs:1373:3)\n    at async inner (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/scripts/check-invoice-journey-emulator.mjs:1619:17)\n    at async file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/scripts/check-invoice-journey-emulator.mjs:1650:20"
+        },
+        {
+          "label": "réseau rétabli",
+          "at": "2026-11-01T09:17:01.483Z"
+        }
+      ],
+      "captures": [
+        "390-01-drive-fond-1-feuille-avant.png",
+        "390-02-drive-fond-1-feuille-fermee.png",
+        "390-03-drive-fond-2-notification-echec.png",
+        "390-04-drive-fond-2-notification-finances.png",
+        "390-99-arret-drive-fond.png"
+      ],
+      "errors": [
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED"
+      ],
+      "records": {},
+      "measures": {
+        "drive-fond-1-fermeture-ms": 60061
+      },
+      "services": {
+        "ai": [
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 100,
+              "sha256": "6f80a31c8b2829d0f296a16e8b80a8e221ebd2ad46b553436ccbba4612aa6989"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T09:08:07.492Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 101,
+              "sha256": "9d960592bb894910a8553368cca268a250f5986c856c55a227594e39a2e0180f"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T09:13:45.695Z",
+            "expectedFile": false
+          }
+        ],
+        "driveAuthorization": [
+          {
+            "action": "config"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "token"
+          }
+        ],
+        "drive": {
+          "uploads": [],
+          "downloads": 0,
+          "requests": 11
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "width": 390,
+      "ok": true,
+      "label": "banc : réécriture émulateur appliquée telle que prévue"
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »",
+      "data": {
+        "fermee": false,
+        "ms": 60061,
+        "alertes": []
+      }
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)",
+      "data": {
+        "lien": null
+      }
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : aucune notification pendant que ça marche"
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 7 : rechargement en plein envoi, la file reprend au démarrage, un seul fichier dans le Drive factice",
+      "data": {
+        "lien": null,
+        "fichiers": 0
+      }
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 7 : aucune notification après la reprise"
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : Drive plein, la feuille se ferme quand même",
+      "data": {
+        "alertes": [
+          "Ton espace Google Drive est plein. Libère de la place ou augmente son espace, puis réessaie. Le brouillon est conservé."
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : la notification d’échec paraît, dit la cause et propose « Renvoyer le justificatif »",
+      "data": {
+        "notification": null
+      }
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : elle est toujours là après 10 s (persistante)",
+      "data": {}
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : le clavier (Tab) atteint ses boutons",
+      "data": {
+        "atteints": []
+      }
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : elle est aussi sur Finances",
+      "data": {}
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : elle est aussi sur le tableau de bord",
+      "data": {}
+    },
+    {
+      "width": 390,
+      "ok": false,
+      "label": "drive-fond 2 : l’état « failed / quota » est écrit sur la dépense (visible depuis tout appareil)",
+      "data": {}
+    }
+  ],
+  "findings": [],
+  "blocked": [
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key"
+  ],
+  "rewrites": [
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    }
+  ],
+  "pids": {
+    "vite": 22144,
+    "chrome": 11384
+  },
+  "closed": {
+    "chrome": true,
+    "vitePortFree": true
+  },
+  "endedAt": "2026-11-01T09:17:02.734Z"
+}

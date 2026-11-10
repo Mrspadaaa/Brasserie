@@ -15,6 +15,7 @@ import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
 import { AiClient } from '../services/aiClient';
 import { withManualEntry } from './manualEntry';
 import { readYeastFactValue, readYeastDocumentaryNotes, type YeastDocumentaryNote, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+import { nombreFr } from '../domain/stock/regles';
 import {
   YEAST_DOCUMENTARY_UNITS, YEAST_SHEET_LABELS, YEAST_VALUE_KIND, YeastFlocculationEditor, YeastMeasuredFactEditor, YeastLinkedText, YeastObservationList,
   withRetainedYeastFact, yeastCategoryKey, yeastRetainedValues, yeastSourceTitle, yeastValueText, type YeastDocumentaryKey
@@ -943,7 +944,7 @@ function IngredientCompletion({
                     {f.kind === 'malt' &&
                       [
                         f.missing.includes('couleur EBC') && f.facts.colorEbc != null
-                          ? `${f.facts.colorEbc} EBC`
+                          ? `${nombreFr(f.facts.colorEbc, 1)} EBC`
                           : null,
                         f.missing.includes('potentiel PPG') && f.facts.potentialPpg != null
                           ? `${f.facts.potentialPpg} PPG`
@@ -951,7 +952,7 @@ function IngredientCompletion({
                       ]
                         .filter(Boolean)
                         .join(' · ')}
-                    {f.kind === 'houblon' && f.facts.alphaPct != null && `${f.facts.alphaPct} % AA`}
+                    {f.kind === 'houblon' && f.facts.alphaPct != null && `${nombreFr(f.facts.alphaPct, 2)} % α`}
                   </span>
                 </div>
                 {f.kind === 'levure' && <>

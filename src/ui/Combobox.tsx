@@ -105,6 +105,9 @@ export const Combobox: React.FC<ComboboxProps> = ({
   const [active, setActive] = useState(0);
   /** La liste se déplie vers le haut quand le clavier occupe le bas. */
   const [flipUp, setFlipUp] = useState(false);
+  const [geo, setGeo] = useState<{ w: number; dx: number } | null>(null);
+  /** Hauteur réellement disponible du côté choisi (px) : la liste ne passe ni sous l'en-tête d'une feuille ni sous le clavier. */
+  const [placeMax, setPlaceMax] = useState<number | null>(null);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputElement>(null);
@@ -182,8 +185,22 @@ export const Combobox: React.FC<ComboboxProps> = ({
     const rect = wrapRef.current.getBoundingClientRect();
     const visibleBottom = window.innerHeight - keyboardInset;
     const below = visibleBottom - rect.bottom;
-    const above = rect.top;
-    setFlipUp(below < 200 && above > below);
+    // BR-92, BR-73 : vers le haut, la place s'arrête au bord du conteneur défilant (le corps d'une feuille), pas au haut de l'écran :
+    // au-dessus il y a l'en-tête de la feuille, qui recouvrait la liste.
+    let top = 0;
+    for (let el = wrapRef.current.parentElement; el; el = el.parentElement) {
+      const overflowY = getComputedStyle(el).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') { top = el.getBoundingClientRect().top; break; }
+    }
+    const above = rect.top - top;
+    const up = below < 200 && above > below;
+    setFlipUp(up);
+    // BR-62 : un champ étroit (le style, 190 px au 1280) ouvrait une liste de sa largeur : 168 noms sur 248 coupés. La liste prend au moins 26 rem
+    // (ou l'écran moins 24 px) et se décale vers la gauche quand elle sortirait à droite ; un champ plus large garde sa largeur.
+    const voulue = Math.min(416, window.innerWidth - 24);
+    const largeur = Math.max(rect.width, voulue);
+    setGeo({ w: largeur, dx: Math.min(0, window.innerWidth - 12 - (rect.left + largeur)) });
+    setPlaceMax(Math.max(96, Math.min(288, (up ? above : below) - 8)));
   }, [open, keyboardInset, rowCount]);
 
   // Garde l'option active dans le champ de vision pendant la navigation clavier.
@@ -440,11 +457,12 @@ export const Combobox: React.FC<ComboboxProps> = ({
           id={listId}
           role="listbox"
           style={{
+            ...(geo ? { width: geo.w, left: geo.dx } : {}),
             // La liste ne descend jamais sous le clavier : sa hauteur se cale
             // sur l'espace réellement visible.
-            maxHeight: keyboardInset > 0 ? 'min(18rem, 40vh)' : '18rem'
+            maxHeight: placeMax !== null ? `min(${placeMax}px, ${keyboardInset > 0 ? '40vh' : '18rem'})` : keyboardInset > 0 ? 'min(18rem, 40vh)' : '18rem'
           }}
-          className={`absolute z-50 left-0 right-0 overflow-y-auto overscroll-contain
+          className={`absolute z-50 left-0 ${geo ? '' : 'right-0'} overflow-y-auto overscroll-contain
                       panel shadow-lift py-1
                       ${flipUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
         >

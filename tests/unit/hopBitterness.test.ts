@@ -1,9 +1,36 @@
 import { describe, it, expect } from 'vitest';
-import { hotBitterness, bitternessScience } from '../../src/domain/hopBitterness';
+import { hotBitterness, bitternessScience, ibuDeLAjout, phraseIbuIncomplet } from '../../src/domain/hopBitterness';
 import { dryHopBitterness, dryHopDoseGL } from '../../functions/src/hopBitternessCore';
 import { assertHopKnowledge } from '../../functions/src/hopPredictionSchema';
 import type { HopIngredient } from '../../src/types';
 const hop: HopIngredient = {name:'Cascade',stage:'boil',weightG:28,alpha:6,timeMin:60};
+
+describe('RJ-3 · RJ-11 : l’en-tête et la ligne ne portent qu’un nombre', () => {
+  const enorme = { ...hop, name: 'Lotus', weightG: 99999, alpha: 15 };
+  it('99 999 g : le total refuse, la ligne aussi (plus « 39 744,7 IBU »)', () => {
+    const r = hotBitterness([enorme], 24, 1.08, 60);
+    expect(r.total).toBeNull();
+    expect(r.additions[0].ibu).toBeNull();
+    expect(ibuDeLAjout([enorme], enorme, 24, 1.08, 60)).toBeNull();
+  });
+  it('une ligne sous la borne seule, mais dans une recette au-dessus : refusée comme l’en-tête', () => {
+    const a = { ...hop, name: 'A', weightG: 600 }, b = { ...hop, name: 'B', weightG: 600 };
+    expect(hotBitterness([a], 24, 1.05, 60).additions[0].ibu).not.toBeNull();
+    expect(hotBitterness([a, b], 24, 1.05, 60).total).toBeNull();
+    expect(ibuDeLAjout([a, b], a, 24, 1.05, 60)).toBeNull();
+    expect(ibuDeLAjout([a, { ...b, weightG: 50 }], a, 24, 1.05, 60)).not.toBeNull();
+  });
+  it('un dry hop reste à 0 IBU, jamais refusé pour sa masse', () => {
+    const cru = { ...hop, stage: 'dryHop' as const, weightG: 99999 };
+    expect(hotBitterness([cru], 24, 1.05, 60).additions[0].ibu).toBe(0);
+  });
+  it('le motif ne finit que par un point', () => {
+    const r = hotBitterness([enorme], 24, 1.08, 60);
+    expect(r.missing[0]).toMatch(/\.$/);
+    expect(phraseIbuIncomplet(r.missing)).toMatch(/[^.]\.$/);
+    expect(phraseIbuIncomplet(['Lotus : alpha du lot', 'volume final de la recette'])).toBe('Lotus : alpha du lot · volume final de la recette.');
+  });
+});
 
 describe('IBU courants, sans masquer les données absentes', () => {
   it('reproduit Tinseth sans arrondi intermédiaire et utilise le volume final', () => {
@@ -18,6 +45,12 @@ describe('IBU courants, sans masquer les données absentes', () => {
   });
   it.each([{timeMin:undefined},{timeMin:95},{alpha:101},{stage:'whirlpool',tempC:undefined},{weightG:NaN}])('refuse le repli plausible : %j', patch=>{
     expect(hotBitterness([{...hop,...patch} as HopIngredient],24,1.05,60).total).toBeNull();
+  });
+  it('n° 27 : la durée d’ébullition de la recette manque UNE fois, sans accuser chaque houblon',()=>{
+    const trois=[{...hop,name:'Galaxy',timeMin:20},{...hop,name:'Citra',timeMin:60},{...hop,name:'Nelson Sauvin',timeMin:20}];
+    const result=hotBitterness(trois,24,1.05,Number.NaN);
+    expect(result.total).toBeNull();
+    expect(result.missing).toEqual(['durée d’ébullition de la recette']);
   });
   it('distingue durée zéro, absence de durée et absence d’OG',()=>{
     expect(hotBitterness([{...hop,timeMin:0}],24,1.05,60).total).toBe(0);

@@ -179,7 +179,7 @@ describe('Levure : style, comparaison et application', () => {
     open(/Ensemencement et durée à préparer/);
     const wort = screen.getByRole('region', { name: 'Moût à ensemencer' });
     expect(wort).toHaveTextContent('Volume ?');
-    expect(wort).toHaveTextContent('SG ?');
+    expect(wort).toHaveTextContent('Densité ?');
     expect(screen.getByText('Non calculable')).toBeVisible();
     expect(screen.queryByLabelText('Taux de cellules visé par mL et degré Plato')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Ancien taux de cellules du scénario par mL et degré Plato')).not.toBeInTheDocument();

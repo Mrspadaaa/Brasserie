@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { NumberInput } from "../NumberInput";
-import { formatDecimal } from "../numericInput";
+import { formatDecimal, messageRefus } from "../numericInput";
 import { formatWaterMessage } from "../waterReadings";
 
 import { DilutionField } from "../DilutionField";
@@ -36,6 +37,8 @@ export function WaterDilution({
   totalOsmoseeL,
   totalReseauL,
 }: Props) {
+  // BR-80 : une borne (1000 L) appliquée pendant la frappe laissait « 10009 » dans le champ ; la saisie hors bornes est refusée et dite.
+  const [refusRo, setRefusRo] = useState<string | null>(null);
   return (
     <>
       {" "}
@@ -58,6 +61,8 @@ export function WaterDilution({
                 value={state.roLimitL}
                 min={0}
                 max={1000}
+                rejeter
+                onRefus={(r) => setRefusRo(r ? messageRefus(r.saisi, r.retenu, { min: 0, max: 1000, unite: "L" }) : null)}
                 emptyValue={undefined}
                 placeholder="Sans limite"
                 className="mt-1 w-full min-h-11 rounded-control bg-cave-900 border border-cave-700 px-3 text-base"
@@ -72,6 +77,7 @@ export function WaterDilution({
                 }
               />
             </label>
+            {refusRo && <p role="alert" data-role="refus" className="text-xs text-alert-strong">{refusRo}</p>}
             <p className="text-cave-400">
               Empâtage et rinçage réunis. Le reste vient du réseau, les volumes
               de brassage sont conservés.
@@ -80,7 +86,7 @@ export function WaterDilution({
               <input
                 type="checkbox"
                 aria-label="Sels et acides suivent la recette"
-                className="w-5 h-5 accent-water"
+                className="w-6 h-6 accent-water"
                 checked={state.autoTreatment === true}
                 onChange={(e) => set({ autoTreatment: e.target.checked })}
               />
@@ -123,7 +129,7 @@ export function WaterDilution({
           <span className="min-w-0 flex-1 text-left truncate text-cave-200">
             Minimum trouvé d’osmosée
           </span>
-          <span className="shrink-0 reading font-semibold text-water">
+          <span className="shrink-0 reading font-semibold text-cave-50">
             {justEnough ? `${formatDecimal(justEnough.pct)} %` : 'Calcul…'}
           </span>
         </button>
@@ -166,7 +172,7 @@ export function WaterDilution({
             )}
           </p>
         )}
-        {justEnough?.proposal&&<details className="text-xs text-cave-400"><summary className="min-h-touch cursor-pointer">Compromis de la proposition</summary><p>{formatDecimal(justEnough.proposal.volumes.totalRoL)} L osmosée · {formatDecimal(justEnough.proposal.volumes.tapL)} L réseau. Mg {formatDecimal(justEnough.proposal.treatment.treatedTotal.mg)} ppm · Na {formatDecimal(justEnough.proposal.treatment.treatedTotal.na)} ppm. Les sels autorisés peuvent apporter magnésium ou sodium pour économiser l’osmosée. Le pH d’empâtage est vérifié séparément.</p></details>}
+        {justEnough?.proposal&&<details className="text-xs text-cave-400"><summary className="min-h-touch cursor-pointer">Compromis de la proposition</summary><p>{formatDecimal(Math.round(justEnough.proposal.volumes.totalRoL * 10) / 10)} L osmosée · {formatDecimal(Math.round(justEnough.proposal.volumes.tapL * 10) / 10)} L réseau. Mg {formatDecimal(justEnough.proposal.treatment.treatedTotal.mg)} ppm · Na {formatDecimal(justEnough.proposal.treatment.treatedTotal.na)} ppm. Les sels autorisés peuvent apporter magnésium ou sodium pour économiser l’osmosée. Le pH d’empâtage est vérifié séparément.</p></details>}
 
         <DilutionField
           label={hasSparge ? "Osmosée — empâtage" : "Part d’eau osmosée"}
@@ -193,7 +199,7 @@ export function WaterDilution({
                   <span className="min-w-0 flex-1 text-left truncate">
                     Rinçage identique · {formatDecimal(state.spargeWaterL)} L
                   </span>
-                  <span className="shrink-0 text-cave-400">délier</span>
+                  <span className="shrink-0 text-cave-200">délier</span>
                 </>
               ) : (
                 <>

@@ -31,6 +31,9 @@ const sansCoquille = args.includes('--sans-coquille');
 const profil = (args.find((a) => a.startsWith('--profil=')) || '--profil=houblons').slice(9);
 if (!['houblons', 'sans-houblons'].includes(profil)) { console.log('Profil inconnu : ' + profil + ' (houblons ou sans-houblons)'); process.exit(2); }
 const seulementVisible = profil === 'sans-houblons';
+// --sans-lignes (D238, 01.11, Dépense passe 3 : « je vois le maximum d'items ») : ne compte pas le texte des lignes de facture,
+// marquées data-mots="lignes" (nom, quantité, montant, pastilles, sous-totaux de groupe) ; le récap, les points et le reste comptent.
+const sansLignes = args.includes('--sans-lignes');
 const rest = args.filter((a) => !a.startsWith('--'));
 const dir = path.resolve(rest[0] || '.');
 const only = rest.slice(1);
@@ -52,7 +55,7 @@ for (const id of ids) {
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await page.goto(pathToFileURL(path.join(dir, id, pageFile)).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise((r) => setTimeout(r, 300));
-  const n = await page.evaluate((sansDonnees, sansCoquille, seulementVisible) => {
+  const n = await page.evaluate((sansDonnees, sansCoquille, seulementVisible, sansLignes) => {
     const H = innerHeight;
     const DONNEE = /^(floral|herbacé|terreux|agrumes|tropicaux|tropical|noyau|pépins|baies|melon|résineux|épicé|végétal|citra|cascade|galaxy|idaho|motueka|nelson|sauvin|cryo|nugget|aurum|celeia|columbus|hallertau|blanc|east|kent|goldings|us-05|verdant|pomona|diamond|lalbrew|g\/l|g|ml\/100|%|ibu|ebc|j|h|°c|crans?|α|[≈~±×+−–\-=<>≤≥]+)$/i;
     const estDonnee = (w) => DONNEE.test(w) || /^[~≈±×+−–\-]?\d+([,.]\d+)?([–\-]\d+([,.]\d+)?)?[%′″]?$/.test(w) || /^\d+([,.]\d+)?(g|j|h|%|′)$/.test(w) || /^[\d,.\s–\-×%′+−~≈]+$/.test(w);
@@ -105,6 +108,7 @@ for (const id of ids) {
       const boite = el.getBoundingClientRect();
       if (boite.width <= 1 && boite.height <= 1) continue;
       if (sansCoquille && el.closest('[data-page-shell] header')) continue;
+      if (sansLignes && el.closest('[data-mots="lignes"]')) continue;
       // o1 (31.10) : le texte d'un <details> fermé n'est pas lu (Chrome lui donne une boîte), sauf son <summary>.
       if (seulementVisible && replie(el)) continue;
       range.selectNodeContents(node);
@@ -132,7 +136,7 @@ for (const id of ids) {
     }
     // Textes SVG dessinés aussi comptés par le parcours ci-dessus (nœuds texte).
     return words;
-  }, sansDonnees, sansCoquille, seulementVisible);
+  }, sansDonnees, sansCoquille, seulementVisible, sansLignes);
   await page.close();
   // --modere (24.10, soir : « dépasse les 70 mots au premier écran c'est pas ultra grave. Il faut être modéré avec les
   // mots ») : au-dessus du seuil, une alerte ; l'échec seulement au-delà de 40 % de plus.

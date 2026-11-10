@@ -41,12 +41,14 @@ export type Route =
   | { view: 'hopSuggest'; recipeId?: string }
   | { view: 'hopCompare'; recipeId?: string; hops: string[]; pinned?: string }
   | { view: 'hopTiming'; recipeId?: string; additionId: string; step?: 'yeast' }
-  | { view: 'hopSubstitute'; recipeId?: string; hopKey: string };
+  | { view: 'hopSubstitute'; recipeId?: string; hopKey: string }
+  // La recherche avancée des houblons (mission 2026-11-09-levure-retours, r2) : ouverte par le champ d'ajout de l'étape.
+  | { view: 'hopSearch'; recipeId?: string };
 
 export type RouteView = Route['view'];
-export type LayerRoute = Extract<Route, { view: 'hopV55' | 'hopBeer' | 'hopSuggest' | 'hopCompare' | 'hopTiming' | 'hopSubstitute' }>;
+export type LayerRoute = Extract<Route, { view: 'hopV55' | 'hopBeer' | 'hopSuggest' | 'hopCompare' | 'hopTiming' | 'hopSubstitute' | 'hopSearch' }>;
 
-const LAYER_VIEWS: ReadonlySet<RouteView> = new Set<RouteView>(['hopV55', 'hopBeer', 'hopSuggest', 'hopCompare', 'hopTiming', 'hopSubstitute']);
+const LAYER_VIEWS: ReadonlySet<RouteView> = new Set<RouteView>(['hopV55', 'hopBeer', 'hopSuggest', 'hopCompare', 'hopTiming', 'hopSubstitute', 'hopSearch']);
 
 /** Une couche s'empile sur la page ouverte ; une page remplace tout au-dessus des onglets. */
 export const isLayerRoute = (route: Route): route is LayerRoute => LAYER_VIEWS.has(route.view);
@@ -124,9 +126,16 @@ export function useFullScreenRoute(): FullScreenRoute {
     set(pile.length > 1 ? pile.slice(0, -1) : pile);
   };
 
+  // BA-NOTE-1 : un double toucher sur « Fermer » appelait `history.back()` deux fois avant le `popstate` : deux entrées en arrière, donc hors de l'app.
+  // Un retour est en cours jusqu'au `popstate` (ou 800 ms : filet si l'événement ne vient jamais) ; un second `close` dans l'intervalle est ignoré.
+  const retourEnCours = useRef<ReturnType<typeof setTimeout> | null>(null);
   const close = useCallback(() => {
+    if (retourEnCours.current) return;
     // `popstate` dépilera : un seul chemin de fermeture.
-    if (pushedBelow() > 0) window.history.back();
+    if (pushedBelow() > 0) {
+      retourEnCours.current = setTimeout(() => { retourEnCours.current = null; }, 800);
+      window.history.back();
+    }
     else closeLocally();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [set]);
@@ -136,6 +145,7 @@ export function useFullScreenRoute(): FullScreenRoute {
 
   useEffect(() => {
     const onPop = (event: PopStateEvent) => {
+      if (retourEnCours.current) { clearTimeout(retourEnCours.current); retourEnCours.current = null; }
       const depth = depthOf(event.state, base.current);
       const pile = current.current;
       // Le fond reste ; chaque étage plus profond que l'entrée retrouvée se ferme. Une entrée plus

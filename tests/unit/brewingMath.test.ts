@@ -28,8 +28,8 @@ const grain = (weightKg: number, ppg = 37): Fermentable => ({
 });
 
 describe('ABV', () => {
-  it('applique le facteur 131.25 des douanes suisses', () => {
-    expect(BrewingMath.calculateABV(1.061, 1.012)).toBeCloseTo(6.4, 1);
+  it('applique la méthode ASBC (Balling), à 0,2 de l’ancien facteur 131,25 sous 1,070 (CF-6)', () => {
+    expect(BrewingMath.calculateABV(1.061, 1.012)).toBeCloseTo(6.5, 1);
   });
 
   it('rend zéro quand la finale dépasse l’initiale — une fermentation ne remonte pas', () => {
@@ -149,7 +149,8 @@ describe('Extrait et densités', () => {
       potentialPpg: 46
     };
     const pointsSucre = BrewingMath.extractPoints([sucre], 30, 50)!;
-    const pointsGrain = BrewingMath.extractPoints([{ ...sucre, kind: 'grain' }], 30, 50)!;
+    // Le grain de comparaison est empâté : un grain bouilli ne compte pas (table domain/fermentables/moments.ts, audit du 08.11, AM 2).
+    const pointsGrain = BrewingMath.extractPoints([{ ...sucre, kind: 'grain', use: 'empatage' }], 30, 50)!;
     expect(pointsSucre.total).toBeCloseTo(pointsGrain.total * 2, 1);
   });
 
@@ -255,6 +256,23 @@ describe('Rendement à haute densité', () => {
     expect(r.note).toContain('%');
   });
 
+  it('RJ-8 / RO-3 : à 1,080, dans la plage du style (1,065–1,085), la perte est calculée mais la note se tait ; au-dessus, elle parle', () => {
+    const dedans = BrewingMath.efficiencyAtGravity(75, 1.08, 1.085);
+    expect(dedans.note).toBeNull();
+    expect(dedans.correctedPct).toBeCloseTo(72, 5);
+    expect(BrewingMath.efficiencyAtGravity(75, 1.082, 1.085).note).toBeNull();
+    expect(BrewingMath.efficiencyAtGravity(75, 1.095, 1.085).note).toMatch(/le moût sature/);
+    // Au-delà des bornes métier, la note d'erreur de saisie reste, quel que soit le style.
+    expect(BrewingMath.efficiencyAtGravity(75, 1.29, 1.3).note).toMatch(/Erreur de saisie probable/);
+  });
+
+  it('RJ-8 : la note écrit le rendement à la virgule, jamais « 71.9 % »', () => {
+    const r = BrewingMath.efficiencyAtGravity(75, 1.08048);
+    expect(r.correctedPct).toBeCloseTo(71.9, 5);
+    expect(r.note).toContain('À 1,080, le moût sature : compte plutôt 71,9 % de rendement que 75 %');
+    expect(r.note).not.toMatch(/\d\.\d/);
+  });
+
   it('ne descend jamais sous 40 % de rendement', () => {
     expect(BrewingMath.efficiencyAtGravity(50, 1.2).correctedPct).toBeGreaterThanOrEqual(40);
   });
@@ -327,17 +345,17 @@ describe('Volumes d’eau', () => {
   it('compte l’absorption du grain, l’évaporation, le volume mort et la rétraction', () => {
     const v = BrewingMath.waterVolumes(6, 30);
     expect(v.grainAbsorptionL).toBeCloseTo(5.8, 1); // 6 × 0.96
-    expect(v.preBoilVolumeL).toBe(36.2); // 30 + 3 + 2 + 1.2
+    expect(v.preBoilVolumeL).toBe(35.6); // (30 + 2) / 0,96 / (1 − 10 %) × 0,96 : volume froid, comme le mode équipement (CF-9)
     expect(v.mashWaterL).toBe(25.2); // 6 × 4.2, l'épaisseur d'un monocuve
-    expect(v.spargeWaterL).toBe(16.8); // 36.2 − (25.2 − 5.8)
+    expect(v.spargeWaterL).toBe(16.2); // 35.6 − (25.2 − 5.8)
     expect(v.mashWaterL).toBeGreaterThan(v.spargeWaterL);
   });
 
-  it('⚠️ l’ancien calcul de l’assistant sous-estimait l’eau totale de 4.5 L', () => {
+  it('⚠️ l’ancien calcul de l’assistant sous-estimait l’eau totale de 3.9 L', () => {
     const v = BrewingMath.waterVolumes(6, 30);
     const ancien = 18 + (30 * 1.25 - 18); // 37.5 L
-    expect(v.mashWaterL + v.spargeWaterL).toBeCloseTo(42, 1);
-    expect(v.mashWaterL + v.spargeWaterL - ancien).toBeCloseTo(4.5, 1);
+    expect(v.mashWaterL + v.spargeWaterL).toBeCloseTo(41.4, 1);
+    expect(v.mashWaterL + v.spargeWaterL - ancien).toBeCloseTo(3.9, 1);
   });
 
   /*
@@ -363,9 +381,9 @@ describe('Volumes d’eau', () => {
   it('⚠️ l’évaporation suit la DURÉE d’ébullition, pas un forfait', () => {
     const court = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 30);
     const long = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 90);
-    expect(court.boilOffL).toBe(1.5); // 30 × 10 % × 0.5 h
-    expect(long.boilOffL).toBe(4.5); // 30 × 10 % × 1.5 h
-    expect(long.preBoilVolumeL - court.preBoilVolumeL).toBeCloseTo(3, 1);
+    expect(court.boilOffL).toBe(1.7); // 10 % × 0,5 h du volume avant ébullition, ramené à froid (CF-9)
+    expect(long.boilOffL).toBe(5.6); // 10 % × 1,5 h du volume avant ébullition, ramené à froid
+    expect(long.preBoilVolumeL - court.preBoilVolumeL).toBeCloseTo(3.9, 1);
   });
 
   /* Le houblon boit — 6 mL par gramme resté dans la cuve. Le cru n'y est pas. */
@@ -373,7 +391,7 @@ describe('Volumes d’eau', () => {
     const sans = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 60, 0);
     const avec = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 60, 300);
     expect(avec.hopLossL).toBe(1.8);
-    expect(avec.preBoilVolumeL - sans.preBoilVolumeL).toBeCloseTo(1.8, 1);
+    expect(avec.preBoilVolumeL - sans.preBoilVolumeL).toBeCloseTo(2.0, 1); // 1,8 L de houblon, plus l'évaporation de 10 % qu'il entraîne
     expect(kettleHopGrams([
       { weightG: 50, stage: 'boil' },
       { weightG: 80, stage: 'whirlpool' },
@@ -404,7 +422,7 @@ describe('Volumes d’eau', () => {
   it('⚠️ sans rinçage, toute l’eau va à l’empâtage', () => {
     const v = BrewingMath.waterVolumes(6, 30, undefined, 'none');
     expect(v.spargeWaterL).toBe(0);
-    expect(v.mashWaterL).toBeCloseTo(42, 1); // 36.2 + 5.76
+    expect(v.mashWaterL).toBeCloseTo(41.4, 1); // 35.6 + 5.8
   });
 
   it('suit le profil de l’installation', () => {
@@ -414,7 +432,7 @@ describe('Volumes d’eau', () => {
       deadSpaceL: 1
     });
     expect(v.mashWaterL).toBe(24); // 6 × 4
-    expect(v.preBoilVolumeL).toBe(36.7); // 30 + 4.5 + 1 + 1.2
+    expect(v.preBoilVolumeL).toBe(36.5); // (30 + 1) / 0,96 / (1 − 15 %) × 0,96
   });
 
   it('ne rend rien sans grain ni volume, au lieu de diviser dans le vide', () => {

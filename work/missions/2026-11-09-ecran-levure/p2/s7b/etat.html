@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s7b — Levure 4/7 · Suggérer : un curseur − / + par axe, cartes rangées par ce que les fiches savent (passe 4, 09.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--biere:#E0A02E;--inc:#ECECEC;--sa:#1F9E89;--saf:#DDF0EB;--chaud:#D9532B;--chaudf:#FBE3DA;--att:#9C7020;--attt:#7F5B10;
+--est:#D9731A;--estf:#FBE6D4;--phe:#9A4A2A;--phef:#F1E2DA;--thi:#1F9E6B;--thif:#DCF1E7;--ter:#6E9A00;--terf:#ECF3D6;
+--ron:#A07850;--ronf:#F1E8DE;--atn:#4A5A72;--atnf:#E5E9EF;--cla:#3A7BD5;--claf:#E0EBFA;--tol:#8A4B9C;--tolf:#F1E4F4;
+--tmp:#D9532B;--vit:#6B6B6B;--sou:#B08900;--nut:#5E8C3A;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+svg.s7b-i{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.s7b-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.s7b-planche{display:flex;flex-wrap:wrap;gap:0}
+.s7b-item{display:flex;flex-direction:column-reverse;width:390px}
+.s7b-item>h2{font-size:14px;font-weight:600;color:var(--t1);padding:8px 10px 14px}
+@media (min-width:800px){.s7b-planche{gap:24px;padding:24px}.s7b-item{flex-direction:column}.s7b-item>h2{padding:0 0 8px}}
+.s7b-cadre{position:relative;width:390px;height:844px;overflow:hidden;background:var(--page);color:var(--t1)}
+/* baseline (s6a) */
+.s7b-hd{padding:0 8px;border-bottom:1px solid var(--bord)}
+.s7b-tb{display:flex;align-items:center;gap:6px;height:36px}
+.s7b-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.s7b-ic svg.s7b-i{width:16px;height:16px}
+.s7b-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.s7b-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.s7b-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.s7b-rail{display:flex;gap:4px;overflow:hidden;padding-bottom:4px}
+.s7b-rail span{flex-shrink:0;padding:0 4px;min-height:26px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:12px;color:var(--t2);white-space:nowrap}
+.s7b-rail i{display:block;height:5px;border-radius:10px;background:var(--bord)}
+.s7b-rail .s7b-fait i{background:#6E6E6E}
+.s7b-rail .s7b-cur{color:var(--t0);font-weight:600}
+.s7b-rail .s7b-cur i{background:var(--t0)}
+.s7b-bd{margin:6px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.s7b-bd>div{display:flex;align-items:baseline;gap:4px}
+.s7b-bd .s7b-l{font-size:13px;color:var(--t2)}
+.s7b-bd .s7b-v{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--t0)}
+.s7b-pst{position:relative;align-self:center;width:44px;height:8px;border-radius:10px;background:var(--bord)}
+.s7b-pst b{position:absolute;top:0;bottom:0;border-radius:10px;background:var(--trait)}
+.s7b-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--t0)}
+.s7b-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);background:var(--biere);align-self:center}
+.s7b-ong{margin:6px 10px 0;display:flex;background:var(--panel);border-radius:16px;padding:2px}
+.s7b-ong span{flex:1;text-align:center;font-size:13px;color:var(--t2);line-height:26px;border-radius:14px}
+.s7b-ong .s7b-on{background:#fff;color:var(--t0);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.s7b-pied{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 66px 8px 10px;background:var(--page);border-top:1px solid var(--bord)}
+.s7b-ret{min-height:28px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px;line-height:26px}
+.s7b-suiv{min-height:28px;padding:0 10px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;line-height:28px}
+.s7b-cmp{min-height:28px;padding:0 12px;border-radius:14px;border:1.5px solid var(--t0);color:var(--t0);font-size:14px;font-weight:600;line-height:26px;white-space:nowrap}
+.s7b-fab{position:absolute;right:10px;bottom:10px;width:44px;height:44px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5)}
+.s7b-fab svg.s7b-i{width:22px;height:22px}
+.s7b-c{padding:8px 10px 0;display:flex;flex-direction:column;gap:7px}
+.s7b-dep{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t1)}
+.s7b-dep b{font-size:16px;font-weight:600;color:var(--t0)}
+.s7b-dep .s7b-puce{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px 0 6px;border-radius:12px;border:1px solid var(--bordm);font-size:13px;color:var(--t0)}
+.s7b-dep .s7b-ctx{margin-left:auto;display:flex;gap:4px}
+.s7b-dep .s7b-ctx span{font-family:var(--mono);font-size:13px;color:var(--t1);background:var(--panel);border-radius:10px;padding:0 6px;line-height:22px}
+/* passe 4 : les axes de la fiche, en cartes − / + (langue q2b), groupés */
+.s7b-grp{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.s7b-gl{grid-column:1 / -1;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.s7b-gl::after{content:"";flex:1;height:1px;background:var(--bord)}
+.s7b-ax{border-radius:12px;background:var(--panel);display:flex;flex-direction:column;overflow:hidden;min-height:62px}
+.s7b-ah{display:flex;align-items:center;gap:4px;padding:5px 6px 0;font-size:12px;font-weight:600;color:var(--t0);white-space:nowrap}
+.s7b-ah i{width:8px;height:8px;border-radius:50%;background:var(--c,#999);flex-shrink:0}
+.s7b-av{padding:1px 6px 4px;font-family:var(--mono);font-size:12px;color:var(--t2);white-space:nowrap}
+.s7b-av.s7b-nd{font-family:var(--sans);color:var(--attt)}
+.s7b-pm{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #E2E2E2}
+.s7b-pm span{display:flex;align-items:center;justify-content:center;gap:2px;height:24px;font-family:var(--mono);font-size:12px;color:var(--t0)}
+.s7b-pm span:first-child{border-right:1px solid #E2E2E2}
+.s7b-pm span b{font-weight:600;font-size:14px}
+.s7b-pm span.s7b-zero{color:#AAAAAA}
+.s7b-pm span.s7b-sel{background:var(--t0);color:#fff}
+.s7b-ax.s7b-choisi{box-shadow:inset 0 0 0 1.5px var(--t0);background:#fff}
+.s7b-ax.s7b-peu{background:#FAFAFA}
+.s7b-ax.s7b-peu .s7b-ah{color:var(--t2)}
+.s7b-repl{display:flex;gap:5px;flex-wrap:wrap}
+.s7b-repl span{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:13px;background:var(--panel);font-size:13px;color:var(--t1);white-space:nowrap}
+.s7b-repl span small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.s7b-repl span.s7b-aj{border:1px dashed var(--bordm);background:none;color:var(--t2)}
+/* liste (s6a, q2b) */
+.s7b-lg{display:flex;flex-direction:column}
+.s7b-gh{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--t0);min-height:22px}
+.s7b-gh .s7b-m{font-weight:400;color:var(--t2)}
+.s7b-gh svg.s7b-i{width:12px;height:12px}
+.s7b-gh.s7b-gris{color:var(--t2);font-weight:400}
+.s7b-gh .s7b-echl{margin-left:auto;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--t2)}
+.s7b-liste{border-left:3px solid var(--t0);border-radius:14px 0 0 14px;padding-left:8px;display:flex;flex-direction:column}
+.s7b-liste.s7b-gris{border-left-color:var(--bordm)}
+.s7b-liste.s7b-catn{border-left-color:var(--atn)}.s7b-liste.s7b-cthi{border-left-color:var(--thi)}
+.s7b-row{display:grid;grid-template-columns:1fr 36px;gap:6px;align-items:center;padding:5px 0;border-top:1px solid var(--bord)}
+.s7b-row:first-child{border-top:0}
+.s7b-r1{display:flex;align-items:center;gap:6px;min-height:20px}
+.s7b-dispo{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 6px 0 4px;border-radius:10px;font-size:12px;font-weight:600;color:var(--t0);background:var(--panel);border:1px solid var(--bord);white-space:nowrap;flex-shrink:0}
+.s7b-dispo svg.s7b-i{width:12px;height:12px}
+.s7b-dispo.s7b-eu,.s7b-dispo.s7b-loin{font-weight:400;color:var(--t2);border-style:dashed;background:none}
+.s7b-nom{font-size:15px;font-weight:600;color:var(--t0);white-space:nowrap}
+.s7b-fab2{font-size:12px;color:var(--t2);white-space:nowrap}
+.s7b-src{margin-left:auto;font-size:12px;color:var(--t2);white-space:nowrap}
+.s7b-ecart{margin-left:auto;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--atn);white-space:nowrap}
+.s7b-r2{display:flex;flex-wrap:wrap;gap:3px;align-items:center;margin-top:3px}
+.s7b-r2 i{font-style:normal;display:inline-flex;align-items:center;gap:3px;font-size:12px;line-height:17px;padding:0 5px 0 3px;border-radius:8px;color:var(--t1);white-space:nowrap;background:var(--panel)}
+.s7b-r2 i::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c,var(--trait))}
+.s7b-r2 i.s7b-est{--c:var(--est);background:var(--estf)}.s7b-r2 i.s7b-phe{--c:var(--phe);background:var(--phef)}
+.s7b-r2 i.s7b-thi{--c:var(--thi);background:var(--thif)}.s7b-r2 i.s7b-ter{--c:var(--ter);background:var(--terf)}
+.s7b-r2 i.s7b-ron{--c:var(--ron);background:var(--ronf)}.s7b-r2 i.s7b-cla{--c:var(--cla);background:var(--claf)}
+.s7b-r2 i.s7b-tol{--c:var(--tol);background:var(--tolf)}
+.s7b-r2 i.s7b-ko{background:var(--chaudf);color:#8A2E12}.s7b-r2 i.s7b-ko::before{background:var(--chaud)}
+.s7b-r2 i.s7b-nd{background:#FFF8EA;color:var(--attt);border:1px dashed var(--att);line-height:15px}.s7b-r2 i.s7b-nd::before{display:none}
+.s7b-r2 i.s7b-nd svg.s7b-i{width:11px;height:11px}
+/* l'axe choisi, une piste large avec ta levure en pointillés (écart sur l'axe) */
+.s7b-piste{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,transparent calc(33.3% - 1px),#D6D6D6 calc(33.3% - 1px),#D6D6D6 33.3%,transparent 33.3%,transparent calc(66.6% - 1px),#D6D6D6 calc(66.6% - 1px),#D6D6D6 66.6%,transparent 66.6%),var(--panel);margin-top:5px}
+.s7b-piste b{position:absolute;top:0;bottom:0;border-radius:5px;background:var(--atn);min-width:5px}
+.s7b-piste u{position:absolute;top:-3px;bottom:-3px;border:1.5px dashed var(--biere);border-radius:6px}
+.s7b-echelle{position:relative;height:14px;margin:0 46px 0 11px}
+.s7b-echelle i{position:absolute;transform:translateX(-50%);font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);line-height:1}
+/* jauges ordinales (l5b) pour deux axes combinés */
+.s7b-jg{display:grid;grid-template-columns:auto 42px auto 42px;gap:4px 6px;align-items:center;margin-top:5px;font-size:12px;color:var(--t2)}
+.s7b-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.s7b-seg i{height:8px;border-radius:2px;background:#E2E2E2}
+.s7b-seg.s7b-thi i.s7b-on{background:var(--thi)}.s7b-seg.s7b-cla i.s7b-on{background:var(--cla)}
+.s7b-seg.s7b-q i{background:none;border:1px dashed var(--bordm)}
+.s7b-plus{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--t0);display:flex;align-items:center;justify-content:center;color:var(--t0)}
+.s7b-plus svg.s7b-i{width:18px;height:18px}
+.s7b-plus.s7b-ko{border-color:var(--bordm);color:var(--t2)}
+.s7b-vide{border:1px dashed var(--bordm);border-radius:12px;padding:5px 10px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.s7b-vide b{color:var(--t0);font-weight:600}
+/* levier conduite (s6a) */
+.s7b-levier{border:1px solid var(--bord);border-radius:12px;padding:5px 10px 6px;display:flex;flex-direction:column;gap:3px;background:#fff}
+.s7b-levier .s7b-lt{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t0);font-weight:600}
+.s7b-levier .s7b-lt small{font-weight:400;color:var(--t2);margin-left:auto;font-size:12px}
+.s7b-axe{position:relative;height:30px}
+.s7b-axe .s7b-tr{position:absolute;left:0;right:0;top:12px;height:6px;border-radius:3px;background:linear-gradient(90deg,#DCEBFA,#F5D9C8)}
+.s7b-axe .s7b-pl{position:absolute;top:11px;height:8px;border-radius:4px;background:var(--thi);opacity:.7}
+.s7b-axe .s7b-g{position:absolute;top:22px;white-space:nowrap;transform:translateX(-50%);font-family:var(--mono);font-size:12px;color:var(--t2);line-height:1}
+.s7b-axe .s7b-cond{position:absolute;top:4px;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600}
+.s7b-axe .s7b-fl{position:absolute;top:6px;height:18px;border-top:2px dashed var(--t0);border-right:2px dashed var(--t0);border-radius:0 8px 0 0}
+.s7b-sans{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+/* s7b : un curseur − / + par axe ; les cartes rangées par nombre de fiches qui documentent l'axe */
+.s7b-tete{display:flex;align-items:baseline;justify-content:space-between;font-size:12px;color:var(--t2)}
+.s7b-tete b{font-size:13px;color:var(--t0);font-weight:600}
+.s7b-cs{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.s7b-cu{border-radius:12px;background:var(--panel);padding:5px 8px 4px;display:flex;flex-direction:column;gap:2px}
+.s7b-cu.s7b-peu{background:#FAFAFA;box-shadow:inset 0 0 0 1px #EEE}
+.s7b-cu.s7b-peu .s7b-ch b{color:var(--t2)}
+.s7b-ch{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.s7b-ch i{width:8px;height:8px;border-radius:50%;background:var(--c,#999);flex-shrink:0}
+.s7b-ch b{font-size:13px;font-weight:600;color:var(--t0)}
+.s7b-ch span{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.s7b-ch span.s7b-q{font-family:var(--sans);color:var(--attt)}
+.s7b-crs{display:grid;grid-template-columns:34px 1fr 34px;align-items:center;gap:4px}
+.s7b-crs>small{font-family:var(--mono);font-size:12px;color:var(--t2);white-space:nowrap}
+.s7b-crs>small:last-child{text-align:right}
+.s7b-crs>small.s7b-z{color:#B5B5B5}
+.s7b-tk{position:relative;height:22px}
+.s7b-tk::before{content:"";position:absolute;left:0;right:0;top:10px;height:3px;border-radius:2px;background:linear-gradient(90deg,#CFCFCF,#E6E6E6 50%,#CFCFCF)}
+.s7b-tk em{position:absolute;left:50%;top:3px;bottom:3px;width:0;border-left:2px dashed var(--biere)}
+.s7b-tk b{position:absolute;top:4px;width:15px;height:15px;margin-left:-7.5px;border-radius:50%;background:#fff;border:2px solid var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.s7b-tk u{position:absolute;top:9px;height:5px;border-radius:3px;background:var(--c,#333)}
+.s7b-cu.s7b-choisi{background:#fff;box-shadow:inset 0 0 0 1.5px var(--t0)}
+.s7b-cu.s7b-choisi .s7b-tk b{background:var(--t0);border-color:var(--t0)}
+.s7b-cu.s7b-choisi .s7b-crs>small.s7b-on{color:var(--t0);font-weight:600}
+.s7b-fiches{font-family:var(--mono);font-size:12px;color:var(--t2)}
+/* cadres 2 et 3 : les cartes non touchées passent en une ligne */
+/* retouches p4 : groupes, crans, lignes touchables, pistes s6a, sans donnée */
+.s7b-gl{grid-column:1 / -1;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.s7b-gl::after{content:"";flex:1;height:1px;background:var(--bord)}
+.s7b-tk::after{content:"";position:absolute;left:0;right:0;top:6px;height:11px;background:linear-gradient(90deg,transparent calc(20% - 1px),#8C8C8C calc(20% - 1px),#8C8C8C calc(20% + 1px),transparent calc(20% + 1px),transparent calc(80% - 1px),#8C8C8C calc(80% - 1px),#8C8C8C calc(80% + 1px),transparent calc(80% + 1px))}
+.s7b-tk b{z-index:1}
+.s7b-li{display:flex;align-items:center;gap:5px;min-height:34px;padding:0 0 0 8px;border-radius:10px;background:var(--panel);font-size:13px;overflow:hidden}
+.s7b-li>i{width:8px;height:8px;border-radius:50%;background:var(--c);flex-shrink:0}
+.s7b-li>b{font-weight:600;color:var(--t0);white-space:nowrap}
+.s7b-li.s7b-peu{background:#FAFAFA}.s7b-li.s7b-peu>b{color:var(--t2)}
+.s7b-pm2{margin-left:auto;display:grid;grid-template-columns:44px 44px;align-self:stretch}
+.s7b-pm2 span{display:flex;align-items:center;justify-content:center;gap:1px;font-family:var(--mono);font-size:12px;color:var(--t0);border-left:1px solid #E2E2E2}
+.s7b-pm2 span b{font-weight:600;font-size:13px}
+.s7b-pm2 span.s7b-z{color:#B5B5B5}
+.s7b-autres{grid-column:1 / -1;display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:10px;border:1px dashed var(--bordm);font-size:13px;color:var(--t2)}
+.s7b-autres b{margin-left:auto;color:var(--t0)}
+.s7b-vide0{display:flex;align-items:center;gap:5px;padding:0 8px;border:1px dashed var(--bordm);border-radius:10px;font-size:12px;color:var(--t2);flex-wrap:wrap;align-content:center}
+.s7b-vide0>i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.s7b-vide0 b{font-weight:600;color:var(--t1)}
+.s7b-vide0 em{font-style:normal;display:inline-flex;align-items:center;gap:3px;color:var(--attt)}
+.s7b-vide0 em svg.s7b-i{width:12px;height:12px}
+.s7b-grad{display:grid;grid-template-columns:24px 1fr 24px 1fr;gap:4px 6px;align-items:end;height:16px;margin:0 46px 2px 11px}
+.s7b-grad span{position:relative;height:14px}
+.s7b-grad span i{position:absolute;top:0;transform:translateX(-50%);font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);line-height:1;white-space:nowrap}
+.s7b-bars{display:grid;grid-template-columns:24px 1fr 24px 1fr;gap:4px 6px;align-items:center;margin-top:5px}
+.s7b-bars small{font-size:12px;color:var(--t2);line-height:1}
+.s7b-bar{position:relative;height:8px;border-radius:5px;background:var(--panel)}
+.s7b-bar b{position:absolute;top:0;bottom:0;border-radius:5px;background:var(--t1)}
+.s7b-bar em{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--t0)}
+.s7b-bar u{position:absolute;top:-2px;bottom:-2px;border:1.5px dashed var(--biere);border-radius:6px}
+.s7b-cs.s7b-court{grid-template-columns:1fr 1fr;gap:4px}
+.s7b-cs.s7b-court .s7b-cu{flex-direction:row;align-items:center;gap:6px;padding:3px 8px;min-height:30px}
+.s7b-cs.s7b-court .s7b-ch{flex:0 0 auto}
+.s7b-cs.s7b-court .s7b-ch span{display:none}
+.s7b-cs.s7b-court .s7b-crs{flex:1;grid-template-columns:1fr}
+.s7b-cs.s7b-court .s7b-crs>small{display:none}
+.s7b-cs.s7b-court .s7b-cu.s7b-choisi{grid-column:1 / -1;flex-direction:column;align-items:stretch;padding:5px 8px 4px}
+.s7b-cs.s7b-court .s7b-cu.s7b-choisi .s7b-ch span{display:inline}
+.s7b-cs.s7b-court .s7b-cu.s7b-choisi .s7b-crs{grid-template-columns:40px 1fr 40px}
+.s7b-cs.s7b-court .s7b-cu.s7b-choisi .s7b-crs>small{display:block}
+</style></head>
+<body data-concept="s7b">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="s7b-chev" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="s7b-imp" viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></symbol>
+  <symbol id="s7b-lune" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="s7b-lev" viewBox="0 0 24 24"><circle cx="10" cy="13" r="6"/><circle cx="17" cy="7.5" r="3.5"/></symbol>
+  <symbol id="s7b-shop" viewBox="0 0 24 24"><path d="M3 9l2-5h14l2 5M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></symbol>
+  <symbol id="s7b-usine" viewBox="0 0 24 24"><path d="M3 21V9l5 3V9l5 3V9l5 3v9H3Z"/><path d="M17 12V4h3v8"/></symbol>
+  <symbol id="s7b-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="s7b-loupe" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m19 19-4.5-4.5"/></symbol>
+  <symbol id="s7b-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="s7b-therm" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/></symbol>
+  <symbol id="s7b-dn" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+<div class="s7b-planche">
+
+<!-- ========== Cadre 1 : un curseur par axe, au repos ========== -->
+<div class="s7b-item"><h2>1 · Repos : un curseur à 3 crans par axe, groupés Arômes (estimé) · Corps · Conduite ; dans chaque groupe, les peu documentés en dernier et pâles ; pistes °C et % de s6a</h2>
+<section class="s7b-cadre" aria-label="Suggérer, curseurs au repos">
+<header class="s7b-hd">
+  <div class="s7b-tb"><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-chev"/></svg></span><p class="s7b-tt"><span class="s7b-tn">Levure</span><span class="s7b-tp">4/7</span></p><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-imp"/></svg></span><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-lune"/></svg></span></div>
+  <nav class="s7b-rail" aria-label="Étapes"><span class="s7b-fait">Identité<i></i></span><span class="s7b-fait">Malts/sucres<i></i></span><span class="s7b-fait">Houblons<i></i></span><span class="s7b-cur">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav>
+</header>
+<div class="s7b-bd"><div><span class="s7b-l">Grain</span><span class="s7b-v">8,0 kg</span></div><div><span class="s7b-l">OG</span><span class="s7b-v">1,066</span></div><div><span class="s7b-l">IBU</span><span class="s7b-v">45</span><span class="s7b-pst"><b style="left:40%;width:30%"></b><em style="left:45%"></em></span></div><div><span class="s7b-l">EBC</span><span class="s7b-sw"></span><span class="s7b-v">12</span></div></div>
+<nav class="s7b-ong" aria-label="Vues"><span>Ma levure</span><span>Chercher</span><span>Comparer</span><span class="s7b-on">Suggérer</span></nav>
+<main class="s7b-c">
+  <div class="s7b-dep"><span class="s7b-puce"><svg class="s7b-i"><use href="#s7b-lev"/></svg>US-05</span><b>Je veux…</b><span class="s7b-ctx"><span>30 L</span><span>19 °C</span></span></div>
+  <div class="s7b-tete"><span>moins <b>−</b> · ta levure · <b>+</b> plus · 3 crans</span><span>pâlit : peu de fiches</span></div>
+  <div class="s7b-cs" data-booster="curseurs-plus-moins">
+    <span class="s7b-gl">Arômes · estimé</span>
+    <div class="s7b-cu" data-axe="phenols" style="--c:var(--phe)"><div class="s7b-ch"><i></i><b>Phénols</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small>−187</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+208</small></div></div>
+    <div class="s7b-cu" data-axe="esters" style="--c:var(--est)"><div class="s7b-ch"><i></i><b>Esters</b><span>faible</span></div><div class="s7b-crs"><small>−41</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+317</small></div></div>
+    <div class="s7b-cu" data-axe="thiols" style="--c:var(--thi)"><div class="s7b-ch"><i></i><b>Thiols</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small>−37</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+55</small></div></div>
+    <div class="s7b-cu s7b-peu" data-axe="terpenes" style="--c:var(--ter)"><div class="s7b-ch"><i></i><b>Terpènes</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small class="s7b-z">−0</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+7</small></div></div>
+    <span class="s7b-gl">Corps</span>
+    <div class="s7b-cu" data-axe="clarte" style="--c:var(--cla)"><div class="s7b-ch"><i></i><b>Clarté</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small>−201</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+241</small></div></div>
+    <div class="s7b-cu" data-axe="attenuation" style="--c:var(--atn)"><div class="s7b-ch"><i></i><b>Atténuation</b><span>78–82 %</span></div><div class="s7b-crs"><small>−500</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+124</small></div></div>
+    <div class="s7b-cu" data-axe="tolerance" style="--c:var(--tol)"><div class="s7b-ch"><i></i><b>Tolérance</b><span>9–11 %</span></div><div class="s7b-crs"><small>−268</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+346</small></div></div>
+    <div class="s7b-cu s7b-peu" data-axe="rondeur" style="--c:var(--ron)"><div class="s7b-ch"><i></i><b>Rondeur</b><span>11 g/L</span></div><div class="s7b-crs"><small>−4</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+2</small></div></div>
+    <span class="s7b-gl">Conduite</span>
+    <div class="s7b-cu" data-axe="temperature" style="--c:var(--tmp)"><div class="s7b-ch"><i></i><b>°C</b><span>18–26</span></div><div class="s7b-crs"><small>−431</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+268</small></div></div>
+    <div class="s7b-cu" data-axe="vitesse" style="--c:var(--vit)"><div class="s7b-ch"><i></i><b>Vitesse</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small>−35</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small>+46</small></div></div>
+    <div class="s7b-cu s7b-peu" data-axe="soufre" style="--c:var(--sou)"><div class="s7b-ch"><i></i><b>Soufre</b><span class="s7b-q">? chercher</span></div><div class="s7b-crs"><small>−2</small><span class="s7b-tk"><em></em><b style="left:50%"></b></span><small class="s7b-z">+0</small></div></div>
+    <div class="s7b-vide0" data-axe="nutriments" data-sans-donnee="1" style="--c:var(--nut)"><i></i><b>Nutriments</b><span>sans donnée</span><em><svg class="s7b-i"><use href="#s7b-loupe"/></svg>chercher</em></div>
+  </div>
+  <div class="s7b-lg">
+    <div class="s7b-gh"><svg class="s7b-i"><use href="#s7b-shop"/></svg>Vendues en CH · FR · DE <span class="s7b-m">27.09</span></div>
+    <div class="s7b-grad" aria-hidden="true"><small></small><span><i style="left:20%">10</i><i style="left:60%">20</i><i style="left:100%;transform:translateX(-100%)">30 °C</i></span><small></small><span><i style="left:0;transform:none">70</i><i style="left:40%">80</i><i style="left:80%">90 %</i></span></div>
+    <div class="s7b-liste" data-booster="pistes-s6a">
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">US-05</span><span class="s7b-fab2">ta levure</span><span class="s7b-src">la référence</span></div>
+        <div class="s7b-r2"><i class="s7b-est">esters faibles</i><i class="s7b-tol">9–11 %</i><i class="s7b-ron">11 g/L</i></div>
+        <div class="s7b-bars"><small>°C</small><span class="s7b-bar"><b style="left:52%;width:32%"></b><em style="left:56%"></em></span><small>%</small><span class="s7b-bar"><b style="left:32%;width:16%"></b></span></div>
+      </div><span class="s7b-plus s7b-ko"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">Verdant IPA</span><span class="s7b-fab2">Lallemand</span></div>
+        <div class="s7b-r2"><i class="s7b-est">abricot · tropical</i><i class="s7b-thi">thiols élevés</i><i class="s7b-tol">12 %</i></div>
+        <div class="s7b-bars"><small>°C</small><span class="s7b-bar"><b style="left:52%;width:28%"></b><em style="left:56%"></em></span><small>%</small><span class="s7b-bar"><b style="left:20%;width:28%"></b><u style="left:32%;width:16%"></u></span></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+    </div>
+  </div>
+</main>
+<nav class="s7b-pied"><span class="s7b-ret">Retour</span><span class="s7b-cmp">Comparer (1)</span><span class="s7b-suiv">Suivant — Paliers</span></nav>
+<span class="s7b-fab"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span>
+</section></div>
+
+<!-- ========== Cadre 2 : Atténuation tirée vers − ========== -->
+<div class="s7b-item"><h2>2 · Atténuation tirée vers − : sa carte s'ouvre en grand (levier : empâtage → Malts/sucres), les autres en lignes « − n · + n » touchables</h2>
+<section class="s7b-cadre" aria-label="Suggérer, moins d'atténuation">
+<header class="s7b-hd">
+  <div class="s7b-tb"><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-chev"/></svg></span><p class="s7b-tt"><span class="s7b-tn">Levure</span><span class="s7b-tp">4/7</span></p><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-imp"/></svg></span><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-lune"/></svg></span></div>
+  <nav class="s7b-rail" aria-label="Étapes"><span class="s7b-fait">Identité<i></i></span><span class="s7b-fait">Malts/sucres<i></i></span><span class="s7b-fait">Houblons<i></i></span><span class="s7b-cur">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav>
+</header>
+<div class="s7b-bd"><div><span class="s7b-l">Grain</span><span class="s7b-v">8,0 kg</span></div><div><span class="s7b-l">OG</span><span class="s7b-v">1,066</span></div><div><span class="s7b-l">IBU</span><span class="s7b-v">45</span><span class="s7b-pst"><b style="left:40%;width:30%"></b><em style="left:45%"></em></span></div><div><span class="s7b-l">EBC</span><span class="s7b-sw"></span><span class="s7b-v">12</span></div></div>
+<nav class="s7b-ong" aria-label="Vues"><span>Ma levure</span><span>Chercher</span><span>Comparer</span><span class="s7b-on">Suggérer</span></nav>
+<main class="s7b-c">
+  <div class="s7b-dep"><span class="s7b-puce"><svg class="s7b-i"><use href="#s7b-lev"/></svg>US-05</span><b>Moins d'atténuation</b><span class="s7b-ctx"><span>30 L</span><span>19 °C</span></span></div>
+  <div class="s7b-cs s7b-court">
+    <div class="s7b-cu s7b-choisi" style="--c:var(--atn)"><div class="s7b-ch"><i></i><b>Atténuation</b><span style="font-family:var(--sans)">78–82 % · levier : empâtage → Malts</span></div><div class="s7b-crs"><small class="s7b-on">−500</small><span class="s7b-tk"><u style="left:20%;width:30%"></u><em></em><b style="left:20%"></b></span><small>+124</small></div></div>
+    <div class="s7b-li" data-booster="lignes-touchables" style="--c:var(--est)"><i></i><b>Esters</b><span class="s7b-pm2"><span>−<b>41</b></span><span>+<b>317</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--phe)"><i></i><b>Phénols</b><span class="s7b-pm2"><span>−<b>187</b></span><span>+<b>208</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--thi)"><i></i><b>Thiols</b><span class="s7b-pm2"><span>−<b>37</b></span><span>+<b>55</b></span></span></div>
+    <div class="s7b-li s7b-peu" style="--c:var(--ter)"><i></i><b>Terpènes</b><span class="s7b-pm2"><span class="s7b-z">−<b>0</b></span><span>+<b>7</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--cla)"><i></i><b>Clarté</b><span class="s7b-pm2"><span>−<b>201</b></span><span>+<b>241</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--tol)"><i></i><b>Tolérance</b><span class="s7b-pm2"><span>−<b>268</b></span><span>+<b>346</b></span></span></div>
+    <div class="s7b-li s7b-peu" style="--c:var(--ron)"><i></i><b>Rondeur</b><span class="s7b-pm2"><span>−<b>4</b></span><span>+<b>2</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--tmp)"><i></i><b>°C</b><span class="s7b-pm2"><span>−<b>431</b></span><span>+<b>268</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--vit)"><i></i><b>Vitesse</b><span class="s7b-pm2"><span>−<b>35</b></span><span>+<b>46</b></span></span></div>
+    <div class="s7b-li s7b-peu" style="--c:var(--sou)"><i></i><b>Soufre</b><span class="s7b-pm2"><span>−<b>2</b></span><span class="s7b-z">+<b>0</b></span></span></div>
+  </div>
+  <div class="s7b-lg">
+    <div class="s7b-gh"><svg class="s7b-i"><use href="#s7b-shop"/></svg>Vendues en CH · FR · DE <span class="s7b-m">2</span><span class="s7b-echl">60 · 70 · 80 · 90 %</span></div>
+    <div class="s7b-liste s7b-catn" data-booster="ecart-sur-l-axe">
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">1084 Irish Ale</span><span class="s7b-fab2">Wyeast · fiche</span><span class="s7b-ecart">−7</span></div>
+        <div class="s7b-piste"><u style="left:60%;width:13.3%"></u><b style="left:36.7%;width:13.3%"></b></div>
+        <div class="s7b-r2"><i class="s7b-cla">floculation moyenne</i><i class="s7b-tol">12 %</i></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">1007 German Ale</span><span class="s7b-fab2">épuisée 27.09</span><span class="s7b-ecart">−5</span></div>
+        <div class="s7b-piste"><u style="left:60%;width:13.3%"></u><b style="left:43.3%;width:13.3%"></b></div>
+      </div><span class="s7b-plus s7b-ko"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+    </div>
+  </div>
+  <div class="s7b-lg">
+    <div class="s7b-gh s7b-gris"><svg class="s7b-i"><use href="#s7b-usine"/></svg>Europe · sans offre vue <span class="s7b-m">21</span></div>
+    <div class="s7b-liste s7b-gris">
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo s7b-eu"><svg class="s7b-i"><use href="#s7b-usine"/></svg>Europe</span><span class="s7b-nom">Windsor</span><span class="s7b-fab2">Lallemand · fiche</span><span class="s7b-ecart">−11</span></div>
+        <div class="s7b-piste"><u style="left:60%;width:13.3%"></u><b style="left:16.7%;width:23.3%"></b></div>
+        <div class="s7b-r2"><i class="s7b-cla">floculation faible</i><i class="s7b-tol">12 %</i></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo s7b-eu"><svg class="s7b-i"><use href="#s7b-usine"/></svg>Europe</span><span class="s7b-nom">S-33</span><span class="s7b-fab2">Fermentis · fiche</span><span class="s7b-ecart">−10</span></div>
+        <div class="s7b-piste"><u style="left:60%;width:13.3%"></u><b style="left:26.7%;width:13.3%"></b></div>
+        <div class="s7b-r2"><i class="s7b-est">esters moyens</i><i class="s7b-tol">9–11 %</i></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+    </div>
+  </div>
+  <div class="s7b-vide"><svg class="s7b-i"><use href="#s7b-globe"/></svg><span>rares en Europe <b class="s7b-m">477</b> · London ESB 67–71 %…</span></div>
+</main>
+<nav class="s7b-pied"><span class="s7b-ret">Retour</span><span class="s7b-cmp">Comparer (1)</span><span class="s7b-suiv">Suivant — Paliers</span></nav>
+<span class="s7b-fab"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span>
+</section></div>
+
+<!-- ========== Cadre 3 : Thiols et Clarté tirés vers + ========== -->
+<div class="s7b-item"><h2>3 · Thiols et Clarté tirés vers + : deux cartes ouvertes, les autres en lignes touchables ; levier °C (Samia 2026) ; jauges des deux axes</h2>
+<section class="s7b-cadre" aria-label="Suggérer, plus de thiols et plus clair">
+<header class="s7b-hd">
+  <div class="s7b-tb"><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-chev"/></svg></span><p class="s7b-tt"><span class="s7b-tn">Levure</span><span class="s7b-tp">4/7</span></p><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-imp"/></svg></span><span class="s7b-ic"><svg class="s7b-i"><use href="#s7b-lune"/></svg></span></div>
+  <nav class="s7b-rail" aria-label="Étapes"><span class="s7b-fait">Identité<i></i></span><span class="s7b-fait">Malts/sucres<i></i></span><span class="s7b-fait">Houblons<i></i></span><span class="s7b-cur">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav>
+</header>
+<div class="s7b-bd"><div><span class="s7b-l">Grain</span><span class="s7b-v">8,0 kg</span></div><div><span class="s7b-l">OG</span><span class="s7b-v">1,066</span></div><div><span class="s7b-l">IBU</span><span class="s7b-v">45</span><span class="s7b-pst"><b style="left:40%;width:30%"></b><em style="left:45%"></em></span></div><div><span class="s7b-l">EBC</span><span class="s7b-sw"></span><span class="s7b-v">12</span></div></div>
+<nav class="s7b-ong" aria-label="Vues"><span>Ma levure</span><span>Chercher</span><span>Comparer</span><span class="s7b-on">Suggérer</span></nav>
+<main class="s7b-c">
+  <div class="s7b-dep"><span class="s7b-puce"><svg class="s7b-i"><use href="#s7b-lev"/></svg>US-05</span><b>Plus de thiols · plus clair</b></div>
+  <div class="s7b-cs s7b-court">
+    <div class="s7b-cu s7b-choisi" style="--c:var(--thi)"><div class="s7b-ch"><i></i><b>Thiols</b><span class="s7b-q">estimé · US-05 ? chercher</span></div><div class="s7b-crs"><small>−37</small><span class="s7b-tk"><u style="left:50%;width:30%"></u><em></em><b style="left:80%"></b></span><small class="s7b-on">+55</small></div></div>
+    <div class="s7b-cu s7b-choisi" style="--c:var(--cla)"><div class="s7b-ch"><i></i><b>Clarté</b><span class="s7b-q">US-05 ? chercher</span></div><div class="s7b-crs"><small>−201</small><span class="s7b-tk"><u style="left:50%;width:30%"></u><em></em><b style="left:80%"></b></span><small class="s7b-on">+241</small></div></div>
+    <div class="s7b-li" style="--c:var(--est)"><i></i><b>Esters</b><span class="s7b-pm2"><span>−<b>41</b></span><span>+<b>317</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--phe)"><i></i><b>Phénols</b><span class="s7b-pm2"><span>−<b>187</b></span><span>+<b>208</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--atn)"><i></i><b>Atténuation</b><span class="s7b-pm2"><span>−<b>500</b></span><span>+<b>124</b></span></span></div>
+    <div class="s7b-li" style="--c:var(--tol)"><i></i><b>Tolérance</b><span class="s7b-pm2"><span>−<b>268</b></span><span>+<b>346</b></span></span></div>
+    <div class="s7b-autres">Terpènes · Rondeur · °C · Vitesse · Soufre <b>›</b></div>
+  </div>
+  <div class="s7b-levier" data-booster="levier-conduite">
+    <div class="s7b-lt"><svg class="s7b-i"><use href="#s7b-therm"/></svg>Levier °C · thiols<small>3SH +33 à +72 % de 15 à 30 °C · Samia 2026</small></div>
+    <div class="s7b-axe">
+      <span class="s7b-tr"></span>
+      <span class="s7b-pl" style="left:47%;width:53%"></span>
+      <span class="s7b-g" style="left:0;transform:none">15</span><span class="s7b-g" style="left:33%">20</span><span class="s7b-g" style="left:67%">25</span><span class="s7b-g" style="left:100%;transform:translateX(-100%)">30 °C</span>
+      <span class="s7b-cond" style="left:27%">19</span>
+      <span class="s7b-fl" style="left:30%;width:17%"></span>
+    </div>
+  </div>
+  <div class="s7b-lg">
+    <div class="s7b-gh"><svg class="s7b-i"><use href="#s7b-shop"/></svg>Vendues en CH · FR · DE <span class="s7b-m">27.09</span></div>
+    <div class="s7b-liste s7b-cthi" data-booster="jauges-deux-axes">
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">Verdant IPA</span><span class="s7b-src">tableau Lallemand · fiche</span></div>
+        <div class="s7b-jg"><span>thiols</span><span class="s7b-seg s7b-thi"><i class="s7b-on"></i><i class="s7b-on"></i><i class="s7b-on"></i></span><span>clarté</span><span class="s7b-seg s7b-cla"><i class="s7b-on"></i><i class="s7b-on"></i><i></i></span></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>FR</span><span class="s7b-nom">Pomona</span><span class="s7b-src">tableau Lallemand · fiche</span></div>
+        <div class="s7b-jg"><span>thiols</span><span class="s7b-seg s7b-thi"><i class="s7b-on"></i><i class="s7b-on"></i><i></i></span><span>clarté</span><span class="s7b-seg s7b-cla"><i class="s7b-on"></i><i class="s7b-on"></i><i></i></span></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo"><svg class="s7b-i"><use href="#s7b-shop"/></svg>CH</span><span class="s7b-nom">US-05</span><span class="s7b-fab2">ta levure</span></div>
+        <div class="s7b-r2"><i class="s7b-nd"><svg class="s7b-i"><use href="#s7b-loupe"/></svg>thiols ?</i><i class="s7b-nd"><svg class="s7b-i"><use href="#s7b-loupe"/></svg>floculation ?</i></div>
+      </div><span class="s7b-plus s7b-ko"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+    </div>
+  </div>
+  <div class="s7b-lg">
+    <div class="s7b-gh s7b-gris"><svg class="s7b-i"><use href="#s7b-usine"/></svg>Europe · sans offre vue</div>
+    <div class="s7b-liste s7b-gris">
+      <div class="s7b-row"><div>
+        <div class="s7b-r1"><span class="s7b-dispo s7b-eu"><svg class="s7b-i"><use href="#s7b-usine"/></svg>Europe</span><span class="s7b-nom">Nottingham</span><span class="s7b-src">Samia 2026 · fiche</span></div>
+        <div class="s7b-jg"><span>thiols</span><span class="s7b-seg s7b-thi"><i class="s7b-on"></i><i class="s7b-on"></i><i class="s7b-on"></i></span><span>clarté</span><span class="s7b-seg s7b-cla"><i class="s7b-on"></i><i class="s7b-on"></i><i class="s7b-on"></i></span></div>
+      </div><span class="s7b-plus"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span></div>
+    </div>
+  </div>
+  <div class="s7b-vide"><svg class="s7b-i"><use href="#s7b-globe"/></svg><span>Diamond (lager, 10–15 °C) · rares <b class="s7b-m">3</b> : Hornindal, Superlager</span></div>
+</main>
+<nav class="s7b-pied"><span class="s7b-ret">Retour</span><span class="s7b-cmp">Comparer (1)</span><span class="s7b-suiv">Suivant — Paliers</span></nav>
+<span class="s7b-fab"><svg class="s7b-i"><use href="#s7b-plus"/></svg></span>
+</section></div>
+
+</div>
+</body></html>

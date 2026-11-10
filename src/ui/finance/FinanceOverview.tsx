@@ -2,11 +2,16 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { formatCHF, todayISO, type LedgerSummary } from '../../domain/finance/ledger';
 import type { JournalRequest } from './TransactionJournal';
+import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
 import { compte } from '../../services/plural';
 
 interface Props {
   ledger: LedgerSummary;
+  /** AM n° 10 : chiffre d'affaires sur 12 mois contre le seuil d'assujettissement à la TVA ; `null` si déjà assujettie ou seuil inconnu. */
+  tvaThreshold?: TvaThresholdStatus | null;
   openingCashReady: boolean;
+  /** BE-72 : le solde saisi mais pas encore confirmé se montre (avec son statut) au lieu de disparaître de l'écran. */
+  openingCash?: { amountCents: number; date: string; confirmed: boolean };
   undatedCount: number;
   onProfile: () => void;
   onJournal: (request: Omit<JournalRequest, 'key'>) => void;
@@ -14,7 +19,7 @@ interface Props {
   onPayment: (id: string) => void;
 }
 
-export function FinanceOverview({ ledger, openingCashReady, undatedCount, onProfile, onJournal, onTransaction, onPayment }: Props) {
+export function FinanceOverview({ ledger, tvaThreshold, openingCashReady, openingCash, undatedCount, onProfile, onJournal, onTransaction, onPayment }: Props) {
   const reviewPayments = () => onJournal({ scope: 'all', allDates: true, filter: 'unknown' });
   const mixedDirections = ledger.payablesCents > 0 && ledger.receivablesCents > 0;
   const dueLabel = (date: string | null) => !date ? 'Échéance à préciser'
@@ -33,15 +38,23 @@ export function FinanceOverview({ ledger, openingCashReady, undatedCount, onProf
       <div>
         <dt>Trésorerie</dt>
         <dd className="finance-money">{ledger.cashComplete && ledger.cashCents != null ? formatCHF(ledger.cashCents) : 'À compléter'}</dd>
-        <dd className="finance-position-note">{ledger.cashComplete ? 'Paiements enregistrés inclus' : openingCashReady ? 'Des données restent à vérifier' : 'Solde de départ à renseigner'}</dd>
+        <dd className="finance-position-note">{ledger.cashComplete ? 'Paiements enregistrés inclus' : openingCashReady ? 'Des données restent à vérifier' : openingCash ? `Solde de départ saisi : ${formatCHF(openingCash.amountCents)}, à confirmer` : 'Solde de départ à renseigner'}</dd>
         <button type="button" className="finance-position-open" aria-label="Renseigner le solde de trésorerie" onClick={onProfile}><ChevronRight size={15}/></button>
       </div>
     </dl>
 
+    {tvaThreshold && tvaThreshold.level !== 'ok' && <section className="finance-section finance-tva-threshold" aria-label="Seuil de TVA" data-level={tvaThreshold.level}
+      role={tvaThreshold.level === 'over' ? 'alert' : 'status'}>
+      <h3>{tvaThreshold.level === 'over' ? 'Seuil de TVA franchi' : 'Seuil de TVA bientôt atteint'}</h3>
+      <p>{tvaThreshold.message}</p>
+      <div className="finance-tva-bar" aria-hidden="true"><span style={{ width: `${Math.min(100, Math.round(tvaThreshold.ratio * 100))}%` }}/></div>
+      <button type="button" className="finance-link" onClick={() => onJournal({ scope: 'all', allDates: true, category: 'recettes' })}>Voir les ventes<ChevronRight size={14}/></button>
+    </section>}
+
     {(!openingCashReady || ledger.unknownPaymentCount > 0 || undatedCount > 0) && <section className="finance-section finance-completion" aria-label="Données à compléter">
       <h3>Pour une situation fiable</h3>
       {!openingCashReady && <button type="button" className="finance-task" onClick={onProfile}>
-        <span><strong>Vérifier le solde de départ</strong><small>La trésorerie ne peut pas encore être confirmée.</small></span><ChevronRight size={16}/>
+        <span><strong>Vérifier le solde de départ</strong><small>{openingCash && Number.isSafeInteger(openingCash.amountCents) ? `Solde saisi : ${formatCHF(openingCash.amountCents)} au ${openingCash.date.split('-').reverse().join('.')}, pas encore confirmé. Coche « J’ai vérifié ce solde ».` : 'La trésorerie ne peut pas encore être confirmée.'}</small></span><ChevronRight size={16}/>
       </button>}
       {ledger.unknownPaymentCount > 0 && <button type="button" className="finance-task" onClick={reviewPayments}>
         <span><strong>Confirmer les paiements</strong><small>{compte(ledger.unknownPaymentCount, 'pièce')} exclue{ledger.unknownPaymentCount > 1 ? 's' : ''} des montants à payer et à encaisser.</small></span><span className="finance-count">{ledger.unknownPaymentCount}</span><ChevronRight size={16}/>

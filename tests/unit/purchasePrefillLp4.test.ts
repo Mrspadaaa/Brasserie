@@ -1,0 +1,39 @@
+import { describe, expect, it } from 'vitest';
+import { invoicePurchaseDescription } from '../../src/services/purchasePrefill';
+import type { ScannedInvoiceResult } from '../../src/services/geminiScanner';
+
+// LP-4 (lecture en ligne du 08.11, doc8 et doc10) : « Pour quoi ? : matériel, emballages » sur une commande de malts, houblons et levures de B&R.
+// Cause : les familles étaient gardées dans l'ordre de première apparition ; la commande commence par du matériel (cuve, robinet, sacs) et le plafond de 60 caractères
+// coupait les ingrédients, qui viennent en dernier. Les matières premières passent devant, et se disent « ingrédients » quand les familles ne tiennent pas (08.11, point 2 : « matières premières » remplacé, voir tests/unit/depense/h13-0811/pour-quoi.test.ts).
+// Lecture imitée d'une vraie commande (types de lignes de doc8, cas-4.json), aucun appel à Gemini.
+const ligne = (id: string, name: string, kind: string, stockCategory?: string) => ({ id, name, kind, quantity: 1, unit: kind === 'stock' ? 'Kg' : '', amountTTC: 10, stockCategory }) as any;
+const commande = (items: any[], more: Partial<ScannedInvoiceResult> = {}): ScannedInvoiceResult => ({
+  documentType: 'invoice', vendor: 'Brau- und Rauchshop GmbH', date: '06.08.2024', currency: 'CHF', invoiceNumber: '652093', amountHT: null, amountTTC: 100, tvaRate: null, tvaAmount: null,
+  category: 'brassage', subcategory: '', description: 'Commande', items, issues: [], review: { status: 'checked', findings: [] }, ...more });
+const MATERIEL = [ligne('a', 'Gärtank 30 Liter', 'equipment'), ligne('b', 'Auslaufhahn', 'equipment'), ligne('c', 'Siphon mit Ansaugpumpe', 'equipment')];
+const EMBALLAGE = [ligne('d', 'Kronkorken 100 Kapseln', 'packaging')];
+const MATIERES = [ligne('e', 'Pilsner Malz', 'stock', 'Malt'), ligne('f', 'Aramis 7.9%', 'stock', 'Houblon'), ligne('g', 'Wyeast 3944', 'stock', 'Levure')];
+
+describe('LP-4 : « Pour quoi ? » d’une commande qui mêle matériel, emballages et matières premières', () => {
+  it('doc8 : le matériel vient d’abord sur la facture, les matières passent devant (« ingrédients » quand les familles ne tiennent pas) et le matériel suit', () => {
+    const texte = invoicePurchaseDescription(commande([...MATERIEL, ...EMBALLAGE, ...MATIERES]));
+    // 08.11 (point 2) : « matières premières » est devenu « ingrédients » (le mot de l'app), plus court : le matériel, 3 lignes sur 7, tient à côté.
+    // RF-15 (09.11) : les familles de matières qui tiennent sont nommées (ici les trois, le matériel qui ne tient pas est coupé) ; « ingrédients » ne remplace plus tout dès que trois ne tiennent pas.
+    expect(texte).toBe('Brau- und Rauchshop GmbH · 652093 · malts, houblons, levures');
+    expect(texte.length).toBeLessThanOrEqual(60);
+    expect(texte).not.toMatch(/emballages|matières premières/);
+    // Même commande, fournisseur plus long : deux familles ne tiennent plus, « ingrédients » reste le repli.
+    expect(invoicePurchaseDescription(commande([...MATERIEL, ...MATIERES], { vendor: 'Brau- und Rauchshop GmbH Densbüren', invoiceNumber: '652093' }))).toMatch(/ingrédients|malts/);
+  });
+  it('quand tout tient, les matières premières sont nommées par famille et passent avant le matériel', () => {
+    const texte = invoicePurchaseDescription(commande([...MATERIEL, ...MATIERES.slice(0, 1)], { vendor: 'B&R', invoiceNumber: '1' }));
+    expect(texte).toBe('B&R · 1 · malts, matériel');
+  });
+  it('sans matières premières, l’ordre d’apparition reste (travaux, nettoyage, matériel…)', () => {
+    expect(invoicePurchaseDescription(commande([...MATERIEL, ...EMBALLAGE], { vendor: 'B&R', invoiceNumber: '1' }))).toBe('B&R · 1 · matériel, emballages');
+  });
+  it('une seule famille de matières premières trop longue pour le plafond reste nommée par sa famille', () => {
+    const texte = invoicePurchaseDescription(commande(MATIERES.slice(0, 1), { vendor: 'Brau- und Rauchshop GmbH Densbüren', invoiceNumber: '652093' }));
+    expect(texte).toContain('malts');
+  });
+});

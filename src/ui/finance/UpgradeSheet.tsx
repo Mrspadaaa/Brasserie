@@ -1,5 +1,5 @@
 import { Input, Textarea } from '../Input';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Archive, ChevronRight, RotateCcw } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { EquipmentUpgrade, FinancialPlan } from '../../domain/finance/types';
@@ -19,7 +19,9 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     upgrade: { version: 1, timing: 'later', stage: 'idea', budgetKnown: false, datePrecision: 'month', estimateSource: 'estimate' },
   });
   const [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const locked = useRef(false);
+  const locked = useRef(false), erreurRef = useRef<HTMLParagraphElement>(null);
+  /* TE-35 : le refus de l'enregistrement s'écrit en haut de la feuille ; qui vient de cocher « Inclure dans mes prévisions » en bas ne le voyait pas : il est amené dans la vue. */
+  useEffect(() => { if (error) erreurRef.current?.scrollIntoView?.({ block: 'nearest' }); }, [error]);
   const detail = draft.upgrade!;
   const patch = (value: Partial<EquipmentUpgrade>) => setDraft(previous => {
     const upgrade = { ...previous.upgrade!, ...value }, total = upgradeBudget(upgrade);
@@ -40,7 +42,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
   return <Sheet open title={plan ? 'Mon projet de matériel' : 'Prévoir du matériel'} subtitle="Du besoin à l’achat" className="finance-sheet" dismissible={!busy} onClose={onClose}
     footer={<div className="finance-actions"><button className="finance-action secondary" disabled={busy} onClick={onClose}>Annuler</button><button className="finance-action" disabled={busy} onClick={() => void save()}>{busy ? 'Enregistrement…' : 'Enregistrer le projet'}</button></div>}>
     <div className="finance-form">
-      {error && <p role="alert" className="finance-error">{error}</p>}
+      {error && <p ref={erreurRef} role="alert" className="finance-error">{error}</p>}
       <Field label="Matériel ou aménagement"><Input value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} placeholder="Hotte, fermenteur, nouvelle cuverie…" autoComplete="off" /></Field>
       <Field label="À quoi va-t-il servir ?"><Textarea rows={2} value={detail.purpose ?? ''} onChange={e => patch({ purpose: e.target.value })} placeholder="Évacuer la vapeur, libérer un fermenteur, augmenter le volume…" /></Field>
       <div role="group" aria-label="Quand ce projet devient-il utile ?" className="finance-filter upgrade-timings">
@@ -58,7 +60,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
         <Field label="Référence ou détails du devis"><Textarea rows={2} value={detail.quoteReference ?? ''} onChange={e => patch({ quoteReference: e.target.value })} placeholder="Référence, date, durée de validité, ce qui est compris…" /></Field>
         <p className="finance-muted">Pour une hotte, pense à la pose et au raccordement. Pour un fermenteur, au refroidissement et aux accessoires nécessaires.</p>
       </div></details>
-      <div className="upgrade-budget"><span>Budget total TTC</span><strong className="finance-money">{detail.budgetKnown ? formatCHF(draft.amountCents) : 'À estimer'}</strong></div>
+      <div className="upgrade-budget flex flex-wrap items-center justify-between gap-x-4 gap-y-1"><span>Budget total TTC</span><strong className="finance-money">{detail.budgetKnown ? formatCHF(draft.amountCents) : 'À estimer'}</strong></div>
       <p className="finance-muted">Les frais laissés vides ne sont pas chiffrés. Tu peux garder une idée sans prix ni date.</p>
       {draft.date && detail.datePrecision === 'month' && <p className="finance-muted">Dans la simulation, le paiement est placé au début du mois choisi. La facture précisera l’échéance réelle.</p>}
       {['draft', 'active'].includes(draft.status) ? <div className="upgrade-inclusion">

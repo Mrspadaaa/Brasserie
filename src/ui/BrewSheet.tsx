@@ -27,7 +27,9 @@ import { StyleWater } from '../domain/waterStyles';
 import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
-import { formatDecimal } from './numericInput';
+import { formatDecimal, messageRefus } from './numericInput';
+import { uniteAccordee } from '../domain/fermentables/parts';
+import { masseLigneRetenue } from '../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
 
 /** Preserve Units' conversion and rounding; only localize the displayed number. */
@@ -69,7 +71,8 @@ const Row: React.FC<{
 }> = ({ label, hint, onDelete, children }) => (
   <div className="py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
     <div className="min-w-0 flex-1">
-      <div className="text-sm sm:text-base text-cave-50 truncate leading-tight">{label}</div>
+      {/* BR-25 : le nom passe à la ligne (« Fermentation primaire » était coupé en « Fermentation prim… » à 390). */}
+      <div className="text-sm sm:text-base text-cave-50 break-words leading-tight">{label}</div>
       {hint && <div className="text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
     </div>
     <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">{children}</div>
@@ -97,11 +100,17 @@ const Cell: React.FC<{
   min?: number;
   max?: number;
   label: string;
+  /** Hors bornes, la saisie est refusée (valeur d'avant gardée, message) au lieu d'être ramenée à la borne : les lignes de houblon (TE-21, BR-42). */
+  refuser?: boolean;
 }> = (props) => {
   const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
   // An erased required measure remains unavailable until the wizard validates it.
   const emptyValue = 'emptyValue' in props ? props.emptyValue : Number.NaN;
+  // TE-21, BR-42 : une saisie hors bornes (α 150 %, −5 min, −1 g) était ramenée à la borne sans un mot. Elle est refusée : la valeur d'avant reste ET le dit (role="alert"), comme VI-9.
+  const [refus, setRefus] = React.useState<string | null>(null);
+  const idRefus = React.useId();
   return (
+    <>
     <span className="flex items-baseline gap-1">
       <NumberInput
         value={value}
@@ -110,6 +119,10 @@ const Cell: React.FC<{
         emptyValue={emptyValue}
         min={min}
         max={max}
+        rejeter={props.refuser}
+        onRefus={(r) => setRefus(r ? messageRefus(r.saisi, r.retenu, { min, max, unite: unit.replace('%α', '%') }) : null)}
+        aria-invalid={refus ? true : undefined}
+        aria-describedby={refus ? idRefus : undefined}
         pad
         aria-label={label}
         className={`${width} min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
@@ -118,6 +131,8 @@ const Cell: React.FC<{
       />
       <span className="reading-unit w-6 sm:w-8 text-sm shrink-0">{unit}</span>
     </span>
+    {refus && <p id={idRefus} role="alert" className="basis-full w-full text-xs text-alert leading-snug">{refus}</p>}
+    </>
   );
 };
 
@@ -276,8 +291,17 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
 }) => {
   const tight = useDensity() === 'tight';
 
-  const patchFerm = (i: number, patch: Partial<Fermentable>) =>
+  const patchFerm = (i: number, patch: Partial<Fermentable>) => {
+    // BR-21 : une masse négative ne se retient pas, 10 t au plus. Un champ VIDÉ du récapitulatif reste une absence (NaN, « à renseigner »), comme tous ses
+    // champs : jamais un 0 inventé ; `undefined` devient cette même absence.
+    if ('weightKg' in patch) {
+      const vide = patch.weightKg === undefined || Number.isNaN(patch.weightKg);
+      const kg = vide ? Number.NaN : masseLigneRetenue(patch.weightKg);
+      if (kg === null) return;
+      patch = { ...patch, weightKg: kg };
+    }
     onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
+  };
   const patchHop = (i: number, patch: Partial<HopIngredient>) =>
     onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
 
@@ -457,16 +481,18 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     unit="g"
                     integer
                     min={0}
+                    refuser
                   />
                   <Cell
                     label={`Alpha de ${h.name}`}
                     value={h.alpha || undefined}
                     onValue={(v) => patchHop(index, { alpha: v ?? 0 })}
                     emptyValue={0}
-                    unit="%AA"
+                    unit="%α"
                     width="w-16"
                     min={0}
                     max={30}
+                    refuser
                   />
                   {(def.ask === 'time' || def.ask === 'timeAndTemp') && (
                     <Cell
@@ -478,6 +504,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                       width="w-16"
                       integer
                       min={0}
+                      refuser
                     />
                   )}
                   {def.ask === 'timeAndTemp' && (
@@ -512,8 +539,9 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Levure -------------------------------------------------------- */}
-      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${yeast.unit}` : 'quantité à préciser'}` : 'Souche à choisir')}>
-        <Row label={yeast.name || '—'} hint={yeast.strain}>
+      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${uniteAccordee(yeast.unit, yeast.qty)}` : 'quantité à préciser'}` : 'Souche à choisir')}>
+        {/* BR-26 : la ligne de la quantité se lit « Quantité », la souche passe en dessous (le nom seul ne disait pas ce que le champ attend). */}
+        <Row label="Quantité" hint={[yeast.name, yeast.strain].filter(Boolean).join(' · ') || undefined}>
           <Cell
             label="Quantité de levure"
             value={yeast.qty}
@@ -588,7 +616,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Fermentation -------------------------------------------------- */}
-      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} palier${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
+      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} phase${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
         {fermentation.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucune phase.</p>
         ) : (
@@ -766,7 +794,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     {formatReading(water.ra)}
                   </span>{' '}
                   {water.raSaltTarget != null
-                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation du mash)`
+                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation de l’empâtage)`
                     : `— repère des malts ${formatReading(water.raBand.min)} à ${formatReading(water.raBand.max)} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-400">

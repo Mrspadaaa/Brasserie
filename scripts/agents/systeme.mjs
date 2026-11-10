@@ -628,11 +628,26 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
   };
   const voies = table('Voies');
   if (voies.length < minVoies) erreurs.push(`${voies.length} voies (${minVoies} au moins)`);
+  const datee = /(\d{4}-\d{2}-\d{2})-[^/\\]+[/\\]MISSION\.md$/.exec(path.resolve(fichier))?.[1];
+  // Leçon L29 (03.11, D381) : la découpe des photos réécrite à la main (papier, angle, seuil) au lieu de la chaîne standard d'OpenCV ; deux jours de
+  // rustines, le banc des 200 en échec. « Tu reinvte la roue là » ; « c'est une erreur de junior ». Une mission qui écrit du code (src/, functions/src/,
+  // scripts/) dit d'abord le problème type, ce qui existe (méthode standard, bibliothèques) et sa décision. Les missions closes avant le 04.11 gardent
+  // leur forme d'époque.
+  if (voies.some((v) => /(^|[\s,])(src|functions\/src|scripts)\//.test(v.possede ?? '')) && (!datee || datee >= '2026-11-04')) {
+    const i = texte.search(/^## État de l'art/m), bloc = i < 0 ? '' : texte.slice(i).split(/\n## /)[0];
+    if (i < 0) erreurs.push("section « ## État de l'art » absente : une mission qui écrit du code dit d'abord le problème type, la méthode standard et les bibliothèques examinées, puis sa décision (L29)");
+    else for (const champ of ['Problème type', 'Examiné', 'Décision']) if (!new RegExp(`^- ${champ} : \\S`, 'm').test(bloc)) erreurs.push(`État de l'art : ligne « - ${champ} : … » absente ou vide (L29)`);
+  }
   for (const v of voies) {
     const id = v.voie || '?';
     if (!NIVEAUX.includes(v.niveau)) erreurs.push(`${id} : niveau « ${v.niveau} » (mécanique, jugement, conception)`);
     if (!MODELES.includes(v.modele)) erreurs.push(`${id} : modèle « ${v.modele} » inconnu`);
     if (!/^\d+$/.test(v.plafond ?? '')) erreurs.push(`${id} : plafond de tours absent`);
+    // Leçon L18 : un plafond au-dessus du maxTurns de l'agent n'est jamais atteint ; l'agent s'arrête avant son rendu (01.11 : f4 à 120 pour 160, relecteur à 30 pour 40).
+    // Les missions closes avant le 31.10 gardent leurs plafonds d'époque (leurs GATES rejouent ce contrôle).
+    const ficheAgent = path.join(RACINE, '.claude', 'agents', `${v.agent}.md`);
+    const maxTurns = existe(ficheAgent) ? Number(/^maxTurns:\s*(\d+)/m.exec(lire(ficheAgent))?.[1]) : NaN;
+    if ((!datee || datee >= '2026-10-31') && Number.isInteger(maxTurns) && Number(v.plafond) > maxTurns) erreurs.push(`${id} : plafond ${v.plafond} au-dessus du maxTurns ${maxTurns} de ${v.agent} ; l'agent s'arrête avant son rendu (L18)`);
     if (!DECIDEURS.includes(v.decideur)) erreurs.push(`${id} : décideur « ${v.decideur} » (${DECIDEURS.join(', ')})`);
     if (!v.controles) erreurs.push(`${id} : contrôles absents`);
     if (!v.possede) erreurs.push(`${id} : périmètre d'écriture absent`);
@@ -1167,14 +1182,14 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false, cr
 const TETE_VOIES = '| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |\n|---|---|---|---|---|---|---|---|---|---|---|';
 const planMission = (voies, avant = '') => `# Mission\n\n## Objectif\no\n${avant}\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n${TETE_VOIES}\n${voies.join('\n')}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`;
 
-function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false, sansControleChoix = false } = {}) {
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false, sansControleChoix = false, plafondTropHaut = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
   const etape = sansEtape ? '—' : 'reprise';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
   const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${sansControleChoix ? 'controle-commun, controle-teinte, controle-continuite' : 'controle-commun, controle-choix, controle-teinte, controle-continuite'} | brasseur | ${etape} |`;
   const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
-  fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
+  fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | ${plafondTropHaut ? 90 : 30} | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
   return f;
 }
 
@@ -1234,6 +1249,7 @@ function temoins() {
   attendu('conseil sans premier geste', verifierConseil(construireConseil(sous('k2'), { sansPremierGeste: true })).length === 0, false);
   attendu('plan routé', verifierMission(construireMissionPlan(sous('p1'))).length === 0, true);
   attendu('plan sans décideur', verifierMission(construireMissionPlan(sous('p2'), { sansDecideur: true })).length === 0, false);
+  attendu('plafond au-dessus du maxTurns de l’agent', verifierMission(construireMissionPlan(sous('p2b'), { plafondTropHaut: true })).length === 0, false);
   attendu('lot montré qui attend le brasseur', verifierMission(construireMissionPlan(sous('p3'), { attendBrasseur: true })).length === 0, false);
   attendu('maquette confiée à Sonnet', verifierMission(construireMissionPlan(sous('p4'), { interfaceSonnet: true })).length === 0, false);
   attendu('maquette relue par un relecteur générique', verifierMission(construireMissionPlan(sous('p5'), { relectureGenerique: true })).length === 0, false);
@@ -1241,6 +1257,15 @@ function temoins() {
   attendu('reprise sans variante choisie', verifierMission(construireMissionPlan(sous('p7'), { sansChoix: true })).length === 0, false);
   // Règle n° 1 (D105) : la maquette jouable du 23.10 suivait la carte au lieu de ses choix, tous contrôles verts.
   attendu('maquette montrée sans controle-choix (règle n° 1)', verifierMission(construireMissionPlan(sous('p8'), { sansControleChoix: true })).length === 0, false);
+  // L29 (03.11) : une mission de code sans état de l'art (la découpe réécrite à la main, « Tu reinvte la roue là ») est refusée.
+  const code = (nom, etat) => {
+    const f = path.join(sous(nom), 'MISSION.md');
+    fs.writeFileSync(f, planMission(['| c1 | découpe | jugement | auteur | sonnet | 60 | src/services/decoupe.ts | — | vitest | pilote | — |', '| c2 | relecture | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | c1 | c | pilote | — |'], etat));
+    return verifierMission(f).length === 0;
+  };
+  attendu("mission de code sans état de l'art (L29)", code('ea1', ''), false);
+  attendu("état de l'art sans décision (L29)", code('ea2', "\n## État de l'art\n- Problème type : scanner de document\n- Examiné : OpenCV.js\n"), false);
+  attendu("mission de code avec son état de l'art", code('ea3', "\n## État de l'art\n- Problème type : scanner de document (contour, redressement, seuil local)\n- Examiné : OpenCV.js (Apache-2.0), jscanify (MIT), Sauvola\n- Décision : OpenCV.js chargé à la demande\n"), true);
   attendu('lot en entonnoir', verifierMission(construireEntonnoir(sous('e1'))).length === 0, true);
   attendu('lot de 12, une variante par agent', verifierMission(construireEntonnoir(sous('e2'), { series: 12, parSerie: 1 })).length === 0, false);
   attendu('éventail trop étroit', verifierMission(construireEntonnoir(sous('e3'), { series: 2, parSerie: 4 })).length === 0, false);

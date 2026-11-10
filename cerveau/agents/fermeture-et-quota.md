@@ -2,7 +2,7 @@
 name: fermeture-et-quota
 description: Fermer une issue dès qu'elle est utilisable sans bloquant (mineurs en sous-issues) ; travailler jusqu'aux paliers de quota, sessions neuves au-delà de 450 k.
 type: agents
-maj: 2026-10-26
+maj: 2026-11-09
 sources: mémoire locale affinee-fermeture-et-quota.md ; work/finalisation-tickets-2026-10-08/mission-orchestrateur.md ; veille/STOP (absent de ce worktree)
 ---
 
@@ -15,9 +15,11 @@ Choix de l'utilisateur, 2026-10-12 (« Fait en sorte de fixer ce mécanisme ») 
 - Découper les zones trop grosses en lots menés jusqu'à la fermeture.
 - Relancer en session neuve (`--new` depuis le handoff) toute sous-session au-delà d'environ 450 k tokens.
 - Quand toutes les issues d'une épopée sont fermées, une session indépendante fait une passe complète de bout en bout (vrai Chrome 390/1280, émulateurs, suite complète, build). Pour chaque bloquant : rouvrir l'issue ou créer une sous-issue, corriger seulement celles-là, refaire une passe, jusqu'à une passe propre. Ensuite seulement, fermer l'épopée.
-- Semaine (26.10, ses mots) : « stop que à 98 pour les sous agent et 99, tu mets en place l'arrêt ». Donc **aucun nouvel agent dès 98 %**, et **arrêt propre à 99 %** (état de reprise complet, commit, push). L'ancienne règle des 80 % est retirée. Mesurer par `get_usage` avant chaque lancement, jamais déduire le niveau d'une phrase : le 26.10, « À 99% d'usage hebdo fait attention » a été lu comme un état actuel, alors que le quota était à 89 %.
+- Semaine (02.11, ses mots, remplace le 26.10) : « À 90% d'usage hebdo, terminé tes tâches ». Dès 90 % (tous modèles), le pilote termine et ferme : rien de neuf, état de reprise écrit, commit. Avant (26.10) : « stop que à 98 pour les sous agent et 99, tu mets en place l'arrêt ». Donc **aucun nouvel agent dès 98 %**, et **arrêt propre à 99 %** (état de reprise complet, commit, push). L'ancienne règle des 80 % est retirée. Mesurer par `get_usage` avant chaque lancement, jamais déduire le niveau d'une phrase : le 26.10, « À 99% d'usage hebdo fait attention » a été lu comme un état actuel, alors que le quota était à 89 %.
 - Ne jamais mettre en pause sous 95 % de la fenêtre 5 h : de 80 à 95 %, on continue l'engagé ; à 98 %, arrêt propre. L'utilisateur a réagi vivement à une pause à 89 %.
 
 Détail actuel : section « Mécanismes d'accélération » de `work/finalisation-tickets-2026-10-08/mission-orchestrateur.md`.
+
+- Mesure (09.11) : `node scripts/agents/jetons.mjs [heures]` lit les transcripts et signale, par session, sorties d'outil > 8 000 car., erreurs, appels répétés (code 1 au-delà des plafonds) ; la session de suivi le joue à chaque lot et alerte la session fautive. Registre : `bugs-auto.mjs` (hook Stop) pose « corrigé » depuis les commits « ID : … », et « déployé » avec `--deploye <sha>`.
 
 Voir [[autonomie-decisions]] et (leçon L11).

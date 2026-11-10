@@ -22,7 +22,7 @@ import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 const RECEIPT = { driveFileId: 'drive-1', fileName: '2026-03-12 Fournisseur A MB-1.pdf', bytes: 9, sha256: 'a'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026' };
 const scan = () => ({ ok: true, model: 'rejeu', result: { documentType: 'invoice', paymentEvidence: 'paid', vendor: 'Fournisseur A', date: '12.03.2026', currency: 'CHF', invoiceNumber: 'MB-1',
   amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 10, category: 'brassage', subcategory: '', description: 'Achat', issues: [], fieldWarnings: [], review: { status: 'checked', findings: [], readers: 2 },
-  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'pce', amountTTC: 10, stockCategory: '' }] } });
+  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'Kg', amountTTC: 10, stockCategory: '' }] } });
 const pdf = (content: string, name: string) => {
   const file = new File([content], name, { type: 'application/pdf' });
   Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode(content).buffer });
@@ -96,13 +96,13 @@ describe('D7 : la dépense attend sa confirmation, le fichier ne change plus', (
     expect(state.scanned).toHaveBeenCalledTimes(1);
     expect(state.save).toHaveBeenCalledTimes(1);
   });
-  it('la zone de dépôt et « Joindre un justificatif » ne sont pas rendus pendant la confirmation en attente', async () => {
+  it('la zone de dépôt et « Joindre des documents » ne sont pas rendus pendant la confirmation en attente', async () => {
     state.save.mockResolvedValue({ transactionId: 'TX-test', proof: RECEIPT });
     state.confirmed.mockRejectedValueOnce(new Error('Confirmation ciblée'));
     await open();
     click(CONFIRM);
     await screen.findByRole('alert');
-    expect(screen.queryByRole('button', { name: 'Joindre un justificatif' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Joindre des documents' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Justificatif de la dépense' })).toBeNull();
   });
 });

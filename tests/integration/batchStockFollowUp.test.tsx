@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import type { Batch } from '../../src/types';
 import { BatchDetailSheet } from '../../src/ui/BatchDetailSheet';
 import { StorageService } from '../../src/services/storage';
@@ -46,7 +46,11 @@ describe('production stock reconciliation', () => {
     const stockConsumption = { appliedAt: '2026-09-01', eventId: 'brew', completedStages: ['brewday'] as const, items: [], pendingItems: [{ stockItemRef: 'H', quantity: 60, unit: 'g' }] };
     render(<BatchDetailSheet batch={base({ status: 'garde', stockAccountingVersion: 1, stockConsumption: { ...stockConsumption, completedStages: ['brewday'] } })} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Passer en « Conditionné »' }));
-    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne' }), 'remaining', false);
+    // AM n° 6 : le passage en Conditionné demande d'abord le volume conditionné ; sans lui, rien ne part.
+    expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText('Volume conditionné (L)'), { target: { value: '27,5' } });
+    fireEvent.click(within(screen.getByLabelText('Conditionnement du brassin')).getByRole('button', { name: 'Passer en « Conditionné »' }));
+    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 27.5 }), 'remaining', false);
     expect(screen.getByRole('button', { name: 'Estimer le budget de ce brassin' })).toBeInTheDocument();
   });
   it('keeps actionable stock issues visible when an attempted deduction needs review', () => {
@@ -57,7 +61,7 @@ describe('production stock reconciliation', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Le stock attend les vérifications');
   });
   it('a direct planned-to-fermentation transition follows the stock service', () => {
-    render(<BatchDetailSheet batch={base({ status: 'planifie', stockAccountingVersion: 1 })} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base({ status: 'planifie', stockAccountingVersion: 1, brewDay: { steps: [], currentIndex: 0, startedAt: 1, pitchedAt: 2 } })} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Passer en « Fermentation »' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'fermentation' }), 'brewday', false);
   });
@@ -68,17 +72,36 @@ describe('production stock reconciliation', () => {
     expect(screen.getByRole('option', { name: 'En attente d’ensemencement' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Passer en « Fermentation »' })).not.toBeInTheDocument();
     const status = screen.getByRole('combobox', { name: 'Étape du brassin' });
-    fireEvent.change(status, { target: { value: 'fermentation' } });
-    expect(screen.getByRole('status')).toHaveTextContent('consigner l’ajout réel de levure');
+    // AM 4 : la fermentation n'est même pas offerte avant l'ajout réel de levure ; la raison est écrite.
+    expect(screen.queryByRole('option', { name: 'Fermentation' })).not.toBeInTheDocument();
+    expect(screen.getByText(/consigner l’ajout réel de levure/)).toBeInTheDocument();
     expect(status).toHaveValue('planifie');
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
     fireEvent.change(status, { target: { value: 'annule' } });
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
       status: 'annule', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026', brewDay: pending.brewDay
     }));
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(pending.plannedBrewDate).toBeUndefined();
     expect(pending.brewDate).toBe('27.09.2026');
+  });
+});
+
+describe('TE-41 — le bandeau de stock n’est pas répété dans chaque rubrique', () => {
+  it.each(['tasting', 'overview'] as const)('rubrique %s : une ligne renvoie à Mesures, le bandeau complet n’y est pas', section => {
+    render(<BatchDetailSheet batch={base()} initialSection={section} onClose={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: 'Tout est déjà déstocké' })).not.toBeInTheDocument();
+    const renvoi = screen.getByRole('button', { name: /Stock à confirmer/ });
+    fireEvent.click(renvoi);
+    expect(screen.getByRole('button', { name: 'Tout est déjà déstocké' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Stock à confirmer/ })).not.toBeInTheDocument();
+  });
+  it('rubrique Mesures : le bandeau complet, une seule fois', () => {
+    render(<BatchDetailSheet batch={base()} initialSection="measurements" onClose={vi.fn()} />);
+    expect(screen.getAllByRole('button', { name: 'Tout est déjà déstocké' })).toHaveLength(1);
+    expect(screen.queryByRole('button', { name: /Stock à confirmer/ })).not.toBeInTheDocument();
   });
 });

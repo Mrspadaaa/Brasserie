@@ -1,0 +1,47 @@
+{
+  "erreurs": [],
+  "notes": {
+    "fab": [
+      "Actions rapides"
+    ],
+    "menuPlus": [
+      "🍺\nL'Affinée",
+      "Clients",
+      "Impôt bière",
+      "Prix et marges",
+      "Bord",
+      "Finances",
+      "Brassins",
+      "Stocks",
+      "Clients",
+      "Nouveau tarif\nSur cet écran",
+      "Compagnon brasseur\nTarifs",
+      "Encaisser une vente",
+      "Créer une recette"
+    ],
+    "tarif": [
+      {
+        "t": "Coût de revient",
+        "fs": "13px"
+      },
+      {
+        "t": "À renseigner",
+        "fs": "14px"
+      },
+      {
+        "t": "Marge brute",
+        "fs": "13px"
+      },
+      {
+        "t": "À renseigner",
+        "fs": "14px"
+      },
+      {
+        "t": "À renseigner",
+        "fs": "14px"
+      }
+    ],
+    "champCuve": false,
+    "atelier": []
+  }
+}

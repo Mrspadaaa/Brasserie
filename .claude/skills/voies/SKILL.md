@@ -12,6 +12,10 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    `node scripts/agents/systeme.mjs chercher <mots>`.
 2. Créer `work/missions/<AAAA-MM-JJ>-<sujet>/MISSION.md` depuis `gabarits/MISSION.md`. Une voie par
    livrable qui se vérifie seul. Les périmètres d'écriture (« Possède ») sont disjoints.
+2 bis. **État de l'art avant le code** (L29) : nommer le problème d'école, chercher (WebSearch, npm, GitHub) la
+   méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire « ## État de l'art » (problème
+   type, examiné, décision). Jamais d'algorithme connu réécrit à la main sans raison mesurée. À la deuxième
+   rustine sur un même module, revenir ici.
 3. Choisir le niveau de chaque voie :
    - **mécanique → `executant` (Haiku)** : lire, extraire, convertir au gabarit, lancer contrôles,
      tests, captures, régénérer ;
@@ -67,6 +71,9 @@ Par voie, `voies/<id>/VOIE.md` (gabarit `gabarits/VOIE.md`) et `voies/<id>/GATES
 gabarit `gabarits/GATES.md`). Chaque critère a une commande qui peut échouer ; une sortie décisive
 (`… OK`) ; un témoin négatif quand le contrôle est nouveau (L13). Passer chaque chemin cité par Glob
 (L09). Recopier dans VOIE.md les exigences transversales et les acquis concernés (L05, L06).
+Ce qu'il verra se prouve par la vision (D343) : le critère décisif est le test d'écran du critique sur de vraies pièces
+(`.claude/agents/critique.md`, mode « Test d'écran »), pas un test unitaire ; Vitest garde les règles de calcul, un test par
+règle, sans doublon ; peu de fixtures. Avant tout déploiement : `node scripts/agents/controle-avant-deploiement.mjs <sha>` (D342).
 Contrôler le format : `node .claude/skills/unlazy/scripts/gate-lint.mjs voies/<id>/GATES.md` → LINT OK.
 L'approbation des commandes (écrites par le pilote lui-même) se fait au premier
 `systeme.mjs voies … --approuver`.

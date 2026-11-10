@@ -1,0 +1,57 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED"
+  ],
+  "bloques": [
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)"
+  ],
+  "captures": [
+    "l6-loupe-1280-clair",
+    "l6b-loupe-issue-1280-clair",
+    "m3-loupe-1280-clair",
+    "m3b-loupe-issue-1280-clair",
+    "l6-loupe-1280-cave",
+    "l6b-loupe-issue-1280-cave",
+    "m3-loupe-1280-cave",
+    "m3b-loupe-issue-1280-cave"
+  ],
+  "notes": {
+    "l6-1280-clair": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "m3-1280-clair": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicé recherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "l6-1280-cave": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "m3-1280-cave": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicé recherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    }
+  }
+}

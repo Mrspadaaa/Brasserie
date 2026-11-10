@@ -1,0 +1,423 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+ [31m❯[39m tests/unit/depense/lecture-d/flux.test.ts [2m([22m[2m25 tests[22m[2m | [22m[31m20 failed[39m[2m)[22m[33m 17027[2mms[22m[39m
+[31m   [31m×[31m 1 — le morceau provisoire arrive avant le final[2m > [22monProvisoire reçoit un ScanOutcome provisoire qui porte le jeton, puis le final est rendu[39m[33m 1008[2mms[22m[39m
+[31m     → expected [] to have a length of 1 but got +0[39m
+[31m   [31m×[31m 1 — le morceau provisoire arrive avant le final[2m > [22mla charge envoyée est celle d'aujourd'hui (file, tier fast), et le flux est demandé avec un signal[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading '0')[39m
+[31m   [31m×[31m 1 — le morceau provisoire arrive avant le final[2m > [22mun onProvisoire qui lève ne change pas le final[39m[32m 2[2mms[22m[39m
+[31m     → expected { …(5) } to match object { ok: true, documentHash: 'h1' }
+(4 matching properties omitted from actual)[39m
+[31m   [31m×[31m 1 — le morceau provisoire arrive avant le final[2m > [22mun morceau mal formé ou d'une autre étape est ignoré, sans erreur[39m[32m 1[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m 1b (C5) — un final seul n'appelle jamais onProvisoire[2m > [22mrangProvisoire et provisoireJeton, sans morceau : le final est rendu tel quel[39m[32m 1[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m 1c — le signal de l'écran coupe le flux[2m > [22mun signal levé pendant l'attente rend ok:false, sans exception, et lève le signal du flux[39m[33m 1001[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+   [32m✓[39m 1c — le signal de l'écran coupe le flux[2m > [22mun signal déjà levé avant l'envoi ne lance aucun flux[32m 1[2mms[22m[39m
+[31m   [31m×[31m 2 — un flux fermé sans résultat rend ok:false[2m > [22mle flux se ferme, `data` ne se résout jamais (401, 429, 503 sans corps SSE) : une erreur, pas une attente sans fin[39m[32m 0[2mms[22m[39m
+[31m     → expected 'Cannot read properties of undefined (…' to match /sans réponse/[39m
+[31m   [31m×[31m 2 — un flux fermé sans résultat rend ok:false[2m > [22mmême après un provisoire : l'écran garde ses valeurs et reçoit une erreur[39m[32m 0[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+[31m   [31m×[31m 2 — un flux fermé sans résultat rend ok:false[2m > [22mune erreur du flux (message « error » du serveur, réseau tombé) passe par humanize[39m[32m 1[2mms[22m[39m
+[31m     → expected { …(5) } to match object { ok: false, …(1) }
+(3 matching properties omitted from actual)[39m
+[31m   [31m×[31m 2 — un flux fermé sans résultat rend ok:false[2m > [22m`stream()` lui-même qui échoue (jeton, réseau) rend ok:false[39m[32m 0[2mms[22m[39m
+[31m     → expected 'Cannot read properties of undefined (…' to match /Session expirée/[39m
+[31m   [31m×[31m 3 — le délai du client[2m > [22mabandonne à AI_CLIENT_TIMEOUT_MS (150 s) quand rien n'arrive, et lève le signal du flux[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be false // Object.is equality[39m
+[31m   [31m×[31m 3 — le délai du client[2m > [22mun final arrivé à temps n'arme plus aucun minuteur[39m[33m 15003[2mms[22m[39m
+[31m     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+   [32m✓[39m 4 — un serveur qui n'envoie aucun morceau rend le final seul, comme A[2m > [22mle final est le même que celui de `run` : mêmes champs, onProvisoire jamais appelé[32m 1[2mms[22m[39m
+   [32m✓[39m 4 — un serveur qui n'envoie aucun morceau rend le final seul, comme A[2m > [22msans option, scanDocument garde l'appel d'aujourd'hui (callable simple), aucun flux[32m 0[2mms[22m[39m
+[31m   [31m×[31m 4 — un serveur qui n'envoie aucun morceau rend le final seul, comme A[2m > [22mun callable sans `.stream` (SDK ancien) retombe sur l'appel simple[39m[32m 0[2mms[22m[39m
+[31m     → AiClient.runFlux is not a function[39m
+[31m   [31m×[31m 5 — ok:false après un provisoire est rendu tel quel[2m > [22mle serveur répond ok:false (IA en pause, budget) : le message du serveur, et le provisoire a bien été délivré[39m[32m 1[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+[31m   [31m×[31m 5 — ok:false après un provisoire est rendu tel quel[2m > [22mune réponse sans `data` mais ok:true est une lecture indisponible, pas une lecture vide[39m[32m 0[2mms[22m[39m
+[31m     → expected 'Cannot read properties of undefined (…' to match /Lecture indisponible/[39m
+[31m   [31m×[31m 6 — rangProvisoire et provisoireJeton traversent normalizeResult[2m > [22mun rang entier, null (ligne ajoutée par la 3.8) et le jeton sont gardés[39m[32m 1[2mms[22m[39m
+[31m     → expected [ undefined, undefined, undefined ] to deeply equal [ +0, 1, null ][39m
+[31m   [31m×[31m 6 — rangProvisoire et provisoireJeton traversent normalizeResult[2m > [22mun rang absent ou invalide n'est jamais fabriqué : la clé n'existe pas, et null reste null[39m[32m 0[2mms[22m[39m
+[31m     → expected [ false, false, false, false, …(2) ] to deeply equal [ false, false, false, false, …(2) ][39m
+   [32m✓[39m 6 — rangProvisoire et provisoireJeton traversent normalizeResult[2m > [22mun ancien résultat sort sans aucune des deux clés[32m 0[2mms[22m[39m
+[31m   [31m×[31m 7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mle final porte pages === N : lecture admise, pagesLues posé ; la charge est `files`[39m[32m 1[2mms[22m[39m
+[31m     → expected { proofDataUrl: '', …(4) } to match object { ok: true, pagesLues: 2, …(1) }
+(3 matching properties omitted from actual)[39m
+[31m   [31m×[31m 7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mun final sans pages (ou pages différent de N) reste « pas encore disponible », même après un morceau[39m[32m 1[2mms[22m[39m
+[31m     → expected { proofDataUrl: '', …(4) } to match object { ok: false, …(1) }
+(3 matching properties omitted from actual)[39m
+[31m   [31m×[31m 7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mun morceau qui dit un autre nombre de pages ne pose pas pagesLues[39m[32m 0[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'pagesLues')[39m
+   [32m✓[39m 7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22msans option, scanPages garde l'appel d'aujourd'hui[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 20 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1 — le morceau provisoire arrive avant le final[2m > [22monProvisoire reçoit un ScanOutcome provisoire qui porte le jeton, puis le final est rendu
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m69:41[22m[39m
+    [90m 67| [39m    const lecturePromise = GeminiScannerService.scanDocument(p1, 'fast…
+    [90m 68| [39m      [33m.[39m[34mthen[39m(o [33m=>[39m { ordre[33m.[39m[34mpush[39m([32m'final'[39m)[33m;[39m [35mreturn[39m o[33m;[39m })[33m;[39m
+    [90m 69| [39m    [35mawait[39m vi[33m.[39m[34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(recu)[33m.[39m[34mtoHaveLength[39m([34m1[39m))[33m;[39m
+    [90m   | [39m                                        [31m^[39m
+    [90m 70| [39m    // Le final n'existe pas encore : le provisoire est bien arrivé se…
+    [90m 71| [39m    [34mexpect[39m(ordre)[33m.[39m[34mtoEqual[39m([[32m'provisoire'[39m])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1 — le morceau provisoire arrive avant le final[2m > [22mla charge envoyée est celle d'aujourd'hui (file, tier fast), et le flux est demandé avec un signal
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading '0')[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m90:51[22m[39m
+    [90m 88| [39m    [35mconst[39m signaux [33m=[39m [34minstaller[39m({ resultat[33m:[39m [34mfinal[39m([33mFINAL[39m) })[33m;[39m
+    [90m 89| [39m    await GeminiScannerService.scanDocument(p1, 'fast', { onProvisoire…
+    [90m 90| [39m    [35mconst[39m charge [33m=[39m mocked[33m.[39mcall[33m.[39mstream[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m0[39m][33m;[39m
+    [90m   | [39m                                                  [31m^[39m
+    [90m 91| [39m    expect(charge).toMatchObject({ task: 'scanInvoice', tier: 'fast' }…
+    [90m 92| [39m    [34mexpect[39m(charge[33m.[39mfile)[33m.[39m[34mtoMatchObject[39m({ mimeType[33m:[39m [32m'image/jpeg'[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1 — le morceau provisoire arrive avant le final[2m > [22mun onProvisoire qui lève ne change pas le final
+[31m[1mAssertionError[22m: expected { …(5) } to match object { ok: true, documentHash: 'h1' }
+(4 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "documentHash": "h1",[39m
+[32m-   "ok": true,[39m
+[31m+   "ok": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m102:20[22m[39m
+    [90m100| [39m    [34minstaller[39m({ messages[33m:[39m [[34mmorceau[39m()][33m,[39m resultat[33m:[39m [34mfinal[39m([33mFINAL[39m) })[33m;[39m
+    [90m101| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m102| [39m    [34mexpect[39m(sortie)[33m.[39m[34mtoMatchObject[39m({ ok[33m:[39m [35mtrue[39m[33m,[39m documentHash[33m:[39m [32m'h1'[39m })[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m103| [39m    [34mexpect[39m(sortie[33m.[39mresult[33m![39m[33m.[39mitems)[33m.[39m[34mtoHaveLength[39m([34m3[39m)[33m;[39m
+    [90m104| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1 — le morceau provisoire arrive avant le final[2m > [22mun morceau mal formé ou d'une autre étape est ignoré, sans erreur
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m111:23[22m[39m
+    [90m109| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m110| [39m    [34mexpect[39m(onProvisoire)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m111| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m112| [39m  })[33m;[39m
+    [90m113| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1b (C5) — un final seul n'appelle jamais onProvisoire[2m > [22mrangProvisoire et provisoireJeton, sans morceau : le final est rendu tel quel
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m121:23[22m[39m
+    [90m119| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m120| [39m    [34mexpect[39m(onProvisoire)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m121| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m122| [39m    [34mexpect[39m(sortie[33m.[39mresult[33m![39m[33m.[39mprovisoireJeton)[33m.[39m[34mtoBe[39m([32m'j1'[39m)[33m;[39m
+    [90m123| [39m    expect(sortie.result!.items.map(i => i.rangProvisoire)).toEqual([0…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m1c — le signal de l'écran coupe le flux[2m > [22mun signal levé pendant l'attente rend ok:false, sans exception, et lève le signal du flux
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m133:49[22m[39m
+    [90m131| [39m    [35mconst[39m onProvisoire [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m132| [39m    const attente = GeminiScannerService.scanDocument(p1, 'fast', { on…
+    [90m133| [39m    await vi.waitFor(() => expect(onProvisoire).toHaveBeenCalledTimes(…
+    [90m   | [39m                                                [31m^[39m
+    [90m134| [39m    ecran[33m.[39m[34mabort[39m()[33m;[39m
+    [90m135| [39m    [35mconst[39m sortie [33m=[39m [35mawait[39m attente[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m2 — un flux fermé sans résultat rend ok:false[2m > [22mle flux se ferme, `data` ne se résout jamais (401, 429, 503 sans corps SSE) : une erreur, pas une attente sans fin
+[31m[1mAssertionError[22m: expected 'Cannot read properties of undefined (…' to match /sans réponse/[39m
+
+[32m- Expected:[39m 
+/sans réponse/
+
+[31m+ Received:[39m 
+"Cannot read properties of undefined (reading 'data')"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m156:26[22m[39m
+    [90m154| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m155| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m156| [39m    [34mexpect[39m(sortie[33m.[39merror)[33m.[39m[34mtoMatch[39m([36m/sans réponse/[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m157| [39m    [34mexpect[39m(sortie[33m.[39mresult)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m158| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m2 — un flux fermé sans résultat rend ok:false[2m > [22mmême après un provisoire : l'écran garde ses valeurs et reçoit une erreur
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m164:26[22m[39m
+    [90m162| [39m    [35mconst[39m onProvisoire [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m163| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m164| [39m    [34mexpect[39m(onProvisoire)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m165| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m166| [39m    [34mexpect[39m(sortie[33m.[39merror)[33m.[39m[34mtoMatch[39m([36m/sans réponse/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m2 — un flux fermé sans résultat rend ok:false[2m > [22mune erreur du flux (message « error » du serveur, réseau tombé) passe par humanize
+[31m[1mAssertionError[22m: expected { …(5) } to match object { ok: false, …(1) }
+(3 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": "Service IA momentanément indisponible.",[39m
+[31m+   "error": "Cannot read properties of undefined (reading 'data')",[39m
+[2m    "ok": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m176:20[22m[39m
+    [90m174| [39m    })[33m;[39m
+    [90m175| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m176| [39m    expect(sortie).toMatchObject({ ok: false, error: 'Service IA momen…
+    [90m   | [39m                   [31m^[39m
+    [90m177| [39m  })[33m;[39m
+    [90m178| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m2 — un flux fermé sans résultat rend ok:false[2m > [22m`stream()` lui-même qui échoue (jeton, réseau) rend ok:false
+[31m[1mAssertionError[22m: expected 'Cannot read properties of undefined (…' to match /Session expirée/[39m
+
+[32m- Expected:[39m 
+/Session expirée/
+
+[31m+ Received:[39m 
+"Cannot read properties of undefined (reading 'data')"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m183:26[22m[39m
+    [90m181| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m182| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m183| [39m    [34mexpect[39m(sortie[33m.[39merror)[33m.[39m[34mtoMatch[39m([36m/Session expirée/[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m184| [39m  })[33m;[39m
+    [90m185| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m3 — le délai du client[2m > [22mabandonne à AI_CLIENT_TIMEOUT_MS (150 s) quand rien n'arrive, et lève le signal du flux
+[31m[1mAssertionError[22m: expected undefined to be false // Object.is equality[39m
+
+[32m- Expected:[39m 
+false
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m194:33[22m[39m
+    [90m192| [39m    const attente = GeminiScannerService.scanDocument(p1, 'fast', { on…
+    [90m193| [39m    [35mawait[39m vi[33m.[39m[34madvanceTimersByTimeAsync[39m([33mAI_CLIENT_TIMEOUT_MS[39m [33m-[39m [34m1_000[39m)[33m;[39m
+    [90m194| [39m    [34mexpect[39m(signaux[[34m0[39m][33m?.[39maborted)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                [31m^[39m
+    [90m195| [39m    [35mlet[39m fini [33m=[39m [35mfalse[39m[33m;[39m
+    [90m196| [39m    [35mvoid[39m attente[33m.[39m[34mthen[39m(() [33m=>[39m { fini [33m=[39m [35mtrue[39m[33m;[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m3 — le délai du client[2m > [22mun final arrivé à temps n'arme plus aucun minuteur
+[31m[1mError[22m: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m208:3[22m[39m
+    [90m206| [39m  })[33m;[39m
+    [90m207| [39m
+    [90m208| [39m  it('un final arrivé à temps n\'arme plus aucun minuteur', async () =…
+    [90m   | [39m  [31m^[39m
+    [90m209| [39m    vi[33m.[39m[34museFakeTimers[39m()[33m;[39m
+    [90m210| [39m    [34minstaller[39m({ resultat[33m:[39m [34mfinal[39m([33mFINAL[39m) })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m4 — un serveur qui n'envoie aucun morceau rend le final seul, comme A[2m > [22mun callable sans `.stream` (SDK ancien) retombe sur l'appel simple
+[31m[1mTypeError[22m: AiClient.runFlux is not a function[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m243:37[22m[39m
+    [90m241| [39m    [35mtry[39m {
+    [90m242| [39m      mocked[33m.[39mcall[33m.[39m[34mmockResolvedValue[39m({ data[33m:[39m [34mfinal[39m([33mFINAL[39m) })[33m;[39m
+    [90m243| [39m      const sortie = await AiClient.runFlux({ task: 'scanInvoice', tie…
+    [90m   | [39m                                    [31m^[39m
+    [90m244| [39m      [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m245| [39m      [34mexpect[39m(mocked[33m.[39mcall)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m5 — ok:false après un provisoire est rendu tel quel[2m > [22mle serveur répond ok:false (IA en pause, budget) : le message du serveur, et le provisoire a bien été délivré
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m255:26[22m[39m
+    [90m253| [39m    [35mconst[39m onProvisoire [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m254| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m255| [39m    [34mexpect[39m(onProvisoire)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m256| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m257| [39m    [34mexpect[39m(sortie[33m.[39merror)[33m.[39m[34mtoBe[39m([32m'IA mise en pause.'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m5 — ok:false après un provisoire est rendu tel quel[2m > [22mune réponse sans `data` mais ok:true est une lecture indisponible, pas une lecture vide
+[31m[1mAssertionError[22m: expected 'Cannot read properties of undefined (…' to match /Lecture indisponible/[39m
+
+[32m- Expected:[39m 
+/Lecture indisponible/
+
+[31m+ Received:[39m 
+"Cannot read properties of undefined (reading 'data')"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m265:26[22m[39m
+    [90m263| [39m    const sortie = await GeminiScannerService.scanDocument(p1, 'fast',…
+    [90m264| [39m    [34mexpect[39m(sortie[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m265| [39m    [34mexpect[39m(sortie[33m.[39merror)[33m.[39m[34mtoMatch[39m([36m/Lecture indisponible/[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m266| [39m  })[33m;[39m
+    [90m267| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m6 — rangProvisoire et provisoireJeton traversent normalizeResult[2m > [22mun rang entier, null (ligne ajoutée par la 3.8) et le jeton sont gardés
+[31m[1mAssertionError[22m: expected [ undefined, undefined, undefined ] to deeply equal [ +0, 1, null ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[32m-   1,[39m
+[32m-   null,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m272:48[22m[39m
+    [90m270| [39m  it('un rang entier, null (ligne ajoutée par la 3.8) et le jeton sont…
+    [90m271| [39m    [35mconst[39m r [33m=[39m [33mGeminiScannerService[39m[33m.[39m[34mnormalizeResult[39m([33mFINAL[39m)[33m;[39m
+    [90m272| [39m    [34mexpect[39m(r[33m.[39mitems[33m.[39m[34mmap[39m(i [33m=>[39m i[33m.[39mrangProvisoire))[33m.[39m[34mtoEqual[39m([[34m0[39m[33m,[39m [34m1[39m[33m,[39m [35mnull[39m])[33m;[39m
+    [90m   | [39m                                               [31m^[39m
+    [90m273| [39m    [34mexpect[39m(r[33m.[39mprovisoireJeton)[33m.[39m[34mtoBe[39m([32m'j1'[39m)[33m;[39m
+    [90m274| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m6 — rangProvisoire et provisoireJeton traversent normalizeResult[2m > [22mun rang absent ou invalide n'est jamais fabriqué : la clé n'existe pas, et null reste null
+[31m[1mAssertionError[22m: expected [ false, false, false, false, …(2) ] to deeply equal [ false, false, false, false, …(2) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    false,[22m
+[2m    false,[22m
+[2m    false,[22m
+[2m    false,[22m
+[32m-   true,[39m
+[32m-   true,[39m
+[31m+   false,[39m
+[31m+   false,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m277:53[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mle final porte pages === N : lecture admise, pagesLues posé ; la charge est `files`
+[31m[1mAssertionError[22m: expected { proofDataUrl: '', …(4) } to match object { ok: true, pagesLues: 2, …(1) }
+(3 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "fileName": "2 pages",[22m
+[32m-   "ok": true,[39m
+[32m-   "pagesLues": 2,[39m
+[31m+   "ok": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m293:20[22m[39m
+    [90m291| [39m    [35mconst[39m recu[33m:[39m [33mScanOutcome[39m[] [33m=[39m [][33m;[39m
+    [90m292| [39m    const sortie = await GeminiScannerService.scanPages([p1, p2], { on…
+    [90m293| [39m    expect(sortie).toMatchObject({ ok: true, pagesLues: 2, fileName: '…
+    [90m   | [39m                   [31m^[39m
+    [90m294| [39m    [34mexpect[39m(recu)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m295| [39m    expect(recu[0]).toMatchObject({ ok: true, jeton: 'j1', pagesLues: …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mun final sans pages (ou pages différent de N) reste « pas encore disponible », même après un morceau
+[31m[1mAssertionError[22m: expected { proofDataUrl: '', …(4) } to match object { ok: false, …(1) }
+(3 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": "La lecture de plusieurs pages n’est pas encore disponible sur le serveur. Lis-les avec « Un document », ou saisis à la main.",[39m
+[31m+   "error": "Cannot read properties of undefined (reading 'data')",[39m
+[2m    "ok": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m304:20[22m[39m
+    [90m302| [39m    [34minstaller[39m({ messages[33m:[39m [[34mmorceau[39m()][33m,[39m resultat[33m:[39m [34mfinal[39m([33mFINAL[39m) })[33m;[39m
+    [90m303| [39m    const sortie = await GeminiScannerService.scanPages([p1, p2], { on…
+    [90m304| [39m    expect(sortie).toMatchObject({ ok: false, error: PLUSIEURS_PAGES_I…
+    [90m   | [39m                   [31m^[39m
+    [90m305| [39m    [34minstaller[39m({ resultat[33m:[39m [34mfinal[39m([33mFINAL[39m[33m,[39m { pages[33m:[39m [34m1[39m }) })[33m;[39m
+    [90m306| [39m    expect((await GeminiScannerService.scanPages([p1, p2], { onProviso…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/20]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/flux.test.ts[2m > [22m7 — plusieurs pages : la règle pages === N s'applique au final[2m > [22mun morceau qui dit un autre nombre de pages ne pose pas pagesLues
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'pagesLues')[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/flux.test.ts:[2m313:20[22m[39m
+    [90m311| [39m    [35mconst[39m recu[33m:[39m [33mScanOutcome[39m[] [33m=[39m [][33m;[39m
+    [90m312| [39m    await GeminiScannerService.scanPages([p1, p2], { onProvisoire: o =…
+    [90m313| [39m    [34mexpect[39m(recu[[34m0[39m][33m.[39mpagesLues)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m314| [39m  })[33m;[39m
+    [90m315| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/20]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m20 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m 14:01:36
+[2m   Duration [22m 18.53s[2m (transform 108ms, setup 188ms, collect 102ms, tests 17.03s, environment 1.01s, prepare 73ms)[22m
+

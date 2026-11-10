@@ -120,7 +120,7 @@ export function WaterAcidity({
                   ? `Alcalinité résiduelle — repère pour les malts ≈ ${formatDecimal(alkaliGoal.target)} ppm (`
                   : `Alcalinité résiduelle — repère ${formatDecimal(raBand.min)} à ${formatDecimal(raBand.max)} ppm (`}
                 {alkaliGoal.limitedByGrist
-                  ? "estimation du mash"
+                  ? "estimation de l’empâtage"
                   : raBand.from === "facture"
                     ? "d’après ta facture"
                     : raBand.label}

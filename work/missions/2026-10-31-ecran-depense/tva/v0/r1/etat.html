@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r1 — TVA : un troisième mode de Synthèse, en chiffres (froide, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--tvar1-page:#FFFFFF;--tvar1-pan:#F5F5F5;--tvar1-sur:#EBEBEB;--tvar1-bord:#DDDDDD;--tvar1-bordm:#BFBFBF;--tvar1-t2:#666666;--tvar1-t1:#333333;--tvar1-t0:#111111;
+--tvar1-fin:#1F64A3;--tvar1-finf:#E6EEF6;--tvar1-red:#3F6B2E;--tvar1-nor:#1F64A3;--tvar1-att:#7F5B10;--tvar1-attf:#FBF3E2;--tvar1-attb:#9C7020;
+--tvar1-sans:"Source Sans 3",system-ui,sans-serif;--tvar1-mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--tvar1-page);color:var(--tvar1-t1);font-family:var(--tvar1-sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+a{color:var(--tvar1-fin);text-decoration:none}
+::selection{background:#CFE0F1}
+:focus-visible{outline:2px solid var(--tvar1-t0);outline-offset:2px}
+.tvar1-m{font-family:var(--tvar1-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+svg{flex:none}
+/* En-tête de l'app, repris tel quel */
+.tvar1-hd{position:sticky;top:0;z-index:6;background:var(--tvar1-page);border-bottom:1px solid var(--tvar1-bord);height:44px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.tvar1-logo{width:32px;height:32px;border-radius:10px;background:#111;display:flex;align-items:center;justify-content:center}
+.tvar1-hd b{flex:1;font-size:16px;font-weight:600;color:var(--tvar1-t0)}
+.tvar1-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--tvar1-t1)}
+.tvar1-ib.tvar1-f{background:var(--tvar1-sur);border:1px solid var(--tvar1-bordm)}
+.tvar1-main{max-width:872px;margin:0 auto;padding:0 12px 76px}
+.tvar1-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--tvar1-bordm)}
+.tvar1-tabs a{height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--tvar1-t1);border-bottom:2px solid transparent}
+.tvar1-tabs a[aria-current]{color:var(--tvar1-fin);border-bottom-color:var(--tvar1-fin);background:#F1F5FA;font-weight:600}
+.tvar1-tete{display:flex;align-items:center;gap:6px;min-height:44px;border-bottom:1px solid var(--tvar1-bord)}
+.tvar1-tete h1{font-size:16px;font-weight:600;color:var(--tvar1-t0)}
+.tvar1-seg{display:flex;gap:2px;margin-left:auto}
+.tvar1-seg button{height:28px;padding:0 9px;border-radius:10px;font-size:14px;color:var(--tvar1-t1);border:1px solid transparent}
+.tvar1-seg button[aria-pressed="true"]{background:var(--tvar1-sur);border-color:var(--tvar1-bordm);color:var(--tvar1-fin);font-weight:600}
+/* Hors ligne */
+.tvar1-hl{display:none;align-items:center;gap:6px;min-height:28px;margin-top:6px;padding:0 8px;border-radius:10px;background:var(--tvar1-pan);border:1px solid var(--tvar1-bord);font-size:13px;color:var(--tvar1-t1)}
+.tvar1-off .tvar1-hl{display:flex}
+/* Période : le pas d'année des Opérations */
+.tvar1-per{display:flex;align-items:center;gap:6px;min-height:44px}
+.tvar1-per .tvar1-an{height:32px;min-width:96px;padding:0 12px;border-radius:10px;border:1px solid var(--tvar1-bordm);background:var(--tvar1-pan);display:flex;align-items:center;justify-content:center;font-family:var(--tvar1-mono);font-size:16px;color:var(--tvar1-t0)}
+.tvar1-per button.tvar1-pas{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--tvar1-t1)}
+.tvar1-per button.tvar1-pas:disabled{color:var(--tvar1-bordm);cursor:default}
+.tvar1-per .tvar1-cpt{margin-left:auto;font-size:13px;color:var(--tvar1-t2)}
+/* La réponse */
+.tvar1-rep{border-top:1px solid var(--tvar1-bord)}
+.tvar1-row{display:flex;align-items:center;gap:8px;min-height:44px;border-bottom:1px solid var(--tvar1-bord);width:100%}
+.tvar1-row .tvar1-l{flex:1;min-width:0;font-size:14px;color:var(--tvar1-t1)}
+.tvar1-non{font-size:16px;font-weight:700;color:var(--tvar1-t0)}
+.tvar1-reg{display:inline-flex;align-items:center;gap:2px;height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--tvar1-bordm);font-size:13px;color:var(--tvar1-fin)}
+.tvar1-tot{padding:8px 0;align-items:flex-end}
+.tvar1-tot .tvar1-l{align-self:center;font-weight:600;color:var(--tvar1-t0)}
+.tvar1-big{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:flex-end;gap:4px 6px;max-width:260px}
+.tvar1-big .tvar1-am{font-size:28px;font-weight:600;color:var(--tvar1-t0);line-height:1}
+.tvar1-big .tvar1-am small{font-size:14px;font-weight:500;margin-left:4px}
+.tvar1-mn{font-size:13px;color:var(--tvar1-t2)}
+.tvar1-chips{flex-basis:100%}
+.tvar1-chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tvar1-inc{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:10px;border:1px dashed var(--tvar1-attb);color:var(--tvar1-att);font-size:13px;font-weight:600;background:repeating-linear-gradient(135deg,var(--tvar1-attf) 0 5px,#FFFFFF 5px 9px)}
+.tvar1-dou{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:10px;border:1px dashed var(--tvar1-attb);color:var(--tvar1-att);font-size:13px;font-weight:600;background:var(--tvar1-attf)}
+/* Les taux */
+.tvar1-taux .tvar1-row{cursor:pointer}
+.tvar1-taux .tvar1-row[aria-pressed="true"]{background:var(--tvar1-pan)}
+.tvar1-pa{display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:24px;padding:0 6px;border-radius:10px;font-family:var(--tvar1-mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.tvar1-p26{background:var(--tvar1-red);color:#FFFFFF}
+.tvar1-p81{background:var(--tvar1-nor);color:#FFFFFF}
+.tvar1-pin{border:1px dashed var(--tvar1-attb);color:var(--tvar1-att);background:repeating-linear-gradient(135deg,var(--tvar1-attf) 0 5px,#FFFFFF 5px 9px)}
+.tvar1-pde{border:1px solid var(--tvar1-t0);color:var(--tvar1-t0);background:#FFFFFF}
+.tvar1-row .tvar1-n{font-size:13px;color:var(--tvar1-t2);min-width:72px;text-align:right;white-space:nowrap}
+.tvar1-row .tvar1-v{min-width:84px;text-align:right;font-size:14px;color:var(--tvar1-t0)}
+.tvar1-row .tvar1-v.tvar1-tir{color:var(--tvar1-att)}
+.tvar1-chev{color:var(--tvar1-t2)}
+.tvar1-sous{display:block;font-size:12px;color:var(--tvar1-t2)}
+.tvar1-am.tvar1-flou{color:var(--tvar1-att);text-decoration:underline dashed 2px;text-underline-offset:6px}
+.tvar1-apart{margin-top:8px;font-size:13px;font-weight:600;color:var(--tvar1-t2);padding:4px 0}
+/* Si j'étais assujetti */
+.tvar1-si summary{list-style:none;display:flex;align-items:center;min-height:40px;font-size:14px;font-weight:600;color:var(--tvar1-t0);cursor:pointer;border-bottom:1px solid var(--tvar1-bord)}
+.tvar1-si summary::-webkit-details-marker{display:none}
+.tvar1-si summary span{flex:1}
+.tvar1-si[open] summary svg{transform:rotate(180deg)}
+.tvar1-si .tvar1-sib{display:flex;flex-direction:column}
+.tvar1-si .tvar1-sib a{display:flex;align-items:center;gap:6px;min-height:40px;border-bottom:1px solid var(--tvar1-bord);font-size:14px}
+.tvar1-si .tvar1-sib a span{flex:1}
+.tvar1-si .tvar1-sib a em{font-style:normal;font-size:12px;color:var(--tvar1-t2)}
+/* Les dépenses */
+.tvar1-lh{display:flex;align-items:center;gap:6px;min-height:36px;margin-top:10px;font-size:14px;font-weight:600;color:var(--tvar1-t0);border-bottom:1px solid var(--tvar1-bordm)}
+.tvar1-lh span{flex:1}
+.tvar1-lh button{font-size:13px;font-weight:400;color:var(--tvar1-fin);height:28px;padding:0 4px}
+.tvar1-li{display:grid;grid-template-columns:44px 1fr auto 60px;align-items:center;gap:6px;min-height:36px;border-bottom:1px solid var(--tvar1-bord);font-size:13px;width:100%}
+.tvar1-li .tvar1-d{color:var(--tvar1-t2)}
+.tvar1-li .tvar1-f{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tvar1-t1)}
+.tvar1-li .tvar1-f small{display:block;font-size:12px;color:var(--tvar1-t2)}
+.tvar1-li .tvar1-tt{text-align:right;color:var(--tvar1-t0)}
+.tvar1-li .tvar1-pa{min-width:60px;height:22px;font-size:12px}
+.tvar1-li.tvar1-ldou{background:var(--tvar1-attf)}
+.tvar1-vide{padding:16px 0;font-size:14px;color:var(--tvar1-t1);display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--tvar1-bord)}
+.tvar1-vide a{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+.tvar1-comp{display:flex;align-items:center;gap:8px;min-height:44px;margin-top:10px;border-top:1px solid var(--tvar1-bord);font-size:14px;color:var(--tvar1-t0)}
+.tvar1-comp span{flex:1;font-weight:600}
+.tvar1-comp em{font-style:normal;font-size:13px;color:var(--tvar1-t2)}
+/* La feuille « choisie à la saisie » : la tuile ① TVA de p3c-3 */
+.tvar1-voile{display:none;position:fixed;inset:0;background:rgba(17,17,17,.35);z-index:20}
+.tvar1-feuille{display:none;position:fixed;left:0;right:0;bottom:0;max-width:872px;margin:0 auto;background:#FFFFFF;border-radius:24px 24px 0 0;z-index:21;padding:8px 12px 16px}
+.tvar1-ouvre .tvar1-voile,.tvar1-ouvre .tvar1-feuille{display:block}
+.tvar1-fh{display:flex;align-items:center;gap:8px;min-height:40px}
+.tvar1-fh b{flex:1;font-size:16px;color:var(--tvar1-t0)}
+.tvar1-fs{font-size:13px;color:var(--tvar1-t2);margin-bottom:8px}
+.tvar1-tuile{border:2px solid var(--tvar1-t0);border-radius:16px;padding:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.tvar1-tuile div{border:1px solid var(--tvar1-bord);border-radius:10px;padding:6px 8px}
+.tvar1-tuile div b{display:block;font-family:var(--tvar1-mono);font-size:22px;color:var(--tvar1-t0)}
+.tvar1-tuile div span{font-size:12px;color:var(--tvar1-t2)}
+.tvar1-tuile div.tvar1-pris{background:#EAF2E6;border-color:#6E9B5B}
+.tvar1-tuile div.tvar1-pris span{color:var(--tvar1-red);font-weight:600}
+.tvar1-calc{grid-column:1/-1;font-size:12px;color:var(--tvar1-t1);border:0!important;padding:2px 0 0!important}
+.tvar1-fa{display:flex;align-items:center;gap:6px;min-height:40px;margin-top:8px;font-size:14px;font-weight:600}
+/* Barre du bas, reprise telle quelle */
+.tvar1-nav{position:fixed;left:0;right:0;bottom:0;height:52px;background:#F7F7F7;border-top:1px solid var(--tvar1-bord);display:flex;justify-content:center;padding-right:76px;z-index:8}
+.tvar1-nav a{flex:0 1 62px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--tvar1-t1)}
+.tvar1-nav a[aria-current]{background:#E1E9F2;color:var(--tvar1-t0);box-shadow:inset 0 2px 0 var(--tvar1-fin)}
+.tvar1-fab{position:fixed;right:8px;bottom:4px;width:64px;height:44px;border-radius:22px;background:#111;color:#FFF;display:flex;align-items:center;justify-content:center;z-index:9}
+@media (min-width:900px){.tvar1-nav{padding-right:0}.tvar1-nav a{flex-basis:90px}.tvar1-fab{right:12px}}
+</style></head>
+<body>
+<header class="tvar1-hd">
+  <span class="tvar1-logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7a3 3 0 0 1 3-3 3 3 0 0 1 3 1 2.5 2.5 0 0 1 3 2"/></svg></span>
+  <b>L'Affinée</b>
+  <button class="tvar1-ib" type="button" aria-label="Thème sombre"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+  <button class="tvar1-ib tvar1-f" type="button" aria-label="Rechercher"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="tvar1-ib tvar1-f" type="button" aria-label="Compagnon brasseur"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18l2-4a7 7 0 1 1 3 3z"/></svg></button>
+</header>
+<main class="tvar1-main" id="tvar1-racine">
+  <nav class="tvar1-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <div class="tvar1-tete">
+    <h1>Situation financière</h1>
+    <span class="tvar1-ib" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span>
+    <div class="tvar1-seg" role="group" aria-label="Lecture de la synthèse"><button type="button" aria-pressed="false">Situation</button><button type="button" aria-pressed="false">Coûts</button><button type="button" aria-pressed="true" data-booster="mode-tva">TVA</button></div>
+  </div>
+  <div class="tvar1-hl" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 9.1 4.5 4.5 0 0 0 7 18z"/><path d="M3 3l18 18"/></svg><span>Hors ligne, chiffres du <span class="tvar1-m">31.10 18:42</span></span></div>
+  <div class="tvar1-per">
+    <button class="tvar1-pas" type="button" id="tvar1-moins" aria-label="Année précédente" data-booster="periode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <span class="tvar1-an" id="tvar1-an">2026</span>
+    <button class="tvar1-pas" type="button" id="tvar1-plus" aria-label="Année suivante"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <span class="tvar1-cpt" id="tvar1-cpt"></span>
+  </div>
+  <section id="tvar1-vue"></section>
+</main>
+<div class="tvar1-voile" id="tvar1-voile"></div>
+<section class="tvar1-feuille" role="dialog" aria-label="TVA choisie à la saisie" id="tvar1-feuille"></section>
+<nav class="tvar1-nav" aria-label="Navigation">
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="6" height="7" rx="1"/><rect x="14" y="4" width="6" height="4" rx="1"/><rect x="4" y="15" width="6" height="5" rx="1"/><rect x="14" y="12" width="6" height="8" rx="1"/></svg>Bord</a>
+  <a href="#" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7l11-3v3"/><path d="M15 13h5v3h-5z"/></svg>Finances</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A4F1E" stroke-width="1.8" stroke-linejoin="round"><path d="M6 8h9v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M9 11v6M12 11v6M6 8a3 3 0 0 1 4.5-2.5A3 3 0 0 1 15 8"/></svg>Brassins</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l4 2.3v4.6L12 12 8 9.9V5.3z"/><path d="M8 12l4 2.3v4.6L8 21l-4-2.1v-4.6z"/><path d="M16 12l4 2.3v4.6L16 21l-4-2.1v-4.6z"/></svg>Stocks</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a5 5 0 0 1 3 6"/></svg>Clients</a>
+</nav>
+<button class="tvar1-fab" data-commun="plus" type="button" aria-label="Nouvelle opération"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>
+(function () {
+  // Données fictives. [date, fournisseur, catégorie, montant TTC, taux (null = TVA inconnue), brassin]
+  var A2026 = [
+    ['12.01','Malterie Fictive SA','Malts',612.40,2.6,21],['12.01','Houblons du Jura Sàrl','Houblons',184.20,2.6,21],
+    ['28.01','Quincaillerie Démo','Matériel',42.80,null,0],['03.03','Droguerie Démo SA','Nettoyage',96.50,8.1,0],
+    ['18.03','Malterie Fictive SA','Malts',548.90,2.6,22],['18.03','Houblons du Jura Sàrl','Houblons',226.80,2.6,22],
+    ['09.04','Marché Fictif','Autres frais',31.20,null,0],['07.05','Matériel Exemple SA','Matériel',389.00,8.1,0],
+    ['22.05','Malterie Fictive SA','Malts',701.30,2.6,23],['22.05','Levures Démo Sàrl','Levures',64.00,2.6,23],
+    ['30.06','Malterie Fictive SA','Malts',88.00,null,23],['14.07','Droguerie Démo SA','Nettoyage',118.40,8.1,0],
+    ['02.09','Malterie Fictive SA','Malts',655.10,2.6,24],['02.09','Houblons du Jura Sàrl','Houblons',241.60,2.6,24],
+    ['05.10','Malterie Fictive SA','Malts',590.00,2.6,25],['05.10','Houblons du Jura Sàrl','Houblons',198.40,2.6,25],
+    ['16.10','Matériel Exemple SA','Matériel',274.00,8.1,0],['21.10','Droguerie Démo SA','Nettoyage',54.90,8.1,0],
+    ['27.10','Quincaillerie Démo','Matériel',23.50,null,0]
+  ];
+  var A2025 = [
+    ['04.02','Malterie Fictive SA','Malts',486.00,null,12],['04.02','Houblons du Jura Sàrl','Houblons',158.40,null,12],
+    ['19.02','Droguerie Démo SA','Nettoyage',72.30,null,0],['11.03','Matériel Exemple SA','Matériel',845.00,null,0],
+    ['02.04','Malterie Fictive SA','Malts',512.80,null,13],['02.04','Houblons du Jura Sàrl','Houblons',201.10,null,13],
+    ['24.04','Quincaillerie Démo','Matériel',38.60,null,0],['15.05','Malterie Fictive SA','Malts',476.20,null,14],
+    ['15.05','Levures Démo Sàrl','Levures',58.00,null,14],['03.06','Droguerie Démo SA','Nettoyage',91.40,null,0],
+    ['26.06','Malterie Fictive SA','Malts',530.90,null,15],['26.06','Houblons du Jura Sàrl','Houblons',187.70,null,15],
+    ['14.07','Marché Fictif','Autres frais',27.50,null,0],['06.08','Malterie Fictive SA','Malts',498.30,null,16],
+    ['06.08','Houblons du Jura Sàrl','Houblons',214.00,null,16],['28.08','Matériel Exemple SA','Matériel',129.00,null,0],
+    ['17.09','Malterie Fictive SA','Malts',521.60,null,17],['17.09','Houblons du Jura Sàrl','Houblons',176.90,null,17],
+    ['02.10','Droguerie Démo SA','Nettoyage',64.80,null,0],['21.10','Quincaillerie Démo','Matériel',19.90,null,0],
+    ['29.10','Levures Démo Sàrl','Levures',61.00,null,17],
+    ['14.11','Malterie Fictive SA','Malts',520.00,2.6,18],['14.11','Houblons du Jura Sàrl','Houblons',176.00,2.6,18],
+    ['02.12','Droguerie Démo SA','Nettoyage',88.40,8.1,0],['10.12','Malterie Fictive SA','Malts',498.00,2.6,19],
+    ['10.12','Houblons du Jura Sàrl','Houblons',152.30,2.6,19],['19.12','Matériel Exemple SA','Matériel',212.00,8.1,0]
+  ];
+  var ANNEES = { 2024: [], 2025: A2025, 2026: A2026 };
+  var ETRANGERE = { d: '08.06', f: 'Inox Demo GmbH', q: 'Matériel', mont: '1 180,00', dev: 'EUR', mwst: '188,40' };
+  var DOUTE = { i: 13, lu: '4,21', somme: '6,12' };
+
+  var q = new URLSearchParams(location.search);
+  var etat = q.get('etat') || 'annee';
+  var annee = etat === 'inconnues' ? 2025 : etat === 'vide' ? 2024 : 2026;
+  var filtre = null;
+  var racine = document.body;
+  if (etat === 'horsligne') racine.classList.add('tvar1-off');
+
+  function fmt(n) {
+    var s = n.toFixed(2).split('.');
+    return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + s[1];
+  }
+  function nd(n) { return n + (n > 1 ? ' dépenses' : ' dépense'); }
+  function tva(l) { return l[4] == null ? null : Math.round(l[3] * l[4] / (100 + l[4]) * 100) / 100; }
+  function pastille(t, txt) {
+    var c = t === 2.6 ? 'tvar1-p26' : t === 8.1 ? 'tvar1-p81' : t === 'de' ? 'tvar1-pde' : 'tvar1-pin';
+    return '<span class="tvar1-pa ' + c + '">' + txt + '</span>';
+  }
+  var chev = '<svg class="tvar1-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+  var bas = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  var sortie = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5714" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+
+  function rendre() {
+    var lignes = ANNEES[annee];
+    document.getElementById('tvar1-an').textContent = String(annee);
+    document.getElementById('tvar1-moins').disabled = annee <= 2024;
+    document.getElementById('tvar1-plus').disabled = annee >= 2026;
+    var douteuse = etat === 'douteuse' && annee === 2026;
+    var etr = etat === 'etrangere' && annee === 2026;
+    var g = { 2.6: { n: 0, v: 0 }, 8.1: { n: 0, v: 0 }, inc: { n: 0, ttc: 0 } };
+    lignes.forEach(function (l) {
+      var v = tva(l);
+      if (v == null) { g.inc.n++; g.inc.ttc += l[3]; } else { g[l[4]].n++; g[l[4]].v += v; }
+    });
+    var total = g[2.6].v + g[8.1].v;
+    var ttcConnu = lignes.reduce(function (s, l) { return l[4] == null ? s : s + l[3]; }, 0);
+    document.getElementById('tvar1-cpt').textContent = lignes.length ? lignes.length + (etr ? 1 : 0) + ' dépenses' : '';
+    var h = [];
+    h.push('<div class="tvar1-rep">');
+    h.push('<div class="tvar1-row"><span class="tvar1-l">Récupérer la TVA</span><span class="tvar1-non">Non</span>' +
+      '<a class="tvar1-reg" href="#reglages" data-booster="statut-reglage">Non assujetti' + chev + '</a></div>');
+    if (!lignes.length) {
+      h.push('<div class="tvar1-row tvar1-tot"><span class="tvar1-l">TVA payée</span><span class="tvar1-big"><span class="tvar1-am tvar1-m">0,00<small>CHF</small></span></span></div>');
+      h.push('<div class="tvar1-vide"><span>Aucune dépense en ' + annee + '.</span><a href="#nouvelle">Saisir une dépense' + chev + '</a></div>');
+      h.push('</div>');
+      document.getElementById('tvar1-vue').innerHTML = h.join('');
+      brancher();
+      return;
+    }
+    var chips = [];
+    if (g.inc.n) chips.push('<button type="button" class="tvar1-inc" data-filtre="inc" data-booster="inconnues">+' + g.inc.n + ' inconnues' + chev + '</button>');
+    if (douteuse) chips.push('<button type="button" class="tvar1-dou" data-ouvre="doute" data-booster="douteuse">1 choisie à la saisie' + chev + '</button>');
+    h.push('<div class="tvar1-row tvar1-tot"><span class="tvar1-l">TVA payée</span><span class="tvar1-big">' +
+      (g.inc.n ? '<span class="tvar1-mn">au moins</span>' : '') +
+      '<span class="tvar1-am tvar1-m' + (g.inc.ttc > (g.inc.ttc + ttcConnu) / 2 ? ' tvar1-flou' : '') + '">' + fmt(total) + '<small>CHF</small></span>' +
+      '<span class="tvar1-chips">' + chips.join('') + '</span></span></div>');
+    h.push('</div>');
+    h.push('<div class="tvar1-taux">');
+    [[2.6, 'réduit'], [8.1, 'normal']].forEach(function (r) {
+      var x = g[r[0]];
+      if (!x.n) return;
+      var txt = String(r[0]).replace('.', ',') + ' %';
+      h.push('<button type="button" class="tvar1-row" data-filtre="' + r[0] + '" aria-pressed="' + (filtre === String(r[0])) + '" data-booster="filtre-taux">' +
+        pastille(r[0], txt) + '<span class="tvar1-l">' + r[1] + '</span><span class="tvar1-n">' + nd(x.n) + '</span>' +
+        '<span class="tvar1-v tvar1-m">' + fmt(x.v) + '</span>' + chev + '</button>');
+    });
+    if (g.inc.n) {
+      h.push('<button type="button" class="tvar1-row" data-filtre="inc" aria-pressed="' + (filtre === 'inc') + '">' +
+        pastille(null, '?') + '<span class="tvar1-l">inconnue<small class="tvar1-sous"><span class="tvar1-m">' + fmt(g.inc.ttc) + ' CHF</span> payés</small></span><span class="tvar1-n">' + nd(g.inc.n) + '</span>' +
+        '<span class="tvar1-v tvar1-m tvar1-tir">—</span>' + chev + '</button>');
+    }
+    if (etr) {
+      h.push('<div class="tvar1-apart">À part, pas de TVA suisse</div>');
+      h.push('<button type="button" class="tvar1-row" data-filtre="de" aria-pressed="' + (filtre === 'de') + '" data-booster="etranger">' +
+        pastille('de', 'DE') + '<span class="tvar1-l">MwSt 19 %</span><span class="tvar1-n">' + nd(1) + '</span>' +
+        '<span class="tvar1-v tvar1-m">' + ETRANGERE.mwst + ' ' + ETRANGERE.dev + '</span>' + chev + '</button>');
+    }
+    h.push('</div>');
+    h.push('<details class="tvar1-si"' + (etat === 'si' ? ' open' : '') + ' data-booster="si-assujetti"><summary><span>Si j\'étais assujetti</span>' + bas + '</summary><div class="tvar1-sib">' +
+      '<a href="https://www.estv.admin.ch" target="_blank" rel="noopener"><span>Assujettissement, seuil de <span class="tvar1-m">100 000 CHF</span></span><em>AFC</em>' + sortie + '</a>' +
+      '<a href="#fiduciaire"><span>Demander à ma fiduciaire</span>' + chev + '</a></div></details>');
+    // Les dépenses de la période (lignes : hors du compte de mots)
+    var vis = lignes.map(function (l, i) { return { l: l, i: i }; });
+    if (etr) vis.push({ etr: true });
+    vis = vis.filter(function (o) {
+      if (!filtre) return true;
+      if (o.etr) return filtre === 'de';
+      if (filtre === 'inc') return o.l[4] == null;
+      return String(o.l[4]) === filtre;
+    }).reverse();
+    var titre = filtre ? (filtre === 'inc' ? 'TVA inconnue' : filtre === 'de' ? 'Étranger' : 'À ' + filtre.replace('.', ',') + ' %') : 'Dépenses ' + annee;
+    h.push('<div class="tvar1-lh"><span>' + titre + '</span>' + (filtre ? '<button type="button" data-filtre="">Toutes</button>' : '') + '</div>');
+    h.push('<div data-mots="lignes">');
+    vis.forEach(function (o) {
+      if (o.etr) {
+        h.push('<div class="tvar1-li"><span class="tvar1-d tvar1-m">' + ETRANGERE.d + '</span><span class="tvar1-f">' + ETRANGERE.f + '<small>' + ETRANGERE.mont + ' ' + ETRANGERE.dev + '</small></span>' +
+          pastille('de', 'DE 19 %') + '<span class="tvar1-tt tvar1-m">à part</span></div>');
+        return;
+      }
+      var l = o.l, v = tva(l), dou = douteuse && o.i === DOUTE.i;
+      h.push('<button type="button" class="tvar1-li' + (dou ? ' tvar1-ldou' : '') + '"' + (dou ? ' data-ouvre="doute"' : '') + '><span class="tvar1-d tvar1-m">' + l[0] + '</span>' +
+        '<span class="tvar1-f">' + l[1] + '<small>' + l[2] + ' · <span class="tvar1-m">' + fmt(l[3]) + '</span></small></span>' +
+        (v == null ? pastille(null, '?') : pastille(l[4], String(l[4]).replace('.', ',') + ' %')) +
+        '<span class="tvar1-tt tvar1-m">' + (v == null ? '—' : (dou ? '<span class="tvar1-dou" style="height:22px;padding:0 4px">' + fmt(v) + '</span>' : fmt(v))) + '</span></button>');
+    });
+    h.push('</div>');
+    h.push('<a class="tvar1-comp" href="#compagnon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg><span>Comprendre ma TVA</span><em>Compagnon brasseur</em>' + chev + '</a>');
+    document.getElementById('tvar1-vue').innerHTML = h.join('');
+    brancher();
+  }
+  function feuille() {
+    var l = A2026[DOUTE.i];
+    document.getElementById('tvar1-feuille').innerHTML =
+      '<div class="tvar1-fh"><b>' + l[1] + '</b><span class="tvar1-m">' + l[0] + '.2026</span>' +
+      '<button class="tvar1-ib" type="button" data-ferme="1" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<div class="tvar1-fs">La TVA lue se contredit ; compté : la valeur choisie à la saisie.</div>' +
+      '<div class="tvar1-tuile"><div><b>' + DOUTE.lu + '</b><span>colonne MWST · lu</span></div><div class="tvar1-pris"><b>' + DOUTE.somme + '</b><span>2,6 % de ' + fmt(l[3]) + ' · choisie</span></div>' +
+      '<div><b>' + fmt(l[3]) + '</b><span>imprimé TTC</span></div><div class="tvar1-calc">' + fmt(l[3]) + ' × 2,6 / 102,6 = ' + DOUTE.somme + ' ≠ ' + DOUTE.lu + ' imprimé</div></div>' +
+      '<a class="tvar1-fa" href="#facture">Ouvrir la facture' + chev + '</a>';
+  }
+  function brancher() {
+    document.querySelectorAll('#tvar1-vue [data-filtre]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-filtre');
+        filtre = f && filtre !== f ? f : null;
+        rendre();
+      });
+    });
+    document.querySelectorAll('#tvar1-vue [data-ouvre]').forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); feuille(); racine.classList.add('tvar1-ouvre'); });
+    });
+  }
+  document.getElementById('tvar1-voile').addEventListener('click', function () { racine.classList.remove('tvar1-ouvre'); });
+  document.getElementById('tvar1-feuille').addEventListener('click', function (e) {
+    if (e.target.closest('[data-ferme]')) racine.classList.remove('tvar1-ouvre');
+  });
+  document.getElementById('tvar1-moins').addEventListener('click', function () { if (annee > 2024) { annee--; filtre = null; rendre(); } });
+  document.getElementById('tvar1-plus').addEventListener('click', function () { if (annee < 2026) { annee++; filtre = null; rendre(); } });
+  rendre();
+})();
+</script>
+</body></html>

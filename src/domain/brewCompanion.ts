@@ -1,4 +1,5 @@
 import { recipeIbu } from './hopBitterness';
+import { formatAmount } from '../../functions/src/brewAmount';
 import { yeastRecipeBoilOg } from './yeastProjection';
 import {
   AcidId,
@@ -26,6 +27,7 @@ import { styleByCode, styleFromTargetIons } from './waterStyles';
 import { Units } from '../services/units';
 import { isMash } from './brewDay';
 import { BrewingMath } from '../services/brewingMath';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** Projection Tinseth, au volume et à l'OG de la recette. Les heures cochées
  * prolongent le contact des houblons déjà versés quand la fin est repoussée. */
@@ -236,7 +238,7 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
       title: `Fin · ${s.label}`,
       body:
         isMash(s.id) && next
-          ? `Monter à ${next.tempC} °C pour ${next.label}.`
+          ? `Monter à ${nombreFr(next.tempC, 1)} °C pour ${next.label}.`
           : 'Temps de contact terminé. Vérifie la cuve.'
     });
   });
@@ -267,7 +269,7 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
         at,
         stepId: items[0].stepId,
         title: 'Ajout en cuve',
-        body: items.map((i) => `${actualAmount(i, state) ?? i.planned} ${i.unit} ${i.name}`).join(' · ')
+        body: items.map((i) => `${formatAmount(actualAmount(i, state) ?? i.planned, i.unit)} ${i.name}`).join(' · ')
       });
     alarms.push({
       id: 'boil-end',
@@ -412,7 +414,7 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   const lactate = lactateInBeer(lactic, recipe.volumeL);
   if (lactate > LACTATE_TASTE_THRESHOLD)
     warnings.push(
-      `Lactique : ${lactate.toFixed(2)} g/L de bière, au-dessus du repère de goût ${LACTATE_TASTE_THRESHOLD}.`
+      `Lactique : ${nombreFr(lactate, 2)} g/L de bière, au-dessus du repère de goût ${LACTATE_TASTE_THRESHOLD}.`
     );
   const outside = style
     ? (['ca', 'mg', 'na', 'so4', 'cl'] as const).filter(

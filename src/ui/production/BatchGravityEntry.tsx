@@ -4,6 +4,12 @@ import React, { useState } from 'react';
 import type { Batch } from '../../types';
 import { catalogDate } from '../../domain/productionCatalog';
 import { parseDecimal } from '../numericInput';
+import { GRAVITY_CEILING, GRAVITY_FLOOR } from '../../domain/gravityBounds';
+import { nombreFr } from '../../domain/nombreAffiche';
+
+/** Température d'un échantillon de moût en fermentation : de la chambre froide (−5 °C) au moût encore chaud d'un départ (45 °C). */
+const TEMP_MIN_C = -5;
+const TEMP_MAX_C = 45;
 
 type Reading = NonNullable<Batch['gravityLog']>[number];
 const today = () => {
@@ -33,8 +39,14 @@ export function BatchGravityEntry({
       temp = parseDecimal(temperature),
       timestamp = catalogDate(date),
       brewed = catalogDate(actualBrewDate(batch));
-    if (value === null || value < 0.9 || value > 1.3) {
-      setError('Saisis une densité entre 0,900 et 1,300, par exemple 1,024.');
+    // AM-40 : mêmes limites physiques que l'OG et la FG (`gravityBounds`), pas 0,900 à 1,300.
+    const gravity = value;
+    if (gravity === null || gravity < GRAVITY_FLOOR || gravity > GRAVITY_CEILING) {
+      setError(`Saisis une densité entre ${GRAVITY_FLOOR.toFixed(3).replace('.', ',')} et ${GRAVITY_CEILING.toFixed(3).replace('.', ',')}, par exemple 1,024.`);
+      return;
+    }
+    if (temperature.trim() && temp !== null && (temp < TEMP_MIN_C || temp > TEMP_MAX_C)) {
+      setError(`Saisis une température entre ${TEMP_MIN_C} et ${nombreFr(TEMP_MAX_C, 1)} °C (celle de l’échantillon), ou laisse ce champ vide.`);
       return;
     }
     if (
@@ -49,7 +61,7 @@ export function BatchGravityEntry({
       setError('Saisis la température mesurée, ou laisse ce champ vide.');
       return;
     }
-    onAdd({ date, sg: value, ...(temp !== null ? { tempC: temp } : {}) });
+    onAdd({ date, sg: gravity, ...(temp !== null ? { tempC: temp } : {}) });
     setSg('');
     setTemperature('');
     setError('');

@@ -1,0 +1,2 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+src/services/aiClient.ts(188,57): error TS2347: Untyped function calls may not accept type arguments.

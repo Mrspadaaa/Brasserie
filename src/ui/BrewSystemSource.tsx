@@ -1,6 +1,7 @@
 import type { Batch } from '../types';
 import { useEffect, useRef } from 'react';
 import { BrewSystemFeedback } from './BrewSystemFeedback';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const STAGES = {
   preboil: 'Avant ébullition',
@@ -15,7 +16,7 @@ export function BrewSystemSource({batch,onClose}:{batch:Batch;onClose:()=>void})
   useEffect(()=>{ref.current?.scrollIntoView?.({block:'start'});ref.current?.focus({preventScroll:true});},[batch.id]);
   return <section ref={ref} tabIndex={-1} className="brew-system" aria-label={`Mesures sources ${batch.id}`}>
     <div className="brew-system-heading"><h3>{batch.id} · {batch.name}</h3><button type="button" className="brew-system-button" onClick={onClose}>Fermer les mesures</button></div>
-    <p className="brew-system-intro">Profil figé : {batch.recipeSnapshot?.brewhouse?.name ?? 'non renseigné'} · {batch.recipeSnapshot?.volumeL ?? batch.volumeL} L prévus.</p>
+    <p className="brew-system-intro">Profil figé : {batch.recipeSnapshot?.brewhouse?.name ?? 'non renseigné'} · {nombreFr(batch.recipeSnapshot?.volumeL ?? batch.volumeL, 1)} L prévus.</p>
     {batch.recipeSnapshot && batch.brewDay && <BrewSystemFeedback recipe={batch.recipeSnapshot} state={batch.brewDay} compact />}
     <details className="brew-system-details" open><summary>Relevés consignés</summary>
       <ul className="brew-system-sources">{(batch.brewDay?.readings ?? []).map((r,i)=><li key={r.id ?? i}>

@@ -1,0 +1,47 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [],
+  "bloques": [],
+  "captures": [
+    "l6-loupe-390-clair-simulee",
+    "l6b-loupe-issue-390-clair-simulee",
+    "m3-loupe-390-clair-simulee",
+    "m3b-loupe-issue-390-clair-simulee",
+    "l6-loupe-390-cave-simulee",
+    "l6b-loupe-issue-390-cave-simulee",
+    "m3-loupe-390-cave-simulee",
+    "m3b-loupe-issue-390-cave-simulee"
+  ],
+  "notes": {
+    "l6-390-clair": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "moyenne (simulé) à confirmerRetenirÉcarter"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "m3-390-clair": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicérecherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicénégatif (simulé) à confirmerRetenirÉcarterphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "l6-390-cave": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "moyenne (simulé) à confirmerRetenirÉcarter"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "m3-390-cave": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicérecherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicénégatif (simulé) à confirmerRetenirÉcarterphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    }
+  }
+}

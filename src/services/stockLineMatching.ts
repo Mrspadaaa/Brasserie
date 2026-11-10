@@ -1,7 +1,9 @@
 import { normalize } from './search';
 import { Units } from './units';
 import type { StockItem } from '../types';
+import { porteDonneeLue, valeurLueDe } from '../domain/stock/ficheValeurs';
 import { CEREALS, hasHopWord, hasYeastWord, inferNature, isReadableUnit, knownCategoriesOf, pieceUnitsEquivalent, PRODUCT_DESCRIPTORS, readProductLabel, weightKey, type Nature, type ProductIdentity } from './ingredientIdentity';
+import { categorieDeFamille, familleDe } from '../ui/depense/familles';
 import { connuesUnSeulCote, ecartsEntre, lireEbc, lireOrigine, nomPropre, sansBis, sansDonneesDeFiche, type Contexte, type DonneesProduit, type Ecart } from '../domain/stock/donnees';
 
 /**
@@ -27,12 +29,24 @@ export const PROPOSAL_WEIGHT_MARK = '#poids';
 
 /** Catégories de Stocks, dans l'ordre d'affichage : l'app les compare à l'identique (fiche, levure, brassage). */
 export const STOCK_CATEGORIES = ['Malt', 'Houblon', 'Levure', 'Sucre', 'Additif', 'Emballage', 'CIP alcalin', 'CIP acide', 'Désinfectant', 'Détergent', 'Sols', 'EPI', 'Consommable'];
-/** La lecture écrit souvent au pluriel, en minuscules ou en allemand (catalogues des malteries). */
+/**
+ * La lecture écrit souvent au pluriel, en minuscules, en allemand, en anglais ou en italien (D271 : les factures viennent en quatre langues).
+ * Clés sans accent ni casse (`normalize`) ; la valeur est toujours le nom français de `STOCK_CATEGORIES`. Aucun nom de pièce ici : des mots de famille.
+ * Absents exprès : « nettoyage / Reinigung / cleaning / pulizia » (trop large : détergent, désinfectant ou CIP ?) — la nature de la ligne tranche alors.
+ */
 const SYNONYMS = new Map(Object.entries({
-  malts: 'Malt', malz: 'Malt', cereale: 'Malt', cereales: 'Malt',
-  houblons: 'Houblon', hopfen: 'Houblon',
-  levures: 'Levure', hefe: 'Levure',
-  sucres: 'Sucre', additifs: 'Additif', emballages: 'Emballage', consommables: 'Consommable'
+  malts: 'Malt', malz: 'Malt', malze: 'Malt', cereale: 'Malt', cereales: 'Malt', cereal: 'Malt', cereals: 'Malt',
+  grain: 'Malt', grains: 'Malt', getreide: 'Malt', malto: 'Malt', malti: 'Malt', cereali: 'Malt',
+  malzextrakt: 'Malt', malzextrakte: 'Malt', 'malt extract': 'Malt', 'extrait de malt': 'Malt', 'estratto di malto': 'Malt',
+  houblons: 'Houblon', hopfen: 'Houblon', hop: 'Houblon', hops: 'Houblon', pellet: 'Houblon', pellets: 'Houblon', hopfenpellets: 'Houblon',
+  luppolo: 'Houblon', luppoli: 'Houblon',
+  levures: 'Levure', hefe: 'Levure', hefen: 'Levure', brauhefe: 'Levure', trockenhefe: 'Levure', yeast: 'Levure', yeasts: 'Levure', lievito: 'Levure', lieviti: 'Levure',
+  sucres: 'Sucre', zucker: 'Sucre', sugar: 'Sucre', sugars: 'Sucre', zucchero: 'Sucre', zuccheri: 'Sucre',
+  additifs: 'Additif', additive: 'Additif', additives: 'Additif', additivo: 'Additif', additivi: 'Additif', zusatz: 'Additif', zusatze: 'Additif', zusatzstoff: 'Additif', zusatzstoffe: 'Additif',
+  emballages: 'Emballage', packaging: 'Emballage', verpackung: 'Emballage', verpackungen: 'Emballage', imballaggio: 'Emballage', imballaggi: 'Emballage',
+  consommables: 'Consommable', consumable: 'Consommable', consumables: 'Consommable', verbrauchsmaterial: 'Consommable', 'materiale di consumo': 'Consommable', 'materiali di consumo': 'Consommable',
+  detergents: 'Détergent', detergent: 'Détergent', reinigungsmittel: 'Détergent', detersivo: 'Détergent', detersivi: 'Détergent',
+  desinfectants: 'Désinfectant', disinfectant: 'Désinfectant', disinfectants: 'Désinfectant', desinfektionsmittel: 'Désinfectant', disinfettante: 'Désinfectant', disinfettanti: 'Désinfectant'
 }));
 
 /**
@@ -45,6 +59,19 @@ export function canonicalStockCategory(value: string | undefined): string {
   const key = normalize(text).replace(/\s+/g, ' ');
   if (!key) return text;
   return STOCK_CATEGORIES.find(category => normalize(category) === key) ?? SYNONYMS.get(key) ?? text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * Catégorie d'un article NEUF (k7, D271, D273d) : la catégorie lue quand c'est une de `STOCK_CATEGORIES` (après synonymes), jamais un mot étranger
+ * ou inconnu (« yeast », « other_stock », « Grain »). Sinon la famille que l'écran donne à la ligne (`familleDe`, la MÊME décision que la bande
+ * affichée) : un sirop candi lu « other_stock » est un Sucre, un emballage au libellé de houblon un Emballage. « Divers » seulement quand la famille est « Autres ».
+ */
+export function categorieArticleNeuf(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'> & { categorie?: string }): string {
+  const lue = canonicalStockCategory(l.stockCategory);
+  if (STOCK_CATEGORIES.includes(lue)) return lue;
+  const contexte = contexteDe({ ...l, stockCategory: undefined });
+  // D306 : `categorie` (la catégorie de la dépense) est facultative ; les appelants d'aujourd'hui ne la passent pas (une ligne de Rénovation n'a pas d'article neuf).
+  return categorieDeFamille(familleDe({ nom: l.description, kind: l.kind, contexte, categorie: l.categorie }), l.description);
 }
 
 const sameSet = (a: string[], b: string[]) => { const A = new Set(a), B = new Set(b); return A.size === B.size && [...A].every(w => B.has(w)); };
@@ -62,13 +89,23 @@ const KIND_REFUSES: Record<string, string[]> = {
 
 /** Au-delà de ce poids imprimé, une ligne de levure n'est plus un sachet : face à un article en sachets sans poids, rien (s1b n° 4). */
 export const SACHET_MAX_G = 50;
-/** Écritures d'une unité que `Units` ne reconnaît pas, ramenées au kg ou au L pour l'appariement seulement (`Units` ne change pas). */
-const UNIT_SPELLINGS: Record<string, string> = { kilo: 'kg', kilos: 'kg', kilogramm: 'kg', kilogramme: 'kg', kilogrammes: 'kg', liter: 'l', liters: 'l', litre: 'l', litres: 'l' };
+/**
+ * Écritures d'une unité que `Units` ne reconnaît pas, en quatre langues (D271, D273f), ramenées au g, au kg ou au L pour la Dépense seulement
+ * (`Units` ne change pas, s1b n° 2).
+ */
+const UNIT_SPELLINGS: Record<string, string> = {
+  gramm: 'g', gramme: 'g', grammes: 'g', gram: 'g', grams: 'g', grammo: 'g', grammi: 'g', gr: 'g',
+  kilo: 'kg', kilos: 'kg', kilogramm: 'kg', kilogramme: 'kg', kilogrammes: 'kg', kilogram: 'kg', kilograms: 'kg', chilo: 'kg', chilogrammo: 'kg', chilogrammi: 'kg',
+  liter: 'l', liters: 'l', litre: 'l', litres: 'l', litro: 'l', litri: 'l',
+};
+const unitSpelling = (unit: string) => (unit ?? '').trim().toLowerCase().replace(/[.\s]+$/, '');
 /** Unité telle que l'appariement la compare : minuscules, sans point final (« Kg. » → « kg »), « Kilo » → « kg », « litres » → « l ». */
 export const linkUnit = (unit: string) => {
-  const key = (unit ?? '').trim().toLowerCase().replace(/[.\s]+$/, '');
+  const key = unitSpelling(unit);
   return UNIT_SPELLINGS[key] ?? key;
 };
+/** L'unité à l'écran : une écriture longue (« Gramm », « Kilogramm », « Liter ») devient son symbole ; toute autre reste telle qu'imprimée (« Kg », « Stk »). */
+export const shortUnit = (unit: string) => UNIT_SPELLINGS[unitSpelling(unit)] ?? (unit ?? '').trim();
 
 /** `vendor` : fournisseur du justificatif ; ses mots dans un nom d'article ne le rendent pas plus précis que la ligne. */
 export interface StockLineInput {
@@ -79,6 +116,13 @@ export interface StockLineInput {
   reference?: string;
   /** Nature de la ligne de la feuille : `ingredient`, `packaging`, `cleaning`. */
   kind?: string;
+  /**
+   * Voie n1-nom-fr (choix B) : le nom FRANÇAIS propre de la ligne (traduction de la base imprimée, `nomFrPropre`). Il ne prête que ses mots au nom : α, récolte, poids, unité
+   * et nature restent lus sur `description` (le libellé imprimé). Absent : rien ne change.
+   */
+  nomFr?: string;
+  /** Le nom IMPRIMÉ lu (base, sans options), gardé à la lecture : il se compare aux `nomsFacture` des articles (lien sûr). Absent : aucun nom gardé n'est consulté. */
+  nomLu?: string;
 }
 export interface StockLineMatch {
   item: StockItem;
@@ -142,7 +186,7 @@ function categorieCompatible(line: Pick<StockLineInput, 'kind'>, nature: Nature,
 }
 
 /** Un article qui porte une donnée écrite par S6 : seul celui-là perd son « bis » dans les jetons (T5). Un « Target bis » nu, créé à la main, garde les siens. */
-const porteDonneeS6 = (item: StockItem) => item.alphaPct !== undefined || item.origin !== undefined || item.colorEbc !== undefined || item.fiche !== undefined;
+const porteDonneeS6 = porteDonneeLue;
 /**
  * L'identité d'un article du stock pour l'appariement : celle de son nom ; pour un article écrit par S6, sans son « bis » ou « bis N » final et avec
  * son origine quand le nom ne l'écrit pas (« Cascade » + origin CH ≡ « Cascade CH »). Aucun autre article ne change.
@@ -182,7 +226,27 @@ const linkUnits = (lineUnit: string, itemUnit: string, category: string): Link |
  * - un seul article doit correspondre ; sinon rien, et le brasseur choisit ou crée l'article.
  */
 export function matchStockLine(line: StockLineInput, items: StockItem[]): StockLineMatch | undefined {
-  if (!(Number(line.quantity) > 0)) return undefined;
+  // Voie n1-nom-fr : le nom imprimé (mots du libellé et noms gardés des articles), puis, si la ligne a son nom français, le nom français (ses MOTS seulement).
+  // Un seul article distinct au total → lien ; deux (ou une ambiguïté dans l'une des lectures) → rien, le brasseur choisit (jamais un lien d'office).
+  const imprime = matchSurNom(line, items);
+  const nomFr = line.nomFr?.trim();
+  const francais = nomFr ? matchSurNom(line, items, nomFr) : undefined;
+  if (imprime.ambigu || francais?.ambigu) return undefined;
+  if (imprime.chosen && francais?.chosen && imprime.chosen.item !== francais.chosen.item) return undefined;
+  return imprime.chosen ?? francais?.chosen;
+}
+
+/** Ce qu'une lecture du nom a trouvé : l'article, ou une ambiguïté (les articles qui correspondent tous), ou rien. */
+interface Trouve { chosen?: StockLineMatch; ambigu: boolean; candidats: StockItem[] }
+const RIEN: Trouve = { ambigu: false, candidats: [] };
+
+/**
+ * Le corps de `matchStockLine` sur UN nom : le libellé imprimé (`nom` absent) ou le nom français (`nom`, mots seulement : α, récolte, poids du sachet,
+ * malté, unité et `deduced` restent lus sur `line.description`, D215). Dans les deux lectures, un nom gardé de l'article (`nomsFacture`) égal au nom lu
+ * (`line.nomLu`) donne le lien sûr (`pass` 1), toutes les autres portes tenues.
+ */
+function matchSurNom(line: StockLineInput, items: StockItem[], nom?: string): Trouve {
+  if (!(Number(line.quantity) > 0)) return RIEN;
   // D214 : une unité illisible ('', '-', '?', un nombre seul) n'empêche pas la proposition et n'assouplit aucune autre règle ;
   // elle n'est jamais devinée ni recopiée depuis l'article (la feuille laisse « Unité » vide et dit « unité à préciser »).
   const unitReadable = isReadableUnit(line.unit);
@@ -192,9 +256,17 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
   const lineHop = nature.strong === 'Houblon' || hasHopWord(line.description);
   const lineYeast = nature.strong === 'Levure' || hasYeastWord(line.description);
   const vendorWords = new Set(wordsOf(line.vendor ?? ''));
-  if (!readProductLabel(line.description, { unit: lineUnit, quantity: line.quantity }).tokens.length) return undefined;
+  if (!readProductLabel(line.description, { unit: lineUnit, quantity: line.quantity }).tokens.length) return RIEN;
 
   const identityOf = identiteArticle;
+  /** Le nom lu égal à l'un des noms gardés de l'article (mots du libellé, `side: 'line'` des deux côtés) : seulement pour un article de catégorie connue (jamais un fourre-tout). */
+  const nomGardeLie = (item: StockItem, hop: boolean, yeast: boolean): boolean => {
+    const lu = line.nomLu?.trim();
+    if (!lu || !item.nomsFacture?.length || !STOCK_CATEGORIES.includes(canonicalStockCategory(item.category))) return false;
+    const options = { unit: lineUnit, quantity: line.quantity, hop, yeast, side: 'line' as const };
+    const mots = readProductLabel(lu, options).tokens;
+    return mots.length > 0 && item.nomsFacture.some(gardé => sameName(mots, readProductLabel(gardé, options).tokens));
+  };
   const contextOf = (item: StockItem) => { const category = canonicalStockCategory(item.category); return { hop: category === 'Houblon' || hasHopWord(item.name), yeast: category === 'Levure' || hasYeastWord(item.name) }; };
 
   const examine = (item: StockItem): StockLineMatch | undefined => {
@@ -207,8 +279,11 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
     const L = readProductLabel(line.description, { unit: lineUnit, quantity: line.quantity, hop, yeast, side: 'line' });
     const I = identityOf(item, hop, yeast);
     if (!L.tokens.length) return undefined;
+    // Le nom français ne prête que ses mots : jetons du nom, tout le reste (α, récolte, poids, malté) de L, le libellé imprimé.
+    const Lnom = nom ? readProductLabel(nom, { unit: lineUnit, quantity: line.quantity, hop, yeast, side: 'line' }) : L;
+    if (!Lnom.tokens.length) return undefined;
 
-    const pass = nameKinship(L, I, item, vendorWords);
+    const pass = nameKinship(Lnom, I, item, vendorWords) || (nomGardeLie(item, hop, yeast) ? 1 : 0);
     if (!pass) return undefined;
 
     // α et récolte : connues des deux côtés et différentes → rien (le brasseur choisit l'article lui-même).
@@ -243,7 +318,7 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
       if (homonym) return undefined;
     }
     return {
-      item, identity: L, pass, deduced: L.deduced,
+      item, identity: nom ? { ...L, tokens: Lnom.tokens, detail: Lnom.detail } : L, pass: pass as 1 | 2, deduced: L.deduced,
       ...(link.alias ? { unitAlias: { from: line.unit.trim(), to: item.unit.trim() } } : {}),
       ...(unitReadable ? {} : { unitMissing: true }),
       ...(weightUnconfirmed ? { weightUnconfirmed: true } : {})
@@ -253,7 +328,8 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
   const first: StockLineMatch[] = [], second: StockLineMatch[] = [];
   for (const item of items) { const match = examine(item); if (match) (match.pass === 1 ? first : second).push(match); }
   const pool = first.length ? first : second;
-  if (pool.length !== 1) return undefined;
+  if (pool.length > 1) return { ambigu: true, candidats: pool.map(match => match.item) };
+  if (pool.length !== 1) return RIEN;
   const chosen = pool[0];
   // Un conditionnement lu (« Carafa, 2 Kg ») alors que le stock décline le même nom en numéros (« Carafa 1 ») : le nombre était peut-être un numéro.
   if (chosen.identity.packSize) {
@@ -265,7 +341,7 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
       const extra = tokens.filter(token => !base.includes(token));
       return tokens.length === base.length + 1 && extra.length === 1 && /^\d+(\.\d+)?$/.test(extra[0]) && base.every(token => tokens.includes(token));
     });
-    if (sibling) return undefined;
+    if (sibling) return RIEN;
   }
   // s1b n° 9 : un nombre collé à l'unité de la ligne (« Carafa Special 2 Kg ») est une taille d'emballage, jamais un numéro d'identité.
   // Il reste comparé (doute → rien), mais il ne choisit pas entre des articles qui ne diffèrent que par leur numéro.
@@ -282,9 +358,9 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
       const tokens = identityOf(other, ctx.hop, ctx.yeast).tokens;
       return sameName(stem(tokens), stem(chosenTokens)) && !sameSet(tokens, chosenTokens);
     });
-    if (numbered) return undefined;
+    if (numbered) return RIEN;
   }
-  return chosen;
+  return { chosen, ambigu: false, candidats: [] };
 }
 
 /** Article proposé pour une ligne lue, ou rien (voir `matchStockLine`). */
@@ -306,6 +382,7 @@ export type RegleProduit =
   | { cas: 'neuf'; nom: string; ecarts: Ecart[]; voisin: StockItem; motif: 'origine' | 'bis' };
 
 const CONTEXTE_DE_CATEGORIE: Record<string, Contexte> = { Houblon: 'Houblon', Malt: 'Malt', Levure: 'Levure' };
+const NATURES_HORS_STOCK = new Set(['packaging', 'cleaning', 'equipment', 'maintenance', 'service', 'shipping', 'discount']);
 function contexteDeTexte(texte: string, categorie?: string, reference?: string): Contexte {
   const canonique = categorie ? canonicalStockCategory(categorie) : undefined;
   const nature = inferNature(texte, reference, canonique && STOCK_CATEGORIES.includes(canonique) ? canonique : undefined);
@@ -317,8 +394,13 @@ function contexteDeTexte(texte: string, categorie?: string, reference?: string):
 }
 /** Ce qu'une ligne est : houblon, malt, levure, ou autre chose (emballage, entretien, inconnu). Même lecture que s1. */
 export function contexteDe(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'>): Contexte {
-  if (l.kind === 'packaging' || l.kind === 'cleaning') return 'autre';
-  return contexteDeTexte(l.description, l.stockCategory, l.reference);
+  // D262c : une ligne que la lecture dit emballage, nettoyage, matériel, entretien, service, port ou remise n'est jamais un ingrédient : un « Hop Filter Bag » n'est pas un houblon.
+  if (NATURES_HORS_STOCK.has(l.kind ?? '')) return 'autre';
+  const contexte = contexteDeTexte(l.description, l.stockCategory, l.reference);
+  // Un ingrédient sans mot de famille (un malt sous un nom de marque) : le préfixe de la référence imprimée (MA, HO, HE) départage, à défaut de mieux.
+  // Il ne remplace jamais un mot de famille ni la catégorie lue (déjà passés ci-dessus), et seulement pour un ingrédient.
+  if (contexte === 'autre' && l.kind === 'ingredient') return CONTEXTE_DE_CATEGORIE[inferNature(l.description, l.reference).weak ?? ''] ?? 'autre';
+  return contexte;
 }
 /** Ce qu'un article est : sa catégorie d'abord, sinon les mots de son nom. */
 export function contexteDeArticle(item: Pick<StockItem, 'name' | 'category'>): Contexte {
@@ -339,14 +421,16 @@ function donneesDe(lu: ProductIdentity, brut: string, contexte: Contexte, fixe: 
 const positif = (n: number | undefined) => (typeof n === 'number' && Number.isFinite(n) && n > 0 ? n : undefined);
 
 /** Ce que le libellé d'une ligne dit : contexte, jetons de la famille (sans EBC, origine, « bis »), données comparables. */
-export function donneesDeLigne(l: StockLineInput, hop?: boolean, yeast?: boolean) {
+export function donneesDeLigne(l: StockLineInput, hop?: boolean, yeast?: boolean, nomFr?: string) {
   const contexte = contexteDe(l);
   const lineUnit = isReadableUnit(l.unit) ? linkUnit(l.unit) : undefined;
   const h = hop ?? contexte === 'Houblon', y = yeast ?? contexte === 'Levure';
   const lecture = h ? 'Houblon' as Contexte : contexte;
   const net = sansDonneesDeFiche(l.description, lecture);
   const lu = readProductLabel(net, { unit: lineUnit, quantity: l.quantity, hop: h, yeast: y, side: 'line' });
-  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, l.description, lecture, {}) };
+  // Voie n1-nom-fr : le nom français ne prête que ses mots (jetons, détail) ; les données (α, EBC, origine, récolte, poids) restent celles du libellé imprimé.
+  const mots = nomFr ? readProductLabel(sansDonneesDeFiche(nomFr, lecture), { unit: lineUnit, quantity: l.quantity, hop: h, yeast: y, side: 'line' }) : lu;
+  return { contexte, lu: nomFr ? { ...lu, tokens: mots.tokens, detail: mots.detail } : lu, jetons: mots.tokens, donnees: donneesDe(lu, l.description, lecture, {}) };
 }
 /** Ce que le nom et les champs d'un article disent : contexte, jetons de la famille, données comparables (champs de l'article d'abord, sinon son nom). */
 export function donneesDArticle(item: StockItem, hop?: boolean, yeast?: boolean) {
@@ -355,10 +439,12 @@ export function donneesDArticle(item: StockItem, hop?: boolean, yeast?: boolean)
   const lecture = h ? 'Houblon' as Contexte : contexte;
   const net = sansDonneesDeFiche(item.name, lecture);
   const lu = readProductLabel(net, { unit: linkUnit(item.unit), hop: h, yeast: y, side: 'item' });
-  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, item.name, lecture, { alpha: positif(item.alphaPct), origine: item.origin, ebc: positif(item.colorEbc) }) };
+  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, item.name, lecture, { alpha: positif(valeurLueDe(item, 'alphaPct')), origine: item.origin, ebc: positif(valeurLueDe(item, 'colorEbc')) }) };
 }
 
 export const pliee = (nom: string) => normalize(nom ?? '').replace(/\s+/g, ' ').trim();
+/** Deux noms sont le même nom : pliés, et sans les marques ® ™ © (« CARABELGE® » est « CARABELGE », comme la rangée et le nom de l'article les nettoient). Sert au nom imprimé gardé (N2, N4, N5). */
+export const memeNom = (a: string, b: string) => pliee((a ?? '').replace(/[®™©]/gu, '')) === pliee((b ?? '').replace(/[®™©]/gu, ''));
 /** Les noms pris : celui de chaque article, et « nom + origine » pour un article écrit par S6 dont le nom ne dit pas son origine. */
 export function nomsPris(stock: readonly StockItem[], brouillon: readonly MembreVirtuel[]): Set<string> {
   const pris = new Set<string>();
@@ -389,19 +475,23 @@ function nomLibre(candidat: string, pris: Set<string>): string {
  * - **nom** : houblon et malt, le nom propre ; « origine » d'abord quand un membre diffère par l'origine connue de la ligne, sinon « bis » ; le premier nom libre
  *   (stock et lignes `new` du brouillon). Autre produit : le libellé comme avant.
  */
-export function regleProduit(line: StockLineInput, stock: readonly StockItem[], brouillon: readonly MembreVirtuel[] = []): RegleProduit {
+/** Ce que la lecture d'un nom rend en plus de sa règle : les articles d'une ambiguïté du lien (nom gardé compris), et le nom proposé quand rien ne relie. */
+interface SortieSurNom { pool: StockItem[]; nomDefaut: string }
+function regleSurNom(line: StockLineInput, stock: readonly StockItem[], brouillon: readonly MembreVirtuel[], opts: { jetons?: string; nom?: string }, sortie: SortieSurNom): RegleProduit {
   const contexte = contexteDe(line);
   const lineCategory = line.stockCategory ? canonicalStockCategory(line.stockCategory) : undefined;
   const nature = inferNature(line.description, line.reference, lineCategory && STOCK_CATEGORIES.includes(lineCategory) ? lineCategory : undefined);
   const items = [...stock];
   const pris = nomsPris(items, brouillon);
   const base = contexte === 'Houblon' || contexte === 'Malt'
-    ? nomPropre(line.description, contexte, { unit: isReadableUnit(line.unit) ? linkUnit(line.unit) : undefined, quantity: line.quantity })
-    : line.description.trim();
-  const sansNom = (candidat: string) => nomLibre(candidat || line.description.trim(), pris);
-  const s1 = matchStockLine(line, items);
+    ? nomPropre(opts.nom ?? line.description, contexte, { unit: isReadableUnit(line.unit) ? linkUnit(line.unit) : undefined, quantity: line.quantity })
+    : (opts.nom ?? line.description).trim();
+  const sansNom = (candidat: string) => nomLibre(candidat || (opts.nom ?? line.description).trim(), pris);
+  sortie.nomDefaut = sansNom(base);
+  const s1 = matchSurNom(line, items, opts.jetons);
+  if (s1.ambigu && (line.nomLu || line.nomFr)) sortie.pool = s1.candidats;
   const vendorWords = new Set(wordsOf(line.vendor ?? ''));
-  const propre = donneesDeLigne(line);
+  const propre = donneesDeLigne(line, undefined, undefined, opts.jetons);
   const code = propre.donnees.origine;
 
   const membres: Array<{ item: StockItem; ecarts: Ecart[]; seul: Ecart[] }> = [];
@@ -410,7 +500,7 @@ export function regleProduit(line: StockLineInput, stock: readonly StockItem[], 
     const category = canonicalStockCategory(item.category);
     const hop = propre.contexte === 'Houblon' || category === 'Houblon' || hasHopWord(item.name);
     const yeast = propre.contexte === 'Levure' || category === 'Levure' || hasYeastWord(item.name);
-    const L = donneesDeLigne(line, hop, yeast), I = donneesDArticle(item, hop, yeast);
+    const L = donneesDeLigne(line, hop, yeast, opts.jetons), I = donneesDArticle(item, hop, yeast);
     if (!L.jetons.length || !I.jetons.length) continue;
     if (!nameKinship({ tokens: L.jetons, detail: L.lu.detail }, { tokens: I.jetons }, item, vendorWords)) continue;
     // Nature inconnue : l'identité de l'article est aussi un nom connu d'une autre catégorie (« Crystal ») → pas le même produit (comme s1).
@@ -419,7 +509,7 @@ export function regleProduit(line: StockLineInput, stock: readonly StockItem[], 
     if (L.lu.malted !== I.lu.malted && L.jetons.some(t => CEREALS.has(t))) continue;
     membres.push({ item, ecarts: ecartsEntre(L.donnees, I.donnees), seul: connuesUnSeulCote(L.donnees, I.donnees) });
   }
-  if (s1) return { cas: 'meme', article: s1.item };
+  if (s1.chosen) return { cas: 'meme', article: s1.chosen.item };
   if (!membres.length) return { cas: 'inconnu', nom: sansNom(base) };
   const nomHoublonMalt = contexte === 'Houblon' || contexte === 'Malt';
   const sansEcart = membres.filter(m => !m.ecarts.length);
@@ -429,4 +519,35 @@ export function regleProduit(line: StockLineInput, stock: readonly StockItem[], 
   const motif: 'origine' | 'bis' = nomHoublonMalt && code && membres.some(m => m.ecarts.includes('origine')) ? 'origine' : 'bis';
   const candidat = !nomHoublonMalt ? base : motif === 'origine' ? `${base} ${code}` : `${base} bis`;
   return { cas: 'neuf', nom: sansNom(candidat), ecarts: voisin.ecarts, voisin: voisin.item, motif };
+}
+
+const GRAVITE = { incertain: 3, neuf: 2, inconnu: 1 } as const;
+/**
+ * Voie n1-nom-fr : la combinaison de la lecture du nom imprimé (`imprime`) et de celle du nom français (`francais`), plus les articles d'une ambiguïté du lien (`supplementaires`).
+ * R1 : candidats distincts (`meme` ou `ambigu` des lectures, supplémentaires) ≥ 2 → `ambigu` (jamais un lien d'office) ; R2 : exactement 1 → `meme` ;
+ * R3 : sinon la plus sévère de `incertain > neuf > inconnu`, à égalité la lecture imprimée. Sans nom français ni supplémentaire : la règle imprimée, telle quelle.
+ */
+export function combinerRegles(imprime: RegleProduit, francais: RegleProduit | undefined, supplementaires: readonly StockItem[], nomParDefaut: string): RegleProduit {
+  if (!francais && !supplementaires.length) return imprime;
+  const candidats: StockItem[] = [];
+  const ajouter = (article: StockItem) => { if (!candidats.some(c => c === article || c.ref === article.ref)) candidats.push(article); };
+  for (const r of [imprime, francais]) { if (r?.cas === 'meme') ajouter(r.article); else if (r?.cas === 'ambigu') r.candidats.forEach(ajouter); }
+  supplementaires.forEach(ajouter);
+  const nomDe = (r: RegleProduit | undefined) => (r && 'nom' in r ? r.nom : undefined);
+  if (candidats.length >= 2) return { cas: 'ambigu', candidats, nom: nomDe(francais) ?? nomDe(imprime) ?? nomParDefaut };
+  if (candidats.length === 1) return { cas: 'meme', article: candidats[0] };
+  const severe = (r: RegleProduit) => GRAVITE[r.cas as keyof typeof GRAVITE] ?? 0;
+  return francais && severe(francais) > severe(imprime) ? francais : imprime;
+}
+
+/**
+ * LA règle publique : le nom imprimé (ses mots lus sur `description`, nommé en français quand la ligne a `nomFr`) et, si la ligne a son nom français, le nom français (ses mots seulement :
+ * α, EBC, origine, récolte, poids restent ceux du libellé imprimé, D215), combinés par `combinerRegles`. Sans `nomFr` ni `nomLu` : exactement la règle d'avant.
+ */
+export function regleProduit(line: StockLineInput, stock: readonly StockItem[], brouillon: readonly MembreVirtuel[] = []): RegleProduit {
+  const nomFr = line.nomFr?.trim() || undefined;
+  const sortieI: SortieSurNom = { pool: [], nomDefaut: '' }, sortieF: SortieSurNom = { pool: [], nomDefaut: '' };
+  const imprime = regleSurNom(line, stock, brouillon, { nom: nomFr }, sortieI);
+  const francais = nomFr ? regleSurNom(line, stock, brouillon, { jetons: nomFr, nom: nomFr }, sortieF) : undefined;
+  return combinerRegles(imprime, francais, [...sortieI.pool, ...sortieF.pool], sortieI.nomDefaut);
 }

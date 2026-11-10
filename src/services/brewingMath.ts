@@ -1,11 +1,31 @@
 import { estimateSwissBeerTax } from '../domain/finance/swissBeerTax';
-import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind,
+import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind, FermentableUse,
   Fermentable
 } from '../types';
 import { equipmentErrors, brewingPreferenceErrors, equipmentCheck, MASH_WATER_EXPANSION } from '../domain/brewEquipment';
 import { resizeWaterPlan } from '../domain/resizeWaterPlan';
 import { snapshotBrewhouse } from '../domain/brewPreferences';
 import { replanRecipeWater } from '../domain/recipeWater';
+import { grainHorsEmpatage } from '../domain/fermentables/moments';
+import { BORNES } from '../domain/bornesMetier';
+import { alcoholByVolume } from '../domain/alcohol';
+import { nombreFr } from '../domain/nombreAffiche';
+
+/**
+ * L'OG la plus haute qu'une bière atteint : 1,130. Les styles les plus forts du BJCP 2021 (English Barleywine, Wheatwine, Eisbock)
+ * s'arrêtent à 1,120 ; la marge couvre une bière hors style. Au-delà, l'OG prédite trahit une saisie fausse (masse, volume) : on la signale,
+ * on ne conseille jamais d'ajouter du grain (audit métier du 08.11, AM 3).
+ */
+export const OG_PLAUSIBLE_MAX = BORNES.og.max;
+
+/**
+ * Part de l'isomérisation de l'alpha-acide à `tempC`, par rapport à 100 °C. Malowicki et Shellhammer (2005, J. Agric. Food Chem. 53) :
+ * k(T) = 7,9e11 · exp(−11858 / T), T en kelvin. Le facteur est k(T) / k(373,15 K). Aucun standard n'existe pour un whirlpool ; c'est
+ * la cinétique publiée, qui remplace l'ancien « moitié par 10 °C » (0,25 à 80 °C, 0,17 ici).
+ */
+export const whirlpoolIsomerisationFactor = (tempC: number): number =>
+  Math.exp(-11858 / (tempC + 273.15)) / Math.exp(-11858 / 373.15);
+export const OG_PLAUSIBLE_MAX_TXT = '1,130';
 
 export interface WaterVolumeOptions {
   /** Cold preparation quantities explicitly chosen by the brewer. */
@@ -29,6 +49,8 @@ export interface WaterVolumePlan {
   spargeMaximumHotL?: number;
   preferredMashRatioLPerKg?: number;
   mashIncreasedForSparge?: boolean;
+  /** TE-39 : présent quand l'empâtage voulu ne tient pas dans la cuve ; vaut la cuve utile (L) qui le borne. */
+  mashLimitedByKettleL?: number;
   waterBalanceErrorL?: number;
 }
 
@@ -52,8 +74,8 @@ export const BrewingMath = {
   // 1. ABV Calculator
   calculateABV(og: number, fg: number): number {
     if (!og || !fg || !Number.isFinite(og) || !Number.isFinite(fg) || og <= fg || og <= 1.0 || fg <= 0) return 0;
-    // Standard formula used in craft brewing & Swiss customs: (OG - FG) * 131.25
-    return Math.round((og - fg) * 131.25 * 10) / 10;
+    // Méthode ASBC (Balling), au dixième : l'ancienne formule (OG - FG) * 131.25 sous-estimait les bières fortes (CF-6, 08.11).
+    return Math.round(alcoholByVolume(og, fg) * 10) / 10;
   },
 
   // 2. Plato Conversion (Swiss OFDF official standard)
@@ -88,8 +110,9 @@ export const BrewingMath = {
    *                  d'environ 10 % que la pratique lui reconnaît.
    *   Ébullition   — Tinseth, sur la durée restante.
    *   Whirlpool    — Tinseth sur la durée de contact, atténué par la
-   *                  température : l'isomérisation ralentit de moitié environ
-   *                  tous les 10 °C sous l'ébullition.
+   *                  température selon la cinétique d'isomérisation de
+   *                  Malowicki et Shellhammer (2005) : 0,42 à 90 °C, 0,17 à
+   *                  80 °C, 0,06 à 70 °C du taux à 100 °C (CF-7, 08.11).
    *   À cru        — aucune contribution Tinseth. L’extraction des humulinones
    *                  et les pertes d’iso-alpha relèvent du modèle séparé à cru.
    */
@@ -126,7 +149,7 @@ export const BrewingMath = {
         // 80 °C est la température de whirlpool conventionnelle ; l'assistant
         // la demande explicitement, cette valeur n'est qu'un repli.
         const tempC = Number.isFinite(hop.tempC) ? Math.max(0, Math.min(hop.tempC!, 100)) : 80;
-        const slowdown = Math.pow(2, (tempC - 100) / 10);
+        const slowdown = whirlpoolIsomerisationFactor(tempC);
         const timeMin = Number.isFinite(hop.timeMin) ? Math.max(0, hop.timeMin!) : 20;
         utilization = gravityFactor * tinseth(timeMin) * slowdown;
         break;
@@ -178,6 +201,7 @@ export const BrewingMath = {
       weightKg: number;
       potentialPpg?: number;
       kind?: FermentableKind;
+      use?: FermentableUse;
       fermentabilityPct?: number;
     }>,
     volumeL: number,
@@ -186,7 +210,7 @@ export const BrewingMath = {
   ): { total: number; unfermentable: number } | null {
     if (!volumeL || !Number.isFinite(volumeL) || volumeL <= 0 || !fermentables.length) return null;
     if (!Number.isFinite(efficiencyPct) || efficiencyPct <= 0) return null;
-    if (fermentables.some((f) => (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
+    if (fermentables.some((f) => !grainHorsEmpatage(f) && (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
       return null;
     }
 
@@ -196,6 +220,8 @@ export const BrewingMath = {
 
     fermentables.forEach((f) => {
       if (precision === 'full' && f.weightKg === 0) return;
+      // Un grain hors de l'empâtage ne donne pas d'extrait (table domain/fermentables/moments.ts, AM 1 et 2) : il compte 0.
+      if (grainHorsEmpatage(f)) return;
       const weightKg = Number.isFinite(f.weightKg) ? Math.max(0, f.weightKg) : 0;
       const isGrain = (f.kind ?? 'grain') === 'grain';
       // Le rendement d'empâtage ne concerne que ce qui passe par la maische.
@@ -297,7 +323,11 @@ export const BrewingMath = {
    * Le chiffre corrigé est RENDU, jamais appliqué en silence : c'est à Gaëtan
    * de décider s'il ajuste sa facture ou son volume.
    */
-  efficiencyAtGravity(nominalPct: number, og: number): {
+  /**
+   * `ogStyleMax` : le haut de la plage d'OG du style choisi. Une OG dans cette plage est la densité normale du style : la perte est
+   * calculée, mais la note se tait (RJ-8 et RO-3, 08.11 : « le moût sature » à 1,080 pour un style de 1,065 à 1,085, du bruit).
+   */
+  efficiencyAtGravity(nominalPct: number, og: number, ogStyleMax?: number | null): {
     correctedPct: number;
     lostPoints: number;
     note: string | null;
@@ -307,15 +337,28 @@ export const BrewingMath = {
       return { correctedPct: safeNominal, lostPoints: 0, note: null };
     }
     const points = (og - 1) * 1000;
+    const ogTxt = og.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const pctTxt = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+    // Audit du 08.11 (AM 3) : à 1,290, le conseil « prévois plus de grain » était l'inverse du vrai. Au-delà du plafond, c'est une saisie à vérifier.
+    if (og > OG_PLAUSIBLE_MAX) {
+      return {
+        correctedPct: nominalPct,
+        lostPoints: 0,
+        note: `OG ${ogTxt} : aucune bière ne monte au-delà de ${OG_PLAUSIBLE_MAX_TXT} (BJCP 2021 : 1,120 au plus). Erreur de saisie probable : vérifie les masses et le volume.`
+      };
+    }
     if (points <= 65) {
       return { correctedPct: nominalPct, lostPoints: 0, note: null };
     }
     const lost = Math.round((points - 65) * 0.2 * 10) / 10;
     const corrected = Math.round(Math.max(40, nominalPct - lost) * 10) / 10;
+    if (typeof ogStyleMax === 'number' && Number.isFinite(ogStyleMax) && og <= ogStyleMax) return { correctedPct: corrected, lostPoints: lost, note: null };
     return {
       correctedPct: corrected,
       lostPoints: lost,
-      note: `À ${og.toFixed(3)}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
+      // Virgule et trois décimales (« 1,085 »), comme `formatDensite` : importé de `recipeMetrics`, il ferait une boucle (recipeMetrics → yeastProjection → ce fichier).
+      // RJ-8 : « 71.9 % » avait son point décimal ; un rendement se lit à 0,1 % près, à la virgule.
+      note: `À ${ogTxt}, le moût sature : compte plutôt ${pctTxt(corrected)} % de rendement que ${pctTxt(nominalPct)} %. Prévois plus de grain ou moins de volume.`
     };
   },
 
@@ -487,7 +530,9 @@ export const BrewingMath = {
     const grainAbsorptionL = round1(totalGristKg * 0.96);
     const boilOffRate = Number.isFinite(brewhouse?.boilOffRatePct) ? Math.max(0, brewhouse!.boilOffRatePct!) : 10;
     const safeBoilMin = Number.isFinite(boilMin) && boilMin >= 0 ? boilMin : 60;
-    const boilOffL = round1(volumeL * (boilOffRate / 100) * (safeBoilMin / 60));
+    // Sans profil d'équipement l'évaporation est un % par heure du volume AVANT ébullition (convention Brewfather et BeerSmith), puis tout se
+    // calcule comme le mode équipement : un volume à chaud, rapporté à froid par la rétraction de 4 % (CF-9, 08.11).
+    const boilOffFraction = Math.min(0.9, (boilOffRate / 100) * (safeBoilMin / 60));
     /*
      * Le houblon boit. Six millilitres par gramme est la valeur de la pratique
      * pour du cône ou du pellet resté dans la cuve — whirlpool compris, où les
@@ -533,12 +578,12 @@ export const BrewingMath = {
       if (check.boilTooFull) issues.push('Le volume avant ébullition dépasse la limite utile de la cuve.');
       if (check.fermenterTooFull) issues.push('Le volume final atteint ou dépasse la capacité totale du fermenteur.');
       if (!check.thinEnough) issues.push('Maische sous 2,5 L/kg : circulation du panier à vérifier ; réduire le brassin si nécessaire.');
-      if (check.spargeTooMuch) issues.push(`Le rinçage dépasse le maximum de ${check.spargeMaximumHotL} L à chaud. Réduis le volume du brassin.`);
-      if (Math.abs(balanceError) > 0.1) issues.push(`La répartition manuelle diffère de ${balanceError} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (check.spargeTooMuch) issues.push(`Le rinçage dépasse le maximum de ${nombreFr(check.spargeMaximumHotL, 1)} L à chaud. Réduis le volume du brassin.`);
+      if (Math.abs(balanceError) > 0.1) issues.push(`La répartition manuelle diffère de ${nombreFr(balanceError, 1)} L du besoin calculé ; les volumes saisis sont conservés.`);
       if (manual && spargeType === 'none' && sparge > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
       const impossible = check.mashTooFull || check.boilTooFull || check.fermenterTooFull || check.spargeTooMuch ||
         Math.abs(balanceError) > 0.1 || (spargeType === 'none' && sparge > 0);
-      if (check.spargeStatus === 'exception') issues.push(`Prévoir ${round1(check.spargeAuxiliaryHotL)} L à chaud en appoint ; exception à confirmer.`);
+      if (check.spargeStatus === 'exception') issues.push(`Prévoir ${nombreFr(check.spargeAuxiliaryHotL, 1)} L à chaud en appoint ; exception à confirmer.`);
       return {
         mashWaterL: mash, spargeWaterL: sparge, preBoilVolumeL: round1(preCold), preBoilHotL: round1(preHot),
         grainAbsorptionL: round1(absorption), boilOffL: round1(evaporationHot * coldFactor), hopLossL,
@@ -546,21 +591,25 @@ export const BrewingMath = {
         planningStatus: impossible ? 'impossible' : check.spargeStatus,
         issues, preferredMashRatioLPerKg: ratio,
         mashIncreasedForSparge: !manual && spargeType !== 'none' && mash > preferred + 0.05,
+        ...(!manual && spargeType !== 'none' && maxMash < Math.min(totalWater, requiredMash) - 0.05 ? { mashLimitedByKettleL: e.kettleWorkingL } : {}),
         waterBalanceErrorL: balanceError,
         spargeHotL: check.spargeHotL, spargeMainHotL: check.spargeMainHotL,
         spargeAuxiliaryHotL: check.spargeAuxiliaryHotL, spargePreferredHotL: check.spargePreferredHotL,
         ...(check.spargeMaximumHotL != null ? { spargeMaximumHotL: check.spargeMaximumHotL } : {})
       };
     }
-    const coolingShrinkageL = volumeL * 0.04;
-    const preBoilVolumeL = round1(
-      Math.max(0, volumeL + boilOffL + deadSpaceL + hopLossL + coolingShrinkageL)
-    );
+    const legacyColdFactor = 0.96;
+    const legacyPostBoilHotL = (volumeL + deadSpaceL + hopLossL) / legacyColdFactor;
+    const legacyPreBoilHotL = legacyPostBoilHotL / (1 - boilOffFraction);
+    const boilOffL = round1((legacyPreBoilHotL - legacyPostBoilHotL) * legacyColdFactor);
+    const preBoilVolumeL = round1(Math.max(0, legacyPreBoilHotL * legacyColdFactor));
+    const preBoilHotL = round1(legacyPreBoilHotL);
 
     const plein: WaterVolumePlan = {
       mashWaterL: round1(preBoilVolumeL + grainAbsorptionL),
       spargeWaterL: 0,
       preBoilVolumeL,
+      preBoilHotL,
       grainAbsorptionL,
       boilOffL,
       hopLossL,
@@ -575,7 +624,7 @@ export const BrewingMath = {
         return { ...vide, issues: ['La répartition manuelle de l’eau doit contenir deux volumes positifs ou nuls.'] };
       const waterBalanceErrorL = round1(manual.mashWaterL + manual.spargeWaterL - calculated.mashWaterL - calculated.spargeWaterL);
       const issues: string[] = [];
-      if (Math.abs(waterBalanceErrorL) > .1) issues.push(`La répartition manuelle diffère de ${waterBalanceErrorL} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (Math.abs(waterBalanceErrorL) > .1) issues.push(`La répartition manuelle diffère de ${nombreFr(waterBalanceErrorL, 1)} L du besoin calculé ; les volumes saisis sont conservés.`);
       if (spargeType === 'none' && manual.spargeWaterL > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
       return { ...calculated, ...manual, mashRatioLPerKg: round1(manual.mashWaterL / totalGristKg),
         waterBalanceErrorL, planningStatus: issues.length ? 'impossible' : 'ready', issues };
@@ -599,6 +648,7 @@ export const BrewingMath = {
       mashWaterL,
       spargeWaterL: round1(Math.max(0, preBoilVolumeL - firstRunningsL)),
       preBoilVolumeL: round1(Math.max(0, preBoilVolumeL)),
+      preBoilHotL,
       grainAbsorptionL: round1(Math.max(0, grainAbsorptionL)),
       boilOffL: round1(Math.max(0, boilOffL)),
       hopLossL: round1(Math.max(0, hopLossL)),
@@ -704,7 +754,7 @@ export const BrewingMath = {
 
     const scaledRecipe: Recipe = {
       ...recipe,
-      id: `${recipe.id}-scale-${targetVolumeL}L`,
+      id: `${recipe.id}-scale-${nombreFr(targetVolumeL, 1)}L`,
       volumeL: targetVolumeL,
       brewhouse: snapshotBrewhouse(targetBrewhouse),
       efficiencyPct: targetBrewhouse.efficiencyPct,
@@ -789,7 +839,8 @@ export const BrewingMath = {
   },
 
   // 8.b Sucre de refermentation (priming) nécessaire, en grammes.
-  // 1 volume de CO2 par litre demande ~4.0 g/L de dextrose (3.86 g/L pour du saccharose).
+  // 1 volume de CO2 par litre demande 4,4 g/L de dextrose du commerce (monohydrate, M 198,17 : 2 CO2 par molécule) et 3,86 g/L de saccharose
+  // (CF-NOTE-1, 08.11 : 4,0 g/L comptait le dextrose anhydre et donnait 10 % de sucre en moins).
   calculatePrimingSugarG(
     targetCo2Vol: number,
     packagedVolumeL: number,
@@ -799,7 +850,7 @@ export const BrewingMath = {
     if (!Number.isFinite(targetCo2Vol) || targetCo2Vol <= 0) return 0;
     if (!Number.isFinite(packagedVolumeL) || packagedVolumeL <= 0) return 0;
     const residual = this.calculateResidualCo2Vol(maxFermentTempC);
-    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.0;
+    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.4;
     const delta = Math.max(0, targetCo2Vol - residual);
     const sugar = Math.round(delta * gramsPerLPerVol * Math.max(0, packagedVolumeL));
     return Number.isFinite(sugar) ? Math.max(0, sugar) : 0;

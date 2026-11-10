@@ -1,0 +1,48 @@
+/* Correctifs du test d'écran de Fermentescibles (critique B1, 07.11). Chargé par EtapeFermentescibles ; les règles de la maquette s1 restent dans
+   `src/pages/recipe-wizard.css` : ici seulement ce que le test a trouvé, sélecteurs précis pour passer devant sans rien retirer à la maquette. */
+
+/* n° 5 : une couleur hors de 1 à 1500 EBC n'est pas avalée : le champ reste, trait plein rouge et chiffre rouge (infobulle « de 1 à 1500 EBC »). */
+.recipe-wizard .fer .fer-ebc.fer-ebc-ko:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  border-style: solid; border-color: #C8382F; color: #A8291F; font-size: 13px;
+}
+[data-theme='cave'] .recipe-wizard .fer .fer-ebc.fer-ebc-ko:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  border-color: #F29289; color: #F29289;
+}
+
+/* N4 et N5 (banc d'actionneurs) : un nombre refusé (négatif, hors bornes) dans une masse, un jour ou la fiche : trait et chiffre rouges, comme la couleur du n° 5. */
+.recipe-wizard .fer :is(.fer-kgin, .fer-bin, .fer-jl, .fer-jin, .fer-fi-in).fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { color: #A8291F; border-color: #C8382F; }
+[data-theme='cave'] .recipe-wizard .fer :is(.fer-kgin, .fer-bin, .fer-jl, .fer-jin, .fer-fi-in).fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { color: #F29289; border-color: #F29289; }
+.recipe-wizard .fer .fer-kgin.fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { border-bottom: 1.5px solid #C8382F; }
+
+/* N3 (banc d'actionneurs) : un nom très long passe à la ligne, dans la ligne comme dans le plateau, au lieu de filer sous « kg » et hors de l'écran. */
+.recipe-wizard .fer .fer-nm b { white-space: normal; overflow-wrap: anywhere; }
+.recipe-wizard .fer button.fer-nom { height: auto; min-height: 24px; text-align: left; }
+.recipe-wizard .fer .fer-bh b { white-space: normal; flex-shrink: 1; min-width: 0; overflow-wrap: anywhere; }
+
+/* n° 6 : plusieurs retraits en attente d'annulation : « 1 de plus » sous le nom barré, sans pousser « Annuler ». */
+.fer .fer-ote .fer-ote-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+
+/* n° 8 : la ligne choisie, en sombre, a un voile à la teinte du malt (35 %) : le gris du moment, de la part et de « kg » y tombait à 2 de contraste.
+   Sur ce voile, ces textes prennent le blanc de la ligne (≥ 6 sur la teinte la plus claire). */
+[data-theme='cave'] .fer .fer-li[aria-current='true'][style*='--fond'] :is(button.fer-mo, .fer-pc, .fer-kg small, .fer-mf) { color: var(--f-t0); }
+[data-theme='cave'] .fer .fer-li[aria-current='true'][style*='--fond'] button.fer-mo .fer-tour { color: var(--f-t1); }
+
+/* n° 9 : le curseur du jour (J+) : le contour de focus de la boîte entière (330 × 24 px) barrait « J0 J7 J14 » et mordait sur le champ « J+ ».
+   Le focus se lit sur le pouce (contour blanc), les repères descendent sous le pouce, et le champ garde 12 px d'air avant la piste. */
+.recipe-wizard .fer .fer-jours { column-gap: 12px; }
+.fer .fer-jp > span.fer-jl-lab { top: 24px; }
+.fer .fer-jr:focus, .fer .fer-jr:focus-visible { outline: none; }
+.fer .fer-jr:focus-visible::-webkit-slider-thumb { border-color: var(--f-t0); }
+
+/* Audit métier du 08.11 (AM 1 à 3). Un grain n'a qu'un moment : le mot reste à sa place, sans la flèche qui tourne (rien d'autre ne change).
+   Un moment impossible (donnée ancienne : grain bouilli ou au fermenteur) et une OG hors de l'échelle se lisent en couleur d'attention. */
+.fer span.fer-mo { display: inline-flex; align-items: center; height: 24px; margin: -4px 0; padding: 0 4px; font-size: 12px; white-space: nowrap; color: var(--f-t2); }
+.fer span.fer-bmo { display: inline-flex; align-items: center; height: 24px; padding: 0 6px; border-radius: 10px; border: 1px solid var(--f-bord); font-size: 12px; color: var(--f-t1); background: var(--f-page); margin-left: auto; flex-shrink: 0; }
+.fer button.fer-mo.fer-mo-hors, .fer button.fer-bmo.fer-bmo-hors { color: var(--f-attt); background: rgb(var(--attention) / 0.14); border-color: rgb(var(--attention) / 0.5); }
+.fer button.fer-mo.fer-mo-hors .fer-tour { color: var(--f-attt); }
+.fer .fer-pc.fer-pc-hors { color: var(--f-attt); font-weight: 600; }
+.fer .fer-ogl.fer-hors, .fer .fer-ebcl.fer-hors { color: var(--f-attt); }
+/* RJ-12, BR-13 (mesurés en Chrome, cave : « empâtage » 2,51:1 sur le voile doré de la ligne choisie) : sur la ligne choisie, le moment et la part prennent le texte plein, pas le gris secondaire. */
+.fer .fer-li[aria-current='true'] .fer-mo:not(.fer-mo-hors), .fer .fer-li[aria-current='true'] .fer-pc:not(.fer-pc-hors) { color: var(--f-t0); }
+/* BR-14 : la bascule des repères faisait 16 × 24 px. */
+.fer button.fer-pl { min-width: 24px; justify-content: center; }

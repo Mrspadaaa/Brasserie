@@ -1,0 +1,163 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED"
+  ],
+  "bloques": [
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)"
+  ],
+  "captures": [
+    "l6-loupe-390-clair",
+    "l6b-loupe-issue-390-clair",
+    "c1-1056-390-clair",
+    "c3-feuille-3filtres-390-clair",
+    "c3-3filtres-390-clair",
+    "m3-loupe-390-clair",
+    "m3b-loupe-issue-390-clair",
+    "s1-repos-390-clair",
+    "s3-deux-axes-390-clair",
+    "l6-loupe-390-cave",
+    "l6b-loupe-issue-390-cave",
+    "c1-1056-390-cave",
+    "c3-feuille-3filtres-390-cave",
+    "c3-3filtres-390-cave",
+    "m3-loupe-390-cave",
+    "m3b-loupe-issue-390-cave",
+    "s1-repos-390-cave",
+    "s3-deux-axes-390-cave"
+  ],
+  "notes": {
+    "l6-390-clair": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "c1-390-clair": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "puces": [],
+      "premier": "US-05",
+      "tapee": "Wyeast 1056 American Ale"
+    },
+    "c3-390-clair": {
+      "phrase": "57ale US · neutre·15–18 °C·sans STA1",
+      "verif": "STA1 non documentée 81 · dont 4 vendues icichercher",
+      "rayons": [
+        "Vendue CH · FR · DE4à vérifier",
+        "Fabricant présent en Europe12",
+        "Rare en Europe45"
+      ]
+    },
+    "m3-390-clair": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicérecherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicéService IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "s1-390-clair": {
+      "cartes": [
+        "Estersfaible−73+304",
+        "Phénols? chercher−189+209",
+        "Thiols? chercher−37+48",
+        "Terpènes? chercher−0+4",
+        "Atténuation78–82 %−492+124",
+        "Clarté? chercher−197+110",
+        "Tolérance9–11 % vol−267+326",
+        "Rondeur11 g/L−4+2",
+        "°C18–26 °C−428+251",
+        "Vitesse? chercher−35+38",
+        "Soufre? chercher−1+0",
+        "Nutrimentssans donnéechercher"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 6CH DEUS-05ta levurela référence°C%esters faiblesCH1007 German Aleépuisée au relevé du 27.09°C%neutreclarté faiblesCHVerdant IPALallemand Brewing°C%tropical · abricotβ-lyase · thiolsclarté moyensFRPomonaLallemand Brewing°C%pêche · agrumesthiolsclarté moyensCHLalBrew NovaLager Brewers Yeast°C%clarté moyensCH1084 Irish Ale°C%fruitéclarté moyens",
+        "Fabricant présent en Europe · sans offre vue 9EuropeSafBrew LA‑02°C%esters faibles20–25 °C · 19 hors plageEuropeYeastflow yf-205-holy-colibate°C%clarté moyensEuropeYeastflow yf-501-kingster°C%clarté faiblesEuropeSafBrew LA‑01°C%esters faiblesEuropeWhite Labs California Ale Yeast 500g°C%clarté moyensEuropeWhite Labs California Ale Yeast Sachet 11g°C%clarté moyensEuropeYeastflow yf-201-st-colibate°C%clarté faiblesEuropeLalBrew Munich Classic Yeast°C%clarté faibles"
+      ]
+    },
+    "s3-390-clair": {
+      "ok1": true,
+      "ok2": true,
+      "titre": "US-05Plus de thiols · plus clair30 L19 °C",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 3CH DEUS-05ta levurela référencethiols ?clarté ?CHVerdant IPALallemand BrewingthiolsclartéFRPomonaLallemand Brewingthiolsclarté",
+        "Fabricant présent en Europe · sans offre vue 2EuropeDiamondLallemand BrewingSamia 2026thiolsclarté10–15 °C · 19 hors plageEuropeNottinghamLallemand BrewingLallemand Brewing · tableauthiolsclarté"
+      ]
+    },
+    "l6-390-cave": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "c1-390-cave": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "puces": [],
+      "premier": "US-05",
+      "tapee": "Wyeast 1056 American Ale"
+    },
+    "c3-390-cave": {
+      "phrase": "57ale US · neutre·15–18 °C·sans STA1",
+      "verif": "STA1 non documentée 81 · dont 4 vendues icichercher",
+      "rayons": [
+        "Vendue CH · FR · DE4à vérifier",
+        "Fabricant présent en Europe12",
+        "Rare en Europe45"
+      ]
+    },
+    "m3-390-cave": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicérecherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicéService IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "s1-390-cave": {
+      "cartes": [
+        "Estersfaible−73+304",
+        "Phénols? chercher−189+209",
+        "Thiols? chercher−37+48",
+        "Terpènes? chercher−0+4",
+        "Atténuation78–82 %−492+124",
+        "Clarté? chercher−197+110",
+        "Tolérance9–11 % vol−267+326",
+        "Rondeur11 g/L−4+2",
+        "°C18–26 °C−428+251",
+        "Vitesse? chercher−35+38",
+        "Soufre? chercher−1+0",
+        "Nutrimentssans donnéechercher"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 6CH DEUS-05ta levurela référence°C%esters faiblesCH1007 German Aleépuisée au relevé du 27.09°C%neutreclarté faiblesCHVerdant IPALallemand Brewing°C%tropical · abricotβ-lyase · thiolsclarté moyensFRPomonaLallemand Brewing°C%pêche · agrumesthiolsclarté moyensCHLalBrew NovaLager Brewers Yeast°C%clarté moyensCH1084 Irish Ale°C%fruitéclarté moyens",
+        "Fabricant présent en Europe · sans offre vue 9EuropeSafBrew LA‑02°C%esters faibles20–25 °C · 19 hors plageEuropeYeastflow yf-205-holy-colibate°C%clarté moyensEuropeYeastflow yf-501-kingster°C%clarté faiblesEuropeSafBrew LA‑01°C%esters faiblesEuropeWhite Labs California Ale Yeast 500g°C%clarté moyensEuropeWhite Labs California Ale Yeast Sachet 11g°C%clarté moyensEuropeYeastflow yf-201-st-colibate°C%clarté faiblesEuropeLalBrew Munich Classic Yeast°C%clarté faibles"
+      ]
+    },
+    "s3-390-cave": {
+      "ok1": true,
+      "ok2": true,
+      "titre": "US-05Plus de thiols · plus clair30 L19 °C",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 3CH DEUS-05ta levurela référencethiols ?clarté ?CHVerdant IPALallemand BrewingthiolsclartéFRPomonaLallemand Brewingthiolsclarté",
+        "Fabricant présent en Europe · sans offre vue 2EuropeDiamondLallemand BrewingSamia 2026thiolsclarté10–15 °C · 19 hors plageEuropeNottinghamLallemand BrewingLallemand Brewing · tableauthiolsclarté"
+      ]
+    }
+  }
+}

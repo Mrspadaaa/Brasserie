@@ -1,7 +1,7 @@
 import type { Transaction } from '../types';
 import type { FinancialPayment } from '../domain/finance/types';
 import { isoDate, validateFinanceTransaction } from '../domain/finance/ledger';
-import { prepareFinanceDocument, saveFinanceDocumentConfirmed } from './financeDocuments';
+import { prepareFinanceDocument, saveFinanceDocumentConfirmed, type DriveProofReceipt } from './financeDocuments';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { stageNewTransactionPayment, validateFinancialPayment } from './financeService';
 import { StorageService } from './storage';
@@ -11,14 +11,15 @@ export interface IncomeEntry {
   proof: ReturnType<typeof prepareFinanceDocument>;
   payment?: FinancialPayment;
 }
-const pending = new WeakMap<IncomeEntry, { staged: boolean; running?: Promise<void> }>();
+const pending = new WeakMap<IncomeEntry, { staged: boolean; running?: Promise<void>; receipt?: DriveProofReceipt }>();
 
 /** The caller retains this exact draft/PDF on retry. Never attach a dataURL to
  * the transaction, and never replay stock/payment writes after a lost reply. */
-export async function saveIncomeEntry(entry: IncomeEntry): Promise<void> {
+/** Rend la preuve Drive de l'original, ou `undefined` quand il n'est resté qu'en copie locale : l'écran ne dit « dans Drive » que sur une preuve (TE-55). */
+export async function saveIncomeEntry(entry: IncomeEntry): Promise<DriveProofReceipt | undefined> {
   let state = pending.get(entry);
   if (!state) { state = { staged: false }; pending.set(entry, state); }
-  if (state.running) return state.running;
+  if (state.running) { await state.running; return state.receipt; }
   const work = (async () => {
     const tx = entry.transaction;
     validateFinanceTransaction(tx);
@@ -28,7 +29,7 @@ export async function saveIncomeEntry(entry: IncomeEntry): Promise<void> {
     const date = isoDate(tx.date);
     if (!date) throw Error('Date de vente invalide.');
     if (!state.staged) {
-      await saveFinanceDocumentConfirmed(entry.proof, Number(date.slice(0, 4)));
+      state.receipt = await saveFinanceDocumentConfirmed(entry.proof, Number(date.slice(0, 4)));
       if (entry.payment) stageNewTransactionPayment(tx, entry.payment);
       else StorageService.addTransaction(tx);
       state.staged = true;
@@ -49,4 +50,5 @@ export async function saveIncomeEntry(entry: IncomeEntry): Promise<void> {
   state.running = work;
   try { await work; }
   finally { if (state.running === work) state.running = undefined; }
+  return state.receipt;
 }

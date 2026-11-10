@@ -1,0 +1,4 @@
+/* Feuille des maquettes : la feuille de l'app (thèmes, base, utilitaires), les règles de l'écran Dépense (p3c.css), puis les seules règles neuves (sf-…). */
+@import '../../../../../src/index.css';
+@import '../../../../../src/ui/depense/p3c.css';
+@import './sf.css';

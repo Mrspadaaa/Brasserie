@@ -55,7 +55,13 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useSyncedDraft(source, source.id);
 
+  // BR-81 : « Modifier » et ✓ occupent la même place. Un double toucher enregistrait l'analyse (donc la configuration de la brasserie) sans que le brasseur
+  // ait rien modifié : un ✓ dans les 600 ms qui suivent l'ouverture de l'édition, sans aucune valeur changée, est un toucher de trop, ignoré.
+  const ouvertA = React.useRef(0);
+  const ouvrir = () => { ouvertA.current = Date.now(); setEditing(true); };
   const save = () => {
+    // Seulement si rien n'a été modifié : un nom ou une valeur corrigés puis ✓ aussitôt (collage, test) est un geste voulu.
+    if (Date.now() - ouvertA.current < 600 && JSON.stringify(draft) === JSON.stringify(source)) return;
     onChange({ ...draft, updatedAt: new Date().toISOString() });
     setEditing(false);
   };
@@ -70,7 +76,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
         {!editing ? (
           <button
             type="button"
-            onClick={() => setEditing(true)}
+            onClick={ouvrir}
             className="touch-target px-3 rounded-control text-sm text-cave-200
                        hover:text-ebc-straw flex items-center gap-1.5"
           >
@@ -166,7 +172,8 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
         </div>
       ) : (
       <div className="overflow-x-auto panel">
-        <table className="w-full text-sm">
+        {/* BR-82 : en édition, sept cases de 64 px sortaient de l'écran à 390 (Mg à 401 px, pH à 641) : colonnes de largeur égale, cases qui s'adaptent. */}
+        <table className={`w-full text-sm${editing ? ' table-fixed' : ''}`}>
           <caption className="sr-only">Analyse ionique de l’eau, en milligrammes par litre</caption>
           <thead>
             <tr className="bg-cave-850">
@@ -207,11 +214,11 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
                       onValue={(v) =>
                         setDraft({ ...draft, [ion]: v })}
                       pad
-                      className="w-16 min-h-touch px-1 rounded-control bg-cave-950
+                      className={`${editing ? 'w-full min-w-0' : 'w-16'} min-h-touch px-0.5 sm:px-1 rounded-control bg-cave-950
                                  border border-cave-700 reading text-sm text-center
                                  focus:outline-none focus:border-ebc-straw
                                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                                 [&::-webkit-inner-spin-button]:appearance-none"
+                                 [&::-webkit-inner-spin-button]:appearance-none`}
                     />
                   ) : (
                     <span className="reading text-cave-50">{source[ion]}</span>
@@ -228,11 +235,11 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
                     onValue={(v) => setDraft({ ...draft, ph: v })}
                     emptyValue={undefined}
                     pad
-                    className="w-16 min-h-touch px-1 rounded-control bg-cave-950
+                    className={`${editing ? 'w-full min-w-0' : 'w-16'} min-h-touch px-0.5 sm:px-1 rounded-control bg-cave-950
                                border border-cave-700 reading text-sm text-center
                                focus:outline-none focus:border-ebc-straw
                                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                               [&::-webkit-inner-spin-button]:appearance-none"
+                               [&::-webkit-inner-spin-button]:appearance-none`}
                   />
                 ) : (
                   <span className="reading text-cave-50">{source.ph ?? '—'}</span>
@@ -256,8 +263,8 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
           <p className="flex items-start gap-2 text-sm text-cave-400 leading-snug px-1">
             <Info className="w-4 h-4 shrink-0 mt-0.5" />
             <span>
-              Des degrés français sur l’analyse ? 1 °fH de TAC = 12.2 ppm de HCO₃ ; 1 °fH de
-              dureté calcique = 4.0 ppm de Ca ; 1 °fH de dureté magnésienne = 2.4 ppm de Mg.
+              Des degrés français sur l’analyse ? 1 °fH de TAC = 12,2 ppm de HCO₃ ; 1 °fH de
+              dureté calcique = 4,0 ppm de Ca ; 1 °fH de dureté magnésienne = 2,4 ppm de Mg.
             </span>
           </p>
           <Input

@@ -1,0 +1,9 @@
+# c5a — c4 + filtres en tiroir (passe 3, 09.11)
+Base : c4 telle quelle (carte de la US, pont des plages, écarts « + / = », houblon). Ses mots : « j'ai besoin de plus de filtre, par style, atténuation ECT... ».
+Idée : sous le champ, une rangée de filtres repliés (Style, °C, Atténuation, Forme, Floculation, Effets…) ; « Filtres » l'ouvre en tiroir sur place : style en pastilles, °C et atténuation en plages à poignées (ta conduite 18–20 marquée), forme en segments, floculation, effets en pastilles de couleur, disponibilité ; chaque choix porte son compte ; « Voir 34 ».
+Cadres : 1 « 1056 » tapé, filtres fermés (chemin US → achetable de c4) · 2 tiroir ouvert · 3 trois filtres posés (sèche · 18–20 °C · 75–82 %) : 34 = 3 vendues CH · FR · DE, 28 fabricant européen, 3 rares, en jauge.
+Comptes (vrais, `comptes-p2c.mjs` sur `yeastCatalogueBootstrap.json` et `yeastSupplyBootstrap.json`) : sèche 126, liquide 190, 1 417 fiches sans forme ; floculation faible 209, moyenne 411, haute 186, très haute 12 ; banane 39, clou 31 (texte de la fiche) ; houblon documenté 127 ; neutre « ≈135 » (recherche de « neutral/clean » dans le texte : estimé) ; fruité sans compte ; CH · FR · DE 6. « °C » = la plage de la fiche couvre 18–20 ; « atténuation » = la plage recoupe 75–82.
+Effets relus contre savoir/TROUS-COMBLES.md : Verdant et Nottingham « thiols forts · terpènes moyens » ; Pomona « terpènes forts · thiols moyens » ; Abbaye « banane à chaud », épicé oui (POF + déclaré) ; Nottingham « neutre à peu fruité » ; BRY-97 arômes non documentés.
+Boosters : rangee-filtres, tiroir-filtres, style, plage-temperature, plage-attenuation, forme, effets, disponibilite, compte-rayons, effets-us, pont.
+Mots : 112 bruts, 82 hors données (> 72). verifier-page PAGE OK ; aucun débordement.
+Limite : le style ne pose ici aucune plage (c'est l'idée de c5b).

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u2 · TVA, la frise des mois dans Annuel</title>
+<style>
+:root{--tvau2-line:#DDDDDD;--tvau2-surf:#F5F5F5;--tvau2-surf2:#EBEBEB;--tvau2-fin:#1F64A3;--tvau2-red:#C99A2E;--tvau2-redt:#7A5A12;--tvau2-nor:#4F7FD0;--tvau2-att:#8A5A00;--tvau2-attf:#E3B55D;--tvau2-etr:#6A4FB0;--tvau2-vte:#8E79C9;--tvau2-ok:#4C6B2A;--tvau2-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3;color:#111;background:#fff}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.tvau2-m{font-family:var(--tvau2-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tvau2-head{border-bottom:1px solid var(--tvau2-line)}
+.tvau2-head-in{max-width:880px;margin:0 auto;height:40px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.tvau2-logo{width:30px;height:30px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau2-brand{font-size:18px;font-weight:500;flex:1}
+.tvau2-hbtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#333}
+.tvau2-hbtn.tvau2-f{background:var(--tvau2-surf2);border:1px solid #BFBFBF}
+.tvau2-wrap{max-width:872px;margin:0 auto;padding:0 12px 76px}
+.tvau2-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--tvau2-line)}
+.tvau2-tabs button{height:34px;color:#333;border-bottom:2px solid transparent}
+.tvau2-tabs button[aria-selected=true]{color:var(--tvau2-fin);border-color:var(--tvau2-fin);background:rgba(31,100,163,.05);font-weight:600}
+.tvau2-bar{display:flex;align-items:center;gap:8px;padding:8px 0}
+.tvau2-bar h2{font-size:16px;font-weight:600;margin:0}
+.tvau2-seg{display:flex;gap:2px}
+.tvau2-seg button{height:28px;padding:0 10px;border-radius:10px;border:1px solid transparent;font-size:13px;color:#333}
+.tvau2-seg button[aria-pressed=true]{background:var(--tvau2-surf2);border-color:#BFBFBF;color:var(--tvau2-fin);font-weight:600}
+.tvau2-ex{margin-left:auto;display:flex;align-items:center;gap:2px}
+.tvau2-ex button{width:26px;height:28px;display:grid;place-items:center;color:#333;border-radius:10px}
+.tvau2-ex strong{font-family:var(--tvau2-mono);font-size:15px}
+.tvau2-off{display:flex;gap:6px;align-items:center;margin:0 0 6px;padding:6px 10px;border-radius:10px;background:var(--tvau2-surf);font-size:13px;color:#333}
+/* La frise */
+.tvau2-chart{position:relative;border-top:1px solid var(--tvau2-line);padding-top:8px}
+.tvau2-tot{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 8px}
+.tvau2-tot .tvau2-lbl{font-size:13px;color:#333}
+.tvau2-big{white-space:nowrap;font-family:var(--tvau2-mono);font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:32px}
+.tvau2-big small{font-size:15px;font-weight:500}
+.tvau2-big.tvau2-rg{font-size:22px}
+.tvau2-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
+.tvau2-chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:13px;border:1px solid #BFBFBF;font-size:13px;background:#fff}
+.tvau2-chip[aria-pressed=false]{opacity:.55}
+.tvau2-chip b{font-family:var(--tvau2-mono);font-weight:600}
+.tvau2-sq{width:10px;height:10px;border-radius:50%;display:inline-block}
+.tvau2-plot{position:relative;height:196px;margin-top:6px;display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;border-bottom:1.5px solid #111}
+.tvau2-plot.tvau2-div{height:262px;align-items:stretch}
+.tvau2-grid{position:absolute;left:0;right:0;border-top:1px dashed #D0D0D0;pointer-events:none}
+.tvau2-grid span{position:absolute;left:0;top:-15px;font-family:var(--tvau2-mono);font-size:12px;color:#666;background:#fff;padding-left:3px}
+.tvau2-col{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;min-width:0;border-radius:10px}
+.tvau2-col[aria-pressed=true]{background:rgba(31,100,163,.08)}
+.tvau2-col i{display:block;width:100%}
+.tvau2-col .tvau2-pk{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--tvau2-mono);font-size:12px;font-weight:600;white-space:nowrap}
+.tvau2-col.tvau2-futur{background:none}
+.tvau2-col.tvau2-futur::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;border:1px dashed #9E9E9E;border-bottom:0}
+.tvau2-h{background:repeating-linear-gradient(135deg,#9E9E9E 0 2px,#fff 2px 5px);outline:1px dashed #9E9E9E;outline-offset:-1px}
+.tvau2-d{background:repeating-linear-gradient(135deg,var(--tvau2-attf) 0 3px,#fff 3px 6px);outline:1.5px solid var(--tvau2-att);outline-offset:-1.5px}
+.tvau2-mark{position:absolute;left:50%;transform:translateX(-50%);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:12px;font-weight:700}
+.tvau2-axis{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:3px;font-size:12px;color:#333;height:16px}
+.tvau2-axis span{text-align:center;white-space:nowrap}
+.tvau2-tag{display:flex;justify-content:center;height:22px}
+.tvau2-tag span{display:inline-flex;align-items:center;gap:2px;height:20px;padding:0 5px;border-radius:10px;background:#EEE9F8;color:var(--tvau2-etr);font-size:12px;font-weight:600}
+.tvau2-half{display:flex;flex-direction:column;justify-content:flex-end}
+.tvau2-half.tvau2-bas{justify-content:flex-start;border-top:1.5px solid #111}
+.tvau2-sw{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;border-bottom:1px solid var(--tvau2-line);text-align:left;margin-top:8px;border-top:1px solid var(--tvau2-line)}
+.tvau2-sw strong{flex:1;font-size:15px}
+.tvau2-sw .tvau2-res{font-size:13px;color:#333}
+.tvau2-sw .tvau2-res b{font-family:var(--tvau2-mono);color:var(--tvau2-etr)}
+.tvau2-tog{width:40px;height:24px;border-radius:12px;background:#BFBFBF;position:relative;flex:none}
+.tvau2-tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.tvau2-tog[data-on="1"]{background:var(--tvau2-etr)}
+.tvau2-tog[data-on="1"]::after{left:19px}
+.tvau2-net{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 0;border-bottom:1px solid var(--tvau2-line)}
+.tvau2-net div{font-size:12px;color:#333}
+.tvau2-net b{display:block;font-family:var(--tvau2-mono);font-size:16px;color:#111}
+.tvau2-net .tvau2-g b{color:var(--tvau2-ok)}
+.tvau2-net .tvau2-v b{color:var(--tvau2-etr)}
+.tvau2-fine{font-size:12px;color:#666;margin:6px 0}
+.tvau2-sec{display:flex;align-items:baseline;justify-content:space-between;padding:10px 0 4px}
+.tvau2-sec h3{margin:0;font-size:15px}
+.tvau2-sec a{font-size:13px;color:var(--tvau2-fin);text-decoration:none;font-weight:600;display:inline-flex;align-items:center}
+.tvau2-row{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:center;width:100%;min-height:42px;padding:4px 0;border-bottom:1px solid var(--tvau2-line);text-align:left}
+.tvau2-date{font-family:var(--tvau2-mono);font-size:12px;color:#333;text-align:center;line-height:1.1}
+.tvau2-row strong{display:block;font-size:14px}
+.tvau2-row .tvau2-s{display:block;font-size:12px;color:#666}
+.tvau2-row .tvau2-v{font-family:var(--tvau2-mono);font-weight:600;text-align:right;font-size:14px}
+.tvau2-row .tvau2-v small{display:block;font-weight:400;font-size:12px;color:#666}
+.tvau2-rate{display:inline-block;width:4px;height:28px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.tvau2-pill{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:10px;font-size:12px;font-weight:600;margin-left:4px;vertical-align:1px}
+.tvau2-pill.tvau2-a{background:#FBEFD5;color:var(--tvau2-att)}
+.tvau2-pill.tvau2-u{background:var(--tvau2-surf2);color:#333}
+.tvau2-pill.tvau2-e{background:#EEE9F8;color:var(--tvau2-etr)}
+.tvau2-act{display:flex;gap:6px;margin-top:4px}
+.tvau2-act button{height:26px;padding:0 9px;border-radius:10px;border:1px solid #BFBFBF;font-size:13px}
+.tvau2-act button.tvau2-k{background:#111;color:#fff;border-color:#111}
+.tvau2-comp{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;text-align:left}
+.tvau2-comp strong{flex:1;font-size:15px;font-weight:500}
+.tvau2-comp span{font-size:13px;color:#666}
+.tvau2-empty{text-align:center;padding:12px 8px 8px}
+.tvau2-empty h3{margin:0 0 4px;font-size:16px}
+.tvau2-empty p{margin:0;color:#333}
+.tvau2-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--tvau2-line);z-index:5}
+.tvau2-nav-in{max-width:872px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr) 76px;height:46px}
+.tvau2-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:#333;text-decoration:none}
+.tvau2-nav a.tvau2-on{background:rgba(31,100,163,.12);color:#111;box-shadow:inset 0 3px 0 var(--tvau2-fin)}
+.tvau2-fab{align-self:center;justify-self:center;width:64px;height:40px;border-radius:20px;background:#111;color:#fff;display:grid;place-items:center}
+@media (min-width:900px){.tvau2-cols{display:grid;grid-template-columns:3fr 2fr;gap:24px;align-items:start}.tvau2-head-in{padding:0}}
+</style>
+</head>
+<body>
+<div id="tvau2-root"></div>
+<script>
+(function(){
+  var etat=new URLSearchParams(location.search).get('etat')||'annee';
+  if(['annee','inconnues','douteuse','etrangere','vide','si','horsligne'].indexOf(etat)<0)etat='annee';
+  var P={
+    mug:'<path d="M6 7h9v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7c0-2 1.5-3 3-3 1 0 1.6.5 2 1 .5-.6 1.2-1 2-1 1.4 0 2 1 2 3"/>',
+    moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+    bulle:'<path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M9 9.5h6M9 12.5h4"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15 13.5h2"/>',
+    cubes:'<path d="M12 3 8 5v4l4 2 4-2V5z"/><path d="M8 11 4 13v4l4 2 4-2v-4z"/><path d="M16 11l-4 2v4l4 2 4-2v-4z"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M3 19c.7-3.4 3-5 6-5s5.3 1.6 6 5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.3c1.7.8 2.9 2.4 3.3 4.7"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    right:'<path d="m9 6 6 6-6 6"/>',
+    left:'<path d="m15 6-6 6 6 6"/>',
+    spark:'<path d="M12 4c.6 3.6 2.4 5.4 6 6-3.6.6-5.4 2.4-6 6-.6-3.6-2.4-5.4-6-6 3.6-.6 5.4-2.4 6-6z"/><path d="M18.5 3.5v3M17 5h3"/><circle cx="6" cy="18.5" r="1.5"/>',
+    cloud:'<path d="M7 18h10a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M4 4l16 16"/>',
+    globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.4 5.2 3.4 8.5s-1 6.1-3.4 8.5c-2.4-2.4-3.4-5.2-3.4-8.5s1-6.1 3.4-8.5z"/>'
+  };
+  function ico(n,s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(36/s).toFixed(3)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+  var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  // TVA payée par mois (2,6 % puis 8,1 %), janv.–oct. 2026 ; somme 869,89.
+  var M=[[12.10,29.97],[8.40,49.95],[15.71,296.72],[14.20,22.56],[10.40,58.00],[24.83,95.91],[11.75,27.00],[13.60,42.00],[5.29,72.00],[8.20,51.30]];
+  // TVA comprise dans les ventes, si assujetti (8,1 % de chaque mois vendu) ; somme 2 340,83.
+  var V=[108.65,125.88,157.36,198.57,260.76,323.70,367.91,328.20,263.76,206.04];
+  var RED='#C99A2E',NOR='#4F7FD0';
+  var inc={4:52.45,6:10.20,7:9.80,8:10.16,9:10.30};
+  var sel=-1, si=etat==='si';
+
+  function chrome(){
+    var t=['Synthèse','Opérations','Prévisions','Annuel'];
+    return '<header class="tvau2-head"><div class="tvau2-head-in"><span class="tvau2-logo" aria-hidden="true">'+ico('mug',20)+'</span><span class="tvau2-brand">L’Affinée</span>'+
+      '<button class="tvau2-hbtn" aria-label="Thème sombre">'+ico('moon',18)+'</button><button class="tvau2-hbtn tvau2-f" aria-label="Rechercher">'+ico('search',18)+'</button><button class="tvau2-hbtn tvau2-f" aria-label="Compagnon">'+ico('bulle',18)+'</button></div></header>'+
+      '<main class="tvau2-wrap"><nav class="tvau2-tabs" role="tablist" aria-label="Finances">'+t.map(function(x,i){return '<button role="tab" aria-selected="'+(i===3)+'">'+x+'</button>';}).join('')+'</nav>'+
+      '<div class="tvau2-bar"><h2>Bilan et impôts</h2><div class="tvau2-seg" role="group" aria-label="Lecture de l’année"><button aria-pressed="false">Bilan</button><button aria-pressed="true">TVA</button></div>'+
+      '<div class="tvau2-ex"><button aria-label="Exercice précédent">'+ico('left',16)+'</button><strong>2026</strong><button aria-label="Exercice suivant">'+ico('right',16)+'</button></div></div>'+
+      (etat==='horsligne'?'<div class="tvau2-off">'+ico('cloud',16)+'Hors ligne · chiffres de ce téléphone, 31.10 à 18:42</div>':'')+
+      '<div id="tvau2-body"></div></main>';
+  }
+  function nav(){
+    var it=[['grid','Bord','#333'],['wallet','Finances','#1F64A3'],['mug','Brassins','#9A4F1E'],['cubes','Stocks','#4C6B2A'],['users','Clients','#333']];
+    return '<nav class="tvau2-nav" aria-label="Navigation principale"><div class="tvau2-nav-in">'+it.map(function(x){return '<a href="#" class="'+(x[1]==='Finances'?'tvau2-on':'')+'"><span style="color:'+x[2]+'">'+ico(x[0],18)+'</span>'+x[1]+'</a>';}).join('')+
+      '<button class="tvau2-fab" data-commun aria-label="Actions rapides">'+ico('plus',22)+'</button></div></nav>';
+  }
+  function f2(v){var s=v.toFixed(2).split('.');return s[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ')+','+s[1];}
+
+  function frise(){
+    var vide=etat==='vide';
+    var H=si?118:170, K=H/320;
+    var cols='';
+    for(var i=0;i<12;i++){
+      var futur=i>9||vide;
+      if(futur){cols+='<div class="tvau2-col tvau2-futur" aria-hidden="true"></div>';continue;}
+      var r=M[i][0],n=M[i][1],tot=r+n, cap='', mark='';
+      if(etat==='inconnues'&&inc[i]){n-=inc[i];cap='<i class="tvau2-h" style="height:'+(inc[i]*K).toFixed(1)+'px"></i>';mark='<span class="tvau2-mark" style="bottom:'+(tot*K+2).toFixed(0)+'px;background:#EBEBEB;color:#333">?</span>';}
+      if(etat==='douteuse'&&i===5){n-=95.91;cap='<i class="tvau2-d" style="height:'+(95.91*K).toFixed(1)+'px"></i>';mark='<span class="tvau2-mark" style="bottom:'+(tot*K+2).toFixed(0)+'px;background:#FBEFD5;color:#8A5A00">!</span>';}
+      if(etat==='horsligne'&&i===9){cap='<i class="tvau2-h" style="height:16px"></i>';mark='<span class="tvau2-mark" style="bottom:'+(tot*K+18).toFixed(0)+'px;background:#EBEBEB;color:#333">?</span>';}
+      var pk=(i===2&&!si)?'<span class="tvau2-pk" style="bottom:'+(tot*K+3).toFixed(0)+'px">312,43</span>':'';
+      var stack=cap+'<i style="height:'+(n*K).toFixed(1)+'px;background:'+NOR+'"></i><i style="height:'+(r*K).toFixed(1)+'px;background:'+RED+'"></i>';
+      if(si){
+        cols+='<button class="tvau2-col" data-m="'+i+'" aria-pressed="'+(sel===i)+'" aria-label="'+MOIS[i]+' : '+f2(tot)+' payés, '+f2(V[i])+' à verser si assujetti" style="display:grid;grid-template-columns:100%;justify-content:stretch;grid-template-rows:'+H+'px 1fr">'+
+          '<span class="tvau2-half" style="position:relative">'+pk+mark+stack+'</span><span class="tvau2-half tvau2-bas"><i style="height:'+(V[i]*K).toFixed(1)+'px;background:#8E79C9"></i></span></button>';
+      } else {
+        cols+='<button class="tvau2-col" data-m="'+i+'" aria-pressed="'+(sel===i)+'" aria-label="'+MOIS[i]+' : '+f2(tot)+' CHF de TVA">'+pk+mark+stack+'</button>';
+      }
+    }
+    var grid=(si||vide)?'':'<div class="tvau2-grid" style="bottom:'+(100*K).toFixed(0)+'px"><span>100</span></div><div class="tvau2-grid" style="bottom:'+(200*K).toFixed(0)+'px"><span>200</span></div>';
+    var ax='<div class="tvau2-axis">'+MOIS.map(function(m,i){return '<span>'+(i%3===0?m:'')+'</span>';}).join('')+'</div>';
+    var tags='';
+    if(etat==='etrangere'){tags='<div class="tvau2-axis tvau2-tag" style="margin-top:2px">'+MOIS.map(function(m,i){return '<span style="background:none">'+(i===7?'<span>'+ico('globe',12)+'DE</span>':i===8?'<span>'+ico('globe',12)+'CH</span>':'')+'</span>';}).join('')+'</div>';}
+    return '<div class="tvau2-plot'+(si?' tvau2-div':'')+'" role="group" aria-label="TVA payée par mois, 2026"'+(si?' style="border-bottom:0"':vide?' style="height:40px"':'')+'>'+grid+cols+'</div>'+ax+tags;
+  }
+
+  function tete(){
+    var lbl='TVA de tes achats', big='869,89<small> CHF</small>', cls='';
+    if(etat==='inconnues'){big='776,98 + ?<small> CHF</small>';cls=' tvau2-rg';lbl='TVA lue · au plus 869,89';}
+    if(etat==='douteuse'){big='869,89 ou 901,98';cls=' tvau2-rg';}
+    if(etat==='horsligne'){lbl='TVA lue · 2 photos pas encore lues';big='869,89 + ?<small> CHF</small>';cls=' tvau2-rg';}
+    if(etat==='vide')return '<div class="tvau2-tot"><span><span class="tvau2-lbl">TVA payée sur tes achats</span><div class="tvau2-big">—</div></span></div>';
+    var r=etat==='inconnues'?'124,48':'124,48', n=etat==='inconnues'?'652,50':etat==='douteuse'?'649,50':'745,41';
+    return '<div class="tvau2-tot"><span><span class="tvau2-lbl">'+lbl+'</span><div class="tvau2-big'+cls+'">'+big+'</div></span>'+
+      '<span class="tvau2-chips"><span class="tvau2-chip"><i class="tvau2-sq" style="background:'+RED+'"></i>2,6 % <b>'+r+'</b></span><span class="tvau2-chip"><i class="tvau2-sq" style="background:'+NOR+'"></i>8,1 % <b>'+n+'</b></span>'+
+      (etat==='inconnues'?'<span class="tvau2-chip"><i class="tvau2-sq tvau2-h"></i>6 sans TVA</span>':'')+
+      (etat==='douteuse'?'<span class="tvau2-chip"><i class="tvau2-sq tvau2-d"></i>1 à vérifier</span>':'')+
+      (etat==='etrangere'?'<span class="tvau2-chip" style="color:#6A4FB0"><i class="tvau2-sq" style="background:#6A4FB0"></i>DE <b>38,00 EUR</b></span>':'')+'</span></div>';
+  }
+  function bascule(){
+    if(etat==='vide')return '';
+    return '<button class="tvau2-sw" id="tvau2-si" aria-pressed="'+si+'"><span class="tvau2-tog" data-on="'+(si?1:0)+'" aria-hidden="true"></span><strong>Si j’étais assujetti</strong>'+
+      (si?'<span class="tvau2-res">de plus <b>1 470,94</b></span>':'<span class="tvau2-res">récupérable ?</span>')+'</button>'+
+      (si?'<div class="tvau2-net"><div class="tvau2-g">Récupéré<b>869,89</b></div><div class="tvau2-v">À verser, 8,1 %<b>2 340,83</b></div><div>Coût TVA<b>2 340,83</b></div></div>'+
+        '<p class="tvau2-fine">En haut, la TVA de tes achats (récupérable) ; en bas, celle de tes ventes. Prix TTC inchangés, ventes 31 240,00. Aujourd’hui : 869,89. Gagnant sous 11 609 CHF de ventes par an. À confirmer avec ta fiduciaire.</p>':'');
+  }
+  function L(d,nm,s,v,t,extra,sv){
+    return '<button class="tvau2-row" data-mots="lignes"><span class="tvau2-date">'+d+'</span><span><strong>'+nm+(extra||'')+'</strong><span class="tvau2-s">'+s+'</span></span><span class="tvau2-v"><span class="tvau2-rate" style="background:'+(t==='e'?'#6A4FB0':t==='?'?'#9E9E9E':t==='2,6'?RED:NOR)+'"></span>'+v+(sv?'<small>'+sv+'</small>':'')+'</span></button>';
+  }
+  function liste(){
+    if(etat==='vide')return '<div class="tvau2-empty"><h3>Aucun achat en 2026</h3><p>Le bouton + enregistre un achat ; chaque mois se remplira de sa TVA.</p></div>'+
+      L('2025','Exercice 2025','41 factures · tout lu','1 204,30','8,1');
+    var titre=sel>=0?MOIS[sel]+' 2026':'Les plus grosses TVA';
+    var rows='';
+    if(sel===2){
+      rows=L('14.03','Inox-Pro SA','Fermenteur 120 L · 3 820,00','286,23','8,1')+L('20.03','Malterie du Léman','Pils et Munich · 620,00','15,71','2,6')+L('27.03','Vetropack','Bouteilles 33 cl · 140,00','10,49','8,1');
+    } else if(sel>=0){
+      var t=M[sel][0]+M[sel][1];
+      rows=L(MOIS[sel],'TVA du mois','2,6 % '+f2(M[sel][0])+' · 8,1 % '+f2(M[sel][1]),f2(t),'8,1');
+    } else {
+      rows=L('14.03','Inox-Pro SA','Fermenteur 120 L · 3 820,00','286,23','8,1');
+      if(etat==='douteuse'){
+        rows+='<div class="tvau2-row" data-mots="lignes" style="grid-template-columns:42px 1fr auto"><span class="tvau2-date">12.06</span><span><strong>Vetropack<span class="tvau2-pill tvau2-a">à vérifier</span></strong><span class="tvau2-s">1 280,00 · lu 128,00 = 10 %, attendu 95,91 à 8,1 %</span><span class="tvau2-act"><button class="tvau2-k">Garder <b class="tvau2-m">95,91</b></button><button>Garder <b class="tvau2-m">128,00</b></button></span></span><span class="tvau2-v"><span class="tvau2-rate" style="background:#E3B55D"></span>?</span></div>';
+      } else rows+=L('12.06','Vetropack','Bouteilles 33 cl · 1 280,00','95,91','8,1');
+      if(etat==='inconnues'){
+        rows+=L('05.05','Imprimerie du Jura','Étiquettes · 700,00 · TVA non lue','?','?','<span class="tvau2-pill tvau2-u">2 pièces</span>','≤ 52,45');
+        rows+=L('juil.–oct.','Landi','CO₂ et nettoyage · 540,00 · tickets sans TVA','?','?','<span class="tvau2-pill tvau2-u">4 tickets</span>','≤ 40,46');
+      } else rows+=L('05.05','Imprimerie du Jura','Étiquettes · 700,00','52,45','8,1');
+      if(etat==='etrangere'){
+        rows+=L('22.09','Brouwland via La Poste','TVA suisse à l’importation · comptée','47,20','8,1','<span class="tvau2-pill tvau2-e">'+ico('globe',12)+'CH</span>');
+        rows+=L('07.08','Brauzubehör, Konstanz','MwSt 19 % · pas une TVA suisse · hors total','38,00','e','<span class="tvau2-pill tvau2-e">'+ico('globe',12)+'DE</span>','EUR');
+      } else rows+=L('22.09','Brouwland via La Poste','Import · matériel','47,20','8,1');
+      rows+=L('10.06','Malterie du Léman','Malt pale · 980,00','24,83','2,6');
+      if(etat==='horsligne')rows+=L('31.10','2 photos en attente','Lues au retour du réseau · pas comptées','?','?','<span class="tvau2-pill tvau2-u">hors ligne</span>');
+    }
+    return '<div class="tvau2-sec"><h3>'+titre+'</h3><a href="#">'+(sel>=0?'Toute l’année':'38 factures')+ico('right',14)+'</a></div>'+rows;
+  }
+  function pied(){return '<button class="tvau2-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>Comprendre ma TVA</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button>';}
+
+  function rendre(){
+    document.getElementById('tvau2-body').innerHTML='<div class="tvau2-cols"><div class="tvau2-chart">'+tete()+frise()+bascule()+'</div><div>'+liste()+pied()+'</div></div>';
+    [].forEach.call(document.querySelectorAll('.tvau2-col[data-m]'),function(b){b.onclick=function(){var m=+b.getAttribute('data-m');sel=sel===m?-1:m;rendre();};});
+    var s=document.getElementById('tvau2-si');if(s)s.onclick=function(){si=!si;rendre();};
+  }
+  document.getElementById('tvau2-root').innerHTML=chrome()+nav();
+  rendre();
+})();
+</script>
+</body>
+</html>
