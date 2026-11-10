@@ -56,6 +56,10 @@ export interface EntreeControles {
   attendusIndependant?: number | null;
   /** Parmi les lignes du brouillon, celles de type remise : un rabais n'est pas un article (bench b1, sunstore-2 : 3 articles et 2 rabais, non 5 articles). */
   nRabais?: number;
+  /** Mission lecture-robuste (jeu en ligne 1, doc2) : les lignes lues SANS montant (« Sédation » imprimée sans prix) ne sont pas dans la colonne des montants : hors du comptage indépendant. */
+  nSansMontant?: number;
+  /** Mission lecture-robuste (jeu en ligne 1, doc14) : les lignes de port rangées à part (« dont port ») ne sont pas des lignes annoncées. */
+  nPort?: number;
   /** Les lignes que PLUSIEURS lectures n'ont pas confirmées (une lecture seule les avait, la retenue non) : leur nombre et leur somme en centimes. Hors du brouillon, donc hors des sommes. */
   vusUneLecture?: { n: number; cents: number } | null;
   /** Le montant effectivement payé lu sur la pièce (règlement), en centimes ; `null` : non lu. */
@@ -128,7 +132,11 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const independant = e.attendusIndependant ?? null;
   /* Les deux comptages (colonne des montants, annonce) comptent des LIGNES, remises comprises : ils se comparent aux lignes lues ; l'affichage dit les articles et les rabais. */
   const reference = independant ?? e.attendus;
-  const ecartArticles = reference === null ? null : nLignesLues - reference;
+  /* Le nombre comparé : les lignes lues ; ou, si c'est lui qui égale le comptage, sans celles qu'un comptage peut ne pas voir (les lignes sans montant
+     pour la colonne des montants ; le port pour l'annonce : une pièce l'annonce dans ses lignes, une autre à part, p3c D12 contre doc14). */
+  const horsComptage = independant !== null ? (e.nSansMontant ?? 0) : (e.nPort ?? 0);
+  const nCompares = reference !== null && horsComptage > 0 && nLignesLues !== reference && nLignesLues - horsComptage === reference ? reference : nLignesLues;
+  const ecartArticles = reference === null ? null : nCompares - reference;
   const rabais = nRabais ? ` · ${nRabais} rabais` : '';
   const ajoutExplique = ecartCents !== null && ecartCents > 0 && e.ajoutsCents > 0 && ecartCents === e.ajoutsCents;
   const rangs: RangControle[] = [];
@@ -142,7 +150,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   if (ecartArticles === null) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles', valeurs: `${nLus} lus${rabais} · non imprimé` });
   else if (ecartArticles === 0 && independant !== null) rangs.push({ cle: 'articles', verdict: 'ok', texte: 'Articles lus = comptés', valeurs: `${nLus}${rabais}` });
   else if (ecartArticles === 0) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}`, note: 'annoncé par la lecture' }); /* p1 : la valeur reste courte (« 5 · 2 rabais »), jamais sur le libellé à 390 ; « annoncé » est la note sous la rangée. */
-  else rangs.push({ cle: 'articles', verdict: 'ecart', texte: independant !== null ? 'Articles lus ≠ comptés' : 'Articles lus ≠ annoncés', valeurs: `${nLignesLues} / ${reference}`, ecart: `${signe(ecartArticles)}${Math.abs(ecartArticles)}`,
+  else rangs.push({ cle: 'articles', verdict: 'ecart', texte: independant !== null ? 'Articles lus ≠ comptés' : 'Articles lus ≠ annoncés', valeurs: `${nCompares} / ${reference}`, ecart: `${signe(ecartArticles)}${Math.abs(ecartArticles)}`,
     ...(ecartArticles < 0 ? gesteManque() : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
 
   /* 2. CHF : la somme des lignes trouvées contre le total imprimé. */
