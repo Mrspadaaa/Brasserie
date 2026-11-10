@@ -599,7 +599,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 };
 
 /** Création d'un article : le strict minimum, le reste se complète depuis la fiche. */
-const NewStockItemSheet: React.FC<{
+export const NewStockItemSheet: React.FC<{
   open: boolean;
   onClose: () => void;
   onCreate: (draft: Partial<StockItem>) => void;

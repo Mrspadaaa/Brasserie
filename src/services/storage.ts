@@ -578,6 +578,16 @@ export const StorageService = {
     if (receipts.length) for (const m of receipts) impact.set(m.stockItemRef, (impact.get(m.stockItemRef) ?? 0) + m.quantity);
     else for (const item of target.stockImpact ?? []) impact.set(item.itemRef, (impact.get(item.itemRef) ?? 0) + item.addedQty);
     const stocks = this.getStocks(), all = [...stocks.rawMaterials, ...stocks.cleaning];
+    // PC-2 (c) : un article supprimé depuis n'a plus de stock à rendre ; l'achat s'annule quand même et l'écart est dit.
+    const nomDe = (ref: string) => (target.stockImpact ?? []).find(i => i.itemRef === ref)?.itemName ?? ref;
+    const supprimes: string[] = [];
+    for (const [ref, qty] of [...impact]) {
+      if (Number.isFinite(qty) && qty >= 0 && !all.some(s => s.ref === ref)) {
+        const ligne = (target.stockImpact ?? []).find(i => i.itemRef === ref);
+        supprimes.push(`${nomDe(ref)} (${ligne ? Units.format(qty, ligne.unit) : String(qty)} reçus, article supprimé : aucun stock à retirer)`);
+        impact.delete(ref);
+      }
+    }
     for (const [ref, qty] of impact) {
       const item = all.find(s => s.ref === ref);
       if (!Number.isFinite(qty) || qty < 0 || !item || item.currentStock + 1e-8 < qty) return { success: false, message: 'Le stock de cet achat a été consommé ou corrigé. Vérifie l’inventaire avant d’annuler ; aucune quantité ne sera effacée.' };
@@ -593,7 +603,7 @@ export const StorageService = {
     FirestoreRepo.put('transactions', id, { ...target, finance });
     FirestoreRepo.put('movements', 'VOID-' + id, { id: 'VOID-' + id, type: 'transaction-void', transactionId: id, createdAt: at });
     this.logAction('Annulation', 'Finances', id, 'Annulation conservée : ' + target.description, 'Le justificatif et les mouvements antérieurs sont conservés.');
-    return { success: true, message: 'Écriture annulée. Son justificatif et son historique sont conservés.' };
+    return { success: true, message: 'Écriture annulée. Son justificatif et son historique sont conservés.' + (supprimes.length ? ` Écart de stock : ${supprimes.join(' ; ')}.` : '') };
   },
 
   // Documentary hop index. Upserts never replace a filtered collection or copy inherited facts.
