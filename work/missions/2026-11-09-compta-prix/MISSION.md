@@ -39,6 +39,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte dans DEFAUTS-RECUR
 | Compta et prix · passe 3 (g5, g6 clôture, c5, p4 frigo, e2, v5 ; candidates g5c, g6, c5a, p4a, e2a, v5a ; e2c écartée) | 09.11 v3 | https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p3/index.html` |
 | Compta et prix · passe 4 (c6, p5a–f, e3, v6 ; candidates c6a, p5b, e3a, v6b) | 09.11 v4 | https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p4/index.html` |
 | Impôt bière de l'année (i1a–i1f, langue de p2b) | 10.11 v1 | https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE | `work/refonte-frontend/v4/outils/pages/2026-11-10-impot-annee/index.html` |
+| Outil d’analyse (a1a–a1h : évolution réelle, budget, année contre année) | 10.11 v1 | https://claude.ai/artifact/AxXZLiq11AEYqsVDTjHJN4 | `work/refonte-frontend/v4/outils/pages/2026-11-10-analyse/index.html` |
 
 ## Sources
 - `INVENTAIRE-CODE.md`, `BRIEF-AUTEUR.md`, `work/missions/BUGS.md`, PRODUCT.md, DESIGN.md
