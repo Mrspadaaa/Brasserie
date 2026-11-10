@@ -3166,7 +3166,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .brew-page.bz .bz-actions button { height: 32px; min-height: 32px; padding: 0 12px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t0); font-size: 14px; font-weight: 600; }
 .brew-page.bz .bz-actions button:last-child { margin-left: auto; background: var(--bz-action); border-color: var(--bz-action); color: var(--bz-action-text); }
-.brew-page.bz .bz-precedent { margin-top: 8px; color: var(--bz-t2); font-size: 12px; }
+.brew-page.bz .bz-precedent { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; color: var(--bz-t2); font-size: 12px; }
 .brew-page.bz .bz-mesure-form { margin: 0; }
 .brew-page.bz .bz-planning { margin-top: 8px; }
 @media (max-width: 900px) {
@@ -3255,6 +3255,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-lecture { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-height: 40px; }
 .brew-page.bz .bz-lecture .bz-saisie { margin-top: 0; flex: 1 1 auto; min-width: 0; }
 .brew-page.bz .bz-val { display: flex; align-items: baseline; gap: 4px; min-height: 40px; padding: 0 2px; border: 0; border-bottom: 1.5px dashed var(--bz-border2); border-radius: 0; background: none; color: var(--bz-t0); }
+.brew-page.bz .bz-quoi { flex: 1 1 auto; min-width: 0; white-space: nowrap; color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-val b { font-size: 28px; line-height: 1.05; font-weight: 600; }
 .brew-page.bz .bz-val[data-vide] b { color: var(--bz-warn); }
 .brew-page.bz .bz-val .bz-u { color: var(--bz-t2); font-size: 14px; }
@@ -3279,6 +3280,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-zone { position: relative; height: 44px; }
 .brew-page.bz .bz-zone .bz-echelle-rail { top: 10px; }
 .brew-page.bz .bz-zone .bz-echelle-cible { top: 6px; }
+.brew-page.bz .bz-zone .bz-tic { position: absolute; top: 16px; width: 1px; height: 5px; background: var(--bz-border2); transform: translateX(-50%); }
 .brew-page.bz .bz-pouce { position: absolute; top: 0; width: 0; transition: left .15s ease-out; pointer-events: none; }
 .brew-page.bz .bz-pouce i { position: absolute; left: -2px; top: 2px; width: 4px; height: 22px; border-radius: 2px; background: var(--bz-hop); }
 .brew-page.bz .bz-pouce b { position: absolute; left: -11px; top: 20px; width: 22px; height: 22px; border-radius: 50%; background: var(--bz-hop); border: 3px solid var(--bz-page); box-shadow: 0 0 0 1px var(--bz-hop); }

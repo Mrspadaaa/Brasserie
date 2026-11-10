@@ -42,3 +42,21 @@ export function bornesCurseur(kind: ReadingKind, min: number, max: number): { mi
     max: Number((Math.floor(max / pas + 1e-9) * pas).toFixed(decimales))
   };
 }
+
+/** L'écart des petits traits sous le rail (maquette m2) : 1 °C, 0,1 pH, 2 points de densité, 1 L. */
+const TRAIT: Record<ReadingKind, number> = { ph: 0.1, temperature: 1, densite: 0.002, volume: 1 };
+export function traitsCurseur(kind: ReadingKind, min: number, max: number): number[] {
+  const t = TRAIT[kind];
+  const out: number[] = [];
+  for (let i = 1; min + i * t < max - t / 2 && i < 200; i++) out.push(min + i * t);
+  return out;
+}
+
+/** Ce que la valeur dit, à côté d'elle (maquette m2) : sur quoi la mesure se prend. Rien quand le code ne le sait pas. */
+export function quoiMesure(kind: ReadingKind, stepId = ''): string | null {
+  if (kind === 'ph') return /^mash/.test(stepId) ? 'échantillon refroidi' : null;
+  if (kind === 'temperature') return /^mash/.test(stepId) ? 'maische à cœur' : null;
+  if (kind === 'densite') return ['refroidissement', 'ensemencement'].includes(stepId) ? 'moût refroidi' : null;
+  if (kind === 'volume') return stepId === 'ensemencement' ? 'au fermenteur' : stepId === 'preboil' ? 'avant ébullition' : null;
+  return null;
+}

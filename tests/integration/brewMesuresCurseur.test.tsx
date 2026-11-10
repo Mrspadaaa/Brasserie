@@ -18,11 +18,17 @@ function Feuille({ initial = vide(), onState }: { initial?: BrewDayState; onStat
     update={(change) => setState((p) => { const n = change(p); onState?.(n); return n; })} />;
 }
 const curseur = () => screen.getByRole('slider', { name: /Température/ });
+// Le palier mash-1 ouvre Mesurer sur le pH (mesure par défaut) : la température est un onglet à toucher.
+const rendreTemp = (props: Parameters<typeof Feuille>[0] = {}) => {
+  const r = render(<Feuille {...props} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Température' }));
+  return r;
+};
 const enregistrer = () => screen.getByRole('button', { name: 'Enregistrer' });
 
 describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
   it('a un curseur (role slider) sur l’échelle de la cible, sans type="number", et rien n’est posé au départ', () => {
-    const { container } = render(<Feuille />);
+    const { container } = rendreTemp();
     const s = curseur() as HTMLInputElement;
     expect(s.type).toBe('range');
     expect(container.querySelector('input[type="number"]')).toBeNull();
@@ -32,21 +38,21 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
   });
   it('un toucher sur le pouce (sans le bouger) pose la cible 67,0 et active Enregistrer', () => {
-    const { container } = render(<Feuille />);
+    const { container } = rendreTemp();
     fireEvent.pointerUp(curseur());
     expect(enregistrer()).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('67,0');
     expect(container.querySelector('.bz-pouce[data-vide]')).toBeNull();
   });
   it('un geste sur la piste pose la valeur ; hors cible, l’écart est dit', () => {
-    render(<Feuille />);
+    rendreTemp();
     fireEvent.change(curseur(), { target: { value: '65.2' } });
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('65,2');
-    expect(screen.getByText(/sous de la cible/)).toBeInTheDocument();
+    expect(screen.getByText(/sous/, { selector: 'span' })).toHaveTextContent('−0,8 sous la cible 66–68 °C');
     expect(enregistrer()).toBeEnabled();
   });
   it('±0,1 : le premier pas part de la cible, puis de la valeur posée', () => {
-    render(<Feuille />);
+    rendreTemp();
     fireEvent.click(screen.getByRole('button', { name: 'plus 0,1' }));
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('67,1');
     fireEvent.click(screen.getByRole('button', { name: 'moins 0,1' }));
@@ -54,13 +60,13 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('66,9');
   });
   it('Entrée au clavier sur le pouce pose la valeur, comme un toucher', () => {
-    render(<Feuille />);
+    rendreTemp();
     fireEvent.keyDown(curseur(), { key: 'Enter' });
     expect(enregistrer()).toBeEnabled();
   });
   it('Enregistrer écrit la valeur posée au journal, en nombre (virgule décimale à l’affichage)', () => {
     const onState = vi.fn();
-    render(<Feuille onState={onState} />);
+    rendreTemp({ onState });
     fireEvent.change(curseur(), { target: { value: '66.4' } });
     fireEvent.click(enregistrer());
     const s = onState.mock.calls.at(-1)![0] as BrewDayState;
@@ -69,12 +75,12 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
   });
   it('jamais une valeur enregistrée sans geste', () => {
     const onState = vi.fn();
-    render(<Feuille onState={onState} />);
+    rendreTemp({ onState });
     fireEvent.click(enregistrer());
     expect(onState).not.toHaveBeenCalled();
   });
   it('la valeur tapée reste possible (crayon), et le curseur la suit', () => {
-    render(<Feuille />);
+    rendreTemp();
     fireEvent.click(screen.getByRole('button', { name: 'Taper la valeur' }));
     const champ = screen.getByRole('textbox', { name: /Température/ });
     expect(champ).toHaveAttribute('inputmode', 'decimal');
@@ -83,7 +89,7 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     expect((curseur() as HTMLInputElement).value).toBe('68.3');
   });
   it('« Pourquoi maintenant » s’ouvre à un toucher', () => {
-    render(<Feuille />);
+    rendreTemp();
     const b = screen.getByRole('button', { name: /Pourquoi maintenant/ });
     expect(b).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(b);
@@ -116,7 +122,7 @@ describe('Relevés du jour : la case « ? » de chaque mesure attendue', () => {
     rendre(vide());
     const maische = screen.getByRole('button', { name: /Relever Maische/ });
     expect(maische).toHaveTextContent('?');
-    expect(screen.getByText('cible', { exact: false, selector: 'small' })).toBeInTheDocument();
+    expect(within(maische.closest('.bz-row') as HTMLElement).getByText(/cible/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Relever pH d’empâtage/ })).toHaveTextContent('?');
     expect(screen.getByText('0/2')).toBeInTheDocument();
   });

@@ -20,7 +20,7 @@ import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 import { nombreFr } from '../domain/nombreAffiche';
-import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur } from '../domain/measureSlider';
+import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur, traitsCurseur, quoiMesure } from '../domain/measureSlider';
 import { raisonMesure } from '../domain/brewMeasures';
 
 export const brewControl =
@@ -358,6 +358,7 @@ function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
       </div>
       <div className="bz-zone">
         <div className="bz-echelle-rail" />
+        {traitsCurseur(kind, scale.min, scale.max).map((t, i) => <span key={i} className="bz-tic" aria-hidden="true" style={{ left: at(t) }} />)}
         <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />
         <span className="bz-pouce" data-vide={pose ? undefined : ''} data-hors={hors ? '' : undefined} style={{ left: at(pos) }} aria-hidden="true"><i /><b /></span>
         <input
@@ -538,6 +539,7 @@ export function BrewDayMeasurements({
             <Pencil size={14} aria-hidden="true" />
           </button>
         )}
+        {scale && quoiMesure(kind, step.id) && <span className="bz-quoi">{quoiMesure(kind, step.id)}</span>}
         <div className="bz-saisie">
           <Input
             id="brew-reading"
@@ -607,14 +609,29 @@ export function BrewDayMeasurements({
             </p>
           ) : feedback ? (
             <>
-              <p className={`bz-verdict is-${feedback.tone}`}>
-                {feedback.tone === 'watch' ? <TriangleAlert size={14} aria-hidden="true" /> : feedback.tone === 'ok' ? <Check size={14} aria-hidden="true" /> : null}
-                <span>{feedback.title}</span>
-              </p>
-              {ecart != null && scale && (
-                <p className="bz-ecart">
-                  <span className="bz-m">{ecart > 0 ? '+' : '−'}{scale.fmt(Math.abs(ecart))}</span>{' '}
-                  {ecart > 0 ? 'au-dessus' : 'sous'} de la cible <span className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}</span>
+              {/* z1 / m2 : une seule phrase de verdict, la maquette dit « −0,8 sous la cible 66–68 °C » ou « dans la cible » ; le texte d'écart
+                  à la consigne (« Écart −3,1 °C · cible 67 °C ») mesurait un autre repère et contredisait la bande. */}
+              {ecart != null && scale && !/^Écart/.test(feedback.title) && (
+                // une alerte de borne (AM-41 à 43, pH, densité…) garde sa phrase, au-dessus de l'écart
+                <p className={`bz-verdict is-${feedback.tone}`}>
+                  <TriangleAlert size={14} aria-hidden="true" />
+                  <span>{feedback.title}</span>
+                </p>
+              )}
+              {ecart != null && scale ? (
+                <p className="bz-verdict is-watch bz-ecart" data-k="hors">
+                  <TriangleAlert size={14} aria-hidden="true" />
+                  <span>
+                    <b className="bz-m">{ecart > 0 ? '+' : '−'}{scale.fmt(Math.abs(ecart))}</b> {ecart > 0 ? 'au-dessus de' : 'sous'} la cible{' '}
+                    <b className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}{READING[kind].unit ? ` ${READING[kind].unit}` : ''}</b>
+                  </span>
+                </p>
+              ) : scale && feedback.tone === 'ok' && /^Écart/.test(feedback.title) ? (
+                <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>dans la cible</span></p>
+              ) : (
+                <p className={`bz-verdict is-${feedback.tone}`}>
+                  {feedback.tone === 'watch' ? <TriangleAlert size={14} aria-hidden="true" /> : feedback.tone === 'ok' ? <Check size={14} aria-hidden="true" /> : null}
+                  <span>{feedback.title}</span>
                 </p>
               )}
               {feedback.detail && <p className="bz-muet">{feedback.detail}</p>}
@@ -677,6 +694,9 @@ export function BrewDayMeasurements({
         </div>
       )}
       </>}
+      {!pairMode && scale && !last && value == null && !raw.trim() && (
+        <p className="bz-precedent">Aucun relevé {isMash(step.id) ? 'ce palier' : 'cette étape'} · un toucher sur le pouce pose <span className="bz-m">{scale.fmt(depart)}</span></p>
+      )}
       {pairMode && <div className="bz-precedent"><button type="button" aria-pressed="true" onClick={() => setPairMode(false)}>Mesure seule</button></div>}
     </section>
   );
