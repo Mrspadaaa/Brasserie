@@ -598,6 +598,16 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   );
 };
 
+/**
+ * Ordre des catégories proposées à la création : d'abord celles du déroulé d'un brassage (Malt, Houblon, Levure…), puis les autres
+ * catégories déjà présentes en stock, triées. Sur téléphone la liste ne montre que 2 lignes sous l'en-tête de la feuille (PC-2 a) :
+ * triée par ordre alphabétique, « Malt » était la 10e ligne, hors de vue, et le brasseur recevait « Divers ».
+ */
+export const ordonnerCategories = (connues: string[]): string[] => {
+  const autres = Array.from(new Set(connues)).filter((c) => !GROUP_ORDER.includes(c)).sort((x, y) => x.localeCompare(y, 'fr'));
+  return [...GROUP_ORDER, ...autres];
+};
+
 /** Création d'un article : le strict minimum, le reste se complète depuis la fiche. */
 export const NewStockItemSheet: React.FC<{
   open: boolean;
@@ -616,9 +626,8 @@ export const NewStockItemSheet: React.FC<{
 
   // Catégories et unités proposées d'après ce qui existe DÉJÀ en stock,
   // complétées par les catégories métier connues. Rien d'inventé.
-  const categoryOptions = Array.from(
-    new Set([...Suggestions.knownCategories(), ...GROUP_ORDER])
-  ).map((c) => ({ value: c, label: c }));
+  const categoryOptions = ordonnerCategories(Suggestions.knownCategories())
+    .map((c) => ({ value: c, label: c }));
   const unitOptions = Suggestions.knownUnits().map((u) => ({ value: u, label: u }));
 
   return (
