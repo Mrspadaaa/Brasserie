@@ -1437,21 +1437,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           )}
                         </div>
                       )}
-                      {thermalVisible && (
-                        <details
-                          className="bz-repli bz-suivi"
-                          // À deux colonnes, une étape sans ingrédient (Refroidissement) laissait la colonne principale à une seule ligne :
-                          // (p3 n° 8 retiré : ouvert d'emblée, il montrait l'ancien bloc ; il reste replié, VERDICT-p3 n° 1).
-                          open={(measuredStep.rampStartedAt != null && measuredStep.holdStartedAt == null)}
-                        >
-                          <summary>
-                            <Thermometer size={14} aria-hidden="true" />
-                            <span>Suivi thermique</span>
-                            <ChevronDown size={14} aria-hidden="true" />
-                          </summary>
-                          <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
-                        </details>
-                      )}
                       {staleTimer && (
                         <aside className="brew-recovery" role="status">
                           <BrewTag tone="due">Reprise du journal</BrewTag>
@@ -1638,6 +1623,20 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   </label>
                 ))}
               </section>
+            )}
+            {!isConsulting && !displayRecipe && thermalVisible && (
+              <details
+                className="bz-repli bz-suivi"
+                // m2 : replié en bas, après « À anticiper », juste avant « Aides et repères » (retouche pilote 10.11) ; ouvert d'emblée pendant la montée.
+                open={(measuredStep.rampStartedAt != null && measuredStep.holdStartedAt == null)}
+              >
+                <summary>
+                  <Thermometer size={14} aria-hidden="true" />
+                  <span>Suivi thermique</span>
+                  <ChevronDown size={14} aria-hidden="true" />
+                </summary>
+                <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
+              </details>
             )}
             <BrewAide
               className="bz-repli bz-aides"

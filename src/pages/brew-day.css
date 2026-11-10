@@ -2772,13 +2772,17 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   .brew-page.bz .brew-recipe-summary { order: 0; }
   .brew-page.bz .brew-due-alert { order: 1; }
   .brew-page.bz .brew-reading-prompt { order: 2; }
-  .brew-page.bz .brew-ingredients { order: 3; }
-  .brew-page.bz .bz-ensuite { order: 4; }
-  .brew-page.bz .brew-readings-summary { order: 5; }
-  .brew-page.bz .brew-finish-summary { order: 6; }
-  .brew-page.bz .brew-preparations { order: 7; }
-  .brew-page.bz .brew-aides, .brew-page.bz .bz-aides { order: 8; }
-  .brew-page.bz .brew-side-column > details { order: 9; }
+  /* m2 : « Relevés du jour » (mesures attendues) juste sous l'horloge, avant Grains ; sans mesure attendue, l'ancienne carte reste après « Ensuite ». */
+  .brew-page.bz .brew-readings-summary[data-attendues] { order: 3; }
+  .brew-page.bz .brew-ingredients { order: 4; }
+  .brew-page.bz .bz-ensuite { order: 5; }
+  .brew-page.bz .brew-readings-summary { order: 6; }
+  .brew-page.bz .brew-finish-summary { order: 7; }
+  .brew-page.bz .brew-preparations { order: 8; }
+  /* m2 : Suivi thermique replié, après « À anticiper », juste avant « Aides et repères » (même rang que À anticiper : il suit dans le DOM). */
+  .brew-page.bz .brew-side-column > details.bz-suivi { order: 8; }
+  .brew-page.bz .brew-aides, .brew-page.bz .bz-aides { order: 9; }
+  .brew-page.bz .brew-side-column > details { order: 10; }
 }
 @media (min-width: 901px) {
   .brew-page.bz > main > div { padding: 12px 24px 72px; }

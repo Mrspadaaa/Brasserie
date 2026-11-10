@@ -483,6 +483,8 @@ export function BrewDayMeasurements({
     );
   };
   const scale = measureScale(kind, step, recipe, value ?? reading?.value);
+  // m2 : sur la feuille, le verdict seul ; la phrase d'aide sur l'écart à la consigne (« Homogénéise, ajuste… ») vit sous « Pourquoi maintenant ».
+  const conseilEnRaison = !!scale && !!feedback && /^Écart/.test(feedback.title);
   const marque = value ?? reading?.value ?? null;
   const ecart = scale && marque != null ? ecartCible(scale, marque) : null;
   const depart = scale ? departCurseur(kind, scale, last?.value) : 0;
@@ -634,7 +636,7 @@ export function BrewDayMeasurements({
                   <span>{feedback.title}</span>
                 </p>
               )}
-              {feedback.detail && <p className="bz-muet">{feedback.detail}</p>}
+              {feedback.detail && !conseilEnRaison && <p className="bz-muet">{feedback.detail}</p>}
             </>
           ) : kind === 'ph' && isMash(step.id) ? (
             // z1 : aucune phrase d'aide sur la feuille Mesurer ; le conseil reste dit aux lecteurs d'écran (p3, n° 5).
@@ -650,7 +652,7 @@ export function BrewDayMeasurements({
               Pourquoi maintenant
               {raison ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
             </button>
-            {raison && <p className="bz-raison">{raisonMesure(kind, step)}</p>}
+            {raison && <p className="bz-raison">{raisonMesure(kind, step)}{conseilEnRaison && feedback?.detail ? ` ${feedback.detail}` : ''}</p>}
           </>
         )}
         <div className="bz-actions">
