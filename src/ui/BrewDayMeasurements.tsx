@@ -695,7 +695,7 @@ export function BrewDayMeasurements({
       )}
       </>}
       {!pairMode && scale && !last && value == null && !raw.trim() && (
-        <p className="bz-precedent">Aucun relevé {isMash(step.id) ? 'ce palier' : 'cette étape'} · un toucher sur le pouce pose <span className="bz-m">{scale.fmt(depart)}</span></p>
+        <p className="bz-precedent"><span>Aucun relevé {isMash(step.id) ? 'ce palier' : 'cette étape'} · un toucher sur le pouce pose <span className="bz-m">{formatCurseur(kind, depart)}</span></span></p>
       )}
       {pairMode && <div className="bz-precedent"><button type="button" aria-pressed="true" onClick={() => setPairMode(false)}>Mesure seule</button></div>}
     </section>
