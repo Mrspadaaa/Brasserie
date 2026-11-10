@@ -266,12 +266,10 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     expect(ingredients().queryByLabelText('Ajouté : US-05')).not.toBeInTheDocument();
     chooseStep('Ensemencement');
     expect(ingredients().getByLabelText('Ajouté : US-05')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
-      'Densité initiale inconnue : relève le moût refroidi à température de référence.'
-    );
-    expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
-      'Volume en fermenteur inconnu : relève le volume et sa référence de température.'
-    );
+    // c3 n° 12 : les deux mesures attendues sont des cases de « Relevés du jour » ; le bilan de clôture ne les répète plus.
+    expect(screen.queryByRole('region', { name: 'Bilan du brassage' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Relever Densité initiale' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Relever Au fermenteur' })).toBeInTheDocument();
   });
 
   it('le journal réunit ajouts réels, mesures, notes et étapes, avec des filtres sans mutation', () => {
