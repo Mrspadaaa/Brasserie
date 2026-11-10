@@ -1673,3 +1673,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **10.11**, mot pour mot, sur la page « Brassin : mesurer au curseur » (V8cp9HDzNbGN9NHxDpY51F), à « Quelle variante je porte ? » : « Le geste, joué au doigt (commun aux 10) »
   (lu, étroit : il retient la section du geste commun — pouce en pointillé, un toucher pose la cible, piste puis ±0,1, après : horloge et Relevés du jour ; la variante de premier plan reste à choisir.)
 - **10.11**, mot pour mot, à « Je pars sur m2 … ou tu en préfères une autre ? » : « non part là dessus » (lu : m2 choisie, avec le geste commun ; à porter.)
+- **10.11**, mot pour mot, à « Tout est bon ? » (non : 1 Mesurer écrit à l'ouverture, 2 enrichissement α vide / malt muet / atténuation vide, 3 liste des catégories à 2 lignes, 4 Mesurer à 1280 non testé en ligne, 5 domaines : origine Google Cloud et correctif Drive) puis « Je corrige 1 et 2 maintenant ? » : « Oui et oui et tous sauf 4 »
+  (lu : corriger 1, 2, 3 ; déployer le correctif serveur Drive (fait, driveAuthorization, tag drive/2026-11-10-domaine) ; laisser 4.)
