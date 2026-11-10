@@ -1,8 +1,9 @@
 // L'en-tête de 40 px de p3c-3 (×, titre, « hors ligne », picto du justificatif) et le petit panneau du picto : « Voir l'original » et « Changer ».
 // Le panneau est monté en permanence (classe `hidden` quand il est fermé) : convention de l'app pour ses panneaux, et le test `changer-fichier` y trouve « Changer ».
 // n2-pages : un justificatif de plusieurs pages montre la pile « N » à la place de l'icône, et le panneau des pages (vignettes, « Changer » qui rouvre l'entrée).
-import React from 'react';
-import { FileText, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, X, ZoomIn } from 'lucide-react';
+import { Loupe } from './Loupe';
 import { PanneauPages, PilePages, type VignettePage } from './Pages';
 
 export interface FichierJustif { nom: string; url: string; type: string }
@@ -25,6 +26,7 @@ export function Entete(p: { titleId: string; titre: string; horsLigne: boolean; 
 }
 
 export function Justificatif(p: { fichier: FichierJustif | null; ouvert: boolean; changerOff: boolean; onChanger: () => void; pages?: VignettePage[] }) {
+  const [loupe, setLoupe] = useState(false);
   if (!p.fichier) return null;
   if (p.pages && p.pages.length > 1) return <div data-dp="justificatif" className={`${p.ouvert ? 'block' : 'hidden'} rounded-panel border border-cave-800 bg-cave-900/60 p-2`}>
     <PanneauPages pages={p.pages} changerOff={p.changerOff} onChanger={p.onChanger}/>
@@ -32,9 +34,10 @@ export function Justificatif(p: { fichier: FichierJustif | null; ouvert: boolean
   const image = p.fichier.type.startsWith('image/');
   return <div data-dp="justificatif" className={`${p.ouvert ? 'block' : 'hidden'} space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2`}>
     <div className="flex flex-wrap items-center gap-1.5">
-      {image ? <span className="text-sm text-cave-200">Voir l’original</span> : <a href={p.fichier.url} download={p.fichier.nom} className="inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw">Ouvrir le PDF original</a>}
+      {image ? <span className="text-sm text-cave-200">Voir l’original <span className="text-xs text-cave-400">· toucher pour agrandir</span></span> : <a href={p.fichier.url} download={p.fichier.nom} className="inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw">Ouvrir le PDF original</a>}
       <button type="button" aria-label="Changer" title="Changer le fichier" disabled={p.changerOff} onClick={p.onChanger} className="ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"><FileText size={14}/>Changer</button>
     </div>
-    {image ? <img src={p.fichier.url} alt="Justificatif source" className="max-h-[40dvh] w-full rounded-panel object-contain"/> : null}
+    {image ? <button type="button" data-dp="agrandir" aria-label="Agrandir le justificatif" onClick={() => setLoupe(true)} className="relative block w-full"><img src={p.fichier.url} alt="Justificatif source" className="max-h-[40dvh] w-full rounded-panel object-contain"/><span aria-hidden className="absolute bottom-1.5 right-1.5 flex size-8 items-center justify-center rounded-control bg-cave-950/80 text-cave-50"><ZoomIn size={18}/></span></button> : null}
+    {image && loupe ? <Loupe url={p.fichier.url} nom={p.fichier.nom} onFermer={() => setLoupe(false)}/> : null}
   </div>;
 }
