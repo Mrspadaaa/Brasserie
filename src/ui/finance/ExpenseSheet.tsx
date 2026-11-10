@@ -146,6 +146,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Le survol d’un fichier au-dessus de la zone, sur ordinateur. */
   const [dropping,setDropping]=useState(false);
   const coarse=useCoarsePointer();
+  const pdfInput=useRef<HTMLInputElement>(null);
   const [attempted,setAttempted]=useState(false);
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
@@ -1523,7 +1524,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       >
         <EntreeDocuments onChoisir={()=>fileInput.current?.click()}/>
         {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
-        <p className="text-balance text-xs text-center text-cave-400">Un fichier, ou plusieurs photos du même ticket · PDF ou image · 4&nbsp;Mo max.</p>
+        {coarse?<p className="text-balance text-xs text-center text-cave-400">Une photo, ou plusieurs du même ticket · <button type="button" onClick={()=>pdfInput.current?.click()} className="min-h-7 underline underline-offset-4 text-cave-200">un PDF</button> · 4&nbsp;Mo max.</p>:<p className="text-balance text-xs text-center text-cave-400">Un fichier, ou plusieurs photos du même ticket · PDF ou image · 4&nbsp;Mo max.</p>}
         {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
       </section>;
   const capt=<>
@@ -1620,7 +1621,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)||verif==='attente'} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
       <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>
       <div ref={form} className="pb-2">
-        <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="application/pdf,image/*" multiple className="hidden" onChange={e=>{surDocuments(e.target.files);e.target.value='';}}/>
+        {/* 10.11 (« Documents ouvre pas la même chose que faisait plusieurs sur mobile ») : au doigt, le sélecteur de « Plusieurs » (images, multiple : appareil photo et galerie) ; le PDF passe par son lien. */}
+        <input hidden ref={pdfInput} aria-label="Importer un PDF" type="file" accept="application/pdf" className="hidden" onChange={e=>{surDocuments(e.target.files);e.target.value='';}}/>
+        <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept={coarse?'image/*':'application/pdf,image/*'} multiple className="hidden" onChange={e=>{surDocuments(e.target.files);e.target.value='';}}/>
         <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)lancerQr(file);e.target.value='';}}/>
         {/* n2-pages : « + page » ouvre ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Plusieurs fichiers d'un coup = plusieurs pages (LO-7) ; placé après les trois d'avant. */}
