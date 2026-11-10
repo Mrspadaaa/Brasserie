@@ -126,6 +126,22 @@ describe('p3c-3 : R1, ordre, filtre, mouture, pied', () => {
     expect(q('[data-dp="filtre"]')).toBeNull();
     expect(qa('[data-purchase-line][hidden]')).toHaveLength(0);
   });
+  it('10.11 « Suivant › » : ouvre la ligne visible suivante, saute les lignes masquées par le filtre, referme la courante', async () => {
+    await ouvrir('3');
+    fireEvent.click(q('[data-dp="compte-liens"] [data-va="bis"]'));
+    const visibles = qa('[data-purchase-line]:not([hidden])');
+    expect(visibles.length).toBeGreaterThan(1);
+    const [premiere, seconde] = visibles;
+    const ouverte = (el: HTMLElement) => (el.querySelector('details') as HTMLDetailsElement).open;
+    const sommaire = premiere.querySelector('summary') as HTMLElement;
+    if (!ouverte(premiere)) fireEvent.click(sommaire);
+    await waitFor(() => expect(premiere.querySelector('[data-dp-suivant]')).not.toBeNull());
+    fireEvent.click(premiere.querySelector('[data-dp-suivant]') as HTMLElement);
+    await waitFor(() => expect(ouverte(seconde)).toBe(true));
+    expect(ouverte(premiere)).toBe(false);
+    const masquees = qa('[data-purchase-line][hidden]');
+    expect(masquees.every(m => !ouverte(m))).toBe(true);
+  });
   it('T9 : rien ne se rattache sans geste ; « Rattacher les 5 » rattache les 5 et la pastille dit « 2,40/Kg avec mouture »', async () => {
     await ouvrir('3');
     expect(qa('[data-dp-mouture]')).toHaveLength(5);
