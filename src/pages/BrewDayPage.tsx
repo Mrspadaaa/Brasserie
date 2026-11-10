@@ -93,6 +93,7 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
 import { readingPrompt } from '../domain/brewAssist';
+import { mesuresAttendues } from '../domain/brewMeasures';
 import { ReadingKind } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
@@ -575,6 +576,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     if (nextStep) choose(state.steps.indexOf(nextStep));
   };
   const isConsulting = view === 'recipe' || view === 'journal';
+  // m2 (VB-1) : ce que l'étape attend en mesure, en cases « ? » dans Relevés du jour ; rien en consultation.
+  const attendues = isConsulting ? [] : mesuresAttendues(measuredStep, state, actualRecipe, now);
   const otherTimers = activeTimers.filter((s) => isConsulting || s.id !== current.id);
   const otherBoil =
     state.boilStartedAt != null && state.boilFinishedAt == null && (isConsulting || !boiled);
@@ -1329,7 +1332,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                     aria-label="Relevé de température"
                                     onClick={() => requestMeasure('temperature')}
                                   >
-                                    {lastTemperature ? fr(lastTemperature.value) : '—'}
+                                    {lastTemperature ? fr(lastTemperature.value) : '?'}
                                   </button>
                                 </>
                               ) : current.pausedAt != null ? (
@@ -1505,7 +1508,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </div>
                       </aside>
                     )}
-                    {prompt && current.doneAt == null && !((holdLine || thermalVisible) && prompt.kind === 'temperature') && (
+                    {prompt && current.doneAt == null && !((holdLine || thermalVisible) && prompt.kind === 'temperature') && !attendues.some((a) => a.kind === prompt.kind) && (
                       <button
                         type="button"
                         className="brew-reading-prompt bz-repli"
@@ -1518,6 +1521,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       </button>
                     )}
                   </>
+                )}
+                {attendues.length > 0 && !displayRecipe && (
+                  <BrewReadingsSummary state={state} step={measuredStep} recipe={actualRecipe} attendues={attendues} onMeasure={requestMeasure} now={now} />
                 )}
                 <BrewIngredients
                   recipe={displayRecipe ? recipe : ingredientDisplayRecipe}
@@ -1570,12 +1576,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
               </section>
             )}
-            {!isConsulting && showReadingSummary && (
+            {!isConsulting && showReadingSummary && attendues.length === 0 && (
               <BrewReadingsSummary
                 state={state}
                 step={measuredStep}
                 recipe={actualRecipe}
-                onMeasure={() => openCapture('measure')}
+                onMeasure={requestMeasure}
                 cloture={area === 'finish' && !displayRecipe ? (
                   <div role="region" aria-label="Bilan du brassage" className="bz-cloture">
                     <span>

@@ -3236,3 +3236,61 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-pictos[data-alerte] { color: #fff; background: var(--bz-alert); }
 /* n° 7 : unité du relevé de clôture en petit, jamais en valeur */
 .brew-page.bz .bz-releve b + small { margin-left: 1px; }
+
+/* ---- p1 (10.11, VB-1) : m2 « Relevés du jour » à vide + le geste au curseur, portés de la maquette m2 (passe 2b) ---- */
+.brew-page.bz .brew-readings-summary[data-attendues] { margin-top: 8px; }
+.brew-page.bz .bz-row.is-mesure { grid-template-columns: minmax(0, 1fr) auto; }
+.brew-page.bz .bz-row.is-mesure .bz-nom small .bz-m { font-size: 12px; }
+.brew-page.bz .bz-mesure-du { color: var(--bz-warn); font-weight: 600; }
+.brew-page.bz .bz-mesure-tard { color: var(--bz-t2); }
+.brew-page.bz .bz-mesure-ok, .brew-page.bz .bz-mesure-hors { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; vertical-align: bottom; }
+.brew-page.bz .bz-mesure-ok { color: var(--bz-hop); }
+.brew-page.bz .bz-mesure-hors { color: var(--bz-warn); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu { min-height: 36px; border: 1.5px dashed var(--bz-warn); color: var(--bz-warn); background: color-mix(in srgb, var(--bz-warn) 6%, var(--bz-page)); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu strong { color: var(--bz-warn); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu[data-tard] { border-color: var(--bz-border2); color: var(--bz-t2); background: var(--bz-page); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu[data-tard] strong { color: var(--bz-t2); }
+.brew-page.bz .bz-row .bz-dose.is-lecture { min-height: 36px; }
+
+.brew-page.bz .bz-lecture { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-height: 40px; }
+.brew-page.bz .bz-lecture .bz-saisie { margin-top: 0; flex: 1 1 auto; min-width: 0; }
+.brew-page.bz .bz-val { display: flex; align-items: baseline; gap: 4px; min-height: 40px; padding: 0 2px; border: 0; border-bottom: 1.5px dashed var(--bz-border2); border-radius: 0; background: none; color: var(--bz-t0); }
+.brew-page.bz .bz-val b { font-size: 28px; line-height: 1.05; font-weight: 600; }
+.brew-page.bz .bz-val[data-vide] b { color: var(--bz-warn); }
+.brew-page.bz .bz-val .bz-u { color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-val svg { align-self: center; margin-left: 2px; color: var(--bz-t2); }
+.brew-page.bz .bz-pas { margin-left: auto; display: flex; gap: 3px; flex: none; }
+.brew-page.bz .bz-pas button { height: 44px; min-height: 44px; min-width: 52px; padding: 0 6px; border: 1px solid var(--bz-border2); border-radius: 4px; background: none; color: var(--bz-t0); font-size: 14px; font-weight: 500; }
+/* Téléphone : la valeur à 28 px est le champ ; le crayon ouvre le vrai champ décimal. À l'ordinateur, le champ reste à côté du curseur. */
+@media (max-width: 900px) {
+  .brew-page.bz .bz-lecture:not([data-sans-echelle]):not([data-champ]) .bz-saisie { display: none; }
+  .brew-page.bz .bz-lecture[data-champ] .bz-val { display: none; }
+}
+@media (min-width: 901px) {
+  .brew-page.bz .bz-lecture .bz-val { display: none; }
+}
+.brew-page.bz .bz-lecture[data-sans-echelle] .bz-val { display: none; }
+.brew-page.bz .bz-curseur { position: relative; margin-top: 6px; touch-action: none; }
+.brew-page.bz .bz-echelle-grads { position: relative; height: 16px; }
+.brew-page.bz .bz-echelle-grads span { position: absolute; top: 0; font-size: 12px; color: var(--bz-t2); transform: translateX(-50%); white-space: nowrap; }
+.brew-page.bz .bz-echelle-grads span[data-bout='g'] { transform: none; }
+.brew-page.bz .bz-echelle-grads span[data-bout='d'] { transform: translateX(-100%); }
+.brew-page.bz .bz-echelle-grads span[data-cible] { color: var(--bz-hop); font-weight: 600; }
+.brew-page.bz .bz-zone { position: relative; height: 44px; }
+.brew-page.bz .bz-zone .bz-echelle-rail { top: 10px; }
+.brew-page.bz .bz-zone .bz-echelle-cible { top: 6px; }
+.brew-page.bz .bz-pouce { position: absolute; top: 0; width: 0; transition: left .15s ease-out; pointer-events: none; }
+.brew-page.bz .bz-pouce i { position: absolute; left: -2px; top: 2px; width: 4px; height: 22px; border-radius: 2px; background: var(--bz-hop); }
+.brew-page.bz .bz-pouce b { position: absolute; left: -11px; top: 20px; width: 22px; height: 22px; border-radius: 50%; background: var(--bz-hop); border: 3px solid var(--bz-page); box-shadow: 0 0 0 1px var(--bz-hop); }
+.brew-page.bz .bz-pouce[data-hors] i, .brew-page.bz .bz-pouce[data-hors] b { background: var(--bz-alert); }
+.brew-page.bz .bz-pouce[data-hors] b { box-shadow: 0 0 0 1px var(--bz-alert); }
+.brew-page.bz .bz-pouce[data-vide] i { background: none; border: 1.5px dashed var(--bz-t2); }
+.brew-page.bz .bz-pouce[data-vide] b { background: var(--bz-page); border: 2px dashed var(--bz-t2); box-shadow: none; }
+.brew-page.bz .bz-range { position: absolute; left: -11px; top: 0; width: calc(100% + 22px); height: 44px; margin: 0; padding: 0; opacity: 0; cursor: pointer; touch-action: none; }
+.brew-page.bz .bz-range::-webkit-slider-thumb { width: 22px; height: 44px; }
+.brew-page.bz .bz-range::-moz-range-thumb { width: 22px; height: 44px; }
+.brew-page.bz .bz-ecart[data-k='vide'] { margin-top: 6px; color: var(--bz-t2); }
+.brew-page.bz .bz-ecart[data-k='vide'] b { color: var(--bz-t0); }
+.brew-page.bz .bz-pourquoi { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 8px; padding: 0; border: 0; background: none; color: var(--bz-t1); font-size: 14px; }
+.brew-page.bz .bz-raison { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--bz-border2); background: var(--bz-raised); color: var(--bz-t1); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .brew-page.bz .bz-pouce { transition: none; } }

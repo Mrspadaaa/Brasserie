@@ -84,7 +84,7 @@ export function BrewThermalControl({ recipe, state, step, now, update, onMeasure
       <span>Transfert {state.transferredAt != null ? new Date(state.transferredAt).toLocaleString('fr-CH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'consigné'} · levure pas encore ajoutée.</span></p>}
     <div className="brew-thermal-readings">
       <span>{step.id === 'sparge' ? 'Eau de rinçage' : 'Moût'} <strong>{last ? `${fmt(last.value)} °C` : 'à mesurer'}</strong><small>{last ? `relevé ${time(last.at)} · il y a ${Math.max(0, Math.floor((now - last.at) / 60000))} min` : 'Aucune température déduite'}</small></span>
-      {rampMin != null && <span>{cooling ? 'Refroidissement' : 'Montée'}<strong>{fmt(rampMin)} min</strong><small>{step.holdStartedAt != null || step.startedAt != null ? 'avant maintien' : 'écoulées'}</small></span>}
+      {rampMin != null && rampMin >= 1 && <span>{cooling ? 'Refroidissement' : 'Montée'}<strong>{fmt(rampMin)} min</strong><small>{step.holdStartedAt != null || step.startedAt != null ? 'avant maintien' : 'écoulées'}</small></span>}
       {step.durationMin > 0 && <span>Maintien<strong>{fmt(step.durationMin)} min</strong><small>{step.holdStartedAt != null ? `départ réel ${time(step.holdStartedAt)}` : 'après température atteinte'}</small></span>}
     </div>
     {holding ? <p className="brew-thermal-estimate"><strong>Maintien en cours</strong> · La montée est terminée. Surveille la température du palier ; ses relevés restent dans le journal.</p> : <p className={`brew-thermal-estimate ${estimate && ['stale', 'stalled', 'unreachable', 'overshoot'].includes(estimate.status) ? 'is-attention' : ''}`}>

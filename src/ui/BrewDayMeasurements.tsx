@@ -1,7 +1,7 @@
 import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
 import React, { useEffect, useId, useState } from 'react';
-import { Check, Minus, Plus, TriangleAlert } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, CircleHelp, Minus, Pencil, Plus, TriangleAlert } from 'lucide-react';
 import { AcidId, BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import {
   defaultReading,
@@ -20,6 +20,8 @@ import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 import { nombreFr } from '../domain/nombreAffiche';
+import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur } from '../domain/measureSlider';
+import { raisonMesure } from '../domain/brewMeasures';
 
 export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
@@ -332,25 +334,46 @@ export function ecartCible(scale: MeasureScale, value: number): number | null {
   return null;
 }
 
-function MeasureScaleView({ scale, value }: { scale: MeasureScale; value: number | null }) {
+/**
+ * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input type="range"> natif, transparent, couvre l'échelle (44 px de haut) : il porte
+ * le glisser, le toucher de piste, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée.
+ */
+function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
+  scale: MeasureScale; kind: ReadingKind; value: number | null; depart: number; label: string; onPose: (v: number) => void;
+}) {
   const span = scale.max - scale.min;
   const at = (n: number) => `${Math.max(0, Math.min(100, ((n - scale.min) / span) * 100))}%`;
-  const hors = value != null && ecartCible(scale, value) != null;
+  const { pas } = pasCurseur(kind);
+  const bornes = bornesCurseur(kind, scale.min, scale.max);
+  const pose = value != null;
+  const pos = pose ? value : depart;
+  const hors = pose && ecartCible(scale, value) != null;
+  const poser = (v: number) => onPose(poserSurPas(kind, v, bornes.min, bornes.max));
   return (
-    <div className="bz-echelle" aria-hidden="true" data-booster="echelle">
-      <div className="bz-echelle-rail" />
-      <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />
-      {scale.ticks.map((t, i) => (
-        <span
-          key={i}
-          className="bz-echelle-grad"
-          style={i === 0 ? { left: 0, transform: 'none' } : i === scale.ticks.length - 1 ? { left: 'auto', right: 0, transform: 'none' } : { left: at(t) }}
-          data-haut={i === 2 ? '' : undefined}
-        >
-          {scale.fmt(t)}
-        </span>
-      ))}
-      {value != null && <span className={`bz-echelle-releve ${hors ? 'is-hors' : ''}`} style={{ left: at(value) }} />}
+    <div className="bz-curseur" data-booster="curseur">
+      <div className="bz-echelle-grads bz-m" aria-hidden="true">
+        {scale.ticks.map((t, i) => (
+          <span key={i} data-bout={i === 0 ? 'g' : i === scale.ticks.length - 1 ? 'd' : undefined} data-cible={i === 1 || i === 2 ? '' : undefined} style={{ left: at(t) }}>{scale.fmt(t)}</span>
+        ))}
+      </div>
+      <div className="bz-zone">
+        <div className="bz-echelle-rail" />
+        <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />
+        <span className="bz-pouce" data-vide={pose ? undefined : ''} data-hors={hors ? '' : undefined} style={{ left: at(pos) }} aria-hidden="true"><i /><b /></span>
+        <input
+          type="range"
+          className="bz-range"
+          min={bornes.min}
+          max={bornes.max}
+          step={pas}
+          value={pos}
+          aria-label={`${label}, curseur`}
+          aria-valuetext={pose ? `${formatCurseur(kind, value)}` : `aucune valeur ; un toucher pose ${formatCurseur(kind, depart)}`}
+          onChange={(e) => poser(Number(e.target.value))}
+          onPointerUp={(e) => { if (!pose) poser(Number(e.currentTarget.value)); }}
+          onKeyDown={(e) => { if (!pose && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); poser(depart); } }}
+        />
+      </div>
     </div>
   );
 }
@@ -395,6 +418,8 @@ export function BrewDayMeasurements({
   );
   const [notice, setNotice] = useState('');
   const [pairMode, setPairMode] = useState(false);
+  const [champ, setChamp] = useState(false);
+  const [raison, setRaison] = useState(false);
   useEffect(() => {
     if (requestedKind) { setKind(requestedKind.kind); setRaw(''); setEditing(null); setNotice(''); setPairMode(false); }
   }, [requestedKind?.token]);
@@ -459,6 +484,12 @@ export function BrewDayMeasurements({
   const scale = measureScale(kind, step, recipe, value ?? reading?.value);
   const marque = value ?? reading?.value ?? null;
   const ecart = scale && marque != null ? ecartCible(scale, marque) : null;
+  const depart = scale ? departCurseur(kind, scale, last?.value) : 0;
+  const pasTexte = String(pasCurseur(kind).pas).replace('.', ',');
+  const poserCurseur = (v: number) => {
+    setRaw(formatCurseur(kind, v));
+    setNotice('');
+  };
   const valeurAffichee = (n: number) => (kind === 'densite' ? sg(n) : String(n).replace('.', ','));
   const minutesDepuis = (at: number) => Math.max(0, Math.round((brewNow() - at) / 60000));
   return (
@@ -489,6 +520,24 @@ export function BrewDayMeasurements({
         ))}
       </div>
       <form autoComplete="off" onSubmit={save} className="bz-mesure-form">
+        <div className="bz-lecture" data-sans-echelle={scale ? undefined : ''} data-champ={champ ? '' : undefined}>
+        {scale && (
+          <button
+            type="button"
+            className="bz-val bz-m"
+            data-booster="valeur"
+            data-vide={value == null ? '' : undefined}
+            aria-label="Taper la valeur"
+            onClick={() => {
+              setChamp(true);
+              requestAnimationFrame(() => document.getElementById('brew-reading')?.focus());
+            }}
+          >
+            <b>{value != null ? formatCurseur(kind, value) : '?'}</b>
+            <span className="bz-u">{READING[kind].unit}</span>
+            <Pencil size={14} aria-hidden="true" />
+          </button>
+        )}
         <div className="bz-saisie">
           <Input
             id="brew-reading"
@@ -513,6 +562,22 @@ export function BrewDayMeasurements({
                 : ''}
           </label>
         </div>
+        {scale && (
+          <span className="bz-pas" data-booster="pas">
+            {[-1, 1].map((sens) => (
+              <button
+                type="button"
+                key={sens}
+                className="bz-m"
+                aria-label={`${sens < 0 ? 'moins' : 'plus'} ${pasTexte}`}
+                onClick={() => poserCurseur((value ?? depart) + sens * pasCurseur(kind).pas)}
+              >
+                {sens < 0 ? '−' : '+'}{pasTexte}
+              </button>
+            ))}
+          </span>
+        )}
+        </div>
         {kind !== 'temperature' && (
           <label className="bz-refroidi">
             <input
@@ -527,7 +592,12 @@ export function BrewDayMeasurements({
                 : 'Volume ramené à 20 °C'}
           </label>
         )}
-        {scale && <MeasureScaleView scale={scale} value={marque} />}
+        {scale && <MeasureSlider scale={scale} kind={kind} value={value} depart={depart} label={READING[kind].label} onPose={poserCurseur} />}
+        {scale && value == null && !raw.trim() && !last && (
+          <p className="bz-ecart" data-k="vide">
+            cible <b className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}</b>{READING[kind].unit ? ` ${READING[kind].unit}` : ''}
+          </p>
+        )}
         <div id="brew-reading-feedback" aria-live="polite" className="bz-verdict-zone">
           {incomplete ? (
             <p className="bz-muet">Complète la valeur.</p>
@@ -556,6 +626,16 @@ export function BrewDayMeasurements({
             <p className="bz-muet">Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.</p>
           ) : null}
         </div>
+        {raisonMesure(kind, step) && (
+          <>
+            <button type="button" className="bz-pourquoi" data-booster="pourquoi" aria-expanded={raison} onClick={() => setRaison((r) => !r)}>
+              <CircleHelp size={14} aria-hidden="true" />
+              Pourquoi maintenant
+              {raison ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
+            </button>
+            {raison && <p className="bz-raison">{raisonMesure(kind, step)}</p>}
+          </>
+        )}
         <div className="bz-actions">
           <button type="button" aria-pressed={pairMode} data-booster="paire" onClick={() => setPairMode(true)}>Volume + densité</button>
           {onAdvice && (
