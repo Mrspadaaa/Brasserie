@@ -1652,3 +1652,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : une ligne ajoutée garde sa bande tant qu'elle est ouverte, même le nom quitté ; elle rejoint Houblons à sa fermeture.)
 - **10.11**, mot pour mot, capture de la vue de brassin (neipa v3, LOT-013, Conduite · Préparer · Eau et sels) : « Lance une nouvelle session pour des  mini maquettes de la vue de brassin »
 - **10.11**, mot pour mot : « C'est pour l'aide durant le brassage, j'avais défini des specs » (lu : les mini maquettes de la vue de brassin partent de ses specs du jour de brassage : `docs/brew-day-ux.md`, `docs/compagnon-brasseur.md`, `docs/besoins/`.)
+- **10.11**, mot pour mot : « Quand j'entre une facture ou encaisse, je veux un Tab en bas, qui me montrer le changement dans mes finances type un peu comme Lignes serrées
+  v6a
+  v5a à − 12 % ; « ✓ Payé » reste à 24 px, le minimum.
+  Mini maquettes
+  Avec les graph sans les items et opération, c'est clair ? »
+  (lu : à la saisie d'une dépense ou d'un encaissement, un onglet en bas de l'écran montre l'effet sur ses finances (avant → après), dans la forme de « Lignes serrées v6a » (page compta-prix p4) : ses graphiques seulement, sans la liste des articles ni des opérations ; à montrer en mini maquettes.)
