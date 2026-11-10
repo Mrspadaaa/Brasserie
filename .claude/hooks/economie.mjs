@@ -60,7 +60,12 @@ switch (e.hook_event_name) {
     // Fable interdit (brasseur, 10.11 : « Pas d'utilisation de fable jusqu'à nouvelle ordre !!! ») : passer FABLE_INTERDIT à false pour lever.
     const FABLE_INTERDIT = true;
     const ti = e.tool_input ?? {};
-    if (FABLE_INTERDIT && /fable/i.test(String(ti.model ?? ''))) {
+    // Sans model explicite, un agent prend celui de sa définition (.claude/agents/<type>.md du dossier, ou ~/.claude/agents).
+    let modeleDef = '';
+    if (e.tool_name === 'Agent' && !ti.model && ti.subagent_type)
+      for (const d of [path.join(e.cwd ?? '.', '.claude', 'agents'), path.join(os.homedir(), '.claude', 'agents')])
+        try { modeleDef = /^model:\s*(\S+)/m.exec(fs.readFileSync(path.join(d, `${ti.subagent_type}.md`), 'utf8'))?.[1] ?? ''; break; } catch { /* absent */ }
+    if (FABLE_INTERDIT && /fable/i.test(String(ti.model ?? '') + modeleDef)) {
       process.stderr.write("FABLE INTERDIT (brasseur, 10.11, jusqu'à nouvel ordre) : choisis un autre modèle (l'agent critique est en Opus).");
       process.exit(2);
     }
