@@ -10,7 +10,7 @@ const ligneDe = (n: number): HTMLElement => document.querySelector<HTMLElement>(
 export function stockDe(n: number): StockAction | undefined {
   const l = ligneDe(n);
   const sortie = l.querySelector('[data-dp-sortie][aria-checked="true"]')?.getAttribute('data-dp-sortie');
-  if (sortie) return sortie === 'relie' ? 'existing' : 'new';
+  if (sortie) return sortie.startsWith('relie') ? 'existing' : 'new'; // p5 : « relie-<ref> » quand plusieurs articles portent le nom
   const t = l.querySelector('[data-dp-stock]')?.textContent ?? '';
   if (/hors stock/.test(t)) return 'none';
   if (/nouvel article/.test(t)) return 'new';

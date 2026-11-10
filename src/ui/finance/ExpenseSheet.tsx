@@ -32,7 +32,7 @@ import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedD
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 import { compterEnGrammes,erreursPoidsManquant,estUnitePiece,pieceSansPoids,poidsDePiece } from '../depense/poidsPiece';
-import { casseUnites,motRelire,chipsDeLecture,compteLiens,articleDeMemeNom,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { casseUnites,motRelire,chipsDeLecture,compteLiens,articleDeMemeNom,candidatsDuNom,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
 import { millingParentIndex,isMillingSurcharge,LIGNES_MAX } from '../../services/purchaseEntry';
 import { contexteDeArticle } from '../../services/stockLineMatching';
 import { vueQr,resumeQr,sommeDesBulletins,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
@@ -50,6 +50,8 @@ import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { ajoutsALaMain,estAjouteeAMain,phraseDuPied,sansMotsBruts } from '../depense/phrasePied';
 import { depenseHorsBrassage } from '../depense/familles';
+import { distinguerCandidats,titreDeSortie } from '../depense/candidats';
+import { garderEnVue } from '../depense/defilement';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
@@ -152,7 +154,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
   const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),queuedRef=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
-  const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null);
+  const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null),vueDeLaLigne=useRef<(()=>void)|null>(null),ligneSuivieVue=useRef<string|null>(null);
   const manuallyClassified=useRef(new Set<string>());
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
@@ -279,6 +281,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
      ligne ou échec : aucune fiche (le nom est proposé quand même). Jamais Gemini, jamais le réseau. */
   const [catalogues,setCatalogues]=useState<Catalogues>({});
   const cacheNeuf=useRef(new Map<string,{sig:string;neuf:ArticleNeuf}>());
+  const cacheRegle=useRef(new Map<string,{sig:string;regle:ReturnType<typeof regleProduit>}>());
   const creeUnArticle=draft.lines.some(l=>l.stockAction==='new');
   useEffect(()=>{
     if(!creeUnArticle||catalogues.houblons)return;
@@ -841,9 +844,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const sel:Record<string,string>={quantite:`[aria-label="Quantité ligne ${n}"]`,unite:`[aria-label="Unité ligne ${n}"],[aria-label="Unité à remplir, ligne ${n}"]`,prix:`[aria-label="Prix ligne ${n}"]`,montant:`[aria-label="Montant ligne ${n}"]`,article:'[data-dp-stock] [aria-label="Article"]',libelle:`[aria-label="Libellé ligne ${n}"]`};
     const cible=el.querySelector<HTMLElement>(sel[champ]);
     /* 10.11 (« Ça devrait scroll pour pouvoir voir l'item en entier, et permettre de cliquer sur l'unité et donc fermé le clavier ») : une ligne ajoutée (nom à saisir) monte en haut de la liste, entière, et y revient quand le clavier a réduit l'écran. */
-    if(champ==='libelle'){/* jeu en ligne 8 : sous l'en-tête et la bande collante, jamais dessous : on retranche le bas des éléments collants posés en haut du défilement. */const enHaut=()=>{el.scrollIntoView?.({block:'start'});const sc=scroller.current;if(!sc||typeof sc.getBoundingClientRect!=='function')return;const haut=sc.getBoundingClientRect().top;let bas=haut;sc.querySelectorAll<HTMLElement>('.dp-p3c-bande-entete,.dp-p3c-filtre,[class*="sticky"]').forEach(n=>{if(getComputedStyle(n).position!=='sticky')return;const r=n.getBoundingClientRect();if(r.height>0&&r.top<=haut+2&&r.bottom>bas&&!n.contains(el))bas=r.bottom;});const dec=el.getBoundingClientRect().top-bas-4;if(dec<0)sc.scrollBy?.({top:dec});};enHaut();cible?.focus?.({preventScroll:true});const vv=typeof window!=='undefined'?window.visualViewport:null;if(vv){const une=()=>{enHaut();vv.removeEventListener('resize',une);};vv.addEventListener('resize',une);setTimeout(()=>vv.removeEventListener('resize',une),1500);}return;}
+    if(champ==='libelle'){/* p5 (jeu en ligne 9, bloquant 1) : la ligne ajoutée se voit ENTIÈRE à toute largeur : on défile l'ancêtre qui défile réellement (`ancetreDefilant`), sur les rectangles du moment, le haut sous les collants, le bas des cases d'unité au-dessus du pied et du clavier ; rejoué quand la mise en page bouge (plateau, vue, clavier). */cible?.focus?.({preventScroll:true});ligneSuivieVue.current=id;vueDeLaLigne.current?.();vueDeLaLigne.current=garderEnVue(el,'haut',scroller.current,()=>mounted.current);const vv=typeof window!=='undefined'?window.visualViewport:null;if(vv){const une=()=>{vv.removeEventListener('resize',une);vueDeLaLigne.current?.();vueDeLaLigne.current=garderEnVue(el,'minimal',scroller.current,()=>mounted.current);};vv.addEventListener('resize',une);setTimeout(()=>vv.removeEventListener('resize',une),1500);}return;}
     cible?.scrollIntoView?.({block:'center'});cible?.focus?.({preventScroll:true});
   };
+  /* p5 : le nom de la ligne ajoutée se tape, la vue (ou le plateau) grandit : la ligne reste entière, sans la faire sauter. */
+  const remettreEnVue=(id:string)=>{if(ligneSuivieVue.current!==id)return;const el=form.current?.querySelector<HTMLElement>('[data-dp-ligne="'+id+'"]');if(!el)return;vueDeLaLigne.current?.();vueDeLaLigne.current=garderEnVue(el,'minimal',scroller.current,()=>mounted.current);};
   const aller=(chip:Chip)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
     /* z2 : la chip « Total » du QR saute au duel et le surligne 0,8 s. */
@@ -889,6 +894,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(l.stockAction==='new')virtuels.push({nom:cache.neuf.name});
     }
   }
+  /* p5 : une ligne reliée n'a pas d'article neuf ; sa règle se lit quand même (mise en cache), pour que la vue des candidats reste affichée une fois l'un d'eux choisi. */
+  const regleExistante=(l:PurchaseLineDraft)=>{const sig=[l.description,l.nameFr,l.nomLu,uniteDe(l),l.quantity,l.stockCategory,l.sourceReference,l.kind,signatureStock].join('§');let c=cacheRegle.current.get(l.id);if(!c||c.sig!==sig){c={sig,regle:regleProduit(ligneDeBrouillon({...l,unit:uniteDe(l)},draft.vendor),existants)};cacheRegle.current.set(l.id,c);}return c.regle;};
   const nomPrisParAutre=(id:string,nom:string)=>{const avant:MembreVirtuel[]=[];for(const l of draft.lines){if(l.id===id)break;const n=neufParLigne.get(l.id);if(l.stockAction==='new'&&n)avant.push({nom:n.name});}return nomsPris(existants,avant).has(pliee(nom));};
   const tailleMo=(()=>{const o=attachment?.size||apercu?.fichier.size;return o?Math.round(o/1e5)/10:0;})();
   const nUnite=shownErrors.filter(m=>m.includes('unité à préciser')).length;
@@ -932,6 +939,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const construire=(line:PurchaseLineDraft,index:number,simple:boolean):React.ReactNode=>{
     const mp=mouturesPropositions.find(p=>p.lineId===line.id),parentIdx=parentDeLaMouture(draft.lines,index),neuf=neufParLigne.get(line.id),nomRefuse=line.stockAction==='new'&&Boolean(line.articleName?.trim())&&nomPrisParAutre(line.id,line.articleName!);
     const isMouture=Boolean(mp)||parentIdx>=0;
+    /* p5 (jeu en ligne 9, bloquant 2) : PLUSIEURS articles du stock portent le nom de la ligne (lue ou ajoutée à la main) : un seul état, la vue FACTURE | STOCK, une sortie « Relier à … » par candidat (distingué par α, récolte, stock), puis « bis » et « Nouvel article » ; rien n'est relié en silence ; ⇄ montre d'abord ces candidats. */
+    const regleLigne=neuf?.regle??(!isMouture&&line.stockAction==='existing'&&line.kind==='ingredient'&&line.description.trim()?regleExistante(line):undefined);
+    const candidats=isMouture||line.kind!=='ingredient'||(line.stockAction==='none'&&depenseHorsBrassage(draft.category)&&!estAjouteeAMain(line))?[]:candidatsDuNom(regleLigne,line,existants);
+    const plusieurs=candidats.length>1,distingues=plusieurs?distinguerCandidats(candidats):[];
     /* Les pièces de la ligne : le formulaire simple (saisie sans justificatif) les montre toutes ; le plateau de p3c-3 n'en garde que l'utile au premier plan,
        le reste derrière un seul « plus » (VERDICT-f3, défaut 1). Une pièce n'existe qu'une fois : le nom de l'article, la quantité, l'unité, le montant. */
     const libelleEl=<div className="flex items-center gap-2"><div className="flex-1 min-w-0"><Field label="Libellé de la facture"><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>{updateLine(line.id,{description,nameFr:undefined});if(line.imprime)void retenirNomBrasseur({name:line.imprime.nom,variant:line.imprime.variante,unit:line.unit},description);}} placeholder="Article ou prestation"/></Field></div>{draft.lines.length>1?<button type="button" aria-label={`Retirer la ligne ${index+1}`} onClick={()=>retirerLigne(line.id)} className="min-h-7 min-w-7 text-cave-400 flex justify-center items-center"><Trash2 size={17}/></button>:null}</div>;
@@ -943,7 +954,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const mathEl=calculOk!==undefined?<p className={`text-xs ${calculOk?'text-cave-200':'text-attention'}`}>{String(line.quantity).replace('.',',')} × {fr(line.unitPrice!)} {calculOk?'= montant ✓':'≠ montant, écart à vérifier'}</p>:null;
     const extraitEl=line.evidence?<details className="text-xs text-cave-400"><summary className="cursor-pointer min-h-8 flex items-center">Voir l’extrait du document</summary><p className="text-cave-200 leading-relaxed">{line.evidence}</p></details>:null;
     const choixStockEl=<select aria-label={`Stock ligne ${index+1}`} value={line.stockAction} onChange={e=>{const v=e.target.value as any;proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=v==='new'?lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined;if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:v});}} className={inputClass}><option value="none">Aucun mouvement de stock</option><option value="existing">Ajouter à un article existant</option><option value="new">Nouvel article</option></select>;
-    const comboArticleEl=<Combobox ariaLabel="Article" value={line.stockRef||''} onChange={stockRef=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockRef});}} options={stockOptions} placeholder="Chercher dans le stock"/>;
+    const comboArticleEl=<Combobox ariaLabel="Article" value={line.stockRef||''} onChange={stockRef=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockRef});}} options={plusieurs?[...distingues.map(c=>({value:c.article.ref,label:c.article.name,detail:[...c.parties,c.stock,c.article.category].join(' · ')})),...stockOptions.filter(o=>!candidats.some(c=>c.ref===o.value))]:stockOptions} placeholder="Chercher dans le stock"/>;
     const relieEl=line.stockAction==='existing'?<>{relieAuto.current.has(line.id)?<p className="text-xs text-cave-200">relié à « {relieAuto.current.get(line.id)} », nom déjà au stock</p>:null}{comboArticleEl}{articleDe(line)?.fiche?<p data-dp-fiche className="text-xs text-cave-200">{phraseFiche(articleDe(line)!.fiche!,catalogues)}</p>:null}</>:null;
     const nomEl=line.stockAction==='new'&&neuf?<NomArticle index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/>:null;
     const champQte=<NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={inputClass}/>;
@@ -991,7 +1002,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const fixNiveau:Niveau|undefined=precisIds.has(line.id)?'inconnu':(bisAConfirmer&&!bisFondu)||ambigu?'repris':undefined;
     const correctionBarre=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
       :bisAConfirmer&&regle&&voisin?(bisFondu?null:<>{stockBisEl}{/* B2 n° 16 : « Garder » et ⇄ vont ensemble à la ligne (jamais le ⇄ seul en bas) */}<span className="inline-flex min-w-0 max-w-full items-center gap-1.5">{garderBisEl}{autre}</span></>)
-      :ambigu?<><span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {voisin!.name} » : choisis</span>{autre}</>
+      :ambigu?<><span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {plusieurs?nomAffiche(line.description):voisin!.name} » : choisis</span>{autre}</>
       :null;
     const bis=bisAConfirmer||(!isMouture&&line.kind==='ingredient'&&line.stockAction==='none'&&Boolean(voisin||existant));
     const lien:LienStock=isMouture?'mouture':precisIds.has(line.id)?'precis':bis?'bis':lienDe(line);
@@ -1116,33 +1127,39 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
        (« bis » proposé ou choisi) ou, reliée à lui, avec une unité qui ne s'y ajoute pas (la proposition « Garder » d'une ligne sans doute garde son face à face D374). */
     const memeNomStock=!isMouture&&line.kind==='ingredient'?articleDeMemeNom(line,existants):undefined;
     const decideLeNom=Boolean(memeNomStock)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===memeNomStock!.ref&&Boolean(uniteHors)));
-    const voisinDuel=!isMouture&&STOCK_KINDS.includes(line.kind)?(voisins.current.get(line.id)?.article??neuf?.voisin??(decideLeNom?memeNomStock:undefined)):undefined;
-    const enTrio=Boolean(voisinDuel)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===voisinDuel!.ref));
+    const choisi=plusieurs&&line.stockAction==='existing'?candidats.find(c=>c.ref===line.stockRef):undefined;
+    const voisinDuel=plusieurs?(choisi??candidats[0]):!isMouture&&STOCK_KINDS.includes(line.kind)?(voisins.current.get(line.id)?.article??neuf?.voisin??(decideLeNom?memeNomStock:undefined)):undefined;
+    const enTrio=plusieurs?(line.stockAction!=='existing'||!line.stockRef||Boolean(choisi)):Boolean(voisinDuel)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===voisinDuel!.ref));
     const trioEl=enTrio&&voisinDuel?(()=>{
       const vd=donneesDArticle(voisinDuel).donnees,luD=lu?.donnees??{},ecarts=ecartsEntre(luD,vd);
       const valeur=(e:Ecart,d:DonneesProduit)=>e==='alpha'&&d.alpha!==undefined?`α ${fr(d.alpha)}`:e==='ebc'&&d.ebc!==undefined?`${fr(d.ebc)} EBC`:e==='origine'&&d.origine?`origine ${d.origine}`:e==='recolte'&&d.recolte!==undefined?`récolte ${d.recolte}`:e==='poids'&&d.poids?`poids ${d.poids}`:undefined;
       const MOT_ECART:Record<Ecart,string>={alpha:'α',ebc:'EBC',origine:'origine',recolte:'récolte',poids:'poids'};
       const meme=lu?.contexte==='Houblon'||lu?.contexte==='Malt'?'variété':'même produit';
-      const actifNeuf=line.stockAction==='new'&&line.articleName!==undefined,actifRelie=line.stockAction==='existing',actifBis=line.stockAction==='new'&&!actifNeuf;
+      const actifNeuf=line.stockAction==='new'&&line.articleName!==undefined,actifRelie=line.stockAction==='existing'&&(!plusieurs||Boolean(choisi)),actifBis=line.stockAction==='new'&&!actifNeuf,aucun=plusieurs&&line.stockAction!=='new'&&!choisi;
       const propose=neufDOffice.current.has(line.id);
-      const nomBis=neuf?.nomPropose??`${voisinDuel.name} bis`,valeursLues=ecarts.map(e=>valeur(e,luD)).filter((v):v is string=>Boolean(v));
+      const nomLigne=nomAffiche(line.description),doublonDuNom=!plusieurs||candidats.some(c=>pliee(c.name)===pliee(nomLigne)),nomNeuf=doublonDuNom?voisinDuel.name:nomLigne;
+      const nomBis=neuf?.nomPropose??(plusieurs&&regleLigne&&regleLigne.cas!=='meme'?regleLigne.nom:`${voisinDuel.name} bis`),valeursLues=ecarts.map(e=>valeur(e,luD)).filter((v):v is string=>Boolean(v));
       const confirmer=()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);relieAuto.current.delete(line.id);};
-      const actif=actifRelie?'relie':actifNeuf?'neuf':'bis';
+      const actif=aucun?'aucun':actifRelie?'relie':actifNeuf?'neuf':'bis';
       const apresRelie=apresReception(draft.lines.map(l=>l.id===line.id?{...l,stockAction:'existing' as const,stockRef:voisinDuel.ref}:l),line.id,voisinDuel,uniteDe);
       const q=line.quantity,qTexte=q===undefined?undefined:`${nombreFr(q)} ${motUnite(unite,q)}`;
       const horsUnite=actif==='relie'&&Boolean(uniteHors),proposeRelie=actifRelie&&Boolean(status.proposed);
-      const facture=<><Nom mono>{line.imprime?.nom??line.description}</Nom>{ecarts.map(e=>{const v=valeur(e,luD);return <Petit key={e}>{v?<Marque>{v}</Marque>:<>{MOT_ECART[e]} <Petit ton="attention">inconnu</Petit></>}</Petit>;})}{horsUnite?<Petit ton="alert">{uniteHors}</Petit>:pieceNeufSansPoids&&actif!=='relie'?<Petit ton="alert">{questionPoids}</Petit>:null}</>;
-      const stock=actif==='bis'?<><Nom>{nomBis}</Nom>{valeursLues.length?<Petit mono>{valeursLues.join(' · ')}</Petit>:null}<Petit ton="attention">à créer à la confirmation</Petit>{qTexte&&!pieceNeufSansPoids?<Apres texte={`0 → ${qTexte}`}/>:null}<Petit>à côté de « {voisinDuel.name} »{valeur('alpha',vd)?` ${valeur('alpha',vd)}`:''}</Petit></>
+      const luTexte=(['alpha','recolte','origine'] as Ecart[]).map(e=>valeur(e,luD)).filter((v):v is string=>Boolean(v));
+      const facture=aucun?<><Nom mono>{line.imprime?.nom??line.description}</Nom>{luTexte.map(v=><Petit key={v}><Marque>{v}</Marque></Petit>)}{pieceNeufSansPoids?<Petit ton="alert">{questionPoids}</Petit>:null}</>:<><Nom mono>{line.imprime?.nom??line.description}</Nom>{ecarts.map(e=>{const v=valeur(e,luD);return <Petit key={e}>{v?<Marque>{v}</Marque>:<>{MOT_ECART[e]} <Petit ton="attention">inconnu</Petit></>}</Petit>;})}{horsUnite?<Petit ton="alert">{uniteHors}</Petit>:pieceNeufSansPoids&&actif!=='relie'?<Petit ton="alert">{questionPoids}</Petit>:null}</>;
+      const stock=actif==='aucun'?<><Nom>{candidats.length} articles « {nomAffiche(line.description)} »</Nom><Petit ton="attention">lequel ? choisis dessous</Petit></>
+        :actif==='bis'?<><Nom>{nomBis}</Nom>{valeursLues.length?<Petit mono>{valeursLues.join(' · ')}</Petit>:null}<Petit ton="attention">à créer à la confirmation</Petit>{qTexte&&!pieceNeufSansPoids?<Apres texte={`0 → ${qTexte}`}/>:null}<Petit>{plusieurs?`à côté de ${candidats.length} articles du stock`:<>à côté de « {voisinDuel.name} »{valeur('alpha',vd)?` ${valeur('alpha',vd)}`:''}</>}</Petit></>
         :actif==='relie'?<><Nom>{voisinDuel.name}</Nom><Petit>{ecarts.map(e=>valeur(e,vd)).filter(Boolean).join(' · ')||'mêmes données'}</Petit>{horsUnite?<><Petit>compté en <Marque>{motUnite(voisinDuel.unit)}</Marque></Petit><Apres texte={`${nombreFr(voisinDuel.currentStock)} ${motUnite(voisinDuel.unit)}`}/><Petit>au stock</Petit></>:apresRelie?<><Apres texte={apresRelie.texte}/><Petit>après réception</Petit></>:null}</>
-        :<><Nom>nouvel article</Nom><Petit ton="alert">doublon de « {voisinDuel.name} »</Petit>{neuf?.fiche&&neuf.nomFiche?<Petit>fiche {neuf.nomFiche}{neuf.fiche.approchee?' · approchée':''}</Petit>:null}</>;
-      return <><Duel etat={actif==='bis'?'repris':actif==='relie'?(horsUnite?'inconnu':proposeRelie?'repris':'sur'):'inconnu'} symbole={actif==='bis'?'≈':actif==='relie'?(horsUnite?'?':proposeRelie?'≈':'='):'+'} note={actif==='bis'?'article voisin, à créer à côté':actif==='relie'?(horsUnite?uniteHors:proposeRelie?'article proposé, à garder':'relié à l’article du stock'):'doublon du stock'} facture={facture} stock={stock}/>
+        :<><Nom>nouvel article</Nom>{doublonDuNom?<Petit ton="alert">doublon de « {voisinDuel.name} »</Petit>:<Petit>{nomNeuf}</Petit>}{neuf?.fiche&&neuf.nomFiche?<Petit>fiche {neuf.nomFiche}{neuf.fiche.approchee?' · approchée':''}</Petit>:null}</>;
+      return <><Duel etat={actif==='aucun'?'repris':actif==='bis'?'repris':actif==='relie'?(horsUnite?'inconnu':proposeRelie?'repris':'sur'):'inconnu'} symbole={actif==='aucun'?'?':actif==='bis'?'≈':actif==='relie'?(horsUnite?'?':proposeRelie?'≈':'='):'+'} note={actif==='aucun'?'plusieurs articles au stock, à choisir':actif==='bis'?'article voisin, à créer à côté':actif==='relie'?(horsUnite?uniteHors:proposeRelie?'article proposé, à garder':'relié à l’article du stock'):'doublon du stock'} facture={facture} stock={stock}/>
         <div role="radiogroup" aria-label={`Article de la ligne ${index+1}`} className="flex flex-col gap-1">
+          {plusieurs?distingues.map(c=>{const dc=donneesDArticle(c.article).donnees,ec=ecartsEntre(luD,dc),actifC=actifRelie&&choisi?.ref===c.article.ref;return <Sortie key={c.article.ref} id={`relie-${c.article.ref}`} titre={titreDeSortie(c,distingues)} actif={actifC} onChoisir={()=>{confirmer();relier(c.article.ref);}}
+            concordances={[{mot:meme,ton:'ok'},...ec.map(e=>({mot:valeur(e,dc)??MOT_ECART[e],ton:'ecart' as const})),{mot:`${c.stock} au stock`,ton:'neutre' as const}]}/>;}):null}
           <Sortie id="bis" titre={`${nomBis}${valeursLues.length?` · ${valeursLues[0]}`:''}`} actif={actifBis} propose={actifBis&&propose} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:undefined});}}
             concordances={[{mot:meme,ton:'ok'},...valeursLues.map(v=>({mot:v,ton:'ok' as const})),...(propose?[{mot:'proposé',ton:'propose' as const}]:[])]}/>
-          <Sortie id="relie" titre={`Relier à ${voisinDuel.name}`} actif={actifRelie} propose={proposeRelie} onChoisir={()=>{confirmer();relier(voisinDuel.ref);}}
-            concordances={[{mot:meme,ton:'ok'},...ecarts.map(e=>({mot:valeur(e,vd)??MOT_ECART[e],ton:'ecart' as const})),...(proposeRelie?[{mot:'proposé',ton:'propose' as const}]:[])]}/>
-          <Sortie id="neuf" titre="Nouvel article" actif={actifNeuf} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:voisinDuel.name});}}
-            concordances={[{mot:`doublon de ${voisinDuel.name}`,ton:'alert'}]}
+          {plusieurs?null:<Sortie id="relie" titre={`Relier à ${voisinDuel.name}`} actif={actifRelie} propose={proposeRelie} onChoisir={()=>{confirmer();relier(voisinDuel.ref);}}
+            concordances={[{mot:meme,ton:'ok'},...ecarts.map(e=>({mot:valeur(e,vd)??MOT_ECART[e],ton:'ecart' as const})),...(proposeRelie?[{mot:'proposé',ton:'propose' as const}]:[])]}/>}
+          <Sortie id="neuf" titre="Nouvel article" actif={actifNeuf} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:nomNeuf});}}
+            concordances={doublonDuNom?[{mot:`doublon de ${voisinDuel.name}`,ton:'alert'}]:[]}
             extra={actifNeuf&&neuf?<div className="flex flex-wrap items-center gap-1.5 px-2.5 pb-1 text-xs text-cave-400"><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>»</span></div>:undefined}/>
         </div></>;})():null;
     /* D374 : « Là on voit pas la vue des stocks ? » : l'article proposé par la lecture (jaune, « Garder ») est un doute ; pu4d : la ligne en doute montre le face à face
@@ -1162,8 +1179,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const retirerEl=<BoutonTexte aria={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}}>Retirer</BoutonTexte>;
     const stockable=STOCK_KINDS.includes(line.kind);
     /* DP-4 : relié par le nom avec une unité qui ne s'y ajoute pas (capture 2), la ligne « article « X » · relié · ⇄ · Retirer » reste sous la vue FACTURE | STOCK ; un voisin (D215) ou un nouvel article la laisse au trio. */
-    const trioGardeArticle=enTrio&&line.stockAction==='existing'&&Boolean(uniteHors);
+    const trioGardeArticle=enTrio&&(plusieurs||(line.stockAction==='existing'&&Boolean(uniteHors)));
     const articleEl=isMouture||(enTrio&&!trioGardeArticle)||!segNature?null
+      :plusieurs&&enTrio&&line.stockAction!=='existing'?<LigneArticle><span>un autre article du stock</span>{autrePlateau}</LigneArticle>
       :!stockable||line.stockAction==='none'?<HorsStock index={index+1} types={[]/* D364 suite : le type fin vit dans « Famille », geste rare, plus de pastilles toujours visibles */} courant={line.kind} onType={k=>{if(k!==line.kind)changerNature(k as PurchaseLineDraft['kind']);}} onSuivre={suivreAuStock} peutSuivre={stockable} autre={stockable?autrePlateau:undefined}/>
       :<LigneArticle>{line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autrePlateau}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}{pastille&&neuf.fiche&&neuf.nomFiche?<span data-dp-pastille className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null}</>
         :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
@@ -1173,7 +1191,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
     const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
     const libelleVide=!line.description.trim();if(libelleVide)libellesVides.current.add(line.id);
-    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onFocus={()=>{libelleFige.current.set(line.id,{groupe:groupeDeLigne(index),sous:sousFamilleLigne(index)});}} onBlur={()=>{/* 10.11 (« l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus ») : tant que la ligne est ouverte, elle reste dans sa bande ; elle rejoint la sienne à sa fermeture (surToggle). */if(ouvertesRef.current.get(line.id))return;if(libelleFige.current.delete(line.id))setPlateaux(n=>n+1);}} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
+    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onFocus={()=>{libelleFige.current.set(line.id,{groupe:groupeDeLigne(index),sous:sousFamilleLigne(index)});}} onBlur={()=>{/* 10.11 (« l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus ») : tant que la ligne est ouverte, elle reste dans sa bande ; elle rejoint la sienne à sa fermeture (surToggle). */if(ouvertesRef.current.get(line.id))return;if(libelleFige.current.delete(line.id))setPlateaux(n=>n+1);}} onChange={description=>{updateLine(line.id,{description,nameFr:undefined});remettreEnVue(line.id);}} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
     const mouturePlateau=enfant&&cestMoutureEnPastille&&pastilleMouture?<RangeeMouture ligne={enfantIdx+1} liee={pastilleMouture.liee} aria={pastilleMouture.aria} onBascule={pastilleMouture.onBascule}
       texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${uniteAffichee(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
     const plateauEl=<div data-dp-pu4d className="space-y-1.5">

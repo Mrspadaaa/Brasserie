@@ -172,9 +172,9 @@ describe('Cas B : même nom qu’un article du stock (« Malt Pilsner », en kg)
 });
 
 describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => {
-  it('C0 : plusieurs articles « Citra » : la ligne reste « hors stock » ; « Confirmer » l’enregistre SANS stock, sans alerte (le seul signe est « plusieurs articles… : choisis » sur la ligne)', async () => {
+  it('C0 : plusieurs articles « Citra » : un seul état (p5 : la vue FACTURE | STOCK, jamais « hors stock » à côté d’un picto de stock) ; rien n’est relié ; « Confirmer » l’enregistre SANS stock, sans alerte', async () => {
     const v = await lire(CITRA2(), [CITRA]);
-    expect(texte(v)).toMatch(/article — · hors stock/); expect(texte(v)).toMatch(/plusieurs articles « Citra 12\.5% » : choisis/);
+    expect(texte(v)).not.toMatch(/hors stock/); expect(texte(v)).toMatch(/2 articles « Citra »/); expect(ligne(v).querySelectorAll('[data-dp-sortie^="relie-"]')).toHaveLength(2);
     const r = await confirmer(v);
     expect(r.alerte).toBe('');
     expect(r.depot.lignes[0].stockAction).toBe('none');
@@ -191,9 +191,9 @@ describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => 
     expect(r.alerte).toBe('');
     expect(r.depot.ajouts).toEqual([{ ligne: 'line-1', ref: 'MP-Citra 12.5%', nom: 'Citra 12.5%', ajout: 100, unite: 'g', avant: 10 }]);
   });
-  it('C2 : « Suivre au stock » sur la ligne ambiguë → un NOUVEL article « Citra » (à côté de « Citra 12.5% »), le résultat de « Confirmer » est mesuré', async () => {
+  it('C2 : la sortie « bis » de la vue, sur la ligne ambiguë (p5, ex-« Suivre au stock »), → un NOUVEL article « Citra » (à côté de « Citra 12.5% »), le résultat de « Confirmer » est mesuré', async () => {
     const v = await lire(CITRA2(), [CITRA]);
-    fireEvent.click(ligne(v).querySelector<HTMLElement>('[data-dp-suivre]')!);
+    fireEvent.click(ligne(v).querySelector<HTMLElement>('[data-dp-sortie="bis"]')!);
     expect(texte(v)).toMatch(/à créer à la confirmation/);
     const r = await confirmer(v);
     expect(r.alerte).toBe('');
