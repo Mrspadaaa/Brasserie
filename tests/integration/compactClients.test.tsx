@@ -186,13 +186,13 @@ describe('Prix (c7c) : un seul endroit pour fixer un prix, sans rien perdre des 
     const tax = within(screen.getByRole('region', { name: 'Impôt bière de l’année' }));
     expect(tax.getByText(/Aucun brassin en/)).toBeVisible();
     expect(tax.getByText('—')).toBeVisible();
-    expect(tax.getByText(/réduction annuelle à confirmer/)).toBeVisible();
+    expect(tax.getByText(/réduction petit brasseur : à confirmer/)).toBeVisible();
     expect(tax.getByText(/Barème par hectolitre/)).not.toBeVisible();
-    fireEvent.click(tax.getByText('Comprendre le calcul et les démarches'));
+    fireEvent.click(tax.getByText('Comprendre le barème'));
     expect(tax.getByText(/Barème par hectolitre/)).toBeVisible();
     fireEvent.change(tax.getByRole('combobox', { name: 'Année de réserve OFDF' }), { target: { value: String(new Date().getFullYear() - 1) } });
     expect(tax.getByText(/Aucun brassin en/)).toBeVisible();
-    expect(tax.getByRole('button', { name: 'Copier cette estimation' })).toBeVisible();
+    expect(tax.getByRole('button', { name: 'Copier pour Taxas' })).toBeVisible();
     expect(tax.getByRole('link', { name: 'Ouvrir Taxas' })).toHaveAttribute('href', 'https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation');
   });
 });

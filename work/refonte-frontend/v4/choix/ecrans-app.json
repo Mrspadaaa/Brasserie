@@ -156,6 +156,15 @@
       "mots": "Les étiquettes accrochées / p5b / Là je vois tout sur le graphe.",
       "capture": "work/missions/2026-11-09-compta-prix/p4/p5b/p5b-page.png",
       "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "impot-biere-annee",
+      "route": "i1a",
+      "statut": "choisi",
+      "choix": "i1a (le total découpé par bande, chaque brassin sur sa bande, la feuille p2b en annexe)",
+      "mots": "Le total et la liste / i1a / Le total découpé par bande ; chaque brassin sur sa bande ; ta feuille p2b en annexe. Très bien",
+      "capture": "work/missions/2026-11-09-compta-prix/p5/i1a/i1a-page.png",
+      "page": "https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE"
     }
   ]
 }
