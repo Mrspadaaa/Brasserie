@@ -16,3 +16,4 @@ variantes (L24) avant tout port.
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Vue de brassin · inviter à mesurer (m1 à m10 ; critique : m2, m8, m1, m7, m5) | 10.11 v1 | https://claude.ai/artifact/NbM6MJvFnT6uiYdbv5nxZs | `work/missions/2026-11-10-brassin-mesures/page/index.html` |
+| Vue de brassin · mesurer au curseur (m1 à m10, boosters-ux ; critique : m2, m1, m8, m7, m5) | 10.11 v2 | https://claude.ai/artifact/V8cp9HDzNbGN9NHxDpY51F | `work/missions/2026-11-10-brassin-mesures/page-v2/index.html` |
