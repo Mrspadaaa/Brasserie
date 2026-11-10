@@ -1,0 +1,55 @@
+/* L'onglet « Mon mois » (f2d, choisi le 10.11). Classes préfixées `om-` (L26). Mesures de la maquette : bouton 44 → 36 px dans le pied de l'app,
+   bascule 32, tuiles 44, piles 236 (176 à 1280), texte ≥ 12 px, cibles ≥ 24 px. Fond, texte et bords par les jetons de l'app (clair et cave). */
+.om-mo, .om-carte, .om-scrim { --om-t1: rgb(var(--cave-texte-50)); --om-t2: rgb(var(--cave-texte-200)); --om-t3: rgb(var(--cave-texte-400));
+  --om-bord: rgb(var(--cave-700)); --om-surf: rgb(var(--cave-900)); --om-pale: rgb(var(--cave-850)); --om-btn: rgb(var(--cave-50)); --om-btx: rgb(var(--cave-950));
+  --om-hach-a: rgb(var(--attention)); --om-hach-b: rgb(var(--c-302719)); --om-haut: 176px; }
+.om-m { font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+.om-hach { background: repeating-linear-gradient(135deg, var(--om-hach-a) 0 4px, var(--om-hach-b) 4px 8px); box-shadow: inset 0 0 0 1px var(--om-hach-a); }
+.om-sw { display: inline-block; width: 14px; height: 12px; border-radius: 3px; flex: none; }
+.om-qr { display: inline-block; width: 15px; height: 14px; border-radius: 3px; flex: none; background: conic-gradient(var(--om-t1) 0 25%, transparent 0 50%, var(--om-t1) 0 75%, transparent 0) 0 0/7px 7px; box-shadow: inset 0 0 0 1.5px var(--om-t1); }
+
+/* fermé : le bouton du pied */
+.om-mo { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; min-width: 24px; max-width: 190px; flex: 1 1 auto; padding: 0 9px; border: 1px solid var(--om-bord); border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--om-t1); background: transparent; cursor: pointer; white-space: nowrap; }
+.om-mo svg { flex: none; }
+.om-mo > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.om-mo[aria-expanded='true'] { background: var(--om-btn); color: var(--om-btx); border-color: var(--om-btn); }
+.om-mo[aria-disabled='true'] { opacity: .5; cursor: default; }
+.om-mo em { font-style: normal; margin-left: auto; padding: 0 5px; border-radius: 8px; font-size: 12px; line-height: 18px; background: #D2B356; color: #2B220C; flex: none; }
+.om-mo em[data-sens='entre'], .om-tuiles em[data-sens='entre'] { background: #56D27B; color: #0F3A1C; }
+.om-mo:focus-visible, .om-tg button:focus-visible { outline: 2px solid var(--om-t1); outline-offset: 2px; }
+
+/* ouvert : la carte au-dessus du pied, la saisie visible derrière */
+.om-scrim { position: fixed; inset: 0; z-index: 30; background: rgba(20, 16, 10, .22); }
+[data-theme='cave'] .om-scrim { background: rgba(0, 0, 0, .5); }
+.om-carte { position: absolute; left: 8px; right: 8px; bottom: calc(100% + 8px); z-index: 31; max-height: calc(100dvh - 120px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px;
+  background: var(--om-surf); color: var(--om-t1); border: 1px solid var(--om-bord); border-radius: 22px; box-shadow: 0 12px 40px rgba(0, 0, 0, .22); font-size: 14px; line-height: 18px; }
+.om-hd { display: flex; justify-content: flex-end; font-size: 12px; color: var(--om-t2); }
+.om-tg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; border-radius: 14px; background: var(--om-pale); }
+.om-tg button { min-height: 32px; border-radius: 11px; font-size: 15px; font-weight: 600; color: var(--om-t2); display: flex; align-items: center; justify-content: center; gap: 6px; background: none; border: 0; cursor: pointer; }
+.om-tg button[aria-checked='true'] { background: var(--om-btn); color: var(--om-btx); }
+.om-tuiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.om-t { border: 1px solid var(--om-bord); border-radius: 12px; padding: 5px 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; transition: background .2s, border-color .2s; }
+.om-t > span { font-size: 12px; color: var(--om-t2); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.om-t b { font-size: 17px; line-height: 22px; }
+.om-t em { font-style: normal; font-size: 12px; line-height: 18px; align-self: flex-start; padding: 0 6px; border-radius: 9px; background: #D2B356; color: #2B220C; }
+.om-t em.om-z { background: none; padding: 0; height: 18px; }
+.om-t[data-on] { border: 2px solid #B8962E; background: color-mix(in srgb, #D2B356 14%, var(--om-surf)); }
+.om-tuiles[data-variante='caisse'] .om-t[data-on] { border-color: #2E9A50; background: color-mix(in srgb, #56D27B 14%, var(--om-surf)); }
+.om-pw { background: var(--om-pale); border-radius: 14px; padding: 6px 8px 8px; }
+.om-piles { display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; height: calc(var(--om-haut) + 34px); }
+.om-p { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; height: 100%; gap: 2px; text-align: center; }
+.om-p:first-child { flex-grow: 1.15; }
+.om-p > b { font-size: 12px; line-height: 14px; }
+.om-p > b[data-signe] { color: rgb(var(--area-stocks-texte)); }
+.om-st { display: flex; flex-direction: column; overflow: hidden; border-radius: 10px 6px 2px 2px; min-height: 3px; }
+.om-st i { display: block; min-height: 1px; }
+.om-st i.om-nv { outline: 2px solid var(--om-t1); outline-offset: -2px; }
+.om-nom { display: block; border-top: 2px solid var(--om-t1); padding-top: 3px; font-size: 12px; line-height: 14px; color: var(--om-t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.om-sep { flex: 0 0 1px; align-self: stretch; margin: 0 3px; border-left: 1px dashed var(--om-t3); opacity: .6; }
+@media (min-width: 900px) { .om-carte { left: auto; right: 12px; width: 420px; --om-haut: 130px; } }
+@media (prefers-reduced-motion: reduce) { .om-t { transition: none; } }
+
+/* Caisse : la rangée « Mon mois + Encaisser » colle au bas du défilement (le Tab en bas) ; le bouton Encaisser garde son style. */
+.om-bas { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 10px; background: rgb(var(--cave-950)); border-top: 1px solid rgb(var(--cave-800)); }
+.om-bas .cs-go { margin: 0; width: auto; flex: 1 1 0; min-width: 0; height: 44px; }
+.om-bas .om-mo { flex: 0 1 150px; min-height: 44px; }

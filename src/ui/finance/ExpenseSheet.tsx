@@ -49,6 +49,8 @@ import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montant
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
+import { BoutonMois,CarteMois } from './ongletMois/OngletMois';
+import { pieceDeDepense,useEffetPiece } from './ongletMois/pieceDeDepense';
 import { ajoutsALaMain,estAjouteeAMain,phraseDuPied,sansMotsBruts } from '../depense/phrasePied';
 import { depenseHorsBrassage } from '../depense/familles';
 import { distinguerCandidats,titreDeSortie } from '../depense/candidats';
@@ -331,6 +333,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* AM n° 7 : la référence du QR-facture (valide) identifie la facture ; elle rejoint le brouillon lu par l'enregistrement et la détection de doublon. */
   const qrReference=qrRes?.statut==='lu'&&qrRes.qr.valid&&qrRes.qr.typeReference!=='NON'?qrRes.qr.reference:undefined;
   const draftEff={...avecUnitesDeduites(draft,articlesStock),...(qrReference?{paymentReference:qrReference}:{})};
+  /* Mon mois (f2d) : l'effet de CETTE pièce sur son mois, par `periodeSynthese` ; la bascule réécrit le Règlement de la saisie (même état, même geste que « Déjà payé / À payer »). */
+  const [moisOuvert,setMoisOuvert]=useState(false);
+  const effetMois=useEffetPiece(pieceDeDepense(draftEff),transactions,FinanceService.getPayments(),`TX-${draft.submissionId}`);
   const effParId=new Map(draftEff.lines.map(l=>[l.id,l]));
   /* La ligne avec son unité déduite (même objet que l'enregistrement) ; l'unité que le stock lit. */
   const effDe=(line:PurchaseLineDraft)=>effParId.get(line.id)??line;
@@ -1678,9 +1683,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       </div>
     </div>
     {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise&&desaccordsRestants.length>0} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
-    {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
+    {showForm?<Pied mois={!done&&!attached&&!dejaTx?<BoutonMois effet={effetMois} variante="depense" ouvert={moisOuvert&&!!effetMois} onBascule={()=>setMoisOuvert(o=>!o)}/>:null} carte={moisOuvert&&effetMois&&!done&&!attached&&!dejaTx?<CarteMois effet={effetMois} variante="depense" aujourdhui={todayIsoMois()} onFermer={()=>setMoisOuvert(false)} onChoisir={reglee=>{reviewed('paymentEvidence');patch({paymentStatus:reglee?'paid':'unpaid',...(reglee&&toIsoDate(draft.paymentDate)>toIsoDate(swissToday())?{paymentDate:swissToday()}:{})});}}/>:null} ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   {prive?<MovementSheet prefill={{kind:'withdrawal',...prive}} onClose={()=>setPrive(null)} onSaved={()=>{onSaved();onClose();}}/>:null}</ModalShell>;
 }
+const todayIsoMois=()=>toIsoDate(swissToday());
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
 /** 0.026 → « 2,6 », 0.081 → « 8,1 », 0.077 → « 7,7 », 0.19 → « 19 » (au dixième de point, virgule suisse). */
 const tauxFr=(rate:number)=>String(Math.round(rate*1000)/10).replace('.',',');

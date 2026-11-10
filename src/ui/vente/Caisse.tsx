@@ -25,6 +25,9 @@ import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePre
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
 import { IdentiteBrasserieFeuille } from './IdentiteBrasserie';
 import { QrExemple } from './QrExemple';
+import { BoutonMois, CarteMois } from '../finance/ongletMois/OngletMois';
+import { useEffetPiece } from '../finance/ongletMois/pieceDeDepense';
+import { FinanceService } from '../../services/financeService';
 import './caisse.css';
 
 /** Lecteurs stables (une identité par module : `useStorageValue` s'abonne dessus). */
@@ -34,6 +37,7 @@ const lireTarifs = () => StorageService.getTarifs();
 const lireTransactions = () => StorageService.getTransactions();
 const lireConfig = () => StorageService.getConfig();
 const lireFuts = () => StorageService.getStocks()?.kegs ?? [];
+const nomAnnexe0 = (c: Client | null) => `Vente · ${c ? c.name : 'Comptoir'}`;
 
 const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 const moisCourt = (b: Batch): string => {
@@ -118,6 +122,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const [identiteOuverte, setIdentiteOuverte] = useState(false);
   const [apercu, setApercu] = useState<{ svg: string; erreur: string } | null>(null);
   const [essai, setEssai] = useState(0);
+  const [moisOuvert, setMoisOuvert] = useState(false);
   const busy = useRef(false), avert = useRef(false), avertPanier = useRef(false);
   const panierRef = useRef<{ n: number; fini: boolean }>({ n: 0, fini: false });
   const premiereTuile = useRef<HTMLButtonElement>(null);
@@ -267,6 +272,9 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
 
   const peutPrimaire = !occupe && (enAttente || (Boolean(totaux) && !bornes && !dateErreur && !(mode === 'paye' && !moyen) && !(mode === 'qr' && (!client || bloqueQr || manqueQrHorsLigne))) && !manqueUid);
   const libelleTotal = totaux ? fr(totaux.totalCents) : '—';
+  /* Mon mois (f2d) : l'effet de CETTE vente sur son mois, par `periodeSynthese`. Le mode (Payé ici | Facture QR) est le seul état : la bascule de la carte l'écrit. */
+  const choisirQr = () => { if (!client) { setVeutFacture(true); return; } setMode('qr'); };
+  const effetMois = useEffetPiece({ sens: 'in', date: dateIso, montantCents: totaux?.totalCents ?? 0, categorie: 'recettes', description: nomAnnexe0(client), reglement: mode === 'paye' ? 'paye' : 'a-payer', dateReglement: dateIso, moyen: moyen === 'cash' ? 'cash' : moyen === 'twint' ? 'twint' : 'other', echeance: dueDate }, transactions, useMemo(() => FinanceService.getPayments(), [transactions]));
   const libellePrimaire = occupe ? 'Enregistrement…' : enAttente ? 'Reprendre la confirmation' : null;
 
   const choisirDate = (valeur: string) => {
@@ -374,7 +382,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
             <div className="cs-pay" role="group" aria-label="Comment il paie">
               <button type="button" aria-pressed={mode === 'paye'} disabled={fieldsetOff} onClick={() => setMode('paye')}>✓ Payé ici</button>
               <button type="button" aria-pressed={mode === 'qr'} aria-disabled={!client || undefined} disabled={fieldsetOff} title={client ? undefined : 'Une facture a besoin d’un client'}
-                onClick={() => { if (!client) { setVeutFacture(true); return; } setMode('qr'); }}><PictoQr />Facture QR</button>
+                onClick={choisirQr}><PictoQr />Facture QR</button>
             </div>
             {mode === 'paye'
               ? <div className="cs-due" role="group" aria-label="Moyen de paiement">
@@ -391,9 +399,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
           </section>
 
           {!resultat
-            ? <button type="button" className="cs-go" disabled={!peutPrimaire} onClick={() => void soumettre(false)}>
+            ? <div className="om-bas" data-om="bas">
+              {moisOuvert && effetMois && !resultat ? <CarteMois effet={effetMois} variante="caisse" aujourdhui={todayISO()} onFermer={() => setMoisOuvert(false)} onChoisir={reglee => { if (reglee) setMode('paye'); else choisirQr(); }} /> : null}
+              <BoutonMois effet={effetMois} variante="caisse" ouvert={moisOuvert && !!effetMois} onBascule={() => setMoisOuvert(o => !o)} />
+              <button type="button" className="cs-go" disabled={!peutPrimaire} onClick={() => void soumettre(false)}>
                 {libellePrimaire ?? (mode === 'qr' ? 'Facturer' : 'Encaisser')}{!libellePrimaire && <> <span className="cs-m">{libelleTotal}</span> CHF</>}
-              </button>
+              </button></div>
             : <div className="cs-fait" role="status"><div><b>Facture {resultat.numero} enregistrée</b><EtatEnvoi resultat={resultat} /></div><span className="cs-m">{fr(resultat.totalCents)} CHF</span></div>}
 
           {(manques.length > 0 || erreur || manqueQrHorsLigne || dateErreur) && (
