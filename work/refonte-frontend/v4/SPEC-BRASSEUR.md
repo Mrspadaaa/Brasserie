@@ -1650,3 +1650,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la ligne ajoutée garde le focus sur son nom, et défile en haut de la liste pour se voir entière, unité comprise.)
 - **10.11**, mot pour mot : « Oui exactement ces vues, bravo continue » (sur les montages p4 Idaho 7 : vue FACTURE | STOCK et trio) ; « Continue sans mes input, ne créé pas de régression, fait bien des commits pour rollback au cas où » ; « Parcontre, l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus... »
   (lu : une ligne ajoutée garde sa bande tant qu'elle est ouverte, même le nom quitté ; elle rejoint Houblons à sa fermeture.)
+- **10.11**, mot pour mot, capture de la vue de brassin (neipa v3, LOT-013, Conduite · Préparer · Eau et sels) : « Lance une nouvelle session pour des  mini maquettes de la vue de brassin »
