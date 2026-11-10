@@ -38,7 +38,8 @@ function Pile({ c, max }: { c: Colonne; max: number }) {
   </div>;
 }
 
-export function Piles({ periode }: { periode: PeriodeSynthese }) {
+/** `nom` : ce que les piles couvrent (« le mois », « la période », « tout l'historique ») ; il ne sert qu'aux noms accessibles. */
+export function Piles({ periode, nom = 'le mois' }: { periode: PeriodeSynthese; nom?: string }) {
   const { ventes, charges, materiel } = colonnesDe(periode);
   const toutes = [ventes, ...charges, materiel].filter((c): c is Colonne => !!c);
   if (!toutes.length) return null;
@@ -46,14 +47,14 @@ export function Piles({ periode }: { periode: PeriodeSynthese }) {
   const sep = (cle: string) => <span key={cle} className="ops-sep" aria-hidden="true"/>;
   const nuancier = `linear-gradient(90deg, ${charges.map((c, i) => `${c.couleur} ${(i / Math.max(charges.length, 1)) * 100}% ${((i + 1) / Math.max(charges.length, 1)) * 100}%`).join(', ') || 'transparent 0 100%'})`;
   return <>
-    <div className="ops-piles" role="group" aria-label="Le mois par catégorie">
+    <div className="ops-piles" role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
       {ventes && <Pile c={ventes} max={max}/>}
       {ventes && (charges.length > 0 || materiel) && sep('s1')}
       {charges.map(c => <Pile key={c.cle} c={c} max={max}/>)}
       {materiel && charges.length > 0 && sep('s2')}
       {materiel && <Pile c={materiel} max={max}/>}
     </div>
-    <p className="ops-legende" aria-label="Payé, à payer et dépensé du mois">
+    <p className="ops-legende" aria-label={`Payé, à payer et dépensé ${nom === 'le mois' ? 'du mois' : nom.replace(/^la /, 'de la ').replace(/^tout /, 'sur tout ')}`}>
       <span><i className="ops-sw" style={{ background: nuancier }}/>payé <b className="ops-m">{amountOnly(periode.payeCents)}</b></span>
       <span><i className="ops-sw ops-hach"/>à payer <b className="ops-m">{amountOnly(periode.aPayerCents)}</b></span>
       <span>dépensé <b className="ops-m">{amountOnly(periode.depenseCents)}</b></span>

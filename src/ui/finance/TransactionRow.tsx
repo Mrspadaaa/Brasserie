@@ -14,7 +14,7 @@ import './operations.css';
  *   étage 1 : quoi · qui                    [geste]  montant
  *   étage 2 : état · échéance ou date · pièce
  *
- * Un seul geste par ligne, dans l'ordre : payer (ou encaisser), annuler le paiement du jour, joindre une pièce.
+ * Un seul geste par ligne, dans l'ordre : payer (ou encaisser), confirmer, annuler le paiement qu'on vient d'écrire, joindre une pièce.
  * ⚠️ « ✓ Payé » écrit un paiement du reste dû, daté d'aujourd'hui, par banque : une hypothèse du geste rapide, dite dans la pastille
  * (« · banque ») ; un autre mode ou une autre date se corrigent dans la fiche. Un état « à confirmer » n'écrit rien : la date réelle se demande.
  * ⚠️ Un seul bouton contient le texte (le bouton principal) ; son ::after couvre la ligne, le geste est un second bouton au-dessus
@@ -22,6 +22,13 @@ import './operations.css';
  */
 const ICONE_PIECE = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>;
 const ICONE_SANS_PIECE = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeDasharray="3 2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/></svg>;
+
+/**
+ * Les paiements écrits par le geste « ✓ Payé » depuis l'ouverture de l'application (CP-12, v6b état « Après »). « Annuler » ne se montre que pour
+ * eux : une ligne payée aujourd'hui par un autre chemin (la fiche, un import) propose « + pièce » comme toute ligne sans pièce. Hors du composant :
+ * la ligne change de groupe en passant à « payé » et se remonte, un état local serait perdu. Il se vide au rechargement : « juste après le geste ».
+ */
+const payesParLeGeste = new Set<string>();
 
 export function TransactionRow({ transaction, transactions, payments, state: given, onOpen, onAddProof, onPay }: {
   transaction: Transaction;
@@ -48,7 +55,8 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   const etat = etatDeLigne(transaction, state, entrant, payments, aujourdhui);
   const piece = pieceDe(transaction);
   const actif = isActiveTransaction(transaction) && transaction.finance?.refundApplication !== 'offset';
-  const annulable = actif ? dernierPaiementAnnulable(transaction, payments, aujourdhui) : null;
+  const dernierDuJour = actif ? dernierPaiementAnnulable(transaction, payments, aujourdhui) : null;
+  const annulable = dernierDuJour && payesParLeGeste.has(dernierDuJour.id) ? dernierDuJour : null;
   const sansPiece = actif && piece.manque && piece.texte === 'sans pièce';
   // Un identifiant de paiement par ligne : un double toucher rejoue le même paiement (refusé « déjà enregistré » s'il diffère, ignoré s'il est identique).
   const [paiementId, setPaiementId] = useState(() => ({ id: idFor('PAI'), at: new Date().toISOString() }));
@@ -67,6 +75,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
     const paiement = paiementRapide(transaction, state, sens, aujourdhui, paiementId.id, paiementId.at);
     if (!paiement) throw new Error('Rien à régler sur cette pièce.');
     FinanceService.recordPayment(paiement);
+    payesParLeGeste.add(paiement.id);
     setPaiementId(() => ({ id: idFor('PAI'), at: new Date().toISOString() })); // le prochain paiement de cette ligne (après « Annuler ») est un autre paiement
     setFlash(true); clearTimeout(minuteur.current); minuteur.current = setTimeout(() => setFlash(false), 3000);
   });

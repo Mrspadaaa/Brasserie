@@ -12,12 +12,16 @@
 
 /* Bande : mois, retard, loupe, puis les piles */
 .ops-bande { margin:4px 0 0; border-radius:16px; background:var(--ops-fond); padding:6px 8px 8px; }
-.ops-haut { display:flex; align-items:center; gap:6px; }
+.ops-haut { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
 .ops-pill { position:relative; display:flex; align-items:center; gap:2px; border-radius:16px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); padding:1px; }
 .ops-pill button { width:28px; height:28px; border-radius:50%; font-size:17px; text-align:center; }
 .ops-pill button:disabled { opacity:.4; cursor:default; }
 .ops-pill .ops-mois { width:auto; min-width:60px; border-radius:14px; padding:0 4px; }
-.ops-pill .ops-mois b { font-size:15px; font-weight:600; }
+.ops-pill .ops-mois b { font-size:15px; font-weight:600; white-space:nowrap; }
+.ops-pill { flex:0 0 auto; }
+.ops-due { white-space:nowrap; }
+/* Une période au libellé long (« Toutes les dates », « juin – sept. 2026 ») + « … » + « en retard » + la loupe ne tiennent pas sur 390 : « en » tombe, la loupe reste sur la ligne. */
+@media (max-width:420px) { .ops-haut[data-serre] { gap:4px; } .ops-haut[data-serre] .ops-en { display:none; } .ops-haut[data-serre] .ops-pill button { width:24px; } .ops-haut[data-serre] .ops-pill .ops-mois { width:auto; } .ops-haut[data-serre] .ops-plus { width:26px; } .ops-haut[data-serre] .ops-due { padding:0 7px; } }
 .ops-mois-champ { position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .ops-due { margin-left:auto; display:flex; align-items:center; gap:5px; min-height:28px; padding:0 9px; border-radius:16px; font-size:13px;
   background:rgb(var(--c-402320)); border:1px solid rgb(var(--alert-strong-texte)); color:rgb(var(--alert-strong-texte)); }
@@ -25,6 +29,13 @@
 .ops-due b { font-size:13px; }
 .ops-loupe { margin-left:auto; display:grid; place-items:center; width:32px; height:32px; border-radius:10px; border:1px solid var(--ops-bord); }
 .ops-due + .ops-loupe { margin-left:0; }
+/* CP-12 : « … » à droite de la pastille de mois ; la rangée « du … au … » est celle de la Synthèse (`PlageMois`), reprise avec les jetons de cet écran. */
+.ops-plus { display:grid; place-items:center; flex:0 0 auto; width:28px; height:32px; border-radius:10px; border:1px solid var(--ops-bord); font-size:15px; font-weight:600; letter-spacing:1px; line-height:1; text-align:center; background:rgb(var(--cave-950)); }
+.ops-plus[aria-pressed='true'], .ops-plus[aria-expanded='true'] { border-color:var(--ops-t2); }
+.ops-bande .syn-plage { display:flex; align-items:center; justify-content:flex-start; gap:12px; margin-top:6px; font-size:12px; color:var(--ops-t2); }
+.ops-bande .syn-plage label { display:flex; align-items:center; gap:6px; }
+.ops-bande .syn-plage input { height:28px; padding:0 8px; border-radius:10px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); color:var(--ops-t1); font-size:12px; font-family:inherit; color-scheme:light; min-width:0; }
+:root[data-theme='cave'] .ops-bande .syn-plage input { color-scheme:dark; }
 .ops-contexte { margin:4px 0 0; font-size:12px; line-height:16px; color:var(--ops-t2); }
 .ops-recherche { display:flex; align-items:center; gap:4px; min-height:32px; margin-top:6px; padding-left:8px; border:1px solid var(--ops-bord); border-radius:10px; background:rgb(var(--cave-950)); color:var(--ops-t2); }
 .ops-recherche input { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; font-size:16px; color:var(--ops-t1); }

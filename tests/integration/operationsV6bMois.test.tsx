@@ -70,7 +70,9 @@ describe('Opérations v6b : le mois se change partout', () => {
     };
     render(<Hote/>);
     expect(montre('Op CE-MOIS') && montre('Op MOIS-PRECEDENT')).toBe(true);
+    // CP-12 : « toutes les dates » garde la même vue ; ses piles couvrent tout l'historique, pas le mois.
     expect(screen.queryByRole('group', { name: 'Le mois par catégorie' })).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Tout l’historique par catégorie' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);

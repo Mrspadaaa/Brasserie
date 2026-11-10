@@ -50,7 +50,9 @@ describe('Journal financier compact', () => {
     fireEvent.change(screen.getByLabelText('Période du journal'), { target: { value: `${previousYear}-02` } });
     expect(screen.getByRole('button', { name: 'Opération ANCIEN-PAYÉ' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Opération CE-MOIS' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Par date', exact: true }));
+    // CP-12 : « Par date » ne change plus la période (il range par jour) ; toutes les dates se demandent par « Tout ».
+    // (le panneau « Filtres » est déjà ouvert par les assistants `categorie()` et `recherche()`)
+    fireEvent.click(screen.getByRole('button', { name: 'Tout', exact: true }));
     expect(screen.getByRole('button', { name: 'Opération CE-MOIS' })).toBeInTheDocument();
   });
 
@@ -152,7 +154,8 @@ describe('Journal financier compact', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Voir toutes les opérations' }));
     expect(screen.getByRole('button', { name: 'Opération ARCHIVÉ' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tout', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'Par date', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Par date', exact: true })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /Choisir le mois, Toutes les dates/ })).toBeInTheDocument();
     expect(JSON.stringify(transactions)).toBe(initial);
   });
 
