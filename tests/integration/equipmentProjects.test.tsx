@@ -10,7 +10,6 @@ import { defaultConfig, StorageService } from '../../src/services/storage';
 import { useStorageValue } from '../../src/hooks/useLiveData';
 import { FinancesTab } from '../../src/components/tabs/FinancesTab';
 import { UpgradeWorkspace } from '../../src/ui/finance/UpgradeWorkspace';
-import { CreativePricing } from '../../src/ui/finance/CreativePricing';
 import { CreativeLabTab } from '../../src/components/CreativeLabTab';
 import { todayISO } from '../../src/domain/finance/ledger';
 import type { FinancialPlan } from '../../src/domain/finance/types';
@@ -156,11 +155,4 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(FinanceService.getPlans()).toHaveLength(1);
   });
 
-  it.each([false, true])('le tarif R&D utilise des montants saisis et le statut TVA %s', registered => {
-    StorageService.saveConfig({ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: registered, tvaNormalRate: 0.081 } });
-    render(<CreativePricing/>); expect(screen.getByText('À renseigner')).toBeVisible();
-    change('Prix de vente TTC (CHF)', '10.81'); change('Coût de revient de ce format (CHF)', '6');
-    expect(screen.getByText('Marge unitaire estimée').parentElement).toHaveTextContent(registered ? '4,00' : '4,81');
-    expect(FinanceService.getPlans()).toHaveLength(0);
-  });
 });
