@@ -93,6 +93,22 @@ Réel (accord 3 + 5 CHF ; dépensé 0,46 CHF, journal `2026-11-01-banc-lecture/j
   règle `payeDuReglement` ; comptages 9/10/7, 13/13/7, 13/8/7 : règle `voterComptage` (unanimité).
 - BAUHAUS net en deux captures qui se recouvrent (`cas-9.json`, doc27, découpe de doc15) : 17/17 sans doublon avec les deux phrases.
 
+## État de reprise (10.11, ~02:45)
+- Code : fc9ec9a8 sur `claude/happy-satoshi-f3f2c1` (poussée). aiTask déployé depuis `Temp/deploy-fusion` (fc9ec9a8). Hébergement NON
+  redéployé : la pilote sert ed9eb964 (c76481aa + DP-3 + DP-4) ; mes changements sont serveur seulement.
+- Tests : 13 132 verts ; 12 rouges déjà sur HEAD (recette, jetons, TE-23 ; hopAdvice browser = chemin node_modules du worktree).
+  tsc racine et functions vides ; build vert, DRAPEAUX OK.
+- En cours : critique, jeu en ligne 8 → `critique/VERDICT-EN-LIGNE-8.md` (critères 1 à 7 du brief, dont le BAUHAUS « Somme = imprimé » vert).
+- Ouvert : cas réel BAUHAUS 28 lignes « Somme = imprimé » vert non reproduit en 4 tirages réels (banc `banc-fusion-bauhaus`) ; doc24 : noms
+  posés sur le montant voisin quand les trois lectures se contredisent (la 3.8 reste, désaccord dit).
+- Jeu en ligne 8 (`critique/VERDICT-EN-LIGNE-8.md`) : 9 problèmes, 5 bloquants. Sun Store tient (7 lignes, 163,85, payé 163,85, plus de
+  « 13 ») ; écart BAUHAUS rouge. Bloquants : (1) BAUHAUS 8 lignes au montant de la voisine + une perdue ; (2) « annoncés 23 » inventé
+  (`printedLineCount`, pas voté par `voterComptage`) ; (3) prix unitaire perdu 28/28, unité 17/28 (« 17 à remplir ») ; (4) 13 corrections
+  barrées au nom d'une voisine ; (5) Sun Store : « Rabais total −2,58 » proposé en pied « pas retrouvée » (rangsHorsPiece ne le reconnaît pas).
+- Prochaine action : rejouer au banc les lectures du jeu 8 si journalisées, sinon `banc-fusion-bauhaus` ; (2) voter `printedLineCount`
+  comme un comptage ; (3) le triplet : un prix null de la 3.8 ne doit pas l'emporter sur un prix lu au même montant ; (1)(4) décalage
+  des noms de la 3.8 : vote du NOM aussi (majorité nom↔montant), pas seulement du montant ; (5) rabais total ; puis jeu en ligne 9.
+
 ## Journal
 - 10.11 : mission ouverte, état de l'art et décision écrits avant le code.
 - 10.11 : budget porté à 8 CHF par le brasseur (« J'autorise 5chf de budget en plus »).
