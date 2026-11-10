@@ -1,7 +1,8 @@
 // Plusieurs pages pour une seule dépense (n2-pages, son choix D291) : le bouton noir coupé en deux, la rangée de pages, la frise, la pile de l'en-tête et le panneau des pages.
 // Maquette reprise telle quelle : `work/missions/2026-10-31-ecran-depense/choix-captures/retenue/` (forme 3), réduite à un seul bouton « Documents » (D382). Jetons de l'app seulement (le thème rend `bg-ebc-straw` noir).
-import React from 'react';
+import React, { useState } from 'react';
 import { FileText, Files, Plus, X } from 'lucide-react';
+import { Loupe } from './Loupe';
 
 export interface VignettePage { id: string; url: string; nom: string }
 
@@ -77,9 +78,13 @@ export function PilePages({ n }: { n: number }) {
 
 /** Au toucher de la pile : vignettes de 56 px sur une ligne (un lien vers l'image) et « Changer » (rouvre l'entrée, ne détruit rien). */
 export function PanneauPages(p: { pages: VignettePage[]; changerOff: boolean; onChanger: () => void }) {
+  /* 10.11 : une page touchée s'ouvre dans la loupe (pincer pour lire), plus dans un autre onglet. */
+  const [loupe, setLoupe] = useState<number | null>(null);
+  const enLoupe = loupe === null ? undefined : p.pages[loupe];
   return <div data-dp="pages-panneau" className="flex items-center gap-1.5">
-    <div className="flex gap-1.5">{p.pages.map((page, i) => <a key={page.id} data-dp="vignette" href={page.url || undefined} target="_blank" rel="noopener noreferrer" aria-label={`Voir la page ${i + 1}`} className="relative block h-14 w-[40px] shrink-0 overflow-hidden rounded-control border border-cave-600 bg-cave-950"><Miniature url={page.url}/><Numero n={i + 1} petit/></a>)}</div>
+    <div className="flex gap-1.5">{p.pages.map((page, i) => <button type="button" key={page.id} data-dp="vignette" disabled={!page.url} onClick={() => setLoupe(i)} aria-label={`Voir la page ${i + 1}`} className="relative block h-14 w-[40px] shrink-0 overflow-hidden rounded-control border border-cave-600 bg-cave-950"><Miniature url={page.url}/><Numero n={i + 1} petit/></button>)}</div>
     <button type="button" aria-label="Changer" title="Changer les pages" disabled={p.changerOff} onClick={p.onChanger} className="ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"><FileText size={14}/>Changer</button>
+    {enLoupe?.url ? <Loupe url={enLoupe.url} nom={enLoupe.nom ?? `page ${loupe! + 1}`} onFermer={() => setLoupe(null)}/> : null}
   </div>;
 }
 
