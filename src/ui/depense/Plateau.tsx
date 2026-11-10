@@ -121,10 +121,16 @@ export const BoutonTexte = ({ children, onClick, aria, attention }: { children: 
   <button type="button" aria-label={aria} onClick={onClick} className={`${BOUTON} ${attention ? 'border-dashed border-attention font-semibold text-attention' : ''}`}>{children}</button>;
 
 /** « hors stock » : le type d'achat en pastilles d'un toucher (D350), et la greffe de pa1d : `article — · hors stock  + Suivre au stock`. */
-export function HorsStock({ index, types, courant, onType, onSuivre, peutSuivre, autre }: { index: number; types: Array<{ valeur: string; mot: string }>; courant: string; onType: (valeur: string) => void; onSuivre?: () => void; peutSuivre: boolean; autre?: React.ReactNode }) {
+/** BR-124 (10.11) : « Ajouter au stock » est offert sur TOUTE ligne dont la vue stock n'est pas ouverte. Une nature que le stock tient (`peutSuivre`) s'ajoute d'un toucher ; une autre (Matériel, Service…)
+ *  demande d'abord, en une rangée, la nature de stock (Ingrédient · Emballage · Nettoyage), puis `onSuivre(nature)`. Rien n'est écrit au stock avant l'enregistrement. */
+export const NATURES_STOCK: Array<{ valeur: 'ingredient' | 'packaging' | 'cleaning'; mot: string }> = [{ valeur: 'ingredient', mot: 'Ingrédient' }, { valeur: 'packaging', mot: 'Emballage' }, { valeur: 'cleaning', mot: 'Nettoyage' }];
+export function HorsStock({ index, types, courant, onType, onSuivre, peutSuivre, autre }: { index: number; types: Array<{ valeur: string; mot: string }>; courant: string; onType: (valeur: string) => void; onSuivre?: (nature?: 'ingredient' | 'packaging' | 'cleaning') => void; peutSuivre: boolean; autre?: React.ReactNode }) {
+  const [demande, setDemande] = useState(false);
   return <>
     <LigneArticle><span>article <b className="font-normal text-cave-50">—</b> · hors stock</span>
-      {peutSuivre && onSuivre ? <button type="button" data-dp-suivre aria-label={`Suivre au stock, ligne ${index}`} onClick={onSuivre} className="inline-flex min-h-8 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50"><Plus size={16} strokeWidth={2.25}/>Suivre au stock</button> : null}{autre}</LigneArticle>
+      {onSuivre ? <button type="button" data-dp-suivre aria-label={`Ajouter au stock, ligne ${index}`} aria-expanded={peutSuivre ? undefined : demande} onClick={() => { if (peutSuivre) onSuivre(); else setDemande(d => !d); }} className="inline-flex min-h-8 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50"><Plus size={16} strokeWidth={2.25}/>Ajouter au stock</button> : null}{autre}</LigneArticle>
+    {onSuivre && !peutSuivre && demande ? <div data-dp-nature-stock role="group" aria-label={`Nature du stock, ligne ${index}`} className="flex flex-wrap items-center gap-1.5 text-xs text-cave-400"><span>au stock comme</span>
+      <div className="inline-flex overflow-hidden rounded-control border border-cave-600">{NATURES_STOCK.map(n => <button key={n.valeur} type="button" onClick={() => onSuivre(n.valeur)} className="min-h-8 px-2.5 text-sm text-cave-200">{n.mot}</button>)}</div></div> : null}
     {types.length ? <div data-dp-types role="group" aria-label={`Type d’achat fin, ligne ${index}`} className="flex flex-wrap gap-1">
       {types.map(t => <button key={t.valeur} type="button" aria-pressed={t.valeur === courant} onClick={() => onType(t.valeur)} className={`min-h-7 rounded-control border px-2 text-xs ${t.valeur === courant ? `border-ebc-straw ${ACTIF}` : 'border-cave-600 text-cave-200'}`}>{t.mot}</button>)}
     </div> : null}

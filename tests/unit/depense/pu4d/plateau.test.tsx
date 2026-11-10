@@ -2,7 +2,7 @@
 /**
  * Voie p-port-pu4d (D361, D364) : le plateau de sa maquette pu4d, porté. Peu de tests, ciblés :
  *  - les règles pures : le stock avant → après réception, le choix d'unité avec la pièce (D353) ;
- *  - la structure sur l'écran rendu : l'article relié montre « 1 → 7 Kg » (stock réel du banc simulé), la ligne hors stock porte « Suivre au stock » (greffe pa1d)
+ *  - la structure sur l'écran rendu : l'article relié montre « 1 → 7 Kg » (stock réel du banc simulé), la ligne hors stock porte « Ajouter au stock » (greffe pa1d)
  *    et ses types en pastilles, aucun menu ni « plus » dans le plateau (D350, D346) ;
  *  - D364 : une ligne d'emballage sous « Local » se range dans la bande Rénovation par le champ « Famille », et y reste.
  * Gemini jamais appelé ; stock SIMULÉ ; rien n'est écrit.
@@ -81,7 +81,7 @@ describe('le plateau porté, sur l’écran rendu', () => {
     expect(a.querySelector('[data-dp-centime]')).toBeNull();
     expect(a.querySelector('[data-dp-stock]')?.textContent).toContain('Maris Otter');
   });
-  it('une ligne hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d) et la famille sous « Famille », sans pastilles (D364)', async () => {
+  it('une ligne hors stock : « article — · hors stock », « Ajouter au stock » (greffe pa1d) et la famille sous « Famille », sans pastilles (D364)', async () => {
     const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Tournevis cruciforme', 'equipment', 1, 'Stk', 9.5)]);
     const c = ouvrir(view, 'line-2');
     expect(c.querySelector('[data-dp-stock]')?.textContent).toContain('hors stock');
@@ -135,7 +135,7 @@ describe('D370 — le libellé d’une ligne ajoutée', () => {
 });
 
 describe('D371, D372 — une ligne en pièce reliée à un houblon compté en g', () => {
-  it('« Galaxy » en pièce, « Suivre au stock » : reliée (pas de doublon) ; son face à face Facture | Stock (pu4d), « compté en g », cinq cases, g proposé ; g d’un toucher', async () => {
+  it('« Galaxy » en pièce, « Ajouter au stock » : reliée (pas de doublon) ; son face à face Facture | Stock (pu4d), « compté en g », cinq cases, g proposé ; g d’un toucher', async () => {
     const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3)]);
     const avant = new Set([...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')));
     fireEvent.click(screen.getByRole('button', { name: /Ajouter une ligne/ }));
@@ -145,7 +145,7 @@ describe('D371, D372 — une ligne en pièce reliée à un houblon compté en g'
     champ.focus(); fireEvent.change(champ, { target: { value: 'Galaxy' } }); champ.blur();
     l = ligneEl(view, id);
     fireEvent.click(l.querySelector('[data-dp-cases-unite] button[data-val="pièce"]')!);
-    fireEvent.click(screen.getByRole('button', { name: /Suivre au stock/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter au stock/ }));
     l = ligneEl(view, id);
     expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('Galaxy');
     expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('relié');

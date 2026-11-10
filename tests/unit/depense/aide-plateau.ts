@@ -21,9 +21,9 @@ export function stockDe(n: number): StockAction | undefined {
 export function retirerStock(n: number) {
   fireEvent.click(within(ligneDe(n)).getByRole('button', { name: `Retirer l’article, ligne ${n}` }));
 }
-/** « Suivre au stock » (greffe pa1d) : relie par le nom si l'article existe, sinon nouvel article. */
+/** « Ajouter au stock » (greffe pa1d) : relie par le nom si l'article existe, sinon nouvel article. */
 export function suivreAuStock(n: number) {
-  fireEvent.click(within(ligneDe(n)).getByRole('button', { name: `Suivre au stock, ligne ${n}` }));
+  fireEvent.click(within(ligneDe(n)).getByRole('button', { name: `Ajouter au stock, ligne ${n}` }));
 }
 /** Le segment « Ingrédient | Service | Matériel » d'une ligne : le mot pressé, ou undefined sans segment (une remise). */
 export function naturePressee(n: number): string | undefined {

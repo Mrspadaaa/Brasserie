@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
  * Voie SM (08.11), sur l'écran rendu : « SI je mets suivre au stock, ça devrait faire le mapping automatique... ».
- * Sa capture : la ligne ajoutée « Idaho7 », 5 g, rangée dans « Autres », « article — · hors stock », bouton « + Suivre au stock ».
+ * Sa capture : la ligne ajoutée « Idaho7 », 5 g, rangée dans « Autres », « article — · hors stock », bouton « + Ajouter au stock ».
  * Voulu : la ligne arrive en Houblons ; le bouton la relie à l'article « Idaho 7 » du stock s'il y est, sinon en fait un nouvel article Houblon « Idaho 7 »
  * avec sa fiche (jamais l'α de la fiche posé), sinon (nom inconnu) un nouvel article simple. Stock SIMULÉ, Gemini jamais appelé, rien d'écrit.
  */
@@ -64,7 +64,7 @@ const ajouter = (view: ReturnType<typeof render>, libelle: string): string => {
   const d = ligneEl(view, id).querySelector('details')!; if (d.open) fireEvent.click(d.querySelector('summary')!);
   return id;
 };
-const suivre = (view: ReturnType<typeof render>, id: string) => { fireEvent.click(within(ligneEl(view, id)).getByRole('button', { name: /Suivre au stock/ })); };
+const suivre = (view: ReturnType<typeof render>, id: string) => { fireEvent.click(within(ligneEl(view, id)).getByRole('button', { name: /Ajouter au stock/ })); };
 /** L'état du stock de la ligne, lu sur son plateau (même lecture que `aide-plateau.ts`, mais par id : une ligne ajoutée à la main n'est pas « line-N »). */
 const stockDe = (view: ReturnType<typeof render>, id: string): 'existing' | 'new' | 'none' | undefined => {
   const t = ligneEl(view, id).querySelector('[data-dp-stock]')?.textContent ?? '';
@@ -74,7 +74,7 @@ const stockDe = (view: ReturnType<typeof render>, id: string): 'existing' | 'new
   return undefined;
 };
 
-describe('SM — « Suivre au stock » relie tout seul', () => {
+describe('SM — « Ajouter au stock » relie tout seul', () => {
   it('« Idaho7 », 5 g, rien au stock : la ligne est déjà dans Houblons, puis le bouton en fait un article Houblon « Idaho 7 » (fiche, pas d’α), la ligne y reste', async () => {
     const view = await lire();
     const id = ajouter(view, 'Idaho7');

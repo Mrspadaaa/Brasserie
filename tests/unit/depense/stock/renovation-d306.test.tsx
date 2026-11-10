@@ -61,7 +61,7 @@ describe('D306 — une pièce de travaux lue « stock » sous Local : la Rénova
     const view = await lire('renovation');
     for (const id of ['line-2', 'line-3', 'line-4', 'line-5']) expect(bandeDe(view, id), id).toBe('renovation');
     expect(bandeDe(view, 'line-1')).toBe('malt');
-    for (const n of [2, 3, 4]) { expect(stockDe(n), `ligne ${n}`).toBe('none'); expect(document.querySelector(`[data-dp-ligne="line-${n}"] [data-dp-suivre]`), `ligne ${n}`).toBeNull(); } // « hors stock », sans « Suivre au stock »
+    for (const n of [2, 3, 4]) { expect(stockDe(n), `ligne ${n}`).toBe('none'); expect(document.querySelector(`[data-dp-ligne="line-${n}"] [data-dp-suivre]`), `ligne ${n}`).not.toBeNull(); } // « hors stock », « Ajouter au stock » offert à la demande (BR-124, 10.11 : « toujours disponible »)
     expect(stockDe(1)).toBe('none'); // s1 (VERDICT-EN-LIGNE-2, 10.11) : une dépense de travaux ne relie plus aucune ligne, même le malt qui retrouve un article (avant : 'existing', proposé sur son article) ; « Suivre au stock » reste à la main
     expect(state.writes).toEqual([]);
   });

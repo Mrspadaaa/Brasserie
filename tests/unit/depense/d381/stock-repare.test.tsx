@@ -200,13 +200,13 @@ describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => 
     expect(r.depot.neufs).toEqual([{ ligne: 'line-1', nom: 'Citra', unite: 'g', stock: 100 }]); // un « Citra » de plus à côté de « Citra 12.5% » et « Citra 13.0% » : le stock se double, rien ne le signale à la confirmation
     expect(r.depot.ajouts).toEqual([]);
   });
-  it('C3 : une ligne lue « autre » (hors stock) : « Ingrédient » seul ne la fait PAS entrer au stock ; « Suivre au stock » (second geste) la crée avec 1 kg', async () => {
+  it('C3 : une ligne lue « autre » (hors stock) : « Ingrédient » seul ne la fait PAS entrer au stock ; « Ajouter au stock » (second geste) la crée avec 1 kg', async () => {
     const SUCRE_AUTRE: Ligne = { nom: 'Sucre candi', q: 1, u: 'kg', prix: null, montant: 5.9, cat: 'sugar', kind: 'other' };
     const touche = (v: ReturnType<typeof render>) => fireEvent.click([...ligne(v).querySelectorAll<HTMLElement>('[data-dp-nature] button')].find(b => b.textContent === 'Ingrédient')!);
     const seul = await lire([], [SUCRE_AUTRE]);
     expect(texte(seul)).toMatch(/article — · hors stock/);
     touche(seul);
-    expect(texte(seul)).toMatch(/Suivre au stock/); expect(texte(seul)).not.toMatch(/nouvel article/);
+    expect(texte(seul)).toMatch(/Ajouter au stock/); expect(texte(seul)).not.toMatch(/nouvel article/);
     const r1 = await confirmer(seul);
     expect(r1.depot.lignes[0].stockAction).toBe('none'); expect(r1.depot.neufs).toEqual([]);
     cleanup(); state.scanned.mockReset();
