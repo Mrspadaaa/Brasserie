@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { normalizeInvoiceScan } from '../../functions/src/invoiceScanCore';
-import { ressemblance, rangsProvisoires, redresserDecalage, retireesParLaTroisieme } from '../../functions/src/invoiceScanVote';
+import { lectureFusionnee, ressemblance, rangsProvisoires, retireesParLaTroisieme } from '../../functions/src/invoiceScanVote';
 
 const ligne = (name: string, amountTTC: number, quantity = 1) => ({ name, kind: 'stock', quantity, unit: 'pc', amountTTC, reference: '' });
 const ancre = (n: number) => ligne(`Article sûr ${n}`, 10 + n);
@@ -50,27 +50,45 @@ describe('p3 : les lignes « retirées » écrites pour le cache sont celles que
   });
 });
 
-describe('p3 relance 1 : redresserDecalage, le nom d’une ligne ne prend jamais le montant d’une voisine', () => {
+describe('2026-11-10 : la fusion des trois lectures, par créneau, la 3.8 pour pivot (lectureFusionnee)', () => {
   const noms = ['Seau bleu', 'Turbine rotative', 'Mètre ruban', 'Gants de travail', 'Serre-joint', 'Jeu de clés', 'Brosse radiateur'];
   const montants = [1.2, 8.85, 7.9, 4.25, 14.9, 8.9, 5.6];
-  const liste = (m: number[], n = noms) => n.map((name, i) => ({ name, amountTTC: m[i], price: m[i], quantity: 1, unit: 'pc' }));
-  const vote = (items: any[]) => ({ normalized: { items } as any, cause: null });
-  it('la 3.8 décalée d’un rang sur les montants : le montant des deux Flash-Lite revient, le nom de la 3.8 reste', () => {
-    const decalee = liste([1.2, 8.85, 4.25, 14.9, 8.9, 5.6, 5.6]);
-    const r = redresserDecalage({ items: decalee }, vote(liste(montants)), vote(liste(montants)));
-    expect(r.redressees.length).toBeGreaterThan(0);
-    expect(r.items[3].amountTTC).toBe(4.25); // « Gants » : 4,25 (le montant d'accord), pas 14,90
-    expect(r.items.map((x: any) => x.name)).toEqual(noms);
-    expect(r.items[2].amountTTC).toBe(7.9);
+  const liste = (m: number[], n = noms, q: number | null = 1) => n.map((name, i) => ({ name, kind: 'other', amountTTC: m[i], price: q === null ? null : m[i], quantity: q, unit: q === null ? '' : 'pc', reference: '' }));
+  const lu = (items: any[], over: Record<string, unknown> = {}) => normalizeInvoiceScan({ vendor: 'Quincaillerie Test', date: '2026-11-01', currency: 'CHF', amountTTC: Math.round(items.reduce((t, l) => t + l.amountTTC, 0) * 100) / 100, items, ...over }) as any;
+  it('la 3.8 décalée d’un rang sur les montants (trois listes de même longueur) : le montant des deux Flash-Lite revient, le nom de la 3.8 reste', () => {
+    const f = lectureFusionnee(lu(liste(montants)), lu(liste(montants)), lu(liste([1.2, 8.85, 4.25, 14.9, 8.9, 5.6, 5.6])));
+    expect(f.items.map((x: any) => x.amountTTC)).toEqual(montants);
+    expect(f.items.map((x: any) => x.name)).toEqual(noms);
   });
-  it('une 3.8 qui s’accorde avec les Flash-Lite, ou qui corrige un montant sans rapport avec une voisine : rien ne change', () => {
-    expect(redresserDecalage({ items: liste(montants) }, vote(liste(montants)), vote(liste(montants))).redressees).toEqual([]);
+  it('une 3.8 qui corrige un montant sans rapport avec une voisine garde sa valeur ; deux Flash-Lite décalées ensemble (lignes en moins) ne la renversent pas', () => {
     const corrigee = liste(montants); corrigee[3] = { ...corrigee[3], amountTTC: 4.5, price: 4.5 };
-    expect(redresserDecalage({ items: corrigee }, vote(liste(montants)), vote(liste(montants))).redressees).toEqual([]);
+    expect(lectureFusionnee(lu(liste(montants)), lu(liste(montants)), lu(corrigee)).items[3].amountTTC).toBe(4.5);
+    const decalees = liste([1.2, 8.85, 4.25, 14.9], noms.slice(0, 4));
+    expect(lectureFusionnee(lu(decalees), lu(decalees), lu(liste(montants))).items.map((x: any) => x.amountTTC)).toEqual(montants);
   });
-  it('deux Flash-Lite de longueur très différente de la 3.8 : le raisonnement par les voisines ne s’applique pas', () => {
-    const decalee = liste([1.2, 8.85, 4.25, 14.9, 8.9, 5.6, 5.6]);
-    const courte = liste(montants).slice(0, 3);
-    expect(redresserDecalage({ items: decalee }, vote(courte), vote(courte)).redressees).toEqual([]);
+  it('la 3.8 n’écrit ni quantité ni prix : le « 1 × prix » lu par les deux Flash-Lite au même montant reste (BAUHAUS, jeu 7 n° 4)', () => {
+    const f = lectureFusionnee(lu(liste(montants)), lu(liste(montants)), lu(liste(montants, noms, null)));
+    expect(f.items.every((x: any) => x.quantity === 1 && x.price === x.amountTTC)).toBe(true);
+  });
+  it('deux tickets d’un règlement : la 3.8 ne lit que le second ; les lignes du premier, lues par les deux Flash-Lite, restent, et le total est celui que leurs lignes font', () => {
+    const p1 = liste([5.4, 9.2], ['Paracétamol 500 mg', 'Ibuprofène 400 mg']), p2 = liste([26.68, 50, 75.15], ['Vaxigrip', 'Vaccination', 'Comirnaty']);
+    const deux = lu([...p1, ...p2], { amountTTC: 166.43, amountPaid: 166.43, terminalAmount: 166.43, countedAmounts: 5 });
+    const f = lectureFusionnee(deux, deux, lu(p2, { amountTTC: 151.83, amountPaid: 14.6, countedAmounts: 13 }));
+    expect(f.items.map((x: any) => x.name)).toEqual(['Paracétamol 500 mg', 'Ibuprofène 400 mg', 'Vaxigrip', 'Vaccination', 'Comirnaty']);
+    expect(f.amountTTC).toBe(166.43);
+    expect((f as any).amountPaid).toBe(166.43); // payé lu par deux lectures, jamais celui de la 3.8 seule
+    expect((f as any).countedAmounts).toBeUndefined(); // 5 / 5 / 13 : la 3.8 contredit les deux autres, le comptage n'est pas un contrôle sûr
+  });
+  it('un comptage que la 3.8 est seule à lire n’est pas gardé (« 13 comptés », jeu 7 n° 2)', () => {
+    const f = lectureFusionnee(lu(liste(montants)), lu(liste(montants), { countedAmounts: 9 }), lu(liste(montants), { countedAmounts: 13 }));
+    expect((f as any).countedAmounts).toBeUndefined();
+  });
+  it('une faute d’OCR entre les deux Flash-Lite ne fait ni doublon ni ligne « retirée » (jeu 7 n° 3)', () => {
+    const a = liste(montants), b = liste(montants, noms.map((n, i) => (i === 2 ? 'METRE RUBAN 1L' : n)));
+    const f = lectureFusionnee(lu(a), lu(b), lu(liste(montants)));
+    expect(f.items).toHaveLength(7);
+    const final = { items: f.items, amountTTC: f.amountTTC, tvaAmount: f.tvaAmount };
+    const third = { normalized: lu(liste(montants)), cause: null };
+    expect(retireesParLaTroisieme({ normalized: lu(a), cause: null } as any, { normalized: lu(b, { amountTTC: 1 }), cause: null } as any, third as any, final)).toBeNull();
   });
 });

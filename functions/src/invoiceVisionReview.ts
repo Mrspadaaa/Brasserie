@@ -58,6 +58,19 @@ function comparisonKey(field: string, value: unknown): string {
  * Vote d'un nombre de contrôle (payé, terminal, comptes) : la valeur lue par au moins deux lectures ; à défaut la 3ᵉ lecture (la 3.8 qui tranche) si elle en porte une ; sinon `undefined`
  * (le champ reste absent : inconnu, jamais 0). Une lecture vide ne pèse pas contre deux lectures qui concordent.
  */
+/**
+ * Mission 2026-11-10 (jeu en ligne 7 n° 2, « Articles lus ≠ comptés 7 / 13 ») : un COMPTAGE (montants, codes EAN, articles annoncés) est un contrôle indépendant.
+ * Deux lectures : gardé si elles lisent le même nombre. Trois : gardé seulement si la 3.8 (troisième) lit le même nombre qu'au moins une autre ; deux Flash-Lite
+ * d'accord contre la 3.8 ne suffisent pas (banc réel, deux tickets d'un règlement : 13 / 13 / 7 pour 7 lignes ; aussi 9 / 10 / 7, 13 / 8 / 7). Sinon le champ
+ * reste absent (« non imprimé », jamais un faux rouge).
+ */
+export function voterComptage(valeurs: unknown[]): number | undefined {
+  const lu = (v: unknown) => (typeof v === 'number' && Number.isInteger(v) ? v : undefined);
+  // une 3.8 vide ne pèse pas : les deux autres décident (B6) ; une 3.8 qui lit un autre nombre que les deux autres l'emporte sur leur accord pour l'écarter
+  if (valeurs.length === 3 && lu(valeurs[2]) !== undefined) { const c = lu(valeurs[2]); return lu(valeurs[0]) === c || lu(valeurs[1]) === c ? c : undefined; }
+  const lus = valeurs.slice(0, 2).map(lu).filter((v): v is number => v !== undefined);
+  return lus.length >= 2 && lus.every(v => v === lus[0]) ? lus[0] : undefined;
+}
 export function voterChampControle(valeurs: unknown[]): number | undefined {
   const nombres = valeurs.map(x => (typeof x === 'number' && Number.isFinite(x) ? Math.round(x * 100) : null));
   for (let k = 0; k < nombres.length; k++) {
@@ -128,33 +141,77 @@ const score = (a: Item, b: Item) => FIVE.filter(f => comparisonKey(f, (a as any)
 const sameFive = (a: Item, b: Item) => score(a, b) === 5;
 interface Pairing { match: Map<number, number>; orphansBase: number[]; orphansOther: number[] }
 
+/**
+ * Mission 2026-11-10-fusion-lectures (L29, « ## État de l'art ») : l'appariement des lignes de deux lectures est un ALIGNEMENT GLOBAL DE SÉQUENCES
+ * (Needleman-Wunsch, trou à coût nul : appariement monotone de poids maximal), comme ROVER aligne les sorties de reconnaissance avant de voter. Un couple
+ * n'est permis que sur une preuve : noms qui se ressemblent (Levenshtein normalisé ou « ensemble de mots », RapidFuzz token set ratio),
+ * nom moyen au même montant, même montant unique des deux côtés, ou même référence avec l'un des deux ; jamais la position seule ni la référence seule
+ * (BAUHAUS, banc doc24 : le code EAN imprimé sous l'article est rattaché tantôt à la ligne d'avant, tantôt à celle d'après). Une faute d'OCR (« APPRET ORTXESSEL 1L » / « APPRET
+ * ORTXESSEL ») ne laisse donc plus deux orphelines (doublons du provisoire, « retirées » fausses). Une seconde passe, à preuve stricte, rattrape une ligne
+ * déplacée (pages dans un autre ordre). Le même aligneur sert la réconciliation, le vote à trois, les rangs provisoires et les lignes retirées.
+ */
+const motsDuNom = (v: unknown): string[] => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+function rapportLevenshtein(x: string, y: string): number {
+  if (!x || !y) return 0;
+  if (x === y) return 1;
+  let precedente = Array.from({ length: y.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= x.length; i++) {
+    const courante = [i];
+    for (let j = 1; j <= y.length; j++) courante[j] = Math.min(precedente[j] + 1, courante[j - 1] + 1, precedente[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+    precedente = courante;
+  }
+  return 1 - precedente[y.length] / Math.max(x.length, y.length);
+}
+/** Ressemblance de deux noms : 1 − (distance de Levenshtein / longueur du plus long), sur le texte sans accents ni ponctuation. 0 si l'un est vide. */
+export function ressemblance(a: unknown, b: unknown): number { return rapportLevenshtein(motsDuNom(a).join(' '), motsDuNom(b).join(' ')); }
+/** Rapport « ensemble de mots » (token set ratio) : les mots communs, puis chacun avec ses mots propres ; le meilleur des trois rapports. */
+export function ressemblanceMots(a: unknown, b: unknown): number {
+  const A = new Set(motsDuNom(a)), Bm = new Set(motsDuNom(b));
+  if (!A.size || !Bm.size) return 0;
+  const communs = [...A].filter(m => Bm.has(m)).sort(), seulsA = [...A].filter(m => !Bm.has(m)).sort(), seulsB = [...Bm].filter(m => !A.has(m)).sort();
+  const c = communs.join(' '), ca = [c, ...seulsA].filter(Boolean).join(' '), cb = [c, ...seulsB].filter(Boolean).join(' ');
+  return Math.max(c ? rapportLevenshtein(c, ca) : 0, c ? rapportLevenshtein(c, cb) : 0, rapportLevenshtein(ca, cb));
+}
+/** La ressemblance de deux libellés lus : le meilleur de Levenshtein normalisé et du rapport « ensemble de mots ». */
+export const ressemblanceNoms = (a: unknown, b: unknown): number => Math.max(ressemblance(a, b), ressemblanceMots(a, b));
+const SEUIL_NOM_SEUL = 0.8, SEUIL_NOM_AU_MONTANT = 0.4, SEUIL_DEPLACEE = 0.85;
+
 function alignLines(base: Item[], other: Item[]): Pairing {
+  const n = base.length, m = other.length;
+  const cents = (item: Item) => toCents(item.amountTTC);
+  const ref = (item: Item) => canonicalText(item.reference ?? '');
+  const compte = (liste: Item[]) => { const c = new Map<number, number>(); for (const it of liste) { const k = cents(it); if (k !== null) c.set(k, (c.get(k) ?? 0) + 1); } return c; };
+  const parMontantB = compte(base), parMontantO = compte(other);
+  const sim: number[][] = base.map(a => other.map(b => ressemblanceNoms(a.name, b.name)));
+  const qte = (item: Item) => comparisonKey('quantity', item.quantity);
+  const jumelles = (x: Item, y: Item, s: number) => s >= SEUIL_NOM_SEUL && cents(x) !== null && cents(x) === cents(y) && qte(x) === qte(y);
+  const preuve = (i: number, j: number, stricte = false): number => {
+    const a = base[i], b = other[j], s = sim[i][j];
+    // Deux lignes au même libellé dans un autre ordre (quantités 2 et 5) : une ligne ne rejoint jamais une autre quantité quand sa jumelle exacte existe en face.
+    if (qte(a) !== qte(b) && (other.some((o, k) => k !== j && jumelles(a, o, sim[i][k])) || base.some((o, k) => k !== i && jumelles(o, b, sim[k][j])))) return 0;
+    const memeRef = ref(a) !== '' && ref(a) === ref(b);
+    const ca = cents(a), memeMontant = ca !== null && ca === cents(b);
+    const uniqueMontant = memeMontant && parMontantB.get(ca!) === 1 && parMontantO.get(ca!) === 1;
+    const permis = stricte ? memeRef || (memeMontant && s >= SEUIL_DEPLACEE)
+      : s >= SEUIL_NOM_SEUL || (memeMontant && s >= SEUIL_NOM_AU_MONTANT) || uniqueMontant || (memeRef && (memeMontant || s >= SEUIL_NOM_AU_MONTANT)) || (n === 1 && m === 1);
+    if (!permis) return 0;
+    return 1 + s + (memeMontant ? 1 : 0) + (memeRef ? 0.5 : 0) + (comparisonKey('quantity', a.quantity) === comparisonKey('quantity', b.quantity) ? 0.25 : 0);
+  };
+  // Needleman-Wunsch, trou à coût nul : S[i][j] = meilleur poids des i premières lignes de base et j premières de l'autre.
+  const S = Array.from({ length: n + 1 }, () => new Float64Array(m + 1));
+  const W = base.map((_, i) => other.map((__, j) => preuve(i, j)));
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++)
+    S[i][j] = Math.max(S[i - 1][j], S[i][j - 1], W[i - 1][j - 1] > 0 ? S[i - 1][j - 1] + W[i - 1][j - 1] : 0);
   const match = new Map<number, number>(), taken = new Set<number>();
-  const name = (item: Item) => canonicalText(item.name), ref = (item: Item) => canonicalText(item.reference ?? '');
-  const tiers: Array<(a: Item, b: Item) => boolean> = [
-    (a, b) => ref(a) !== '' && ref(a) === ref(b) && name(a) === name(b),
-    (a, b) => ref(a) !== '' && ref(a) === ref(b),
-    (a, b) => name(a) !== '' && name(a) === name(b),
-  ];
-  for (const same of tiers) {
-    base.forEach((line, bi) => {
-      if (match.has(bi)) return;
-      const candidates = other.flatMap((candidate, oi) => !taken.has(oi) && same(line, candidate) ? [{ oi, s: score(line, candidate) }] : []);
-      if (!candidates.length) return;
-      const top = Math.max(...candidates.map(c => c.s)), best = candidates.filter(c => c.s === top);
-      // À égalité, la première ne vaut que si les candidates sont identiques sur les cinq champs ; sinon la ligne reste non rapprochée.
-      if (best.length > 1 && !best.every(c => sameFive(other[c.oi], other[best[0].oi]))) return;
-      match.set(bi, best[0].oi); taken.add(best[0].oi);
-    });
+  for (let i = n, j = m; i > 0 && j > 0;) {
+    const w = W[i - 1][j - 1];
+    if (w > 0 && Math.abs(S[i][j] - (S[i - 1][j - 1] + w)) < 1e-9) { match.set(i - 1, j - 1); taken.add(j - 1); i--; j--; }
+    else if (S[i][j] === S[i - 1][j]) i--;
+    else j--;
   }
-  // Ancre par les chiffres : mêmes quantité, unité, montant et nature, seule candidate des deux côtés.
-  const cle = (item: Item) => [comparisonKey('quantity', item.quantity), comparisonKey('unit', item.unit), comparisonKey('amountTTC', item.amountTTC), comparisonKey('kind', item.kind)].join('|');
-  const libresBase = base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), libresOther = other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi]));
-  for (const bi of libresBase) {
-    const k = cle(base[bi]);
-    const cb = libresBase.filter(i => cle(base[i]) === k), co = libresOther.filter(i => cle(other[i]) === k);
-    if (cb.length === 1 && co.length === 1) { match.set(bi, co[0]); taken.add(co[0]); }
-  }
+  // Une ligne déplacée (hors de l'ordre) : la plus forte preuve stricte d'abord, une paire à la fois.
+  const restes = base.flatMap((_, i) => (match.has(i) ? [] : other.flatMap((__, j) => (taken.has(j) ? [] : [{ i, j, w: preuve(i, j, true) }])))).filter(c => c.w > 0).sort((a, b) => b.w - a.w);
+  for (const c of restes) if (!match.has(c.i) && !taken.has(c.j)) { match.set(c.i, c.j); taken.add(c.j); }
   return { match, orphansBase: base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), orphansOther: other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi])) };
 }
 /** D308 : exportée sous ce nom pour rapprocher les lignes du premier écran (deux Flash-Lite) de celles de la lecture finale (`invoiceScanVote.ts`). */
@@ -452,8 +509,8 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   // c1 : les champs des contrôles croisés ne se votent pas ; la lecture de base les porte, une valeur absente se prend dans une autre lecture (jamais inventée), une photo incomplète pour une lecture l'est.
   // Comme le total : deux lectures qui concordent l'emportent (une 3.8 vide ne les efface pas) ; sans concordance, la 3.8 seule (la 3ᵉ lecture) ; sinon rien : jamais une valeur lue une seule fois par une Flash-Lite.
   for (const champ of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans'] as const) {
-    const valeur = voterChampControle(readings.map((r: any) => r[champ]));
-    if (valeur !== undefined) merged[champ] = valeur;
+    const valeur = (champ === 'amountPaid' || champ === 'terminalAmount' ? voterChampControle : voterComptage)(readings.map((r: any) => r[champ]));
+    if (valeur !== undefined) merged[champ] = valeur; else if (champ !== 'amountPaid' && champ !== 'terminalAmount') delete merged[champ];
     // Limite 2 : un comptage de montants n'est « confirmé » que si la 3.8 (la 3ᵉ lecture) l'a lu aussi, au même nombre.
     if (champ === 'countedAmounts') {
       if (valeur !== undefined && readings.length === 3 && (readings[2] as any).countedAmounts === valeur) merged.countedAmountsConfirmed = true; else delete merged.countedAmountsConfirmed;

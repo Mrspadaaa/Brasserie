@@ -68,13 +68,14 @@ describe('LE1 — champs qui déclenchent', () => {
 });
 
 describe('P4 — jamais de rapprochement par la seule position', () => {
-  it('deux « Fermenteur » aux quantités échangées : non rapprochés, 3e lecture, phrase « rapprochées »', () => {
+  // 2026-11-10 (Needleman-Wunsch) : même nom et même montant au même rang sont une preuve ; la quantité qui diffère est un désaccord qui pèse et appelle la 3.8.
+  it('deux « Fermenteur » aux quantités échangées : rapprochés par nom et montant, la quantité en désaccord appelle la 3e lecture', () => {
     const a = simple({ amountTTC: 550 }, [fermenteur(1, 500), fermenteur(2, 50)]);
     const b = simple({ amountTTC: 550 }, [fermenteur(2, 500), fermenteur(1, 50)]);
     const r = reconcileInvoiceVision([lire(a), lire(b)]);
     expect(r.needsCorrection).toBe(true);
-    expect(r.review.findings.join(' ')).toContain('rapprochées');
-    expect((r.result as any).points.some((p: any) => p.code === 'lignes-non-rapprochees')).toBe(true);
+    expect(r.review.findings.join(' ')).toContain('quantité');
+    expect((r.result as any).points.some((p: any) => p.code === 'lectures-divergentes' && p.pese)).toBe(true);
   });
   it('cinq lignes identiques sur les cinq champs se rapprochent dans l\'ordre', () => {
     const cinq = () => simple({ amountTTC: 5 }, Array.from({ length: 5 }, () => malt({ name: 'Zuschlag Schrotung', quantity: 1, price: 1, amountTTC: 1 })));

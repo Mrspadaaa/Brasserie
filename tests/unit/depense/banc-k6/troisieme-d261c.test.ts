@@ -92,19 +92,11 @@ describe('D261c — ce qui appelle la 3.8 sur une pièce de cette forme', () => 
     expect(needs(lecture(), b)).toBe(true);
   });
 
-  it.skip('EN ATTENTE D261c — kind ET nom divergent sans référence imprimée : les lignes ne sont pas « sans vis-à-vis » (l’ancre par les chiffres ne devrait pas exiger le même kind)', () => {
+  it('D261c (posé le 10.11, alignement de Needleman-Wunsch) — kind ET nom divergent sans référence imprimée : les lignes ne sont pas « sans vis-à-vis » (l’ancre par les chiffres ne devrait pas exiger le même kind)', () => {
     const sansRef = (list: any[]) => list.map(l => ({ ...l, reference: '' }));
     const a = lecture({}, sansRef(items()));
     const b = lecture({}, sansRef(items([{}, {}, { kind: 'other', name: 'Hopfensack fictif fein, Mischung: Einzelprodukt' }])));
     expect(trouve(points(a, b), 'lignes-non-rapprochees')).toEqual([]);
   });
 
-  it('AUJOURD’HUI (cause ; à retirer une fois le correctif posé) — ce couple kind + nom sans référence laisse DEUX lignes sans vis-à-vis, un point qui pèse', () => {
-    const sansRef = (list: any[]) => list.map(l => ({ ...l, reference: '' }));
-    const a = lecture({}, sansRef(items()));
-    const b = lecture({}, sansRef(items([{}, {}, { kind: 'other', name: 'Hopfensack fictif fein, Mischung: Einzelprodukt' }])));
-    const [p] = trouve(points(a, b), 'lignes-non-rapprochees');
-    expect(p).toMatchObject({ pese: true, lignes: [3, 3] });
-    expect(releveDivergences(...paire(a, b)).map(d => d.code)).toContain('lignes-non-rapprochees');
-  });
 });

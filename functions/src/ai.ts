@@ -9,7 +9,7 @@ import { geminiBody, userTextOf } from './geminiBody.js';
 import { validateInvoiceFile, normalizeInvoiceScan, LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
 import { ScanReadCutError, ligneJournalLecture, type CauseCoupure } from './invoiceVisionReview.js';
 import { isoCurrency, lireCsv8 } from './invoiceScanVote.js';
-import { INVOICE_SCAN_PROMPTS } from './invoiceScanPrompts.js';
+import { INVOICE_SCAN_PROMPTS, notePlusieursCaptures } from './invoiceScanPrompts.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
 import { jonctionNote, morceauNote } from './invoiceMorceaux.js';
 import { MORCEAUX_MAX, assemblerMorceaux, jonctionsRecues, morceauxRecus } from './invoiceAssemblage.js';
@@ -127,8 +127,7 @@ interface AiTaskResult {
 export const SCAN_MAX_PAGES = 4;
 export const MAX_PAGES_B64 = 16_000_000;
 /** La phrase du banc (`multiCaptureNote`, `scripts/banc-lecture-facture.ts`), mot pour mot : c'est la forme mesurée. */
-export const MULTI_PAGE_NOTE = (count: number): string =>
-  `Les ${count} images jointes sont des captures successives d’un même document, dans l’ordre de lecture ; elles peuvent se recouvrir. Chaque ligne imprimée ne se lit qu’une seule fois : si une ligne apparaît sur deux captures, ne la transcris qu’une fois.`;
+export const MULTI_PAGE_NOTE = notePlusieursCaptures;
 
 /** Les pages d'une lecture à plusieurs fichiers : 2 à 4 images valides, dans l'ordre reçu, pas plus de `MAX_PAGES_B64` caractères en tout. */
 export function pagesDeLecture(files: unknown): InvoiceFile[] {

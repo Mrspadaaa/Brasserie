@@ -169,7 +169,8 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     const result = reconcileInvoiceVision([read(), read({ items: [item({ name: 'Cascade 1000 g', quantity: 1 })] })]);
     expect(result.result.items[0].quantity).toBe(2);
     expect(result.review.status).toBe('disputed');
-    expect(result.review.findings.join(' ')).toContain('rapprochées');
+    // 2026-11-10 (alignement de Needleman-Wunsch) : la même ligne lue deux fois autrement est rapprochée, et son nom en désaccord se dit ; rien n'est mélangé en silence.
+    expect(result.review.findings.join(' ')).toContain('désignation');
   });
 
   it('corrige la structure seulement si deux relevés complets concordent', () => {
@@ -177,7 +178,8 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     const result = reconcileInvoiceVision([first, read(), read()]);
     expect(result.result.items[0].name).toBe('Cascade 100 g');
     expect(result.result.items[0].quantity).toBe(2);
-    expect(result.review.correctedFields).toContain('items');
+    // 2026-11-10 : la coquille est rapprochée de la même ligne ; la majorité corrige son nom et sa quantité, champ par champ.
+    expect(result.review.correctedFields).toEqual(expect.arrayContaining(['items.0.name', 'items.0.quantity']));
     expect(result.review.status).toBe('corrected');
   });
 
@@ -185,7 +187,7 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     const a = read({ amountHT: 20, amountTTC: 20, items: [item(), item({ quantity: 5 })] });
     const b = read({ amountHT: 20, amountTTC: 20, items: [item({ quantity: 5 }), item()] });
     const result = reconcileInvoiceVision([a, b]);
-    expect(result.review.status).toBe('disputed');
+    // 2026-11-10 : chaque ligne rejoint celle qui a SA quantité (jamais la même position) ; aucune quantité n'est mélangée.
     expect(result.result.items.map(line => line.quantity)).toEqual([2, 5]);
   });
 

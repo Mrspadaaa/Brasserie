@@ -71,13 +71,13 @@ import { TASKS } from '../functions/src/prompts';
 import { SCAN_MAX_ITEMS, SCAN_MAX_OUTPUT, SCAN_MODEL, countPdfPages, normalizeInvoiceScan, validateInvoiceFile, type InvoiceFile } from '../functions/src/invoiceScanCore';
 import { SV_SCHEMA, productionToSv, schemaProblems, svSystem, svToProduction } from './banc-lecture-schema';
 import { GEMINI_LITE_MODEL, assertGeminiModel } from '../functions/src/models';
-import { INVOICE_SCAN_PROMPTS } from '../functions/src/invoiceScanPrompts';
+import { INVOICE_SCAN_PROMPTS, notePlusieursCaptures, notePlusieursCapturesAvant } from '../functions/src/invoiceScanPrompts';
 import {
   ScanReadCutError, ajouterCoupure, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
   type CauseCoupure, type InvoiceScanResult
 } from '../functions/src/invoiceVisionReview';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
-import { dateDuVoteEtoile, phrasesDuVote } from '../functions/src/invoiceScanVote';
+import { dateDuVoteEtoile, desaccordsDuVote, lectureFusionnee, phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
 import { ALLEGEES, preparerAllegement } from './banc-lecture-alleger';
 import {
@@ -367,8 +367,8 @@ export interface ReadBodyOptions {
   nameFr?: boolean;
 }
 /** La phrase du banc ajoutée à la consigne d'un cas à plusieurs fichiers (jamais à un cas à un fichier). Générique : aucune valeur. */
-export const multiCaptureNote = (count: number) =>
-  `Les ${count} images jointes sont des captures successives d’un même document, dans l’ordre de lecture ; elles peuvent se recouvrir. Chaque ligne imprimée ne se lit qu’une seule fois : si une ligne apparaît sur deux captures, ne la transcris qu’une fois.`;
+// Mission 2026-11-10 : la phrase de la production (une seule source) ; BANC_NOTE_AVANT=1 rejoue l'ancienne (témoin).
+export const multiCaptureNote = (count: number) => (process.env.BANC_NOTE_AVANT ? notePlusieursCapturesAvant(count) : notePlusieursCaptures(count));
 /** Tv : les deux tuiles sont des agrandissements de la page entière (la première image), qui se recouvrent. */
 export const TILES_NOTE = 'La première image est la page entière ; les deux images suivantes sont des agrandissements de la même page (sa partie haute, puis sa partie basse, qui se recouvrent). Ce sont les mêmes lignes imprimées : chaque ligne ne se lit qu’une seule fois.';
 /** Le JSON demandé dans le texte quand l'outil d'exécution de code et le schéma ne vont pas ensemble. */
@@ -694,7 +694,8 @@ export function finalOfLite(r1: Reading, r2: Reading, third?: Reading, force = f
  */
 export function finalOfStar(r1: Reading, r2: Reading, third?: Reading, force = false): Final {
   if (r1.normalized && r2.normalized && third?.normalized && (force || needsThird(r1, r2)))
-    return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third], true);
+    // mission 2026-11-10-fusion-lectures : la fusion par créneau de la production (une seule règle, jamais une copie)
+    return finish(singleResult(finirUneLecture(lectureFusionnee(r1.normalized!, r2.normalized!, third.normalized)), 3), [r1, r2, third], true);
   return finalOfLite(r1, r2, third, force);
 }
 /**
@@ -707,7 +708,7 @@ export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force
   const star = finalOfStar(r1, r2, third, force);
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third, force);
-  const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
+  const disagreements = desaccordsDuVote(vote.result, r1.normalized, r2.normalized, third.normalized);
   // D272b : les phrases du vote sans ses contrôles de calcul, comme la production (`phrasesDuVote`).
   const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
   // LT-2, comme la production (`dateDuVoteEtoile`) : avant le 09.11 le banc ne l'appliquait pas (doc21 : faux « corrigé » 07.11.2025 au banc m9).

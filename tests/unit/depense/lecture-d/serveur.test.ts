@@ -130,26 +130,26 @@ describe('s-serveur — rangProvisoire', () => {
     const final = await lireCsv8(io);
     expect(final.items.map((ligne: any) => [ligne.name, ligne.rangProvisoire])).toEqual([['Levure US-05', null], ['Houblon Citra', 1], ['Malt Pilsner', 0]]);
   });
-  it('T6 bis : une ligne que la 3.8 ne lit plus disparaît du final, les autres gardent leur rang', async () => {
+  it('T6 bis : une ligne que les deux Flash-Lite lisent et que la 3.8 ne lit plus reste (vote à deux contre un, Sun Store), à son rang', async () => {
     const { io } = banc({ ...EN_DESACCORD([MALT, HOUBLON, LEVURE]), s3: piece([MALT, LEVURE]) }, { provisoire: () => undefined });
     const final = await lireCsv8(io);
-    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEqual([0, 2]);
+    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEqual([0, 1, 2]);
   });
-  it('T7 : une pièce d’une ligne dont la 3.8 change le nom et le montant : le repli par la position donne rangProvisoire 0', async () => {
+  it('T7 : une pièce d’une ligne dont la 3.8 change le nom et le montant : rangProvisoire 0', async () => {
     const corrigee = { ...MALT, name: 'Malt Pilsner bio, sac de 25 kg', price: 2.08, amountTTC: 52 };
-    // sans repli : la ligne n'a aucune paire (ni nom, ni référence, ni chiffres identiques)
+    // 2026-11-10 : deux pièces d'une seule ligne : la preuve est la pièce elle-même (l'aligneur rapproche)
     const paire = alignerLignes(lu(piece([MALT])).items, lu(piece([corrigee])).items);
-    expect(paire.match.size).toBe(0);
+    expect(paire.match.size).toBe(1);
     const { io } = banc({ ...EN_DESACCORD([MALT]), s3: piece([corrigee]) }, { provisoire: () => undefined });
     const final = await lireCsv8(io);
     expect(final.items).toHaveLength(1);
     expect(final.items[0]).toMatchObject({ name: 'Malt Pilsner bio, sac de 25 kg', rangProvisoire: 0 });
   });
-  it('T7 bis : le repli par la position ne s’applique pas quand les listes n’ont pas la même longueur', async () => {
+  it('T7 bis : aucune paire par la position : la ligne des deux Flash-Lite reste (en tête), les deux de la 3.8 sont ajoutées', async () => {
     const autre = { ...MALT, name: 'Sac de farine', quantity: 3, unit: 'sac', price: 9, amountTTC: 27 };
     const { io } = banc({ ...EN_DESACCORD([MALT]), s3: piece([autre, HOUBLON]) }, { provisoire: () => undefined });
     const final = await lireCsv8(io);
-    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEqual([null, null]);
+    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEqual([0, null, null]);
   });
   it('T7 ter : sans io.provisoire (client sans flux), le final n’a aucun rang : forme d’aujourd’hui', async () => {
     const { io } = banc({ ...EN_DESACCORD([MALT]), s3: piece([MALT]) });

@@ -875,6 +875,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   place le système qui permet d'améliorer et compare avec les données que l'on a, j'en ai pas plus pour le moment » ; puis : « J'ai
   l'impression que tout ce qui est skill, harness ou autre a été un peu mis de côte » (registre de chaque geste :
   `work/missions/2026-11-01-banc-lecture/GESTES.md` ; boucle : skill `banc-lecture`).
+  10.11 (01:52, capture BAUHAUS en ligne, lignes sans quantité ni prix tantôt acceptées, tantôt « ? × — » rouges), mot pour mot : « Pas d'unité mais accepté ? J'ai l'impression que on voit plus si il y a un second contrôle, j'ai l'impression qu'il y a eu quelques petits régression là depuis quelques minutes ?? » (hébergement servi à cette heure : index-V0Rzeg6D.js, plus c76481aa ; mission 2026-11-10-fusion-lectures).
 - **Une pièce déjà saisie** (01.11, après ses pièces), mot pour mot : « et les deux PDF de la commande 652093 sont identiques. Géré ce cas
   là, on doit voir que ce document est déjà lié à un stock, facture ».
 - **Frais de port et second avis** (01.11, après-midi), à la question « Sur une commande en plusieurs captures, les frais de port

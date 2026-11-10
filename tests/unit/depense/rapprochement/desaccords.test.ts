@@ -83,10 +83,11 @@ describe('U1 — les valeurs concurrentes sont gardées', () => {
     const minoritaire = simple({}, [malt({ name: 'Cascadc 100 g', reference: '', quantity: 20, price: 0.25 })]);
     const r = reconcileInvoiceVision([lire(minoritaire), lire(bonne()), lire(bonne())]);
     expect(r.review.status).toBe('corrected');
-    expect(r.review.correctedFields).toContain('items');
+    // 2026-11-10 : la coquille de la lecture minoritaire est rapprochée de sa ligne ; la majorité corrige champ par champ, rien ne pèse.
+    expect(r.review.correctedFields).toEqual(expect.arrayContaining(['items.0.quantity']));
     const pts = (r.result as any).points;
     expect(pts.some((p: any) => p.code === 'lignes-non-rapprochees')).toBe(false);
-    expect(pts.find((p: any) => p.code === 'lectures-divergentes' && p.champ === 'items')).toMatchObject({ pese: false, source: 'désaccord' });
+    expect(pts.filter((p: any) => p.source === 'désaccord').every((p: any) => !p.pese)).toBe(true);
     expect(r.review.findings).toEqual([]);
   });
 

@@ -1,8 +1,10 @@
 import {
-  ajouterCoupure, alignerLignes, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
+  ajouterCoupure, alignerLignes, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision, ressemblanceNoms, voterChampControle, voterComptage,
   type CauseCoupure, type InvoiceScanResult
 } from './invoiceVisionReview.js';
-import { choisirDate, dateDeLecture } from './invoiceScanCore.js';
+import { choisirDate, dateDeLecture, normalizeInvoiceScan } from './invoiceScanCore.js';
+import { signerPoint } from './invoiceControls.js';
+export { ressemblance, ressemblanceNoms } from './invoiceVisionReview.js';
 
 /**
  * La lecture de facture en production : C★v8 + N du banc (D247, mission 2026-11-01-bascule-lecture).
@@ -87,7 +89,7 @@ function singleResult(single: ReturnType<typeof finirUneLecture>, readers = 1): 
 /** C★ : quand la 3.8 est appelée et lisible sur un désaccord, son résultat TRANCHE SEUL. Sinon le repli `finalOfLite`. */
 function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
   if (r1.normalized && r2.normalized && third?.normalized && needsThird(r1, r2))
-    return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third]);
+    return finish(singleResult(finirUneLecture(lectureFusionnee(r1.normalized, r2.normalized, third.normalized)), 3), [r1, r2, third]);
   return finalOfLite(r1, r2, third);
 }
 
@@ -100,10 +102,29 @@ export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: Lectur
   const star = finalOfStar(r1, r2, third);
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third);
-  const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
+  const disagreements = desaccordsDuVote(vote.result, r1.normalized, r2.normalized, third.normalized);
   const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
   dateDuVoteEtoile(result, [r1.normalized!, r2.normalized!, third.normalized]);
   return { ...star, result };
+}
+/**
+ * Les désaccords du vote à trois, au rang des lignes de la lecture fusionnée. Ceux d'une ligne portent le rang de la lecture de base de la réconciliation
+ * (la première, ou la deuxième quand elle seule s'accorde avec la 3.8) : ils passent au rang de leur colonne ; un désaccord sur une ligne qui n'est pas
+ * gardée n'est pas montré (jeu en ligne 7 n° 8 : « Voir le désaccord » ouvrait une autre ligne). Exportée pour le banc : une seule règle.
+ */
+export function desaccordsDuVote(vote: any, a: InvoiceScanResult, b: InvoiceScanResult, c: InvoiceScanResult): any[] {
+  const base = vote.review?.correctedFields?.includes('items') ? 1 : 0;
+  const colonneDe = new Map<number, number>();
+  colonnesDeTrois(a, b, c).forEach((col, k) => { if (col[base] !== null) colonneDe.set(col[base]! + 1, k + 1); });
+  return (vote.points ?? []).filter((point: any) => point.source === 'désaccord')
+    .filter((point: any) => typeof point.ligne !== 'number' || colonneDe.has(point.ligne)).map((point: any) => (typeof point.ligne === 'number' ? renumeroterPoint(point, colonneDe) : point));
+}
+function renumeroterPoint(point: any, vers: ReadonlyMap<number, number>): any {
+  const n = (k: number) => vers.get(k) ?? k;
+  const { signature: _ancienne, ...reste } = { ...point, ligne: n(point.ligne), ...(Array.isArray(point.lignes) ? { lignes: point.lignes.map((k: number) => n(k)) } : {}),
+    champs: (point.champs ?? []).map((c: string) => c.replace(/^items.(d+)./, (_m: string, k: string) => `items.${n(Number(k))}.`)),
+    cle: String(point.cle).replace(/:(d+):/, (_m: string, k: string) => `:${n(Number(k))}:`) };
+  return { ...reste, signature: signerPoint(reste) };
 }
 /**
  * LT-2 : la 3.8 tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
@@ -156,55 +177,96 @@ export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
 }
 
 /**
- * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3.8 l'ajoute. Le rapprochement est celui de la production
- * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position : ce sont les ANCRES).
- * p3 (jeu en ligne 5, BAUHAUS : « GANTS DE TRAVAIL » posé sur « METRE AUGA » à un autre montant) : problème d'école, l'alignement de deux séquences autour d'ancres communes (diff, Needleman-Wunsch).
- * L'ancien repli (même longueur totale, ligne sans paire au même rang des deux côtés) devinait des paires dès que les deux listes avaient le même nombre de lignes, sans regarder si l'espace entre deux ancres
- * avait le même nombre de lignes de chaque côté : sur une photo tachée (10 lignes sans paire de chaque côté) il rapprochait des lignes sans rapport et décalait les corrections. Le repli se fait DANS UN INTERVALLE
- * entre deux ancres voisines (dans l'ordre des deux listes) : les lignes sans paire de l'intervalle se rapprochent une à une, dans l'ordre, seulement s'il y en a le même nombre des deux côtés (le doc13 du banc :
- * la 3.8 change le nom et le montant d'une ligne entre deux lignes sûres). Sinon aucune paire : celle du provisoire est « retirée », celle du final « ajoutée », sans correction inventée.
+ * Mission 2026-11-10-fusion-lectures : quand la 3.8 tranche, la fusion des trois lectures se fait après alignement, par créneau (ROVER, Fiscus 1997),
+ * pivot = la 3.8. Une colonne = une ligne vue par une ou plusieurs lectures (`alignerLignes`, Needleman-Wunsch). Elle est gardée si la 3.8 l'a, ou si les
+ * deux Flash-Lite l'ont au même montant (deux tickets d'un règlement : la 3.8 qui ne lit qu'une page ne fait plus disparaître l'autre).
+ * Les deux Flash-Lite ne sont pas des lecteurs indépendants (même modèle, même image : banc, doc25, toutes deux « 0,69 » pour 6,95) : leur accord ne
+ * renverse la valeur de la 3.8 que sur une preuve. Le montant reste celui de la 3.8, sauf s'il manque, ou s'il est le montant d'accord d'une ligne VOISINE
+ * (la 3.8 décalée d'un rang : jeu en ligne 6, « OPSHGE CHANTIER » à 8,50). Le triplet quantité, unité, prix est celui de la 3.8 quand elle le lit au montant
+ * retenu ; sinon celui que les lectures lisent à ce montant (un « 1 » lu par les deux Flash-Lite n'est plus perdu quand la 3.8 ne l'écrit pas).
+ * Le nom et la nature sont ceux de la 3.8 quand elle a la ligne.
  */
-const SEUIL_NOM = 0.7, SEUIL_NOM_MONTANT_EGAL = 0.5, SEUIL_UNE_PAIRE = 0.5;
-const texteDeNom = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-/** Ressemblance de deux noms : 1 − (distance de Levenshtein / longueur du plus long), sur le texte sans accents ni ponctuation. 0 si l'un est vide. */
-export function ressemblance(a: unknown, b: unknown): number {
-  const x = texteDeNom(a), y = texteDeNom(b);
-  if (!x || !y) return 0;
-  let precedente = Array.from({ length: y.length + 1 }, (_, j) => j);
-  for (let i = 1; i <= x.length; i++) {
-    const courante = [i];
-    for (let j = 1; j <= y.length; j++) courante[j] = Math.min(precedente[j] + 1, courante[j - 1] + 1, precedente[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
-    precedente = courante;
+export type Colonne = [number | null, number | null, number | null];
+export function colonnesDeTrois(a: InvoiceScanResult, b: InvoiceScanResult, c: InvoiceScanResult): Colonne[] {
+  const p31 = alignerLignes(c.items, a.items), p32 = alignerLignes(c.items, b.items), p12 = alignerLignes(a.items, b.items);
+  const cols: Colonne[] = c.items.map((_, k) => [p31.match.get(k) ?? null, p32.match.get(k) ?? null, k]);
+  const pris1 = new Set(cols.flatMap(x => (x[0] === null ? [] : [x[0]]))), pris2 = new Set(cols.flatMap(x => (x[1] === null ? [] : [x[1]])));
+  // Les lignes que les deux Flash-Lite lisent au même montant et que la 3.8 n'a pas : à leur place, après la colonne qui les précède dans la première lecture.
+  for (const [i, j] of [...p12.match].sort((x, y) => x[0] - y[0])) {
+    if (pris1.has(i) || pris2.has(j)) continue;
+    const m = centimesDe(a.items[i]?.amountTTC);
+    if (m === null || m !== centimesDe(b.items[j]?.amountTTC)) continue;
+    let apres = -1;
+    for (let k = cols.length - 1; k >= 0 && apres < 0; k--) if ((cols[k][0] !== null && cols[k][0]! < i) || (cols[k][0] === null && cols[k][1] !== null && cols[k][1]! < j)) apres = k;
+    cols.splice(apres + 1, 0, [i, j, null]);
   }
-  return 1 - precedente[y.length] / Math.max(x.length, y.length);
+  return cols;
+}
+function centimesDe(v: unknown): number | null { return typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null; }
+const triplet = (l: any) => ({ quantity: l.quantity ?? null, unit: l.unit ?? '', price: l.price ?? null });
+const cleTriplet = (t: { quantity: unknown; unit: unknown; price: unknown }) => `${centimesDe(t.quantity)}|${String(t.unit ?? '').trim().toLowerCase()}|${centimesDe(t.price)}`;
+const tripletVide = (t: { quantity: unknown; price: unknown }) => t.quantity === null && t.price === null;
+/** Le montant d'accord des deux Flash-Lite sur une colonne (les deux lisent la ligne au même montant), ou null. */
+function accordLite(col: Colonne, L: any[][]): number | null {
+  if (col[0] === null || col[1] === null) return null;
+  const x = centimesDe(L[0][col[0]]?.amountTTC);
+  return x !== null && x === centimesDe(L[1][col[1]]?.amountTTC) ? x : null;
+}
+function ligneFusionnee(cols: Colonne[], k: number, L: any[][]): any {
+  const col = cols[k], lignes = col.map((rang, r) => (rang === null ? null : L[r][rang]));
+  const pivot = lignes[2] ?? lignes[0] ?? lignes[1];
+  const accord = accordLite(col, L), a3 = lignes[2] ? centimesDe(lignes[2].amountTTC) : null;
+  let montant = lignes[2] ? a3 : accord;
+  if (lignes[2] && accord !== null && a3 !== accord) {
+    // la 3.8 décalée : son montant est l'accord d'une colonne voisine (rang ± 1 ou 2), d'un autre nom. Le signe est symétrique (deux Flash-Lite décalées
+    // ensemble le montrent aussi : banc doc25, il leur manque trois lignes) : il ne vaut que si les trois lectures ont le même nombre de lignes, à une près.
+    const comparables = L.every(liste => Math.abs(liste.length - L[2].length) <= 1);
+    const voisine = [-2, -1, 1, 2].some(d => cols[k + d] && accordLite(cols[k + d], L) === a3 && ressemblanceNoms(lignes[2].name, (L[0][cols[k + d][0]!] ?? {}).name) < 0.6);
+    if (a3 === null || (voisine && comparables)) montant = accord;
+  }
+  const montantLu = montant === null ? null : (lignes.find(l => l && centimesDe(l.amountTTC) === montant)!.amountTTC as number);
+  const auMontant = lignes.map(l => (l && centimesDe(l.amountTTC) === montant && !tripletVide(triplet(l)) ? triplet(l) : undefined));
+  const lus = auMontant.filter((t): t is ReturnType<typeof triplet> => Boolean(t));
+  const tient = (t: { quantity: any; price: any }) => t.price !== null && montant !== null && Math.abs(Math.round((t.quantity ?? 1) * t.price * 100) - montant) <= 1;
+  const choisi = auMontant[2] ?? lus.find(t => lus.filter(u => cleTriplet(u) === cleTriplet(t)).length >= 2) ?? (lus.length === 1 && tient(lus[0]) ? lus[0] : undefined);
+  return { ...pivot, amountTTC: montantLu, ...(choisi ?? triplet(pivot)) };
+}
+/** La lecture fusionnée des trois, normalisée de nouveau (la normalisation est idempotente : ses contrôles portent sur les valeurs gardées). */
+export function lectureFusionnee(a: InvoiceScanResult, b: InvoiceScanResult, c: InvoiceScanResult, colonnes = colonnesDeTrois(a, b, c)): InvoiceScanResult {
+  const L = [a.items, b.items, c.items] as any[][];
+  const items = colonnes.map((_, k) => ligneFusionnee(colonnes, k, L));
+  const lu = (champ: string) => [a, b, c].map(x => ((x as any)[champ] === undefined ? undefined : (x as any)[champ]));
+  // Le total de la 3.8, sauf si les deux Flash-Lite lisent un autre total d'accord et que la somme des lignes gardées l'égale (au centime) sans égaler
+  // celui de la 3.8 : la 3.8 n'a lu qu'une partie (Sun Store : la page 2, 14,60 pour un règlement de 163,85).
+  const somme = items.reduce((t, it) => t + (centimesDe(it.amountTTC) ?? 0), 0), tA = centimesDe(a.amountTTC);
+  const total = tA !== null && tA === centimesDe(b.amountTTC) && tA !== centimesDe(c.amountTTC) && somme === tA && somme !== centimesDe(c.amountTTC) ? a.amountTTC : c.amountTTC;
+  // L'en-tête chiffré (HT, TVA, bloc) vient d'une lecture dont le total est le total retenu : la 3.8 d'abord.
+  const donneur: any = [c, a, b].find(x => centimesDe(x.amountTTC) === centimesDe(total)) ?? c;
+  const sortie: any = { ...c, items, amountTTC: total ?? null, amountHT: donneur.amountHT, tvaAmount: donneur.tvaAmount, tvaRate: donneur.tvaRate, vat: donneur.vat };
+  for (const champ of ['amountPaid', 'terminalAmount']) { const v = voterChampControle(lu(champ)); if (v === undefined) delete sortie[champ]; else sortie[champ] = v; }
+  // Un comptage n'est gardé que si toutes les lectures qui le portent lisent le même nombre (`voterComptage`).
+  for (const champ of ['countedAmounts', 'countedEans', 'printedItemCount']) {
+    const v = voterComptage(lu(champ));
+    if (v === undefined) delete sortie[champ]; else sortie[champ] = v;
+  }
+  if (sortie.countedAmounts !== (c as any).countedAmounts) delete sortie.countedAmountsConfirmed;
+  return normalizeInvoiceScan(sortie) as InvoiceScanResult;
+}
+
+/**
+ * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si elle n'y est pas. Le provisoire est la réconciliation des deux
+ * Flash-Lite, dont les lignes sont celles de la première lecture, dans son ordre : le rang est donc celui de la colonne dans la première lecture
+ * (provenance exacte, aucun second rapprochement). Sans 3.8 lisible, le même aligneur rapproche les deux listes.
+ */
+/** Les rangs provisoires des lignes finales d'une fusion à trois : la colonne de chaque ligne (provenance) ; si la normalisation a changé le nombre de lignes, l'aligneur. */
+function rangsDuFinal(provisoire: any[], final: any[], a: InvoiceScanResult, b: InvoiceScanResult, c: InvoiceScanResult): Array<number | null> {
+  const cols = colonnesDeTrois(a, b, c);
+  return cols.length === final.length && provisoire.length === a.items.length ? cols.map(col => col[0]) : rangsProvisoires(provisoire, final);
 }
 export function rangsProvisoires(provisoire: any[], final: any[]): Array<number | null> {
   const paire = alignerLignes(provisoire, final);
   const rangDe = new Map<number, number>([...paire.match].map(([p, f]) => [f, p]));
-  const rangs: Array<number | null> = final.map((_, f) => rangDe.get(f) ?? null);
-  const sansPaire = new Set(paire.orphansBase);
-  let precedenteF = -1, precedenteP = -1; // la dernière ancre (rang final, rang provisoire)
-  const intervalle = (finF: number, finP: number) => {
-    const deF: number[] = []; for (let f = precedenteF + 1; f < finF; f++) if (rangs[f] === null) deF.push(f);
-    const deP: number[] = []; for (let p = precedenteP + 1; p < finP; p++) if (sansPaire.has(p)) deP.push(p);
-    if (!deF.length || !deP.length) return;
-    // Une seule ligne sans paire de chaque côté : la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13) SEULEMENT si la pièce n'a que cette ligne ou si les noms se ressemblent : entre deux ancres,
-    // la position seule rapprochait « PINCEAU PLAT » de « ROBAN DE MASQUAGE » (BAUHAUS, banc : deux lignes sans rapport, montants 3,40 et 4,50).
-    if (deF.length === 1 && deP.length === 1) { if ((final.length === 1 && provisoire.length === 1) || ressemblance(final[deF[0]]?.name, provisoire[deP[0]]?.name) >= SEUIL_UNE_PAIRE) rangs[deF[0]] = deP[0]; return; }
-    // Plusieurs : jamais la position (elle décale tout). Seule une ressemblance du nom lu (une faute d'OCR corrigée : BNOSEE / BROSSE) rapproche, la plus forte d'abord, une paire à la fois.
-    const candidats = deF.flatMap(f => deP.map(p => ({ f, p, s: ressemblance(final[f]?.name, provisoire[p]?.name), memeMontant: final[f]?.amountTTC === provisoire[p]?.amountTTC })))
-      .filter(c => c.s >= SEUIL_NOM || (c.memeMontant && c.s >= SEUIL_NOM_MONTANT_EGAL)).sort((a, b) => b.s - a.s);
-    const prisF = new Set<number>(), prisP = new Set<number>();
-    for (const c of candidats) if (!prisF.has(c.f) && !prisP.has(c.p)) { rangs[c.f] = c.p; prisF.add(c.f); prisP.add(c.p); }
-  };
-  for (let f = 0; f < final.length; f++) {
-    const p = rangDe.get(f);
-    if (p === undefined || p <= precedenteP) continue; // une ancre qui revient en arrière n'ouvre aucun intervalle sûr
-    intervalle(f, p);
-    precedenteF = f; precedenteP = p;
-  }
-  intervalle(final.length, provisoire.length);
-  return rangs;
+  return final.map((_, f) => rangDe.get(f) ?? null);
 }
 
 /**
@@ -218,8 +280,8 @@ export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: 
   if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
   const provisoire = provisoireDeDeux(l1, l2);
   if (!provisoire) return null;
-  // p3 : la même table que le flux (`rangsProvisoires`) : une ligne que le repli rapproche est corrigée par la 3.8, pas retirée.
-  const rapprochees = new Set(rangsProvisoires(provisoire.items, final.items ?? []).filter((r): r is number => r !== null));
+  // Les lignes du provisoire sont celles de la première lecture : une ligne est retirée si aucune colonne gardée ne la contient (même table que le flux).
+  const rapprochees = new Set(rangsDuFinal(provisoire.items, final.items ?? [], l1.normalized, l2.normalized, third.normalized).filter((r): r is number => r !== null));
   const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang));
   const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
   const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
@@ -230,37 +292,17 @@ export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: 
 }
 
 /**
- * p3 relance 1 (jeu en ligne 6, BAUHAUS : « OPSHGE CHANTIER » à 8,50 posé sur « CRATONS DE CHARPENTTER · 3,10 », 8 lignes au nom d'une voisine) : preuve sur les lectures réelles du banc (`analyse-decalage-sortie.txt`,
- * 113 tirages à trois lectures, aucun appel) : c'est la 3.8 elle-même, pas le rapprochement : sur le ticket BAUHAUS tâché (doc24) et un second ticket de la même boutique (doc25), jusqu'à 12 lignes sur 29 de sa lecture portent le montant
- * d'une ligne VOISINE ; ailleurs, aucune. Quand elle tranche seule (C★), ses lignes remplacent celles des deux Flash-Lite, qui s'accordaient sur ces lignes.
- * Détection (pas de modèle de plus) : une ligne de la 3.8 dont le nom est retrouvé (ressemblance ≥ 0,6) dans CHACUNE des deux Flash-Lite, les deux lignes retrouvées s'accordant sur le montant, alors que le montant de la 3.8 diffère
- * de ce montant d'accord ET est celui d'une ligne voisine (rang ± 1 à 2, d'un autre nom) dans chacune des deux. Alors le montant, le prix, la quantité et l'unité d'accord des deux Flash-Lite remplacent ceux de la 3.8 :
- * le nom (sa lecture, meilleure) reste. Une correction de nom ne change jamais le montant d'une ligne. Rend les rangs redressés.
+ * Mission 2026-11-10 (jeu en ligne 7 n° 1 : « Payé · TWINT ≠ imprimé 14,60 / 163,85 », deux tickets d'un règlement) : quand le terminal affiche le total de la
+ * pièce, le règlement est ce montant ; un payé lu différent est celui d'un des tickets (les trois lectures du banc lisent 14,60 et le terminal 163,85).
+ * Sans terminal lu, ou un terminal différent du total (paiement partagé, espèces rendues), le payé lu reste : jamais une valeur inventée.
  */
-export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote): { items: any[]; redressees: number[] } {
-  const items: any[] = final?.items ?? [];
-  if (!l1.normalized || !l2.normalized || !items.length) return { items, redressees: [] };
-  const lites = [l1.normalized.items as any[], l2.normalized.items as any[]];
-  const montant = (x: any) => (typeof x?.amountTTC === 'number' && Number.isFinite(x.amountTTC) ? Math.round(x.amountTTC * 100) : null);
-  // Le raisonnement par les voisines ne vaut que si les trois listes ont une structure comparable (à une ligne près) : deux Flash-Lite qui ont perdu des lignes (doc25, tirage p5 : 18 et 21 pour 22) se décalent elles-mêmes.
-  if (lites.some(liste => Math.abs(liste.length - items.length) > 1)) return { items, redressees: [] };
-  const redressees: number[] = [];
-  const sortie = items.map((it, i) => {
-    const a3 = montant(it);
-    if (a3 === null) return it;
-    const proches = lites.map(liste => liste.map((x, j) => ({ j, s: ressemblance(it.name, x?.name) })).sort((p, q) => q.s - p.s)[0]);
-    if (proches.some(p => !p || p.s < 0.6)) return it;
-    const [pa, pb] = proches, xa = lites[0][pa.j], xb = lites[1][pb.j], aF = montant(xa);
-    // les deux Flash-Lite s'accordent sur la ligne ET sur son rang : deux listes de longueurs différentes n'ont pas les mêmes voisines (doc25, tirage p5 : la 3.8 avait raison contre deux listes décalées entre elles)
-    if (aF === null || aF !== montant(xb) || aF === a3 || pa.j !== pb.j) return it;
-    const voisine = (liste: any[], p: { j: number }) => [-2, -1, 1, 2].some(dj => liste[p.j + dj] && montant(liste[p.j + dj]) === a3 && ressemblance(liste[p.j + dj].name, it.name) < 0.6);
-    if (!voisine(lites[0], pa) || !voisine(lites[1], pb)) return it;
-    redressees.push(i);
-    return { ...it, amountTTC: xa.amountTTC, price: xa.price ?? null, quantity: xa.quantity ?? null, unit: xa.unit ?? it.unit };
-  });
-  return { items: sortie, redressees };
+export function payeDuReglement<R>(result: R): R {
+  const r: any = result;
+  if (!r) return result;
+  const c = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const terminal = c(r.terminalAmount), total = c(r.amountTTC), paye = c(r.amountPaid);
+  return terminal !== null && terminal === total && paye !== null && paye !== total ? { ...r, amountPaid: r.terminalAmount } : result;
 }
-
 /**
  * C★v8 : deux Flash-Lite en parallèle (chaque appel en cours est attendu avant de rendre la main : le budget ferme son registre après),
  * la 3.8 sur désaccord ou lecture manquante, le résultat de `finalOfStarVote`. Rien de lisible nulle part : l'erreur de la première
@@ -276,7 +318,7 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
     // D308 : le premier écran part avant la 3.8 et ne l'attend pas. Seulement si les deux Flash-Lite sont lisibles ; sinon on attend la 3.8.
     if (io.provisoire && l1.normalized && l2.normalized) {
       try {
-        const morceau = provisoireDeDeux(l1, l2), sorti = io.provisoire(morceau);
+        const morceau = payeDuReglement(provisoireDeDeux(l1, l2)), sorti = io.provisoire(morceau);
         if (sorti && typeof (sorti as Promise<unknown>).catch === 'function') (sorti as Promise<unknown>).catch(() => undefined);
         provisoire = morceau;
       } catch { provisoire = null; }
@@ -285,11 +327,12 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
   }
   const final = finalOfStarVote(l1, l2, third);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
-  if (third?.normalized) { const { items, redressees } = redresserDecalage(final.result, l1, l2); if (redressees.length) final.result = { ...final.result, items }; }
+  final.result = payeDuReglement(final.result);
   const retirees = retireesParLaTroisieme(l1, l2, third, final.result);
   if (retirees) final.result = { ...final.result, retirees };
   if (!provisoire) return final.result;
   // La 3.8 a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
-  const rangs = third?.normalized ? rangsProvisoires(provisoire.items, final.result.items) : final.result.items.map((_: unknown, rang: number) => rang);
+  // La 3.8 a lu : chaque ligne finale est une colonne de la fusion, son rang provisoire est celui de sa ligne dans la première lecture (provenance exacte).
+  const rangs = third?.normalized ? rangsDuFinal(provisoire.items, final.result.items, l1.normalized!, l2.normalized!, third.normalized) : final.result.items.map((_: unknown, rang: number) => rang);
   return { ...final.result, items: final.result.items.map((ligne: any, rang: number) => ({ ...ligne, rangProvisoire: rangs[rang] })) };
 }

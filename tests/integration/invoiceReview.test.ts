@@ -206,7 +206,8 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
     // C★v8 : les lignes sont celles de la 3.8 seule (3 et 4), jamais un mélange des trois lectures ; avant, A gardait la première lecture (1 et 2).
     expect(data.items).toHaveLength(4);
     expect(data.items.slice(0, 2).map(line => line.quantity)).toEqual([3, 4]);
-    expect(data.issues.join(' ')).toContain('rapprochées');
+    // 2026-11-10 : les lignes se rapprochent par nom et montant ; les quantités divergentes se disent (« lectures divergentes (1 / 2 / 3) »).
+    expect(data.issues.join(' ')).toContain('quantité : lectures divergentes');
   });
 
   it.each([0, 1])('préserve l’autre transcription si la lecture %i est tronquée, sans quatrième tentative', async index => {

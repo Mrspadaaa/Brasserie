@@ -748,7 +748,8 @@ describe('k4 — plusieurs fichiers : une part par fichier, dans l’ordre ; la 
     expect(parts.slice(1).map((part: any) => part.inlineData)).toEqual(files);
     expect(parts[0].text).toContain(multiCaptureNote(3));
     expect(multiCaptureNote(3)).toMatch(/recouvr/);
-    expect(multiCaptureNote(3)).toMatch(/une seule fois/);
+    expect(multiCaptureNote(3)).toMatch(/qu’une fois/);
+    expect(multiCaptureNote(3)).toMatch(/même règlement/);
   });
   it('un cas à un fichier : aucune phrase du banc, le corps est celui de la production', () => {
     expect(textOf(buildReadBody([file], INVOICE_SCAN_PROMPTS[0]))).toBe(INVOICE_SCAN_PROMPTS[0]);

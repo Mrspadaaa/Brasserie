@@ -25,12 +25,11 @@ describe('p2 1b — ce que la 3.8 retire est écrit dans le résultat (donc dans
     /* la 3.8 n'est appelée que sur un désaccord : ici une quantité (le cas du jeu en ligne : la 3.8 a tranché seule). */
     jouer({ l1: deux, l2: { ...deux, items: deux.items.map((i, k) => (k === 2 ? { ...i, quantity: 2 } : i)) }, s3: ticket(PAGE2, 149.25, 0) });
     const { data } = await lire();
-    expect(data.items).toHaveLength(5);
-    expect(data.amountTTC).toBe(149.25);
-    expect(data.retirees.lignes.map((x: any) => x.ligne.name)).toEqual(['Paracétamol 500 mg', 'Ibuprofène 400 mg']);
-    expect(data.retirees.lignes.map((x: any) => x.ligne.amountTTC)).toEqual([5.4, 9.2]);
-    expect(data.retirees.lignes.map((x: any) => x.rang)).toEqual([0, 1]);
-    expect(data.retirees).toMatchObject({ amountTTC: 163.85, tvaAmount: 0.37 });
+    // 2026-11-10 (fusion par créneau) : les deux lignes de la page 1, lues par les deux Flash-Lite, restent ; le total est celui que les sept lignes font.
+    expect(data.items).toHaveLength(7);
+    expect(data.items.slice(0, 2).map((x: any) => x.name)).toEqual(['Paracétamol 500 mg', 'Ibuprofène 400 mg']);
+    expect(data.amountTTC).toBe(163.85);
+    expect(data).not.toHaveProperty('retirees');
   });
   it('rien n’est retiré (la 3.8 confirme les lignes et les totaux, seule une quantité diffère) : aucun champ `retirees`', async () => {
     const deux = ticket([...PAGE1, ...PAGE2], 163.85, 0.37);

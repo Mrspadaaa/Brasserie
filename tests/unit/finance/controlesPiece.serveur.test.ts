@@ -190,9 +190,9 @@ describe('limite 2 (b1, 09.11) — le vote marque le comptage des montants confi
     expect(result.countedAmounts).toBe(3);
     expect(result).not.toHaveProperty('countedAmountsConfirmed');
   });
-  it('deux lectures concordent contre une 3.8 qui lit autre chose : retenu, jamais confirmé', () => {
+  it('deux lectures concordent contre une 3.8 qui lit autre chose : pas de comptage (2026-11-10, « 13 comptés » : 13 / 13 / 7 sur deux tickets)', () => {
     const { result } = reconcileInvoiceVision([lectureComptee(3), lectureComptee(3), lectureComptee(2)]) as any;
-    expect(result.countedAmounts).toBe(3);
+    expect(result).not.toHaveProperty('countedAmounts');
     expect(result).not.toHaveProperty('countedAmountsConfirmed');
   });
   it('le marqueur ne survit pas sans comptage de montants (le vote seul le pose)', () => {
