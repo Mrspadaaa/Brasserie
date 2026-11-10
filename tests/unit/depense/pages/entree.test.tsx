@@ -25,6 +25,16 @@ const pdf = () => { const f = new File(['%PDF-1.4\nfacture\n'], 'facture.pdf', {
 const noms = (view: { container: HTMLElement }) => [...view.container.querySelectorAll('[data-dp="rangee-pages"] [data-dp="page"]')].map(n => n.getAttribute('data-dp-nom'));
 
 describe('T-E1 un seul bouton « Documents »', () => {
+  it('10.11 tactile : « Documents » ouvre le sélecteur de « Plusieurs » (images, plusieurs, sans capture) ; le PDF a son lien', async () => {
+    etat.coarse = true;
+    const view = await monter();
+    expect(champFichier(view).getAttribute('accept')).toBe('image/*');
+    expect(champFichier(view).multiple).toBe(true);
+    expect(champFichier(view).hasAttribute('capture')).toBe(false);
+    const pdfChamp = view.container.querySelector('input[aria-label="Importer un PDF"]') as HTMLInputElement;
+    expect(pdfChamp.getAttribute('accept')).toBe('application/pdf');
+    expect(bouton('un PDF')).toBeTruthy();
+  });
   it('« Documents » (nom accessible = texte visible), ni « Un document » ni « Plusieurs » ; un seul sélecteur sans capture ; « Photographier le ticket » seulement en tactile', async () => {
     const view = await monter();
     const docs = bouton('Documents');
