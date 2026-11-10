@@ -73,11 +73,32 @@ function PilesMois({ effet }: { effet: EffetPiece }) {
 export function CarteMois({ effet, variante, aujourdhui, onChoisir, onFermer }: { effet: EffetPiece; variante: VarianteMois; aujourdhui: string; onChoisir: (reglee: boolean) => void; onFermer: () => void }) {
   const caisse = variante === 'caisse', reglee = effet.reglement === 'paye', ouverte = effet.reglement === 'a-payer';
   const mot = (aria: boolean) => ({ role: 'radio' as const, 'aria-checked': aria });
+  const ref = React.useRef<HTMLElement>(null);
+  /* Caisse : la rangée du bouton est dans une zone qui défile (elle rognerait la carte). La carte se pose alors en `fixed`, à la largeur de la rangée (≥ 900 px : 420 px,
+     alignée à droite de la rangée). Au-dessus de la rangée si elle y tient entière ; sinon dessous si elle y tient ; sinon pleine hauteur de fenêtre, défilement interne. */
+  const [pose, setPose] = React.useState<React.CSSProperties | null>(null);
+  React.useLayoutEffect(() => {
+    if (!caisse) return;
+    const mesurer = () => {
+      const carte = ref.current, rangee = carte?.parentElement; if (!carte || !rangee) return;
+      const r = rangee.getBoundingClientRect(), large = window.innerWidth >= 900, H = window.innerHeight, h = carte.scrollHeight + 2, m = 8;
+      const cote = large ? { left: 'auto', right: Math.max(m, Math.round(window.innerWidth - r.right)), width: Math.min(420, Math.round(r.width)) } : { left: m, right: m };
+      let v: React.CSSProperties;
+      if (r.top - m - h >= m) v = { top: 'auto', bottom: Math.round(H - r.top + m), maxHeight: Math.round(r.top - 2 * m) };
+      else if (H - (r.bottom + m) - m >= h) v = { top: Math.round(r.bottom + m), bottom: 'auto', maxHeight: Math.round(H - r.bottom - 2 * m) };
+      else v = { top: m, bottom: 'auto', maxHeight: H - 2 * m };
+      const next: React.CSSProperties = { position: 'fixed', ...cote, ...v };
+      setPose(prev => (prev && JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    };
+    mesurer();
+    window.addEventListener('resize', mesurer); document.addEventListener('scroll', mesurer, true);
+    return () => { window.removeEventListener('resize', mesurer); document.removeEventListener('scroll', mesurer, true); };
+  }, [caisse, effet, variante]);
   return <>
     <div className="om-scrim" data-om="scrim" onClick={onFermer} aria-hidden="true" />
-    <section className="om-carte" data-om="carte" data-variante={variante} data-ouverte={ouverte ? '1' : '0'} aria-label="Effet sur le mois">
+    <section ref={ref} className="om-carte" data-om="carte" data-variante={variante} data-ouverte={ouverte ? '1' : '0'} aria-label="Effet sur le mois" style={pose ?? undefined}>
       <div className="om-hd"><span>{moisCourt(effet.mois, aujourdhui)}</span></div>
-      <div className="om-tg" role="radiogroup" aria-label={caisse ? 'Encaissée ou à encaisser' : 'Payée ou à payer'}>
+      <div className="om-tg" role="radiogroup" aria-label={caisse ? 'Règlement de la vente' : 'Règlement de la pièce'}>
         <button type="button" data-om="regle" {...mot(reglee)} onClick={() => onChoisir(true)}>{caisse ? '✓ Encaissé' : '✓ Payé'}</button>
         <button type="button" data-om="ouvert" {...mot(ouverte)} onClick={() => onChoisir(false)}>{caisse ? <i className="om-qr" aria-hidden="true" /> : <i className="om-hach om-sw" aria-hidden="true" />}{caisse ? 'Facture QR' : 'À payer'}</button>
       </div>
