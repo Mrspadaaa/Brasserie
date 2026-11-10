@@ -1,4 +1,4 @@
-OK — page-v3 : cinq choix du jour, référence et 3 options chacun, gestes joués ; PAGE OK
+OK — v3b : 5 bloquants de SYNTHESE-v3 corrigés, non bloquants simples ; PAGE OK
 
 Skills invoqués d'abord : boosters-ux, impeccable, ui-design-system. Fable non utilisé. Rien dans `src/`, ni commit ni stash.
 
@@ -48,3 +48,23 @@ Prédiction : il prendra 1C et 3C (ou 3B), et 2C ou 2B ; pour 5, A, car l'écart
 DÉCISION À PRENDRE : aucune (le brasseur choisit sur la page).
 CONNAISSANCE : la masse du sachet et la plage de dose fabricant (50–80 g/hL) sont déjà dans `src/data/yeastSupplyBootstrap.json` (`format.amount`, `dose.range`) : 1B et 1C sont branchables sans nouvelle donnée.
 LEÇON PROPOSÉE : aucune
+
+
+## Passe 3b (10.11, agent neuf, Opus ; Fable non utilisé)
+Corrigé en place dans `etat.src.html`, `sprite.svg` (+ cal, goutte, plus, crayon, cube), `capturer.mjs`, `page.cjs` ; captures et page régénérées.
+Attention : `work/missions/**` est ignoré par Git ; la v3 d'avant (source et captures) n'existe plus que dans les captures citées par la critique.
+1. Titre : 14 px comme l'app, icônes 38 px → « New England IPA · LOT-DEMO · 19 L » entier sur toutes les captures (vu : b1 à b7).
+2. Préparer (4A–4C, 5A–5C) repris de ref-preparer : calendrier, « Date dépassée » + « Changer la date », goutte et « + » aux deux groupes Eau, « Consigne 76 °C » à part, mélange en chasse fixe. 4A = la référence, au pixel près hors police.
+3. 2C ensemencement : « À cru 171 g · 9 g/L · Citra 85 · Galaxy 43 · Mosaic 43 · phase ? », aucun jour. 2C ébullition : moments en g et g/L, « Coupure du feu », 61 IBU en neutre (« dans la marge de l'estimation Tinseth »), plus d'ambre.
+4. 3B : feuille Mesurer de l'app (sans poignée) : « ? SG » souligné en tirets + crayon + « moût refroidi », case « Densité refroidie ou corrigée à l'étalonnage », « cible 1,059–1,063 SG », ligne d'aide « 1056 est accepté pour 1,056 », « Pourquoi maintenant », note « Aucun relevé cette étape · un toucher sur le pouce pose 1,061 » ; seul ajout : « Enregistrer revient à la confirmation ». Volume : plage de l'app 11,4–26,6, repère 19, « Volume ramené à 20 °C ».
+5. 3C : crayon à côté de chaque valeur, cases de correction, ligne d'aide densité, « Pourquoi maintenant », texte de clôture de l'app gardé (3B aussi), pied collant : « Confirmer » toujours visible (c3c-apres).
+6. Choix 5 : écran Concassage de l'app (ref-concassage) avec la colonne des grains 4,1 / 0,91 / 0,45 / 0,34 kg (c5a|b|c-pile) et le groupe de près (c5a|b|c-zoom). Mesuré : en Source Sans 3, « 1111 » fait 61 px en B (proportionnels) contre 82 px en C (tabulaires) à 40 px ; sur les grains l'écart est de 2 à 3 px (0,91 sort de la colonne en B). Dit tel quel sur la page : « À l'œil, presque B ».
+7. 1C : la pastille suit la quantité (« 2 sachets » enfoncée, c1c-deux) ; « Pour 19 L prévus ». 1B : masse dite deux fois (case, pastille), plus de sous-ligne ni de virgule en chasse fixe. 2A : panneau entier de l'app (phrases, axe 0 · 72, « Calculer ma dose amère », « Préparer le dry hop »). Page : 1C a son état au repos ; références Concassage et Mesurer · Volume ajoutées.
+Non traités (choix du brasseur ou hors portée) : 2C sans α ni rôle à l'ébullition (préférence critique 2B là) ; 3B deux allers-retours ; 4B double source de quantité ; 4C placé en Préparer (z1 le met à l'ébullition : à dire au brasseur) ; Ensuite · Whirlpool encadré en c2 (l'app n'encadre pas ces doses).
+
+Sorties : `node capturer.mjs` → CAPTURES OK (`capturer.txt`, B9 30 ms, mouvement réduit 0 s) ; `verifier-page.mjs … --page-lot` → PAGE OK (46 images chargées, lisible à 390 et 1280 px, sans erreur) (`tests.txt`).
+Captures ouvertes (planches os.tmpdir()/v3-planches b1–b7) : c4a|b-repos, c4c-apres, c3b-geste|apres, c3c-repos|apres|apres-cave, c2c-ens, c1c-deux, c5a|b|c-pile, c5b|c-zoom, c2a-apres, c2c-apres|apres-cave, c5a|c-apres, c4b-repos-cave, c5c-apres-cave, page-ordinateur.
+Prédiction : « Là c'est mon app ; 1C, 3C. B et C, pareil : prends C. »
+DÉCISION À PRENDRE : aucune (le brasseur choisit sur la page).
+CONNAISSANCE : Source Sans 3 a des chiffres tabulaires par défaut ; seule `font-variant-numeric: proportional-nums` les rend proportionnels, et l'écart ne porte guère que sur le 1.
+LEÇON PROPOSÉE : une passe de retouche sous `work/missions/**` (ignoré par Git) copie d'abord la version jugée (source et captures) dans un sous-dossier daté, sinon la référence de la critique disparaît.
