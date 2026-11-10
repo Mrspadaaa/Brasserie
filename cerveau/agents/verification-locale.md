@@ -43,3 +43,4 @@ Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` d
 **Fixtures d'un banc Chrome sous `?dev-local` (dp-doublon, 01.11).** `import('/src/services/firestoreRepo.ts')` puis `FirestoreRepo.put` pose une donnée dans le cache mémoire seul ; `import('/src/services/geminiScanner.ts')` permet de remplacer `GeminiScannerService.scanDocument` par une lecture simulée comptée : même instance de module que l'app. Un filtre réseau sur « aiTask » se limite aux fetch/xhr vers l'extérieur : le module source `aiClient.ts` en importe un dont le nom contient « aiTask », et le bloquer casse le chargement.
 
 Voir [[socle-v01]] et [[chimie-eau]].
+- **Lecture seule en ligne** (10.11, VB-2) : une voie qui ne doit rien écrire coupe toute requête non GET par interception (puppeteer) ; ouvrir une feuille d'écriture compte comme un geste.
