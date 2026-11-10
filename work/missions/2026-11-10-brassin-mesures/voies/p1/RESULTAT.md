@@ -1,4 +1,4 @@
-OK — m2 (Relevés du jour à vide) et le geste au curseur portés dans la vue de brassin ; branche p1/mesures, sha 0cb79bde
+OK — m2 et le geste portés ; retouche pilote faite (ordre, Suivi thermique en bas, phrase retirée) ; p1/mesures sha 0da8e635
 
 Worktree `C:/Users/mrspa/AppData/Local/Temp/p1-wt`, branche `p1/mesures`, base tag `en-ligne/2026-11-10-parcours2` (6d9a584d).
 Commits : 4e6d75c0 (WIP) · 5b65e412 · f8a69651 · 5340eb6b · 0cb79bde (final). Aucun déploiement, aucune donnée réelle, aucun Gemini.
@@ -36,6 +36,15 @@ Carte « Relevés du jour » à vide dès que l'étape attend (Maische « ? °C 
 ## Doutes
 - Hors des captures : pas de test Chrome du refroidissement/ensemencement (carte avec bilan de clôture), couvert seulement par `brewWorkspace`.
 - Toucher/glisser testés par tap puppeteer, pas sur un vrai téléphone.
+
+## Retouche pilote (agent neuf, sur 0cb79bde) — sha final 0da8e635
+Test écrit d'abord, rouge sur 0cb79bde : `tests/integration/brewOrdreM2.test.tsx` (4 rouges sur 6 : Suivi thermique hors de l'horloge et après À anticiper, ordre CSS à 390 des deux blocs, phrase au premier plan). Maintenant 6 verts.
+1. Ordre : à 390, `.brew-readings-summary[data-attendues]` passe au rang 3, avant Grains (4) (`brew-day.css`, bloc z1 final). À 1280 le DOM mettait déjà Relevés avant Grains. Sans mesure attendue, l'ancienne carte garde sa place après « Ensuite ».
+2. Suivi thermique : sorti de l'horloge (`BrewDayPage.tsx`) et rendu dans la colonne latérale, après À anticiper, avant Aides et repères ; rang 8 à 390 (`details.bz-suivi`). Il reste ouvert d'emblée pendant la montée.
+3. Feuille Mesurer : « Température sous la consigne. Homogénéise… » n'est plus au premier plan quand l'échelle dit déjà l'écart (titre « Écart… ») ; elle s'ajoute au texte de « Pourquoi maintenant » (`BrewDayMeasurements.tsx`). Les alertes de bornes (AM-41 à 43) gardent leur phrase.
+Tests : 24 fichiers (les 22 des écrans, brewOrdreM2, brewMeasuresAttendues) : 24 passés (`tests-retouche.txt`). `tsc` : seules les 2 erreurs d'environnement (`firebase-admin/firestore`, identiques sur le tag). Suite complète non relancée.
+Captures (banc `banc-sortie-retouche.txt`, Chrome réel, serveur local sur le port 3012, arrêté ensuite) : `p1-*` refaites (390 et 1280, clair et cave) ; côte à côte `cote-a-cote-{repos,hors,apres}-390-{clair,cave}`, `repos-1280-clair`, `hors-1280-clair`, `mesurer-*`, `pouce-390-clair`. Ouvertes : repos 390 clair, hors 390 clair, après 390 cave, repos 1280 clair : ordre conforme à m2 (horloge, Relevés, Grains, À anticiper, Suivi thermique, Aides et repères), phrase absente. Non ouvertes une à une : repos 390 cave, hors 390 cave, après 390 clair, hors 1280 clair (même code que les ouvertes).
+Limites : repos cave, après cave et repos 1280 n'ont pas de maquette m2 : comparés à la maquette claire ou à `curseur-1280` la plus proche. Dans m2, « Pourquoi maintenant » est ouvert ; dans l'app il est replié (non demandé). La feuille reste ouverte après Enregistrer (décision plus bas).
 
 DÉCISION À PRENDRE : la feuille Mesurer doit-elle se fermer après Enregistrer, comme la maquette « après » ? Options : (a) rester ouverte (comportement actuel, permet pH puis température d'affilée) ; (b) se fermer et laisser voir la valeur dans la carte. Recommandation : (a), à confirmer en montrant les deux au brasseur.
 
