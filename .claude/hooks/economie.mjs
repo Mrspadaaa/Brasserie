@@ -41,9 +41,28 @@ const ctxAgent = e.agent_id ? contexte(transcriptAgent()) : 0;
 
 switch (e.hook_event_name) {
   case 'SessionStart':
+    delete s.lus; garder();
     dire('SessionStart', "PAROLE (brasseur, 09.11 : « pas besoin de retour juste un recap à la fin quand la tache est terminé, c'est TOUT ») : aucun rapport de progrès, ni à l'utilisateur ni à la session parente. Une fin de tour en attente (agents, tests) tient en un mot. Un seul récapitulatif quand la tâche est terminée : ce qui est fait, preuve, commit, en 400 caractères au plus. Une note intermédiaire d'une sous-session ne se relaie pas à l'utilisateur. SendMessage seulement pour une question bloquante, 700 caractères au plus.");
     break;
   case 'PreToolUse':
+    // Relecture (10.11 : 3 600 lectures sur 6 871 relisaient un fichier inchangé) : refusée tant que le fichier n'a pas changé
+    // depuis sa lecture dans ce contexte. Remis à zéro par SessionStart (compaction, reprise), où le contenu est perdu.
+    if (e.tool_name === 'Read' && e.tool_input?.file_path) {
+      let mtime = 0; try { mtime = fs.statSync(e.tool_input.file_path).mtimeMs; } catch { /* absent : l'outil le dira */ }
+      const k = JSON.stringify([e.tool_input.file_path, e.tool_input.offset, e.tool_input.limit, e.tool_input.pages]);
+      s.lus = s.lus ?? {};
+      if (mtime && s.lus[k] === mtime) {
+        process.stderr.write('ÉCONOMIE (hook) : ce fichier (même partie) est déjà dans ton contexte et n\'a pas changé depuis. Reprends-le de ton contexte ; pour une autre partie, change offset/limit.');
+        process.exit(2);
+      }
+      if (mtime) { s.lus[k] = mtime; garder(); }
+    }
+    // Agent générique sans modèle : il hérite d'Opus. Choisir l'agent du projet (executant Haiku, auteur/relecteur Sonnet,
+    // concepteur Opus, critique Fable) ou nommer le modèle : la qualité reste un choix explicite, pas un défaut.
+    if (e.tool_name === 'Agent' && /^(general-purpose|claude)?$/.test(e.tool_input?.subagent_type ?? '') && !e.tool_input?.model) {
+      process.stderr.write('ÉCONOMIE (hook) : agent générique sans modèle = Opus par défaut. Prends un agent du projet (executant, auteur, relecteur, concepteur, critique) ou passe model explicitement (haiku pour le mécanique).');
+      process.exit(2);
+    }
     if (ctxAgent > AGENT_BLOQUER && !/^(Write|Edit)$/.test(e.tool_name ?? '')) {
       process.stderr.write(`ÉCONOMIE (hook) : contexte de l'agent ${Math.round(ctxAgent / 1000)} k > 200 k, relu à chaque appel. Plus d'outil sauf Write/Edit : écris ton état de reprise (fait, preuves, fichiers, reste à faire) dans le fichier de ta voie, puis rends ta ligne en commençant par « REPRISE : <fichier> ». Le pilote relance un agent neuf.`);
       process.exit(2);
