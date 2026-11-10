@@ -82,11 +82,18 @@ export function CarteMois({ effet, variante, aujourdhui, onChoisir, onFermer }: 
     const mesurer = () => {
       const carte = ref.current, rangee = carte?.parentElement; if (!carte || !rangee) return;
       const r = rangee.getBoundingClientRect(), large = window.innerWidth >= 900, H = window.innerHeight, h = carte.scrollHeight + 2, m = 8;
-      const cote = large ? { left: 'auto', right: Math.max(m, Math.round(window.innerWidth - r.right)), width: Math.min(420, Math.round(r.width)) } : { left: m, right: m };
+      // Bornes : le dialogue « Vendre » qui contient la rangée (la carte n'en sort jamais), sinon la fenêtre.
+      const boite = rangee.closest('[role="dialog"]')?.getBoundingClientRect();
+      const haut = boite ? boite.top : 0, bas = boite ? boite.bottom : H;
+      let cote: React.CSSProperties = large ? { left: 'auto', right: Math.max(m, Math.round(window.innerWidth - r.right)), width: Math.min(420, Math.round(r.width)) } : { left: m, right: m };
       let v: React.CSSProperties;
-      if (r.top - m - h >= m) v = { top: 'auto', bottom: Math.round(H - r.top + m), maxHeight: Math.round(r.top - 2 * m) };
-      else if (H - (r.bottom + m) - m >= h) v = { top: Math.round(r.bottom + m), bottom: 'auto', maxHeight: Math.round(H - r.bottom - 2 * m) };
-      else v = { top: m, bottom: 'auto', maxHeight: H - 2 * m };
+      if (r.top - m - h >= haut + m) v = { top: 'auto', bottom: Math.round(H - r.top + m), maxHeight: Math.round(r.top - haut - 2 * m) };
+      else if (bas - (r.bottom + m) - m >= h) v = { top: Math.round(r.bottom + m), bottom: 'auto', maxHeight: Math.round(bas - r.bottom - 2 * m) };
+      else if (large && boite && r.left - boite.left - 2 * m >= 320) {
+        // Ordinateur, ni dessus ni dessous : à gauche de la rangée, sur la colonne des bières, posée sur le bas du dialogue ; « Encaisser » reste visible.
+        cote = { left: 'auto', right: Math.round(window.innerWidth - r.left + m), width: Math.min(420, Math.round(r.left - boite.left - 2 * m)) };
+        v = { top: 'auto', bottom: Math.round(H - bas + m), maxHeight: Math.round(bas - haut - 2 * m) };
+      } else v = { top: haut + m, bottom: 'auto', maxHeight: Math.round(bas - haut - 2 * m) };
       const next: React.CSSProperties = { position: 'fixed', ...cote, ...v };
       setPose(prev => (prev && JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
     };
