@@ -16,3 +16,8 @@ mesurée, avant / après chiffré, dans une voie suivante.
 | Voie | Agent | Modèle | Livrable |
 |---|---|---|---|
 | l1 | auteur | sonnet | mesure en ligne et analyse du paquet, causes classées, plan chiffré |
+
+## Signature (10.11, pilote)
+En ligne : tag en-ligne/2026-11-10-rapide (index-KIK8T_uv.js). Accueil à froid −29 % (6,07 → 4,32 s, banc l2), Finances sous le tag, vues
+préchargées à l'inactivité ~0,4 s. Reste connu : l'atelier V5.5 touché dans les premières secondes d'un démarrage à froid +1,9 s (au niveau
+du tag après repos) ; choix du pilote : déployer, le gain à chaque ouverture l'emporte. Pas de service worker (décision à part).
