@@ -16,7 +16,7 @@ import { articleDeMemeNom, libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
 import { groupeDe } from './groupes';
 import { tvaImprimee } from './tva';
-import { depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
+import { categorieDeLaPiece, depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
 import type { StockItem } from '../../types';
 
 // Le point « lecture coupée » (R1) : recopié du serveur (`functions/src/invoiceVisionReview.ts`, `phraseCoupure`, `pointLectureCoupee`, `ajouterCoupure`) en fonctions pures, parce que ce module tire `invoiceScanCore`, `models` et `node:*`
@@ -78,6 +78,7 @@ function lienParLeNom(line: PurchaseLineDraft, unit: string, regle: ReturnType<t
  */
 export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readonly StockItem[], submissionId: string): { lines: PurchaseLineDraft[]; propositions: Propositions } {
   const propositions = propositionsVides();
+  const categorie = categorieDeLaPiece(result.category, result.items.map(i => i.name)); // p3 : la catégorie de la PIÈCE (familles.ts), pas le seul choix de la lecture
   const total = invoiceTotalProposal(result);
   const lues0: PurchaseLineDraft[] = result.items.map(item => {
     /* d2, bloquant 1 (critique) : une remise n'a ni quantité ni unité ni prix unitaire (« 1 pièce × −0,68 » comptait 2 pièces de plus) ; elle reste un montant négatif. */
@@ -87,7 +88,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
     return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.kind === 'discount' ? undefined : item.quantity ?? quantiteImpliciteDuTicket(item, result.currency), unit: item.kind === 'discount' ? '' : item.unit, unitPrice: result.currency === 'CHF' && item.kind !== 'discount' ? (item.price ?? undefined) : undefined, stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
   });
   const existantsLus = sansCetteSaisie(stockItems, submissionId);
-  const familleDeLigne = (l: PurchaseLineDraft): FamilleCle => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, result.category);
+  const familleDeLigne = (l: PurchaseLineDraft): FamilleCle => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, categorie);
   /* D328c : une famille SANS stock (matériel, rénovation, services, « Autres ») dont un article existe déjà au stock, relié par son nom (même produit) ou par la ressemblance que `matchStockLine`
      retient, garde la ligne en ingrédient (liée à lui : le lien d'un article du brasseur ne se perd pas). Les familles AVEC stock (nettoyage, emballage, consommable) prennent leur nature
      (cleaning, packaging) : le rapprochement qui suit relie le même article, pour ces natures aussi. */
@@ -104,12 +105,12 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
   const lues: PurchaseLineDraft[] = lues0.map(l => {
     if (l.kind !== 'ingredient') return l;
     const famille = familleDeLigne(l), nature = NATURE_DE_FAMILLE[famille];
-    if (!nature || (famille === 'autres' && result.category === 'brassage') || dejaAuStock(l, famille)) return l;
+    if (!nature || (famille === 'autres' && categorie === 'brassage') || dejaAuStock(l, famille)) return l;
     return { ...l, kind: nature, stockAction: 'none' as const };
   });
   /* D277 : l'unité absente se déduit avant le rapprochement ; l'imprimé reste vide (D213). */
-  const deduites = avecUnitesDeduites({ lines: lues, vendor: result.vendor ?? '', amount: total.amount, category: result.category }, stockItems as StockItem[]).lines;
-  const horsBrassage = depenseHorsBrassage(result.category);
+  const deduites = avecUnitesDeduites({ lines: lues, vendor: result.vendor ?? '', amount: total.amount, category: categorie }, stockItems as StockItem[]).lines;
+  const horsBrassage = depenseHorsBrassage(categorie);
   const lines = deduites.map(line => {
     const unit = uniteEffective(line);
     /* s1 (VERDICT-EN-LIGNE-2) : une dépense hors brassage ne crée ni ne relie aucun article, quelle que soit la famille lue pour la ligne ; le brasseur peut toujours « Suivre au stock » à la main. */
@@ -143,7 +144,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
 /** Ce que la lecture propose pour l'en-tête (sans les lignes) : le patch que `applyOutcome` passe à `patchPurchaseDraft`. */
 export function enteteDeLecture(previous: PurchaseDraft, result: ScannedInvoiceResult, today: string): Partial<PurchaseDraft> {
   const total = invoiceTotalProposal(result), proposed = applyScannedDescription(previous, result);
-  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: result.category, amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
+  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: categorieDeLaPiece(result.category, result.items.map(i => i.name)) as ScannedInvoiceResult["category"], amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
 }
 
 export interface OptionsLecture { stockItems: readonly StockItem[]; today: string; model?: string; documentHash?: string; ligneVide: () => PurchaseLineDraft }

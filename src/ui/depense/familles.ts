@@ -417,3 +417,24 @@ export function sousFamilleDe(famille: FamilleCle, e: EntreeFamille): string | u
   if (famille === 'nettoyage' || famille === 'consommable') return lue ?? categorieDeFamille(famille, nom);
   return lue;
 }
+
+/**
+ * p3 relance 1 (jeu en ligne 6, BAUHAUS : 16 outils en « Matériel de brassage » avec l'icône de stock) : la catégorie de la dépense est un choix de la lecture, qui varie d'un tirage à l'autre sur le même ticket (jeu 4 : `renovation`, jeu 6 :
+ * une autre) ; or les mots AMBIGUS des travaux (brosse, seau, gant, ruban…) ne vont en Rénovation que sous `renovation`, et la nature `equipment` lue envoie le reste au Matériel de brassage. Le contexte de la PIÈCE tranche, sans nom de
+ * boutique : au moins 3 lignes aux mots SANS ÉQUIVOQUE des travaux (peinture, cheville, carrelage…), au moins une sur dix, et AUCUNE ligne de brassage (ingrédient, ou matériel précis comme une cuve) : la dépense est de `renovation`.
+ * Une catégorie déjà hors brassage (`renovation`, `chargesFixes`, `divers`) ou absente n'est jamais changée ; un ticket de brasserie n'a pas de mots de peinture. Rend la catégorie à utiliser.
+ */
+export function categorieDeLaPiece(categorie: string | undefined | null, noms: readonly (string | undefined | null)[]): string | undefined {
+  const lue = typeof categorie === 'string' ? categorie : undefined;
+  if (!lue || depenseHorsBrassage(lue)) return lue;
+  const lignes = noms.map(n => (typeof n === 'string' ? n : '')).filter(n => n.trim());
+  if (lignes.length < 3) return lue;
+  let travaux = 0;
+  for (const nom of lignes) {
+    const t = jetons(nom), joint = ` ${t.join(' ')} `;
+    if (estMaterielPrecis(t)) return lue;
+    if (['malt', 'houblon', 'levure', 'sucre', 'additif'].includes(familleDe({ nom, categorie: 'brassage' }))) return lue;
+    if (estTravauxSur(t, joint)) travaux++;
+  }
+  return travaux >= 3 && travaux * 10 >= lignes.length ? 'renovation' : lue;
+}
