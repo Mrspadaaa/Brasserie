@@ -711,7 +711,7 @@ export const App: React.FC = () => {
   /** Clôture du jour de brassage : sauvegarde des relevés, puis fermentation. */
   const finishBrewDay = (updated: Batch) => {
     const result = StorageService.completeBrewStock(updated);
-    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.` : `${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
+    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.${result.issues.length ? ' Levure à régulariser dans le dossier du brassin.' : ''}` :`${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
     route.close();
   };
 

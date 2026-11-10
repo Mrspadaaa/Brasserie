@@ -1033,8 +1033,10 @@ export const StorageService = {
         FirestoreRepo.put('movements', movement.id, movement);
       }
     }
-    this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: [] }, { previous: live?.stockConsumption });
-    return { success: true, issues: [] };
+    // Un second geste (déjà appliqué) garde le constat du premier ; un déstockage fait avec une levure à régulariser le dit.
+    const reviewIssues = proposal.status === 'already-applied' ? (live?.stockReviewIssues ?? []) : proposal.reviewIssues;
+    this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: reviewIssues }, { previous: live?.stockConsumption });
+    return { success: true, issues: reviewIssues };
   },
 
   /**

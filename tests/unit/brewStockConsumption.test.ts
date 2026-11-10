@@ -40,18 +40,22 @@ describe('brew stock consumption write proposal', () => {
     const b = batch();
     b.brewDay = { currentIndex: 0, steps: [], pitchedAt: Date.parse('2026-09-09T12:00:00Z'), pitchQuantityConfirmation: 'unmeasured' };
     const result = prepareBrewStockConsumption(b, stocks);
-    expect(result.status).toBe('needs-review');
-    expect(result.issues).toContain('Levure : quantité réelle non renseignée ; consommation à régulariser, sans reprendre la dose prévue.');
-    expect(result.stockUpdates).toEqual([]);
-    expect(result.movements).toEqual([]);
+    // PC-1 : la levure inconnue ne bloque plus le grain et le houblon ; elle n'est ni déstockée ni mise à 0.
+    expect(result.status).toBe('ready');
+    expect(result.reviewIssues).toContain('Levure : quantité réelle non renseignée ; consommation à régulariser, sans reprendre la dose prévue.');
+    expect(result.stockUpdates.some(s => s.ref === 'Y')).toBe(false);
+    expect(result.movements.some(m => m.stockItemRef === 'Y')).toBe(false);
+    expect(result.stockUpdates.find(s => s.ref === 'M')?.currentStock).toBe(15);
   });
   it('does not treat a unique homonym as the explicitly associated yeast stock item', () => {
     const b = batch(); delete b.recipeSnapshot.yeast!.stockItemRef;
     const result = prepareBrewStockConsumption(b, stocks);
-    expect(result.status).toBe('needs-review');
-    expect(result.issues.join(' ')).toContain('article ou lot de levure à associer explicitement');
-    expect(result.stockUpdates).toEqual([]);
-    expect(result.movements).toEqual([]);
+    // PC-1 : l'homonyme n'est pas retiré (jamais deviné), mais il ne bloque plus le reste ; il est dit « à régulariser ».
+    expect(result.status).toBe('ready');
+    expect(result.reviewIssues.join(' ')).toContain('article ou lot de levure à associer explicitement');
+    expect(result.stockUpdates.some(s => s.ref === 'Y')).toBe(false);
+    expect(result.movements.some(m => m.stockItemRef === 'Y')).toBe(false);
+    expect(result.stockUpdates.find(s => s.ref === 'M')?.currentStock).toBe(15);
   });
   it('uses an explicit actual yeast unit when the recipe dose is zero and unit was missing', () => {
     const b = batch();

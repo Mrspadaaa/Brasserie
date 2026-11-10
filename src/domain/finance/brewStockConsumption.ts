@@ -32,6 +32,8 @@ export interface BrewConsumptionPlan {
   stockUpdates: StockItem[];
   movements: BrewStockMovement[];
   issues: string[];
+  /** Ce qui n'a pas pu être déstocké (levure non pesée ou sans article) sans bloquer le reste : à régulariser par comptage. */
+  reviewIssues: string[];
 }
 
 /** Pure, atomic write proposal. The caller persists all returned writes together, after checking status. */
@@ -41,7 +43,7 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   bindings?: Record<string, string>;
 } = {}): BrewConsumptionPlan {
   const stage = options.stage ?? 'brewday';
-  const empty = (status: BrewConsumptionPlan['status'], issues: string[] = []): BrewConsumptionPlan => ({ status, batch, stockUpdates: [], movements: [], issues });
+  const empty = (status: BrewConsumptionPlan['status'], issues: string[] = []): BrewConsumptionPlan => ({ status, batch, stockUpdates: [], movements: [], issues, reviewIssues: [] });
   const previous = batch.stockConsumption;
   if (previous?.completedStages?.includes(stage)) return empty('already-applied');
   if (stage === 'brewday' && previous?.appliedAt) return empty('already-applied');
@@ -55,6 +57,9 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   const now = options.now ?? new Date().toISOString();
   const eventId = `BREW-STOCK-${batch.id}-${stage}`;
   const issues: string[] = [];
+  // PC-1 (parcours du 10.11) : une levure dont la quantité réelle ou l'article manque ne bloque plus le malt ni le houblon.
+  // L'inconnu n'est jamais 0 ni la dose prévue : la levure n'est pas déstockée, elle reste dite « à régulariser ».
+  const review: string[] = [];
   const consumed = new Map<string, BrewStockConsumptionItem>();
   const pending = new Map<string, BrewStockConsumptionItem>();
   const append = (target: Map<string, BrewStockConsumptionItem>, item: BrewStockConsumptionItem) => {
@@ -138,14 +143,14 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
         }
         if ((state.pitchQuantityConfirmation !== 'measured' && state.pitchQuantityConfirmation !== 'planned') || !addition ||
           !Number.isFinite(addition.amount) || addition.amount <= 0 || !(addition.unit ?? ingredient.unit)?.trim()) {
-          issues.push('Levure : quantité réelle non renseignée ; consommation à régulariser, sans reprendre la dose prévue.');
+          review.push('Levure : quantité réelle non renseignée ; consommation à régulariser, sans reprendre la dose prévue.');
           continue;
         }
         const unit = addition.unit ?? ingredient.unit;
         const yeast = recipe.yeast;
         const yeastStockItemRef = replacement ? undefined : yeast?.stockItemRef;
         if (!yeastStockItemRef) {
-          issues.push(`${name} : article ou lot de levure à associer explicitement avant le déstockage.`);
+          review.push(`${name || 'Levure'} : article ou lot de levure à associer explicitement avant le déstockage ; consommation à régulariser par comptage.`);
           continue;
         }
         assignYeast(name, addition.amount, unit, yeastStockItemRef);
@@ -176,5 +181,5 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   return { status: 'ready', batch: { ...batch, stockConsumption: {
     appliedAt: previous?.appliedAt ?? now, eventId, completedStages: [...(previous?.completedStages ?? []), stage],
     items: [...(previous?.items ?? []), ...consumed.values()], pendingItems: [...pending.values()]
-  } }, stockUpdates, movements, issues: [] };
+  } }, stockUpdates, movements, issues: [], reviewIssues: review };
 }
