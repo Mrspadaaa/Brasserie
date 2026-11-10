@@ -89,6 +89,9 @@
 .cs-go { margin: 12px 10px 0; width: calc(100% - 20px); height: 48px; border-radius: 10px; background: var(--cs-t0) !important; color: var(--cs-sur) !important; font-weight: 700; font-size: 16px; text-align: center !important; }
 .cs-go:disabled { opacity: .4; }
 .cs-fait { margin: 12px 10px 0; min-height: 48px; border-radius: 10px; background: var(--cs-bleu-fond); border: 1px solid var(--cs-bleu); color: var(--cs-bleu-texte); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; }
+.cs-fait > div { display: flex; flex-direction: column; gap: 1px; padding: 6px 0; }
+.cs-envoi { font-size: 11px; opacity: .85; }
+.cs-envoi button { margin-left: 6px; min-height: 22px; padding: 0 8px; border-radius: 6px; border: 1px solid currentColor; background: transparent; color: inherit; font: inherit; }
 .cs-warn { position: sticky; top: 0; z-index: 6; margin: 0; padding: 6px 12px; font-size: 13px; color: var(--cs-ambre-texte); border-bottom: 1px solid #E3B55D; background: var(--cs-panneau); box-shadow: inset 0 0 0 100px var(--cs-ambre-fond); }
 .cs-notes { display: grid; gap: 6px; margin: 8px 10px 0; }
 .cs-note { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--cs-ambre-texte); padding: 4px 4px 4px 10px; border-radius: 10px; border: 1px dashed #E3B55D; background: repeating-linear-gradient(135deg, var(--cs-ambre-fond) 0 5px, transparent 5px 10px); }

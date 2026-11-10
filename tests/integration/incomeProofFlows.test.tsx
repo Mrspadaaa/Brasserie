@@ -2,7 +2,7 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 const state = vi.hoisted(() => ({ save: vi.fn(), generate: vi.fn(), download: vi.fn() }));
-vi.mock('../../src/services/incomeEntry', () => ({ saveIncomeEntry: (...args: any[]) => state.save(...args) }));
+vi.mock('../../src/services/incomeEntry', () => ({ saveIncomeEntry: (...args: any[]) => state.save(...args), saveIncomeEntryInBackground: async (...args: any[]) => ({ receipt: await state.save(...args), queued: false, confirmed: true }) }));
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {}, auth: { currentUser: null }, storage: {} }));
 vi.mock('../../src/services/swissQrBill', async importOriginal => {
   const o = await importOriginal<any>();

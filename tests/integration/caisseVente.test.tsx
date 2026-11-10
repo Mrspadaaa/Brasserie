@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 const state = vi.hoisted(() => ({ save: vi.fn(), generate: vi.fn(), download: vi.fn(), qr: vi.fn() }));
-vi.mock('../../src/services/incomeEntry', () => ({ saveIncomeEntry: (...args: any[]) => state.save(...args) }));
+vi.mock('../../src/services/incomeEntry', () => ({ saveIncomeEntry: (...args: any[]) => state.save(...args), saveIncomeEntryInBackground: async (...args: any[]) => ({ receipt: await state.save(...args), queued: false, confirmed: true }) }));
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {}, auth: { currentUser: null }, storage: {} }));
 vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
 vi.mock('../../src/services/swissQrBill', async importOriginal => {

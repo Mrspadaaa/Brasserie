@@ -4,7 +4,9 @@ import { Sparkles, X } from 'lucide-react';
 import type { AppConfig, Batch, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
-import { saveIncomeEntry } from '../../services/incomeEntry';
+import { saveIncomeEntryInBackground } from '../../services/incomeEntry';
+import { requeueProof } from '../../services/proofQueue';
+import { useEnvoiVente } from './envoiJustificatif';
 import { ModalShell } from '../ModalShell';
 import { EditClientModal } from '../../components/EditClientModal';
 import { ChampNombre } from '../depense/ChampNombre';
@@ -69,7 +71,19 @@ interface ContenuProps {
 }
 
 type Libre = { designation: string; quantite: number | undefined; prix: number | undefined; formatId: string; batchId?: string; litres: number };
-interface Resultat { numero: string; totalCents: number; mode: ModeVente; pdf: VentePreparee['pdf'] }
+/** `envoi` : `file` = le PDF attend dans la file locale (l'état se lit en direct) ; `drive` = confirmé dans Drive ; `local` = gardé sur l'appareil seulement. */
+interface Resultat { numero: string; totalCents: number; mode: ModeVente; pdf: VentePreparee['pdf']; txId: string; envoi: 'file' | 'drive' | 'local' }
+
+/** L'état d'envoi du PDF au Drive, sous « Facture … enregistrée » : une ligne, comme la Dépense (en cours / fait / à renvoyer). */
+function EtatEnvoi({ resultat }: { resultat: Resultat }) {
+  const etat = useEnvoiVente(resultat.txId, resultat.envoi === 'file');
+  const [renvoi, setRenvoi] = useState(false);
+  if (resultat.envoi === 'drive') return <small className="cs-envoi">PDF dans Drive</small>;
+  if (resultat.envoi === 'local') return <small className="cs-envoi">PDF gardé sur cet appareil, pas dans Drive</small>;
+  if (etat === 'fait') return <small className="cs-envoi">PDF dans Drive</small>;
+  if (etat === 'a-renvoyer') return <small className="cs-envoi" role="alert">Envoi Drive à renvoyer <button type="button" disabled={renvoi} onClick={() => { setRenvoi(true); void requeueProof(resultat.txId).finally(() => setRenvoi(false)); }}>Renvoyer</button></small>;
+  return <small className="cs-envoi" aria-live="polite">PDF en cours d’envoi vers Drive…</small>;
+}
 
 /** Le contenu de la caisse (v3a) : à qui, quoi, comment. L'hôte (`Caisse` ou `QuickActionModal`) fournit le dialogue. */
 export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, fermetureRef }: ContenuProps) {
@@ -231,15 +245,19 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
         b = { vente, lignes, clientId, mode, dateIso, echeance, moyen };
         garderBrouillon(b); setEnAttente(true);
       }
-      const recu = await saveIncomeEntry(b.vente.entry);
+      /* L'écriture d'abord, l'envoi au Drive ensuite, en arrière-plan : la caisse n'attend pas Drive (10.11, « faire le job en background »). */
+      const { receipt, queued, confirmed } = await saveIncomeEntryInBackground(b.vente.entry);
       effacerBrouillon(); setEnAttente(false);
-      const v = b.vente, ttc = v.totalCents / 100;
+      const v = b.vente, ttc = v.totalCents / 100, piece = v.mode === 'paye' ? 'Quittance' : 'Facture';
+      /* Jamais « conservée dans Drive » avant que ce soit vrai : en file, le justificatif est « en cours d'envoi ». */
+      const drive = queued ? `${piece} en cours d’envoi vers Drive.` : receipt ? `${piece} conservée dans Drive.` : `${piece} gardée sur cet appareil, pas dans Drive.`;
+      const sync = confirmed ? '' : ' Écrite sur cet appareil : elle se synchronise au retour du réseau.';
       onSaved?.(v.mode === 'paye'
-        ? `Vente de ${montantChf(ttc)} CHF enregistrée. ${recu ? 'Quittance conservée dans Drive.' : 'Quittance gardée sur cet appareil, pas dans Drive.'}`
-        : `Facture ${v.numero} de ${montantChf(ttc)} CHF enregistrée à encaisser. ${recu ? 'Facture conservée dans Drive.' : 'Facture gardée sur cet appareil, pas dans Drive.'}`);
+        ? `Vente de ${montantChf(ttc)} CHF enregistrée.${sync} ${drive}`
+        : `Facture ${v.numero} de ${montantChf(ttc)} CHF enregistrée à encaisser.${sync} ${drive}`);
       if (envoyer) await partager(v.pdf);
       if (v.mode === 'paye') { changerOccupe(false); onClose(); return; }
-      setResultat({ numero: v.numero, totalCents: v.totalCents, mode: v.mode, pdf: v.pdf });
+      setResultat({ numero: v.numero, totalCents: v.totalCents, mode: v.mode, pdf: v.pdf, txId: v.entry.transaction.id, envoi: queued ? 'file' : receipt ? 'drive' : 'local' });
     } catch (e) {
       setErreur(e instanceof QrFactureInvalide ? e.message : e instanceof Error && e.message ? e.message : 'La vente reste à confirmer. Le brouillon est conservé.');
     } finally { changerOccupe(false); }
@@ -376,7 +394,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
             ? <button type="button" className="cs-go" disabled={!peutPrimaire} onClick={() => void soumettre(false)}>
                 {libellePrimaire ?? (mode === 'qr' ? 'Facturer' : 'Encaisser')}{!libellePrimaire && <> <span className="cs-m">{libelleTotal}</span> CHF</>}
               </button>
-            : <div className="cs-fait" role="status"><b>Facture {resultat.numero} enregistrée</b><span className="cs-m">{fr(resultat.totalCents)} CHF</span></div>}
+            : <div className="cs-fait" role="status"><div><b>Facture {resultat.numero} enregistrée</b><EtatEnvoi resultat={resultat} /></div><span className="cs-m">{fr(resultat.totalCents)} CHF</span></div>}
 
           {(manques.length > 0 || erreur || manqueQrHorsLigne || dateErreur) && (
             <div className="cs-notes">

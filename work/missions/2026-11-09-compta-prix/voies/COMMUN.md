@@ -12,3 +12,5 @@
 - Aucun code, aucun commit, pas de `git stash`. Gemini jamais appelé. L'IBAN n'est jamais recopié.
 
 **Remplacer, jamais fusionner** (ses mots du 09.11 : « Bien replacé ce qui est déjà en place par les mini maquettes, par un merge ou portage à moitié ») : l'écran choisi remplace entièrement l'écran actuel ; aucun bloc de l'ancien ne reste à côté. Une fonction de l'ancien absente de la maquette va au second plan dans la langue de la maquette, ou est listée dans RESULTAT.md pour le pilote. « 99 % mini maquettes » : un compromis rare se justifie et se liste.
+
+**Acquis (10.11, ses mots : « Les filtre de ce type sont super super pratique à ne pas enlever »)** : les lignes-tâches « Confirmer les paiements (n) › », « Vérifier les pièces sans date › » et leurs semblables, qui ouvrent le journal filtré, restent ; aucun port ne les retire (capture `critique/brasseur-10-11-taches-filtres.jpg`).
