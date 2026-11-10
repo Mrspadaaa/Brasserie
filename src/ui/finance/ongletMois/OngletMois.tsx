@@ -42,16 +42,24 @@ function PilesMois({ effet }: { effet: EffetPiece }) {
   const apres = colonnesDe(effet.apres), avant = colonnesDe(effet.avant);
   const avantDe = (cle: string) => [avant.ventes, ...avant.charges, avant.materiel].find(c => c?.cle === cle);
   const toutes = [apres.ventes, ...apres.charges, apres.materiel].filter((c): c is NonNullable<typeof c> => !!c);
-  const max = Math.max(...toutes.map(c => c.cents), 1);
+  /* MM-1 (10.11, « On voit pas vraiment ce que on ajoute ») : quand les ventes écrasent les charges (plus du double de la plus haute), leur pile est
+     coupée (axe interrompu, montant exact écrit) et l'échelle se règle sur les charges ; la pièce garde un segment d'au moins 10 px et son écart écrit. */
+  const autres = [...apres.charges, apres.materiel].filter((c): c is NonNullable<typeof c> => !!c);
+  const maxAutres = Math.max(0, ...autres.map(c => c.cents));
+  const coupe = !!apres.ventes && maxAutres > 0 && apres.ventes.cents > 2 * maxAutres;
+  const max = coupe ? maxAutres : Math.max(...toutes.map(c => c.cents), 1);
   const pile = (c: (typeof toutes)[number]) => {
     const dessous = avantDe(c.cle);
     const piece = Math.max(0, c.cents - (dessous?.cents ?? 0));
     const pieceHach = Math.min(piece, Math.max(0, c.hachureCents - (dessous?.hachureCents ?? 0)));
     const hachAutre = Math.max(0, c.hachureCents - pieceHach);
     const pleinAutre = Math.max(0, c.cents - hachAutre - piece);
-    return <div key={c.cle} className="om-p" data-pile={c.cle}>
+    const coupee = coupe && c === apres.ventes;
+    const ratio = coupee ? 1 : Math.max(c.cents / max, 0.04);
+    return <div key={c.cle} className="om-p" data-pile={c.cle} data-coupee={coupee ? '' : undefined}>
+      {piece > 0 && <em className="om-m om-ep" data-om="ecart-pile" data-sens={c.signe ? 'entre' : 'sortie'}>+{amountOnly(piece)}</em>}
       <b className="om-m" data-signe={c.signe}>{c.signe ?? ''}{amountOnly(c.cents)}</b>
-      <span className="om-st" style={{ height: `calc(var(--om-haut) * ${Math.max(c.cents / max, 0.04).toFixed(4)})` }}>
+      <span className="om-st" style={{ height: piece > 0 ? `max(14px, calc(var(--om-haut) * ${ratio.toFixed(4)}))` : `calc(var(--om-haut) * ${ratio.toFixed(4)})` }}>
         {hachAutre > 0 && <i className="om-hach" style={{ flex: hachAutre }} />}
         {piece > 0 && <i data-piece={pieceHach > 0 ? 'a-payer' : 'payee'} className={`om-nv${pieceHach > 0 ? ' om-hach' : ''}`} style={{ flex: piece, ...(pieceHach > 0 ? {} : { background: c.couleur }) }} />}
         {pleinAutre > 0 && <i style={{ flex: pleinAutre, background: c.couleur }} />}

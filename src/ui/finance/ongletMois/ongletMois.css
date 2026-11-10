@@ -57,3 +57,17 @@
 footer:has(.om-scrim) button:not(.om-carte button), .om-bas:has(.om-scrim) button:not(.om-carte button) { position: relative; z-index: 31; }
 /* f2d-etat : l'argent qui entre (à encaisser, Facture QR) se hachure en vert, jamais en ambre des dépenses à payer. */
 .om-carte[data-variante='caisse'] [data-pile='recettes'] .om-hach, .om-carte[data-variante='caisse'] [data-tuile='aEncaisser'] .om-hach, .om-carte[data-variante='caisse'] .om-tg .om-hach { --om-hach-a: #2E9A50; }
+/* MM-1 (10.11) : la part de la pièce se voit quelle que soit l'échelle. Écart écrit sur sa pile, segment d'au moins 10 px, ventes coupées (axe interrompu). */
+.om-piles { height: calc(var(--om-haut) + 54px); }
+.om-ep { display: block; align-self: center; padding: 0 5px; border-radius: 8px; font-style: normal; font-size: 12px; line-height: 18px; background: #D2B356; color: #2B220C; white-space: nowrap; }
+.om-ep[data-sens='entre'] { background: #56D27B; color: #0F3A1C; }
+.om-st i.om-nv { min-height: 10px; flex-shrink: 0; }
+.om-p[data-coupee] .om-st { position: relative; }
+.om-p[data-coupee] .om-st::after { content: ''; position: absolute; left: -2px; right: -2px; top: 38%; height: 9px; background: var(--om-pale);
+  clip-path: polygon(0 30%, 12% 0, 25% 30%, 37% 0, 50% 30%, 62% 0, 75% 30%, 87% 0, 100% 30%, 100% 100%, 87% 70%, 75% 100%, 62% 70%, 50% 100%, 37% 70%, 25% 100%, 12% 70%, 0 100%); }
+/* MM-1 : au téléphone, avec la bascule « Catégorie | Papier » au pied, le bouton garde ses mini-piles et sa pastille entières ; « Mon mois » reste dans son aria-label. */
+@media (max-width: 520px) {
+  footer:has([data-ordre]) .om-mo:has(em) { flex: 0 0 auto; gap: 5px; padding: 0 8px; }
+  footer:has([data-ordre]) .om-mo:has(em) > span { display: none; }
+}
+.om-mo em { flex: none; }
