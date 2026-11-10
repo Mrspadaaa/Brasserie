@@ -5,7 +5,7 @@ import { echelle } from '../../../domain/finance/periodeSynthese';
 import { colonnesAnnee, premiereNonPrete, type EtapeEtat } from './calculs';
 import { couleur, libelleCategorie, texteSur } from '../synthese/libelles';
 import { montant } from '../previsions/format';
-import type { Ctx } from './ctx';
+import { versInventaireCloture, type Ctx } from './ctx';
 
 const H = 286;
 /** Hauteur (px) sous laquelle l'écart ne contient plus son texte : perte = résultat 28 + « CHF perdus » + badge du stock 28 + marges ; gain = résultat 24 + « CHF gagnés ». */
@@ -23,6 +23,13 @@ export function Piste({ etapes, ici, onGo }: { etapes: EtapeEtat[]; ici?: number
   return <div className="ann-pi" role="group" onKeyDown={clavier} aria-label={`Clôture : ${etapes.filter(e => e.prete).length} étapes sur 9 prêtes`}>
     {etapes.map(e => <button type="button" key={e.n} aria-label={`${e.n}. ${e.nom}${e.prete ? ' · prête' : ''}`} aria-current={ici === e.n ? 'step' : undefined} className={`ann-pi-b${e.prete ? ' ok' : e.n === now ? ' now' : ''}${ici === e.n ? ' ici' : ''}`} onClick={() => onGo(e.n)}><i/></button>)}
   </div>;
+}
+
+/** « Stock au 31 déc. » : inconnu, la puce est un renvoi (CP-18) vers l'inventaire de CLÔTURE, avec ce que le manque empêche ; connu, une simple valeur. */
+function PuceStock({ c, label, seul }: { c: Ctx; label: string; seul: boolean }) {
+  const classe = `ann-stock${seul ? ' ann-stock-seul' : ''} ann-m`;
+  if (c.report.inventoryChangeCents != null) return <i className={classe}>Stock au 31 déc. <b>{label}</b></i>;
+  return <button type="button" className={`${classe} ann-stock-q`} disabled={c.gele} aria-label="Noter le stock au 31 déc. : sans lui, la perte reste avant stock" onClick={() => versInventaireCloture(c)}>Stock au 31 déc. <b>{label}</b><small className="ann-stock-why">sans lui, perte avant stock ›</small></button>;
 }
 
 export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () => void; onMois: () => void; onTva: () => void; tva: { libelle: string; pct: number } | null }) {
@@ -47,10 +54,10 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
       {vide ? <p className="ann-vide">Rien de noté pour {c.year}.</p> : <div className="ann-scene" role="img" aria-label={`${c.year} : entré ${montant(col.entreCents)}, dépensé plus usure ${montant(col.totalDepenseCents)}, ${perte < 0 ? 'perdu' : 'gagné'} ${montant(Math.abs(perte))} avant le stock`}>
         <div className="ann-col">
           <div className="ann-hc"><span>&nbsp;</span></div>
-          {ech.signe === 'perte' && !ecartMince && <div className="ann-trou" style={{ height: ech.hEcart }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><i className="ann-stock ann-m">Stock au 31 déc. <b>{stockLabel}</b></i></div>}
+          {ech.signe === 'perte' && !ecartMince && <div className="ann-trou" style={{ height: ech.hEcart }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><PuceStock c={c} label={stockLabel} seul={false}/></div>}
           {/* Écart trop mince pour porter son texte (g6 : le trou est à l'échelle, jamais gonflé) : le trou reste un liseré hachuré à sa vraie hauteur, le résultat et le stock se posent juste au-dessus. */}
-          {ech.signe === 'perte' && ecartMince && <><div className="ann-trou-txt"><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><i className="ann-stock ann-stock-seul ann-m">Stock au 31 déc. <b>{stockLabel}</b></i></div><div className="ann-trou ann-trou-mince" style={{ height: ech.hEcart }} aria-hidden="true" /></>}
-          {ech.signe !== 'perte' && <i className="ann-stock ann-stock-seul ann-m">Stock au 31 déc. <b>{stockLabel}</b></i>}
+          {ech.signe === 'perte' && ecartMince && <><div className="ann-trou-txt"><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><PuceStock c={c} label={stockLabel} seul={true}/></div><div className="ann-trou ann-trou-mince" style={{ height: ech.hEcart }} aria-hidden="true" /></>}
+          {ech.signe !== 'perte' && <PuceStock c={c} label={stockLabel} seul={true}/>}
           <div className="ann-pile ann-pile-entree" style={{ height: ech.signe === 'perte' ? ech.hPileEntree : H }}>
             <span className="ann-lib">Entré <b className="ann-m">{montant(col.entreCents)}</b></span><span className="ann-leg">{legendeVente}</span>
           </div>

@@ -76,6 +76,7 @@
 .syn-row .syn-t small { display:block; font-size:12px; color:var(--syn-t2); }
 .syn-t-bouton { background:none; border:0; padding:0; min-height:44px; color:var(--syn-txt); }
 .syn-litre { font-size:16px; font-weight:600; }
+.syn-litre-bouton { min-height:36px; padding:0 4px; background:none; border:0; color:inherit; font:inherit; font-weight:600; text-decoration:underline dotted; text-underline-offset:3px; cursor:pointer; }
 .syn-plus { width:28px; height:28px; min-width:28px; border-radius:16px; border:1px solid var(--syn-bord); display:grid; place-items:center; font-size:16px; }
 .syn-dt::before { content:"\00B7"; margin:0 4px; } .syn-dt { font-style:normal; }
 .syn-ouvert { transform:rotate(180deg); }

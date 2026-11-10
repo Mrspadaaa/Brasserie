@@ -85,3 +85,5 @@
 .ibr-inc-btn { cursor: pointer; font: inherit; font-weight: 600; min-height: 24px; }
 .ibr-lien { all: unset; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; min-height: 24px; }
 .ibr-lien:focus-visible, .ibr-inc-btn:focus-visible { outline: 2px solid rgb(var(--accent, 47 111 168)); outline-offset: 2px; }
+.ibr-puce-btn { all: unset; cursor: pointer; min-height: 24px; display: inline-flex; align-items: center; }
+.ibr-puce-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

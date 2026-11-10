@@ -3,7 +3,7 @@ import { batchDisplayDate, hasBrewStarted } from '../batchSchedule';
 import { ingredientsOf } from '../recipeSnapshot';
 import { annualBrewFixedCosts, brewBudgetDateKey, brewBudgetDemands, estimateBrewBudget, resolveBudgetStock, BREW_COST_LABELS, type BrewBudgetSnapshot, type BrewCostKey } from './brewBudget';
 import { coutLitre, litresNets, troisNotions, type CoutLitre } from './chaineLitre';
-import type { ForecastItem } from './forecast';
+import type { AvertissementCible, ForecastItem } from './forecast';
 import { usureAnnuelleLitre } from './materielFutur';
 import type { FinanceTransaction, FinancialAsset, FinancialPlan, FinancialProfile } from './types';
 
@@ -59,7 +59,7 @@ export interface EntreeBrassinsPlanifies {
   /** Coût du litre « hors ce projet de matériel » (D3-7, `mesurerAchat`). */
   ignorerPlanId?: string;
 }
-export interface SortieBrassinsPlanifies { brassins: BrassinPrevu[]; items: ForecastItem[]; warnings: string[]; remplaces: Set<string> }
+export interface SortieBrassinsPlanifies { brassins: BrassinPrevu[]; items: ForecastItem[]; warnings: string[]; /** Les mêmes limites que `warnings`, avec leur cible (CP-18) : ajout seul, les chaînes sont inchangées. */ avertissements: AvertissementCible[]; remplaces: Set<string> }
 
 const cents = (chf: number) => Math.round(chf * 100);
 const finiPositif = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n >= 0;
@@ -122,7 +122,8 @@ function impotEnCaisse(snapshot: BrewBudgetSnapshot): number | null {
 export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): SortieBrassinsPlanifies {
   const { batches, stockItems, transactions, plans, profile, asOf } = input;
   const reglages = { ...REGLAGES_BREW_FORECAST_DEFAUT, ...input.reglages };
-  const warnings: string[] = [], items: ForecastItem[] = [], brassins: BrassinPrevu[] = [], remplaces = new Set<string>();
+  const warnings: string[] = [], avertissements: AvertissementCible[] = [], items: ForecastItem[] = [], brassins: BrassinPrevu[] = [], remplaces = new Set<string>();
+  const noter = (a: AvertissementCible) => { warnings.push(a.texte); avertissements.push(a); };
   const now = `${asOf}T12:00:00Z`;
   const instantanes = plans.filter(p => p.brewEstimate).map(p => p.brewEstimate as BrewBudgetSnapshot);
   const fixes = annualBrewFixedCosts(plans);
@@ -141,15 +142,17 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
       const cond = brewBudgetDateKey(batch.bottlingDate ?? '');
       if (cond) {
         const echeance = ajouterJours(finDePeriode(cond, reglages.periodeImpot), reglages.delaiPaiementImpotJours);
-        if (echeance >= asOf) warnings.push(`Impôt sur la bière des brassins conditionnés non prévu : « ${batch.name} », échéance estimée le ${jjmmaaaa(echeance)}.`);
+        if (echeance >= asOf) noter({ texte: `Impôt sur la bière des brassins conditionnés non prévu : « ${batch.name} », échéance estimée le ${jjmmaaaa(echeance)}.`, cible: { kind: 'brassin', batchId: batch.id, rubrique: 'argent' }, batchId: batch.id, titre: batch.name, sujet: 'Impôt sur la bière',
+          detail: `échéance estimée le ${jjmmaaaa(echeance)} : l’impôt de ce brassin n’est pas dans la prévision` });
       }
       continue;
     }
     const titre = batch.name || batch.recipeSnapshot?.name || 'Brassin';
     const jour = brewBudgetDateKey(batchDisplayDate(batch) ?? '');
-    if (!jour) { warnings.push(`${titre} : date de brassage illisible, aucune sortie prévue.`); continue; }
+    if (!jour) { noter({ texte: `${titre} : date de brassage illisible, aucune sortie prévue.`, cible: { kind: 'brassin', batchId: batch.id, rubrique: 'date' }, batchId: batch.id, titre, sujet: 'Date de brassage', detail: 'date de brassage illisible : aucune sortie prévue' }); continue; }
     const commence = statut !== 'planifie' || hasBrewStarted(batch);
-    if (!commence && jour < asOf) warnings.push(`${titre} : brassage planifié le ${jjmmaaaa(jour)}, déjà passé ; sorties ramenées à aujourd’hui.`);
+    if (!commence && jour < asOf) noter({ texte: `${titre} : brassage planifié le ${jjmmaaaa(jour)}, déjà passé ; sorties ramenées à aujourd’hui.`, cible: { kind: 'brassin', batchId: batch.id, rubrique: 'date' }, batchId: batch.id, titre, sujet: 'Date de brassage',
+      detail: `brassage planifié le ${jjmmaaaa(jour)}, déjà passé : date à corriger, sorties ramenées à aujourd’hui` });
 
     const recette = recetteDuBrassin(batch);
     const propre = instantanes.filter(e => e.batchId === batch.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
@@ -221,7 +224,13 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
       impot ? [{ label: BREW_COST_LABELS.beerTax, amountCents: cents(impot), origin: snapshot.beerTaxSource === 'calcule' ? (densite === 'cible' ? 'calculé sur la densité cible de la recette (estimé)' : 'calculé sur la densité du brassin') : 'montant saisi' }] : [], true);
 
     const partiel = [...(commence ? [] : [...manqueAchats, ...manqueFrais]), ...manqueEmballage, ...manqueImpot];
-    if (partiel.length) warnings.push(`${titre} : à compléter pour une prévision entière : ${partiel.join(', ')}.`);
+    if (partiel.length) {
+      const sansPrix = commence ? [] : manqueAchats, autres = partiel.filter(m => !sansPrix.includes(m));
+      // Une petite ligne : les noms quand il y en a deux au plus, sinon leur nombre (la liste est dans le coût du brassin).
+      const dits = [sansPrix.length > 2 ? `${sansPrix.length} ingrédients sans prix` : sansPrix.length ? `sans prix : ${sansPrix.join(', ')}` : '', autres.length > 2 ? `${autres.length} frais à compléter` : autres.length ? `à compléter : ${autres.join(', ')}` : ''].filter(Boolean);
+      noter({ texte: `${titre} : à compléter pour une prévision entière : ${partiel.join(', ')}.`, cible: { kind: 'brassin', batchId: batch.id, rubrique: 'cout' }, batchId: batch.id, titre, sujet: sansPrix.length && !autres.length ? 'Prix des ingrédients' : 'Coût à compléter',
+        detail: `${dits.join(' ; ')} : prévision partielle`, manque: partiel });
+    }
     if (mesItems.length) remplaces.add(batch.id);
     const notions = troisNotions(snapshot);
     brassins.push({ batchId: batch.id, titre, dateBrassage: jour, items: mesItems, partiel, litresNets: net, densite,
@@ -229,6 +238,6 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
     items.push(...mesItems);
   }
   items.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  return { brassins, items, warnings: [...new Set(warnings)], remplaces };
+  return { brassins, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], remplaces };
 }
 

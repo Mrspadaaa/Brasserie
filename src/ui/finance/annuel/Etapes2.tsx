@@ -7,14 +7,14 @@ import { TAX_REVIEWS } from '../../../domain/finance/fribourgTax';
 import { montant } from '../previsions/format';
 import { DriveConnection } from '../DriveConnection';
 import { MoneyInput, idFor } from '../FinanceForms';
-import type { Ctx } from './ctx';
+import { versInventaireCloture, type Ctx } from './ctx';
 
 /* ---------- 6 · Parts privées ---------- */
 const ICONES_TUILES: Record<string, LucideIcon> = { biere: Beer, electricite: Zap, local: House, telephone: Smartphone, vehicule: Car };
 export function Etape6({ c }: { c: Ctx }) {
   // Au repos, g6-6 pose déjà la première charge reconnue (l'électricité) avec son curseur : la part n'est pas connue, le curseur le dit (pouce en pointillé).
   const [tuile, setTuile] = React.useState<string | null>(() => TUILES_PRIVEES.find(t => baseProposee(c.transactions, c.year, t.mots))?.id ?? null);
-  const [pct, setPct] = React.useState<number | null>(null), [saisie, setSaisie] = React.useState<number | undefined>();
+  const [pct, setPct] = React.useState<number | null>(null), [saisie, setSaisie] = React.useState<number | undefined>(), zone = React.useRef<HTMLDivElement>(null);
   const privees = c.tax.corrections.filter(x => x.kind === 'private-use');
   const courante = TUILES_PRIVEES.find(t => t.id === tuile), base = courante ? baseProposee(c.transactions, c.year, courante.mots) : null;
   const montantPart = base ? (pct === null ? undefined : Math.round(base.cents * pct / 100)) : saisie;
@@ -27,7 +27,7 @@ export function Etape6({ c }: { c: Ctx }) {
     bas={<button type="button" className="ann-pri" disabled={c.gele} onClick={() => { c.act.ecrire(t => { t.reviews = { ...t.reviews, privateUse: true }; }); c.act.aller(7); }}>Valider</button>}>
     <div className="ann-tiles">{TUILES_PRIVEES.map(t => { const x = privees.find(p => p.label === t.libelle), Icone = ICONES_TUILES[t.id]; return <button type="button" key={t.id} aria-pressed={tuile === t.id} disabled={c.gele} className={`ann-ti${x ? ' fait' : ' ann-hach'}`} onClick={() => { setTuile(t.id); setPct(null); setSaisie(undefined); }}><Icone size={20} aria-hidden="true" className={`ann-ti-i ${t.id}`}/><b>{t.libelle}</b><span className="ann-m">{x ? montant(x.amountCents) : `? ${t.id === 'biere' ? 'L' : '%'}`}</span></button>; })}
       <button type="button" className="ann-ti dash" disabled={c.gele} onClick={() => c.act.feuille('corrections')}><Plus size={20} aria-hidden="true" className="ann-ti-i plus"/><b>Autre</b><small>ajouter</small></button></div>
-    {courante && <div className="ann-sl"><div className="lab"><span>{courante.libelle}{base && <> <span className="ann-m">{montant(base.cents)}</span> : part pour toi</>}</span><span className="ann-pa at">à confirmer</span></div>
+    {courante && <div className="ann-sl" ref={zone}><div className="lab"><span>{courante.libelle}{base && <> <span className="ann-m">{montant(base.cents)}</span> : part pour toi</>}</span><button type="button" className="ann-pa at" aria-label="Fixer la part : sans elle, rien n’est ajouté aux corrections" onClick={() => zone.current?.querySelector('input')?.focus()}>à confirmer</button></div>
       {base ? <><input type="range" min={0} max={100} step={5} value={pct ?? 0} data-inconnu={pct === null ? '' : undefined} aria-label={`Part privée de ${courante.libelle} en pourcentage${pct === null ? ' (pas encore fixée)' : ''}`} onChange={e => setPct(Number(e.target.value))}/><div className="ends"><span className="ann-m">0 %</span>{pct !== null && <span className="ann-m">{nombreFr(pct, 0)} % = {montant(montantPart ?? 0)}</span>}<span className="ann-m">100 %</span></div><p className="ann-terme">d’après : {base.pieces.join(', ')} (à vérifier)</p></>
         : <><MoneyInput label={`Montant à toi, estimé (CHF)`} value={saisie} onChange={setSaisie}/><p className="ann-terme">Aucune charge reconnue : tu saisis le montant, sans valeur par défaut.</p></>}
       {montantPart != null && <button type="button" className="ann-btn" onClick={ajouter} disabled={montantPart <= 0}>Ajouter cette part</button>}</div>}
@@ -61,6 +61,20 @@ export function Etape7({ c }: { c: Ctx }) {
 }
 
 /* ---------- 8 · Montants à reporter ---------- */
+/** CP-18 : l'endroit où se règle une ligne « manque » du rapport fiscal (les mots viennent du domaine : `fribourgTax.ts`). Aucune règle ici : seulement le chemin vers la bonne feuille ; `null` = pur constat, rien à saisir. */
+export function versManque(m: string, c: Ctx): (() => void) | null {
+  const revue = TAX_REVIEWS.find(r => m.startsWith(r.label + ' : à confirmer'));
+  if (revue) return () => revue.key === 'journal' ? c.act.aller(1) : revue.key === 'privateUse' ? c.act.aller(6) : revue.key === 'assets' ? c.act.aller(3) : revue.key === 'balance' ? c.act.aller(5) : c.act.feuille('checks');
+  if (/^Justificatif manquant/.test(m)) return () => c.act.onOperations({ scope: 'all', year: String(c.year), allDates: true, filter: 'proof' });
+  if (/activité principale ou accessoire/.test(m)) return () => c.act.aller(7);
+  if (/trésorerie vérifiable|ne correspondent pas à la trésorerie/.test(m)) return () => c.act.aller(2);
+  if (/nom et l’adresse|référence aux comptes|adresse du créancier/.test(m)) return () => c.act.feuille('balance');
+  if (/relevés bancaires|décompte de cotisations|relier la facture/.test(m)) return () => c.act.feuille('attachments');
+  if (/Fortune mobilière/.test(m)) return () => c.act.feuille('wealth');
+  if (/Rubriques FriTax/.test(m)) return () => { window.open(c.tax.sourceUrl, '_blank', 'noopener'); };
+  return null;
+}
+
 export function Etape8({ c }: { c: Ctx }) {
   const rev = ticketRevenu(c.report, c.tax), fo = ticketFortune(c.report, c.tax);
   const champ = (id: string) => c.tax.fields.find(f => f.id === id);
@@ -71,21 +85,21 @@ export function Etape8({ c }: { c: Ctx }) {
   const copier = (id: string, label: string, cents: number | null, pret: boolean) => <button type="button" className="ann-cpy" disabled={!pret || cents == null} aria-label={`Copier ${label}`} onClick={() => void c.dossier.copy(id, cents)}>{c.dossier.copied === id ? <Check size={14}/> : <Copy size={14}/>}Copier</button>;
   return <Cadre n={8} c={c} question="Ce que tu recopies dans ta déclaration" terme="montants à reporter · Fribourg"
     bas={<><Etoile onClick={() => c.act.assistant('Explique-moi, pas à pas, comment reporter le revenu et la fortune de ma brasserie ' + c.year + ' dans ma déclaration fribourgeoise, et ce qui manque encore. Rien ne doit être modifié.')}>Expliquer</Etoile><button type="button" className="ann-pri" onClick={() => c.act.aller(9)}>Préparer le dossier</button></>}>
-    {!c.tax.mappingVerified && <p className="ann-gele">Les instructions vérifiées concernent {c.tax.sourceYear} : les codes {c.year} sont à confirmer avant le report.</p>}
+    {!c.tax.mappingVerified && <a className="ann-gele ann-gele-a" href={c.tax.sourceUrl} target="_blank" rel="noreferrer">Les instructions vérifiées concernent {c.tax.sourceYear} : les codes {c.year} sont à confirmer avant le report ›</a>}
     <div className="ann-cp"><h4>{champ('income')?.label ?? 'Revenu de la brasserie'}</h4>
       {rev.aReporterCents != null ? <span className="ann-m big">{montant(rev.aReporterCents)}</span> : <><span className="ann-m big ann-prov-n">{montant(rev.avantStockCents)}</span><small>avant stock : ce n’est pas encore le montant à reporter</small></>}
-      <small>ventes <span className="ann-m">{montant(c.report.revenueCents)}</span> − dépensé <span className="ann-m">{montant(c.report.operatingExpensesCents)}</span> − usure <span className="ann-m">{montant(c.report.depreciationCents)}</span> ± stock <span className="ann-m">{c.report.inventoryChangeCents == null ? '?' : montant(c.report.inventoryChangeCents)}</span>{c.tax.correctionCents !== 0 && <> ± corrections <span className="ann-m">{montant(c.tax.correctionCents)}</span></>}</small>
+      <small>ventes <span className="ann-m">{montant(c.report.revenueCents)}</span> − dépensé <span className="ann-m">{montant(c.report.operatingExpensesCents)}</span> − usure <span className="ann-m">{montant(c.report.depreciationCents)}</span> ± stock {c.report.inventoryChangeCents == null ? <button type="button" className="ann-q-btn ann-m" aria-label="Compter le stock au 31 déc. : sans lui, le revenu reste avant stock" onClick={() => versInventaireCloture(c)}>?</button> : <span className="ann-m">{montant(c.report.inventoryChangeCents)}</span>}{c.tax.correctionCents !== 0 && <> ± corrections <span className="ann-m">{montant(c.tax.correctionCents)}</span></>}</small>
       <span className="cod"><span className={`ann-pa ${rev.pret ? 'ok' : 'at'}`}>{rev.pret ? 'prêt' : 'provisoire'}</span><span className="ann-pa no">{rev.code ? `code ${c.tax.sourceYear} : ${rev.code}` : 'code : choisis principale ou accessoire (étape 7)'}</span></span>
       {copier('income', champ('income')?.label ?? 'Revenu', rev.aReporterCents, rev.pret)}</div>
     <div className="ann-cp"><h4>{champ('wealth')?.label ?? 'Fortune de la brasserie'}</h4>
-      {fo.aReporterCents != null ? <span className="ann-m big">{montant(fo.aReporterCents)}</span> : <><span className="ann-m big ann-prov-n">À confirmer</span><small>annexe 05 des instructions</small></>}
-      <small>aide, pas le montant à reporter : caisse <span className="ann-m">{fo.aideCaisseCents == null ? '?' : montant(fo.aideCaisseCents)}</span> + cuve <span className="ann-m">{montant(fo.aideMaterielCents)}</span> − dettes <span className="ann-m">{montant(fo.aideDettesCents)}</span>{fo.aideNetteCents == null ? ' = ? (stock à compter)' : <> = <span className="ann-m">{montant(fo.aideNetteCents)}</span></>}</small>
+      {fo.aReporterCents != null ? <span className="ann-m big">{montant(fo.aReporterCents)}</span> : <><button type="button" className="ann-m big ann-prov-n" aria-label="Confirmer le report de fortune : sans lui, rien à copier" onClick={() => c.act.feuille('wealth')}>À confirmer</button><small>annexe 05 des instructions</small></>}
+      <small>aide, pas le montant à reporter : caisse {fo.aideCaisseCents == null ? <button type="button" className="ann-q-btn ann-m" aria-label="Noter le solde d’ouverture : sans lui, la caisse reste inconnue" onClick={c.act.onProfile}>?</button> : <span className="ann-m">{montant(fo.aideCaisseCents)}</span>} + cuve <span className="ann-m">{montant(fo.aideMaterielCents)}</span> − dettes <span className="ann-m">{montant(fo.aideDettesCents)}</span>{fo.aideNetteCents == null ? <> = <button type="button" className="ann-q-btn ann-m" aria-label="Compter le stock au 31 déc. : sans lui, l’aide à la fortune reste inconnue" onClick={() => versInventaireCloture(c)}>? (stock à compter) ›</button></> : <> = <span className="ann-m">{montant(fo.aideNetteCents)}</span></>}</small>
       <span className="cod"><span className={`ann-pa ${fo.pret ? 'ok' : 'at'}`}>{fo.pret ? 'prêt' : 'provisoire'}</span><span className="ann-pa no">{fo.code ? `code ${c.tax.sourceYear} : ${fo.code}` : 'code à vérifier'}</span></span>
       {copier('wealth', champ('wealth')?.label ?? 'Fortune', fo.aReporterCents, fo.pret)}
       <button type="button" className="ann-link" onClick={() => c.act.feuille('wealth')}>Confirmer le report de fortune</button></div>
     {enCours && <p className="ann-terme">L’exercice court encore : le report n’est prêt qu’après le 31 déc.</p>}
-    {manques.length > 0 && <ul className="ann-manque">{manques.map(m => <li key={m}>{m}</li>)}{autres > 0 && <li>+ {autres} autre{autres > 1 ? 's' : ''}</li>}</ul>}
-    <p className="ann-terme">La déclaration personnelle reste à compléter : autres revenus, prévoyance, famille. <a href={c.tax.sourceUrl} target="_blank" rel="noreferrer">Instructions officielles Fribourg {c.tax.sourceYear}</a></p>
+    {manques.length > 0 && <ul className="ann-manque">{manques.map(m => { const va = versManque(m, c); return <li key={m}>{va ? <button type="button" className="ann-manque-b" onClick={va}>{m} ›</button> : m}</li>; })}{autres > 0 && <li>+ {autres} autre{autres > 1 ? 's' : ''}</li>}</ul>}
+    <p className="ann-terme">La déclaration personnelle se remplit dans FriTax, hors de l’app : autres revenus, prévoyance, famille. <a href={c.tax.sourceUrl} target="_blank" rel="noreferrer">Instructions officielles Fribourg {c.tax.sourceYear}</a></p>
   </Cadre>;
 }
 

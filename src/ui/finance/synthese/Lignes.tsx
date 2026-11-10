@@ -49,9 +49,11 @@ export function LigneLitre({ plans, batches, recipes, onOpenBudget, onAbsent, on
   return <div className="syn-row" data-ligne="litre">
     <button type="button" className="syn-t syn-t-bouton" onClick={ouvrir} aria-label={`${snapshot.title}, coût du litre : ouvrir le budget`}>
       {snapshot.title}
-      <small>{litre.litres !== null ? `${nombreFr(litre.litres, 1)} L nets` : 'litres nets à saisir'}<i className="syn-dt" aria-hidden="true"/>tout compris<i className="syn-dt" aria-hidden="true"/>estimé</small>
+      <small>{litre.litres !== null ? `${nombreFr(litre.litres, 1)} L nets` : 'litres nets à saisir : sans eux, pas de coût du litre'}<i className="syn-dt" aria-hidden="true"/>tout compris<i className="syn-dt" aria-hidden="true"/>estimé</small>
     </button>
-    <span className="syn-m syn-litre">{litre.chfParL !== null ? `${formatCHF(Math.round(litre.chfParL * 100))}/L` : 'À compléter'}</span>
+    {/* CP-18 : « À compléter » est un renvoi : il ouvre le budget du brassin, dont les lignes-tâches disent quoi saisir (litres nets, prix, charges). */}
+    {litre.chfParL !== null ? <span className="syn-m syn-litre">{`${formatCHF(Math.round(litre.chfParL * 100))}/L`}</span>
+      : <button type="button" className="syn-m syn-litre syn-litre-bouton" onClick={ouvrir} aria-label={`${snapshot.title} : coût du litre à compléter, ouvrir le budget pour saisir ce qui manque`}>À compléter ›</button>}
     <button type="button" className="syn-plus" aria-label="Coût d’un autre brassin" onClick={onPicker}>+</button>
   </div>;
 }
@@ -106,6 +108,15 @@ export function Replie({ transactions, payments, plans, mois, jusqua, onJournal,
 export interface VerifierProps {
   periode: PeriodeSynthese; ledger: LedgerSummary; tvaThreshold?: TvaThresholdStatus | null;
   onJournal: (request: Omit<JournalRequest, 'key'>) => void;
+  /** CP-18 : le solde de départ « à confirmer » de « Origine et limites » ouvre la feuille du solde. Absent : la ligne est portée par le renvoi de la caisse, juste au-dessus. */
+  onProfile?: () => void;
+}
+/** CP-18 : chaque limite de « Origine et limites des montants » qui annonce un manque est un renvoi vers l'endroit où le régler. */
+function Limite({ w, onJournal, onProfile }: { w: string; onJournal: VerifierProps['onJournal']; onProfile?: () => void }) {
+  const agir = /^Solde de trésorerie initial/.test(w) ? onProfile : /^Date à corriger/.test(w) ? () => onJournal({ scope: 'all', allDates: true, filter: 'review' }) : /paiements? historiques? à confirmer/.test(w) ? () => onJournal({ scope: 'all', allDates: true, filter: 'unknown' }) : undefined;
+  if (agir) return <li><button type="button" className="syn-lien" onClick={agir}>{w}<ChevronRight size={14} aria-hidden="true"/></button></li>;
+  // data-renvoi="aucun" : le solde à confirmer est déjà porté par le renvoi « Solde de départ saisi… à confirmer » de la caisse (même écran) tant que `onProfile` n'est pas branché.
+  return <li data-renvoi={/^Solde de trésorerie initial/.test(w) ? 'aucun' : undefined}>{w}</li>;
 }
 const Rang = ({ titre, texte, nombre, onClick }: { titre: string; texte?: string; nombre?: number; onClick?: () => void }) => {
   const corps = <><span className="syn-t">{titre}{texte && <small>{texte}</small>}</span>{nombre !== undefined && <span className="syn-n">{nombre}</span>}{onClick && <ChevronRight size={16} aria-hidden="true"/>}</>;
@@ -122,7 +133,7 @@ export function AlerteTva({ tvaThreshold, onJournal }: { tvaThreshold?: TvaThres
 }
 
 /** Ce qui rend le chiffre moins sûr. Absent quand il n'y a rien : l'écran est alors celui de la maquette, sans une ligne de plus. */
-export function Verifier({ periode: p, ledger, tvaThreshold, onJournal }: VerifierProps) {
+export function Verifier({ periode: p, ledger, tvaThreshold, onJournal, onProfile }: VerifierProps) {
   const v = p.aVerifier;
   const soon = tvaThreshold && tvaThreshold.level === 'warn';
   const lignes: React.ReactNode[] = [];
@@ -135,6 +146,6 @@ export function Verifier({ periode: p, ledger, tvaThreshold, onJournal }: Verifi
   if (!lignes.length && !ledger.warnings.length) return null;
   return <section className="syn-verifier" aria-label="À vérifier">
     {lignes}
-    {ledger.warnings.length > 0 && <details className="syn-details"><summary>Origine et limites des montants</summary><ul>{ledger.warnings.map(w => <li key={w}>{w}</li>)}</ul></details>}
+    {ledger.warnings.length > 0 && <details className="syn-details"><summary>Origine et limites des montants</summary><ul>{ledger.warnings.map(w => <Limite key={w} w={w} onJournal={onJournal} onProfile={onProfile}/>)}</ul></details>}
   </section>;
 }

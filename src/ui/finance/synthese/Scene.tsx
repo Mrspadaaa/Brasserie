@@ -121,7 +121,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
       <span><i style={{ background: couleur('chargesFixes') }}/>payé</span>
       {p.aPayer.length > 0 && <span><i style={{ backgroundImage: hachure('chargesFixes') }}/>à payer</span>}
       {p.aEncaisser.length > 0 && <span><i style={{ backgroundImage: hachure('recettes') }}/>à encaisser</span>}
-      {aConfirmer > 0 && <span><i className="syn-confirmer"/>{aConfirmer} à confirmer</span>}
+      {/* data-renvoi="aucun" : la légende nomme la hachure ; la ligne-tâche « Confirmer les paiements (n) › » de « À vérifier », juste en dessous, ouvre le journal filtré. */}
+      {aConfirmer > 0 && <span data-renvoi="aucun"><i className="syn-confirmer"/>{aConfirmer} à confirmer</span>}
     </div>
   </div>;
 }

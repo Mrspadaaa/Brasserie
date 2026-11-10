@@ -42,6 +42,15 @@
 .ann-gain-mince { min-height:10px; }
 .ann-stock { position:absolute; left:8px; right:8px; bottom:6px; height:28px; border:2px dashed var(--ann-att); border-radius:10px; background:var(--ann-attf); color:var(--ann-attt); display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-style:normal; font-weight:600; }
 .ann-stock-seul { position:static; margin-bottom:6px; width:100%; }
+/* CP-18 : un manque est un renvoi. La puce « Stock au 31 déc. ? » devient un bouton (≥ 28 px) qui ouvre l'inventaire de clôture ; une ligne dit ce que le manque empêche. */
+.ann-stock-q { height:auto; min-height:28px; padding:3px 8px; flex-wrap:wrap; row-gap:0; cursor:pointer; font-family:inherit; line-height:1.25; }
+.ann-stock-q:disabled { cursor:default; opacity:.7; }
+.ann-stock-why { flex-basis:100%; text-align:center; font-size:11px; font-weight:500; }
+/* un « ? » qui est un renvoi : même dessin que le « ? » hachuré, touchable (≥ 24 px) */
+.ann-q-btn { min-height:24px; min-width:24px; padding:0 6px; border-radius:8px; border:1.5px dashed var(--ann-att); background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-att) 30%,var(--ann-page)) 0 4px,var(--ann-page) 4px 8px); color:var(--ann-attt); font-weight:600; cursor:pointer; font-family:inherit; }
+.ann-q-btn:disabled { cursor:default; opacity:.7; }
+button.ann-pa { cursor:pointer; font-family:inherit; min-height:24px; border:1.5px dashed var(--ann-att); } button.ann-pa:disabled { cursor:default; opacity:.7; }
+.ann-more { display:block; margin-top:2px; font-size:12px; font-weight:600; text-decoration:underline; color:var(--ann-fin); }
 /* cadre clôture */
 .ann-cl { margin-top:10px; padding:8px; border-radius:10px; background:var(--ann-panel); }
 .ann-clh { display:flex; justify-content:space-between; align-items:baseline; font-weight:600; } .ann-clh small { font-size:12px; color:var(--ann-t2); font-weight:400; }
@@ -160,3 +169,21 @@
   .ann-wrap { display:grid; grid-template-columns:1.1fr 1fr; gap:0 40px; align-items:start; } .ann-cl { margin-top:0; }
 }
 @media (prefers-reduced-motion:reduce) { .ann * { scroll-behavior:auto !important; } }
+
+/* CP-18 (rvA) : chaque manque de l'Annuel et de la Clôture est un renvoi. Mêmes dessins qu'avant (le « ? » hachuré reste), maintenant touchables. */
+.ann button.ann-mo { text-align:left; cursor:pointer; font-family:inherit; width:100%; color:inherit; }
+.ann button.ann-li.ann-li-q { flex-direction:column; align-items:flex-start; gap:2px; cursor:pointer; min-height:44px; text-align:left; }
+.ann button.ann-li.ann-li-q small { color:var(--ann-attt); text-decoration:underline; }
+.ann .ann-cp button.big { background:none; border:0; padding:0; text-align:left; text-decoration:underline dotted; cursor:pointer; font-family:inherit; min-height:30px; color:var(--ann-attt); }
+.ann a.ann-gele-a { display:block; min-height:24px; text-decoration:underline; }
+.ann .ann-manque-b { text-align:left; text-decoration:underline; color:inherit; font-size:12px; min-height:24px; cursor:pointer; font-family:inherit; }
+/* … et leurs dessins à la spécificité de `.ann button` (qui remet fond, bord et couleur à zéro). */
+.ann button.ann-stock-q { border:2px dashed var(--ann-att); border-radius:10px; background:var(--ann-attf); color:var(--ann-attt); font-size:12px; font-weight:600; font-style:normal; font-family:inherit; text-align:center; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; column-gap:6px; row-gap:0; height:auto; min-height:28px; padding:3px 8px; }
+.ann button.ann-stock-q.ann-stock-seul { position:static; width:100%; margin:4px 0 6px; }
+.ann button.ann-stock-q:not(.ann-stock-seul) { position:absolute; left:8px; right:8px; bottom:6px; width:auto; }
+.ann button.ann-stock-q .ann-stock-why { flex-basis:100%; text-align:center; font-size:11px; font-weight:500; font-family:inherit; }
+.ann button.ann-mo.q { border:1.5px dashed var(--ann-att); background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-att) 30%,var(--ann-page)) 0 4px,var(--ann-page) 4px 8px); color:inherit; }
+.ann button.ann-q-btn { min-height:24px; min-width:24px; padding:0 6px; border-radius:8px; border:1.5px dashed var(--ann-att); background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-att) 30%,var(--ann-page)) 0 4px,var(--ann-page) 4px 8px); color:var(--ann-attt); font-weight:600; text-align:center; }
+.ann button.ann-pa { border:1.5px dashed var(--ann-att); min-height:24px; font-size:12px; font-weight:600; border-radius:10px; padding:2px 8px; }
+.ann button.ann-pa.at { color:var(--ann-attt); background:var(--ann-attf); }
+.ann button.ann-li.ann-li-q .tot { color:var(--ann-attt); }

@@ -121,3 +121,10 @@
 .arg .prx-m { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 .arg-pied { display: flex; justify-content: flex-end; padding-top: 6px; }
 @media (min-width: 1000px) { .arg-ch { grid-template-columns: 24px 1fr 24px 1fr; column-gap: 12px; } }
+
+/* CP-18 : les « ? » de la tête et de la ligne du brassin sont des renvois vers la liste des manques. */
+.prx-ans-q { all: unset; cursor: pointer; display: inline-flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-height: 24px; }
+.prx-ans-q > span { font-size: 15px; color: rgb(var(--cave-200)); text-decoration: underline; text-underline-offset: 3px; }
+.prx-ans-q:focus-visible, button.prx-br:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+button.prx-br { font: inherit; color: inherit; text-align: inherit; border: 0; width: 100%; cursor: pointer; }
+#prx-manque { scroll-margin-top: 64px; }

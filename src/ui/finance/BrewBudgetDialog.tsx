@@ -12,8 +12,12 @@ import { Field, inputClass } from '../FormNav';
 
 const readContext = () => ({ ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), stocks: StorageService.getStocks(), batches: StorageService.getBatches(), config: StorageService.getConfig() });
 /** `onOpenForecast` : branché par l'écran Prévisions (hors de ce port). Sans lui, aucun lien n'est affiché ; l'état de navigation est tout de même écrit. */
-export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast,onNoteDensity}:{recipe?:Recipe;batch?:Batch;onClose:()=>void;onOpenForecast?:(target:{planId:string;batchId?:string})=>void;onNoteDensity?:()=>void}) {
+const AssetSheet=React.lazy(()=>import('./FinanceForms').then(m=>({default:m.AssetSheet})));
+const PrixFeuille=React.lazy(()=>import('../prix/PrixEcran').then(m=>({default:m.PrixFeuille})));
+/** `onMesures` : la fiche du brassin › Mesures (CP-18 : « Litres nets » y renvoie). Le registre du matériel et le tarif s'ouvrent ici, par-dessus le coût. */
+export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast,onNoteDensity,onMesures}:{recipe?:Recipe;batch?:Batch;onClose:()=>void;onOpenForecast?:(target:{planId:string;batchId?:string})=>void;onNoteDensity?:()=>void;onMesures?:()=>void}) {
   const data=useStorageValue(readContext);
+  const [registre,setRegistre]=React.useState(false), [tarif,setTarif]=React.useState(false);
   const [recipePlanChoice,setRecipePlanChoice]=React.useState('');
   const key=batch?.id??recipe?.id??'new';
   const related=data.plans.filter(p=>p.source==='brew'&&p.brewEstimate&&(batch ? (p.brewEstimate as BrewBudgetSnapshot).batchId===batch.id : !!recipe && !(p.brewEstimate as BrewBudgetSnapshot).batchId && (p.brewEstimate as BrewBudgetSnapshot).recipeId===recipe.id));
@@ -25,7 +29,7 @@ export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast,onNoteDens
     if(!usure.lignes.length)return {amountCHF:undefined,warnings:[...usure.avertissements,'Aucun matériel au registre : usure à renseigner.']};
     return {amountCHF:usure.complet?usure.totalCents/100:undefined,warnings:usure.avertissements};
   },[data.plans,data.assets,data.transactions]);
-  return <BrewBudgetSheet open onClose={onClose} onNoteDensity={onNoteDensity} recipe={recipe} batch={batch} config={data.config} batches={data.batches} stockItems={[...data.stocks.rawMaterials,...data.stocks.cleaning]} transactions={data.transactions}
+  return <><BrewBudgetSheet open onClose={onClose} onNoteDensity={onNoteDensity} onMesures={onMesures} profile={data.profile} onRegistre={()=>setRegistre(true)} onTarif={batch?()=>setTarif(true):undefined} recipe={recipe} batch={batch} config={data.config} batches={data.batches} stockItems={[...data.stocks.rawMaterials,...data.stocks.cleaning]} transactions={data.transactions}
     savedEstimates={data.plans.filter(p=>p.brewEstimate).map(p=>p.brewEstimate as BrewBudgetSnapshot)} savedEstimate={previous?.brewEstimate as BrewBudgetSnapshot|undefined} settings={{annualVolumeL:data.profile.annualProductionL,annualFixedCHF:annualFixed.amountCHF}} settingsWarnings={annualFixed.warnings} usureForBudgetDate={budgetUsure}
     canPlan={snapshot=>{const candidates=matchingRecipeBrewPlans(data.plans,snapshot);return !candidates.length||recipePlanChoice==='separate'||candidates.some(p=>p.id===recipePlanChoice);}}
     renderPlanReconciliation={snapshot=>{
@@ -44,6 +48,9 @@ export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast,onNoteDens
       FinanceService.savePlan({id,title:snapshot.title,date:brewBudgetDateKey(snapshot.brewDate)??isoDate(batch?.brewDate)!,amountCents:Math.round(snapshot.cashRequiredTTC*100),direction:'out',category:'brassage',source:'brew',status:addToPlan?'active':'draft',batchId:batch?.id,brewEstimate:snapshot,createdAt:new Date().toISOString()});
       if(addToPlan){StorageService.setUiState('finances_workspace','forecast');onOpenForecast?.({planId:id,batchId:batch?.id});}
     }}/>
+    {registre&&<React.Suspense fallback={null}><AssetSheet onClose={()=>setRegistre(false)}/></React.Suspense>}
+    {tarif&&batch&&<React.Suspense fallback={null}><PrixFeuille config={data.config} batch={batch} onClose={()=>setTarif(false)}/></React.Suspense>}
+  </>
 }
 
 export function BrewBudgetButton({recipe,batch,onNoteDensity}:{recipe?:Recipe;batch?:Batch;onNoteDensity?:()=>void}) {

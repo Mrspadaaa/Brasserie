@@ -1,11 +1,11 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { Piste } from './Tete';
-import { escalierMateriel, inventairesParNature, LIBELLE_NATURE, justificatifs, moisNotes, natureDeLigne, perteAvantStock, plansManquants, plateaux, pontCaisse, valeurEstimee, type Escalier } from './calculs';
+import { escalierMateriel, inventairesParNature, LIBELLE_NATURE, justificatifs, moisNotes, natureDuStock, perteAvantStock, plansManquants, plateaux, pontCaisse, propositionsInventaire, valeurEstimee, type Escalier } from './calculs';
 import { montant } from '../previsions/format';
 import { nombreFr } from '../../../domain/nombreAffiche';
 import type { StockItem } from '../../../types';
-import type { Ctx } from './ctx';
+import { versInventaireCloture, type Ctx } from './ctx';
 
 const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 
@@ -32,7 +32,9 @@ export function Etape1({ c }: { c: Ctx }) {
   return <Cadre n={1} c={c} question="Tout est noté ?" terme="opérations et justificatifs"
     bas={<><Etoile onClick={() => c.act.assistant('Cherche les oublis dans mes opérations de ' + c.year + ' : mois sans écriture, charges récurrentes manquantes, justificatifs absents. Cite les opérations concernées, sans rien modifier.')}>Chercher les oublis</Etoile>
       <button type="button" className="ann-pri" disabled={c.gele} onClick={() => { c.act.ecrire(t => { t.reviews = { ...t.reviews, journal: true }; }); c.act.aller(2); }}>Tout est noté</button></>}>
-    <div className="ann-mois" aria-label="Opérations notées par mois">{cases.map(m => <div key={m.mois} className={`ann-mo${m.etat === 'vide' ? ' q ann-hachA' : m.etat === 'avenir' ? ' av' : ''}`}><small>{MOIS[m.mois - 1]}</small>{m.etat === 'avenir' ? <span className="ann-avenir">à venir</span> : <span className="ann-m">{m.etat === 'vide' ? '?' : m.n}</span>}</div>)}</div>
+    <div className="ann-mois" aria-label="Opérations notées par mois">{cases.map(m => m.etat === 'vide'
+      ? <button type="button" key={m.mois} className="ann-mo q ann-hachA" aria-label={`${MOIS[m.mois - 1]} : rien noté, ouvrir ce mois dans les opérations`} onClick={() => c.act.onOperations({ scope: 'current', month: `${c.year}-${String(m.mois).padStart(2, '0')}`, allDates: false })}><small>{MOIS[m.mois - 1]}</small><span className="ann-m">?</span></button>
+      : <div key={m.mois} className={`ann-mo${m.etat === 'avenir' ? ' av' : ''}`}><small>{MOIS[m.mois - 1]}</small>{m.etat === 'avenir' ? <span className="ann-avenir">à venir</span> : <span className="ann-m">{m.n}</span>}</div>)}</div>
     <p className="ann-terme">opérations notées par mois</p>
     <div className="ann-lst">
       {vides.length > 0 && <div className="ann-it"><span className="ann-dot att"/><span className="ann-t">{plage} : rien noté<small>vraiment rien acheté ni vendu ? Si c’est vraiment vide, coche « Tout est noté ».</small></span></div>}
@@ -62,8 +64,8 @@ export function Etape2({ c }: { c: Ctx }) {
   const o = c.profile.openingCash, p = pontCaisse(c.profile, c.report, c.year), [reponse, setReponse] = React.useState<'oui' | 'non'>('oui');
   return <Cadre n={2} c={c} question="Avec combien as-tu commencé l’année ?" terme="solde d’ouverture"
     bas={<button type="button" className="ann-pri" onClick={() => c.act.aller(3)}>C’est juste</button>}>
-    {o ? <div className={`ann-ok${o.confirmed ? '' : ' att'}`}><span className="ann-t">En caisse au {p?.ouvertureLe1er === false ? o.date : `1er janv. ${c.year}`}<span className="ann-m ann-big">{montant(o.amountCents)} CHF</span></span><span className={`ann-pa ${o.confirmed ? 'ok' : 'at'}`}>{o.confirmed ? 'confirmé' : 'à confirmer'}</span></div>
-      : <div className="ann-ok att"><span className="ann-t">Solde d’ouverture<span className="ann-m ann-big">?</span></span><button type="button" className="ann-btn" onClick={c.act.onProfile}>Renseigner le solde</button></div>}
+    {o ? <div className={`ann-ok${o.confirmed ? '' : ' att'}`}><span className="ann-t">En caisse au {p?.ouvertureLe1er === false ? o.date : `1er janv. ${c.year}`}<span className="ann-m ann-big">{montant(o.amountCents)} CHF</span></span>{o.confirmed ? <span className="ann-pa ok">confirmé</span> : <button type="button" className="ann-pa at" aria-label="Confirmer le solde d’ouverture : sans confirmation, il n’entre pas dans la caisse" onClick={c.act.onProfile}>à confirmer</button>}</div>
+      : <div className="ann-ok att"><span className="ann-t">Solde d’ouverture<button type="button" className="ann-q-btn ann-m ann-big" aria-label="Renseigner le solde d’ouverture" onClick={c.act.onProfile}>?</button><small>sans lui, pas de pont de caisse</small></span><button type="button" className="ann-btn" onClick={c.act.onProfile}>Renseigner le solde</button></div>}
     {p && p.coherent && <PontSvg p={p} year={c.year}/>}
     {p && !p.coherent && <p className="ann-terme">Le calcul de la caisse ne part pas d’un solde du 1er janvier : pas de pont dessiné ({montant(p.finCents)} au {c.anneeCourante ? 'jour' : '31 déc.'}).</p>}
     {o && <><p className="ann-qq">Ta banque dit la même chose{c.anneeCourante ? ' aujourd’hui' : ' au 31 déc.'} ?</p>
@@ -86,8 +88,7 @@ const ICONES: Record<NatureCase, { couleur: string; d: string[] }> = {
 const IcNature = ({ nature }: { nature: string }) => { const i = ICONES[nature as NatureCase]; return i ? <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={i.couleur} strokeWidth="1.8" aria-hidden="true">{i.d.map(d => <path key={d} d={d}/>)}</svg> : <span className="ic" aria-hidden="true"/>; };
 export function Etape3({ c }: { c: Ctx }) {
   const lignes = inventairesParNature(c.closing, c.stockItems);
-  /** Nature d'un article du stock : « Emballage » (que `natureDeLigne` laisse en « autres », il ne lit que le type d'une ligne saisie) compris. */
-  const natureStock = (s: StockItem) => (s.category ?? '').toLowerCase().includes('emball') ? 'emballages' : natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, c.stockItems);
+  const natureStock = (s: StockItem) => natureDuStock(s, c.stockItems);
   /** Les articles de cette nature réellement en stock, les plus gros d'abord : un article à 0 n'est ni listé ni estimé. */
   const enStock = (nature: string) => c.stockItems.filter(s => natureStock(s) === nature && s.currentStock > 0).sort((a, b) => b.currentStock - a.currentStock);
   const quantite = (s: StockItem) => `${nombreFr(s.currentStock, 1)} ${s.unit}`;
@@ -96,7 +97,7 @@ export function Etape3({ c }: { c: Ctx }) {
     return items.length > 0 && e.every(x => x) ? { cents: e.reduce((n, x) => n + x!.cents, 0), n: items.length, quantite: items.length === 1 ? quantite(items[0]) : '', detail: items.map((i, k) => `${quantite(i)} de ${i.name} (${e[k]!.source})`).join(' ; ') } : null;
   };
   const estimes = (['malt', 'houblons', 'emballages'] as const).flatMap(n => { const e = estimeParNature(n); return e ? [{ nature: n, ...e }] : []; });
-  const propositionsDe = (nature?: string) => c.stockItems.filter(s => !nature || natureStock(s) === nature).flatMap(s => { const e = valeurEstimee(s, c.transactions, c.year, c.today); return e ? [{ stockItemRef: s.ref, valueCents: e.cents, note: `Estimé : ${e.source}` }] : []; });
+  const propositionsDe = (nature?: string) => propositionsInventaire(c.stockItems, c.transactions, c.year, c.today, nature as NatureCase | undefined);
   const lotCave = c.batches.find(b => b.status === 'conditionne' && (b.volumePackagedL ?? 0) > 0);
   /** UNE petite ligne par nature (g6) : les deux plus gros, puis « +N » ; « aujourd’hui » une seule fois, jamais coupé. */
   const petite = (nature: string) => {
@@ -127,7 +128,7 @@ export function Etape3({ c }: { c: Ctx }) {
         return <React.Fragment key={l.nature}><span className="n"><IcNature nature={l.nature}/><span className="nt">{l.libelle}{p && <small className="l"><span className="e">{p.texte}</span>{p.fin && <>{' '}<span className="s">{p.fin}</span></>}</small>}</span></span>{cell(l.ouverture, 'openingInventory')}{cell(l.cloture, 'closingInventory')}</React.Fragment>;
       })}
     </div>
-    <div className="ann-var"><span className="ann-t">Ce que le stock a changé corrige la perte de <span className="ann-m">{montant(perteAvantStock(c.report))}</span></span><span className={`ann-pa ${c.report.inventoryChangeCents == null ? 'at' : 'ok'}`}>{c.report.inventoryChangeCents == null ? 'à compter' : `compté ${c.report.inventoryChangeCents > 0 ? '+' : ''}${montant(c.report.inventoryChangeCents)}`}</span></div>
+    <div className="ann-var"><span className="ann-t">Ce que le stock a changé corrige la perte de <span className="ann-m">{montant(perteAvantStock(c.report))}</span></span>{c.report.inventoryChangeCents == null ? <button type="button" className="ann-pa at" disabled={c.gele} aria-label="Compter le stock au 31 déc. : sans lui, la perte reste avant stock" onClick={() => versInventaireCloture(c)}>à compter</button> : <span className="ann-pa ok">{`compté ${c.report.inventoryChangeCents > 0 ? '+' : ''}${montant(c.report.inventoryChangeCents)}`}</span>}</div>
     {estimes.map(e => <p key={e.nature} id={`ann-est-${e.nature}`} className="ann-terme" title={e.detail}>{`${estimes.length > 1 ? `${LIBELLE_NATURE[e.nature]} ` : ''}≈ ${montant(e.cents)} : ${e.n === 1 ? `${e.quantite} au prix de la dernière facture` : `${e.n} articles au prix de leur dernière facture`}, estimé`}</p>)}
   </Cadre>;
 }
@@ -176,14 +177,15 @@ export function Etape5({ c }: { c: Ctx }) {
     <div className="ann-bal">
       <div className="ann-pan d"><h4>Tu dois</h4><span className="tot ann-m">{montant(somme(pl.tuDois))}</span>
         {pl.tuDois.map(r => <button type="button" key={r.id} className="ann-li" onClick={() => c.act.feuille('balance')}><span>{r.description}<small>{r.counterparty || 'tiers à nommer'}{r.date ? ` · depuis ${r.date.slice(8, 10)}.${r.date.slice(5, 7)}.${r.date.slice(0, 4)}` : ''}</small></span><span className="ann-m">{montant(r.amountCents)}</span></button>)}
-        {pl.prevues.map(p => <div key={p.id} className="ann-li f"><span>{p.titre}<small>prévu {p.date.slice(8, 10)}.{p.date.slice(5, 7)}</small></span><span className="ann-m">{montant(p.amountCents)} ?</span></div>)}
+        {/* data-renvoi="aucun" sur chaque charge prévue : ici « ? » dit « prévu, pas encore dû » (légende sous les panneaux), pas une donnée absente. */}
+        {pl.prevues.map(p => <div key={p.id} className="ann-li f" data-renvoi="aucun"><span>{p.titre}<small>prévu {p.date.slice(8, 10)}.{p.date.slice(5, 7)}</small></span><span className="ann-m">{montant(p.amountCents)} ?</span></div>)}
       </div>
-      <div className="ann-pan cr"><h4>On te doit</h4><span className="tot ann-m">{incertain ? '?' : montant(somme(pl.onTeDoit))}</span>
+      <div className="ann-pan cr"><h4>On te doit</h4>{incertain ? <button type="button" className="ann-li ann-li-q" aria-label="Confirmer les paiements : sans eux, ce qu’on te doit reste inconnu" onClick={() => c.act.onOperations({ scope: 'all', year: String(c.year), allDates: true, filter: 'unknown' })}><span className="tot ann-m">?</span><small>paiements à confirmer ›</small></button> : <span className="tot ann-m">{montant(somme(pl.onTeDoit))}</span>}
         {pl.onTeDoit.map(r => <button type="button" key={r.id} className="ann-li" onClick={() => c.act.feuille('balance')}><span>{r.description}<small>{r.counterparty || 'tiers à nommer'}</small></span><span className="ann-m">{montant(r.amountCents)}</span></button>)}
         {!pl.onTeDoit.length && !incertain && <div className="ann-li"><span>Ventes {c.year}<small>toutes payées</small></span><span className="ann-pa ok">payé</span></div>}
       </div>
     </div>
     <div className="ann-lst"><div className="ann-it"><span className="ann-dot att"/><span className="ann-t">Un prêt, une avance ?<small>avec le nom de la personne</small></span><button type="button" disabled={c.gele} onClick={() => c.act.feuille('balance')}>Ajouter</button></div></div>
-    <p className="ann-terme">« ? » : prévu, pas encore dû ; il n’entre pas dans le total.</p>
+    {/* data-renvoi="aucun" : légende du « ? » des charges prévues. */}<p className="ann-terme" data-renvoi="aucun">« ? » : prévu, pas encore dû ; il n’entre pas dans le total.</p>
   </Cadre>;
 }

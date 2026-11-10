@@ -1,0 +1,20 @@
+/* CP-18 (10.11) : chaque « ? » est un renvoi. Le « ? » hachuré reste, il devient touchable ; une ligne-tâche dit ce que le manque empêche. */
+.cbf button.cbf-row-q, .cbf button.cbf-qb, .cbf button.cbf-lq, .cbf button.cbf-embtn, .cbf button.cbf-litl { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; text-align: left; }
+.cbf button.cbf-row-q { width: 100%; }
+.cbf button.cbf-litl { width: 100%; min-height: 28px; }
+.cbf button.cbf-qb { min-height: 28px; display: inline-flex; align-items: center; gap: 4px; text-decoration: underline dotted; text-underline-offset: 3px; }
+.cbf button.cbf-lq { min-height: 24px; font-size: 16px; font-weight: 600; text-decoration: underline dotted; text-underline-offset: 3px; }
+.cbf button.cbf-embtn { min-height: 24px; font-style: normal; font-weight: 600; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; color: inherit; }
+.cbf-tache-res, .cbf-tache { width: 100%; min-height: 36px; display: flex; align-items: center; gap: 8px; text-align: left; }
+.cbf-tache-res { margin-top: 8px; padding: 4px 0 0; border-top: 1px dashed currentColor; }
+.cbf-tache-res > span, .cbf-tache > span { flex: 1; min-width: 0; }
+.cbf-tache-res b, .cbf-tache b { display: block; font-size: 13px; font-weight: 600; line-height: 1.25; }
+.cbf-tache-res small, .cbf-tache small { display: block; font-size: 12px; line-height: 1.25; opacity: .8; }
+.cbf-tache i, .cbf-tache-res i { font-style: normal; font-size: 20px; line-height: 1; opacity: .7; }
+.cbf-taches { border-top: 1px dashed var(--cbf-bord); padding-top: 6px; }
+.cbf-taches-t { font-size: 13px; font-weight: 600; color: var(--cbf-att); }
+.cbf-taches ul { list-style: none; margin: 2px 0 0; padding: 0; }
+.cbf-taches li { border-bottom: 1px solid var(--cbf-bord); }
+.cbf-taches li:last-child { border-bottom: 0; }
+.cbf-lien-champ { display: inline; min-height: 24px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; color: inherit; font-size: inherit; text-align: left; }
+.cbf-lien-ligne { display: block; width: 100%; min-height: 32px; text-align: left; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; color: inherit; }

@@ -12,11 +12,13 @@ import type { StyleEtiquette } from './EscalierSvg';
 interface Props {
   marches: Marche[]; styleDe: (i: ForecastItem) => StyleEtiquette; titreDe: (i: ForecastItem) => string;
   plansListes: FinancialPlan[]; undated: { id: string; label: string; amountCents: number; direction: 'in' | 'out' }[];
+  /** CP-18 : une pièce sans échéance ouvre sa pièce, où la dater ; absent, la ligne reste une phrase. */
+  onUndated?: (id: string) => void;
   onItem: (i: ForecastItem) => void; onPlan: (p: FinancialPlan) => void; onAdd: () => void; onBudget: () => void; onProjets: () => void; onProfile: () => void; onClose: () => void;
 }
 const PASTILLE: Record<StyleEtiquette, string> = { facture: 'facture', prevu: 'prévu', brassin: 'brassin', projet: 'projet', entree: 'entrée' };
 
-export function ListeSorties({ marches, styleDe, titreDe, plansListes, undated, onItem, onPlan, onAdd, onBudget, onProjets, onProfile, onClose }: Props) {
+export function ListeSorties({ marches, styleDe, titreDe, plansListes, undated, onUndated, onItem, onPlan, onAdd, onBudget, onProjets, onProfile, onClose }: Props) {
   const lignes = marches.flatMap(m => m.items.map((item, k) => ({ item, apres: k === m.items.length - 1 ? m.soldeApresCents : null })));
   return <Feuille titre="Sorties et entrées prévues" onClose={onClose} haute>
     <div className="prv-outils">
@@ -31,7 +33,9 @@ export function ListeSorties({ marches, styleDe, titreDe, plansListes, undated, 
       <span className="prv-nom">{titreDe(item)}<small>{jourCourt(item.date)} · {PASTILLE[styleDe(item)]}</small></span>
       <b className="prv-m">{item.direction === 'out' ? montant(-item.amountCents) : `+${montant(item.amountCents)}`}</b>
       {apres != null && <span className={`prv-apres${apres < 0 ? ' prv-rt' : ''}`}>→ {montant(apres)}</span>}<ChevronRight size={14} aria-hidden="true" /></button></li>)}</ol>
-    {undated.length > 0 && <section><h4>Échéance à préciser</h4><ul className="prv-sans">{undated.map(u => <li key={u.id}>{u.label} · {montant(u.direction === 'out' ? -u.amountCents : u.amountCents)}</li>)}</ul></section>}
+    {undated.length > 0 && <section><h4>Échéance à préciser</h4><ul className="prv-sans" style={onUndated ? { listStyle: 'none', paddingLeft: 0 } : undefined}>{undated.map(u => <li key={u.id}>{onUndated
+      ? <button type="button" className="prv-plan" onClick={() => onUndated(u.id)}><span>{u.label}<small>échéance à préciser : hors des mois prévus</small></span><b>{montant(u.direction === 'out' ? -u.amountCents : u.amountCents)}</b><ChevronRight size={14} aria-hidden="true" /></button>
+      : <>{u.label} · {montant(u.direction === 'out' ? -u.amountCents : u.amountCents)}</>}</li>)}</ul></section>}
     {plansListes.length > 0 && <details className="prv-lim"><summary>Toutes mes prévisions ({plansListes.length})</summary>{plansListes.map(p => <button type="button" className="prv-plan" key={p.id} onClick={() => onPlan(p)}>
       <span>{p.title}<small>{p.status === 'active' ? 'À venir' : p.status === 'cancelled' ? 'Annulée' : 'Terminée'}</small></span><b>{montant(p.amountCents)}</b><ChevronRight size={14} aria-hidden="true" /></button>)}</details>}
   </Feuille>;

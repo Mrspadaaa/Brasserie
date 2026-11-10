@@ -1,5 +1,6 @@
 import React from 'react';
 import './cout-brassin.css';
+import './cout-brassin-renvois.css';
 import type { BrewBudgetSnapshot, BrewCostKey, BrewBudgetLine } from '../../domain/finance/brewBudget';
 import type { CoutLitre, TroisNotions } from '../../domain/finance/chaineLitre';
 
@@ -171,6 +172,18 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
   const emballageCompris = snapshot.fraisParPoste?.packaging?.cout != null;
   const parts = litre && litres ? litreTroisTemps(notions!, litres, litre.affiche.complet) : null;
   const libelleParts = ['payé', 'à payer', 'année'];
+  // CP-18 : chaque « ? » ouvre l'endroit où le saisir. Les litres inconnus mènent aux litres ; sinon, au premier nœud inconnu (le chemin du nœud « ? »).
+  const inconnus = destinations.filter(d => d.montant === null && !d.horsRecette);
+  const premier = (ids?: NoeudId[]) => inconnus.find(d => !ids || ids.includes(d.id))?.id;
+  const vers = (ids?: NoeudId[]) => { const id = premier(ids) ?? premier(); if (id) onNoeud(id); };
+  const versLitre = () => litres ? vers() : onVolumes();
+  const rangee = (source: 'stock' | 'an') => {
+    const incomplete = sourceIncomplete(source, destinations);
+    const ids: NoeudId[] = source === 'stock' ? ['malt', 'q', 'autres'] : ['mat', 'fix'];
+    const noms = inconnus.filter(d => ids.includes(d.id)).map(d => d.label.toLocaleLowerCase('fr-CH'));
+    const contenu = <><span className="cbf-div">{source === 'stock' ? 'Déjà payé' : 'Coût de l’année'}</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{montantSource(sources[source], incomplete)}</span><span className="cbf-u">CHF<b>{source === 'stock' ? 'en stock' : 'part du brassin'}</b></span></>;
+    return { incomplete, noms, contenu, ids };
+  };
 
   return <div className="cbf">
     <div className="cbf-cols"><span>Quand tu paies</span>
@@ -202,26 +215,30 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
     </div>
     <div className="cbf-resw">
     {selection === 'stock' || selection === 'an'
-      ? <div className={`cbf-res cbf-sel-${selection}`} data-booster="deux-nombres">
-        <div className="cbf-row"><span className="cbf-div">{selection === 'stock' ? 'Déjà payé' : 'Coût de l’année'}</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{montantSource(sources[selection], sourceIncomplete(selection, destinations))}</span><span className="cbf-u">CHF<b>{selection === 'stock' ? 'en stock' : 'part du brassin'}</b></span></div>
+      ? (() => { const r = rangee(selection); return <div className={`cbf-res cbf-sel-${selection}`} data-booster="deux-nombres">
+        {r.incomplete
+          ? <button type="button" className="cbf-row cbf-row-q" onClick={() => vers(r.ids)}>{r.contenu}</button>
+          : <div className="cbf-row">{r.contenu}</div>}
         <div className="cbf-quand">
           {flux.filter(f => f.source === selection).map(f => <span key={f.dest}>{destinations.find(d => d.id === f.dest)?.label.toLocaleLowerCase('fr-CH')} <b className="cbf-m">{fr(f.montant)}</b></span>)}
         </div>
-      </div>
+        {r.incomplete && <button type="button" className="cbf-tache-res" data-manque={selection} onClick={() => vers(r.ids)}>
+          <span><b>{selection === 'stock' ? `Prix à saisir : ${r.noms.join(', ')}` : `À saisir : ${r.noms.join(', ')}`}</b><small>{selection === 'stock' ? 'Sans eux, le déjà payé est un minimum.' : 'Sans eux, la part de l’année est un minimum.'}</small></span><i aria-hidden="true">›</i></button>}
+      </div>; })()
       : selection === 'now'
       ? <div className="cbf-res cbf-now" data-booster="deux-nombres">
         <div className="cbf-row"><span className="cbf-div">À payer</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{fr(poche)}</span><span className="cbf-u">CHF<b>TTC</b>{partiel || q?.avantBrassage === null || q?.plusTard === null ? <em>partiel</em> : null}</span></div>
         <div className="cbf-quand">
-          <span>avant le brassage <b className="cbf-m">{q?.avantBrassage == null ? '?' : fr(q.avantBrassage)}</b></span>
-          <span>plus tard <small>emballage, impôt</small> <b className="cbf-m">{q?.plusTard == null ? '?' : fr(q.plusTard)}</b></span>
+          {q?.avantBrassage == null ? <button type="button" className="cbf-qb" onClick={() => vers(['malt', 'q', 'autres', 'ener', 'net'])}>avant le brassage <b className="cbf-m">?</b></button> : <span>avant le brassage <b className="cbf-m">{fr(q.avantBrassage)}</b></span>}
+          {q?.plusTard == null ? <button type="button" className="cbf-qb" onClick={() => vers(['emb', 'imp'])}>plus tard <small>emballage, impôt</small> <b className="cbf-m">?</b></button> : <span>plus tard <small>emballage, impôt</small> <b className="cbf-m">{fr(q.plusTard)}</b></span>}
         </div>
         {snapshot.resteEnStock ? <p className="cbf-note">dont {fr(snapshot.resteEnStock)} restent en stock (sacs entiers)</p> : null}
       </div>
       : <div className="cbf-res" data-booster="deux-nombres">
         <div className="cbf-row">
-          <span className="cbf-div"><span className="cbf-m">{partiel && !litre ? '≥ ' : ''}{fr(total)}</span><b className="cbf-m">÷ {litres ? `${frL(litres)} L` : '? L'}</b></span><span className="cbf-eq">=</span>
+          <span className="cbf-div"><span className="cbf-m">{partiel && !litre ? '≥ ' : ''}{fr(total)}</span>{litres ? <b className="cbf-m">÷ {frL(litres)} L</b> : <button type="button" className="cbf-lq cbf-m" onClick={onVolumes} aria-label="Litres nets : les saisir">÷ ? L</button>}</span><span className="cbf-eq">=</span>
           <span className={`cbf-big cbf-m${litre ? '' : ' cbf-big-q'}`} aria-label={litre ? `${fr(litre.affiche.complet)} CHF par litre` : 'Coût du litre inconnu'}>{litre ? fr(litre.affiche.complet) : '—'}</span>
-          <span className="cbf-u">CHF/L<em>{litre ? `${emballageCompris ? 'emballage compris · ' : ''}estimé` : motifSansLitre === 'litres' ? 'litres nets à confirmer' : 'prix à compléter'}</em>{litre && horsRecette ? <em>sans houblon ni levure</em> : null}</span>
+          <span className="cbf-u">CHF/L<em>{litre ? `${emballageCompris ? 'emballage compris · ' : ''}estimé` : <button type="button" className="cbf-embtn" data-manque={motifSansLitre === 'litres' ? 'litres' : 'prix'} onClick={motifSansLitre === 'litres' ? onVolumes : () => vers()}>{motifSansLitre === 'litres' ? 'litres nets à confirmer' : 'prix à compléter'} ›</button>}</em>{litre && horsRecette ? <em>sans houblon ni levure</em> : null}</span>
         </div>
       </div>}
     </div>
@@ -230,7 +247,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
       {parts
         ? <><div className="cbf-lit" data-booster="litre-trois-temps">{SRC.map((s, i) => <span key={s.id} style={{ flex: Math.max(parts[i], 0.001), background: s.c, opacity: selection && selection !== s.id ? 0.25 : 1 }} />)}</div>
           <div className="cbf-litl">{parts.map((v, i) => <span key={i} style={{ flex: Math.max(v / parts.reduce((a, b) => a + b, 0), 0.14) }}>{libelleParts[i]} <b className="cbf-m">{fr(v)}</b></span>)}</div></>
-        : <><div className="cbf-lit cbf-lit-vide" aria-hidden="true" /><div className="cbf-litl cbf-litl-q">{libelleParts.map(l => <span key={l}>{l} <b className="cbf-m">?</b></span>)}</div></>}
+        : <><div className="cbf-lit cbf-lit-vide" aria-hidden="true" /><button type="button" className="cbf-litl cbf-litl-q" onClick={versLitre} aria-label="Le litre est inconnu : saisir ce qui manque">{libelleParts.map(l => <span key={l}>{l} <b className="cbf-m">?</b></span>)}</button></>}
     </div>
     {children}
   </div>;

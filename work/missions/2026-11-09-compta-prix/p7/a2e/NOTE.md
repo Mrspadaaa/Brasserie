@@ -1,0 +1,8 @@
+# a2e — audacieuse : la rivière et les bocaux
+Idée : les douze mois de a1b en tuiles 6 × 2 au-dessus (octobre et novembre cerclés = les 30 jours montrés ; toucher change la période), l'escalier de a1a dessous sur un fond lavé où chaque palier prend la couleur claire de la source qui l'a posé ; vues en quatre pictos (escalier, rivière, bocal, entonnoir).
+Vues : Rivière (par source) = sankey : caisse du 1er janv. 2 320,00 + ventes 10 108,00 → caisse du 31 oct. 4 016,00, charges fixes 4 712,00, brassage 2 980,00, nettoyage 260,00, autres 140,00, matériel 320,00 hachuré à part ; 2025 sous chaque nom ; Bocaux (budget) = un bocal par source, rebord bleu = prévu, niveau en %, une dépense qui déborde en hachures rouges (« 80,00 de trop »), les ventes en plus en mousse (+1 108,00), trait gris = 2025 ; Filtre = tuiles en période (mai → oct.), sources en pastilles, escalier cumulé sur fond lavé.
+Entrée : Synthèse › « Revoir le mois ». Figure 5 : tuiles hachurées « rien noté », novembre seul rempli (≤ +5 667), ses données.
+Boosters : vues (pictos), tuiles, etiquettes, riviere, bocaux, filtres, pourquoi, operations.
+B1 OK · B2 OK (+400,00 et l'escalier) · B3 OK (MOTS 57) · B4 OK · B5 non mesuré · B6 OK · B7 OK (rouge seul pour le dépassement) · B8 OK · B9–B10 s.o. · B11 OK · B12 OK · B13 pictos 42 px.
+Contrôles : PAGE OK · 5 figures, 1280 débord 0, < 12 px 0, erreurs 0 · MOTS OK. Captures v1–v5 ouvertes.
+Tient : la rivière dit d'un regard où est passé l'argent de l'année ; la mousse des ventes parle à un brasseur. Casse : les petits postes (nettoyage, autres, matériel) sont des filets dans la rivière ; tuiles sans 2025 au coin à 6 colonnes (2025 en pied d'écran).

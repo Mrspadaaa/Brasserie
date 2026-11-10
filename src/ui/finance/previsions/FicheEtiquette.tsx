@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Archive, Wrench, Wheat } from 'lucide-react';
+import { Archive, ChevronRight, Wrench, Wheat } from 'lucide-react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
 import type { FinancialPlan } from '../../../domain/finance/types';
 import { upgradeDetails } from '../../../domain/finance/upgrades';
@@ -73,7 +73,7 @@ export function FicheBrassin({ titre, items, litre, onClose, onOuvrir }: Brassin
     <p className="prv-note">estimé · se met à jour seul (recette, stock, factures)</p>
     <ul className="prv-lignes">{items.map(i => <li key={i.id}><div className="prv-lg"><span>{i.label.split(' · ').slice(1).filter(p => p !== 'date estimée' && !p.startsWith('partiel')).join(' · ')}{i.label.includes('date estimée') ? ' · date estimée' : ''}</span>{i.amountCents > 0 ? <b>{montant(-i.amountCents)}</b> : <b className="prv-inconnu">à compléter</b>}<small>{jourCourt(i.date)}</small></div>
       {i.lines?.map(l => <div className="prv-lg prv-o" key={l.label}><span>{l.label} · {l.origin}</span><b>{montant(l.amountCents)}</b></div>)}
-      {i.partial?.length ? <p className="prv-etat prv-attente">partiel, à compléter : {i.partial.join(', ')}</p> : null}</li>)}</ul>
+      {i.partial?.length ? <button type="button" className="prv-plan prv-etat prv-attente" onClick={onOuvrir}><span>partiel, à compléter : {i.partial.join(', ')}<small>ouvre le budget du brassin pour le saisir</small></span><ChevronRight size={14} aria-hidden="true" /></button> : null}</li>)}</ul>
     <div className="prv-gr"><div className="prv-k prv-l"><span>Total en caisse</span><b>{montant(-total)}</b>{litre && <small>Mon litre : {litre} le litre</small>}</div></div>
     <div className="prv-acts"><button type="button" className="prv-prim" onClick={onOuvrir}>Ouvrir le budget</button></div>
   </Feuille>;

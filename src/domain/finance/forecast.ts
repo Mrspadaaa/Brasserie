@@ -14,8 +14,29 @@ export interface ForecastItem { id: string; date: string; label: string; amountC
 export interface ForecastMonth { month: string; incomeCents: number; expenseCents: number; committedCents: number; projectedCents: number; balanceCents: number | null; items: ForecastItem[] }
 /** Pièce à payer ou à encaisser dont l'échéance manque : jamais placée dans un mois, comptée à part (aucune date inventée). */
 export interface UndatedForecastItem { id: string; label: string; amountCents: number; direction: 'in' | 'out'; category: string; pieceDate: string | null; planId?: string; occurrenceId?: string; unconfirmed?: boolean }
+/** Où ouvrir ce qui manque (CP-18) : la pièce, le plan, la fiche ou le coût du brassin, la feuille du solde, le journal des paiements à confirmer. */
+export type CibleLimite =
+  | { kind: 'piece'; txId: string }
+  | { kind: 'plan'; planId: string }
+  | { kind: 'brassin'; batchId: string; rubrique: 'date' | 'cout' | 'argent' }
+  | { kind: 'journal-a-confirmer' }
+  | { kind: 'solde' }
+  | { kind: 'historique' };
+/** Un avertissement structuré, ajouté À CÔTÉ de sa chaîne (`texte` est exactement l'entrée de `warnings`) : de quoi faire une ligne-tâche « … › ». */
+export interface AvertissementCible {
+  texte: string; cible: CibleLimite;
+  /** Le sujet : le nom du brassin, de la pièce, du plan. */
+  titre: string;
+  /** Ce qui manque, en tête de ligne quand le brassin groupe plusieurs limites (« Date de brassage »). */
+  sujet?: string;
+  /** Ce qui manque et ce que ça empêche, en une petite ligne. */
+  detail: string;
+  batchId?: string;
+  /** Brassin : tout ce qui manque (ingrédients sans prix, frais, impôt). */
+  manque?: string[];
+}
 export interface FinanceForecast {
-  months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
+  months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; avertissements: AvertissementCible[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
   undated: UndatedForecastItem[]; undatedInCents: number; undatedOutCents: number;
 }
 /** Seules les catégories de dépenses récurrentes nourrissent la tendance : l'achat de malt, de houblon ou de levure est irrégulier. */
@@ -72,6 +93,21 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   const end = anchoredDate(`${monthKeys[count - 1]}-31`, 0);
   const ledger = summarizeLedger(transactions, payments, profile, asOf), warnings = [...ledger.warnings], items: ForecastItem[] = [];
   const active = transactions.filter(isActiveTransaction);
+  const avertissements: AvertissementCible[] = [];
+  /** Une limite : sa chaîne (inchangée) va dans `warnings`, sa cible à côté. */
+  const noter = (texte: string, cible: CibleLimite, titre: string, detail: string) => { warnings.push(texte); avertissements.push({ texte, cible, titre, detail }); };
+  // Les avertissements du grand livre (ledger.ts) : mêmes conditions, ici seulement leur cible.
+  for (const tx of active) {
+    if (isoDate(tx.date)) continue;
+    const nom = tx.description || tx.id;
+    avertissements.push({ texte: `Date à corriger : ${nom}.`, cible: { kind: 'piece', txId: tx.id }, titre: nom, detail: 'date à corriger : sans elle, la pièce n’est ni comptée ni placée' });
+  }
+  for (const w of ledger.warnings) {
+    const montantFaux = /^Montant à vérifier : (.+)\.$/.exec(w);
+    if (montantFaux) { const tx = active.find(t => t.id === montantFaux[1]); if (tx) avertissements.push({ texte: w, cible: { kind: 'piece', txId: tx.id }, titre: tx.description || tx.id, detail: 'montant à vérifier : il est écarté du solde' }); }
+    else if (w.startsWith('Solde de trésorerie initial')) avertissements.push({ texte: w, cible: { kind: 'solde' }, titre: 'Solde de départ', detail: 'solde à confirmer : sans lui, seul l’écart de la période est connu' });
+    else if (/paiements? historiques? à confirmer/.test(w)) avertissements.push({ texte: w, cible: { kind: 'journal-a-confirmer' }, titre: 'Paiements à confirmer', detail: 'à confirmer dans le journal : exclus des échéances' });
+  }
   const undated: UndatedForecastItem[] = [];
   const linkedPlanOf = (tx: FinanceTransaction) => plans.find(p => p.id === tx.finance?.planId && (p.status === 'active' || isUpgradePlan(p)));
   /** Reste à payer ou à encaisser, sans échéance valide : la pièce va dans `undated`, et ne remplace pas l'occurrence de son plan. */
@@ -84,45 +120,45 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
     const state = paymentState(tx, payments, transactions, asOf);
     const linkedPlan = linkedPlanOf(tx);
     if (!state.remainingCents || state.state === 'unknown' && !linkedPlan) continue;
-    if (state.state === 'unknown') warnings.push(`Paiement à confirmer : ${tx.description}. Le montant lié à la prévision reste réservé.`);
+    if (state.state === 'unknown') noter(`Paiement à confirmer : ${tx.description}. Le montant lié à la prévision reste réservé.`, { kind: 'piece', txId: tx.id }, tx.description, 'paiement à confirmer : son montant reste réservé dans la prévision');
     const due = isoDate(tx.finance?.dueDate), date = due && due > asOf ? due : asOf;
     const direction = transactionDirection(tx, transactions);
     if (!due) {
       undated.push({ id: `invoice:${tx.id}`, label: tx.description, amountCents: state.remainingCents, direction, category: tx.category, pieceDate: isoDate(tx.date),
         planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId, ...(state.state === 'unknown' ? { unconfirmed: true } : {}) });
-      warnings.push(`Échéance à préciser : ${tx.description} (${formatCHF(state.remainingCents)}). Montant hors des mois prévus.`);
+      noter(`Échéance à préciser : ${tx.description} (${formatCHF(state.remainingCents)}). Montant hors des mois prévus.`, { kind: 'piece', txId: tx.id }, tx.description, `échéance à préciser : ${formatCHF(state.remainingCents)} hors des mois prévus`);
       continue;
     }
     if (date <= end) items.push({ id: `invoice:${tx.id}`, date, label: state.state === 'unknown' ? `${tx.description} · paiement à confirmer` : tx.description, amountCents: state.remainingCents, direction: transactionDirection(tx, transactions), source: 'invoice', category: tx.category, planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId });
   }
   const derived = input.batches ? estimerBrassinsPlanifies({ batches: input.batches, stockItems: input.stockItems ?? [], transactions, plans, profile, assets: input.assets, asOf, fin: end, reglages: input.brewReglages, reductionImpot: input.brewTaxReduction, ignorerPlanId: input.ignoreUpgradePlanId }) : undefined;
-  if (derived) { items.push(...derived.items); warnings.push(...derived.warnings); }
+  if (derived) { items.push(...derived.items); warnings.push(...derived.warnings); avertissements.push(...derived.avertissements); }
   for (const plan of plans) {
     if (plan.status !== 'active') continue;
     // Le brassin porte ses sorties dérivées (ou n'en a plus : annulé, conditionné, terminé) : son plan « Prévoir » reste lisible, jamais compté.
     if (derived && plan.source === 'brew') { const batchId = planBrewBatchId(plan); if (batchId && derived.remplaces.has(batchId)) continue; }
     if (isUpgradePlan(plan) && input.includeEquipmentProjects === false) continue;
-    if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { warnings.push(`Projet à compléter : ${plan.title}.`); continue; }
-    if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { warnings.push(`Prévision invalide : ${plan.title}.`); continue; }
+    if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { noter(`Projet à compléter : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'projet de matériel à compléter (date ou budget) : écarté de la prévision'); continue; }
+    if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { noter(`Prévision invalide : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'date ou montant illisible : la prévision n’est pas comptée'); continue; }
     const linked = active.filter(t => t.finance?.planId === plan.id && transactionKind(t) === (plan.direction === 'out' ? 'expense' : 'income'));
     if (plan.recurrence && linked.some(t => !t.finance?.occurrenceId)) {
-      warnings.push(`Récurrence « ${plan.title} » : confirmer l’échéance des factures liées. Leur mois sert au rapprochement provisoire ; les échéances suivantes restent prévues.`);
+      noter(`Récurrence « ${plan.title} » : confirmer l’échéance des factures liées. Leur mois sert au rapprochement provisoire ; les échéances suivantes restent prévues.`, { kind: 'plan', planId: plan.id }, plan.title, 'récurrence : confirme l’échéance des factures liées');
     }
     for (const occurrence of planOccurrences(plan, plan.recurrence ? `${currentMonth}-01` : asOf, end)) {
       // A documented invoice replaces the intention, whether paid or still payable.
       const undatedLinked = linked.filter(isUndatedPending);
-      if (undatedLinked.length) warnings.push(`Facture sans échéance liée à « ${plan.title} » : la prévision reste réservée, la facture est comptée à part.`);
+      if (undatedLinked.length) noter(`Facture sans échéance liée à « ${plan.title} » : la prévision reste réservée, la facture est comptée à part.`, { kind: 'plan', planId: plan.id }, plan.title, 'facture sans échéance liée : la prévision reste réservée');
       const invoiced = linked.filter(t => !undatedLinked.includes(t)).filter(t => !plan.recurrence || t.finance?.occurrenceId === occurrence.id || !t.finance?.occurrenceId && monthKey(isoDate(t.finance?.dueDate) ?? isoDate(t.date) ?? '') === monthKey(occurrence.date)).reduce((sum, t) => {
         const allocation = planInvoiceAllocation(t);
         if (allocation.issue === 'allocation') {
-          warnings.push(`Montant lié à corriger : ${t.description}. La prévision reste réservée.`); return sum;
+          noter(`Montant lié à corriger : ${t.description}. La prévision reste réservée.`, { kind: 'piece', txId: t.id }, t.description, `montant lié à corriger : la prévision « ${plan.title} » reste réservée`); return sum;
         }
-        if (allocation.issue === 'mixed') { warnings.push(`Facture mixte « ${t.description} » : préciser le montant affecté à « ${plan.title} ». La prévision reste réservée.`); return sum; }
+        if (allocation.issue === 'mixed') { noter(`Facture mixte « ${t.description} » : préciser le montant affecté à « ${plan.title} ». La prévision reste réservée.`, { kind: 'piece', txId: t.id }, t.description, `facture mixte : indique la part de « ${plan.title} »`); return sum; }
         return sum + allocation.amountCents!;
       }, 0);
       const remaining = Math.max(0, plan.amountCents - invoiced);
       if (!remaining) continue;
-      if (occurrence.date < asOf) warnings.push(`Échéance passée « ${plan.title} » : montant encore prévu aujourd’hui, à rapprocher d’une facture ou à confirmer.`);
+      if (occurrence.date < asOf) noter(`Échéance passée « ${plan.title} » : montant encore prévu aujourd’hui, à rapprocher d’une facture ou à confirmer.`, { kind: 'plan', planId: plan.id }, plan.title, 'échéance passée : encore prévue aujourd’hui, à rapprocher d’une facture');
       items.push({ id: occurrence.id, occurrenceId: occurrence.id, planId: plan.id, date: occurrence.date < asOf ? asOf : occurrence.date, label: plan.title, amountCents: remaining,
         direction: plan.direction, source: plan.source === 'brew' ? 'brew' : isUpgradePlan(plan) ? 'equipment' : plan.recurrence ? 'recurring' : 'plan', category: plan.category });
     }
@@ -134,7 +170,7 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   const txVendor = (tx: FinanceTransaction) => vendorKey(tx.finance?.vendor ?? tx.proofNotes?.replace(/^Fournisseur:\s*/i, '').split('·')[0]);
   const recurringVendors = new Set(plans.filter(p => p.status === 'active' && p.direction === 'out' && p.recurrence && p.vendor?.trim()).map(p => vendorKey(p.vendor)));
   const residual = active.filter(isResidualExpense).filter(tx => !recurringVendors.has(txVendor(tx)));
-  if (trendMonths.length < 3) warnings.push('Tendance non calculée : confirmer au moins trois mois complets d’historique. Les engagements restent affichés.');
+  if (trendMonths.length < 3) noter('Tendance non calculée : confirmer au moins trois mois complets d’historique. Les engagements restent affichés.', { kind: 'historique' }, 'Tendance non calculée', 'indique depuis quand ton historique est complet (3 mois au moins) : sans lui, pas de dépenses courantes prévues');
   else {
     const seen = [...new Set(residual.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(tx => tx.category))];
     const categories = seen.filter(category => TREND_CATEGORIES.includes(category));
@@ -174,6 +210,6 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
       projectedCents: rows.filter(i => i.source === 'trend').reduce((sum, i) => sum + i.amountCents, 0), items: rows };
   });
   const undatedTotal = (direction: 'in' | 'out') => undated.filter(u => u.direction === direction).reduce((sum, u) => sum + u.amountCents, 0);
-  return { months, items, warnings: [...new Set(warnings)], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents,
+  return { months, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents,
     undated, undatedInCents: undatedTotal('in'), undatedOutCents: undatedTotal('out') };
 }

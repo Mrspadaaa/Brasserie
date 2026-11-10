@@ -2,7 +2,7 @@ import type { StockItem, Batch } from '../../../types';
 import type { AnnualReport, FinanceTransaction, FinancialAsset, FinancialClosing, FinancialPayment, FinancialPlan, FinancialProfile, FribourgTaxClosing, FribourgTaxReport } from '../../../domain/finance/types';
 import type { TaxSection } from '../TaxClosingSheet';
 import type { JournalRequest } from '../TransactionJournal';
-import type { EtapeEtat } from './calculs';
+import { propositionsInventaire, type EtapeEtat } from './calculs';
 import type { useDossier } from './dossier';
 
 export interface OuvertureInventaire { cote?: 'openingInventory' | 'closingInventory'; proposer?: boolean; propositions?: Array<{ stockItemRef: string; valueCents: number; note: string }>; /** CP-10 : la nature visée par la case touchée (étape 3). */ nature?: 'malt' | 'houblons' | 'emballages' | 'biere' }
@@ -18,6 +18,9 @@ export interface Actions {
   aller: (n: number) => void;
   assistant: (question: string) => void;
 }
+/** Le renvoi « stock à compter » (CP-18) : l'inventaire de CLÔTURE (31 déc.), proposé depuis le stock seulement pour l'exercice en cours, jamais pour la cave (la bière en cave se compte lot par lot). */
+export const versInventaireCloture = (c: { anneeCourante: boolean; stockItems: StockItem[]; transactions: FinanceTransaction[]; year: number; today: string; act: { onInventories: (o?: OuvertureInventaire) => void } }, nature?: OuvertureInventaire['nature']) =>
+  c.act.onInventories({ cote: 'closingInventory', nature, ...(c.anneeCourante && nature !== 'biere' ? { proposer: true, propositions: propositionsInventaire(c.stockItems, c.transactions, c.year, c.today, nature) } : {}) });
 export interface Ctx {
   year: number; today: string; anneeCourante: boolean;
   report: AnnualReport; tax: FribourgTaxReport; closing?: FinancialClosing; profile: FinancialProfile;

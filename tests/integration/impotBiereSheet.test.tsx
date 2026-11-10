@@ -33,7 +33,7 @@ const curseur = (value: number) => fireEvent.change(screen.getByRole('slider', {
 describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
   it('1. montre la règle hachurée, le curseur « 12 °P · exemple », 6,74 CHF, les formats et l’année', () => {
     ouvrir();
-    expect(txt('ibr-puce')).toBe('densité à noter');
+    expect(txt('ibr-puce')).toBe('densité à noter ›');
     expect(screen.getByTestId('ibr-regle')).toHaveAttribute('data-hachure', 'oui');
     expect(txt('ibr-curseur')).toBe('12 °P · exemple');
     expect(txt('ibr-litres')).toBe('ce brassin · 26,6 L attendus (estimé)');
@@ -82,7 +82,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
 
   it('5. densité absurde : « à vérifier », hachures, rien tiré de cette densité', () => {
     ouvrir(brassin({ og: '1.001' }));
-    expect(txt('ibr-puce')).toBe('densité à vérifier');
+    expect(txt('ibr-puce')).toBe('densité à vérifier ›');
     expect(screen.getByTestId('ibr-regle')).toHaveAttribute('data-hachure', 'oui');
     expect(txt('ibr-curseur')).toBe('12 °P · exemple');
   });
@@ -233,7 +233,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     ouvrir(brassin({ recipeSnapshot: { ogTarget: 1.062 } as never }));
     expect(txt('ibr-curseur')).toBe('15,2 °P · visée recette');
     expect(screen.getByTestId('ibr-regle')).toHaveAttribute('data-hachure', 'oui');
-    expect(txt('ibr-puce')).toBe('densité à noter');
+    expect(txt('ibr-puce')).toBe('densité à noter ›');
     expect(txt('ibr-resultat')).toBe('8,98 CHF');
   });
 });

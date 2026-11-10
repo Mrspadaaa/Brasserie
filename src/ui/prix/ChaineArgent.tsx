@@ -11,10 +11,12 @@ import { ImpotBiereSheet, classesBareme, positionRegle } from '../production/Imp
 import { montantChf } from '../../domain/finance/ledger';
 import { PrixFeuille } from './PrixEcran';
 import { brassinEnUnites, lirePrix, resteAnnuel, seuilsRegle, tarifsDuFormat, unitesParAn, type FormatId } from './calculPrix';
-import { biereDuBrassin, brassinDuCout, formatsDe, impotUnite, lireDonneesPrix } from './donneesPrix';
+import { biereDuBrassin, brassinDuCout, formatsDe, impotUnite, lireDonneesPrix, manquesPrix, type FormatManque, type ManquePrix } from './donneesPrix';
 import './prix.css';
+import './chaine-argent-renvois.css';
 
 const BrewBudgetDialog = React.lazy(() => import('../finance/BrewBudgetDialog').then(m => ({ default: m.BrewBudgetDialog })));
+const ProfileSheet = React.lazy(() => import('../finance/FinanceForms').then(m => ({ default: m.ProfileSheet })));
 const chf = (n: number) => montantChf(n);
 
 /**
@@ -52,7 +54,7 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
   const d = useStorageValue(lireDonneesPrix);
   const [question, setQuestion] = useState<string | undefined>();
   const demande = React.useRef<() => string>(() => '');
-  const [ouvert, setOuvert] = useState<null | 'cout' | 'impot' | 'prix'>(null);
+  const [ouvert, setOuvert] = useState<null | 'cout' | 'impot' | 'prix' | 'profil'>(null);
   const [formatId, setFormatId] = useState<FormatId>('33cl');
   const [an, setAn] = useState<boolean>(() => StorageService.getUiState<string>('prix_lecture', 'bouteille') === 'an');
   const planifie = batch.status === 'planifie';
@@ -95,6 +97,13 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
       : <div className="arg-st" data-reste={opts.reste ? '' : undefined} role="group" aria-label={opts.label}>{corps}</div>}
   </>;
 
+  /** CP-18 : un manque hors d'un bouton de marche (la marche porte déjà des boutons : format, bouteille/an) est lui-même un bouton vers l'endroit où le saisir. */
+  const Q = ({ vers, label, children }: { vers: NonNullable<typeof ouvert>; label: string; children: React.ReactNode }) => <button type="button" className="arg-qb" aria-label={label} onClick={() => setOuvert(vers)}>{children}</button>;
+  const formatsManque: FormatManque[] = [{ id: f.id as FormatId, label: f.label, present: true, prixConnu: prix !== null || tf.kind === 'plusieurs' || (tf.kind === 'sans-prix' && !tf.tarif.format), emballageManque: tf.kind === 'un' && tarif?.emballageUnite == null, tarifExiste: tf.kind === 'sans-prix' }];
+  const manques = manquesPrix({ chiffrage: c, formats: formatsManque, volumeAnnuelManque: litresAn === undefined });
+  const ouvrirManque = (m: ManquePrix) => { if (m.cible === 'fiche') onNoteDensity?.(); else if (m.cible === 'cout') setOuvert('cout'); else if (m.cible === 'profil') setOuvert('profil'); else setOuvert('prix'); };
+  const resteVers = prix === null ? 'prix' : 'cout';
+
   return (
     <div className="arg" aria-label="Argent du brassin">
       {planifie && <EncartPrevisions batch={batch} />}
@@ -112,9 +121,9 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
         </>, { ouvre: 'impot', label: 'Impôt sur la bière' })}
         {marche(3, <>
           <div className="arg-l1"><span className="prx-seg" role="group" aria-label="Format" data-booster="format" style={{ gap: 4 }}>{formats.map(x => <button key={x.format.id} type="button" aria-pressed={x.format.id === f.id} style={{ minHeight: 28, padding: '0 8px', fontSize: 12 }} onClick={() => setFormatId(x.format.id as FormatId)}>{x.format.label}</button>)}</span>
-            <b className="prx-m">{lecture.cout ? `${lecture.cout.exact && !planifie ? '' : '≥ '}${chf(lecture.cout.affiche)}` : '?'} <small>coûte</small></b></div>
+            <b className="prx-m">{lecture.cout ? `${lecture.cout.exact && !planifie ? '' : '≥ '}${chf(lecture.cout.affiche)}` : <Q vers="cout" label="Coût du format inconnu : ouvrir le coût du brassin">?</Q>} <small>coûte</small></b></div>
           {part && <div className="arg-barre"><i style={{ flex: part.biere, background: '#9E5518' }} />{part.emb > 0 && <i style={{ flex: part.emb, background: '#9AA3AD' }} />}<i style={{ flex: Math.max(part.imp, 0.01), minWidth: 3, background: '#C98A3A' }} /></div>}
-          {part ? <div className="arg-l2"><span>bière <b className="prx-m">{chf(part.biere)}</b>{part.emb > 0 ? <> · emballage <b className="prx-m">{chf(part.emb)}</b></> : <> · emballage <span className="arg-q">à compléter</span></>} · impôt <b className="prx-m">{chf(part.imp)}</b></span></div> : <><div className="arg-barre arg-hach" data-inconnu="" aria-hidden="true" /><div className="arg-l2"><span>bière <b className="prx-m">?</b> · emballage <span className="arg-q">à compléter</span> · impôt <b className="prx-m">{unitImpot !== null ? chf(unitImpot) : '?'}</b></span></div></>}
+          {part ? <div className="arg-l2"><span>bière <b className="prx-m">{chf(part.biere)}</b>{part.emb > 0 ? <> · emballage <b className="prx-m">{chf(part.emb)}</b></> : <> · emballage <Q vers="prix" label="Emballage à compléter : ouvrir le tarif"><span className="arg-q">à compléter</span></Q></>} · impôt <b className="prx-m">{chf(part.imp)}</b></span></div> : <><div className="arg-barre arg-hach" data-inconnu="" aria-hidden="true" /><div className="arg-l2"><span>bière <Q vers="cout" label="Bière : coût inconnu, ouvrir le coût du brassin"><b className="prx-m">?</b></Q> · emballage <Q vers="prix" label="Emballage à compléter : ouvrir le tarif"><span className="arg-q">à compléter</span></Q> · impôt {unitImpot !== null ? <b className="prx-m">{chf(unitImpot)}</b> : <Q vers="impot" label="Impôt inconnu : ouvrir la feuille Impôt bière"><b className="prx-m">?</b></Q>}</span></div></>}
         </>, { label: 'Coût du format' })}
         {marche(4, <>
           <div className="arg-l1"><span>Vendue{prix === null ? '' : ''}</span><b className="prx-m">{prix === null ? 'prix ?' : chf(prix)} <small>CHF</small></b></div>
@@ -122,7 +131,7 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
           {seuils && <div className="arg-regle" data-booster="regle-prix"><span style={{ flex: seuils.perte, background: '#F8DCDA', color: '#8E2A24' }}>à perte</span><span style={{ flex: Math.max(seuils.mince - seuils.perte, 0.01), background: '#F8EBCD', color: '#6B4C0C' }}>mince</span><span style={{ flex: Math.max(xMax - seuils.mince, 0.01), background: '#E3F2E8', color: '#256B42' }}>il te reste</span>{prix !== null && <i className="arg-curs" style={{ left: `${Math.min(100, prix / xMax * 100)}%` }} />}</div>}
         </>, { ouvre: 'prix', label: 'Prix de vente' })}
         {marche(5, <>
-          <div className="arg-l1"><span>Il te reste</span><b className="prx-m" style={{ color: 'rgb(var(--ok-texte, 37 107 66))' }}>{reste ? `${reste.borne || planifie ? '≤ ' : ''}${chf(reste.valeur)}` : '?'} <small>/ {f.label}</small></b></div>
+          <div className="arg-l1"><span>Il te reste</span><b className="prx-m" style={{ color: 'rgb(var(--ok-texte, 37 107 66))' }}>{reste ? `${reste.borne || planifie ? '≤ ' : ''}${chf(reste.valeur)}` : <Q vers={resteVers} label="Ce qu'il te reste est inconnu : ouvrir ce qui manque">?</Q>} <small>/ {f.label}</small></b></div>
           <div className="arg-l2"><button type="button" className="prx-swap" aria-pressed={an} onClick={e => { e.stopPropagation(); basculer(); }} data-booster="bascule-tete">{an ? `an · ${resteAn !== null ? `${reste?.borne ? '≤ ' : ''}${chf(resteAn)}` : 'volume annuel ?'}` : 'bouteille'}</button><b className="prx-m">{reste && lecture.partPrix !== null ? `${nombreFr(lecture.partPrix, 0)} %` : ''}</b></div>
         </>, { reste: true, label: 'Il te reste' })}
         {marche(6, <>
@@ -132,7 +141,12 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
           <div className="arg-l2"><span>{ligne ? <><b className="prx-m">{ligne.paient}</b> paient {n ? <b className="prx-m">{chf(n.total)}</b> : null}</> : <><b className="prx-m">?</b> paient <b className="prx-m">?</b></>}</span>{ligne ? <span>vendu <b className="prx-m">{chf(ligne.vendu)}</b></span> : <span>vendu <b className="prx-m">?</b></span>}</div>
         </>, { ouvre: 'prix', reste: true, label: 'Brassin' })}
       </div>
-      {ouvert === 'cout' && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity} /></React.Suspense>}
+      {manques.length > 0 && <section className="arg-taches" aria-label="Données à compléter">
+        <p className="arg-taches-t">Pour compléter cette chaîne :</p>
+        <ul>{manques.map(m => <li key={m.cle}><button type="button" className="arg-tache" data-manque={m.cle} onClick={() => ouvrirManque(m)}><span><b>{m.titre}</b><small>{m.effet}</small></span><i aria-hidden="true">›</i></button></li>)}</ul>
+      </section>}
+      {ouvert === 'cout' && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity} onMesures={onNoteDensity} /></React.Suspense>}
+      {ouvert === 'profil' && d.profile && <React.Suspense fallback={null}><ProfileSheet profile={d.profile} parametres onClose={() => setOuvert(null)} /></React.Suspense>}
       {ouvert === 'impot' && <ImpotBiereSheet batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity ? () => { setOuvert(null); onNoteDensity(); } : undefined} />}
       {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'batch', id: batch.id }} label={batch.name} phase="Prix de vente" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
       {ouvert === 'prix' && <PrixFeuille config={config} batch={batch} formatInitial={formatId} onClose={() => setOuvert(null)} />}

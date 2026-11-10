@@ -181,7 +181,7 @@ describe('T15 le litre : les trois appels de domaine, jamais de 0 inventé', () 
   });
   it('estimation ancienne : « À compléter », aucun « 0,00 »', () => {
     render(<LigneLitre plans={plan({ ...snapshot, dejaPaye: undefined })} batches={[]} recipes={[]} onOpenBudget={() => {}} onAbsent={() => {}} onPicker={() => {}}/>);
-    expect(screen.getByText('À compléter')).toBeVisible();
+    expect(screen.getByRole('button', { name: /coût du litre à compléter/ })).toBeVisible();
     expect(screen.queryByText(/0,00/)).not.toBeInTheDocument();
   });
   it('aucune estimation : « Estimer un brassin »', () => {

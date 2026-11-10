@@ -188,7 +188,9 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         <section className="ibr-regle" data-testid="ibr-regle" data-hachure={hachure ? 'oui' : 'non'}>
           <div className="ibr-q">
             <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : onNoteDensity ? <button type="button" className="ibr-inc ibr-inc-btn" onClick={onNoteDensity}>litres à noter ›</button> : <span className="ibr-inc">litres à noter</span>}</span>
-            <em data-testid="ibr-puce" data-ton={densite === 'notee' && !exonere ? 'neutre' : 'attention'}>{puce}</em>
+            {onNoteDensity && densite !== 'notee' && !exonere
+              ? <button type="button" className="ibr-puce-btn" onClick={onNoteDensity}><em data-testid="ibr-puce" data-ton="attention">{puce} ›</em></button>
+              : <em data-testid="ibr-puce" data-ton={densite === 'notee' && !exonere ? 'neutre' : 'attention'}>{puce}</em>}
           </div>
           <div className="ibr-bandes">
             {classesBareme().map((classe, i) => {
@@ -253,7 +255,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
             <p>Le °Plato se lit sur la densité initiale : {nombreFr(1.048, 3)} correspond à {nombreFr(exemplePlato, 1)} °P.</p>
             <p>L’impôt est dû à la sortie de la brasserie, pas à la mise en bouteille : le conditionné n’est qu’un indicateur.</p>
             <p>Déclaration sous 20 jours et paiement sous 30 jours après la fin de la période ({periode}), via Taxas.</p>
-            <p>Bière à 0,5 % vol. ou moins : comptée exonérée dans ce calcul, seuil à confirmer auprès de l’OFDF.</p>
+            <p>Bière à 0,5 % vol. ou moins : comptée exonérée dans ce calcul, <a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer">seuil à confirmer auprès de l’OFDF</a>.</p>
             <p>TVA de la bière alcoolisée : {StorageService.getConfig().fiscal.isTvaRegistered ? 'taux normal de 8,1 %.' : 'brasserie non assujettie, aucune TVA facturée.'}</p>
           </div>
         </details>

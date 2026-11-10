@@ -31,8 +31,9 @@ export function GrapheInconnu({ prix, libelleUnite, an, bureau }: GrapheInconnuP
   const aigu = prix !== null && prix > 0 && prix <= pMax ? prix : null;
   const sty = (on: boolean) => ({ fontWeight: on ? 700 : 400, fill: on ? '#111' : '#666' });
   const croise = r.X0 + 56;
+  // CP-18 : les « ? » du graphe sont portés par le bouton voisin « ? CHF/L · à compléter › » et par la liste « Il manque ces données ».
   return (
-    <svg className={bureau ? 'prx-g prx-g-bureau prx-g-inconnu' : 'prx-g prx-g-inconnu'} viewBox="0 0 390 318" role="img" aria-label={`Prix et reste, ${libelleUnite} : coût du litre inconnu, zones et reste à compléter`} data-booster="pente-sur-regle" data-inconnu="">
+    <svg data-renvoi="aucun" className={bureau ? 'prx-g prx-g-bureau prx-g-inconnu' : 'prx-g prx-g-inconnu'} viewBox="0 0 390 318" role="img" aria-label={`Prix et reste, ${libelleUnite} : coût du litre inconnu, zones et reste à compléter`} data-booster="pente-sur-regle" data-inconnu="">
       <defs><pattern id={hach} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fff" /><rect width="3" height="8" fill="#E4E4E4" /></pattern></defs>
       <rect x={r.X0} y={r.T} width={xMax - r.X0} height={dessous - r.T} fill={`url(#${hach})`} />
       <g data-booster="double-echelle" className="prx-ech">

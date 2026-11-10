@@ -132,6 +132,12 @@ export function valeurEstimee(item: StockItem, transactions: FinanceTransaction[
   return { cents: Math.round(dernier.l.amountCents / dernier.l.quantity! * item.currentStock), source: `${dernier.t.description} · ${isoDate(dernier.t.date)}` };
 }
 
+/** Nature d'un article du stock : « Emballage » (que `natureDeLigne` laisse en « autres », il ne lit que le type d'une ligne saisie) compris. */
+export const natureDuStock = (s: StockItem, stocks: StockItem[]): NatureInventaire => (s.category ?? '').toLowerCase().includes('emball') ? 'emballages' : natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, stocks);
+/** Les lignes que « Proposer depuis le stock » pose dans l'inventaire (CP-18 : la tête, l'étape 3 et le renvoi « à compter » parlent de la même source). Seulement un article dont la dernière facture donne un prix : jamais un 0 inventé. */
+export const propositionsInventaire = (stocks: StockItem[], transactions: FinanceTransaction[], year: number, today: string, nature?: NatureInventaire) =>
+  stocks.filter(s => !nature || natureDuStock(s, stocks) === nature).flatMap(s => { const e = valeurEstimee(s, transactions, year, today); return e ? [{ stockItemRef: s.ref, valueCents: e.cents, note: `Estimé : ${e.source}` }] : []; });
+
 /* ---------- étape 4 ---------- */
 export interface Escalier { nom: string; achatCents: number; partPro: number; ouvertureCents: number; usureCents: number; clotureCents: number; prevuCents: number; acquisition: string }
 export function escalierMateriel(row: DepreciationRow, asset: FinancialAsset, year: number): Escalier {

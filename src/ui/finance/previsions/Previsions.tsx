@@ -2,7 +2,8 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { ChevronRight, Plus } from 'lucide-react';
 import type { Batch, StockItem, Transaction } from '../../../types';
 import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../../domain/finance/types';
-import { buildForecast, type ForecastItem } from '../../../domain/finance/forecast';
+import { buildForecast, type AvertissementCible, type CibleLimite, type ForecastItem } from '../../../domain/finance/forecast';
+import type { BatchDetailSection } from '../../../domain/productionInsights';
 import { estimerBrassinsPlanifies } from '../../../domain/finance/brewForecast';
 import { isUpgradePlan, upgradeDetails, upgradeReadiness } from '../../../domain/finance/upgrades';
 import type { LedgerSummary } from '../../../domain/finance/ledger';
@@ -19,6 +20,11 @@ import { renvoiCaisse } from '../causeCaisse';
 import { centimesDeSaisie, jourCourt, litreFr, montant, montantEntier, montantSigne } from './format';
 import '../previsions.css';
 
+/* La fiche du brassin, en lazy (comme l'Impôt bière de l'année) : elle pèse lourd et ne s'ouvre qu'à un renvoi des limites. */
+const BatchDetailSheet = React.lazy(() => import('../../BatchDetailSheet').then(m => ({ default: m.BatchDetailSheet })));
+// `argent` est une rubrique de la fiche (son état l'accepte), absente du type de sa prop : on la nomme une fois.
+const RUBRIQUE_ARGENT = 'argent' as unknown as BatchDetailSection;
+
 const HORIZONS = [[30, '30j', '30 jours'], [90, '90j', '90 jours'], [365, '12 mois', '12 mois']] as const;
 const CLE_PRIX = 'previsions_prix_bouteille';
 type Horizon = 30 | 90 | 365;
@@ -30,7 +36,7 @@ export interface PrevisionsProps {
   transactions: Transaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; assets: FinancialAsset[]; batches: Batch[]; stockItems: StockItem[];
   ledger: LedgerSummary; openingCashReady: boolean;
   avecProjets: boolean; onAvecProjets: (avec: boolean) => void;
-  onProfile: () => void; onPayments: () => void; /** CP-4 : le journal sans filtre (cause « autre » de la caisse inconnue) ; absent, le journal des paiements à confirmer. */ onRegistre?: () => void; /** CP-7 : la feuille du solde ouverte sur « Paramètres des prévisions » (début de l'historique complet) ; absent, la feuille du solde. */ onHistorique?: () => void; onOpenTransaction: (tx: Transaction) => void; onOpenPlan: (plan: FinancialPlan) => void; onOpenUpgrade: (plan: FinancialPlan | null) => void;
+  onProfile: () => void; onPayments: () => void; /** CP-4 : le journal sans filtre (cause « autre » de la caisse inconnue) ; absent, le journal des paiements à confirmer. */ onRegistre?: () => void; /** CP-7 : la feuille du solde ouverte sur « Paramètres des prévisions » (début de l'historique complet) ; absent, la feuille du solde. */ onHistorique?: () => void; onOpenTransaction: (tx: Transaction) => void; /** CP-18 : « Date à corriger › » ouvre la pièce à modifier ; absent, son détail. */ onCorrigerPiece?: (tx: Transaction) => void; onOpenPlan: (plan: FinancialPlan) => void; onOpenUpgrade: (plan: FinancialPlan | null) => void;
   onAddPlan: () => void; onBudgetPicker: () => void; onOpenBudget: (batch: Batch) => void; onNotice: (texte: string) => void; onSale?: () => void; onJournal?: () => void;
   cible?: CiblePrevoir | null; onCibleTraitee?: () => void; projetsOuverts?: boolean; children?: React.ReactNode;
 }
@@ -42,6 +48,7 @@ export function Previsions(p: PrevisionsProps) {
   const [annexe, setAnnexe] = useState(false), [limites, setLimites] = useState(false), [projets, setProjets] = useState(!!p.projetsOuverts);
   const [prix, setPrix] = useState(() => StorageService.getUiState<string>(CLE_PRIX, ''));
   const [message, setMessage] = useState(''), [restes, setRestes] = useState<string[]>([]);
+  const [lot, setLot] = useState<{ batchId: string; rubrique: BatchDetailSection } | null>(null);
   const stockKey = p.stockItems.map(s => `${s.ref}:${s.currentStock}`).join('|');
   const stockRef = useRef(p.stockItems); stockRef.current = p.stockItems;
 
@@ -90,6 +97,10 @@ export function Previsions(p: PrevisionsProps) {
   const visibles = affiche.marches.flatMap(m => m.items);
   const nSorties = visibles.filter(i => i.direction === 'out').length, entrees = visibles.filter(i => i.direction === 'in').reduce((s, i) => s + i.amountCents, 0);
   const aCompleter = useMemo(() => [...new Set(avec.items.filter(i => i.amountCents === 0 && i.date <= fin && i.source === 'brew' && !avec.warnings.some(w => w.startsWith(`${i.label.split(' · ')[0]} :`))).map(i => `${nomLong(i)} : à compléter${i.partial?.length ? ` (${i.partial.join(', ')})` : ''}`))], [avec, fin]);
+  // CP-18 : chaque limite a sa cible ; une part de brassin sans montant (« Milk Stout · emballage ») renvoie au coût du brassin.
+  const avertissements = useMemo<AvertissementCible[]>(() => [...avec.avertissements, ...avec.items.filter(i => i.amountCents === 0 && i.date <= fin && i.source === 'brew' && i.batchId && !avec.warnings.some(w => w.startsWith(`${i.label.split(' · ')[0]} :`)))
+    .map(i => ({ texte: `${nomLong(i)} : à compléter${i.partial?.length ? ` (${i.partial.join(', ')})` : ''}`, cible: { kind: 'brassin', batchId: i.batchId!, rubrique: 'cout' } as CibleLimite, batchId: i.batchId, titre: nomLong(i).split(' · ')[0],
+      sujet: nomLong(i).split(' · ')[1] ? `Part : ${nomLong(i).split(' · ')[1]}` : undefined, detail: `${i.partial?.length ? `à compléter : ${i.partial.join(', ')}` : 'montant à compléter'} : la sortie n’est pas chiffrée` }))], [avec, fin]);
   const incomplet = avec.warnings.length > 0 || !ledger.cashComplete || aCompleter.length > 0, nLimites = avec.warnings.length + aCompleter.length + (ledger.cashComplete ? 0 : 1) + (avec.undated.length ? 1 : 0);
   const titreDe = nomLong;
   const styleDe = (i: ForecastItem) => styleDeBase(i, testeId);
@@ -97,6 +108,18 @@ export function Previsions(p: PrevisionsProps) {
   const sousZero = (s: typeof affiche) => s.premierJourSousZero ? `sous zéro ${jourCourt(s.premierJourSousZero)}` : 'au-dessus de zéro';
 
   const fermerPuis = (fn: () => void) => () => { setAnnexe(false); setLimites(false); setProjets(false); fn(); };
+  // Une limite devient son geste : la pièce, le plan, la fiche du brassin (sa date en tête, ou Argent), son coût, le journal, la feuille du solde.
+  const ouvrirCible = (c: CibleLimite) => fermerPuis(() => {
+    if (c.kind === 'piece') { const tx = p.transactions.find(t => t.id === c.txId); if (tx) (p.onCorrigerPiece ?? p.onOpenTransaction)(tx); return; }
+    if (c.kind === 'plan') { const plan = plansParId.get(c.planId); if (plan) p.onOpenPlan(plan); return; }
+    if (c.kind === 'brassin') {
+      const batch = p.batches.find(b => b.id === c.batchId); if (!batch) return;
+      if (c.rubrique === 'cout') p.onOpenBudget(batch); else setLot({ batchId: batch.id, rubrique: c.rubrique === 'argent' ? RUBRIQUE_ARGENT : 'measurements' });
+      return;
+    }
+    if (c.kind === 'journal-a-confirmer') p.onPayments();
+    else if (c.kind === 'historique') (p.onHistorique ?? p.onProfile)(); else p.onProfile();
+  })();
   const ouvrirItem = (item: ForecastItem) => {
     if (item.source === 'equipment' && item.planId) { setTeste(item.planId); setFiche({ kind: 'projet', planId: item.planId }); return; }
     if (item.source === 'brew' && item.batchId) { setFiche({ kind: 'brassin', batchId: item.batchId }); return; }
@@ -175,11 +198,12 @@ export function Previsions(p: PrevisionsProps) {
       {p.onSale && <button type="button" className="prv-prim prv-rouge" onClick={p.onSale}><Plus size={16} aria-hidden="true" />Vente</button>}
     </div>
     {p.children}
-    {annexe && <ListeSorties marches={affiche.marches} styleDe={styleDe} titreDe={titreDe} plansListes={plansHorsProjets(p.plans)} undated={avec.undated}
+    {annexe && <ListeSorties marches={affiche.marches} styleDe={styleDe} titreDe={titreDe} plansListes={plansHorsProjets(p.plans)} undated={avec.undated} onUndated={id => { const tx = p.transactions.find(t => `invoice:${t.id}` === id); if (tx) fermerPuis(() => (p.onCorrigerPiece ?? p.onOpenTransaction)(tx))(); }}
       onItem={i => { setAnnexe(false); ouvrirItem(i); }} onPlan={pl => fermerPuis(() => p.onOpenPlan(pl))()} onAdd={fermerPuis(p.onAddPlan)} onBudget={fermerPuis(p.onBudgetPicker)} onProjets={() => { setAnnexe(false); setProjets(true); }} onProfile={fermerPuis(p.onProfile)} onClose={() => setAnnexe(false)} />}
     {limites && <Feuille titre="Limites de cette prévision" onClose={() => setLimites(false)}>
-      <FinanceForecastSummary ledger={ledger} openingCashReady={p.openingCashReady} warnings={avec.warnings} undatedCount={avec.undated.length} undatedOutCents={avec.undatedOutCents} undatedInCents={avec.undatedInCents} aCompleter={aCompleter}
+      <FinanceForecastSummary ledger={ledger} openingCashReady={p.openingCashReady} warnings={avec.warnings} avertissements={avertissements} onCible={ouvrirCible} undatedCount={avec.undated.length} undatedOutCents={avec.undatedOutCents} undatedInCents={avec.undatedInCents} aCompleter={aCompleter}
         onProfile={fermerPuis(p.onProfile)} onPayments={fermerPuis(p.onPayments)} /></Feuille>}
+    {lot && <React.Suspense fallback={null}><BatchDetailSheet batch={p.batches.find(b => b.id === lot.batchId) ?? null} initialSection={lot.rubrique} onClose={() => setLot(null)} /></React.Suspense>}
     {projets && <Feuille titre="Mes projets de matériel" onClose={() => setProjets(false)} haute><UpgradeWorkspace onOpenProject={pl => p.onOpenUpgrade(pl)} onVoirPrevisions={() => setProjets(false)} /></Feuille>}
     {ficheProjet && mesure && isUpgradePlan(ficheProjet) && <FicheProjet plan={ficheProjet} mesure={mesure} titreFin={titre} prix={prix} onPrix={s => { setPrix(s); StorageService.setUiState(CLE_PRIX, s); }}
       onClose={() => setFiche(null)} onOuvrir={() => { setFiche(null); p.onOpenUpgrade(ficheProjet); }} />}

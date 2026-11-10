@@ -1,0 +1,58 @@
+<title>Outil d’analyse, passe 2 · 10.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : ta base, puis les variantes ; la clôture en neuf écrans. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Outil d’analyse, passe 2 · 10.11</h1>
+<p class="mut">10.11 · tes mots : « a1a … Mais plus de couleur, d’analyse et aussi vue par source, et vue par budget et vue par filtre et période / Un peu comme La cascade du mois a1e » ; les tuiles a1b « en plus ». En pointillé : a1a et a1e. Page d’avant : <a href="https://claude.ai/artifact/AxXZLiq11AEYqsVDTjHJN4">passe 1</a>.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>L’outil d’analyse : ta variante, un mélange, ou aucune. Toutes partent de ton escalier a1a.</p>
+<p class="mut">Six variantes, a2a à a2f. Agrandie, chaque vignette montre l’ouverture, puis les vues Sources, Budget et Filtre, puis l’outil sur tes données d’aujourd’hui.</p></section>
+
+<section data-choix="outil-analyse-p2"><h2>L’outil d’analyse, passe 2</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/a1a-page.png"><img src="img/a1a-haut.png" alt="a1a"></button><figcaption><span class="pill p-ref">Référence</span><b>Le passé accroché</b> <span class="id">a1a</span></figcaption></figure>
+<figure data-vignette data-reference><button data-agrandir="img/a1e-page.png"><img src="img/a1e-haut.png" alt="a1e"></button><figcaption><span class="pill p-ref">Référence</span><b>La cascade du mois</b> <span class="id">a1e</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2a-page.png"><img src="img/a2a-haut.png" alt="a2a"></button><figcaption><b>L’escalier, quatre vues</b> <span class="id">a2a</span>Ton a1a tel quel, en couleur ; un segment Caisse · Sources · Budget · Filtrer ; Sources = la cascade de a1e ; Filtrer = les tuiles de a1b.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2b-page.png"><img src="img/a2b-haut.png" alt="a2b"></button><figcaption><b>La frise en tête</b> <span class="id">a2b</span>Les 12 mois de a1b en frise au-dessus, l’escalier en points teintés, les quatre vues au pouce en bas.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2c-page.png"><img src="img/a2c-haut.png" alt="a2c"></button><figcaption><b>Les marches pleines</b> <span class="id">a2c</span>Marches teintées par source, gagné en grand, mois en une rangée ; vues en pastilles de couleur ; les deux faits du mois sous le graphe.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2d-page.png"><img src="img/a2d-haut.png" alt="a2d"></button><figcaption><b>Les couloirs</b> <span class="id">a2d</span>Une piste par source sous l’escalier, chaque opération reliée à sa marche ; toucher une piste filtre.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2e-page.png"><img src="img/a2e-haut.png" alt="a2e"></button><figcaption><b>La rivière et les bocaux</b> <span class="id">a2e</span>Tuiles de l’année en tête, escalier sur fond teinté ; Sources = rivière vers la caisse ; Budget = bocaux remplis.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a2f-page.png"><img src="img/a2f-haut.png" alt="a2f"></button><figcaption><b>Le ruban sombre</b> <span class="id">a2f</span>Fond sombre, escalier en ruban de couleur, vues en carrousel ; écarts au budget en barres.</figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>
