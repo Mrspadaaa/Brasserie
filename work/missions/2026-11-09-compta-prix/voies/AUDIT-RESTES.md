@@ -17,3 +17,6 @@
 - Brancher `nature={closingOpts.nature}` dans FinancesTab.tsx l.~120 (après sd), puis captures de la feuille ouverte (ci/RESULTAT.md, DEMANDE EXECUTANT).
 - 390 : « Pilsner Mal… +6 » coupé.
 - Cases « ? » sans hachures visibles (g6 : hachures jaunes nettes) ; Emballages sans petite ligne (g6 : « bouteilles, capsules ») ; petite ligne « Pilsner M… +6 aujourd'hui » : viser « Pilsner 10 kg +6 », « aujourd'hui » à retirer si ça coupe.
+
+## Prévisions (pj)
+- À 390 sans solde, quatre bandeaux pointillés s'empilent (solde, tendance, rien de prévu, projets) : chacun juste, mais lourd ; à regrouper en une ligne-tâche dépliable si le brasseur le trouve trop chargé.

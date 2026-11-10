@@ -19,13 +19,31 @@ export const upgradeDateLabel = (plan: FinancialPlan) => {
   return date ? new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric', ...(upgradeDetails(plan).datePrecision === 'day' ? { day: 'numeric' } : {}) }) : 'Date à choisir';
 };
 
-export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequestHandled }: { onOpenProject?: (plan: FinancialPlan | null) => void; createRequest?: { kind: string; at: number } | null; onCreateRequestHandled?: () => void }) {
+/** CP-13 : un projet entre dans Finances › Prévisions seulement inclus (actif) ET daté et budgété ; le calcul (`forecast.ts`) écarte tout le reste, ici on le dit. */
+export const dansLesPrevisions = (plan: FinancialPlan) => isUpgradePlan(plan) && plan.status === 'active' && upgradeReadiness(plan).length === 0;
+/** Les projets à venir que les prévisions ne comptent pas, dans l'ordre de la liste « À venir » (échéance, date, nom). */
+export function projetsPasComptes(plans: FinancialPlan[]): FinancialPlan[] {
+  const ordre = Object.keys(UPGRADE_TIMINGS);
+  return plans.filter(p => isUpgradePlan(p) && ['draft', 'active'].includes(p.status) && !dansLesPrevisions(p))
+    .sort((a, b) => ordre.indexOf(upgradeDetails(a).timing) - ordre.indexOf(upgradeDetails(b).timing) || (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));
+}
+const moisCourtDe = (plan: FinancialPlan) => { const date = isoDate(plan.date); return date ? new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { month: 'short', year: 'numeric' }) : ''; };
+const RENVOI_PREVISIONS = 'Datés et budgétés, ils entrent dans Finances › Prévisions';
+
+export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequestHandled, onVoirPrevisions }: { onOpenProject?: (plan: FinancialPlan | null) => void; createRequest?: { kind: string; at: number } | null; onCreateRequestHandled?: () => void;
+  /** Ouverte depuis Finances › Prévisions, le renvoi referme simplement cette feuille ; absent, il demande à l'app d'ouvrir Finances › Prévisions (`affinee:ouvrir-finances`). */ onVoirPrevisions?: () => void }) {
   const mobile = useMobileLayout();
   const data = useStorageValue(read);
   const [scope, setScope] = useState('future');
   const [editing, setEditing] = useState<FinancialPlan | null | undefined>();
   const [purchase, setPurchase] = useState<FinancialPlan>();
-  const [busy, setBusy] = useState<string>(), [error, setError] = useState('');
+  const [busy, setBusy] = useState<string>(), [error, setError] = useState(''), [ailleurs, setAilleurs] = useState('');
+  // CP-13 : sur le modèle de `affinee:ouvrir-reglages` — l'événement annulable est pris par App ; sans écouteur, la ligne dit où aller.
+  const voirPrevisions = () => {
+    if (onVoirPrevisions) { onVoirPrevisions(); return; }
+    const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-finances', { cancelable: true, detail: { onglet: 'previsions' } }));
+    setAilleurs(pris ? '' : 'Ouvre Finances › Prévisions : les projets datés et budgétés y sont comptés.');
+  };
   const open = (plan: FinancialPlan | null) => onOpenProject ? onOpenProject(plan) : setEditing(plan);
   const handled = React.useRef<number>(undefined);
   React.useEffect(() => { if (createRequest?.kind === 'newIdea' && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
@@ -43,7 +61,9 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     const detail = upgradeDetails(plan), progress = upgradeProgress(plan, data.transactions, data.payments), missing = upgradeReadiness(plan);
     return <article className="upgrade-item" key={plan.id}>
       <button className="upgrade-project" onClick={() => open(plan)}>
-        <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
+        <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}{scope === 'future' && <>{' · '}{dansLesPrevisions(plan)
+          ? <span className="upgrade-prev upgrade-prev-oui">dans les prévisions · {moisCourtDe(plan)}</span>
+          : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
         <span className="upgrade-price">{detail.budgetKnown ? formatCHF(plan.amountCents) : 'À estimer'}<ChevronRight size={16}/></span>
       </button>
       {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</p>}
@@ -64,6 +84,8 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
       </ViewNavigation>
     </div>{mobile && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
     {error && <p className="finance-error" role="alert">{error}</p>}
+    {scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
+    {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
     {scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));
       return rows.length ? <section className="upgrade-stage" key={timing}><h3>{label}</h3>{rows.map(renderProject)}</section> : null;

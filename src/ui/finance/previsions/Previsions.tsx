@@ -4,10 +4,10 @@ import type { Batch, StockItem, Transaction } from '../../../types';
 import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../../domain/finance/types';
 import { buildForecast, type ForecastItem } from '../../../domain/finance/forecast';
 import { estimerBrassinsPlanifies } from '../../../domain/finance/brewForecast';
-import { isUpgradePlan } from '../../../domain/finance/upgrades';
+import { isUpgradePlan, upgradeDetails, upgradeReadiness } from '../../../domain/finance/upgrades';
 import type { LedgerSummary } from '../../../domain/finance/ledger';
 import { StorageService } from '../../../services/storage';
-import { UpgradeWorkspace } from '../UpgradeWorkspace';
+import { UpgradeWorkspace, projetsPasComptes } from '../UpgradeWorkspace';
 import { FinanceForecastSummary } from '../FinanceForecastSummary';
 import { construireEscalier, dernierJourInclus, notions, regrouperTendance, titreHorizon } from './escalier';
 import { EscalierSvg, nomLong, styleDe as styleDeBase } from './EscalierSvg';
@@ -132,6 +132,10 @@ export function Previsions(p: PrevisionsProps) {
     .brassins.find(b => b.batchId === ficheBrassin.batchId)?.coutLitre?.affiche.complet ?? null : null, [ficheBrassin?.batchId, p.batches, p.transactions, p.plans, p.profile, p.assets, asOf, fin]); // eslint-disable-line react-hooks/exhaustive-deps
   const ficheProjet = fiche?.kind === 'projet' ? plansParId.get(fiche.planId) : undefined;
   const connu = depart !== null;
+  // CP-13 : les projets de matériel que le domaine écarte (à compléter ou pas inclus) : la prévision le dit et renvoie à la feuille qui les liste.
+  const pasComptes = useMemo(() => projetsPasComptes(p.plans), [p.plans]);
+  const aCompleterProjets = pasComptes.some(pl => upgradeReadiness(pl).length > 0);
+  const detailPasComptes = pasComptes.length ? `${aCompleterProjets ? 'date ou budget à compléter' : 'à inclure'} : ${pasComptes.slice(0, 2).map(pl => `${pl.title}${upgradeDetails(pl).budgetKnown && Number.isSafeInteger(pl.amountCents) ? ` ${montant(pl.amountCents)}` : ''}`).join(', ')}${pasComptes.length > 2 ? ` +${pasComptes.length - 2}` : ''}` : '';
   // CP-7 : un escalier sans marche est plat sans dire pourquoi ; le domaine le sait (tendance non calculée sans trois mois d'historique complet, aucun plan ni brassin à venir).
   // Plate = rien APRÈS aujourd’hui : les achats du jour (sa capture du 10.11) ne sont pas une prévision.
   const plate = affiche.marches.every(m => m.date <= debut);
@@ -149,6 +153,7 @@ export function Previsions(p: PrevisionsProps) {
     {!connu && <button type="button" className="prv-depart" onClick={renvoi.geste === 'profil' ? p.onProfile : renvoi.geste === 'paiements' ? p.onPayments : (p.onRegistre ?? p.onPayments)}><span>{renvoi.titre}{renvoi.aide && <small>{renvoi.aide}</small>}</span><ChevronRight size={14} aria-hidden="true" /></button>}
     {plate && tendanceACalculer && <button type="button" className="prv-depart" onClick={p.onHistorique ?? p.onProfile}><span>Tendance à calculer<small>indique depuis quand ton historique est complet (3 mois au moins)</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
     {plate && <button type="button" className="prv-depart" onClick={p.onAddPlan}><span>Rien de prévu<small>un brassin ou un paiement à venir</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
+    {pasComptes.length > 0 && <button type="button" className="prv-depart" onClick={() => setProjets(true)}><span>{pasComptes.length} {pasComptes.length > 1 ? 'achats' : 'achat'} de matériel pas {pasComptes.length > 1 ? 'comptés' : 'compté'}<small>{detailPasComptes}</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
     {eSans && planTeste ? <div className="prv-sw" role="group" aria-label="Avec ou sans le projet de matériel">
       {carte(eAvec, `Avec ${planTeste.title.toLowerCase()}`, !modeSans, () => p.onAvecProjets(true))}
       {carte(eSans, `Sans ${planTeste.title.toLowerCase()}`, modeSans, () => p.onAvecProjets(false))}</div>
@@ -175,7 +180,7 @@ export function Previsions(p: PrevisionsProps) {
     {limites && <Feuille titre="Limites de cette prévision" onClose={() => setLimites(false)}>
       <FinanceForecastSummary ledger={ledger} openingCashReady={p.openingCashReady} warnings={avec.warnings} undatedCount={avec.undated.length} undatedOutCents={avec.undatedOutCents} undatedInCents={avec.undatedInCents} aCompleter={aCompleter}
         onProfile={fermerPuis(p.onProfile)} onPayments={fermerPuis(p.onPayments)} /></Feuille>}
-    {projets && <Feuille titre="Mes projets de matériel" onClose={() => setProjets(false)} haute><UpgradeWorkspace onOpenProject={pl => p.onOpenUpgrade(pl)} /></Feuille>}
+    {projets && <Feuille titre="Mes projets de matériel" onClose={() => setProjets(false)} haute><UpgradeWorkspace onOpenProject={pl => p.onOpenUpgrade(pl)} onVoirPrevisions={() => setProjets(false)} /></Feuille>}
     {ficheProjet && mesure && isUpgradePlan(ficheProjet) && <FicheProjet plan={ficheProjet} mesure={mesure} titreFin={titre} prix={prix} onPrix={s => { setPrix(s); StorageService.setUiState(CLE_PRIX, s); }}
       onClose={() => setFiche(null)} onOuvrir={() => { setFiche(null); p.onOpenUpgrade(ficheProjet); }} />}
     {ficheBrassin && itemsBrassin.length > 0 && <FicheBrassin titre={batch?.name ?? itemsBrassin[0].label.split(' · ')[0]} items={itemsBrassin} litre={litreBrassin == null ? null : litreFr(litreBrassin)} onClose={() => setFiche(null)}

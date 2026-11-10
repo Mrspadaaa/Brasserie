@@ -39,6 +39,8 @@ interface FinancesTabProps {
   onOpenRecipe?:(recipeId:string)=>void;
   /** Bouton « Vente » de l’écran Prévisions : la porte unique vers la saisie de vente (câblée par App). Absent : le bouton n’est pas affiché. */
   onOpenSale?:()=>void;
+  /** CP-13 : `affinee:ouvrir-finances` (App) demande un sous-onglet par son nom : synthese, operations, previsions, annuel. `at` distingue deux demandes. */
+  ongletRequest?:{onglet:string;at:number}|null;
 }
 const readFinance=()=>FinanceService.snapshot();
 const views=[['overview','Synthèse'],['journal','Opérations'],['forecast','Prévisions'],['annual','Annuel']] as const;
@@ -49,8 +51,9 @@ const initialView = (): FinanceView => {
   return views.some(([key]) => key === saved) ? saved as FinanceView : 'overview';
 };
 const EMPTY: never[]=[];
+const ONGLETS_DEMANDES:Record<string,FinanceView>={synthese:'overview',operations:'journal',previsions:'forecast',annuel:'annual'};
 
-export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe,onOpenSale}:FinancesTabProps) {
+export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe,onOpenSale,ongletRequest}:FinancesTabProps) {
   const data=useStorageValue(readFinance);
   const archives=useStorageValue(FinancialArchiveService.getArchives);
   const [archiveOpen,setArchiveOpen]=useState(false),[journalRequest,setJournalRequest]=useState<JournalRequest>();
@@ -90,6 +93,13 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     setView('journal');StorageService.setUiState('finances_workspace','journal');
     setJournalRequest({key,scope:'all',query:transaction.id,allDates:true});
   },[openTransactionRequest,transactions]);
+  const ongletTraite=useRef(0);
+  useEffect(()=>{
+    if(!ongletRequest||ongletTraite.current===ongletRequest.at)return;
+    ongletTraite.current=ongletRequest.at;
+    const cible=Object.prototype.hasOwnProperty.call(ONGLETS_DEMANDES,ongletRequest.onglet)?ONGLETS_DEMANDES[ongletRequest.onglet]:undefined;
+    if(cible){setView(cible);StorageService.setUiState('finances_workspace',cible);}
+  },[ongletRequest]);
   const assistantView=view==='overview'?'costs':view;
   const financeAssistant=<FinanceAssistant view={assistantView} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
   const row=(t:Transaction,state?:ReturnType<typeof paymentState>)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} state={state} onOpen={()=>setSelected(t)} onAddProof={()=>setEditing(t)} onPay={()=>setPaying(t)}/>;

@@ -287,6 +287,21 @@ export const App: React.FC = () => {
     window.addEventListener('affinee:ouvrir-reglages', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
   }, []);
+  // CP-13 : « Datés et budgétés, ils entrent dans Finances › Prévisions » (Brassins › Atelier › Matériel) : l'événement annulable ouvre l'onglet Finances sur le sous-onglet demandé.
+  const [financeTabRequest, setFinanceTabRequest] = useState<{ onglet: string; at: number } | null>(null);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const onglet = (event as CustomEvent<{ onglet?: string }>).detail?.onglet;
+      if (typeof onglet !== 'string') return;
+      setFinanceOpenRequest(null);
+      if (onglet === 'previsions') StorageService.setUiState('finances_workspace', 'forecast');
+      setFinanceTabRequest({ onglet, at: Date.now() });
+      setActiveTab('finances');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-finances', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-finances', ouvrir);
+  }, []);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -970,6 +985,7 @@ export const App: React.FC = () => {
           <FinancesTab
             transactions={transactions}
             openTransactionRequest={financeOpenRequest}
+            ongletRequest={financeTabRequest}
             recipes={recipes}
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
