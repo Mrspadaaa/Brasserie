@@ -29,3 +29,10 @@ Aucun déploiement, aucune donnée réelle, ni commit ni stash. Fichiers de trav
 
 ## Rendre
 `RESULTAT.md` au fil (tous les 5 éléments). Réponse finale au pilote : une ligne.
+
+## Méthode exigée (ses mots du 10.11 : « utilise les ux, ui booster » ; « enfin les vraim truc mis en place... »)
+Avant de dessiner, invoque par l'outil Skill : `boosters-ux` (check-list d'écran et boosters : curseur, pastille, jauge, plage…),
+puis `impeccable` et `ui-design-system`. Applique la check-list de `boosters-ux` à chaque variante et écris dans RESULTAT.md, par
+variante, les boosters retenus et les points de la check-list vérifiés sur capture (hiérarchie, premier plan, états, retour du geste,
+saisie au téléphone, cible du pouce). Réemploie les composants et jetons existants (DESIGN.md, `src/ui/` : échelle `MeasureScaleView`
+de `BrewDayMeasurements.tsx`), aucun dessin libre hors grammaire z1.
