@@ -715,6 +715,26 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ...(canTransferStarter ? [{ mode: 'starter-transferred' as const, label: 'Starter transféré' }] : [])
     ]
   } : undefined;
+  const bilanCloture = area === 'finish' && !displayRecipe ? (
+          <div role="region" aria-label="Bilan du brassage" className="bz-cloture">
+            <span>
+              Densité initiale{' '}
+              <b className="bz-m">{finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'}</b>{finishedReadings.gravity && <small className="bz-m"> SG</small>}{' '}
+              <small className="bz-m">cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? '—'}</small>
+            </span>
+            <span>
+              Volume en fermenteur{' '}
+              <b className="bz-m">{finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'}</b>{finishedReadings.volume && <small className="bz-m"> L à froid</small>}{' '}
+              <small className="bz-m">cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</small>
+            </span>
+            {/* Pourquoi une valeur manque : dit aux lecteurs d'écran, pas affiché (z1 : sans un mot d'aide). */}
+            {(!finishedReadings.gravity || !finishedReadings.volume) && (
+              <span className="sr-only">
+                {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
+              </span>
+            )}
+          </div>
+  ) : undefined;
   const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
@@ -1523,7 +1543,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   </>
                 )}
                 {attendues.length > 0 && !displayRecipe && (
-                  <BrewReadingsSummary state={state} step={measuredStep} recipe={actualRecipe} attendues={attendues} onMeasure={requestMeasure} now={now} />
+                  <BrewReadingsSummary state={state} step={measuredStep} recipe={actualRecipe} attendues={attendues} onMeasure={requestMeasure} now={now} cloture={bilanCloture} />
                 )}
                 <BrewIngredients
                   recipe={displayRecipe ? recipe : ingredientDisplayRecipe}
@@ -1582,26 +1602,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 step={measuredStep}
                 recipe={actualRecipe}
                 onMeasure={requestMeasure}
-                cloture={area === 'finish' && !displayRecipe ? (
-                  <div role="region" aria-label="Bilan du brassage" className="bz-cloture">
-                    <span>
-                      Densité initiale{' '}
-                      <b className="bz-m">{finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'}</b>{finishedReadings.gravity && <small className="bz-m"> SG</small>}{' '}
-                      <small className="bz-m">cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? '—'}</small>
-                    </span>
-                    <span>
-                      Volume en fermenteur{' '}
-                      <b className="bz-m">{finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'}</b>{finishedReadings.volume && <small className="bz-m"> L à froid</small>}{' '}
-                      <small className="bz-m">cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</small>
-                    </span>
-                    {/* Pourquoi une valeur manque : dit aux lecteurs d'écran, pas affiché (z1 : sans un mot d'aide). */}
-                    {(!finishedReadings.gravity || !finishedReadings.volume) && (
-                      <span className="sr-only">
-                        {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
-                      </span>
-                    )}
-                  </div>
-                ) : undefined}
+                cloture={bilanCloture}
               />
             )}
             {!isConsulting && (

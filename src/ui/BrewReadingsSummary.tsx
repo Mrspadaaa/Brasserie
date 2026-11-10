@@ -76,6 +76,9 @@ export function BrewReadingsSummary({
                     {avis?.tone === 'ok' && (
                       <> · <span className="bz-mesure-ok"><Check size={14} aria-hidden="true" /> dans la cible</span></>
                     )}
+                    {avis && avis.tone !== 'ok' && avis.tone !== 'watch' && avis.title && (
+                      <> · <span className="bz-mesure-tard">{avis.title}</span></>
+                    )}
                     {avis?.tone === 'watch' && (
                       <> · <span className="bz-mesure-hors"><TriangleAlert size={14} aria-hidden="true" /> {avis.title}</span></>
                     )}
