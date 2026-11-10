@@ -138,11 +138,11 @@ describe('D213 unités : la ligne repliée de la feuille', () => {
     expect(state.writes).toEqual([]);
   });
 
-  it('D214, D275 (voie f3) : une unité lisible (« Stk ») face à un malt en kg reste sans proposition ; l’ingrédient non relié est nouvel article d’office (HEAD : none)', async () => {
+  it('D214, D275 (voie f3), DP-4 : une unité lisible (« Stk ») face à un malt en kg ne fait pas un autre produit (D371b) : le même nom RELIE, proposé dans la vue FACTURE | STOCK, jamais un « bis » d’office', async () => {
     const view = await lire([{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 6, unit: 'Stk', amountTTC: 10, stockCategory: '' }], [item('MO', 'Maris Otter', 'Malt', 'kg')]);
-    // 28c98cba (pu4d, D374, p-port-pu4d/RESULTAT.md) : le mot « proposé » est aussi celui de la sortie « bis » (nouvel article d'office, D215/D275d), pas d'un lien : aucune proposition de LIEN (ni « Garder l'article », ni sortie « Relier » allumée).
-    expect(screen.queryAllByRole('button', { name: /^Garder l’article/ })).toHaveLength(0);
-    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-sortie="relie"][aria-checked="true"]')).toBeNull();
-    expect(stockDe(1)).toBe('new');
+    // DP-4 (10.11, « Ça pose aucun problème que un houblon du stock soit ajouter en pièce ??? ») : avant, « Stk » face à « kg » faisait un nouvel article d'office (HEAD : bis) ; l'unité n'est pas une identité.
+    expect(stockDe(1)).toBe('existing');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-sortie="relie"][aria-checked="true"]')).not.toBeNull();
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-sortie="bis"][aria-checked="true"]')).toBeNull();
   });
 });

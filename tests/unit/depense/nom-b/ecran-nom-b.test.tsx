@@ -125,7 +125,8 @@ describe('une ligne « touchée » n\'est jamais reprise', () => {
       await new Promise(r => setTimeout(r, 30));
       expect(garder()).toHaveLength(0);
       expect(screen.queryAllByText(/nom déjà au stock/u)).toHaveLength(0);
-      expect(champNom()).not.toBeNull();
+      /* DP-4 (10.11) : un article du stock porte le nom français de la ligne : la vue FACTURE | STOCK et ses trois sorties s'ouvrent (le brasseur choisit), à la place du seul champ du nom. */
+      expect(champNom() ?? screen.queryByRole('radiogroup', { name: /Article de la ligne 1/ })).not.toBeNull();
     });
   }
 });

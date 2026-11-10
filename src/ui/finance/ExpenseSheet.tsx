@@ -31,7 +31,8 @@ import { lireOptions } from '../depense/optionsDuNom';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
-import { casseUnites,motRelire,chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { compterEnGrammes,erreursPoidsManquant,estUnitePiece,pieceSansPoids,poidsDePiece } from '../depense/poidsPiece';
+import { casseUnites,motRelire,chipsDeLecture,compteLiens,articleDeMemeNom,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
 import { millingParentIndex,isMillingSurcharge,LIGNES_MAX } from '../../services/purchaseEntry';
 import { contexteDeArticle } from '../../services/stockLineMatching';
 import { vueQr,resumeQr,sommeDesBulletins,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
@@ -329,6 +330,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const effDe=(line:PurchaseLineDraft)=>effParId.get(line.id)??line;
   const uniteDe=(line:PurchaseLineDraft)=>uniteEffective(effDe(line));
   const errors=validatePurchase(draftEff,stocks,transactions),duplicates=purchaseDuplicates(draftEff,transactions);
+  errors.push(...erreursPoidsManquant(draftEff.lines)); /* DP-4 : un houblon ou un malt neuf compté en pièce sans poids n'entre pas au stock */
   if(selectedPlan?.recurrence&&!draft.occurrenceId)errors.push('Sélectionne l’échéance de la dépense prévue.');
   // Une ligne simple reprend déjà montant et motif : une seule correction doit
   // être demandée, sans ouvrir les options de stock qui n’y changent rien.
@@ -837,7 +839,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const d=el.querySelector<HTMLDetailsElement>('details');if(d)d.open=true;
     if(champ==='libelle'){const plus=el.querySelector<HTMLDetailsElement>('details[data-dp-plus]');if(plus)plus.open=true;}
     const sel:Record<string,string>={quantite:`[aria-label="Quantité ligne ${n}"]`,unite:`[aria-label="Unité ligne ${n}"],[aria-label="Unité à remplir, ligne ${n}"]`,prix:`[aria-label="Prix ligne ${n}"]`,montant:`[aria-label="Montant ligne ${n}"]`,article:'[data-dp-stock] [aria-label="Article"]',libelle:`[aria-label="Libellé ligne ${n}"]`};
-    const cible=el.querySelector<HTMLElement>(sel[champ]);cible?.scrollIntoView?.({block:'center'});cible?.focus?.({preventScroll:true});
+    const cible=el.querySelector<HTMLElement>(sel[champ]);
+    /* 10.11 (« Ça devrait scroll pour pouvoir voir l'item en entier, et permettre de cliquer sur l'unité et donc fermé le clavier ») : une ligne ajoutée (nom à saisir) monte en haut de la liste, entière, et y revient quand le clavier a réduit l'écran. */
+    if(champ==='libelle'){const enHaut=()=>el.scrollIntoView?.({block:'start'});enHaut();cible?.focus?.({preventScroll:true});const vv=typeof window!=='undefined'?window.visualViewport:null;if(vv){const une=()=>{enHaut();vv.removeEventListener('resize',une);};vv.addEventListener('resize',une);setTimeout(()=>vv.removeEventListener('resize',une),1500);}return;}
+    cible?.scrollIntoView?.({block:'center'});cible?.focus?.({preventScroll:true});
   };
   const aller=(chip:Chip)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
@@ -1083,9 +1088,17 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </RangeeCalcul>;
     /* Les cinq cases de l'unité qui manque : le prix par unité dessous, l'unité du stock proposée (jamais posée). */
     const uniteStock=article&&isReadableUnit(article.unit)?CINQ_UNITES.find(u=>cleUnite(u.valeur)===cleUnite(article.unit))?.valeur:undefined;
-    const casesEl=uniteManque&&!(horsStock&&!STOCK_KINDS.includes(line.kind))?<CasesUnite ref={el=>{if(el)casesRefs.current.set(line.id,el);else casesRefs.current.delete(line.id);}} index={index+1} unites={CINQ_UNITES} propose={uniteStock} prix={prixTexte||undefined} onChoisir={choisirUnite}/>:null;
-    /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. D372 : une unité lisible qui ne s'ajoute pas à l'article (`confianceLigne`) prend le même face à face, sa raison à la place de « unité illisible ». */
+    /* D372 : une unité lisible qui ne s'ajoute pas à l'article (`confianceLigne`) prend le face à face de l'unité qui manque, sa raison à la place de « unité illisible ». */
     const uniteHors=lisible&&article&&rougeDe('unite')&&uniteHorsArticle({description:line.description,quantity:line.quantity,unit:unite},article)?`${motUnite(unite,line.quantity)} ne s’ajoute pas`:undefined;
+    /* DP-4 (10.11) : « 1 pièce = ? g ». Un article compté au poids n'entre jamais en pièce sans poids : le poids se LIT sur le nom (« pellets 100 g », bouton « Compter en g »), sinon la question reste posée (jamais inventé),
+       et l'unité du stock (ou g pour un houblon neuf, Kg pour un malt) est proposée. */
+    const poidsLu=lisible?poidsDePiece({description:line.description,unit:unite,quantity:line.quantity}):undefined;
+    const pieceNeufSansPoids=line.stockAction==='new'&&!horsStock&&lisible&&pieceSansPoids({description:line.description,unit:unite,quantity:line.quantity,kind:line.kind,nameFr:line.nameFr,nomLu:line.nomLu});
+    const questionPoids=(uniteHors&&estUnitePiece(unite)&&!poidsLu)||pieceNeufSansPoids?`1 ${motUnite(unite,1)} = ? ${article?.unit&&cleUnite(article.unit)==='kg'?'Kg':'g'}`:undefined;
+    const uniteProposee=uniteStock??(pieceNeufSansPoids?CINQ_UNITES.find(u=>cleUnite(u.valeur)===(lu?.contexte==='Malt'?'kg':'g'))?.valeur:undefined);
+    const casesEl=uniteManque&&!(horsStock&&!STOCK_KINDS.includes(line.kind))?<CasesUnite ref={el=>{if(el)casesRefs.current.set(line.id,el);else casesRefs.current.delete(line.id);}} index={index+1} unites={CINQ_UNITES} propose={uniteProposee} question={questionPoids} sansStock={!article} prix={prixTexte||undefined} onChoisir={choisirUnite}/>:null;
+    const poidsEl=uniteHors&&poidsLu?<div className="flex justify-end"><BoutonTexte aria={`Compter la ligne ${index+1} en g : 1 ${motUnite(unite,1)} = ${poidsLu.texte}`} onClick={()=>{unitesTouchees.current.add(line.id);quantiteSaisie.current.add(line.id);derniers.current.delete(line.id);calcules.current.delete(line.id);updateLine(line.id,compterEnGrammes(line,poidsLu.grammes));}}>1 {motUnite(unite,1)} = {poidsLu.texte} · compter en g</BoutonTexte></div>:null;
+    /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. */
     const duelUniteEl=uniteManque&&article?<Duel etat="inconnu" symbole="?" note={uniteHors??'unité illisible'}
       facture={<><Petit>extrait · ligne {numeros.get(line.id)??index+1}</Petit><span className="whitespace-pre-wrap break-words rounded-control bg-cave-800 px-1 font-mono text-xs text-cave-50">{line.evidence??line.imprime?.nom??line.description}</span><Petit ton="alert">{uniteHors??'unité illisible'}</Petit></>}
       stock={<><Nom>{article.name}</Nom><Petit>compté en <Marque>{motUnite(article.unit)}</Marque></Petit><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}/>:null;
@@ -1099,7 +1112,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="flex justify-end gap-1.5"><BoutonTexte onClick={()=>{setTranchees(t=>new Set(t).add(`corr:${line.id}`));setNTranchees(n=>n+1);}}>{corr!.qte&&line.quantity!==undefined?`Garder ${fr(line.quantity)}`:'Garder'}</BoutonTexte>
         <BoutonTexte onClick={()=>annulerCorrection(line.id)}>{corr!.qte&&avantQte!==undefined?`Remettre ${fr(avantQte)}`:'Remettre'}</BoutonTexte></div></>:null;
     /* Un « bis » (D215) : la facture face au stock, et les trois sorties, chacune avec sa concordance. Le choix du brasseur reste visible après coup (la ligne reliée au voisin garde ses trois cases). */
-    const voisinDuel=!isMouture&&STOCK_KINDS.includes(line.kind)?(voisins.current.get(line.id)?.article??neuf?.voisin):undefined;
+    /* DP-4 (10.11, « on voit pas la vue stock normalement ? ») : un article du stock qui PORTE LE MÊME NOM que la ligne ouvre la vue FACTURE | STOCK et ses trois sorties dès qu'il y a quelque chose à décider : la ligne est un nouvel article
+       (« bis » proposé ou choisi) ou, reliée à lui, avec une unité qui ne s'y ajoute pas (la proposition « Garder » d'une ligne sans doute garde son face à face D374). */
+    const memeNomStock=!isMouture&&line.kind==='ingredient'?articleDeMemeNom(line,existants):undefined;
+    const decideLeNom=Boolean(memeNomStock)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===memeNomStock!.ref&&Boolean(uniteHors)));
+    const voisinDuel=!isMouture&&STOCK_KINDS.includes(line.kind)?(voisins.current.get(line.id)?.article??neuf?.voisin??(decideLeNom?memeNomStock:undefined)):undefined;
     const enTrio=Boolean(voisinDuel)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===voisinDuel!.ref));
     const trioEl=enTrio&&voisinDuel?(()=>{
       const vd=donneesDArticle(voisinDuel).donnees,luD=lu?.donnees??{},ecarts=ecartsEntre(luD,vd);
@@ -1113,16 +1130,17 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const actif=actifRelie?'relie':actifNeuf?'neuf':'bis';
       const apresRelie=apresReception(draft.lines.map(l=>l.id===line.id?{...l,stockAction:'existing' as const,stockRef:voisinDuel.ref}:l),line.id,voisinDuel,uniteDe);
       const q=line.quantity,qTexte=q===undefined?undefined:`${nombreFr(q)} ${motUnite(unite,q)}`;
-      const facture=<><Nom mono>{line.imprime?.nom??line.description}</Nom>{ecarts.map(e=>{const v=valeur(e,luD);return <Petit key={e}>{v?<Marque>{v}</Marque>:<>{MOT_ECART[e]} <Petit ton="attention">inconnu</Petit></>}</Petit>;})}</>;
-      const stock=actif==='bis'?<><Nom>{nomBis}</Nom>{valeursLues.length?<Petit mono>{valeursLues.join(' · ')}</Petit>:null}<Petit ton="attention">à créer à la confirmation</Petit>{qTexte?<Apres texte={`0 → ${qTexte}`}/>:null}<Petit>à côté de « {voisinDuel.name} »{valeur('alpha',vd)?` ${valeur('alpha',vd)}`:''}</Petit></>
-        :actif==='relie'?<><Nom>{voisinDuel.name}</Nom><Petit>{ecarts.map(e=>valeur(e,vd)).filter(Boolean).join(' · ')||'mêmes données'}</Petit>{apresRelie?<><Apres texte={apresRelie.texte}/><Petit>après réception</Petit></>:null}</>
+      const horsUnite=actif==='relie'&&Boolean(uniteHors),proposeRelie=actifRelie&&Boolean(status.proposed);
+      const facture=<><Nom mono>{line.imprime?.nom??line.description}</Nom>{ecarts.map(e=>{const v=valeur(e,luD);return <Petit key={e}>{v?<Marque>{v}</Marque>:<>{MOT_ECART[e]} <Petit ton="attention">inconnu</Petit></>}</Petit>;})}{horsUnite?<Petit ton="alert">{uniteHors}</Petit>:pieceNeufSansPoids&&actif!=='relie'?<Petit ton="alert">{questionPoids}</Petit>:null}</>;
+      const stock=actif==='bis'?<><Nom>{nomBis}</Nom>{valeursLues.length?<Petit mono>{valeursLues.join(' · ')}</Petit>:null}<Petit ton="attention">à créer à la confirmation</Petit>{qTexte&&!pieceNeufSansPoids?<Apres texte={`0 → ${qTexte}`}/>:null}<Petit>à côté de « {voisinDuel.name} »{valeur('alpha',vd)?` ${valeur('alpha',vd)}`:''}</Petit></>
+        :actif==='relie'?<><Nom>{voisinDuel.name}</Nom><Petit>{ecarts.map(e=>valeur(e,vd)).filter(Boolean).join(' · ')||'mêmes données'}</Petit>{horsUnite?<><Petit>compté en <Marque>{motUnite(voisinDuel.unit)}</Marque></Petit><Apres texte={`${nombreFr(voisinDuel.currentStock)} ${motUnite(voisinDuel.unit)}`}/><Petit>au stock</Petit></>:apresRelie?<><Apres texte={apresRelie.texte}/><Petit>après réception</Petit></>:null}</>
         :<><Nom>nouvel article</Nom><Petit ton="alert">doublon de « {voisinDuel.name} »</Petit>{neuf?.fiche&&neuf.nomFiche?<Petit>fiche {neuf.nomFiche}{neuf.fiche.approchee?' · approchée':''}</Petit>:null}</>;
-      return <><Duel etat={actif==='bis'?'repris':actif==='relie'?'sur':'inconnu'} symbole={actif==='bis'?'≈':actif==='relie'?'=':'+'} note={actif==='bis'?'article voisin, à créer à côté':actif==='relie'?'relié à l’article du stock':'doublon du stock'} facture={facture} stock={stock}/>
+      return <><Duel etat={actif==='bis'?'repris':actif==='relie'?(horsUnite?'inconnu':proposeRelie?'repris':'sur'):'inconnu'} symbole={actif==='bis'?'≈':actif==='relie'?(horsUnite?'?':proposeRelie?'≈':'='):'+'} note={actif==='bis'?'article voisin, à créer à côté':actif==='relie'?(horsUnite?uniteHors:proposeRelie?'article proposé, à garder':'relié à l’article du stock'):'doublon du stock'} facture={facture} stock={stock}/>
         <div role="radiogroup" aria-label={`Article de la ligne ${index+1}`} className="flex flex-col gap-1">
           <Sortie id="bis" titre={`${nomBis}${valeursLues.length?` · ${valeursLues[0]}`:''}`} actif={actifBis} propose={actifBis&&propose} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:undefined});}}
             concordances={[{mot:meme,ton:'ok'},...valeursLues.map(v=>({mot:v,ton:'ok' as const})),...(propose?[{mot:'proposé',ton:'propose' as const}]:[])]}/>
-          <Sortie id="relie" titre={`Relier à ${voisinDuel.name}`} actif={actifRelie} onChoisir={()=>{confirmer();relier(voisinDuel.ref);}}
-            concordances={[{mot:meme,ton:'ok'},...ecarts.map(e=>({mot:valeur(e,vd)??MOT_ECART[e],ton:'ecart' as const}))]}/>
+          <Sortie id="relie" titre={`Relier à ${voisinDuel.name}`} actif={actifRelie} propose={proposeRelie} onChoisir={()=>{confirmer();relier(voisinDuel.ref);}}
+            concordances={[{mot:meme,ton:'ok'},...ecarts.map(e=>({mot:valeur(e,vd)??MOT_ECART[e],ton:'ecart' as const})),...(proposeRelie?[{mot:'proposé',ton:'propose' as const}]:[])]}/>
           <Sortie id="neuf" titre="Nouvel article" actif={actifNeuf} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:voisinDuel.name});}}
             concordances={[{mot:`doublon de ${voisinDuel.name}`,ton:'alert'}]}
             extra={actifNeuf&&neuf?<div className="flex flex-wrap items-center gap-1.5 px-2.5 pb-1 text-xs text-cave-400"><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>»</span></div>:undefined}/>
@@ -1136,14 +1154,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       facture={<><Nom mono>{line.imprime?.nom??line.description}</Nom><Petit>{uniteDiffere?<Marque>{qLue}</Marque>:qLue}</Petit>{status.notes.length?<Petit ton="attention">{status.notes.join(' · ')}</Petit>:null}</>}
       stock={<><Nom>{article.name}</Nom><Petit>compté en {uniteDiffere?<Marque>{motUnite(article.unit)}</Marque>:motUnite(article.unit)}</Petit>{effetArticle?<><Apres texte={effetArticle.texte}/><Petit>après réception</Petit></>:<><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}</>}/>:null;
     /* La nature, en segment ; le stock avant → après réception à sa droite (une ligne reliée, ou un article neuf). */
-    const effetDroite=!enTrio&&!corrigeeEnAttente&&!enProposition&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
+    const effetDroite=!enTrio&&!corrigeeEnAttente&&!enProposition&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible&&!pieceNeufSansPoids?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
     const natureSegEl=segNature?<SegmentNature index={index+1} nature={segNature} onChoisir={changerNature} droite={effetDroite?<Apres texte={effetDroite}/>:undefined}/>:null;
     /* Hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d), le type d'achat en pastilles d'un toucher (D350). */
     const suivreAuStock=()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);/* D371b : une unité qui ne s'y ajoute pas (« pièce » face à l'article en g) n'en fait pas un autre produit : le nom seul relie, l'alerte d'unité suit (jamais un doublon). */const meme=lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu})??(isReadableUnit(uniteDe(line))?lieAuStock(line.description,'',undefined,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined);if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:'new'});};
     const autrePlateau=<BoutonCarre aria="Choisir un autre article" onClick={choisirAutre}/>;
     const retirerEl=<BoutonTexte aria={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}}>Retirer</BoutonTexte>;
     const stockable=STOCK_KINDS.includes(line.kind);
-    const articleEl=isMouture||enTrio||!segNature?null
+    /* DP-4 : relié par le nom avec une unité qui ne s'y ajoute pas (capture 2), la ligne « article « X » · relié · ⇄ · Retirer » reste sous la vue FACTURE | STOCK ; un voisin (D215) ou un nouvel article la laisse au trio. */
+    const trioGardeArticle=enTrio&&line.stockAction==='existing'&&Boolean(uniteHors);
+    const articleEl=isMouture||(enTrio&&!trioGardeArticle)||!segNature?null
       :!stockable||line.stockAction==='none'?<HorsStock index={index+1} types={[]/* D364 suite : le type fin vit dans « Famille », geste rare, plus de pastilles toujours visibles */} courant={line.kind} onType={k=>{if(k!==line.kind)changerNature(k as PurchaseLineDraft['kind']);}} onSuivre={suivreAuStock} peutSuivre={stockable} autre={stockable?autrePlateau:undefined}/>
       :<LigneArticle>{line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autrePlateau}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}{pastille&&neuf.fiche&&neuf.nomFiche?<span data-dp-pastille className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null}</>
         :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
@@ -1161,9 +1181,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {libelleChamp}
       {calculEl}
       {nombresEl}
-      {casesEl}
+      {casesEl}{poidsEl}
       {/* B2 n° 18 : une marque rouge par champ manquant, sur le champ lui-même (bord tireté, son nom dedans) : plus de puce « à remplir » en double dessous. */}
-      {duelUniteEl}{duelCorrEl}{trioEl}{duelProposeEl}
+      {enTrio?null:duelUniteEl}{duelCorrEl}{trioEl}{duelProposeEl}
       {isMouture||estRabais?null:natureSegEl}
       {/* 10.11 (« Un petit bouton ici, next pour aller à l'article suivant ( ça doit respecter le filtrage) ») : « Suivant › » à droite de la rangée article ; referme cette ligne et ouvre la suivante VISIBLE (filtre et recherche compris), dans l'ordre de l'écran. */}
       <div className="flex items-start gap-2"><div className="min-w-0 flex-1">{estRabais?null:articleEl}</div><button type="button" data-dp-suivant aria-label={`Ligne suivante, après la ligne ${index+1}`} onClick={()=>allerSuivante(line.id)} className="ml-auto inline-flex min-h-8 shrink-0 items-center gap-0.5 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50">Suivant<ChevronRight size={16} aria-hidden/></button></div>
