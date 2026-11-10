@@ -1173,7 +1173,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
     const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
     const libelleVide=!line.description.trim();if(libelleVide)libellesVides.current.add(line.id);
-    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onFocus={()=>{libelleFige.current.set(line.id,{groupe:groupeDeLigne(index),sous:sousFamilleLigne(index)});}} onBlur={()=>{if(libelleFige.current.delete(line.id))setPlateaux(n=>n+1);}} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
+    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onFocus={()=>{libelleFige.current.set(line.id,{groupe:groupeDeLigne(index),sous:sousFamilleLigne(index)});}} onBlur={()=>{/* 10.11 (« l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus ») : tant que la ligne est ouverte, elle reste dans sa bande ; elle rejoint la sienne à sa fermeture (surToggle). */if(ouvertesRef.current.get(line.id))return;if(libelleFige.current.delete(line.id))setPlateaux(n=>n+1);}} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
     const mouturePlateau=enfant&&cestMoutureEnPastille&&pastilleMouture?<RangeeMouture ligne={enfantIdx+1} liee={pastilleMouture.liee} aria={pastilleMouture.aria} onBascule={pastilleMouture.onBascule}
       texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${uniteAffichee(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
     const plateauEl=<div data-dp-pu4d className="space-y-1.5">
@@ -1258,7 +1258,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* ------- p3c-3 : un seul plateau ouvert à la fois (les `details` ne sont pas contrôlés : le DOM les ouvre, ceci ferme les autres) ------- */
   const surToggle=(id:string,ouvert:boolean)=>{
     const avant=ouvertesRef.current.get(id);ouvertesRef.current.set(id,ouvert);if(avant!==ouvert)setPlateaux(n=>n+1);
-    if(!ouvert)return;
+    if(!ouvert){if(libelleFige.current.delete(id))setPlateaux(n=>n+1);return;}
     const cible=form.current?.querySelector(`[data-dp-ligne="${id}"]`);
     form.current?.querySelectorAll<HTMLDetailsElement>('details[data-dp-plateau][open]').forEach(d=>{if(d.closest('[data-dp-ligne]')!==cible&&!(cible&&d.contains(cible)))d.open=false;});
   };
