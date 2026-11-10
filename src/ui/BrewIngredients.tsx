@@ -90,8 +90,9 @@ interface AjoutLigne {
  */
 export interface PitchEditor {
   mode?: PitchQuantityChoice['mode'];
-  options: { mode: PitchQuantityChoice['mode']; label: string }[];
-  onMode: (mode: PitchQuantityChoice['mode']) => void;
+  /** `preset` : une quantité toute faite, un seul toucher (une levure sèche : « 1 sachet »). */
+  options: { mode: PitchQuantityChoice['mode']; label: string; preset?: { amount: number; unit: string } }[];
+  onMode: (mode: PitchQuantityChoice['mode'], preset?: { amount: number; unit: string }) => void;
   token: number;
 }
 
@@ -253,7 +254,7 @@ function IngredientRow({
         {item.id === 'yeast' && (pitchActualUnknown
           ? <small>{state.pitchQuantityConfirmation === 'unmeasured' ? 'Réel non mesuré' : state.pitchQuantityConfirmation === 'starter-transferred' ? 'Starter transféré · volume non relevé' : 'Réel non renseigné'} · prévu {item.planned > 0 ? `${f(item.planned, item.unit)} ${item.unit}` : 'absent'}</small>
           : pitchPlannedUnknown
-            ? <small>Quantité prévue absente ou nulle · saisis le réel dans le guide Levure</small>
+            ? <small>Pas de dose prévue · à choisir à l’ajout</small>
             : null)}
         {changed && (
           <small>
@@ -311,17 +312,22 @@ function IngredientRow({
         <div className="brew-dose-edit bz-edition" aria-label={`Ajuster ${nom}`}>
           {pitchChoosing && (
             <div className="bz-levure-choix" role="radiogroup" aria-label="Quantité de levure réellement ajoutée" data-sans-choix={pitch!.mode ? undefined : ''}>
-              {pitch!.options.map((o) => (
-                <button
-                  key={o.mode}
-                  type="button"
-                  role="radio"
-                  aria-checked={pitch!.mode === o.mode}
-                  onClick={() => { onInteract(); pitch!.onMode(o.mode); }}
-                >
-                  {o.label}
-                </button>
-              ))}
+              {pitch!.options.map((o) => {
+                const estPose = (p?: { amount: number; unit: string }) => !!p && pitch!.mode === 'measured' && actual?.amount === p.amount && actual?.unit === p.unit;
+                const presetPose = pitch!.options.some((x) => estPose(x.preset));
+                const coche = o.preset ? estPose(o.preset) : pitch!.mode === o.mode && !(o.mode === 'measured' && presetPose);
+                return (
+                  <button
+                    key={o.label}
+                    type="button"
+                    role="radio"
+                    aria-checked={coche}
+                    onClick={() => { onInteract(); pitch!.onMode(o.mode, o.preset); }}
+                  >
+                    {o.label}
+                  </button>
+                );
+              })}
             </div>
           )}
           {fermentable?.kind === 'grain' && (

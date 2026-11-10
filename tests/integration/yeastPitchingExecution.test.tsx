@@ -208,7 +208,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     fireEvent.change(actualInput, { target: { value: '5,5' } });
     fireEvent.change(within(guide).getByLabelText('Unité de la quantité réelle de levure'), { target: { value: 'g' } });
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
-    expect(screen.getByText(/Quantité mesurée : 5,5 g · Aucune quantité prévue valide/)).toBeInTheDocument();
+    expect(screen.getByText(/Quantité mesurée : 5,5 g · sans dose prévue/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     const saved = finish.mock.calls[0][0] as Batch;

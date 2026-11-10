@@ -289,7 +289,7 @@ describe('Assistant pendant le brassage', () => {
     if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
     fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
-    expect(screen.getByText('OG inconnue · volume en fermenteur inconnu.')).toBeInTheDocument();
+    expect(screen.getByText('Densité initiale pas relevée · volume au fermenteur pas relevé.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
     await waitFor(() => expect(v.finish).toHaveBeenCalledTimes(1));
     expect(v.finish.mock.calls[0][0]).toMatchObject({ og: undefined, volumeBrewedL: undefined });

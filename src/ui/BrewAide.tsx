@@ -31,6 +31,7 @@ export function BrewAide({
   const ref = useRef<HTMLDetailsElement>(null);
   const wasNotified = useRef(false);
   const [notice, setNotice] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
@@ -39,7 +40,7 @@ export function BrewAide({
       setNotice(found);
       // N'ouvrir qu'au passage à l'avertissement : le brasseur garde le droit
       // de refermer la section après l'avoir lue.
-      if (found && !wasNotified.current && !quiet) node.open = true;
+      if (found && !wasNotified.current && !quiet) { node.open = true; setOpen(true); }
       wasNotified.current = found;
     };
     read();
@@ -53,12 +54,13 @@ export function BrewAide({
     return () => observer.disconnect();
   }, []);
   return (
-    <details ref={ref} className={`brew-aide ${className}`}>
+    <details ref={ref} className={`brew-aide ${className}`} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
       <summary>
         {icon}
         <span className="brew-aide-title">{title}</span>
         {summary != null && <span className="brew-aide-summary">{summary}</span>}
-        {notice && <BrewTag tone="due">À vérifier</BrewTag>}
+        {/* Une seule alerte à l'écran (VB-4) : ouvert, le repli montre sa cause (le texte rouge) ; l'étiquette ne sert que replié. */}
+        {notice && !open && <BrewTag tone="due">À vérifier</BrewTag>}
         <ChevronDown size={16} aria-hidden="true" />
       </summary>
       <div className="brew-aide-body">{children}</div>

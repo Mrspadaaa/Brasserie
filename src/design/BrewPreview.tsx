@@ -159,7 +159,13 @@ type View = 'recette' | 'assistant' | 'brassage' | 'eau' | 'materiel';
 export const BrewPreview: React.FC = () => {
   const initialView = (new URLSearchParams(location.search).get('view') as View) || 'recette';
   const [view, setView] = useState<View>(initialView);
-  const [previewRecipe, setPreviewRecipe] = useState(()=>hardwarePreview && !new URLSearchParams(location.search).has('legacy')?adaptRecipeEquipment(NEIPA,CONFIG.brewhouses[0],24):NEIPA);
+  const [previewRecipe, setPreviewRecipe] = useState(()=>{
+    const base = hardwarePreview && !new URLSearchParams(location.search).has('legacy')?adaptRecipeEquipment(NEIPA,CONFIG.brewhouses[0],24):NEIPA;
+    // Banc seulement (?levure=seche-sans-quantite) : une levure sèche sans quantité prévue, comme LOT-018 du brasseur.
+    if (new URLSearchParams(location.search).get('levure') !== 'seche-sans-quantite') return base;
+    const { qty: _qty, unit: _unit, ...sansQuantite } = base.yeast;
+    return { ...base, yeast: { ...sansQuantite, name: 'SafAle US-05', lab: 'Fermentis', strain: 'US-05', form: 'sèche' } } as typeof base;
+  });
   const [batch, setBatch] = useState<Batch>(()=>{
     const fixture = hardwarePreview?{...BATCH,volumeL:previewRecipe.volumeL,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH;
     const stage = new URLSearchParams(location.search).get('stage');

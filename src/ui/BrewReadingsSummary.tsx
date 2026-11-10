@@ -41,7 +41,9 @@ export function BrewReadingsSummary({
   const jour = [...parCle.values()]
     .filter((r) => !(r.stepId === step.id && attendus.has(r.kind)))
     .sort((a, b) => a.at - b.at);
-  if (!jour.length && !cloture && !attendues.length) return null;
+  // VB-4 : les cases « Densité initiale » et « Au fermenteur » disent déjà valeur et cible ; le bilan de clôture les répéterait en chasse fixe.
+  const bilan = attendus.has('densite') && attendus.has('volume') ? undefined : cloture;
+  if (!jour.length && !bilan && !attendues.length) return null;
   const stepLabel = (id?: string) => state.steps.find((s) => s.id === id)?.label ?? '';
   const valeur = (r: BrewDayReading) => (r.kind === 'densite' ? sg(r.value) : String(r.value).replace('.', ','));
   const ici = (Object.keys(READING) as ReadingKind[])
@@ -104,9 +106,9 @@ export function BrewReadingsSummary({
           </div>
         );
       })}
-      {(cloture || jour.length > 0) && (
+      {(bilan || jour.length > 0) && (
         <div className="bz-releve">
-          {cloture}
+          {bilan}
           {jour.map((r) => (
             <span key={readingKey(r)}>
               {READING[r.kind].label}

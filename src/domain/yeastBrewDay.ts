@@ -12,7 +12,7 @@ const known = (n: unknown): n is number => typeof n === 'number' && Number.isFin
 const fmt = (n?: number, digits = 1) => known(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
 
 /** Recipe is the batch's frozen recipe. Measurements remain separate; this helper never writes a journal event. */
-export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phase: YeastBrewPhase, refs: YeastReference[]) {
+export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phase: YeastBrewPhase, refs: YeastReference[], quantityChosen = false) {
   if (recipe.nolo?.enabled || !recipe.yeast?.name) return null;
   const intent = readYeastRecipeDesign(recipe);
   const draft = createYeastRecipeDraft(recipe, refs);
@@ -26,7 +26,10 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
     r.unit === (kind === 'temperature' ? '°C' : kind === 'volume' ? 'L' : 'SG'));
   const measured = { temperature: final('temperature'), volume: final('volume'), gravity: final('densite') };
   const quantityKnown = known(recipe.yeast.qty) && recipe.yeast.qty > 0 && !!recipe.yeast.unit;
-  const quantity = quantityKnown ? `${recipe.yeast.qty!.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit}` : 'Quantité à préciser';
+  // VB-4 : l'alerte « quantité » s'éteint dès que la cause est réglée : dose prévue, quantité réelle posée, ou choix explicite (« sans mesure »).
+  const actualYeastDose = state.additions?.yeast;
+  const quantityResolved = quantityKnown || quantityChosen || (known(actualYeastDose?.amount) && actualYeastDose!.amount > 0 && !!actualYeastDose!.unit);
+  const quantity = quantityKnown ?`${recipe.yeast.qty!.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit}` : 'Quantité à préciser';
   const pitchRecorded = known(state.pitchedAt) || known(state.steps.find(s => s.id === 'ensemencement')?.doneAt);
   const actualYeast = state.additions?.yeast;
   const pitchQuantitySummary = !pitchRecorded ? `Prévu : ${quantity}`
@@ -39,8 +42,10 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
   const pressure = draft.pressureBar;
   const formWarning = yeastRecipeFormWarning(recipe, analysis.candidate?.reference);
   const confirmedDry = recipe.yeast.form === 'sèche' && analysis.candidate?.reference.form === 'sèche';
+  // Le geste en peu de mots (VB-4) : le titre et la forme ne se collent plus (« Préparer la levure / sèche. Renseigner… »).
   if (phase === 'preparation' || phase === 'recipe') instructions.push({ id: 'prepare', title: `Préparer ${quantityKnown ? quantity : 'la levure'}`,
-    detail: `${recipe.yeast.form || 'Forme à préciser'}. ${quantityKnown ? 'Conserver les conditions de préparation de la notice du lot.' : 'Renseigner la quantité et son unité avant l’ensemencement ; aucun sachet ni nombre de cellules n’est supposé.'}`, warning: !quantityKnown });
+    detail: quantityKnown ? `${recipe.yeast.form ? `Levure ${recipe.yeast.form}. ` : ''}Suivre la notice du lot.`
+      : quantityResolved ? 'Quantité choisie à l’ajout.' : 'Quantité à choisir à l’ajout.', warning: !quantityResolved });
   if (phase === 'mash' || phase === 'recipe') {
     const steps = recipe.mash?.steps ?? [], sacch = steps.findIndex(s => known(s.tempC) && s.tempC >= 60 && s.tempC <= 75 && s.durationMin > 0);
     const rest = steps.find((s, i) => i < sacch && s.tempC >= 43 && s.tempC <= 45 && s.durationMin > 0 && !steps.slice(0, i).some(p => p.tempC >= 60));
@@ -56,7 +61,7 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
         ? 'L’ajout est déclaré sans quantité. Le prévu ne devient pas une mesure et la consommation reste à régulariser.'
         : 'Le mode réel est consigné séparément du prévu ; la recette figée reste inchangée.';
     instructions.push({ id: 'pitch', title: pitchRecorded ? `Ensemencement consigné · ${pitchQuantitySummary}` : state.phase === 'awaiting-pitch' ? `En attente de levure · cible ${fmt(pitchPlan.targetC)} °C · ${quantity}` : known(pitchPlan.targetC) ? `Ensemencer à ${fmt(pitchPlan.targetC)} °C · ${quantity}` : `Température d’ensemencement à préciser · ${quantity}`,
-      detail: pitchRecorded ? `Consigne principale prévue : ${fmt(pitchPlan.primaryC)} °C. ${recordedQuantityDetail}` : pitchPlan.warning ?? `Vérifier la température du moût et la méthode choisie pour ${recipe.yeast.name}. Consigne principale : ${fmt(pitchPlan.primaryC)} °C. Le transfert seul ne commence pas la fermentation.`, warning: !known(pitchPlan.targetC) || !quantityKnown || !!pitchPlan.warning });
+      detail: pitchRecorded ? `Consigne principale prévue : ${fmt(pitchPlan.primaryC)} °C. ${recordedQuantityDetail}` : pitchPlan.warning ?? `Vérifier la température du moût et la méthode choisie pour ${recipe.yeast.name}. Consigne principale : ${fmt(pitchPlan.primaryC)} °C. Le transfert seul ne commence pas la fermentation.`, warning: !known(pitchPlan.targetC) || !quantityResolved || !!pitchPlan.warning });
     instructions.push({ id: 'pressure', title: pressure === undefined ? 'Pression précoce à préciser' : pressure === 0 ? 'Départ sans contre-pression · 0 bar rel.' : `Pression précoce prévue · ${fmt(pressure)} bar rel.`,
       detail: pressure === undefined ? 'Aucune valeur n’est déduite de la carbonatation finale.' : 'Réglage prévu pour le début de fermentation, distinct de la carbonatation finale. La pression peut modifier l’expression des esters.' });
     if (analysis.hops.additions.length) instructions.push({ id: 'dry-hop', title: `À cru prévu · ${fmt(analysis.hops.doseGL)} g/L`,

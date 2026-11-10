@@ -22,19 +22,23 @@ const brewDateTime = (value: string | number) => {
 };
 export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible,
   pitchQuantityMode, pitchQuantityAmount, pitchQuantityUnit, preparationExecution, plannedBrewDate,
-  onPitchQuantityModeChange, onPitchQuantityAmountChange, onPitchQuantityUnitChange }: {
+  onPitchQuantityModeChange, onPitchQuantityAmountChange, onPitchQuantityUnitChange, onChooseQuantity, quantityChosen }: {
   recipe: TrialRecipe; state: BrewDayState; phase: YeastBrewPhase; onMeasure?: (kind: 'temperature' | 'volume' | 'densite') => void;
   pitchQuantityMode?: PitchQuantityChoice['mode']; pitchQuantityAmount?: number; pitchQuantityUnit?: string;
   preparationExecution?: YeastPreparationExecution; plannedBrewDate?: string;
   onPitchQuantityModeChange?: (mode: PitchQuantityChoice['mode']) => void;
   onPitchQuantityAmountChange?: (amount: number | undefined) => void;
   onPitchQuantityUnitChange?: (unit: string) => void;
+  /** Le geste de l'alerte « quantité » : ouvre l'éditeur de la ligne Levure (VB-4, « une alerte dit le geste et l'ouvre »). */
+  onChooseQuantity?: () => void;
+  /** Une quantité (réelle ou « sans mesure ») est choisie : l'alerte « quantité » s'éteint. */
+  quantityChosen?: boolean;
   /** Dans la conduite, l'aide passe sous les ingrédients et s'ouvre à la demande. */
   collapsible?: boolean;
 }) {
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const refs = useMemo(() => yeastReferences(saved), [saved]);
-  const guide = useMemo(() => buildYeastBrewDay(recipe, state, phase, refs), [recipe, state, phase, refs]);
+  const guide = useMemo(() => buildYeastBrewDay(recipe, state, phase, refs, !!quantityChosen), [recipe, state, phase, refs, quantityChosen]);
   if (!guide || !guide.instructions.length) return null;
   const currentPreparation = recipe.yeast.pitching?.preparation;
   const starterPlan = preparationExecution?.plan ?? currentPreparation;
@@ -55,6 +59,7 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible
     {guide.formWarning && <p className="yeast-notice" data-notice>{guide.formWarning}</p>}
     <dl className="yeast-brew-instructions">{guide.instructions.map(item => <div key={item.id} data-instruction={item.id}>
       <dt className={item.warning ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={item.warning || undefined}>{item.title}</dt><dd>{item.detail}</dd>
+      {item.id === 'prepare' && item.warning && onChooseQuantity && <button type="button" className="yeast-geste" onClick={onChooseQuantity}>Choisir la quantité</button>}
     </div>)}</dl>
     {phase === 'finish' && starterPlan && <section aria-label="Starter du brassin" className="rounded-control border border-cave-800 p-2 space-y-2">
       <h4 className="text-sm font-semibold text-cave-50">Starter · {starterPlan.protocol.label}</h4>
@@ -145,12 +150,13 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible
       </dl>
       {guide.observedDoseG && <p className="text-[13px]">Repère fabricant pour {fmt(guide.measured.volume?.value)} L relevés : {fmt(guide.observedDoseG.range.min)}–{fmt(guide.observedDoseG.range.max)} g. Quantité prévue : {guide.quantity}.</p>}
     </>}
-    <details><summary>Programme, ajouts à cru et sources</summary><div>
+    {/* Au jour de brassage, pas de cockpit (graphe J0–J10, tableau de dry hop, sources en anglais) : il reste dans la fiche recette. */}
+    {phase === 'recipe' && <details><summary>Programme, ajouts à cru et sources</summary><div>
       <FermentationTemperatureChart compact steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />
       {guide.hops.additions.length > 0 && <table className="yeast-contacts"><caption>Ajouts prévus dans le brassin</caption><thead><tr><th>Houblon</th><th>Phase</th><th>Contact</th></tr></thead><tbody>{guide.hops.additions.map((h, i) => <tr key={i}><th scope="row">{h.name}<span className="block yeast-small">{h.dayOffset == null ? 'Jour à préciser' : `J+${fmt(h.dayOffset)}`} · {Units.format(h.weightG, 'g')}</span></th><td>{h.phase === 'active' ? 'Active' : h.phase === 'post' ? 'Après fermentation' : 'À préciser'}</td><td>{fmt(h.contactHours)} h · {fmt(h.temperatureC)} °C</td></tr>)}</tbody></table>}
       <p className="yeast-small">Consignes prévues. Les relevés et les ajouts réels restent dans le journal.</p>
       {guide.sources.map((s, i) => <p key={i} className="yeast-small">{/^https?:\/\//.test(s.reference) ? <a className="yeast-source" href={s.reference} target="_blank" rel="noreferrer">{s.author} · {s.title}</a> : `${s.author} · ${s.title}`}</p>)}
-    </div></details>
+    </div></details>}
     {(phase === 'preparation' || phase === 'finish' || phase === 'recipe') && <YeastStrainDetails information={guide.strainInformation} />}
   </>;
   if (collapsible) return <BrewAide title={`Levure · ${guide.name}`} summary={guide.goal ?? 'conduite prévue'}>{body}</BrewAide>;

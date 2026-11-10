@@ -617,7 +617,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const pitchChoiceValid = validPitchQuantityChoice(currentPitchChoice);
   const plannedPitchSummary = typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit
     ? `Dose prévue : ${Units.format(recipe.yeast.qty, recipe.yeast.unit)}`
-    : 'Aucune quantité prévue valide';
+    : 'sans dose prévue';
   const confirmed = confirmedOther + (ingredients.some(i => i.id === 'yeast') &&
     (state.pitchedAt != null || state.additions?.yeast?.doneAt != null || pitchChoiceValid) ? 1 : 0);
   const pitchQuantityConsequence = currentPitchChoice?.mode === 'measured'
@@ -629,8 +629,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         : currentPitchChoice?.mode === 'unmeasured'
           ? `Ajout confirmé sans mesure de quantité ; aucun stock ne sera déduit à partir de la dose prévue (${plannedPitchSummary}).`
           : state.pitchedAt != null ? 'Quantité réelle historique non renseignée.' : 'Quantité réelle à confirmer dans le guide Levure.';
-  const selectPitchQuantityMode = (mode: PitchQuantityChoice['mode']) => {
+  const selectPitchQuantityMode = (mode: PitchQuantityChoice['mode'], preset?: { amount: number; unit: string }) => {
     setPitchQuantityMode(mode);
+    if (mode === 'measured' && preset) {
+      // « 1 sachet » : une quantité choisie d'un toucher (une levure sèche sans dose prévue) ; la clôture la prend pour une quantité mesurée.
+      setPitchQuantityAmount(preset.amount);
+      setPitchQuantityUnit(preset.unit);
+      update(s => ({ ...s, additions: { ...s.additions, yeast: { ...s.additions?.yeast, amount: preset.amount, unit: preset.unit } } }));
+      return;
+    }
     if (mode === 'starter-transferred') {
       setPitchQuantityAmount(undefined);
       setPitchQuantityUnit('L');
@@ -710,6 +717,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     onMode: selectPitchQuantityMode,
     options: [
       ...(plannedPitchUsable ? [{ mode: 'planned' as const, label: 'Prévue ajoutée' }] : []),
+      // Une levure sèche se dose au sachet : sans dose prévue, « 1 sachet » est un toucher, pas quatre gestes (VB-4).
+      ...(!plannedPitchUsable && recipe.yeast?.form === 'sèche' ? [{ mode: 'measured' as const, label: '1 sachet', preset: { amount: 1, unit: 'sachet' } }] : []),
       { mode: 'measured' as const, label: 'Mesurée' },
       { mode: 'unmeasured' as const, label: 'Sans mesure' },
       ...(canTransferStarter ? [{ mode: 'starter-transferred' as const, label: 'Starter transféré' }] : [])
@@ -760,7 +769,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     else if (lastStep) {
       if (!pitchChoiceValid) {
         // La quantité réellement ajoutée reste un choix explicite : on ouvre l'éditeur de la ligne Levure, à l'écran, avec ses choix.
-        setNotice('Choisis la quantité de levure réellement ajoutée.');
+        // Aucun bandeau en haut de page (il était vert, la couleur de la réussite, et loin de la ligne) : l'éditeur parle sur sa ligne.
         setPitchEditToken((t) => t + 1);
         return;
       }
@@ -838,7 +847,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   );
   const nextStepIngredients = nextStep && !isConsulting
     ? brewIngredients(executionRecipe).filter(
-        (i) => i.planned > 0 && ingredientAppliesToStep(i, { area: areaOf(nextStep.id), stepId: nextStep.id }) &&
+        // La levure sans dose prévue figure quand même dans « Ensuite » (m2 : le brasseur voit ce qui vient), avec « à choisir ».
+        (i) => (i.planned > 0 || i.id === 'yeast') && ingredientAppliesToStep(i, { area: areaOf(nextStep.id), stepId: nextStep.id }) &&
           // « Ensuite » ne répète pas ce que l'étape en cours montre déjà (grains d'un palier au suivant).
           !ingredientAppliesToStep(i, { area: areaOf(current.id), stepId: current.id })
       )
@@ -848,7 +858,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     ? nextGrains
       ? `${doseFr(nextStepIngredients.reduce((sum, i) => sum + (actualAmount(i, state) ?? i.planned), 0), 'kg')} kg`
       : [
-          nextStep.tempC != null ? `${fr(nextStep.tempC)} °C` : '',
+          nextStep.tempC != null ? `${fr(nextStep.tempC)} °C` : nextStep.id === 'ensemencement' && recipe.yeast?.pitchTempC != null ? `${fr(recipe.yeast.pitchTempC)} °C` : '',
           isBoilStep(nextStep) ? `${boilMinutes(state, recipe)} min` : nextStep.durationMin > 0 ? `${nextStep.durationMin} min` : ''
         ].filter(Boolean).join(' · ')
     : '';
@@ -1572,8 +1582,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     <div className="bz-row is-apercu" key={i.id}>
                       <div className="bz-nom"><strong>{state.additions?.[i.id]?.replacement?.name ?? i.name}</strong></div>
                       <span className="bz-dose is-lecture">
-                        <strong>{doseFr(actualAmount(i, state) ?? i.planned, i.unit)}</strong>
-                        <small>{i.unit}</small>
+                        <strong>{i.planned > 0 || state.additions?.[i.id]?.amount != null ? doseFr(actualAmount(i, state) ?? i.planned, i.unit) : 'à choisir'}</strong>
+                        <small>{i.planned > 0 || state.additions?.[i.id]?.amount != null ? i.unit : ''}</small>
                       </span>
                       <span className="bz-case is-apercu" aria-hidden="true" />
                     </div>
@@ -1693,6 +1703,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   onPitchQuantityModeChange={selectPitchQuantityMode}
                   onPitchQuantityAmountChange={updatePitchQuantityAmount}
                   onPitchQuantityUnitChange={updatePitchQuantityUnit}
+                  onChooseQuantity={() => setPitchEditToken((t) => t + 1)}
+                  quantityChosen={pitchChoiceValid}
                 />
               )}
               <BrewAide title="Houblons" summary="vigilances et potentiel">
@@ -1892,7 +1904,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         className="brew-confirm"
         onClose={() => setConfirmFinish(false)}
         title={state.pitchedAt != null ? 'Finaliser la synchronisation ?' : 'Confirmer l’ajout de levure ?'}
-        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${nombreFr(finishedReadings.volume.value, 1)} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
+        what={`${finishedReadings.gravity ? `OG ${finishedReadings.gravity.value.toFixed(3).replace('.', ',')}` : 'Densité initiale pas relevée'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${nombreFr(finishedReadings.volume.value, 1)} L à froid en fermenteur` : 'volume au fermenteur pas relevé'}.`}
         consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${nombreFr(pitchTemperature, 1)} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
         confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
         onConfirm={async () => {
