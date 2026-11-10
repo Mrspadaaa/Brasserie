@@ -5,7 +5,7 @@
  */
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { webcrypto } from 'node:crypto';
 
 const state = vi.hoisted(() => ({ stocks: { rawMaterials: [] as any[], cleaning: [] as any[], equipment: [] as any[] }, writes: [] as any[], scanned: vi.fn() }));
@@ -46,6 +46,21 @@ describe('DP-4 — la ligne « Idaho 7 » en pièce face au houblon « Idaho 7 �
   const ligne = (view: ReturnType<typeof render>) => view.container.querySelector<HTMLElement>('[data-dp-ligne="line-1"]')!;
   const sortie = (view: ReturnType<typeof render>, id: string) => ligne(view).querySelector<HTMLElement>(`[data-dp-sortie="${id}"]`);
 
+  it('10.11 : une ligne ajoutée nommée « Idaho 7 » reste dans sa bande tant qu’elle est ouverte (le nom quitté compris) ; elle rejoint Houblons à sa fermeture', async () => {
+    const view = await lire('Idaho 7', 'pièce', [idaho()]);
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter une ligne/ }));
+    const champ = await screen.findByRole('textbox', { name: 'Libellé ligne 2' });
+    const neuve = () => champ.closest<HTMLElement>('[data-dp-ligne]')!;
+    const bande = neuve().getAttribute('data-dp-groupe');
+    fireEvent.focusIn(champ);
+    fireEvent.change(champ, { target: { value: 'Idaho 7' } });
+    fireEvent.focusOut(champ);
+    expect(neuve().getAttribute('data-dp-groupe')).toBe(bande);
+    expect((neuve().querySelector('details') as HTMLDetailsElement).open).toBe(true);
+    const id = neuve().getAttribute('data-dp-ligne')!;
+    fireEvent.click(neuve().querySelector<HTMLElement>('[data-dp-suivant]')!);
+    await waitFor(() => expect(view.container.querySelector(`[data-dp-ligne="${id}"]`)!.getAttribute('data-dp-groupe')).toBe('houblon'));
+  });
   it('la vue FACTURE | STOCK et les trois sorties paraissent, « Relier » est proposé ; jamais « Idaho 7 bis » d’office ni « 0 → 1 pièce »', async () => {
     const view = await lire('Idaho 7', 'pièce', [idaho()]);
     const l = ligne(view);
