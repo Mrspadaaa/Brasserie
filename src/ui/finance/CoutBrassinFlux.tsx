@@ -86,6 +86,18 @@ export function fluxDuBrassin(s: BrewBudgetSnapshot, estimes: Partial<Record<Noe
 }
 
 /**
+ * Une source est INCOMPLÈTE quand une destination qu'elle alimenterait est inconnue : stock = un ingrédient sans prix ; année = usure ou charges fixes sans volume annuel ;
+ * à payer = n'importe quelle destination inconnue (elle peut encore s'acheter). Sa somme est alors « au moins » (≥), et « ? » si elle est nulle : jamais « 0,00 » (revue du 10.11).
+ */
+export function sourceIncomplete(id: SourceId, destinations: Destination[]): boolean {
+  const inconnues = destinations.filter(d => d.montant === null && !d.horsRecette);
+  if (id === 'now') return inconnues.length > 0;
+  if (id === 'stock') return inconnues.some(d => d.id === 'malt' || d.id === 'q' || d.id === 'autres');
+  return inconnues.some(d => d.id === 'mat' || d.id === 'fix');
+}
+export const montantSource = (valeur: number, incomplete: boolean): string => !incomplete ? fr(valeur) : valeur > 0 ? `≥ ${fr(valeur)}` : '?';
+
+/**
  * Les trois parts du litre, au centime, sommant au litre affiché (plus grand reste ; égalité : l'ordre payé, à payer, année).
  * `complet` est le litre déjà arrondi (`coutLitre(...).affiche.complet`) : l'arrondi se fait une seule fois, à la fin.
  */
@@ -99,6 +111,8 @@ export function litreTroisTemps(notions: Pick<TroisNotions, 'dejaPaye' | 'aPayer
 }
 
 const PX = 1.62, MIN = 12, X0 = 112, X1 = 236, W = 10, TOP = 10, H_MAX = 330, PAS = 36;
+/** Pas minimal entre deux sources : leur étiquette (nom + montant, parfois sur trois lignes) tient dedans ; trois sources inconnues ne se superposent plus (revue du 10.11). */
+const PAS_SOURCE = 60;
 const SRC: Array<{ id: SourceId; nom: string; c: string }> = [{ id: 'stock', nom: 'Déjà payé', c: 'var(--cbf-stock)' }, { id: 'now', nom: 'À payer', c: 'var(--cbf-now)' }, { id: 'an', nom: 'Coût de l’année', c: 'var(--cbf-an)' }];
 
 export interface CoutBrassinFluxProps {
@@ -127,10 +141,13 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
     const sh: Record<string, number> = {}, dh: Record<string, number> = {};
     flux.forEach(f => { const t = haut(f.montant); sh[f.source] = (sh[f.source] ?? 0) + t; dh[f.dest] = (dh[f.dest] ?? 0) + t; });
     let y = TOP; const sp: Record<string, { y: number; h: number; o: number }> = {};
-    SRC.forEach(s => { const h = sh[s.id] ?? MIN; sp[s.id] = { y, h, o: 0 }; y += h + 26; });
-    const finSources = y;
+    SRC.forEach(s => { const h = sh[s.id] ?? MIN; sp[s.id] = { y, h, o: 0 }; y += Math.max(h + 26, PAS_SOURCE); });
+    // Les étiquettes de source gardent 60 px entre leurs centres, même si une barre haute a poussé sa voisine moins loin (comme les destinations).
+    const sly: Record<string, number> = {}; let prec = 24 - PAS_SOURCE; // la première étiquette (48 px) ne passe pas au-dessus du bord
+    SRC.forEach(s => { const c = Math.max(sp[s.id].y + sp[s.id].h / 2, prec + PAS_SOURCE); sly[s.id] = c; prec = c; });
+    const finSources = Math.max(y, prec + 30);
     y = TOP; const dp: Record<string, { y: number; h: number; o: number }> = {};
-    destinations.forEach(d => { const h = d.montant === null ? MIN : Math.max(dh[d.id] ?? 0, MIN); dp[d.id] = { y, h, o: 0 }; y += h + 7; });
+    destinations.forEach(d => { const h = d.montant === null ? MIN : Math.max(dh[d.id] ?? 0, MIN); dp[d.id] = { y, h, o: 0 }; y += Math.max(h + 7, PAS); });
     // Étiquettes de destination : un pas de 36 px (la zone tactile), pour que deux zones voisines se touchent sans se chevaucher (constat 10, repris par fz).
     const ly: number[] = [];
     destinations.forEach((d, i) => { const p = dp[d.id]; let c = p.y + p.h / 2; if (i && c < ly[i - 1] + PAS) c = ly[i - 1] + PAS; ly.push(c); });
@@ -141,7 +158,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
       const xm = (X0 + W + X1) / 2;
       return { f, d: `M${X0 + W} ${y0} C${xm} ${y0} ${xm} ${y1} ${X1} ${y1} L${X1} ${y1 + t} C${xm} ${y1 + t} ${xm} ${y0 + t} ${X0 + W} ${y0 + t} Z` };
     });
-    return { sp, dp, hauteur, rubans, ly };
+    return { sp, dp, hauteur, rubans, ly, sly };
   }, [flux, destinations]);
 
   const pale = (s: SourceId) => selection !== null && selection !== s;
@@ -163,15 +180,21 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
       <svg className="cbf-flux" viewBox={`0 0 390 ${geo.hauteur}`} preserveAspectRatio="none" aria-hidden="true">
         <defs><pattern id="cbf-hach" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--cbf-fond)" /><rect width="2" height="5" fill="var(--cbf-trait)" /></pattern></defs>
         {geo.rubans.map(({ f, d }, i) => <path key={i} d={d} fill={SRC.find(s => s.id === f.source)!.c} opacity={pale(f.source) ? 0.05 : 0.3} />)}
-        {destinations.filter(d => d.montant === null).map(d => { const p = geo.dp[d.id]; const a = geo.sp.now; return <path key={`l${d.id}`} d={`M${X0 + W} ${a.y + a.h - 2} C174 ${a.y + a.h} 174 ${p.y + 6} ${X1} ${p.y + 6}`} fill="none" stroke="var(--cbf-trait)" strokeWidth="1.5" strokeDasharray="4 3" opacity={selection && selection !== 'now' ? 0.12 : 1} />; })}
-        {SRC.map(s => { const p = geo.sp[s.id]; return <rect key={s.id} x={X0} y={p.y} width={W} height={p.h} rx="2" fill={s.c} opacity={pale(s.id) ? 0.12 : 1} />; })}
+        {destinations.filter(d => d.montant === null).map((d, i, inconnus) => { const p = geo.dp[d.id]; const a = geo.sp.now;
+          // Les départs se répartissent sur la hauteur de la source : sept pointillés ne naissent pas du même point (une boule noire).
+          const dep = a.y + 2 + (inconnus.length > 1 ? (a.h - 4) * i / (inconnus.length - 1) : (a.h - 4) / 2);
+          return <path key={`l${d.id}`} d={`M${X0 + W} ${dep} C174 ${dep} 174 ${p.y + 6} ${X1} ${p.y + 6}`} fill="none" stroke="var(--cbf-trait)" strokeWidth="1.5" strokeDasharray="4 3" opacity={selection && selection !== 'now' ? 0.12 : 1} />; })}
+        {SRC.map(s => { const p = geo.sp[s.id]; const inconnue = !flux.some(f => f.source === s.id) && sourceIncomplete(s.id, destinations);
+          return inconnue
+            ? <rect key={s.id} x={X0} y={p.y} width={W} height={p.h} rx="2" fill="url(#cbf-hach)" stroke="var(--cbf-trait)" opacity={pale(s.id) ? 0.3 : 1} data-inconnu="true" />
+            : <rect key={s.id} x={X0} y={p.y} width={W} height={p.h} rx="2" fill={s.c} opacity={pale(s.id) ? 0.12 : 1} />; })}
         {destinations.map(d => { const p = geo.dp[d.id]; return d.montant === null
           ? <rect key={d.id} x={X1} y={p.y} width={W} height={12} rx="2" fill="url(#cbf-hach)" stroke="var(--cbf-trait)" />
           : <rect key={d.id} x={X1} y={p.y} width={W} height={p.h} rx="2" fill={d.couleur} />; })}
       </svg>
-      {SRC.map(s => { const p = geo.sp[s.id], c = p.y + p.h / 2; return <button key={s.id} type="button" className={`cbf-src${pale(s.id) ? ' cbf-pale' : ''}`} data-s={s.id} data-pale={pale(s.id) ? 'true' : undefined}
+      {SRC.map(s => { const c = geo.sly[s.id]; return <button key={s.id} type="button" className={`cbf-src${pale(s.id) ? ' cbf-pale' : ''}`} data-s={s.id} data-pale={pale(s.id) ? 'true' : undefined}
         aria-pressed={selection === s.id} onClick={() => onSelect(selection === s.id ? null : s.id)} style={{ top: Math.max(0, Math.round(c - 24)) }}>
-        <small><i style={{ background: s.c }} />{s.nom}{s.id === 'now' && assujetti ? ' (HT)' : ''}</small><b className="cbf-m">{fr(sources[s.id])}</b></button>; })}
+        <small><i style={{ background: s.c }} />{s.nom}{s.id === 'now' && assujetti ? ' (HT)' : ''}</small><b className="cbf-m">{montantSource(sources[s.id], sourceIncomplete(s.id, destinations))}</b></button>; })}
       {destinations.map((d, i) => <button key={d.id} type="button" className={`cbf-dst${d.estime ? ' cbf-ex' : ''}${d.montant === null ? ' cbf-q' : ''}${destPale(d) ? ' cbf-pale' : ''}`} data-d={d.id} data-pale={destPale(d) ? 'true' : undefined}
         style={{ top: Math.round(geo.ly[i]) }} onClick={() => onNoeud(d.id)} aria-label={`${d.label} : ${d.montant === null ? (d.horsRecette ? 'hors recette' : 'à compléter') : `${fr(d.montant)} CHF`}`}>
         <span>{d.label}</span><b className="cbf-m">{d.montant === null ? '?' : fr(d.montant)}</b></button>)}
@@ -180,7 +203,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
     <div className="cbf-resw">
     {selection === 'stock' || selection === 'an'
       ? <div className={`cbf-res cbf-sel-${selection}`} data-booster="deux-nombres">
-        <div className="cbf-row"><span className="cbf-div">{selection === 'stock' ? 'Déjà payé' : 'Coût de l’année'}</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{fr(sources[selection])}</span><span className="cbf-u">CHF<b>{selection === 'stock' ? 'en stock' : 'part du brassin'}</b></span></div>
+        <div className="cbf-row"><span className="cbf-div">{selection === 'stock' ? 'Déjà payé' : 'Coût de l’année'}</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{montantSource(sources[selection], sourceIncomplete(selection, destinations))}</span><span className="cbf-u">CHF<b>{selection === 'stock' ? 'en stock' : 'part du brassin'}</b></span></div>
         <div className="cbf-quand">
           {flux.filter(f => f.source === selection).map(f => <span key={f.dest}>{destinations.find(d => d.id === f.dest)?.label.toLocaleLowerCase('fr-CH')} <b className="cbf-m">{fr(f.montant)}</b></span>)}
         </div>
@@ -196,8 +219,8 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
       </div>
       : <div className="cbf-res" data-booster="deux-nombres">
         <div className="cbf-row">
-          <span className="cbf-div"><span className="cbf-m">{fr(total)}</span><b className="cbf-m">÷ {litres ? `${frL(litres)} L` : '? L'}</b></span><span className="cbf-eq">=</span>
-          <span className="cbf-big cbf-m" aria-label={litre ? `${fr(litre.affiche.complet)} CHF par litre` : 'Coût du litre inconnu'}>{litre ? fr(litre.affiche.complet) : '—'}</span>
+          <span className="cbf-div"><span className="cbf-m">{partiel && !litre ? '≥ ' : ''}{fr(total)}</span><b className="cbf-m">÷ {litres ? `${frL(litres)} L` : '? L'}</b></span><span className="cbf-eq">=</span>
+          <span className={`cbf-big cbf-m${litre ? '' : ' cbf-big-q'}`} aria-label={litre ? `${fr(litre.affiche.complet)} CHF par litre` : 'Coût du litre inconnu'}>{litre ? fr(litre.affiche.complet) : '—'}</span>
           <span className="cbf-u">CHF/L<em>{litre ? `${emballageCompris ? 'emballage compris · ' : ''}estimé` : motifSansLitre === 'litres' ? 'litres nets à confirmer' : 'prix à compléter'}</em>{litre && horsRecette ? <em>sans houblon ni levure</em> : null}</span>
         </div>
       </div>}
@@ -207,7 +230,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
       {parts
         ? <><div className="cbf-lit" data-booster="litre-trois-temps">{SRC.map((s, i) => <span key={s.id} style={{ flex: Math.max(parts[i], 0.001), background: s.c, opacity: selection && selection !== s.id ? 0.25 : 1 }} />)}</div>
           <div className="cbf-litl">{parts.map((v, i) => <span key={i} style={{ flex: Math.max(v / parts.reduce((a, b) => a + b, 0), 0.14) }}>{libelleParts[i]} <b className="cbf-m">{fr(v)}</b></span>)}</div></>
-        : <><div className="cbf-lit cbf-lit-vide" aria-hidden="true" /><div className="cbf-litl"><span>—</span></div></>}
+        : <><div className="cbf-lit cbf-lit-vide" aria-hidden="true" /><div className="cbf-litl cbf-litl-q">{libelleParts.map(l => <span key={l}>{l} <b className="cbf-m">?</b></span>)}</div></>}
     </div>
     {children}
   </div>;

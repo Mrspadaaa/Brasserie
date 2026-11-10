@@ -146,7 +146,7 @@ export function Previsions(p: PrevisionsProps) {
       : carte(eAvec, titre, null)}
     <div className="prv-g" ref={zone}>
       {affiche.marches.length === 0 && <p className="prv-vide">Aucune sortie prévue sur {horizon === 365 ? '12 mois' : `${horizon} jours`}.</p>}
-      <EscalierSvg e={affiche} fantome={fantome} nomFantome={planTeste ? `${modeSans ? 'avec' : 'sans'} ${planTeste.title.toLowerCase()}` : undefined} largeur={largeur} testeId={modeSans ? null : testeId} sousLignes={sousLignes} asOf={asOf} onEtiquette={ouvrirItem} onRestes={setRestes} />
+      <EscalierSvg e={affiche} fantome={fantome} nomFantome={planTeste ? `${modeSans ? 'avec' : 'sans'} ${planTeste.title.toLowerCase()}` : undefined} largeur={largeur} testeId={modeSans ? null : testeId} sousLignes={sousLignes} asOf={asOf} onEtiquette={ouvrirItem} onLot={() => setAnnexe(true)} onRestes={setRestes} />
     </div>
     <div className="prv-leg"><span><i className="prv-dp" />À payer <b className="prv-m">{montant(n.aPayer)}</b></span><span><i className="prv-dv" />Prévu <b className="prv-m">~ {montant(n.prevu)}</b></span></div>
     {restes.length > 0 && <button type="button" className="prv-restes" aria-label={`Voir ${restes.length} ${restes.length > 1 ? 'sorties' : 'sortie'} de plus dans la liste`} onClick={() => setAnnexe(true)}>+ {restes.length} {restes.length > 1 ? 'sorties' : 'sortie'}<ChevronRight size={14} aria-hidden="true" /></button>}

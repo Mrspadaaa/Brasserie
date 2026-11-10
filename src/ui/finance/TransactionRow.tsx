@@ -5,7 +5,7 @@ import { formatCHF, isActiveTransaction, paymentState, todayISO, transactionAmou
 import { FinanceService } from '../../services/financeService';
 import { CATEGORY_LABELS, idFor } from './FinanceForms';
 import { amountOnly } from './financeFormat';
-import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, paiementRapide, pieceDe } from './operations/calculs';
+import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, paiementRapide, pieceDe, tiersAAfficher } from './operations/calculs';
 import { GROUPES, type GroupeId } from './operations/groupes';
 import './operations.css';
 
@@ -43,7 +43,8 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   const entrant = sens === 'in';
   const montant = transactionAmount(transaction);
   const categorie = CATEGORY_LABELS[transaction.category] ?? transaction.category;
-  const tiers = transactionVendor(transaction);
+  // Le client déjà écrit dans le titre (« Vente 10 × Bière — Restaurant du Lac ») ne se répète pas après lui (revue du 10.11).
+  const tiers = tiersAAfficher(transaction.description, transactionVendor(transaction));
   const etat = etatDeLigne(transaction, state, entrant, payments, aujourdhui);
   const piece = pieceDe(transaction);
   const actif = isActiveTransaction(transaction) && transaction.finance?.refundApplication !== 'offset';

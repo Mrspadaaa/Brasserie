@@ -8,6 +8,8 @@ import { montant } from '../previsions/format';
 import type { Ctx } from './ctx';
 
 const H = 286;
+/** Hauteur (px) sous laquelle l'écart ne contient plus son texte : perte = résultat 28 + « CHF perdus » + badge du stock 28 + marges ; gain = résultat 24 + « CHF gagnés ». */
+export const ECART_MIN_TEXTE_PERTE = 96, ECART_MIN_TEXTE_GAIN = 56;
 
 export function Piste({ etapes, ici, onGo }: { etapes: EtapeEtat[]; ici?: number; onGo: (n: number) => void }) {
   const now = premiereNonPrete(etapes)?.n;
@@ -32,6 +34,7 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
   const vide = col.entreCents === 0 && col.totalDepenseCents === 0;
   const stockLabel = c.report.inventoryChangeCents == null ? '?' : `${c.report.inventoryChangeCents > 0 ? '+' : ''}${montant(c.report.inventoryChangeCents)}`;
   const perte = col.perteAvantStockCents;
+  const ecartMince = ech.hEcart < ECART_MIN_TEXTE_PERTE, gainMince = ech.hEcart < ECART_MIN_TEXTE_GAIN;
   return <div className="ann-wrap">
     <section>
       <div className="ann-top">
@@ -44,7 +47,9 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
       {vide ? <p className="ann-vide">Rien de noté pour {c.year}.</p> : <div className="ann-scene" role="img" aria-label={`${c.year} : entré ${montant(col.entreCents)}, dépensé plus usure ${montant(col.totalDepenseCents)}, ${perte < 0 ? 'perdu' : 'gagné'} ${montant(Math.abs(perte))} avant le stock`}>
         <div className="ann-col">
           <div className="ann-hc"><span>&nbsp;</span></div>
-          {ech.signe === 'perte' && <div className="ann-trou" style={{ height: ech.hEcart }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><i className="ann-stock ann-m">Stock au 31 déc. <b>{stockLabel}</b></i></div>}
+          {ech.signe === 'perte' && !ecartMince && <div className="ann-trou" style={{ height: ech.hEcart }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><i className="ann-stock ann-m">Stock au 31 déc. <b>{stockLabel}</b></i></div>}
+          {/* Écart trop mince pour porter son texte (g6 : le trou est à l'échelle, jamais gonflé) : le trou reste un liseré hachuré à sa vraie hauteur, le résultat et le stock se posent juste au-dessus. */}
+          {ech.signe === 'perte' && ecartMince && <><div className="ann-trou-txt"><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><i className="ann-stock ann-stock-seul ann-m">Stock au 31 déc. <b>{stockLabel}</b></i></div><div className="ann-trou ann-trou-mince" style={{ height: ech.hEcart }} aria-hidden="true" /></>}
           {ech.signe !== 'perte' && <i className="ann-stock ann-stock-seul ann-m">Stock au 31 déc. <b>{stockLabel}</b></i>}
           <div className="ann-pile ann-pile-entree" style={{ height: ech.signe === 'perte' ? ech.hPileEntree : H }}>
             <span className="ann-lib">Entré <b className="ann-m">{montant(col.entreCents)}</b></span><span className="ann-leg">{legendeVente}</span>
@@ -52,10 +57,11 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
         </div>
         <div className="ann-col">
           <div className="ann-hc">Dépensé + usure <b className="ann-m">{montant(col.totalDepenseCents)}</b></div>
-          {ech.signe === 'gain' && <div className="ann-gain" style={{ height: ech.hEcart }}><b className="ann-m">+{montant(perte)}</b><span>CHF gagnés</span></div>}
+          {ech.signe === 'gain' && !gainMince && <div className="ann-gain" style={{ height: ech.hEcart }}><b className="ann-m">+{montant(perte)}</b><span>CHF gagnés</span></div>}
+          {ech.signe === 'gain' && gainMince && <><div className="ann-gain-txt"><b className="ann-m">+{montant(perte)}</b><span>CHF gagnés</span></div><div className="ann-gain ann-gain-mince" style={{ height: ech.hEcart }} aria-hidden="true" /></>}
           <div className="ann-pile" style={{ height: ech.signe === 'gain' ? ech.hPileDepense : H }}>
             {col.usureCents > 0 && <div className="ann-s ann-usure" style={{ flex: col.usureCents }}><span className="ann-tag">Usure du matériel <b className="ann-m">{montant(col.usureCents)}</b></span><span className="ann-tag">estimé</span></div>}
-            {col.postes.map(p => <div key={p.categorie} className="ann-s" style={{ flex: p.cents, background: couleur(p.categorie), color: texteSur(p.categorie) }}><span>{libelleCategorie(p.categorie)}</span><b className="ann-m">{montant(p.cents)}</b></div>)}
+            {col.postes.map(p => <div key={p.categorie} className="ann-s" style={{ flex: p.cents, background: couleur(p.categorie), color: p.categorie === 'renovation' ? '#24100a' : texteSur(p.categorie) }}><span>{libelleCategorie(p.categorie)}</span><b className="ann-m">{montant(p.cents)}</b></div>)}
           </div>
         </div>
       </div>}

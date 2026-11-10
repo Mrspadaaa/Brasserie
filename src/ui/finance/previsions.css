@@ -18,7 +18,7 @@
 .prv-sw small, .prv-seule small { display:block; font-size:12px; font-weight:400; }
 .prv-sw b, .prv-seule b { font-size:17px; font-weight:600; color:var(--prv-txt); }
 .prv-sw button.prv-on { box-shadow:inset 0 0 0 2px var(--prv-projet); color:var(--prv-txt); font-weight:600; background:rgb(var(--cave-800)); }
-.prv-g { position:relative; border-radius:16px; background:var(--prv-panel); overflow:hidden; min-height:500px; }
+.prv-g { position:relative; border-radius:16px; background:var(--prv-panel); overflow:hidden; min-height:280px; }
 .prv-svg { display:block; max-width:100%; }
 .prv-vide { position:absolute; top:44%; left:0; right:0; text-align:center; color:var(--prv-t2); z-index:1; pointer-events:none; }
 .prv-grid { stroke:var(--prv-bord); stroke-width:1; opacity:.7; } .prv-zero { stroke:var(--prv-t2); stroke-width:1.2; }
@@ -39,6 +39,7 @@
 .prv-prevu .prv-chip { stroke:var(--prv-fin); stroke-dasharray:3 3; } .prv-prevu .prv-fil { stroke:var(--prv-fin); }
 .prv-brassin .prv-chip { stroke:var(--prv-brassin); stroke-width:1.6; } .prv-brassin .prv-fil { stroke:var(--prv-brassin); }
 .prv-projet .prv-chip { stroke:var(--prv-projet); stroke-width:2.4; } .prv-projet .prv-fil { stroke:var(--prv-projet); stroke-width:2; } .prv-projet .prv-tx { font-size:15px; font-weight:700; }
+.prv-partiel .prv-chip { stroke-dasharray:3 3; }
 .prv-entree .prv-chip { stroke:var(--prv-entree); stroke-width:1.8; } .prv-entree .prv-fil { stroke:var(--prv-entree); }
 .prv-tx { font-size:13px; font-weight:600; fill:var(--prv-txt); } .prv-sub { font-size:12px; fill:var(--prv-t2); }
 .prv-reste rect { fill:rgb(var(--cave-900)); stroke:var(--prv-t2); } .prv-reste text { font-size:13px; font-weight:600; fill:var(--prv-txt); } .prv-reste { cursor:pointer; }

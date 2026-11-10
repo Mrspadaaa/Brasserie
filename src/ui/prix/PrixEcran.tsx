@@ -8,6 +8,7 @@ import { TarifSheet, type FormatChoix } from '../TarifSheet';
 import { montantChf } from '../../domain/finance/ledger';
 import { nombreFr } from '../../domain/nombreAffiche';
 import { GraphePrix } from './GraphePrix';
+import { GrapheInconnu } from './GrapheInconnu';
 import { brassinEnUnites, formatDuTarif, lirePrix, resteAnnuel, tarifsDuFormat, unitesParAn, type FormatId, type LecturePrix } from './calculPrix';
 import { bieresDe, biereDuBrassin, brassinDuCout, formatsDe, impotUnite, lireDonneesPrix, prixReels } from './donneesPrix';
 import './prix.css';
@@ -20,6 +21,10 @@ const ICONES: Record<FormatId, typeof Beer> = { '33cl': Beer, '75cl': Wine, fut:
 const unite = (id: FormatId) => (id === 'fut' ? 'fût' : 'bouteille');
 const entierFr = (n: number) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n);
 const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/** Un prix à zéro (ou absent) est un prix à compléter, jamais « 0,00 ». */
+export const prixConnu = (p: number | undefined): p is number => typeof p === 'number' && Number.isFinite(p) && p > 0;
+/** Le libellé d'un ancien tarif, sans le « (0 hl) » que l'ancien écran y avait écrit (un volume nul n'est pas une information). */
+export const libelleTarif = (produit: string): string => produit.replace(/\s*\(\s*0(?:[.,]0+)?\s*hl\s*\)/gi, '').trim() || produit;
 
 export interface PrixEcranProps {
   config: AppConfig;
@@ -140,25 +145,28 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       </div>
       <div className="prx-col prx-col-graphe prx-col-svg">
         {lecture.cout ? <GraphePrix cout={lecture.cout.affiche} coutExact={lecture.cout.exact} prix={prix} unites={unites} an={lectureAn} reels={reels} libelleUnite={unite(formatId)} />
-          : <div className="prx-inconnu" role="status"><b className="prx-m">coût ?</b><span>Le coût du litre n’est pas encore complet : prix d’un stock, litres nets ou densité à noter.</span></div>}
+          : <GrapheInconnu prix={prix} libelleUnite={unite(formatId)} an={lectureAn} />}
         {lecture.cout && chiffrage?.litre && <button type="button" className="prx-cout" onClick={() => setCoutOuvert(true)}><span className="prx-m">{chf(chiffrage.litre.affiche.complet)} CHF/L</span> ›</button>}
+        {!lecture.cout && batch && <button type="button" className="prx-cout prx-cout-q" onClick={() => setCoutOuvert(true)} data-booster="cout-a-completer"><span className="prx-m">? CHF/L</span> · à compléter ›</button>}
       </div>
       <div className="prx-col prx-col-bas">
         {ligneBrassin ? <div className="prx-br" data-booster="bouteilles-brassin"><span><b className="prx-m">{nombreFr(chiffrage!.litres, 1)} L</b> nets</span>
           <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width={Math.max(0, cases)} height="14" rx="3" fill="#111" /><rect x={cases + 1} y="0" width={Math.max(0, 92 - cases - 1)} height="14" rx="3" fill="#2F8A55" />{nbCases > 10 && Array.from({ length: Math.floor((nbCases - 1) / 10) }, (_, i) => <rect key={i} x={((i + 1) * 10 / nbCases) * 92} y="0" width="1" height="14" fill="#fff" />)}</svg>
           <span><b className="prx-m">{ligneBrassin.paient}</b> paient le brassin</span><span className="prx-v"><b className="prx-m">{ligneBrassin.pourToi}</b> pour toi</span></div>
-          : chiffrage && chiffrage.litres === null ? <div className="prx-br"><span><b className="prx-m">? L</b> nets</span></div> : null}
+          : chiffrage ? <div className="prx-br prx-br-q" data-booster="bouteilles-brassin" data-inconnu=""><span><b className="prx-m">{chiffrage.litres === null ? '? L' : `${nombreFr(chiffrage.litres, 1)} L`}</b> nets</span>
+            <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="92" height="14" rx="3" fill="url(#prx-hach-br)" stroke="#BBB" strokeDasharray="3 2" /><defs><pattern id="prx-hach-br" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fff" /><rect width="2" height="6" fill="#DDD" /></pattern></defs></svg>
+            <span><b className="prx-m">?</b> paient le brassin</span><span className="prx-v"><b className="prx-m">?</b> pour toi</span></div> : null}
         <div className="prx-fo">
           {formats.filter(f => f.format.id !== formatId).map(f => {
             const o = lire(f.format); const Icone = ICONES[f.format.id as FormatId]; const r = o.lecture.reste;
             const v = r ? (an && o.unites !== null ? resteAnnuel(r.valeur, o.unites) : r.valeur) : null;
             return <button key={f.format.id} type="button" className="prx-tuile" data-absent={f.present ? undefined : ''} onClick={() => setFormatId(f.format.id as FormatId)}>
               <Icone size={18} aria-hidden="true" /><p>{majuscule(f.format.label)}<i className="prx-m">{o.prix !== null ? chf(o.prix) : o.tf.kind === 'plusieurs' ? `${o.tf.tarifs.length} prix` : 'prix ?'}</i></p>
-              {v !== null && <b className={`prx-m${r!.valeur < 0 ? ' prx-neg' : ''}`}>{r!.borne ? '≤ ' : ''}{chf(v)}</b>}</button>;
+              {v !== null ? <b className={`prx-m${r!.valeur < 0 ? ' prx-neg' : ''}`}>{r!.borne ? '≤ ' : ''}{chf(v)}</b> : <b className="prx-m prx-q">≤ ?</b>}</button>;
           })}
         </div>
         {completer.length > 0 && <div className="prx-completer" role="group" aria-label="Tarifs à compléter">
-          <span>À compléter</span>{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)}>{t.product} · <span className="prx-m">{Number.isFinite(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}
+          <span>À compléter</span>{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)} title={t.product}><span className="prx-nom">{libelleTarif(t.product)}</span> · <span className="prx-m">{prixConnu(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}
         </div>}
         {!lecture.cout?.exact && prix !== null && lecture.cout && <p className="prx-aide">Emballage de l’unité à compléter dans le tarif : le reste est un maximum.</p>}
         <div className="prx-act">

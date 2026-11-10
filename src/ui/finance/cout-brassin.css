@@ -43,6 +43,11 @@
 .cbf-div b { font-size: 16px; opacity: 1; font-weight: 600; }
 .cbf-eq { font-size: 22px; opacity: .8; }
 .cbf-big { font-size: 32px; font-weight: 600; letter-spacing: -.02em; }
+/* Le litre inconnu garde la place et la taille du grand chiffre de c3a : un bloc hachuré (le texte « — » reste pour la lecture, invisible). */
+.cbf-big.cbf-big-q { display: inline-block; width: 74px; height: 34px; border-radius: 8px; color: transparent; border: 1px dashed currentColor; border-color: rgba(255, 255, 255, .7); background: repeating-linear-gradient(45deg, transparent 0 3px, rgba(255, 255, 255, .5) 3px 5px); }
+[data-theme='cave'] .cbf-big.cbf-big-q { border-color: rgba(0, 0, 0, .6); background: repeating-linear-gradient(45deg, transparent 0 3px, rgba(0, 0, 0, .4) 3px 5px); }
+.cbf-litl-q span { flex: 1; }
+.cbf-litl-q b { color: var(--cbf-att); }
 .cbf-u { font-size: 13px; opacity: .85; display: flex; flex-direction: column; line-height: 1.15; }
 .cbf-u em { font-style: normal; color: #F2C14E; font-weight: 600; font-size: 12px; opacity: 1; }
 [data-theme='cave'] .cbf-u em { color: #8A5A00; }

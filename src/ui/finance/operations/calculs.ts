@@ -114,9 +114,27 @@ export function pieceDe(tx: Transaction): Piece {
   const genre = ({ invoice: 'facture', receipt: 'ticket', credit_note: 'avoir' } as Record<string, string>)[tx.finance?.sourceDocumentType ?? ''] ?? 'pièce';
   const lignes = tx.finance?.lines ?? [];
   const seule = lignes.length === 1 ? lignes[0] : null;
-  const detail = seule && seule.quantity > 0 && seule.unit ? ` · ${seule.description} ${String(seule.quantity).replace('.', ',')} ${seule.unit}` : '';
+  const detail = seule && seule.quantity > 0 && seule.unit ? ` · ${detailLigne(seule)}` : '';
   return { texte: `${genre}${detail}`, manque: false };
 }
+
+/**
+ * Le détail d'une pièce à ligne unique. Une quantité en « pièce » se lit « 10 pièces » (revue du 10.11 : « 75 cl 10 pièce »), sans recopier le libellé de la ligne : il est déjà
+ * dans le titre de l'opération. Une masse ou un volume garde son libellé : « Pilsner 25 kg ».
+ */
+export function detailLigne(ligne: { description: string; quantity?: number; unit?: string }): string {
+  const quantite = ligne.quantity ?? 0, unite = ligne.unit ?? '';
+  const q = String(quantite).replace('.', ',');
+  if (/^pi[eè]ces?$/i.test(unite.trim())) return `${q} ${quantite > 1 ? 'pièces' : 'pièce'}`;
+  return `${ligne.description} ${q} ${unite}`;
+}
+
+const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+/** Le tiers à écrire après le titre : rien quand le titre le dit déjà (« Vente 10 × Bière — Restaurant du Lac » + tiers « Restaurant du Lac » : le client ne s'écrit pas deux fois). */
+export const tiersAAfficher = (description: string, tiers: string | undefined | null): string | null => {
+  const t = (tiers ?? '').trim();
+  return t && !sansAccent(description).includes(sansAccent(t)) ? t : null;
+};
 
 /** Le montant de l'écriture avec son sens : positif pour ce qui entre, négatif pour ce qui sort. */
 export const montantSigne = (tx: Transaction, sens: 'in' | 'out'): number => (sens === 'in' ? 1 : -1) * transactionAmount(tx);

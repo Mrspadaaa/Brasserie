@@ -32,6 +32,14 @@
 .ann-trou b { font-size:28px; line-height:1; } .ann-trou span { font-size:12px; font-weight:600; }
 .ann-gain { border:2px dashed var(--ann-gain); border-bottom:0; border-radius:10px 10px 0 0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--ann-gain); }
 .ann-gain b { font-size:24px; line-height:1; } .ann-gain span { font-size:12px; font-weight:600; }
+/* Écart trop mince pour son texte : liseré hachuré à l'échelle, texte posé au-dessus (même rouge, même badge du stock). */
+.ann-trou-txt { display:flex; flex-direction:column; align-items:center; gap:2px; padding:0 0 4px; color:var(--ann-perte); }
+.ann-trou-txt b { font-size:28px; line-height:1; } .ann-trou-txt span { font-size:12px; font-weight:600; }
+.ann-trou-txt .ann-stock-seul { margin:4px 0 6px; }
+.ann-trou-mince { min-height:10px; justify-content:flex-start; }
+.ann-gain-txt { display:flex; flex-direction:column; align-items:center; padding:0 0 4px; color:var(--ann-gain); }
+.ann-gain-txt b { font-size:24px; line-height:1; } .ann-gain-txt span { font-size:12px; font-weight:600; }
+.ann-gain-mince { min-height:10px; }
 .ann-stock { position:absolute; left:8px; right:8px; bottom:6px; height:28px; border:2px dashed var(--ann-att); border-radius:10px; background:var(--ann-attf); color:var(--ann-attt); display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-style:normal; font-weight:600; }
 .ann-stock-seul { position:static; margin-bottom:6px; width:100%; }
 /* cadre clôture */

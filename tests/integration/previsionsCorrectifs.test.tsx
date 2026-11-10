@@ -30,10 +30,10 @@ describe('constat 1 : l’étiquette est courte (mot-clé, montant entier, jour)
     expect(motCle('Pale Ale d’hiver · énergie et nettoyage', true)).toBe('énergie et nettoyage'.length <= 14 ? 'énergie et nettoyage' : 'énergie');
     expect(motCle('IBAN SA')).toBe('IBAN SA');
   });
-  it('« loyer −400, 25.12 » : une ligne, courte ; « ~ » pour une date estimée, « + » pour un montant partiel', () => {
+  it('« loyer −400, 25.12 » : une ligne, courte ; « ~ » pour une date estimée, « ≥ » pour un montant partiel', () => {
     expect(texteEtiquette(item({ date: '2026-12-25' }))).toBe('loyer −400, 25.12');
     expect(texteEtiquette(item({ amountCents: 684, label: 'Pale Ale d’hiver · impôt sur la bière · date estimée', source: 'brew' }))).toBe('impôt sur la bière −6,84, ~25.11'.replace('impôt sur la bière', 'impôt'));
-    expect(texteEtiquette(item({ amountCents: 2400, label: 'Pale Ale d’hiver · emballage', source: 'brew', partial: ['emballage'], date: '2026-12-03' }))).toBe('emballage −24+, 03.12');
+    expect(texteEtiquette(item({ amountCents: 2400, label: 'Pale Ale d’hiver · emballage', source: 'brew', partial: ['emballage'], date: '2026-12-03' }))).toBe('emballage ≥ 24, 03.12');
     expect(texteEtiquette(item({ amountCents: 300_000, label: 'Frigo', source: 'equipment', date: '2026-11-15' }))).toBe('frigo −3 000, 15.11');
     expect(texteEtiquette(item({ direction: 'in', amountCents: 50_000, label: 'Vente', source: 'plan' }))).toBe('vente +500, 25.11');
   });
@@ -41,7 +41,7 @@ describe('constat 1 : l’étiquette est courte (mot-clé, montant entier, jour)
     expect(libelleLong(item({ date: '2026-12-25' }))).toBe('Loyer de l’atelier −400,00, 25.12');
   });
   it('largeur d’une étiquette courte : au plus la moitié du graphe à 390', () => {
-    for (const t of ['loyer −400, 25.12', 'fermenteur −750, 01.01', 'emballage −24+, 03.12', 'énergie −11, 20.11']) expect(largeurTexte(t, 13) + 18).toBeLessThan(200);
+    for (const t of ['loyer −400, 25.12', 'fermenteur −750, 01.01', 'emballage ≥ 24, 03.12', 'énergie −11, 20.11']) expect(largeurTexte(t, 13) + 18).toBeLessThan(200);
   });
 });
 

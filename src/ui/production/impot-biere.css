@@ -67,6 +67,11 @@
 .ibr-prim { height: 32px; padding: 0 12px; border-radius: 10px; background: rgb(var(--ebc-straw)); color: rgb(var(--cave-950)); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; border: 0; cursor: pointer; white-space: nowrap; }
 .ibr-prim:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
 
+/* Inconnu : la place et la taille du chiffre de p2b, en hachures (le « — » reste pour la lecture, invisible). Un total, un litre, jamais 0. */
+.ibr .ibr-blanc { display: inline-block; min-width: 64px; height: 28px; border-radius: 8px; color: transparent; border: 1px dashed rgb(var(--cave-400)); background: repeating-linear-gradient(135deg, transparent 0 4px, rgb(var(--cave-400) / .55) 4px 6px); text-align: center; align-self: center; }
+.ibr .ibr-mt.ibr-blanc { min-width: 56px; height: 22px; }
+.ibr-inc { display: inline-block; padding: 0 8px; border-radius: 8px; border: 1px dashed rgb(var(--attention-texte)); color: rgb(var(--attention-texte)); font-weight: 600; background: repeating-linear-gradient(135deg, transparent 0 4px, rgb(var(--attention) / .18) 4px 6px); }
+
 /* Corrections du test d'écran (09.11). */
 .ibr-pied .ibr-prim { min-height: 40px; padding-inline: 14px; }
 .ibr-reglage { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; min-height: 32px; }

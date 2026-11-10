@@ -183,7 +183,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
 
         <section className="ibr-regle" data-testid="ibr-regle" data-hachure={hachure ? 'oui' : 'non'}>
           <div className="ibr-q">
-            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : 'litres à noter'}</span>
+            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : <span className="ibr-inc">litres à noter</span>}</span>
             <em data-testid="ibr-puce" data-ton={densite === 'notee' && !exonere ? 'neutre' : 'attention'}>{puce}</em>
           </div>
           <div className="ibr-bandes">
@@ -204,7 +204,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
             onChange={event => setDixiemes(Number(event.target.value))} />
           <div className="ibr-res">
             <span>à <span className="ibr-m">{platoTexte}</span>, ce brassin doit</span>
-            <b className="ibr-m" data-testid="ibr-resultat">{chf(brassin.montant)}{brassin.montant === null ? '' : <> <small>CHF</small></>}</b>
+            <b className={`ibr-m${brassin.montant === null ? ' ibr-blanc' : ''}`} data-testid="ibr-resultat">{chf(brassin.montant)}{brassin.montant === null ? '' : <> <small>CHF</small></>}</b>
           </div>
           {reductionConfirmee && reductionPct > 0 && <p className="ibr-note">réduction petit brasseur {nombreFr(reductionPct, 1)} % comprise</p>}
         </section>
@@ -226,7 +226,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
             <b>{litresAn === null ? 'Sur l’année' : <>Sur l’année, si {nombreFr(litresAn, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} L à <span className="ibr-m">{platoTexte}</span></>}</b>
             <span>{litresAn === null ? 'production annuelle à indiquer (Finances, profil)' : `estimé${mention ? ' · ' + mention : ''} · ${annee}`}</span>
           </div>
-          <span className="ibr-mt ibr-m">{impotAn === null ? '—' : `~ ${chf(impotAn)}`}</span>
+          <span className={`ibr-mt ibr-m${impotAn === null ? ' ibr-blanc' : ''}`}>{impotAn === null ? '—' : `~ ${chf(impotAn)}`}</span>
         </div>
 
         <div className="ibr-qa">
