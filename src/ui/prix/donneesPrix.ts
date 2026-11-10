@@ -78,6 +78,61 @@ export function prixReels(transactions: Transaction[], formatId: FormatId, exclu
   return vus.sort((x, y) => x - y);
 }
 
+/** Où se saisit une donnée manquante : la fiche du brassin (Mesures), le coût du brassin, le tarif d'un format, le profil financier. */
+export type CibleManque = 'fiche' | 'cout' | 'tarif' | 'profil';
+export interface ManquePrix {
+  cle: string;
+  cible: CibleManque;
+  /** Ce qui manque, nommé (avec le brassin ou le format). */
+  titre: string;
+  /** Son effet, en une ligne. */
+  effet: string;
+  /** Pour la cible « tarif » : le format du tarif à créer (prix absent) ; sans lui, le tarif existant du format. */
+  formatId?: FormatId;
+  tarifExistant?: boolean;
+}
+export interface FormatManque { id: FormatId; label: string; present: boolean; prixConnu: boolean; emballageManque: boolean; tarifExiste: boolean }
+const uniteDe = (id: FormatId) => (id === 'fut' ? 'fût' : 'bouteille');
+const deUnite = (id: FormatId) => (id === 'fut' ? 'du fût' : 'de la bouteille');
+const nomsCourts = (noms: string[]) => (noms.length <= 3 ? noms.join(', ') : `${noms.slice(0, 3).join(', ')} et ${noms.length - 3} autre${noms.length - 3 > 1 ? 's' : ''}`);
+
+/**
+ * Les données qui manquent pour savoir « ce qu'il te reste », dans l'ordre du calcul (litres → coût du brassin → densité → prix → emballage → volume annuel).
+ * Rien n'est inventé : chaque ligne vient d'un trou réel (`notions.manque`, litres nuls, °P inconnu, tarif absent) ; un inconnu n'est jamais compté 0.
+ */
+export function manquesPrix(input: { chiffrage: Chiffrage | null; formats: FormatManque[]; volumeAnnuelManque: boolean }): ManquePrix[] {
+  const { chiffrage: c, formats, volumeAnnuelManque } = input;
+  const m: ManquePrix[] = [];
+  if (c) {
+    const nom = c.batch.name;
+    const nomsManque = c.notions?.manque ?? [];
+    const ingredients = nomsManque.filter(n => n !== 'litres nets');
+    if (c.litres === null || nomsManque.includes('litres nets')) {
+      const fait = c.batch.status !== 'planifie';
+      m.push({ cle: 'litres', cible: 'fiche', titre: `Litres conditionnés de « ${nom} »`,
+        effet: fait ? 'Sans eux, pas de coût du litre.' : 'Brassin pas encore fait : les litres se notent après la mise en bouteille.' });
+    }
+    if (!c.notions) m.push({ cle: 'cout', cible: 'cout', titre: `Coût du brassin « ${nom} »`, effet: 'Pas encore chiffré : sans lui, pas de coût du litre.' });
+    else if (ingredients.length) m.push({ cle: 'ingredients', cible: 'cout', titre: `Prix de ${ingredients.length} ingrédient${ingredients.length > 1 ? 's' : ''} : ${nomsCourts(ingredients)}`,
+      effet: `Sans ${ingredients.length > 1 ? 'eux' : 'lui'}, le coût du brassin reste incomplet.` });
+    else if (!c.notions.complet && !nomsManque.length) m.push({ cle: 'cout', cible: 'cout', titre: `Coût du brassin « ${nom} » à compléter`, effet: 'Une ligne du coût est encore ouverte : sans elle, pas de coût du litre.' });
+    if (c.plato === null) m.push({ cle: 'densite', cible: 'fiche', titre: `Densité de « ${nom} »`, effet: 'Sans elle, l’impôt bière de chaque unité reste inconnu : le reste est un maximum.' });
+  }
+  for (const f of formats) {
+    if (f.prixConnu) continue;
+    m.push({ cle: `prix-${f.id}`, cible: 'tarif', formatId: f.id, tarifExistant: f.tarifExiste, titre: `Prix du ${f.label}`,
+      effet: `Sans prix, pas de reste par ${uniteDe(f.id)}${f.present ? '.' : ' (ce brassin n’en a pas : seulement si tu en vends).'}` });
+  }
+  for (const f of formats) {
+    if (!f.prixConnu || !f.emballageManque) continue;
+    m.push({ cle: `emballage-${f.id}`, cible: 'tarif', formatId: f.id, tarifExistant: true, titre: `Emballage du ${f.label}`,
+      effet: `Sans lui, le coût ${deUnite(f.id)} est un minimum et le reste un maximum.` });
+  }
+  if (volumeAnnuelManque) m.push({ cle: 'volume-annuel', cible: 'profil', titre: 'Volume annuel',
+    effet: 'Sans lui, pas de reste par an. Se note dans « Paramètres des prévisions et des brassins ».' });
+  return m;
+}
+
 export interface DonneesPrix {
   tarifs: PricingItem[]; batches: Batch[]; kegs: KegItem[]; transactions: Transaction[];
   plans: ReturnType<typeof FinanceService.snapshot>['plans']; profile: ReturnType<typeof FinanceService.snapshot>['profile'];

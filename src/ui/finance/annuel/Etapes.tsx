@@ -1,9 +1,10 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { Piste } from './Tete';
-import { escalierMateriel, inventairesParNature, justificatifs, moisNotes, natureDeLigne, perteAvantStock, plansManquants, plateaux, pontCaisse, valeurEstimee, type Escalier } from './calculs';
+import { escalierMateriel, inventairesParNature, LIBELLE_NATURE, justificatifs, moisNotes, natureDeLigne, perteAvantStock, plansManquants, plateaux, pontCaisse, valeurEstimee, type Escalier } from './calculs';
 import { montant } from '../previsions/format';
 import { nombreFr } from '../../../domain/nombreAffiche';
+import type { StockItem } from '../../../types';
 import type { Ctx } from './ctx';
 
 const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
@@ -75,30 +76,59 @@ export function Etape2({ c }: { c: Ctx }) {
 }
 
 /* ---------- 3 · Inventaires ---------- */
+type NatureCase = 'malt' | 'houblons' | 'emballages' | 'biere';
+const ICONES: Record<NatureCase, { couleur: string; d: string[] }> = {
+  malt: { couleur: '#B08A2E', d: ['M12 3v18M12 7c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4zm0 5c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4zm0 5c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4z'] },
+  houblons: { couleur: '#4C6B2A', d: ['M12 3c4 3 5 7 3 11-1 2-2 3-3 3s-2-1-3-3c-2-4-1-8 3-11z', 'M12 7v10'] },
+  emballages: { couleur: '#1F64A3', d: ['M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3z'] },
+  biere: { couleur: '#9A4F1E', d: ['M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z', 'M16 10h2a2 2 0 0 1 0 4h-2'] },
+};
+const IcNature = ({ nature }: { nature: string }) => { const i = ICONES[nature as NatureCase]; return i ? <svg className="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={i.couleur} strokeWidth="1.8" aria-hidden="true">{i.d.map(d => <path key={d} d={d}/>)}</svg> : <span className="ic" aria-hidden="true"/>; };
 export function Etape3({ c }: { c: Ctx }) {
   const lignes = inventairesParNature(c.closing, c.stockItems);
+  /** Nature d'un article du stock : « Emballage » (que `natureDeLigne` laisse en « autres », il ne lit que le type d'une ligne saisie) compris. */
+  const natureStock = (s: StockItem) => (s.category ?? '').toLowerCase().includes('emball') ? 'emballages' : natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, c.stockItems);
+  /** Les articles de cette nature réellement en stock, les plus gros d'abord : un article à 0 n'est ni listé ni estimé. */
+  const enStock = (nature: string) => c.stockItems.filter(s => natureStock(s) === nature && s.currentStock > 0).sort((a, b) => b.currentStock - a.currentStock);
+  const quantite = (s: StockItem) => `${nombreFr(s.currentStock, 1)} ${s.unit}`;
   const estimeParNature = (nature: string) => {
-    const items = c.stockItems.filter(s => natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, c.stockItems) === nature);
-    const e = items.map(i => valeurEstimee(i, c.transactions, c.year, c.today));
-    return items.length > 0 && e.every(x => x) ? { cents: e.reduce((n, x) => n + x!.cents, 0), sources: items.map((i, k) => `${nombreFr(i.currentStock, 1)} ${i.unit} de ${i.name} au prix de la dernière facture (${e[k]!.source})`) } : null;
+    const items = enStock(nature), e = items.map(i => valeurEstimee(i, c.transactions, c.year, c.today));
+    return items.length > 0 && e.every(x => x) ? { cents: e.reduce((n, x) => n + x!.cents, 0), n: items.length, quantite: items.length === 1 ? quantite(items[0]) : '', detail: items.map((i, k) => `${quantite(i)} de ${i.name} (${e[k]!.source})`).join(' ; ') } : null;
   };
-  const maltEstime = estimeParNature('malt');
-  const propositions = c.stockItems.flatMap(s => { const e = valeurEstimee(s, c.transactions, c.year, c.today); return e ? [{ stockItemRef: s.ref, valueCents: e.cents, note: `Estimé : ${e.source}` }] : []; });
+  const estimes = (['malt', 'houblons', 'emballages'] as const).flatMap(n => { const e = estimeParNature(n); return e ? [{ nature: n, ...e }] : []; });
+  const propositionsDe = (nature?: string) => c.stockItems.filter(s => !nature || natureStock(s) === nature).flatMap(s => { const e = valeurEstimee(s, c.transactions, c.year, c.today); return e ? [{ stockItemRef: s.ref, valueCents: e.cents, note: `Estimé : ${e.source}` }] : []; });
   const lotCave = c.batches.find(b => b.status === 'conditionne' && (b.volumePackagedL ?? 0) > 0);
+  /** UNE petite ligne par nature (g6) : les deux plus gros, puis « +N » ; « aujourd’hui » une seule fois, jamais coupé. */
+  const petite = (nature: string) => {
+    if (nature === 'biere') return lotCave ? { texte: `${lotCave.name}, ${nombreFr(lotCave.volumePackagedL ?? 0, 0)} L nets`, fin: '' } : null;
+    const items = enStock(nature);
+    if (!items.length) return null;
+    const reste = items.length - 2, deux = items.slice(0, 2);
+    return { texte: (nature === 'emballages' ? deux.map(s => s.name) : deux.map(s => `${s.name} ${quantite(s)}`)).join(', '), fin: [reste > 0 ? `+${reste}` : '', nature === 'emballages' ? '' : 'aujourd’hui'].filter(Boolean).join(' ') };
+  };
+  const ouvrir = (nature: string, cote: 'openingInventory' | 'closingInventory') => {
+    const visee = nature === 'autres' ? undefined : nature as NatureCase;
+    /* Le stock d'aujourd'hui n'est ni celui du 1er janvier ni celui d'une année passée : on ne le propose que pour la clôture de l'exercice en cours. */
+    c.act.onInventories({ cote, nature: visee, ...(cote === 'closingInventory' && c.anneeCourante && visee && visee !== 'biere' ? { proposer: true, propositions: propositionsDe(visee) } : {}) });
+  };
   return <Cadre n={3} c={c} question="Qu’avais-tu en stock, au début et à la fin ?" terme="inventaires d’ouverture et de clôture"
-    bas={<><Etoile onClick={() => c.act.onInventories({ cote: 'closingInventory', proposer: true, propositions })}>Proposer depuis le stock</Etoile>
-      <button type="button" className="ann-pri" disabled={c.gele} onClick={() => c.act.onInventories({ cote: 'closingInventory', propositions })}>Noter l’inventaire</button></>}>
+    bas={<><Etoile onClick={() => c.act.onInventories({ cote: 'closingInventory', proposer: true, propositions: propositionsDe() })}>Proposer depuis le stock</Etoile>
+      <button type="button" className="ann-pri" disabled={c.gele} onClick={() => c.act.onInventories({ cote: 'closingInventory', propositions: propositionsDe() })}>Noter l’inventaire</button></>}>
     <div className="ann-inv"><span className="h">CHF</span><span className="h">1er janv.</span><span className="h">31 déc.</span>
       {lignes.map(l => {
-        const est = l.nature === 'malt' ? maltEstime : l.nature === 'houblons' ? estimeParNature('houblons') : null;
-        const cell = (x: typeof l.ouverture, estimable: boolean) => x.cents != null ? <span className={`c p${x.aucuneLigne ? ' zero' : ''}`}>{montant(x.cents)}{x.aucuneLigne && <small>aucune ligne</small>}</span>
-          : estimable && est ? <span className="c p est">≈ {montant(est.cents)}</span> : <span className="c ann-hachA">?</span>;
-        return <React.Fragment key={l.nature}><span className="n"><span>{l.libelle}{l.nature === 'biere' && lotCave && <small>{lotCave.name}, {nombreFr(lotCave.volumePackagedL ?? 0, 0)} L nets</small>}{l.nature === 'malt' && c.stockItems.some(s => natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, c.stockItems) === 'malt') && <small>{c.stockItems.filter(s => natureDeLigne({ kind: 'raw', stockItemRef: s.ref }, c.stockItems) === 'malt').map(s => `${s.name} ${nombreFr(s.currentStock, 1)} ${s.unit} aujourd’hui`).join(', ')}</small>}</span></span>{cell(l.ouverture, false)}{cell(l.cloture, true)}</React.Fragment>;
+        const est = estimes.find(e => e.nature === l.nature), p = petite(l.nature);
+        const cell = (x: typeof l.ouverture, cote: 'openingInventory' | 'closingInventory') => {
+          if (x.cents != null) return <span className={`c p${x.aucuneLigne ? ' zero' : ''}`}>{montant(x.cents)}{x.aucuneLigne && <small>aucune ligne</small>}</span>;
+          const nom = `Noter ${l.libelle} au ${cote === 'openingInventory' ? '1er janv.' : '31 déc.'}`;
+          return est && cote === 'closingInventory'
+            ? <button type="button" className="c p est" aria-label={nom} aria-describedby={`ann-est-${est.nature}`} disabled={c.gele} onClick={() => ouvrir(l.nature, cote)}>≈ {montant(est.cents)}</button>
+            : <button type="button" className="c ann-hachA" aria-label={nom} disabled={c.gele} onClick={() => ouvrir(l.nature, cote)}>?</button>;
+        };
+        return <React.Fragment key={l.nature}><span className="n"><IcNature nature={l.nature}/><span className="nt">{l.libelle}{p && <small className="l"><span className="e">{p.texte}</span>{p.fin && <>{' '}<span className="s">{p.fin}</span></>}</small>}</span></span>{cell(l.ouverture, 'openingInventory')}{cell(l.cloture, 'closingInventory')}</React.Fragment>;
       })}
     </div>
     <div className="ann-var"><span className="ann-t">Ce que le stock a changé corrige la perte de <span className="ann-m">{montant(perteAvantStock(c.report))}</span></span><span className={`ann-pa ${c.report.inventoryChangeCents == null ? 'at' : 'ok'}`}>{c.report.inventoryChangeCents == null ? 'à compter' : `compté ${c.report.inventoryChangeCents > 0 ? '+' : ''}${montant(c.report.inventoryChangeCents)}`}</span></div>
-    {maltEstime && <p className="ann-terme">≈ {montant(maltEstime.cents)} : {maltEstime.sources.join(' ; ')}, estimé</p>}
-    <p className="ann-terme">La bière en cave se saisit dans la feuille : « Ajouter une ligne », nature « Bière en cours » ou « conditionnée ».</p>
+    {estimes.map(e => <p key={e.nature} id={`ann-est-${e.nature}`} className="ann-terme" title={e.detail}>{`${estimes.length > 1 ? `${LIBELLE_NATURE[e.nature]} ` : ''}≈ ${montant(e.cents)} : ${e.n === 1 ? `${e.quantite} au prix de la dernière facture` : `${e.n} articles au prix de leur dernière facture`}, estimé`}</p>)}
   </Cadre>;
 }
 

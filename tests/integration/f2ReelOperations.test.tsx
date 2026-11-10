@@ -44,7 +44,10 @@ describe('Opérations v6b, la vente unique de la vraie app', () => {
     expect(tiersAAfficher('Restaurant du Lac — vente', 'restaurant du lac')).toBeNull();
     expect(tiersAAfficher('Vente', '')).toBeNull();
   });
-  it('le titre long passe sur deux lignes au lieu d’être coupé (« Restaur… »)', () => {
-    expect(readFileSync('src/ui/finance/operations.css', 'utf8')).toMatch(/\.ops-q \{[^}]*-webkit-line-clamp:\s*2/);
+  it('le titre long reste sur une ligne, comme v6b (toutes les opérations à la même hauteur) : coupé par « … », nom complet dans le nom accessible et le survol (voie vo, 10.11)', () => {
+    // Remplace l'ancienne règle de f2 (deux lignes), contraire à la maquette choisie : « nom sur deux lignes » était l'un de ses reproches.
+    const css = readFileSync('src/ui/finance/operations.css', 'utf8');
+    expect(css).toMatch(/\.ops-q \{[^}]*white-space:\s*nowrap[^}]*text-overflow:\s*ellipsis/);
+    expect(css).not.toMatch(/\.ops-q \{[^}]*-webkit-line-clamp/);
   });
 });

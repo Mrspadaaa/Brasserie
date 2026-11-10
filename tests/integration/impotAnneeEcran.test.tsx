@@ -112,7 +112,7 @@ describe('Clients › Impôt bière : l’écran de la maquette i1a', () => {
     expect(tax.getByTestId('iaa-total')).not.toHaveTextContent('0,00');
   });
 
-  it('9. Copier pour Taxas : le texte porte l’année, le total et la réserve ; le retour est dit', async () => {
+  it('9. Copier pour Taxas : les hectolitres par catégorie, le total, ce qui manque (CP-8) ; le retour est dit', async () => {
     const ecrire = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { value: { writeText: ecrire }, configurable: true });
     const tax = montrer();
@@ -122,6 +122,11 @@ describe('Clients › Impôt bière : l’écran de la maquette i1a', () => {
     expect(texte).toContain(`IMPÔT SUR LA BIÈRE — ${annee}`);
     expect(texte).toContain('256,00 – 260,49 CHF');
     expect(texte).toContain('Taux plein');
+    expect(texte).toContain('- légère, jusqu’à 10 °P : 2 hl × 16,88 = 33,76 CHF');
+    expect(texte).toContain('- normale, 10,1 à 14 °P : 6,2 hl × 25,32 = 156,98 CHF');
+    expect(texte).toContain('- forte, dès 14,1 °P : 1,8 hl × 33,76 = 60,77 CHF');
+    expect(texte).toContain('À compléter avant de déclarer : Pale Ale de septembre (densité).');
+    expect(texte).not.toContain('Estimation indicative');
   });
 
   it('10. copie refusée : l’écran le dit', async () => {

@@ -63,7 +63,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
   const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
   const [movement,setMovement]=useState<Transaction|null|undefined>(undefined),[closingId,setClosingId]=useState('');
-  const [profileOpen,setProfileOpen]=useState(false);
+  const [profileOpen,setProfileOpen]=useState(false), [profileParams,setProfileParams]=useState(false);
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
@@ -106,18 +106,18 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
       {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)} assistant={financeAssistant}/></>}
       {view==='forecast'&&<Previsions asOf={todayISO()} horizon={horizon} onHorizon={setHorizon} transactions={transactions} payments={data.payments} plans={data.plans} profile={data.profile} assets={data.assets} batches={batches} stockItems={stockItems}
         ledger={ledger} openingCashReady={openingCashReady} avecProjets={includeEquipmentProjects} onAvecProjets={setIncludeEquipmentProjects}
-        onProfile={()=>setProfileOpen(true)} onPayments={()=>openJournal({scope:'all',allDates:true,filter:'unknown'})} onOpenTransaction={setSelected} onOpenPlan={openPlan} onOpenUpgrade={setUpgrade}
+        onProfile={()=>setProfileOpen(true)} onPayments={()=>openJournal({scope:'all',allDates:true,filter:'unknown'})} onRegistre={()=>openJournal({scope:'all',allDates:true})} onHistorique={()=>{setProfileParams(true);setProfileOpen(true);}} onOpenTransaction={setSelected} onOpenPlan={openPlan} onOpenUpgrade={setUpgrade}
         onAddPlan={()=>setPlan(null)} onBudgetPicker={()=>setBudgetPicker(true)} onOpenBudget={b=>setBudget({batch:b})} onNotice={setNotice} onSale={onOpenSale}
         cible={cible} onCibleTraitee={()=>setCible(null)} projetsOuverts={projetsRef.current}>{financeAssistant}</Previsions>}
       {view==='annual'&&<TaxWorkspace key={year} report={annual} closing={latestClosing} closings={yearClosings} year={year} onYear={value=>{setYear(value);setClosingId('');}} transactions={transactions} payments={data.payments} assets={data.assets} plans={data.plans} stockItems={stockItems} batches={batches} profile={data.profile} tvaThreshold={tvaThreshold} companyName={config.company.name}
         onProfile={()=>setProfileOpen(true)} onInventories={ouverture=>{setClosingOpts(ouverture??{});setClosingOpen(true);}} onAsset={(a,initial)=>{setAssetInitial(initial);setAsset(a);}} onVersion={setClosingId} onOperations={openJournal} onArchives={()=>setArchiveOpen(true)}/>}
     </section>
     {archiveOpen&&<ArchiveManagerSheet transactions={transactions} payments={data.payments} archives={archives} closings={data.closings} onClose={()=>setArchiveOpen(false)} onSaved={setNotice} onBrowse={(year,archived)=>{setArchiveOpen(false);openJournal(archived?{scope:'archives',archiveYear:String(year),allDates:true}:{scope:'all',year:String(year),allDates:true});}}/>}
-    {profileOpen&&<ProfileSheet profile={data.profile} onClose={()=>setProfileOpen(false)}/>}
+    {profileOpen&&<ProfileSheet profile={data.profile} parametres={profileParams} onClose={()=>{setProfileOpen(false);setProfileParams(false);}}/>}
     {upgrade!==undefined&&<UpgradeSheet plan={upgrade??undefined} onClose={()=>setUpgrade(undefined)} onOpenTransaction={tx=>{setUpgrade(undefined);setSelected(tx);}}/>}
     {plan!==undefined&&<PlanSheet plan={plan??undefined} onClose={()=>setPlan(undefined)}/>}
     {asset!==undefined&&<AssetSheet asset={asset??undefined} initial={assetInitial} onClose={()=>{setAsset(undefined);setAssetInitial(undefined);}}/>}
-    {closingOpen&&<ClosingSheet year={year} closing={latestClosing?.report?{...latestClosing,id:idFor(`CLOTURE-${year}`),createdAt:new Date().toISOString(),report:undefined}:latestClosing} stockItems={stockItems} cote={closingOpts.cote} proposer={closingOpts.proposer} propositions={closingOpts.propositions} onClose={()=>{setClosingOpen(false);setClosingOpts({});setClosingId('');}}/>}
+    {closingOpen&&<ClosingSheet year={year} closing={latestClosing?.report?{...latestClosing,id:idFor(`CLOTURE-${year}`),createdAt:new Date().toISOString(),report:undefined}:latestClosing} stockItems={stockItems} cote={closingOpts.cote} proposer={closingOpts.proposer} propositions={closingOpts.propositions} nature={closingOpts.nature} onClose={()=>{setClosingOpen(false);setClosingOpts({});setClosingId('');}}/>}
     {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} onClose={()=>setPaying(null)}/>}
     {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
     {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}

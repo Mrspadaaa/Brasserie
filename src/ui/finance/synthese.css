@@ -57,6 +57,9 @@
 .syn-ct-bouton { min-height:28px; }
 .syn-note { margin:4px 0 0; font-size:12px; color:var(--syn-t2); }
 .syn-note-date { display:block; }
+/* CP-4 : la note de la caisse inconnue est un renvoi (solde, paiements à confirmer, registre) ; mêmes mots, même place. */
+.syn-note-lien { display:flex; align-items:center; justify-content:space-between; gap:6px; width:100%; min-height:28px; padding:0; text-align:left; font:inherit; color:inherit; background:none; border:0; }
+.syn-note-lien:focus-visible { outline:2px solid var(--syn-t2); outline-offset:2px; border-radius:4px; }
 .syn-cb { display:flex; height:14px; border-radius:10px; overflow:hidden; margin:6px 0; }
 .syn-cb-libre { background:#567BD2; opacity:.7; }
 .syn-cb-dette { background:repeating-linear-gradient(135deg, var(--syn-perte) 0 3px, color-mix(in srgb, var(--syn-perte) 22%, var(--syn-page)) 3px 7px); }
@@ -95,3 +98,9 @@
 .syn-bar { display:flex; height:22px; border-radius:10px; overflow:hidden; margin-top:8px; font-size:12px; color:var(--syn-page); }
 .syn-bar i { display:flex; align-items:center; padding-left:6px; font-style:normal; min-width:2px; overflow:hidden; white-space:nowrap; }
 @media (min-width:900px) { .syn-wrap { display:grid; grid-template-columns:1.1fr 1fr; gap:0 40px; align-items:start; } }
+/* CP-9 : « … » au bout du segment (même taille que ses voisins) et la rangée « du [mois] au [mois] » dessous */
+.syn-seg .syn-seg-plus { padding:0 8px; letter-spacing:1px; }
+.syn-plage { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:6px; font-size:12px; color:var(--syn-t2); }
+.syn-plage label { display:flex; align-items:center; gap:6px; }
+.syn-plage input { height:28px; padding:0 8px; border-radius:10px; border:1px solid var(--syn-bord); background:var(--syn-panel); color:var(--syn-txt); font-size:12px; font-family:inherit; color-scheme:light; min-width:0; }
+:root[data-theme='cave'] .syn-plage input { color-scheme:dark; }

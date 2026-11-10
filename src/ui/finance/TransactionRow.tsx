@@ -94,7 +94,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
     <span className="ops-bar" data-hachure={liseré} style={{ '--ops-couleur': lisereCouleur } as React.CSSProperties} aria-hidden="true"/>
     <button type="button" className="ops-main finance-op" onClick={onOpen}
       aria-label={`${transaction.description} · ${categorie}${tiers ? ` · ${tiers}` : ''} · ${money} · ${lisible} · ${piece.texte}`}>
-      <span className="ops-q"><span className="ops-nom" id={nomId}>{transaction.description}</span>{tiers && <small> · {tiers}</small>}</span>
+      <span className="ops-q" title={`${transaction.description}${tiers ? ` · ${tiers}` : ''}`}><span className="ops-nom" id={nomId}>{transaction.description}</span>{tiers && <small> · {tiers}</small>}</span>
       <span className="ops-meta">
         <span className={`ops-tg ops-tg-${etat.ton}`}>{etat.texte}</span>
         {!(etat.ton === 'void') && <span className={`ops-pc${piece.manque ? ' ops-no' : ''}`}>{piece.manque ? ICONE_SANS_PIECE : ICONE_PIECE}{piece.texte}</span>}

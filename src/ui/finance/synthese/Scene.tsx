@@ -1,25 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatCHF } from '../../../domain/finance/ledger';
 import { echelle, regrouperPetits, type PeriodeSynthese, type Reste } from '../../../domain/finance/periodeSynthese';
 import { amountOnly, shortDate } from '../financeFormat';
-import { couleur, hachure, libelleCategorie, fenetreMois, moisCourt, texteSur, titreMois } from './libelles';
+import { couleur, hachure, libelleCategorie, fenetreMois, moisCourt, texteSur, titreMois, titrePlage } from './libelles';
 
 /** Hauteur de la plus haute pile, en px : celle de la maquette g3a. */
 export const HAUTEUR = 300;
 const EN_TETE = 34;
 
-export interface PeriodeChoix { mois: string; tout: boolean }
+/** `plage` : début et fin (`AAAA-MM`, bornes incluses) de la période choisie avec « … » (CP-9) ; elle remplace le mois ou « tout ». */
+export interface PeriodeChoix { mois: string; tout: boolean; plage?: { du: string; au: string } | null }
 
-/** E1 : titre de la période et segment « sept. oct. nov. tout ». */
-export function Periode({ courant, choix, onMois, onTout }: { courant: string; choix: PeriodeChoix; onMois: (mois: string) => void; onTout: () => void }) {
+/** Le texte du titre d'une période : la plage, « tout l'historique » ou le mois. */
+export function titrePeriode(choix: PeriodeChoix, anneeCourante: string): string {
+  return choix.plage ? titrePlage(choix.plage.du, choix.plage.au) : choix.tout ? 'Tout l’historique' : titreMois(choix.mois, anneeCourante);
+}
+
+const PREMIER_MOIS = '2000-01';
+
+/**
+ * E1 : titre de la période et segment « sept. oct. nov. tout … » (g3a). Le dernier élément « … » montre, sous le segment, la rangée
+ * « du [mois] au [mois] » (champs mois natifs, bornés au mois courant, du ≤ au). Un mois ou « tout » touché la referme.
+ */
+export function Periode({ courant, choix, onMois, onTout, onPlage }: { courant: string; choix: PeriodeChoix; onMois: (mois: string) => void; onTout: () => void; onPlage: (du: string, au: string) => void }) {
   const annee = courant.slice(0, 4);
-  return <div className="syn-top">
-    <h2>{choix.tout ? 'Tout l’historique' : titreMois(choix.mois, annee)}</h2>
-    <div className="syn-seg" role="group" aria-label="Période">
-      {fenetreMois(courant, choix.mois).map(mois => <button type="button" key={mois} aria-pressed={!choix.tout && mois === choix.mois} onClick={() => onMois(mois)}>{moisCourt(mois, annee)}</button>)}
-      <button type="button" aria-pressed={choix.tout} onClick={onTout}>tout</button>
+  const [ouvert, setOuvert] = useState(false);
+  const [du, setDu] = useState(courant), [au, setAu] = useState(courant);
+  const ouvrir = () => {
+    if (!ouvert) { setDu(choix.plage?.du ?? (choix.tout ? courant : choix.mois)); setAu(choix.plage?.au ?? courant); }
+    setOuvert(!ouvert);
+  };
+  const borne = (valeur: string) => valeur < PREMIER_MOIS ? PREMIER_MOIS : valeur > courant ? courant : valeur;
+  // du ≤ au : le champ qu'on vient de toucher tire l'autre avec lui, jamais de plage inversée.
+  const changer = (champ: 'du' | 'au', brut: string) => {
+    if (!/^\d{4}-\d{2}$/.test(brut)) return;
+    const v = borne(brut);
+    const [nouveauDu, nouveauAu] = champ === 'du' ? [v, v > au ? v : au] : [v < du ? v : du, v];
+    setDu(nouveauDu); setAu(nouveauAu);
+    onPlage(nouveauDu, nouveauAu);
+  };
+  return <>
+    <div className="syn-top">
+      <h2>{titrePeriode(choix, annee)}</h2>
+      <div className="syn-seg" role="group" aria-label="Période">
+        {fenetreMois(courant, choix.mois).map(mois => <button type="button" key={mois} aria-pressed={!choix.tout && !choix.plage && mois === choix.mois} onClick={() => { setOuvert(false); onMois(mois); }}>{moisCourt(mois, annee)}</button>)}
+        <button type="button" aria-pressed={choix.tout} onClick={() => { setOuvert(false); onTout(); }}>tout</button>
+        <button type="button" className="syn-seg-plus" aria-label="Autre période" aria-expanded={ouvert} aria-pressed={!!choix.plage} onClick={ouvrir}>…</button>
+      </div>
     </div>
-  </div>;
+    {ouvert && <div className="syn-plage" role="group" aria-label="Plage de mois">
+      <label>du <input type="month" aria-label="Du mois" value={du} min={PREMIER_MOIS} max={au} onChange={e => changer('du', e.target.value)}/></label>
+      <label>au <input type="month" aria-label="Au mois" value={au} min={du} max={courant} onChange={e => changer('au', e.target.value)}/></label>
+    </div>}
+  </>;
 }
 
 /** Un grand nombre (« +1 430,20 ») rétrécit pour rester dans sa colonne. */

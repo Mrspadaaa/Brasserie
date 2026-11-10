@@ -85,7 +85,8 @@ describe('Comptabilité quotidienne intégrée',()=>{
     fireEvent.click(screen.getByRole('button',{name:/Limites/}));
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
     expect(screen.queryByRole('button',{name:'Renseigner le solde de départ'})).not.toBeInTheDocument();
-    expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
+    // CP-4 : le bandeau de Prévisions (derrière la feuille) dit aussi « Confirmer les paiements (1) » ; la feuille Limites garde sa rangée (acquis).
+    expect(screen.getAllByRole('button',{name:/Confirmer les paiements/}).length).toBeGreaterThanOrEqual(2);
   });
   it('demande une date réelle au paiement historique et propose la date du jour pour une facture suivie',()=>{
     const unknown=tx({finance:undefined});

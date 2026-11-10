@@ -25,9 +25,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346).
+- Erreur : 19.10 l5b, barres sans pistes ; 26.10 u4 masqué (D155) ; 02.11 F (D295), p3c-3 : « Mais l'app » (D346) ; 10.11 ports loin de ses maquettes (CP-11).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf. Port : jugé sur `?finance-demo=reel`.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 

@@ -163,7 +163,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   // Archiving never settles a bill. Follow-up includes earlier and archived years.
   const followingUp = scope === 'current' && FOLLOW_UP_FILTERS.has(filter);
   /** Le mois de la bande : une période civile, ni un suivi, ni un exercice, ni « Par date », ni les archives. */
-  const modeMois = scope === 'current' && !followingUp && !year && !allDates;
+  // Le mois se change toujours (10.11 : « Pourquoi je peux pas changer de mois ? Je veux !! ») : archives comprises, il filtre aussi ce mois.
+  const modeMois = scope !== 'archives' && !followingUp && !year && !allDates;
   /**
    * Le tri se fait en deux temps, et c'est une question de coût.
    * Le SOCLE — périmètre, période, recherche, catégorie — est le travail lourd ; il ne dépend de l'état demandé que par un booléen (un suivi
@@ -177,7 +178,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
       if (scope === 'current' && !chasing && archived && !open) return false;
       if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
-      if (scope !== 'archives' && !year && !allDates && !chasing && !(scope === 'current' && open) && !date?.startsWith(month)) return false;
+      // Une facture ouverte reste dans la liste du mois, archives comprises aussi : « Tout » montre au moins ce que montrent les courantes (la pastille « en retard » ne promet rien d'absent).
+      if (scope !== 'archives' && !year && !allDates && !chasing && !open && !date?.startsWith(month)) return false;
       if (needle && !search.includes(needle)) return false;
       if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
         (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
@@ -274,6 +276,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   };
   /** Sous-total d'un groupe : les écritures actives affichées ; une annulée se liste mais ne s'additionne pas. Les ventes en +, les charges en positif. */
   const sousTotal = (id: GroupeId | 'jour', rows: typeof filtered): string => {
+    // Rien d'actif à additionner (un groupe d'annulées, un jour sans écriture active) : pas de total, jamais un « 0,00 ».
+    if (!rows.some(r => isActiveTransaction(r.transaction))) return '';
     let cents = 0;
     for (const { transaction, direction } of rows) {
       if (!isActiveTransaction(transaction)) continue;
@@ -286,7 +290,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
 
   return <div className="ops">
     <Bande libellePeriode={periodLabel} contexte={followingUp ? 'Suivi sur tous les exercices, archives comprises.' : scope === 'all' ? 'Archives comprises' : undefined} moisActif={modeMois} month={month} today={aujourdhui}
-      onMonth={value => change({ month: value, allDates: false })}
+      onMonth={value => change({ month: value, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}
       retardCents={retard.totalCents} onRetard={() => change({ filter: 'late' })}
       rechercheOuverte={loupe || !!query} onLoupe={() => { if (!query) setLoupe(open => !open); }}
       query={query} onQuery={value => { change({ query: value }); if (!value) searchRef.current?.focus(); }} searchRef={searchRef} searchId={searchId}
@@ -295,11 +299,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     <div className="ops-liste">{groupes.map(groupe => {
       const meta = groupe.id === 'jour' ? null : GROUPES[groupe.id];
       const total = sousTotal(groupe.id, groupe.rows);
-      return <section key={groupe.cle} className="ops-groupe" data-groupe={groupe.id} aria-label={`${groupe.etiquette} · ${libelleCompte(groupe.rows)} · ${total}`}>
+      return <section key={groupe.cle} className="ops-groupe" data-groupe={groupe.id} aria-label={[groupe.etiquette, libelleCompte(groupe.rows), total].filter(Boolean).join(' · ')}>
         {groupe.id === 'part' && <div className="ops-part" aria-hidden="true"/>}
         <p className="ops-g" aria-hidden="true">
           <span className="ops-sq" style={meta ? { background: meta.fond, color: meta.trait } : undefined}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><path d={meta ? meta.chemin : ICONE_JOUR}/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap={groupe.id === 'divers' ? 'round' : undefined}><path d={meta ? meta.chemin : ICONE_JOUR}/></svg>
           </span>
           <b>{groupe.etiquette}</b><span className="ops-sub ops-m" data-signe={total.startsWith('+') ? '+' : undefined}>{total}</span>
         </p>

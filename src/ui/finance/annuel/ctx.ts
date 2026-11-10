@@ -5,7 +5,7 @@ import type { JournalRequest } from '../TransactionJournal';
 import type { EtapeEtat } from './calculs';
 import type { useDossier } from './dossier';
 
-export interface OuvertureInventaire { cote?: 'openingInventory' | 'closingInventory'; proposer?: boolean; propositions?: Array<{ stockItemRef: string; valueCents: number; note: string }> }
+export interface OuvertureInventaire { cote?: 'openingInventory' | 'closingInventory'; proposer?: boolean; propositions?: Array<{ stockItemRef: string; valueCents: number; note: string }>; /** CP-10 : la nature visée par la case touchée (étape 3). */ nature?: 'malt' | 'houblons' | 'emballages' | 'biere' }
 export interface Actions {
   /** Écrit dans `closing.tax` par la seule voie `ecrireTax`. */
   ecrire: (patch: (tax: FribourgTaxClosing) => void) => void;

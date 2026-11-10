@@ -5,11 +5,10 @@ import { todayISO, type LedgerSummary } from '../../domain/finance/ledger';
 import { periodeSynthese } from '../../domain/finance/periodeSynthese';
 import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
 import type { JournalRequest } from './TransactionJournal';
-import { Periode, Scene } from './synthese/Scene';
+import { Periode, Scene, titrePeriode } from './synthese/Scene';
 import { Caisse } from './synthese/Caisse';
 import { AlerteTva, LigneLitre, Replie, Verifier } from './synthese/Lignes';
 import { Pourquoi } from './synthese/Pourquoi';
-import { titreMois } from './synthese/libelles';
 import './synthese.css';
 
 interface Props {
@@ -50,21 +49,32 @@ interface Props {
 export function FinanceOverview(props: Props) {
   const { transactions, payments, plans, assets, batches, recipes, ledger, month, allDates } = props;
   const aujourdhui = todayISO();
-  const periode = useMemo(() => periodeSynthese({ transactions, payments, mois: allDates ? null : month, aujourdhui, assets }), [transactions, payments, allDates, month, aujourdhui, assets]);
+  // CP-9 : la plage choisie avec « … » vit ici, en état local. Elle remplace le mois ou « tout » tant qu'on ne touche pas l'un d'eux.
+  // À brancher dans FinancesTab (voie sd) pour la garder en quittant l'onglet : `plage` à côté de `month` et `allDates`.
+  const [plage, setPlage] = useState<{ du: string; au: string } | null>(null);
+  const periode = useMemo(() => periodeSynthese({ transactions, payments, mois: plage ? plage.du : allDates ? null : month, jusqua: plage?.au, aujourdhui, assets }), [transactions, payments, plage, allDates, month, aujourdhui, assets]);
   const [pourquoi, setPourquoi] = useState(false);
-  const nomPeriode = allDates ? 'tout l’historique' : titreMois(month, aujourdhui.slice(0, 4)).toLowerCase();
-  const mois = allDates ? null : month;
+  const choix = { mois: month, tout: allDates && !plage, plage };
+  const nomPeriode = titrePeriode(choix, aujourdhui.slice(0, 4)).toLowerCase();
+  const mois = plage ? plage.du : allDates ? null : month;
+  // Le journal ne filtre pas encore une plage : il s'ouvre sur toutes les dates, la catégorie reste filtrée.
+  const jusqua = plage?.au;
+  const portee = plage ? { allDates: true } : { month: mois ?? undefined, allDates };
   const ouvrir = (extra: Omit<JournalRequest, 'key' | 'scope'>) => props.onJournal({ scope: 'all', ...extra });
+  const choisirPlage = (du: string, au: string) => {
+    if (du === au) { setPlage(null); props.onMonth(du); } else setPlage({ du, au });
+  };
 
   return <div className="syn">
     <div className="syn-wrap">
       <section aria-label="Entré et dépensé">
-        <Periode courant={aujourdhui.slice(0, 7)} choix={{ mois: month, tout: allDates }} onMois={m => { props.onMonth(m); }} onTout={props.onAllDates}/>
+        <Periode courant={aujourdhui.slice(0, 7)} choix={choix}
+          onMois={m => { setPlage(null); props.onMonth(m); }} onTout={() => { setPlage(null); props.onAllDates(); }} onPlage={choisirPlage}/>
         <Scene periode={periode} nomPeriode={nomPeriode}
-          onCategorie={categorie => ouvrir({ category: categorie, month: mois ?? undefined, allDates })}
+          onCategorie={categorie => ouvrir({ category: categorie, ...portee })}
           onPiece={props.onTransaction}
-          onVentes={() => ouvrir({ category: 'recettes', month: mois ?? undefined, allDates })}
-          onMateriel={() => ouvrir({ category: 'materiel', month: mois ?? undefined, allDates })}
+          onVentes={() => ouvrir({ category: 'recettes', ...portee })}
+          onMateriel={() => ouvrir({ category: 'materiel', ...portee })}
           onPourquoi={() => setPourquoi(true)}/>
       </section>
       <section aria-label="Caisse et coût du litre">
@@ -72,7 +82,7 @@ export function FinanceOverview(props: Props) {
         <AlerteTva tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
         <Verifier periode={periode} ledger={ledger} tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
         <LigneLitre plans={plans} batches={batches} recipes={recipes} onOpenBudget={props.onOpenBudget} onAbsent={props.onNotice} onPicker={props.onBudgetPicker}/>
-        <Replie sansRegistre={periode.aVerifier.materielSansRegistre} transactions={transactions} payments={payments} plans={plans} mois={mois} onJournal={props.onJournal} onUpgrade={props.onUpgrade} onBrowseProjects={props.onBrowseProjects}/>
+        <Replie sansRegistre={periode.aVerifier.materielSansRegistre} transactions={transactions} payments={payments} plans={plans} mois={mois} jusqua={jusqua} onJournal={props.onJournal} onUpgrade={props.onUpgrade} onBrowseProjects={props.onBrowseProjects}/>
         {props.assistant}
       </section>
     </div>

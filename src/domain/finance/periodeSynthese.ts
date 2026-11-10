@@ -118,14 +118,30 @@ export interface PeriodeEntree {
   payments: FinancialPayment[];
   /** `AAAA-MM`, ou `null` pour toutes les dates. */
   mois: string | null;
+  /**
+   * `AAAA-MM`, fin incluse d'une plage (CP-9, 10.11) : avec `mois` = début, une pièce compte si son mois est dans [mois, jusqua].
+   * Sans `jusqua` (ou avec `mois` nul), rien ne change : Annuel et Opérations restent sur un seul mois.
+   */
+  jusqua?: string;
   /** Date du jour, ISO : l'état de paiement et le retard sont évalués à cette date. */
   aujourdhui: string;
   /** Registre des immobilisations ; absent : « sans registre » n'est pas évalué. */
   assets?: FinancialAsset[];
 }
 
+/**
+ * Une date ISO est-elle dans la période ? `mois` nul : toutes les dates ; `jusqua` absent : le seul mois `mois` ; sinon l'intervalle
+ * [mois, jusqua] bornes incluses (comparaison de chaînes `AAAA-MM`, sûre car le format est fixe). Une plage inversée ne contient rien.
+ */
+export function dansPeriode(date: string, mois: string | null, jusqua?: string): boolean {
+  if (mois === null) return true;
+  if (!jusqua) return date.startsWith(mois);
+  const m = date.slice(0, 7);
+  return m >= mois && m <= jusqua;
+}
+
 export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
-  const { transactions, payments, mois, aujourdhui } = entree;
+  const { transactions, payments, mois, jusqua, aujourdhui } = entree;
   const verifier: AVerifier = { sansDate: [], paiementsAConfirmer: [], avoirsInvalides: [], avoirsNonDessinesCents: 0, materielSansRegistre: [] };
   const totaux = new Map<string, number>(), aPayerParCat = new Map<string, number>();
   const aPayer: Reste[] = [], aEncaisser: Reste[] = [];
@@ -134,7 +150,7 @@ export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
   for (const tx of transactions.filter(isActiveTransaction)) {
     const date = isoDate(tx.date);
     if (!date) { verifier.sansDate.push(tx.description || tx.id); continue; }
-    if (mois !== null && !date.startsWith(mois)) continue;
+    if (!dansPeriode(date, mois, jusqua)) continue;
     const kind = transactionKind(tx);
     if (kind === 'contribution' || kind === 'withdrawal') continue;
     const montant = transactionAmount(tx);

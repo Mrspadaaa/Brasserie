@@ -6,7 +6,7 @@ import type { BrewBudgetSnapshot } from '../../../domain/finance/brewBudget';
 import { netVolumeSaisi } from '../../../domain/finance/brewBudget';
 import { coutLitre, litresNets, troisNotions } from '../../../domain/finance/chaineLitre';
 import { formatCHF, isActiveTransaction, isoDate, transactionAmount, transactionDirection, transactionKind, transactionVendor, type LedgerSummary } from '../../../domain/finance/ledger';
-import type { PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
+import { dansPeriode, type PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import type { TvaThresholdStatus } from '../../../domain/finance/tvaThreshold';
 import { compte } from '../../../services/plural';
 import { nombreFr } from '../../../domain/nombreAffiche';
@@ -59,17 +59,19 @@ export function LigneLitre({ plans, batches, recipes, onOpenBudget, onAbsent, on
 export interface ReplieProps {
   transactions: Transaction[]; payments: FinancialPayment[]; plans: FinancialPlan[];
   mois: string | null;
+  /** Fin de plage (`AAAA-MM`, CP-9) : avec `mois` = début, la période est [mois, jusqua]. */
+  jusqua?: string;
   onJournal: (request: Omit<JournalRequest, 'key'>) => void;
   onUpgrade: (plan: FinancialPlan) => void; onBrowseProjects: () => void;
   /** Pièces de matériel rangées à part mais sans ligne au registre : dites ici, au pli « matériel », pas au premier plan (g3a n'a aucune ligne entre la caisse et le litre). */
   sansRegistre?: string[];
 }
 /** Principaux fournisseurs de la période (≤ 5), avoirs déduits : les montants de l'ancien écran Coûts. */
-export function fournisseurs(transactions: Transaction[], mois: string | null): Array<[string, number]> {
+export function fournisseurs(transactions: Transaction[], mois: string | null, jusqua?: string): Array<[string, number]> {
   const sommes = new Map<string, number>();
   for (const t of transactions.filter(isActiveTransaction)) {
     const date = isoDate(t.date), kind = transactionKind(t);
-    if (!date || mois !== null && !date.startsWith(mois)) continue;
+    if (!date || !dansPeriode(date, mois, jusqua)) continue;
     const sortant = kind === 'expense' || kind === 'refund' && transactionDirection(t, transactions) === 'in';
     if (!sortant) continue;
     const nom = transactionVendor(t) || 'Fournisseur à compléter';
@@ -79,9 +81,11 @@ export function fournisseurs(transactions: Transaction[], mois: string | null): 
 }
 
 /** E6 : « Fournisseurs, matériel », repliée ; dedans, les fournisseurs et l'évolution de la brasserie. */
-export function Replie({ transactions, payments, plans, mois, onJournal, onUpgrade, onBrowseProjects, sansRegistre = [] }: ReplieProps) {
+export function Replie({ transactions, payments, plans, mois, jusqua, onJournal, onUpgrade, onBrowseProjects, sansRegistre = [] }: ReplieProps) {
   const [ouvert, setOuvert] = useState(false);
-  const liste = fournisseurs(transactions, mois);
+  const liste = fournisseurs(transactions, mois, jusqua);
+  // Le journal ne filtre pas encore une plage : sur plage, il s'ouvre sur toutes les dates (le fournisseur reste filtré).
+  const sansMois = mois === null || !!jusqua;
   return <div>
     <button type="button" className="syn-row syn-row-bouton" aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
       <span className="syn-t">Fournisseurs, matériel</span>
@@ -89,7 +93,7 @@ export function Replie({ transactions, payments, plans, mois, onJournal, onUpgra
     </button>
     {ouvert && <div className="syn-replie">
       {liste.length > 0 && <ul className="syn-four" aria-label="Principaux fournisseurs">
-        {liste.map(([nom, cents]) => <li key={nom}><button type="button" onClick={() => onJournal({ scope: 'all', query: nom === 'Fournisseur à compléter' ? '' : nom, month: mois ?? undefined, allDates: mois === null })}>
+        {liste.map(([nom, cents]) => <li key={nom}><button type="button" onClick={() => onJournal({ scope: 'all', query: nom === 'Fournisseur à compléter' ? '' : nom, month: sansMois ? undefined : mois ?? undefined, allDates: sansMois })}>
           <span>{nom}</span><span className="syn-m">{amountOnly(cents)}</span><ChevronRight size={14} aria-hidden="true"/></button></li>)}
       </ul>}
       <UpgradeAnalytics plans={plans} transactions={transactions} payments={payments} onOpen={onUpgrade} onBrowse={onBrowseProjects}/>

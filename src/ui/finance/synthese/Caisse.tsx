@@ -1,7 +1,10 @@
 import React from 'react';
+import { ChevronRight } from 'lucide-react';
 import { formatCHF, todayISO, type LedgerSummary } from '../../../domain/finance/ledger';
 import type { JournalRequest } from '../TransactionJournal';
 import { amountOnly, shortDate } from '../financeFormat';
+import { renvoiCaisse } from '../causeCaisse';
+import { compte } from '../../../services/plural';
 
 export interface CaisseProps {
   ledger: LedgerSummary;
@@ -15,7 +18,7 @@ export interface CaisseProps {
 const CHIPS = 3;
 
 /** E4 : « En caisse », la barre libre / à payer, les règlements à suivre en pastilles avec leur geste. */
-export function Caisse({ ledger, openingCashReady, openingCash, onProfile, onJournal, onTransaction, onPayment }: CaisseProps) {
+export function Caisse({ ledger, openingCash, onProfile, onJournal, onTransaction, onPayment }: CaisseProps) {
   const connue = ledger.cashComplete && ledger.cashCents != null;
   const caisse = connue ? ledger.cashCents! : 0;
   const libre = caisse - ledger.payablesCents;
@@ -23,16 +26,22 @@ export function Caisse({ ledger, openingCashReady, openingCash, onProfile, onJou
   const echus = ledger.outstanding.filter(e => e.dueDate && e.dueDate < todayISO());
   const ordre = [...echus, ...ledger.outstanding.filter(e => !echus.includes(e))];
   const solde = openingCash && Number.isSafeInteger(openingCash.amountCents) ? openingCash : null;
+  // CP-4 : la note sous « En caisse » dit la cause exacte de la caisse inconnue et renvoie là où elle se règle.
+  const renvoi = connue ? null : renvoiCaisse(ledger, openingCash, todayISO());
+  const ouvrirRenvoi = () => renvoi?.geste === 'paiements' ? onJournal({ scope: 'all', allDates: true, filter: 'unknown' }) : renvoi?.geste === 'registre' ? onJournal({ scope: 'all', allDates: true }) : onProfile();
 
   return <div className="syn-caisse">
     <button type="button" className="syn-ct syn-ct-bouton" aria-label="Solde et paramètres financiers" onClick={onProfile}>
       <span>En caisse</span>
       {connue ? <span className="syn-m syn-f">{formatCHF(caisse)}</span> : <span className="syn-m syn-f">À compléter</span>}
     </button>
-    {!connue && <p className="syn-note">
-      {openingCashReady ? 'Des données restent à vérifier'
-        : solde ? <>Solde de départ saisi : {formatCHF(solde.amountCents)}, à confirmer. <span className="syn-note-date">Solde saisi : {formatCHF(solde.amountCents)} au {solde.date.split('-').reverse().join('.')}, pas encore confirmé. Coche « J’ai vérifié ce solde ».</span></>
-        : 'Solde de départ à renseigner'}
+    {!connue && renvoi && <p className="syn-note">
+      <button type="button" className="syn-note-lien" onClick={ouvrirRenvoi}>
+        <span>{renvoi.cause === 'a-confirmer' && solde
+          ? <>Solde de départ saisi : {formatCHF(solde.amountCents)}, à confirmer. <span className="syn-note-date">Solde saisi : {formatCHF(solde.amountCents)} au {solde.date.split('-').reverse().join('.')}, pas encore confirmé. Coche « J’ai vérifié ce solde ».</span></>
+          : <>{renvoi.cause === 'paiements' ? `${compte(ledger.unknownSinceOpeningCount, 'paiement', 'paiements')} à confirmer` : renvoi.titre}{renvoi.cause !== 'absent' && renvoi.aide && <span className="syn-note-date">{renvoi.aide}</span>}</>}</span>
+        <ChevronRight size={12} aria-hidden="true" />
+      </button>
     </p>}
     {connue && <>
       <div className="syn-cb" role="img" aria-label={`En caisse ${formatCHF(caisse)} : ${libre >= 0 ? `libre ${formatCHF(libre)}` : `manque ${formatCHF(-libre)}`}, à payer ${formatCHF(ledger.payablesCents)}`}>

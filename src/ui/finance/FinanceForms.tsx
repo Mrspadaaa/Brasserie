@@ -47,14 +47,15 @@ function FormSheet({title,onClose,onSave,children,saveLabel='Enregistrer'}:{titl
   const submit=async(e?:React.FormEvent)=>{e?.preventDefault(); if(busy)return; setBusy(true); setError(''); try {await onSave();onClose();}catch(err){setError(err instanceof Error?err.message:'Enregistrement impossible.');}finally{setBusy(false);}};
   return <Sheet open title={title} onClose={onClose} dismissible={!busy} className="finance-sheet" footer={<div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose} disabled={busy}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy?'Enregistrement…':saveLabel}</button></div>}><form autoComplete="off" id="finance-form" onSubmit={submit} className="finance-form">{error&&<p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
 }
-export function ProfileSheet({profile,onClose}:{profile:FinancialProfile;onClose:()=>void}) {
+export function ProfileSheet({profile,onClose,parametres=false}:{profile:FinancialProfile;onClose:()=>void;/** CP-7 : ouvre d'emblée « Paramètres des prévisions et des brassins » (le renvoi « Tendance à calculer »). */parametres?:boolean}) {
   const [draft,setDraft]=useState(profile), [cash,setCash]=useState(profile.openingCash?.amountCents), [date,setDate]=useState(profile.openingCash?.date??todayISO()), [confirmed,setConfirmed]=useState(profile.openingCash?.confirmed??false);
   return <FormSheet title="Solde et paramètres financiers" onClose={onClose} onSave={()=>{if(cash!=null&&!isoDate(date))throw Error('Choisis la date du solde.'); FinanceService.saveProfile({...draft,openingCash:cash!=null?{date,amountCents:cash,confirmed}:undefined});}}>
     <p className="finance-muted">Le solde de départ sert à calculer l’argent disponible après les paiements enregistrés.</p>
     <div className="finance-form-grid"><MoneyInput signed label="Solde de départ (CHF)" value={cash} onChange={value=>{setCash(value);setConfirmed(false);}}/>
     <Field label="Date du solde"><input type="date" value={date} max={todayISO()} onChange={e=>{setDate(e.target.value);setConfirmed(false);}} required/></Field></div>
     <label className="finance-check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>J’ai vérifié ce solde, avant les paiements de cette journée.</label>
-    <details className="finance-disclosure"><summary>Paramètres des prévisions et des brassins</summary><div className="finance-form">
+    {cash!=null&&!confirmed&&<p className="finance-muted" role="note">Sans cette case, ce solde n’est compté ni dans la caisse ni dans les prévisions.</p>}
+    <details className="finance-disclosure" open={parametres||undefined}><summary>Paramètres des prévisions et des brassins</summary><div className="finance-form">
     <Field label="Historique des dépenses complet depuis"><input type="month" value={draft.historyCompleteFrom?.slice(0,7)??''} onChange={e=>setDraft({...draft,historyCompleteFrom:e.target.value?`${e.target.value}-01`:undefined})}/></Field>
     <p className="finance-muted">La tendance n’est calculée qu’avec au moins trois mois complets. Les anciens paiements inconnus restent à confirmer.</p>
     <Field label="Production annuelle prévue (litres conditionnés)"><NumberInput value={draft.annualProductionL} onValue={v=>setDraft({...draft,annualProductionL:v??undefined})} emptyValue={undefined} min={1}/></Field>
@@ -108,10 +109,25 @@ export function AssetSheet({asset,initial,onClose}:{asset?:FinancialAsset;/** Pr
 /** Une ligne d'inventaire dont la valeur n'est pas encore saisie n'a PAS de valeur (jamais 0 pour un inconnu) : le champ reste vide, l'enregistrement la refuse. `propositions` : valeurs estimées (dernière facture), offertes par « Utiliser », jamais écrites seules. */
 export type PropositionInventaire={stockItemRef:string;valueCents:number;note:string};
 const lignesDuStock=(stockItems:StockItem[]):FinancialInventoryLine[]=>stockItems.map(s=>({id:idFor('INV'),name:s.name,kind:s.category==='Emballage'?'packaging' as const:'raw' as const,quantity:s.currentStock,unit:s.unit,valueCents:0,stockItemRef:s.ref,note:'Copié du stock actuel : quantité et valeur à vérifier.'}));
-export function ClosingSheet({closing,year,onClose,stockItems,cote,proposer,propositions=[]}:{closing?:FinancialClosing;year:number;onClose:()=>void;stockItems:StockItem[];cote?:'openingInventory'|'closingInventory';proposer?:boolean;propositions?:PropositionInventaire[]}) {
+/** CP-10 : nature visée par une case de l'étape 3 de l'Annuel. */
+export type NatureVisee='malt'|'houblons'|'emballages'|'biere';
+const natureDeLigneSaisie=(l:FinancialInventoryLine,stockItems:StockItem[]):NatureVisee|'autres'=>{
+  if(l.kind==='packaging')return 'emballages';
+  if(l.kind==='work-in-progress'||l.kind==='finished')return 'biere';
+  const categorie=(stockItems.find(s=>s.ref===l.stockItemRef)?.category??'').toLowerCase();
+  return categorie.includes('malt')?'malt':categorie.includes('houblon')?'houblons':'autres';
+};
+const KIND_DE_NATURE:Record<NatureVisee,FinancialInventoryLine['kind']>={malt:'raw',houblons:'raw',emballages:'packaging',biere:'finished'};
+export function ClosingSheet({closing,year,onClose,stockItems,cote,proposer,propositions=[],nature}:{closing?:FinancialClosing;year:number;onClose:()=>void;stockItems:StockItem[];cote?:'openingInventory'|'closingInventory';proposer?:boolean;propositions?:PropositionInventaire[];/** Nature visée : seules ses lignes du stock sont proposées (0 exclus) ; sans proposition, une ligne vide de cette nature est prête. */nature?:NatureVisee}) {
   const [side,setSide]=useState<'openingInventory'|'closingInventory'>(cote??'closingInventory');
   const [init]=useState(()=>{
     const base:FinancialClosing=closing??{id:`CLOTURE-${year}`,year,createdAt:new Date().toISOString(),openingInventory:[],closingInventory:[],inventoriesConfirmed:false,adjustments:[]};
+    if(nature){
+      if(base[side].some(l=>natureDeLigneSaisie(l,stockItems)===nature))return {draft:base,absent:new Set<string>()};
+      const proposees=proposer?lignesDuStock(stockItems).filter(l=>(l.quantity??0)>0&&natureDeLigneSaisie(l,stockItems)===nature):[];
+      const lignes=proposees.length?proposees:[{id:idFor('INV'),name:'',kind:KIND_DE_NATURE[nature],quantity:0,unit:nature==='biere'?'L':nature==='malt'?'kg':nature==='houblons'?'g':'pièce',valueCents:0}];
+      return {draft:{...base,[side]:[...base[side],...lignes],inventoriesConfirmed:false},absent:new Set(lignes.map(l=>l.id))};
+    }
     if(!proposer||base[side].length)return {draft:base,absent:new Set<string>()};
     const lignes=lignesDuStock(stockItems);
     return {draft:{...base,[side]:lignes,inventoriesConfirmed:false},absent:new Set(lignes.map(l=>l.id))};

@@ -5,13 +5,15 @@
   --ops-bord: rgb(var(--cave-700)); --ops-fond: rgb(var(--cave-850)); --ops-hach-a: rgb(var(--attention)); --ops-hach-b: rgb(var(--c-302719));
   min-width:0; color:var(--ops-t1); font-size:14px; line-height:18px; display:flex; flex-direction:column; }
 .ops * { box-sizing:border-box; }
+/* Clair : la bande est le gris le plus pâle du thème et la pastille de mois reste blanche, comme la bande crème et la pastille blanche de v6b (le crème exact n'est pas un jeton). */
+:root:not([data-theme='cave']) .ops { --ops-fond: rgb(var(--cave-900)); }
 :where(.ops) button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:left; }
 .ops .ops-m { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; font-weight:600; }
 
 /* Bande : mois, retard, loupe, puis les piles */
 .ops-bande { margin:4px 0 0; border-radius:16px; background:var(--ops-fond); padding:6px 8px 8px; }
 .ops-haut { display:flex; align-items:center; gap:6px; }
-.ops-pill { position:relative; display:flex; align-items:center; gap:2px; border-radius:16px; border:1px solid var(--ops-bord); padding:1px; }
+.ops-pill { position:relative; display:flex; align-items:center; gap:2px; border-radius:16px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); padding:1px; }
 .ops-pill button { width:28px; height:28px; border-radius:50%; font-size:17px; text-align:center; }
 .ops-pill button:disabled { opacity:.4; cursor:default; }
 .ops-pill .ops-mois { width:auto; min-width:60px; border-radius:14px; padding:0 4px; }
@@ -54,6 +56,7 @@
 .ops-g b { font-size:13px; letter-spacing:.02em; }
 .ops-sub { font-size:13px; color:var(--ops-t2); }
 .ops-sub[data-signe] { color:rgb(var(--area-stocks-texte)); }
+.ops-groupe[data-groupe=retard] .ops-sub { color:rgb(var(--alert-strong-texte)); }
 .ops-part { margin:4px 0 0; border-top:1px dashed var(--ops-t3); }
 .ops-suivi { margin:0; padding-top:4px; font-size:12px; line-height:16px; color:var(--ops-t2); }
 
@@ -66,21 +69,25 @@
 .ops-main::after { content:''; position:absolute; inset:0; }
 .ops-main:focus-visible { outline:none; }
 .ops-main:focus-visible::after { outline:2px solid rgb(var(--ebc-straw)); outline-offset:-2px; border-radius:4px; }
-.ops-q { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; font-size:14px; font-weight:600; line-height:15px; overflow:hidden; overflow-wrap:anywhere; }
+.ops-q { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px; font-weight:600; line-height:15px; }
 .ops-q small { font-weight:400; color:var(--ops-t2); font-size:13px; }
-/* fz : « sans pièce » passe à la ligne au lieu d'être coupé (« sans p ») quand l'état et le geste prennent la place. */
-.ops-meta { display:flex; flex-wrap:wrap; align-items:center; gap:2px 6px; font-size:12px; color:var(--ops-t2); line-height:14px; min-height:14px; min-width:0; }
-.ops-tg { display:inline-flex; align-items:center; padding:0 6px; border-radius:999px; line-height:14px; font-size:12px; white-space:nowrap; }
+/* v6b : deux étages, jamais trois (la maquette : « état et pièce sans retour à la ligne »). Quand l'état et le geste prennent la place, c'est la pastille d'état qui se coupe
+   (« … · ban… »), jamais « sans pièce » ; le détail complet reste dans le nom accessible de la ligne et dans la fiche. */
+.ops-meta { display:flex; flex-wrap:nowrap; align-items:center; gap:0 6px; font-size:12px; color:var(--ops-t2); line-height:14px; min-height:14px; min-width:0; }
+.ops-tg { display:inline-block; flex:0 1 auto; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:0 6px; border-radius:999px; line-height:14px; font-size:12px; white-space:nowrap; }
 .ops-tg-ok { background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); }
 .ops-tg-pay { background:repeating-linear-gradient(135deg, rgb(var(--c-302719)) 0 4px, transparent 4px 8px), rgb(var(--c-302719)); color:rgb(var(--attention-texte)); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }
 .ops-tg-late { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); box-shadow:inset 0 0 0 1px rgb(var(--alert-strong-texte)); }
 .ops-tg-alert { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); }
 .ops-tg-unknown, .ops-tg-void { background:rgb(var(--cave-800)); color:var(--ops-t2); }
-.ops-pc { display:inline-flex; align-items:center; gap:2px; white-space:nowrap; color:var(--ops-t2); overflow:hidden; text-overflow:ellipsis; }
+.ops-pc { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; white-space:nowrap; color:var(--ops-t2); }
 .ops-pc svg { flex:0 0 auto; }
 .ops-pc.ops-no { color:rgb(var(--attention-texte)); }
 .ops-a { grid-column:4; font-size:14px; text-align:right; line-height:15px; align-self:start; padding-top:1px; }
 .ops-a.ops-in { color:rgb(var(--area-stocks-texte)); }
+/* Une annulée se liste mais ne compte pas : montant et nom s'effacent, le montant est barré (même ligne, mêmes jetons ; aucun composant neuf). */
+.ops-row[data-ton=void] .ops-a { color:var(--ops-t3); text-decoration:line-through; }
+.ops-row[data-ton=void] .ops-q { color:var(--ops-t2); font-weight:400; }
 .ops-act { grid-column:3; position:relative; z-index:1; justify-self:end; align-self:center; text-align:center; }
 .ops-btn { min-height:28px; padding:0 10px; border-radius:16px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:13px; font-weight:600; white-space:nowrap; }
 .ops-mini { min-height:24px; padding:0 7px; border-radius:10px; border:1px solid var(--ops-bord); font-size:12px; color:var(--ops-t2); white-space:nowrap; }
@@ -88,7 +95,11 @@
 
 /* Pied : puces, panneau */
 .ops-pied { display:flex; flex-wrap:wrap; gap:6px; padding:10px 0 4px; }
-.ops-pied .finance-assistant { min-height:30px; padding:0 10px; border-radius:10px; border:1px dashed rgb(var(--area-finances)); background:transparent; color:var(--finance-accent,rgb(var(--area-finances-texte))); font-size:13px; }
+.ops-pied .finance-assistant { display:inline-flex; align-items:center; gap:5px; width:auto; max-width:100%; margin:0; min-height:30px; padding:0 10px; border-radius:10px; border:1px dashed rgb(var(--area-finances)); background:transparent; color:var(--finance-accent,rgb(var(--area-finances-texte))); font-size:13px; }
+.ops-pied .finance-assistant > svg { width:13px; height:13px; }
+.ops-pied .finance-assistant > svg:last-child, .ops-pied .finance-assistant small { display:none; }
+.ops-pied .finance-assistant > span { display:inline; flex:0 1 auto; }
+.ops-pied .finance-assistant strong { font-size:13px; font-weight:400; line-height:18px; }
 .ops-pu { display:inline-flex; align-items:center; gap:4px; min-height:30px; padding:0 10px; border-radius:10px; background:rgb(var(--cave-800)); font-size:13px; color:var(--ops-t2); }
 .ops-pu[aria-pressed=true], .ops-pu[aria-expanded=true] { background:var(--ops-t1); color:rgb(var(--cave-950)); font-weight:600; }
 .ops-pu:disabled { opacity:.5; cursor:default; }

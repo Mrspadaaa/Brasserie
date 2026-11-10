@@ -39,6 +39,15 @@ export function moisCourt(mois: string, anneeCourante: string): string {
   const base = MOIS_COURT.format(date(mois));
   return mois.slice(0, 4) === anneeCourante ? base : `${base} ${mois.slice(0, 4)}`;
 }
+/**
+ * Titre d'une plage de mois (CP-9) : « Juin – nov. 2026 » ; sur deux années, chaque bout porte la sienne : « Déc. 2025 – mars 2026 ».
+ * L'année est toujours dite (une plage n'est pas « le mois en cours »).
+ */
+export function titrePlage(du: string, au: string): string {
+  const court = (mois: string) => MOIS_COURT.format(date(mois));
+  const [a1, a2] = [du.slice(0, 4), au.slice(0, 4)];
+  return majuscule(a1 === a2 ? `${court(du)} – ${court(au)} ${a2}` : `${court(du)} ${a1} – ${court(au)} ${a2}`);
+}
 /** « Novembre », avec l'année quand ce n'est pas l'année en cours. */
 export function titreMois(mois: string, anneeCourante: string): string {
   const base = majuscule(MOIS_LONG.format(date(mois)));

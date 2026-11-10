@@ -10,10 +10,13 @@ import { nombreFr } from '../../domain/nombreAffiche';
 import { GraphePrix } from './GraphePrix';
 import { GrapheInconnu } from './GrapheInconnu';
 import { brassinEnUnites, formatDuTarif, lirePrix, resteAnnuel, tarifsDuFormat, unitesParAn, type FormatId, type LecturePrix } from './calculPrix';
-import { bieresDe, biereDuBrassin, brassinDuCout, formatsDe, impotUnite, lireDonneesPrix, prixReels } from './donneesPrix';
+import { bieresDe, biereDuBrassin, brassinDuCout, formatsDe, impotUnite, lireDonneesPrix, manquesPrix, prixReels, type FormatManque, type ManquePrix } from './donneesPrix';
+import '../finance/finance.css'; // la feuille « Solde et paramètres » (volume annuel) s'ouvre ici sans passer par l'onglet Finances
 import './prix.css';
 
 const BrewBudgetDialog = React.lazy(() => import('../finance/BrewBudgetDialog').then(m => ({ default: m.BrewBudgetDialog })));
+const BatchDetailSheet = React.lazy(() => import('../BatchDetailSheet').then(m => ({ default: m.BatchDetailSheet })));
+const ProfileSheet = React.lazy(() => import('../finance/FinanceForms').then(m => ({ default: m.ProfileSheet })));
 const BrewerChat = React.lazy(() => import('../BrewerChat').then(m => ({ default: m.BrewerChat })));
 
 const chf = (n: number) => montantChf(n);
@@ -54,6 +57,9 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
   const [an, setAn] = useState<boolean>(() => StorageService.getUiState<string>('prix_lecture', 'bouteille') === 'an');
   const [feuille, setFeuille] = useState<PricingItem | null>(null);
   const [coutOuvert, setCoutOuvert] = useState(false);
+  /** Les renvois du bloc « À compléter » : la fiche du brassin (Mesures) et le profil financier (volume annuel). */
+  const [ficheOuverte, setFicheOuverte] = useState(false);
+  const [profilOuvert, setProfilOuvert] = useState(false);
   const [question, setQuestion] = useState<string | undefined>();
   useEffect(() => { StorageService.setUiState('prix_lecture', an ? 'an' : 'bouteille'); }, [an]);
 
@@ -86,7 +92,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
 
   const completer = tarifs.filter(t => !t.format);
   const choixFormats: FormatChoix[] = formats.map(f => ({ id: f.format.id as FormatId, label: f.format.label, volumeL: f.format.volumeL }));
-  const ouvrir = (t?: PricingItem) => setFeuille(t ?? { product: '', biere, format: { id: actif.format.id as FormatId, volumeL: actif.format.volumeL }, priceHT: Number.NaN });
+  const ouvrir = (t?: PricingItem, f: { id: string; volumeL: number } = actif.format) => setFeuille(t ?? { product: '', biere, format: { id: f.id as FormatId, volumeL: f.volumeL }, priceHT: Number.NaN });
   useEffect(() => { if (nouveau) ouvrir(); }, [nouveau]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Une seule voie d'écriture : le libellé est la clé de stockage ; un renommage remplace la ligne éditée. Le journal est écrit ici, sans « marge » (le coût n'est plus saisi).
@@ -100,6 +106,25 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
     onSuccessMessage?.(`Tarif « ${t.product} » enregistré.`);
   };
   const supprimer = (t: PricingItem) => { StorageService.deleteTarif(t.product); onSuccessMessage?.(`Tarif « ${t.product} » supprimé.`); };
+
+  // Chaque donnée manquante, une ligne : ce qui manque, son effet, un toucher qui ouvre l'endroit où la saisir.
+  const formatsManque: FormatManque[] = formats.map(f => {
+    const o = lire(f.format); const tf = o.tf;
+    // Plusieurs tarifs pour le format : pas un manque. Un ancien tarif sans format : sa puce plus bas le dit déjà.
+    const prixConnu = o.prix !== null || tf.kind === 'plusieurs' || (tf.kind === 'sans-prix' && !tf.tarif.format);
+    return { id: f.format.id as FormatId, label: f.format.label, present: f.present, prixConnu, emballageManque: tf.kind === 'un' && o.tarif?.emballageUnite == null, tarifExiste: tf.kind === 'sans-prix' };
+  });
+  const manques = manquesPrix({ chiffrage, formats: formatsManque, volumeAnnuelManque: litresAn === undefined });
+  const ouvrirManque = (m: ManquePrix) => {
+    if (m.cible === 'fiche') setFicheOuverte(true);
+    else if (m.cible === 'cout') setCoutOuvert(true);
+    else if (m.cible === 'profil') setProfilOuvert(true);
+    else {
+      const f = formats.find(x => x.format.id === m.formatId)!.format;
+      const tf = tarifsDuFormat(tarifs, f.id as FormatId, biere);
+      ouvrir(m.tarifExistant && (tf.kind === 'un' || tf.kind === 'sans-prix') ? tf.tarif : undefined, f);
+    }
+  };
 
   const question1 = () => {
     const f = majuscule(actif.format.label);
@@ -165,10 +190,14 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
               {v !== null ? <b className={`prx-m${r!.valeur < 0 ? ' prx-neg' : ''}`}>{r!.borne ? '≤ ' : ''}{chf(v)}</b> : <b className="prx-m prx-q">≤ ?</b>}</button>;
           })}
         </div>
-        {completer.length > 0 && <div className="prx-completer" role="group" aria-label="Tarifs à compléter">
-          <span>À compléter</span>{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)} title={t.product}><span className="prx-nom">{libelleTarif(t.product)}</span> · <span className="prx-m">{prixConnu(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}
-        </div>}
-        {!lecture.cout?.exact && prix !== null && lecture.cout && <p className="prx-aide">Emballage de l’unité à compléter dans le tarif : le reste est un maximum.</p>}
+        {(manques.length > 0 || completer.length > 0) && <section className="prx-manque" aria-label="Données à compléter">
+          <p className="prx-manque-t">Il manque ces données pour savoir ce qu’il te reste :</p>
+          {manques.length > 0 && <ul>{manques.map(m => <li key={m.cle}><button type="button" className="prx-tache" onClick={() => ouvrirManque(m)} data-manque={m.cle}><span><b>{m.titre}</b><small>{m.effet}</small></span><i aria-hidden="true">›</i></button></li>)}</ul>}
+          {completer.length > 0 && <>
+            <p className="prx-manque-e">Anciens tarifs sans format. Sans format, ce prix n’entre pas dans le calcul : choisis 33 cl, 75 cl ou fût.</p>
+            <div className="prx-completer" role="group" aria-label="Tarifs à compléter">{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)} title={t.product}><span className="prx-nom">{libelleTarif(t.product)}</span> · <span className="prx-m">{prixConnu(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}</div>
+          </>}
+        </section>}
         <div className="prx-act">
           <button type="button" className="prx-ia" onClick={() => setQuestion(question1())} data-booster="ia-proposer"><Sparkles size={18} aria-hidden="true" />Proposer</button>
           <button type="button" className="prx-pri" onClick={() => ouvrir(cur.tarif ?? undefined)}><Pencil size={18} aria-hidden="true" />{cur.tarif ? 'Changer le prix' : 'Fixer le prix'}</button>
@@ -177,6 +206,8 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       <TarifSheet item={feuille} config={config} existingProducts={tarifs.map(t => t.product)} formats={choixFormats}
         apercu={s => { const f = choixFormats.find(c => c.id === s.formatId) ?? choixFormats.find(c => c.id === formatId)!; return lire(f, s.emballage ?? null, s.prix ?? null).lecture as LecturePrix; }}
         onClose={() => setFeuille(null)} onSave={enregistrer} onDelete={supprimer} />
+      {ficheOuverte && batch && <React.Suspense fallback={null}><BatchDetailSheet batch={batch} initialSection="measurements" onClose={() => setFicheOuverte(false)} /></React.Suspense>}
+      {profilOuvert && d.profile && <React.Suspense fallback={null}><ProfileSheet profile={d.profile} parametres onClose={() => setProfilOuvert(false)} /></React.Suspense>}
       {coutOuvert && batch && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setCoutOuvert(false)} /></React.Suspense>}
       {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'app', id: 'clients-tarifs' }} label="Mes prix" phase="Prix de vente" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
     </div>

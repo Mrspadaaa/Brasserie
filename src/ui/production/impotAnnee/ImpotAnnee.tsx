@@ -83,14 +83,22 @@ export function ImpotAnnee({ batches, config }: { batches: Batch[]; config: AppC
   const libelleReduction = reductionConfirmee ? `Réduction petit brasseur confirmée : ${nombreFr(pct, 1)} %.` : 'Taux plein : réduction à confirmer dans les réglages.';
 
   const copier = () => {
-    const lignesTexte = lignes.map(l => `- ${l.nom} : ${l.litres === null ? 'litres à noter' : `${nombreFr(l.litres, 1)} L`}, ${l.plato === null ? 'densité à noter' : `${nombreFr(l.plato, 1)} °P`}, ${
-      l.etat === 'inconnue' ? (l.min !== null && l.max !== null ? `${montantChf(l.min)} – ${montantChf(l.max)} CHF` : 'impôt inconnu') : l.montant === null ? 'impôt inconnu' : `${l.etat === 'visee' ? '~ ' : ''}${montantChf(l.montant)} CHF`}`);
-    const texte = `IMPÔT SUR LA BIÈRE — ${annee}
-Entreprise : ${config.company.name}
-Brassins de l'année : ${lignes.length}
-Impôt estimé : ${intervalle === null ? '—' : `${intervalle} CHF`}${total.inconnu ? ` (densité à noter pour ${lignes.filter(l => l.etat === 'inconnue').length} brassin(s))` : ''}${total.sansLitres ? ` (litres à noter pour ${total.sansLitres} brassin(s) : total minimum)` : ''}
-${libelleReduction}
-${lignesTexte.join('\n')}${lignesTexte.length ? '\n' : ''}Estimation indicative : l'impôt est dû à la sortie de cave (déclaration via Taxas).`;
+    /* CP-8 (10.11, « texte inutile ») : le texte copié est ce que Taxas demande, les hectolitres par catégorie, et ce qui manque encore. */
+    const NOMS = ['légère', 'normale', 'forte'];
+    const parBande = BAREME_IMPOT_BIERE.map((tranche, i) => {
+      const prises = lignes.filter(l => l.etat === 'note' && l.bande === i && l.litres !== null && l.montant !== null);
+      const bas = i === 0 ? null : nombreFr(BAREME_IMPOT_BIERE[i - 1].jusquaPlato + 0.1, 1);
+      const borne = bas === null ? `jusqu’à ${nombreFr(tranche.jusquaPlato, 1)} °P` : Number.isFinite(tranche.jusquaPlato) ? `${bas} à ${nombreFr(tranche.jusquaPlato, 1)} °P` : `dès ${bas} °P`;
+      const litres = prises.reduce((n, l) => n + l.litres!, 0), montant = prises.reduce((n, l) => n + l.montant!, 0);
+      return prises.length ? `- ${NOMS[i]}, ${borne} : ${nombreFr(litres / 100, 3)} hl × ${montantChf(tranche.chfParHl)} = ${montantChf(montant)} CHF` : null;
+    }).filter(Boolean);
+    const manques = lignes.filter(l => l.etat === 'visee' || l.etat === 'inconnue' || (l.etat === 'note' && l.litres === null))
+      .map(l => `${l.nom} (${l.litres === null ? 'litres' : ''}${l.litres === null && l.etat !== 'note' ? ' et ' : ''}${l.etat === 'visee' ? 'densité visée, à mesurer' : l.etat === 'inconnue' ? 'densité' : ''})`);
+    const texte = [`IMPÔT SUR LA BIÈRE — ${annee} · pour Taxas`, config.company.name,
+      parBande.length ? 'Hectolitres par catégorie (densité notée) :' : 'Aucun brassin à densité notée : rien à reporter encore.', ...parBande,
+      `Total : ${intervalle === null ? '—' : `${intervalle} CHF`}`,
+      manques.length ? `À compléter avant de déclarer : ${manques.join(', ')}.` : '',
+      libelleReduction].filter(Boolean).join('\n');
     /* TE-8 : le retour est visible dans les deux cas ; une copie refusée par le navigateur le dit au lieu de se taire. */
     void Promise.resolve(navigator.clipboard?.writeText(texte)).then(() => setCopie('ok'), () => setCopie('failed'));
     if (!navigator.clipboard) setCopie('failed');

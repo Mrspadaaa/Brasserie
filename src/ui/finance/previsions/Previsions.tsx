@@ -15,6 +15,7 @@ import { FicheBrassin, FicheProjet } from './FicheEtiquette';
 import { Feuille } from './Feuille';
 import { ListeSorties, plansHorsProjets } from './ListeSorties';
 import { mesureDuProjet } from './mesureProjet';
+import { renvoiCaisse } from '../causeCaisse';
 import { centimesDeSaisie, jourCourt, litreFr, montant, montantEntier, montantSigne } from './format';
 import '../previsions.css';
 
@@ -29,7 +30,7 @@ export interface PrevisionsProps {
   transactions: Transaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; assets: FinancialAsset[]; batches: Batch[]; stockItems: StockItem[];
   ledger: LedgerSummary; openingCashReady: boolean;
   avecProjets: boolean; onAvecProjets: (avec: boolean) => void;
-  onProfile: () => void; onPayments: () => void; onOpenTransaction: (tx: Transaction) => void; onOpenPlan: (plan: FinancialPlan) => void; onOpenUpgrade: (plan: FinancialPlan | null) => void;
+  onProfile: () => void; onPayments: () => void; /** CP-4 : le journal sans filtre (cause « autre » de la caisse inconnue) ; absent, le journal des paiements à confirmer. */ onRegistre?: () => void; /** CP-7 : la feuille du solde ouverte sur « Paramètres des prévisions » (début de l'historique complet) ; absent, la feuille du solde. */ onHistorique?: () => void; onOpenTransaction: (tx: Transaction) => void; onOpenPlan: (plan: FinancialPlan) => void; onOpenUpgrade: (plan: FinancialPlan | null) => void;
   onAddPlan: () => void; onBudgetPicker: () => void; onOpenBudget: (batch: Batch) => void; onNotice: (texte: string) => void; onSale?: () => void; onJournal?: () => void;
   cible?: CiblePrevoir | null; onCibleTraitee?: () => void; projetsOuverts?: boolean; children?: React.ReactNode;
 }
@@ -131,6 +132,12 @@ export function Previsions(p: PrevisionsProps) {
     .brassins.find(b => b.batchId === ficheBrassin.batchId)?.coutLitre?.affiche.complet ?? null : null, [ficheBrassin?.batchId, p.batches, p.transactions, p.plans, p.profile, p.assets, asOf, fin]); // eslint-disable-line react-hooks/exhaustive-deps
   const ficheProjet = fiche?.kind === 'projet' ? plansParId.get(fiche.planId) : undefined;
   const connu = depart !== null;
+  // CP-7 : un escalier sans marche est plat sans dire pourquoi ; le domaine le sait (tendance non calculée sans trois mois d'historique complet, aucun plan ni brassin à venir).
+  // Plate = rien APRÈS aujourd’hui : les achats du jour (sa capture du 10.11) ne sont pas une prévision.
+  const plate = affiche.marches.every(m => m.date <= debut);
+  const tendanceACalculer = avec.warnings.some(w => w.startsWith('Tendance non calculée'));
+  // CP-4 : la ligne en pointillé dit la cause exacte de la caisse inconnue et renvoie là où elle se règle (solde, paiements à confirmer, registre).
+  const renvoi = renvoiCaisse(ledger, p.profile.openingCash, asOf) ?? { cause: 'absent' as const, geste: 'profil' as const, titre: 'Solde de départ à renseigner', aide: 'sans lui, seul l’écart de la période est connu' };
   const carte = (s: typeof affiche, etiquette: string, actif: boolean | null, onClick?: () => void) => {
     const contenu = <><span>{etiquette}<small>{connu ? sousZero(s) : `écart ${horizon === 365 ? '12 mois' : `${horizon} j`}`}</small></span><b className={`prv-m${(dernier(s) == null ? montantSigne(s.ecartFinCents) : montant(dernier(s)!)).length > 8 ? ' prv-long' : ''}`}>{dernier(s) == null ? montantSigne(s.ecartFinCents) : montant(dernier(s)!)}</b></>;
     return onClick ? <button type="button" aria-pressed={!!actif} className={actif ? 'prv-on' : ''} onClick={onClick}>{contenu}</button> : <div className="prv-seule">{contenu}</div>;
@@ -139,7 +146,9 @@ export function Previsions(p: PrevisionsProps) {
   return <section className="prv" aria-label={`Prévision sur ${horizon === 365 ? '12 mois' : `${horizon} jours`}`}>
     <div className="prv-tete"><h3>{titre}</h3>
       <span className="prv-seg" role="group" aria-label="Horizon de prévision">{HORIZONS.map(([v, court, long]) => <button type="button" key={v} aria-label={long} aria-pressed={horizon === v} onClick={() => p.onHorizon(v)}>{court}</button>)}</span></div>
-    {!connu && <button type="button" className="prv-depart" onClick={p.onProfile}><span>Solde de départ à renseigner<small>sans lui, seul l’écart de la période est connu</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
+    {!connu && <button type="button" className="prv-depart" onClick={renvoi.geste === 'profil' ? p.onProfile : renvoi.geste === 'paiements' ? p.onPayments : (p.onRegistre ?? p.onPayments)}><span>{renvoi.titre}{renvoi.aide && <small>{renvoi.aide}</small>}</span><ChevronRight size={14} aria-hidden="true" /></button>}
+    {plate && tendanceACalculer && <button type="button" className="prv-depart" onClick={p.onHistorique ?? p.onProfile}><span>Tendance à calculer<small>indique depuis quand ton historique est complet (3 mois au moins)</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
+    {plate && <button type="button" className="prv-depart" onClick={p.onAddPlan}><span>Rien de prévu<small>un brassin ou un paiement à venir</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
     {eSans && planTeste ? <div className="prv-sw" role="group" aria-label="Avec ou sans le projet de matériel">
       {carte(eAvec, `Avec ${planTeste.title.toLowerCase()}`, !modeSans, () => p.onAvecProjets(true))}
       {carte(eSans, `Sans ${planTeste.title.toLowerCase()}`, modeSans, () => p.onAvecProjets(false))}</div>

@@ -111,9 +111,17 @@ export interface OutstandingEntry {
   id: string; description: string; date: string | null; dueDate: string | null;
   amountCents: number; paidCents: number; remainingCents: number; direction: 'in' | 'out'; state: string;
 }
+/** absent : aucun solde de départ ; a-confirmer : saisi, case non cochée ; paiements : des paiements depuis le solde restent à confirmer ; autre : registre en synchro, lien de remboursement, paiement invalide, date du solde à venir. */
+export type CashCause = 'absent' | 'a-confirmer' | 'paiements' | 'autre';
 export interface LedgerSummary {
   incomeCents: number; expenseCents: number; contributionCents: number; withdrawalCents: number;
   cashCents: number | null; cashComplete: boolean; unknownPaymentCount: number;
+  /** CP-4 : pourquoi la caisse n'est pas connue (null si elle l'est). Aucun calcul ne dépend de ces champs. */
+  cashCause: CashCause | null;
+  /** Paiements « à confirmer » des pièces datées depuis le solde de départ : ce que le brasseur confirme pour débloquer la caisse. */
+  unknownSinceOpeningCount: number;
+  /** Cause « autre » : la première alerte du registre qui bloque la caisse (la phrase du registre, pas une invention). */
+  cashAlert: string | null;
   receivablesCents: number; payablesCents: number; missingProofCount: number;
   outstanding: OutstandingEntry[]; warnings: string[];
 }
@@ -128,8 +136,9 @@ export interface LedgerOptions {
 export function summarizeLedger(transactions: FinanceTransaction[], payments: FinancialPayment[], profile: FinancialProfile, asOf = todayISO(), options: LedgerOptions = {}): LedgerSummary {
   const warnings: string[] = [];
   const result: LedgerSummary = { incomeCents: 0, expenseCents: 0, contributionCents: 0, withdrawalCents: 0,
-    cashCents: null, cashComplete: false, unknownPaymentCount: 0, receivablesCents: 0, payablesCents: 0, missingProofCount: 0, outstanding: [], warnings };
+    cashCents: null, cashComplete: false, unknownPaymentCount: 0, cashCause: null, unknownSinceOpeningCount: 0, cashAlert: null, receivablesCents: 0, payablesCents: 0, missingProofCount: 0, outstanding: [], warnings };
   const opening = profile.openingCash;
+  const blocages: string[] = [];
   if (opening?.confirmed && isoDate(opening.date) && isoDate(opening.date)! <= asOf && Number.isSafeInteger(opening.amountCents)) {
     result.cashCents = opening.amountCents + payments.filter(p => validPayment(p) && isoDate(p.date)! >= isoDate(opening.date)! && isoDate(p.date)! <= asOf)
       .reduce((sum, p) => sum + (p.direction === 'in' ? p.amountCents : -p.amountCents), 0);
@@ -151,6 +160,7 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
   transactions.filter(isActiveTransaction).forEach(tx => {
     if (tx.settlementBalanceCents !== undefined && tx.settlementBalanceCents !== paidForTransaction(tx, payments, transactions)) {
       warnings.push(`${tx.id} : registre de paiements en cours de synchronisation ou restauration.`);
+      blocages.push(warnings[warnings.length - 1]);
       result.cashComplete = false;
     }
     const date = isoDate(tx.date);
@@ -163,7 +173,7 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     if (!Number.isSafeInteger(amount) || amount < 0) { warnings.push(`Montant à vérifier : ${tx.id}.`); return; }
     const kind = transactionKind(tx), direction = transactionDirection(tx, transactions);
     const refundIssue = refundLinkIssue(tx, transactions);
-    if (refundIssue) { warnings.push(refundIssue); result.cashComplete = false; return; }
+    if (refundIssue) { warnings.push(refundIssue); blocages.push(refundIssue); result.cashComplete = false; return; }
     if (kind === 'income') result.incomeCents += amount;
     if (kind === 'expense') result.expenseCents += amount;
     if (kind === 'contribution') result.contributionCents += amount;
@@ -173,7 +183,7 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     const state = paymentState(tx, payments, transactions, asOf);
     if (state.state === 'unknown') {
       result.unknownPaymentCount++;
-      if (opening && date >= (isoDate(opening.date) ?? '')) result.cashComplete = false;
+      if (opening && date >= (isoDate(opening.date) ?? '')) { result.cashComplete = false; result.unknownSinceOpeningCount++; }
     } else if (state.remainingCents > 0) {
       result.outstanding.push({ id: tx.id, description: tx.description, date, dueDate: isoDate(tx.finance?.dueDate),
         amountCents: amount, paidCents: state.paidCents, remainingCents: state.remainingCents, direction, state: state.state });
@@ -182,7 +192,15 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     if (state.overpaidCents > 0) warnings.push(`Paiement supérieur à la pièce ${tx.id} : ${formatCHF(state.overpaidCents)}.`);
   });
   if (result.unknownPaymentCount) warnings.push(`${compte(result.unknownPaymentCount, 'paiement historique', 'paiements historiques')} à confirmer ; exclus des échéances.`);
-  if (payments.some(p => !validPayment(p))) { warnings.push('Des paiements ont une date ou un montant invalide.'); result.cashComplete = false; }
+  if (payments.some(p => !validPayment(p))) { warnings.push('Des paiements ont une date ou un montant invalide.'); blocages.push('Des paiements ont une date ou un montant invalide.'); result.cashComplete = false; }
+  if (!result.cashComplete) {
+    const dateSolde = opening ? isoDate(opening.date) : null;
+    if (!opening || !dateSolde || !Number.isSafeInteger(opening.amountCents)) result.cashCause = 'absent';
+    else if (!opening.confirmed) result.cashCause = 'a-confirmer';
+    else if (dateSolde > asOf) { result.cashCause = 'autre'; result.cashAlert = 'La date du solde de départ est dans le futur.'; }
+    else if (result.unknownSinceOpeningCount > 0) result.cashCause = 'paiements';
+    else { result.cashCause = 'autre'; result.cashAlert = blocages[0] ?? warnings.find(w => !w.startsWith('Solde de trésorerie initial')) ?? null; }
+  }
   result.outstanding.sort((a, b) => (a.dueDate ?? a.date ?? '').localeCompare(b.dueDate ?? b.date ?? ''));
   return result;
 }

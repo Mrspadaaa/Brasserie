@@ -96,12 +96,19 @@
 .ann-ch { border:1.5px solid var(--ann-bord) !important; border-radius:12px; padding:10px 8px; display:flex; flex-direction:column; gap:2px; font-size:13px; } .ann-ch b { font-size:14px; }
 .ann-ch.on { border-color:var(--ann-txt) !important; box-shadow:inset 0 0 0 1px var(--ann-txt); }
 /* 3 */
-.ann-inv { display:grid; grid-template-columns:1fr 84px 84px; gap:4px 6px; margin-top:10px; align-items:stretch; }
+.ann-inv { display:grid; grid-template-columns:1fr 80px 80px; gap:4px 6px; margin-top:10px; align-items:stretch; }
 .ann-inv .h { font-size:12px; color:var(--ann-t2); font-weight:600; text-align:center; } .ann-inv .h:first-child { text-align:left; }
 .ann-inv .n { display:flex; align-items:center; min-height:48px; } .ann-inv .n small { display:block; font-size:12px; color:var(--ann-t2); }
 .ann-inv .c { border-radius:10px; display:grid; place-items:center; font-family:ui-monospace,monospace; font-size:14px; color:var(--ann-attt); border:1.5px dashed var(--ann-att); text-align:center; }
 .ann-inv .c.p { border:1.5px solid var(--ann-gain); color:var(--ann-gain); background:color-mix(in srgb,var(--ann-gain) 12%,var(--ann-page)); font-weight:600; } .ann-inv .c small { font-size:11px; font-weight:400; }
 .ann-inv .c.est { font-weight:600; }
+/* CP-10 : icône de nature, UNE petite ligne qui ne s'étire jamais, cases « ? » et « ≈ » = boutons de même hauteur (g6-3). */
+.ann-inv .n { gap:8px; min-width:0; } .ann-inv .n .ic { flex:none; } .ann-inv .n .nt { min-width:0; flex:1; display:block; }
+.ann-inv .n small.l { display:flex; gap:4px; white-space:nowrap; } .ann-inv .n small.l .e { min-width:0; overflow:hidden; text-overflow:ellipsis; } .ann-inv .n small.l .s { flex:none; }
+.ann-inv button.c { appearance:none; margin:0; padding:0; min-height:48px; width:100%; cursor:pointer; background-color:transparent; }
+.ann-inv button.c.p { background-color:color-mix(in srgb,var(--ann-gain) 12%,var(--ann-page)); }
+.ann-inv button.c:disabled { cursor:default; opacity:.7; }
+.ann-inv button.c:focus-visible { outline:2px solid var(--ann-txt); outline-offset:2px; }
 .ann-var { margin-top:10px; border-radius:12px; background:var(--ann-panel); padding:8px; display:flex; align-items:center; gap:10px; } .ann-var .ann-t { flex:1; font-size:13px; }
 /* 5 */
 .ann-bal { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
