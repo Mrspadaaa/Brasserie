@@ -57,6 +57,14 @@ switch (e.hook_event_name) {
       }
       if (mtime) { s.lus[k] = mtime; garder(); }
     }
+    // Fable interdit (brasseur, 10.11 : « Pas d'utilisation de fable jusqu'à nouvelle ordre !!! ») : passer FABLE_INTERDIT à false pour lever.
+    const FABLE_INTERDIT = true;
+    const ti = e.tool_input ?? {};
+    if (FABLE_INTERDIT && (/fable/i.test(String(ti.model ?? ''))
+      || (e.tool_name === 'Agent' && ti.subagent_type === 'critique' && !ti.model))) {
+      process.stderr.write("FABLE INTERDIT (brasseur, 10.11, jusqu'à nouvel ordre). Agent critique : passe model: \"opus\" ; ailleurs, un autre modèle.");
+      process.exit(2);
+    }
     // Agent générique sans modèle : il hérite d'Opus. Choisir l'agent du projet (executant Haiku, auteur/relecteur Sonnet,
     // concepteur Opus, critique Fable) ou nommer le modèle : la qualité reste un choix explicite, pas un défaut.
     if (e.tool_name === 'Agent' && /^(general-purpose|claude)?$/.test(e.tool_input?.subagent_type ?? '') && !e.tool_input?.model) {
