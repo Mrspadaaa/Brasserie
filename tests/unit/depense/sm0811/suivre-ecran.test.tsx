@@ -60,6 +60,8 @@ const ajouter = (view: ReturnType<typeof render>, libelle: string): string => {
   l = ligneEl(view, id);
   const cases = l.querySelector('[data-dp-cases-unite]');
   if (cases) fireEvent.click(cases.querySelector('button[data-val="g"]')!);
+  /* DP-6 (10.11) : une ligne ouverte garde sa bande ; elle rejoint la sienne à sa fermeture. */
+  const d = ligneEl(view, id).querySelector('details')!; if (d.open) fireEvent.click(d.querySelector('summary')!);
   return id;
 };
 const suivre = (view: ReturnType<typeof render>, id: string) => { fireEvent.click(within(ligneEl(view, id)).getByRole('button', { name: /Suivre au stock/ })); };
@@ -76,7 +78,7 @@ describe('SM — « Suivre au stock » relie tout seul', () => {
   it('« Idaho7 », 5 g, rien au stock : la ligne est déjà dans Houblons, puis le bouton en fait un article Houblon « Idaho 7 » (fiche, pas d’α), la ligne y reste', async () => {
     const view = await lire();
     const id = ajouter(view, 'Idaho7');
-    expect(bandeDe(view, id)).toBe('houblon');
+    await waitFor(() => expect(bandeDe(view, id)).toBe('houblon')); // DP-6 : à la fermeture de la ligne
     suivre(view, id);
     const l = ouvrir(view, id);
     expect(bandeDe(view, id)).toBe('houblon');
