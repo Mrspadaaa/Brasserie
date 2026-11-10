@@ -75,7 +75,7 @@ const enter = (v: string) =>
 const notePh = (v = '5,7') => {
   enter(v);
   fireEvent.click(screen.getByLabelText(/Échantillon refroidi/));
-  fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+  fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
 };
 
 describe('Assistant pendant le brassage', () => {
@@ -90,7 +90,7 @@ describe('Assistant pendant le brassage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
     await waitFor(() =>
-      expect(screen.getByText('Vérifie le débit de recirculation.')).toBeInTheDocument()
+      expect(within(screen.getByRole('region', { name: 'Notes et conseil' })).getByText('Vérifie le débit de recirculation.')).toBeInTheDocument()
     );
     expect(v.latest().notes![0].text).toBe('Le débit ralentit');
     expect(AiClient.run).toHaveBeenCalledTimes(1);
@@ -102,7 +102,7 @@ describe('Assistant pendant le brassage', () => {
     expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText(/Échantillon refroidi/));
     expect(screen.getByText(/Au-dessus de la fenêtre/)).toBeInTheDocument();
-    fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+    fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
     expect(v.latest().readings![0]).toMatchObject({
       value: 5.7,
       stepId: 'mash-0',
@@ -144,7 +144,7 @@ describe('Assistant pendant le brassage', () => {
     mount({ readings: [{ at: 10, kind: 'ph', unit: '', value: 5.7 }] });
     expect(screen.queryByText(/Moitié de l’estimation/)).not.toBeInTheDocument();
     enter('5,7');
-    fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+    fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
     expect(screen.getByText(/Refroidis l’échantillon/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
   });
@@ -184,11 +184,11 @@ describe('Assistant pendant le brassage', () => {
       '<svg>'
     ]) {
       enter(s);
-      expect(form().getByRole('button', { name: 'Noter' })).toBeDisabled();
+      expect(form().getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
       expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
     }
     enter('5,3');
-    expect(form().getByRole('button', { name: 'Noter' })).toBeEnabled();
+    expect(form().getByRole('button', { name: 'Enregistrer' })).toBeEnabled();
   });
   it('pause et reprise gardent le temps restant, le palier suivant ne démarre pas seul', () => {
     const date = vi.spyOn(Date, 'now').mockReturnValue(1000);
@@ -245,7 +245,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
     await waitFor(() => expect(screen.getByText('Hors ligne')).toBeInTheDocument());
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
-    await waitFor(() => expect(screen.getByText('Maintiens ce palier.')).toBeInTheDocument());
+    await waitFor(() => expect(within(screen.getByRole('region', { name: 'Notes et conseil' })).getByText('Maintiens ce palier.')).toBeInTheDocument());
     expect(screen.getByLabelText(/pH de maische/)).toBeEnabled();
   });
   it('clôture explicite : un relevé pré-ébullition ne remplace pas l’OG', async () => {

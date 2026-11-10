@@ -17,7 +17,11 @@ import {
   Thermometer,
   ListChecks,
   ArrowLeft,
-  BellRing
+  BellRing,
+  RefreshCw,
+  Pencil,
+  CircleHelp,
+  MessageCircle
 } from 'lucide-react';
 import './brew-day.css';
 import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
@@ -49,6 +53,7 @@ import {
   remainingMs,
   formatCountdown,
   armAudio,
+  isAudioArmed,
   beep,
   keepScreenAwake,
   releaseScreen
@@ -65,7 +70,8 @@ import {
   BrewUpdate,
   brewControl
 } from '../ui/BrewDayMeasurements';
-import { BrewIngredients } from '../ui/BrewIngredients';
+import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
+import type { PitchEditor } from '../ui/BrewIngredients';
 import { BrewJournal } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
 import { BrewChoice } from '../ui/BrewChoice';
@@ -103,17 +109,29 @@ interface Props {
 }
 /** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
 const fr = (n: number | string) => String(n).replace('.', ',');
+
+// Le choix du son du brasseur, d'une session à l'autre (préférence locale à l'appareil ; jamais une promesse d'alarme écran éteint).
+const SOUND_KEY = 'laffinee.brew.son';
+const readSoundPreference = () => {
+  try {
+    return window.localStorage.getItem(SOUND_KEY) === 'on';
+  } catch {
+    return false;
+  }
+};
+const writeSoundPreference = (on: boolean) => {
+  try {
+    window.localStorage.setItem(SOUND_KEY, on ? 'on' : 'off');
+  } catch {
+    /* stockage indisponible : le choix vaut pour cette session seulement */
+  }
+};
 const AREA: Record<BrewArea, string> = {
   preparation: 'Préparer',
   mash: 'Empâter',
   boil: 'Ébullition',
   finish: 'Refroidir'
 };
-const time = (at: number) =>
-  new Date(at).toLocaleTimeString('fr-CH', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 
 export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish, onOpenHopV55 }: Props) {
   const recipe = useMemo(
@@ -146,7 +164,27 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     areaOf(state.steps[state.currentIndex]?.id ?? 'eau')
   );
   const [now, setNow] = useState(brewNow);
-  const [sound, setSound] = useState(false);
+  // p3 : le choix du son se garde d'une session à l'autre (préférence locale du brasseur) ; couper le son reste un geste explicite.
+  const [sound, setSoundState] = useState(readSoundPreference);
+  const setSound = (on: boolean) => {
+    setSoundState(on);
+    writeSoundPreference(on);
+  };
+  const [pitchEditToken, setPitchEditToken] = useState(0);
+  const [audioArmed, setAudioArmed] = useState(isAudioArmed);
+  // Le son gardé d'une session précédente ne s'arme qu'à un vrai geste (iOS, Safari) : le premier toucher de la page l'arme.
+  useEffect(() => {
+    if (!sound || audioArmed) return;
+    const arm = () => {
+      if (armAudio()) setAudioArmed(true);
+    };
+    window.addEventListener('pointerdown', arm, { once: true });
+    window.addEventListener('keydown', arm, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', arm);
+      window.removeEventListener('keydown', arm);
+    };
+  }, [sound, audioArmed]);
   const [awake, setAwake] = useState(false);
   const [notice, setNotice] = useState('');
   useEffect(() => {
@@ -267,6 +305,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     document.addEventListener('visibilitychange', visible);
     return () => document.removeEventListener('visibilitychange', visible);
   }, [awake]);
+  // Le + flottant de l'app (compagnon, facture, vente…) recouvrait des cases de cette vue : il s'efface ici (brew-day.css), le compagnon vit dans « Aides et repères ».
+  useEffect(() => {
+    document.body.setAttribute('data-brew-fab-off', '');
+    return () => document.body.removeAttribute('data-brew-fab-off');
+  }, []);
   const choose = (index: number) => {
     if (index < 0 || !state.steps[index]) return;
     setNotice('');
@@ -285,6 +328,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const revealAdditions = () => {
     const target =
       document.querySelector('.brew-ingredient-group.is-due') ??
+      document.querySelector('.bz-row[data-prochain]') ??
       document.querySelector('.brew-ingredients');
     if (!target) return;
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -306,7 +350,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const start = () => {
     if (!session.canStart) return;
     setNotice('');
-    if (armAudio()) setSound(true);
+    if (armAudio()) {
+      setSoundState(true);
+      setAudioArmed(true);
+    }
     if (boiled)
       update((s) => {
         const n = { ...s, boilStartedAt: s.boilStartedAt ?? brewNow() };
@@ -314,8 +361,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         return n;
       });
     else if (rampBeforeHold && current.rampStartedAt == null && current.startedAt == null) {
+      // Test d'écran n° 6 : la feuille Mesurer ne s'ouvre plus d'office, elle recouvrait l'horloge ; l'invitation reste en ligne (« relevé » de l'horloge).
       update(s => startThermalSegment(s, current, current.id === 'whirlpool' ? 'immersion' : 'heating', thermalTarget!, brewNow()));
-      requestMeasure('temperature');
     } else update((s) => startBrewStep(s, brewNow()));
   };
   const setDuration = (minutes: number) => {
@@ -531,13 +578,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const otherTimers = activeTimers.filter((s) => isConsulting || s.id !== current.id);
   const otherBoil =
     state.boilStartedAt != null && state.boilFinishedAt == null && (isConsulting || !boiled);
+  // Une horloge tourne : un minuteur de palier en marche (pas en pause) ou l'ébullition commencée et non finie.
+  const clockRunning =
+    (state.boilStartedAt != null && state.boilFinishedAt == null) ||
+    state.steps.some((s) => isUsefulTimer(s) && s.startedAt != null && s.pausedAt == null && s.doneAt == null);
   const headerAlarm =
     upcoming &&
     now - upcoming.at <= 30 * 60000 &&
-    (upcoming.at <= now ||
-      upcoming.title === 'Ajout en cuve' ||
-      isConsulting ||
-      upcoming.stepId !== current.id)
+    // 10.11, le brasseur : « Bien mettre les alere et tout ! Je veux pas louper un timing !! » : chaque ajout garde son bandeau.
+    (upcoming.at <= now || upcoming.title === 'Ajout en cuve' || isConsulting || upcoming.stepId !== current.id)
       ? upcoming
       : undefined;
   const lastStep = !nextStep;
@@ -649,6 +698,20 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       return { ...s, additions: { ...s.additions, yeast: { ...s.additions?.yeast, amount, unit } } };
     });
   };
+  // p3 (n° 4) : le choix de la quantité de levure vit dans l'éditeur de la ligne Levure ; le pied « J'ai ajouté la levure » l'ouvre.
+  const plannedPitchUsable = typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && !!recipe.yeast.unit;
+  const canTransferStarter = batch.yeastPreparation?.status === 'started' || batch.yeastPreparation?.status === 'ready';
+  const pitchEditor: PitchEditor | undefined = state.pitchedAt == null ? {
+    mode: currentPitchMode,
+    token: pitchEditToken,
+    onMode: selectPitchQuantityMode,
+    options: [
+      ...(plannedPitchUsable ? [{ mode: 'planned' as const, label: 'Prévue ajoutée' }] : []),
+      { mode: 'measured' as const, label: 'Mesurée' },
+      { mode: 'unmeasured' as const, label: 'Sans mesure' },
+      ...(canTransferStarter ? [{ mode: 'starter-transferred' as const, label: 'Starter transféré' }] : [])
+    ]
+  } : undefined;
   const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
@@ -673,7 +736,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     else if (!brewingStarted) update(s => ({ ...s, startedAt: brewNow() }));
     else if (lastStep) {
       if (!pitchChoiceValid) {
-        setNotice('Consigne la quantité réellement ajoutée dans le guide Levure avant de clôturer.');
+        // La quantité réellement ajoutée reste un choix explicite : on ouvre l'éditeur de la ligne Levure, à l'écran, avec ses choix.
+        setNotice('Choisis la quantité de levure réellement ajoutée.');
+        setPitchEditToken((t) => t + 1);
         return;
       }
       setConfirmFinish(true);
@@ -713,14 +778,73 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     openCapture('note');
   };
 
+  // — La grammaire de z1 (« La conduite affûtée ») : ce qui se lit à la cuve, calculé une fois ici. —
+  const syncAttention =
+    !!session.error || ['À synchroniser', 'Connexion interrompue', 'Ouvert dans un autre onglet'].includes(session.status);
+  const syncText = session.error || session.status === 'À synchroniser' || session.status === 'Connexion interrompue'
+    ? 'à synchroniser'
+    : session.status === 'Ouvert dans un autre onglet'
+      ? 'autre onglet'
+      : session.status === 'Enregistrement…' || session.status.startsWith('Connexion au')
+        ? session.status.toLowerCase()
+        : 'à jour';
+  const etapeNumero = Math.max(1, routeIndex + 1);
+  const lastTemperature = [...(state.readings ?? [])]
+    .reverse()
+    .find((r) => r.kind === 'temperature' && r.stepId === current.id);
+  const phaseFill = (v: BrewArea) => {
+    const steps = route.filter((s) => areaOf(s.id) === v);
+    if (!steps.length) return 0;
+    let sum = 0;
+    for (const s of steps) {
+      if (isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null) sum += 1;
+      else if ((s.id === current.id || (boiled && isBoilStep(s))) && running && left != null && duration > 0)
+        sum += Math.max(0, Math.min(1, 1 - left / (duration * 60000)));
+    }
+    return sum / steps.length;
+  };
+  const boilPoints = boiled ? boilAdditionPoints(executionRecipe, state) : [];
+  const nextBoilPoint = boilPoints.find((p) => !p.done);
+  const elapsedShare = boiled && running && left != null && duration > 0 ? Math.max(0, Math.min(1, 1 - left / (duration * 60000))) : null;
+  const thermalVisible =
+    (/^mash/.test(measuredStep.id) || measuredStep.id === 'sparge' || ['refroidissement', 'ensemencement', 'whirlpool'].includes(measuredStep.id)) &&
+    state.finishedAt == null && measuredStep.doneAt == null;
+  const wideScreen = typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 901px)').matches;
+  const stepHasIngredients = brewIngredients(ingredientDisplayRecipe).some(
+    (i) => ingredientAppliesToStep(i, { area, stepId: current.id }) && (i.planned > 0 || !!state.additions?.[i.id])
+  );
+  const nextStepIngredients = nextStep && !isConsulting
+    ? brewIngredients(executionRecipe).filter(
+        (i) => i.planned > 0 && ingredientAppliesToStep(i, { area: areaOf(nextStep.id), stepId: nextStep.id }) &&
+          // « Ensuite » ne répète pas ce que l'étape en cours montre déjà (grains d'un palier au suivant).
+          !ingredientAppliesToStep(i, { area: areaOf(current.id), stepId: current.id })
+      )
+    : [];
+  const nextGrains = nextStepIngredients.length > 0 && nextStepIngredients.every((i) => i.kind === 'grain');
+  const nextStepMeta = nextStep
+    ? nextGrains
+      ? `${doseFr(nextStepIngredients.reduce((sum, i) => sum + (actualAmount(i, state) ?? i.planned), 0), 'kg')} kg`
+      : [
+          nextStep.tempC != null ? `${fr(nextStep.tempC)} °C` : '',
+          isBoilStep(nextStep) ? `${boilMinutes(state, recipe)} min` : nextStep.durationMin > 0 ? `${nextStep.durationMin} min` : ''
+        ].filter(Boolean).join(' · ')
+    : '';
+  // Au palier d'empâtage : « maintien 67 °C · relevé — », la température avant le temps (L04), au repos, en marche, en pause.
+  const holdLine = showTimer && !boiled && !completed && !staleTimer && isMash(current.id) && thermalTarget != null;
+  const waitingLabel = running && !completed && left != null && left > 0
+    ? boiled
+      ? 'Coupure du feu'
+      : 'Fin du palier'
+    : null;
+
   const viewNavigation = (
-    <nav aria-label="Vues du brassin" className="brew-view-tabs">
+    <nav aria-label="Vues du brassin" className="brew-view-tabs bz-onglets">
       <button
         type="button"
         aria-pressed={!isConsulting}
         onClick={() => navigate(areaOf(current.id))}
       >
-        <SlidersHorizontal size={16} />
+        <SlidersHorizontal size={14} />
         Conduite
       </button>
       <button
@@ -729,7 +853,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         aria-pressed={view === 'recipe'}
         onClick={() => navigate('recipe')}
       >
-        <BookOpen size={16} />
+        <BookOpen size={14} />
         Recette
       </button>
       <button
@@ -738,23 +862,83 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         aria-pressed={view === 'journal'}
         onClick={() => navigate('journal')}
       >
-        <NotebookPen size={16} />
+        <NotebookPen size={14} />
         Journal
       </button>
       <span className="brew-progress-label">
         {doneCount}/{route.length} étapes faites
       </span>
+      <span className={`bz-sync ${syncAttention ? 'is-attention' : ''}`} data-booster="sync">
+        <RefreshCw size={12} aria-hidden="true" />
+        {syncText}
+      </span>
     </nav>
+  );
+  const alerteBande = (
+    <>
+      {alarmSound.ringing && (
+        <div className="brew-ringing bz-alerte" role="status">
+          {due[0] ? (
+            <button
+              type="button"
+              className="brew-ringing-reason"
+              onClick={() => choose(state.steps.findIndex((s) => s.id === due[0].stepId))}
+            >
+              <BellRing size={16} />
+              <span>
+                À faire maintenant
+                <strong>{due[0].title === 'Ajout en cuve' ? due[0].body : due[0].title}</strong>
+              </span>
+              <ChevronRight size={14} />
+            </button>
+          ) : (
+            <BrewTag tone="due">Sonnerie</BrewTag>
+          )}
+          <button
+            type="button"
+            className="brew-ringing-stop"
+            aria-label="Arrêter la sonnerie"
+            onClick={alarmSound.stop}
+          >
+            <VolumeX size={16} />
+            {due.length ? 'Arrêter' : 'Arrêter la sonnerie'}
+          </button>
+        </div>
+      )}
+      {headerAlarm && !alarmSound.ringing && (
+        <button
+          type="button"
+          className={`brew-next-alarm bz-alerte ${headerAlarm.at <= now ? 'is-due' : ''}`}
+          onClick={() => {
+            choose(state.steps.findIndex((s) => s.id === headerAlarm.stepId));
+            // Le bandeau annonce une dose : amener la ligne correspondante
+            // sous les yeux plutôt que de laisser chercher dans la liste.
+            if (headerAlarm.title === 'Ajout en cuve')
+              requestAnimationFrame(revealAdditions);
+          }}
+        >
+          <BellRing size={14} />
+          <span>
+            {headerAlarm.at <= now ? 'À faire maintenant' : `À ${heureCuve(headerAlarm.at)}`}
+            <strong>
+              {headerAlarm.title === 'Ajout en cuve' ? headerAlarm.body : headerAlarm.title}
+            </strong>
+          </span>
+          <span className="brew-digits">{formatCountdown(headerAlarm.at - now)}</span>
+          <ChevronRight size={14} />
+        </button>
+      )}
+    </>
   );
   return (
     <PageShell
       wide
-      className="brew-page"
+      className="brew-page bz"
       title={batch.name}
       subtitle={
         session.error
           ? 'Journal à synchroniser · brouillon conservé'
-          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${String(recipe.volumeL ?? batch.volumeL ?? '—').replace('.', ',')} L`
+          : `${batch.id} · ${String(recipe.volumeL ?? batch.volumeL ?? '—').replace('.', ',')} L`
       }
       onClose={() =>
         capture
@@ -769,26 +953,38 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         <>
           <button
             type="button"
-            className="brew-icon-button"
+            className="brew-icon-button bz-pictos"
             aria-label={sound ? 'Couper les alertes sonores' : 'Activer les alertes sonores'}
             aria-pressed={sound}
+            data-booster="son"
+            // Une horloge tourne sans son armé : le picto se voit en couleur d'alerte (« Je veux pas louper un timing !! », 10.11).
+            data-alerte={clockRunning && (!sound || !audioArmed) ? '' : undefined}
             onClick={() => {
-              if (sound) {
+              if (sound && !audioArmed) {
+                // Son gardé d'une session précédente, pas encore armé : ce toucher l'arme (il ne le coupe pas).
+                if (armAudio()) {
+                  setAudioArmed(true);
+                  beep(1);
+                }
+              } else if (sound) {
                 alarmSound.stop();
                 setSound(false);
               } else if (armAudio()) {
                 setSound(true);
+                setAudioArmed(true);
                 beep(1);
               }
             }}
           >
-            {sound ? <Volume2 size={19} /> : <VolumeX size={19} />}
+            {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}
+            <span aria-hidden="true">son</span>
           </button>
           <button
             type="button"
-            className="brew-icon-button"
+            className="brew-icon-button bz-pictos"
             aria-label="Garder l’écran allumé"
             aria-pressed={awake}
+            data-booster="ecran"
             onClick={async () => {
               if (awake) {
                 await releaseScreen();
@@ -796,167 +992,107 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               } else setAwake(await keepScreenAwake());
             }}
           >
-            <Sun size={19} />
+            <Sun size={14} />
+            <span aria-hidden="true">écran</span>
           </button>
         </>
       }
-      progress={
-        <>
-          {viewNavigation}
-          {alarmSound.ringing && (
-            <div className="brew-ringing" role="status">
-              {due[0] ? (
-                <button
-                  type="button"
-                  className="brew-ringing-reason"
-                  onClick={() => choose(state.steps.findIndex((s) => s.id === due[0].stepId))}
-                >
-                  <BellRing size={18} />
-                  <span>
-                    À faire maintenant
-                    <strong>{due[0].title === 'Ajout en cuve' ? due[0].body : due[0].title}</strong>
-                  </span>
-                  <ChevronRight size={16} />
-                </button>
-              ) : (
-                <BrewTag tone="due">Sonnerie</BrewTag>
-              )}
-              <button
-                type="button"
-                className="brew-ringing-stop"
-                aria-label="Arrêter la sonnerie"
-                onClick={alarmSound.stop}
-              >
-                <VolumeX size={18} />
-                {due.length ? 'Arrêter' : 'Arrêter la sonnerie'}
-              </button>
-            </div>
-          )}
-          {headerAlarm && !alarmSound.ringing && (
-            <button
-              type="button"
-              className={`brew-next-alarm ${headerAlarm.at <= now ? 'is-due' : ''}`}
-              onClick={() => {
-                choose(state.steps.findIndex((s) => s.id === headerAlarm.stepId));
-                // Le bandeau annonce une dose : amener la ligne correspondante
-                // sous les yeux plutôt que de laisser chercher dans la liste.
-                if (headerAlarm.title === 'Ajout en cuve')
-                  requestAnimationFrame(revealAdditions);
-              }}
-            >
-              <BellRing size={16} />
-              <span>
-                {headerAlarm.at <= now ? 'À faire maintenant' : `À ${time(headerAlarm.at)}`}
-                <strong>
-                  {headerAlarm.title === 'Ajout en cuve' ? headerAlarm.body : headerAlarm.title}
-                </strong>
-              </span>
-              <span className="brew-digits">{formatCountdown(headerAlarm.at - now)}</span>
-              <ChevronRight size={16} />
-            </button>
-          )}
-        </>
-      }
+      progress={viewNavigation}
       footer={
-        <div className="brew-footer">
-          <div className="brew-footer-context">
-            <span>
-              {!brewingStarted ? 'Pas encore commencé' : isConsulting ? 'Étape en cours' : completed ? 'Étape terminée' : 'À la cuve'}
-            </span>
-            <strong>
-              {!brewingStarted ? `Aujourd’hui : ${breweryDay(now)}` : isConsulting
-                ? current.label
-                : nextStepName
-                  ? `Ensuite : ${nextStepName}`
-                  : 'Passage en fermentation'}
-            </strong>
-          </div>
-          <div className="brew-footer-actions">
-            <button
-              type="button"
-              className="brew-quick-entry"
-              aria-label="Relever une mesure"
-              disabled={!session.canStart}
-              onClick={() => openCapture('measure')}
-            >
-              <Thermometer size={20} />
-              <span>Mesurer</span>
-            </button>
-            <button
-              type="button"
-              className="brew-quick-entry"
-              aria-label="Ajouter une note"
-              disabled={!session.canStart}
-              onClick={() => openCapture('note')}
-            >
-              <NotebookPen size={20} />
-              <span>{note.trim() ? 'Brouillon' : 'Note'}</span>
-            </button>
-            <button
-              type="button"
-              className="brew-primary"
-              disabled={!session.canStart}
-              onClick={primaryAction}
-            >
-              {isConsulting ? (
-                <ArrowLeft size={18} />
-              ) : showTimer && !running && !completed && !lastStep ? (
-                <Play size={18} />
-              ) : (
-                <Check size={18} />
-              )}
-              <span>{primaryLabel}</span>
-              {!isConsulting && <ChevronRight size={18} />}
-            </button>
-          </div>
+        <div className="brew-footer bz-pied">
+          <button
+            type="button"
+            className="brew-quick-entry"
+            aria-label="Relever une mesure"
+            disabled={!session.canStart}
+            data-booster="mesurer"
+            onClick={() => openCapture('measure')}
+          >
+            <Thermometer size={14} />
+            <span>Mesurer</span>
+          </button>
+          <button
+            type="button"
+            className="brew-quick-entry"
+            aria-label="Ajouter une note"
+            disabled={!session.canStart}
+            data-booster="note"
+            onClick={() => openCapture('note')}
+          >
+            <Pencil size={14} />
+            <span>{note.trim() ? 'Brouillon' : 'Note'}</span>
+          </button>
+          <button
+            type="button"
+            className="brew-primary"
+            aria-label={primaryLabel}
+            data-attente={waitingLabel ? '' : undefined}
+            disabled={!session.canStart}
+            data-booster="action"
+            onClick={primaryAction}
+          >
+            {waitingLabel && left != null ? (
+              <>
+                {waitingLabel} · <span className="bz-m">{heureCuve(now + left)}</span>
+              </>
+            ) : (
+              primaryLabel
+            )}
+          </button>
         </div>
       }
     >
-      {/* Le bouton d'action flottant ouvre cette conversation : la carte de
-          lancement reprenait une rangée entière du déroulé pour le même geste. */}
+      {/* Le + flottant (le menu d'actions de toute l'app : compagnon, facture, vente, recette, brassin) recouvrait des cases de cette vue ;
+          il s'efface ici et ses actions de brassage vivent dans « Aides et repères » (compagnon) et dans les en-têtes de groupe (+). */}
       <BrewerChat hideLauncher scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
         editableTargets={session.canStart ? ['journal','batch'] : []} beforeApply={session.flush}
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
-      <div className="mb-2">
-        <BatchSchedule batch={datedBatch} onSave={async updated => {
-          await saveBatchSchedule(batchRef.current, updated.plannedBrewDate ?? '', onSave);
-        }} />
-      </div>
       <div ref={contentRef} className="brew-workspace">
         {notice && !capture && (
           <div className="brew-toast" role="status">
             {notice}
           </div>
         )}
-        <nav aria-label="Phases du brassage" className="brew-navigation" hidden={isConsulting}>
+        <nav aria-label="Phases du brassage" className="brew-navigation bz-phases" hidden={isConsulting}>
           <div className="brew-phases">
-            {(Object.keys(AREA) as BrewArea[]).map((v, index) => {
+            {(Object.keys(AREA) as BrewArea[]).map((v) => {
               const phaseSteps = route.filter((s) => areaOf(s.id) === v);
               const phaseDone =
                 phaseSteps.length > 0 &&
                 phaseSteps.every((s) =>
                   isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
                 );
+              const fill = phaseFill(v);
+              const here = !isConsulting && view === v;
               return (
                 <button
                   type="button"
                   key={v}
                   disabled={!phaseSteps.length || !session.canStart}
                   aria-label={areaLabels[v]}
-                  aria-pressed={!isConsulting && view === v}
-                  className={`brew-phase ${phaseDone ? 'is-complete' : ''}`}
+                  aria-pressed={here}
+                  aria-current={here ? 'step' : undefined}
+                  className={`brew-phase bz-phase ${phaseDone ? 'is-complete' : ''}`}
+                  data-phase={v}
+                  data-fait={phaseDone ? 'true' : undefined}
+                  data-encours={here && fill > 0 && !phaseDone ? 'true' : undefined}
+                  style={{ '--bz-fill': `${Math.round(fill * 100)}%` } as React.CSSProperties}
                   onClick={() => navigate(v)}
                 >
-                  <span className="brew-phase-number" aria-hidden="true">
-                    {phaseDone ? <Check size={16} /> : index + 1}
-                  </span>
-                  <span>{areaLabels[v]}</span>
+                  <i aria-hidden="true" />
+                  {areaLabels[v]}
                 </button>
               );
             })}
           </div>
         </nav>
+        {alerteBande}
+        <div className="bz-planning" data-phase={isConsulting ? 'consultation' : area}>
+          <BatchSchedule batch={datedBatch} onSave={async updated => {
+            await saveBatchSchedule(batchRef.current, updated.plannedBrewDate ?? '', onSave);
+          }} />
+        </div>
 
         {!isConsulting && (otherTimers.length > 0 || otherBoil) && (
           <div aria-label="Minuteurs actifs" className="brew-timer-tray">
@@ -968,7 +1104,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 disabled={!session.canStart}
                 onClick={() => choose(state.steps.indexOf(s))}
               >
-                <Clock3 size={15} />
+                <Clock3 size={14} />
                 <span>{s.label}</span>
                 <strong className="brew-digits">
                   {s.pausedAt != null ? 'Pause · ' : ''}
@@ -983,7 +1119,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 disabled={!session.canStart}
                 onClick={() => choose(state.steps.findIndex(isBoilStep))}
               >
-                <Clock3 size={15} />
+                <Clock3 size={14} />
                 <span>Ébullition</span>
                 <strong className="brew-digits">
                   {formatCountdown(state.boilStartedAt + boilMinutes(state, recipe) * 60000 - now)}
@@ -1113,221 +1249,185 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   <>
                     <section
                       aria-label="Étape consultée"
-                      className={`brew-station ${showTimer ? 'has-timer' : ''} ${completed ? 'is-complete' : ''}`}
+                      className={`brew-station bz-station ${showTimer ? 'has-timer' : ''} ${completed ? 'is-complete' : ''}`}
                     >
-                      <div className="brew-station-heading">
-                        <div>
-                          <div className="brew-step-meta">
-                            <span className="brew-muted">
-                              Étape {Math.max(1, routeIndex + 1)}
-                            </span>
-                            {showTimer && <BrewTag tone={currentTag.tone}>{currentTag.label}</BrewTag>}
-                            {/*
-                              « Ensuite » vivait dans un pied de page que la feuille
-                              masquait à toutes les largeurs. Il coûte moins cher ici,
-                              sur une ligne qui existe déjà, et ne prend rien à la barre fixe.
-                            */}
-                            <span className="brew-step-next">
-                              Ensuite : {nextStepName ?? 'passage en fermentation'}
-                            </span>
-                          </div>
-                          <div className="brew-step-select">
-                            {stepsHere.length > 1 ? (
-                              <BrewChoice
-                                heading
-                                label="Choisir une étape"
-                                value={String(
-                                  stepsHere.find(
-                                    ({ s }) => s.id === current.id || (boiled && isBoilStep(s))
-                                  )?.i ?? state.currentIndex
-                                )}
-                                onChange={(value) => choose(Number(value))}
-                                options={stepsHere.map(({ s, i }) => ({
-                                  value: String(i),
-                                  label: isBoilStep(s) ? 'Ébullition' : s.label,
-                                  detail: [
-                                    s.tempC != null ? `${fr(s.tempC)} °C` : '',
-                                    isBoilStep(s)
-                                      ? `${boilMinutes(state, recipe)} min`
-                                      : s.durationMin > 0
-                                        ? `${s.durationMin} min`
-                                        : ''
-                                  ]
-                                    .filter(Boolean)
-                                    .join(' · '),
-                                  tag: stepTag(s)
-                                }))}
-                              />
-                            ) : (
-                              <h2>{boiled ? 'Ébullition' : current.label}</h2>
-                            )}
-                          </div>
+                      <div className="bz-etape">
+                        <b className="bz-m">{etapeNumero}</b>
+                        <div className="brew-step-select">
+                          {stepsHere.length > 1 ? (
+                            <BrewChoice
+                              heading
+                              label="Choisir une étape"
+                              value={String(
+                                stepsHere.find(
+                                  ({ s }) => s.id === current.id || (boiled && isBoilStep(s))
+                                )?.i ?? state.currentIndex
+                              )}
+                              onChange={(value) => choose(Number(value))}
+                              options={stepsHere.map(({ s, i }) => ({
+                                value: String(i),
+                                label: isBoilStep(s) ? 'Ébullition' : s.label,
+                                detail: [
+                                  s.tempC != null ? `${fr(s.tempC)} °C` : '',
+                                  isBoilStep(s)
+                                    ? `${boilMinutes(state, recipe)} min`
+                                    : s.durationMin > 0
+                                      ? `${s.durationMin} min`
+                                      : ''
+                                ]
+                                  .filter(Boolean)
+                                  .join(' · '),
+                                tag: stepTag(s)
+                              }))}
+                            />
+                          ) : (
+                            <h2>{boiled ? 'Ébullition' : current.label}</h2>
+                          )}
                         </div>
-                        {completed && (
-                          <button
-                            type="button"
-                            className="brew-complete-toggle"
-                            aria-label="Annuler la validation de cette étape"
-                            onClick={toggleComplete}
-                          >
-                            <Check size={18} />
-                            <span>Terminé · Annuler</span>
-                          </button>
-                        )}
+                        <span className="bz-suite">
+                          ensuite {nextStepName ?? 'passage en fermentation'}
+                          {nextStep && isMash(nextStep.id) && nextStep.tempC != null && <> <span className="bz-m">{fr(nextStep.tempC)} °C</span></>}
+                        </span>
                       </div>
-                      {/*
-                        La consigne ne disparaît plus au démarrage du palier : on
-                        recircule, on écume ou on surveille pendant que l'horloge
-                        tourne. Elle passe au second plan, elle ne quitte pas l'écran.
-                      */}
-                      {instructions && (
-                        <p
-                          className={`brew-instruction ${stepStarted ? 'is-running' : ''}`}
+                      {completed && (
+                        <button
+                          type="button"
+                          className="brew-complete-toggle"
+                          aria-label="Annuler la validation de cette étape"
+                          onClick={toggleComplete}
                         >
-                          {instructions}
-                        </p>
-                      )}
-                      {(showTimer || thermalTarget != null) && (
-                        <div className="brew-instruments">
-                          {thermalTarget != null && (
-                            <div className="brew-temperature">
-                              <span>
-                                <Thermometer size={16} />
-                                Consigne
-                              </span>
-                              <strong className="brew-digits">
-                                {fr(thermalTarget)}
-                                <small>°C</small>
-                              </strong>
-                            </div>
-                          )}
-                          {showTimer && (
-                            <div className="brew-clock">
-                              <span>
-                                <Clock3 size={16} />
-                                {completed
-                                  ? 'Terminé'
-                                  : current.pausedAt != null
-                                    ? 'En pause'
-                                    : running
-                                      ? left != null && left < 0
-                                        ? staleTimer
-                                          ? 'Palier à vérifier'
-                                          : 'Temps dépassé'
-                                        : 'Temps restant'
-                                      : 'Durée du palier'}
-                              </span>
-                              <div>
-                                <output
-                                  aria-label="Temps restant"
-                                  aria-live="off"
-                                  className={`brew-digits ${left != null && left < 0 ? 'is-due' : ''}`}
-                                >
-                                  {staleTimer
-                                    ? '00:00'
-                                    : formatCountdown(completed ? 0 : (left ?? duration * 60000))}
-                                </output>
-                                {!boiled && running && (
-                                  <button
-                                    type="button"
-                                    aria-label="Mettre le minuteur en pause"
-                                    className="brew-icon-button"
-                                    onClick={() =>
-                                      update((s) => ({
-                                        ...s,
-                                        steps: s.steps.map((x, i) =>
-                                          i === s.currentIndex ? { ...x, pausedAt: brewNow() } : x
-                                        )
-                                      }))
-                                    }
-                                  >
-                                    <Pause size={20} />
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
-                      {current.id === 'ensemencement' && state.pitchedAt == null && (
-                        <label className="brew-thermal-coolant">Moût à l’ajout de levure (facultatif)
-                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-5} max={45} onValue={setPitchTemperature} /> °C <small>(−5 à 45 °C : au-delà, la levure ne s’ajoute pas)</small></span>
-                        </label>
+                          <Check size={14} />
+                          <span>Terminé · Annuler</span>
+                        </button>
                       )}
                       {showTimer && (
-                        <>
-                          <div className="brew-clock-meta">
-                            <span>
-                              {running && left != null
-                                ? `Fin prévue ${staleTimer ? new Date(now + left).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' }) + ' à ' : 'à '}${time(now + left)}`
-                                : completed
-                                  ? 'Étape consignée dans le journal'
-                                  : current.pausedAt != null
-                                    ? 'Le temps restant est conservé'
-                                    : boiled
-                                      ? 'Départ à ébullition atteinte'
-                                      : 'Départ à température atteinte'}
+                        <div
+                          className="bz-horloge"
+                          data-booster="horloge"
+                          data-etat={completed ? 'fait' : current.pausedAt != null ? 'pause' : running ? (left != null && left < 0 ? 'depasse' : 'cours') : 'repos'}
+                        >
+                          <div className="bz-haut">
+                            <output
+                              aria-label="Temps restant"
+                              aria-live="off"
+                              className={`bz-temps bz-m brew-digits ${left != null && left < 0 ? 'is-due' : ''}`}
+                            >
+                              {staleTimer
+                                ? '00:00'
+                                : formatCountdown(completed ? 0 : (left ?? duration * 60000))}
+                            </output>
+                            <span className="bz-fin">
+                              {completed ? (
+                                'terminé'
+                              ) : holdLine ? (
+                                <>
+                                  {current.pausedAt != null ? 'en pause · ' : running && left != null && left < 0 ? 'dépassé · ' : ''}
+                                  maintien <span className="bz-m">{fr(thermalTarget!)} °C</span> · relevé{' '}
+                                  <button
+                                    type="button"
+                                    className="bz-releve-lien bz-m"
+                                    aria-label="Relevé de température"
+                                    onClick={() => requestMeasure('temperature')}
+                                  >
+                                    {lastTemperature ? fr(lastTemperature.value) : '—'}
+                                  </button>
+                                </>
+                              ) : current.pausedAt != null ? (
+                                'en pause'
+                              ) : running && left != null ? (
+                                <>
+                                  {left < 0 ? (staleTimer ? 'palier à vérifier' : 'dépassé') : 'fin'}{' '}
+                                  {staleTimer && <>{new Date(now + left).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })} à </>}
+                                  {(staleTimer || left >= 0) && <span className="bz-m">{heureCuve(now + left)}</span>}
+                                </>
+                              ) : thermalTarget != null ? (
+                                <>
+                                  maintien <span className="bz-m">{fr(thermalTarget)} °C</span>
+                                  {lastTemperature && <> · relevé <span className="bz-m">{fr(lastTemperature.value)}</span></>}
+                                </>
+                              ) : (
+                                'durée'
+                              )}
                             </span>
-                            <button
-                              type="button"
-                              aria-expanded={durationOpen}
-                              className="brew-text-button"
-                              onClick={() => setDurationOpen((v) => !v)}
-                            >
-                              <SlidersHorizontal size={15} />
-                              Ajuster la durée
-                            </button>
-                          </div>
-                          {durationOpen && (
-                            <div
-                              className="brew-duration"
-                              role="group"
-                              aria-label="Ajuster la durée"
-                            >
+                            <div className="bz-ctl" role="group" aria-label="Ajuster la durée">
                               {[-5, -1].map((d) => (
                                 <button
                                   type="button"
                                   key={d}
-                                  className={brewControl}
+                                  className="bz-m"
                                   aria-label={`Retirer ${-d} minutes`}
+                                  disabled={completed}
+                                  data-booster={`moins${-d}`}
                                   onClick={() => setDuration(duration + d)}
                                 >
-                                  {d}
+                                  −{-d}
                                 </button>
                               ))}
-                              <label>
-                                <NumberInput
-                                  value={duration}
-                                  min={1}
-                                  max={480}
-                                  integer
-                                  onValue={setDuration}
-                                  aria-label="Durée totale en minutes"
-                                  className="brew-duration-input"
-                                />
-                                <span>min</span>
-                              </label>
+                              {!boiled && running && (
+                                <button
+                                  type="button"
+                                  aria-label="Mettre le minuteur en pause"
+                                  data-pause=""
+                                  data-booster="pause"
+                                  onClick={() =>
+                                    update((s) => ({
+                                      ...s,
+                                      steps: s.steps.map((x, i) =>
+                                        i === s.currentIndex ? { ...x, pausedAt: brewNow() } : x
+                                      )
+                                    }))
+                                  }
+                                >
+                                  <Pause size={14} fill="currentColor" />
+                                </button>
+                              )}
                               {[1, 5].map((d) => (
                                 <button
                                   type="button"
                                   key={d}
-                                  className={brewControl}
+                                  className="bz-m"
                                   aria-label={`Ajouter ${d} minutes`}
+                                  disabled={completed}
+                                  data-booster={`plus${d}`}
                                   onClick={() => setDuration(duration + d)}
                                 >
                                   +{d}
                                 </button>
                               ))}
-                              {boiled && (
-                                <p>
-                                  Les ajouts à venir suivent la nouvelle durée. Les ajouts déjà
-                                  faits conservent leur heure réelle.
-                                </p>
-                              )}
+                            </div>
+                          </div>
+                          {boiled && boilPoints.length > 0 && (
+                            <div className="bz-piste" aria-hidden="true" data-booster="piste">
+                              <div className="bz-piste-rail" />
+                              <div className="bz-piste-fait" style={{ width: `${(elapsedShare ?? 0) * 100}%` }} />
+                              {boilPoints.map((p) => (
+                                <span
+                                  key={p.id}
+                                  className="bz-pt"
+                                  data-fait={p.done ? '' : undefined}
+                                  data-prochain={nextBoilPoint?.id === p.id && running ? '' : undefined}
+                                  style={{ left: `${duration > 0 ? Math.max(0, Math.min(100, ((duration - p.minute) / duration) * 100)) : 0}%` }}
+                                />
+                              ))}
+                              {elapsedShare != null && <span className="bz-now" style={{ left: `${elapsedShare * 100}%` }} />}
                             </div>
                           )}
-                        </>
+                        </div>
+                      )}
+                      {thermalVisible && (
+                        <details
+                          className="bz-repli bz-suivi"
+                          // À deux colonnes, une étape sans ingrédient (Refroidissement) laissait la colonne principale à une seule ligne :
+                          // (p3 n° 8 retiré : ouvert d'emblée, il montrait l'ancien bloc ; il reste replié, VERDICT-p3 n° 1).
+                          open={(measuredStep.rampStartedAt != null && measuredStep.holdStartedAt == null)}
+                        >
+                          <summary>
+                            <Thermometer size={14} aria-hidden="true" />
+                            <span>Suivi thermique</span>
+                            <ChevronDown size={14} aria-hidden="true" />
+                          </summary>
+                          <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
+                        </details>
                       )}
                       {staleTimer && (
                         <aside className="brew-recovery" role="status">
@@ -1383,7 +1483,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 ≈ {nombreFr(bitterness.projected, 1)} IBU{' '}
                                 <small>· recette {bitterness.planned}</small>
                               </span>
-                              <ChevronDown size={16} />
+                              <ChevronDown size={14} />
                             </summary>
                             <p>
                               Projection avec les ajouts et durées réels, au volume et à l’OG
@@ -1392,9 +1492,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </details>
                         )}
                     </section>
-                    {due.length > 0 && !staleTimer && (
+                    {due.length > 0 && !staleTimer && !headerAlarm && !alarmSound.ringing && (
                       <aside role="status" className="brew-due-alert">
-                        <BellRing size={20} />
+                        <BellRing size={16} />
                         <div>
                           {due.map((a) => (
                             <p key={a.id}>
@@ -1405,18 +1505,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </div>
                       </aside>
                     )}
-                    {prompt && current.doneAt == null && (
+                    {prompt && current.doneAt == null && !((holdLine || thermalVisible) && prompt.kind === 'temperature') && (
                       <button
                         type="button"
-                        className="brew-reading-prompt"
+                        className="brew-reading-prompt bz-repli"
+                        title={prompt.detail}
                         onClick={() => prompt.title === 'Volume + densité' ? requestWortPair(current.id) : requestMeasure(prompt.kind as ReadingKind)}
                       >
-                        <Thermometer size={18} />
-                        <span>
-                          <strong>{prompt.title}</strong>
-                          <small>{prompt.detail}</small>
-                        </span>
-                        <ChevronRight size={18} />
+                        <Thermometer size={14} />
+                        <span>{prompt.title}</span>
+                        <ChevronRight size={14} />
                       </button>
                     )}
                   </>
@@ -1430,142 +1528,91 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   update={update}
                   now={now}
                   stepId={current.id}
+                  pitch={pitchEditor}
                 />
-                {area === 'finish' && !displayRecipe && (
-                  <section className="brew-finish-summary" aria-label="Bilan du brassage">
-                    <h3>Avant de passer en fermentation</h3>
-                    <div className="brew-recipe-targets">
-                      <div>
-                        <span>Densité initiale relevée</span>
-                        <strong>
-                          {finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'} <small>SG</small>
-                        </strong>
-                        <span>Cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? 'non renseignée'}</span>
-                      </div>
-                      <div>
-                        <span>Volume en fermenteur</span>
-                        <strong>
-                          {finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'} <small>L à froid</small>
-                        </strong>
-                        <span>Cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</span>
-                      </div>
-                    </div>
-                    {(!finishedReadings.gravity || !finishedReadings.volume) && (
-                      <p className="brew-muted">
-                        {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
-                      </p>
-                    )}
-                  </section>
+                {!displayRecipe && current.id === 'ensemencement' && state.pitchedAt == null && (
+                  <label className="bz-moutajout">
+                    <span>Moût à l’ajout</span>
+                    <span className="bz-moutajout-val"><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-5} max={45} placeholder="—" onValue={setPitchTemperature} /> <span className="bz-unite">°C</span></span>
+                  </label>
                 )}
-                {!displayRecipe && ['preboil', 'ensemencement'].includes(current.id) && <BrewSystemFeedback recipe={recipe} state={state} onMeasure={requestWortPair} onIngredients={()=>{const index=state.steps.findIndex(s=>isMash(s.id));if(index>=0){choose(index);requestAnimationFrame(revealAdditions);}}} compact />}
-                {/*
-                  Les aides viennent après les doses, fermées, avec un résumé qui dit
-                  de quoi elles parlent. Un avertissement ouvre sa section tout seul
-                  (voir BrewAide), donc replier ne revient jamais à masquer une alerte.
-                */}
-                <section className="brew-aides" aria-labelledby={aidesLabelId}>
-                  <h2 className="brew-aides-label" id={aidesLabelId}>
-                    Aides et repères
-                  </h2>
-                  {!displayRecipe &&
-                    (!specialExtraction || area === 'boil' || area === 'finish') && (
-                      <BrewAssist
-                        key={current.id}
-                        recipe={executionRecipe}
-                        state={state}
-                        step={current}
-                        now={now}
-                        update={update}
-                        onMeasure={requestMeasure}
-                        thermalHandled
-                        stock={stockItems}
-                        brewhouse={rig}
-                      />
-                    )}
-                  <NoloBrewDayGuide
-                    collapsible
-                    overview={displayRecipe}
-                    recipe={recipe}
-                    state={state}
-                    step={current}
-                    onMeasure={requestMeasure}
-                    onNote={noteNolo}
-                  />
-                  <YeastBrewDayGuide
-                    collapsible
-                    recipe={recipe}
-                    state={state}
-                    phase={displayRecipe ? 'recipe' : area}
-                    onMeasure={displayRecipe ? undefined : requestMeasure}
-                    pitchQuantityMode={currentPitchMode}
-                    pitchQuantityAmount={currentPitchAmount}
-                    pitchQuantityUnit={currentPitchUnit}
-                    preparationExecution={batch.yeastPreparation}
-                    plannedBrewDate={toIsoDate(plannedBrewDate(batch) ?? '') || undefined}
-                    onPitchQuantityModeChange={selectPitchQuantityMode}
-                    onPitchQuantityAmountChange={updatePitchQuantityAmount}
-                    onPitchQuantityUnitChange={updatePitchQuantityUnit}
-                  />
-                  <BrewAide title="Houblons" summary="vigilances et potentiel">
-                    <p className="brew-aide-note">
-                      Quantités du journal si renseignées, au volume prévu de la recette. Les
-                      temps de contact à l’ébullition suivent les ajouts terminés.
-                    </p>
-                    <HopRecipePanel
-                      recipe={recipeForHopAnalysis(actualRecipe, state)}
-                      batchId={batch.id}
-                    />
-                    {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
-                  </BrewAide>
-                </section>
               </>
             )}
           </div>
 
           <div className="brew-side-column">
+            {!isConsulting && nextStep && nextStepIngredients.length > 0 && (
+              <section className="bz-groupe bz-ensuite" data-matiere={nextGrains ? 'grain' : nextStepIngredients[0].kind === 'hop' ? 'houblon' : 'autre'} aria-label={`Ensuite · ${nextStepName}`}>
+                <header className="bz-groupe-tete">
+                  <h3>Ensuite · {nextStepName}</h3>
+                  {nextStepMeta && <span className="bz-compte bz-m">{nextStepMeta}</span>}
+                </header>
+                {nextGrains ? (
+                  <div className="bz-releve">
+                    {nextStepIngredients.map((i) => (
+                      <span key={i.id}>
+                        <b className="bz-m">{doseFr(actualAmount(i, state) ?? i.planned, i.unit)}</b>{' '}
+                        {state.additions?.[i.id]?.replacement?.name ?? i.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  nextStepIngredients.map((i) => (
+                    <div className="bz-row is-apercu" key={i.id}>
+                      <div className="bz-nom"><strong>{state.additions?.[i.id]?.replacement?.name ?? i.name}</strong></div>
+                      <span className="bz-dose is-lecture">
+                        <strong>{doseFr(actualAmount(i, state) ?? i.planned, i.unit)}</strong>
+                        <small>{i.unit}</small>
+                      </span>
+                      <span className="bz-case is-apercu" aria-hidden="true" />
+                    </div>
+                  ))
+                )}
+              </section>
+            )}
             {!isConsulting && showReadingSummary && (
               <BrewReadingsSummary
                 state={state}
                 step={measuredStep}
                 recipe={actualRecipe}
                 onMeasure={() => openCapture('measure')}
+                cloture={area === 'finish' && !displayRecipe ? (
+                  <div role="region" aria-label="Bilan du brassage" className="bz-cloture">
+                    <span>
+                      Densité initiale{' '}
+                      <b className="bz-m">{finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'}</b>{finishedReadings.gravity && <small className="bz-m"> SG</small>}{' '}
+                      <small className="bz-m">cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? '—'}</small>
+                    </span>
+                    <span>
+                      Volume en fermenteur{' '}
+                      <b className="bz-m">{finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'}</b>{finishedReadings.volume && <small className="bz-m"> L à froid</small>}{' '}
+                      <small className="bz-m">cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</small>
+                    </span>
+                    {/* Pourquoi une valeur manque : dit aux lecteurs d'écran, pas affiché (z1 : sans un mot d'aide). */}
+                    {(!finishedReadings.gravity || !finishedReadings.volume) && (
+                      <span className="sr-only">
+                        {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
+                      </span>
+                    )}
+                  </div>
+                ) : undefined}
               />
             )}
-            <BrewCapturePanel
-              title="Mesurer"
-              context={current.label}
-              open={capture === 'measure'}
-              onClose={() => setCapture(null)}
-              className="brew-measure-capture"
-            >
-              <div className="brew-measure-panel">
-                <BrewDayMeasurements
-                  key={current.id}
-                  step={measuredStep}
-                  recipe={actualRecipe}
-                  requestedKind={requestedReading}
-                  requestedPair={requestedPair}
-                  state={state}
-                  update={update}
-                  drafts={readingDrafts.current}
-                />
-              </div>
-            </BrewCapturePanel>
             {!isConsulting && (
-              <section aria-label="Préparations" className="brew-preparations">
-                <div className="brew-section-heading">
-                  <h3>
-                    <ListChecks size={18} />
-                    {area === 'preparation' ? 'Avant de commencer' : 'À anticiper'}
-                  </h3>
-                  <span className="brew-count">
+              <section aria-label="Préparations" className="brew-preparations bz-groupe bz-anticiper">
+                <header className="bz-groupe-tete">
+                  <ListChecks size={14} aria-hidden="true" />
+                  <h3>À anticiper</h3>
+                  <span className="bz-compte">
                     {preparationCount}/{phasePreps.length}
                   </span>
-                </div>
+                </header>
                 {phasePreps.map((p) => (
-                  <label key={p.id} className={state.preparations?.[p.id] ? 'is-complete' : ''}>
+                  <label key={p.id} className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
+                    <span>{p.label}</span>
                     <input
                       type="checkbox"
+                      data-booster="prepare"
                       checked={!!state.preparations?.[p.id]}
                       onChange={(e) => {
                         const checked = e.target.checked;
@@ -1578,136 +1625,251 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         }));
                       }}
                     />
-                    <span>{p.label}</span>
+                    <span className="bz-case-boite is-ronde" aria-hidden="true">
+                      {state.preparations?.[p.id] && <Check size={16} strokeWidth={3} />}
+                    </span>
                   </label>
                 ))}
               </section>
             )}
-            <BrewCapturePanel
-              title="Note"
-              context={state.steps.find((step) => step.id === noteStepId)?.label ?? current.label}
-              open={capture === 'note'}
-              onClose={() => setCapture(null)}
-              className="brew-note-capture"
+            <BrewAide
+              className="bz-repli bz-aides"
+              quiet
+              icon={<CircleHelp size={14} aria-hidden="true" />}
+              title="Aides et repères"
             >
-              <section aria-label="Notes et conseil" className="brew-notes">
-                <div className="brew-section-heading">
-                  <h3>
-                    <NotebookPen size={18} />
-                    Carnet de cuve
-                  </h3>
-                </div>
-                <label htmlFor="brew-note" className="sr-only">
-                  Observation
-                </label>
-                <Textarea
-                  id="brew-note"
-                  aria-label="Carnet de cuve"
-                  value={note}
-                  rows={3}
-                  maxLength={2000}
-                  placeholder="Débit de rinçage, changement de malt, ajustement…"
-                  onChange={(e) => {
-                    if (!note.trim()) setNoteStepId(current.id);
-                    setNote(e.target.value);
-                    setNotice('');
-                  }}
+              <button
+                type="button"
+                className="bz-compagnon"
+                onClick={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+              >
+                <MessageCircle size={14} aria-hidden="true" />
+                Compagnon brasseur
+              </button>
+              {/* p3 (n° 3) : le bilan « Ce brassin · mon installation » (six repères) ne passe plus devant la ligne Levure : il vit ici, replié. */}
+              {!displayRecipe && ['preboil', 'ensemencement'].includes(current.id) && <BrewSystemFeedback recipe={recipe} state={state} onMeasure={requestWortPair} onIngredients={()=>{const index=state.steps.findIndex(s=>isMash(s.id));if(index>=0){choose(index);requestAnimationFrame(revealAdditions);}}} compact />}
+              {!displayRecipe &&
+                (!specialExtraction || area === 'boil' || area === 'finish') && (
+                  <BrewAssist
+                    key={current.id}
+                    recipe={executionRecipe}
+                    state={state}
+                    step={current}
+                    now={now}
+                    update={update}
+                    onMeasure={requestMeasure}
+                    thermalHandled
+                    stock={stockItems}
+                    brewhouse={rig}
+                  />
+                )}
+              <NoloBrewDayGuide
+                collapsible
+                overview={displayRecipe}
+                recipe={recipe}
+                state={state}
+                step={current}
+                onMeasure={requestMeasure}
+                onNote={noteNolo}
+              />
+              {(
+                <YeastBrewDayGuide
+                  collapsible
+                  recipe={recipe}
+                  state={state}
+                  phase={displayRecipe ? 'recipe' : area}
+                  onMeasure={displayRecipe ? undefined : requestMeasure}
+                  pitchQuantityMode={currentPitchMode}
+                  pitchQuantityAmount={currentPitchAmount}
+                  pitchQuantityUnit={currentPitchUnit}
+                  preparationExecution={batch.yeastPreparation}
+                  plannedBrewDate={toIsoDate(plannedBrewDate(batch) ?? '') || undefined}
+                  onPitchQuantityModeChange={selectPitchQuantityMode}
+                  onPitchQuantityAmountChange={updatePitchQuantityAmount}
+                  onPitchQuantityUnitChange={updatePitchQuantityUnit}
                 />
-                <div className="brew-note-actions">
+              )}
+              <BrewAide title="Houblons" summary="vigilances et potentiel">
+                <p className="brew-aide-note">
+                  Quantités du journal si renseignées, au volume prévu de la recette. Les
+                  temps de contact à l’ébullition suivent les ajouts terminés.
+                </p>
+                <HopRecipePanel
+                  recipe={recipeForHopAnalysis(actualRecipe, state)}
+                  batchId={batch.id}
+                />
+                {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
+              </BrewAide>
+              <details className="brew-options">
+                <summary>
+                  <span>
+                    <SlidersHorizontal size={14} /> Options et alertes
+                  </span>
+                  <ChevronDown size={14} />
+                </summary>
+                {showTimer && !isConsulting && (
+                  <div className="bz-duree">
+                    <label>
+                      Durée de l’étape
+                      <NumberInput
+                        value={duration}
+                        min={1}
+                        max={480}
+                        integer
+                        onValue={setDuration}
+                        aria-label="Durée totale en minutes"
+                        className="brew-duration-input"
+                      />
+                      <span>min</span>
+                    </label>
+                    {boiled && (
+                      <p>
+                        Les ajouts à venir suivent la nouvelle durée. Les ajouts déjà
+                        faits conservent leur heure réelle.
+                      </p>
+                    )}
+                  </div>
+                )}
+                <details className="brew-sound-settings">
+                  <summary>
+                    Sonnerie · option de test <ChevronDown size={14} />
+                  </summary>
+                  <div>
+                    <h3>Sonnerie</h3>
+                    <BrewTag tone={sound ? 'info' : 'neutral'}>
+                      {sound ? 'Activée' : 'Muette'}
+                    </BrewTag>
+                  </div>
+                  <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
                   <button
                     type="button"
                     className={brewControl}
-                    disabled={!note.trim()}
-                    onClick={() => addNote()}
+                    onClick={() => {
+                      if (alarmSound.ringing) alarmSound.stop();
+                      else if (armAudio()) {
+                        setSoundState(true);
+                        setAudioArmed(true);
+                        if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
+                      } else setNotice('Le navigateur n’a pas pu activer le son.');
+                    }}
                   >
-                    <Check size={16} />
-                    Noter
+                    {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
                   </button>
-                  <button
-                    type="button"
-                    className="brew-text-button"
-                    disabled={busy}
-                    onClick={analyse}
-                  >
-                    <Sparkles size={16} />
-                    {busy ? 'Analyse…' : 'Conseil IA'}
-                  </button>
-                </div>
-                {notice && capture === 'note' && (
-                  <p role="status" className="brew-muted">
-                    {notice}
-                  </p>
-                )}
-                {advice?.key === signature && (
+                </details>
+                <BrewAlarmSettings
+                  batchId={batch.id}
+                  alarms={alarms}
+                  ready={!session.pending && session.canStart}
+                />
+              </details>
+            </BrewAide>
+          </div>
+        </fieldset>
+        {session.error && (
+          <div className="brew-sync" role="status">
+            <BrewTag tone="due">{session.status}</BrewTag>
+            <p>{session.error}</p>
+            <button type="button" className={brewControl} onClick={() => void session.retry()}>
+              Réessayer
+            </button>
+            <button type="button" className={brewControl} onClick={() => void session.reload()}>
+              Recharger le serveur
+            </button>
+            <small>La version non envoyée reste en sauvegarde locale.</small>
+          </div>
+        )}
+        <BrewCapturePanel
+          title="Mesurer"
+          icon={<Thermometer size={14} aria-hidden="true" />}
+          context={current.label}
+          open={capture === 'measure'}
+          onClose={() => setCapture(null)}
+          className="brew-measure-capture"
+        >
+          <div className="brew-measure-panel">
+            <BrewDayMeasurements
+              key={current.id}
+              step={measuredStep}
+              recipe={actualRecipe}
+              requestedKind={requestedReading}
+              requestedPair={requestedPair}
+              state={state}
+              update={update}
+              drafts={readingDrafts.current}
+              onAdvice={analyse}
+              adviceBusy={busy}
+              advice={
+                advice?.key === signature ? (
                   <aside role="status" className="brew-advice">
                     <p>{advice.verdict}</p>
                     {advice.action && <p>{advice.action}</p>}
                   </aside>
-                )}
-                {advice && advice.key !== signature && (
-                  <p className="brew-muted">Le contexte a changé : actualise le conseil.</p>
-                )}
-              </section>
-            </BrewCapturePanel>
-            <details className="brew-options">
-              <summary>
-                <span>
-                  <SlidersHorizontal size={17} /> Options et alertes
-                </span>
-                <ChevronDown size={16} />
-              </summary>
-              <details className="brew-sound-settings">
-                <summary>
-                  Sonnerie · option de test <ChevronDown size={16} />
-                </summary>
-                <div>
-                  <h3>Sonnerie</h3>
-                  <BrewTag tone={sound ? 'info' : 'neutral'}>
-                    {sound ? 'Activée' : 'Muette'}
-                  </BrewTag>
-                </div>
-                <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
-                <button
-                  type="button"
-                  className={brewControl}
-                  onClick={() => {
-                    if (alarmSound.ringing) alarmSound.stop();
-                    else if (armAudio()) {
-                      setSound(true);
-                      if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
-                    } else setNotice('Le navigateur n’a pas pu activer le son.');
-                  }}
-                >
-                  {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
-                </button>
-              </details>
-              <BrewAlarmSettings
-                batchId={batch.id}
-                alarms={alarms}
-                ready={!session.pending && session.canStart}
-              />
-            </details>
+                ) : undefined
+              }
+            />
           </div>
-        </fieldset>
-        {session.status && (
-          <div className="brew-sync" role="status">
-            <BrewTag tone={session.error ? 'due' : session.pending ? 'pause' : 'done'}>
-              {session.status}
-            </BrewTag>
-            {session.error && (
-              <>
-                <p>{session.error}</p>
-                <button type="button" className={brewControl} onClick={() => void session.retry()}>
-                  Réessayer
-                </button>
-                <button type="button" className={brewControl} onClick={() => void session.reload()}>
-                  Recharger le serveur
-                </button>
-                <small>La version non envoyée reste en sauvegarde locale.</small>
-              </>
+        </BrewCapturePanel>
+        <BrewCapturePanel
+          title="Note"
+          icon={<Pencil size={14} aria-hidden="true" />}
+          context={state.steps.find((step) => step.id === noteStepId)?.label ?? current.label}
+          open={capture === 'note'}
+          onClose={() => setCapture(null)}
+          className="brew-note-capture"
+        >
+          <section aria-label="Notes et conseil" className="brew-notes">
+            <label htmlFor="brew-note" className="sr-only">
+              Observation
+            </label>
+            <Textarea
+              id="brew-note"
+              aria-label="Carnet de cuve"
+              value={note}
+              rows={3}
+              maxLength={2000}
+              placeholder="Débit de rinçage, changement de malt, ajustement…"
+              onChange={(e) => {
+                if (!note.trim()) setNoteStepId(current.id);
+                setNote(e.target.value);
+                setNotice('');
+              }}
+            />
+            <div className="brew-note-actions">
+              <button
+                type="button"
+                className={brewControl}
+                disabled={!note.trim()}
+                onClick={() => addNote()}
+              >
+                <Check size={14} />
+                Noter
+              </button>
+              <button
+                type="button"
+                className="brew-text-button"
+                disabled={busy}
+                onClick={analyse}
+              >
+                <Sparkles size={14} />
+                {busy ? 'Analyse…' : 'Conseil IA'}
+              </button>
+            </div>
+            {notice && capture === 'note' && (
+              <p role="status" className="brew-muted">
+                {notice}
+              </p>
             )}
-          </div>
-        )}
+            {advice?.key === signature && (
+              <aside role="status" className="brew-advice">
+                <p>{advice.verdict}</p>
+                {advice.action && <p>{advice.action}</p>}
+              </aside>
+            )}
+            {advice && advice.key !== signature && (
+              <p className="brew-muted">Le contexte a changé : actualise le conseil.</p>
+            )}
+          </section>
+        </BrewCapturePanel>
       </div>
       <ConfirmSheet
         open={confirmAdvance}

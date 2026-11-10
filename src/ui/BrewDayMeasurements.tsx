@@ -1,11 +1,12 @@
 import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
 import React, { useEffect, useId, useState } from 'react';
-import { Check, Minus, Plus } from 'lucide-react';
+import { Check, Minus, Plus, TriangleAlert } from 'lucide-react';
 import { AcidId, BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import {
   defaultReading,
   isMash,
+  isFinalWort,
   parseReading,
   READING,
   measuredReadingFeedback,
@@ -269,6 +270,91 @@ function MashCorrection({
   );
 }
 
+/**
+ * L'échelle de la feuille Mesurer (z1) : la cible en bande, le relevé en trait. Elle n'existe que pour une mesure qui a une cible
+ * documentée par le code : pH de maische (5,2–5,5), température de consigne (± 1 °C), densité de l'OG (± 2 points), volume visé (± 5 %).
+ * Ailleurs : `null`, et la feuille ne dessine rien (une cible inventée serait pire qu'une échelle absente).
+ */
+export interface MeasureScale {
+  min: number;
+  max: number;
+  bandMin: number;
+  bandMax: number;
+  ticks: number[];
+  fmt: (n: number) => string;
+}
+const decimales = (n: number, max: number) =>
+  new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 0, maximumFractionDigits: max, useGrouping: false }).format(n);
+export function measureScale(
+  kind: ReadingKind,
+  step: BrewDayStep,
+  recipe?: RecipeSnapshot,
+  value?: number | null
+): MeasureScale | null {
+  let band: [number, number] | null = null;
+  let axis: [number, number] | null = null;
+  let fmt = (n: number) => decimales(n, 2);
+  if (kind === 'ph' && isMash(step.id)) {
+    band = [5.2, 5.5];
+    fmt = (n) => n.toFixed(1).replace('.', ',');
+    axis = [5, 5.8];
+  } else if (kind === 'temperature' && step.tempC != null) {
+    band = [step.tempC - 1, step.tempC + 1];
+    axis = [step.tempC - 6, step.tempC + 6];
+    fmt = (n) => decimales(n, 1);
+  } else if (kind === 'densite' && isFinalWort(step.id) && recipe?.ogTarget && recipe.ogTarget > 1) {
+    band = [recipe.ogTarget - 0.002, recipe.ogTarget + 0.002];
+    axis = [recipe.ogTarget - 0.012, recipe.ogTarget + 0.012];
+    fmt = sg;
+  } else if (kind === 'volume') {
+    const target = volumeTarget(step, recipe);
+    if (target && target > 0) {
+      band = [target * 0.95, target * 1.05];
+      axis = [target * 0.85, target * 1.15];
+      fmt = (n) => decimales(n, 1);
+    }
+  }
+  if (!band || !axis) return null;
+  let [min, max] = axis;
+  // Un relevé hors de l'axe l'étire : le trait ne se colle jamais à un bord comme s'il y était.
+  if (value != null && Number.isFinite(value)) {
+    const marge = (max - min) * 0.1;
+    if (value < min) min = value - marge;
+    if (value > max) max = value + marge;
+  }
+  return { min, max, bandMin: band[0], bandMax: band[1], ticks: [min, band[0], band[1], max], fmt };
+}
+
+/** « +0,12 » au-dessus de la bande, « −0,3 » en dessous, `null` dans la cible : l'écart à la borne la plus proche. */
+export function ecartCible(scale: MeasureScale, value: number): number | null {
+  if (value > scale.bandMax) return value - scale.bandMax;
+  if (value < scale.bandMin) return value - scale.bandMin;
+  return null;
+}
+
+function MeasureScaleView({ scale, value }: { scale: MeasureScale; value: number | null }) {
+  const span = scale.max - scale.min;
+  const at = (n: number) => `${Math.max(0, Math.min(100, ((n - scale.min) / span) * 100))}%`;
+  const hors = value != null && ecartCible(scale, value) != null;
+  return (
+    <div className="bz-echelle" aria-hidden="true" data-booster="echelle">
+      <div className="bz-echelle-rail" />
+      <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />
+      {scale.ticks.map((t, i) => (
+        <span
+          key={i}
+          className="bz-echelle-grad"
+          style={i === 0 ? { left: 0, transform: 'none' } : i === scale.ticks.length - 1 ? { left: 'auto', right: 0, transform: 'none' } : { left: at(t) }}
+          data-haut={i === 2 ? '' : undefined}
+        >
+          {scale.fmt(t)}
+        </span>
+      ))}
+      {value != null && <span className={`bz-echelle-releve ${hors ? 'is-hors' : ''}`} style={{ left: at(value) }} />}
+    </div>
+  );
+}
+
 export function BrewDayMeasurements({
   step,
   state,
@@ -276,7 +362,10 @@ export function BrewDayMeasurements({
   update,
   drafts,
   requestedKind,
-  requestedPair
+  requestedPair,
+  onAdvice,
+  adviceBusy = false,
+  advice
 }: {
   step: BrewDayStep;
   state: BrewDayState;
@@ -285,6 +374,10 @@ export function BrewDayMeasurements({
   drafts?: Map<string, BrewReadingDraft>;
   requestedKind?: {kind: ReadingKind; token: number};
   requestedPair?: {stage: WortPairDraft['stage']; token: number};
+  /** « Conseil » de la feuille : le même conseil que « Conseil IA » du carnet, lancé d'ici. */
+  onAdvice?: () => void;
+  adviceBusy?: boolean;
+  advice?: React.ReactNode;
 }) {
   const [kind, setKind] = useState<ReadingKind>(
     () => drafts?.get(step.id)?.kind ?? defaultReading(step)
@@ -363,20 +456,22 @@ export function BrewDayMeasurements({
       `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
     );
   };
+  const scale = measureScale(kind, step, recipe, value ?? reading?.value);
+  const marque = value ?? reading?.value ?? null;
+  const ecart = scale && marque != null ? ecartCible(scale, marque) : null;
+  const valeurAffichee = (n: number) => (kind === 'densite' ? sg(n) : String(n).replace('.', ','));
+  const minutesDepuis = (at: number) => Math.max(0, Math.round((brewNow() - at) / 60000));
   return (
-    <section aria-label="Mesures de cette étape" className="space-y-2">
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-cave-50">Mesurer à la cuve</h3>
-        <button type="button" aria-pressed={pairMode} className="min-h-touch px-2 text-xs text-water underline" onClick={() => setPairMode(p => !p)}>{pairMode ? 'Mesure seule' : 'Volume + densité'}</button>
-      </div>
+    <section aria-label="Mesures de cette étape" className="bz-mesure">
       {pairMode ? <BrewWortPair step={step} state={state} update={update} drafts={drafts} requestedStage={requestedPair} /> : <>
-      <div className="flex gap-1" role="group" aria-label="Type de mesure">
+      <div className="bz-seg" role="group" aria-label="Type de mesure" data-booster="grandeur">
         {(Object.keys(READING) as ReadingKind[]).map((k) => (
           <button
             type="button"
             key={k}
             aria-label={READING[k].label}
             aria-pressed={kind === k}
+            className={kind === k ? 'border-2 border-ebc-straw font-semibold underline decoration-2 underline-offset-4' : undefined}
             onClick={() => {
               setKind(k);
               setRoomTemp(
@@ -388,37 +483,13 @@ export function BrewDayMeasurements({
               setEditing(null);
               setNotice('');
             }}
-            className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-2 border-ebc-straw bg-ebc-straw/20 font-semibold text-cave-50 underline decoration-2 underline-offset-4' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
           >
             {k === 'temperature' ? 'Temp.' : READING[k].label}
-            {(() => {
-              const recent = [...(state.readings ?? [])]
-                .reverse()
-                .find((r) => r.kind === k && r.stepId === step.id);
-              return (
-                recent && (
-                  <span className="block reading text-2xs font-semibold">
-                    {k === 'densite'
-                      ? sg(recent.value)
-                      : String(recent.value).replace('.', ',')}
-                    {recent.unit && ` ${recent.unit}`}
-                  </span>
-                )
-              );
-            })()}
           </button>
         ))}
       </div>
-      <form autoComplete="off" onSubmit={save} className="space-y-1">
-        <label htmlFor="brew-reading" className="text-2xs text-cave-200">
-          {READING[kind].label}
-          {READING[kind].unit
-            ? ` (${READING[kind].unit})`
-            : isMash(step.id)
-              ? ' de maische · cible 5,2–5,5'
-              : ''}
-        </label>
-        <div className="flex gap-2">
+      <form autoComplete="off" onSubmit={save} className="bz-mesure-form">
+        <div className="bz-saisie">
           <Input
             id="brew-reading"
             aria-describedby="brew-reading-feedback"
@@ -432,24 +503,22 @@ export function BrewDayMeasurements({
               setNotice('');
             }}
             placeholder={last ? 'Nouveau relevé' : placeholderFor(kind, step, recipe)}
-            className={`${brewInput} flex-1`}
           />
-          <button
-            type="submit"
-            disabled={value == null}
-            className={`${brewControl} !bg-ebc-straw !text-cave-950 !border-ebc-straw font-semibold flex gap-1 items-center`}
-          >
-            <Check size={16} />
-            {editing ? 'Corriger' : 'Noter'}
-          </button>
+          <label htmlFor="brew-reading" className="bz-unite">
+            {READING[kind].label}
+            {READING[kind].unit
+              ? ` (${READING[kind].unit})`
+              : isMash(step.id)
+                ? ' de maische · cible 5,2–5,5'
+                : ''}
+          </label>
         </div>
         {kind !== 'temperature' && (
-          <label className="flex items-center gap-2 min-h-10 text-2xs text-cave-200">
+          <label className="bz-refroidi">
             <input
               type="checkbox"
               checked={roomTemp}
               onChange={(e) => setRoomTemp(e.target.checked)}
-              className="accent-ebc-straw w-4 h-4"
             />
             {kind === 'ph'
               ? 'Échantillon refroidi à 20–25 °C'
@@ -458,35 +527,48 @@ export function BrewDayMeasurements({
                 : 'Volume ramené à 20 °C'}
           </label>
         )}
-      </form>
-      <div id="brew-reading-feedback" aria-live="polite" className="text-sm">
-        {incomplete ? (
-          <p className="text-cave-400">Complète la valeur.</p>
-        ) : raw.trim() && value == null ? (
-          <p className="text-ebc-straw">
-            {invitationMesure(kind)}
-          </p>
-        ) : feedback ? (
-          <div
-            className={`border-l-2 pl-3 py-1 ${feedback.tone === 'watch' ? 'border-ebc-straw' : feedback.tone === 'ok' ? 'border-hop' : 'border-cave-600'}`}
-          >
-            <p
-              className={`font-semibold ${feedback.tone === 'watch' ? 'text-ebc-straw' : 'text-cave-50'}`}
-            >
-              {feedback.title}
+        {scale && <MeasureScaleView scale={scale} value={marque} />}
+        <div id="brew-reading-feedback" aria-live="polite" className="bz-verdict-zone">
+          {incomplete ? (
+            <p className="bz-muet">Complète la valeur.</p>
+          ) : raw.trim() && value == null ? (
+            <p className="bz-verdict is-watch">
+              {invitationMesure(kind)}
             </p>
-            <p className="text-cave-200 text-2xs mt-0.5">{feedback.detail}</p>
-          </div>
-        ) : (
-          <p className="text-cave-400 text-2xs">
-            {kind === 'ph' && isMash(step.id)
-              ? 'Mesure dix à quinze minutes après l’empâtage, sur un échantillon refroidi.'
-              : kind === 'densite'
-                ? 'Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.'
-                : 'Saisis une mesure : l’écart à la consigne apparaît immédiatement.'}
-          </p>
-        )}
-      </div>
+          ) : feedback ? (
+            <>
+              <p className={`bz-verdict is-${feedback.tone}`}>
+                {feedback.tone === 'watch' ? <TriangleAlert size={14} aria-hidden="true" /> : feedback.tone === 'ok' ? <Check size={14} aria-hidden="true" /> : null}
+                <span>{feedback.title}</span>
+              </p>
+              {ecart != null && scale && (
+                <p className="bz-ecart">
+                  <span className="bz-m">{ecart > 0 ? '+' : '−'}{scale.fmt(Math.abs(ecart))}</span>{' '}
+                  {ecart > 0 ? 'au-dessus' : 'sous'} de la cible <span className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}</span>
+                </p>
+              )}
+              {feedback.detail && <p className="bz-muet">{feedback.detail}</p>}
+            </>
+          ) : kind === 'ph' && isMash(step.id) ? (
+            // z1 : aucune phrase d'aide sur la feuille Mesurer ; le conseil reste dit aux lecteurs d'écran (p3, n° 5).
+            <p className="sr-only">Mesure dix à quinze minutes après l’empâtage, sur un échantillon refroidi.</p>
+          ) : kind === 'densite' ? (
+            <p className="bz-muet">Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.</p>
+          ) : null}
+        </div>
+        <div className="bz-actions">
+          <button type="button" aria-pressed={pairMode} data-booster="paire" onClick={() => setPairMode(true)}>Volume + densité</button>
+          {onAdvice && (
+            <button type="button" data-booster="conseil" disabled={adviceBusy} onClick={onAdvice}>
+              {adviceBusy ? 'Analyse…' : 'Conseil'}
+            </button>
+          )}
+          <button type="submit" className="is-prim" disabled={value == null} data-booster="enregistrer">
+            {editing ? 'Corriger' : 'Enregistrer'}
+          </button>
+        </div>
+      </form>
+      {advice}
       {reading && kind === 'ph' && isMash(step.id) && reading.value > 5.5 && (
         <MashCorrection
           key={raw ? `draft-${raw}` : readingKey(reading)}
@@ -498,14 +580,12 @@ export function BrewDayMeasurements({
         />
       )}
       {last && !raw && (
-        <div className="flex items-center justify-between gap-2 text-2xs text-cave-200">
+        <div className="bz-precedent">
           <span role="status">
-            {notice ||
-              `Dernier relevé · ${new Date(last.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} · ${last.kind === 'densite' ? sg(last.value) : String(last.value).replace('.', ',')} ${last.unit}`}
+            {notice || <>Précédent : <span className="bz-m">{valeurAffichee(last.value)}</span>{last.unit ? ` ${last.unit}` : ''} · il y a <span className="bz-m">{minutesDepuis(last.at)}</span> min</>}
           </span>
           <button
             type="button"
-            className="min-h-10 px-2 underline text-cave-200"
             onClick={() => {
               setRaw(String(last.value));
               setRoomTemp(!!last.roomTemp);
@@ -517,6 +597,7 @@ export function BrewDayMeasurements({
         </div>
       )}
       </>}
+      {pairMode && <div className="bz-precedent"><button type="button" aria-pressed="true" onClick={() => setPairMode(false)}>Mesure seule</button></div>}
     </section>
   );
 }

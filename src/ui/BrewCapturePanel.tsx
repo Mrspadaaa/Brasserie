@@ -2,13 +2,18 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useKeyboardInset } from './useViewport';
 
-/** Les mêmes champs restent montés : refermer la saisie ne perd pas le brouillon. */
+/**
+ * La feuille de saisie (Mesurer, Note) de la vue de brassin, comme z1 la dessine : une rangée de titre « Mesurer · Empâtage » et sa croix,
+ * sans pied. Au téléphone elle se pose au bas de l'écran sur un voile ; à l'ordinateur elle flotte à droite, au-dessus du pied,
+ * sans voile, et n'existe à l'écran que ouverte. Les mêmes champs restent montés : refermer la saisie ne perd pas le brouillon.
+ */
 export function BrewCapturePanel({
   title,
   context,
   open,
   onClose,
   children,
+  icon,
   className = ''
 }: {
   title: string;
@@ -16,6 +21,7 @@ export function BrewCapturePanel({
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
 }) {
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 900px)').matches);
@@ -57,6 +63,7 @@ export function BrewCapturePanel({
     <dialog
       ref={dialog}
       className={`brew-capture ${mobile ? 'is-mobile' : 'is-inline'} ${className}`}
+      data-open={open ? '' : undefined}
       role={mobile ? 'dialog' : 'presentation'}
       aria-label={mobile ? title : undefined}
       style={
@@ -72,25 +79,16 @@ export function BrewCapturePanel({
         if (mobile && event.key === 'Escape') event.stopPropagation();
       }}
     >
-      {mobile && (
-        <header className="brew-capture-header">
-          <div>
-            <h2>{title}</h2>
-            <p>{context}</p>
-          </div>
-          <button type="button" aria-label="Fermer la saisie" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </header>
-      )}
+      <header className="brew-capture-header">
+        <h2>
+          {icon}
+          {title} <span>· {context}</span>
+        </h2>
+        <button type="button" aria-label="Fermer la saisie" onClick={onClose}>
+          <X size={16} />
+        </button>
+      </header>
       <div className="brew-capture-content">{children}</div>
-      {mobile && (
-        <footer>
-          <button type="button" className="brew-capture-return" onClick={onClose}>
-            Retour à l’étape
-          </button>
-        </footer>
-      )}
     </dialog>
   );
 }

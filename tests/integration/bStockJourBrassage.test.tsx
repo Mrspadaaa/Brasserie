@@ -26,7 +26,7 @@ describe('BR-51 / BE-32 : un relevé de volume absurde n’entre pas au journal'
     fireEvent.click(screen.getByRole('button', { name: 'Volume' }));
     const champ = screen.getByLabelText(/Volume \(L\)/);
     fireEvent.change(champ, { target: { value: '99999' } });
-    expect(screen.getByRole('button', { name: 'Noter' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
     expect(screen.getByText(/Saisis 0,1 à 2000 L\./)).toBeInTheDocument();
     fireEvent.submit(champ.closest('form')!);
     expect(last).toBeUndefined();
@@ -55,11 +55,11 @@ describe('BE-37 / BR-56 : la virgule dans les mesures et le journal', () => {
   const recipe = { id: 'R1', name: 'Essai', fermentables: [], hops: [] } as unknown as RecipeSnapshot;
   const lecture = { id: 'r1', at: 1000, stepId: 'ensemencement', kind: 'volume', value: 2.5, unit: 'L', roomTemp: false } as never;
   const etat: BrewDayState = { steps: [step], currentIndex: 0, readings: [lecture] };
-  it('« Dernier relevé » écrit 2,5 L', () => {
+  it('« Précédent » (ex « Dernier relevé ») écrit 2,5 L', () => {
     render(<BrewDayMeasurements step={step} state={etat} update={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Volume' }));
     const texte = document.body.textContent ?? '';
-    expect(texte).toMatch(/Dernier relevé.*2,5 L/);
+    expect(texte).toMatch(/Précédent.*2,5 L/);
     expect(texte).not.toMatch(/\d\.\d/);
   });
   it('le journal écrit 2,5 L', () => {

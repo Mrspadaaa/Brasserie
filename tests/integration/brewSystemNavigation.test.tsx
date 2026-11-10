@@ -65,6 +65,8 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
         { id: 'density-recorded', pairId: 'same-wort', at: measuredAt, stepId: 'preboil', measurementStage: 'preboil', kind: 'densite', value: 1.04, unit: 'SG', roomTemp: true },
       ],
     });
+    // p3 : le bilan « Ce brassin · mon installation » vit dans « Aides et repères » (replié, un toucher plus loin).
+    fireEvent.click(screen.getByText('Aides et repères'));
     const feedback = within(screen.getByRole('region', { name: 'Ce brassin · mon installation' }));
     expect(feedback.getByText('Confirme les quantités réellement ajoutées : Pale.', { selector: 'p' })).toBeVisible();
     expect(feedback.queryByRole('button', { name: 'Compléter les mesures' })).not.toBeInTheDocument();
@@ -157,7 +159,7 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
     clock.mockReturnValue(50 * MIN);
     fireEvent.click(screen.getByRole('button', { name: 'Relever le moût' }));
     fireEvent.change(form().getByLabelText('Température (°C)'), { target: { value: '75' } });
-    fireEvent.click(form().getByRole('button', { name: 'Noter', exact: true }));
+    fireEvent.click(form().getByRole('button', { name: 'Enregistrer', exact: true }));
     const last = view.latest().readings!.at(-1)!;
     expect(last.at).toBe(50 * MIN);
     expect(last.thermalSegmentId).toBeUndefined();

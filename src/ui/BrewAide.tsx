@@ -14,11 +14,19 @@ import { BrewTag } from './BrewTag';
 export function BrewAide({
   title,
   summary,
-  children
+  children,
+  icon,
+  className = '',
+  quiet = false
 }: {
   title: string;
   summary?: React.ReactNode;
   children: React.ReactNode;
+  /** Le picto de la ligne repliée (« Aides et repères » de z1). */
+  icon?: React.ReactNode;
+  className?: string;
+  /** Le repli reste fermé : l'avertissement se signale (« À vérifier ») sans l'ouvrir (« Aides et repères » de z1). */
+  quiet?: boolean;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const wasNotified = useRef(false);
@@ -31,7 +39,7 @@ export function BrewAide({
       setNotice(found);
       // N'ouvrir qu'au passage à l'avertissement : le brasseur garde le droit
       // de refermer la section après l'avoir lue.
-      if (found && !wasNotified.current) node.open = true;
+      if (found && !wasNotified.current && !quiet) node.open = true;
       wasNotified.current = found;
     };
     read();
@@ -45,8 +53,9 @@ export function BrewAide({
     return () => observer.disconnect();
   }, []);
   return (
-    <details ref={ref} className="brew-aide">
+    <details ref={ref} className={`brew-aide ${className}`}>
       <summary>
+        {icon}
         <span className="brew-aide-title">{title}</span>
         {summary != null && <span className="brew-aide-summary">{summary}</span>}
         {notice && <BrewTag tone="due">À vérifier</BrewTag>}

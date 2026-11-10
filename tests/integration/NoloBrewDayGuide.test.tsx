@@ -138,6 +138,6 @@ describe('Aide NOLO du jour de brassage', () => {
     expect(context.recipe).toEqual(frozen);
     expect(context.recipe.fermentables[0].weightKg).toBe(4);
     expect(context.ingredients.some(item => item.name === 'Drêches d’origine')).toBe(false);
-    await screen.findByText('Observation test locale.');
+    await within(screen.getByRole('region', { name: 'Notes et conseil' })).findByText('Observation test locale.');
   });
 });

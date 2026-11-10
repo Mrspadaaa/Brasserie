@@ -1,6 +1,6 @@
 import { Input } from './Input';
 import React, { useId, useLayoutEffect, useRef, useState } from 'react';
-import { Check, ChevronDown, Search, X } from 'lucide-react';
+import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { BrewTag, BrewTagTone } from './BrewTag';
 import { useKeyboardInset } from './useViewport';
 
@@ -21,7 +21,8 @@ export function BrewChoice({
   onChange,
   placeholder = 'Choisir…',
   heading = false,
-  searchable = false
+  searchable = false,
+  plus = false
 }: {
   label: string;
   title?: string;
@@ -31,6 +32,8 @@ export function BrewChoice({
   placeholder?: string;
   heading?: boolean;
   searchable?: boolean;
+  /** Le petit « + » carré d'un en-tête de groupe (z1) : sans texte, il ouvre la même liste. */
+  plus?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -70,14 +73,20 @@ export function BrewChoice({
       aria-haspopup="dialog"
       aria-expanded={open}
       aria-controls={id}
-      className={`brew-choice-trigger ${heading ? 'is-heading' : ''}`}
+      className={`brew-choice-trigger ${heading ? 'is-heading' : ''} ${plus ? 'is-plus' : ''}`}
       onClick={() => {
         setQuery('');
         setOpen(true);
       }}
     >
-      <span>{selected?.label ?? placeholder}</span>
-      <ChevronDown size={20} aria-hidden="true" />
+      {plus ? (
+        <Plus size={12} strokeWidth={2.5} aria-hidden="true" />
+      ) : (
+        <>
+          <span>{selected?.label ?? placeholder}</span>
+          <ChevronDown size={heading ? 14 : 20} aria-hidden="true" />
+        </>
+      )}
     </button>
   );
   return (

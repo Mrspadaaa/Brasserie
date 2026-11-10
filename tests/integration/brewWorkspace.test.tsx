@@ -104,7 +104,7 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     });
     expect(
       within(screen.getByRole('region', { name: 'Mesures de cette étape' })).getByRole('button', {
-        name: 'Noter'
+        name: 'Enregistrer'
       })
     ).toBeDisabled();
     expect(screen.queryByText(/Maische déjà acide/)).not.toBeInTheDocument();
@@ -242,15 +242,17 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     chooseStep(fwhStep.label);
     expect(ingredients().getByLabelText('Ajouté : FWH')).toBeInTheDocument();
     phase('Ébullition');
+    // z1 : une seule liste « Ajouts », une ligne par ajout avec sa minute (10′), le prochain en avant.
     const group = screen
-      .getByRole('heading', { name: '10 min avant la fin' })
+      .getByRole('heading', { name: 'Ajouts' })
       .closest('.brew-ingredient-group')!;
     expect(within(group).getAllByRole('checkbox')).toHaveLength(2);
-    expect(group).toHaveTextContent('Maintenant');
+    expect(group.textContent).toMatch(/10′[\s\S]*10′/);
+    expect(group).toHaveTextContent('maintenant');
     fireEvent.click(screen.getByLabelText('Ajouté : Citra'));
-    expect(group).toHaveTextContent('Maintenant');
+    expect(group).toHaveTextContent('maintenant');
     fireEvent.click(screen.getByLabelText('Ajouté : Galaxy'));
-    expect(group).not.toHaveTextContent('Maintenant');
+    expect(group).not.toHaveTextContent('maintenant');
     expect(ingredients().queryByLabelText('Ajouté : Mosaic')).not.toBeInTheDocument();
     const whirlpool = brewState(r).steps.find((s) => s.id === 'whirlpool')!;
     chooseStep(whirlpool.label);
