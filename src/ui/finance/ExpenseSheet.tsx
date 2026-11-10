@@ -1,6 +1,6 @@
 import React,{useState,useRef,useEffect,useLayoutEffect,useId,useMemo} from 'react';
 import { flushSync } from 'react-dom';
-import { Camera,FileText,Plus,Trash2,Check,Loader2,Package,CalendarDays,ChevronDown,AlertCircle,X } from 'lucide-react';
+import { Camera,FileText,Plus,Trash2,Check,Loader2,Package,CalendarDays,ChevronDown,ChevronRight,AlertCircle,X } from 'lucide-react';
 import { ModalShell } from '../ModalShell';
 import { Field,inputClass } from '../FormNav';
 import { TextInput } from '../TextInput';
@@ -1173,7 +1173,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {/* B2 n° 18 : une marque rouge par champ manquant, sur le champ lui-même (bord tireté, son nom dedans) : plus de puce « à remplir » en double dessous. */}
       {duelUniteEl}{duelCorrEl}{trioEl}{duelProposeEl}
       {isMouture||estRabais?null:natureSegEl}
-      {estRabais?null:articleEl}
+      {/* 10.11 (« Un petit bouton ici, next pour aller à l'article suivant ( ça doit respecter le filtrage) ») : « Suivant › » à droite de la rangée article ; referme cette ligne et ouvre la suivante VISIBLE (filtre et recherche compris), dans l'ordre de l'écran. */}
+      <div className="flex items-start gap-2"><div className="min-w-0 flex-1">{estRabais?null:articleEl}</div><button type="button" data-dp-suivant aria-label={`Ligne suivante, après la ligne ${index+1}`} onClick={()=>allerSuivante(line.id)} className="ml-auto inline-flex min-h-8 shrink-0 items-center gap-0.5 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50">Suivant<ChevronRight size={16} aria-hidden/></button></div>
       {mouturePlateau}
       {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
       <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture||estRabais?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
@@ -1314,6 +1315,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Une cible (« y aller », une erreur) dans un sous-groupe replié : il s'ouvre d'abord, de façon synchrone, avant le défilement et le focus. */
   /* Une ligne qui change de bande se remonte ailleurs : son plateau reste ouvert, elle vient au centre et le focus revient sur le type allumé. */
   const suivreLigne=(id:string)=>{ouvertesRef.current.set(id,true);aSuivre.current=id;setPlateaux(n=>n+1);};
+  /* « Suivant › » : la ligne visible qui suit dans l'ordre de l'écran (les masquées par un filtre ou la recherche sont sautées) ; la dernière se referme seulement. */
+  const allerSuivante=(id:string)=>{const els=[...(form.current?.querySelectorAll<HTMLElement>('article[data-dp-ligne]')??[])].filter(e=>!e.closest('[hidden]'));const i=els.findIndex(e=>e.getAttribute('data-dp-ligne')===id);const suivante=i>=0?els[i+1]?.getAttribute('data-dp-ligne'):undefined;ouvertesRef.current.set(id,false);if(suivante)suivreLigne(suivante);else setPlateaux(n=>n+1);};
   const reveler=(el:Element|null|undefined)=>{const corps=el?.closest<HTMLElement>('[data-dp-sg-corps]'),cle=corps?.dataset.dpSgCorps;if(corps&&cle&&corps.hidden)flushSync(()=>setChoixGroupes(c=>new Map(c).set(cle,true)));};
   const barre:ItemBarre[]=lignesAff.map(l=>({id:l.id,cents:l.amount===undefined?0:Math.round(l.amount*100),groupe:groupeDeLigne(draft.lines.indexOf(l)),ouvert:douteuxIds.has(l.id),nom:l.description}));
   const centsAff=lignesAff.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
