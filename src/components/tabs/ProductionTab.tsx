@@ -2,7 +2,6 @@ import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
-import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
@@ -17,6 +16,9 @@ import '../../ui/production/compact.css';
 import { ViewNavigation } from '../../ui/ViewNavigation';
 import { loadRecipePage } from '../../pages/recipePageLoader';
 
+// l2 (10.11) : la fiche d'un brassin (graphiques, chat, procédé…) ne se télécharge plus avec l'accueil : elle part à la première ouverture,
+// et se précharge à l'inactivité (voir precharge dans App). Même motif que Previsions, PrixEcran et ImpotAnnee.
+const BatchDetailSheet = lazy(() => import('../../ui/BatchDetailSheet').then(m => ({ default: m.BatchDetailSheet })));
 const CreativeLabTab = lazy(() =>
   import('../CreativeLabTab').then(({ CreativeLabTab: CreativeLab }) => ({
     default: CreativeLab,
@@ -132,6 +134,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const [invalidTargetVolume, setInvalidTargetVolume] = useState<string>();
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
+  const feuilleOuverte = React.useRef(false);
+  if (detailBatch) feuilleOuverte.current = true;
   const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
 
   useEffect(() => {
@@ -313,7 +317,12 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         </section>
       )}
 
-      <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onClose={() => setDetailBatch(null)} />
+      {/* Monté à la première ouverture, puis gardé monté (fermeture comme avant : la feuille se ferme d'elle-même quand batch est nul). */}
+      {(detailBatch || feuilleOuverte.current) && (
+        <Suspense fallback={null}>
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onClose={() => setDetailBatch(null)} />
+        </Suspense>
+      )}
     </div>
   );
 };

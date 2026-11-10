@@ -2,7 +2,7 @@ import type { BrewingEquipment, Recipe, RecipeSnapshot } from '../types';
 import type { HopSource } from '../../functions/src/hopIndexSchema';
 import { YEAST_RECIPE_PROFILES } from '../data/yeastRecipeProfiles';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
-import { yeastReferences } from './yeastReferences';
+import { yeastReferencesNoyau } from './yeastReferencesCore';
 
 export interface FermenterRecommendation {
   headspacePct: number;
@@ -22,7 +22,7 @@ type FermenterRecipe = Pick<Recipe | RecipeSnapshot, 'yeast' | 'installation'>;
 export function fermenterRecommendation(recipe: FermenterRecipe, equipment?: BrewingEquipment): FermenterRecommendation | undefined {
   if (!equipment || !Number.isFinite(equipment.fermenterCapacityL) || equipment.fermenterCapacityL <= 0) return;
   const yeast = recipe.yeast;
-  const refs = yeastReferences(undefined, { includeCatalogue: false });
+  const refs = yeastReferencesNoyau();
   const matches = yeast?.hopIndexId ? refs.filter(r => r.id === yeast.hopIndexId)
     : yeast?.name ? findRecipeYeastMatches(yeast.name, withDocumentedYeastNames(refs)).map(m => m.item) : [];
   const reference = matches.length === 1 ? matches[0] : undefined;

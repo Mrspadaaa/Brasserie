@@ -13,7 +13,7 @@ import { noloScience } from './noloScience';
 import { beerSheetContext, readYeastDocumentaryView, yeastFactScope, type YeastHistoricalScalarReading } from './ingredientFacts';
 import type { NoloSugar } from '../../functions/src/noloSchema';
 import { yeastTechnicalFactIdentity } from '../../functions/src/yeastDocumentarySheet';
-import { effectiveYeastTechnicalFactSources, effectiveYeastTechnicalFacts } from './yeastReferences';
+import { effectiveYeastTechnicalFactSources, effectiveYeastTechnicalFacts } from './yeastFacts';
 import { nombreFr } from '../domain/nombreAffiche';
 
 export type YeastFermentationProcess = 'unspecified' | 'preacidified' | 'acidifying-yeast' | 'mixed-culture';
