@@ -20,3 +20,8 @@
 
 ## Prévisions (pj)
 - À 390 sans solde, quatre bandeaux pointillés s'empilent (solde, tendance, rien de prévu, projets) : chacun juste, mais lourd ; à regrouper en une ligne-tâche dépliable si le brasseur le trouve trop chargé.
+
+## Outil d'analyse (an, à revoir sur ses données en ligne)
+- Budget : la ligne « Ventes · rien de prévu » est rangée parmi les dépenses ; la sortir ou la dire « entrées ».
+- Sources : libellé « Pas encore payé, apports +400,00 » à clarifier.
+- Démo riche : toutes les opérations au 10.11, l'escalier devient un trait ; juger sur ses vraies données.
