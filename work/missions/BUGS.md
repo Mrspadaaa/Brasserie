@@ -934,4 +934,4 @@ Retrouvés dans les rapports le 08.11 ; chacun est maintenant une ligne ouverte 
 - EN-1, bloquant : houblon neuf « Nelson Sauvin ZZ » lié à « Nelson Sauvin NZ », travail fini, mais α (%) reste vide sur la fiche.
 - EN-2 : malt « Maris Otter ZZ » non reconnu (`nonIdentifiable`), la fiche ne le dit pas ; EBC et PPG vides en silence.
 - EN-3 : levure « US-05 ZZ » complétée par Gemini (Fermentis, 18 à 26 °C, vrai) mais atténuation vide.
-- EN-4 : fiche d'une dépense payée, « Corriger ce paiement erroné » ferme la fiche sans effet visible.
+- EN-4 (UX, non bloquant) : « Corriger ce paiement erroné » ouvre son encart de confirmation hors de vue (l agent a cru la fiche fermée) ; « Annuler cette écriture » ne prévient qu après « Confirmer la correction » qu il faut d abord annuler le paiement. Retrait ZZ fait (voie r1, chiffres de départ retrouvés).
