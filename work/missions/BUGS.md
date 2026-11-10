@@ -935,3 +935,8 @@ Retrouvés dans les rapports le 08.11 ; chacun est maintenant une ligne ouverte 
 - EN-2 : malt « Maris Otter ZZ » non reconnu (`nonIdentifiable`), la fiche ne le dit pas ; EBC et PPG vides en silence.
 - EN-3 : levure « US-05 ZZ » complétée par Gemini (Fermentis, 18 à 26 °C, vrai) mais atténuation vide.
 - EN-4 (UX, non bloquant) : « Corriger ce paiement erroné » ouvre son encart de confirmation hors de vue (l agent a cru la fiche fermée) ; « Annuler cette écriture » ne prévient qu après « Confirmer la correction » qu il faut d abord annuler le paiement. Retrait ZZ fait (voie r1, chiffres de départ retrouvés).
+
+## Parcours complet rejoué (10.11, voies r2 à r4, b2)
+- PC-3 : la liste du `Combobox` « Catégorie » de Nouvel article ne montre que 2 lignes à 390 en feuille courte ; corrigé en partie (b2 : Malt, Houblon, Levure en tête), hauteur de liste du composant partagé à reprendre.
+- PC-4 : coche « Ajouté » de la levure sans quantité → 400 « Quantité invalide » collé (corrigé b2, d59c3ae1).
+- PC-5 : refus d'annuler un achat consommé ne dit pas qu'il faut d'abord supprimer le brassin ; « Supprimer la recette » sans texte visible ; fiche client sans `role=dialog`.
