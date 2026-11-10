@@ -10,7 +10,7 @@ variantes (L24) avant tout port.
 |---|---|---|---|---|
 | v1 | concepteur | opus | mini maquettes | page de 8 à 12 variantes sur z1, état sans relevé |
 | c1 | critique | opus (Fable interdit, 10.11) | tri | classement, défauts, sans rejet |
-| p1 | auteur | sonnet | port | la variante qu'il choisit, sur la vue en ligne (après b1) |
+| p1 | auteur | sonnet | port | m2 + geste commun (choisis le 10.11 : « non part là dessus »), sur parcours2 |
 
 ## Pages
 | Sujet | Version | Adresse | Source |

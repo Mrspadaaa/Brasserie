@@ -1672,3 +1672,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la passe se conçoit avec le skill `boosters-ux` et les outils déjà en place (`impeccable`, `ui-design-system`, contrôles du dépôt), pas à la main.)
 - **10.11**, mot pour mot, sur la page « Brassin : mesurer au curseur » (V8cp9HDzNbGN9NHxDpY51F), à « Quelle variante je porte ? » : « Le geste, joué au doigt (commun aux 10) »
   (lu, étroit : il retient la section du geste commun — pouce en pointillé, un toucher pose la cible, piste puis ±0,1, après : horloge et Relevés du jour ; la variante de premier plan reste à choisir.)
+- **10.11**, mot pour mot, à « Je pars sur m2 … ou tu en préfères une autre ? » : « non part là dessus » (lu : m2 choisie, avec le geste commun ; à porter.)
