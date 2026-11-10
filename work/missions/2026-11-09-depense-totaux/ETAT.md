@@ -53,3 +53,5 @@
   deploy hosting ; vérifier le bundle servi ; tag `en-ligne/<date>-<nom>`.
 - En attente : « Mon mois » (session effet-finances) à reposer sur compta9 (conflit ExpenseSheet) ; vue de brassin (session
   vue-brassin, choix du brasseur) ; mission `2026-11-10-parcours-complet` (agent critique en cours, VERDICT.md attendu).
+- 10.11 : la session vue-brassin a déployé sa vue de brassin z1 (16 fichiers Brew*) : base de tout déploiement suivant = tag
+  `en-ligne/2026-11-10-brassin2` (compta11 + port z1). Ne jamais repartir de compta11 seul.
