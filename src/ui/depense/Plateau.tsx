@@ -88,9 +88,9 @@ export const Apres = ({ texte, aria }: { texte: string; aria?: string }) => <spa
 /** Le pastille de la ligne où le brasseur voit ce que la facture imprime d'écrit, mot du métier : « α 12,5 » tireté jaune quand il diffère. */
 export const Marque = ({ children }: { children: React.ReactNode }) => <span className="rounded-control border border-dashed border-attention bg-attention/10 px-1 font-mono font-semibold text-attention">{children}</span>;
 
-export interface SortieProps { id: string; titre: string; concordances: Array<{ mot: string; ton: 'ok' | 'ecart' | 'alert' | 'propose' }>; actif: boolean; propose?: boolean; onChoisir: () => void; extra?: React.ReactNode; ia?: boolean }
-const SIGNE = { ok: '= ', ecart: '≠ ', alert: '≠ ', propose: '' } as const;
-const TON = { ok: 'text-hop', ecart: 'font-semibold text-attention', alert: 'font-semibold text-alert', propose: 'font-semibold text-attention' } as const;
+export interface SortieProps { id: string; titre: string; concordances: Array<{ mot: string; ton: 'ok' | 'ecart' | 'alert' | 'propose' | 'neutre' }>; actif: boolean; propose?: boolean; onChoisir: () => void; extra?: React.ReactNode; ia?: boolean }
+const SIGNE = { ok: '= ', ecart: '≠ ', alert: '≠ ', propose: '', neutre: '' } as const;
+const TON = { ok: 'text-hop', ecart: 'font-semibold text-attention', alert: 'font-semibold text-alert', propose: 'font-semibold text-attention', neutre: 'text-cave-400' } as const;
 /** Une sortie du choix (case ronde, un toucher) : « Citra bis · α 12,5 », « Relier à Citra · 2024 », « Nouvel article », avec la concordance de chacune. */
 export function Sortie({ id, titre, concordances, actif, propose, onChoisir, extra, ia }: SortieProps) {
   return <>

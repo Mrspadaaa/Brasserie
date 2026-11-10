@@ -96,8 +96,8 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
   it('R13 : « Target » sans α face à Target (11,8) et Target bis (11,3) : pas de bouton « Créer », « plusieurs articles », le menu donne un nom libre', async () => {
     const view = await lire({ 7: { name: 'Target', alphaPct: null, alphaPctLu: null } }, [article('MP-T', 'Target', 'Houblon', 'g', { alphaPct: 11.8 }), article('MP-Tbis', 'Target bis', 'Houblon', 'g', { alphaPct: 11.3 })], ['Target 11.8%']);
     expect(within(ligne(view, 8)).queryByRole('button', { name: /^Créer «/ })).toBeNull();
-    expect(ligne(view, 8).textContent).toMatch(/plusieurs articles « Target » : choisis/);
-    suivreAuStock(8); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Créer un nouvel article » est « Suivre au stock »
+    expect(ligne(view, 8).textContent).toMatch(/2 articles « Target »/); // p5 : la vue FACTURE | STOCK des deux articles (avant : « plusieurs articles « Target » : choisis » sur « hors stock »)
+    fireEvent.click(ligne(view, 8).querySelector<HTMLElement>('[data-dp-sortie="bis"]')!); // p5 : le nom libre est la sortie « bis » de la vue (avant : « Suivre au stock »)
     expect(stockDe(8)).toBe('new');
     expect(ligne(view, 8).textContent).toContain('Target bis 2');
   });

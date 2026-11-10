@@ -96,11 +96,25 @@ export function memeProduit(description: string, unit: string, items: readonly S
  * DP-4 (10.11) : l'article du stock qui PORTE LE NOM de la ligne, quelle que soit sa catégorie ou son unité (jamais deux : le brasseur choisit alors). Le nom de la ligne est celui que la rangée montre
  * (`nomAffiche` : sans α ni options), comparé au nom de l'article et à ses noms gardés de la facture (`memeNom` : pliés, sans ®™©). Sert à montrer la vue FACTURE | STOCK dès qu'un même nom existe.
  */
-export function articleDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem | undefined {
+export function articlesDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem[] {
   const noms = [ligne.description, ligne.nameFr, ligne.nomLu].map(n => (n ?? '').trim()).filter(Boolean);
-  if (!noms.length) return undefined;
-  const portes = items.filter(item => noms.some(n => memeNom(nomAffiche(n), item.name) || memeNom(n, item.name) || (item.nomsFacture ?? []).some(g => memeNom(n, g) || memeNom(nomAffiche(n), g))));
+  if (!noms.length) return [];
+  return items.filter(item => noms.some(n => memeNom(nomAffiche(n), item.name) || memeNom(n, item.name) || (item.nomsFacture ?? []).some(g => memeNom(n, g) || memeNom(nomAffiche(n), g))));
+}
+export function articleDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem | undefined {
+  const portes = articlesDeMemeNom(ligne, items);
   return portes.length === 1 ? portes[0] : undefined;
+}
+/**
+ * p5 (jeu en ligne 9, bloquant 2) : les articles entre lesquels le brasseur choisit quand PLUSIEURS portent le nom de la ligne : ceux que la règle dit « ambigu » (jamais un lien d'office), plus ceux de même nom ;
+ * moins de deux : rien (le cas d'un seul article garde sa vue, D215). Même règle pour une ligne lue et pour une ligne ajoutée à la main.
+ */
+export function candidatsDuNom(regle: RegleProduit | undefined, ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem[] {
+  const vus = new Set<string>(), out: StockItem[] = [];
+  const ajouter = (i: StockItem) => { if (!vus.has(i.ref)) { vus.add(i.ref); out.push(i); } };
+  if (regle?.cas === 'ambigu') regle.candidats.forEach(ajouter);
+  articlesDeMemeNom(ligne, items).forEach(ajouter);
+  return out.length >= 2 ? out : [];
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
 /** D287 : le deux-points final d'un libellé de facture (« Frais de port : ») tombe, imprimé ou traduit. */
