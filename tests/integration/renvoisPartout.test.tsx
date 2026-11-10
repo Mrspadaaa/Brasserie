@@ -75,6 +75,15 @@ describe('CP-18 · chaque manque visible est un renvoi (jeu clairsemé)', () => 
     semer(); const { container } = render(<Finances vue="overview" />); await laisser();
     verifie('Synthèse', container);
   });
+  it('Finances › Synthèse › Revoir le mois (outil d’analyse a2a : Caisse, Sources, Budget, Filtrer)', async () => {
+    semer(); const { container } = render(<Finances vue="overview" />); await laisser();
+    fireEvent.click(screen.getByRole('button', { name: /Revoir le mois/ })); await laisser();
+    verifie('Analyse › Caisse', container);
+    for (const vue of ['Sources', 'Budget', 'Filtrer']) {
+      fireEvent.click(screen.getByRole('tab', { name: new RegExp(`^${vue}`) })); await laisser();
+      verifie(`Analyse › ${vue}`, container);
+    }
+  });
   it('Finances › Opérations', async () => {
     semer(); const { container } = render(<Finances vue="journal" />); await laisser();
     verifie('Opérations', container);

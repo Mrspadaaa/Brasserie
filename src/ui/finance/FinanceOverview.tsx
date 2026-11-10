@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import type { Batch, Recipe, Transaction } from '../../types';
-import type { FinancialAsset, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
+import { ChevronRight } from 'lucide-react';
+import type { Batch, Recipe, StockItem, Transaction } from '../../types';
+import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../domain/finance/types';
 import { todayISO, type LedgerSummary } from '../../domain/finance/ledger';
 import { periodeSynthese } from '../../domain/finance/periodeSynthese';
 import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
@@ -9,6 +10,7 @@ import { Periode, Scene, titrePeriode } from './synthese/Scene';
 import { Caisse } from './synthese/Caisse';
 import { AlerteTva, LigneLitre, Replie, Verifier } from './synthese/Lignes';
 import { Pourquoi } from './synthese/Pourquoi';
+import { Analyse } from './analyse/Analyse';
 import './synthese.css';
 
 interface Props {
@@ -40,6 +42,10 @@ interface Props {
   onUpgrade: (plan: FinancialPlan) => void;
   onBrowseProjects: () => void;
   onNotice: (message: string) => void;
+  /** L'outil d'analyse (a2a) : le profil (solde de départ) et le stock servent ses calculs ; sans profil, l'entrée « Revoir le mois » n'est pas offerte. */
+  profile?: FinancialProfile;
+  stockItems?: StockItem[];
+  onPrevisions?: () => void;
 }
 
 /**
@@ -54,6 +60,7 @@ export function FinanceOverview(props: Props) {
   const [plage, setPlage] = useState<{ du: string; au: string } | null>(null);
   const periode = useMemo(() => periodeSynthese({ transactions, payments, mois: plage ? plage.du : allDates ? null : month, jusqua: plage?.au, aujourdhui, assets }), [transactions, payments, plage, allDates, month, aujourdhui, assets]);
   const [pourquoi, setPourquoi] = useState(false);
+  const [analyse, setAnalyse] = useState(false);
   const choix = { mois: month, tout: allDates && !plage, plage };
   const nomPeriode = titrePeriode(choix, aujourdhui.slice(0, 4)).toLowerCase();
   const mois = plage ? plage.du : allDates ? null : month;
@@ -64,6 +71,12 @@ export function FinanceOverview(props: Props) {
   const choisirPlage = (du: string, au: string) => {
     if (du === au) { setPlage(null); props.onMonth(du); } else setPlage({ du, au });
   };
+
+  if (analyse && props.profile) {
+    return <Analyse entree={{ transactions, payments, plans, profile: props.profile, assets, batches, stockItems: props.stockItems, aujourdhui }}
+      onBack={() => setAnalyse(false)} onJournal={props.onJournal} onTransaction={props.onTransaction} onProfile={props.onProfile}
+      onPrevisions={props.onPrevisions ?? (() => setAnalyse(false))} onBrowseProjects={props.onBrowseProjects}/>;
+  }
 
   return <div className="syn">
     <div className="syn-wrap">
@@ -76,6 +89,10 @@ export function FinanceOverview(props: Props) {
           onVentes={() => ouvrir({ category: 'recettes', ...portee })}
           onMateriel={() => ouvrir({ category: 'materiel', ...portee })}
           onPourquoi={() => setPourquoi(true)}/>
+        {props.profile && <button type="button" className="syn-row" data-ligne="analyse" onClick={() => setAnalyse(true)}>
+          <span className="syn-t">Revoir le mois<small>Caisse jour par jour, sources, budgets, 12 mois</small></span>
+          <ChevronRight size={16} aria-hidden="true"/>
+        </button>}
       </section>
       <section aria-label="Caisse et coût du litre">
         <Caisse ledger={ledger} openingCashReady={props.openingCashReady} openingCash={props.openingCash} onProfile={props.onProfile} onJournal={props.onJournal} onTransaction={props.onTransaction} onPayment={props.onPayment}/>

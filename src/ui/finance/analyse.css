@@ -1,0 +1,148 @@
+/* Outil d'analyse (a2a, choisi le 10.11). Classes préfixées `ana-` (L26). Couleurs de source : sombres en clair, vives en cave (même teinte que les maquettes a1a/a1e/a1b). */
+.ana { --ana-txt:rgb(var(--cave-texte-50)); --ana-t2:rgb(var(--cave-texte-200)); --ana-bord:rgb(var(--cave-600)); --ana-panel:rgb(var(--cave-850)); --ana-page:rgb(var(--cave-950));
+  --ana-fin:#1F64A3; --ana-rouge:#D6453D; --ana-mal:#C8382F; --ana-ok:#226B3E; --ana-vert:#56D27B; --ana-att:#8A5A00; --ana-attf:#FBF1DC; --ana-gris:#8C8C8C;
+  --ana-ventes:#2A8A4E; --ana-chargesFixes:#7B4FC4; --ana-brassage:#C9A23F; --ana-nettoyage:#2A9AAE; --ana-autres:#8C8C8C; --ana-materiel:#3D7BE0; --ana-prive:#8C8C8C;
+  color:var(--ana-txt); font-size:14px; line-height:1.3; max-width:640px; margin:0 auto; padding:6px 10px 12px; }
+:root[data-theme='cave'] .ana { --ana-fin:#7DB4E8; --ana-rouge:#F0786E; --ana-mal:#F0786E; --ana-ok:#56D27B; --ana-att:#E3B55D; --ana-attf:#3a2f10; --ana-gris:#9A9A9A;
+  --ana-ventes:#56D27B; --ana-chargesFixes:#9856D2; --ana-brassage:#D2B356; --ana-nettoyage:#56C1D2; --ana-autres:#9A9A9A; --ana-materiel:#567BD2; --ana-prive:#9A9A9A; }
+.ana *, .ana *::before, .ana *::after { box-sizing:border-box; }
+.ana button { text-align:left; color:inherit; font:inherit; }
+.ana .ana-m, .ana-m { font-family:ui-monospace,"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.ana-ok { color:var(--ana-ok); } .ana-mal { color:var(--ana-mal); } .ana-t2 { color:var(--ana-t2); } .ana-gris { color:var(--ana-gris); } .ana-sp { flex:1; }
+.ana-s-ventes { --c:var(--ana-ventes); } .ana-s-chargesFixes { --c:var(--ana-chargesFixes); } .ana-s-brassage { --c:var(--ana-brassage); }
+.ana-s-nettoyage { --c:var(--ana-nettoyage); } .ana-s-autres { --c:var(--ana-autres); } .ana-s-materiel { --c:var(--ana-materiel); } .ana-s-prive { --c:var(--ana-prive); }
+.ana-s-caisse { --c:var(--ana-fin); } .ana-s-gagne { --c:var(--ana-ventes); }
+/* en-tête */
+.ana-tete { display:flex; align-items:center; gap:8px; min-height:32px; flex-wrap:wrap; }
+.ana-retour { display:inline-flex; align-items:center; min-height:28px; padding:0 8px 0 2px; border-radius:10px; font-size:12px; color:var(--ana-t2); background:none; border:0; }
+.ana-h1 { font-size:18px; font-weight:600; margin:0; flex:1; min-width:0; white-space:nowrap; }
+@media (max-width:460px) { .ana-retour-t { display:none; } .ana-retour { padding:0 4px 0 0; } }
+.ana-ex { display:inline-flex; align-items:center; height:20px; padding:0 7px; border-radius:10px; background:var(--ana-attf); color:var(--ana-att); font-size:12px; font-weight:600; }
+.ana-seg { display:inline-flex; border:1px solid var(--ana-bord); border-radius:10px; overflow:hidden; height:28px; }
+.ana-seg button { padding:0 9px; font-size:12px; color:var(--ana-t2); background:none; border:0; border-right:1px solid var(--ana-bord); }
+.ana-seg button:last-child { border-right:0; }
+.ana-seg button[aria-pressed=true] { background:var(--ana-txt); color:var(--ana-page); font-weight:600; }
+.ana-seg-mode { margin:6px 0 4px; align-self:flex-end; }
+.ana-vues { display:grid; grid-template-columns:repeat(4,1fr); height:32px; border-radius:10px; background:var(--ana-panel); padding:2px; gap:2px; margin-top:6px; }
+.ana-vues button { border:0; background:none; border-radius:8px; font-size:13px; font-weight:600; color:var(--ana-t2); text-align:center; }
+.ana-vues button[aria-selected=true] { background:var(--ana-page); color:var(--ana-txt); box-shadow:0 1px 2px rgba(0,0,0,.25); }
+.ana-corps { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+/* phrase-réponse */
+.ana-dit { margin:0; font-size:13px; line-height:1.4; }
+.ana-dit b { font-family:ui-monospace,"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:600; }
+.ana-gros { margin:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:6px; font-size:13px; }
+.ana-gros > b { font-size:22px; font-weight:700; }
+.ana-vide { margin:12px 0; color:var(--ana-t2); text-align:center; }
+.ana-note { margin:0; font-size:12px; color:var(--ana-t2); }
+.ana-lien { background:none; border:0; padding:0; min-height:24px; color:var(--ana-att); text-decoration:underline dotted; font-size:inherit; }
+.ana-n, .ana-num-t { font-weight:700; }
+.ana-n { display:inline-flex; width:16px; height:16px; border-radius:50%; background:var(--ana-txt); color:var(--ana-page); font-size:12px; align-items:center; justify-content:center; vertical-align:-2px; }
+/* trois cases */
+.ana-cases { display:grid; grid-template-columns:1.15fr 1fr 1fr; border:1px solid var(--ana-bord); border-radius:10px; overflow:hidden; min-height:42px; }
+.ana-cases > * { display:flex; flex-direction:column; justify-content:center; padding:2px 8px; font-size:12px; color:var(--ana-t2); white-space:nowrap; background:none; border:0; border-radius:0; }
+.ana-cases > * + * { border-left:1px solid var(--ana-bord); }
+.ana-cases b { font-size:15px; font-weight:600; color:var(--ana-txt); }
+.ana-cases .ana-reel-case { background:color-mix(in srgb, var(--ana-fin) 14%, var(--ana-page)); color:var(--ana-fin); font-weight:600; }
+.ana-cases .ana-reel-case b { color:var(--ana-fin); }
+.ana-case-renvoi b { font-size:13px; text-decoration:underline dotted; }
+.ana-hach { background:repeating-linear-gradient(135deg, var(--ana-page) 0 6px, var(--ana-panel) 6px 12px) !important; }
+/* graphiques */
+.ana-gr { border-radius:14px; background:var(--ana-panel); padding:4px 0; }
+.ana-svg { display:block; width:100%; height:auto; overflow:visible; }
+.ana-grille { stroke:var(--ana-bord); stroke-width:1; opacity:.6; } .ana-zero { stroke:var(--ana-t2); stroke-width:1; }
+.ana-axe { font:12px ui-monospace,"IBM Plex Mono",monospace; fill:var(--ana-t2); } .ana-axe-x { font:600 12px system-ui,sans-serif; fill:var(--ana-t2); }
+.ana-sous { font:12px system-ui,sans-serif; fill:var(--ana-t2); }
+.ana-reel { fill:none; stroke:var(--ana-fin); stroke-width:2.5; stroke-linejoin:round; }
+.ana-reel-brassage, .ana-reel-ventes, .ana-reel-chargesFixes, .ana-reel-nettoyage, .ana-reel-autres { stroke:var(--c); }
+.ana-reel-brassage { --c:var(--ana-brassage); } .ana-reel-ventes { --c:var(--ana-ventes); } .ana-reel-chargesFixes { --c:var(--ana-chargesFixes); } .ana-reel-nettoyage { --c:var(--ana-nettoyage); } .ana-reel-autres { --c:var(--ana-autres); }
+.ana-aire { fill:color-mix(in srgb, var(--ana-fin) 12%, transparent); stroke:none; }
+.ana-aire-brassage { fill:color-mix(in srgb, var(--ana-brassage) 18%, transparent); } .ana-aire-ventes { fill:color-mix(in srgb, var(--ana-ventes) 18%, transparent); }
+.ana-aire-chargesFixes { fill:color-mix(in srgb, var(--ana-chargesFixes) 18%, transparent); } .ana-aire-nettoyage { fill:color-mix(in srgb, var(--ana-nettoyage) 18%, transparent); } .ana-aire-autres { fill:color-mix(in srgb, var(--ana-autres) 18%, transparent); }
+.ana-prevu { fill:none; stroke:var(--ana-fin); stroke-width:1.8; stroke-dasharray:3 3; }
+.ana-an { fill:none; stroke:var(--ana-gris); stroke-width:2; opacity:.8; }
+.ana-cm { stroke:var(--c); stroke-width:5; stroke-linecap:butt; }
+.ana-cm.ana-s-materiel { stroke:url(#ana-hb); }
+.ana-p-fond-mat { fill:color-mix(in srgb, var(--ana-materiel) 18%, var(--ana-page)); } .ana-p-trait-mat { stroke:var(--ana-materiel); stroke-width:2.4; }
+.ana-p-fond-gris { fill:var(--ana-panel); } .ana-p-trait-gris { stroke:var(--ana-bord); stroke-width:3; }
+.ana-p-fond-rouge { fill:color-mix(in srgb, var(--ana-rouge) 16%, var(--ana-page)); } .ana-p-trait-rouge { stroke:var(--ana-rouge); stroke-width:2.6; }
+.ana-fin { font:700 16px ui-monospace,"IBM Plex Mono",monospace; fill:var(--ana-fin); paint-order:stroke; stroke:var(--ana-panel); stroke-width:3.5px; }
+.ana-fin-prevu { font:12px ui-monospace,"IBM Plex Mono",monospace; fill:var(--ana-fin); }
+.ana-fin-c { color:var(--ana-fin); }
+.ana-fil { stroke:var(--ana-t2); stroke-width:1; }
+.ana-et { cursor:pointer; }
+.ana-et rect { fill:var(--ana-page); stroke:var(--ana-bord); stroke-width:1.5; }
+.ana-et-pp rect { stroke:#E3B55D; stroke-width:2; } .ana-et-pp .ana-et-s { fill:var(--ana-att); }
+.ana-et:focus-visible rect { stroke:var(--ana-txt); stroke-width:2.5; } .ana-et:focus-visible { outline:none; }
+.ana-et-t { font:600 13px system-ui,sans-serif; fill:var(--ana-txt); } .ana-et-s { font:12px system-ui,sans-serif; fill:var(--ana-t2); }
+.ana-pt { display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--c); flex-shrink:0; } circle.ana-pt { fill:var(--c); background:none; }
+.ana-num { fill:var(--ana-txt); } .ana-num-t { font-size:12px; fill:var(--ana-page); }
+.ana-reste { padding:2px 8px 6px; }
+.ana-pastille, .ana-chip, .ana-ia { display:inline-flex; align-items:center; gap:5px; min-height:28px; padding:0 10px; border-radius:14px; border:1px solid var(--ana-bord); background:var(--ana-page); font-size:12px; font-weight:600; position:relative; }
+.ana-liste { list-style:none; margin:4px 0 0; padding:0; } .ana-liste button { display:flex; justify-content:space-between; width:100%; min-height:28px; background:none; border:0; border-bottom:1px solid var(--ana-bord); font-size:12px; }
+/* légende, tâches, pied */
+.ana-leg { display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center; font-size:12px; color:var(--ana-t2); }
+.ana-leg i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:3px; background:var(--c); }
+.ana-leg i.ana-i-mat { border-radius:2px; width:12px; background:repeating-linear-gradient(135deg, var(--ana-materiel) 0 2px, color-mix(in srgb, var(--ana-materiel) 20%, var(--ana-page)) 2px 4px); }
+.ana-leg i.ana-i-prevu { width:14px; height:0; border-radius:0; border-top:2px dotted var(--ana-fin); background:none; vertical-align:2px; }
+.ana-leg i.ana-i-an { width:14px; height:2px; border-radius:0; background:var(--ana-gris); vertical-align:2px; }
+.ana-leg i.ana-i-cadre { width:14px; height:8px; border-radius:2px; border:1.5px dashed var(--ana-fin); background:none; }
+.ana-leg i.ana-i-encoche, .ana-encoche { border-radius:0; background:var(--ana-gris); clip-path:polygon(50% 0,100% 100%,0 100%); }
+.ana-leg i.ana-i-depasse { width:12px; border-radius:2px; background:repeating-linear-gradient(135deg, var(--ana-rouge) 0 2px, color-mix(in srgb, var(--ana-rouge) 18%, var(--ana-page)) 2px 4px); }
+.ana-leg i.ana-i-tic { width:2px; height:12px; border-radius:0; border-left:2px dotted var(--ana-fin); background:none; }
+.ana-leg i.ana-i-vente { width:12px; border-radius:2px; background:var(--ana-ventes); filter:brightness(.8); }
+.ana-tache { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:32px; padding:0 10px; border-radius:16px; border:1px solid var(--ana-fin); background:none; font-size:12px; color:var(--ana-fin); }
+.ana-tache-pointille { border:1px dashed #E3B55D; color:var(--ana-att); background:color-mix(in srgb, var(--ana-attf) 60%, transparent); }
+.ana-pied { display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:30px; }
+.ana-ops { display:inline-flex; align-items:center; gap:3px; min-height:28px; background:none; border:0; font-size:13px; font-weight:600; }
+.ana-rep { border-radius:12px; background:color-mix(in srgb, #7B4FC4 10%, var(--ana-page)); border:1px solid color-mix(in srgb, #7B4FC4 35%, var(--ana-page)); padding:8px 10px; font-size:13px; display:flex; flex-direction:column; gap:4px; }
+.ana-rep-t { display:flex; align-items:center; gap:6px; font-weight:600; color:#7B4FC4; } :root[data-theme='cave'] .ana-rep-t { color:#C7A6F0; }
+.ana-rep small { font-size:12px; color:var(--ana-t2); }
+/* Sources : la cascade couchée */
+.ana-cascade { display:flex; flex-direction:column; gap:0; background:var(--ana-panel); border-radius:14px; padding:6px 8px 4px; }
+.ana-rang { display:grid; grid-template-columns:86px 1fr 74px; align-items:center; gap:6px; min-height:34px; background:none; border:0; width:100%; padding:0; }
+.ana-lib { font-size:12px; font-weight:600; overflow:hidden; line-height:1.15; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.ana-val { font-size:12px; text-align:right; }
+.ana-piste { position:relative; height:22px; display:block; }
+.ana-barre { position:absolute; top:3px; height:16px; border-radius:4px; background:color-mix(in srgb, var(--c) 28%, var(--ana-page)); border:1.5px solid var(--c); }
+.ana-barre.ana-s-caisse { background:color-mix(in srgb, var(--ana-fin) 14%, var(--ana-page)); }
+.ana-hach-mat { background:repeating-linear-gradient(135deg, var(--c) 0 2px, color-mix(in srgb, var(--c) 18%, var(--ana-page)) 2px 5px); }
+.ana-cadre { position:absolute; top:1px; height:20px; border:1.5px dashed var(--ana-fin); border-radius:5px; }
+.ana-depasse { position:absolute; top:3px; height:16px; background:repeating-linear-gradient(135deg, var(--ana-rouge) 0 2px, color-mix(in srgb, var(--ana-rouge) 18%, var(--ana-page)) 2px 5px); border-radius:0 4px 4px 0; }
+.ana-encoche { position:absolute; top:12px; width:9px; height:9px; margin-left:-4px; }
+.ana-echelle { display:grid; grid-template-columns:86px 1fr 74px; gap:6px; margin-top:2px; }
+.ana-echelle .ana-piste { height:16px; } .ana-tic { position:absolute; top:0; transform:translateX(-50%); font-size:12px; color:var(--ana-t2); }
+/* Budget */
+.ana-regles { display:flex; flex-direction:column; background:var(--ana-panel); border-radius:14px; padding:4px 10px; }
+.ana-regle { display:flex; flex-direction:column; gap:3px; padding:7px 0 6px; background:none; border:0; border-bottom:1px solid var(--ana-bord); width:100%; min-height:44px; }
+.ana-regle:last-child { border-bottom:0; }
+.ana-regle-t { display:flex; align-items:baseline; gap:6px; font-size:13px; flex-wrap:wrap; }
+.ana-regle-t .ana-pt { align-self:center; }
+.ana-regle-v { font-weight:600; }
+.ana-regle-piste { height:12px; }
+.ana-regle-fond { position:absolute; inset:1px 0; border-radius:6px; background:var(--ana-bord); opacity:.45; }
+.ana-regle-reel { position:absolute; left:0; top:1px; bottom:1px; border-radius:6px; background:color-mix(in srgb, var(--c, var(--ana-fin)) 30%, var(--ana-page)); border:1.5px solid var(--c, var(--ana-fin)); }
+.ana-regle-prevu { position:absolute; top:-1px; bottom:-1px; border-left:2px dotted var(--ana-fin); }
+.ana-regle-plus { position:absolute; top:1px; bottom:1px; background:var(--ana-ventes); filter:brightness(.8); border-radius:0 6px 6px 0; }
+.ana-regle .ana-depasse { top:1px; height:auto; bottom:1px; }
+.ana-regle .ana-encoche { top:4px; }
+.ana-h3 { margin:6px 0 0; font-size:12px; font-weight:600; color:var(--ana-t2); text-transform:uppercase; letter-spacing:.03em; }
+/* Filtrer : les tuiles */
+.ana-tuiles { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+.ana-tuile { position:relative; display:flex; flex-direction:column; justify-content:flex-start; gap:1px; min-height:48px; padding:3px 6px 8px; border:1px solid transparent; border-radius:8px; font-size:12px; text-align:left; color:var(--ana-txt); }
+.ana-tuile b { font-size:12px; } .ana-tuile .ana-m { font-size:13px; font-weight:700; }
+.ana-tuile-fort { color:#fff; } :root[data-theme='cave'] .ana-tuile-fort { color:#fff; }
+.ana-tuile[aria-pressed=true] { border:2px solid var(--ana-txt); padding:2px 5px 7px; }
+.ana-tuile-futur, .ana-tuile-vide { background:var(--ana-panel); color:var(--ana-t2); }
+.ana-tuile-vide { background:repeating-linear-gradient(135deg, var(--ana-page) 0 6px, var(--ana-panel) 6px 12px); }
+.ana-regle-mini { position:absolute; left:5px; right:5px; bottom:3px; height:4px; border-radius:2px; background:rgba(0,0,0,.25); }
+.ana-regle-mini > span { position:absolute; left:0; top:0; bottom:0; border-radius:2px; background:var(--ana-page); opacity:.9; } .ana-regle-mini > span.ana-mini-trop { background:var(--ana-rouge); opacity:1; }
+.ana-regle-mini > i { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--ana-txt); }
+.ana-coin { position:absolute; top:3px; right:3px; width:7px; height:7px; background:var(--ana-gris); clip-path:polygon(100% 0,100% 100%,0 0); }
+.ana-pastilles { display:flex; flex-wrap:wrap; gap:6px; }
+.ana-chip select { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; font-size:16px; }
+.ana-chip-on { border-color:var(--ana-txt); }
+.ana .syn-plage { margin-top:2px; }
+@media (min-width:900px) { .ana { padding-top:10px; } .ana-h1 { font-size:20px; } }
+
+/* 1280 : les figures gardent leurs proportions de téléphone (viewBox fixe) ; sans plafond, les étiquettes de l'escalier deviennent énormes. */
+@media (min-width:700px) { .ana { max-width:720px; margin-left:auto; margin-right:auto; } .ana-svg { max-width:560px; margin-left:auto; margin-right:auto; } }
