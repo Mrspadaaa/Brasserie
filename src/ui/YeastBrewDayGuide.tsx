@@ -62,7 +62,7 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible
       // dans Préparer, « Quantité à choisir à l'ajout. » reste dite sans rouge ni étiquette « À vérifier ».
       const alerte = item.warning && (item.id !== 'prepare' || !!onChooseQuantity);
       return <div key={item.id} data-instruction={item.id}>
-        <dt className={alerte ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={alerte || undefined}>{item.title}</dt><dd>{item.detail}</dd>
+        <dt className={alerte ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={alerte ? (item.cause ?? 'true') : undefined}>{item.title}</dt><dd>{item.detail}</dd>
         {item.id === 'prepare' && alerte && <button type="button" className="yeast-geste" onClick={onChooseQuantity}>Choisir la quantité</button>}
       </div>;
     })}</dl>

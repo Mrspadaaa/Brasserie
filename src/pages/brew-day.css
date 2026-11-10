@@ -2981,6 +2981,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 }
 .brew-page.bz .bz-row .bz-dose strong { font: 500 14px/1.3 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; color: var(--bz-t0); }
 .brew-page.bz .bz-row .bz-dose small, .brew-page.bz .bz-row .bz-dose > span { font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); }
+.brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { font-family: 'Source Sans 3', system-ui, sans-serif; font-size: 14px; font-weight: 600; }
 .brew-page.bz .bz-row .bz-dose[aria-expanded='true'] { border-color: var(--bz-t0); }
 .brew-page.bz .bz-row .bz-dose.is-lecture { border-color: transparent; background: none; }
 .brew-page.bz .bz-dose-texte { display: block; padding: 0; border: 0; background: none; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); text-align: left; min-height: 0; }

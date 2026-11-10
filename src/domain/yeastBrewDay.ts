@@ -7,7 +7,7 @@ import { yeastStrainInformation } from './yeastStrainInformation';
 import { createYeastRecipeDraft, evaluateYeastRecipeDesign, readYeastRecipeDesign, yeastRecipeDesignChanged, yeastRecipeFormWarning, YEAST_RECIPE_GOAL_LABELS } from './yeastRecipeDesign';
 
 export type YeastBrewPhase = 'preparation' | 'mash' | 'boil' | 'finish' | 'recipe';
-export interface YeastBrewInstruction { id: string; title: string; detail: string; warning?: boolean }
+export interface YeastBrewInstruction { id: string; title: string; detail: string; warning?: boolean; /** La cause de l'alerte en peu de mots, pour l'étiquette du repli fermé. */ cause?: string }
 const known = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 const fmt = (n?: number, digits = 1) => known(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
 
@@ -64,8 +64,9 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
       detail: pitchRecorded ? `Consigne principale prévue : ${fmt(pitchPlan.primaryC)} °C. ${recordedQuantityDetail}` : pitchPlan.warning ?? `Vérifier la température du moût et la méthode choisie pour ${recipe.yeast.name}. Consigne principale : ${fmt(pitchPlan.primaryC)} °C. Le transfert seul ne commence pas la fermentation.`, warning: !known(pitchPlan.targetC) || !quantityResolved || !!pitchPlan.warning });
     instructions.push({ id: 'pressure', title: pressure === undefined ? 'Pression précoce à préciser' : pressure === 0 ? 'Départ sans contre-pression · 0 bar rel.' : `Pression précoce prévue · ${fmt(pressure)} bar rel.`,
       detail: pressure === undefined ? 'Aucune valeur n’est déduite de la carbonatation finale.' : 'Réglage prévu pour le début de fermentation, distinct de la carbonatation finale. La pression peut modifier l’expression des esters.' });
-    if (analysis.hops.additions.length) instructions.push({ id: 'dry-hop', title: `À cru prévu · ${fmt(analysis.hops.doseGL)} g/L`,
-      detail: `${analysis.hops.unknownCount ? `${analysis.hops.unknownCount} phase${analysis.hops.unknownCount > 1 ? 's' : ''} à préciser. ` : ''}Contrôler la stabilité de la densité et la maturation après le dernier ajout ; un jour du calendrier ne confirme pas la fin de fermentation.`, warning: analysis.hops.unknownCount > 0 });
+    if (analysis.hops.additions.length) instructions.push({ id: 'dry-hop', title: `À cru prévu · ${fmt(analysis.hops.doseGL)} g/L${analysis.hops.unknownCount ? ' · phase à préciser' : ''}`,
+      // C3 : l'alerte nomme sa cause (la phase du dry hop, que le seul jour prévu ne dit pas) ; elle s'éteint quand chaque ajout dit « fermentation active » ou « après ».
+      detail: `${analysis.hops.unknownCount ? 'Dire, pour chaque ajout, s’il va en fermentation active ou après. ' : ''}Contrôler la stabilité de la densité et la maturation après le dernier ajout ; un jour du calendrier ne confirme pas la fin de fermentation.`, warning: analysis.hops.unknownCount > 0, cause: 'À cru · phase à préciser' });
   }
   // A manufacturer's mass range can be recalculated from an observed fermenter volume,
   // but that observation never changes the planned dose or the frozen recipe.

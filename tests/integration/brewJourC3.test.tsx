@@ -322,3 +322,41 @@ describe('n° 23 : Ébullition › Aide à cette étape › Simuler parle en min
   });
 });
 
+describe('n° 7 (suite) : l’alerte « À cru » qui reste après « 1 sachet » nomme sa cause, et s’éteint quand la phase est dite', () => {
+  const garde = (aromaTiming?: 'fermentation' | 'postFermentation') => {
+    const recette = yeastFlowRecipe() as RecipeSnapshot;
+    recette.yeast = { name: 'SafAle US-05', form: 'sèche', qty: 11.5, unit: 'g' };
+    recette.hops = recette.hops.map((h) => h.stage === 'dryHop' ? { ...h, aromaTiming } : h);
+    const guide = buildYeastBrewDay(recette as never, { steps: [], currentIndex: 0, readings: [] }, 'finish', [], true)!;
+    return guide.instructions.find((i) => i.id === 'dry-hop')!;
+  };
+  it('dry hop sans phase (un jour prévu seulement) : alerte, qui dit « phase à préciser » dans le titre', () => {
+    const aCru = garde(undefined);
+    expect(aCru.warning).toBe(true);
+    expect(aCru.title).toMatch(/^À cru prévu · [\d,]+ g\/L · phase à préciser$/);
+  });
+  it('replié, le repli nomme la cause en peu de mots au lieu d’un « À vérifier » muet ; deux causes ou une alerte sans nom : « À vérifier »', () => {
+    const { unmount } = render(<BrewAide title="Aides et repères" quiet><p data-notice="À cru · phase à préciser">détail</p></BrewAide>);
+    expect(screen.getByText('À cru · phase à préciser')).toBeInTheDocument();
+    expect(screen.queryByText('À vérifier')).not.toBeInTheDocument();
+    unmount();
+    render(<BrewAide title="Aides et repères" quiet><p data-notice="À cru · phase à préciser">a</p><p data-notice>b</p></BrewAide>);
+    expect(screen.getByText('À vérifier')).toBeInTheDocument();
+  });
+  it('le guide pose la cause sur le texte rouge du dry hop sans phase, et sur lui seul', () => {
+    const recette = yeastFlowRecipe() as RecipeSnapshot;
+    recette.yeast = { name: 'SafAle US-05', form: 'sèche', qty: 11.5, unit: 'g' };
+    recette.hops = recette.hops.map((h) => h.stage === 'dryHop' ? { ...h, aromaTiming: undefined } : h);
+    render(<YeastBrewDayGuide recipe={recette as never} state={{ steps: [], currentIndex: 0, readings: [] }} phase="finish" quantityChosen />);
+    const causes = [...document.querySelectorAll('dt[data-notice]')].map((n) => n.getAttribute('data-notice'));
+    expect(causes).toEqual(['À cru · phase à préciser']);
+  });
+  it('dry hop dont la phase est dite : plus d’alerte, plus de « à préciser »', () => {
+    for (const phase of ['fermentation', 'postFermentation'] as const) {
+      const aCru = garde(phase);
+      expect(aCru.warning).toBeFalsy();
+      expect(aCru.title).not.toMatch(/préciser/);
+    }
+  });
+});
+

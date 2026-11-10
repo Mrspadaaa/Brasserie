@@ -524,7 +524,6 @@ export function BrewDayMeasurements({
             key={k}
             aria-label={READING[k].label}
             aria-pressed={kind === k}
-            className={kind === k ? 'border-2 border-ebc-straw font-semibold underline decoration-2 underline-offset-4' : undefined}
             onClick={() => {
               setKind(k);
               setRoomTemp(

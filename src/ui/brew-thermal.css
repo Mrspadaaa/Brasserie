@@ -2,7 +2,7 @@
 .brew-thermal p { margin: .35rem 0; }
 .brew-thermal-readings { display: flex; flex-wrap: wrap; gap: .35rem .8rem; }
 .brew-thermal-readings > span { display: grid; gap: .1rem; flex: 1 1 80px; }
-.brew-thermal-readings strong { font: 600 1rem/1.25 'IBM Plex Mono', monospace; color: rgb(var(--cave-texte-50)); }
+.brew-thermal-readings strong { font: 600 1rem/1.25 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: rgb(var(--cave-texte-50)); }
 .brew-thermal small, .brew-thermal-note { font-size: .75rem; color: rgb(var(--cave-texte-400)); }
 .brew-thermal-estimate { color: rgb(var(--cave-texte-200)); }
 .brew-thermal-estimate.is-attention { color: rgb(var(--attention-texte)); }

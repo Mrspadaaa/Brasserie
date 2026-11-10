@@ -167,7 +167,7 @@ export const BrewPreview: React.FC = () => {
     return { ...base, yeast: { ...sansQuantite, name: 'SafAle US-05', lab: 'Fermentis', strain: 'US-05', form: 'sèche' } } as typeof base;
   });
   const [batch, setBatch] = useState<Batch>(()=>{
-    const fixture = hardwarePreview?{...BATCH,volumeL:previewRecipe.volumeL,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH;
+    const fixture = hardwarePreview||new URLSearchParams(location.search).has('levure')?{...BATCH,volumeL:previewRecipe.volumeL,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH;
     const stage = new URLSearchParams(location.search).get('stage');
     if(!stage) return fixture;
     const steps=buildTimeline(fixture.recipeSnapshot!);
