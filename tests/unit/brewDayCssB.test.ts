@@ -31,7 +31,10 @@ describe('contrastes et cibles du jour de brassage', () => {
   it('PD-11 : le guillemet fermant ne passe pas seul à la ligne', () => {
     expect(readFileSync('src/ui/BatchDetailSheet.tsx', 'utf8')).toContain('actuellement « ${style.label} »');
   });
-  it('BR-58 : l’onglet de mesure choisi porte une marque qui ne dépend pas de la teinte (bordure pleine, gras, souligné)', () => {
-    expect(mesures).toMatch(/border-2 border-ebc-straw[^']*font-semibold[^']*underline/);
+  it('BR-58 : l’onglet de mesure choisi porte une marque qui ne dépend pas de la teinte (m2 : fond de pastille, gras, contour)', () => {
+    const regle = bloc(".bz-seg button[aria-pressed='true']");
+    expect(regle).toMatch(/background:/);
+    expect(regle).toMatch(/font-weight: 600/);
+    expect(regle).toMatch(/box-shadow: 0 0 0 1px/);
   });
 });
