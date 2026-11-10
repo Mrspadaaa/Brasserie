@@ -15,3 +15,4 @@ variantes (L24) avant tout port.
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Vue de brassin · inviter à mesurer (m1 à m10 ; critique : m2, m8, m1, m7, m5) | 10.11 v1 | https://claude.ai/artifact/NbM6MJvFnT6uiYdbv5nxZs | `work/missions/2026-11-10-brassin-mesures/page/index.html` |
