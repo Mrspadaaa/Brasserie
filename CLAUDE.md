@@ -96,7 +96,8 @@ Système complet : `docs/agents/systeme.md`.
   moins d'appels et un contexte léger. Un lot = un script préparé et un appel groupé, pas une exploration
   pas à pas ; jamais un appel en échec relancé tel quel ; sorties filtrées (`head`, `grep`, champs
   ciblés) ; pas d'outil ni de connecteur activé en cours de session (casse le cache) ; compacter ou
-  passer la main avant que les messages pèsent plus de 450 k. Mesure : `node scripts/agents/jetons.mjs`.
+  passer la main avant que les messages pèsent plus de 450 k ; un agent s'arrête à 200 k (hook) et rend
+  « REPRISE : <fichier> », que le pilote relance dans un agent neuf (10.11 : 82 % des 3,8 Md relus venaient d'agents > 250 k). Mesure : `node scripts/agents/jetons.mjs`.
   Appliqué par hooks utilisateur (`~/.claude/hooks/`, source `.claude/hooks/economie.mjs` et `rc-sessions.mjs`) :
   pas de relance d’un échec, allers-retours comptés, messages ≤ 700 car., aucun rapport de progrès,
   un seul récapitulatif à la fin ; toute session lancée passe en /rc on.
