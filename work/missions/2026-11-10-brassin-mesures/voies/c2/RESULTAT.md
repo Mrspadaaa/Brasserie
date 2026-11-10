@@ -17,7 +17,7 @@ Worktree de référence (tag, détaché) : `C:/Users/mrspa/AppData/Local/Temp/c2
 ## Critères
 - Tests ciblés (nouveau + brewMesuresCurseur + brewMeasuresAttendues) : 3 fichiers, 44 verts.
 - `tsc --noEmit` : seules les 2 erreurs d'environnement `firebase-admin/firestore` (`functions/`), identiques sur le tag.
-- Suite complète : lancée (`tests.txt`) à la fin de ma limite, non lue. Voir DEMANDE EXECUTANT.
+- Suite complète (`tests.txt`, lancée avant la dernière retouche des traits) : 12 tests rouges, 12 994 verts. Les 12 sont dans les 5 fichiers déjà rouges sur le tag (fuzzSaisie 2, recipeAiWorkflow 2, recipeEditing 6, designTokens 1, virgule-transversale 1) ; zéro fichier nouveau (les autres « FAIL » sont des fichiers à 0 test, `firebase-admin` absent). Le rouge virgule-transversale cite le même offenseur (`BrewDayMeasurements.tsx` `{…} %`) sur le tag et sur c2 : identique. Le VOIE.md annonçait 11 ; le compte exact est 12. À rejouer après le dernier commit (DEMANDE EXECUTANT n° 1).
 - Build : non lancé. Voir DEMANDE EXECUTANT.
 - Captures : premier jeu `captures/apres-*` pris AVANT la dernière retouche (traits ≤ 24) et avec un artefact de banc (« 96,096,5 » : la frappe s'ajoutait à la valeur posée). Ouvertes : boil-0 temp repos clair, pouce clair, champ-ferme cave : curseur 90–102, pouce pointillé puis posé 96,0, champ visible avec bord, plus rien de coupé. Non ouvertes : volume, densité, pH, clavier (même code).
 

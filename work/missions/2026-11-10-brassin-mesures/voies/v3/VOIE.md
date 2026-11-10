@@ -35,3 +35,13 @@ déploiement, aucune donnée réelle, ni commit ni stash. Fichiers de travail : 
 
 ## Rendre
 `RESULTAT.md` au fil (tous les 5 éléments). À 150 k : « REPRISE : <fichier> ». Réponse finale : une ligne.
+
+## Passe 3b (pilote, après `../../critique/SYNTHESE-v3.md`)
+Agent neuf : lis RESULTAT.md de cette voie et SYNTHESE-v3.md ; corrige seulement les 5 bloquants, puis les non bloquants simples :
+1. titre de l'en-tête entier (« LOT-DEMO · 19 L ») sur toutes les captures ;
+2. Préparer (4A à 5C) : la référence « actuel » est une capture de l'app (`../c3/captures/apres/`), et chaque option garde tout ce que
+   l'app montre (« Changer la date », « + » des groupes Eau, icônes) hors du point montré ;
+3. 2C : aucun jour inventé (« J2 Citra… ») : ce que l'app sait seulement (« À cru 171 g · 9 g/L · phase ? ») ;
+4. 3B, 3C : la feuille Mesurer et la fenêtre de clôture gardent les pièces de m2 (crayon pour taper, ligne d'aide, « Pourquoi maintenant ») ;
+5. 5 : une capture où B et C se distinguent (chiffres empilés, liste des Ajouts) ; 1C : la pastille « 1 sachet » suit la quantité.
+Rejoue `verifier-page.mjs --page-lot` (PAGE OK dans `tests.txt`), rouvre les captures touchées, complète RESULTAT.md. Une ligne.
