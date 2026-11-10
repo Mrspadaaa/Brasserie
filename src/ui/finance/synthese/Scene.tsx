@@ -43,6 +43,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
   const ech = echelle(p.entreCents, p.depenseCents, HAUTEUR);
   const postes = regrouperPetits(p.postes, p.depenseCents, 4);
   const pctDe = (cents: number) => p.depenseCents > 0 ? cents * 100 / p.depenseCents : 0;
+  // Une étiquette ne s'écrit que si la tranche est assez haute pour la porter : sinon elle déborde sur sa voisine (« tout » : Solde atelier sur Loyer).
+  const pxDe = (cents: number) => p.depenseCents > 0 ? cents * ech.hPileDepense / p.depenseCents : 0;
   const perte = ech.signe === 'perte', gain = ech.signe === 'gain';
   const pastille = vide ? null : gain
     ? <><b className="syn-m" style={taille(amountOnly(p.gainCents))}>+{amountOnly(p.gainCents)}</b><span>CHF gagnés</span></>
@@ -80,8 +82,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
           </button>)}
           {p.aPayer.map(r => <button type="button" key={r.id} className="syn-s syn-ap" style={{ flex: r.cents, backgroundImage: hachure(r.categorie), flexDirection: 'column', gap: 2 }}
             aria-label={`${r.libelle} ${formatCHF(r.cents)} à payer ${echeance(r)}${r.enRetard ? ', en retard' : ''}, ouvrir la pièce`} onClick={() => onPiece(r.id)}>
-            {pctDe(r.cents) >= 4 && <span className={pctDe(r.cents) >= 10 ? 'syn-tag' : 'syn-tag syn-tag-court'}>{r.libelle} <span className="syn-m">{amountOnly(r.cents)}</span></span>}
-            {pctDe(r.cents) >= 10 && <span className="syn-tag">à payer {echeance(r)}</span>}
+            {pxDe(r.cents) >= 22 && <span className={pxDe(r.cents) >= 46 ? 'syn-tag' : 'syn-tag syn-tag-court'}>{r.libelle} <span className="syn-m">{amountOnly(r.cents)}</span></span>}
+            {pxDe(r.cents) >= 46 && <span className="syn-tag">à payer {echeance(r)}</span>}
           </button>)}
         </div>}
       </div>

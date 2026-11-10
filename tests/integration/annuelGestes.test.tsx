@@ -56,6 +56,9 @@ describe('Annuel g6 : les gestes écrivent par une seule voie, jamais une valeur
     fireEvent.click(piste(6));
     fireEvent.click(screen.getByRole('button', { name: /^Électricité/ }));
     expect(screen.getByText(/d’après : Électricité/)).toBeVisible();
+    // Au repos la part n'est pas fixée (pouce en pointillé) : pas de bouton d'ajout tant qu'on n'a pas posé le curseur.
+    expect(screen.queryByRole('button', { name: 'Ajouter cette part' })).toBeNull();
+    fireEvent.change(screen.getByRole('slider'), { target: { value: '50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter cette part' })); // 50 % de 68,00
     expect(closing()!.tax!.corrections).toEqual([expect.objectContaining({ kind: 'private-use', label: 'Électricité', amountCents: 3400, treatment: 'add' })]);
     expect(closing()!.tax!.reviews.privateUse).toBeFalsy();
@@ -64,7 +67,7 @@ describe('Annuel g6 : les gestes écrivent par une seule voie, jamais une valeur
     render(<Banc/>);
     fireEvent.click(piste(6));
     fireEvent.click(screen.getByRole('button', { name: /^Téléphone/ }));
-    expect(screen.getByRole('button', { name: 'Ajouter cette part' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Ajouter cette part' })).toBeNull(); // aucun montant saisi : rien à ajouter
     const champ = screen.getByLabelText('Montant à toi, estimé (CHF)');
     fireEvent.change(champ, { target: { value: '12' } }); fireEvent.blur(champ);
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter cette part' }));

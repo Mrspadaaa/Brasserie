@@ -154,7 +154,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
             const o = lire(f.format); const Icone = ICONES[f.format.id as FormatId]; const r = o.lecture.reste;
             const v = r ? (an && o.unites !== null ? resteAnnuel(r.valeur, o.unites) : r.valeur) : null;
             return <button key={f.format.id} type="button" className="prx-tuile" data-absent={f.present ? undefined : ''} onClick={() => setFormatId(f.format.id as FormatId)}>
-              <Icone size={18} aria-hidden="true" /><p>{majuscule(f.format.label)}<i className="prx-m">{o.prix !== null ? chf(o.prix) : 'prix ?'}</i></p>
+              <Icone size={18} aria-hidden="true" /><p>{majuscule(f.format.label)}<i className="prx-m">{o.prix !== null ? chf(o.prix) : o.tf.kind === 'plusieurs' ? `${o.tf.tarifs.length} prix` : 'prix ?'}</i></p>
               {v !== null && <b className={`prx-m${r!.valeur < 0 ? ' prx-neg' : ''}`}>{r!.borne ? '≤ ' : ''}{chf(v)}</b>}</button>;
           })}
         </div>

@@ -68,7 +68,7 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
           <button type="button" className="ann-go" onClick={() => c.act.aller(suivante?.n ?? 9)}>Continuer</button></div>
       </div>
       <button type="button" className="ann-row" onClick={() => c.act.aller(8)}><span className="ann-t">Impôts Fribourg<small>{c.report.generatedAt.slice(0, 10) <= `${c.year}-12-31` ? 'après le 31 déc.' : 'à reporter'}</small></span><ChevronRight size={16}/></button>
-      {tva && <button type="button" className="ann-row" onClick={onTva}><span className="ann-t">TVA<small>{tva.libelle}</small></span><span className="ann-m ann-t2">{nombreFr(tva.pct, 0)} %</span><ChevronRight size={16}/></button>}
+      {tva && <button type="button" className="ann-row" onClick={onTva}><span className="ann-t">TVA<small>{tva.libelle}</small></span><span className="ann-m ann-t2">{nombreFr(tva.pct, tva.pct > 0 && tva.pct < 10 ? 1 : 0)} %</span><ChevronRight size={16}/></button>}
       <button type="button" className="ann-row" onClick={() => c.act.aller(9)}><span className="ann-t">Dossier et archives</span><ChevronRight size={16}/></button>
     </section>
   </div>;

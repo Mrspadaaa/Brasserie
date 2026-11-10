@@ -64,6 +64,9 @@
   .prx-col-bas { grid-column: 2; grid-row: 3; }
   .prx-g { max-width: 700px; }
   .prx-ans b { font-size: 56px; }
+  /* fz : dans la colonne étroite de 1280, les deux tuiles de format s'empilent (elles se chevauchaient) et les actions passent l'une sous l'autre si besoin. */
+  .prx-fo { flex-direction: column; }
+  .prx-act { flex-wrap: wrap; }
 }
 
 /* Feuille « Changer le prix » */

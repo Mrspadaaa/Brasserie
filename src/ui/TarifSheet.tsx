@@ -103,7 +103,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
         // NumberInput restaure la dernière valeur lisible au blur. Garder l'erreur pour ne pas enregistrer cette ancienne valeur à sa place.
         setInvalidMoney(current => ({ ...current, [key]: entered.trim() && parseDecimal(entered) === null ? entered : undefined }));
       }}>
-        <NumberInput id={`tf-${key}`} value={draft[key]} emptyValue={undefined}
+        <NumberInput id={`tf-${key}`} value={draft[key]} emptyValue={undefined} fractionDigits={2}
           onValue={(value: number | undefined) => { setTouched(current => ({ ...current, [key]: true })); setDraft(current => current && ({ ...current, [key]: value })); }}
           // BE-98 : au-delà du plafond (ou sous zéro), la saisie est refusée : la valeur d'avant revient ET le message dit le plafond et la valeur gardée.
           min={0} max={PRIX_UNITAIRE_MAX} rejeter

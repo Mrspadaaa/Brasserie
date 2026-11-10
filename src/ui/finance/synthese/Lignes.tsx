@@ -61,6 +61,8 @@ export interface ReplieProps {
   mois: string | null;
   onJournal: (request: Omit<JournalRequest, 'key'>) => void;
   onUpgrade: (plan: FinancialPlan) => void; onBrowseProjects: () => void;
+  /** Pièces de matériel rangées à part mais sans ligne au registre : dites ici, au pli « matériel », pas au premier plan (g3a n'a aucune ligne entre la caisse et le litre). */
+  sansRegistre?: string[];
 }
 /** Principaux fournisseurs de la période (≤ 5), avoirs déduits : les montants de l'ancien écran Coûts. */
 export function fournisseurs(transactions: Transaction[], mois: string | null): Array<[string, number]> {
@@ -77,7 +79,7 @@ export function fournisseurs(transactions: Transaction[], mois: string | null): 
 }
 
 /** E6 : « Fournisseurs, matériel », repliée ; dedans, les fournisseurs et l'évolution de la brasserie. */
-export function Replie({ transactions, payments, plans, mois, onJournal, onUpgrade, onBrowseProjects }: ReplieProps) {
+export function Replie({ transactions, payments, plans, mois, onJournal, onUpgrade, onBrowseProjects, sansRegistre = [] }: ReplieProps) {
   const [ouvert, setOuvert] = useState(false);
   const liste = fournisseurs(transactions, mois);
   return <div>
@@ -91,7 +93,8 @@ export function Replie({ transactions, payments, plans, mois, onJournal, onUpgra
           <span>{nom}</span><span className="syn-m">{amountOnly(cents)}</span><ChevronRight size={14} aria-hidden="true"/></button></li>)}
       </ul>}
       <UpgradeAnalytics plans={plans} transactions={transactions} payments={payments} onOpen={onUpgrade} onBrowse={onBrowseProjects}/>
-      {!liste.length && !plans.length && <p className="syn-note">Rien à montrer sur cette période.</p>}
+      {sansRegistre.length > 0 && <p className="syn-note" data-ligne="sans-registre">Matériel pas encore au registre : {sansRegistre.slice(0, 3).join(', ')}. Rangé à part ici ; l’Annuel le compte autrement.</p>}
+      {!liste.length && !plans.length && !sansRegistre.length && <p className="syn-note">Rien à montrer sur cette période.</p>}
     </div>}
   </div>;
 }
@@ -123,7 +126,6 @@ export function Verifier({ periode: p, ledger, tvaThreshold, onJournal }: Verifi
   if (v.sansDate.length > 0) lignes.push(<Rang key="dates" titre="Vérifier les pièces sans date" texte={`${compte(v.sansDate.length, 'pièce')} avec une date à corriger, à replacer dans la bonne période.`} onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'review' })}/>);
   if (v.avoirsInvalides.length > 0) lignes.push(<Rang key="avoirs" titre="Avoirs sans facture valide" texte={`${compte(v.avoirsInvalides.length, 'avoir')} laissé${v.avoirsInvalides.length > 1 ? 's' : ''} de côté : sans facture d’origine valide.`}/>);
   if (v.avoirsNonDessinesCents > 0) lignes.push(<Rang key="excedent" titre="Avoirs au-delà du poste" texte={`${formatCHF(v.avoirsNonDessinesCents)} d’avoirs dépassent ce que cette période a dépensé : ils ne sont pas dessinés en négatif.`}/>);
-  if (v.materielSansRegistre.length > 0) lignes.push(<Rang key="registre" titre="Matériel sans registre" texte={`${v.materielSansRegistre.slice(0, 3).join(', ')} : rangé à part, mais sans immobilisation au registre (l’Annuel le compte autrement).`}/>);
   if (soon) lignes.push(<div key="tva" className="syn-row" role="status"><span className="syn-t">Seuil de TVA bientôt atteint<small>{tvaThreshold.message}</small></span>
     <button type="button" className="syn-lien" onClick={() => onJournal({ scope: 'all', allDates: true, category: 'recettes' })}>Voir les ventes</button></div>);
   if (!lignes.length && !ledger.warnings.length) return null;

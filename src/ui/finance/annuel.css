@@ -24,9 +24,9 @@
 .ann-pile { display:flex; flex-direction:column; border-radius:10px; overflow:hidden; }
 .ann-pile-entree { background:var(--ann-vert); color:#123d1f; padding:6px 8px; justify-content:space-between; border-radius:0 0 10px 10px; }
 .ann-pile-entree .ann-lib { font-size:14px; } .ann-pile-entree .ann-leg { font-size:12px; }
-.ann-s { display:flex; justify-content:space-between; align-items:flex-start; padding:2px 8px; font-size:12px; border-top:1px solid rgba(255,255,255,.7); min-height:0; overflow:hidden; gap:6px; }
+.ann-s { display:flex; justify-content:space-between; align-items:flex-start; padding:2px 8px; font-size:12px; border-top:1px solid rgba(255,255,255,.7); min-height:22px; line-height:1.2; overflow:hidden; gap:6px; }
 .ann-s:first-child { border-top:0; }
-.ann-usure { flex-direction:column; gap:2px; background:repeating-linear-gradient(135deg,#567BD2 0 4px,#DCE6FA 4px 9px); color:#0E2A5E; }
+.ann-usure { min-height:44px; flex-direction:column; gap:2px; background:repeating-linear-gradient(135deg,#567BD2 0 4px,#DCE6FA 4px 9px); color:#0E2A5E; }
 .ann-tag { background:#fff; color:#0E2A5E; border-radius:10px; padding:0 6px; font-weight:600; align-self:flex-start; }
 .ann-trou { position:relative; border:2px dashed var(--ann-perte); border-bottom:0; border-radius:10px 10px 0 0; background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-perte) 16%,var(--ann-page)) 0 5px,var(--ann-page) 5px 10px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--ann-perte); }
 .ann-trou b { font-size:28px; line-height:1; } .ann-trou span { font-size:12px; font-weight:600; }
@@ -126,6 +126,19 @@
 .ann-docs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
 .ann-doc { border-radius:10px; background:var(--ann-page) !important; border:1px solid var(--ann-bord) !important; padding:8px 4px; min-height:72px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center !important; } .ann-doc b { font-size:12px; line-height:1.15; }
 .ann-doc.miss { border:1.5px dashed var(--ann-att) !important; }
+/* Corrections du test d'écran (fz) : `.ann button` (font:inherit, background:none) l'emportait sur les classes seules des boutons. */
+.ann button.ann-li { font-size:13px; align-items:flex-start; } .ann button.ann-li > span:first-child { min-width:0; flex:1; } .ann button.ann-li .ann-m, .ann .ann-li .ann-m { flex:none; }
+.ann button.ann-ti.ann-hach { background:repeating-linear-gradient(135deg,var(--ann-panel) 0 4px,var(--ann-page) 4px 8px); }
+.ann button.ann-ti.fait { background:color-mix(in srgb,var(--ann-gain) 12%,var(--ann-page)); }
+.ann-ti { justify-content:center; } .ann-ti .ann-m { font-size:12px; color:var(--ann-t2); }
+.ann-ti-i { flex:none; color:var(--ann-t2); } .ann-ti-i.biere { color:#9E5518; } .ann-ti-i.electricite { color:#8A4FD0; } .ann-ti-i.local { color:#5B6572; } .ann-ti-i.telephone { color:#3C4350; } .ann-ti-i.vehicule { color:#5B6572; } .ann-ti-i.plus { color:var(--ann-fin, #1F64A3); }
+/* Curseur de part privée sans part fixée : piste hachurée, pouce en pointillé (g6-6). */
+.ann-sl input[type=range][data-inconnu] { accent-color:var(--ann-att); }
+.ann-sl input[type=range][data-inconnu]::-webkit-slider-runnable-track { height:6px; border-radius:3px; background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ann-att) 60%,var(--ann-page)) 0 5px,transparent 5px 9px); }
+.ann-sl input[type=range][data-inconnu]::-webkit-slider-thumb { -webkit-appearance:none; margin-top:-8px; width:22px; height:22px; border-radius:50%; background:transparent; border:2px dashed var(--ann-att); }
+.ann-sl input[type=range][data-inconnu]::-moz-range-track { height:6px; border-radius:3px; background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ann-att) 60%,var(--ann-page)) 0 5px,transparent 5px 9px); }
+.ann-sl input[type=range][data-inconnu]::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:transparent; border:2px dashed var(--ann-att); }
+.ann-sl input[type=range] { margin-bottom:2px; }
 /* Mois par mois */
 .ann-chip { margin-top:6px; padding:6px 10px; border-radius:10px; background:var(--ann-panel); font-size:13px; }
 @media (min-width:900px) {

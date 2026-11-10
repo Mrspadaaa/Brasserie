@@ -14,15 +14,17 @@ export interface Echelles {
   anCrans: number[];
 }
 const chf = (cents: number) => cents / 100;
-/** Le haut d'un axe : la première graduation au-dessus des données (`graduations` de pv laisse le haut juste au-dessus de la donnée, pas sur un cran). */
-const hautNice = (g: { ticks: number[]; haut: number }) => { const t = g.ticks.map(chf); const pas = t.length > 1 ? r2(t[1] - t[0]) : 1; const dernier = t[t.length - 1] ?? 0; return dernier * 100 < g.haut - 1e-6 ? r2(dernier + pas) : dernier; };
 export function echelles(cout: number, prix: number | null, unites: number | null): Echelles {
   const mince = seuilsRegle(cout).mince;
-  const gx = graduations(0, Math.round(Math.max(prix ?? 0, mince) * 1.4 * 100));
-  const xCrans = gx.ticks.map(chf);
-  const xMax = hautNice(gx);
-  const gy = graduations(0, Math.max(100, Math.round((xMax - cout) * 100)));
-  const yMax = hautNice(gy);
+  // L'axe des prix s'arrête au premier cran qui couvre la donnée (c7c : 5,00 × 1,4 = 7 → 0 · 1 · … · 7), pas au cran d'après (`hautNice` donnait 8).
+  const donneeX = Math.max(prix ?? 0, mince) * 1.4;
+  const gx = graduations(0, Math.round(donneeX * 100), 8);
+  const pasX = gx.ticks.length > 1 ? r2(chf(gx.ticks[1]) - chf(gx.ticks[0])) : 1;
+  const xMax = r2(Math.max(pasX, Math.ceil(donneeX / pasX - 1e-9) * pasX));
+  const xCrans = gx.ticks.map(chf).filter(v => v <= xMax + 1e-6);
+  // L'axe du reste va exactement de zéro au reste du bord droit (la pente finit dans l'angle, comme la maquette) ; les crans sont ceux de `graduations`.
+  const yMax = Math.max(1, r2(xMax - cout));
+  const gy = graduations(0, Math.round(yMax * 100));
   const yCrans = gy.ticks.map(chf).filter(v => v <= yMax + 1e-6);
   const yPas = yCrans.length > 1 ? r2(yCrans[1] - yCrans[0]) : 1;
   let anCrans: number[] = [];

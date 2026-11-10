@@ -84,7 +84,7 @@ describe('Synthèse g3a : la maquette remplace l’écran', () => {
     demo(); render(<Ecran/>);
     fireEvent.click(screen.getByRole('button', { name: /Pourquoi \?/ }));
     const feuille = within(screen.getByRole('dialog', { name: 'Pourquoi si peu ?' }));
-    expect(feuille.getByText(/Ce qui est entré \(720,00.*CHF\) est parti surtout dans « Charges fixes » : 468,00.*CHF, soit 65 % de l’entré/)).toBeVisible();
+    expect(feuille.getByText(/Ce qui est entré \(720,00.*CHF\) est parti surtout dans « Loyer de l’atelier » : 400,00.*CHF, soit 56 % de l’entré/)).toBeVisible();
     expect(feuille.getByText(/« Brassage » en prend 26 %/)).toBeVisible();
     expect(feuille.getByText(/Il en reste 23,20/)).toBeVisible();
     expect(feuille.getByText(/Source : Opérations de novembre \(6 lignes\)\. Calcul fait ici, sans IA\./)).toBeVisible();
@@ -133,9 +133,11 @@ describe('Synthèse g3a : la maquette remplace l’écran', () => {
   });
   it('« À vérifier » : la démo n’y met que « Matériel sans registre » (US-2) ; un paiement inconnu ajoute sa rangée, visible sans geste', () => {
     demo({ soldeConfirme: true }); const { unmount } = render(<Ecran/>);
-    const bloc = within(screen.getByLabelText('À vérifier'));
-    expect(bloc.getByText('Matériel sans registre')).toBeVisible();
-    expect(bloc.queryByText('Confirmer les paiements')).not.toBeInTheDocument();
+    // fz : le matériel sans registre n'est plus une ligne du premier plan (g3a n'en a aucune) : il se dit au pli « Fournisseurs, matériel ».
+    expect(screen.queryByLabelText('À vérifier')).toBeNull();
+    expect(screen.queryByText('Confirmer les paiements')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
+    expect(screen.getByText(/Matériel pas encore au registre : Joints de la cuve/)).toBeVisible();
     unmount();
     StorageService.addTransaction(tx('X', 'Avant l’app', 9000, 'divers', { paymentStatus: undefined }));
     render(<Ecran/>);

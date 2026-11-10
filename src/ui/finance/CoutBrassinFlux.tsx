@@ -98,7 +98,7 @@ export function litreTroisTemps(notions: Pick<TroisNotions, 'dejaPaye' | 'aPayer
   return [plancher[0] / 100, plancher[1] / 100, plancher[2] / 100];
 }
 
-const PX = 1.62, MIN = 12, X0 = 112, X1 = 236, W = 10, TOP = 10, H_MAX = 330, PAS = 24;
+const PX = 1.62, MIN = 12, X0 = 112, X1 = 236, W = 10, TOP = 10, H_MAX = 330, PAS = 36;
 const SRC: Array<{ id: SourceId; nom: string; c: string }> = [{ id: 'stock', nom: 'Déjà payé', c: 'var(--cbf-stock)' }, { id: 'now', nom: 'À payer', c: 'var(--cbf-now)' }, { id: 'an', nom: 'Coût de l’année', c: 'var(--cbf-an)' }];
 
 export interface CoutBrassinFluxProps {
@@ -131,7 +131,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
     const finSources = y;
     y = TOP; const dp: Record<string, { y: number; h: number; o: number }> = {};
     destinations.forEach(d => { const h = d.montant === null ? MIN : Math.max(dh[d.id] ?? 0, MIN); dp[d.id] = { y, h, o: 0 }; y += h + 7; });
-    // Étiquettes de destination : un pas de 24 px au moins, pour que deux zones tactiles voisines ne se chevauchent pas (constat 10).
+    // Étiquettes de destination : un pas de 36 px (la zone tactile), pour que deux zones voisines se touchent sans se chevaucher (constat 10, repris par fz).
     const ly: number[] = [];
     destinations.forEach((d, i) => { const p = dp[d.id]; let c = p.y + p.h / 2; if (i && c < ly[i - 1] + PAS) c = ly[i - 1] + PAS; ly.push(c); });
     const hauteur = Math.ceil(Math.max(y, finSources, 120, (ly.length ? ly[ly.length - 1] + PAS / 2 : 0) + 6) + 18);

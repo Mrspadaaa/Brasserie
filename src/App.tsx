@@ -281,6 +281,12 @@ export const App: React.FC = () => {
   const currentRoute = useRef(route.route);
   currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // « Régler dans Réglages › » de la feuille Impôt bière (p2b) : l'événement annulable ouvre Réglages ; la feuille se ferme dès qu'il est pris.
+  useEffect(() => {
+    const ouvrir = (event: Event) => { setIsSettingsOpen(true); event.preventDefault(); };
+    window.addEventListener('affinee:ouvrir-reglages', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
+  }, []);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);

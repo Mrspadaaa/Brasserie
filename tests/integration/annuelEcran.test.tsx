@@ -87,7 +87,8 @@ describe('Annuel g6 : les neuf étapes', () => {
     expect(screen.getByText('à compter')).toBeVisible();
     fireEvent.click(piste(8));
     expect(screen.getByText(/avant stock/)).toBeVisible();
-    expect(screen.getByText('À confirmer (annexe 05)')).toBeVisible();
+    expect(screen.getByText('À confirmer')).toBeVisible();
+    expect(screen.getByText('annexe 05 des instructions')).toBeVisible();
     expect(screen.getByRole('button', { name: /^Copier Revenu de la brasserie/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: /^Copier Fortune/ })).toBeDisabled();
     expect(screen.getByText(/L’exercice court encore/)).toBeVisible();

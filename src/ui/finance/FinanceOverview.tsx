@@ -72,7 +72,7 @@ export function FinanceOverview(props: Props) {
         <AlerteTva tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
         <Verifier periode={periode} ledger={ledger} tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
         <LigneLitre plans={plans} batches={batches} recipes={recipes} onOpenBudget={props.onOpenBudget} onAbsent={props.onNotice} onPicker={props.onBudgetPicker}/>
-        <Replie transactions={transactions} payments={payments} plans={plans} mois={mois} onJournal={props.onJournal} onUpgrade={props.onUpgrade} onBrowseProjects={props.onBrowseProjects}/>
+        <Replie sansRegistre={periode.aVerifier.materielSansRegistre} transactions={transactions} payments={payments} plans={plans} mois={mois} onJournal={props.onJournal} onUpgrade={props.onUpgrade} onBrowseProjects={props.onBrowseProjects}/>
         {props.assistant}
       </section>
     </div>

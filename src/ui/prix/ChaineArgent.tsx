@@ -8,7 +8,6 @@ import { estimerBrassinsPlanifies } from '../../domain/finance/brewForecast';
 import { todayISO } from '../../domain/finance/ledger';
 import { nombreFr } from '../../domain/nombreAffiche';
 import { ImpotBiereSheet, classesBareme, positionRegle } from '../production/ImpotBiereSheet';
-import { jourCourt } from '../finance/previsions/format';
 import { montantChf } from '../../domain/finance/ledger';
 import { PrixFeuille } from './PrixEcran';
 import { brassinEnUnites, lirePrix, resteAnnuel, seuilsRegle, tarifsDuFormat, unitesParAn, type FormatId } from './calculPrix';
@@ -32,17 +31,27 @@ function EncartPrevisions({ batch }: { batch: Batch }) {
     const b = sortie.brassins.find(x => x.batchId === batch.id);
     if (!b) return null;
     const sorties = b.items.filter(i => i.direction === 'out');
-    const avant = sorties.filter(i => i.date <= b.dateBrassage).reduce((s, i) => s + i.amountCents, 0);
-    const apres = sorties.filter(i => i.date > b.dateBrassage);
     if (!sorties.length) return null;
-    return { avant, date: b.dateBrassage, apres: apres.map(i => `${montantChf(i.amountCents / 100)} le ${jourCourt(i.date)}`) };
+    // Une sortie « partielle » (`partial` : ce qui manque) vaut au moins son montant ; à 0 elle est INCONNUE, jamais « 0,00 » (e3a : « ce qui manque dit ? et compte à part »).
+    const somme = (l: typeof sorties) => ({ cents: l.reduce((s, i) => s + i.amountCents, 0), partiel: l.some(i => i.partial?.length) });
+    const lAvant = sorties.filter(i => i.date <= b.dateBrassage), avant = lAvant.length ? somme(lAvant) : null;
+    const parMois = new Map<string, typeof sorties>();
+    for (const i of sorties.filter(x => x.date > b.dateBrassage)) parMois.set(i.date.slice(0, 7), [...(parMois.get(i.date.slice(0, 7)) ?? []), i]);
+    return { avant, date: b.dateBrassage, apres: [...parMois.entries()].sort(([x], [y]) => x.localeCompare(y)).map(([mois, l]) => ({ mois: MOIS_ABR[Number(mois.slice(5, 7)) - 1], ...somme(l) })) };
   }, [d, batch.id]);
   if (!texte) return null;
-  return <div className="arg-prev" data-booster="reflet-previsions"><CheckCircle2 size={16} aria-hidden="true" /><span>Dans Prévisions : <b className="prx-m">{montantChf(texte.avant / 100)}</b> avant le {jourCourt(texte.date)}{texte.apres.length ? <> · <b className="prx-m">{texte.apres.join(' · ')}</b></> : null}</span></div>;
+  const valeur = (s: { cents: number; partiel: boolean }) => s.cents <= 0 && s.partiel ? '?' : `${s.partiel ? '≥ ' : ''}${montantChf(s.cents / 100)}`;
+  return <div className="arg-prev" data-booster="reflet-previsions"><CheckCircle2 size={16} aria-hidden="true" /><span>Dans Prévisions :{texte.avant && <> <b className="prx-m">{valeur(texte.avant)}</b> avant le {Number(texte.date.slice(8, 10))} {MOIS_ABR[Number(texte.date.slice(5, 7)) - 1]}</>}{texte.apres.map((a, k) => <React.Fragment key={a.mois}>{texte.avant || k > 0 ? ' · ' : ' '}<b className="prx-m">{valeur(a)}</b> en {a.mois}</React.Fragment>)}</span></div>;
 }
+const MOIS_ABR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 
-export function ChaineArgent({ batch, config, onNoteDensity }: { batch: Batch; config: AppConfig; onNoteDensity?: () => void }) {
+const BrewerChat = React.lazy(() => import('../BrewerChat').then(m => ({ default: m.BrewerChat })));
+
+/** `proposer` : un compteur que la fiche monte quand le brasseur touche « ✦ Proposer » (e3a : l'action primaire de l'onglet) ; l'IA ne s'ouvre qu'à ce toucher. */
+export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch: Batch; config: AppConfig; onNoteDensity?: () => void; proposer?: number }) {
   const d = useStorageValue(lireDonneesPrix);
+  const [question, setQuestion] = useState<string | undefined>();
+  const demande = React.useRef<() => string>(() => '');
   const [ouvert, setOuvert] = useState<null | 'cout' | 'impot' | 'prix'>(null);
   const [formatId, setFormatId] = useState<FormatId>('33cl');
   const [an, setAn] = useState<boolean>(() => StorageService.getUiState<string>('prix_lecture', 'bouteille') === 'an');
@@ -68,6 +77,16 @@ export function ChaineArgent({ batch, config, onNoteDensity }: { batch: Batch; c
   const seuils = lecture.cout ? seuilsRegle(lecture.cout.affiche) : null;
   const xMax = seuils ? Math.max(prix ?? 0, seuils.mince) * 1.4 : 1;
   const part = lecture.cout && c.litre?.liquide != null ? { biere: c.litre.liquide * f.volumeL, emb: tarif?.emballageUnite ?? 0, imp: unitImpot ?? 0 } : null;
+  demande.current = () => {
+    const nomFormat = f.label;
+    const lignes = [`Mon brassin « ${batch.name} »${planifie ? ' (planifié)' : ''} : ${c.litre ? `coût du litre ${chf(c.litre.affiche.complet)} CHF` : 'coût du litre encore inconnu'}${c.litres !== null ? `, ${nombreFr(c.litres, 1)} L nets` : ', litres nets à noter'}.`,
+      `Format ${nomFormat} : ${prix !== null ? `vendu ${chf(prix)} CHF HT` : 'pas encore de prix'}${lecture.cout ? `, coût ${lecture.cout.exact ? '' : 'd’au moins '}${chf(lecture.cout.affiche)} CHF` : ''}.`,
+      reste ? `Il me reste ${reste.borne ? 'au plus ' : ''}${chf(reste.valeur)} CHF par ${nomFormat} (${nombreFr(lecture.partPrix, 0)} % du prix).` : '',
+      'Quel prix me conseilles-tu, et pourquoi ?'];
+    return lignes.filter(Boolean).join(' ');
+  };
+  const dernier = React.useRef(proposer ?? 0);
+  React.useEffect(() => { if (proposer !== undefined && proposer !== dernier.current) { dernier.current = proposer; setQuestion(demande.current()); } }, [proposer]);
   const basculer = () => { const v = !an; setAn(v); StorageService.setUiState('prix_lecture', v ? 'an' : 'bouteille'); };
 
   const marche = (num: number, corps: React.ReactNode, opts: { ouvre?: typeof ouvert; reste?: boolean; label: string }) => <>
@@ -105,13 +124,14 @@ export function ChaineArgent({ batch, config, onNoteDensity }: { batch: Batch; c
           <div className="arg-l2"><button type="button" className="prx-swap" aria-pressed={an} onClick={e => { e.stopPropagation(); basculer(); }} data-booster="bascule-tete">{an ? `an · ${resteAn !== null ? `${reste?.borne ? '≤ ' : ''}${chf(resteAn)}` : 'volume annuel ?'}` : 'bouteille'}</button><b className="prx-m">{reste && lecture.partPrix !== null ? `${nombreFr(lecture.partPrix, 0)} %` : ''}</b></div>
         </>, { reste: true, label: 'Il te reste' })}
         {marche(6, <>
-          <div className="arg-l1"><span>Brassin, {c.litres !== null ? `${nombreFr(c.litres, 0)} L${planifie ? ' prévus' : ''}` : '? L'}</span><b className="prx-m" style={{ color: 'rgb(var(--ok-texte, 37 107 66))' }}>{ligne ? `${planifie ? '≤ ' : ''}${chf(ligne.resteBrassin)}` : '?'} <small>CHF</small></b></div>
+          <div className="arg-l1"><span>Brassin, {c.litres !== null ? `${nombreFr(c.litres, 0)} L${planifie ? ' prévus' : ''}` : <>? L nets{batch.volumeL > 0 ? <small className="arg-q"> · {nombreFr(batch.volumeL, 0)} L visés</small> : null}</>}</span><b className="prx-m" style={{ color: 'rgb(var(--ok-texte, 37 107 66))' }}>{ligne ? `${planifie ? '≤ ' : ''}${chf(ligne.resteBrassin)}` : '?'} <small>CHF</small></b></div>
           {ligne && <svg viewBox="0 0 320 12" preserveAspectRatio="none" style={{ width: '100%', height: 12, display: 'block' }} aria-hidden="true">{Array.from({ length: Math.min(ligne.n, 200) }, (_, i) => <rect key={i} x={i * 320 / Math.min(ligne.n, 200)} y="0" width={320 / Math.min(ligne.n, 200) - 1} height="12" rx="1" fill={i < (ligne.paient / ligne.n) * Math.min(ligne.n, 200) ? '#111' : '#7DC79A'} />)}</svg>}
           <div className="arg-l2"><span>{ligne ? <><b className="prx-m">{ligne.paient}</b> paient {n ? <b className="prx-m">{chf(n.total)}</b> : null}</> : 'prix ou coût à compléter'}</span>{ligne && <span>vendu <b className="prx-m">{chf(ligne.vendu)}</b></span>}</div>
         </>, { ouvre: 'prix', reste: true, label: 'Brassin' })}
       </div>
       {ouvert === 'cout' && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity} /></React.Suspense>}
       {ouvert === 'impot' && <ImpotBiereSheet batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity ? () => { setOuvert(null); onNoteDensity(); } : undefined} />}
+      {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'batch', id: batch.id }} label={batch.name} phase="Prix de vente" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
       {ouvert === 'prix' && <PrixFeuille config={config} batch={batch} formatInitial={formatId} onClose={() => setOuvert(null)} />}
     </div>
   );

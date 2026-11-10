@@ -1,6 +1,6 @@
 import React from 'react';
 import { nombreFr } from '../../../domain/nombreAffiche';
-import { Check, Copy, Download, Loader2, Lock } from 'lucide-react';
+import { Beer, Car, Check, Copy, Download, House, Loader2, Lock, Plus, Smartphone, Zap, type LucideIcon } from 'lucide-react';
 import { Cadre, Etoile } from './Etapes';
 import { baseProposee, justificatifs, materielPret, ticketFortune, ticketRevenu, TUILES_PRIVEES } from './calculs';
 import { TAX_REVIEWS } from '../../../domain/finance/fribourgTax';
@@ -10,24 +10,27 @@ import { MoneyInput, idFor } from '../FinanceForms';
 import type { Ctx } from './ctx';
 
 /* ---------- 6 · Parts privées ---------- */
+const ICONES_TUILES: Record<string, LucideIcon> = { biere: Beer, electricite: Zap, local: House, telephone: Smartphone, vehicule: Car };
 export function Etape6({ c }: { c: Ctx }) {
-  const [tuile, setTuile] = React.useState<string | null>(null), [pct, setPct] = React.useState(50), [saisie, setSaisie] = React.useState<number | undefined>();
+  // Au repos, g6-6 pose déjà la première charge reconnue (l'électricité) avec son curseur : la part n'est pas connue, le curseur le dit (pouce en pointillé).
+  const [tuile, setTuile] = React.useState<string | null>(() => TUILES_PRIVEES.find(t => baseProposee(c.transactions, c.year, t.mots))?.id ?? null);
+  const [pct, setPct] = React.useState<number | null>(null), [saisie, setSaisie] = React.useState<number | undefined>();
   const privees = c.tax.corrections.filter(x => x.kind === 'private-use');
   const courante = TUILES_PRIVEES.find(t => t.id === tuile), base = courante ? baseProposee(c.transactions, c.year, courante.mots) : null;
-  const montantPart = base ? Math.round(base.cents * pct / 100) : saisie;
+  const montantPart = base ? (pct === null ? undefined : Math.round(base.cents * pct / 100)) : saisie;
   const ajouter = () => {
     if (!courante || montantPart == null || montantPart <= 0) return;
     c.act.ecrire(t => { t.corrections = [...t.corrections, { id: idFor('FISC'), kind: 'private-use', label: courante.libelle, amountCents: montantPart, treatment: 'add', note: base ? `Part privée estimée par le brasseur : ${nombreFr(pct, 0)} % de ${montant(base.cents)} (${base.pieces.join(', ')}).` : 'Montant estimé par le brasseur.' }]; });
-    setTuile(null); setSaisie(undefined);
+    setTuile(null); setSaisie(undefined); setPct(null);
   };
   return <Cadre n={6} c={c} question="Qu’as-tu pris pour toi ?" terme="parts privées"
     bas={<button type="button" className="ann-pri" disabled={c.gele} onClick={() => { c.act.ecrire(t => { t.reviews = { ...t.reviews, privateUse: true }; }); c.act.aller(7); }}>Valider</button>}>
-    <div className="ann-tiles">{TUILES_PRIVEES.map(t => { const x = privees.find(p => p.label === t.libelle); return <button type="button" key={t.id} aria-pressed={tuile === t.id} disabled={c.gele} className={`ann-ti${x ? ' fait' : ' ann-hach'}`} onClick={() => { setTuile(t.id); setPct(50); setSaisie(undefined); }}><b>{t.libelle}</b><span className="ann-m">{x ? montant(x.amountCents) : '?'}</span></button>; })}
-      <button type="button" className="ann-ti dash" disabled={c.gele} onClick={() => c.act.feuille('corrections')}><b>Autre</b><small>ajouter</small></button></div>
+    <div className="ann-tiles">{TUILES_PRIVEES.map(t => { const x = privees.find(p => p.label === t.libelle), Icone = ICONES_TUILES[t.id]; return <button type="button" key={t.id} aria-pressed={tuile === t.id} disabled={c.gele} className={`ann-ti${x ? ' fait' : ' ann-hach'}`} onClick={() => { setTuile(t.id); setPct(null); setSaisie(undefined); }}><Icone size={20} aria-hidden="true" className={`ann-ti-i ${t.id}`}/><b>{t.libelle}</b><span className="ann-m">{x ? montant(x.amountCents) : `? ${t.id === 'biere' ? 'L' : '%'}`}</span></button>; })}
+      <button type="button" className="ann-ti dash" disabled={c.gele} onClick={() => c.act.feuille('corrections')}><Plus size={20} aria-hidden="true" className="ann-ti-i plus"/><b>Autre</b><small>ajouter</small></button></div>
     {courante && <div className="ann-sl"><div className="lab"><span>{courante.libelle}{base && <> <span className="ann-m">{montant(base.cents)}</span> : part pour toi</>}</span><span className="ann-pa at">à confirmer</span></div>
-      {base ? <><input type="range" min={0} max={100} step={5} value={pct} aria-label={`Part privée de ${courante.libelle} en pourcentage`} onChange={e => setPct(Number(e.target.value))}/><div className="ends"><span className="ann-m">0 %</span><span className="ann-m">{nombreFr(pct, 0)} % = {montant(montantPart ?? 0)}</span><span className="ann-m">100 %</span></div><p className="ann-terme">d’après : {base.pieces.join(', ')} (à vérifier)</p></>
+      {base ? <><input type="range" min={0} max={100} step={5} value={pct ?? 0} data-inconnu={pct === null ? '' : undefined} aria-label={`Part privée de ${courante.libelle} en pourcentage${pct === null ? ' (pas encore fixée)' : ''}`} onChange={e => setPct(Number(e.target.value))}/><div className="ends"><span className="ann-m">0 %</span>{pct !== null && <span className="ann-m">{nombreFr(pct, 0)} % = {montant(montantPart ?? 0)}</span>}<span className="ann-m">100 %</span></div><p className="ann-terme">d’après : {base.pieces.join(', ')} (à vérifier)</p></>
         : <><MoneyInput label={`Montant à toi, estimé (CHF)`} value={saisie} onChange={setSaisie}/><p className="ann-terme">Aucune charge reconnue : tu saisis le montant, sans valeur par défaut.</p></>}
-      <button type="button" className="ann-btn" onClick={ajouter} disabled={montantPart == null || montantPart <= 0}>Ajouter cette part</button></div>}
+      {montantPart != null && <button type="button" className="ann-btn" onClick={ajouter} disabled={montantPart <= 0}>Ajouter cette part</button>}</div>}
     <div className="ann-choix"><button type="button" className="ann-ch" disabled={c.gele} onClick={() => { c.act.ecrire(t => { t.reviews = { ...t.reviews, privateUse: true }; }); c.act.aller(7); }}><b>Rien pris pour moi</b><span>tout reste pro</span></button><button type="button" className="ann-ch" onClick={() => setTuile(TUILES_PRIVEES[1].id)}><b>J’ai pris quelque chose</b><span>toucher une tuile</span></button></div>
   </Cadre>;
 }
@@ -61,7 +64,9 @@ export function Etape7({ c }: { c: Ctx }) {
 export function Etape8({ c }: { c: Ctx }) {
   const rev = ticketRevenu(c.report, c.tax), fo = ticketFortune(c.report, c.tax);
   const champ = (id: string) => c.tax.fields.find(f => f.id === id);
-  const manques = c.tax.missing.slice(0, 3);
+  // Le domaine écrit « Justificatif manquant : <identifiant> — <description>. » : l'identifiant technique ne s'affiche pas, la pièce se reconnaît à sa description.
+  const lisible = (m: string) => { const r = /^Justificatif manquant : \S+ — (.*?)\.?$/.exec(m); return r ? `${r[1]} : justificatif manquant` : m; };
+  const manques = c.tax.missing.slice(0, 3).map(lisible), autres = Math.max(0, c.tax.missing.length - 3);
   const enCours = c.report.generatedAt.slice(0, 10) <= `${c.year}-12-31`;
   const copier = (id: string, label: string, cents: number | null, pret: boolean) => <button type="button" className="ann-cpy" disabled={!pret || cents == null} aria-label={`Copier ${label}`} onClick={() => void c.dossier.copy(id, cents)}>{c.dossier.copied === id ? <Check size={14}/> : <Copy size={14}/>}Copier</button>;
   return <Cadre n={8} c={c} question="Ce que tu recopies dans ta déclaration" terme="montants à reporter · Fribourg"
@@ -73,13 +78,13 @@ export function Etape8({ c }: { c: Ctx }) {
       <span className="cod"><span className={`ann-pa ${rev.pret ? 'ok' : 'at'}`}>{rev.pret ? 'prêt' : 'provisoire'}</span><span className="ann-pa no">{rev.code ? `code ${c.tax.sourceYear} : ${rev.code}` : 'code : choisis principale ou accessoire (étape 7)'}</span></span>
       {copier('income', champ('income')?.label ?? 'Revenu', rev.aReporterCents, rev.pret)}</div>
     <div className="ann-cp"><h4>{champ('wealth')?.label ?? 'Fortune de la brasserie'}</h4>
-      {fo.aReporterCents != null ? <span className="ann-m big">{montant(fo.aReporterCents)}</span> : <span className="ann-m big ann-prov-n">À confirmer (annexe 05)</span>}
+      {fo.aReporterCents != null ? <span className="ann-m big">{montant(fo.aReporterCents)}</span> : <><span className="ann-m big ann-prov-n">À confirmer</span><small>annexe 05 des instructions</small></>}
       <small>aide, pas le montant à reporter : caisse <span className="ann-m">{fo.aideCaisseCents == null ? '?' : montant(fo.aideCaisseCents)}</span> + cuve <span className="ann-m">{montant(fo.aideMaterielCents)}</span> − dettes <span className="ann-m">{montant(fo.aideDettesCents)}</span>{fo.aideNetteCents == null ? ' = ? (stock à compter)' : <> = <span className="ann-m">{montant(fo.aideNetteCents)}</span></>}</small>
       <span className="cod"><span className={`ann-pa ${fo.pret ? 'ok' : 'at'}`}>{fo.pret ? 'prêt' : 'provisoire'}</span><span className="ann-pa no">{fo.code ? `code ${c.tax.sourceYear} : ${fo.code}` : 'code à vérifier'}</span></span>
       {copier('wealth', champ('wealth')?.label ?? 'Fortune', fo.aReporterCents, fo.pret)}
       <button type="button" className="ann-link" onClick={() => c.act.feuille('wealth')}>Confirmer le report de fortune</button></div>
     {enCours && <p className="ann-terme">L’exercice court encore : le report n’est prêt qu’après le 31 déc.</p>}
-    {manques.length > 0 && <ul className="ann-manque">{manques.map(m => <li key={m}>{m}</li>)}</ul>}
+    {manques.length > 0 && <ul className="ann-manque">{manques.map(m => <li key={m}>{m}</li>)}{autres > 0 && <li>+ {autres} autre{autres > 1 ? 's' : ''}</li>}</ul>}
     <p className="ann-terme">La déclaration personnelle reste à compléter : autres revenus, prévoyance, famille. <a href={c.tax.sourceUrl} target="_blank" rel="noreferrer">Instructions officielles Fribourg {c.tax.sourceYear}</a></p>
   </Cadre>;
 }

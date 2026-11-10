@@ -1,6 +1,6 @@
 import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
-import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
+import { Trash2, ArrowRight, AlertTriangle, PackageCheck, Sparkles } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
@@ -64,6 +64,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [brewDayDraft, setBrewDayDraft] = useState<string | null>(null);
   const [brewDayError, setBrewDayError] = useState('');
   const [section, setSection] = useState<BatchDetailSection | 'argent'>(initialSection);
+  /** e3a : « ✦ Proposer » est l'action primaire de l'onglet Argent ; la chaîne ouvre l'IA quand ce compteur monte. */
+  const [proposerArgent, setProposerArgent] = useState(0);
   const [noloNotice,setNoloNotice]=useState('');
   /** `focusOg` : « Noter la densité » (feuille Impôt bière ou coût, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale. */
   const [focusOg, setFocusOg] = useState(false);
@@ -194,9 +196,11 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)} visés`}
         className="md:max-w-2xl md:mx-auto"
         footer={
-          <Button intent="primary" full onClick={onClose}>
-            Fermer
-          </Button>
+          section === 'argent'
+            ? <Button intent="primary" full onClick={() => setProposerArgent(n => n + 1)} icon={<Sparkles className="w-5 h-5" />}>Proposer</Button>
+            : <Button intent="primary" full onClick={onClose}>
+              Fermer
+            </Button>
         }
       >
         <div className="space-y-2">
@@ -288,7 +292,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
-          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />}
+          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} proposer={proposerArgent} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />}
           {section === 'measurements' && (
             <>
               <section className="space-y-2">

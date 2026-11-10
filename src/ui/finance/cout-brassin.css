@@ -96,6 +96,8 @@
 .cbf-res.cbf-sel-stock .cbf-u b, .cbf-res.cbf-sel-an .cbf-u b { font-weight: 600; font-size: 12px; display: block; }
 .cbf-res.cbf-sel-stock .cbf-quand, .cbf-res.cbf-sel-an .cbf-quand { color: inherit; opacity: .95; }
 .cbf-res.cbf-sel-stock .cbf-quand b, .cbf-res.cbf-sel-an .cbf-quand b { color: inherit; }
+/* 10 (fz) : chaque poste de destination est une zone de 36 px de haut ; `PAS` du flux les espace de 36 px, elles se touchent sans se chevaucher. */
+.cbf button.cbf-dst { min-height: 36px; height: 36px; padding: 0; box-sizing: border-box; }
 /* 2 : le geste « Prévoir » répond dans la feuille. */
 .cbf-fait { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--cbf-stock); padding: 2px 2px 6px; max-width: 390px; margin: 0 auto; }
 .cbf-fait span { color: var(--cbf-t1); font-weight: 500; }

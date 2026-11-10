@@ -112,6 +112,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const searchId = useId();
   const [loupe, setLoupe] = useState(false);
   const [panneau, setPanneau] = useState(false);
+  const panneauRef = useRef<HTMLDivElement>(null);
+  // Le panneau s'ouvre sous la rangée de boutons du pied, souvent hors écran à 390 : on l'amène dans la vue.
+  useEffect(() => { if (panneau) panneauRef.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }); }, [panneau]);
   const replaceState = (next: JournalState) => { setInternalState(next); onStateChange?.(next); };
   const change = (patch: Partial<JournalState>) => replaceState({ ...journal, ...patch, page: 1 });
   const index = useMemo(() => archiveIndex(archives), [archives]);
@@ -349,17 +352,21 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       <button type="button" className="ops-pu" aria-pressed={scope === 'archives'} onClick={() => changeScope(scope === 'archives' ? 'current' : 'archives')}>Archives</button>
     </div>
 
-    {panneau && <div className="ops-panneau" aria-label="Filtres du journal">
+    {panneau && <div className="ops-panneau" ref={panneauRef} aria-label="Filtres du journal">
       <div className="ops-chips" role="group" aria-label="Périmètre du journal">
         {([['current', 'Courantes'], ['all', 'Tout']] as const).map(([value, label]) =>
           <button type="button" className="ops-chip" key={value} aria-pressed={scope === value} onClick={() => changeScope(value)}>{label}</button>)}
       </div>
-      <div className="ops-chips" role="group" aria-label="État des opérations">
-        {shownFilters.map(({ value, urgent }) => <button type="button" className="ops-chip" key={value} aria-pressed={filter === value}
-          aria-describedby={`${searchId}-${value}`} onClick={() => change({ filter: value })} data-urgent={urgent && counts[value] > 0 || undefined}>
-          {FILTER_LABELS[value]}
-          <span className="ops-chip-n ops-m" aria-hidden="true" data-empty={counts[value] === 0 || undefined}>{counts[value]}</span>
-        </button>)}
+      {/* Deux périmètres, deux rangées : « Toutes 7 » compte le mois, « À compléter 15 » toutes les dates (la relance). Sur une même rangée, les nombres paraissaient faux. */}
+      <div role="group" aria-label="État des opérations" className="ops-etats">
+        {[shownFilters.filter(f => !(scope === 'current' && FOLLOW_UP_FILTERS.has(f.value))), shownFilters.filter(f => scope === 'current' && FOLLOW_UP_FILTERS.has(f.value))].map((rangee, i) => rangee.length > 0 && <div className="ops-chips" key={i}>
+          {i === 1 && <span className="ops-cap">toutes les dates</span>}
+          {rangee.map(({ value, urgent }) => <button type="button" className="ops-chip" key={value} aria-pressed={filter === value}
+            aria-describedby={`${searchId}-${value}`} onClick={() => change({ filter: value })} data-urgent={urgent && counts[value] > 0 || undefined}>
+            {FILTER_LABELS[value]}
+            <span className="ops-chip-n ops-m" aria-hidden="true" data-empty={counts[value] === 0 || undefined}>{counts[value]}</span>
+          </button>)}
+        </div>)}
       </div>
       {/* Le compte DÉCRIT la puce, il n'entre pas dans son nom : « À payer » reste « À payer » au clavier, et le lecteur d'écran entend en plus
           combien d'opérations attendent derrière. Ces libellés vivent hors des boutons. */}

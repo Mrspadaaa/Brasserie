@@ -50,7 +50,7 @@ export function TaxWorkspace({ report, closing, closings = [], year = report.yea
     perimees: relecturesPerimees(closing, taxBasisKey(report)), etapes: etapesPiste({ report, tax, closing, profile, assets }), dossier,
     act: { ecrire, feuille: setFeuille, onProfile, onInventories, onAsset, onOperations: onOperations ?? (() => {}), onArchives, aller, assistant: setQuestion }
   };
-  const tva = tvaThreshold ? { libelle: profile.vatRegistered ? 'assujetti · sur 12 mois à ce jour' : 'non assujetti · sur 12 mois à ce jour', pct: Math.floor(tvaThreshold.ratio * 100) } : null;
+  const tva = tvaThreshold ? { libelle: profile.vatRegistered ? 'assujetti · sur 12 mois à ce jour' : 'non assujetti · sur 12 mois à ce jour', pct: tvaThreshold.ratio * 100 } : null;
   const corps = [null, Etape1, Etape2, Etape3, Etape4, Etape5, Etape6, Etape7, Etape8][etape] as ((p: { c: Ctx }) => React.ReactElement) | null;
   return <div className="ann" onKeyDown={e => { if (e.key === 'Escape' && etape > 0 && !feuille && !vue && question === undefined) aller(0); }}>
     <h2 className="ann-sr">Annuel</h2>
