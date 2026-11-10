@@ -165,6 +165,15 @@
       "mots": "Le total et la liste / i1a / Le total découpé par bande ; chaque brassin sur sa bande ; ta feuille p2b en annexe. Très bien",
       "capture": "work/missions/2026-11-09-compta-prix/p5/i1a/i1a-page.png",
       "page": "https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE"
+    },
+    {
+      "ecran": "outil-analyse",
+      "route": "a2a",
+      "statut": "choisi",
+      "choix": "a2a (l’escalier a1a en couleur ; segment Caisse · Sources · Budget · Filtrer ; Sources = cascade de a1e ; Filtrer = tuiles de a1b)",
+      "mots": "Super ! Ajoute encore un petit peu de clarté dans le protage mais c'est du 19/20 pas besoin de mini maquettes en plus",
+      "capture": "work/missions/2026-11-09-compta-prix/p7/a2a/a2a-page.png",
+      "page": "https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY"
     }
   ]
 }

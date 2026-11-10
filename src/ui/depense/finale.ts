@@ -44,6 +44,15 @@ export function quantiteImpliciteDuTicket(item: { price?: number | null; amountT
   if (devise !== 'CHF' || item.price === null || item.price === undefined || item.amountTTC === null || item.amountTTC === undefined) return undefined;
   return Math.round(item.price * 100) === Math.round(item.amountTTC * 100) && item.price > 0 ? 1 : undefined;
 }
+/**
+ * dp (10.11, « Aucune unité rien ? ») : une ligne HORS STOCK (divers, entretien, matériel, service) lue avec un seul total (ni quantité, ni prix unitaire) est « 1 × total » : quantité 1, prix unitaire = total.
+ * Jamais pour un ingrédient, un emballage ou un nettoyant (leur quantité décide du stock : elle reste à remplir), ni une remise.
+ */
+const SANS_STOCK: ReadonlySet<string> = new Set(['other', 'maintenance', 'service', 'shipping']);
+export function totalSeulEnUn(l: PurchaseLineDraft): PurchaseLineDraft {
+  if (!SANS_STOCK.has(l.kind) || l.quantity !== undefined || l.unitPrice !== undefined || l.amount === undefined || !(l.amount > 0)) return l;
+  return { ...l, quantity: 1, unitPrice: l.amount };
+}
 export const scanKind = (kind: ScannedLineKind): PurchaseLineDraft['kind'] => (kind === 'stock' ? 'ingredient' : kind === 'unknown' ? 'other' : kind);
 /** Le prix lu, au moins deux décimales (2,30 et non 2,3), trois sous 0,10 : une mise en forme, jamais un chiffre ajouté. */
 export const prixImprime = (p: number) => { const d = (String(p).split('.')[1] ?? '').length; return p.toFixed(Math.max(Math.abs(p) < 0.1 ? 3 : 2, d)).replace('.', ','); };
@@ -138,7 +147,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
     if (match.weightUnconfirmed) propositions.proposedStock.add(line.id + PROPOSAL_WEIGHT_MARK);
     return { ...line, stockAction: 'existing' as const, stockRef: match.item.ref, evidence: [line.evidence, ...(match.deduced.length ? [`Libellé : ${line.description}`, ...match.deduced] : [])].filter(Boolean).join(' · ') };
   });
-  return { lines, propositions };
+  return { lines: lines.map(totalSeulEnUn), propositions };
 }
 
 /** Ce que la lecture propose pour l'en-tête (sans les lignes) : le patch que `applyOutcome` passe à `patchPurchaseDraft`. */

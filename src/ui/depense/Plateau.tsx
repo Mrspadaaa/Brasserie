@@ -25,7 +25,7 @@ export const Op = ({ c }: { c: string }) => <span aria-hidden className="text-sm
 
 /** D350, D353 : l'unité en segment de deux ou trois, la pièce toujours offerte. Un toucher choisit ; l'unité lue allume son bouton. */
 export function SegmentUnite({ index, choix, active, repris, onChoisir }: { index: number; choix: ChoixUnite[]; active: string; repris?: boolean; onChoisir: (valeur: string) => void }) {
-  return <span data-dp-unite-segments {...(repris ? { 'data-dp-niveau': 'repris' } : {})} role="group" aria-label={`Unité ligne ${index}`} className={`inline-flex h-9 overflow-hidden rounded-control ${repris ? 'border-2 border-dashed border-attention' : 'border border-cave-600'}`}>
+  return <span data-dp-unite-segments {...(repris ? { 'data-dp-niveau': 'repris' } : {})} role="group" aria-label={`Unité ligne ${index}`} className={`inline-flex h-9 divide-x divide-cave-600 overflow-hidden rounded-control ${repris ? 'border-2 border-dashed border-attention' : 'border border-cave-600'}`}>
     {choix.map(c => <button key={c.valeur} type="button" aria-pressed={c.valeur === active} onClick={() => onChoisir(c.valeur)} className={`min-w-8 px-1.5 font-mono text-sm ${c.valeur === active ? ACTIF : 'text-cave-200'}`}>{c.label}</button>)}
   </span>;
 }

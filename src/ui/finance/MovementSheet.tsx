@@ -10,9 +10,10 @@ import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firesto
 import { StorageService } from '../../services/storage';
 
 /** Private cash and credit notes never masquerade as sales or new purchases. */
-export function MovementSheet({original,onClose,onSaved}:{original?:Transaction;onClose:()=>void;onSaved:()=>void}) {
-  const [id]=useState(()=>idFor('MOUV')), [amount,setAmount]=useState<number>(), [date,setDate]=useState(todayISO());
-  const [kind,setKind]=useState<'contribution'|'withdrawal'>('contribution'), [note,setNote]=useState('');
+/** `prefill` (dp, 10.11) : le renvoi d'une ligne « pas un achat de brasserie ? » ouvre la feuille sur un prélèvement, montant et motif déjà posés. */
+export function MovementSheet({original,onClose,onSaved,prefill}:{original?:Transaction;onClose:()=>void;onSaved:()=>void;prefill?:{kind:'contribution'|'withdrawal';amountCents:number;note:string;date?:string}}) {
+  const [id]=useState(()=>idFor('MOUV')), [amount,setAmount]=useState<number|undefined>(prefill?.amountCents), [date,setDate]=useState(prefill?.date&&prefill.date<=todayISO()?prefill.date:todayISO());
+  const [kind,setKind]=useState<'contribution'|'withdrawal'>(prefill?.kind??'contribution'), [note,setNote]=useState(prefill?.note??'');
   const [application,setApplication]=useState<'cash'|'offset'|''>('');
   const [paid,setPaid]=useState(!original), [method,setMethod]=useState<FinancialPayment['method']>('bank'), [error,setError]=useState(''),[busy,setBusy]=useState(false),[pending,setPending]=useState(false);
   const lock=useRef(false),submitted=useRef(false),mounted=useRef(true),retry=useRef(false);

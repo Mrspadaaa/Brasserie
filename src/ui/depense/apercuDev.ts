@@ -292,6 +292,12 @@ export function apercuDepense(etat: string): ApercuDepense {
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  if (etat === 'medicament') {
+    // SIMULÉ (dp, 10.11) : son ticket de pharmacie BENU Matran, une ligne MEFENACIDE 13,40, dépense « divers » (tests/integration/depenseMedicament.test.tsx).
+    Object.assign(result as unknown as Record<string, unknown>, { vendor: 'BENU Matran', date: '10.11.2026', invoiceNumber: '', description: 'Pharmacie', category: 'divers', subcategory: '', amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 13.4, issues: [], points: [], fieldWarnings: [],
+      paymentEvidence: 'paid', paymentMethod: 'twint', amountPaid: 13.4, printedLineCount: 1, review: { status: 'checked', findings: [], readers: 3 },
+      items: [{ id: 'line-1', name: 'MEFENACIDE cpr pell 500 mg sécables 30 pce', kind: 'other', quantity: null, unit: '', price: null, amountTTC: 13.4, reference: '', variant: '', stockCategory: '', evidence: 'MEFENACIDE cpr pell 500 mg sécables 30 pce 13.40' }] });
+  }
   if (etat === '2' || etat === 'date') {
     // « lue, sans point » : la facture sans ses points (SIMULÉ).
     result.points = []; result.fieldWarnings = []; result.issues = []; result.review = { status: 'checked', findings: [], readers: 2 };
