@@ -72,7 +72,9 @@ describe('Prévisions (p5b) : le bandeau pointillé suit la cause et renvoie au 
     return fn;
   };
   // Le bandeau du solde ; « Rien de prévu » et « Tendance à calculer » (CP-7) ont la même forme mais une autre cause.
-  const bandeau = () => ([...document.querySelectorAll('.prv-depart')] as HTMLElement[]).find(b => !/Rien de prévu|Tendance à calculer/.test(b.textContent ?? '')) ?? null;
+  // Trois lignes ou plus : une seule ligne-tâche « N choses à compléter… » (fx2) ; on la déplie d'abord, comme le brasseur.
+  const deplier = () => { const t = document.querySelector('.prv-tache-tete') as HTMLElement | null; if (t && t.getAttribute('aria-expanded') === 'false') fireEvent.click(t); };
+  const bandeau = () => (deplier(), [...document.querySelectorAll('.prv-depart:not(.prv-tache-tete)')] as HTMLElement[]).find(b => !/Rien de prévu|Tendance à calculer/.test(b.textContent ?? '')) ?? null;
 
   it('absent : « Solde de départ à renseigner » ouvre la feuille du solde', () => {
     const fn = monter('absent');
@@ -211,9 +213,17 @@ describe('Prévisions plate : dire pourquoi et renvoyer', () => {
   });
   it('solde inconnu ET rien de prévu : le bandeau du solde reste le premier', () => {
     monter(sansSolde);
-    const bandeaux = [...document.querySelectorAll('.prv-depart')].map(b => b.textContent ?? '');
+    const tete = document.querySelector('.prv-tache-tete') as HTMLElement;
+    expect(tete.textContent).toBe('3 choses à compléter pour une prévision juste');
+    expect(document.querySelectorAll('.prv-depart')).toHaveLength(1); // replié : une seule ligne
+    expect(tete.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(tete);
+    expect(tete.getAttribute('aria-expanded')).toBe('true');
+    const bandeaux = [...document.querySelectorAll('.prv-depart:not(.prv-tache-tete)')].map(b => b.textContent ?? '');
     expect(bandeaux[0]).toContain('Solde de départ à renseigner');
     expect(bandeaux).toHaveLength(3);
+    fireEvent.click(tete); // se replie
+    expect(document.querySelectorAll('.prv-depart')).toHaveLength(1);
   });
   it('feuille du solde ouverte sur « Paramètres des prévisions et des brassins » quand on y est renvoyé', () => {
     render(<ProfileSheet profile={confirme} parametres onClose={() => {}} />);

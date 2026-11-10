@@ -116,6 +116,9 @@ button.ann-pa { cursor:pointer; font-family:inherit; min-height:24px; border:1.5
 .ann-inv .n small.l { display:flex; gap:4px; white-space:nowrap; } .ann-inv .n small.l .e { min-width:0; overflow:hidden; text-overflow:ellipsis; } .ann-inv .n small.l .s { flex:none; }
 .ann-inv button.c { appearance:none; margin:0; padding:0; min-height:48px; width:100%; cursor:pointer; background-color:transparent; }
 .ann-inv button.c.p { background-color:color-mix(in srgb,var(--ann-gain) 12%,var(--ann-page)); }
+/* Hachures jaunes nettes de g6 : `.ann button { background:none }` (plus spécifique) effaçait celles de `.ann-hachA` sur les boutons « ? ». */
+.ann button.ann-hachA { background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-att) 42%,var(--ann-page)) 0 5px,var(--ann-page) 5px 10px); }
+:root[data-theme='cave'] .ann button.ann-hachA { background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ann-att) 20%,var(--ann-page)) 0 5px,var(--ann-page) 5px 10px); }
 .ann-inv button.c:disabled { cursor:default; opacity:.7; }
 .ann-inv button.c:focus-visible { outline:2px solid var(--ann-txt); outline-offset:2px; }
 .ann-var { margin-top:10px; border-radius:12px; background:var(--ann-panel); padding:8px; display:flex; align-items:center; gap:10px; } .ann-var .ann-t { flex:1; font-size:13px; }

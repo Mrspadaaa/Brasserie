@@ -13,7 +13,7 @@ import type { Batch, PricingItem } from '../../src/types';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
 vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: () => null }));
 vi.mock('../../src/ui/finance/BrewBudgetDialog', () => ({ BrewBudgetDialog: ({ batch }: { batch: Batch }) => <div role="dialog" aria-label="Coût du brassin">{batch.name}</div> }));
-vi.mock('../../src/ui/BatchDetailSheet', () => ({ BatchDetailSheet: ({ batch, initialSection }: { batch: Batch; initialSection?: string }) => <div role="dialog" aria-label="Fiche du brassin" data-section={initialSection} data-batch={batch.id} /> }));
+vi.mock('../../src/ui/BatchDetailSheet', () => ({ BatchDetailSheet: ({ batch, initialSection, focus }: { batch: Batch; initialSection?: string; focus?: string }) => <div role="dialog" aria-label="Fiche du brassin" data-section={initialSection} data-focus={focus} data-batch={batch.id} /> }));
 vi.mock('../../src/ui/finance/FinanceForms', () => ({ ProfileSheet: () => <div role="dialog" aria-label="Solde et paramètres financiers" /> }));
 
 const annee = new Date().getFullYear();
@@ -66,6 +66,7 @@ describe('Prix : chaque donnée manquante a son renvoi et son explication (CP-3)
     fireEvent.click(l);
     const fiche = await screen.findByRole('dialog', { name: 'Fiche du brassin' });
     expect(fiche).toHaveAttribute('data-section', 'measurements'); expect(fiche).toHaveAttribute('data-batch', 'B1');
+    expect(fiche).toHaveAttribute('data-focus', 'volume'); // fx2 : le focus sur « Saisir le volume conditionné »
   });
 
   it('ingrédients sans prix : les noms, l\'effet, et le coût du brassin s\'ouvre', async () => {
@@ -83,6 +84,7 @@ describe('Prix : chaque donnée manquante a son renvoi et son explication (CP-3)
     expect(norm(l)).toMatch(/impôt bière/);
     fireEvent.click(l);
     expect(await screen.findByRole('dialog', { name: 'Fiche du brassin' })).toHaveAttribute('data-section', 'measurements');
+    expect(screen.getByRole('dialog', { name: 'Fiche du brassin' })).toHaveAttribute('data-focus', 'densite');
   });
 
   it('prix d\'un format absent : « Prix du 75 cl » ouvre « Fixer le prix » sur 75 cl ; le fût de même', async () => {

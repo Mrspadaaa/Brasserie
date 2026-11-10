@@ -58,7 +58,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
   const [feuille, setFeuille] = useState<PricingItem | null>(null);
   const [coutOuvert, setCoutOuvert] = useState(false);
   /** Les renvois du bloc « À compléter » : la fiche du brassin (Mesures) et le profil financier (volume annuel). */
-  const [ficheOuverte, setFicheOuverte] = useState(false);
+  const [ficheOuverte, setFicheOuverte] = useState(false), [ficheFocus, setFicheFocus] = useState<'densite' | 'volume'>('densite');
   const [profilOuvert, setProfilOuvert] = useState(false);
   const [question, setQuestion] = useState<string | undefined>();
   useEffect(() => { StorageService.setUiState('prix_lecture', an ? 'an' : 'bouteille'); }, [an]);
@@ -118,7 +118,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
   });
   const manques = manquesPrix({ chiffrage, formats: formatsManque, volumeAnnuelManque: litresAn === undefined });
   const ouvrirManque = (m: ManquePrix) => {
-    if (m.cible === 'fiche') setFicheOuverte(true);
+    if (m.cible === 'fiche') { setFicheFocus(m.cle === 'litres' ? 'volume' : 'densite'); setFicheOuverte(true); }
     else if (m.cible === 'cout') setCoutOuvert(true);
     else if (m.cible === 'profil') setProfilOuvert(true);
     else {
@@ -208,9 +208,9 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       <TarifSheet item={feuille} config={config} existingProducts={tarifs.map(t => t.product)} formats={choixFormats}
         apercu={s => { const f = choixFormats.find(c => c.id === s.formatId) ?? choixFormats.find(c => c.id === formatId)!; return lire(f, s.emballage ?? null, s.prix ?? null).lecture as LecturePrix; }}
         onClose={() => setFeuille(null)} onSave={enregistrer} onDelete={supprimer} />
-      {ficheOuverte && batch && <React.Suspense fallback={null}><BatchDetailSheet batch={batch} initialSection="measurements" onClose={() => setFicheOuverte(false)} /></React.Suspense>}
+      {ficheOuverte && batch && <React.Suspense fallback={null}><BatchDetailSheet batch={batch} initialSection="measurements" focus={ficheFocus} onClose={() => setFicheOuverte(false)} /></React.Suspense>}
       {profilOuvert && d.profile && <React.Suspense fallback={null}><ProfileSheet profile={d.profile} parametres onClose={() => setProfilOuvert(false)} /></React.Suspense>}
-      {coutOuvert && batch && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setCoutOuvert(false)} /></React.Suspense>}
+      {coutOuvert && batch && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setCoutOuvert(false)} onNoteDensity={() => { setCoutOuvert(false); setFicheFocus('densite'); setFicheOuverte(true); }} onMesures={() => { setCoutOuvert(false); setFicheFocus('volume'); setFicheOuverte(true); }} /></React.Suspense>}
       {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'app', id: 'clients-tarifs' }} label="Mes prix" phase="Prix de vente" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
     </div>
   );

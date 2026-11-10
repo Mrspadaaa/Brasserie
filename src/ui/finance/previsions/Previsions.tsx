@@ -28,6 +28,8 @@ const RUBRIQUE_ARGENT = 'argent' as unknown as BatchDetailSection;
 const HORIZONS = [[30, '30j', '30 jours'], [90, '90j', '90 jours'], [365, '12 mois', '12 mois']] as const;
 const CLE_PRIX = 'previsions_prix_bouteille';
 type Horizon = 30 | 90 | 365;
+const SEUIL_TACHES = 3;
+const COLONNE: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6 };
 type Fiche = { kind: 'projet'; planId: string } | { kind: 'brassin'; batchId: string } | null;
 export interface CiblePrevoir { planId: string; batchId?: string; at: number }
 
@@ -47,7 +49,7 @@ export function Previsions(p: PrevisionsProps) {
   const [teste, setTeste] = useState<string | null>(null), [fiche, setFiche] = useState<Fiche>(null);
   const [annexe, setAnnexe] = useState(false), [limites, setLimites] = useState(false), [projets, setProjets] = useState(!!p.projetsOuverts);
   const [prix, setPrix] = useState(() => StorageService.getUiState<string>(CLE_PRIX, ''));
-  const [message, setMessage] = useState(''), [restes, setRestes] = useState<string[]>([]);
+  const [message, setMessage] = useState(''), [restes, setRestes] = useState<string[]>([]), [tachesOuvertes, setTachesOuvertes] = useState(false);
   const [lot, setLot] = useState<{ batchId: string; rubrique: BatchDetailSection } | null>(null);
   const stockKey = p.stockItems.map(s => `${s.ref}:${s.currentStock}`).join('|');
   const stockRef = useRef(p.stockItems); stockRef.current = p.stockItems;
@@ -170,13 +172,23 @@ export function Previsions(p: PrevisionsProps) {
     return onClick ? <button type="button" aria-pressed={!!actif} className={actif ? 'prv-on' : ''} onClick={onClick}>{contenu}</button> : <div className="prv-seule">{contenu}</div>;
   };
 
+  // Les lignes en pointillé (solde, tendance, rien de prévu, projets) : à trois ou plus, une seule ligne-tâche qui se déplie sur place et les liste avec leurs renvois.
+  type Tache = { cle: string; titre: React.ReactNode; aide?: string; onClick: () => void };
+  const taches: Tache[] = [
+    ...(!connu ? [{ cle: 'depart', titre: renvoi.titre, aide: renvoi.aide, onClick: renvoi.geste === 'profil' ? p.onProfile : renvoi.geste === 'paiements' ? p.onPayments : (p.onRegistre ?? p.onPayments) }] : []),
+    ...(plate && tendanceACalculer ? [{ cle: 'tendance', titre: 'Tendance à calculer', aide: 'indique depuis quand ton historique est complet (3 mois au moins)', onClick: p.onHistorique ?? p.onProfile }] : []),
+    ...(plate ? [{ cle: 'rien', titre: 'Rien de prévu', aide: 'un brassin ou un paiement à venir', onClick: p.onAddPlan }] : []),
+    ...(pasComptes.length > 0 ? [{ cle: 'projets', titre: `${pasComptes.length} ${pasComptes.length > 1 ? 'achats' : 'achat'} de matériel pas ${pasComptes.length > 1 ? 'comptés' : 'compté'}`, aide: detailPasComptes, onClick: () => setProjets(true) }] : []),
+  ];
+  const ligneTache = (t: Tache) => <button type="button" key={t.cle} className="prv-depart" onClick={t.onClick}><span>{t.titre}{t.aide && <small>{t.aide}</small>}</span><ChevronRight size={14} aria-hidden="true" /></button>;
+
   return <section className="prv" aria-label={`Prévision sur ${horizon === 365 ? '12 mois' : `${horizon} jours`}`}>
     <div className="prv-tete"><h3>{titre}</h3>
       <span className="prv-seg" role="group" aria-label="Horizon de prévision">{HORIZONS.map(([v, court, long]) => <button type="button" key={v} aria-label={long} aria-pressed={horizon === v} onClick={() => p.onHorizon(v)}>{court}</button>)}</span></div>
-    {!connu && <button type="button" className="prv-depart" onClick={renvoi.geste === 'profil' ? p.onProfile : renvoi.geste === 'paiements' ? p.onPayments : (p.onRegistre ?? p.onPayments)}><span>{renvoi.titre}{renvoi.aide && <small>{renvoi.aide}</small>}</span><ChevronRight size={14} aria-hidden="true" /></button>}
-    {plate && tendanceACalculer && <button type="button" className="prv-depart" onClick={p.onHistorique ?? p.onProfile}><span>Tendance à calculer<small>indique depuis quand ton historique est complet (3 mois au moins)</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
-    {plate && <button type="button" className="prv-depart" onClick={p.onAddPlan}><span>Rien de prévu<small>un brassin ou un paiement à venir</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
-    {pasComptes.length > 0 && <button type="button" className="prv-depart" onClick={() => setProjets(true)}><span>{pasComptes.length} {pasComptes.length > 1 ? 'achats' : 'achat'} de matériel pas {pasComptes.length > 1 ? 'comptés' : 'compté'}<small>{detailPasComptes}</small></span><ChevronRight size={14} aria-hidden="true" /></button>}
+    {taches.length >= SEUIL_TACHES
+      ? <div className="prv-taches" style={COLONNE}><button type="button" className="prv-depart prv-tache-tete" aria-expanded={tachesOuvertes} aria-controls="prv-taches-liste" onClick={() => setTachesOuvertes(o => !o)}><span>{taches.length} choses à compléter pour une prévision juste</span><ChevronRight size={14} aria-hidden="true" style={tachesOuvertes ? { transform: 'rotate(90deg)' } : undefined} /></button>
+        {tachesOuvertes && <div id="prv-taches-liste" className="prv-taches-liste" style={COLONNE}>{taches.map(ligneTache)}</div>}</div>
+      : taches.map(ligneTache)}
     {eSans && planTeste ? <div className="prv-sw" role="group" aria-label="Avec ou sans le projet de matériel">
       {carte(eAvec, `Avec ${planTeste.title.toLowerCase()}`, !modeSans, () => p.onAvecProjets(true))}
       {carte(eSans, `Sans ${planTeste.title.toLowerCase()}`, modeSans, () => p.onAvecProjets(false))}</div>

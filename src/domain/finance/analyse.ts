@@ -177,6 +177,8 @@ export interface Cascade {
   lignes: LigneSource[]; materielCents: number; materielAnCents: number | null;
   /** Ce qui rattache la caisse de fin à celle du début quand les pièces et les paiements ne coïncident pas (à payer, apports, retraits) ; `null` si caisse inconnue. */
   autresMouvementsCents: number | null;
+  /** Ce même écart, dit en deux choses (fx1) : les apports privés (paiements d'apport − retraits de la période, exacts) et le reste (`autresMouvementsCents` − apports) : l'argent des pièces du mois pas encore sorti. `null` si caisse inconnue. */
+  apportsCents: number | null; resteCents: number | null;
   /** Sans caisse connue : ce qui a été gagné sur la période (entré − dépensé, matériel à part). */
   gagneCents: number; nombrePieces: number; incertains: string[]; aPrevu: boolean; plusGrosDepassement: LigneSource | null;
 }
@@ -199,6 +201,7 @@ export function cascade(e: EntreeAnalyse, plage: PlageMois): Cascade {
   const connu = !!o && o.date <= du;
   const fin = [e.aujourdhui, finDuMois(plage.au)].reduce((a, b) => a < b ? a : b);
   const debutCents = connu ? soldeAvant(e, du) : null, finCents = connu ? soldeFinJour(e, fin) : null;
+  const apportsCents = debutCents !== null && finCents !== null ? paiementsDe(e).filter(x => x.source === 'prive' && x.date >= du && x.date <= fin).reduce((n, x) => n + x.cents, 0) : null;
   const gros = [...lignes].sort((a, b) => b.depasseCents - a.depasseCents)[0];
   const sorties = lignes.reduce((n, l) => n + l.reelCents, 0);
   return {
@@ -206,6 +209,7 @@ export function cascade(e: EntreeAnalyse, plage: PlageMois): Cascade {
     ventesCents: p.entreCents, ventesPrevuCents: prevu.has('ventes') ? prevu.get('ventes')! : null, ventesAnCents: sortieAn ? an.entreCents : null,
     lignes, materielCents: p.materielCents, materielAnCents: sortieAn ? an.materielCents : null,
     autresMouvementsCents: debutCents !== null && finCents !== null ? finCents - (debutCents + p.entreCents - sorties - p.materielCents) : null,
+    apportsCents, resteCents: debutCents !== null && finCents !== null ? finCents - (debutCents + p.entreCents - sorties - p.materielCents) - apportsCents! : null,
     gagneCents: p.entreCents - p.depenseCents, nombrePieces: p.lignes, incertains: p.aVerifier.paiementsAConfirmer,
     aPrevu: flux.length > 0, plusGrosDepassement: gros && gros.depasseCents > 0 ? gros : null,
   };

@@ -99,13 +99,18 @@ export function Etape3({ c }: { c: Ctx }) {
   const estimes = (['malt', 'houblons', 'emballages'] as const).flatMap(n => { const e = estimeParNature(n); return e ? [{ nature: n, ...e }] : []; });
   const propositionsDe = (nature?: string) => propositionsInventaire(c.stockItems, c.transactions, c.year, c.today, nature as NatureCase | undefined);
   const lotCave = c.batches.find(b => b.status === 'conditionne' && (b.volumePackagedL ?? 0) > 0);
-  /** UNE petite ligne par nature (g6) : les deux plus gros, puis « +N » ; « aujourd’hui » une seule fois, jamais coupé. */
+  /** UNE petite ligne par nature (g6), jamais coupée au milieu d’un nom : le plus gros article avec sa quantité, puis « +N » ; « aujourd’hui » seulement s’il tient
+   *  (un seul article, court). Emballages : les deux premiers noms ; sans article en stock, ce que la nature compte (« bouteilles, capsules »). */
   const petite = (nature: string) => {
     if (nature === 'biere') return lotCave ? { texte: `${lotCave.name}, ${nombreFr(lotCave.volumePackagedL ?? 0, 0)} L nets`, fin: '' } : null;
     const items = enStock(nature);
+    if (nature === 'emballages') {
+      if (!items.length) return { texte: 'bouteilles, capsules', fin: '' };
+      return { texte: items.slice(0, 2).map(s => s.name).join(', '), fin: items.length > 2 ? `+${items.length - 2}` : '' };
+    }
     if (!items.length) return null;
-    const reste = items.length - 2, deux = items.slice(0, 2);
-    return { texte: (nature === 'emballages' ? deux.map(s => s.name) : deux.map(s => `${s.name} ${quantite(s)}`)).join(', '), fin: [reste > 0 ? `+${reste}` : '', nature === 'emballages' ? '' : 'aujourd’hui'].filter(Boolean).join(' ') };
+    const texte = `${items[0].name} ${quantite(items[0])}`, reste = items.length - 1;
+    return { texte, fin: reste > 0 ? `+${reste}` : texte.length <= 16 ? 'aujourd’hui' : '' };
   };
   const ouvrir = (nature: string, cote: 'openingInventory' | 'closingInventory') => {
     const visee = nature === 'autres' ? undefined : nature as NatureCase;

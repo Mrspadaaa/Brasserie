@@ -50,7 +50,7 @@ const MOIS_ABR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'ao
 const BrewerChat = React.lazy(() => import('../BrewerChat').then(m => ({ default: m.BrewerChat })));
 
 /** `proposer` : un compteur que la fiche monte quand le brasseur touche « ✦ Proposer » (e3a : l'action primaire de l'onglet) ; l'IA ne s'ouvre qu'à ce toucher. */
-export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch: Batch; config: AppConfig; onNoteDensity?: () => void; proposer?: number }) {
+export function ChaineArgent({ batch, config, onNoteDensity, onNoteLitres, proposer }: { batch: Batch; config: AppConfig; onNoteDensity?: () => void; /** Les litres conditionnés : la fiche sur Mesures, focus sur « Saisir le volume conditionné » ; absent, comme la densité. */ onNoteLitres?: () => void; proposer?: number }) {
   const d = useStorageValue(lireDonneesPrix);
   const [question, setQuestion] = useState<string | undefined>();
   const demande = React.useRef<() => string>(() => '');
@@ -145,9 +145,9 @@ export function ChaineArgent({ batch, config, onNoteDensity, proposer }: { batch
         <p className="arg-taches-t">Pour compléter cette chaîne :</p>
         <ul>{manques.map(m => <li key={m.cle}><button type="button" className="arg-tache" data-manque={m.cle} onClick={() => ouvrirManque(m)}><span><b>{m.titre}</b><small>{m.effet}</small></span><i aria-hidden="true">›</i></button></li>)}</ul>
       </section>}
-      {ouvert === 'cout' && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity} onMesures={onNoteDensity} /></React.Suspense>}
+      {ouvert === 'cout' && <React.Suspense fallback={null}><BrewBudgetDialog batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity} onMesures={onNoteLitres ?? onNoteDensity} /></React.Suspense>}
       {ouvert === 'profil' && d.profile && <React.Suspense fallback={null}><ProfileSheet profile={d.profile} parametres onClose={() => setOuvert(null)} /></React.Suspense>}
-      {ouvert === 'impot' && <ImpotBiereSheet batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity ? () => { setOuvert(null); onNoteDensity(); } : undefined} />}
+      {ouvert === 'impot' && <ImpotBiereSheet batch={batch} onClose={() => setOuvert(null)} onNoteDensity={onNoteDensity ? () => { setOuvert(null); onNoteDensity(); } : undefined} onNoteLitres={onNoteLitres ? () => { setOuvert(null); onNoteLitres(); } : undefined} />}
       {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'batch', id: batch.id }} label={batch.name} phase="Prix de vente" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
       {ouvert === 'prix' && <PrixFeuille config={config} batch={batch} formatInitial={formatId} onClose={() => setOuvert(null)} />}
     </div>

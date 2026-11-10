@@ -62,7 +62,7 @@ export function ImpotAnnee({ batches, config }: { batches: Batch[]; config: AppC
   const [annee, setAnnee] = useState(anneeCourante);
   const [ouvert, setOuvert] = useState<string | null>(null);
   /** « Noter la densité » de la feuille (annexe de i1a) : la fiche du brassin s'ouvre sur Mesures, sans quitter Clients. */
-  const [mesures, setMesures] = useState<string | null>(null);
+  const [mesures, setMesures] = useState<string | null>(null), [focusMesures, setFocusMesures] = useState<'densite' | 'volume'>('densite');
   const [copie, setCopie] = useState<'idle' | 'ok' | 'failed'>('idle');
   const [reglage, setReglage] = useState<'idle' | 'introuvable'>('idle');
   const minuteur = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -172,8 +172,8 @@ export function ImpotAnnee({ batches, config }: { batches: Batch[]; config: AppC
           })}
         </div>
       </>}
-      {batchOuvert && <ImpotBiereSheet batch={batchOuvert} onClose={() => setOuvert(null)} onNoteDensity={() => { setOuvert(null); setMesures(batchOuvert.id); }} />}
-      {batchMesures && <React.Suspense fallback={null}><BatchDetailSheet batch={batchMesures} initialSection="measurements" onClose={() => setMesures(null)} /></React.Suspense>}
+      {batchOuvert && <ImpotBiereSheet batch={batchOuvert} onClose={() => setOuvert(null)} onNoteDensity={() => { setOuvert(null); setFocusMesures('densite'); setMesures(batchOuvert.id); }} onNoteLitres={() => { setOuvert(null); setFocusMesures('volume'); setMesures(batchOuvert.id); }} />}
+      {batchMesures && <React.Suspense fallback={null}><BatchDetailSheet batch={batchMesures} initialSection="measurements" focus={focusMesures} onClose={() => setMesures(null)} /></React.Suspense>}
 
       <div className="iaa-qa">
         <div data-testid="iaa-quand">

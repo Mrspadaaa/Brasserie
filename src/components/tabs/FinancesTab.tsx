@@ -62,6 +62,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [view,setView]=useState<FinanceView>(initialView);
   const projetsRef=useRef(StorageService.getUiState<string>('finances_workspace','overview')==='projects'),[cible,setCible]=useState<CiblePrevoir|null>(null);
   const [month,setMonth]=useState(todayISO().slice(0,7)),[allDates,setAllDates]=useState(false);
+  const [plage,setPlage]=useState<{du:string;au:string}|null>(null);
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
   const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
@@ -110,7 +111,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {notice&&<div className="finance-notice" role="status"><span>{notice}</span>{' '}<button className="finance-link" style={{marginInlineStart:'0.5rem'}} onClick={()=>setNotice('')}>Fermer</button></div>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
       {view==='overview'&&<FinanceOverview transactions={transactions} payments={data.payments} plans={data.plans} assets={data.assets} batches={batches} recipes={recipes} ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} openingCash={data.profile.openingCash}
-        month={month} allDates={allDates} onMonth={value=>{setMonth(value);setAllDates(false);}} onAllDates={()=>setAllDates(true)} assistant={financeAssistant}
+        month={month} allDates={allDates} onMonth={value=>{setMonth(value);setAllDates(false);}} onAllDates={()=>setAllDates(true)} plage={plage} onPlage={setPlage} assistant={financeAssistant}
         onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}
         onOpenBudget={setBudget} onBudgetPicker={()=>setBudgetPicker(true)} onUpgrade={setUpgrade} onBrowseProjects={showProjects} onNotice={setNotice}
         profile={data.profile} stockItems={stockItems} onPrevisions={()=>selectView('forecast')}/>}

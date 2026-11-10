@@ -6,7 +6,13 @@
   min-width:0; color:var(--ops-t1); font-size:14px; line-height:18px; display:flex; flex-direction:column; }
 .ops * { box-sizing:border-box; }
 /* Clair : la bande est le gris le plus pâle du thème et la pastille de mois reste blanche, comme la bande crème et la pastille blanche de v6b (le crème exact n'est pas un jeton). */
-:root:not([data-theme='cave']) .ops { --ops-fond: rgb(var(--cave-900)); }
+:root:not([data-theme='cave']) .ops { --ops-fond: rgb(var(--cave-900));
+  /* fx1 (10.11, « palette de v6b ») : en clair, les piles et les liserés prennent le vif de la maquette (Ventes vert, Fixes violet, Brassage or, Nettoyage cyan, Matériel bleu, Apports rose)
+     et les cercles d'en-tête sont pleins (fond sombre, trait clair). Ce sont les valeurs de la cave, reprises seulement sous `.ops` : le reste de l'app garde ses teintes claires.
+     Contraste : trait sur fond de chaque cercle ≥ 4,5 (tests/integration/fx1.test.tsx). */
+  --c-56d27b: 86 210 123; --c-9856d2: 152 86 210; --c-d2b356: 210 179 86; --c-56c1d2: 86 193 210; --c-567bd2: 86 123 210; --c-d256a4: 210 86 164;
+  --c-255633: 37 86 51; --c-3f2556: 63 37 86; --c-564925: 86 73 37; --c-254f56: 37 79 86; --c-253356: 37 51 86; --c-562544: 86 37 68;
+  --ct-b9f4ca: 185 244 202; --ct-d8b9f4: 216 185 244; --ct-f4e5b9: 244 229 185; --ct-b9ecf4: 185 236 244; --ct-b9caf4: 185 202 244; --ct-f4b9de: 244 185 222; }
 :where(.ops) button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:left; }
 .ops .ops-m { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; font-weight:600; }
 
@@ -53,6 +59,8 @@
 .ops-st { display:flex; flex-direction:column; overflow:hidden; border-radius:10px 6px 2px 2px; min-height:3px; }
 .ops-st i { display:block; min-height:1px; }
 .ops-hach { background:repeating-linear-gradient(135deg, var(--ops-hach-a) 0 1.5px, var(--ops-hach-b) 1.5px 8px); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }
+/* v6b en clair : bandes jaunes franches (#E3B55D / #FCEFD2) cerclées #C99A3A ; la cave garde la hachure fine de ses jetons. */
+:root:not([data-theme='cave']) .ops .ops-hach { background:repeating-linear-gradient(135deg, rgb(227 181 93) 0 4px, rgb(252 239 210) 4px 8px); box-shadow:inset 0 0 0 1px rgb(201 154 58); }
 .ops-nom-pile { display:block; border-top:2px solid var(--ops-t1); padding-top:3px; font-size:12px; line-height:14px; color:var(--ops-t2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ops-sep { flex:0 0 1px; align-self:stretch; margin:0 4px; border-left:1px dashed var(--ops-t3); }
 .ops-legende { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin:6px 0 0; font-size:12px; color:var(--ops-t2); }

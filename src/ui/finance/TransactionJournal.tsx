@@ -13,6 +13,7 @@ import { titrePlage } from './synthese/libelles';
 import { compte } from '../../services/plural';
 import { Bande, type Actif } from './operations/Bande';
 import { enRetard, retardTotal } from './operations/calculs';
+import { questionPoste } from './operations/assistant';
 import { GROUPES, ORDRE, groupeDe, type GroupeId } from './operations/groupes';
 import './operations.css';
 
@@ -277,6 +278,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   }, [followingUp, scope, classified, debut, fin]);
   const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
+  // fx1 : la puce IA pose la question du plus gros poste des piles (v6b) ; sans poste, son libellé actuel.
+  const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `le mois ${month}` : nomPiles) : null, [piles, modeMois, month, nomPiles]);
+  const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
     ...(filter !== 'all' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
     ...(category !== 'all' ? [{ cle: 'categorie', libelle: CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category, retirer: () => change({ category: 'all' }) }] : []),
@@ -383,7 +387,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     </div>}
 
     <div className="ops-pied">
-      {assistant}
+      {puce}
       <button type="button" className="ops-pu journal-date-toggle" aria-pressed={parJour} title="Ranger les lignes de la période par jour, au lieu de par catégorie"
         onClick={() => change({ parJour: !parJour })}>Par date</button>
       <button type="button" className="ops-pu" aria-expanded={panneau} onClick={() => setPanneau(open => !open)}>

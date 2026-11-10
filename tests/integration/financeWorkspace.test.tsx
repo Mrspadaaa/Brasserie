@@ -86,7 +86,9 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
     expect(screen.queryByRole('button',{name:'Renseigner le solde de départ'})).not.toBeInTheDocument();
     // CP-4 : le bandeau de Prévisions (derrière la feuille) dit aussi « Confirmer les paiements (1) » ; la feuille Limites garde sa rangée (acquis).
-    expect(screen.getAllByRole('button',{name:/Confirmer les paiements/}).length).toBeGreaterThanOrEqual(2);
+    // fx2 (10.11) : à partir de trois bandeaux, Prévisions les regroupe en « N choses à compléter › » (dépliable) ; la feuille Limites garde sa rangée.
+    expect(screen.getAllByRole('button',{name:/Confirmer les paiements/}).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByRole('button',{name:/choses? à compléter|Confirmer les paiements/}).length).toBeGreaterThanOrEqual(2);
   });
   it('demande une date réelle au paiement historique et propose la date du jour pour une facture suivie',()=>{
     const unknown=tx({finance:undefined});

@@ -31,6 +31,9 @@ interface Props {
   allDates: boolean;
   onMonth: (month: string) => void;
   onAllDates: () => void;
+  /** La plage du … au … (CP-9), gardée par FinancesTab pour survivre au changement d'onglet (fx1) ; sans elle, l'écran la garde en local. */
+  plage?: { du: string; au: string } | null;
+  onPlage?: (plage: { du: string; au: string } | null) => void;
   /** Ligne « Compagnon brasseur » (le composant de l'assistant, question préparée). */
   assistant?: React.ReactNode;
   onProfile: () => void;
@@ -55,9 +58,10 @@ interface Props {
 export function FinanceOverview(props: Props) {
   const { transactions, payments, plans, assets, batches, recipes, ledger, month, allDates } = props;
   const aujourdhui = todayISO();
-  // CP-9 : la plage choisie avec « … » vit ici, en état local. Elle remplace le mois ou « tout » tant qu'on ne touche pas l'un d'eux.
-  // À brancher dans FinancesTab (voie sd) pour la garder en quittant l'onglet : `plage` à côté de `month` et `allDates`.
-  const [plage, setPlage] = useState<{ du: string; au: string } | null>(null);
+  // CP-9 : la plage choisie avec « … » remplace le mois ou « tout » tant qu'on ne touche pas l'un d'eux. FinancesTab la garde (fx1) : elle survit à un changement d'onglet.
+  const [plageLocale, setPlageLocale] = useState<{ du: string; au: string } | null>(null);
+  const plage = props.plage !== undefined ? props.plage : plageLocale;
+  const setPlage = props.onPlage ?? setPlageLocale;
   const periode = useMemo(() => periodeSynthese({ transactions, payments, mois: plage ? plage.du : allDates ? null : month, jusqua: plage?.au, aujourdhui, assets }), [transactions, payments, plage, allDates, month, aujourdhui, assets]);
   const [pourquoi, setPourquoi] = useState(false);
   const [analyse, setAnalyse] = useState(false);

@@ -52,12 +52,15 @@ interface BatchDetailSheetProps {
   batch: Batch | null;
   onClose: () => void;
   initialSection?: BatchDetailSection;
+  /** Où poser le focus à l'ouverture (sur Mesures) : la densité initiale, ou « Saisir le volume conditionné » (un renvoi « litres »). */
+  focus?: 'densite' | 'volume';
 }
 
 export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   batch,
   onClose,
-  initialSection = 'measurements'
+  initialSection = 'measurements',
+  focus
 }) => {
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -67,18 +70,19 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   /** e3a : « ✦ Proposer » est l'action primaire de l'onglet Argent ; la chaîne ouvre l'IA quand ce compteur monte. */
   const [proposerArgent, setProposerArgent] = useState(0);
   const [noloNotice,setNoloNotice]=useState('');
-  /** `focusOg` : « Noter la densité » (feuille Impôt bière ou coût, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale. */
-  const [focusOg, setFocusOg] = useState(false);
+  /** `cibleFocus` : « Noter la densité » ou « Noter les litres » (feuille Impôt bière, coût, Prix, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale ou sur « Saisir le volume conditionné ». La prop `focus` fait de même à l'ouverture. */
+  const [cibleFocus, setCibleFocus] = useState<'densite' | 'volume' | null>(focus ?? null);
+  useEffect(() => { if (focus) setCibleFocus(focus); }, [focus, batch?.id]);
   useEffect(() => {
-    if (!focusOg || section !== 'measurements') return;
+    if (!cibleFocus || section !== 'measurements') return;
     const timer = window.setTimeout(() => {
-      const champ = document.querySelector<HTMLInputElement>('input[name="batch_sheet_og"]');
+      const champ = document.querySelector<HTMLElement>(cibleFocus === 'volume' ? '[data-batch-packaging-open]' : 'input[name="batch_sheet_og"]');
       champ?.focus();
       champ?.scrollIntoView?.({ block: 'center' });
-      setFocusOg(false);
+      setCibleFocus(null);
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [focusOg, section]);
+  }, [cibleFocus, section]);
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
@@ -292,7 +296,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
-          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} proposer={proposerArgent} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />}
+          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} proposer={proposerArgent} onNoteDensity={() => { setSection('measurements'); setCibleFocus('densite'); }} onNoteLitres={() => { setSection('measurements'); setCibleFocus('volume'); }} />}
           {section === 'measurements' && (
             <>
               <section className="space-y-2">

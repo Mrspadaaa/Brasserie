@@ -141,6 +141,22 @@ describe('dp-4 : la date du paiement suit la date de l’achat tant qu’elle n�
     await waitFor(()=>expect(view.container.querySelector('[data-dp="paye-autre-jour"]')!.textContent).toMatch(/payé le 08\.11\.2026, autre jour que l’achat/));
   });
 });
+describe('fx2 : « Autre date » montre le champ et la petite ligne ; « C’est la date » remet le lien',()=>{
+  it('Autre date : le champ « Date du paiement » et la ligne dès le toucher ; une autre date : « autre jour » ; « C’est la date » rend le lien',async()=>{
+    const view=await ouvrir(lecturePharmacie({},{date:'05.11.2026'}));
+    fireEvent.click(view.container.querySelector<HTMLElement>('[data-dp="tuile-paye"]')!);
+    expect(view.container.querySelector('[data-dp="paye-meme-jour"]')).toBeNull();
+    fireEvent.click(await screen.findByRole('button',{name:'Autre date'}));
+    await screen.findByLabelText('Date du paiement');
+    expect(view.container.querySelector('[data-dp="paye-meme-jour"]')!.textContent).toMatch(/payé le 05\.11\.2026, même jour que l’achat/);
+    fireEvent.change(screen.getByLabelText('Date du paiement'),{target:{value:'2026-11-08'}});
+    await waitFor(()=>expect(view.container.querySelector('[data-dp="paye-autre-jour"]')!.textContent).toMatch(/payé le 08\.11\.2026, autre jour que l’achat \(05\.11\.2026\)/));
+    fireEvent.click(screen.getByRole('button',{name:'C’est la date'}));
+    await waitFor(()=>expect(screen.queryByLabelText('Date du paiement')).toBeNull());
+    expect(view.container.querySelector('[data-dp="paye-autre-jour"]')).toBeNull();
+    expect(view.container.querySelector('[data-dp="paye-suit"]')!.textContent).toMatch(/Payé le 05\.11\.2026/);
+  });
+});
 describe('dp-5 : le sélecteur « Changer le mois » est en français',()=>{
   it('les mois s’écrivent en français et le choix garde le jour',()=>{
     const onChange=vi.fn();

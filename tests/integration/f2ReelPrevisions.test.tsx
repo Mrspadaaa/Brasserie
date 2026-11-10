@@ -52,6 +52,8 @@ describe('Prévisions p5b, états de la vraie app', () => {
   it('sans solde de départ : « à renseigner », écart seul, UNE étiquette pour les achats du jour, dessin plus court que 500 px', () => {
     render(<Ecran />);
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
+    const tete = document.querySelector('.prv-tache-tete') as HTMLElement | null; // trois lignes ou plus : une ligne-tâche dépliable (fx2)
+    if (tete) fireEvent.click(tete);
     expect(screen.getByText('Solde de départ à renseigner')).toBeVisible();
     const etiquettes = screen.getAllByRole('button').filter(b => /achats/i.test(b.getAttribute('aria-label') ?? ''));
     expect(etiquettes).toHaveLength(1);

@@ -9,10 +9,12 @@ interface Props {
   year: number;
   horizon: number;
   includeEquipmentProjects?: boolean;
+  /** Opérations : la question calculée de v6b (« Pourquoi les charges fixes pèsent autant ? ») remplace le libellé et la question de la vue. */
+  pose?: { libelle: string; question: string } | null;
 }
 
 /** Preparing a question never starts a generation: the brewer edits and sends it. */
-export function FinanceAssistant({ view, month, allDates, year, horizon, includeEquipmentProjects = true }: Props) {
+export function FinanceAssistant({ view, month, allDates, year, horizon, includeEquipmentProjects = true, pose }: Props) {
   const [question, setQuestion] = useState<string>();
   const period = allDates ? 'tout mon historique disponible' : `la période ${month}`;
   const suggestions = [
@@ -22,7 +24,7 @@ export function FinanceAssistant({ view, month, allDates, year, horizon, include
     { label: 'Vérifier mes opérations', question: 'Vérifie les incohérences de mes opérations enregistrées, y compris les archives utiles : doublons possibles, paiements, classement du matériel et pièces à compléter. Identifie les opérations concernées et propose les corrections à vérifier, sans rien modifier.' },
     { label: `Préparer l’année ${year}`, question: `Aide-moi à préparer le dossier annuel ${year} de ma brasserie indépendante en Suisse selon mon profil enregistré. Explique les amortissements, inventaires, créances et dettes à vérifier. Distingue résultat et trésorerie. Si cette année n’est pas couverte par le contexte, dis-le clairement et demande les chiffres nécessaires.` }
   ];
-  const selected = suggestions[view === 'forecast' ? 2 : view === 'annual' ? 4 : view === 'journal' ? 3 : view === 'projects' ? 1 : 0];
+  const selected = pose ? { label: pose.libelle, question: pose.question } : suggestions[view === 'forecast' ? 2 : view === 'annual' ? 4 : view === 'journal' ? 3 : view === 'projects' ? 1 : 0];
   return <>
     <button type="button" className="finance-assistant" onClick={() => setQuestion(selected.question)}>
       <Sparkles size={19} aria-hidden="true" />

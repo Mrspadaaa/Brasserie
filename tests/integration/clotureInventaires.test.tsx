@@ -24,19 +24,23 @@ const nature = (libelle: string) => screen.getByText(libelle, { selector: 'span'
 const petite = (libelle: string) => nature(libelle).querySelector('small') as HTMLElement | null;
 
 describe('Étape 3 : la petite ligne tient sur une ligne, les articles à 0 sont exclus', () => {
-  it('onze malts dont trois à 0 kg : les deux plus gros, puis « +N », « aujourd’hui » une seule fois', () => {
+  it('onze malts dont trois à 0 kg : le plus gros avec sa quantité, puis « +7 » (huit en stock), sans « aujourd’hui » qui ferait couper', () => {
     onzeMalts();
     render(<Banc/>); fireEvent.click(piste(3));
     const l = petite('Malt')!;
-    expect(l.textContent).toBe('Pilsner Malz 10 kg, Weizenmalz 8,5 kg +6 aujourd’hui');
+    expect(l.textContent).toBe('Pilsner Malz 10 kg +7');
     expect(l.textContent).not.toMatch(/Chocolat|\b0 kg/);
-    expect((l.textContent!.match(/aujourd’hui/g) ?? [])).toHaveLength(1);
+    expect(l.textContent).not.toMatch(/aujourd’hui|…/);
   });
-  it('un seul article : « Pilsner 3 kg aujourd’hui » ; emballages : les noms, sans quantité', () => {
+  it('un seul article : « Pilsner 3 kg aujourd’hui » ; emballages : les noms, sans quantité ; sans article : « bouteilles, capsules »', () => {
     stock('E-BOU', 'Bouteilles 33 cl', 'Emballage', 'pièces', 400); stock('E-CAP', 'Capsules', 'Emballage', 'pièce', 900); stock('E-ETI', 'Étiquettes', 'Emballage', 'pièce', 0);
     render(<Banc/>); fireEvent.click(piste(3));
     expect(petite('Malt')!.textContent).toBe('Pilsner 3 kg aujourd’hui');
     expect(petite('Emballages')!.textContent).toBe('Capsules, Bouteilles 33 cl');
+  });
+  it('sans article d’emballage : la petite ligne dit ce que la nature compte (g6)', () => {
+    render(<Banc/>); fireEvent.click(piste(3));
+    expect(petite('Emballages')!.textContent).toBe('bouteilles, capsules');
   });
   it('plus de phrase « La bière en cave se saisit dans la feuille »', () => {
     render(<Banc/>); fireEvent.click(piste(3));

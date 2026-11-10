@@ -146,3 +146,6 @@
 
 /* 1280 : les figures gardent leurs proportions de téléphone (viewBox fixe) ; sans plafond, les étiquettes de l'escalier deviennent énormes. */
 @media (min-width:700px) { .ana { max-width:720px; margin-left:auto; margin-right:auto; } .ana-svg { max-width:560px; margin-left:auto; margin-right:auto; } }
+/* fx1 : les entrées (ventes) ne sont pas une règle de dépense : une ligne à part sous la liste, avec son renvoi vers les ventes. */
+.ana-entrees { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:32px; padding:0 4px; margin-top:6px; background:none; border:0; border-top:1px dashed var(--ana-bord); font-size:13px; color:var(--ana-txt); text-align:left; width:100%; cursor:pointer; }
+.ana-entrees:focus-visible { outline:2px solid var(--ana-fin); outline-offset:1px; }

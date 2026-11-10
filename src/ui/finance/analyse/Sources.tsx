@@ -5,9 +5,9 @@ import { chf, categorieDeSource, jourMois, nomSource, signe } from './format';
 import { Pourquoi, type TextePourquoi } from './Pourquoi';
 import type { VueProps } from './Caisse';
 
-interface Rang { cle: string; libelle: string; source: SourceCle | 'caisse' | 'autres-mouvements' | 'gagne'; de: number; a: number; valeur: string; prevu: number | null; an: number | null; depasse: number; hachure?: boolean; cliquable: boolean }
+interface Rang { cle: string; libelle: string; source: SourceCle | 'caisse' | 'apports' | 'reste' | 'gagne'; de: number; a: number; valeur: string; prevu: number | null; an: number | null; depasse: number; hachure?: boolean; cliquable: boolean }
 
-/** Les rangs de la cascade, dans l'ordre de a1e : caisse au début → ventes → chaque source → (autres mouvements) → matériel → caisse à la fin. */
+/** Les rangs de la cascade, dans l'ordre de a1e : caisse au début → ventes → chaque source → apports privés → reste à payer → matériel → caisse à la fin. */
 export function rangsCascade(c: Cascade, debutLibelle: string, finLibelle: string): Rang[] {
   const rangs: Rang[] = [];
   let courant = 0;
@@ -18,7 +18,10 @@ export function rangsCascade(c: Cascade, debutLibelle: string, finLibelle: strin
     rangs.push({ cle: l.source, libelle: nomSource(l.source), source: l.source, de: courant, a: courant - l.reelCents, valeur: signe(-l.reelCents), prevu: l.prevuCents, an: l.anCents, depasse: l.depasseCents, cliquable: true });
     courant -= l.reelCents;
   }
-  if (c.autresMouvementsCents) { rangs.push({ cle: 'mouvements', libelle: 'Pas encore payé, apports', source: 'autres-mouvements', de: courant, a: courant + c.autresMouvementsCents, valeur: signe(c.autresMouvementsCents), prevu: null, an: null, depasse: 0, hachure: true, cliquable: true }); courant += c.autresMouvementsCents; }
+  // fx1 : l'écart qui rattache la caisse de fin à celle du début se dit en deux choses, chacune avec son renvoi : les apports privés (paiements signés) et le reste à payer.
+  // Un reste négatif n'est pas « à payer » : ce sont des paiements d'une autre période (ou des ventes pas encore encaissées) ; il se dit autrement.
+  if (c.apportsCents) { rangs.push({ cle: 'apports', libelle: 'Apports privés', source: 'apports', de: courant, a: courant + c.apportsCents, valeur: signe(c.apportsCents), prevu: null, an: null, depasse: 0, cliquable: true }); courant += c.apportsCents; }
+  if (c.resteCents) { rangs.push({ cle: 'reste', libelle: c.resteCents > 0 ? 'Reste à payer' : 'Payé hors période', source: 'reste', de: courant, a: courant + c.resteCents, valeur: signe(c.resteCents), prevu: null, an: null, depasse: 0, hachure: true, cliquable: true }); courant += c.resteCents; }
   if (c.debutCents === null) rangs.push({ cle: 'gagne', libelle: 'Gagné', source: 'gagne', de: 0, a: courant, valeur: signe(courant), prevu: null, an: null, depasse: 0, cliquable: false });
   if (c.materielCents > 0) { rangs.push({ cle: 'materiel', libelle: 'Matériel', source: 'materiel', de: courant, a: courant - c.materielCents, valeur: signe(-c.materielCents), prevu: null, an: c.materielAnCents, depasse: 0, hachure: true, cliquable: true }); courant -= c.materielCents; }
   if (c.finCents !== null) rangs.push({ cle: 'fin', libelle: finLibelle, source: 'caisse', de: 0, a: c.finCents, valeur: chf(c.finCents), prevu: null, an: null, depasse: 0, cliquable: false });
@@ -47,7 +50,7 @@ export function SourcesVue({ c, finJour, duree, pourquoi, onJournal }: SourcesPr
     {c.nombrePieces === 0 && c.ventesCents === 0 ? <p className="ana-vide">Aucune pièce sur cette période.</p> : <div className="ana-cascade" role="list" aria-label="Cascade des sources">
       {rangs.map(r => {
         const sens = r.a >= r.de ? 1 : -1;
-        const barre = <span className={`ana-barre ${r.source === 'caisse' ? 'ana-s-caisse' : `ana-s-${r.source}`}${r.hachure ? ' ana-hach-mat' : ''}`} style={{ left: pct(Math.min(r.de, r.a)), width: larg(r.de, r.a) }}/>;
+        const barre = <span className={`ana-barre ${r.source === 'caisse' ? 'ana-s-caisse' : r.source === 'apports' ? 'ana-s-prive' : r.source === 'reste' ? 'ana-s-autres' : `ana-s-${r.source}`}${r.hachure ? ' ana-hach-mat' : ''}`} style={{ left: pct(Math.min(r.de, r.a)), width: larg(r.de, r.a) }}/>;
         const contenu = <>
           <span className="ana-lib">{r.libelle}</span>
           <span className="ana-piste">
@@ -58,9 +61,10 @@ export function SourcesVue({ c, finJour, duree, pourquoi, onJournal }: SourcesPr
           </span>
           <span className="ana-val ana-m">{r.valeur}</span>
         </>;
-        const cat = r.source === 'caisse' || r.source === 'gagne' || r.source === 'autres-mouvements' ? undefined : categorieDeSource(r.source);
-        return r.cliquable && r.source !== 'autres-mouvements'
-          ? <button type="button" role="listitem" key={r.cle} className="ana-rang" aria-label={`${r.libelle} ${r.valeur} CHF${r.prevu !== null ? `, prévu ${chf(r.prevu)}` : ''}${r.depasse > 0 ? `, dépassé de ${chf(r.depasse)}` : ''}, voir ces opérations`} onClick={() => onJournal({ scope: 'all', allDates: true, category: cat })}>{contenu}</button>
+        const cat = r.source === 'caisse' || r.source === 'gagne' || r.source === 'apports' || r.source === 'reste' ? undefined : categorieDeSource(r.source);
+        const renvoi = r.source === 'apports' ? { category: 'apports' } : r.source === 'reste' ? (r.a > r.de ? { filter: 'payable' } : {}) : { category: cat };
+        return r.cliquable
+          ? <button type="button" role="listitem" key={r.cle} className="ana-rang" aria-label={`${r.libelle} ${r.valeur} CHF${r.prevu !== null ? `, prévu ${chf(r.prevu)}` : ''}${r.depasse > 0 ? `, dépassé de ${chf(r.depasse)}` : ''}, voir ces opérations`} onClick={() => onJournal({ scope: 'all', allDates: true, ...renvoi })}>{contenu}</button>
           : <div role="listitem" key={r.cle} className="ana-rang">{contenu}</div>;
       })}
       <div className="ana-echelle" aria-hidden="true"><span className="ana-lib"/><span className="ana-piste">{gr.valeurs.filter(v => v >= bas && v <= haut).map(v => <span key={v} className="ana-tic ana-m" style={{ left: pct(v) }}>{chf(v).replace(/[,.]00$/, '')}</span>)}</span><span className="ana-val"/></div>

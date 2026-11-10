@@ -115,7 +115,7 @@ export function ImpotBiereLien({ batch, onOpen, titre = 'Impôt bière', classNa
   return <button type="button" className={className ?? 'min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left'} onClick={onOpen}>{texte} ›</button>;
 }
 
-export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batch; onClose: () => void; onNoteDensity?: () => void }) {
+export function ImpotBiereSheet({ batch, onClose, onNoteDensity, onNoteLitres }: { batch: Batch; onClose: () => void; onNoteDensity?: () => void; /** « litres à noter », « Noter les litres » : la fiche sur « Saisir le volume conditionné » ; absent, `onNoteDensity` (la fiche sur Mesures). */ onNoteLitres?: () => void }) {
   const donnees = useStorageValue(lireDonnees);
   const { profile, fiscal } = donnees;
   const [dixiemes, setDixiemes] = useState<number | null>(null);
@@ -169,6 +169,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
     ecrire.then(() => setCopie('ok'), () => setCopie('failed'));
   };
 
+  const noterLitres = onNoteLitres ?? onNoteDensity;
   const pied = (
     <div className="ibr-pied">
       <span className="ibr-liens">
@@ -176,7 +177,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         <a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer">Directives OFDF</a>
         <button type="button" onClick={copier}>Copier</button>
       </span>
-      {onNoteDensity && <button type="button" className="ibr-prim" onClick={onNoteDensity}><Plus size={16} aria-hidden="true" />{!litres ? 'Noter les litres' : densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>}
+      {(!litres ? noterLitres : onNoteDensity) && <button type="button" className="ibr-prim" onClick={!litres ? noterLitres : onNoteDensity}><Plus size={16} aria-hidden="true" />{!litres ? 'Noter les litres' : densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>}
     </div>
   );
 
@@ -187,7 +188,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
 
         <section className="ibr-regle" data-testid="ibr-regle" data-hachure={hachure ? 'oui' : 'non'}>
           <div className="ibr-q">
-            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : onNoteDensity ? <button type="button" className="ibr-inc ibr-inc-btn" onClick={onNoteDensity}>litres à noter ›</button> : <span className="ibr-inc">litres à noter</span>}</span>
+            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : noterLitres ? <button type="button" className="ibr-inc ibr-inc-btn" onClick={noterLitres}>litres à noter ›</button> : <span className="ibr-inc">litres à noter</span>}</span>
             {onNoteDensity && densite !== 'notee' && !exonere
               ? <button type="button" className="ibr-puce-btn" onClick={onNoteDensity}><em data-testid="ibr-puce" data-ton="attention">{puce} ›</em></button>
               : <em data-testid="ibr-puce" data-ton={densite === 'notee' && !exonere ? 'neutre' : 'attention'}>{puce}</em>}
