@@ -40,3 +40,14 @@ Aucun déploiement, aucune donnée réelle, aucun appel Gemini. Fichiers de trav
 ## Rendre
 `RESULTAT.md` au fil (tous les 5 éléments) : écarts au port (aucun sans raison), commits (sha), tests, captures. Réponse finale : une
 ligne avec le sha final de `p1/mesures`.
+
+## Retouche pilote (après `captures/cote-a-cote-repos-390-clair.png` et `cote-a-cote-hors-390-clair.png`, ouvertes)
+Agent neuf, sur `p1/mesures` (sha 0cb79bde), écarts à m2 (règle n° 1), chacun avec un test qui échoue avant :
+1. **Ordre** : dans m2, « Relevés du jour » est juste sous l'horloge, avant Grains ; dans l'app il vient après Grains (sous le pli à 390).
+   Remonte-le sous l'horloge (à toute largeur, colonne principale).
+2. **Suivi thermique** : dans m2 il est replié en bas, après « À anticiper », juste avant « Aides et repères » ; dans l'app il est entre
+   l'horloge et Grains. Même place que m2.
+3. **Feuille Mesurer** : la phrase « Température sous la consigne. Homogénéise, ajuste doucement puis remesure. » n'est pas dans m2
+   (le verdict seul, la raison sous « Pourquoi maintenant ») : retire-la du premier plan (elle peut vivre dans « Pourquoi maintenant »).
+Rejoue les tests touchés et les 22 fichiers de ces écrans, refais les captures côte à côte repos / hors / après 390 clair et cave, et
+1280 clair, ouvre-les, complète RESULTAT.md. Une ligne avec le sha.
