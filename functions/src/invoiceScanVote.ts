@@ -212,9 +212,44 @@ function accordLite(col: Colonne, L: any[][]): number | null {
   const x = centimesDe(L[0][col[0]]?.amountTTC);
   return x !== null && x === centimesDe(L[1][col[1]]?.amountTTC) ? x : null;
 }
+/**
+ * Voie f2 (jeu en ligne 8, bloquants 1 et 4) : le vote du NOM, par créneau. La 3.8 peut glisser les noms d'un rang sur une photo tachée (BAUHAUS : « SERRE-JOINT » sur le
+ * montant de « CRATONS ») tandis que les montants sont justes ; le nom n'était pas voté, seulement le montant. Le nom des deux Flash-Lite l'emporte quand : elles lisent la
+ * ligne au montant retenu et s'accordent entre elles (≥ 0,6) ; le nom de la 3.8 ne ressemble à aucun des deux (< 0,5) ; ET c'est le nom d'une ligne d'un AUTRE créneau,
+ * lu par une Flash-Lite (≥ 0,6), la preuve d'un glissement. Une 3.8 qui traduit, complète ou corrige un nom sans en prendre un d'une autre ligne garde le sien (doc12, doc10) ;
+ * trois lectures qui se contredisent : la 3.8 reste, aucune majorité n'est inventée. Rend la ligne de la première Flash-Lite (nom, nature, référence ensemble), ou null.
+ */
+const NOM_COMMUN = 0.6, NOM_ETRANGER = 0.5;
+function ligneDuNomMajoritaire(cols: Colonne[], k: number, L: any[][], lignes: any[], montant: number | null): any | null {
+  const [l1, l2, l3] = lignes;
+  if (!l1 || !l2 || !l3 || montant === null || centimesDe(l1.amountTTC) !== montant || centimesDe(l2.amountTTC) !== montant) return null;
+  if (ressemblanceNoms(l1.name, l2.name) < NOM_COMMUN || ressemblanceNoms(l3.name, l1.name) >= NOM_ETRANGER || ressemblanceNoms(l3.name, l2.name) >= NOM_ETRANGER) return null;
+  const ailleurs = cols.some((c, j) => j !== k && [0, 1].some(r => c[r] !== null && ressemblanceNoms(l3.name, L[r][c[r]!]?.name) >= NOM_COMMUN));
+  return ailleurs ? l1 : null;
+}
+/**
+ * Voie f2 (bloquant 3, « prix perdu 28/28, unité 17/28 ») : un prix ou une unité NULS de la 3.8 ne l'emportent pas sur une valeur lue au même montant. Le prix : celui que deux autres
+ * lectures lisent, sinon celui d'une seule qui tient (quantité × prix = montant). L'unité : celle que les autres lectures lisent sans se contredire (une contradiction : l'unité reste à préciser,
+ * jamais devinée). Seules comptent les lectures de la MÊME quantité (une unité dit la quantité). La valeur que la 3.8 lit reste la sienne.
+ */
+function completerTriplet(t: ReturnType<typeof triplet>, autres: Array<ReturnType<typeof triplet>>, montant: number | null): ReturnType<typeof triplet> {
+  const memeQte = autres.filter(x => t.quantity === null || x.quantity === t.quantity);
+  let { quantity, unit, price } = t;
+  if (price === null) {
+    const prix = memeQte.filter(x => x.price !== null);
+    const clePrix = (x: { price: unknown }) => centimesDe(x.price);
+    const accord = prix.find(x => prix.filter(y => clePrix(y) === clePrix(x)).length >= 2) ?? (prix.length === 1 ? prix[0] : undefined);
+    if (accord && montant !== null && Math.abs(Math.round((quantity ?? accord.quantity ?? 1) * (accord.price as number) * 100) - montant) <= 1) { price = accord.price; quantity = quantity ?? accord.quantity; }
+  }
+  if (!String(unit ?? '').trim()) {
+    const unites = memeQte.map(x => String(x.unit ?? '').trim()).filter(Boolean);
+    if (unites.length && unites.every(u => u.toLowerCase() === unites[0].toLowerCase())) unit = unites[0];
+  }
+  return { quantity, unit, price };
+}
 function ligneFusionnee(cols: Colonne[], k: number, L: any[][]): any {
   const col = cols[k], lignes = col.map((rang, r) => (rang === null ? null : L[r][rang]));
-  const pivot = lignes[2] ?? lignes[0] ?? lignes[1];
+  let pivot = lignes[2] ?? lignes[0] ?? lignes[1];
   const accord = accordLite(col, L), a3 = lignes[2] ? centimesDe(lignes[2].amountTTC) : null;
   let montant = lignes[2] ? a3 : accord;
   if (lignes[2] && accord !== null && a3 !== accord) {
@@ -229,7 +264,11 @@ function ligneFusionnee(cols: Colonne[], k: number, L: any[][]): any {
   const lus = auMontant.filter((t): t is ReturnType<typeof triplet> => Boolean(t));
   const tient = (t: { quantity: any; price: any }) => t.price !== null && montant !== null && Math.abs(Math.round((t.quantity ?? 1) * t.price * 100) - montant) <= 1;
   const choisi = auMontant[2] ?? lus.find(t => lus.filter(u => cleTriplet(u) === cleTriplet(t)).length >= 2) ?? (lus.length === 1 && tient(lus[0]) ? lus[0] : undefined);
-  return { ...pivot, amountTTC: montantLu, ...(choisi ?? triplet(pivot)) };
+  // le nom voté (jeu en ligne 8) : le nom des deux Flash-Lite quand la 3.8 a glissé ; le triplet reste celui qui se lit à ce montant
+  const ligneDuNom = ligneDuNomMajoritaire(cols, k, L, lignes, montant);
+  if (ligneDuNom) pivot = ligneDuNom;
+  const complet = auMontant[2] && choisi ? completerTriplet(choisi, lus.filter(t => t !== auMontant[2]), montant) : choisi;
+  return { ...pivot, amountTTC: montantLu, ...(complet ?? triplet(pivot)) };
 }
 /** La lecture fusionnée des trois, normalisée de nouveau (la normalisation est idempotente : ses contrôles portent sur les valeurs gardées). */
 export function lectureFusionnee(a: InvoiceScanResult, b: InvoiceScanResult, c: InvoiceScanResult, colonnes = colonnesDeTrois(a, b, c)): InvoiceScanResult {
@@ -245,7 +284,8 @@ export function lectureFusionnee(a: InvoiceScanResult, b: InvoiceScanResult, c: 
   const sortie: any = { ...c, items, amountTTC: total ?? null, amountHT: donneur.amountHT, tvaAmount: donneur.tvaAmount, tvaRate: donneur.tvaRate, vat: donneur.vat };
   for (const champ of ['amountPaid', 'terminalAmount']) { const v = voterChampControle(lu(champ)); if (v === undefined) delete sortie[champ]; else sortie[champ] = v; }
   // Un comptage n'est gardé que si toutes les lectures qui le portent lisent le même nombre (`voterComptage`).
-  for (const champ of ['countedAmounts', 'countedEans', 'printedItemCount']) {
+  // Le nombre de lignes annoncé (`printedLineCount`) est un comptage comme les autres (jeu en ligne 8 : « annoncés 23 » d'une lecture seule, sur un ticket qui n'en imprime aucun).
+  for (const champ of ['countedAmounts', 'countedEans', 'printedItemCount', 'printedLineCount']) {
     const v = voterComptage(lu(champ));
     if (v === undefined) delete sortie[champ]; else sortie[champ] = v;
   }
@@ -276,13 +316,38 @@ export function rangsProvisoires(provisoire: any[], final: any[]): Array<number 
  * `alignerLignes`), et, avec elles, le total et la TVA d'avant quand la 3.8 les change. Additif : aucune valeur du résultat n'est modifiée ici, le client décide (Garder / Retirer).
  */
 export interface Retirees { lignes: Array<{ rang: number; ligne: any }>; amountTTC?: number | null; tvaAmount?: number | null }
+/**
+ * Voie f2 (jeu en ligne 8, bloquant 5 : « Rabais total −2,58 · pas retrouvée · Garder / Retirer ») : une ligne qui n'est pas un article n'est jamais « retirée ». Même règle que le client
+ * (`rangsHorsPiece`, `src/domain/finance/controlesPiece.ts`, dont `functions/` ne peut rien importer) : un total, un sous-total, un règlement, un montant en devise (par la désignation) ; un
+ * RABAIS GLOBAL, remise dont le montant est la somme d'au moins deux autres remises de la liste (−0,68 et −1,90 font le « Rabais total » de −2,58, à un centime). Preuve par la somme, jamais par
+ * le montant seul : une remise unique reste une remise. Rangs de la liste donnée (base 0).
+ */
+const HORS_ARTICLE = /^\s*(?:montant\s+en\s+(?:eur|euro|usd)|betrag\s+in\s+(?:eur|euro|usd)|eur|euro|usd|sous[- ]?total|zwischensumme|zwischentotal|subtotal|total|summe|twint|eft|e[- ]?payment|maestro|visa|mastercard|postcard|v[- ]?pay|especes|espèces|bargeld|cash|r[uü]ckgeld|monnaie\s+rendue|rendu|pay[ée]|bezahlt|zahlung)(?![a-zà-ÿ])/i;
+export function rangsHorsPiece(items: Array<{ name?: unknown; kind?: unknown; amountTTC?: unknown; price?: unknown; quantity?: unknown }>): Set<number> {
+  const hors = new Set<number>();
+  items.forEach((l, i) => { if (HORS_ARTICLE.test(String(l.name ?? ''))) hors.add(i); });
+  const montant = (l: { amountTTC?: unknown; price?: unknown; quantity?: unknown }) => centimesDe(l.amountTTC) ?? (centimesDe(l.price) !== null && (l.quantity === null || l.quantity === undefined || l.quantity === 1) ? centimesDe(l.price) : null);
+  const remises = items.map((l, i) => ({ i, c: (l.kind === 'discount' || (montant(l) ?? 0) < 0) && !hors.has(i) ? montant(l) : null })).filter((x): x is { i: number; c: number } => x.c !== null);
+  for (const r of remises) {
+    const pool = remises.filter(x => x.i !== r.i).slice(0, 12);
+    if (pool.length < 2) continue;
+    for (let masque = 1; masque < (1 << pool.length); masque++) {
+      let n = 0, somme = 0;
+      for (let k = 0; k < pool.length; k++) if (masque & (1 << k)) { n++; somme += pool[k].c; }
+      if (n >= 2 && Math.abs(somme - r.c) <= 1) { hors.add(r.i); break; }
+    }
+  }
+  return hors;
+}
 export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: LectureVote | undefined, final: any): Retirees | null {
   if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
   const provisoire = provisoireDeDeux(l1, l2);
   if (!provisoire) return null;
   // Les lignes du provisoire sont celles de la première lecture : une ligne est retirée si aucune colonne gardée ne la contient (même table que le flux).
   const rapprochees = new Set(rangsDuFinal(provisoire.items, final.items ?? [], l1.normalized, l2.normalized, third.normalized).filter((r): r is number => r !== null));
-  const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang));
+  // Un total, un sous-total, un règlement ou un rabais global (somme d'autres rabais du provisoire) n'est pas une ligne perdue : ni écrit, ni proposé (jeu en ligne 8, bloquant 5).
+  const horsPiece = rangsHorsPiece(provisoire.items);
+  const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang) && !horsPiece.has(x.rang));
   const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
   const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
   const tva = centimes(provisoire.tvaAmount) !== null && centimes(provisoire.tvaAmount) !== centimes(final.tvaAmount);

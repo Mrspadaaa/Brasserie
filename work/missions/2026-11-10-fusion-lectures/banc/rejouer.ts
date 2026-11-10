@@ -5,7 +5,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { parseReadResponse } from '../../../../scripts/banc-lecture-facture';
 import { normalizeInvoiceScan } from '../../../../functions/src/invoiceScanCore';
-import { isoCurrency, lireCsv8, ressemblance } from '../../../../functions/src/invoiceScanVote';
+import { isoCurrency, lireCsv8, ressemblance, ressemblanceNoms } from '../../../../functions/src/invoiceScanVote';
 
 const RACINE = process.env.BANC_RACINE ?? 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/finalisation-tickets-2026-10-08/H13-reels';
 const cts = (v: any) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
@@ -65,6 +65,24 @@ async function main() {
         r.enTrop = fin.items.length - mf.size;
         r.qte = [...mf].filter(([i, x]) => juste(x) && cts(qte(fin.items[i])) === cts(qte(V[x.t]) ?? 1)).length;
         r.total = cts(fin.amountTTC) === cts(v.amountTTC);
+        // Voie f2 (jeu en ligne 8) : « le final a-t-il perdu ou inventé quelque chose que les lectures avaient ? », en plus de « les montants sont-ils au bon rang ? ».
+        const lus = l.flatMap(x => ('normalized' in x ? [(x as any).normalized] : []));
+        const auMontant = (liste: any[], c: number | null) => liste.filter(x => c !== null && cts(x.amountTTC) === c);
+        // comptage d'articles annoncé (printedLineCount) : sans majorité parmi les lectures (« annoncés 23 » inventé), ou différent du nombre de lignes de la vérité
+        const pl = fin.printedLineCount;
+        r.annonceSansMajorite = typeof pl === 'number' && lus.filter((x: any) => x.printedLineCount === pl).length < 2;
+        r.annonceFausse = typeof pl === 'number' && pl !== V.length;
+        // prix ou unité que le final n'a plus, alors qu'une lecture les lisait à ce montant
+        r.prixPerdus = fin.items.filter((it: any) => it.price == null && cts(it.amountTTC) !== null && lus.some((x: any) => auMontant(x.items, cts(it.amountTTC)).some((y: any) => y.price != null))).length;
+        r.unitesPerdues = fin.items.filter((it: any) => !String(it.unit ?? '').trim() && cts(it.amountTTC) !== null && lus.some((x: any) => auMontant(x.items, cts(it.amountTTC)).some((y: any) => String(y.unit ?? '').trim()))).length;
+        // un nom déplacé : les deux Flash-Lite lisent le même nom (≥ 0,6) à ce montant, le final en porte un autre (< 0,5 avec chacun) qui est celui d'une ligne d'un autre montant (≥ 0,6)
+        r.nomsContreMajorite = l[0] && l[1] && 'normalized' in l[0] && 'normalized' in l[1] ? fin.items.filter((it: any) => {
+          const A = auMontant((l[0] as any).normalized.items, cts(it.amountTTC)), B = auMontant((l[1] as any).normalized.items, cts(it.amountTTC));
+          const ailleurs = lus.slice(0, 2).some((x: any) => x.items.some((y: any) => cts(y.amountTTC) !== cts(it.amountTTC) && ressemblanceNoms(it.name, y.name) >= 0.6));
+          return ailleurs && A.length === 1 && B.length === 1 && A.some((a: any) => B.some((b: any) => ressemblanceNoms(a.name, b.name) >= 0.6 && ressemblanceNoms(it.name, a.name) < 0.5 && ressemblanceNoms(it.name, b.name) < 0.5));
+        }).length : 0;
+        // un nom posé sur le montant d'une voisine, jugé sur la vérité : le nom ressemble à une autre ligne de la vérité (≥ 0,6) et très peu à la sienne (< 0,35)
+        r.nomsDecales = [...mf].filter(([i, x]) => juste(x) && ressemblanceNoms(fin.items[i].name, V[x.t]?.name) < 0.35 && V.some((w: any, u: number) => u !== x.t && ressemblanceNoms(fin.items[i].name, w.name) >= 0.6)).length;
         r.compte = fin.countedAmounts ?? null; r.compteFaux = typeof fin.countedAmounts === 'number' && fin.countedAmounts !== V.length;
         // Cas réel du 10.11 (BAUHAUS tâché, 28 lignes, « Somme = imprimé 352,05 » en vert) : la somme des lignes égale le total alors que la vérité ne l'égale pas.
         const sommeF = fin.items.reduce((t: number, x: any) => t + (cts(x.amountTTC) ?? 0), 0), sommeV = V.reduce((t: number, x: any) => t + (cts(x.amountTTC) ?? 0), 0);
@@ -98,7 +116,7 @@ async function main() {
   }
   const avec = lignes.filter(r => r.nV !== undefined);
   const somme = (k: string) => avec.reduce((t, r) => t + (typeof r[k] === 'number' ? r[k] : r[k] === true ? 1 : 0), 0);
-  const tot = Object.fromEntries(['nV', 'justes', 'enTrop', 'qte', 'total', 'fauxVert', 'sommeVerteFausse', 'compteFaux', 'provJustes', 'provEnTrop', 'paires', 'pairesFausses', 'pairesNoms', 'jumellesManquees', 'retirees', 'retireesDoublons', 'retireesVraies'].map(k => [k, somme(k)]));
+  const tot = Object.fromEntries(['nV', 'justes', 'enTrop', 'qte', 'total', 'fauxVert', 'sommeVerteFausse', 'compteFaux', 'annonceSansMajorite', 'annonceFausse', 'prixPerdus', 'unitesPerdues', 'nomsContreMajorite', 'nomsDecales', 'provJustes', 'provEnTrop', 'paires', 'pairesFausses', 'pairesNoms', 'jumellesManquees', 'retirees', 'retireesDoublons', 'retireesVraies'].map(k => [k, somme(k)]));
   const sortie = process.argv[2];
   if (sortie) writeFileSync(sortie, JSON.stringify({ tot, tirages: lignes.length, avecVerite: avec.length, erreurs: lignes.filter(r => r.erreur).length, lignes }, null, 1));
   console.log('TIRAGES', lignes.length, 'avec vérité', avec.length, 'erreurs', lignes.filter(r => r.erreur).length);
