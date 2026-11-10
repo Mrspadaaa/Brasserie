@@ -5,6 +5,17 @@ import { fileURLToPath } from 'node:url';
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
   plugins: [react(), {
+    // l2 (10.11) : `functions/src/brewerHopAdviceContextBinding.ts` n'importe de `brewerTools` que `normalizeRecipe` (ré-export de
+    // `recipeSnapshot`), mais l'alias ci-dessous lui donnait tout `brewerTools.ts` : le chat Brasseur, donc Finances, tirait ainsi la
+    // bibliothèque de levures (347 Ko). Côté navigateur seulement ; le serveur garde son `brewerTools.js` empaqueté, sans changement.
+    name: 'binding-sans-brewertools',
+    enforce: 'pre',
+    resolveId(source, importer) {
+      if (!importer || !/[\\/]functions[\\/]src[\\/]brewerHopAdviceContextBinding\.ts(?:\?|$)/.test(importer)) return null;
+      if (source !== './brewerTools.js' && !/[\\/]src[\\/]domain[\\/]brewerTools\.ts$/.test(source)) return null;
+      return fileURLToPath(new URL('./src/domain/recipeSnapshot.ts', import.meta.url));
+    }
+  }, {
     name: 'exclude-private-initial-data',
     apply: 'build',
     generateBundle(_options, bundle) {

@@ -66,6 +66,7 @@ import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
 import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
+import { prechargerVuesAuRepos } from './services/prechargeVues';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 import { montantChf } from './domain/finance/ledger';
 
@@ -549,6 +550,18 @@ export const App: React.FC = () => {
     else if (!stored.recipeId) setWizardSeed({ title: stored.title, description: stored.description });
     route.replaceTop(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, isDataReady]);
+
+  // l2 (10.11) : une fois connecté, l'accueil affiché et le navigateur au repos, les vues les plus ouvertes (brassins, stocks, finances,
+  // clients) se chargent une à une ; leur première ouverture n'attend plus le réseau. Voir services/prechargeVues.ts.
+  useEffect(() => {
+    if (!currentUser || !isDataReady) return;
+    let annuler = () => {};
+    let demonte = false;
+    const lancer = () => { if (!demonte) annuler = prechargerVuesAuRepos(); };
+    if (document.readyState === 'complete') lancer();
+    else window.addEventListener('load', lancer, { once: true });
+    return () => { demonte = true; window.removeEventListener('load', lancer); annuler(); };
   }, [currentUser, isDataReady]);
 
   /**
