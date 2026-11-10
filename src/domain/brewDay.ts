@@ -230,6 +230,18 @@ export function readingFeedback(
 }
 
 /** Ne réécrit pas les étapes d'un brassage entamé. Ajoute seulement l'horloge commune. */
+/**
+ * Ce que le serveur peut recevoir : chaque ajout porte une quantité finie (functions/src/brewSessionCore.ts, « Quantité invalide »).
+ * Un ajout sans quantité (levure cochée sans mesure, brouillon déjà stocké sur l'appareil) ne part pas : l'inconnu n'est ni envoyé ni mis à 0.
+ * L'état local n'est pas modifié ; le serveur répond avec son état, qui remplace le brouillon.
+ */
+export function ajoutsEnvoyables(state: BrewDayState): BrewDayState {
+  if (!state.additions) return state;
+  const garde = Object.entries(state.additions).filter(([, a]) => a != null && Number.isFinite(a.amount));
+  if (garde.length === Object.keys(state.additions).length) return state;
+  return { ...state, additions: Object.fromEntries(garde) };
+}
+
 export function restoreBrewDay(state: BrewDayState): BrewDayState {
   let elapsed = 0;
   const steps = state.steps.map((s) => {

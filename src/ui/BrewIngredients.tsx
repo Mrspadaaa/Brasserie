@@ -133,6 +133,8 @@ function IngredientRow({
     requestAnimationFrame(() => rowRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   }, [pitch?.token]);
   const named = actual?.replacement?.name ?? item.name;
+  // Nom lisible par les lecteurs d'écran même quand la levure n'a pas de nom : « Quantité réelle de  » n'est pas un nom.
+  const nom = named.trim() ? named : item.id === 'yeast' ? 'Levure' : item.id;
   const patch = (p: Partial<NonNullable<BrewDayState['additions']>[string]>) => {
     onInteract();
     // Toucher la quantité d'une levure à ajouter, c'est la mesurer : le choix passe à « Mesurée ».
@@ -151,7 +153,10 @@ function IngredientRow({
         } };
         return s;
       }
-      return { ...s, additions: { ...s.additions, [item.id]: { amount: actualAmount(item, s) ?? item.planned, ...existing, ...p } } };
+      const entry = { amount: actualAmount(item, s) ?? item.planned, ...existing, ...p };
+      // PC-2 : le serveur exige un `amount` fini (400 « Quantité invalide »). Une quantité inconnue ne s'écrit pas, ni comme 0.
+      if (!Number.isFinite(entry.amount)) return s;
+      return { ...s, additions: { ...s.additions, [item.id]: entry } };
     });
   };
   const rung = item.kind === 'salt' || item.kind === 'acid' ? 0.1 : item.unit === 'kg' ? 0.1 : 1;
@@ -208,7 +213,7 @@ function IngredientRow({
   const doseUnit = `${pitchActualUnknown || (pitchPlannedUnknown && !item.unit) ? '' : item.unit}${item.kind === 'water' ? ' à froid' : ''}`;
   const doseProps = {
     type: 'button' as const,
-    'aria-label': `Modifier la quantité de ${named}${item.side ? ' au ' + item.side : ''}`,
+    'aria-label': `Modifier la quantité de ${nom}${item.side ? ' au ' + item.side : ''}`,
     'aria-describedby': `brew-dose-value-${item.id} brew-dose-unit-${item.id}`,
     'aria-expanded': editingDose,
     disabled: pitchActualUnknown,
@@ -265,11 +270,13 @@ function IngredientRow({
       <label className="bz-case" title="Cocher après l’ajout réel">
         <input
           type="checkbox"
-          aria-label={`Ajouté : ${named}`}
+          aria-label={`Ajouté : ${nom}`}
           checked={checked}
           disabled={item.id === 'yeast' && state.pitchedAt != null}
           onChange={(e) => {
             onInteract();
+            // Cocher une levure dont la quantité est inconnue ouvre la saisie de la quantité (Mesurée / Sans mesure) au lieu d'envoyer un ajout invalide.
+            if (e.target.checked && (pitchPlannedUnknown || !Number.isFinite(actual?.amount ?? actualAmount(item, state)))) { setEditingDose(true); return; }
             if (e.target.checked) patch({ doneAt: brewNow(), ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) });
             else
               update((s) => {
@@ -301,7 +308,7 @@ function IngredientRow({
         </div>
       )}
       {editingDose && (
-        <div className="brew-dose-edit bz-edition" aria-label={`Ajuster ${named}`}>
+        <div className="brew-dose-edit bz-edition" aria-label={`Ajuster ${nom}`}>
           {pitchChoosing && (
             <div className="bz-levure-choix" role="radiogroup" aria-label="Quantité de levure réellement ajoutée" data-sans-choix={pitch!.mode ? undefined : ''}>
               {pitch!.options.map((o) => (
@@ -331,7 +338,7 @@ function IngredientRow({
             </button>
           )}
           <div className="brew-dose" data-changed={changed || undefined}>
-            <button type="button" {...press(-rung)} aria-label={`Diminuer ${named}`}>
+            <button type="button" {...press(-rung)} aria-label={`Diminuer ${nom}`}>
               −
             </button>
             <div className="brew-dose-value" onBlur={() => { seance.current = null; }}>
@@ -351,11 +358,11 @@ function IngredientRow({
                   if (problem) retablirAvantFrappe();
                   else patch({ amount: n });
                 }}
-                aria-label={`Quantité réelle de ${named}${item.side ? ' au ' + item.side : ''}`}
+                aria-label={`Quantité réelle de ${nom}${item.side ? ' au ' + item.side : ''}`}
               />
               <span>{item.unit}</span>
             </div>
-            <button type="button" {...press(rung)} aria-label={`Augmenter ${named}`}>
+            <button type="button" {...press(rung)} aria-label={`Augmenter ${nom}`}>
               +
             </button>
           </div>
