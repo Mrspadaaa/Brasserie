@@ -55,3 +55,14 @@
   vue-brassin, choix du brasseur) ; mission `2026-11-10-parcours-complet` (agent critique en cours, VERDICT.md attendu).
 - 10.11 : la session vue-brassin a déployé sa vue de brassin z1 (16 fichiers Brew*) : base de tout déploiement suivant = tag
   `en-ligne/2026-11-10-brassin2` (compta11 + port z1). Ne jamais repartir de compta11 seul.
+
+## Reprise (10.11, midi) — pilote
+- Dernier hébergement : tag `en-ligne/2026-11-10-lecture2` (session lecture-robuste ; contient brassin2 = compta11 + vue z1). aiTask 69ebb660
+  (tag `aitask/2026-11-10-1148`, retour `aitask/2026-11-10-f2`).
+- Restes de test supprimés dans Firestore (accord « oui ») : transactions/TX-c5cc184f…, financialPayments PAY- et CONTRE-PAY-c5cc184f…,
+  clients/CL-006. La vente ZZ REC-9d44a94b… reste annulée (voidedAt). Retour à l'état de départ non relu dans l'app.
+- En cours : voie b1 (agent auteur) `work/missions/2026-11-10-parcours-complet/voies/b1/` : PC-1 brassage qui déstocke, PC-2 a-d, dans un
+  worktree détaché sur lecture2, branche `b1/parcours` ; ensuite : déployer depuis lecture2 + b1, tag `en-ligne/<date>-parcours`, rejouer
+  le parcours complet (critique Opus, jamais Fable).
+- Domaines : plan app.laffinee.ch publié (session domaines) ; commit 86c0b562 (driveAuthorization) à déployer côté fonctions, accord attendu.
+- Ordre du brasseur : aucun Fable (hook de blocage en place, 0b7e03d8).
