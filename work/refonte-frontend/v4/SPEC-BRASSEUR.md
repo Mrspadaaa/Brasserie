@@ -1650,3 +1650,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la ligne ajoutée garde le focus sur son nom, et défile en haut de la liste pour se voir entière, unité comprise.)
 - **10.11**, mot pour mot : « Oui exactement ces vues, bravo continue » (sur les montages p4 Idaho 7 : vue FACTURE | STOCK et trio) ; « Continue sans mes input, ne créé pas de régression, fait bien des commits pour rollback au cas où » ; « Parcontre, l'ajout de par exemple Idaho 7 le fait passer en houblons automatiquement, et du coup on perd le focus dessus... »
   (lu : une ligne ajoutée garde sa bande tant qu'elle est ouverte, même le nom quitté ; elle rejoint Houblons à sa fermeture.)
+
+- **10.11**, mot pour mot, sur la page « Onglet Mon mois · v0 » (https://claude.ai/artifact/KrAgKX1bDreQQUxZaNZEsK), en citant la vignette « Payée ou à payer / f2d / « ✓ Payé | À payer » : la pièce tombe pleine ou hachurée. Titre en trop. » : « C'est top mais les maquettes de base de dépense sont pas vraiment les bonnes attention à bien implémenter ça sur la vrai app, vrai vue »
+  (lu : f2d choisie, sans son titre ; l'onglet se porte sur la vraie Nouvelle dépense et la vraie Caisse telles qu'elles sont dans l'app, pas sur le fond dessiné des maquettes ; la bascule « ✓ Payé | À payer » est le règlement réel de la pièce, pas un second état.)

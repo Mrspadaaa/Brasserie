@@ -23,8 +23,13 @@ export function pieceDeDepense(draft: PurchaseDraft): PieceEnSaisie {
 }
 
 /** L'effet de la pièce sur son mois, recalculé seulement quand la pièce ou le nombre d'écritures change. */
-export function useEffetPiece(piece: PieceEnSaisie, transactions: FinanceTransaction[], payments: FinancialPayment[], idFinal?: string): EffetPiece | null {
+export function useEffetPiece(piece: PieceEnSaisie, transactions: FinanceTransaction[] | undefined, payments: FinancialPayment[] | undefined, idFinal?: string): EffetPiece | null {
   const cle = JSON.stringify(piece);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => effetPiece({ piece, transactions, payments, aujourdhui: todayISO(), idFinal }), [cle, transactions, payments, idFinal]);
+  // Sans donnée (service absent, mock partiel, écriture illisible), l'onglet se tait : jamais la saisie ne plante pour lui.
+  return useMemo(() => {
+    if (!Array.isArray(transactions)) return null;
+    try { return effetPiece({ piece, transactions, payments: Array.isArray(payments) ? payments : [], aujourdhui: todayISO(), idFinal }); }
+    catch { return null; }
+  }, [cle, transactions, payments, idFinal]);
 }

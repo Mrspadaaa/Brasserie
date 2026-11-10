@@ -274,7 +274,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const libelleTotal = totaux ? fr(totaux.totalCents) : '—';
   /* Mon mois (f2d) : l'effet de CETTE vente sur son mois, par `periodeSynthese`. Le mode (Payé ici | Facture QR) est le seul état : la bascule de la carte l'écrit. */
   const choisirQr = () => { if (!client) { setVeutFacture(true); return; } setMode('qr'); };
-  const effetMois = useEffetPiece({ sens: 'in', date: dateIso, montantCents: totaux?.totalCents ?? 0, categorie: 'recettes', description: nomAnnexe0(client), reglement: mode === 'paye' ? 'paye' : 'a-payer', dateReglement: dateIso, moyen: moyen === 'cash' ? 'cash' : moyen === 'twint' ? 'twint' : 'other', echeance: dueDate }, transactions, useMemo(() => FinanceService.getPayments(), [transactions]));
+  const effetMois = useEffetPiece({ sens: 'in', date: dateIso, montantCents: totaux?.totalCents ?? 0, categorie: 'recettes', description: nomAnnexe0(client), reglement: mode === 'paye' ? 'paye' : 'a-payer', dateReglement: dateIso, moyen: moyen === 'cash' ? 'cash' : moyen === 'twint' ? 'twint' : 'other', echeance: dueDate }, transactions, useMemo(() => { try { return FinanceService.getPayments?.() ?? []; } catch { return []; } }, [transactions]));
   const libellePrimaire = occupe ? 'Enregistrement…' : enAttente ? 'Reprendre la confirmation' : null;
 
   const choisirDate = (valeur: string) => {

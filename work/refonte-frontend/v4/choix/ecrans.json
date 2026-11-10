@@ -193,6 +193,7 @@
    ],
    "provisoire": "étape de Dryhopper",
    "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
-  }
+  },
+    {"ecran":"onglet-mon-mois","route":"depense+caisse","statut":"choisi","choix":"f2d (2026-11-10-onglet-finances v0)","mots":"C'est top mais les maquettes de base de dépense sont pas vraiment les bonnes attention à bien implémenter ça sur la vrai app, vrai vue","capture":"work/missions/2026-11-10-onglet-finances/v0/f2d/f2d-haut.png","page":"https://claude.ai/artifact/KrAgKX1bDreQQUxZaNZEsK","note":"Choisie le 10.11 sans son titre (« Titre en trop »). Fond = la vraie Nouvelle dépense et la vraie Caisse, jamais le fond dessiné de la maquette."}
  ]
 }

@@ -335,7 +335,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const draftEff={...avecUnitesDeduites(draft,articlesStock),...(qrReference?{paymentReference:qrReference}:{})};
   /* Mon mois (f2d) : l'effet de CETTE pièce sur son mois, par `periodeSynthese` ; la bascule réécrit le Règlement de la saisie (même état, même geste que « Déjà payé / À payer »). */
   const [moisOuvert,setMoisOuvert]=useState(false);
-  const effetMois=useEffetPiece(pieceDeDepense(draftEff),transactions,FinanceService.getPayments(),`TX-${draft.submissionId}`);
+  const paiementsMois=useMemo(()=>{try{return FinanceService.getPayments?.()??[];}catch{return [];}},[transactions]);
+  const effetMois=useEffetPiece(pieceDeDepense(draftEff),transactions,paiementsMois,`TX-${draft.submissionId}`);
   const effParId=new Map(draftEff.lines.map(l=>[l.id,l]));
   /* La ligne avec son unité déduite (même objet que l'enregistrement) ; l'unité que le stock lit. */
   const effDe=(line:PurchaseLineDraft)=>effParId.get(line.id)??line;
