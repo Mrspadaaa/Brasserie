@@ -3255,7 +3255,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-lecture { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-height: 40px; }
 .brew-page.bz .bz-lecture .bz-saisie { margin-top: 0; flex: 1 1 auto; min-width: 0; }
 .brew-page.bz .bz-val { display: flex; align-items: baseline; gap: 4px; min-height: 40px; padding: 0 2px; border: 0; border-bottom: 1.5px dashed var(--bz-border2); border-radius: 0; background: none; color: var(--bz-t0); }
-.brew-page.bz .bz-quoi { flex: 1 1 auto; min-width: 0; white-space: nowrap; color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-quoi { flex: 0 0 auto; white-space: nowrap; color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-val b { font-size: 28px; line-height: 1.05; font-weight: 600; }
 .brew-page.bz .bz-val[data-vide] b { color: var(--bz-warn); }
 .brew-page.bz .bz-val .bz-u { color: var(--bz-t2); font-size: 14px; }
