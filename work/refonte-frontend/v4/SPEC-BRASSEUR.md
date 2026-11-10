@@ -1675,3 +1675,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **10.11**, mot pour mot, à « Je pars sur m2 … ou tu en préfères une autre ? » : « non part là dessus » (lu : m2 choisie, avec le geste commun ; à porter.)
 - **10.11**, mot pour mot, à « Tout est bon ? » (non : 1 Mesurer écrit à l'ouverture, 2 enrichissement α vide / malt muet / atténuation vide, 3 liste des catégories à 2 lignes, 4 Mesurer à 1280 non testé en ligne, 5 domaines : origine Google Cloud et correctif Drive) puis « Je corrige 1 et 2 maintenant ? » : « Oui et oui et tous sauf 4 »
   (lu : corriger 1, 2, 3 ; déployer le correctif serveur Drive (fait, driveAuthorization, tag drive/2026-11-10-domaine) ; laisser 4.)
+- **10.11**, mot pour mot : « Tout les nouvelles vue on mis du temps à chargé, il semblerait qu'il y aille un peu de lenteur dans l'app »
+  (lu : à mesurer avant tout (L20) : temps d'ouverture de chaque vue en ligne, au téléphone, premier passage après déploiement et passages suivants.)
