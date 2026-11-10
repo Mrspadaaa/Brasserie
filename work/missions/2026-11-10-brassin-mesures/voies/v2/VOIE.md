@@ -36,3 +36,12 @@ puis `impeccable` et `ui-design-system`. Applique la check-list de `boosters-ux`
 variante, les boosters retenus et les points de la check-list vérifiés sur capture (hiérarchie, premier plan, états, retour du geste,
 saisie au téléphone, cible du pouce). Réemploie les composants et jetons existants (DESIGN.md, `src/ui/` : échelle `MeasureScaleView`
 de `BrewDayMeasurements.tsx`), aucun dessin libre hors grammaire z1.
+
+## Passe 2b (pilote, après `../../critique/SYNTHESE-v2.md`)
+Agent neuf : lis `RESULTAT.md` de cette voie et `SYNTHESE-v2.md`, puis corrige dans les dix variantes de `page-v2`, sans rien d'autre :
+1. un toucher sur le pouce sans le bouger enregistre la valeur où il est (67,0 pile d'un toucher), ou « Enregistrer » le permet sans
+   déplacement ; prouve-le par un geste joué dans Chrome (capture) ;
+2. après le relevé, la valeur revient comme dans z1 : dans l'horloge (« relevé 66,4 ») et dans la carte « Relevés du jour » ; pas une
+   troisième fois ailleurs ;
+3. m8 : plus de « montée 0,1 min » (une durée absurde ne s'affiche pas).
+Rejoue `verifier-page.mjs --page-lot` (PAGE OK dans `tests.txt`), rouvre les captures touchées, complète RESULTAT.md. Une ligne.
