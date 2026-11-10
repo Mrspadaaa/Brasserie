@@ -1670,3 +1670,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu, portée étroite et réversible, L01 : la saisie des mesures du jour de brassage (pH, température, densité, volume) se fait au téléphone par un curseur posé sur l'échelle cible de z1, la valeur tapée restant à un toucher ; les autres champs chiffrés de l'app ne sont pas visés tant qu'il ne l'étend pas.)
 - **10.11**, mot pour mot, juste après : « utilise les ux, ui booster » ; « enfin les vraim truc mis en place... »
   (lu : la passe se conçoit avec le skill `boosters-ux` et les outils déjà en place (`impeccable`, `ui-design-system`, contrôles du dépôt), pas à la main.)
+- **10.11**, mot pour mot, sur la page « Brassin : mesurer au curseur » (V8cp9HDzNbGN9NHxDpY51F), à « Quelle variante je porte ? » : « Le geste, joué au doigt (commun aux 10) »
+  (lu, étroit : il retient la section du geste commun — pouce en pointillé, un toucher pose la cible, piste puis ±0,1, après : horloge et Relevés du jour ; la variante de premier plan reste à choisir.)
