@@ -208,7 +208,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(screen.queryByRole('button', { name: 'Saisie rapide', exact: true })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
     // BX-4 (09.11) : au Bord, l'action de l'écran est « Nouvelle écriture » ; « Entrer une facture » n'est plus répétée dans le menu. La vente passe par la même saisie rapide.
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Encaisser une vente/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Vendre/ }));
     expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);

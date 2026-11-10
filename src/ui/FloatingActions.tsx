@@ -178,7 +178,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
   groups.push([
     { key: 'invoice', label: 'Entrer une facture', hint: 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
-    { key: 'sale', label: 'Encaisser une vente', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
+    { key: 'sale', label: 'Vendre', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
   ]);
   groups.push([
     { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },

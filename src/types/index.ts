@@ -718,6 +718,9 @@ export interface Batch {
 
 export type ClientStatus = 'Fidèle' | 'Actif' | 'Prospect';
 
+/** Adresse structurée saisie (norme QR-facture) ; le nom vient de la fiche ou de la brasserie. */
+export interface AdresseSaisie { rue: string; numero: string; npa: string; localite: string; pays: string }
+
 export interface Client {
   id: string; // CL-001
   name: string;
@@ -725,7 +728,10 @@ export interface Client {
   contact: string;
   phone: string;
   email: string;
+  /** Adresse en une chaîne (anciennes fiches, autres lecteurs). Dérivée de `adresse` à chaque écriture complète ; jamais effacée sinon. */
   address?: string;
+  /** Adresse structurée (QR-facture) : prime pour la caisse. */
+  adresse?: AdresseSaisie;
   notes?: string;
   /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
   favorite?: boolean;
@@ -753,15 +759,23 @@ export interface GanttTask {
   completed?: boolean;
 }
 
+/** Format d'un tarif (ids de la caisse : formatsVente.ts). Le tarif porte son format : plus de regex sur le libellé quand il est renseigné (ue, 09.11). */
+export interface FormatTarif { id: '33cl' | '75cl' | 'fut'; volumeL: number }
 export interface PricingItem {
   product: string;
-  costIngredients: number;
-  costLabor: number;
-  costFixed: number;
-  costTotal: number;
+  /** Bière du tarif : le nom de la recette, pas celui d'un lot. Absent sur un ancien tarif (à compléter). */
+  biere?: string;
+  format?: FormatTarif;
+  /** Emballage d'UNE unité (CHF, base HT si assujetti), saisi dans la fiche du tarif. Absent = à compléter, jamais 0. */
+  emballageUnite?: number;
+  /** Hérités de l'ancien formulaire (coût saisi à la main) : plus écrits, jamais effacés d'une ligne existante. */
+  costIngredients?: number;
+  costLabor?: number;
+  costFixed?: number;
+  costTotal?: number;
   priceHT: number;
-  marginCHF: number;
-  marginPercent: number;
+  marginCHF?: number;
+  marginPercent?: number;
 }
 
 export interface BudgetLine {
@@ -820,6 +834,8 @@ export interface AppConfig {
     communeContact: string;
     iban?: string;
     bankName?: string;
+    /** Adresse structurée de la brasserie (QR-facture, P7). Absente sur les anciennes configurations. */
+    adresse?: AdresseSaisie;
   };
   fiscal: {
     /**

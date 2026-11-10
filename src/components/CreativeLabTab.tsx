@@ -25,7 +25,6 @@ import { CreativeItem, Recipe, Client } from '../types';
 import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
 import { UpgradeWorkspace } from '../ui/finance/UpgradeWorkspace';
-import { CreativePricing } from '../ui/finance/CreativePricing';
 import { BrewerChat } from '../ui/BrewerChat';
 import { Pencil } from 'lucide-react';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
@@ -206,7 +205,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   return (
     <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
       {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
-      <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Essais de tarifs',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
+      <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Idées de tarif',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
       <div className="creative-nav" role="group" aria-label="Mon atelier">
         {([['equipment','Matériel'],['recipe-idea','Bières'],['pricing-test','Tarifs'],['prospect','Contacts'],['event','À faire']] as const).map(([key,label])=><button key={key} aria-pressed={activeSection===key} onClick={()=>setActiveSection(key)}>{label}</button>)}
       </div>
@@ -272,7 +271,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
         </div>
       )}
 
-      {activeSection==='pricing-test'&&<><CreativePricing/><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
+      {activeSection==='pricing-test'&&<><p className="finance-muted">Pour fixer un prix : Clients › Prix (le coût y vient du brassin). Ici, tes idées de tarif.</p><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
 
       {/* 6. SECTION 4: PROSPECTS & PASSERELLE CRM EN 1 CLIC */}
       {activeSection === 'prospect' && (

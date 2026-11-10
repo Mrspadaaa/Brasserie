@@ -1,0 +1,116 @@
+/* c3a — coût d'un brassin et d'un litre (maquette choisie, 09.11). Classes préfixées `cbf-` (L26). Teintes de catégorie de la maquette ;
+   fond, texte et bords par les jetons de l'app (clair et cave). La couleur « Malt » est celle de la maquette, pas l'échelle EBC. */
+.cbf, .cbf-act, .cbf-noeud, .cbf-fait {
+  --cbf-malt: #D2B356; --cbf-ener: #D27B56; --cbf-net: #56C1D2; --cbf-emb: #9A8A7E; --cbf-imp: #1F64A3; --cbf-fix: #9856D2; --cbf-mat: #567BD2; --cbf-hop: #7FA35B;
+  --cbf-stock: #5E8C3A; --cbf-an: #9856D2;
+  --cbf-now: rgb(var(--cave-50));
+  --cbf-fond: rgb(var(--cave-950));
+  --cbf-trait: rgb(var(--cave-400));
+  --cbf-t0: rgb(var(--cave-50)); --cbf-t1: rgb(var(--cave-200)); --cbf-t2: rgb(var(--cave-400));
+  --cbf-panneau: rgb(var(--cave-900)); --cbf-bord: rgb(var(--cave-700));
+  --cbf-sur-ink: rgb(var(--cave-950));
+  --cbf-att: #7F5B10;
+}
+.cbf { width: 100%; max-width: 390px; margin: 0 auto; padding: 0 0 8px; color: var(--cbf-t1); font-size: 14px; line-height: 1.3; }
+[data-theme='cave'] .cbf, [data-theme='cave'] .cbf-act, [data-theme='cave'] .cbf-noeud, [data-theme='cave'] .cbf-fait {
+  --cbf-imp: #5B9BD5; --cbf-fix: #B98AE8; --cbf-an: #B98AE8; --cbf-mat: #86A5EC; --cbf-stock: #8FBF6A; --cbf-hop: #9CC27A; --cbf-emb: #B3A397;
+  --cbf-att: #F2C14E;
+}
+.cbf-m { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.cbf button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+.cbf button:focus-visible { outline: 2px solid var(--cbf-t0); outline-offset: 2px; border-radius: 10px; }
+.cbf-fil { display: flex; justify-content: flex-end; padding: 0 0 6px; }
+.cbf-vol { font-size: 13px; color: var(--cbf-t0); background: var(--cbf-panneau); border: 1px solid var(--cbf-bord); border-radius: 10px; padding: 6px 10px; min-height: 32px; }
+.cbf-vol[data-inconnu] { color: var(--cbf-att); border: 1px dashed var(--cbf-att); }
+.cbf-cols { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--cbf-t2); text-transform: uppercase; letter-spacing: .06em; }
+.cbf-sk { position: relative; margin-top: 2px; }
+.cbf-sk svg.cbf-flux { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cbf-src { position: absolute; left: 0; width: 100px; min-height: 44px; display: flex; flex-direction: column; justify-content: center; border-radius: 10px; padding: 2px 4px 2px 0; }
+.cbf-src small { font-size: 13px; color: var(--cbf-t1); font-weight: 600; line-height: 1.1; display: flex; align-items: center; gap: 5px; }
+.cbf-src small i { width: 9px; height: 9px; border-radius: 10px; display: inline-block; flex-shrink: 0; }
+.cbf-src b { font-size: 17px; font-weight: 600; color: var(--cbf-t0); line-height: 1.25; }
+.cbf-src.cbf-pale { opacity: .35; }
+.cbf-dst { position: absolute; left: 64.1%; right: 0; gap: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--cbf-t1); transform: translateY(-50%); white-space: nowrap; min-height: 24px; }
+.cbf-dst b { font-weight: 500; color: var(--cbf-t0); font-size: 13px; }
+.cbf-dst.cbf-ex b { border-bottom: 1.5px dotted var(--cbf-t2); }
+.cbf-dst.cbf-q b { color: var(--cbf-att); font-weight: 600; }
+.cbf-dst.cbf-pale { opacity: .35; }
+.cbf-exl { position: absolute; right: 0; bottom: 0; font-size: 12px; color: var(--cbf-t2); }
+.cbf-exl span { border-bottom: 1.5px dotted var(--cbf-t2); }
+.cbf-res { margin: 8px 0 0; border-radius: 16px; background: var(--cbf-t0); color: var(--cbf-sur-ink); padding: 10px 12px 12px; }
+.cbf-row { display: flex; align-items: center; gap: 10px; }
+.cbf-div { font-size: 13px; opacity: .8; display: flex; flex-direction: column; line-height: 1.15; }
+.cbf-div b { font-size: 16px; opacity: 1; font-weight: 600; }
+.cbf-eq { font-size: 22px; opacity: .8; }
+.cbf-big { font-size: 32px; font-weight: 600; letter-spacing: -.02em; }
+.cbf-u { font-size: 13px; opacity: .85; display: flex; flex-direction: column; line-height: 1.15; }
+.cbf-u em { font-style: normal; color: #F2C14E; font-weight: 600; font-size: 12px; opacity: 1; }
+[data-theme='cave'] .cbf-u em { color: #8A5A00; }
+.cbf-res.cbf-now { background: #F2C14E; color: #111; }
+.cbf-res.cbf-now .cbf-u em { color: #3A2E0A; }
+.cbf-quand { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 13px; color: #3A2E0A; }
+.cbf-quand b { color: #111; font-weight: 600; margin-left: 4px; }
+.cbf-quand small { font-size: 12px; opacity: .85; }
+.cbf-note { margin-top: 4px; font-size: 12px; color: #3A2E0A; }
+.cbf-litw { margin: 14px 0 0; }
+.cbf-litt { font-size: 13px; font-weight: 600; color: var(--cbf-t1); margin-bottom: 6px; }
+.cbf-lit { display: flex; height: 22px; border-radius: 10px; overflow: hidden; gap: 2px; }
+.cbf-lit span { display: block; height: 100%; }
+.cbf-lit-vide { background: repeating-linear-gradient(45deg, var(--cbf-fond) 0 3px, var(--cbf-trait) 3px 5px); border: 1px solid var(--cbf-trait); }
+.cbf-litl { display: flex; margin-top: 5px; font-size: 13px; color: var(--cbf-t2); gap: 8px; }
+.cbf-litl span { white-space: nowrap; }
+.cbf-litl b { color: var(--cbf-t0); font-weight: 600; }
+.cbf-extra { margin-top: 12px; display: grid; gap: 8px; font-size: 13px; color: var(--cbf-t1); }
+.cbf-extra p { margin: 0; }
+.cbf-extra .brew-budget-section { gap: 6px; }
+.cbf-extra .brew-budget-section h3 { font-size: 14px; }
+.cbf-extra .brew-budget-hint { font-size: 13px; line-height: 1.4; }
+.cbf-statut { font-size: 13px; color: var(--cbf-att); }
+.cbf-enregistree { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--cbf-t2); }
+.cbf-enregistree b { color: var(--cbf-t0); font-weight: 600; }
+/* Pied de feuille : Expliquer (bleu clair), action principale noire (maquette). */
+.cbf-act { display: flex; gap: 8px; width: 100%; max-width: 390px; margin: 0 auto; }
+.cbf-pri, .cbf-sec, .cbf-ia { height: 44px; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; padding: 0 12px; }
+.cbf-pri { flex: 1; background: var(--cbf-t0); color: var(--cbf-sur-ink); }
+.cbf-pri:disabled { opacity: .4; cursor: not-allowed; }
+.cbf-sec { border: 1px solid var(--cbf-bord); color: var(--cbf-t0); }
+.cbf-sec:disabled { opacity: .4; cursor: not-allowed; }
+.cbf-ia { background: rgba(31, 100, 163, .12); color: #1F64A3; }
+[data-theme='cave'] .cbf-ia { background: rgba(91, 155, 213, .16); color: #8FBFEA; }
+.cbf-retour { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; font-size: 14px; color: var(--cbf-t1); margin-bottom: 8px; }
+.cbf-noeud { max-width: 760px; margin: 0 auto; }
+
+/* Corrections du test d'écran (09.11). */
+/* 5 : la pastille « 27 L nets » prend la ligne des titres de colonnes (elle coûtait une ligne entière) ; sa zone tactile déborde sans toucher un autre bouton. */
+.cbf-cols { align-items: center; min-height: 28px; }
+.cbf button.cbf-vol { position: relative; min-height: 26px; padding: 3px 10px; font-size: 13px; text-transform: none; letter-spacing: 0; font-weight: 500; background: var(--cbf-panneau); border: 1px solid var(--cbf-bord); border-radius: 10px; }
+.cbf button.cbf-vol[data-inconnu] { border: 1px dashed var(--cbf-att); }
+.cbf-vol::after { content: ''; position: absolute; inset: -5px -4px; }
+/* 1 : le bloc du litre reste visible en bas de la feuille quand l'écran est trop court pour tout montrer ; au repos il garde sa place de la maquette. */
+.cbf-resw { position: sticky; bottom: 0; z-index: 2; background: var(--cbf-panneau); padding: 6px 0 4px; margin-top: 2px; }
+.cbf-resw .cbf-res { margin: 0; }
+/* 3 : « Déjà payé » et « Coût de l'année » donnent leur bloc dans leur couleur, comme « À payer » (état 2 de la maquette). */
+.cbf-res.cbf-sel-stock { background: var(--cbf-stock); color: #fff; }
+.cbf-res.cbf-sel-an { background: var(--cbf-an); color: #fff; }
+[data-theme='cave'] .cbf-res.cbf-sel-stock, [data-theme='cave'] .cbf-res.cbf-sel-an { color: #111; }
+.cbf-res.cbf-sel-stock .cbf-u b, .cbf-res.cbf-sel-an .cbf-u b { font-weight: 600; font-size: 12px; display: block; }
+.cbf-res.cbf-sel-stock .cbf-quand, .cbf-res.cbf-sel-an .cbf-quand { color: inherit; opacity: .95; }
+.cbf-res.cbf-sel-stock .cbf-quand b, .cbf-res.cbf-sel-an .cbf-quand b { color: inherit; }
+/* 10 (fz) : chaque poste de destination est une zone de 36 px de haut ; `PAS` du flux les espace de 36 px, elles se touchent sans se chevaucher. */
+.cbf button.cbf-dst { min-height: 36px; height: 36px; padding: 0; box-sizing: border-box; }
+/* 2 : le geste « Prévoir » répond dans la feuille. */
+.cbf-fait { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--cbf-stock); padding: 2px 2px 6px; max-width: 390px; margin: 0 auto; }
+.cbf-fait span { color: var(--cbf-t1); font-weight: 500; }
+/* 8 : explications derrière « ? ». */
+.cbf-aide { font-size: 13px; color: var(--cbf-t1); }
+.cbf-aide > button { cursor: pointer; width: 22px; height: 22px; border-radius: 11px; border: 1px solid var(--cbf-bord); background: none; color: var(--cbf-t2); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; position: relative; }
+.cbf-aide > button::after { content: ''; position: absolute; inset: -8px; }
+.cbf-aide[data-ouvert] > button { background: var(--cbf-t0); color: var(--cbf-sur-ink); border-color: var(--cbf-t0); }
+.cbf-aide-texte { position: absolute; left: 0; right: 0; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--cbf-bord); border-radius: 10px; background: var(--cbf-panneau); display: grid; gap: 4px; line-height: 1.4; z-index: 3; }
+.cbf-aide-texte p { margin: 0; }
+.cbf-tete { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cbf-tete h3 { margin: 0; }
+/* 9 : le poste touché est surligné dans la feuille. */
+.cbf-noeud [data-poste-actif='true'] { padding: 4px 6px; background: color-mix(in srgb, var(--cbf-att) 14%, transparent); border-radius: 10px; outline: 1.5px solid var(--cbf-att); outline-offset: 2px; }
+.cbf-lien { display: inline-flex; align-items: center; min-height: 32px; font-size: 13px; font-weight: 600; color: var(--cbf-t0); text-decoration: underline; text-underline-offset: 3px; }
+.cbf-ingr-calcul { color: var(--cbf-t2); }

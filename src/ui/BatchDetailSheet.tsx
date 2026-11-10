@@ -1,6 +1,6 @@
 import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
-import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
+import { Trash2, ArrowRight, AlertTriangle, PackageCheck, Sparkles } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
@@ -19,7 +19,6 @@ import { BatchGravityEntry } from './production/BatchGravityEntry';
 import { formatDecimal, parseDecimal } from './numericInput';
 import { NoloPanel } from './NoloPanel';
 import { noloRecipeForBatch } from '../domain/nolo';
-import { BrewBudgetButton } from './finance/BrewBudgetDialog';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
@@ -33,6 +32,7 @@ import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
+import { ChaineArgent } from './prix/ChaineArgent';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -63,8 +63,22 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [brewDayDraft, setBrewDayDraft] = useState<string | null>(null);
   const [brewDayError, setBrewDayError] = useState('');
-  const [section, setSection] = useState<BatchDetailSection>(initialSection);
+  const [section, setSection] = useState<BatchDetailSection | 'argent'>(initialSection);
+  /** e3a : « ✦ Proposer » est l'action primaire de l'onglet Argent ; la chaîne ouvre l'IA quand ce compteur monte. */
+  const [proposerArgent, setProposerArgent] = useState(0);
   const [noloNotice,setNoloNotice]=useState('');
+  /** `focusOg` : « Noter la densité » (feuille Impôt bière ou coût, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale. */
+  const [focusOg, setFocusOg] = useState(false);
+  useEffect(() => {
+    if (!focusOg || section !== 'measurements') return;
+    const timer = window.setTimeout(() => {
+      const champ = document.querySelector<HTMLInputElement>('input[name="batch_sheet_og"]');
+      champ?.focus();
+      champ?.scrollIntoView?.({ block: 'center' });
+      setFocusOg(false);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [focusOg, section]);
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
@@ -182,9 +196,11 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)} visés`}
         className="md:max-w-2xl md:mx-auto"
         footer={
-          <Button intent="primary" full onClick={onClose}>
-            Fermer
-          </Button>
+          section === 'argent'
+            ? <Button intent="primary" full onClick={() => setProposerArgent(n => n + 1)} icon={<Sparkles className="w-5 h-5" />}>Proposer</Button>
+            : <Button intent="primary" full onClick={onClose}>
+              Fermer
+            </Button>
         }
       >
         <div className="space-y-2">
@@ -195,14 +211,15 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           <YeastPreparationPanel batch={draft} onSave={save} />
           {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
-            className="grid grid-cols-3 border-b border-cave-700"
+            className="grid grid-cols-4 border-b border-cave-700"
             aria-label="Rubriques du brassin"
           >
             {(
               [
                 ['measurements', 'Mesures'],
                 ['tasting', 'Carnet'],
-                ['overview', 'Dossier']
+                ['overview', 'Dossier'],
+                ['argent', 'Argent']
               ] as const
             ).map(([key, label]) => (
               <button
@@ -246,7 +263,6 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           })()}
           {section === 'overview' && (
             <>
-              <BrewBudgetButton batch={draft} />
               <section className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>
@@ -276,6 +292,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
+          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} proposer={proposerArgent} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />}
           {section === 'measurements' && (
             <>
               <section className="space-y-2">

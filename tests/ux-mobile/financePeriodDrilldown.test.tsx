@@ -137,8 +137,7 @@ describe('Percer une période de prévisions', () => {
 
   it('préserve le parcours de catégorie de CostComposition vers le journal', async () => {
     renderFinances();
-    fireEvent.click(screen.getByRole('button', { name: 'Coûts' }));
-    fireEvent.click(screen.getByRole('button', { name: /Brassage.*Voir ces opérations/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Brassage.*[Vv]oir ces opérations/ }));
     await waitFor(() => expect(screen.getByRole('tab', { name: 'Opérations' })).toHaveAttribute('aria-selected', 'true'));
     expect(screen.getByLabelText('Catégorie')).toHaveValue('brassage');
     expect(screen.getByRole('button', { name: /Houblon Cascade/ })).toBeVisible();

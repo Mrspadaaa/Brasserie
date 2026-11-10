@@ -42,7 +42,7 @@ describe('Archives accessibles et journal quotidien', () => {
   });
   it('archive une année depuis le récapitulatif puis la réintègre sans changer les pièces', async () => {
     savePaid('ANCIEN'); const original = JSON.stringify(StorageService.getTransactions()); render(<Workspace/>);
-    fireEvent.click(screen.getByText('Autres filtres', {exact:true}));
+    fireEvent.click(screen.getByRole('button', { name: /^Filtres/ })); // v6b : le panneau « Filtres » porte « Gérer les archives »
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: `Archiver ${previousYear}`, exact: true }));
     expect(FinancialArchiveService.getArchives()).toHaveLength(0);
@@ -70,6 +70,7 @@ describe('Archives accessibles et journal quotidien', () => {
     StorageService.addTransaction({ ...purchase('HISTORIQUE'), finance: undefined });
     await FinancialArchiveService.setYearArchived(previousYear, true); render(<Workspace/>);
     expect(screen.queryByRole('button', { name: /Achat HISTORIQUE/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Filtres/ }));
     fireEvent.click(screen.getByRole('button', { name: 'À compléter', exact: true }));
     expect(screen.getByRole('button', { name: /Achat HISTORIQUE/ })).toBeInTheDocument();
     expect(screen.getByText(/Suivi sur tous les exercices/)).toBeInTheDocument();
@@ -81,6 +82,7 @@ describe('Archives accessibles et journal quotidien', () => {
     expect(screen.getAllByRole('button', { name: /^Pièce page / })).toHaveLength(50);
     fireEvent.click(screen.getByRole('button', { name: 'Page suivante' }));
     expect(screen.getByText('Page 2 sur 3')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Rechercher' })); // v6b : la loupe ouvre le champ
     fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une opération' }), { target: { value: 'Pièce page 122' } });
     expect(screen.getByRole('button', { name: 'Pièce page 122' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /^Pièce page / })).toHaveLength(1);

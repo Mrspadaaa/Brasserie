@@ -32,7 +32,9 @@ const ligneSeule = (c: number, i: number): Transaction => ({
 });
 const rendu = (transactions: Transaction[]) => {
   const { container } = render(<TransactionJournal transactions={transactions} payments={[]} archives={[]} renderRow={t => <span>{t.description}</span>} onManageArchives={() => {}} onPrivateMovement={() => {}} />);
-  return (container.textContent ?? '').replace(/\s+/g, ' ').replace(/[  ]/g, ' ');
+  // v6b : le compteur et le total d'un groupe sont portés par son nom accessible (« Brassage · 27 opérations · 220,80 »), plus par un en-tête de période.
+  const groupes = [...container.querySelectorAll('section[aria-label]')].map(el => el.getAttribute('aria-label')).join(' ');
+  return `${groupes} ${container.textContent ?? ''}`.replace(/\s+/g, ' ').replace(/[  ]/g, ' ');
 };
 afterEach(cleanup);
 

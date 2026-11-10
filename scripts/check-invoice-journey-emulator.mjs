@@ -1103,14 +1103,14 @@ async function financeViews(c, docId, { exports = true } = {}) {
   await click(c.page, 'nav button', 'Finances');
   await click(c.page, '#finance-tab-annual');
   await sleep(800);
-  await click(c.page, '#tax-tab-documents');
+  await click(c.page, 'button', '9. Dossier'); // Annuel g6 : le dossier est l'étape 9 de la piste (plus d'onglet #tax-tab-documents)
   await sleep(600);
   await shoot(c, `${docId}-dossier-annuel`);
   const XLSX = (await import(pathToFileURL(join(ROOT, 'node_modules/xlsx/xlsx.mjs')).href));
   const { unzipSync, strFromU8 } = await import(pathToFileURL(join(ROOT, 'node_modules/fflate/esm/index.mjs')).href).catch(() => import('fflate'));
   const exportsView = {};
   let before = readdirSync(c.downloads);
-  await click(c.page, 'button', 'Excel');
+  await click(c.page, 'button', 'Opérations Excel'); // Annuel g6 : tuile « Opérations · Excel » du dossier
   const xlsx = await downloaded(c, before, 'Excel').catch(error => { exportsView.excel = String(error).slice(0, 120); return null; });
   if (xlsx) {
     const book = XLSX.read(readFileSync(xlsx));
@@ -1122,10 +1122,10 @@ async function financeViews(c, docId, { exports = true } = {}) {
   }
   before = readdirSync(c.downloads);
   // Après le téléchargement Excel, l'écran Annuel peut revenir à « Préparer » : on le constate (exportsView) et on rouvre « Dossier ».
-  if (!(await c.page.$$eval('button', nodes => nodes.some(b => b.getClientRects().length && b.innerText.trim().startsWith('Télécharger le dossier avec justificatifs'))))) {
+  if (!(await c.page.$$eval('button', nodes => nodes.some(b => b.getClientRects().length && (b.getAttribute('aria-label') || b.innerText).trim().startsWith('Télécharger le dossier avec justificatifs'))))) {
     exportsView.ongletDossierReinitialiseApresExcel = true;
     await shoot(c, `${docId}-annuel-reinitialise`);
-    await click(c.page, '#tax-tab-documents');
+    await click(c.page, 'button', '9. Dossier'); // Annuel g6 : le dossier est l'étape 9 de la piste (plus d'onglet #tax-tab-documents)
     await sleep(600);
   }
   await click(c.page, 'button', 'Télécharger le dossier avec justificatifs');

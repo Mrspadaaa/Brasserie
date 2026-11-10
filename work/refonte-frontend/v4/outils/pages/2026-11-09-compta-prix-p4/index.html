@@ -1,0 +1,121 @@
+<title>Compta et prix · passe 4 · 09.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : ta base, puis les variantes ; chaque état se ouvre en grand. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Compta et prix · passe 4</h1>
+<p class="mut">09.11 · après tes verdicts de la passe 3. Première vignette, en pointillé : ta base. Page d'avant : <a href="https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe">passe 3</a>.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>Pour chaque écran : ta maquette, un mélange, ou « aucune ». Cadre bleu : candidate du critique.</p>
+<p class="mut">Choisis : g3a, g6, c3a, v3a, p2b.</p></section>
+
+<section data-choix="prix"><h2>1 · Prix : c6a, la règle revenue</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/c5b-page.png"><img src="img/c5b-haut.png" alt="c5b"></button><figcaption><span class="pill p-ref">Ta base</span><b>Par bouteille ou par an</b> <span class="id">c5b</span></figcaption></figure>
+<figure data-vignette data-reference><button data-agrandir="img/c5a-page.png"><img src="img/c5a-haut.png" alt="c5a"></button><figcaption><span class="pill p-ref">Ta base</span><b>La même aiguille dans l'année</b> <span class="id">c5a</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/c6a-page.png"><img src="img/c6a-haut.png" alt="c6a"></button><figcaption><span class="pill p-cand">Candidate</span><b>La règle revenue</b> <span class="id">c6a</span>C'est c5b, et la règle est revenue.<a href="img/c6a-etat2.png">état 2</a></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c6b-page.png"><img src="img/c6b-haut.png" alt="c6b"></button><figcaption><span class="pill p-ok">Bien</span><b>Le mur de l'année</b> <span class="id">c6b</span>Le mur de 3 636 bouteilles rend l'aire en 3 s.<a href="img/c6b-etat2.png">état 2</a></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c6c-page.png"><img src="img/c6c-haut.png" alt="c6c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>La règle à calcul</b> <span class="id">c6c</span>Deuxième réglette décalée de 2,48 ; l'étrier demande une lecture.<a href="img/c6c-etat2.png">état 2</a></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c6d-page.png"><img src="img/c6d-haut.png" alt="c6d"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Le compteur</b> <span class="id">c6d</span>Deux échelles mêlées sur un cadran ; illisible en 3 s.<a href="img/c6d-etat2.png">état 2</a></figcaption></figure>
+</div></section>
+
+<section data-choix="prix-c5b"><h2>1 bis · Prix : c5b retouchée</h2><p class="mut">Tes mots : « c5b était mieux, mais il faut un peu l’améliorer ». Trois retouches légères.</p><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/c5b-page.png"><img src="img/c5b-haut.png" alt="c5b"></button><figcaption><span class="pill p-ref">Ta base</span><b>Par bouteille ou par an</b> <span class="id">c5b</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c7a-page.png"><img src="img/c7a-haut.png" alt="c7a"></button><figcaption><span class="pill p-ok">Retouche</span><b>c5b, quatre retouches</b> <span class="id">c7a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c7b-page.png"><img src="img/c7b-haut.png" alt="c7b"></button><figcaption><span class="pill p-ok">Retouche</span><b>Un seul axe qui change avec la bascule</b> <span class="id">c7b</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c7c-page.png"><img src="img/c7c-haut.png" alt="c7c"></button><figcaption><span class="pill p-ok">Retouche</span><b>Deux échelles côte à côte</b> <span class="id">c7c</span></figcaption></figure>
+</div></section>
+<section data-choix="prix-c7c"><h2>1 ter · Prix : c7c, encore mieux</h2><p class="mut">Tes mots : « c7c, c’est vraiment bien, mais on peut faire encore mieux ». Les deux échelles côte à côte, poussées plus loin.</p><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/c7c-page.png"><img src="img/c7c-haut.png" alt="c7c"></button><figcaption><span class="pill p-ref">Ta base</span><b>Deux échelles côte à côte</b> <span class="id">c7c</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c8a-page.png"><img src="img/c8a-haut.png" alt="c8a"></button><figcaption><span class="pill p-ok">Passe 6</span><b>Le thermomètre</b> <span class="id">c8a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c8b-page.png"><img src="img/c8b-haut.png" alt="c8b"></button><figcaption><span class="pill p-ok">Passe 6</span><b>La double règle</b> <span class="id">c8b</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c8c-page.png"><img src="img/c8c-haut.png" alt="c8c"></button><figcaption><span class="pill p-ok">Passe 6</span><b>Deux bouteilles</b> <span class="id">c8c</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c8d-page.png"><img src="img/c8d-haut.png" alt="c8d"></button><figcaption><span class="pill p-ok">Passe 6</span><b>La table</b> <span class="id">c8d</span></figcaption></figure>
+</div></section>
+<section data-choix="previsions-p6"><h2>2 quater · Prévisions : p5a, greffée</h2><p class="mut">Tes mots : p5a « le mieux mais résoud pas tout », avec des aspects de p4a, p5g, p5q et l’escalier p5s.</p><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p5a-page.png"><img src="img/p5a-haut.png" alt="p5a"></button><figcaption><span class="pill p-ref">Ta base</span><b>Chaque marche dit son nom</b> <span class="id">p5a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6a-page.png"><img src="img/p6a-haut.png" alt="p6a"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + le socle</b> <span class="id">p6a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6b-page.png"><img src="img/p6b-haut.png" alt="p6b"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + la remontée</b> <span class="id">p6b</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6c-page.png"><img src="img/p6c-haut.png" alt="p6c"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + déjà, encore</b> <span class="id">p6c</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6d-page.png"><img src="img/p6d-haut.png" alt="p6d"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + avant, après</b> <span class="id">p6d</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6e-page.png"><img src="img/p6e-haut.png" alt="p6e"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + les mois</b> <span class="id">p6e</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p6f-page.png"><img src="img/p6f-haut.png" alt="p6f"></button><figcaption><span class="pill p-ok">Passe 6</span><b>p5a + les ventes</b> <span class="id">p6f</span></figcaption></figure>
+</div></section>
+<section data-choix="previsions"><h2>2 · Prévisions : p5b, les étiquettes accrochées</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p4a-page.png"><img src="img/p4a-haut.png" alt="p4a"></button><figcaption><span class="pill p-ref">Ta base</span><b>Le frigo en marche</b> <span class="id">p4a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5a-page.png"><img src="img/p5a-haut.png" alt="p5a"></button><figcaption><span class="pill p-ok">Bien</span><b>Chaque marche dit son nom</b> <span class="id">p5a</span>p4a plus les étiquettes ; la liste reste.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/p5b-page.png"><img src="img/p5b-haut.png" alt="p5b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Les étiquettes accrochées</b> <span class="id">p5b</span>Là je vois tout sur le graphe.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5c-page.png"><img src="img/p5c-haut.png" alt="p5c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Mois par mois sur l'escalier</b> <span class="id">p5c</span>Sur le graphe il ne reste que des points et « − 3 000 ».</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5d-page.png"><img src="img/p5d-haut.png" alt="p5d"></button><figcaption><span class="pill p-ok">Bien</span><b>Un escalier par chemin</b> <span class="id">p5d</span>Deux escaliers à la même échelle, rien ne se superpose.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5e-page.png"><img src="img/p5e-haut.png" alt="p5e"></button><figcaption><span class="pill p-ok">Bien</span><b>L'écart peint</b> <span class="id">p5e</span>La bande hachurée, le frigo : l'idée la plus forte.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5f-page.png"><img src="img/p5f-haut.png" alt="p5f"></button><figcaption><span class="pill p-res">Avec réserve</span><b>La descente</b> <span class="id">p5f</span>Vertical, nuit : dix secondes pour retrouver l'axe de l'argent.</figcaption></figure>
+</div></section>
+
+<section data-choix="previsions-f52"><h2>2 bis · Prévisions par Fable 5.2</h2><p class="mut">Même question, autre modèle, pour comparer avec la rangée 2. Pas encore jugées par le critique.</p><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p4a-page.png"><img src="img/p4a-haut.png" alt="p4a"></button><figcaption><span class="pill p-ref">Ta base</span><b>Le frigo en marche</b> <span class="id">p4a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5g-page.png"><img src="img/p5g-haut.png" alt="p5g"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Le socle</b> <span class="id">p5g</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5h-page.png"><img src="img/p5h-haut.png" alt="p5h"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Le plafond</b> <span class="id">p5h</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5i-page.png"><img src="img/p5i-haut.png" alt="p5i"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>L’escalier couché</b> <span class="id">p5i</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5j-page.png"><img src="img/p5j-haut.png" alt="p5j"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Trois mois</b> <span class="id">p5j</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5k-page.png"><img src="img/p5k-haut.png" alt="p5k"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Le fleuve</b> <span class="id">p5k</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5l-page.png"><img src="img/p5l-haut.png" alt="p5l"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>L’escalier et ses pistes</b> <span class="id">p5l</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5m-page.png"><img src="img/p5m-haut.png" alt="p5m"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>12 mois : le Gantt d’épargne</b> <span class="id">p5m</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5n-page.png"><img src="img/p5n-haut.png" alt="p5n"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>12 mois : douze tuiles</b> <span class="id">p5n</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5o-page.png"><img src="img/p5o-haut.png" alt="p5o"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>12 mois : le socle sur l’année</b> <span class="id">p5o</span></figcaption></figure>
+</div></section>
+<section data-choix="previsions-f52b"><h2>2 ter · Prévisions par Fable 5.2, la vue graphe</h2><p class="mut">À 300 CHF par mois : déjà 1 567,60, encore 1 432,40, frigo en avril. Coups durs (exemples) : panne 800 → juillet ; contrôle électrique 350 → mai ; fonds +50 par mois → mai ; les trois → septembre.</p><div class="row">
+<figure data-vignette data-variante><button data-agrandir="img/p5p-page.png"><img src="img/p5p-haut.png" alt="p5p"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Déjà, encore</b> <span class="id">p5p</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5q-page.png"><img src="img/p5q-haut.png" alt="p5q"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Avant, après</b> <span class="id">p5q</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5r-page.png"><img src="img/p5r-haut.png" alt="p5r"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Trois coups durs, trois petits graphes</b> <span class="id">p5r</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5s-page.png"><img src="img/p5s-haut.png" alt="p5s"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>L’escalier qui monte</b> <span class="id">p5s</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5t-page.png"><img src="img/p5t-haut.png" alt="p5t"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>La cagnotte et l’éventail</b> <span class="id">p5t</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p5u-page.png"><img src="img/p5u-haut.png" alt="p5u"></button><figcaption><span class="pill p-ok">Fable 5.2</span><b>Avant et après, l’un sous l’autre</b> <span class="id">p5u</span></figcaption></figure>
+</div></section>
+<section data-choix="rangement"><h2>3 · Rangement : e3a, chaque marche dessinée</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/e1b-page.png"><img src="img/e1b-haut.png" alt="e1b"></button><figcaption><span class="pill p-ref">Ta base</span><b>Depuis le brassin</b> <span class="id">e1b</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/e3a-page.png"><img src="img/e3a-haut.png" alt="e3a"></button><figcaption><span class="pill p-cand">Candidate</span><b>Chaque marche dessinée</b> <span class="id">e3a</span>C'est e1b, en mieux.<a href="img/e3a-etat2.png">état 2</a></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/e3b-page.png"><img src="img/e3b-haut.png" alt="e3b"></button><figcaption><span class="pill p-ok">Bien</span><b>La cascade sur une échelle</b> <span class="id">e3b</span>La cascade sur une seule échelle est la plus honnête.<a href="img/e3b-etat2.png">état 2</a></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/e3c-page.png"><img src="img/e3c-haut.png" alt="e3c"></button><figcaption><span class="pill p-ok">Bien</span><b>La bouteille tranchée</b> <span class="id">e3c</span>Tranchée à l'échelle ; le verre « ? » hachuré, juste.<a href="img/e3c-etat2.png">état 2</a></figcaption></figure>
+</div></section>
+
+<section data-choix="operations"><h2>4 · Opérations : v6b, compact, tout le mois</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/v5a-page.png"><img src="img/v5a-haut.png" alt="v5a"></button><figcaption><span class="pill p-ref">Ta base</span><b>Chaque ligne dit tout</b> <span class="id">v5a</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v6a-page.png"><img src="img/v6a-haut.png" alt="v6a"></button><figcaption><span class="pill p-ok">Bien</span><b>Lignes serrées</b> <span class="id">v6a</span>v5a à − 12 % ; « ✓ Payé » reste à 24 px, le minimum.<a href="img/v6a-etat.png">état</a></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/v6b-page.png"><img src="img/v6b-haut.png" alt="v6b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Compact, tout le mois</b> <span class="id">v6b</span>Là c'est compact, je vois tout le mois d'un coup.<a href="img/v6b-etat.png">état</a></figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>

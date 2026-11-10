@@ -1,5 +1,6 @@
 import type { CreativeItem } from '../../types';
 import type { EquipmentUpgrade, FinanceTransaction, FinancialPayment, FinancialPlan } from './types';
+import { DEPRECIATION_CATEGORIES } from './annual';
 import { isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, refundLinkIssue, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 
 export const UPGRADE_TIMINGS = { soon: 'Bientôt', next: 'Ensuite', later: 'Plus tard' } as const;
@@ -44,6 +45,9 @@ export function validateUpgrade(plan: FinancialPlan): void {
   if (!Object.prototype.hasOwnProperty.call(UPGRADE_TIMINGS, detail.timing) || !Object.prototype.hasOwnProperty.call(UPGRADE_STAGES, detail.stage)) throw Error('Choisis un horizon et une étape valides.');
   if (plan.date && !isoDate(plan.date)) throw Error('La date du projet est invalide.');
   if ([detail.purchaseCents, detail.deliveryCents, detail.installationCents].some(value => value != null && (!Number.isSafeInteger(value) || value < 0))) throw Error('Les montants du projet doivent être positifs en centimes CHF.');
+  if (detail.usefulLifeYears != null && !(Number.isFinite(detail.usefulLifeYears) && detail.usefulLifeYears >= 1 && detail.usefulLifeYears <= 50 && Number.isInteger(detail.usefulLifeYears * 2))) throw Error('La durée d’usage va de 1 à 50 ans, par demi-année.');
+  if (detail.inServiceMonth != null && !/^\d{4}-(0[1-9]|1[0-2])$/.test(detail.inServiceMonth)) throw Error('Le mois de mise en service est invalide (AAAA-MM).');
+  if (detail.depreciationCategory != null && !DEPRECIATION_CATEGORIES.some(c => c.id === detail.depreciationCategory)) throw Error('La catégorie d’usure est inconnue.');
   if (plan.upgrade && detail.budgetKnown && upgradeBudget(detail) !== plan.amountCents) throw Error('Le budget doit réunir le prix, la livraison et l’installation.');
   if (plan.upgrade && !detail.budgetKnown && plan.amountCents !== 0) throw Error('Confirme le budget du projet.');
   if (plan.status === 'active' && upgradeReadiness(plan).length) throw Error(upgradeReadiness(plan).join(' '));

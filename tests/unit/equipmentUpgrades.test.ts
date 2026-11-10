@@ -86,3 +86,24 @@ describe('Évolution du matériel de la brasserie', () => {
     expect(outgoing(forecast([project()], all, [payment()]))).toBe(70000);
   });
 });
+
+describe('Durée d’usage, catégorie et mise en service (champs facultatifs)', () => {
+  const avec = (patch: Partial<NonNullable<FinancialPlan['upgrade']>>) => project({ upgrade: { ...project().upgrade!, ...patch } });
+  it('un projet sans ces champs reste valide, budget inchangé', () => {
+    expect(() => validateUpgrade(project())).not.toThrow();
+    expect(upgradeBudget(project().upgrade!)).toBe(120000);
+  });
+  it('accepte durée, catégorie et mise en service valides', () => {
+    expect(() => validateUpgrade(avec({ usefulLifeYears: 5, depreciationCategory: 'production', inServiceMonth: '2026-11' }))).not.toThrow();
+    expect(() => validateUpgrade(avec({ usefulLifeYears: 7.5 }))).not.toThrow();
+    expect(upgradeBudget(avec({ usefulLifeYears: 5 }).upgrade!)).toBe(120000);
+  });
+  it.each([0, 0.5, 51, 4.3, Number.NaN, Number.POSITIVE_INFINITY])('refuse la durée %s', usefulLifeYears => {
+    expect(() => validateUpgrade(avec({ usefulLifeYears }))).toThrow('durée');
+  });
+  it('refuse un mois de mise en service ou une catégorie invalides', () => {
+    expect(() => validateUpgrade(avec({ inServiceMonth: '2026-13' }))).toThrow('mise en service');
+    expect(() => validateUpgrade(avec({ inServiceMonth: '2026-1' }))).toThrow('mise en service');
+    expect(() => validateUpgrade(avec({ depreciationCategory: 'inconnue' as never }))).toThrow('catégorie');
+  });
+});

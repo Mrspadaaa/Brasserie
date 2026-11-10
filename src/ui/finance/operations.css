@@ -1,0 +1,129 @@
+/* Opérations (v6b : lignes serrées, le geste à côté du montant). Classes préfixées `ops-` (L26), racine `.ops`.
+   Clair comme cave : le texte et les fonds prennent les jetons du thème ; seuls les liserés et les piles portent les couleurs de catégorie
+   déjà portées (`--c-…`, deux valeurs selon le thème). `journal.css` ne s'applique plus ici (la racine `finance-journal` est abandonnée). */
+.ops { --ops-haut: 88px; --ops-t1: rgb(var(--cave-texte-50)); --ops-t2: rgb(var(--cave-texte-200)); --ops-t3: rgb(var(--cave-texte-400));
+  --ops-bord: rgb(var(--cave-700)); --ops-fond: rgb(var(--cave-850)); --ops-hach-a: rgb(var(--attention)); --ops-hach-b: rgb(var(--c-302719));
+  min-width:0; color:var(--ops-t1); font-size:14px; line-height:18px; display:flex; flex-direction:column; }
+.ops * { box-sizing:border-box; }
+:where(.ops) button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:left; }
+.ops .ops-m { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; font-weight:600; }
+
+/* Bande : mois, retard, loupe, puis les piles */
+.ops-bande { margin:4px 0 0; border-radius:16px; background:var(--ops-fond); padding:6px 8px 8px; }
+.ops-haut { display:flex; align-items:center; gap:6px; }
+.ops-pill { position:relative; display:flex; align-items:center; gap:2px; border-radius:16px; border:1px solid var(--ops-bord); padding:1px; }
+.ops-pill button { width:28px; height:28px; border-radius:50%; font-size:17px; text-align:center; }
+.ops-pill button:disabled { opacity:.4; cursor:default; }
+.ops-pill .ops-mois { width:auto; min-width:60px; border-radius:14px; padding:0 4px; }
+.ops-pill .ops-mois b { font-size:15px; font-weight:600; }
+.ops-mois-champ { position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.ops-due { margin-left:auto; display:flex; align-items:center; gap:5px; min-height:28px; padding:0 9px; border-radius:16px; font-size:13px;
+  background:rgb(var(--c-402320)); border:1px solid rgb(var(--alert-strong-texte)); color:rgb(var(--alert-strong-texte)); }
+.ops-due i { width:8px; height:8px; border-radius:50%; background:rgb(var(--alert-strong-texte)); }
+.ops-due b { font-size:13px; }
+.ops-loupe { margin-left:auto; display:grid; place-items:center; width:32px; height:32px; border-radius:10px; border:1px solid var(--ops-bord); }
+.ops-due + .ops-loupe { margin-left:0; }
+.ops-contexte { margin:4px 0 0; font-size:12px; line-height:16px; color:var(--ops-t2); }
+.ops-recherche { display:flex; align-items:center; gap:4px; min-height:32px; margin-top:6px; padding-left:8px; border:1px solid var(--ops-bord); border-radius:10px; background:rgb(var(--cave-950)); color:var(--ops-t2); }
+.ops-recherche input { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; font-size:16px; color:var(--ops-t1); }
+.ops-recherche:focus-within { outline:2px solid rgb(var(--ebc-straw)); outline-offset:1px; }
+.ops-recherche button { display:grid; place-items:center; min-width:28px; min-height:28px; }
+.ops-actifs { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.ops-actif { display:inline-flex; align-items:center; gap:4px; min-height:24px; padding:0 8px; border-radius:12px; font-size:12px; font-weight:600;
+  border:1px solid var(--finance-accent,rgb(var(--area-finances))); color:var(--finance-accent,rgb(var(--area-finances-texte))); }
+
+/* Piles */
+.ops-piles { display:flex; align-items:flex-end; height:calc(var(--ops-haut) + 34px); margin-top:6px; }
+.ops-pile { flex:1 1 0; min-width:0; display:flex; flex-direction:column; justify-content:flex-end; align-items:stretch; height:100%; gap:2px; text-align:center; padding:0 2px; }
+.ops-pile b { font-size:12px; line-height:14px; }
+.ops-pile b[data-signe] { color:rgb(var(--area-stocks-texte)); }
+.ops-st { display:flex; flex-direction:column; overflow:hidden; border-radius:10px 6px 2px 2px; min-height:3px; }
+.ops-st i { display:block; min-height:1px; }
+.ops-hach { background:repeating-linear-gradient(135deg, var(--ops-hach-a) 0 1.5px, var(--ops-hach-b) 1.5px 8px); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }
+.ops-nom-pile { display:block; border-top:2px solid var(--ops-t1); padding-top:3px; font-size:12px; line-height:14px; color:var(--ops-t2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ops-sep { flex:0 0 1px; align-self:stretch; margin:0 4px; border-left:1px dashed var(--ops-t3); }
+.ops-legende { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin:6px 0 0; font-size:12px; color:var(--ops-t2); }
+.ops-legende span { display:flex; align-items:center; gap:4px; }
+.ops-legende b { font-size:13px; color:var(--ops-t1); }
+.ops-sw { display:inline-block; width:13px; height:11px; border-radius:3px; }
+
+/* Liste : groupes toujours ouverts, une opération = deux étages */
+.ops-liste { margin-top:2px; }
+.ops-g { display:grid; grid-template-columns:20px 1fr auto; gap:6px; align-items:center; padding:4px 0 0; margin:0; }
+.ops-sq { width:20px; height:20px; border-radius:10px; display:grid; place-items:center; }
+.ops-g b { font-size:13px; letter-spacing:.02em; }
+.ops-sub { font-size:13px; color:var(--ops-t2); }
+.ops-sub[data-signe] { color:rgb(var(--area-stocks-texte)); }
+.ops-part { margin:4px 0 0; border-top:1px dashed var(--ops-t3); }
+.ops-suivi { margin:0; padding-top:4px; font-size:12px; line-height:16px; color:var(--ops-t2); }
+
+.ops-row { position:relative; display:grid; grid-template-columns:4px minmax(0,1fr) auto auto; column-gap:8px; align-items:center; padding:3px 0; border-bottom:1px solid var(--ops-bord); }
+.ops-row[data-flash] { background:rgb(var(--c-20311d)); }
+.ops-bar { align-self:stretch; border-radius:2px; background:var(--ops-couleur); }
+.ops-bar[data-hachure] { background:repeating-linear-gradient(135deg, var(--ops-couleur) 0 3px, transparent 3px 6px); box-shadow:inset 0 0 0 1px var(--ops-couleur); }
+/* Le bouton principal garde `finance-op` (crochet du banc d'émulateur) : on défait la grille de `finance.css`. */
+.ops .ops-main.finance-op { display:block; grid-column:2; grid-template-columns:none; grid-template-areas:none; min-height:0; padding:0; min-width:0; width:100%; }
+.ops-main::after { content:''; position:absolute; inset:0; }
+.ops-main:focus-visible { outline:none; }
+.ops-main:focus-visible::after { outline:2px solid rgb(var(--ebc-straw)); outline-offset:-2px; border-radius:4px; }
+.ops-q { display:block; font-size:14px; font-weight:600; line-height:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ops-q small { font-weight:400; color:var(--ops-t2); font-size:13px; }
+/* fz : « sans pièce » passe à la ligne au lieu d'être coupé (« sans p ») quand l'état et le geste prennent la place. */
+.ops-meta { display:flex; flex-wrap:wrap; align-items:center; gap:2px 6px; font-size:12px; color:var(--ops-t2); line-height:14px; min-height:14px; min-width:0; }
+.ops-tg { display:inline-flex; align-items:center; padding:0 6px; border-radius:999px; line-height:14px; font-size:12px; white-space:nowrap; }
+.ops-tg-ok { background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); }
+.ops-tg-pay { background:repeating-linear-gradient(135deg, rgb(var(--c-302719)) 0 4px, transparent 4px 8px), rgb(var(--c-302719)); color:rgb(var(--attention-texte)); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }
+.ops-tg-late { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); box-shadow:inset 0 0 0 1px rgb(var(--alert-strong-texte)); }
+.ops-tg-alert { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); }
+.ops-tg-unknown, .ops-tg-void { background:rgb(var(--cave-800)); color:var(--ops-t2); }
+.ops-pc { display:inline-flex; align-items:center; gap:2px; white-space:nowrap; color:var(--ops-t2); overflow:hidden; text-overflow:ellipsis; }
+.ops-pc svg { flex:0 0 auto; }
+.ops-pc.ops-no { color:rgb(var(--attention-texte)); }
+.ops-a { grid-column:4; font-size:14px; text-align:right; line-height:15px; align-self:start; padding-top:1px; }
+.ops-a.ops-in { color:rgb(var(--area-stocks-texte)); }
+.ops-act { grid-column:3; position:relative; z-index:1; justify-self:end; align-self:center; text-align:center; }
+.ops-btn { min-height:28px; padding:0 10px; border-radius:16px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:13px; font-weight:600; white-space:nowrap; }
+.ops-mini { min-height:24px; padding:0 7px; border-radius:10px; border:1px solid var(--ops-bord); font-size:12px; color:var(--ops-t2); white-space:nowrap; }
+.ops-erreur { grid-column:2 / -1; margin:2px 0 0; font-size:12px; line-height:16px; color:rgb(var(--alert-strong-texte)); }
+
+/* Pied : puces, panneau */
+.ops-pied { display:flex; flex-wrap:wrap; gap:6px; padding:10px 0 4px; }
+.ops-pied .finance-assistant { min-height:30px; padding:0 10px; border-radius:10px; border:1px dashed rgb(var(--area-finances)); background:transparent; color:var(--finance-accent,rgb(var(--area-finances-texte))); font-size:13px; }
+.ops-pu { display:inline-flex; align-items:center; gap:4px; min-height:30px; padding:0 10px; border-radius:10px; background:rgb(var(--cave-800)); font-size:13px; color:var(--ops-t2); }
+.ops-pu[aria-pressed=true], .ops-pu[aria-expanded=true] { background:var(--ops-t1); color:rgb(var(--cave-950)); font-weight:600; }
+.ops-pu:disabled { opacity:.5; cursor:default; }
+.ops-pu[data-urgent] { box-shadow:inset 0 0 0 1px rgb(var(--attention)); color:rgb(var(--attention-texte)); }
+.ops-n { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; font-weight:600; }
+.ops-panneau { display:flex; flex-direction:column; gap:6px; padding:8px 0 10px; border-top:1px solid var(--ops-bord); }
+.ops-chips { display:flex; flex-wrap:wrap; gap:4px; }
+.ops-etats { display:flex; flex-direction:column; gap:6px; }
+.ops-chips .ops-cap { align-self:center; font-size:12px; color:var(--ops-t3); }
+.ops-chip { display:inline-flex; align-items:center; gap:4px; min-height:28px; padding:3px 8px; border:1px solid rgb(var(--cave-600)); border-radius:10px; font-size:13px; color:var(--ops-t2); white-space:nowrap; }
+.ops-chip[aria-pressed=true] { color:var(--finance-accent,rgb(var(--area-finances-texte))); border-color:var(--finance-accent,rgb(var(--area-finances))); font-weight:600; }
+.ops-chip[data-urgent] { border-color:rgb(var(--attention)); color:rgb(var(--attention-texte)); }
+.ops-chip-n { font-size:12px; color:var(--ops-t1); }
+.ops-chip-n[data-empty] { display:none; }
+.ops-ligne { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; }
+.ops-select { min-height:32px; padding:3px 6px; border:1px solid rgb(var(--cave-600)); border-radius:10px; background:rgb(var(--cave-850)); color:var(--ops-t1); font-size:16px; max-width:100%; }
+.ops-lien { display:inline-flex; align-items:center; gap:4px; min-height:28px; font-size:13px; color:var(--finance-accent,rgb(var(--area-finances-texte))); }
+.ops-lien:hover { text-decoration:underline; text-underline-offset:3px; }
+.ops-archives { padding:6px 0; font-size:13px; color:var(--ops-t2); }
+.ops-archives select { min-height:32px; margin-left:6px; padding:3px 6px; border:1px solid rgb(var(--cave-600)); border-radius:10px; background:rgb(var(--cave-850)); color:var(--ops-t1); font-size:16px; }
+.ops-doublons { margin:6px 0; padding:6px 8px; border-left:3px solid rgb(var(--attention)); background:rgb(var(--c-302719)); font-size:13px; line-height:18px; color:var(--ops-t2); }
+.ops-doublons strong { color:rgb(var(--attention-texte)); font-weight:600; }
+.ops-doublons p { margin:0; }
+.ops-doublons ul { margin:4px 0 0; padding-left:16px; list-style:disc; }
+.ops-doublons .ops-lien { display:inline; min-height:0; }
+.ops-pages { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:8px 0; font-size:13px; }
+.ops-pages .ops-mini { display:grid; place-items:center; min-width:28px; }
+.ops-vide { border-bottom:1px solid var(--ops-bord); padding:10px 0; }
+.ops-vide h3 { font-size:14px; line-height:20px; margin:0; }
+.ops-vide p { margin:4px 0; color:var(--ops-t2); font-size:13px; line-height:18px; overflow-wrap:anywhere; }
+.ops-vide > div { display:flex; flex-wrap:wrap; gap:4px 12px; }
+
+/* Ordinateur : les piles à gauche (collées), la liste à droite */
+@media (min-width:900px) {
+  .ops { --ops-haut: 176px; display:grid; grid-template-columns:400px minmax(0,1fr); gap:0 24px; align-items:start; }
+  .ops > * { grid-column:2; }
+  .ops > .ops-bande { grid-column:1; grid-row:1 / span 12; position:sticky; top:0; }
+}

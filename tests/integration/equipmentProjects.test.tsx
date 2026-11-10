@@ -10,7 +10,6 @@ import { defaultConfig, StorageService } from '../../src/services/storage';
 import { useStorageValue } from '../../src/hooks/useLiveData';
 import { FinancesTab } from '../../src/components/tabs/FinancesTab';
 import { UpgradeWorkspace } from '../../src/ui/finance/UpgradeWorkspace';
-import { CreativePricing } from '../../src/ui/finance/CreativePricing';
 import { CreativeLabTab } from '../../src/components/CreativeLabTab';
 import { todayISO } from '../../src/domain/finance/ledger';
 import type { FinancialPlan } from '../../src/domain/finance/types';
@@ -18,7 +17,8 @@ import type { FinancialPlan } from '../../src/domain/finance/types';
 const read = () => StorageService.getTransactions();
 function Finances() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" onOpenQuickAction={() => {}}/>; }
 const change = (label: string, value: string) => { const input = screen.getByLabelText(label); fireEvent.change(input, { target: { value } }); fireEvent.blur(input); };
-const saved = () => waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+// La feuille « Mes projets de matériel » (liste, second plan de Prévisions) reste ouverte sous les feuilles de saisie : seules celles-ci doivent se fermer.
+const saved = () => waitFor(() => expect(screen.queryByRole('dialog', { name: /^(Mon projet de matériel|Prévoir du matériel|Acheter du matériel)$/ })).not.toBeInTheDocument());
 const hotte = (): FinancialPlan => ({ id: 'HOTTE', title: 'Hotte de brassage', date: todayISO(), amountCents: 120000, direction: 'out', category: 'materiel', source: 'equipment', status: 'active', createdAt: new Date().toISOString(), upgrade: { version: 1, timing: 'soon', stage: 'quote', budgetKnown: true, datePrecision: 'month', estimateSource: 'quote', purchaseCents: 100000, deliveryCents: 5000, installationCents: 15000 } });
 beforeEach(() => { window.history.replaceState({}, '', '/?dev-local'); FirestoreRepo.startSync(); StorageService.setUiState('finances_workspace', 'projects'); });
 afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
@@ -61,11 +61,9 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(StorageService.getTransactions()).toHaveLength(0);
     expect(StorageService.getStocks().equipment).toHaveLength(0);
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
-    expect(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ })).toBeChecked();
-    expect(screen.getByRole('button', { name: /Nouvelle cuverie.*Projet de matériel/ })).toBeVisible();
-    fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));
-    expect(screen.queryByRole('button', { name: /Nouvelle cuverie.*Projet de matériel/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Nouvelle cuverie −2['’\s]?150,00/ })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: /Sans nouvelle cuverie/ }));
+    expect(screen.queryByRole('button', { name: /Nouvelle cuverie −/ })).not.toBeInTheDocument();
     expect(FinanceService.getPlans()[0].status).toBe('active'); // simulation temporaire
   });
 
@@ -113,22 +111,18 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(StorageService.getTransactions()[0]).toMatchObject({ amountTTC: 800, finance: { planId: 'HOTTE', amountCents: 80000, paymentStatus } });
     expect(StorageService.getStocks().equipment[0]).toMatchObject({ name: 'Hotte de brassage', purchasePrice: 800 });
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
-    const due = within(screen.getByRole('heading', { name: 'Échéances et estimations à venir' }).closest('section')!);
-    // TA4 : la facture « à payer » saisie sans échéance ne remplace plus la prévision (qui reste entière) et se dit sur la ligne « Échéance à préciser ».
-    if (paymentStatus === 'paid') expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*400/ })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' })); // la feuille « Mes projets de matériel »
+    // TA4 : la facture « à payer » saisie sans échéance ne remplace plus la prévision (qui reste entière) et se dit à part, « sans date », hors graphe.
+    if (paymentStatus === 'paid') expect(screen.getByRole('button', { name: /Hotte de brassage −400,00/ })).toBeVisible();
     else {
-      expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*1[\s'’]?200/ })).toBeVisible();
-      expect(screen.getByText(/Échéance à préciser : 1 pièce/)).toHaveTextContent(/800,00.*à payer/);
+      expect(screen.getByRole('button', { name: /Hotte de brassage −1['’\s]?200,00/ })).toBeVisible();
+      expect(screen.getByRole('button', { name: /1 pièce sans date.*800,00 hors graphe/ })).toBeVisible();
     }
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/2[\s'’]?800,00/);
-    fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('0,00');
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(paymentStatus === 'paid' ? /3[\s'’]?200,00/ : /4[\s'’]?000,00/);
-    if (paymentStatus === 'unpaid') expect(screen.getByText(/Échéance à préciser : 1 pièce/)).toHaveTextContent(/800,00.*à payer/);
+    const bascule = within(screen.getByRole('group', { name: /Avec ou sans/ }));
+    expect(bascule.getByRole('button', { name: /Avec hotte de brassage/ })).toHaveTextContent(/2['’\s]?800,00/);
+    expect(bascule.getByRole('button', { name: /Sans hotte de brassage/ })).toHaveTextContent(paymentStatus === 'paid' ? /3['’\s]?200,00/ : /4['’\s]?000,00/);
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
-    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte de brassage.*Depuis le début du projet/ }));
     fireEvent.click(screen.getByText(/Achats liés ·/));
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Hotte de brassage.*Part du projet/ }));
@@ -142,12 +136,10 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }));
     await waitFor(() => expect(FinanceService.getPlans()[0].status).toBe('draft'));
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('300,00');
-    expect(screen.queryByRole('checkbox', { name: /Inclure mes projets de matériel/ })).not.toBeInTheDocument();
+    expect(screen.getByText('À payer').parentElement).toHaveTextContent('300,00');
+    expect(screen.queryByRole('group', { name: /Avec ou sans/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
-    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     expect(screen.getByRole('button', { name: /Hotte de brassage.*1 facture.*300/ })).toBeVisible();
   });
 
@@ -163,11 +155,4 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(FinanceService.getPlans()).toHaveLength(1);
   });
 
-  it.each([false, true])('le tarif R&D utilise des montants saisis et le statut TVA %s', registered => {
-    StorageService.saveConfig({ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: registered, tvaNormalRate: 0.081 } });
-    render(<CreativePricing/>); expect(screen.getByText('À renseigner')).toBeVisible();
-    change('Prix de vente TTC (CHF)', '10.81'); change('Coût de revient de ce format (CHF)', '6');
-    expect(screen.getByText('Marge unitaire estimée').parentElement).toHaveTextContent(registered ? '4,00' : '4,81');
-    expect(FinanceService.getPlans()).toHaveLength(0);
-  });
 });

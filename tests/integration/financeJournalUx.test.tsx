@@ -29,7 +29,11 @@ const defaults = {
   renderRow: (transaction: Transaction) => <button>{transaction.description}</button>,
   onManageArchives: () => {}, onSale: () => {}, onPrivateMovement: () => {},
 };
-const filterButton = (name: string) => within(screen.getByRole('group', { name: 'État des opérations' })).getByRole('button', { name, exact: true });
+// v6b : la recherche et les filtres vivent derrière la loupe et « Filtres » ; chaque aide ouvre ce qu'il faut, une seule fois.
+const ouvrirFiltres = () => { if (!screen.queryByRole('group', { name: 'État des opérations' })) fireEvent.click(screen.getByRole('button', { name: /^Filtres/ })); };
+const recherche = () => { if (!screen.queryByRole('textbox', { name: 'Rechercher une opération' })) fireEvent.click(screen.getByRole('button', { name: 'Rechercher' })); return screen.getByRole('textbox', { name: 'Rechercher une opération' }); };
+const categorie = () => { ouvrirFiltres(); return screen.getByLabelText('Catégorie'); };
+const filterButton = (name: string) => { ouvrirFiltres(); return within(screen.getByRole('group', { name: 'État des opérations' })).getByRole('button', { name, exact: true }); };
 afterEach(cleanup);
 
 describe('Journal financier compact', () => {
@@ -39,14 +43,14 @@ describe('Journal financier compact', () => {
     const oldDue = purchase('ANCIEN-OUVERT', { date: `${previousYear}-02-11` });
     render(<TransactionJournal {...defaults} transactions={[current, oldPaid, oldDue]} payments={[paymentFor(current), paymentFor(oldPaid)]}/>);
     expect(screen.getByLabelText('Période du journal')).toBeVisible();
-    expect(screen.getByLabelText('Catégorie')).toBeVisible();
-    expect(screen.getByRole('textbox', { name: 'Rechercher une opération' })).toBeVisible();
+    expect(categorie()).toBeVisible();
+    expect(recherche()).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Opération ANCIEN-PAYÉ' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Opération ANCIEN-OUVERT' })).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Période du journal'), { target: { value: `${previousYear}-02` } });
     expect(screen.getByRole('button', { name: 'Opération ANCIEN-PAYÉ' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Opération CE-MOIS' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Toutes les dates', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Par date', exact: true }));
     expect(screen.getByRole('button', { name: 'Opération CE-MOIS' })).toBeInTheDocument();
   });
 
@@ -119,7 +123,7 @@ describe('Journal financier compact', () => {
     mixed.finance = { ...mixed.finance!, vendor: 'Comptoir du malt', invoiceNumber: 'F-123', amountCents: 12860,
       lines: [{ id: 'line', description: 'Désinfectant', kind: 'cleaning', amountCents: 2860 }] };
     render(<TransactionJournal {...defaults} transactions={[mixed, purchase('AUTRE')]}/>);
-    const search = screen.getByRole('textbox', { name: 'Rechercher une opération' });
+    const search = recherche();
     for (const query of ['Comptoir', 'F-123', '128,60']) {
       fireEvent.change(search, { target: { value: query } });
       expect(screen.getByRole('button', { name: 'Opération MIXTE' })).toBeInTheDocument();
@@ -127,7 +131,7 @@ describe('Journal financier compact', () => {
     }
     fireEvent.click(screen.getByRole('button', { name: 'Effacer la recherche' }));
     expect(search).toHaveFocus();
-    fireEvent.change(screen.getByLabelText('Catégorie'), { target: { value: 'nettoyage' } });
+    fireEvent.change(categorie(), { target: { value: 'nettoyage' } });
     expect(screen.getByRole('button', { name: 'Opération MIXTE' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Opération AUTRE' })).not.toBeInTheDocument();
   });
@@ -137,18 +141,18 @@ describe('Journal financier compact', () => {
     const transactions = [oldPaid];
     const initial = JSON.stringify(transactions);
     render(<TransactionJournal {...defaults} transactions={transactions} payments={[paymentFor(oldPaid)]} archives={[archive]}/>);
-    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une opération' }), { target: { value: 'introuvable' } });
-    fireEvent.change(screen.getByLabelText('Catégorie'), { target: { value: 'materiel' } });
+    fireEvent.change(recherche(), { target: { value: 'introuvable' } });
+    fireEvent.change(categorie(), { target: { value: 'materiel' } });
     expect(screen.getByText('Aucune opération trouvée')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Retirer les filtres', exact: true }));
-    expect(screen.getByLabelText('Catégorie')).toHaveValue('all');
-    expect(screen.getByRole('textbox', { name: 'Rechercher une opération' })).toHaveValue('');
-    expect(screen.getByRole('textbox', { name: 'Rechercher une opération' })).toHaveFocus();
+    expect(categorie()).toHaveValue('all');
+    expect(recherche()).toHaveValue('');
+    expect(recherche()).toHaveFocus();
     expect(screen.getByText('Aucune opération trouvée')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Voir toutes les opérations' }));
     expect(screen.getByRole('button', { name: 'Opération ARCHIVÉ' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tout', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'Toutes les dates', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Par date', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(JSON.stringify(transactions)).toBe(initial);
   });
 
@@ -166,23 +170,23 @@ describe('Journal financier compact', () => {
     render(<Workspace/>);
     expect(screen.getByRole('button', { name: 'Retirer le filtre : À payer et encaisser' })).toBeVisible();
     fireEvent.click(filterButton('Toutes'));
-    fireEvent.change(screen.getByLabelText('Catégorie'), { target: { value: 'brassage' } });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une opération' }), { target: { value: 'Opération' } });
+    fireEvent.change(categorie(), { target: { value: 'brassage' } });
+    fireEvent.change(recherche(), { target: { value: 'Opération' } });
     fireEvent.click(screen.getByRole('button', { name: 'Page suivante' }));
     expect(screen.getByText('Page 2 sur 2')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Changer de vue' }));
     fireEvent.click(screen.getByRole('button', { name: 'Changer de vue' }));
     expect(screen.getByText('Page 2 sur 2')).toBeInTheDocument();
-    expect(screen.getByLabelText('Catégorie')).toHaveValue('brassage');
-    expect(screen.getByRole('textbox', { name: 'Rechercher une opération' })).toHaveValue('Opération');
+    expect(categorie()).toHaveValue('brassage');
+    expect(recherche()).toHaveValue('Opération');
     expect(filterButton('Toutes')).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une opération' }), { target: { value: 'Opération 000' } });
+    fireEvent.change(recherche(), { target: { value: 'Opération 000' } });
     expect(screen.getByRole('button', { name: 'Opération 000' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Pages du journal' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir les paiements' }));
     expect(filterButton('À payer')).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('textbox', { name: 'Rechercher une opération' })).toHaveValue('');
-    expect(screen.getByLabelText('Catégorie')).toHaveValue('all');
+    expect(recherche()).toHaveValue('');
+    expect(categorie()).toHaveValue('all');
     expect(screen.getByText('Page 1 sur 2')).toBeInTheDocument();
   });
 
@@ -194,7 +198,7 @@ describe('Journal financier compact', () => {
       onPrivateMovement={onPrivateMovement} onManageArchives={onManageArchives} onScopeChange={onScopeChange}/>);
     expect(screen.getByText(`Exercice ${previousYear}`)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Autres filtres', { exact: true }));
+    ouvrirFiltres();
     fireEvent.click(screen.getByRole('button', { name: 'Écritures annulées uniquement' }));
     expect(screen.getByRole('button', { name: 'Retirer le filtre : Écritures annulées' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives' }));

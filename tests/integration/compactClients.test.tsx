@@ -93,82 +93,82 @@ describe('Carnet compact : retrouver, lire, corriger', () => {
   });
 });
 
-describe('Tarifs compacts : comparer et enregistrer sans perdre de données', () => {
-  it('filtre une perte, atteint le tableau au clavier et réinitialise une recherche vide', async () => {
+describe('Prix (c7c) : un seul endroit pour fixer un prix, sans rien perdre des tarifs existants', () => {
+  it('Clients › Prix monte l’écran Prix : format, plus de tableau ; un ancien tarif sans format est lisible et invite à le compléter', () => {
     showClients();
-    fireEvent.click(screen.getByRole('button', { name: 'Prix et marges' }));
-    const table = screen.getByRole('table');
-    expect(within(table).getByText('-0,50')).toBeVisible();
-    expect(within(table).queryByText('+-0,50')).not.toBeInTheDocument();
-    screen.getByRole('searchbox', { name: 'Rechercher un tarif' }).focus();
-    await userEvent.tab();
-    expect(screen.getByRole('radio', { name: 'Tous 2' })).toHaveFocus();
-    await userEvent.tab();
-    expect(screen.getByRole('region', { name: 'Comparaison des tarifs' })).toHaveFocus();
-    fireEvent.click(screen.getByRole('radio', { name: 'Sans marge 1' }));
-    expect(screen.queryByRole('button', { name: 'Modifier le tarif Bouteille 75 cl' })).not.toBeInTheDocument();
-    fireEvent.change(screen.getByRole('searchbox', { name: 'Rechercher un tarif' }), { target: { value: 'Fût 50 L' } });
-    expect(screen.getByText('Aucun tarif avec cette recherche ou ce filtre.')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Tout effacer' }));
-    expect(screen.getByRole('button', { name: 'Modifier le tarif Bouteille 75 cl' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Prix' }));
+    expect(screen.getByRole('group', { name: 'Format' })).toBeVisible();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    const aCompleter = screen.getByRole('group', { name: 'Tarifs à compléter' });
+    expect(within(aCompleter).getByRole('button', { name: /Bouteille 75 cl · 6,00/ })).toBeVisible();
+    expect(within(aCompleter).getByRole('button', { name: /Bouteille 33 cl · 2,50/ })).toBeVisible();
   });
 
   it.each([false, true])('bloque le raccourci clavier invalide et garde les formules avec une virgule décimale (coarse=%s)', coarse => {
-    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({ matches: coarse && query === '(pointer: coarse)', media: query, onchange: null, addEventListener: () => {}, removeEventListener: () => {}, addListener: () => {}, removeListener: () => {}, dispatchEvent: () => false }));
+    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({ matches: coarse && query === '(pointer: coarse)', media: query, onchange: null, addEventListener: () => {}, removeEventListener: () => {}, addListener: () => {}, removeListener: () => {}, dispatchEvent: () => false }) as MediaQueryList);
     const saved = vi.fn();
-    render(<TarifSheet item={tarif('', 6)} config={{ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: true, tvaNormalRate: .081 } }} onClose={() => {}} onSave={saved} onDelete={() => {}} />);
-    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Produit et conditionnement' }), { key: 'Enter', ctrlKey: true });
+    render(<TarifSheet item={{ product: '', biere: '', format: { id: '33cl', volumeL: 0.33 }, priceHT: Number.NaN }} config={{ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: true, tvaNormalRate: .081 } }} onClose={() => {}} onSave={saved} onDelete={() => {}} />);
+    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Bière' }), { key: 'Enter', ctrlKey: true });
     expect(saved).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toHaveTextContent('au moins 2 caractères');
-    fireEvent.change(screen.getByRole('textbox', { name: 'Produit et conditionnement' }), { target: { value: 'Fût 10 L' } });
-    const ingredients = screen.getByRole('textbox', { name: 'Ingrédients (CHF)' });
-    expect(ingredients.tagName).toBe(coarse ? 'TEXTAREA' : 'INPUT');
-    // Partir d'un vrai montant : conserver 2 CHF après « abc » masquerait le bug.
-    fireEvent.change(ingredients, { target: { value: 'abc' } });
-    expect(ingredients).toHaveAttribute('aria-invalid', 'true');
-    expect(ingredients).toHaveAccessibleDescription(/Montant « abc » non reconnu/);
-    expect(screen.getByRole('status', { name: 'Coût de revient' })).toHaveTextContent('À renseigner');
-    fireEvent.keyDown(ingredients, { key: 'Enter', ctrlKey: true });
+    expect(screen.getAllByRole('alert').map(n => n.textContent).join(' ')).toContain('Indique la bière et le format');
+    fireEvent.change(screen.getByRole('textbox', { name: 'Bière' }), { target: { value: 'Pale Ale' } });
+    const prix = screen.getByRole('textbox', { name: 'Prix de vente HT (CHF)' });
+    expect(prix.tagName).toBe(coarse ? 'TEXTAREA' : 'INPUT');
+    fireEvent.change(prix, { target: { value: 'abc' } });
+    expect(prix).toHaveAttribute('aria-invalid', 'true');
+    expect(prix).toHaveAccessibleDescription(/Montant « abc » non reconnu/);
+    fireEvent.keyDown(prix, { key: 'Enter', ctrlKey: true });
     expect(saved).not.toHaveBeenCalled();
-    fireEvent.blur(ingredients);
-    fireEvent.keyDown(ingredients, { key: 'Enter', ctrlKey: true });
+    fireEvent.blur(prix);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(saved).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toHaveTextContent('Montant « abc » non reconnu');
-    expect(ingredients).toHaveAttribute('aria-invalid', 'true');
-    fireEvent.change(ingredients, { target: { value: '2,0' } });
-    expect(ingredients).toHaveAttribute('aria-invalid', 'false');
+    fireEvent.change(prix, { target: { value: '6,0' } });
+    expect(prix).toHaveAttribute('aria-invalid', 'false');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    fireEvent.change(ingredients, { target: { value: '' } });
-    expect(screen.getByRole('status', { name: 'Coût de revient' })).toHaveTextContent('À renseigner');
-    fireEvent.keyDown(ingredients, { key: 'Enter', ctrlKey: true });
+    fireEvent.change(prix, { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(saved).not.toHaveBeenCalled();
-    expect(ingredients).toHaveAccessibleDescription('Champ vide : indique un montant de 0 à 10 000 CHF.');
-    fireEvent.change(ingredients, { target: { value: '2,50' } });
-    expect(ingredients).toHaveAttribute('aria-invalid', 'false');
-    expect(screen.getByRole('status', { name: 'Coût de revient' })).toHaveTextContent('3,50 CHF');
-    expect(screen.getByRole('status', { name: 'Prix TTC' })).toHaveTextContent('6,49 CHF');
-    fireEvent.keyDown(ingredients, { key: 'Enter', ctrlKey: true });
+    expect(prix).toHaveAccessibleDescription('Champ vide : indique un montant de 0 à 10 000 CHF.');
+    fireEvent.change(prix, { target: { value: '6,50' } });
+    expect(screen.getByRole('status', { name: 'Prix TTC' })).toHaveTextContent('7,03 CHF');
+    fireEvent.keyDown(prix, { key: 'Enter', ctrlKey: true });
     expect(saved).toHaveBeenCalledTimes(1);
-    expect(saved).toHaveBeenCalledWith(expect.objectContaining({ product: 'Fût 10 L', costIngredients: 2.5, costFixed: 1, costLabor: 0, costTotal: 3.5, priceHT: 6, marginCHF: 2.5, marginPercent: 41.7 }));
+    const sortie = saved.mock.calls[0][0];
+    expect(sortie).toEqual(expect.objectContaining({ product: 'Pale Ale 33 cl', biere: 'Pale Ale', format: { id: '33cl', volumeL: 0.33 }, priceHT: 6.5 }));
+    expect(sortie).not.toHaveProperty('emballageUnite'); // vide = à compléter, jamais 0
+    expect(sortie).not.toHaveProperty('costTotal');
   });
 
-  it('refuse un nom occupé et remplace la clé renommée sans dupliquer ni supprimer les voisins', () => {
+  it('refuse un nom occupé et remplace la clé renommée sans dupliquer ni supprimer les voisins (tarif ancien, nom libre)', () => {
     const neighborBefore = StorageService.getTarifs().find(item => item.product === 'Bouteille 33 cl');
     showClients();
-    fireEvent.click(screen.getByRole('button', { name: 'Prix et marges' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le tarif Bouteille 75 cl' }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Produit et conditionnement' }), { target: { value: 'BOUTEILLE-33-cl' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Prix' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Tarifs à compléter' })).getByRole('button', { name: /Bouteille 75 cl/ }));
+    expect(screen.getByRole('note')).toHaveTextContent('pas encore de bière ni de format');
+    fireEvent.change(screen.getByRole('textbox', { name: 'Nom actuel du tarif' }), { target: { value: 'BOUTEILLE-33-cl' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(screen.getByRole('alert')).toHaveTextContent('a déjà un tarif');
     expect(StorageService.getTarifs()).toHaveLength(2);
-    fireEvent.change(screen.getByRole('textbox', { name: 'Produit et conditionnement' }), { target: { value: 'Bouteille 75 cl consignée' } });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Nom actuel du tarif' }), { target: { value: 'Bouteille 75 cl consignée' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(StorageService.getTarifs()).toHaveLength(2);
     expect(StorageService.getTarifs().map(item => item.product)).toEqual(expect.arrayContaining(['Bouteille 75 cl consignée', 'Bouteille 33 cl']));
     expect(StorageService.getTarifs().find(item => item.product === 'Bouteille 33 cl')).toEqual(neighborBefore);
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    const renomme = StorageService.getTarifs().find(item => item.product === 'Bouteille 75 cl consignée')!;
+    expect(renomme.costIngredients).toBe(2); // les champs hérités ne sont jamais effacés
+    expect(renomme.format).toEqual({ id: '75cl', volumeL: 0.75 });
+  });
+
+  it('le journal d’un tarif enregistré ne dit pas « marge  % » (le coût n’est plus saisi)', () => {
+    showClients();
+    fireEvent.click(screen.getByRole('button', { name: 'Prix' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Tarifs à compléter' })).getByRole('button', { name: /Bouteille 33 cl/ }));
+    const logs: string[] = [];
+    vi.spyOn(StorageService, 'logAction').mockImplementation((...a: unknown[]) => { logs.push(a.join(' | ')); });
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    expect(logs.join(' ')).toMatch(/Tarif Bouteille 33 cl/);
+    expect(logs.join(' ')).not.toMatch(/marge/);
   });
 
   it('conserve le tarif quand la suppression est annulée', () => {
@@ -177,20 +177,21 @@ describe('Tarifs compacts : comparer et enregistrer sans perdre de données', ()
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer le tarif Bouteille 75 cl' }));
     fireEvent.click(screen.getByRole('button', { name: 'Annuler la suppression' }));
     expect(remove).not.toHaveBeenCalled();
-    expect(screen.getByRole('textbox', { name: 'Produit et conditionnement' })).toHaveValue('Bouteille 75 cl');
+    expect(screen.getByRole('textbox', { name: 'Nom actuel du tarif' })).toHaveValue('Bouteille 75 cl');
   });
 
-  it('garde les réserves OFDF visibles et déplie les démarches sans changer le montant', () => {
+  it('garde la réduction visible et déplie les démarches ; aucun brassin = « — », jamais un 0,00 qui ressemble à un calcul', () => {
     showClients();
-    fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
-    const tax = within(screen.getByRole('region', { name: 'Réserve pour l’impôt sur la bière' }));
-    expect(tax.getByText(/Aucun litre conditionné en/)).toBeVisible();
-    expect(tax.getByText(/Réduction annuelle à confirmer/)).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Impôt bière' }));
+    const tax = within(screen.getByRole('region', { name: 'Impôt bière de l’année' }));
+    expect(tax.getByText(/Aucun brassin en/)).toBeVisible();
+    expect(tax.getByText('—')).toBeVisible();
+    expect(tax.getByText(/réduction annuelle à confirmer/)).toBeVisible();
     expect(tax.getByText(/Barème par hectolitre/)).not.toBeVisible();
     fireEvent.click(tax.getByText('Comprendre le calcul et les démarches'));
     expect(tax.getByText(/Barème par hectolitre/)).toBeVisible();
     fireEvent.change(tax.getByRole('combobox', { name: 'Année de réserve OFDF' }), { target: { value: String(new Date().getFullYear() - 1) } });
-    expect(tax.getByText(/Aucun litre conditionné en/)).toBeVisible();
+    expect(tax.getByText(/Aucun brassin en/)).toBeVisible();
     expect(tax.getByRole('button', { name: 'Copier cette estimation' })).toBeVisible();
     expect(tax.getByRole('link', { name: 'Ouvrir Taxas' })).toHaveAttribute('href', 'https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation');
   });

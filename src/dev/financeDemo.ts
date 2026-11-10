@@ -9,7 +9,13 @@ export function financeDemoEntries() {
   const today=todayISO(), year=Number(today.slice(0,4)), month=today.slice(0,7), at=new Date().toISOString();
   const entries:Array<{name:CollectionName;id:string;data:any}>=[];
   const add=(name:CollectionName,id:string,data:any)=>entries.push({name,id,data});
-  add('config','app',{...defaultConfig,company:{...defaultConfig.company,name:'Brasserie · Démonstration'},fiscal:{...defaultConfig.fiscal,isTvaRegistered:false}});
+  /* Caisse (uv) : brasserie complète avec l'IBAN d'EXEMPLE public du guide SIX (jamais un vrai), deux clients, trois tarifs, un brassin conditionné. Tout est de démonstration. */
+  add('config','app',{...defaultConfig,company:{...defaultConfig.company,name:'Brasserie · Démonstration',uid:'CHE-123.456.789',iban:'CH93 0076 2011 6238 5295 7',adresse:{rue:'Rue de la Démo',numero:'1',npa:'1700',localite:'Fribourg',pays:'CH'}},fiscal:{...defaultConfig.fiscal,isTvaRegistered:false}});
+  add('clients','CL-DEMO-1',{id:'CL-DEMO-1',name:'Café du Bourg',type:'Pro',contact:'',phone:'',email:'',notes:'Démonstration',favorite:true});
+  add('clients','CL-DEMO-2',{id:'CL-DEMO-2',name:'Martin Rey',type:'Privé',contact:'',phone:'',email:'',notes:'Démonstration',adresse:{rue:'Chemin des Fixtures',numero:'4',npa:'1700',localite:'Fribourg',pays:'CH'},address:'Chemin des Fixtures 4, 1700 Fribourg'});
+  [['Pale Ale 33 cl',5],['Pale Ale 75 cl',10],['Pale Ale Fût 20 L',160]].forEach(([product,priceHT])=>add('tarifs',String(product).toLowerCase().replace(/[^a-z0-9]+/g,'-'),{product,costIngredients:0,costLabor:0,costFixed:0,costTotal:0,priceHT,marginCHF:0,marginPercent:0}));
+  add('batches','DEMO-LOT-CAISSE',{id:'DEMO-LOT-CAISSE',name:'Pale Ale',style:'Pale Ale',volumeL:30,brewDate:`${month}-05`,status:'conditionne',volumePackagedL:27,packaging:{bottles33:96,bottles75:24,kegIds:['DEMO-FUT-1']}});
+  add('kegs','DEMO-FUT-1',{id:'DEMO-FUT-1',capacityL:20,state:'full',batchRef:'DEMO-LOT-CAISSE'});
   const stocks=[{id:'DEMO-MALT',ref:'DEMO-MALT',name:'Pilsner',category:'Malt',unit:'kg',currentStock:3,minStock:2,reorder:false}];
   stocks.forEach(s=>add('stockItems',s.ref,{...s,kind:'rawMaterials'}));
   const recipe={id:'DEMO-PALE',name:'Pale Ale de septembre',style:'Pale Ale',volumeL:30,brewDate:`${month}-20`,fermentables:[{name:'Pilsner',weightKg:6,kind:'grain',use:'empatage',stockItemRef:'DEMO-MALT'}],hops:[],yeast:{name:'',qty:0,unit:'sachet',form:'sèche'},ogTarget:1.05,fgTarget:1.01,abvTarget:5.2,ibuTarget:28,colorEbc:8,boilMin:60,efficiencyPct:72,totalGristKg:6,carboTarget:'2.4 vol'} as Recipe;

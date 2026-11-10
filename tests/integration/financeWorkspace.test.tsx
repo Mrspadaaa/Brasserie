@@ -26,8 +26,8 @@ describe('Comptabilité quotidienne intégrée',()=>{
     StorageService.addTransaction(tx({id:'HIST',description:'Achat historique',finance:undefined}));
     render(<Workspace/>);
     expect(screen.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
-    const position=within(screen.getByLabelText('Situation financière actuelle'));
-    expect(position.getByText('Trésorerie').parentElement).toHaveTextContent('À compléter');
+    expect(screen.getByRole('button',{name:'Solde et paramètres financiers'})).toHaveTextContent('En caisse');
+    expect(screen.getByRole('button',{name:'Solde et paramètres financiers'})).toHaveTextContent('À compléter');
     // Les totaux à régler résument la liste des règlements ; ils ne sont plus un
     // indicateur de tête d'écran, mais restent chiffrés et cliquables.
     expect(screen.getByRole('button',{name:'Voir les factures à payer'})).toHaveTextContent('150,00');
@@ -37,57 +37,52 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toBeVisible();
     expect(screen.queryByRole('button',{name:/^Vente festival/})).not.toBeInTheDocument();
     expect(screen.queryByRole('button',{name:/^Achat historique/})).not.toBeInTheDocument();
+    // v6b : la recherche vit derrière la loupe, les états derrière « Filtres » ; une recherche saisie garde la loupe ouverte au retour.
+    fireEvent.click(screen.getByRole('button',{name:'Rechercher'}));
     fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'mixte'}});
     fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
     fireEvent.click(screen.getByRole('tab',{name:'Opérations'}));
     expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toHaveValue('mixte');
-    expect(screen.getByRole('button',{name:'À payer',exact:true})).toHaveAttribute('aria-pressed','true');
+    fireEvent.click(screen.getByRole('button',{name:/^Filtres/}));
+    expect(within(screen.getByRole('group',{name:'État des opérations'})).getByRole('button',{name:'À payer',exact:true})).toHaveAttribute('aria-pressed','true');
   });
-  it('annonce les limites de la prévision avant ses chiffres et ouvre les paiements à confirmer',()=>{
+  it('annonce les limites de la prévision (pli « Limites ») et ouvre les paiements à confirmer',()=>{
     StorageService.addTransaction(tx({finance:undefined}));
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    fireEvent.click(screen.getByRole('button',{name:/Limites/}));
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
-    expect(screen.getByText('Sorties renseignées')).toBeVisible();
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent('À compléter');
     fireEvent.click(screen.getByRole('button',{name:/Confirmer les paiements/}));
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toHaveTextContent('Paiement à confirmer');
   });
-  it('ne charge le graphique qu’à l’ouverture et garde le tableau accessible pendant le chargement',async()=>{
+  it('l’escalier se rend sans mesure d’écran (largeur de repli) et porte un nom accessible',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.queryByRole('group',{name:/Scénario mensuel à venir/})).not.toBeInTheDocument();
-    const summary=screen.getByText('Comparer les mois',{exact:true});
-    summary.focus();fireEvent.click(summary);
-    expect(summary).toHaveFocus();
-    expect(await screen.findByRole('table',{name:/Scénario mensuel à venir/})).toBeVisible();
-    await waitFor(()=>expect(screen.getByRole('group',{name:/Scénario mensuel à venir/})).toBeVisible());
+    const escalier=screen.getByRole('img',{name:/Escalier de trésorerie/});
+    expect(escalier).toBeVisible();expect(escalier).toHaveAttribute('width','370');
   });
-  it('fait varier les sorties et les soldes mensuels du même montant lorsque le projet de matériel est exclu',async()=>{
+  it('la bascule retire le projet de matériel : soldes avec et sans, du même montant',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     FinanceService.savePlan({id:'POMPE',title:'Pompe prévue',date:todayISO(),amountCents:20000,direction:'out',category:'materiel',source:'equipment',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    const summary=within(screen.getByRole('region',{name:/Prévision sur/}));
-    const outgoing=()=>summary.getByText(/Sorties (prévues|renseignées)/).parentElement;
-    expect(outgoing()).toHaveTextContent('350,00');
-    fireEvent.click(screen.getByText('Comparer les mois',{exact:true}));
-    const table=within(await screen.findByRole('table',{name:/Scénario mensuel à venir/}));
-    expect(table.getAllByRole('row')[1]).toHaveTextContent(/350,00\s*CHF\s*0,00\s*CHF\s*650,00\s*CHF/);
-    fireEvent.click(screen.getByRole('checkbox',{name:/Inclure mes projets de matériel/}));
-    expect(outgoing()).toHaveTextContent('150,00');
-    expect(table.getAllByRole('row')[1]).toHaveTextContent(/150,00\s*CHF\s*0,00\s*CHF\s*850,00\s*CHF/);
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
+    const bascule=within(screen.getByRole('group',{name:/Avec ou sans/}));
+    expect(bascule.getByRole('button',{name:/Avec pompe prévue/})).toHaveTextContent(/650,00/);
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveTextContent(/850,00/);
+    expect(screen.getByText('À payer').parentElement).toHaveTextContent('150,00');
+    fireEvent.click(bascule.getByRole('button',{name:/Sans pompe prévue/}));
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveAttribute('aria-pressed','true');
   });
   it('ne redemande pas le solde déjà confirmé lorsque les paiements empêchent de calculer la trésorerie',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx({finance:undefined}));
     render(<Workspace/>);
-    expect(screen.getByText('Trésorerie').parentElement).toHaveTextContent('À compléter');
+    expect(screen.getByRole('button',{name:'Solde et paramètres financiers'})).toHaveTextContent('À compléter');
     expect(screen.queryByRole('button',{name:/Vérifier le solde de départ/})).not.toBeInTheDocument();
     expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
     fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    fireEvent.click(screen.getByRole('button',{name:/Limites/}));
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
     expect(screen.queryByRole('button',{name:'Renseigner le solde de départ'})).not.toBeInTheDocument();
     expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
@@ -104,11 +99,15 @@ describe('Comptabilité quotidienne intégrée',()=>{
   it('guide la préparation annuelle du solde vers les opérations de l’exercice',()=>{
     StorageService.addTransaction(tx());
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Annuel'}));
+    // g6 : la préparation se fait étape par étape ; le solde d'ouverture est l'étape 2 de la piste.
+    fireEvent.click(screen.getByRole('button',{name:/^2\. Solde d’ouverture/}));
     fireEvent.click(screen.getByRole('button',{name:'Renseigner le solde',exact:true}));
     expect(screen.getByRole('dialog',{name:'Solde et paramètres financiers'})).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Annuler',exact:true}));
     act(()=>FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:10000,confirmed:true}}));
-    fireEvent.click(screen.getByRole('button',{name:'Ouvrir les opérations',exact:true}));
+    // Étape 1 « Tout est noté ? » : « Joindre » ouvre les opérations de l'exercice sans justificatif.
+    fireEvent.click(screen.getByRole('button',{name:/^1\. /}));
+    fireEvent.click(screen.getByRole('button',{name:'Joindre',exact:true}));
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toBeVisible();
   });
@@ -123,23 +122,21 @@ describe('Comptabilité quotidienne intégrée',()=>{
     fireEvent.click(dialog.getByText('Échéance et prévision',{exact:true}));
     expect(dialog.getByLabelText('Échéance de la facture')).toBeVisible();
   });
-  it('sépare les factures des budgets et donne accès aux échéances au-delà des six premières',()=>{
+  it('sépare à payer et prévu, et la liste de l’annexe garde toutes les sorties (jamais tronquée)',()=>{
     StorageService.addTransaction(tx());
     for(let i=1;i<=8;i++)FinanceService.savePlan({id:`PLAN-${i}`,title:`Achat prévu ${i}`,date:todayISO(),amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
-    expect(screen.getByText('Budgets et estimations').parentElement).toHaveTextContent('80,00');
-    const due=within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
-    expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
-    fireEvent.click(due.getByRole('button',{name:'Voir les 3 échéances suivantes'}));
-    expect(due.getByRole('button',{name:/^Achat prévu 8/})).toBeVisible();
-    fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
-    expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
+    expect(screen.getByText('À payer').parentElement).toHaveTextContent('150,00');
+    expect(screen.getByText('Prévu').parentElement).toHaveTextContent('80,00');
+    fireEvent.click(screen.getByRole('button',{ name: /\d+\s+sorties?$/ }));
+    const liste=within(screen.getByRole('dialog',{name:'Sorties et entrées prévues'}));
+    expect(liste.getAllByRole('listitem')).toHaveLength(9);
+    expect(within(liste.getByRole('list')).getByText(/Achat prévu 8/)).toBeVisible();
   });
   it('ouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée',()=>{
     FinanceService.saveAsset({id:'CUVE',name:'Cuve 30 L',category:'tanks',acquisitionDate:todayISO(),inServiceDate:todayISO(),acquisitionCents:50000,businessUsePct:100,method:'declining',ratePct:20,openingYear:Number(todayISO().slice(0,4)),openingValueCents:50000,openingConfirmed:false,firstYearFraction:1});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Annuel'}));
-    fireEvent.click(screen.getByRole('button',{name:/^Matériel à amortir/}));
+    fireEvent.click(screen.getByRole('button',{name:/^4\. Matériel/}));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     const asset=screen.getByRole('button',{name:/Cuve 30 L.*À compléter/});
     expect(asset).toBeVisible();fireEvent.click(asset);
@@ -150,21 +147,23 @@ describe('Comptabilité quotidienne intégrée',()=>{
     try {
       for(const [id,date] of [['Dans 29 jours','2026-10-08'],['Dans 30 jours','2026-10-09'],['Dernier jour inclus','2027-09-08'],['Anniversaire exclu','2027-09-09']]) FinanceService.savePlan({id,title:id,date,amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
       render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-      const due=()=>within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
+      const annexe=()=>{fireEvent.click(screen.getByRole('button',{ name: /\d+\s+sorties?$/ }));return within(screen.getByRole('dialog',{name:'Sorties et entrées prévues'}));};
       fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
-      expect(due().getByRole('button',{name:/^Dans 29 jours/})).toBeInTheDocument();
-      expect(due().queryByRole('button',{name:/^Dans 30 jours/})).not.toBeInTheDocument();
+      let liste=within(annexe().getByRole('list'));
+      expect(liste.getByText(/Dans 29 jours/)).toBeInTheDocument();
+      expect(liste.queryByText(/Dans 30 jours/)).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button',{name:'Fermer'}));
       fireEvent.click(screen.getByRole('button',{name:'12 mois',exact:true}));
-      expect(due().getByRole('button',{name:/^Dernier jour inclus/})).toBeInTheDocument();
-      expect(due().queryByRole('button',{name:/^Anniversaire exclu/})).not.toBeInTheDocument();
+      liste=within(annexe().getByRole('list'));
+      expect(liste.getByText(/Dernier jour inclus/)).toBeInTheDocument();
+      expect(liste.queryByText(/Anniversaire exclu/)).not.toBeInTheDocument();
     } finally { vi.useRealTimers(); }
   });
   it('déduit les avoirs des coûts et permet la navigation au clavier',()=>{
     StorageService.addTransaction(tx({finance:undefined}));
     StorageService.addTransaction(tx({id:'CREDIT',description:'Remise fournisseur',amountHT:20,amountTTC:20,finance:{version:1,kind:'refund',amountCents:2000,refundOfId:'T1',refundDirection:'in',refundApplication:'cash',paymentStatus:'unpaid',lines:[]}}));
     render(<Workspace/>);
-    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
-    expect(screen.getByRole('button',{name:/Autres frais\s*130/})).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/Autres frais\s*130,00/})).toBeInTheDocument();
     fireEvent.keyDown(screen.getByRole('tab',{name:'Synthèse'}),{key:'ArrowRight'});
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveFocus();
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
@@ -172,18 +171,16 @@ describe('Comptabilité quotidienne intégrée',()=>{
   it('ouvre les coûts puis retrouve une facture mixte depuis sa ligne matériel',()=>{
     StorageService.addTransaction(tx());render(<Workspace/>);
     expect(screen.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
-    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
     fireEvent.click(screen.getByRole('button',{name:/^Matériel\s*100/}));
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/Achat mixte/})).toBeInTheDocument();
   });
   it('conserve une pièce sans date dans l’historique et signale son exclusion du mois',()=>{
     StorageService.addTransaction(tx({date:'inconnue',finance:undefined}));render(<Workspace/>);
-    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
     // Une seule pièce : le français met le singulier jusqu'à 2 exclu, donc
     // « 1 pièce », jamais « 1 pièce(s) ». Voir `src/services/plural.ts`.
     expect(screen.getByText(/1 pièce avec une date à corriger/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button',{name:'Retrouver ces pièces dans l’historique'}));
+    fireEvent.click(screen.getByRole('button',{name:/Vérifier les pièces sans date/}));
     expect(screen.getByRole('button',{name:/Achat mixte/})).toBeInTheDocument();
   });
   it('fait choisir la véritable échéance récurrente remplacée par une facture',()=>{
@@ -205,13 +202,14 @@ describe('Comptabilité quotidienne intégrée',()=>{
   it('fige une version annuelle et garde ses chiffres après une nouvelle dépense',async()=>{
     const year=Number(todayISO().slice(0,4));StorageService.addTransaction(tx({finance:undefined}));
     FinanceService.saveClosing({id:'draft',year,createdAt:new Date().toISOString(),inventoriesConfirmed:true,openingInventory:[],closingInventory:[],adjustments:[]});render(<Workspace/>);
-    fireEvent.click(screen.getByRole('tab',{name:'Annuel'}));fireEvent.click(screen.getByRole('tab',{name:'Dossier'}));
-    fireEvent.click(screen.getByText('Conserver une version de référence'));
-    fireEvent.click(screen.getByRole('button',{name:'Figer cette version avec ses points à vérifier'}));
+    fireEvent.click(screen.getByRole('tab',{name:'Annuel'}));fireEvent.click(screen.getByRole('button',{name:/^9\. Dossier/}));
+    fireEvent.click(screen.getByRole('button',{name:/^Figer la version/}));
     const saved=FinanceService.getClosings().find(c=>c.report)!;expect(saved.report?.operatingExpensesCents).toBe(15000);
     act(()=>StorageService.addTransaction(tx({id:'T2',finance:undefined})));
     expect(FinanceService.getClosings().find(c=>c.id===saved.id)?.report?.operatingExpensesCents).toBe(15000);
-    await waitFor(()=>expect(screen.getByText('Version figée',{exact:true})).toBeInTheDocument());
+    // g6 : le dossier dit « 2026, figé » (avant : « Version figée »), et propose de travailler sur une nouvelle version.
+    await waitFor(()=>expect(screen.getByText(/^\d{4}, figé$/)).toBeInTheDocument());
+    expect(screen.getByRole('button',{name:/^Travailler sur une nouvelle version/})).toBeVisible();
   });
   it('un apport privé change le solde sans gonfler les ventes',async()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:10000,confirmed:true}});

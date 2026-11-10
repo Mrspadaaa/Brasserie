@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Batch, Recipe, StockItem } from '../../src/types';
 import { newNoloConfig } from '../../src/domain/nolo';
-import { annualBrewFixedCosts, brewBudgetDateKey, brewBudgetDemands, demandKey, estimateBrewBudget, latestBrewPrices, matchingRecipeBrewPlans, resolveBudgetStock, type BrewBudgetSettings, type BrewPrice } from '../../src/domain/finance/brewBudget';
+import { annualBrewFixedCosts, brewBudgetDateKey, brewBudgetDemands, demandKey, estimateBrewBudget, latestBrewPrices, matchingRecipeBrewPlans, netVolumeSaisi, reductionImpotPourAnnee, resolveBudgetStock, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewPrice } from '../../src/domain/finance/brewBudget';
+import { estimateSwissBeerTax } from '../../src/domain/finance/swissBeerTax';
 import type { FinanceTransaction, FinancialPlan } from '../../src/domain/finance/types';
 
 const recipe = (patch: Partial<Recipe> = {}): Recipe => ({ id: 'R1', name: 'Pale Ale', volumeL: 30, style: 'Pale Ale', fermentables: [{ name: 'Pilsner', weightKg: 5, kind: 'grain', use: 'empatage' }], hops: [], yeast: { name: '', qty: 0, unit: 'sachet', form: 'sèche' }, ...patch } as Recipe);
@@ -215,5 +216,166 @@ describe('invoice price provenance', () => {
     expect(latestBrewPrices([{ id: 'old', date: '01.09.2026', amountTTC: 100 } as FinanceTransaction])).toEqual({});
     const invalid = tx('missing-qty', '01.09.2026', 5000); delete invalid.finance.lines[0].quantity;
     expect(latestBrewPrices([invalid])).toEqual({});
+  });
+});
+
+// d1 (09.11) : trois notions, impôt calculé, litres nets. Fixture construite à la main, dates fixes (jamais financeDemoEntries :
+// elle dépend de l'horloge). Brassin de 27 L nets : déjà payé 22,41 + à payer 64,26 + année 116,10 = 202,77 ; 7,51 CHF/L.
+describe('trois notions, impôt calculé et litres nets (d1)', () => {
+  const pilsner = stock({ ref: 'MP-1', name: 'Pilsner', currentStock: 6 });
+  const pale = stock({ id: 's2', ref: 'MP-2', name: 'Pale', currentStock: 0 });
+  const fixtureRecipe = () => recipe({ volumeL: 30, fermentables: [
+    { name: 'Pilsner', weightKg: 5.6025, kind: 'grain', use: 'empatage' }, { name: 'Pale', weightKg: 5.605, kind: 'grain', use: 'empatage' }] } as Partial<Recipe>);
+  const fixtureSettings: BrewBudgetSettings = { costs: { energy: { enabled: true, amountTTC: 8 }, cleaning: { enabled: true, amountTTC: 3 }, packaging: { enabled: true, amountTTC: 24 }, beerTax: { enabled: true } },
+    includeFixed: true, includeDepreciation: true, annualVolumeL: 1200, annualFixedCHF: 4800, annualDepreciationCHF: 360 };
+  const fixturePrices = (pale4: Partial<BrewPrice> = {}) => ({ [demandKey('Pilsner', 'kg')]: price({ amount: 4 }), [demandKey('Pale', 'kg')]: price({ amount: 4, ...pale4 }) });
+  const fixture = (patch = {}) => estimateBrewBudget({ recipe: fixtureRecipe(), stockItems: [pilsner, pale], batches: [], brewDate: '15.09.2026', netVolumeL: 27, og: '1.048',
+    settings: fixtureSettings, prices: fixturePrices(), now: '2026-09-09T12:00:00Z', ...patch });
+  const cents = (n: number | undefined) => Math.round((n ?? NaN) * 100);
+
+  it('rejoue la fixture : 22,41 + 64,26 + 116,10 = 202,77 et 7,51 CHF/L', () => {
+    const r = fixture();
+    expect(r.complete).toBe(true);
+    expect([r.dejaPaye, r.aPayer, r.annee]).toEqual([22.41, 64.26, 116.1]);
+    expect(r.totalCost).toBe(202.77);
+    expect(r.costPerL).toBe(7.51);
+    expect(r.cashRequiredTTC).toBe(64.26);
+    expect(r.packagingCost).toBe(24);
+    expect(r.beerTaxCost).toBe(6.84);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(r.netVolumeSource).toBe('saisi');
+  });
+  it('découpe chaque ligne : valeur du stock + achat = coût consommé, au centime', () => {
+    for (const line of fixture().lines) expect(cents(line.stockCost!) + cents(line.purchaseCost!)).toBe(cents(line.consumedCost!));
+  });
+  it('un sac entier fait sortir plus d’argent que le coût : le reste en stock s’affiche, le coût ne bouge pas', () => {
+    const base = fixture(), sac = fixture({ prices: fixturePrices({ packQuantity: 25 }) });
+    expect(sac.totalCost).toBe(base.totalCost);
+    expect(sac.aPayer).toBe(base.aPayer);
+    expect(sac.cashRequiredTTC).toBe(141.84);
+    expect(sac.resteEnStock).toBe(77.58);
+    expect(base.resteEnStock).toBe(0);
+  });
+  it('un frais inclus dans le récurrent reste dans « à payer » (coût) mais sort de la caisse', () => {
+    const r = fixture({ settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, energy: { enabled: true, amountTTC: 8, cashTreatment: 'included-in-recurring' } } } });
+    expect(r.aPayer).toBe(64.26);
+    expect(r.cashRequiredTTC).toBe(56.26);
+  });
+  it('assujetti à 8,1 % : les trois notions somment exactement au total, en centimes', () => {
+    const tva = { amount: 4.32, tvaRate: 0.081, basis: 'HT' as const };
+    const r = fixture({ isTvaRegistered: true, prices: { [demandKey('Pilsner', 'kg')]: price(tva), [demandKey('Pale', 'kg')]: price(tva) },
+      settings: { ...fixtureSettings, costs: { energy: { enabled: true, amountTTC: 8, tvaRate: 0.081 }, cleaning: { enabled: true, amountTTC: 3, tvaRate: 0.081 }, packaging: { enabled: true, amountTTC: 24, tvaRate: 0.081 }, beerTax: { enabled: true } } } });
+    expect(r.complete).toBe(true);
+    expect(cents(r.dejaPaye) + cents(r.aPayer) + cents(r.annee)).toBe(cents(r.totalCost));
+    expect(r.resteEnStock).toBeNull();
+    expect(r.cashRequiredTTC).toBeGreaterThan(r.aPayer!);
+  });
+  it('l’impôt vient de l’OG et des litres nets ; le montant manuel est ignoré', () => {
+    const r = fixture({ settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, beerTax: { enabled: true, amountTTC: 99 } } } });
+    expect(r.beerTaxCost).toBe(6.84);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(fixture({ netVolumeL: 26.6 }).beerTaxCost).toBe(6.74);
+  });
+  it('sans OG : le montant manuel garde son chemin, vide il reste inconnu (jamais 0)', () => {
+    const manuel = fixture({ og: undefined, settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, beerTax: { enabled: true, amountTTC: 6.84 } } } });
+    expect(manuel.beerTaxSource).toBe('manuel');
+    expect(manuel.totalCost).toBe(202.77);
+    const inconnu = fixture({ og: undefined });
+    expect(inconnu.beerTaxSource).toBe('inconnu');
+    expect(inconnu.beerTaxCost).toBeNull();
+    expect(inconnu.complete).toBe(false);
+    expect(inconnu.issues.some(i => i.includes('Impôt'))).toBe(true);
+  });
+  it('une bière à 0,4 % vol. est exonérée : impôt 0, cas connu', () => {
+    const r = fixture({ og: '1.040', abv: '0.4' });
+    expect(r.beerTaxCost).toBe(0);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(r.beerTaxExonere).toBe(true);
+    expect(r.complete).toBe(true);
+  });
+  it('la réduction confirmée s’applique, son absence donne le taux plein', () => {
+    expect(fixture({ beerTaxReductionPct: 40 }).beerTaxCost).toBe(4.1);
+    expect(fixture().beerTaxCost).toBe(6.84);
+  });
+  it('les litres nets pris sur le volume à brasser sont signalés par netVolumeSource', () => {
+    const r = fixture({ netVolumeL: undefined });
+    expect(r.netVolumeSource).toBe('volume-a-brasser');
+    expect(fixture().netVolumeSource).toBe('saisi');
+    expect(r.costPerL).toBe(7.21); // 216,43 ÷ 30 L : charges, usure et impôt suivent les 30 L
+  });
+  it('un prix inconnu sort du total : l’instantané le dit', () => {
+    const r = fixture({ prices: { [demandKey('Pilsner', 'kg')]: price({ amount: 4 }) } });
+    expect(r.lines.find(l => l.name === 'Pale')!.stockCost).toBeNull();
+    expect(r.complete).toBe(false);
+  });
+});
+
+describe('frais par poste, poche en deux temps, litres nets saisis et réduction (uc, 09.11)', () => {
+  const pilsner = stock({ ref: 'MP-1', name: 'Pilsner', currentStock: 6 });
+  const pale = stock({ id: 's2', ref: 'MP-2', name: 'Pale', currentStock: 0 });
+  const r2 = () => recipe({ volumeL: 30, fermentables: [
+    { name: 'Pilsner', weightKg: 5.6025, kind: 'grain', use: 'empatage' }, { name: 'Pale', weightKg: 5.605, kind: 'grain', use: 'empatage' }] } as Partial<Recipe>);
+  const s2: BrewBudgetSettings = { costs: { energy: { enabled: true, amountTTC: 8 }, cleaning: { enabled: true, amountTTC: 3 }, packaging: { enabled: true, amountTTC: 24 }, beerTax: { enabled: true } },
+    includeFixed: true, includeDepreciation: true, annualVolumeL: 1200, annualFixedCHF: 4800, annualDepreciationCHF: 360 };
+  const prices = { [demandKey('Pilsner', 'kg')]: price({ amount: 4 }), [demandKey('Pale', 'kg')]: price({ amount: 4 }) };
+  const run = (patch = {}) => estimateBrewBudget({ recipe: r2(), stockItems: [pilsner, pale], batches: [], brewDate: '15.09.2026', netVolumeL: 27, og: '1.048', settings: s2, prices, now: '2026-09-09T12:00:00Z', ...patch });
+
+  it('chaque poste porte son coût et sa caisse ; l’impôt calculé en fait partie', () => {
+    const r = run();
+    expect(r.fraisParPoste).toEqual({ energy: { cout: 8, cash: 8 }, cleaning: { cout: 3, cash: 3 }, packaging: { cout: 24, cash: 24 }, beerTax: { cout: 6.84, cash: 6.84 } });
+  });
+  it('33,42 avant le brassage + 30,84 plus tard = 64,26 = cashRequiredTTC', () => {
+    const r = run();
+    expect(r.quandPaye).toEqual({ avantBrassage: 33.42, plusTard: 30.84 });
+    expect(Math.round(r.quandPaye!.avantBrassage! * 100) + Math.round(r.quandPaye!.plusTard! * 100)).toBe(Math.round(r.cashRequiredTTC * 100));
+  });
+  it('un poste « déjà prévu dans les charges récurrentes » sort du coût mais pas de la caisse', () => {
+    const r = run({ settings: { ...s2, costs: { ...s2.costs, energy: { enabled: true, amountTTC: 8, cashTreatment: 'included-in-recurring' } } } });
+    expect(r.fraisParPoste!.energy).toEqual({ cout: 8, cash: 0 });
+    expect(r.quandPaye!.avantBrassage).toBe(25.42);
+    expect(Math.round(r.quandPaye!.avantBrassage! * 100) + Math.round(r.quandPaye!.plusTard! * 100)).toBe(Math.round(r.cashRequiredTTC * 100));
+  });
+  it('un assujetti : le coût est HT, la caisse TTC, et la somme des deux temps reste la poche', () => {
+    const tva = { ...s2, costs: { energy: { enabled: true, amountTTC: 10.81, tvaRate: 0.081 }, cleaning: { enabled: true, amountTTC: 3.24, tvaRate: 0.081 }, packaging: { enabled: true, amountTTC: 21.62, tvaRate: 0.081 }, beerTax: { enabled: true } } };
+    const r = run({ settings: tva, isTvaRegistered: true });
+    expect(r.fraisParPoste!.energy).toEqual({ cout: 10, cash: 10.81 });
+    expect(r.fraisParPoste!.packaging).toEqual({ cout: 20, cash: 21.62 });
+    expect(Math.round(r.quandPaye!.avantBrassage! * 100) + Math.round(r.quandPaye!.plusTard! * 100)).toBe(Math.round(r.cashRequiredTTC * 100));
+  });
+  it('un poste inconnu ou un prix manquant rend null, jamais 0 ; un poste désactivé est absent', () => {
+    const inconnu = run({ settings: { ...s2, costs: { ...s2.costs, packaging: { enabled: true } } } });
+    expect(inconnu.fraisParPoste!.packaging).toEqual({ cout: null, cash: null });
+    expect(inconnu.quandPaye!.plusTard).toBeNull();
+    expect(inconnu.quandPaye!.avantBrassage).toBe(33.42);
+    const sansPrix = run({ prices: {} });
+    expect(sansPrix.quandPaye!.avantBrassage).toBeNull();
+    const off = run({ settings: { ...s2, costs: { ...s2.costs, energy: { enabled: false } } } });
+    expect(off.fraisParPoste!.energy).toBeUndefined();
+  });
+  it('netVolumeSaisi : le net n’est lu que s’il a été saisi', () => {
+    expect(netVolumeSaisi(run())).toBe(27);
+    expect(netVolumeSaisi(run({ netVolumeL: undefined }))).toBeNull(); // 30 L par défaut : pas un net
+    const ancien = { ...run() } as Partial<BrewBudgetSnapshot>; delete ancien.netVolumeSource;
+    expect(netVolumeSaisi(ancien as BrewBudgetSnapshot)).toBeNull(); // instantané d'avant d1
+    expect(netVolumeSaisi(undefined)).toBeNull();
+    expect(netVolumeSaisi({ netVolumeL: 0, netVolumeSource: 'saisi' })).toBeNull();
+  });
+  it('réduction petit brasseur : confirmée, 0 à 40 %, année du brassin (date suisse ou ISO)', () => {
+    const fiscal = { beerTaxAnnualReductionPct: 40, beerTaxReductionYear: 2026 };
+    expect(reductionImpotPourAnnee(fiscal, '15.09.2026')).toBe(40);
+    expect(reductionImpotPourAnnee(fiscal, '2026-09-15')).toBe(40);
+    expect(reductionImpotPourAnnee(fiscal, '15.09.2027')).toBeUndefined();
+    expect(reductionImpotPourAnnee({ ...fiscal, beerTaxAnnualReductionPct: 41 }, '15.09.2026')).toBeUndefined();
+    expect(reductionImpotPourAnnee({ ...fiscal, beerTaxAnnualReductionPct: -1 }, '15.09.2026')).toBeUndefined();
+    expect(reductionImpotPourAnnee({ beerTaxAnnualReductionPct: 40 }, '15.09.2026')).toBeUndefined();
+    expect(reductionImpotPourAnnee(undefined, '15.09.2026')).toBeUndefined();
+    expect(reductionImpotPourAnnee(fiscal, undefined)).toBeUndefined();
+  });
+  it('parité avec estimateSwissBeerTax : même règle de confirmation', () => {
+    for (const [pct, year, brew] of [[40, 2026, '15.09.2026'], [40, 2025, '15.09.2026'], [41, 2026, '15.09.2026'], [20, 2026, '2026-03-01']] as const) {
+      const fiscal = { beerTaxAnnualReductionPct: pct, beerTaxReductionYear: year };
+      const ref = estimateSwissBeerTax([], { annualReductionPct: pct, reductionYear: year, year: Number(brewBudgetDateKey(brew)!.slice(0, 4)) });
+      expect(reductionImpotPourAnnee(fiscal, brew) ?? 0).toBe(ref.reductionPct);
+    }
   });
 });

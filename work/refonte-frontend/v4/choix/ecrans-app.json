@@ -75,6 +75,87 @@
       "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
       "capture": "work/missions/2026-11-09-ecran-levure/p2/s7a/s7a-cadres.png",
       "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd"
+    },
+    {
+      "ecran": "impot-biere",
+      "route": "p2b",
+      "statut": "choisi",
+      "choix": "p2b (la règle des degrés : trois bandes du barème, chaque bière posée dessus)",
+      "mots": "La règle des degrés / p2b · tiède / Ça top comme ça",
+      "capture": "work/missions/2026-11-09-compta-prix/v0/p2b/p2b-page.png",
+      "page": "https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS"
+    },
+    {
+      "ecran": "cout-brassin-litre",
+      "route": "c3a",
+      "statut": "choisi",
+      "choix": "c3a (le flux de c1c, trois notions nommées : déjà payé, à payer, coût de l année ; le litre découpé)",
+      "mots": "c1c, trois notions nommées / c3a / Oui choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/c3a/c3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "facture-vente",
+      "route": "v3a",
+      "statut": "choisi",
+      "choix": "v3a (la caisse complète : comptoir, Pro ou Privé, échéance, facture imprimée)",
+      "mots": "La caisse complète / v3a / Choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/v3a/v3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "synthese",
+      "route": "g3a",
+      "statut": "choisi",
+      "choix": "g3a (g1b, entré contre dépensé à la même échelle, l à-payer hachuré)",
+      "mots": "Ta base / g3a et g3c / passe 2 / Non la meilleure on garde celle ci",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/g3a/g3a-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "annuel-cloture",
+      "route": "g6",
+      "statut": "choisi",
+      "choix": "g6 (g4a, colonnes de l année, puis 9 écrans de clôture)",
+      "mots": "L année, et la clôture / g6",
+      "capture": "work/missions/2026-11-09-compta-prix/p3/g6/g6-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "rangement-prix-impot",
+      "route": "e3a",
+      "statut": "choisi",
+      "choix": "e3a (e1b amélioré : prix et impôt depuis la fiche du brassin)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/e3a/e3a-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "operations",
+      "route": "v6b",
+      "statut": "choisi",
+      "choix": "v6b (v5a, lignes serrées : qui, quoi, état, échéance, pièce)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/v6b/v6b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "prix-marges",
+      "route": "c7c",
+      "statut": "choisi",
+      "choix": "c7c (c5b retouchée : deux échelles par bouteille et par an côte à côte)",
+      "mots": "Deux échelles côte à côte / c7c",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/c7c/c7c-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "previsions",
+      "route": "p5b",
+      "statut": "choisi",
+      "choix": "p5b (les étiquettes accrochées à l escalier : brassin futur, frigo, point bas)",
+      "mots": "Les étiquettes accrochées / p5b / Là je vois tout sur le graphe.",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/p5b/p5b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
     }
   ]
 }

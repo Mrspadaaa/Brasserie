@@ -11,7 +11,12 @@
  * Module sans import : la taxe, la projection de levure et le brassin mesuré l'appellent sans cycle.
  * Renvoie 0 quand une densité manque ou que la FG ne descend pas sous l'OG : jamais un alcool inventé.
  */
-const plato = (sg: number) => -616.868 + 1111.14 * sg - 630.272 * sg ** 2 + 135.997 * sg ** 3;
+/**
+ * °Plato depuis la densité (polynôme de Lincoln, ASBC) : la formule unique du dépôt (d1, 09.11). Valeur brute, sans garde ni arrondi :
+ * `BrewingMath.sgToPlato` y ajoute son plancher à 0 et son arrondi au dixième, l'impôt sur la bière arrondit au dixième avant le palier.
+ */
+export const platoFromSg = (sg: number): number => -616.868 + 1111.14 * sg - 630.272 * sg ** 2 + 135.997 * sg ** 3;
+const plato = platoFromSg;
 
 export function alcoholByVolume(og: number, fg: number): number {
   if (!Number.isFinite(og) || !Number.isFinite(fg) || !(og > fg) || fg <= 0) return 0;

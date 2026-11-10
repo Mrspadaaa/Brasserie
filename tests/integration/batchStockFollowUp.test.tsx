@@ -51,7 +51,7 @@ describe('production stock reconciliation', () => {
     fireEvent.change(screen.getByLabelText('Volume conditionné (L)'), { target: { value: '27,5' } });
     fireEvent.click(within(screen.getByLabelText('Conditionnement du brassin')).getByRole('button', { name: 'Passer en « Conditionné »' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 27.5 }), 'remaining', false);
-    expect(screen.getByRole('button', { name: 'Estimer le budget de ce brassin' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Argent' })).toBeInTheDocument(); // l'estimation du budget vit sous Argent (marche 1)
   });
   it('keeps actionable stock issues visible when an attempted deduction needs review', () => {
     vi.mocked(StorageService.completeBrewStock).mockReturnValue({ success: false, issues: ['Citra : unité incompatible'] });
