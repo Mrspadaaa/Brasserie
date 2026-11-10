@@ -1,0 +1,57 @@
+<title>Impôt bière de l'année · 10.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : ta base, puis les variantes ; la clôture en neuf écrans. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Impôt bière de l'année · 10.11</h1>
+<p class="mut">10.11 · l'impôt de l'année entière, après ta feuille d'un brassin (p2b). Première vignette, en pointillé : ta feuille p2b. Pages d'avant : <a href="../2026-11-09-compta-prix-p3/index.html">passe 3</a>.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>Clients › Impôt bière, l'année entière : ta maquette, un mélange ou aucune. p2b (ta feuille d'un brassin) en référence.</p>
+<p class="mut">Six mini maquettes, i1a à i1f, chacune avec la même année (exemple janvier à août, Pale Ale de septembre à densité inconnue). Chaque vignette s'ouvre en grand.</p></section>
+
+<section data-choix="impot-annee"><h2>Impôt bière, l'année entière</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p2b-page.png"><img src="img/p2b-haut.png" alt="p2b"></button><figcaption><span class="pill p-ref">Référence</span><b>Ta feuille d'un brassin</b> <span class="id">p2b</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1a-page.png"><img src="img/i1a-haut.png" alt="i1a"></button><figcaption><b>Le total et la liste</b> <span class="id">i1a</span>Le total découpé par bande ; chaque brassin sur sa bande ; ta feuille p2b en annexe.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1b-page.png"><img src="img/i1b-haut.png" alt="i1b"></button><figcaption><b>Mes bières sur la règle</b> <span class="id">i1b</span>Chaque brassin épinglé à son °P sur ta règle ; la somme dessous.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1c-page.png"><img src="img/i1c-haut.png" alt="i1c"></button><figcaption><b>Sorti de cave, ou dedans</b> <span class="id">i1c</span>Ce que tu dois (sorti de cave) et ce qui attend (en cave), séparés.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1d-page.png"><img src="img/i1d-haut.png" alt="i1d"></button><figcaption><b>Le chemin jusqu'au paiement</b> <span class="id">i1d</span>Mois par mois jusqu'au paiement : déclarer le 20, payer le 30 janvier 2027.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1e-page.png"><img src="img/i1e-haut.png" alt="i1e"></button><figcaption><b>Ma déclaration, déjà remplie</b> <span class="id">i1e</span>Le formulaire Taxas rempli : hl × taux par bande, total, tampon.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/i1f-page.png"><img src="img/i1f-haut.png" alt="i1f"></button><figcaption><b>La cuve de l'année</b> <span class="id">i1f</span>Ce que tu as brassé, son impôt, et ce qui reste à brasser.</figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>

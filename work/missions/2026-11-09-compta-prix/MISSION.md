@@ -38,6 +38,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte dans DEFAUTS-RECUR
 | Compta et prix · passe 2 (32 variantes ; candidates g3c, g4d, c3a, c4a, p3a, e1a, v3a, v4b ; p2b choisi) | 09.11 v2 | https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p2/index.html` |
 | Compta et prix · passe 3 (g5, g6 clôture, c5, p4 frigo, e2, v5 ; candidates g5c, g6, c5a, p4a, e2a, v5a ; e2c écartée) | 09.11 v3 | https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p3/index.html` |
 | Compta et prix · passe 4 (c6, p5a–f, e3, v6 ; candidates c6a, p5b, e3a, v6b) | 09.11 v4 | https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p4/index.html` |
+| Impôt bière de l'année (i1a–i1f, langue de p2b) | 10.11 v1 | https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE | `work/refonte-frontend/v4/outils/pages/2026-11-10-impot-annee/index.html` |
 
 ## Sources
 - `INVENTAIRE-CODE.md`, `BRIEF-AUTEUR.md`, `work/missions/BUGS.md`, PRODUCT.md, DESIGN.md
@@ -53,6 +54,7 @@ e2c écartée : impôt de l'année faux (303,84), critique SYNTHESE-P3.
 - **Ensuite** : port de v3a (voie uv, phase 3 de PLAN-METIER § 3.5), puis g3a, g6, et les écrans choisis en passe 4.
 - **Mise à jour** : phase 2 commitée (2d290f56, 180 tests verts). Test d'écran du critique : `critique/TEST-ECRAN-P2.md` (20 constats, c3a à corriger, p2b fidèle) ; correctifs en cours, voie fx (`voies/fx/RESULTAT.md`), non commités. Passe 4 maquettes finie (c6, e3, p5a–f, v6) ; critique en cours → `critique/SYNTHESE-P4.md`, puis page passe 4 (artefact neuf, avec p4/f52 si le brasseur l'a lancé).
 - **Mise à jour 2** : choisis aussi e3a (rangement) et v6b (Opérations). Correctifs du test d'écran commités (75ea78c9). Page passe 4 v4 (https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm) : rangées 1 bis (c7a–c), 2 bis (p5g–o Fable 5.2), 2 ter (p5p–u Fable 5.2). En cours : Prix c8a–d (base c7c, « on peut faire encore mieux »), Prévisions p6a–f (base p5a + aspects p4a, p5g, p5q, p5s). À leur retour : ajouter à la page (rangées neuves, même méthode node + verifier-page), publier sur la même adresse, commit. Puis port de v3a (voie uv), g3a, g6, e3a, v6b, et des choix Prix et Prévisions.
+| Impôt bière de l'année (i1a–i1f, langue de p2b) | 10.11 v1 | https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE | `work/refonte-frontend/v4/outils/pages/2026-11-10-impot-annee/index.html` |
 
 ## État de l'art
 | Problème type | Examiné | Décision |
@@ -71,3 +73,4 @@ e2c écartée : impôt de l'année faux (303,84), critique SYNTHESE-P3.
 
 ## Signature (10.11)
 Port fini dans le worktree, rien poussé ni déployé : p2b, c3a, v3a, g3a, g6, e3a, v6b, c7c, p5b remplacent leurs écrans. Tests d'écran du critique faits (TEST-ECRAN-P2, -V3A, -P5B, -PORT), correctifs fx, vx, px, fz. Suite complète : seuls échecs = environnement du worktree (firebase-admin, firebase-functions, cheerio, @noble/hashes). Ouvert pour le brasseur : suppression de CreativePricing.tsx et CostComposition.tsx (accord), Impôt bière de l'année sans maquette, compromis « 99 % » listés par voie, une décision de fz (voies/fz/RESULTAT.md). Déploiement : la pilote.
+- **Reprise (10.11, après déploiement index-D30arxAj.js)** : défauts CP-1 (écrans loin des maquettes sur ses vraies données) et CP-2 (vente lente, corrigé en 12da1b9e, non déployé). Revue en ligne : `critique/REVUE-EN-LIGNE-PILOTE.md`. En cours : voie f2 (fixture `?finance-demo=reel`, correction écran par écran ; `voies/f2/RESULTAT.md`). Ensuite : commit, demander à la pilote de redéployer (fusion de claude/refonte-houblons-v4 déjà faite en be056452 ; react-zoom-pan-pinch absent du worktree = environnement), rejouer les 9 écrans dans le Chrome du brasseur (fenêtre visible). Mini maquettes Impôt bière de l'année : `BRIEF-IMPOT-ANNEE.md`, en cours (p5/i1a–i1f), page à publier.
