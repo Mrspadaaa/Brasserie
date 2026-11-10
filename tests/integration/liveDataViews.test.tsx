@@ -69,13 +69,14 @@ describe('Live records and unsaved forms', () => {
     expect(result.current).toBe('après');
   });
 
-  it('updates an open batch sheet after a server edit, preserving an in-progress density reading', () => {
+  it('updates an open batch sheet after a server edit, preserving an in-progress density reading', async () => {
     const batch: any = { id: 'B-live', name: 'Avant', style: 'Stout', volumeL: 30, status: 'planifie', brewDate: '07.09.2026' };
     const view = (b: any) => <ProductionTab batches={[b]} recipes={[]} brewhouses={defaultConfig.brewhouses}
       activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab="batches"
       onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenBrewDay={vi.fn()} onOpenRecipe={vi.fn()} />;
     const { rerender } = render(view(batch));
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin B-live' }));
+    await screen.findByRole('dialog', { name: 'Avant' }, { timeout: 10000 });
     const density = document.querySelector('input[name="batch_sheet_og"]')!;
     fireEvent.change(density, { target: { value: '1.054' } });
     rerender(view({ ...batch, name: 'Nom confirmé par IA', volumeL: 24 }));

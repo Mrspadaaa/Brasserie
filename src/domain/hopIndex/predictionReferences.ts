@@ -1,4 +1,4 @@
-import { yeastReferences } from '../yeastReferences';
+import { yeastReferencesChargees, yeastReferencesNoyau } from '../yeastReferencesCore';
 import { assertHopKnowledge, type HopKnowledge, type HopYeast } from '../../../functions/src/hopPredictionSchema';
 import type { FermentationGuide } from '../../../functions/src/fermentationGuideSchema';
 import { qualifyHopPredictionKnowledge, type HopPredictionKnowledgeView, type HopSavedModelSelection } from './knowledgeQualification';
@@ -29,6 +29,9 @@ function checkedKnowledge(rows: unknown[]): HopKnowledge[] {
 const canonical = (value: any): string => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.keys(item).sort().map(k => [k, item[k]])) : item);
 export { canonical as canonicalPredictionReference };
 
+/** Voie l3 : ce module n'importe plus la bibliothèque de levures (1,4 Mo). `guidePredictionKnowledge*` la lit dans la porte de
+ * `yeastReferencesCore` : l'appelant fait d'abord `await chargerBibliothequeLevures()` (atelier V5.5 : au chargement du Host), ou importe
+ * `yeastReferences` ; sinon l'erreur est explicite. Aucun résultat ne change. */
 /** Only an untouched built-in can follow the current proposed revision. */
 export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
   if (row?.kind !== 'extrapolation' && row?.kind !== 'trial') return row;
@@ -41,7 +44,7 @@ export function proposedBrewingPredictionKnowledge(): HopKnowledge[] {
   const fermentations = [...new Map([...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack)].map(k => [k.id, k])).values()]
     .filter((row): row is FermentationGuide => row.kind === 'fermentation' && row.enabled);
   return [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack),
-    ...checkedKnowledge(trialPack.hopKnowledge), ...yeastReferences([], { includeCatalogue: false }).map(storedPredictionKnowledge),
+    ...checkedKnowledge(trialPack.hopKnowledge), ...yeastReferencesNoyau().map(storedPredictionKnowledge),
     ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...fermentations,
     ...checkedKnowledge([...legacyNoloPack, ...noloScenarioPack])];
 }
@@ -51,7 +54,7 @@ export function proposedBrewingPredictionKnowledge(): HopKnowledge[] {
 export function guidePredictionKnowledgeQualification(
   knowledge: HopKnowledge[], selectedSavedById: HopSavedModelSelection = {}
 ): HopPredictionKnowledgeView {
-  const yeastById = new Map(yeastReferences(knowledge).map(row => [row.id, storedPredictionKnowledge(row)]));
+  const yeastById = new Map(yeastReferencesChargees(knowledge).map(row => [row.id, storedPredictionKnowledge(row)]));
   const proposed = proposedBrewingPredictionKnowledge();
   const saved = knowledge.filter(k => k.kind !== 'styleGuide').map(storedPredictionKnowledge).map(currentGuideRevision);
   const qualified = qualifyHopPredictionKnowledge(proposed, saved, selectedSavedById);

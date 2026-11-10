@@ -67,6 +67,7 @@ import { Sheet } from './ui/Sheet';
 import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 import { prechargerVuesAuRepos } from './services/prechargeVues';
+import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 import { montantChf } from './domain/finance/ledger';
 
@@ -82,7 +83,9 @@ const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
 const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
 const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
-const HopV55Host = lazy(() => import('./ui/hopV55/Host').then(module => ({ default: module.HopV55Host })));
+// Voie l3 : le chunk du Host et la bibliothèque de levures (1,4 Mo) partent EN PARALLÈLE ; le Host ne se monte qu'une fois les deux là,
+// donc tout calcul synchrone du moteur (prepareBrewingScenarioContext…) trouve la bibliothèque. Elle n'est plus une dépendance statique du Host.
+const HopV55Host = lazy(() => Promise.all([import('./ui/hopV55/Host'), chargerBibliothequeLevures()]).then(([module]) => ({ default: module.HopV55Host })));
 // Écran provisoire des outils houblons v4 (#162) : atteint seulement par le crochet de développement tant que le
 // drapeau `hopV4` (src/ui/hopIndex/flags.ts) est éteint.
 // Une couche préchargée (precharge.ts) se rend d'un coup : la fabrique rend alors un thenable synchrone, car React garde sinon

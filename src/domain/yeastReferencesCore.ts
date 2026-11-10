@@ -1,5 +1,6 @@
 import { assertHopKnowledge, type HopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
 import { catalogueIdentityAliases } from './yeastCatalogue';
+import { bibliothequeLevuresEnregistree } from './yeastLibraryPorte';
 import core from '../data/yeastCoreReferences.json';
 import recipeProfiles from '../data/yeastRecipeReferences.json';
 import belgian from '../data/yeastEnrichmentBelgian.json';
@@ -40,7 +41,7 @@ export function yeastReferencesAvec(saved: HopKnowledge[] = empty, options: { in
   // The bundled library is available offline to the editor and server tools.
   // Reading it never installs a catalogue into the brewer's personal records.
   if (options.includeCatalogue !== false && !documentedById) {
-    if (!bibliotheque) throw new Error('Bibliothèque de levures non fournie : passer par yeastReferences().');
+    if (!bibliotheque) throw new Error('Bibliothèque de levures non chargée : passer par yeastReferences() ou attendre chargerBibliothequeLevures().');
     // The decoder already validates every library row and freezes its entire
     // graph. Preserve that validation rather than repeating its dates/URLs/facts
     // for each saved collection. Personal/enriched objects still validate below.
@@ -86,5 +87,8 @@ export function yeastReferencesAvec(saved: HopKnowledge[] = empty, options: { in
   });
   activeCache.set(cacheKey, result); return result;
 }
+/** Le calcul AVEC catalogue, sur la bibliothèque enregistrée dans la porte (yeastLibraryPorte) : lève tant qu'elle n'est pas chargée. */
+export const yeastReferencesChargees = (saved?: HopKnowledge[], options: { includeCatalogue?: boolean } = {}): YeastReference[] =>
+  yeastReferencesAvec(saved, options, bibliothequeLevuresEnregistree());
 /** Le noyau seul (levures documentées à la main), sans la bibliothèque : ce que lit l'accueil. */
 export const yeastReferencesNoyau = (saved?: HopKnowledge[]): YeastReference[] => yeastReferencesAvec(saved, { includeCatalogue: false });

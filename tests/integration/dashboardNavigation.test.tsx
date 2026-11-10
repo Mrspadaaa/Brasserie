@@ -132,7 +132,7 @@ describe('Dashboard agenda navigation', () => {
 });
 
 describe('Direct batch navigation from the dashboard', () => {
-  it('opens a batch outside this month without widening the catalog, closes and reopens it only for a new request', () => {
+  it('opens a batch outside this month without widening the catalog, closes and reopens it only for a new request', async () => {
     const handled = vi.fn();
     const props = { ...productionProps(), onOpenBatchRequestHandled: handled };
     const request = { id: oldBatch.id, at: 1 };
@@ -142,7 +142,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(within(catalog).queryByRole('button', { name: `Ouvrir le brassin ${oldBatch.id}` })).not.toBeInTheDocument();
 
     view.rerender(<ProductionTab {...props} openBatchRequest={request} />);
-    let dialog = screen.getByRole('dialog', { name: oldBatch.name });
+    let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
     expect(handled).toHaveBeenCalledTimes(1);
     fireEvent.click(within(dialog).getByRole('button', { name: 'Carnet', exact: true }));
@@ -156,14 +156,14 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(updated.name);
 
     view.rerender(<ProductionTab {...props} batches={[updated, currentBatch]} openBatchRequest={{ id: oldBatch.id, at: 2 }} />);
-    dialog = screen.getByRole('dialog', { name: updated.name });
+    dialog = await screen.findByRole('dialog', { name: updated.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.052');
     expect(within(dialog).getByRole('button', { name: 'Mesures', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(handled).toHaveBeenCalledTimes(2);
     expect(props.onOpenBrewDay).not.toHaveBeenCalled();
   });
 
-  it('waits for the requested live record, selects Brassins and consumes its request once under StrictMode', () => {
+  it('waits for the requested live record, selects Brassins and consumes its request once under StrictMode', async () => {
     const handled = vi.fn();
     const props = {
       ...productionProps(), targetSubTab: 'recipes' as const,

@@ -8,6 +8,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { HopExplorationChart } from '../../../src/ui/hopIndex/HopAromaChart';
 import { App } from '../../../src/App';
+import '../../../src/domain/yeastReferences'; // voie l3 : enregistre la bibliothèque de levures pour les calculs synchrones
 import { StorageService } from '../../../src/services/storage';
 import { FirestoreRepo, qaMetrics, seedQa, releaseQaRecipe } from './repo';
 import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties, guideFermentations, guideFermentationScience } from '../../../src/ui/hopIndex/guideData';
