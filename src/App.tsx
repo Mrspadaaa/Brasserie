@@ -461,7 +461,8 @@ export const App: React.FC = () => {
 
   // Critical stock count
   // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
-  const criticalStockCount = articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches).length;
+  // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
+  const criticalStockCount = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes).length, [stocks, batches, recipes]);
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(

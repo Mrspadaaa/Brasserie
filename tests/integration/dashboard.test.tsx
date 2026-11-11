@@ -13,6 +13,7 @@ const data = vi.hoisted(() => ({
 vi.mock('../../src/services/storage', () => ({
   StorageService: {
     getCreativeItems: () => data.events,
+    getRecipes: () => [], // R1 (k2) : « À commander » compte aussi les recettes écrites
     subscribe: (callback: () => void) => {
       data.listeners.add(callback);
       return () => data.listeners.delete(callback);

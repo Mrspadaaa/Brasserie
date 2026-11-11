@@ -4,6 +4,7 @@ import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
 import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
+import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -116,8 +117,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [recipeId, setRecipeId] = useState('');
   const selectedRecipe = recipes.find(recipe => recipe.id === recipeId) ?? null;
   const recipeComparison = useMemo(() => selectedRecipe
-    ? compareRecipeWithStock(selectedRecipe, batches, allItems)
-    : [], [selectedRecipe, batches, allItems]);
+    ? compareRecipeWithStock(selectedRecipe, batches, allItems, savedRecipes)
+    : [], [selectedRecipe, batches, allItems, savedRecipes]);
   const [selected, setSelected] = useLiveSelection(allItems, 'ref');
   const [creating, setCreating] = useState(false);
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
@@ -151,7 +152,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   /** Toute la liste de courses, tous fournisseurs confondus. */
   const copyEverything = () => {
     if (shoppingBySupplier.length === 0) {
-      onSuccessMessage?.('Rien à commander : le stock couvre les brassins planifiés.');
+      onSuccessMessage?.('Rien à commander : le stock couvre les brassins planifiés et les recettes écrites.');
       return;
     }
     const text = [
@@ -159,7 +160,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       '',
       ...shoppingBySupplier.flatMap(([supplier, list]) => [
         `${supplier} :`,
-        ...list.map((l) => `  - ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`),
+        ...list.map((l) => `  - ${l.item.name} : ${l.missing > 0 ? `${l.auMoins ? 'au moins ' : ''}${Units.format(l.missing, l.item.unit)}` : 'seuil atteint, quantité à définir'}`),
         ''
       ])
     ].join('\n');
@@ -248,36 +249,36 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   // Le même compte que le badge de la barre et « À commander » (test en ligne n° 49, 08.11 : « Stock (1) » au-dessus de « À commander · 0 »).
-  const criticalCount = useMemo(() => articlesACommander(allItems, batches).length, [allItems, batches]);
+  const criticalCount = useMemo(() => articlesACommander(allItems, batches, savedRecipes).length, [allItems, batches, savedRecipes]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
    * regroupé par fournisseur habituel. Entièrement calculé, jamais saisi.
    */
   const shoppingBySupplier = useMemo(() => {
-    const map = new Map<string, Array<{ item: StockItem; missing: number }>>();
+    const map = new Map<string, Array<{ item: StockItem; missing: number; auMoins: boolean; sources: SourceBesoin[] }>>();
 
-    articlesACommander(allItems, batches).forEach(({ item, missing: toOrder }) => {
+    articlesACommander(allItems, batches, savedRecipes).forEach(({ item, missing: toOrder, auMoins, sources }) => {
       const supplier = item.supplier?.trim() || 'Fournisseur à préciser';
       const arr = map.get(supplier) ?? [];
-      arr.push({ item, missing: toOrder });
+      arr.push({ item, missing: toOrder, auMoins, sources });
       map.set(supplier, arr);
     });
 
     return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
-  }, [allItems, batches]);
+  }, [allItems, batches, savedRecipes]);
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
   const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
   const favoriteCount = allItems.filter(item => item.favorite).length;
   const visibleItems = useMemo(() => allItems.filter(item => stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true), [allItems, stockFilter, orderRefs]);
 
-  const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number }>) => {
+  const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
     const text = [
       `Commande — Brasserie L'Affinée`,
       `Fournisseur : ${supplier}`,
       '',
-      ...list.map((l) => `- ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`)
+      ...list.map((l) => `- ${l.item.name} : ${l.missing > 0 ? `${l.auMoins ? 'au moins ' : ''}${Units.format(l.missing, l.item.unit)}` : 'seuil atteint, quantité à définir'}`)
     ].join('\n');
     navigator.clipboard.writeText(text);
     setCopiedSupplier(supplier);
@@ -383,10 +384,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                 />}
             {selectedRecipe && <>
               <p className="text-xs leading-snug text-cave-400">
-                Essai sans réservation : ses manques restent hors « À commander ». Libre = stock physique moins ingrédients encore réservés aux brassins en cours ; les consommations sont déjà retirées du physique. Commandes entrantes non suivies.
+                Même règle que « À commander » : le manque compte aussi ce que les brassins planifiés et les autres recettes écrites prévoient déjà ; les consommations sont déjà retirées du stock. Commandes entrantes non suivies.
               </p>
               {recipeComparison.some(row => row.stockItem) && <div aria-label="Légende de la barre de stock" className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
-                <span className="text-water">Réservé</span><span className="text-attention">Besoin prévu</span><span className="text-hop">Libre</span><span className="text-alert-strong">Manque</span>
+                <span className="text-water">Prévu ailleurs</span><span className="text-attention">Besoin prévu</span><span className="text-hop">Reste</span><span className="text-alert-strong">Manque</span>
               </div>}
               {recipeComparison.length === 0
                 ? <p className="text-xs text-cave-400">Aucun ingrédient renseigné dans cette recette.</p>
@@ -471,7 +472,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             <div className="py-12 text-center space-y-2">
               <p className="text-base text-cave-200">Rien à commander</p>
               <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
-                Le stock couvre les brassins planifiés et les seuils minimums.
+                Le stock couvre les brassins planifiés, les recettes écrites et les seuils minimums.
               </p>
             </div>
           ) : (
@@ -493,15 +494,20 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                 </div>
 
                 <ul>
-                  {list.map(({ item, missing }) => (
+                  {list.map(({ item, missing, auMoins, sources }) => (
                     <li
                       key={item.ref}
                       className="flex items-baseline justify-between gap-2 py-1.5
                                  border-b border-cave-800 last:border-0"
                     >
-                      <span className="text-sm text-cave-200 min-w-0 break-words">{item.name}</span>
+                      <span className="min-w-0">
+                        <span className="block text-sm text-cave-200 break-words">{item.name}</span>
+                        {sources.length > 0 && <span data-stock-sources className="block text-xs text-cave-400 break-words">
+                          {sources.map(libelleSource).join(' · ')}
+                        </span>}
+                      </span>
                       <span className="font-mono text-sm text-ebc-straw shrink-0">
-                        {missing > 0 ? Units.format(missing, item.unit) : 'à définir'}
+                        {missing > 0 ? `${auMoins ? 'au moins ' : ''}${Units.format(missing, item.unit)}` : 'à définir'}
                       </span>
                     </li>
                   ))}

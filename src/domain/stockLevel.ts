@@ -1,6 +1,7 @@
 import { Batch, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
 import { ingredientsOf, normalizeRecipe } from './recipeSnapshot';
+import { disponibilites, type SourceBesoin } from './stock/disponibilite';
 
 /**
  * Niveau de stock exprimé en COUVERTURE DE BRASSINS.
@@ -157,6 +158,14 @@ export interface RecipeStockComparison {
   physical: number | null;
   reserved: number | null;
   available: number | null;
+  /**
+   * Ce que les AUTRES sources prévoient déjà de ce même article (brassins planifiés, ajouts restants, autres recettes écrites),
+   * dans l'unité de l'article ; `null` si une de ces sources est inconnue (R1, `disponibilite.ts`).
+   */
+  elsewhere: number | null;
+  /** Les autres sources, nommées. */
+  elsewhereSources: SourceBesoin[];
+  /** Même chiffre que « À commander » : besoin de cette recette + prévu ailleurs − stock en main, s'il est positif. */
   shortage: number | null;
   issue?: string;
   availabilityIssue?: string;
@@ -183,16 +192,20 @@ function recipeStockItem(
 }
 
 /**
- * Compare une recette enregistrée à l'inventaire. Seuls les pendingItems sont
- * encore réservés physiquement ; les consommations sont déjà reflétées dans
- * currentStock. Les brassins planifiés et les commandes ne sont pas réservés.
+ * Compare une recette à l'inventaire. Seuls les pendingItems sont encore réservés
+ * physiquement ; les consommations sont déjà reflétées dans currentStock.
+ * Le manque suit la même règle que « À commander » (R1) : il compte aussi ce que
+ * les brassins planifiés et les autres recettes écrites prévoient déjà (`recipes` :
+ * toutes les recettes du carnet ; la recette comparée n'est pas comptée deux fois).
  */
 export function compareRecipeWithStock(
   recipe: Recipe,
   batches: Batch[],
-  stockItems: StockItem[]
+  stockItems: StockItem[],
+  recipes: Recipe[]
 ): RecipeStockComparison[] {
   const normalized = normalizeRecipe(recipe);
+  const ailleurs = disponibilites(stockItems, batches, recipes, { sauf: { recetteId: recipe.id } }).parArticle;
   const needs: RecipeNeedLine[] = [
     ...(normalized.fermentables ?? []).map(line => ({ name: line.name, stockItemRef: line.stockItemRef, quantity: line.weightKg, unit: 'kg' })),
     ...(normalized.hops ?? []).map(line => ({ name: line.name, stockItemRef: line.stockItemRef, quantity: line.weightG, unit: 'g' })),
@@ -250,7 +263,11 @@ export function compareRecipeWithStock(
         : reserved !== null && reserved > physical
           ? `Réservations supérieures au stock physique de ${Units.format(reserved - physical, item.unit)}.`
           : undefined;
-    const shortage = required !== null && available !== null ? Math.max(0, required - available) : null;
+    const autres = ailleurs.get(item.ref);
+    const elsewhere = autres ? autres.besoin : null;
+    const shortage = required !== null && physical !== null && elsewhere !== null
+      ? Math.max(0, Units.round(required + elsewhere - physical, item.unit))
+      : null;
     return {
       key: `stock:${item.ref}`,
       label: item.name,
@@ -263,6 +280,8 @@ export function compareRecipeWithStock(
       physical,
       reserved,
       available,
+      elsewhere,
+      elsewhereSources: autres?.sources ?? [],
       shortage,
       issue,
       availabilityIssue
@@ -281,6 +300,8 @@ export function compareRecipeWithStock(
     physical: null,
     reserved: null,
     available: null,
+    elsewhere: null,
+    elsewhereSources: [],
     shortage: null,
     issue: match === 'ambiguous'
       ? 'Plusieurs articles ont ce nom : stock inconnu sans référence explicite.'
@@ -393,17 +414,6 @@ export function computeStockLevel(item: StockItem, batches: Batch[], stockItems?
   };
 }
 
-/**
- * Manque à commander pour couvrir tous les brassins planifiés.
- * Renvoie 0 quand le stock suffit.
- */
-export function shortfall(item: StockItem, batches: Batch[], stockItems?: StockItem[]): number {
-  const needed = batches
-    .reduce((sum, b) => sum + outstandingInBatch(item, b, stockItems), 0);
-  const missing = needed - (item.currentStock ?? 0);
-  return missing > 0 ? Units.round(missing, item.unit) : 0;
-}
-
 /** Les brassins planifiés qui consomment cet article, pour l'affichage des étiquettes. */
 export function allocatedBatches(
   item: StockItem,
@@ -422,20 +432,29 @@ export interface ArticleACommander {
   missing: number;
   /** Le stock est épuisé (≤ 0). */
   rupture: boolean;
+  /** Le manque vient d'une source dont une quantité est inconnue : `missing` est un plancher (« au moins »). */
+  auMoins: boolean;
+  /** D'où vient le besoin, source par source (brassins planifiés, ajouts restants, recettes écrites). */
+  sources: SourceBesoin[];
 }
 
 /**
- * LE comptage du « manque » (test en ligne n° 49 : Stocks disait 12, le Bord et le badge 26).
- * Un article est à commander s'il manque pour les brassins planifiés (`shortfall`), ou s'il est au seuil ou
- * en dessous d'un seuil RENSEIGNÉ (`minStock` > 0 : un article sans seuil n'a pas de seuil à atteindre).
+ * LE comptage du « manque » (test en ligne n° 49 : Stocks disait 12, le Bord et le badge 26 ; R1 : une seule disponibilité).
+ * Un article est à commander s'il manque pour ce que les brassins planifiés (pas encore brassés) et les recettes écrites
+ * (jamais brassées, non archivées) vont consommer (`disponibilites`), ou s'il est au seuil ou en dessous d'un seuil
+ * RENSEIGNÉ (`minStock` > 0 : un article sans seuil n'a pas de seuil à atteindre).
+ * Un besoin inconnu n'est jamais 0 : si le connu dépasse déjà le stock, l'article est listé « au moins » ce plancher.
  * Stocks (« À commander »), le Bord et le badge de la barre du bas appellent tous cette fonction.
  */
-export function articlesACommander(items: StockItem[], batches: Batch[]): ArticleACommander[] {
+export function articlesACommander(items: StockItem[], batches: Batch[], recipes: Recipe[]): ArticleACommander[] {
+  const { parArticle } = disponibilites(items, batches, recipes);
   return items.flatMap((item) => {
-    const missing = shortfall(item, batches, items);
-    const belowMin = item.minStock > 0 && item.currentStock <= item.minStock;
+    const d = parArticle.get(item.ref);
+    const missing = d?.manque ?? d?.manqueAuMoins ?? 0;
+    const sources = d?.sources ?? [];
+    const belowMin = (item.minStock ?? 0) > 0 && item.currentStock <= (item.minStock ?? 0);
     if (missing <= 0 && !belowMin) return [];
-    const toOrder = missing > 0 ? missing : Units.round(item.minStock - item.currentStock, item.unit);
-    return [{ item, missing: Math.max(0, toOrder), rupture: (item.currentStock ?? 0) <= 0 }];
+    const toOrder = missing > 0 ? missing : Units.round((item.minStock ?? 0) - item.currentStock, item.unit);
+    return [{ item, missing: Math.max(0, toOrder), rupture: (item.currentStock ?? 0) <= 0, auMoins: missing > 0 && d?.manque === null, sources }];
   });
 }

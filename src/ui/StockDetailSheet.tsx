@@ -6,6 +6,7 @@ import { DateField, toIsoDate, toSwissDate } from './DateField';
 import { todayISO } from '../domain/finance/ledger';
 import { libelleDurabilite, liensArticle, motifNonSuppression, nombreFr, quantiteLue, statutDurabilite, verifierSeuil } from '../domain/stock/regles';
 import { Units } from '../services/units';
+import { disponibilites, libelleSource } from '../domain/stock/disponibilite';
 import { computeStockLevel, pendingStockSummary, allocatedBatches, type RecipeStockComparison } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
 import { Sheet, ConfirmSheet } from './Sheet';
@@ -69,6 +70,8 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 
   const level = computeStockLevel(draft, batches, stockItems);
   const allocated = allocatedBatches(item, batches, stockItems);
+  // R1 (k2) : le même besoin et le même manque que « À commander » ; les brassins et les recettes sont comptés par `disponibilites`.
+  const dispo = disponibilites(stockItems ?? [item], batches, recipes ?? []).parArticle.get(item.ref);
   const pending = pendingStockSummary(item, batches);
   const physical = Number.isFinite(item.currentStock) && item.currentStock >= 0 ? item.currentStock : null;
   const available = physical !== null && pending.known ? Math.max(0, physical - pending.knownQuantity) : null;
@@ -139,7 +142,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             <p className="text-xs text-cave-400">Besoin prévu · {recipeCheck.recipeName}</p>
             <dl className="grid grid-cols-3 gap-2 text-xs">
               <div><dt className="text-cave-400">Besoin</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.quantity === null || !recipeCheck.comparison.unit ? 'Inconnu' : quantiteLue(recipeCheck.comparison.quantity, recipeCheck.comparison.unit)}</dd></div>
-              <div><dt className="text-cave-400">Libre</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.available === null ? 'Inconnu' : quantiteLue(recipeCheck.comparison.available, recipeCheck.comparison.unit!)}</dd></div>
+              <div><dt className="text-cave-400">Prévu ailleurs</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.elsewhere === null ? 'Inconnu' : quantiteLue(recipeCheck.comparison.elsewhere, recipeCheck.comparison.unit!)}</dd></div>
               <div><dt className="text-cave-400">Manque</dt><dd className={`font-mono ${recipeCheck.comparison.shortage === null ? 'text-cave-200' : recipeCheck.comparison.shortage > 0 ? 'text-alert-strong' : 'text-hop'}`}>{recipeCheck.comparison.shortage === null || !recipeCheck.comparison.unit ? 'Inconnu' : quantiteLue(recipeCheck.comparison.shortage, recipeCheck.comparison.unit)}</dd></div>
             </dl>
             {recipeCheck.comparison.issue && <p className="text-xs text-attention">{recipeCheck.comparison.issue}</p>}
@@ -150,17 +153,26 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             Besoin moyen : <span className="font-mono text-cave-200">{Units.format(level.perBatch, item.unit)}</span> par brassin
             {level.source === 'planifie' ? ' planifié.' : ', selon l’historique.'}
           </p>}
-          {allocated.length > 0 && <details>
-            <summary className="cursor-pointer min-h-touch flex items-center text-2xs text-water">Besoins de {allocated.length} {allocated.length === 1 ? 'brassin' : 'brassins'}</summary>
-            <table className="w-full text-xs">
-              <caption className="sr-only">Quantités prévues par brassin</caption>
-              <thead className="sr-only"><tr><th>Brassin</th><th>Quantité</th></tr></thead>
-              <tbody>{allocated.map(batch => <tr key={batch.id} className="border-t border-cave-800">
-                <th scope="row" className="text-left font-normal py-1 pr-2 break-words">{batch.name}</th>
-                <td className="text-right font-mono whitespace-nowrap py-1">{Units.format(batch.qty, item.unit)}</td>
-              </tr>)}</tbody>
-            </table>
-          </details>}
+          {dispo && dispo.sources.length > 0 && <div data-stock-besoin className="border-t border-cave-800 pt-2 space-y-1">
+            <dl className="grid grid-cols-2 gap-2 text-xs">
+              <div><dt className="text-cave-400">Besoin prévu</dt><dd className="font-mono text-cave-50">{dispo.besoin === null ? 'Inconnu' : Units.format(dispo.besoin, item.unit)}</dd></div>
+              <div><dt className="text-cave-400">Manque</dt><dd data-stock-manque className={`font-mono ${dispo.manque === null ? 'text-attention' : dispo.manque > 0 ? 'text-alert-strong' : 'text-hop'}`}>{
+                dispo.manque !== null ? Units.format(dispo.manque, item.unit)
+                  : dispo.manqueAuMoins !== null ? `Au moins ${Units.format(dispo.manqueAuMoins, item.unit)}` : 'Inconnu'}</dd></div>
+            </dl>
+            {dispo.raisons.map(raison => <p key={raison} className="text-xs text-attention">{raison}</p>)}
+            <details>
+              <summary className="cursor-pointer min-h-touch flex items-center text-2xs text-water">Besoin de {dispo.sources.length} {dispo.sources.length === 1 ? 'source' : 'sources'} (brassins, recettes)</summary>
+              <table className="w-full text-xs">
+                <caption className="sr-only">Quantités prévues par source</caption>
+                <thead className="sr-only"><tr><th>Source</th><th>Quantité</th></tr></thead>
+                <tbody>{dispo.sources.map(source => <tr key={`${source.genre}:${source.id}`} className="border-t border-cave-800">
+                  <th scope="row" className="text-left font-normal py-1 pr-2 break-words">{libelleSource(source)}</th>
+                  <td className="text-right font-mono whitespace-nowrap py-1">{source.quantite === null ? 'Inconnu' : Units.format(source.quantite, item.unit)}</td>
+                </tr>)}</tbody>
+              </table>
+            </details>
+          </div>}
         </section>
 
         <FormNav className="stock-form space-y-2" onSubmit={save}>

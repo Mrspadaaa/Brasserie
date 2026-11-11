@@ -97,8 +97,8 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('meter')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Ouvrir Pilsner'}));expect(open).toHaveBeenCalledWith(item);
     view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrectInventory={()=>{}} onToggleFavorite={()=>{}}/>);
-    fireEvent.click(screen.getByText('Besoins de 1 brassin'));
-    expect(screen.getByText('Brassin du samedi')).toBeVisible();
+    fireEvent.click(screen.getByText('Besoin de 1 source (brassins, recettes)'));
+    expect(screen.getByText(/^Brassin du samedi/)).toBeVisible(); // la source est nommée, avec sa date quand elle est connue (R1)
     expect(screen.getByRole('button',{name:'Corriger l’inventaire'})).toBeVisible();
   });
 

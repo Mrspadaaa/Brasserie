@@ -874,6 +874,17 @@ export const StorageService = {
       kind: type
     });
 
+    // R4 (k2) : l'inventaire écrit un mouvement, comme l'achat et le brassage (avant, écart, après, motif, date). Nouveau type de
+    // document dans la collection existante `movements` (immuable) : aucun champ de collection neuf, aucune règle à changer.
+    const createdAt = new Date().toISOString();
+    const movementId = `inventory-${ref}-${createdAt.replace(/[^0-9]/g, '')}-${Math.random().toString(36).slice(2, 6)}`;
+    FirestoreRepo.put('movements', movementId, {
+      id: movementId, type: 'inventory-adjustment', stockItemRef: ref, stockKind: type, unit: item.unit,
+      previousStock: item.currentStock, delta, newStock: compte,
+      reasonCode: reason, reason: INVENTORY_REASONS[reason], ...(note ? { note } : {}),
+      date: createdAt.slice(0, 10), createdAt
+    });
+
     this.logAction(
       'Modification',
       'Stocks',
