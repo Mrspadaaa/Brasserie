@@ -124,6 +124,79 @@ describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition 
   });
 });
 
+describe('3C : la fenêtre de clôture porte les curseurs densité et volume (crayon, étalonnage, aide, Pourquoi maintenant)', () => {
+  const ouvrirCloture = (fini = vi.fn()) => {
+    monter(lot(SECHE_SANS_QUANTITE), fini);
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
+    fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
+    const fenetre = screen.getByRole('dialog');
+    return { fini, fenetre: within(fenetre), noeud: fenetre };
+  };
+  const densite = () => within(screen.getByRole('group', { name: 'Densité initiale' }));
+  const volume = () => within(screen.getByRole('group', { name: 'Au fermenteur' }));
+  it('deux blocs : valeur « ? » (jamais 0), crayon, pas, case, curseur, cible ou repère, aide', () => {
+    const { fenetre } = ouvrirCloture();
+    expect(fenetre.getAllByText('Confirmer l’ajout de levure ?').length).toBeGreaterThan(0);
+    expect(densite().getByText('moût refroidi')).toBeInTheDocument();
+    expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
+    expect(densite().getByRole('button', { name: 'moins 0,001' })).toBeInTheDocument();
+    expect(densite().getByRole('button', { name: 'plus 0,001' })).toBeInTheDocument();
+    expect(densite().getByRole('checkbox', { name: 'Densité refroidie ou corrigée à l’étalonnage' })).not.toBeChecked();
+    expect(densite().getByRole('slider', { name: 'Densité, curseur' })).toBeInTheDocument();
+    expect(densite().getByText('1,059–1,063').closest('p')).toHaveTextContent('cible 1,059–1,063');
+    expect(densite().getByText('Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.')).toBeInTheDocument();
+    expect(volume().getByText('au transfert')).toBeInTheDocument();
+    expect(volume().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
+    expect(volume().getByRole('button', { name: 'moins 0,1' })).toBeInTheDocument();
+    expect(volume().getByRole('checkbox', { name: 'Volume ramené à 20 °C' })).not.toBeChecked();
+    expect(volume().getByRole('slider', { name: 'Volume, curseur' })).toBeInTheDocument();
+    expect(volume().getByText('repère', { exact: false })).toHaveTextContent('repère 19,0 L');
+  });
+  it('« Pourquoi maintenant » dit les deux raisons ; la phrase « Densité initiale pas relevée » ne se lit plus qu’aux lecteurs d’écran', () => {
+    const { fenetre, noeud } = ouvrirCloture();
+    expect(fenetre.queryByText(/Moût refroidi, avant l’ensemencement/)).not.toBeInTheDocument();
+    fireEvent.click(fenetre.getByRole('button', { name: /Pourquoi maintenant/ }));
+    expect(fenetre.getByText(/Moût refroidi, avant l’ensemencement/)).toBeInTheDocument();
+    expect(fenetre.getByText(/Au transfert : le volume au fermenteur/)).toBeInTheDocument();
+    const dites = [...noeud.querySelectorAll('p')].filter((p) => /pas relevée/.test(p.textContent ?? ''));
+    expect(dites.length).toBeGreaterThan(0);
+    for (const p of dites) expect(p.className).toMatch(/sr-only/);
+    expect(fenetre.getByText(/1\/\d+ ajouts cochés/)).toBeInTheDocument();
+  });
+  it('un pas pose la valeur, le verdict dit l’écart à la cible ; la clôture écrit les deux relevés avant la levure et qualifie l’OG et le volume cochés', async () => {
+    const { fini, fenetre } = ouvrirCloture();
+    fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
+    expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('1,062');
+    fireEvent.click(densite().getByRole('checkbox'));
+    fireEvent.click(volume().getByRole('button', { name: 'plus 0,1' }));
+    fireEvent.click(volume().getByRole('checkbox'));
+    expect(volume().getByText('au repère')).toBeInTheDocument();
+    fireEvent.click(fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await vi.waitFor(() => expect(fini).toHaveBeenCalledOnce());
+    const lotFini = fini.mock.calls[0][0] as Batch;
+    expect(lotFini).toMatchObject({ og: '1.062', volumeBrewedL: 19.1, status: 'fermentation' });
+    const releves = lotFini.brewDay!.readings!;
+    expect(releves.find((r) => r.kind === 'densite')).toMatchObject({ stepId: 'ensemencement', value: 1.062, unit: 'SG', roomTemp: true });
+    expect(releves.find((r) => r.kind === 'volume')).toMatchObject({ stepId: 'ensemencement', value: 19.1, unit: 'L', volumeBasis: 'cold' });
+    for (const r of releves) expect(r.at).toBeLessThanOrEqual(lotFini.brewDay!.pitchedAt!);
+  });
+  it('sans la case « refroidie » : le relevé reste au journal, mais l’OG n’est pas qualifiée ; sans rien saisi, aucun relevé écrit', async () => {
+    const a = ouvrirCloture();
+    fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
+    fireEvent.click(a.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await vi.waitFor(() => expect(a.fini).toHaveBeenCalledOnce());
+    const sans = a.fini.mock.calls[0][0] as Batch;
+    expect(sans.og).toBeUndefined();
+    expect(sans.brewDay!.readings).toHaveLength(1);
+    cleanup();
+    const b = ouvrirCloture();
+    fireEvent.click(b.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await vi.waitFor(() => expect(b.fini).toHaveBeenCalledOnce());
+    expect((b.fini.mock.calls[0][0] as Batch).brewDay!.readings).toHaveLength(0);
+  });
+});
+
 describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à l’ensemencement, une ligne « À cru » (g, g/L, phase, aucun jour inventé)', () => {
   const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
   const A_CRU = [

@@ -353,7 +353,7 @@ export function ecartCible(scale: MeasureScale, value: number): number | null {
  * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input type="range"> natif, transparent, couvre l'échelle (44 px de haut) : il porte
  * le glisser, le toucher de piste, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée.
  */
-function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
+export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
   scale: MeasureScale; kind: ReadingKind; value: number | null; depart: number; label: string; onPose: (v: number) => void;
 }) {
   const span = scale.max - scale.min;

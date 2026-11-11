@@ -24,7 +24,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import './brew-day.css';
-import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
+import { AppConfig, Batch, BrewDayReading, BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import { ingredientsOf } from '../domain/recipeSnapshot';
 import { breweryDay, brewSessionDatePatch, hasBrewStarted, plannedBrewDate } from '../domain/batchSchedule';
 import { BatchSchedule } from '../ui/production/BatchSchedule';
@@ -73,6 +73,7 @@ import {
 import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
 import type { PitchEditor } from '../ui/BrewIngredients';
 import { sachetDeLaLevure } from '../domain/levure/sachet';
+import { BrewClotureReleves, CLOTURE_VIDE, cloturePartirDe, type ClotureReleves } from '../ui/BrewClotureReleves';
 import yeastSupplyBootstrap from '../data/yeastSupplyBootstrap.json';
 import { BrewJournal } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
@@ -197,6 +198,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     return () => window.clearTimeout(timer);
   }, [notice]);
   const [confirmFinish, setConfirmFinish] = useState(false);
+  // 3C : les relevés de la fenêtre de clôture. Brouillon repris du journal à l'ouverture ; rien d'écrit avant « Confirmer la levure ajoutée ».
+  const [clotureReleves, setClotureReleves] = useState<ClotureReleves>(CLOTURE_VIDE);
+  const clotureDepart = useRef<ClotureReleves>(CLOTURE_VIDE);
   const [pitchTemperature, setPitchTemperature] = useState<number>();
   const [pitchQuantityMode, setPitchQuantityMode] = useState<PitchQuantityChoice['mode']>();
   const [pitchQuantityAmount, setPitchQuantityAmount] = useState<number | undefined>(state.additions?.yeast?.amount);
@@ -497,6 +501,17 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     (s) => isUsefulTimer(s) && s.startedAt != null && s.doneAt == null
   );
   const finishedReadings = finalBrewReadings(state, recipe);
+  const etapeCloture = state.steps.find((s) => s.id === 'ensemencement') ?? current;
+  const clotureLevure = state.pitchedAt == null;
+  useEffect(() => {
+    if (!confirmFinish || !clotureLevure) return;
+    const depart = cloturePartirDe({
+      densite: finishedReadings.rawGravity,
+      volume: finishedReadings.rawVolume
+    });
+    clotureDepart.current = depart;
+    setClotureReleves(depart);
+  }, [confirmFinish]);
   const countableIngredients = ingredients.filter(i => i.planned > 0 || i.id === 'yeast');
   const confirmedOther = countableIngredients.filter(
     (i) => i.id !== 'yeast' && i.planned > 0 && state.additions?.[i.id]?.doneAt != null
@@ -1930,6 +1945,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         what={`${finishedReadings.gravity ? `OG ${finishedReadings.gravity.value.toFixed(3).replace('.', ',')}` : 'Densité initiale pas relevée'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${nombreFr(finishedReadings.volume.value, 1)} L à froid en fermenteur` : 'volume au fermenteur pas relevé'}.`}
         consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${nombreFr(pitchTemperature, 1)} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
         confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
+        children={clotureLevure ? (
+          <BrewClotureReleves step={etapeCloture} recipe={recipe} draft={clotureReleves} onChange={setClotureReleves} />
+        ) : undefined}
         onConfirm={async () => {
           if (finalizing.current) return;
           if (!pitchChoiceValid) {
@@ -1938,7 +1956,18 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           }
           finalizing.current = true;
           const pitchChoice = currentPitchChoice ?? { mode: 'unmeasured' as const };
-          update((s) => recordPitch(s, brewNow(), pitchTemperature, pitchChoice));
+          // 3C : les relevés saisis dans la fenêtre entrent au journal AVANT la levure (la densité et le volume qualifiés doivent précéder l'ajout) ; une valeur inchangée n'écrit rien.
+          const avecReleves = (s: BrewDayState): BrewDayState => {
+            if (!clotureLevure) return s;
+            const d = clotureReleves, o = clotureDepart.current, at = brewNow();
+            const nouveaux: BrewDayReading[] = [];
+            if (d.densite != null && (d.densite !== o.densite || d.densiteRefroidie !== o.densiteRefroidie))
+              nouveaux.push({ id: crypto.randomUUID(), at, stepId: 'ensemencement', kind: 'densite', value: d.densite, unit: READING.densite.unit, roomTemp: d.densiteRefroidie });
+            if (d.volume != null && (d.volume !== o.volume || d.volumeRefroidi !== o.volumeRefroidi))
+              nouveaux.push({ id: crypto.randomUUID(), at, stepId: 'ensemencement', kind: 'volume', value: d.volume, unit: READING.volume.unit, roomTemp: d.volumeRefroidi, ...(d.volumeRefroidi ? { volumeBasis: 'cold' as const } : {}) });
+            return nouveaux.length ? { ...s, readings: [...(s.readings ?? []), ...nouveaux] } : s;
+          };
+          update((s) => recordPitch(avecReleves(s), brewNow(), pitchTemperature, pitchChoice));
           if (!(await session.flush())) {
             finalizing.current = false;
             setNotice(

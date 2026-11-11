@@ -1831,6 +1831,23 @@ button.brew-consign:disabled { opacity: 0.6; }
   flex: 2 1 auto;
   white-space: nowrap;
 }
+/* 3C (p3) : les relevés de la fenêtre de clôture. Les gestes sont ceux de la feuille Mesurer (classes bz-*) ; ici seulement la mise en page de la fenêtre. */
+.brew-confirm .bz-cl { color: var(--bz-t1); }
+.brew-confirm .bz-cl-bloc + .bz-cl-bloc { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bz-border2); }
+.brew-confirm .bz-cl-titre { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.brew-confirm .bz-cl-titre strong { color: var(--bz-t0); font-size: 18px; font-weight: 600; line-height: 1.15; }
+.brew-confirm .bz-cl-titre span { color: var(--bz-t2); font-size: 14px; }
+.brew-confirm .bz-cl .bz-lecture { margin-top: 0; }
+.brew-confirm .bz-cl .bz-lecture .bz-saisie { flex: 0 1 120px; }
+.brew-confirm .bz-cl .bz-pas { margin-left: 0; }
+.brew-confirm .bz-cl .bz-pas button { min-height: 44px; }
+.brew-confirm .bz-cl-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; margin-top: 8px; }
+.brew-confirm .bz-cl-ligne p { margin: 0; }
+.brew-confirm .bz-cl-ligne .bz-verdict { margin-top: 0; }
+.brew-confirm .bz-cl-cible { margin-left: auto; margin-top: 0; }
+.brew-confirm .bz-cl .bz-muet { margin: 6px 0 0; color: var(--bz-t2); font-size: 14px; }
+.brew-confirm .bz-cl .bz-pourquoi { margin-top: 12px; min-height: 36px; }
+.brew-confirm .bz-cl .bz-curseur { margin-top: 6px; }
 .brew-capture-header {
   display: flex;
   flex-shrink: 0;

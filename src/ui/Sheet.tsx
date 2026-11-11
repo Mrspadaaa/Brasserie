@@ -184,7 +184,9 @@ export const ConfirmSheet: React.FC<{
   consequence?: string;
   confirmLabel?: string;
   className?: string;
-}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className }) => (
+  /** Contenu propre à la confirmation (p3, 3C : les relevés de clôture). Il remplace l'affichage de `what`, qui reste dit aux lecteurs d'écran. */
+  children?: React.ReactNode;
+}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className, children }) => (
   <Sheet
     open={open}
     onClose={onClose}
@@ -215,7 +217,8 @@ export const ConfirmSheet: React.FC<{
     }
   >
     <div className="space-y-3">
-      <p className="text-base text-cave-50">{what}</p>
+      <p className={children ? 'sr-only' : 'text-base text-cave-50'}>{what}</p>
+      {children}
       {consequence && <p className="text-sm text-cave-400 leading-relaxed">{consequence}</p>}
     </div>
   </Sheet>
