@@ -6,7 +6,9 @@ import { AcidId, BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } fro
 import {
   defaultReading,
   isMash,
-  isFinalWort,
+  cibleMesure,
+  ecartHorsCible,
+  formatCible,
   parseReading,
   READING,
   measuredReadingFeedback,
@@ -297,28 +299,17 @@ export function measureScale(
   recipe?: RecipeSnapshot,
   value?: number | null
 ): MeasureScale {
-  let band: [number, number] | null = null;
+  // La bande vient de `cibleMesure` : la même que pour les Relevés du jour et la clôture (une seule source de cible et d'écart).
+  const cible = cibleMesure(kind, step, recipe);
+  let band: [number, number] | null = cible ? [cible.min, cible.max] : null;
   let axis: [number, number] | null = null;
   let fmt = (n: number) => decimales(n, 2);
-  if (kind === 'ph' && isMash(step.id)) {
-    band = [5.2, 5.5];
-    fmt = (n) => n.toFixed(1).replace('.', ',');
-    axis = [5, 5.8];
-  } else if (kind === 'temperature' && step.tempC != null) {
-    band = [step.tempC - 1, step.tempC + 1];
-    axis = [step.tempC - 6, step.tempC + 6];
-    fmt = (n) => decimales(n, 1);
-  } else if (kind === 'densite' && isFinalWort(step.id) && recipe?.ogTarget && recipe.ogTarget > 1) {
-    band = [recipe.ogTarget - 0.002, recipe.ogTarget + 0.002];
-    axis = [recipe.ogTarget - 0.012, recipe.ogTarget + 0.012];
-    fmt = sg;
-  } else if (kind === 'volume') {
-    const target = volumeTarget(step, recipe);
-    if (target && target > 0) {
-      band = [target * 0.95, target * 1.05];
-      axis = [target * 0.85, target * 1.15];
-      fmt = (n) => decimales(n, 1);
-    }
+  if (cible) {
+    const centre = (cible.min + cible.max) / 2;
+    const demi = kind === 'ph' ? 0.4 : kind === 'temperature' ? 6 : kind === 'densite' ? 0.012 : centre * 0.15;
+    axis = [centre - demi, centre + demi];
+    if (kind === 'ph') axis = [5, 5.8];
+    fmt = (n) => formatCible(kind, n);
   }
   let milieu: number;
   if (band && axis) {
@@ -343,10 +334,7 @@ export function measureScale(
 
 /** « +0,12 » au-dessus de la bande, « −0,3 » en dessous, `null` dans la cible : l'écart à la borne la plus proche. */
 export function ecartCible(scale: MeasureScale, value: number): number | null {
-  if (!scale.cible) return null;
-  if (value > scale.bandMax) return value - scale.bandMax;
-  if (value < scale.bandMin) return value - scale.bandMin;
-  return null;
+  return scale.cible ? ecartHorsCible({ min: scale.bandMin, max: scale.bandMax }, value) : null;
 }
 
 /**
@@ -501,7 +489,7 @@ export function BrewDayMeasurements({
   };
   const scale = measureScale(kind, step, recipe, value ?? reading?.value);
   // m2 : sur la feuille, le verdict seul ; la phrase d'aide sur l'écart à la consigne (« Homogénéise, ajuste… ») vit sous « Pourquoi maintenant ».
-  const conseilEnRaison = !!scale && !!feedback && /^Écart/.test(feedback.title);
+  const conseilEnRaison = !!scale && !!feedback && !!feedback.bande && kind === 'temperature';
   // m2 : la valeur se dit une fois (le curseur). Un verdict neutre qui la recopie (« Température : 96 °C », « Relevé rattaché à cette étape. ») n'apprend rien.
   const echoValeur = !!scale && !!feedback && feedback.tone === 'neutral' && feedback.title.startsWith(`${READING[kind].label} :`);
   const marque = value ?? reading?.value ?? null;
@@ -631,7 +619,7 @@ export function BrewDayMeasurements({
             <>
               {/* z1 / m2 : une seule phrase de verdict, la maquette dit « −0,8 sous la cible 66–68 °C » ou « dans la cible » ; le texte d'écart
                   à la consigne (« Écart −3,1 °C · cible 67 °C ») mesurait un autre repère et contredisait la bande. */}
-              {ecart != null && scale && !/^Écart/.test(feedback.title) && (
+              {ecart != null && scale && !feedback.bande && (
                 // une alerte de borne (AM-41 à 43, pH, densité…) garde sa phrase, au-dessus de l'écart
                 <p className={`bz-verdict is-${feedback.tone}`}>
                   <TriangleAlert size={14} aria-hidden="true" />
@@ -646,7 +634,7 @@ export function BrewDayMeasurements({
                     <b className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}{READING[kind].unit ? ` ${READING[kind].unit}` : ''}</b>
                   </span>
                 </p>
-              ) : scale.cible && feedback.tone === 'ok' && /^Écart/.test(feedback.title) ? (
+              ) : scale.cible && feedback.tone === 'ok' && feedback.bande ? (
                 <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>dans la cible</span></p>
               ) : echoValeur ? null : (
                 <p className={`bz-verdict is-${feedback.tone}`}>

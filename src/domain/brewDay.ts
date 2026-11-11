@@ -92,6 +92,74 @@ export interface ReadingFeedback {
   tone: 'ok' | 'watch' | 'neutral';
   title: string;
   detail: string;
+  /** Vrai quand le verdict est celui de la bande de cible (`cibleMesure`) : la feuille Mesurer l'écrit alors elle-même, avec les mêmes nombres. */
+  bande?: boolean;
+}
+
+/** La bande de cible d'une mesure : pH 5,2–5,5, consigne ± 1 °C, OG ± 2 points, volume ± 5 %. */
+export interface CibleMesure {
+  min: number;
+  max: number;
+}
+const fini = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/**
+ * Densité visée juste avant l'ébullition, par conservation des points de densité (méthode de BeerSmith et de Brewfather) :
+ * `1 + (OG − 1) × V_après / V_avant`. V_avant est le volume de moût avant l'ébullition, V_après ce qu'il en reste quand l'évaporation
+ * (L/h de l'installation × durée de l'ébullition) est partie ; les deux « à chaud », leur rapport est le même à froid.
+ * Une donnée manque (OG, durée, évaporation, volume avant) : `undefined`, jamais une cible devinée.
+ */
+export function densiteAvantEbullition(recipe?: RecipeSnapshot): number | undefined {
+  const og = recipe?.ogTarget;
+  const e = recipe?.brewhouse?.equipment;
+  if (!fini(og) || og <= 1 || !e || !fini(e.boilOffLPerHour) || e.boilOffLPerHour < 0 || !fini(recipe?.boilMin) || recipe!.boilMin! <= 0)
+    return undefined;
+  const shrink = e.coolingShrinkagePct;
+  const avant = fini(recipe?.preBoilHotL) && recipe!.preBoilHotL! > 0
+    ? recipe!.preBoilHotL!
+    : fini(recipe?.preBoilL) && recipe!.preBoilL! > 0 && fini(shrink) && shrink >= 0 && shrink < 20
+      ? recipe!.preBoilL! / (1 - shrink / 100)
+      : undefined;
+  if (avant == null) return undefined;
+  const apres = avant - (e.boilOffLPerHour * recipe!.boilMin!) / 60;
+  if (apres <= 0) return undefined;
+  return Math.round((1 + (og - 1) * (apres / avant)) * 1000) / 1000;
+}
+
+/**
+ * LA cible d'une mesure, une seule fois : la feuille Mesurer, les Relevés du jour et la clôture la lisent ici (n° 2 de a1 : trois
+ * lectures donnaient « +0,5 », « +1,5 » et « +3 points » pour un même relevé). `null` : la recette ne donne pas de cible, aucune n'est inventée.
+ */
+export function cibleMesure(kind: ReadingKind, step: BrewDayStep, recipe?: RecipeSnapshot): CibleMesure | null {
+  if (kind === 'ph') return isMash(step.id) ? { min: 5.2, max: 5.5 } : null;
+  if (kind === 'temperature') return step.tempC != null ? { min: step.tempC - 1, max: step.tempC + 1 } : null;
+  if (kind === 'densite') {
+    const t = isFinalWort(step.id)
+      ? recipe?.ogTarget && recipe.ogTarget > 1 ? recipe.ogTarget : undefined
+      : step.id === 'preboil' ? densiteAvantEbullition(recipe) : undefined;
+    return t ? { min: t - 0.002, max: t + 0.002 } : null;
+  }
+  const v = volumeTarget(step, recipe);
+  return v && v > 0 ? { min: v * 0.95, max: v * 1.05 } : null;
+}
+
+/** L'écart à la borne la plus proche (« +0,5 », « −0,3 »), ou `null` dans la bande (une tolérance de 1e-9 : 1,064 − 1,063 n'est pas un flottant). */
+export function ecartHorsCible(cible: CibleMesure | null, valeur: number): number | null {
+  if (!cible) return null;
+  if (valeur > cible.max + 1e-9) return valeur - cible.max;
+  if (valeur < cible.min - 1e-9) return valeur - cible.min;
+  return null;
+}
+
+/** Les nombres d'une cible à l'écran : virgule, la décimale que la grandeur porte. */
+export function formatCible(kind: ReadingKind, n: number): string {
+  return kind === 'densite' ? sg(n) : kind === 'ph' ? n.toFixed(1).replace('.', ',') : nombreFr(n, 1);
+}
+const uniteCible = (kind: ReadingKind) => (READING[kind].unit ? ` ${READING[kind].unit}` : '');
+export const texteBande = (kind: ReadingKind, c: CibleMesure) => `${formatCible(kind, c.min)}–${formatCible(kind, c.max)}${uniteCible(kind)}`;
+/** « +0,5 au-dessus de la cible 75–77 °C » : la phrase d'écart, la même sur la feuille, dans les Relevés et à la clôture. */
+export function phraseEcart(kind: ReadingKind, ecart: number, cible: CibleMesure): string {
+  return `${ecart > 0 ? '+' : '−'}${formatCible(kind, Math.abs(ecart))} ${ecart > 0 ? 'au-dessus de' : 'sous'} la cible ${texteBande(kind, cible)}`;
 }
 /** Même retour pour la saisie et le résumé : un pH ancien ou à chaud ne devient pas valide en fermant le formulaire. */
 export function measuredReadingFeedback(
@@ -166,14 +234,16 @@ export function readingFeedback(
       detail: `Au-dessus de ${nombreFr(PITCH_TEMPERATURE_MAX_C, 1)} °C la levure souffre ou meurt (ale 18–24 °C, lager 8–14 °C). Refroidis le moût avant d’ensemencer, ou vérifie la sonde.`
     };
   if (kind === 'temperature' && step.tempC != null) {
-    const delta = value - step.tempC;
+    const cible = cibleMesure('temperature', step, recipe)!;
+    const ecart = ecartHorsCible(cible, value);
     return {
-      tone: Math.abs(delta) <= 1 ? 'ok' : 'watch',
-      title: `Écart ${delta > 0 ? '+' : ''}${nombreFr(Math.round(delta * 10) / 10, 1)} °C · cible ${nombreFr(step.tempC, 1)} °C`,
+      tone: ecart == null ? 'ok' : 'watch',
+      title: ecart == null ? `Dans la cible ${texteBande(kind, cible)}` : phraseEcart(kind, ecart, cible),
+      bande: true,
       detail:
-        Math.abs(delta) <= 1
+        ecart == null
           ? 'Température proche de la consigne.'
-          : delta > 0
+          : ecart > 0
             ? 'Refroidis progressivement et homogénéise avant de remesurer.'
             : step.startedAt != null
               ? 'Température sous la consigne. Homogénéise, ajuste doucement puis remesure.'
@@ -181,14 +251,15 @@ export function readingFeedback(
     };
   }
   if (kind === 'densite') {
-    const target = isFinalWort(step.id) ? recipe?.ogTarget : undefined;
-    if (target && target > 1) {
-      const points = Math.round((value - target) * 1000);
+    const cible = cibleMesure('densite', step, recipe);
+    if (cible) {
+      const ecart = ecartHorsCible(cible, value);
       return {
-        tone: Math.abs(points) <= 2 ? 'ok' : 'watch',
-        title: `${points > 0 ? '+' : ''}${points} points / OG ${sg(target)}`,
+        tone: ecart == null ? 'ok' : 'watch',
+        title: ecart == null ? `Dans la cible ${texteBande(kind, cible)}` : phraseEcart(kind, ecart, cible),
+        bande: true,
         detail:
-          Math.abs(points) <= 2
+          ecart == null
             ? 'Densité proche de la recette.'
             : 'Compare aussi le volume recueilli avant de décider d’une dilution ou d’une correction.'
       };
@@ -208,16 +279,19 @@ export function readingFeedback(
         title: `${nombreFr(Math.round(value * 10) / 10, 1)} L : plus que ${vessel.label} (${nombreFr(vessel.capacityL, 1)} L)`,
         detail: `Ce volume ne tient pas dans ${vessel.label} du profil d’installation. Vérifie la saisie (des litres, pas des décilitres), ou corrige la capacité dans l’installation.`
       };
-    const target = volumeTarget(step, recipe);
-    if (target && target > 0)
+    const cible = cibleMesure('volume', step, recipe);
+    if (cible) {
+      const ecart = ecartHorsCible(cible, value);
       return {
-        tone: Math.abs(value - target) <= target * 0.05 ? 'ok' : 'watch',
-        title: `${Math.round((value - target) * 10) / 10 > 0 ? '+' : ''}${nombreFr(Math.round((value - target) * 10) / 10, 1)} L / ${step.id === 'preboil' ? 'repère ≈' : 'cible'} ${nombreFr(Math.round(target * 10) / 10, 1)} L`,
+        tone: ecart == null ? 'ok' : 'watch',
+        title: ecart == null ? `Dans la cible ${texteBande(kind, cible)}` : phraseEcart(kind, ecart, cible),
+        bande: true,
         detail:
           step.id === 'preboil'
             ? 'Repère eau moins absorption du grain ; le fond de cuve et le volume à chaud peuvent créer un écart.'
             : 'Volume en fermenteur, à comparer avec la densité.'
       };
+    }
   }
   return {
     tone: 'neutral',

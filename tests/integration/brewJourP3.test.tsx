@@ -187,7 +187,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     expect(volume().getByRole('button', { name: 'moins 0,1' })).toBeInTheDocument();
     expect(volume().getByRole('checkbox', { name: 'Volume ramené à 20 °C' })).not.toBeChecked();
     expect(volume().getByRole('slider', { name: 'Volume, curseur' })).toBeInTheDocument();
-    expect(volume().getByText('repère', { exact: false })).toHaveTextContent('repère 19,0 L');
+    expect(volume().getByText('18,1–20', { exact: false }).closest('p')).toHaveTextContent('cible 18,1–20 L');
   });
   it('« Pourquoi maintenant » dit les deux raisons ; la phrase « Densité initiale pas relevée » ne se lit plus qu’aux lecteurs d’écran', () => {
     const { fenetre, noeud } = ouvrirCloture();
@@ -207,7 +207,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     fireEvent.click(densite().getByRole('checkbox'));
     fireEvent.click(volume().getByRole('button', { name: 'plus 0,1' }));
     fireEvent.click(volume().getByRole('checkbox'));
-    expect(volume().getByText('au repère')).toBeInTheDocument();
+    expect(volume().getByText('dans la cible')).toBeInTheDocument();
     fireEvent.click(fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
     await vi.waitFor(() => expect(fini).toHaveBeenCalledOnce());
     const lotFini = fini.mock.calls[0][0] as Batch;
