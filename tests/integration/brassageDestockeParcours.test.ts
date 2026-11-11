@@ -82,13 +82,14 @@ describe('PC-1 : le jour de brassage retire le malt', () => {
     expect(fakeRepo.all('movements')).toHaveLength(1);
   });
 
-  it('un manque réel de stock refuse toujours tout, sans passer en fermentation', () => {
+  it('R2 : un manque réel de stock ne bloque plus le brassin ; l’article reste intact et dit « à régulariser »', () => {
     StorageService.saveStocks({ rawMaterials: [stock({ ref: 'MP-036', name: 'ZZ malt', currentStock: 2 })], cleaning: [] });
     const batch = StorageService.planRecipeBatch(recipe(), 'LOT-ZZ');
     const result = StorageService.completeBrewStock({ ...batch, status: 'fermentation', brewDay: jourConduit() as never });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
     expect(refStock('MP-036')).toBe(2);
-    expect(StorageService.getBatches().find((b) => b.id === 'LOT-ZZ')!.status).toBe('planifie');
+    expect(result.issues.join(' ')).toContain('ZZ malt');
+    expect(StorageService.getBatches().find((b) => b.id === 'LOT-ZZ')!.status).toBe('fermentation');
   });
 
   it('une levure réellement mesurée mais sans article associé : le malt part, la levure reste à régulariser', () => {

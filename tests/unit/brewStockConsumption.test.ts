@@ -80,9 +80,10 @@ describe('brew stock consumption write proposal', () => {
     expect(result.movements.find(m => m.stockItemRef === 'Y')?.delta).toBe(-11);
 
     const unassociated = prepareBrewStockConsumption(b, [stock('M', 'Pils', 'kg', 20), stock('H', 'Citra', 'g', 200), stock('Y', 'US05', 'g', 50)]);
-    expect(unassociated.status).toBe('needs-review');
-    expect(unassociated.issues.join(' ')).toContain('format exact et lot associé');
-    expect(unassociated.movements).toEqual([]);
+    // R2 : la levure sans format exact n'est pas déstockée et reste à régulariser ; le malt et le houblon partent.
+    expect(unassociated.status).toBe('ready');
+    expect(unassociated.reviewIssues.join(' ')).toContain('format exact et lot associé');
+    expect(unassociated.movements.map(m => m.stockItemRef)).not.toContain('Y');
   });
   it('converts a measured 11.5 g addition to one sachet using the recipe lot confirmation and remains idempotent', () => {
     const source = { url: 'https://yeast.example/product', title: 'Product sheet', checkedAt: '2026-09-01' };
@@ -101,16 +102,16 @@ describe('brew stock consumption write proposal', () => {
 
     const conflictingLot = { ...stockWithSachets.find(item => item.ref === 'Y')!, yeastLot: { productId: 'P-OTHER' } };
     const conflict = prepareBrewStockConsumption(b, [...stockWithSachets.filter(item => item.ref !== 'Y'), conflictingLot]);
-    expect(conflict.status).toBe('needs-review');
-    expect(conflict.issues.join(' ')).toContain('contredit le format choisi');
-    expect(conflict.movements).toEqual([]);
+    expect(conflict.status).toBe('ready');
+    expect(conflict.reviewIssues.join(' ')).toContain('contredit le format choisi');
+    expect(conflict.movements.map(m => m.stockItemRef)).not.toContain('Y');
 
     const unknownFormat = structuredClone(b);
     delete unknownFormat.recipeSnapshot.yeast!.pitching!.product!.format;
     const unknown = prepareBrewStockConsumption(unknownFormat, stockWithSachets);
-    expect(unknown.status).toBe('needs-review');
-    expect(unknown.issues.join(' ')).toContain('format exact et lot associé');
-    expect(unknown.movements).toEqual([]);
+    expect(unknown.status).toBe('ready');
+    expect(unknown.reviewIssues.join(' ')).toContain('format exact et lot associé');
+    expect(unknown.movements.map(m => m.stockItemRef)).not.toContain('Y');
   });
   it('converts a measured half-flacon in mL to fractional flacon stock through the exact liquid format', () => {
     const source = { url: 'https://yeast.example/activator', title: 'Activator sheet', checkedAt: '2026-09-01' };
@@ -150,17 +151,17 @@ describe('brew stock consumption write proposal', () => {
     b.brewDay = { currentIndex: 0, steps: [], pitchedAt: 100, pitchQuantityConfirmation: 'starter-transferred' };
     b.yeastPreparation = { plan: { id: 'P', revision: 1, productId: 'PROD', context: 'c', protocol: { id: 'M', label: 'Starter', source: { url: 'https://example.test/source', title: 'Notice', checkedAt: '2026-09-01' }, method: 'Notice', medium: 'malt-extract', targetSg: 1.035, conditions: 'selon notice', leadHours: { min: 24, max: 48 }, steps: ['Aérer'] }, volumeL: 1.5, inoculum: '1 sachet', equipment: 'Flacon', startAt: '2026-09-07T12:00:00Z', targetPitchAt: '2026-09-09T12:00:00Z', status: 'planned', steps: [{ id: 'step-0', label: 'Aérer', dueAt: '2026-09-07T12:00:00Z' }] }, status: 'transferred', startedAt: 1, steps: [{ id: 'step-0', at: 2 }], inoculumUsed: { amount: 1, unit: 'sachet' }, stockRegularization: [{ kind: 'medium', stockItemRef: 'MALTEX', at: 3 }] };
     const result = prepareBrewStockConsumption(b, stocks);
-    expect(result.status).toBe('needs-review');
-    expect(result.issues.join(' ')).toContain('Inoculum du starter : article de stock à associer');
-    expect(result.stockUpdates).toEqual([]);
-    expect(result.movements).toEqual([]);
+    expect(result.status).toBe('ready');
+    expect(result.reviewIssues.join(' ')).toContain('Inoculum du starter : article de stock à associer');
   });
-  it('does not partially debit stock if an ingredient is ambiguous or insufficient', () => {
+  it('R2 : an insufficient ingredient is left untouched and listed to regularise, the others are debited', () => {
     const result = prepareBrewStockConsumption(batch(), stocks.map(s => s.ref === 'M' ? { ...s, currentStock: 2 } : s));
-    expect(result.status).toBe('needs-review');
-    expect(result.stockUpdates).toEqual([]);
-    expect(result.movements).toEqual([]);
-    expect(result.issues[0]).toContain('Corriger l’inventaire');
+    expect(result.status).toBe('ready');
+    expect(result.issues).toEqual([]);
+    expect(result.stockUpdates.map(s => s.ref)).not.toContain('M');
+    expect(result.movements.map(m => m.stockItemRef)).not.toContain('M');
+    expect(result.reviewIssues.join(' ')).toContain('à régulariser par inventaire');
+    expect(result.batch.stockConsumption?.items.map(i => i.stockItemRef)).not.toContain('M');
   });
   it('protects stock reserved for fermentation in the next brew estimate', () => {
     const first = prepareBrewStockConsumption(batch(), stocks);

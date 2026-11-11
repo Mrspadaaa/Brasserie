@@ -67,16 +67,17 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
     target.set(item.stockItemRef, old ? { ...old, quantity: old.quantity + item.quantity } : { ...item });
   };
   const assign = (target: Map<string, BrewStockConsumptionItem>, demand: BrewBudgetDemand) => {
-    if (!Number.isFinite(demand.quantity) || demand.quantity < 0) { issues.push(`${demand.name} : quantité consommée invalide`); return; }
+    if (!Number.isFinite(demand.quantity) || demand.quantity < 0) { review.push(`${demand.name} : quantité consommée invalide ; consommation à régulariser par comptage.`); return; }
     if (!(demand.quantity > 0)) return;
     const { item, issue } = resolveBudgetStock(demand, stocks, options.bindings?.[demand.key]);
     if (!item) {
       // Network water and water treatments without inventory records are expenses, not stock movements.
-      if (demand.kind === 'ingredient') issues.push(`${demand.name} : ${issue}`);
+      // R2 : un article sans lien ni nom unique en stock n'arrête pas le brassage ; il reste dit « à régulariser », les autres sont déstockés.
+      if (demand.kind === 'ingredient') review.push(`${demand.name} : ${issue} ; consommation à régulariser par comptage.`);
       return;
     }
     const qty = Units.convert(demand.quantity, demand.unit, item.unit);
-    if (qty === null) { issues.push(`${demand.name} : ${demand.unit} incompatible avec ${item.unit}`); return; }
+    if (qty === null) { review.push(`${demand.name} : ${demand.unit} incompatible avec ${item.unit} ; consommation à régulariser par comptage.`); return; }
     append(target, { stockItemRef: item.ref, quantity: qty, unit: item.unit });
   };
   if (stage === 'remaining') {
@@ -91,18 +92,18 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
       const recipeLotProductId = yeast?.pitching?.lot?.productId;
       const stockLotProductId = linked?.yeastLot?.productId;
       if (product && linked && (stockLotProductId && stockLotProductId !== product.id || recipeLotProductId && recipeLotProductId !== product.id)) {
-        issues.push(`${name} : le produit associé au lot de stock contredit le format choisi dans la recette.`);
+        review.push(`${name} : le produit associé au lot de stock contredit le format choisi dans la recette ; consommation à régulariser par comptage.`);
         return;
       }
       if (linked && Units.convert(quantity, unit, linked.unit) === null) {
         const formatProductId = stockLotProductId ?? recipeLotProductId;
         if (!product?.format || product.referenceId !== yeast?.hopIndexId || formatProductId !== product.id) {
-          issues.push(`${name} : conversion de conditionnement impossible sans format exact et lot associé.`);
+          review.push(`${name} : conversion de conditionnement impossible sans format exact et lot associé ; consommation à régulariser par comptage.`);
           return;
         }
         const converted = yeastQuantityInStockUnit(quantity, unit, product, linked.unit);
         if (converted === undefined) {
-          issues.push(`${name} : unités incompatibles, conversion de conditionnement impossible.`);
+          review.push(`${name} : unités incompatibles, conversion de conditionnement impossible ; consommation à régulariser par comptage.`);
           return;
         }
         assign(consumed, { key: demandKey(name, linked.unit, linked.ref), name, quantity: converted, unit: linked.unit, kind: 'ingredient', stockItemRef: linked.ref });
@@ -125,9 +126,9 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
           const mediumAdjusted = (preparation!.stockRegularization ?? []).some(entry => entry.kind === 'medium');
           if (!inoculumAdjusted) {
             if (!inoculum || !Number.isFinite(inoculum.amount) || inoculum.amount <= 0 || !inoculum.unit.trim())
-              issues.push('Inoculum du starter : quantité non consignée ; consommation à régulariser par comptage.');
+              review.push('Inoculum du starter : quantité non consignée ; consommation à régulariser par comptage.');
             else if (!inoculum.stockItemRef)
-              issues.push('Inoculum du starter : article de stock à associer pour régulariser la consommation.');
+              review.push('Inoculum du starter : article de stock à associer pour régulariser la consommation.');
             else assignYeast('Inoculum de levure', inoculum.amount, inoculum.unit, inoculum.stockItemRef);
           }
           if (!mediumAdjusted) issues.push('Milieu du starter : stock à régulariser par comptage avant la clôture.');
@@ -168,18 +169,21 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   }
   const stockUpdates: StockItem[] = [];
   const movements: BrewStockMovement[] = [];
+  // R2 : `items` ne liste que ce qui a réellement été déstocké ; une ligne non déstockée n'est pas écrite comme « consommée ».
+  const debited: BrewStockConsumptionItem[] = [];
   for (const line of consumed.values()) {
     const item = stocks.find(s => s.ref === line.stockItemRef);
-    if (!item || !Units.areCompatible(line.unit, item.unit)) { issues.push(`${line.stockItemRef} : article ou unité à vérifier`); continue; }
+    if (!item || !Units.areCompatible(line.unit, item.unit)) { review.push(`${item?.name ?? line.stockItemRef} : article ou unité à vérifier ; consommation à régulariser par comptage.`); continue; }
     const quantity = Units.convert(line.quantity, line.unit, item.unit)!;
-    if (!Number.isFinite(item.currentStock) || item.currentStock + 1e-8 < quantity) { issues.push(`${item.name} : ${Units.format(quantity, item.unit)} consommés, ${Units.format(item.currentStock, item.unit)} en stock. Corriger l’inventaire.`); continue; }
+    if (!Number.isFinite(item.currentStock) || item.currentStock + 1e-8 < quantity) { review.push(`${item.name} : ${Units.format(quantity, item.unit)} consommés, ${Units.format(item.currentStock, item.unit)} en stock ; non déstocké, à régulariser par inventaire.`); continue; }
     const newStock = Units.round(Math.max(0, item.currentStock - quantity), item.unit);
-    stockUpdates.push({ ...item, currentStock: newStock, reorder: newStock <= item.minStock });
+    debited.push(line);
+    stockUpdates.push({ ...item, currentStock: newStock, reorder: item.minStock !== undefined && newStock <= item.minStock });
     movements.push({ id: `${eventId}-${item.ref}`, batchId: batch.id, stockItemRef: item.ref, itemRef: item.ref, unit: item.unit, delta: -quantity, previousStock: item.currentStock, newStock, reason: stage === 'brewday' ? 'Brassage terminé' : 'Ajouts de fermentation terminés', timestamp: now });
   }
   if (issues.length) return empty('needs-review', issues);
   return { status: 'ready', batch: { ...batch, stockConsumption: {
     appliedAt: previous?.appliedAt ?? now, eventId, completedStages: [...(previous?.completedStages ?? []), stage],
-    items: [...(previous?.items ?? []), ...consumed.values()], pendingItems: [...pending.values()]
+    items: [...(previous?.items ?? []), ...debited], pendingItems: [...pending.values()]
   } }, stockUpdates, movements, issues: [], reviewIssues: review };
 }

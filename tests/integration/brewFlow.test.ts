@@ -179,23 +179,22 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
     expect(apres?.reorder).toBe(true);
   });
 
-  it('refuse une consommation insuffisamment approvisionnée sans débit partiel', () => {
+  it('R2 : un article en stock insuffisant reste intact et « à régulariser » ; les autres sont déstockés', () => {
     const result = finish(recipe({ volumeL: 30, fermentables: [
       { name: 'US 2-row', weightKg: 999, kind: 'grain', use: 'empatage' }
     ] } as Partial<T['Recipe']>), 'LOT-1');
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
     expect(refStock('MP-001')).toBe(25);
-    expect(refStock('MP-002')).toBe(400);
-    expect(fakeRepo.all('movements')).toEqual([]);
-    expect(StorageService.getBatches()[0].stockReviewIssues?.join(' ')).toContain('Corriger l’inventaire');
+    expect(fakeRepo.all('movements').map((m) => (m as { itemRef: string }).itemRef)).not.toContain('MP-001');
+    expect(StorageService.getBatches()[0].stockReviewIssues?.join(' ')).toContain('à régulariser par inventaire');
   });
 
-  it('conserve le brassin et demande le rapprochement d’un ingrédient absent', () => {
+  it('R2 : un ingrédient absent du stock est dit à régulariser, sans rien retirer du stock des autres articles liés', () => {
     const r = recipe({
       fermentables: [{ name: 'Malt fantôme', weightKg: 3, kind: 'grain', use: 'empatage' }]
     } as Partial<T['Recipe']>);
     const result = finish(r, 'LOT-1');
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
     expect(result.issues.join(' ')).toContain('Malt fantôme');
     expect(refStock('MP-001')).toBe(25);
   });

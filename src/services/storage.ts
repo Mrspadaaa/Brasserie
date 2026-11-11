@@ -1044,7 +1044,9 @@ export const StorageService = {
       }
     }
     // Un second geste (déjà appliqué) garde le constat du premier ; un déstockage fait avec une levure à régulariser le dit.
-    const reviewIssues = proposal.status === 'already-applied' ? (live?.stockReviewIssues ?? []) : proposal.reviewIssues;
+    // Les ajouts restants s'ajoutent à ce que le jour de brassage avait déjà laissé « à régulariser » : une alerte déjà écrite ne disparaît pas (R2).
+    const reviewIssues = proposal.status === 'already-applied' ? (live?.stockReviewIssues ?? [])
+      : stage === 'remaining' ? [...new Set([...(live?.stockReviewIssues ?? []), ...proposal.reviewIssues])] : proposal.reviewIssues;
     this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: reviewIssues }, { previous: live?.stockConsumption });
     return { success: true, issues: reviewIssues };
   },

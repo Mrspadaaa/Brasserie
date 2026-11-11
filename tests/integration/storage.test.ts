@@ -254,14 +254,15 @@ describe('Recettes et brassins', () => {
     expect(fakeRepo.all('movements')).toHaveLength(2);
   });
 
-  it('AM 4 : un déstockage refusé ne fait pas passer le brassin en fermentation (relevés gardés, étape inchangée)', () => {
-    // Aucun article de stock : « Pale » ne se rapproche de rien, la consommation est à revoir.
+  it('AM 4 puis R2 : sans aucun article de stock lié, le brassin passe en fermentation, relevés gardés, et chaque ingrédient est dit à régulariser', () => {
+    // Aucun article de stock : « Pale » ne se rapproche de rien ; rien n'est déstocké, tout est dit « à régulariser » (plus de refus en bloc).
     const planned = StorageService.planRecipeBatch(recipe, 'LOT-REFUS');
     const pitched = { ...planned, status: 'fermentation' as const, og: '1.061', brewDay: { currentIndex: 0, pitchedAt: 1, steps: [], readings: [] } };
     const result = StorageService.completeBrewStock(pitched);
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
     const stored = StorageService.getBatches().find(b => b.id === 'LOT-REFUS')!;
-    expect(stored.status).toBe('planifie');
+    expect(stored.status).toBe('fermentation');
+    expect(result.issues.length).toBeGreaterThan(0);
     expect(stored.stockReviewIssues).toEqual(result.issues);
     expect(stored.og).toBe('1.061');
     expect(stored.brewDay?.pitchedAt).toBe(1);
