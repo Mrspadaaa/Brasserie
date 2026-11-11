@@ -789,7 +789,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           : boiled
             ? 'Ébullition atteinte'
             : rampBeforeHold
-              ? current.rampStartedAt == null ? current.id === 'whirlpool' ? 'Commencer le refroidissement' : 'Commencer la montée' : 'Démarrer le maintien'
+              ? current.rampStartedAt == null ? current.id === 'whirlpool' ? (thermalTarget != null ? `Descendre à ${fr(thermalTarget)} °C` : 'Descendre en température') : 'Commencer la montée' : 'Démarrer le maintien'
               : 'Démarrer'
         : completed
           ? 'Étape suivante'
@@ -899,11 +899,17 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     : '';
   // Au palier d'empâtage : « maintien 67 °C · relevé — », la température avant le temps (L04), au repos, en marche, en pause.
   const holdLine = showTimer && !boiled && !completed && !staleTimer && isMash(current.id) && thermalTarget != null;
-  const waitingLabel = running && !completed && left != null && left > 0
-    ? boiled
-      ? 'Coupure du feu'
-      : 'Fin du palier'
-    : null;
+  // Pied au format z1 « Action · heure » : tant que l'horloge tourne, le bouton nomme la fin attendue et son heure, échue ou non
+  // (« Coupure du feu · 14 h 38 »), plutôt que « Couper le feu et continuer », trop long pour 390 px.
+  const finLabel = boiled
+    ? 'Coupure du feu'
+    : isMash(current.id)
+      ? 'Fin du palier'
+      : current.id === 'whirlpool'
+        ? 'Fin du whirlpool'
+        : 'Fin de l’étape';
+  const finEnCours = running && !completed && left != null;
+  const waitingLabel = finEnCours && left > 0 ? finLabel : null;
 
   const viewNavigation = (
     <nav aria-label="Vues du brassin" className="brew-view-tabs bz-onglets">
@@ -1101,9 +1107,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             data-booster="action"
             onClick={primaryAction}
           >
-            {waitingLabel && left != null ? (
+            {finEnCours ? (
               <>
-                {waitingLabel} · <span className="bz-m">{heureCuve(now + left)}</span>
+                {finLabel} · <span className="bz-m">{heureCuve(now + left!)}</span>
               </>
             ) : (
               primaryLabel
@@ -1406,9 +1412,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 'en pause'
                               ) : running && left != null ? (
                                 <>
-                                  {left < 0 ? (staleTimer ? 'palier à vérifier' : 'dépassé') : 'fin'}{' '}
+                                  {/* « palier à vérifier » ne vaut que pour un palier ; l'ébullition et le whirlpool disent « fin 14 h 38 » (z1). */}
+                                  {staleTimer && isMash(current.id) ? 'palier à vérifier' : 'fin'}{' '}
                                   {staleTimer && <>{new Date(now + left).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })} à </>}
-                                  {(staleTimer || left >= 0) && <span className="bz-m">{heureCuve(now + left)}</span>}
+                                  <span className="bz-m">{heureCuve(now + left)}</span>
+                                  {left < 0 && (staleTimer && !isMash(current.id)
+                                    ? ' · à vérifier'
+                                    : !staleTimer && phraseRetard(left)?.retard ? ` · ${phraseRetard(left)!.court}` : '')}
                                 </>
                               ) : thermalTarget != null ? (
                                 <>
@@ -1486,13 +1496,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       )}
                       {staleTimer && (
                         <aside className="brew-recovery" role="status">
-                          <BrewTag tone="due">Reprise du journal</BrewTag>
+                          <BrewTag tone="due">{(phraseRetard(left!)?.retard ? phraseRetard(left!)!.court : 'Échéance passée').replace(/^en retard/, 'En retard')}</BrewTag>
                           <p>
-                            Échéance dépassée de {formatCountdown(Math.abs(left!))}. Aucune fin n’a
-                            été consignée. Vérifie ce qui s’est réellement passé à la cuve.
+                            {isMash(current.id) ? 'Ce palier' : boiled ? 'Cette ébullition' : 'Cette étape'} devait finir à {heureCuve(now + left!)} et la fin n’a pas été validée.
+                            Regarde ce qui s’est passé à la cuve.
                           </p>
                           <button type="button" className={brewControl} onClick={toggleComplete}>
-                            Consigner la fin maintenant
+                            {boiled ? 'Le feu est coupé : valider' : 'C’est fini : valider'}
                           </button>
                           <button
                             type="button"
@@ -1525,7 +1535,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                               }))
                             }
                           >
-                            Relancer {duration} min maintenant
+                            Pas fini : relancer {duration} min
                           </button>
                         </aside>
                       )}
@@ -1871,7 +1881,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         <BrewCapturePanel
           title="Note"
           icon={<Pencil size={14} aria-hidden="true" />}
-          context={state.steps.find((step) => step.id === noteStepId)?.label ?? current.label}
+          context={(note.trim() ? state.steps.find((step) => step.id === noteStepId)?.label : undefined) ?? current.label}
           open={capture === 'note'}
           onClose={() => setCapture(null)}
           className="brew-note-capture"
