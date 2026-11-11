@@ -77,7 +77,8 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
     ouvrir();
     expect(jauge().getByText('à choisir')).toBeInTheDocument();
     expect(jauge().getByText(/Pour 19 L prévus/)).toBeInTheDocument();
-    expect(jauge().getByText('sachet 11,5 g · Fermentis · vu le 27.09.2026')).toBeInTheDocument();
+    // 1C « comme telle » (11.11) : la source du poids n'est pas au premier plan (absente du dessin), elle reste lue au lecteur d'écran.
+    expect(jauge().getByText('Source du poids : sachet 11,5 g · Fermentis · vu le 27.09.2026')).toHaveClass('sr-only');
     expect(screen.getByText('Plage du fabricant pour ce volume : 9,5 à 15,2 g.')).toBeInTheDocument();
   });
   it('« 1 sachet » : 11,5 g, 61 g/hL, dans la plage ; un sachet de plus : « 2 sachets » enfoncé, 23,0 g, 121 g/hL, au-dessus de la plage', () => {

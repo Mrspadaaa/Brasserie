@@ -55,7 +55,7 @@ export function BrewPitchJauge({ info, choix }: { info: PitchJaugeInfo; choix?: 
         <span className="bz-m" style={{ left: '100%' }}>{max} g</span>
       </div>
       {fourchette && <p className="sr-only">Plage du fabricant pour ce volume : {fr(fourchette.min)} à {fr(fourchette.max)} g.</p>}
-      {sachet && <p className="bz-jauge-source">{libelleSource(sachet)}</p>}
+      {sachet && <p className="sr-only">Source du poids : {libelleSource(sachet)}</p>}
     </div>
   );
 }
