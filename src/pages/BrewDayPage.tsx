@@ -98,7 +98,7 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
 import { readingPrompt } from '../domain/brewAssist';
-import { mesuresAttendues } from '../domain/brewMeasures';
+import { mesureDue, mesuresAttendues } from '../domain/brewMeasures';
 import { ReadingKind } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
@@ -192,9 +192,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     };
   }, [sound, audioArmed]);
   const [awake, setAwake] = useState(false);
+  // 12 : l'écran reste allumé tant qu'une horloge tourne ; le brasseur peut l'arrêter (l'icône « écran »), et cela tient jusqu'à la fin de l'horloge.
+  const [ecranArrete, setEcranArrete] = useState(false);
+  const ecranAuto = useRef(false);
   const [notice, setNotice] = useState('');
   useEffect(() => {
-    if (notice !== 'Note ajoutée au journal.') return;
+    if (!/ au journal.?$/.test(notice)) return;
     const timer = window.setTimeout(() => setNotice(''), 5000);
     return () => window.clearTimeout(timer);
   }, [notice]);
@@ -614,6 +617,25 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const clockRunning =
     (state.boilStartedAt != null && state.boilFinishedAt == null) ||
     state.steps.some((s) => isUsefulTimer(s) && s.startedAt != null && s.pausedAt == null && s.doneAt == null);
+  useEffect(() => {
+    if (!clockRunning) {
+      setEcranArrete(false);
+      if (ecranAuto.current) {
+        ecranAuto.current = false;
+        void releaseScreen();
+        setAwake(false);
+      }
+      return;
+    }
+    if (ecranArrete || awake) return;
+    let annule = false;
+    void keepScreenAwake().then((ok) => {
+      if (annule) return;
+      ecranAuto.current = ok;
+      setAwake(ok);
+    });
+    return () => { annule = true; };
+  }, [clockRunning, ecranArrete, awake]);
   const headerAlarm =
     upcoming &&
     now - upcoming.at <= 30 * 60000 &&
@@ -1064,8 +1086,14 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             onClick={async () => {
               if (awake) {
                 await releaseScreen();
+                ecranAuto.current = false;
                 setAwake(false);
-              } else setAwake(await keepScreenAwake());
+                setEcranArrete(true);
+              } else {
+                setEcranArrete(false);
+                ecranAuto.current = false;
+                setAwake(await keepScreenAwake());
+              }
             }}
           >
             <Sun size={14} />
@@ -1082,7 +1110,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             aria-label="Relever une mesure"
             disabled={!session.canStart}
             data-booster="mesurer"
-            onClick={() => openCapture('measure')}
+            onClick={() => {
+              // m2 : la feuille s'ouvre sur la mesure due de l'étape ; un brouillon en cours garde sa grandeur.
+              if (isConsulting || readingDrafts.current.get(current.id)?.raw) openCapture('measure');
+              else requestMeasure(mesureDue(measuredStep, state, actualRecipe, now));
+            }}
           >
             <Thermometer size={14} />
             <span>Mesurer</span>
@@ -1865,6 +1897,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               state={state}
               update={update}
               drafts={readingDrafts.current}
+              onSaved={(message) => {
+                setCapture(null);
+                setNotice(`${message}.`);
+              }}
               onAdvice={analyse}
               adviceBusy={busy}
               advice={

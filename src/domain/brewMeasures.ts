@@ -1,5 +1,5 @@
 import type { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
-import { cibleMesure, isFinalWort, isMash, sg, volumeTarget, type ReadingKind } from './brewDay';
+import { cibleMesure, defaultReading, isFinalWort, isMash, sg, volumeTarget, type ReadingKind } from './brewDay';
 import { nombreFr } from './nombreAffiche';
 
 /**
@@ -115,6 +115,33 @@ export function mesuresAttendues(
     ];
   }
   return [];
+}
+
+/**
+ * La mesure sur laquelle la feuille Mesurer s'ouvre (m2) : la première mesure due de l'étape qui n'a pas encore de relevé, dans l'ordre
+ * des cases (Maische °C au palier avant le pH ; densité initiale à l'ensemencement). Sinon, la grandeur habituelle de l'étape
+ * (`defaultReading` : le pH au palier tant que rien n'est dû, la température déjà relevée).
+ */
+export function mesureDue(
+  step: BrewDayStep,
+  state: BrewDayState,
+  recipe: RecipeSnapshot | undefined,
+  now: number
+): ReadingKind {
+  const aFaire = mesuresAttendues(step, state, recipe, now).filter((m) => m.due && !m.reading);
+  // À l'avant-ébullition, volume et densité sont dues ensemble : la grandeur habituelle (densité) passe la première.
+  if (step.id === 'preboil') return aFaire.find((m) => m.kind === 'densite')?.kind ?? aFaire[0]?.kind ?? defaultReading(step);
+  return aFaire[0]?.kind ?? defaultReading(step);
+}
+
+/**
+ * Les grandeurs qu'on peut relever à cette étape. La densité n'a pas de sens avant qu'il y ait du moût : Eau et sels, Concassage,
+ * Empâtage, Mashout (m2). Un relevé de densité déjà au journal sur l'étape la garde visible.
+ */
+export function grandeursOuvertes(step: BrewDayStep, state: BrewDayState): ReadingKind[] {
+  const sansMout = step.id === 'eau' || step.id === 'concassage' || isMash(step.id);
+  const dejaLue = (state.readings ?? []).some((r) => r.stepId === step.id && r.kind === 'densite');
+  return (['ph', 'temperature', 'densite', 'volume'] as const).filter((k) => k !== 'densite' || !sansMout || dejaLue);
 }
 
 /** « Pourquoi maintenant » : la raison de la mesure, à un toucher dans la feuille. Texte de brasseur, sans chiffre qui ne vienne du code. */

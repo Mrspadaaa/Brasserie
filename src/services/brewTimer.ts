@@ -459,7 +459,7 @@ export function beep(times = 3): void {
 
 // --- Écran allumé ------------------------------------------------------------
 
-type WakeLockSentinelLike = { release: () => Promise<void> };
+type WakeLockSentinelLike = { release: () => Promise<void>; released?: boolean };
 let wakeLock: WakeLockSentinelLike | null = null;
 
 /** Empêche l'écran de s'éteindre. Renvoie `false` si le navigateur ne sait pas. */
@@ -468,6 +468,8 @@ export async function keepScreenAwake(): Promise<boolean> {
     wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinelLike> };
   };
   if (!nav.wakeLock) return false;
+  // Déjà tenu : le navigateur le relâche quand l'onglet se cache (`released`), on n'en empile pas un second à chaque retour.
+  if (wakeLock && wakeLock.released !== true) return true;
   try {
     wakeLock = await nav.wakeLock.request('screen');
     return true;

@@ -24,7 +24,7 @@ import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 import { nombreFr } from '../domain/nombreAffiche';
 import { bornesPlausibles, bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur, traitsCurseur, quoiMesure } from '../domain/measureSlider';
-import { raisonMesure } from '../domain/brewMeasures';
+import { grandeursOuvertes, mesureDue, raisonMesure } from '../domain/brewMeasures';
 
 export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
@@ -393,7 +393,8 @@ export function BrewDayMeasurements({
   requestedPair,
   onAdvice,
   adviceBusy = false,
-  advice
+  advice,
+  onSaved
 }: {
   step: BrewDayStep;
   state: BrewDayState;
@@ -406,18 +407,20 @@ export function BrewDayMeasurements({
   onAdvice?: () => void;
   adviceBusy?: boolean;
   advice?: React.ReactNode;
+  /** m2 : l'enregistrement ferme la feuille ; la page dit au journal ce qui vient d'y entrer. */
+  onSaved?: (message: string) => void;
 }) {
   const [kind, setKind] = useState<ReadingKind>(
-    () => drafts?.get(step.id)?.kind ?? defaultReading(step)
+    () => drafts?.get(step.id)?.kind ?? mesureDue(step, state, recipe, brewNow())
   );
   const [raw, setRaw] = useState(() => drafts?.get(step.id)?.raw ?? '');
   const [roomTemp, setRoomTemp] = useState(
     () =>
       drafts?.get(step.id)?.roomTemp ??
       refroidiParDefaut(
-        defaultReading(step),
+        kind,
         step.id,
-        [...(state.readings ?? [])].reverse().find((r) => r.kind === defaultReading(step) && r.stepId === step.id)?.roomTemp
+        [...(state.readings ?? [])].reverse().find((r) => r.kind === kind && r.stepId === step.id)?.roomTemp
       )
   );
   const [editing, setEditing] = useState<string | null>(
@@ -428,7 +431,11 @@ export function BrewDayMeasurements({
   const [champ, setChamp] = useState(false);
   const [raison, setRaison] = useState(false);
   useEffect(() => {
-    if (requestedKind) { setKind(requestedKind.kind); setRaw(''); setEditing(null); setNotice(''); setPairMode(false); }
+    if (requestedKind) {
+      setKind(requestedKind.kind);
+      setRoomTemp(refroidiParDefaut(requestedKind.kind, step.id, [...(state.readings ?? [])].reverse().find((r) => r.kind === requestedKind.kind && r.stepId === step.id)?.roomTemp));
+      setRaw(''); setEditing(null); setNotice(''); setPairMode(false);
+    }
   }, [requestedKind?.token]);
   useEffect(() => { if (requestedPair) setPairMode(true); }, [requestedPair?.token]);
   useEffect(() => {
@@ -486,9 +493,9 @@ export function BrewDayMeasurements({
     });
     setRaw('');
     setEditing(null);
-    setNotice(
-      `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
-    );
+    const message = `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`;
+    setNotice(message);
+    onSaved?.(message);
   };
   const scale = measureScale(kind, step, recipe, value ?? reading?.value);
   // m2 : sur la feuille, le verdict seul ; la phrase d'aide sur l'écart à la consigne (« Homogénéise, ajuste… ») vit sous « Pourquoi maintenant ».
@@ -509,7 +516,7 @@ export function BrewDayMeasurements({
     <section aria-label="Mesures de cette étape" className="bz-mesure">
       {pairMode ? <BrewWortPair step={step} state={state} update={update} drafts={drafts} requestedStage={requestedPair} /> : <>
       <div className="bz-seg" role="group" aria-label="Type de mesure" data-booster="grandeur">
-        {(Object.keys(READING) as ReadingKind[]).map((k) => (
+        {grandeursOuvertes(step, state).map((k) => (
           <button
             type="button"
             key={k}
