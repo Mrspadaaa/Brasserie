@@ -29,8 +29,9 @@ const ETAPES: BrewDayStep[] = [
   { id: 'refroidissement', label: 'Refroidissement', durationMin: 0 },
   { id: 'ensemencement', label: 'Ensemencement', durationMin: 0 }
 ];
-function lot(yeast: YeastSpec, index = 1, state?: Partial<BrewDayState>): Batch {
+function lot(yeast: YeastSpec, index = 1, state?: Partial<BrewDayState>, hops?: RecipeSnapshot['hops']): Batch {
   const recipe = yeastFlowRecipe() as RecipeSnapshot;
+  if (hops) recipe.hops = hops;
   recipe.yeast = yeast;
   recipe.volumeL = 19;
   recipe.ogTarget = 1.061;
@@ -120,5 +121,46 @@ describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition 
   it('à l’ensemencement, la levure est déjà là : plus de rappel', () => {
     monter(lot(SECHE_SANS_QUANTITE));
     expect(screen.queryByText(/Sortir la levure/)).not.toBeInTheDocument();
+  });
+});
+
+describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à l’ensemencement, une ligne « À cru » (g, g/L, phase, aucun jour inventé)', () => {
+  const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
+  const A_CRU = [
+    { name: 'Hallertau', stage: 'boil', weightG: 20, alpha: 4, timeMin: 60 },
+    { name: 'Citra', stage: 'dryHop', weightG: 85, alpha: 0 },
+    { name: 'Galaxy', stage: 'dryHop', weightG: 43, alpha: 0 },
+    { name: 'Mosaic', stage: 'dryHop', weightG: 43, alpha: 0 }
+  ] as unknown as RecipeSnapshot['hops'];
+  const ouvrirAides = () => {
+    const resume = screen.getByText('Aides et repères');
+    fireEvent.click(resume);
+    return within(resume.closest('details') as HTMLElement);
+  };
+  it('2B : à l’ébullition, le panneau « Houblons — vigilances et potentiel » a disparu des Aides ; l’aide à cette étape reste', () => {
+    monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }, A_CRU));
+    const aides = ouvrirAides();
+    expect(aides.queryByText('vigilances et potentiel')).not.toBeInTheDocument();
+    expect(aides.getByText('Aide à cette étape')).toBeInTheDocument();
+  });
+  it('2C : à l’ensemencement, « À cru · 171 g · 9 g/L », trois puces, « phase ? » et aucun jour ; Aides ouvert d’emblée', () => {
+    monter(lot(SECHE_SANS_QUANTITE, 1, undefined, A_CRU));
+    const ligne = screen.getByRole('group', { name: 'À cru' });
+    const l = within(ligne);
+    expect(l.getByText('171 g · 9 g/L')).toBeInTheDocument();
+    for (const puce of ['Citra 85', 'Galaxy 43', 'Mosaic 43']) expect(l.getByText(puce)).toBeInTheDocument();
+    expect(l.getByText('phase ?')).toBeInTheDocument();
+    expect(ligne.textContent).not.toMatch(/\bJ\+|\bjour/i);
+    expect(screen.queryByText('vigilances et potentiel')).not.toBeInTheDocument();
+    expect((screen.getByText('Aides et repères').closest('details') as HTMLDetailsElement).open).toBe(true);
+  });
+  it('2C : dépliée, une ligne par houblon avec ses g, ses g/L et sa phase ; sans dry hop, aucune ligne', () => {
+    monter(lot(SECHE_SANS_QUANTITE, 1, undefined, A_CRU));
+    const ligne = screen.getByRole('group', { name: 'À cru' });
+    fireEvent.click(within(ligne).getByText('À cru'));
+    expect(within(ligne).getByText('Citra · 85 g · 4,5 g/L · phase ?')).toBeInTheDocument();
+    cleanup();
+    monter(lot(SECHE_SANS_QUANTITE, 1, undefined, [{ name: 'Hallertau', stage: 'boil', weightG: 20, alpha: 4, timeMin: 60 }] as unknown as RecipeSnapshot['hops']));
+    expect(screen.queryByRole('group', { name: 'À cru' })).not.toBeInTheDocument();
   });
 });

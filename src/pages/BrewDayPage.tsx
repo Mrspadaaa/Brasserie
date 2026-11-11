@@ -89,6 +89,7 @@ import { BrewThermalControl } from '../ui/BrewThermalControl';
 import { BrewSystemFeedback } from '../ui/BrewSystemFeedback';
 import { YeastBrewDayGuide } from '../ui/YeastBrewDayGuide';
 import { BrewAide } from '../ui/BrewAide';
+import { BrewACru } from '../ui/BrewACru';
 import { buildYeastCompanion } from '../domain/yeastCompanion';
 import { StorageService } from '../services/storage';
 import { BrewerChat } from '../ui/BrewerChat';
@@ -491,6 +492,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         areaOf(s.id) === area && (!isBoilStep(s) || s.id === state.steps.find(isBoilStep)?.id)
     );
   const displayRecipe = view === 'recipe';
+  const enseme = !displayRecipe && current.id === 'ensemencement';
   const activeTimers = state.steps.filter(
     (s) => isUsefulTimer(s) && s.startedAt != null && s.doneAt == null
   );
@@ -1666,6 +1668,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               </details>
             )}
             <BrewAide
+              key={enseme ? 'aides-ensemencement' : 'aides'}
+              defaultOpen={enseme}
               className="bz-repli bz-aides"
               quiet
               icon={<CircleHelp size={14} aria-hidden="true" />}
@@ -1724,7 +1728,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   quantityChosen={pitchChoiceValid}
                 />
               )}
-              <BrewAide title="Houblons" summary="vigilances et potentiel">
+              {/* p3 / 2C : à l'ensemencement, les houblons à cru tiennent en une ligne ; 2B : à l'ébullition, plus de panneau Houblons dans les Aides. */}
+              {enseme && <BrewACru recipe={recipe} />}
+              {(displayRecipe || (area !== 'boil' && !enseme)) && <BrewAide title="Houblons" summary="vigilances et potentiel">
                 <p className="brew-aide-note">
                   Quantités du journal si renseignées, au volume prévu de la recette. Les
                   temps de contact à l’ébullition suivent les ajouts terminés.
@@ -1734,7 +1740,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   batchId={batch.id}
                 />
                 {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
-              </BrewAide>
+              </BrewAide>}
               <details className="brew-options">
                 <summary>
                   <span>

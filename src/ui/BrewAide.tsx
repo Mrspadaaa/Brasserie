@@ -17,7 +17,8 @@ export function BrewAide({
   children,
   icon,
   className = '',
-  quiet = false
+  quiet = false,
+  defaultOpen = false
 }: {
   title: string;
   summary?: React.ReactNode;
@@ -27,15 +28,18 @@ export function BrewAide({
   className?: string;
   /** Le repli reste fermé : l'avertissement se signale (« À vérifier ») sans l'ouvrir (« Aides et repères » de z1). */
   quiet?: boolean;
+  /** Ouvert au montage (p3 / 2C : les Aides de l'ensemencement montrent la ligne « À cru »). Le brasseur peut le refermer. */
+  defaultOpen?: boolean;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const wasNotified = useRef(false);
   // Le texte de l'étiquette : « À vérifier », ou la cause en peu de mots quand l'alerte la donne (`data-notice="À cru · phase à préciser"`).
   const [notice, setNotice] = useState<string | false>(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+    if (defaultOpen) node.open = true;
     const read = () => {
       const alerts = [...node.querySelectorAll('[data-notice]')];
       const found = alerts.length > 0;
