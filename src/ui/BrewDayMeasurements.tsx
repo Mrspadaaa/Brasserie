@@ -493,7 +493,7 @@ export function BrewDayMeasurements({
     });
     setRaw('');
     setEditing(null);
-    const message = `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`;
+    const message = `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ${kind === 'temperature' || kind === 'densite' ? 'ajoutée' : 'ajouté'} au journal`;
     setNotice(message);
     onSaved?.(message);
   };

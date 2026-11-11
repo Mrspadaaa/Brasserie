@@ -57,7 +57,7 @@ describe('v1 lot D : Mesurer (8), onglets (10), écran allumé (12)', () => {
     fireEvent.change(document.getElementById('brew-reading') as HTMLInputElement, { target: { value: '66,5' } });
     fireEvent.click(within(feuille()).getByRole('button', { name: 'Enregistrer' }));
     expect(feuille().hasAttribute('data-open')).toBe(false);
-    expect(document.querySelector('.brew-toast')?.textContent).toMatch(/Température 66,5 °C ajouté au journal/);
+    expect(document.querySelector('.brew-toast')?.textContent).toMatch(/Température 66,5 °C ajoutée au journal/);
   });
 
   it('10 : la feuille de l’eau n’a pas d’onglet Densité (pas de moût)', () => {
