@@ -65,3 +65,36 @@ describe('5C : les chiffres du jour de brassage en police du texte, tabulaires, 
     expect(source).toMatch(/\.bz-dose strong\s*\{[^}]*tabular-nums/);
   });
 });
+
+describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source du poids ; la pastille suit la quantité', () => {
+  const jauge = () => within(screen.getByRole('group', { name: 'Dose de la levure pour le volume' }));
+  const ouvrir = (yeast: YeastSpec = SECHE_SANS_QUANTITE) => {
+    monter(lot(yeast));
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
+  };
+  it('avant tout choix : « à choisir », la plage du fabricant pour 19 L et la source du poids, aucun jour ni dose inventés', () => {
+    ouvrir();
+    expect(jauge().getByText('à choisir')).toBeInTheDocument();
+    expect(jauge().getByText(/Pour 19 L prévus/)).toBeInTheDocument();
+    expect(jauge().getByText('sachet 11,5 g · Fermentis · vu le 27.09.2026')).toBeInTheDocument();
+    expect(screen.getByText('Plage du fabricant pour ce volume : 9,5 à 15,2 g.')).toBeInTheDocument();
+  });
+  it('« 1 sachet » : 11,5 g, 61 g/hL, dans la plage ; un sachet de plus : « 2 sachets » enfoncé, 23,0 g, 121 g/hL, au-dessus de la plage', () => {
+    ouvrir();
+    fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
+    expect(jauge().getByText('11,5 g')).toBeInTheDocument();
+    expect(jauge().getByText('61 g/hL')).toBeInTheDocument();
+    expect(jauge().getByText('dans la plage')).toBeInTheDocument();
+    fireEvent.click(ligneIngredients().getByRole('button', { name: /Augmenter/ }));
+    expect(ligneIngredients().getByRole('radio', { name: '2 sachets' })).toHaveAttribute('aria-checked', 'true');
+    expect(ligneIngredients().queryByRole('radio', { name: '1 sachet' })).not.toBeInTheDocument();
+    expect(jauge().getByText('23,0 g')).toBeInTheDocument();
+    expect(jauge().getByText('121 g/hL')).toBeInTheDocument();
+    expect(jauge().getByText('au-dessus de la plage')).toBeInTheDocument();
+  });
+  it('une levure sans produit sûr au catalogue : aucun poids, aucune jauge', () => {
+    ouvrir({ name: 'Levure maison', form: 'sèche' });
+    expect(screen.queryByRole('group', { name: 'Dose de la levure pour le volume' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/sachet 11/)).not.toBeInTheDocument();
+  });
+});

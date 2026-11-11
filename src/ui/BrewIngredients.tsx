@@ -24,6 +24,7 @@ import type { PitchQuantityChoice } from '../domain/brewDay';
 import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
 import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
 import { nombreFr } from '../domain/nombreAffiche';
+import { BrewPitchJauge, type PitchJaugeInfo } from './BrewPitchJauge';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
 const f = (n: number, unit = 'L') => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: amountDecimals(unit, n) }).format(roundAmount(n, unit));
@@ -94,6 +95,8 @@ export interface PitchEditor {
   options: { mode: PitchQuantityChoice['mode']; label: string; preset?: { amount: number; unit: string } }[];
   onMode: (mode: PitchQuantityChoice['mode'], preset?: { amount: number; unit: string }) => void;
   token: number;
+  /** p3 / 1C : le poids du sachet (catalogue) et le volume, pour dire la dose en g et en g/hL ; absent = pas de jauge. */
+  jauge?: PitchJaugeInfo;
 }
 
 function IngredientRow({
@@ -311,24 +314,31 @@ function IngredientRow({
       {editingDose && (
         <div className="brew-dose-edit bz-edition" aria-label={`Ajuster ${nom}`}>
           {pitchChoosing && (
-            <div className="bz-levure-choix" role="radiogroup" aria-label="Quantité de levure réellement ajoutée" data-sans-choix={pitch!.mode ? undefined : ''}>
-              {pitch!.options.map((o) => {
-                const estPose = (p?: { amount: number; unit: string }) => !!p && pitch!.mode === 'measured' && actual?.amount === p.amount && actual?.unit === p.unit;
-                const presetPose = pitch!.options.some((x) => estPose(x.preset));
-                const coche = o.preset ? estPose(o.preset) : pitch!.mode === o.mode && !(o.mode === 'measured' && presetPose);
-                return (
-                  <button
-                    key={o.label}
-                    type="button"
-                    role="radio"
-                    aria-checked={coche}
-                    onClick={() => { onInteract(); pitch!.onMode(o.mode, o.preset); }}
-                  >
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
+            <>
+              {pitch!.jauge && <BrewPitchJauge info={pitch!.jauge} choix={pitch!.mode === 'measured' ? actual : undefined} />}
+              <div className="bz-levure-choix" role="radiogroup" aria-label="Quantité de levure réellement ajoutée" data-sans-choix={pitch!.mode ? undefined : ''}>
+                {pitch!.options.map((o) => {
+                  // p3 / 1C : la pastille du préréglage suit la quantité (« 2 sachets » enfoncée à 2), pas un « 1 sachet » figé.
+                  const estPose = (p?: { amount: number; unit: string }) => !!p && pitch!.mode === 'measured' && actual?.unit === p.unit && typeof actual?.amount === 'number' && actual.amount > 0;
+                  const presetPose = pitch!.options.some((x) => estPose(x.preset));
+                  const coche = o.preset ? estPose(o.preset) : pitch!.mode === o.mode && !(o.mode === 'measured' && presetPose);
+                  const label = o.preset && coche && o.preset.unit === 'sachet'
+                    ? `${String(actual!.amount).replace('.', ',')} sachet${actual!.amount >= 2 ? 's' : ''}`
+                    : o.label;
+                  return (
+                    <button
+                      key={o.label}
+                      type="button"
+                      role="radio"
+                      aria-checked={coche}
+                      onClick={() => { onInteract(); if (!(o.preset && coche)) pitch!.onMode(o.mode, o.preset); }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
           {fermentable?.kind === 'grain' && (
             <button

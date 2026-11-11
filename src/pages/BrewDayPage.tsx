@@ -72,6 +72,8 @@ import {
 } from '../ui/BrewDayMeasurements';
 import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
 import type { PitchEditor } from '../ui/BrewIngredients';
+import { sachetDeLaLevure } from '../domain/levure/sachet';
+import yeastSupplyBootstrap from '../data/yeastSupplyBootstrap.json';
 import { BrewJournal } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
 import { BrewChoice } from '../ui/BrewChoice';
@@ -715,6 +717,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     mode: currentPitchMode,
     token: pitchEditToken,
     onMode: selectPitchQuantityMode,
+    // p3 / 1C : le poids du sachet vient du catalogue (avec sa source), le volume du fermenteur relevé, sinon de la recette.
+    jauge: {
+      sachet: sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products),
+      volumeL: finishedReadings.volume?.value ?? recipe.volumeL,
+      volumeBase: finishedReadings.volume ? 'relevés' : 'prévus'
+    },
     options: [
       ...(plannedPitchUsable ? [{ mode: 'planned' as const, label: 'Prévue ajoutée' }] : []),
       // Une levure sèche se dose au sachet : sans dose prévue, « 1 sachet » est un toucher, pas quatre gestes (VB-4).

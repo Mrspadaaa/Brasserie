@@ -3264,6 +3264,27 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-levure-choix button { min-height: 36px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-levure-choix button[aria-checked='true'] { border: 2px solid var(--bz-action); background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
 .brew-page.bz .bz-levure-choix[data-sans-choix] button { border-style: dashed; }
+/* p3 / 1C : la dose dite en g et en g/hL sur la plage du fabricant (maquette c1c : bande vert pâle, trait vert / ambre / pointillé). */
+.brew-page.bz .bz-jauge { padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
+.brew-page.bz .bz-jauge-tete { display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-dose { white-space: nowrap; }
+.brew-page.bz .bz-jauge-dose b { font-size: 16px; font-weight: 600; color: var(--bz-t0); font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-jauge-verdict { margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge[data-statut='dans'] .bz-jauge-verdict { color: var(--bz-ph4); }
+.brew-page.bz .bz-jauge[data-statut='au-dessus'] .bz-jauge-verdict, .brew-page.bz .bz-jauge[data-statut='sous'] .bz-jauge-verdict { color: var(--bz-ph2t); }
+.brew-page.bz .bz-jauge-barre { position: relative; height: 26px; margin-top: 4px; }
+.brew-page.bz .bz-jauge-rail { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-jauge-bande { position: absolute; top: 7px; height: 12px; box-sizing: border-box; border-radius: 2px; background: color-mix(in srgb, var(--bz-ph4) 30%, var(--bz-page)); border: 1px solid var(--bz-ph4); }
+.brew-page.bz .bz-jauge-trait { position: absolute; top: 3px; width: 4px; height: 20px; border-radius: 2px; background: var(--bz-ph4); transform: translateX(-50%); transition: left 0.18s ease-out; }
+.brew-page.bz .bz-jauge[data-statut='au-dessus'] .bz-jauge-trait, .brew-page.bz .bz-jauge[data-statut='sous'] .bz-jauge-trait { background: var(--bz-ph2); }
+.brew-page.bz .bz-jauge[data-statut='vide'] .bz-jauge-trait { background: none; border: 1.5px dashed var(--bz-t2); box-sizing: border-box; }
+.brew-page.bz .bz-jauge-grad { position: relative; height: 16px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-grad > span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.brew-page.bz .bz-jauge-grad > span:first-child { left: 0; transform: none; }
+.brew-page.bz .bz-jauge-grad > span:last-child { transform: translateX(-100%); }
+.brew-page.bz .bz-jauge-grad .bz-jauge-bord { color: var(--bz-ph4); font-weight: 600; }
+.brew-page.bz .bz-jauge-source { margin: 2px 0 0; font-size: 12px; color: var(--bz-t2); }
+@media (prefers-reduced-motion: reduce) { .brew-page.bz .bz-jauge-trait { transition: none; } }
 /* Son : une horloge tourne alors que le son est coupé (ou pas armé) → le picto « son » est en couleur d'alerte */
 .brew-page.bz .bz-pictos[data-alerte] { color: #fff; background: var(--bz-alert); }
 /* n° 7 : unité du relevé de clôture en petit, jamais en valeur */
