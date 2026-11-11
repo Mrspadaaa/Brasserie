@@ -1682,3 +1682,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **10.11**, mot pour mot, aux cinq points ouverts du jour de brassage (poids du sachet de levure ; panneau Houblons dans les Aides ; relevés depuis la fenêtre de clôture ; une ligne Levure dans Préparer ; les polices) : « Okay montre »
 - **11.11**, mot pour mot, à « Donne-moi ton choix pour chacun » (page « Brassage : cinq choix », JNc5JHjCy8fr6foyE1Hpnf) : « continue »
   (lu : pas de choix donné ; ni choix ni accord ne bloquent (L24) : le pilote porte les préférences du critique (1C, 2B à l'ébullition et 2C à l'ensemencement, 3C, 4C, 5C), réversibles ; la page reste ouverte, un autre choix se reporte.)
+- **11.11**, mot pour mot, sur la page « Brassage : cinq choix », option 1C : « 1 sachet · 11,5 g » ; « Et Une jauge : 11,5 g pour 19 L, sur la plage fabricant 50–80 g/hL. » ; « C'est vraiment bien pas de nouvelles mini maquettes implémente comme telle »
+  (lu : 1C choisi, à porter tel que dessiné ; déjà porté par p3, à vérifier contre l'image c1c, voie e3.)
