@@ -422,7 +422,7 @@
   line-height: 1.45;
 }
 .brew-digits {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.04em;
 }
@@ -710,8 +710,9 @@
 .brew-recipe-targets strong {
   color: rgb(var(--cave-texte-50));
   font:
-    500 26px 'IBM Plex Mono',
-    monospace;
+    500 26px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
 }
 .brew-recipe-targets small {
   font:
@@ -740,8 +741,9 @@
 .brew-efficiency-value {
   color: rgb(var(--cave-texte-50));
   font:
-    500 32px 'IBM Plex Mono',
-    monospace;
+    500 32px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
 }
 .brew-feedback {
   color: var(--brew-gold);
@@ -930,8 +932,9 @@
   margin-top: 0 !important;
   text-align: right;
   font:
-    500 16px 'IBM Plex Mono',
-    monospace;
+    500 16px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
   color: rgb(var(--cave-texte-50));
   overflow-wrap: anywhere;
 }
@@ -1529,8 +1532,9 @@
 .brew-amount strong {
   color: rgb(var(--cave-texte-50));
   font:
-    500 20px 'IBM Plex Mono',
-    monospace;
+    500 20px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
   font-variant-numeric: tabular-nums;
 }
 /* RJ-14 : « À préciser » n'est pas un nombre : texte courant, à la ligne dans son cadre, jamais 20 px de chiffre à 106 px de large. */
@@ -1677,8 +1681,9 @@
   background: none;
   text-align: right;
   font:
-    500 20px 'IBM Plex Mono',
-    monospace;
+    500 20px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
   color: rgb(var(--cave-texte-50));
 }
 /* VI-8 : sur un écran tactile le champ est un <textarea> d'une ligne, dont le texte se pose en haut de sa boîte ; la hauteur de ligne
@@ -1905,8 +1910,9 @@ button.brew-consign:disabled { opacity: 0.6; }
 }
 .brew-summary-reading strong {
   font:
-    500 21px 'IBM Plex Mono',
-    monospace;
+    500 21px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
   color: rgb(var(--cave-texte-50));
 }
 .brew-summary-reading small {
@@ -2693,7 +2699,7 @@ button.brew-consign:disabled { opacity: 0.6; }
   --bz-ph2t: #d9a441;
 }
 .bz .bz-m {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
 }
 .bz svg { flex-shrink: 0; }
@@ -2979,13 +2985,13 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   background: var(--bz-page);
   color: var(--bz-t0);
 }
-.brew-page.bz .bz-row .bz-dose strong { font: 500 14px/1.3 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; color: var(--bz-t0); }
+.brew-page.bz .bz-row .bz-dose strong { font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-t0); }
 .brew-page.bz .bz-row .bz-dose small, .brew-page.bz .bz-row .bz-dose > span { font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); }
 .brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { font-family: 'Source Sans 3', system-ui, sans-serif; font-size: 14px; font-weight: 600; }
 .brew-page.bz .bz-row .bz-dose[aria-expanded='true'] { border-color: var(--bz-t0); }
 .brew-page.bz .bz-row .bz-dose.is-lecture { border-color: transparent; background: none; }
 .brew-page.bz .bz-dose-texte { display: block; padding: 0; border: 0; background: none; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); text-align: left; min-height: 0; }
-.brew-page.bz .bz-dose-texte strong, .brew-page.bz .bz-dose-texte small, .brew-page.bz .bz-dose-texte span { display: inline; font-weight: 400; color: inherit; font-size: 12px; font-family: inherit; white-space: nowrap; }.brew-page.bz .bz-min { color: var(--bz-t2); font: 500 14px/1.3 'IBM Plex Mono', ui-monospace, monospace; }
+.brew-page.bz .bz-dose-texte strong, .brew-page.bz .bz-dose-texte small, .brew-page.bz .bz-dose-texte span { display: inline; font-weight: 400; color: inherit; font-size: 12px; font-family: inherit; white-space: nowrap; }.brew-page.bz .bz-min { color: var(--bz-t2); font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 .brew-page.bz .bz-quand { color: var(--bz-t2); font-size: 12px; text-align: right; }
 .brew-page.bz .bz-row[data-prochain] { background: color-mix(in srgb, var(--bz-warn) 10%, var(--bz-page)); }
 .brew-page.bz .bz-row[data-prochain] .bz-min { color: var(--bz-warn); font-weight: 600; }
@@ -3015,7 +3021,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 
 /* Répartition réseau / osmosée, dessinée sous l'eau */
 .brew-page.bz .bz-eaux { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding: 0 0 4px; }
-.brew-page.bz .bz-eaux > span { font: 600 12px/1.3 'IBM Plex Mono', ui-monospace, monospace; color: var(--bz-eau-texte); }
+.brew-page.bz .bz-eaux > span { font: 600 12px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-eau-texte); }
 .brew-page.bz .bz-eaux > span b { font-weight: inherit; }
 .brew-page.bz .bz-eaux > .brew-feedback { grid-column: 1 / -1; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-alert); }
 .brew-page.bz .bz-eaux-barre { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--bz-border); }
@@ -3170,13 +3176,13 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; box-shadow: 0 0 0 1px var(--bz-border2); }
 .brew-page.bz .bz-saisie { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 /* VB-3 : au doigt, `Input` rend un textarea (une ligne) ; la règle ne visait que `input`, le champ restait sans bord ni fond (« plus aucun champ »). */
-.brew-page.bz .bz-saisie :is(input, textarea) { flex: 1; min-width: 0; box-sizing: border-box; height: 36px; min-height: 36px; padding: 0 10px; line-height: 34px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); font: 16px/34px 'IBM Plex Mono', ui-monospace, monospace; }
+.brew-page.bz .bz-saisie :is(input, textarea) { flex: 1; min-width: 0; box-sizing: border-box; height: 36px; min-height: 36px; padding: 0 10px; line-height: 34px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); font: 16px/34px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 .brew-page.bz .bz-unite { color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-echelle { position: relative; height: 30px; margin-top: 10px; }
 .brew-page.bz .bz-echelle-rail { position: absolute; left: 0; right: 0; top: 13px; height: 4px; border-radius: 2px; background: var(--bz-border); }
 .brew-page.bz .bz-echelle-cible { position: absolute; top: 9px; height: 12px; border-radius: 2px; border: 1px solid var(--bz-hop); background: color-mix(in srgb, var(--bz-hop) 35%, var(--bz-page)); }
 .brew-page.bz .bz-echelle-releve { position: absolute; top: 6px; width: 4px; height: 18px; border-radius: 2px; background: var(--bz-alert); transform: translateX(-50%); }
-.brew-page.bz .bz-echelle-grad { position: absolute; top: 0; font: 12px 'IBM Plex Mono', ui-monospace, monospace; color: var(--bz-t2); transform: translateX(-50%); }
+.brew-page.bz .bz-echelle-grad { position: absolute; top: 0; font: 12px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-t2); transform: translateX(-50%); }
 .brew-page.bz .bz-verdict-zone { margin-top: 20px; }
 .brew-page.bz .bz-verdict { display: flex; align-items: center; gap: 8px; margin-top: 20px; color: var(--bz-alert); font-weight: 600; }
 .brew-page.bz .bz-verdict svg { width: 14px; height: 14px; }
@@ -3252,7 +3258,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-moutajout-val { display: flex; align-items: center; gap: 4px; }
 .brew-page.bz .bz-moutajout-val input { width: 64px; text-align: right; }
 /* n° 13 : « Moût à l'ajout » est un champ à saisir : même cadre que celui de la feuille Mesurer (au doigt, `Input` rend un textarea). */
-.brew-page.bz .bz-moutajout-val :is(input, textarea) { box-sizing: border-box; width: 64px; height: 32px; min-height: 32px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); text-align: right; font: 16px/30px 'IBM Plex Mono', ui-monospace, monospace; resize: none; }
+.brew-page.bz .bz-moutajout-val :is(input, textarea) { box-sizing: border-box; width: 64px; height: 32px; min-height: 32px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); text-align: right; font: 16px/30px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; resize: none; }
 /* n° 4 : choix de la quantité de levure réellement ajoutée, dans l'éditeur de la ligne Levure */
 .brew-page.bz .bz-levure-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px; }
 .brew-page.bz .bz-levure-choix button { min-height: 36px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
