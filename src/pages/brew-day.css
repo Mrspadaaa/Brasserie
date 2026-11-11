@@ -3207,7 +3207,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
     z-index: 30;
   }
 }
-.brew-page.bz .bz-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
+.brew-page.bz .bz-seg { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
 .brew-page.bz .bz-seg button { height: 26px; min-height: 26px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; box-shadow: 0 0 0 1px var(--bz-border2); }
 .brew-page.bz .bz-saisie { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
