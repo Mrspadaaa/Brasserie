@@ -248,11 +248,12 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
       .closest('.brew-ingredient-group')!;
     expect(within(group).getAllByRole('checkbox')).toHaveLength(2);
     expect(group.textContent).toMatch(/10′[\s\S]*10′/);
-    expect(group).toHaveTextContent('maintenant');
+    // Ébullition à 51 min : l'ajout de 10′ était dû à 50 min, il dit son retard (v1, n° 7) au lieu de « maintenant ».
+    expect(group).toHaveTextContent('en retard de 1 min');
     fireEvent.click(screen.getByLabelText('Ajouté : Citra'));
-    expect(group).toHaveTextContent('maintenant');
+    expect(group).toHaveTextContent('en retard de 1 min');
     fireEvent.click(screen.getByLabelText('Ajouté : Galaxy'));
-    expect(group).not.toHaveTextContent('maintenant');
+    expect(group).not.toHaveTextContent('en retard');
     expect(ingredients().queryByLabelText('Ajouté : Mosaic')).not.toBeInTheDocument();
     const whirlpool = brewState(r).steps.find((s) => s.id === 'whirlpool')!;
     chooseStep(whirlpool.label);

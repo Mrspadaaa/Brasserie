@@ -52,6 +52,7 @@ import {
   buildTimeline,
   remainingMs,
   formatCountdown,
+  phraseRetard,
   armAudio,
   isAudioArmed,
   beep,
@@ -986,12 +987,14 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         >
           <BellRing size={14} />
           <span>
-            {headerAlarm.at <= now ? 'À faire maintenant' : `À ${heureCuve(headerAlarm.at)}`}
+            {headerAlarm.at <= now
+              ? phraseRetard(headerAlarm.at - now)!.retard ? `À faire, ${phraseRetard(headerAlarm.at - now)!.court}` : 'À faire maintenant'
+              : `À ${heureCuve(headerAlarm.at)}`}
             <strong>
               {headerAlarm.title === 'Ajout en cuve' ? headerAlarm.body : headerAlarm.title}
             </strong>
           </span>
-          <span className="brew-digits">{formatCountdown(headerAlarm.at - now)}</span>
+          {!phraseRetard(headerAlarm.at - now)?.retard && <span className="brew-digits">{formatCountdown(headerAlarm.at - now)}</span>}
           <ChevronRight size={14} />
         </button>
       )}

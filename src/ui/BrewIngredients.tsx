@@ -24,6 +24,7 @@ import type { PitchQuantityChoice } from '../domain/brewDay';
 import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
 import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
 import { nombreFr } from '../domain/nombreAffiche';
+import { phraseRetard } from '../services/brewTimer';
 import { BrewPitchJauge, type PitchJaugeInfo } from './BrewPitchJauge';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
@@ -721,7 +722,7 @@ export function BrewIngredients({
                       ? null
                       : next
                         ? reste! <= 0
-                          ? <b>maintenant</b>
+                          ? <b>{phraseRetard(reste!)!.court}</b>
                           : minutes === 0
                             ? <>dans <span className="bz-m">&lt;1</span> min</>
                             : <>dans <span className="bz-m">{minutes}</span> min</>
