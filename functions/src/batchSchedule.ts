@@ -16,8 +16,11 @@ export interface BrewDateSession {
   thermalSegments?: Array<{ startedAt: number }>;
   additions?: Record<string, { doneAt?: number }>;
   /** Keep legacy/incomplete input representable; only measured kind/value pairs provide start evidence. */
-  readings?: Array<{ at?: number; kind?: string; value?: number; unit?: string }>;
+  readings?: Array<{ at?: number; kind?: string; value?: number; unit?: string; stepId?: string }>;
 }
+
+/** Une mesure prise à Préparer (eau, concassage : pH de l'eau, température de la salle) ne démarre pas le brassin. */
+const ETAPES_DE_PREPARATION = ['eau', 'concassage'];
 
 /** Accept the two stored formats, but never normalize an impossible calendar day. */
 export function normalizeBrewDate(value: string | undefined): string | undefined {
@@ -48,7 +51,8 @@ export function brewStartedAt(session?: BrewDateSession): number | undefined {
     ...Object.values(session?.additions ?? {}).map(item => item.doneAt),
     ...(session?.readings ?? [])
       .filter(reading => typeof reading?.value === 'number' && Number.isFinite(reading.value)
-        && ['temperature', 'volume', 'densite', 'ph'].includes(reading.kind ?? ''))
+        && ['temperature', 'volume', 'densite', 'ph'].includes(reading.kind ?? '')
+        && !ETAPES_DE_PREPARATION.includes(reading.stepId ?? ''))
       .map(reading => reading.at)]
     .filter((time): time is number => typeof time === 'number' && Number.isFinite(time) && time >= 0);
   return times.length ? Math.min(...times) : undefined;
