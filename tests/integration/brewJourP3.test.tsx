@@ -178,7 +178,8 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
     expect(densite().getByRole('button', { name: 'moins 0,001' })).toBeInTheDocument();
     expect(densite().getByRole('button', { name: 'plus 0,001' })).toBeInTheDocument();
-    expect(densite().getByRole('checkbox', { name: 'Densité refroidie ou corrigée à l’étalonnage' })).not.toBeChecked();
+    // v1, n° 3 : à l'ensemencement le moût est à la température d'ensemencement, la case de la densité est cochée d'office (décochable).
+    expect(densite().getByRole('checkbox', { name: 'Densité refroidie ou corrigée à l’étalonnage' })).toBeChecked();
     expect(densite().getByRole('slider', { name: 'Densité, curseur' })).toBeInTheDocument();
     expect(densite().getByText('1,059–1,063').closest('p')).toHaveTextContent('cible 1,059–1,063');
     expect(densite().getByText('Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.')).toBeInTheDocument();
@@ -204,7 +205,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     const { fini, fenetre } = ouvrirCloture();
     fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
     expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('1,062');
-    fireEvent.click(densite().getByRole('checkbox'));
+    expect(densite().getByRole('checkbox')).toBeChecked();
     fireEvent.click(volume().getByRole('button', { name: 'plus 0,1' }));
     fireEvent.click(volume().getByRole('checkbox'));
     expect(volume().getByText('dans la cible')).toBeInTheDocument();
@@ -219,6 +220,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
   });
   it('sans la case « refroidie » : le relevé reste au journal, mais l’OG n’est pas qualifiée ; sans rien saisi, aucun relevé écrit', async () => {
     const a = ouvrirCloture();
+    fireEvent.click(densite().getByRole('checkbox')); // cochée d'office : le brasseur la décoche
     fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
     fireEvent.click(a.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
     await vi.waitFor(() => expect(a.fini).toHaveBeenCalledOnce());

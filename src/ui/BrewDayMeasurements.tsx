@@ -13,6 +13,7 @@ import {
   READING,
   measuredReadingFeedback,
   readingKey,
+  refroidiParDefaut,
   volumeTarget,
   sg,
   ReadingKind
@@ -413,9 +414,11 @@ export function BrewDayMeasurements({
   const [roomTemp, setRoomTemp] = useState(
     () =>
       drafts?.get(step.id)?.roomTemp ??
-      !![...(state.readings ?? [])]
-        .reverse()
-        .find((r) => r.kind === defaultReading(step) && r.stepId === step.id)?.roomTemp
+      refroidiParDefaut(
+        defaultReading(step),
+        step.id,
+        [...(state.readings ?? [])].reverse().find((r) => r.kind === defaultReading(step) && r.stepId === step.id)?.roomTemp
+      )
   );
   const [editing, setEditing] = useState<string | null>(
     () => drafts?.get(step.id)?.editing ?? null
@@ -515,9 +518,11 @@ export function BrewDayMeasurements({
             onClick={() => {
               setKind(k);
               setRoomTemp(
-                !![...(state.readings ?? [])]
-                  .reverse()
-                  .find((r) => r.kind === k && r.stepId === step.id)?.roomTemp
+                refroidiParDefaut(
+                  k,
+                  step.id,
+                  [...(state.readings ?? [])].reverse().find((r) => r.kind === k && r.stepId === step.id)?.roomTemp
+                )
               );
               setRaw('');
               setEditing(null);

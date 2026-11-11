@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useState } from 'react';
 import { Check, ChevronDown, ChevronUp, CircleHelp, Pencil, TriangleAlert } from 'lucide-react';
 import type { BrewDayStep, RecipeSnapshot } from '../types';
-import { parseReading, READING } from '../domain/brewDay';
+import { parseReading, READING, refroidiParDefaut } from '../domain/brewDay';
 import { departCurseur, formatCurseur, pasCurseur } from '../domain/measureSlider';
 import { raisonMesure } from '../domain/brewMeasures';
 import { Input } from './Input';
@@ -18,7 +18,7 @@ export interface ClotureReleves {
   volume: number | null;
   volumeRefroidi: boolean;
 }
-export const CLOTURE_VIDE: ClotureReleves = { densite: null, densiteRefroidie: false, volume: null, volumeRefroidi: false };
+export const CLOTURE_VIDE: ClotureReleves = { densite: null, densiteRefroidie: refroidiParDefaut('densite', 'ensemencement'), volume: null, volumeRefroidi: false };
 
 function Bloc({ kind, titre, quoi, step, recipe, value, refroidi, onValue, onRefroidi }: {
   kind: 'densite' | 'volume';
@@ -175,7 +175,8 @@ export function cloturePartirDe(
 ): ClotureReleves {
   return {
     densite: brut.densite?.value ?? null,
-    densiteRefroidie: brut.densite?.roomTemp === true,
+    // 3 : sans relevé, la case est cochée d'office (le moût est à la température d'ensemencement) ; un relevé déjà noté garde son choix.
+    densiteRefroidie: refroidiParDefaut('densite', 'ensemencement', brut.densite ? brut.densite.roomTemp === true : undefined),
     volume: brut.volume?.value ?? null,
     volumeRefroidi: brut.volume ? brut.volume.volumeBasis === 'cold' || (!brut.volume.volumeBasis && brut.volume.roomTemp === true) : false
   };

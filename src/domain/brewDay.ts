@@ -64,6 +64,15 @@ export const defaultReading = (s?: BrewDayStep): ReadingKind =>
         ? 'temperature'
         : 'volume';
 
+/**
+ * La case « refroidie ou corrigée » d'une mesure. Un relevé déjà au journal garde son choix (décochable, et son refus se respecte) ;
+ * sans relevé, la densité à l'ensemencement est cochée d'office : à ce moment le moût est à la température d'ensemencement.
+ */
+export function refroidiParDefaut(kind: ReadingKind, stepId: string | undefined, deja?: boolean): boolean {
+  if (deja !== undefined) return deja === true;
+  return kind === 'densite' && stepId === 'ensemencement';
+}
+
 /** Une chaîne complète, jamais parseFloat('5.7abc'). Accepte SG et points (1056). */
 export function parseReading(raw: string, kind: ReadingKind): number | null {
   const str = raw.trim().replace(',', '.');
