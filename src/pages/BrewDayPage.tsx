@@ -982,7 +982,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             >
               <BellRing size={16} />
               <span>
-                À faire maintenant
+                {phraseRetard(due[0].at - now)?.retard ? `À faire, ${phraseRetard(due[0].at - now)!.court}` : 'À faire maintenant'}
                 <strong>{due[0].title === 'Ajout en cuve' ? due[0].body : due[0].title}</strong>
               </span>
               <ChevronRight size={14} />
