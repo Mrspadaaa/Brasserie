@@ -181,13 +181,13 @@ export function measuredReadingFeedback(
     if (state.acidCorrections?.some((c) => c.at >= reading.at))
       return {
         tone: 'neutral',
-        title: `pH précédent : ${reading.value} · à remesurer`,
+        title: `pH précédent : ${String(reading.value).replace('.', ',')} · à remesurer`,
         detail: ''
       };
     if (!reading.roomTemp)
       return {
         tone: 'neutral',
-        title: `pH ${reading.value} · à confirmer à froid`,
+        title: `pH ${String(reading.value).replace('.', ',')} · à confirmer à froid`,
         detail: 'La cible 5,2–5,5 concerne un échantillon à 20–25 °C.'
       };
   }
