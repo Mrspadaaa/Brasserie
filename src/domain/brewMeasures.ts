@@ -1,5 +1,5 @@
 import type { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
-import { isFinalWort, isMash, sg, volumeTarget, type ReadingKind } from './brewDay';
+import { cibleMesure, isFinalWort, isMash, sg, volumeTarget, type ReadingKind } from './brewDay';
 import { nombreFr } from './nombreAffiche';
 
 /**
@@ -81,9 +81,11 @@ export function mesuresAttendues(
     ];
   if (step.id === 'preboil') {
     const v = volumeTarget(step, recipe);
+    // 11 : la cible de densité vient de la recette (conservation des points, `densiteAvantEbullition`) ; une donnée manque : pas de cible.
+    const bande = cibleMesure('densite', step, recipe);
     return [
       mesure({ kind: 'volume', nom: 'Volume avant ébullition', court: 'L', cible: v && v > 0 ? `≈ ${nombreFr(v, 1)} L` : undefined, due: true, quand: 'maintenant' }),
-      mesure({ kind: 'densite', nom: 'Densité avant ébullition', court: 'SG', due: true, quand: 'maintenant' })
+      mesure({ kind: 'densite', nom: 'Densité avant ébullition', court: 'SG', cible: bande ? `${sg(bande.min)}–${sg(bande.max)}` : undefined, due: true, quand: 'maintenant' })
     ];
   }
   if (isFinalWort(step.id)) {
