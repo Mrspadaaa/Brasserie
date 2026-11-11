@@ -86,7 +86,7 @@ export function ficheAEnregistrer(vivant: StockItem, ouverte: StockItem, saisie:
     // Pas de conversion possible : le changement d'unité a déjà été refusé à l'écran ; par sécurité le stock vivant n'est pas touché.
     if (facteur !== null && vivant.unit === ouverte.unit) currentStock = Math.round(vivant.currentStock * facteur * 1e6) / 1e6;
   }
-  return { ...(resultat as unknown as StockItem), currentStock, reorder: currentStock <= (resultat.minStock as number) };
+  return { ...(resultat as unknown as StockItem), currentStock, reorder: typeof resultat.minStock === 'number' && currentStock <= resultat.minStock };
 }
 
 /* ───────────── Seuil minimum plausible (MV-43, BR-76) ───────────── */
@@ -99,6 +99,8 @@ export function plafondSeuil(unit: string): number {
 
 export type VerdictSeuil = { ok: true } | { ok: false; refus: string };
 export function verifierSeuil(seuil: unknown, unit: string, stockActuel?: number): VerdictSeuil {
+  // Le seuil est un réglage facultatif : absent, null ou vide = « inconnu » (K11), jamais 0 ; seul un seuil saisi se vérifie.
+  if (seuil === undefined || seuil === null || (typeof seuil === 'string' && seuil.trim() === '')) return { ok: true };
   if (typeof seuil !== 'number' || !Number.isFinite(seuil) || seuil < 0) return { ok: false, refus: 'Le seuil minimum est un nombre positif ou nul.' };
   const plafond = plafondSeuil(unit);
   if (seuil > plafond) return { ok: false, refus: `Seuil trop haut : ${Units.format(seuil, unit)} dépasse ${Units.format(plafond, unit)}. Vérifie l’unité ou la virgule.` };

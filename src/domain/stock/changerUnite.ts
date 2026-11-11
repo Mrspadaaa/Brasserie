@@ -32,7 +32,8 @@ export function changerUniteArticle(item: StockItem, nouvelleUnite: string, rese
     return { ok: false, refus: `Impossible de passer de ${item.unit || 'sans unité'} à ${cible} : ce ne sont pas de la même famille d’unités, le stock (${nombre(item.currentStock)} ${item.unit}), le seuil et le maximum ne peuvent pas être convertis. Corrige le stock par un inventaire, ou crée un autre article.` };
   }
   const convertir = (valeur: number): number => arrondi(valeur * facteur);
-  const converti: StockItem = { ...(prix() as StockItem), unit: cible, currentStock: convertir(item.currentStock), minStock: convertir(item.minStock),
+  const converti: StockItem = { ...(prix() as StockItem), unit: cible, currentStock: convertir(item.currentStock),
+    ...(item.minStock !== undefined ? { minStock: convertir(item.minStock) } : {}),
     ...(item.maxStock !== undefined ? { maxStock: convertir(item.maxStock) } : {}) };
   return { ok: true, item: converti, note: `Stock converti : ${nombre(item.currentStock)} ${item.unit} = ${nombre(converti.currentStock)} ${cible} (seuil et maximum aussi).` };
 }

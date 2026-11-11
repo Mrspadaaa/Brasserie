@@ -78,7 +78,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const canSave = !!draft.name.trim() && seuil.ok;
   const save = () => {
     if (!canSave) return;
-    onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.currentStock <= draft.minStock }, item);
+    onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.minStock !== undefined && draft.currentStock <= draft.minStock }, item);
     onClose();
   };
   // AM-55 : ce qui retient l'article (brassin qui le réserve, recette qui le cite).
@@ -182,7 +182,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Field label={`Seuil minimum (${draft.unit})`} htmlFor="stock-min" error={seuilErreur}>
-              <NumberInput id="stock-min" value={draft.minStock} min={0} aria-invalid={!seuil.ok} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
+              <NumberInput id="stock-min" value={draft.minStock} min={0} emptyValue={undefined} placeholder="Inconnu" aria-invalid={!seuil.ok} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
             </Field>
             <Field label="Fournisseur" htmlFor="stock-vendor">
               <Combobox id="stock-vendor" ariaLabel="Fournisseur" value={draft.supplier || ''} onChange={supplier => setDraft({ ...draft, supplier })}

@@ -49,7 +49,8 @@ export interface StockItem {
   category: string; // 'Malt', 'Houblon', 'Levure', 'Sucre', 'Emballage', 'CIP alcalin', 'CIP acide', 'Désinfectant', 'Détergent', 'Sols', 'EPI', 'Consommable'
   unit: string; // 'kg', 'g', 'sachet', 'L', 'boîte', 'rouleau'
   currentStock: number;
-  minStock: number;
+  /** Seuil minimum ; absent = inconnu (jamais 0 : 0 est un seuil renseigné). */
+  minStock?: number;
   maxStock?: number; // Maximum storage capacity (e.g. 50kg bag/silo)
   reorder: boolean;
   supplier?: string;
