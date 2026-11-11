@@ -531,7 +531,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const doneCount = route.filter((s) =>
     isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
   ).length;
-  const phasePreps = PREPARATIONS.filter((p) => p.area === area &&
+  // p3 / 4C : « Sortir la levure … » à l'ébullition (z1, l'écran choisi), tant que la levure n'est pas ajoutée. Le poids du sachet n'est dit que
+  // s'il vient du catalogue (sachet.ts) : sans produit sûr, la ligne seule.
+  const sachetRappel = sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products);
+  const rappelLevure: { id: string; label: string; area: string; sous?: string }[] = recipe.yeast?.name && state.pitchedAt == null ? [{
+    id: 'levure-sortir',
+    label: `Sortir la levure ${recipe.yeast.name}`,
+    area: 'boil',
+    ...(sachetRappel ? { sous: `quantité choisie à l’ensemencement · 1 sachet = ${String(sachetRappel.grammes).replace('.', ',')} g` } : {})
+  }] : [];
+  const phasePreps: { id: string; label: string; area: string; sous?: string }[] = [...PREPARATIONS, ...rappelLevure].filter((p) => p.area === area &&
     !(noloProcess === 'secondRunnings' && p.id === 'moulin') &&
     !(specialExtraction && p.id === 'rinçage'));
   const preparationCount = phasePreps.filter((p) => state.preparations?.[p.id]).length;
@@ -1619,7 +1628,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 </header>
                 {phasePreps.map((p) => (
                   <label key={p.id} className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
-                    <span>{p.label}</span>
+                    <span>{p.label}{p.sous && <small className="bz-anticiper-sous">{p.sous}</small>}</span>
                     <input
                       type="checkbox"
                       data-booster="prepare"

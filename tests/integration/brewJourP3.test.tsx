@@ -98,3 +98,27 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
     expect(screen.queryByText(/sachet 11/)).not.toBeInTheDocument();
   });
 });
+
+describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition (là où la maquette z1 la place), avec le poids seulement s’il vient du catalogue', () => {
+  const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
+  const surEbullition = (yeast: YeastSpec) => monter(lot(yeast, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }));
+  it('US-05 : la ligne et sa sous-ligne « quantité choisie à l’ensemencement · 1 sachet = 11,5 g », cochable', () => {
+    surEbullition(SECHE_SANS_QUANTITE);
+    const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
+    expect(anticiper.getByText('Sortir la levure SafAle US-05')).toBeInTheDocument();
+    expect(anticiper.getByText('quantité choisie à l’ensemencement · 1 sachet = 11,5 g')).toBeInTheDocument();
+    const case_ = anticiper.getByRole('checkbox', { name: /Sortir la levure SafAle US-05/ });
+    fireEvent.click(case_);
+    expect(case_).toBeChecked();
+  });
+  it('une levure sans produit sûr : la ligne, mais aucune sous-ligne de poids', () => {
+    surEbullition({ name: 'Levure maison', form: 'sèche' });
+    const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
+    expect(anticiper.getByText('Sortir la levure Levure maison')).toBeInTheDocument();
+    expect(anticiper.queryByText(/1 sachet =/)).not.toBeInTheDocument();
+  });
+  it('à l’ensemencement, la levure est déjà là : plus de rappel', () => {
+    monter(lot(SECHE_SANS_QUANTITE));
+    expect(screen.queryByText(/Sortir la levure/)).not.toBeInTheDocument();
+  });
+});
