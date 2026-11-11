@@ -1,4 +1,5 @@
 import React from 'react';
+import { Check } from 'lucide-react';
 import {
   echelleMaxG, fourchetteG, gParHl, grammesDuChoix, libelleSource, statutDose, type Sachet
 } from '../domain/levure/sachet';
@@ -18,7 +19,8 @@ export interface PitchJaugeInfo {
 const fr = (n: number, d = 1) => n.toFixed(d).replace('.', ',');
 const frSobre = (n: number) => (Number.isInteger(n) ? String(n) : fr(n));
 
-const VERDICT = { sous: 'sous la plage', dans: 'dans la plage', 'au-dessus': 'au-dessus de la plage' } as const;
+// c1c : « ✓ dans la plage fabricant » ; sous ou au-dessus, la plage seule (la couleur ambre fait le reste).
+const VERDICT = { sous: 'sous la plage', dans: 'dans la plage fabricant', 'au-dessus': 'au-dessus de la plage' } as const;
 
 export function BrewPitchJauge({ info, choix }: { info: PitchJaugeInfo; choix?: { amount?: number; unit?: string } }) {
   const { sachet, volumeL } = info;
@@ -39,7 +41,7 @@ export function BrewPitchJauge({ info, choix }: { info: PitchJaugeInfo; choix?: 
           Pour {frSobre(volumeL)} L {info.volumeBase}
           {g != null && <> · <b>{fr(g)} g</b> · <span className="bz-m">{Math.round(ghl!)} g/hL</span></>}
         </span>
-        {verdict && <span className="bz-jauge-verdict">{verdict}</span>}
+        {verdict && <span className="bz-jauge-verdict">{statut === 'dans' && <Check size={14} strokeWidth={2.5} aria-hidden="true" />}{verdict}</span>}
       </div>
       <div className="bz-jauge-barre" aria-hidden="true">
         <span className="bz-jauge-rail" />

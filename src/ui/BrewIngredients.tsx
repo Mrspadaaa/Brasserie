@@ -213,8 +213,10 @@ function IngredientRow({
   const shortage = availableQty != null && amount != null && availableQty < amount;
   const changed = amount != null && Math.abs(amount - item.planned) > 0.001;
   const checked = actual?.doneAt != null || (item.id === 'yeast' && state.pitchedAt != null);
-  const doseLabel = pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0, item.unit);
-  const doseUnit = `${pitchActualUnknown || (pitchPlannedUnknown && !item.unit) ? '' : item.unit}${item.kind === 'water' ? ' à froid' : ''}`;
+  // c1c : la pastille d'une levure sans quantité dit « à choisir » ; posée, « 2 sachets » (pluriel), pas « 2 sachet ».
+  const uniteLue = item.unit === 'sachet' && (amount ?? 0) >= 2 ? 'sachets' : item.unit;
+  const doseLabel = pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? (pitchChoosing ? 'à choisir' : 'À préciser') : f(amount ?? 0, item.unit);
+  const doseUnit = `${pitchActualUnknown || (pitchPlannedUnknown && !item.unit) ? '' : uniteLue}${item.kind === 'water' ? ' à froid' : ''}`;
   const doseProps = {
     type: 'button' as const,
     'aria-label': `Modifier la quantité de ${nom}${item.side ? ' au ' + item.side : ''}`,
@@ -256,7 +258,7 @@ function IngredientRow({
         )}</strong>}
         {item.id === 'yeast' && (pitchActualUnknown
           ? <small>{state.pitchQuantityConfirmation === 'unmeasured' ? 'Réel non mesuré' : state.pitchQuantityConfirmation === 'starter-transferred' ? 'Starter transféré · volume non relevé' : 'Réel non renseigné'} · prévu {item.planned > 0 ? `${f(item.planned, item.unit)} ${item.unit}` : 'absent'}</small>
-          : pitchPlannedUnknown
+          : pitchPlannedUnknown && !editingDose
             ? <small>Pas de dose prévue · à choisir à l’ajout</small>
             : null)}
         {changed && (
@@ -361,7 +363,7 @@ function IngredientRow({
               <NumberInput
                 // « Mesurée » : le champ reste vide tant que rien n'a été mesuré (la dose prévue n'est jamais présentée comme mesurée).
                 value={pitchChoosing && pitch!.mode === 'measured' && actual?.amount == null ? undefined : amount}
-                placeholder={pitchChoosing && pitch!.mode === 'measured' ? 'Mesure' : undefined}
+                placeholder={pitchChoosing && pitch!.mode === 'measured' ? 'Mesure' : pitchChoosing && amount == null ? '?' : undefined}
                 emptyValue={undefined}
                 aria-invalid={quantityProblem ? true : undefined}
                 onValue={(saisi) => {
@@ -376,14 +378,15 @@ function IngredientRow({
                 }}
                 aria-label={`Quantité réelle de ${nom}${item.side ? ' au ' + item.side : ''}`}
               />
-              <span>{item.unit}</span>
+              <span>{uniteLue || (pitchChoosing && pitch!.options.some((o) => o.preset?.unit === 'sachet') ? 'sachet' : '')}</span>
             </div>
             <button type="button" {...press(rung)} aria-label={`Augmenter ${nom}`}>
               +
             </button>
           </div>
           {quantityProblem && <p role="alert" className="text-xs text-alert-strong">{quantityProblem}</p>}
-          {item.id === 'yeast' && !item.unit && <label className="block space-y-1 text-xs text-cave-400">Unité réelle
+          {/* c1c (11.11) : avant tout choix, ou sur un sachet posé, l'unité va de soi : le champ « Unité réelle » ne paraît que pour « Mesurée ». */}
+          {item.id === 'yeast' && !item.unit && (!pitchChoosing || (pitch!.mode === 'measured' && !(actual?.unit === 'sachet' && typeof actual.amount === 'number' && actual.amount > 0))) && <label className="block space-y-1 text-xs text-cave-400">Unité réelle
             <select aria-label="Unité de la quantité réelle de levure" value={actual?.unit ?? ''} onChange={event => patch({ unit: event.target.value })} className="min-h-touch rounded-control border border-cave-700 bg-cave-900 px-2 text-sm text-cave-50">
               <option value="">À choisir</option>{['g', 'kg', 'mL', 'L', 'sachet', 'flacon', 'paquet'].map(unit => <option key={unit} value={unit}>{unit}</option>)}
             </select>

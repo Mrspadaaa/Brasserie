@@ -3005,7 +3005,12 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-row .bz-dose strong { font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-t0); }
 .brew-page.bz .bz-row .bz-dose small, .brew-page.bz .bz-row .bz-dose > span { font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); }
 .brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { font-family: 'Source Sans 3', system-ui, sans-serif; font-size: 14px; font-weight: 600; }
+/* c1c : « à choisir » est une pastille en pointillé, grise, comme les « ? » de Relevés du jour */
+.brew-page.bz .bz-row .bz-dose:has(> strong[data-sans-valeur]) { border-style: dashed; }
+.brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { color: var(--bz-t2); font-weight: 400; }
 .brew-page.bz .bz-row .bz-dose[aria-expanded='true'] { border-color: var(--bz-t0); }
+/* c1c : la pastille de la levure reste grise quand l'éditeur est ouvert (c1c-repos, c1c-apres) */
+.brew-page.bz .bz-row .bz-dose[aria-expanded='true']:has(#brew-dose-value-yeast) { border-color: var(--bz-border2); }
 .brew-page.bz .bz-row .bz-dose.is-lecture { border-color: transparent; background: none; }
 .brew-page.bz .bz-dose-texte { display: block; padding: 0; border: 0; background: none; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); text-align: left; min-height: 0; }
 .brew-page.bz .bz-dose-texte strong, .brew-page.bz .bz-dose-texte small, .brew-page.bz .bz-dose-texte span { display: inline; font-weight: 400; color: inherit; font-size: 12px; font-family: inherit; white-space: nowrap; }.brew-page.bz .bz-min { color: var(--bz-t2); font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
@@ -3291,16 +3296,15 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 /* n° 13 : « Moût à l'ajout » est un champ à saisir : même cadre que celui de la feuille Mesurer (au doigt, `Input` rend un textarea). */
 .brew-page.bz .bz-moutajout-val :is(input, textarea) { box-sizing: border-box; width: 64px; height: 32px; min-height: 32px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); text-align: right; font: 16px/30px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; resize: none; }
 /* n° 4 : choix de la quantité de levure réellement ajoutée, dans l'éditeur de la ligne Levure */
-.brew-page.bz .bz-levure-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px; }
-.brew-page.bz .bz-levure-choix button { min-height: 36px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
+.brew-page.bz .bz-levure-choix { display: flex; flex-wrap: wrap; flex: 1 1 100%; gap: 6px; margin-bottom: 2px; }
+.brew-page.bz .bz-levure-choix button { flex: 0 0 auto; min-height: 36px; padding: 0 12px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-levure-choix button[aria-checked='true'] { border: 2px solid var(--bz-action); background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
-.brew-page.bz .bz-levure-choix[data-sans-choix] button { border-style: dashed; }
 /* p3 / 1C : la dose dite en g et en g/hL sur la plage du fabricant (maquette c1c : bande vert pâle, trait vert / ambre / pointillé). */
-.brew-page.bz .bz-jauge { padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
+.brew-page.bz .bz-jauge { flex: 1 1 100%; min-width: 0; padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
 .brew-page.bz .bz-jauge-tete { display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--bz-t2); }
 .brew-page.bz .bz-jauge-dose { white-space: nowrap; }
 .brew-page.bz .bz-jauge-dose b { font-size: 16px; font-weight: 600; color: var(--bz-t0); font-variant-numeric: tabular-nums; }
-.brew-page.bz .bz-jauge-verdict { margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-verdict { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
 .brew-page.bz .bz-jauge[data-statut='dans'] .bz-jauge-verdict { color: var(--bz-ph4); }
 .brew-page.bz .bz-jauge[data-statut='au-dessus'] .bz-jauge-verdict, .brew-page.bz .bz-jauge[data-statut='sous'] .bz-jauge-verdict { color: var(--bz-ph2t); }
 .brew-page.bz .bz-jauge-barre { position: relative; height: 26px; margin-top: 4px; }

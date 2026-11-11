@@ -85,13 +85,48 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
     fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
     expect(jauge().getByText('11,5 g')).toBeInTheDocument();
     expect(jauge().getByText('61 g/hL')).toBeInTheDocument();
-    expect(jauge().getByText('dans la plage')).toBeInTheDocument();
+    expect(jauge().getByText('dans la plage fabricant')).toBeInTheDocument();
     fireEvent.click(ligneIngredients().getByRole('button', { name: /Augmenter/ }));
     expect(ligneIngredients().getByRole('radio', { name: '2 sachets' })).toHaveAttribute('aria-checked', 'true');
     expect(ligneIngredients().queryByRole('radio', { name: '1 sachet' })).not.toBeInTheDocument();
     expect(jauge().getByText('23,0 g')).toBeInTheDocument();
     expect(jauge().getByText('121 g/hL')).toBeInTheDocument();
     expect(jauge().getByText('au-dessus de la plage')).toBeInTheDocument();
+  });
+  // 11.11, « C'est vraiment bien, implémente comme telle » : c1c-repos / c1c-apres / c1c-deux n'ont ni « Unité réelle », ni « Pas de dose prévue », et les trois boutons tiennent sur une ligne.
+  it('c1c-repos : avant tout choix, l’éditeur n’affiche ni « Unité réelle : À choisir » ni « Pas de dose prévue » (la pastille « à choisir » le dit)', () => {
+    ouvrir();
+    expect(ligneIngredients().queryByLabelText('Unité de la quantité réelle de levure')).not.toBeInTheDocument();
+    expect(ligneIngredients().queryByText(/Pas de dose prévue/)).not.toBeInTheDocument();
+    fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
+    expect(ligneIngredients().queryByLabelText('Unité de la quantité réelle de levure')).not.toBeInTheDocument();
+    expect(ligneIngredients().queryByText(/Pas de dose prévue/)).not.toBeInTheDocument();
+  });
+  it('c1c : la pastille de la ligne dit « à choisir » puis « 1 sachet » puis « 2 sachets » (pluriel), le pas « ? sachet » avant le choix', () => {
+    ouvrir();
+    const ligne = ligneIngredients();
+    expect(ligne.getByRole('button', { name: /Modifier la quantité de SafAle US-05/ })).toHaveTextContent('à choisir');
+    expect(ligne.getByLabelText(/Quantité réelle de SafAle/)).toHaveAttribute('placeholder', '?');
+    fireEvent.click(ligne.getByRole('radio', { name: '1 sachet' }));
+    expect(ligne.getByRole('button', { name: /Modifier la quantité de SafAle US-05/ })).toHaveTextContent('1 sachet');
+    fireEvent.click(ligne.getByRole('button', { name: /Augmenter/ }));
+    expect(ligne.getByRole('button', { name: /Modifier la quantité de SafAle US-05/ })).toHaveTextContent('2 sachets');
+  });
+  it('« Mesurée » : l’unité reste à choisir (c’est elle qui donne le sens de la mesure)', () => {
+    ouvrir();
+    fireEvent.click(ligneIngredients().getByRole('radio', { name: 'Mesurée' }));
+    expect(ligneIngredients().getByLabelText('Unité de la quantité réelle de levure')).toBeInTheDocument();
+  });
+  it('la ligne Levure sans choix garde « Pas de dose prévue » quand l’éditeur est fermé (le test C3 le demande)', () => {
+    monter(lot(SECHE_SANS_QUANTITE));
+    expect(ligneIngredients().getByText(/Pas de dose prévue/)).toBeInTheDocument();
+  });
+  it('c1c : les boutons de quantité sur une seule ligne (flex qui passe à la ligne, plus une grille à 2 colonnes), la jauge sur toute la largeur', () => {
+    const source = css();
+    const choix = source.match(/\.bz-levure-choix\s*\{[^}]*\}/)![0];
+    expect(choix).toMatch(/display:\s*flex/);
+    expect(choix).not.toMatch(/grid-template-columns/);
+    expect(source.match(/\.bz-jauge\s*\{[^}]*\}/)![0]).toMatch(/flex:\s*1 1 100%|flex-basis:\s*100%/);
   });
   it('une levure sans produit sûr au catalogue : aucun poids, aucune jauge', () => {
     ouvrir({ name: 'Levure maison', form: 'sèche' });

@@ -192,7 +192,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     const save = vi.fn(), finish = vi.fn();
     const batch = brewDayBatch(yeast);
     const view = render(<BrewDayPage batch={batch} config={defaultConfig} onSave={save} onFinish={finish} onClose={vi.fn()} />);
-    await screen.findAllByText('À vérifier');
+    await screen.findByText(/^Levure ·/); // p3 / 2C : les Aides de l'ensemencement sont ouvertes, l'étiquette « À vérifier » ne sert que repliées
     const guide = screen.getByText(/^Levure ·/).closest('details')!;
     if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
     expect(within(guide).getByText(/Dose prévue du brassin : Quantité à préciser/)).toBeInTheDocument();
@@ -249,7 +249,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     const state: BrewDayState = { currentIndex: 0, startedAt: 1, pitchedAt: 2, finishedAt: 2,
       steps: [{ id: 'ensemencement', label: 'Ensemencement', durationMin: 0, doneAt: 2 }], readings: [] };
     const view = render(<BrewDayPage batch={brewDayBatch(yeast, state)} config={defaultConfig} onSave={saved} onFinish={vi.fn()} onClose={vi.fn()} />);
-    await screen.findAllByText('À vérifier');
+    await screen.findByText(/^Levure ·/); // p3 / 2C : les Aides de l'ensemencement sont ouvertes, l'étiquette « À vérifier » ne sert que repliées
     expect(saved).not.toHaveBeenCalled();
     const guide = screen.getByText(/^Levure ·/).closest('details')!;
     if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
