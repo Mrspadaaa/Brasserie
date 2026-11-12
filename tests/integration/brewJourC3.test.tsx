@@ -2,6 +2,7 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { BrewAide } from '../../src/ui/BrewAide';
 import { BrewReadingsSummary } from '../../src/ui/BrewReadingsSummary';
@@ -76,7 +77,7 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
     // La couleur de réussite (vert) n'annonce pas une consigne : plus de bandeau, l'éditeur parle sur sa ligne.
     expect(screen.queryByText('Choisis la quantité de levure réellement ajoutée.')).not.toBeInTheDocument();
   });
-  it('« 1 sachet » est une quantité choisie : le pied ouvre alors la confirmation, qui clôt avec 1 sachet', () => {
+  it('« 1 sachet » est une quantité choisie : le pied ouvre alors la confirmation, qui clôt avec 1 sachet', async () => {
     const fini = vi.fn();
     monter(lot(SECHE_SANS_QUANTITE), fini);
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
@@ -85,6 +86,7 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     return vi.waitFor(() => {
       expect(fini).toHaveBeenCalledOnce();
       expect((fini.mock.calls[0][0] as Batch).brewDay).toMatchObject({ pitchQuantityConfirmation: 'measured', additions: { yeast: { amount: 1, unit: 'sachet' } } });

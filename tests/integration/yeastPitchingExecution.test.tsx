@@ -2,6 +2,7 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BatchDetailSheet } from '../../src/ui/BatchDetailSheet';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { YeastBrewDayGuide } from '../../src/ui/YeastBrewDayGuide';
 import { brewerJobs } from '../../src/services/brewerJobs';
@@ -210,6 +211,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByText(/Quantité mesurée : 5,5 g · sans dose prévue/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     const saved = finish.mock.calls[0][0] as Batch;
     expect(saved.brewDay).toMatchObject({ pitchQuantityConfirmation: 'measured', additions: { yeast: { amount: 5.5, unit: 'g' } } });
@@ -230,6 +232,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByText(/1\/\d+ ajouts cochés/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     const saved = finish.mock.calls[0][0].brewDay as BrewDayState;
     expect(saved.pitchQuantityConfirmation).toBe('unmeasured');
@@ -237,10 +240,10 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     expect(saved.pitchedAt).toBe(Date.now());
     view.unmount();
     render(<BrewDayPage batch={finish.mock.calls[0][0]} config={defaultConfig} onSave={vi.fn()} onFinish={vi.fn()} onClose={vi.fn()} />);
-    const yeastRow = within(screen.getByRole('region', { name: 'Ingrédients à ajouter' }));
-    expect(yeastRow.getByText('Réel non mesuré · prévu 12 g')).toBeInTheDocument();
-    expect(yeastRow.getByText('Non renseignée')).toBeInTheDocument();
-    expect(yeastRow.getByRole('checkbox', { name: 'Ajouté : Culture quantité inconnue' })).toBeChecked();
+    // p2c E4 : un brassin ensemencé rouvre sur la clôture ; le bloc Levure dit « quantité non mesurée », sans zéro ni dose prévue (12 g).
+    const levure = screen.getByRole('region', { name: 'Levure' });
+    expect(levure.textContent).toMatch(/Culture quantité inconnue · quantité non mesurée · ajoutée \d+ h \d{2}/);
+    expect(levure.textContent).not.toMatch(/12 g|0 g/);
   });
 
   it('laisse un historique sans quantité inchangé au montage puis trace une déclaration explicite', async () => {
@@ -271,6 +274,7 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     fireEvent.change(within(guide).getByLabelText('Volume de starter réellement transféré'), { target: { value: '1,5' } });
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     const saved = finish.mock.calls[0][0] as Batch;
     expect(saved.yeastPreparation).toMatchObject({ status: 'transferred', inoculumUsed: { amount: 1, unit: 'flacon', stockItemRef: 'YEAST-A' }, cultureVolumeL: 1.5 });

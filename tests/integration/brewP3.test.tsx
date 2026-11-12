@@ -2,6 +2,7 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { defaultConfig, StorageService } from '../../src/services/storage';
@@ -74,6 +75,7 @@ describe('p3 n° 4 : « J’ai ajouté la levure » amène le choix de la quanti
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByText(/Quantité prévue explicitement confirmée : 12 g/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     expect((finish.mock.calls[0][0] as Batch).brewDay).toMatchObject({ pitchQuantityConfirmation: 'planned', additions: { yeast: { amount: 12, unit: 'g' } } });
   });

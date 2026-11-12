@@ -1,6 +1,7 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within, act } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { AiClient } from '../../src/services/aiClient';
@@ -269,6 +270,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(v.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée', exact: true }));
+    await terminerLaJournee();
     await waitFor(() => expect(v.finish).toHaveBeenCalledWith(
       expect.objectContaining({
         og: undefined,
@@ -291,6 +293,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByText('Densité initiale pas relevée · volume au fermenteur pas relevé.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(v.finish).toHaveBeenCalledTimes(1));
     expect(v.finish.mock.calls[0][0]).toMatchObject({ og: undefined, volumeBrewedL: undefined });
     expect(v.finish.mock.calls[0][0].brewDay.readings).toEqual(readings);
@@ -319,6 +322,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(morning.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(morning.finish).toHaveBeenCalledTimes(1));
     expect(morning.finish.mock.calls[0][0]).toMatchObject({ status: 'fermentation', brewDate: '20.09.2026', plannedBrewDate: '25.09.2026' });
     const completed = morning.finish.mock.calls[0][0].brewDay;

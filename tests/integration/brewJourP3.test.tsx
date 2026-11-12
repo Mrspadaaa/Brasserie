@@ -2,6 +2,7 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { defaultConfig, StorageService } from '../../src/services/storage';
@@ -210,6 +211,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     fireEvent.click(volume().getByRole('checkbox'));
     expect(volume().getByText('dans la cible')).toBeInTheDocument();
     fireEvent.click(fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(fini).toHaveBeenCalledOnce());
     const lotFini = fini.mock.calls[0][0] as Batch;
     expect(lotFini).toMatchObject({ og: '1.062', volumeBrewedL: 19.1, status: 'fermentation' });
@@ -223,6 +225,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     fireEvent.click(densite().getByRole('checkbox')); // cochée d'office : le brasseur la décoche
     fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
     fireEvent.click(a.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(a.fini).toHaveBeenCalledOnce());
     const sans = a.fini.mock.calls[0][0] as Batch;
     expect(sans.og).toBeUndefined();
@@ -230,6 +233,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     cleanup();
     const b = ouvrirCloture();
     fireEvent.click(b.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(b.fini).toHaveBeenCalledOnce());
     expect((b.fini.mock.calls[0][0] as Batch).brewDay!.readings).toHaveLength(0);
   });
