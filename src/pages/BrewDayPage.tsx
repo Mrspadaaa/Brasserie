@@ -2323,7 +2323,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   <span className="bz-m bz-nw">{heureCuve(now + left)}</span>
                                   {left < 0 && (staleTimer && !isMash(current.id)
                                     ? ' · à vérifier'
-                                    : !staleTimer && phraseRetard(left)?.retard ? ` · ${phraseRetard(left)!.court}` : '')}
+                                    : !staleTimer && phraseRetard(left)?.retard ? insecables(` · ${phraseRetard(left)!.court}`) : '')}
                                 </>
                               ) : thermalTarget != null ? (
                                 <>

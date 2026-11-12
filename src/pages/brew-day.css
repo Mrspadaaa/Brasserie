@@ -3311,9 +3311,12 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 
 /* ---- p3 : corrections du test d'écran du 10.11 (VERDICT-p2) ---- */
 /* n° 9 : l'horloge du palier tient sur une ligne à 390 : le texte de relevé se replie dans sa colonne, les boutons ne passent plus dessous */
-.brew-page.bz .bz-haut { flex-wrap: nowrap; }
+/* K7 n° 15 et 30 : −5 −1 ⏸ +1 +5 sur leur propre ligne (p2c), 44 px ; le temps et son texte reprennent toute la largeur de la ligne du haut. */
+.brew-page.bz .bz-haut { flex-wrap: wrap; }
 .brew-page.bz .bz-haut .bz-fin { min-width: 0; flex: 1 1 0; font-size: 12px; line-height: 1.25; }
-.brew-page.bz .bz-haut .bz-ctl { flex: none; }
+.brew-page.bz .bz-haut .bz-ctl { flex: 1 1 100%; }
+/* K7 n° 26 et 30 : un nombre et son unité ne se séparent jamais dans l'horloge */
+.brew-page.bz .bz-fin .bz-m { white-space: nowrap; }
 /* n° 3 : « Moût à l'ajout » = une ligne de plus sous la ligne Levure (valeur à droite, unité en petit) */
 .brew-page.bz .bz-moutajout { order: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; margin-top: 6px; padding: 2px 10px; border: 1px solid var(--bz-border); border-radius: 8px; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-moutajout-val { display: flex; align-items: center; gap: 4px; }

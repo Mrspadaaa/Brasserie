@@ -30,4 +30,9 @@ describe('K6 n° 26 : une heure et une mesure avec son unité ne se coupent pas 
     expect(insecables('à choisir')).toBe('à choisir');
     expect(insecables('fin ~19 h 49 · 35,4 g').replace(/\s/g, ' ')).toBe('fin ~19 h 49 · 35,4 g');
   });
+  it('K7 n° 26 et 30 : le verdict « prochain relevé : pH d’empâtage dès 11 h 51 » et le retard « en retard de 2 min » gardent nombre et unité ensemble', () => {
+    expect(insecables('Enregistré · prochain relevé : pH d’empâtage dès 11 h 51')).toBe(`Enregistré · prochain relevé : pH d’empâtage dès 11${N}h${N}51`);
+    expect(insecables(' · en retard de 2 min')).toBe(` · en retard de 2${N}min`);
+    expect(insecables('maintien 82 °C')).toBe(`maintien 82${N}°C`);
+  });
 });

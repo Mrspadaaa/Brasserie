@@ -115,7 +115,7 @@ function Mesure(p: MaintenantMesure) {
       </div>
       <MeasureSlider scale={scale} kind={kind} value={valeur} depart={depart} label={p.titre} onPose={onPose} />
       {verdict && (
-        <p className="bm-verd" aria-live="polite" data-ton={fait ? 'fait' : !pose ? 'muet' : zone === 'dans' ? 'ok' : 'hors'}>{verdict}</p>
+        <p className="bm-verd" aria-live="polite" data-ton={fait ? 'fait' : !pose ? 'muet' : zone === 'dans' ? 'ok' : 'hors'}>{insecables(verdict)}</p>
       )}
       {avecDonc && (
         <div className="bm-donc">
