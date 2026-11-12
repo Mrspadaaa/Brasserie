@@ -940,12 +940,15 @@ export const doseFr = f;
  * Les ajouts de l'ébullition, du premier au dernier, pour la piste de l'horloge (z1) : la minute avant la fin, et s'ils sont versés.
  * Même règle que la liste (`BrewIngredients`) : un ajout dont l'heure réelle a été consignée suit l'horloge du brassin.
  */
-export function boilAdditionPoints(recipe: RecipeSnapshot, state: BrewDayState): { id: string; minute: number; done: boolean }[] {
+export function boilAdditionPoints(recipe: RecipeSnapshot, state: BrewDayState): { id: string; nom: string; dose: number; unit: string; minute: number; done: boolean }[] {
   const duree = boilMinutes(state, recipe);
   return brewIngredients(recipe)
     .filter((i) => i.area === 'boil' && i.beforeEndMin != null && i.stepId !== 'whirlpool' && (i.planned > 0 || state.additions?.[i.id]))
     .map((i) => ({
       id: i.id,
+      nom: i.name,
+      dose: state.additions?.[i.id]?.amount ?? i.planned,
+      unit: i.unit,
       minute: state.hopElapsedMin?.[i.id] != null ? Math.max(0, duree - state.hopElapsedMin[i.id]) : i.beforeEndMin!,
       done: state.additions?.[i.id]?.doneAt != null
     }))

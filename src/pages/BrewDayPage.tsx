@@ -75,6 +75,8 @@ import {
 } from '../ui/BrewDayMeasurements';
 import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
 import type { PitchEditor } from '../ui/BrewIngredients';
+import { BrewPiste } from '../ui/BrewPiste';
+import { dansDit, pointsPiste, type RendezVous } from '../domain/brewDayPiste';
 import { echelleMaxG, fourchetteG, grammesDuChoix, gParHl, sachetDeLaLevure, statutDose } from '../domain/levure/sachet';
 import type { Sachet } from '../domain/levure/sachet';
 import { BrewClotureReleves, CLOTURE_VIDE, cloturePartirDe, type ClotureReleves } from '../ui/BrewClotureReleves';
@@ -1420,6 +1422,54 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     }
     return p;
   });
+  // La piste de l'horloge (p2c, test c6 n° 3 et 4) : les rendez-vous du palier (pH, eau de rinçage, fin), les ajouts de l'ébullition (✓, en retard),
+  // et, au contrôle avant ébullition, l'horloge de l'ébullition à venir (60:00, « au premier bouillon ») avec ses ajouts. Aucune heure inventée : sans heure, pas de point.
+  const finPalier: { t: number | null; estime: boolean } =
+    current.startedAt != null && current.pausedAt == null && left != null ? { t: now + left, estime: false } : { t: etapesPlan[current.id]?.fin ?? null, estime: true };
+  const pisteMaintien = (() => {
+    if (isConsulting || boiled || completed || !showTimer || !isMash(current.id)) return null;
+    const pl = etapesPlan[current.id];
+    const debutP = current.startedAt ?? pl?.tenue ?? null;
+    const phLu = (state.readings ?? []).some((r) => r.kind === 'ph' && r.stepId === current.id);
+    const heurePh = debutP != null && duration > 10 ? debutP + 10 * 60000 : null;
+    const rinc = cote('rinçage')?.heure ?? null;
+    const rdv: RendezVous[] = [
+      {
+        id: 'ph', heure: heurePh, etat: phLu ? 'ok' : 'vide',
+        texte: heurePh == null ? '' : phLu ? 'pH ✓' : `pH · ${heureCuve(heurePh)} · ${heurePh <= now ? 'à relever' : dansDit(heurePh, now)}`
+      },
+      { id: 'rinçage', heure: rinc, etat: 'vide', texte: rinc == null ? '' : `eau de rinçage · ~${heureCuve(rinc)}` }
+    ];
+    return pointsPiste({ debut: debutP, fin: finPalier.t, now, depart: current.startedAt != null ? 'du' : 'vide', finTexte: 'fin', rendezVous: rdv });
+  })();
+  const ecouleEbullitionMs = left != null ? duration * 60000 - left : 0;
+  const pisteEbullition = (() => {
+    if (!boiled || boilPoints.length === 0 || duration <= 0) return null;
+    const rdv: RendezVous[] = boilPoints.map((p) => {
+      const t = (duration - p.minute) * 60000;
+      const retard = !p.done && running && t + 60000 <= ecouleEbullitionMs;
+      return { id: p.id, heure: t, etat: p.done ? 'ok' : retard ? 'red' : 'vide', texte: p.done ? `${p.nom} ✓` : retard ? `${p.nom} en retard` : p.nom };
+    });
+    const r = pointsPiste({ debut: 0, fin: duration * 60000, now: ecouleEbullitionMs, rendezVous: rdv });
+    const ton: Record<string, 'red'> = {};
+    for (const p of rdv) if (p.etat === 'red') ton[p.id] = 'red';
+    return { ...r, ton };
+  })();
+  const avantEbullition = !isConsulting && current.id === 'preboil' && state.boilStartedAt == null && state.steps.some(isBoilStep);
+  const dureeAvant = avantEbullition ? boilMinutes(state, actualRecipe) : 0;
+  const planBouillon = boilIdPlan ? etapesPlan[boilIdPlan] : undefined;
+  const pisteAvant = (() => {
+    if (!avantEbullition || dureeAvant <= 0) return null;
+    const pts = boilAdditionPoints(executionRecipe, state);
+    const rdv: RendezVous[] = pts.map((p, i) => {
+      const premier = i === 0, dernier = i === pts.length - 1 && pts.length > 1;
+      const texte = premier
+        ? `${p.nom} ${doseFr(p.dose, p.unit)} ${p.unit} · ${p.minute >= dureeAvant ? 'au bouillon' : p.minute === 0 ? 'coupure' : `${p.minute}′`}`
+        : dernier ? `${p.nom} · ${p.minute === 0 ? 'coupure' : `${p.minute}′`}` : '';
+      return { id: p.id, heure: (dureeAvant - p.minute) * 60000, etat: 'vide', texte };
+    });
+    return pointsPiste({ debut: 0, fin: dureeAvant * 60000, now: 0, rendezVous: rdv });
+  })();
   const stepHasHop = brewIngredients(ingredientDisplayRecipe).some(
     (i) => i.kind === 'hop' && ingredientAppliesToStep(i, { area, stepId: current.id }) && i.planned > 0
   );
@@ -2100,6 +2150,34 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <span>Terminé · Annuler</span>
                         </button>
                       )}
+                      {avantEbullition && dureeAvant > 0 && (
+                        <div className="bz-horloge" data-booster="horloge" data-etat="repos" data-avant-ebullition="">
+                          <div className="bz-haut">
+                            <output aria-label="Durée de l’ébullition" aria-live="off" className="bz-temps bz-m brew-digits">{String(dureeAvant).padStart(2, '0')}:00</output>
+                            <span className="bz-fin">
+                              fin <span className="bz-m">{planBouillon?.fin == null ? '?' : `~${heureCuve(planBouillon.fin)}`}</span>
+                              <br />
+                              au premier bouillon <span className="bz-m">{planBouillon?.debut == null ? '?' : `~${heureCuve(planBouillon.debut)}`}</span>
+                            </span>
+                            <div className="bz-ctl" role="group" aria-label="Ajuster la durée de l’ébullition">
+                              {[-5, -1].map((d) => (
+                                <button type="button" key={d} className="bz-m" aria-label={`Retirer ${-d} minutes d’ébullition`} data-booster={`moins${-d}`} onClick={() => update((s) => changeBoilMinutes(s, recipe, d))}>
+                                  −{-d}
+                                </button>
+                              ))}
+                              <button type="button" aria-label="Passer à l’ébullition" data-booster="play" onClick={finishAndContinue}>
+                                <Play size={14} fill="currentColor" />
+                              </button>
+                              {[1, 5].map((d) => (
+                                <button type="button" key={d} className="bz-m" aria-label={`Ajouter ${d} minutes d’ébullition`} data-booster={`plus${d}`} onClick={() => update((s) => changeBoilMinutes(s, recipe, d))}>
+                                  +{d}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          {pisteAvant && pisteAvant.points.length > 0 && <BrewPiste nom="Ajouts de l’ébullition à venir" booster="piste" points={pisteAvant.points} avance={0} />}
+                        </div>
+                      )}
                       {showTimer && (
                         <div
                           className="bz-horloge"
@@ -2122,15 +2200,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                               ) : holdLine ? (
                                 <>
                                   {current.pausedAt != null ? 'en pause · ' : running && left != null && left < 0 ? 'dépassé · ' : ''}
-                                  maintien <span className="bz-m">{fr(thermalTarget!)} °C</span> · relevé{' '}
-                                  <button
-                                    type="button"
-                                    className="bz-releve-lien bz-m"
-                                    aria-label="Relevé de température"
-                                    onClick={() => requestMeasure('temperature')}
-                                  >
-                                    {lastTemperature ? fr(lastTemperature.value) : '?'}
-                                  </button>
+                                  fin <span className="bz-m">{finPalier.t == null ? '?' : `${finPalier.estime ? '~' : ''}${heureCuve(finPalier.t)}`}</span>
+                                  <br />
+                                  tenir <span className="bz-m">{fr(thermalTarget!)} °C</span> · couvercle
                                 </>
                               ) : current.pausedAt != null ? (
                                 'en pause'
@@ -2200,22 +2272,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                               ))}
                             </div>
                           </div>
-                          {boiled && boilPoints.length > 0 && (
-                            <div className="bz-piste" aria-hidden="true" data-booster="piste">
-                              <div className="bz-piste-rail" />
-                              <div className="bz-piste-fait" style={{ width: `${(elapsedShare ?? 0) * 100}%` }} />
-                              {boilPoints.map((p) => (
-                                <span
-                                  key={p.id}
-                                  className="bz-pt"
-                                  data-fait={p.done ? '' : undefined}
-                                  data-prochain={nextBoilPoint?.id === p.id && running ? '' : undefined}
-                                  style={{ left: `${duration > 0 ? Math.max(0, Math.min(100, ((duration - p.minute) / duration) * 100)) : 0}%` }}
-                                />
-                              ))}
-                              {elapsedShare != null && <span className="bz-now" style={{ left: `${elapsedShare * 100}%` }} />}
-                            </div>
-                          )}
+                          {pisteEbullition && <BrewPiste nom="Ajouts de l’ébullition" booster="piste" points={pisteEbullition.points} avance={pisteEbullition.avance} ton={pisteEbullition.ton} />}
+                          {pisteMaintien && pisteMaintien.points.length > 0 && <BrewPiste nom="Rendez-vous du palier" booster="piste-palier" points={pisteMaintien.points} avance={pisteMaintien.avance} ton={{ ph: 'ocre' }} />}
                         </div>
                       )}
                       {staleTimer && (

@@ -2930,7 +2930,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   font-size: 14px;
   font-weight: 500;
 }
-.brew-page.bz .bz-ctl button[data-pause] { min-width: 36px; }
+.brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 36px; }
 .brew-page.bz .bz-piste { position: relative; height: 22px; margin-top: 8px; width: 100%; }
 .brew-page.bz .bz-piste-rail { position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-border); }
 .brew-page.bz .bz-piste-fait { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-hop); }
