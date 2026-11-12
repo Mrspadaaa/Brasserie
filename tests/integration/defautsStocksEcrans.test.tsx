@@ -52,13 +52,15 @@ describe('AM-55, MV-43, BR-76 — la fiche d’un article', () => {
 
   it('un article cité par une recette ne se supprime pas, et la fiche dit laquelle', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[recette]} />);
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
+    expect(screen.getByRole('menuitem', { name: 'Supprimer' })).toBeDisabled();
     expect(screen.getByRole('status', { name: '' }) ?? null).toBeTruthy();
     expect(document.querySelector('[data-stock-suppression-bloquee]')).toHaveTextContent(/Pils maison/);
   });
   it('un article libre se supprime', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[]} />);
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
+    expect(screen.getByRole('menuitem', { name: 'Supprimer' })).toBeEnabled();
   });
   it('un seuil de 999 999 kg est refusé avec son motif, Enregistrer est éteint', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[]} />);

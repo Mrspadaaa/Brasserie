@@ -96,10 +96,10 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.queryByText(/Brassin du samedi/)).not.toBeInTheDocument();
     expect(screen.getByRole('meter')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Ouvrir Pilsner'}));expect(open).toHaveBeenCalledWith(item);
-    view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrectInventory={()=>{}} onToggleFavorite={()=>{}}/>);
-    fireEvent.click(screen.getByText('Besoin de 1 source (brassins, recettes)'));
+    view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrect={()=>{}} onToggleFavorite={()=>{}}/>);
+    expect(screen.getByText(/1 source/)).toBeVisible();
     expect(screen.getByText(/^Brassin du samedi/)).toBeVisible(); // la source est nommée, avec sa date quand elle est connue (R1)
-    expect(screen.getByRole('button',{name:'Corriger l’inventaire'})).toBeVisible();
+    expect(screen.getByText(/Corriger le stock/)).toBeVisible();
   });
 
   it('ouvre les finances sur la synthèse et conserve la recherche visible entre les quatre vues',()=>{

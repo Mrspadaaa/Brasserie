@@ -35,8 +35,8 @@ describe('stocks compacts', () => {
     render(<Catalogue/>);
     const opener = await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' });
     opener.focus(); fireEvent.click(opener);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Fermer', exact: true })).toHaveFocus());
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Fermer', exact: true }), { key: 'Escape' });
+    await waitFor(() => expect(screen.getByRole('dialog')).toHaveFocus());
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
     await waitFor(() => expect(opener).toHaveFocus());
     expect(screen.queryByRole('dialog')).toBeNull();
   });
@@ -72,13 +72,11 @@ describe('stocks compacts', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'pils')).toMatchObject({ minStock: 3.5, colorEbc: 4.2, currentStock: 2 });
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir Malt Pilsner' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Corriger l’inventaire', exact: true }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Stock réellement compté (kg)' }), { target: { value: '1,5' } });
-    fireEvent.change(screen.getByLabelText('Précision (facultatif)'), { target: { value: 'Sac pesé' } });
-    expect(screen.getByRole('status')).toHaveTextContent('-500 g');
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer l’écart' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Il en reste' }), { target: { value: '1,5' } });
+    expect(document.querySelector('[data-delta]')).toHaveTextContent('−0,5');
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'pils')?.currentStock).toBe(1.5);
-    expect(StorageService.getAuditLogs()[0].details).toContain('Sac pesé');
+    expect(StorageService.getAuditLogs()[0].details).toContain('Inventaire physique');
   });
 
   it('ne transforme ni un seuil en brassins ni un niveau inconnu en jauge pleine', () => {

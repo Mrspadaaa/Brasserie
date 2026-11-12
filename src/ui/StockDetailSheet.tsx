@@ -383,9 +383,6 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <Field label={`Seuil minimum (${draft.unit})`} htmlFor="stock-min" error={seuilErreur}>
-              <NumberInput id="stock-min" value={draft.minStock} min={0} emptyValue={undefined} placeholder="Inconnu" aria-invalid={!seuil.ok} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
-            </Field>
             <Field label="Fournisseur" htmlFor="stock-vendor">
               <Combobox id="stock-vendor" ariaLabel="Fournisseur" value={draft.supplier || ''} onChange={supplier => setDraft({ ...draft, supplier })}
                 options={vendorOptions} placeholder="Choisir…" allowCreate onCreate={supplier => setDraft({ ...draft, supplier })}/>
