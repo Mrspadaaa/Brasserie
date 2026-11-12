@@ -33,7 +33,9 @@ const avant = (a: Element, b: Element) => !!(a.compareDocumentPosition(b) & Node
 describe('m2 : l’ordre des blocs de l’étape (DOM)', () => {
   it('« Relevés du jour » vient avant Grains', () => {
     monter();
-    const releves = screen.getByRole('region', { name: 'Relevés de cette étape' });
+    // p2c (I1b) : la carte « Maintenant » prend la place des cases « Relevés du jour » dans la conduite.
+    const releves = document.querySelector('.bm-now') as HTMLElement;
+    expect(releves).toBeTruthy();
     const grains = screen.getByRole('region', { name: 'Ingrédients à ajouter' });
     expect(avant(releves, grains)).toBe(true);
   });

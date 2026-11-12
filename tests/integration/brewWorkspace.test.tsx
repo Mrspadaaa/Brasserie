@@ -269,8 +269,10 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     expect(ingredients().getByLabelText('Ajouté : US-05')).toBeInTheDocument();
     // c3 n° 12 : les deux mesures attendues sont des cases de « Relevés du jour » ; le bilan de clôture ne les répète plus.
     expect(screen.queryByRole('region', { name: 'Bilan du brassage' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Relever Densité initiale' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Relever Au fermenteur' })).toBeInTheDocument();
+    // p2c (I1b) : la mesure due est la carte « Maintenant » (une à la fois : la densité initiale d'abord).
+    const carte = document.querySelector('.bm-now') as HTMLElement;
+    expect(within(carte).getByText('Densité initiale')).toBeInTheDocument();
+    expect(within(carte).getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
   });
 
   it('le journal réunit ajouts réels, mesures, notes et étapes, avec des filtres sans mutation', () => {
