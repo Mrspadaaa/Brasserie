@@ -87,7 +87,7 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
           : []
       });
       phase('Empâter');
-      const summary = screen.getByRole('region', { name: 'Relevés de cette étape' });
+      const summary = screen.getByRole('region', { name: 'Avis du relevé' });
       expect(summary).toHaveTextContent(feedback);
       expect(summary).not.toHaveTextContent('rien à ajouter');
       expect(

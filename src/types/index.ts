@@ -617,6 +617,18 @@ export interface BrewDayState {
   /** Ajustement du jour, sans réécrire la recette. */
   boilDurationMin?: number;
   boilFinishedAt?: number;
+  /**
+   * p2c E3 : le choix du brasseur devant un moût d'avant ébullition hors cible. Écrit dans l'état (donc au journal, hors ligne, au
+   * rechargement), jamais déduit. `readingAt` : l'heure de la paire volume + densité qu'il corrige ; une paire plus récente l'annule.
+   * `options` : les trois choix tels qu'ils étaient proposés, car « bouillir plus » change la durée et donc le calcul qui suit.
+   */
+  boilCorrection?: {
+    choix: 'bouillir' | 'extrait' | 'accepter';
+    at: number;
+    readingAt: number;
+    options: Array<{ id: 'bouillir' | 'extrait' | 'accepter'; titre: string; detail: string; minutesEbullition?: number }>;
+    note?: string;
+  };
   additions?: Record<string, { amount: number; unit?: string; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
   /** Measured free wort left after lautering; zero must also be explicitly confirmed. */
   lauterRetainedL?: number;

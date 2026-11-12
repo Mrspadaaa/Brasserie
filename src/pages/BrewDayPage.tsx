@@ -21,7 +21,8 @@ import {
   RefreshCw,
   Pencil,
   CircleHelp,
-  MessageCircle
+  MessageCircle,
+  TriangleAlert
 } from 'lucide-react';
 import './brew-day.css';
 import { AppConfig, Batch, BrewDayReading, BrewDayState, RecipeSnapshot, StockItem } from '../types';
@@ -74,15 +75,15 @@ import {
 } from '../ui/BrewDayMeasurements';
 import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
 import type { PitchEditor } from '../ui/BrewIngredients';
-import { sachetDeLaLevure } from '../domain/levure/sachet';
+import { echelleMaxG, fourchetteG, grammesDuChoix, gParHl, sachetDeLaLevure, statutDose } from '../domain/levure/sachet';
+import type { Sachet } from '../domain/levure/sachet';
 import { BrewClotureReleves, CLOTURE_VIDE, cloturePartirDe, type ClotureReleves } from '../ui/BrewClotureReleves';
 import yeastSupplyBootstrap from '../data/yeastSupplyBootstrap.json';
-import { BrewJournal } from '../ui/BrewJournal';
+import { BrewJournal, phraseCorrection } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
 import { BrewChoice } from '../ui/BrewChoice';
 import { BrewTag, BrewTagTone } from '../ui/BrewTag';
 import { useBrewSound } from '../ui/useBrewSound';
-import { BrewReadingsSummary } from '../ui/BrewReadingsSummary';
 import { BrewAlarmSettings } from '../ui/BrewAlarmSettings';
 import { NumberInput } from '../ui/NumberInput';
 import { useBrewSession } from '../ui/useBrewSession';
@@ -109,19 +110,19 @@ import { BrewMaintenant } from '../ui/BrewMaintenant';
 import type { MaintenantProps } from '../ui/BrewMaintenant';
 import { BrewAppel, BrewAppelPlein } from '../ui/BrewAppel';
 import type { BrewAppelAjout, BrewAppelProps, BrewAppelSuivant } from '../ui/BrewAppel';
-import { creerRappelNavigateur, ecouterActionsNotification, idsAcocher, idsAjoutDepuis } from '../services/brewNotifications';
+import { acquitterFileActions, adresseSansAction, creerRappelNavigateur, ecouterActionsNotification, idsAcocher, idsAjoutDepuis, lireActionUrl, lireFileActions } from '../services/brewNotifications';
 import { measureScale } from '../ui/BrewDayMeasurements';
 import { departCurseur } from '../domain/measureSlider';
 import { sauterAjout } from '../ui/BrewIngredients';
 import type { BrewAlarm } from '../domain/brewCompanion';
-import { compteReleves, losangesFrise, relevesDuJour, trierTuiles, tuilesDuJour } from '../domain/brewDayBilan';
+import { compteReleves, heuresTenues, losangesFrise, relevesDuJour, trierTuiles, tuilesDuJour } from '../domain/brewDayBilan';
 import type { HeuresPrevues, ReleveDuJour } from '../domain/brewDayBilan';
 import { planJournee } from '../domain/brewDayPlan';
 import type { PlanJournee } from '../domain/brewDayPlan';
 import { rendementVise } from '../domain/brewDayCalculs';
 import { BrewFrise } from '../ui/BrewFrise';
-import { BrewBilan } from '../ui/BrewBilan';
-import type { TuileBilan } from '../ui/BrewBilan';
+import { BrewBilan, BrewJournalExtrait } from '../ui/BrewBilan';
+import type { EntreeJournalBilan, HeureTenue as HeureTenueBilan, TuileBilan } from '../ui/BrewBilan';
 import { ReadingKind, sg as sgFr } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
@@ -180,12 +181,96 @@ export function tuileRendement(recipe: RecipeSnapshot, state: BrewDayState): Tui
 }
 
 /** Les tuiles du bilan : celles d'A1, le rendement d'A2 avant l'ensemencement, triées (dû, écart, puis l'ordre de la journée). */
-export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, state: BrewDayState): TuileBilan[] {
+export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, state: BrewDayState, mode: 'vise' | 'reel' = 'vise'): TuileBilan[] {
   const base = tuilesDuJour(releves, recipe);
   const i = base.findIndex((t) => t.id === 'ensemencement');
   const avecRendement: TuileBilan[] = [...base];
   avecRendement.splice(i < 0 ? base.length : i, 0, tuileRendement(recipe, state));
-  return trierTuiles(avecRendement).map((t) => (t.id === 'avant' && t.etat === 'ecart' ? { ...t, grand: true } : t));
+  const c = state.boilCorrection;
+  return trierTuiles(avecRendement)
+    .map((t) => (t.id === 'avant' && t.etat === 'ecart' ? { ...t, grand: mode === 'vise' } : t))
+    // B11 : « 15 h 05 · accepté : OG ≈ 1,057 ». À la clôture, la tuile garde « relevé à 15 h 05 » : le choix est au journal.
+    .map((t) => (t.id === 'avant' && c && mode === 'vise' ? { ...t, quand: `${heureFr(c.readingAt)} · ${phraseCorrection(c)}` } : t));
+}
+
+/** « Heures tenues » d'A1 vers les lignes du bilan. */
+export function heuresDuBilan(state: BrewDayState, recipe: RecipeSnapshot): HeureTenueBilan[] {
+  return heuresTenues(state, recipe).map((h) => ({ id: h.id, nom: h.nom, de: h.debut, a: h.fin, detail: h.plage, verdict: h.verdict, ton: h.ton === 'ocre' ? 'ecart' : 'ok' }));
+}
+
+/**
+ * « Au journal · tout est daté » (Z03) : les faits saillants de la journée, du plus ancien au plus récent : le choix d'avant ébullition,
+ * un ajout en retard, sauté ou remplacé, la levure. `prevuDe` : l'heure prévue d'un ajout (les alarmes) ; absente, aucun retard n'est dit.
+ */
+export function entreesJournalBilan(state: BrewDayState, recipe: RecipeSnapshot, prevuDe: (id: string) => number | null): EntreeJournalBilan[] {
+  const sortie: EntreeJournalBilan[] = [];
+  if (state.boilCorrection) sortie.push({ at: state.boilCorrection.at, texte: `avant ébullition hors cible · ${phraseCorrection(state.boilCorrection)}` });
+  for (const i of brewIngredients(recipe)) {
+    const a = state.additions?.[i.id];
+    if (!a || a.doneAt == null || i.beforeEndMin == null) continue;
+    const nom = a.replacement?.name ?? i.name;
+    if (a.amount === 0 && i.planned > 0) { sortie.push({ at: a.doneAt, texte: `${i.name} non versé` }); continue; }
+    const prevu = prevuDe(i.id);
+    const retard = prevu != null ? Math.round((a.doneAt - prevu) / 60000) : 0;
+    const dose = `${doseFr(a.amount, i.unit)} ${i.unit}`;
+    if (a.replacement) sortie.push({ at: a.doneAt, texte: `${nom} ${dose} à la place de ${i.name}` });
+    else if (retard >= 1) sortie.push({ at: a.doneAt, texte: `${nom} ${dose} ajouté, ${retard} min en retard` });
+  }
+  if (state.pitchedAt != null) {
+    const y = state.additions?.yeast;
+    const quantite = state.pitchQuantityConfirmation === 'unmeasured' || y?.amount == null ? 'quantité non mesurée' : `${doseFr(y.amount, y.unit ?? '')} ${y.unit ?? ''}`.trim();
+    sortie.push({ at: state.pitchedAt, texte: `levure, ${quantite}` });
+  }
+  return sortie.sort((p, q) => p.at - q.at);
+}
+
+const frNb = (n: number, d = 1) => n.toFixed(d).replace('.', ',');
+/** p2c E4 + 1C : la dose de levure posée sur la plage du fabricant, dite deux fois : pour le volume RÉEL au fermenteur, puis pour le volume PRÉVU. */
+function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, volumePrevuL, ajouteeA }: {
+  nom: string; detail: string; sachet: Sachet | null; grammes: number | null; volumeReelL: number | null; volumePrevuL: number | null; ajouteeA: number;
+}) {
+  const base = volumeReelL ?? volumePrevuL;
+  const plage = sachet?.plageGHl;
+  const fourchette = base != null ? fourchetteG(plage, base) : null;
+  const max = grammes != null ? echelleMaxG(fourchette, grammes) : null;
+  const pc = (x: number) => `${Math.min(100, Math.max(0, (x / (max as number)) * 100))}%`;
+  const dit = (v: number | null) => {
+    if (v == null || grammes == null) return null;
+    const st = statutDose(gParHl(grammes, v), plage);
+    return st == null ? null : st === 'dans' ? 'dans la plage' : st === 'sous' ? 'sous la plage' : 'au-dessus de la plage';
+  };
+  const reel = dit(volumeReelL);
+  const prevu = dit(volumePrevuL);
+  const phrase = [
+    volumeReelL == null ? 'volume au fermenteur non relevé' : reel ? `pour ${frNb(volumeReelL)} L réels : ${reel}` : null,
+    volumePrevuL != null && prevu && volumeReelL !== volumePrevuL ? `pour ${frNb(volumePrevuL)} L prévus : ${prevu}` : null
+  ].filter(Boolean).join(' · ');
+  return (
+    <section className="bz-groupe bz-levure-cloture" aria-label="Levure">
+      <header className="bz-groupe-tete"><h3>Levure</h3><span className="bz-compte">1/1</span></header>
+      <div className="bz-levure-cloture-ligne">
+        <div className="bz-levure-cloture-txt">
+          <strong>{nom}</strong> <span className="bz-levure-cloture-sub">· {detail} · ajoutée <span className="bz-m">{heureFr(ajouteeA)}</span></span>
+          {max != null && grammes != null && (
+            <div className="bz-jauge" role="group" aria-label="Dose de la levure pour le volume">
+              <div className="bz-jauge-barre" aria-hidden="true">
+                <span className="bz-jauge-rail" />
+                {fourchette && <span className="bz-jauge-bande" style={{ left: pc(fourchette.min), width: `calc(${pc(fourchette.max)} - ${pc(fourchette.min)})` }} />}
+                <span className="bz-jauge-trait" style={{ left: pc(grammes) }} />
+              </div>
+              <div className="bz-jauge-grad" aria-hidden="true">
+                <span className="bz-m">0</span>
+                {fourchette && <span className="bz-m bz-jauge-bord" style={{ left: pc((fourchette.min + fourchette.max) / 2) }}>{frNb(fourchette.min)}–{frNb(fourchette.max)}</span>}
+                <span className="bz-m" style={{ left: '100%' }}>{max} g</span>
+              </div>
+            </div>
+          )}
+          {phrase && <p className="bz-levure-cloture-phrase">{phrase}</p>}
+        </div>
+        <span className="bz-case-boite is-ronde is-fait" aria-hidden="true"><Check size={16} strokeWidth={3} /></span>
+      </div>
+    </section>
+  );
 }
 
 // Le choix du son du brasseur, d'une session à l'autre (préférence locale à l'appareil ; jamais une promesse d'alarme écran éteint).
@@ -691,7 +776,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // Les chiffres viennent d'A1 (relevés), d'A2 (zones, infusion, trois choix) et d'A3 (heures) ; la page pose, relie et écrit, elle ne calcule rien.
   const [maintBrouillon, setMaintBrouillon] = useState<{ cle: string; valeur: number | null } | null>(null);
   const [maintFait, setMaintFait] = useState<{ stepId: string; at: number; kind: ReadingKind; value: number; titre: string; sousTitre?: string; unite: string; entete: string; verdict: string } | null>(null);
-  const [choixPaire, setChoixPaire] = useState<OptionCorrection['id'] | null>(null);
   // À l'avant-ébullition, la paire volume + densité se relève par la feuille Mesurer (paire à froid, case « refroidi ») : pas de carte à une grandeur.
   const aFaireCarte = isConsulting || current.id === 'preboil' ? [] : attendues.filter((m) => m.due && !m.reading);
   const mesureCarte: MesureAttendue | undefined =
@@ -750,12 +834,21 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const corrections = paireLue
     ? correctionsAvantEbullition(actualRecipe, state, { finEbullitionMs: boilIdPlan ? planJ?.etapes[boilIdPlan]?.fin ?? null : null })
     : null;
+  // Le choix écrit pour CETTE paire (même heure de relevé) : il survit au rechargement et au hors ligne, et garde ses trois options telles qu'elles étaient proposées.
+  const pairAt = paireLue ? Math.max(paireLue.volume.at, paireLue.gravity.at) : null;
+  const correctionEcrite = state.boilCorrection && pairAt != null && state.boilCorrection.readingAt === pairAt ? state.boilCorrection : null;
   const choisirCorrection = (id: OptionCorrection['id']) => {
-    setChoixPaire(id);
-    const option = corrections?.options.find((o) => o.id === id);
+    const proposees = correctionEcrite?.options ?? corrections?.options;
+    const option = proposees?.find((o) => o.id === id);
     // « bouillir plus » règle l'horloge (durée totale d'A2) ; accepter ou extrait sec la remettent à la durée de la recette. Rien n'est inventé : sans durée de recette, on ne touche pas.
     const voulue = id === 'bouillir' ? option?.minutesEbullition : recipe.boilMin;
-    if (voulue != null && voulue > 0) update((s) => (voulue === boilMinutes(s, actualRecipe) ? s : changeBoilMinutes(s, actualRecipe, voulue - boilMinutes(s, actualRecipe))));
+    if (!proposees || pairAt == null) return;
+    const noteChoix = correctionEcrite?.note ?? corrections?.note;
+    const at = brewNow();
+    update((s) => {
+      const dureeOk = voulue != null && voulue > 0 && voulue !== boilMinutes(s, actualRecipe) ? changeBoilMinutes(s, actualRecipe, voulue - boilMinutes(s, actualRecipe)) : s;
+      return { ...dureeOk, boilCorrection: { choix: id, at, readingAt: pairAt, options: proposees.map(({ id: oid, titre, detail, minutesEbullition }) => ({ id: oid, titre, detail, ...(minutesEbullition != null ? { minutesEbullition } : {}) })), ...(noteChoix ? { note: noteChoix } : {}) } };
+    });
   };
   let maintenant: MaintenantProps | null = null;
   if (mesureCarte) {
@@ -783,7 +876,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       note: infusion ? '≈ calculé par l’app · pas de relevé ce palier : l’horloge tourne quand même' : undefined,
       enregistre: null
     };
-  } else if (paireLue && corrections) {
+  } else if (paireLue && (corrections || correctionEcrite)) {
     const cibleVol = cibleMesure('volume', measuredStep, actualRecipe);
     const cibleDens = cibleMesure('densite', measuredStep, actualRecipe);
     const volumeHors = ecartHorsCible(cibleVol, paireLue.volume.value) != null;
@@ -800,10 +893,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         densiteCible: cibleDens ? (cibleDens.min + cibleDens.max) / 2 : null,
         volumeHors,
         densiteHors,
-        options: corrections.options,
-        choisi: choixPaire ?? choisiParHorloge,
+        options: correctionEcrite?.options ?? corrections?.options ?? [],
+        choisi: correctionEcrite?.choix ?? choisiParHorloge,
         onChoix: choisirCorrection,
-        note: corrections.note
+        note: correctionEcrite?.note ?? corrections?.note
       };
     }
   }
@@ -902,6 +995,32 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       }),
     [batch.id]
   );
+  // G2 : « Ajouté » touché dans la notification, appli fermée : l'adresse `?brewday=<lot>&ajoute=<ids>&a=<heure du toucher>` ou la file IndexedDB du service worker.
+  // La page coche à l'heure du TOUCHER (sinon, à l'ouverture, dite). Un ajout déjà coché garde son heure ; l'adresse est nettoyée pour qu'un rechargement ne recoche rien.
+  const cocheDepuisNotification = (ids: string[], at: number) =>
+    update((s) => {
+      const aCocher = idsAcocher(ids, s.additions);
+      if (!aCocher.length) return s;
+      const additions = { ...s.additions };
+      for (const id of aCocher) additions[id] = { ...(additions[id] ?? { amount: 0 }), doneAt: at } as NonNullable<typeof additions[string]>;
+      return { ...s, additions };
+    });
+  useEffect(() => {
+    if (isConsulting) return;
+    let vivant = true;
+    const url = lireActionUrl(window.location.search);
+    if (url && url.batchId === batch.id) {
+      cocheDepuisNotification(url.additionIds, url.at ?? brewNow());
+      window.history.replaceState(window.history.state, '', `${window.location.pathname}${adresseSansAction(window.location.search)}${window.location.hash}`);
+    }
+    void lireFileActions().then((file) => {
+      if (!vivant) return;
+      const miens = file.filter((a) => a.batchId === batch.id);
+      for (const a of miens) cocheDepuisNotification(a.additionIds, a.at);
+      if (miens.length) void acquitterFileActions(miens.map((a) => a.key));
+    });
+    return () => { vivant = false; };
+  }, [batch.id]);
   const appelProps = (): BrewAppelProps | null => {
     const alarm = appelAlarme;
     const fait = appelFait;
@@ -975,6 +1094,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   };
   const appelCourant = appelProps();
   const appelPlein = !!appelCourant && !appelFait && alarmSound.ringing;
+  useEffect(() => {
+    if (!appelPlein) return;
+    const coque = contentRef.current?.closest('.page-shell');
+    const autour = [...(coque?.children ?? [])].filter((el) => el.tagName === 'HEADER' || el.tagName === 'FOOTER') as HTMLElement[];
+    for (const el of autour) el.setAttribute('inert', '');
+    return () => { for (const el of autour) el.removeAttribute('inert'); };
+  }, [appelPlein]);
   // La frise ne se dessine que si toutes les phases ont leurs heures et si la journée tient dans 36 h ; sinon la barre des phases garde la navigation.
   const friseDessinable = !!planJ && planJ.phasesInconnues.length === 0 && planJ.phases.length > 0 && Math.max(planJ.finEstimee ?? 0, now, ...planJ.phases.map((p) => p.fin)) - Math.min(planJ.debut, ...planJ.phases.map((p) => p.debut)) <= 36 * 3600000;
   const otherTimers = activeTimers.filter((s) => isConsulting || s.id !== current.id);
@@ -1150,26 +1276,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ...(canTransferStarter ? [{ mode: 'starter-transferred' as const, label: 'Starter transféré' }] : [])
     ]
   } : undefined;
-  const bilanCloture = area === 'finish' && !displayRecipe ? (
-          <div role="region" aria-label="Bilan du brassage" className="bz-cloture">
-            <span>
-              Densité initiale{' '}
-              <b className="bz-m">{finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'}</b>{finishedReadings.gravity && <small className="bz-m"> SG</small>}{' '}
-              <small className="bz-m">cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? '—'}</small>
-            </span>
-            <span>
-              Volume en fermenteur{' '}
-              <b className="bz-m">{finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'}</b>{finishedReadings.volume && <small className="bz-m"> L à froid</small>}{' '}
-              <small className="bz-m">cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</small>
-            </span>
-            {/* Pourquoi une valeur manque : dit aux lecteurs d'écran, pas affiché (z1 : sans un mot d'aide). */}
-            {(!finishedReadings.gravity || !finishedReadings.volume) && (
-              <span className="sr-only">
-                {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
-              </span>
-            )}
-          </div>
-  ) : undefined;
   const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
@@ -1583,6 +1689,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     </>
   );
   const porteAide = !isConsulting && !enseme && showReadingSummary;
+  // p2c E4 : à la clôture (levure ajoutée, dernière étape), la page devient le bilan contre la cible. Avant la levure, c'est la conduite du jour.
+  const clotureFaite = !isConsulting && !displayRecipe && lastStep && state.pitchedAt != null;
+  const finJour = state.finishedAt ?? (clotureFaite ? now : null);
+  const heureDeFinJour = finJour != null ? heureCuve(finJour) : '?';
+  const dureeJourMin = state.startedAt != null && finJour != null ? Math.max(0, Math.round((finJour - state.startedAt) / 60000)) : null;
+  const dureeJour = dureeJourMin == null ? '?' : `${Math.floor(dureeJourMin / 60)} h ${String(dureeJourMin % 60).padStart(2, '0')}`;
+  const avanceJour = planJ?.avanceMin ?? null;
+  const prevuDeAjout = (id: string) => alarms.find((a) => a.id.startsWith('add-') && ajoutsDe(a).ids.includes(id))?.at ?? null;
+  const gLevure = grammesDuChoix(state.additions?.yeast, sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products));
   return (
     <PageShell
       wide
@@ -1697,6 +1812,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             {finEnCours ? (
               <>
                 {finLabel} · <span className="bz-m">{heureCuve(now + left!)}</span>
+              </>
+            ) : clotureFaite ? (
+              <>
+                Terminer · <span className="bz-m">{heureCuve(now)}</span>
               </>
             ) : (
               primaryLabel
@@ -2178,7 +2297,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </div>
                       </aside>
                     )}
-                    {prompt && current.doneAt == null && !((holdLine || thermalVisible) && prompt.kind === 'temperature') && !attendues.some((a) => a.kind === prompt.kind) && (
+                    {prompt && current.doneAt == null && !((holdLine || thermalVisible) && prompt.kind === 'temperature') && (current.id === 'preboil' || !attendues.some((a) => a.kind === prompt.kind)) && (
                       <button
                         type="button"
                         className="brew-reading-prompt bz-repli"
@@ -2194,10 +2313,47 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
                 {maintenant && <BrewMaintenant {...maintenant} />}
                 {appelCourant && !appelPlein && <BrewAppel {...appelCourant} />}
-                {attendues.length > 0 && !displayRecipe && !maintenant && (area === 'finish' || current.id === 'preboil' || avisAgir) && (
-                  <BrewReadingsSummary state={state} step={measuredStep} recipe={actualRecipe} attendues={attendues} onMeasure={requestMeasure} now={now} cloture={bilanCloture} />
+                {clotureFaite && (
+                  <>
+                    <section className="bz-fin-jour" aria-label="Heure de fin" data-booster="horloge-fin">
+                      <b className="bz-m bz-fin-duree" aria-label="Durée du brassage">{dureeJour}</b>
+                      <span className="bz-fin-texte">
+                        de <span className="bz-m">{state.startedAt != null ? heureCuve(state.startedAt) : '?'}</span> à <span className="bz-m">{heureDeFinJour}</span>
+                        {planJ?.finPrevue != null && (
+                          <>
+                            <br />~<span className="bz-m">{heureCuve(planJ.finPrevue)}</span> estimé
+                            {avanceJour != null && avanceJour !== 0 && <> · {Math.abs(avanceJour)} min {avanceJour > 0 ? 'd’avance' : 'de retard'}</>}
+                          </>
+                        )}
+                      </span>
+                    </section>
+                    <BrewBilan mode="reel" tuiles={tuilesDuBilan(relevesJ, actualRecipe, state, 'reel')} faits={compteJ.faits} total={compteJ.total} heures={heuresDuBilan(state, actualRecipe)} />
+                    <LevureCloture
+                      nom={recipe.yeast?.name ?? 'Levure'}
+                      detail={state.pitchQuantityConfirmation === 'unmeasured' || state.additions?.yeast?.amount == null ? 'quantité non mesurée' : `${doseFr(state.additions.yeast.amount, state.additions.yeast.unit ?? '')} ${state.additions.yeast.unit ?? ''}${gLevure != null && state.additions.yeast.unit !== 'g' ? ` · ${frNb(gLevure)} g` : ''}`}
+                      sachet={sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products)}
+                      grammes={gLevure}
+                      volumeReelL={finishedReadings.volume?.value ?? null}
+                      volumePrevuL={recipe.volumeL ?? null}
+                      ajouteeA={state.pitchedAt!}
+                    />
+                  </>
                 )}
-                <BrewIngredients
+                {avisAgir && !displayRecipe && (
+                  <section className="bz-avis-releve" aria-label="Avis du relevé">
+                    {attendues.filter((a) => a.reading).map((a) => {
+                      const retour = measuredReadingFeedback(a.reading!, state, measuredStep, actualRecipe);
+                      if (retour.tone !== 'watch' && !(a.kind === 'ph' && isMash(measuredStep.id) && retour.tone === 'neutral')) return null;
+                      return (
+                        <p key={a.kind} className={`bz-releve-avis is-${retour.tone}`}>
+                          {retour.tone === 'watch' && <TriangleAlert size={14} aria-hidden="true" />}
+                          <span>{retour.title}</span>
+                        </p>
+                      );
+                    })}
+                  </section>
+                )}
+                {!clotureFaite && <BrewIngredients
                   recipe={displayRecipe ? recipe : ingredientDisplayRecipe}
                   state={state}
                   stock={stockItems}
@@ -2207,7 +2363,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   now={now}
                   stepId={current.id}
                   pitch={pitchEditor}
-                />
+                />}
                 {!displayRecipe && current.id === 'ensemencement' && state.pitchedAt == null && (
                   <label className="bz-moutajout">
                     <span>Moût à l’ajout</span>
@@ -2254,7 +2410,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
               </section>
             )}
-            {!isConsulting && showReadingSummary && (
+            {clotureFaite && <BrewJournalExtrait entrees={entreesJournalBilan(state, actualRecipe, prevuDeAjout)} />}
+            {!isConsulting && !clotureFaite && showReadingSummary && (
               <BrewBilan
                 tuiles={tuilesDuBilan(relevesJ, actualRecipe, state)}
                 faits={compteJ.faits}
@@ -2266,7 +2423,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 aide={porteAide ? <>{aidesDebut}{aideOptions}</> : undefined}
               />
             )}
-            {!isConsulting && (
+            {!isConsulting && !clotureFaite && (
               <section aria-label="Préparations" className="brew-preparations bz-groupe bz-anticiper">
                 <header className="bz-groupe-tete">
                   <ListChecks size={14} aria-hidden="true" />

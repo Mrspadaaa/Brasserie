@@ -213,7 +213,8 @@ describe('n° 11 : Refroidissement montre « Ensuite · Ensemencement » avec la
     monter(lot(SECHE_SANS_QUANTITE, 0));
     const ensuite = screen.getByRole('region', { name: /Ensuite · Ensemencement/ });
     expect(within(ensuite).getByText('SafAle US-05')).toBeInTheDocument();
-    expect(screen.getByText(/au transfert/)).toBeInTheDocument();
+    // p2c (I2) : l'ancienne case « au transfert » de « Relevés du jour » est retirée ; l'OG et le volume attendus se lisent dans le bilan.
+    expect(within(screen.getByRole('region', { name: /bilan visé/ })).getAllByText(/Au fermenteur/).length).toBeGreaterThan(0);
   });
   it('le volume relevé dans la case « Au fermenteur » du Refroidissement s’enregistre comme volume au fermenteur (décision du pilote, fidèle à m2)', () => {
     const etape: BrewDayStep = { id: 'refroidissement', label: 'Refroidissement', durationMin: 0 };
