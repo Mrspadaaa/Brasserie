@@ -37,6 +37,9 @@ const HopIndexPanel = lazy(() =>
 );
 
 const readRecipes = () => StorageService.getRecipes();
+// Hors du composant : `useStorageValue` relit à chaque changement de `read` ; une flèche écrite dans le rendu
+// le changerait à chaque rendu, et `getStockMovements()` rend un tableau neuf tant que la collection est absente (boucle).
+const readMovements = () => StorageService.getStockMovements();
 
 interface StocksTabProps {
   stocks: {
@@ -115,7 +118,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     [stocks.rawMaterials, stocks.cleaning]
   );
   const savedRecipes = useStorageValue(readRecipes);
-  const movements = useStorageValue(() => StorageService.getStockMovements());
+  const movements = useStorageValue(readMovements);
   const recipes = useMemo(() => savedRecipes
     .filter(recipe => !recipe.archivedAt)
     .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
