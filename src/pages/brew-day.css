@@ -3326,7 +3326,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-levure-choix button[aria-checked='true'] { border: 2px solid var(--bz-action); background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
 /* p3 / 1C : la dose dite en g et en g/hL sur la plage du fabricant (maquette c1c : bande vert pâle, trait vert / ambre / pointillé). */
 .brew-page.bz .bz-jauge { flex: 1 1 100%; min-width: 0; padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
-.brew-page.bz .bz-jauge-tete { display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 12px; color: var(--bz-t2); }
 .brew-page.bz .bz-jauge-dose { white-space: nowrap; }
 .brew-page.bz .bz-jauge-dose b { font-size: 16px; font-weight: 600; color: var(--bz-t0); font-variant-numeric: tabular-nums; }
 .brew-page.bz .bz-jauge-verdict { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
@@ -3435,3 +3435,6 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 
 /* K4 n° 23 : le voile de la saisie flottante à 1280 (même teinte que celui du téléphone) ; la saisie passe devant. */
 .brew-page.bz .brew-capture-voile { position: fixed; inset: 0; z-index: 29; background: rgba(0, 0, 0, .35); }
+
+/* K6 n° 26 : une heure ou une mesure avec son unité ne se coupe pas en fin de ligne (voir `insecables` de src/ui/brewNombres.tsx). */
+.bz-nw { white-space: nowrap; }

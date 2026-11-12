@@ -121,6 +121,8 @@ import type { BrewAlarm } from '../domain/brewCompanion';
 import { compteReleves, heuresTenues, losangesFrise, relevesDuJour, trierTuiles, tuilesDuJour } from '../domain/brewDayBilan';
 import type { HeuresPrevues, ReleveDuJour } from '../domain/brewDayBilan';
 import { planJournee } from '../domain/brewDayPlan';
+import { momentHoublonEnsuite } from '../domain/brewDayEnsuite';
+import { insecables } from '../ui/brewNombres';
 import type { PlanJournee } from '../domain/brewDayPlan';
 import { boilPausedAt, etatEbullitionFigee, grainPourProchain, pauseBoil, rendementVise, resumeBoil } from '../domain/brewDayCalculs';
 import { BrewFrise } from '../ui/BrewFrise';
@@ -291,7 +293,7 @@ function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, reelNonQuali
       <header className="bz-groupe-tete"><h3>Levure</h3><span className="bz-compte">1/1</span></header>
       <div className="bz-levure-cloture-ligne">
         <div className="bz-levure-cloture-txt">
-          <strong>{nom}</strong> <span className="bz-levure-cloture-sub">· {detail} · ajoutée <span className="bz-m">{heureFr(ajouteeA)}</span></span>
+          <strong>{nom}</strong> <span className="bz-levure-cloture-sub">· {detail} · ajoutée <span className="bz-m bz-nw">{heureFr(ajouteeA)}</span></span>
           {max != null && grammes != null && (
             <div className="bz-jauge" role="group" aria-label="Dose de la levure pour le volume">
               <div className="bz-jauge-barre" aria-hidden="true">
@@ -1490,7 +1492,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         .join(', fin ')
     : null;
   // test c6 n° 17 : le texte en police du texte ; les heures et les degrés seuls en chiffres tabulaires, sans coupure.
-  const enHeures = (texte: string) => texte.split(/(~?\d{1,2} h \d{2}|\d+(?:,\d+)? °C)/).map((part, i) => (i % 2 === 1 ? <span key={i} className="bz-m">{part}</span> : part));
+  const enHeures = (texte: string) => texte.split(/(~?\d{1,2}\s?h\s\d{2}|\d+(?:,\d+)?\s°C)/).map((part, i) => (i % 2 === 1 ? <span key={i} className="bz-m">{part}</span> : part));
   const ensuiteSous = [debutSuivantDit ? `à ${debutSuivantDit}` : null, apresDit].filter(Boolean).join(' · ');
   // p2c N10 / A10 : « Chauffer l'eau de rinçage 76 °C · dès 13 h 50 · prête pour 14 h 15 » ; « Désinfecter le refroidisseur · pendant l'ébullition · ~16 h 00 ».
   const cote = (id: string) => planJ?.aCote.find((c) => c.id === id);
@@ -2264,7 +2266,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                             <span className="bz-fin">
                               fin <span className="bz-m">{planBouillon?.fin == null ? '?' : `~${heureCuve(planBouillon.fin)}`}</span>
                               <br />
-                              au premier bouillon <span className="bz-m">{planBouillon?.debut == null ? '?' : `~${heureCuve(planBouillon.debut)}`}</span>
+                              au premier bouillon <span className="bz-m bz-nw">{planBouillon?.debut == null ? '?' : `~${heureCuve(planBouillon.debut)}`}</span>
                             </span>
                             <div className="bz-ctl" role="group" aria-label="Ajuster la durée de l’ébullition">
                               {[-5, -1].map((d) => (
@@ -2318,7 +2320,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   {/* « palier à vérifier » ne vaut que pour un palier ; l'ébullition et le whirlpool disent « fin 14 h 38 » (z1). */}
                                   {staleTimer && isMash(current.id) ? 'palier à vérifier' : 'fin'}{' '}
                                   {staleTimer && <>{new Date(now + left).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })} à </>}
-                                  <span className="bz-m">{heureCuve(now + left)}</span>
+                                  <span className="bz-m bz-nw">{heureCuve(now + left)}</span>
                                   {left < 0 && (staleTimer && !isMash(current.id)
                                     ? ' · à vérifier'
                                     : !staleTimer && phraseRetard(left)?.retard ? ` · ${phraseRetard(left)!.court}` : '')}
@@ -2565,14 +2567,18 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   ensuiteHoublons ? (
                     <div className="bz-row is-apercu">
                       <div className="bz-nom">
-                        <strong>{nextStepIngredients.map((i) => `${state.additions?.[i.id]?.replacement?.name ?? i.name} ${doseFr(actualAmount(i, state) ?? i.planned, i.unit)} ${i.unit}`).join(' · ')}</strong>
+                        <strong>{insecables(nextStepIngredients.map((i) => `${state.additions?.[i.id]?.replacement?.name ?? i.name} ${doseFr(actualAmount(i, state) ?? i.planned, i.unit)} ${i.unit}`).join(' · '))}</strong>
                         <small className="bz-m">{enHeures(momentHoublons!)}</small>
                       </div>
                       <span className="bz-case is-apercu" aria-hidden="true" />
                     </div>
                   ) : nextStepIngredients.map((i) => (
                     <div className="bz-row is-apercu" key={i.id}>
-                      <div className="bz-nom"><strong>{state.additions?.[i.id]?.replacement?.name ?? i.name}</strong></div>
+                      <div className="bz-nom">
+                        <strong>{state.additions?.[i.id]?.replacement?.name ?? i.name}</strong>
+                        {/* K6 n° 18 (p2c) : le moment du houblon (« 60′ · au premier bouillon », « coupure du feu », « au premier moût »). */}
+                        {i.kind === 'hop' && momentHoublonEnsuite(i, boilMinutes(state, recipe)) && <small className="bz-m">{enHeures(momentHoublonEnsuite(i, boilMinutes(state, recipe))!)}</small>}
+                      </div>
                       <span className="bz-dose is-lecture">
                         <strong>{i.planned > 0 || state.additions?.[i.id]?.amount != null ? doseFr(actualAmount(i, state) ?? i.planned, i.unit) : 'à choisir'}</strong>
                         <small>{i.planned > 0 || state.additions?.[i.id]?.amount != null ? i.unit : ''}</small>

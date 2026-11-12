@@ -19,7 +19,7 @@
   --fr-rows: 20px 12px 20px calc(var(--fr-rangees, 1) * 24px) 22px;
   margin: 8px 8px 0;
   display: grid;
-  grid-template-columns: 52px 1fr;
+  grid-template-columns: 68px 1fr;
   position: relative;
   color: var(--fr-t1);
 }

@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { ArrowLeftRight, ArrowUp, CircleHelp, Clock, Flag, PencilLine } from 'lucide-react';
 import { heureCuve } from './BrewIngredients';
+import { insecables } from './brewNombres';
 import './brew-bilan.css';
 
 /**
@@ -129,10 +130,10 @@ function Tuile({ t }: { t: TuileBilan }) {
       <span className="bz-bilan-v">
         <Valeur texte={valeur} />
       </span>
-      {t.cible ? <span className="bz-bilan-c">{t.cible}</span> : null}
+      {t.cible ? <span className="bz-bilan-c">{insecables(t.cible)}</span> : null}
       <span className="bz-bilan-w">
         <span className="bz-bilan-sr">{t.etat === 'afaire' && /\d/.test(valeur) ? 'Relevé, sans cible. ' : ETAT_DIT[t.etat]}</span>
-        {t.quand}
+        {insecables(t.quand)}
       </span>
     </li>
   );

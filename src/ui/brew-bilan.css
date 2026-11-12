@@ -108,3 +108,9 @@
 @media (min-width: 1024px) {
   .bz-bilan-grille { grid-template-columns: 1fr 1fr; }
 }
+
+/* K6 n° 22 : à 390, « Aide » ne tombe plus seul sur une ligne : il se range à droite de « Au jour J » ; les portes (« durée ± », « dose », « houblon manquant ») passent dessous, entières. */
+@media (max-width: 520px) {
+  .bz-bilan-dv > span { order: -2; }
+  .bz-bilan-dv .bz-bilan-aide-porte { order: -1; margin-left: auto; }
+}

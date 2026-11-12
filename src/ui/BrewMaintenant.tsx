@@ -1,4 +1,5 @@
 import React, { useId } from 'react';
+import { insecables } from './brewNombres';
 import { Clock, Thermometer } from 'lucide-react';
 import type { ReadingKind } from '../domain/brewDay';
 import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas } from '../domain/measureSlider';
@@ -178,7 +179,7 @@ function Paire(p: MaintenantPaire) {
           {p.options.map((o) => (
             <button type="button" key={o.id} className="bm-b bm-ch" data-choix={o.id} aria-pressed={p.choisi === o.id} onClick={() => p.onChoix(o.id)}>
               <span className="bm-s">{o.titre}</span>
-              <span>{o.detail}</span>
+              <span>{insecables(o.detail)}</span>
             </button>
           ))}
           {p.note && <div className="bm-nb">{p.note}</div>}

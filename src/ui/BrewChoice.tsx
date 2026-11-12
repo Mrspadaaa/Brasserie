@@ -2,6 +2,7 @@ import { Input } from './Input';
 import React, { useId, useLayoutEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Plus, Search, X } from 'lucide-react';
 import { BrewTag, BrewTagTone } from './BrewTag';
+import { insecables } from './brewNombres';
 import { useKeyboardInset } from './useViewport';
 
 export interface BrewChoiceOption {
@@ -172,7 +173,7 @@ export function BrewChoice({
               >
                 <span className="brew-choice-label">
                   <strong>{option.label}</strong>
-                  {option.detail && <small>{option.detail}</small>}
+                  {option.detail && <small>{insecables(option.detail)}</small>}
                 </span>
                 {option.tag && <BrewTag tone={option.tag.tone}>{option.tag.label}</BrewTag>}
                 <span className="brew-choice-check" aria-hidden="true">
