@@ -1825,6 +1825,11 @@ button.brew-consign:disabled { opacity: 0.6; }
   min-height: 32px;
   touch-action: manipulation;
 }
+/* Lot F (15) : « Annuler » ne colle plus à ses bords : une marge intérieure, et il ne se laisse pas écraser par le bouton de confirmation. */
+.brew-confirm > div:last-child .gap-3 > button:not(.bg-alert) {
+  padding-inline: 16px;
+  flex: 1 0 auto;
+}
 .brew-confirm .bg-alert {
   background: rgb(var(--ebc-straw));
   color: rgb(var(--sur-paille));
