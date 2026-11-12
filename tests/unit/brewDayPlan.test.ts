@@ -133,25 +133,28 @@ describe('planJournee — heures de la journée', () => {
     expect(p.avanceMin).toBe(10);
   });
 
-  it('montée sans vitesse de chauffe connue : l’heure est null, jamais 0', () => {
+  it('montée sans vitesse de chauffe connue : comptée à 1 °C/min, dite hypothèse, la frise se dessine (n° 1 du test c6)', () => {
     const p = planJournee(e1(), sansVitesse(), h(13, 5), { attentes: ATT })!;
-    expect(p.etapes.mashout.debut).toBe(h(14, 5)); // le début est connu : le palier précédent finit à 14 h 05
-    expect(p.etapes.mashout.tenue).toBeNull();
-    expect(p.etapes.mashout.fin).toBeNull();
-    expect(p.etapes.sparge.fin).toBeNull();
-    expect(p.finEstimee).toBeNull();
-    expect(p.avanceMin).toBeNull();
-    expect(p.aCote.find((c) => c.id === 'levure')!.heure).toBeNull();
-    // les phases dont une borne est inconnue ne sont pas dessinées
-    expect(p.phases.map((x) => x.area)).toEqual(['preparation']);
-    expect(p.phasesInconnues).toEqual(['mash', 'boil', 'finish']);
+    expect(p.etapes.mashout.debut).toBe(h(14, 5)); // le palier précédent finit à 14 h 05
+    expect(hm(p.etapes.mashout.tenue)).toBe('14 h 14'); // 67 → 76 °C à 1 °C/min : 9 min
+    expect(hm(p.etapes.mashout.fin)).toBe('14 h 24');
+    expect(p.etapes.mashout.origine).toBe('estime');
+    expect(p.finEstimee).not.toBeNull();
+    expect(p.avanceMin).not.toBeNull();
+    expect(p.aCote.find((c) => c.id === 'levure')!.heure).not.toBeNull();
+    expect(p.phases.map((x) => x.area)).toEqual(['preparation', 'mash', 'boil', 'finish']);
+    expect(p.phasesInconnues).toEqual([]);
+    expect(p.hypotheses).toContain('vitesse de chauffe : 1 °C/min (hypothèse)');
   });
 
-  it('la suite se recale sur une étape réellement commencée, même après une montée inconnue', () => {
+  it('avec une vitesse connue, aucune hypothèse de vitesse', () => {
+    const p = plan(e1(), h(13, 5));
+    expect(p.hypotheses.some((x) => x.startsWith('vitesse de chauffe'))).toBe(false);
+  });
+
+  it('la suite se recale sur une étape réellement commencée, même sans vitesse connue', () => {
     const s = e1({ boilStartedAt: h(15, 20) }, { 'mash-0': { doneAt: h(14, 5) } });
     const p = planJournee(s, sansVitesse(), h(15, 25), { attentes: ATT })!;
-    expect(p.etapes.mashout.tenue).toBeNull();
-    expect(p.etapes.sparge.fin).toBeNull();
     expect(hm(p.etapes['boil-0'].fin)).toBe('16 h 20');
     expect(hm(p.finEstimee)).toBe('17 h 30');
   });

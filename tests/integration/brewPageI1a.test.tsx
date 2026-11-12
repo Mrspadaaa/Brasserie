@@ -40,11 +40,12 @@ describe('port p2c I1a : frise, bilan, heures, porte Aide', () => {
     expect(container.querySelector('.brew-phases')).toBeNull();
   });
 
-  it('sans vitesse de chauffe, la frise ne date pas toutes les phases : la barre des phases garde la navigation (aucune heure inventée)', () => {
+  it('sans vitesse de chauffe, la frise se dessine quand même, montée comptée à 1 °C/min (hypothèse, « ~ ») : p2c montre sa frise (test c6, n° 1)', () => {
     const { container } = monter(false);
-    expect(screen.queryByRole('region', { name: 'La journée' })).toBeNull();
-    expect(container.querySelector('.brew-phases')).not.toBeNull();
-    expect(screen.getByRole('navigation', { name: 'Phases du brassage' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'La journée' })).toBeTruthy();
+    expect(container.querySelector('.brew-phases')).toBeNull();
+    const nav = screen.getByRole('navigation', { name: 'Phases du brassage' });
+    for (const nom of ['Préparer', 'Empâter', 'Ébullition', 'Refroidir']) expect(within(nav).getByRole('button', { name: nom })).toBeTruthy();
   });
 
   it('une journée vieille de plus de 36 h ne se dessine pas en frise (axe absurde) : la barre des phases reste', () => {

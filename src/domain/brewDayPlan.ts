@@ -97,7 +97,12 @@ interface Parcours {
   hasBoil: boolean;
   hyp: Set<keyof AttentesPlan>;
   att: (cle: keyof AttentesPlan) => number;
+  /** Vrai si une montée a été comptée à la vitesse de départ (hypothèse), faute de vitesse connue. */
+  vitesseHypothese: () => boolean;
 }
+
+/** Vitesse de chauffe de départ quand ni la recette ni le matériel n'en donnent : une hypothèse dite (« ~ »), jamais une mesure. */
+export const VITESSE_CHAUFFE_DEFAUT = 1;
 
 const vitesse = (recipe: RecipeSnapshot | undefined, cfg: ParametresPlan) => {
   const v = cfg.heatingRateCPerMin ?? recipe?.mash?.heatingRateCPerMin ?? recipe?.brewhouse?.equipment?.heatingRateCPerMin;
@@ -114,7 +119,9 @@ function parcours(state: BrewDayState, recipe: RecipeSnapshot | undefined, now: 
     if (ATTENTES_DEFAUT[cle] > 0) hyp.add(cle);
     return ATTENTES_DEFAUT[cle];
   };
-  const rate = vitesse(recipe, cfg);
+  const rateDonnee = vitesse(recipe, cfg);
+  const rate = rateDonnee ?? VITESSE_CHAUFFE_DEFAUT;
+  let vitesseHypothese = false;
   const futur = (v: number) => (reel ? Math.max(v, now) : v);
   const steps = state.steps;
 
@@ -128,10 +135,13 @@ function parcours(state: BrewDayState, recipe: RecipeSnapshot | undefined, now: 
     if (!fini(t)) return 0;
     if (derniereT == null) return null;
     if (t === derniereT) return 0;
-    return t > derniereT && rate ? Math.round((t - derniereT) / rate) * MIN : null;
+    if (!(t > derniereT)) return null;
+    if (rateDonnee == null) vitesseHypothese = true;
+    return Math.round((t - derniereT) / rate) * MIN;
   };
   const monteeEbullition = (): Ms => {
-    if (derniereT == null || !rate) return null;
+    if (derniereT == null) return null;
+    if (rateDonnee == null) vitesseHypothese = true;
     return Math.max(0, Math.round((100 - derniereT) / rate)) * MIN;
   };
   const calculerBloc = () => {
@@ -187,7 +197,7 @@ function parcours(state: BrewDayState, recipe: RecipeSnapshot | undefined, now: 
       cursor = fin;
     } else if (reel && s.rampStartedAt != null && fini(s.tempC)) {
       // montée en cours : la mesure du moût d'abord, sinon l'entrée en température prévue
-      const est = thermalEstimate(state, s, s.tempC, now, state.coolingWaterC, rate);
+      const est = thermalEstimate(state, s, s.tempC, now, state.coolingWaterC, rateDonnee);
       let tenue: Ms;
       if (est.status === 'estimate') tenue = now + est.minutes * MIN;
       else if (est.status === 'reached') tenue = now;
@@ -213,7 +223,7 @@ function parcours(state: BrewDayState, recipe: RecipeSnapshot | undefined, now: 
   const b = bloc.v;
   return {
     etapes, fin: cursor, debutMash, debutEbullition, debutBouillon: b?.start ?? null, coupure,
-    hasBoil: b != null, hyp, att
+    hasBoil: b != null, hyp, att, vitesseHypothese: () => vitesseHypothese
   };
 }
 
@@ -269,6 +279,9 @@ export function planJournee(state: BrewDayState, recipe: RecipeSnapshot | undefi
 
   return {
     debut, finEstimee, phases, aCote, avanceMin, finPrevue, etapes, phasesInconnues,
-    hypotheses: [...jour.hyp].map((k) => `${LIBELLE_HYPOTHESE[k](ATTENTES_DEFAUT[k])} (hypothèse)`)
+    hypotheses: [
+      ...[...jour.hyp].map((k) => `${LIBELLE_HYPOTHESE[k](ATTENTES_DEFAUT[k])} (hypothèse)`),
+      ...(jour.vitesseHypothese() ? [`vitesse de chauffe : ${nombreFr(VITESSE_CHAUFFE_DEFAUT, 1)} °C/min (hypothèse)`] : [])
+    ]
   };
 }
