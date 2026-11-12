@@ -80,7 +80,8 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
    racine qui s'efface : le bouton porte son `display` en ligne, pour qu'aucune
    feuille d'écran ne le retire de sa case hors de ces deux cas. */
 :root body[data-has-modal] .floating-actions,
-:root body[data-has-drawer-open] .floating-actions {
+:root body[data-has-drawer-open] .floating-actions,
+:root body[data-has-fiche-page] .floating-actions {
   display: none;
 }
 

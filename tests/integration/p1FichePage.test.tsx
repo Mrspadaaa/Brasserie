@@ -3,7 +3,7 @@
 // Contrôle rouge sur la fiche d'avant (tag 2d9bd3e3 : feuille basse, « Corriger l'inventaire »), vert sur la page.
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { StockDetailSheet } from '../../src/ui/StockDetailSheet';
 import type { StockItem } from '../../src/types';
 import type { MouvementBrut } from '../../src/domain/stock/mouvementsArticle';
@@ -31,6 +31,14 @@ describe('p1 — la fiche d’article en page entière', () => {
     expect(screen.getByText('Ce qui a bougé')).toBeInTheDocument();
     expect(screen.getByText(/Corriger le stock · il en reste/)).toBeInTheDocument();
     expect(screen.getByText('320')).toBeInTheDocument(); // 120 g + 200 g : le stock de la famille
+  });
+  it('ouverte, elle lève le drapeau du corps qui masque le bouton « + » et borne la liste (défauts 2 et 3)', async () => {
+    await import('../../src/pages/PageShell');
+    const { unmount } = render(<StockDetailSheet item={c1} stockItems={[c1, c2]} batches={[]} movements={mouvements} onClose={() => {}} onSave={() => {}} onDelete={() => {}}
+      onToggleFavorite={() => {}} onCorrect={() => {}} onOpenTransaction={() => {}}/>);
+    await waitFor(() => expect(document.body.hasAttribute('data-has-fiche-page')).toBe(true));
+    unmount();
+    await waitFor(() => expect(document.body.hasAttribute('data-has-fiche-page')).toBe(false));
   });
   it('ne contient aucun champ type="number"', () => {
     monter();

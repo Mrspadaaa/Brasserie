@@ -48,6 +48,18 @@ describe('p1 — les mouvements d’un article', () => {
     expect(x.liste[0]).toMatchObject({ genre: 'correction', titre: 'Correction · perte ou péremption', avant: 150, apres: 120 });
   });
 
+  it('un mouvement sans libellé mais avec son code de motif dit le motif, et la note en détail', () => {
+    const x = mouvementsDeFamille([{ ref: 'A', currentStock: 120 }], [
+      { id: 'c', type: 'inventory-adjustment', stockItemRef: 'A', delta: -30, previousStock: 150, newStock: 120, reasonCode: 'perte', note: 'sac humide', date: '2026-11-01', createdAt: '2026-11-01T08:00:00Z' }]);
+    expect(x.liste[0]).toMatchObject({ genre: 'correction', titre: 'Correction · perte ou péremption', detail: 'sac humide' });
+  });
+
+  it('« sans motif » seulement quand ni libellé ni code', () => {
+    const x = mouvementsDeFamille([{ ref: 'A', currentStock: 120 }], [
+      { id: 'c', type: 'inventory-adjustment', stockItemRef: 'A', delta: -30, previousStock: 150, newStock: 120, date: '2026-11-01', createdAt: '2026-11-01T08:00:00Z' }]);
+    expect(x.liste[0].titre).toBe('Correction · sans motif');
+  });
+
   it('le stock actuel qui s’écarte du dernier « après » est dit, pas effacé', () => {
     const x = mouvementsDeFamille([{ ref: 'MP-CITRA', currentStock: 460 }], mouvements, lots);
     expect(x.ecartFinal).toBe(10);

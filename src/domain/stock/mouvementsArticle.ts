@@ -36,6 +36,10 @@ export interface MouvementArticle {
   ecart: number | null;
 }
 
+/** Libellés des motifs d'une correction (copie de `INVENTORY_REASONS`, services/storage.ts : le domaine n'importe pas les services). */
+const LIBELLES_MOTIF: Readonly<Record<string, string>> = {
+  comptage: 'Inventaire physique', casse: 'Casse', perte: 'Perte ou péremption', saisie: 'Erreur de saisie', don: 'Don ou dégustation'
+};
 const nombre = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const arrondi = (v: number) => Math.round(v * 1e6) / 1e6;
 const cleTemps = (m: MouvementBrut) => m.createdAt ?? m.timestamp ?? m.date ?? '';
@@ -113,7 +117,8 @@ export function mouvementsDeFamille(famille: ArticleDeFamille[], bruts: Mouvemen
     const apres = somme();
     const art = famille.find(a => a.ref === c.ref);
     const lot = c.brut.batchId ? batches.find(b => b.id === c.brut.batchId) : undefined;
-    const raison = (c.brut.reason ?? '').trim();
+    const code = (c.brut.reasonCode ?? '').trim();
+    const raison = (c.brut.reason ?? '').trim() || (LIBELLES_MOTIF[code] ?? '');
     let titre: string; let detail: string | null = null; let lien: MouvementArticle['lien'] = null;
     if (c.genre === 'achat') { titre = art?.supplier ? `Achat · ${art.supplier}` : 'Achat'; lien = c.brut.transactionId ? { genre: 'facture', id: c.brut.transactionId } : null; }
     else if (c.genre === 'annulation') { titre = 'Achat annulé'; lien = c.brut.transactionId ? { genre: 'facture', id: c.brut.transactionId } : null; }

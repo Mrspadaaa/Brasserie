@@ -185,7 +185,14 @@
 .sfp-vide-m { color: var(--sfp-t2); padding: 4px 0 6px; }
 
 @media (min-width: 900px) {
-  .sfp { left: auto; width: min(760px, calc(100% - 22rem)); border-left: 1px solid var(--sfp-border); box-shadow: -8px 0 24px rgb(0 0 0 / .08); }
+  .sfp { left: auto; width: var(--sfp-w, min(760px, calc(100vw - 22rem))); border-left: 1px solid var(--sfp-border); box-shadow: -8px 0 24px rgb(0 0 0 / .08); }
+  /* La page prend la place d'un panneau, elle ne recouvre pas la liste : tant qu'elle est ouverte, le contenu, l'en-tête et la
+     barre des onglets se bornent à ce qui reste à gauche (k2 : la liste entière à gauche, la page à droite). */
+  body[data-has-fiche-page] { --sfp-w: min(760px, calc(100vw - 22rem)); }
+  body[data-has-fiche-page] main[data-floating-actions-gap="nav"],
+  body[data-has-fiche-page] .app-titlebar { max-width: calc(100vw - var(--sfp-w)); margin-left: 0; margin-right: auto; }
+  body[data-has-fiche-page] .app-bottom-dock > nav { right: var(--sfp-w); }
+  body[data-has-fiche-page] .app-bottom-dock-cell { display: none; }
   .sfp-back { display: none; }
   .sfp-x { display: grid !important; }
   .sfp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; align-items: start; }
