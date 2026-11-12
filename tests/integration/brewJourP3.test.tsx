@@ -243,10 +243,15 @@ describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à
     { name: 'Galaxy', stage: 'dryHop', weightG: 43, alpha: 0 },
     { name: 'Mosaic', stage: 'dryHop', weightG: 43, alpha: 0 }
   ] as unknown as RecipeSnapshot['hops'];
+  // I1a (G3) : pendant le jour, « Aides et repères » est la porte « Aide » du bilan ; à l'ensemencement et en consultation, l'ancien bloc.
   const ouvrirAides = () => {
-    const resume = screen.getByText('Aides et repères');
-    fireEvent.click(resume);
-    return within(resume.closest('details') as HTMLElement);
+    const resume = screen.queryByText('Aides et repères');
+    if (resume) {
+      fireEvent.click(resume);
+      return within(resume.closest('details') as HTMLElement);
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Aide' }));
+    return within(screen.getByRole('region', { name: 'Aide du jour J' }));
   };
   it('2B : à l’ébullition, le panneau « Houblons — vigilances et potentiel » a disparu des Aides ; l’aide à cette étape reste', () => {
     monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }, A_CRU));

@@ -45,6 +45,7 @@ import {
   effectiveFermentables,
   isBoilStep,
   isUsefulTimer,
+  measuredEfficiency,
   mineralFeedback,
   PREPARATIONS
 } from '../domain/brewCompanion';
@@ -98,8 +99,16 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
 import { readingPrompt } from '../domain/brewAssist';
-import { mesureDue, mesuresAttendues } from '../domain/brewMeasures';
-import { ReadingKind } from '../domain/brewDay';
+import { estEtapeCoupure, mesureDue, mesuresAttendues } from '../domain/brewMeasures';
+import { compteReleves, losangesFrise, relevesDuJour, trierTuiles, tuilesDuJour } from '../domain/brewDayBilan';
+import type { HeuresPrevues, ReleveDuJour } from '../domain/brewDayBilan';
+import { planJournee } from '../domain/brewDayPlan';
+import type { PlanJournee } from '../domain/brewDayPlan';
+import { rendementVise } from '../domain/brewDayCalculs';
+import { BrewFrise } from '../ui/BrewFrise';
+import { BrewBilan } from '../ui/BrewBilan';
+import type { TuileBilan } from '../ui/BrewBilan';
+import { ReadingKind, sg as sgFr } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
 import { nombreFr } from '../domain/nombreAffiche';
@@ -115,6 +124,55 @@ interface Props {
 }
 /** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
 const fr = (n: number | string) => String(n).replace('.', ',');
+
+/**
+ * p2c : les heures prévues par A3 (`planJournee`) posées sur les relevés d'A1, par id d'atome. Rien n'est inventé ici : une heure que le
+ * plan ne donne pas reste absente (« ? »). L'eau d'empâtage est due au début de l'étape « eau », la maische au début du premier palier
+ * tenu, la densité avant ébullition à l'étape `preboil`, la coupure à la fin de l'étape de coupure, l'OG et le volume à la fin du refroidissement,
+ * la température d'ensemencement au début de l'ensemencement.
+ */
+export function heuresPrevuesDuPlan(plan: PlanJournee | null, state: BrewDayState): HeuresPrevues {
+  if (!plan) return {};
+  const e = plan.etapes;
+  const palier = state.steps.find((s) => isMash(s.id) && (s.tempC ?? 0) < 75) ?? state.steps.find((s) => isMash(s.id));
+  const coupure = [...state.steps].reverse().find(estEtapeCoupure);
+  const prevue: HeuresPrevues = {};
+  const pose = (id: keyof HeuresPrevues, t: number | null | undefined) => {
+    if (t != null) prevue[id] = t;
+  };
+  pose('eau-temp', e.eau?.debut);
+  pose('maische', palier ? e[palier.id]?.tenue : null);
+  pose('avant-volume', e.preboil?.debut);
+  pose('avant-densite', e.preboil?.debut);
+  pose('coupure', coupure ? e[coupure.id]?.fin : null);
+  pose('og', e.refroidissement?.fin ?? e.ensemencement?.debut);
+  pose('fermenteur', e.refroidissement?.fin ?? e.ensemencement?.debut);
+  pose('ensemencement-temp', e.ensemencement?.debut);
+  return prevue;
+}
+
+/** « Rendement d'empâtage » (huitième tuile de p2c) : le visé et le lu passent par la même fonction (A2 / `measuredEfficiency`). « ≈ » : un calcul. */
+export function tuileRendement(recipe: RecipeSnapshot, state: BrewDayState): TuileBilan {
+  const vise = rendementVise(recipe, state);
+  const lu = measuredEfficiency(recipe, state, 'preboil');
+  const cible = vise != null ? `visé ≈ ${Math.round(vise)} %` : undefined;
+  const base = { id: 'rendement', nom: 'Rendement d’empâtage', cible, calcul: true } as const;
+  if (lu.known && !lu.questionable) {
+    // Écart au-delà de 2 points de rendement ; sans cible, le lu n'est ni dans la cible ni hors d'elle : à relever (pas de verdict inventé).
+    const etat = vise == null ? 'afaire' : Math.abs(lu.pct - vise) >= 2 ? 'ecart' : 'ok';
+    return { ...base, valeur: `≈ ${Math.round(lu.pct)} %`, quand: `calculé sur ${nombreFr(lu.volumeL, 1)} L à ${sgFr(lu.sg)}`, etat };
+  }
+  return { ...base, valeur: '?', quand: 'calculé au relevé avant ébullition', etat: 'afaire' };
+}
+
+/** Les tuiles du bilan : celles d'A1, le rendement d'A2 avant l'ensemencement, triées (dû, écart, puis l'ordre de la journée). */
+export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, state: BrewDayState): TuileBilan[] {
+  const base = tuilesDuJour(releves, recipe);
+  const i = base.findIndex((t) => t.id === 'ensemencement');
+  const avecRendement: TuileBilan[] = [...base];
+  avecRendement.splice(i < 0 ? base.length : i, 0, tuileRendement(recipe, state));
+  return trierTuiles(avecRendement).map((t) => (t.id === 'avant' && t.etat === 'ecart' ? { ...t, grand: true } : t));
+}
 
 // Le choix du son du brasseur, d'une session à l'autre (préférence locale à l'appareil ; jamais une promesse d'alarme écran éteint).
 const SOUND_KEY = 'laffinee.brew.son';
@@ -610,6 +668,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const isConsulting = view === 'recipe' || view === 'journal';
   // m2 (VB-1) : ce que l'étape attend en mesure, en cases « ? » dans Relevés du jour ; rien en consultation.
   const attendues = isConsulting ? [] : mesuresAttendues(measuredStep, state, actualRecipe, now);
+  // p2c : la journée en frise et le bilan visé. Les heures viennent d'A3, les 9 relevés d'A1, le rendement d'A2 ; rien n'est calculé dans la page.
+  const planJ = planJournee(state, actualRecipe, now);
+  const relevesJ = relevesDuJour(state, actualRecipe, now, heuresPrevuesDuPlan(planJ, state));
+  const compteJ = compteReleves(relevesJ);
+  // La frise ne se dessine que si toutes les phases ont leurs heures et si la journée tient dans 36 h ; sinon la barre des phases garde la navigation.
+  const friseDessinable = !!planJ && planJ.phasesInconnues.length === 0 && planJ.phases.length > 0 && Math.max(planJ.finEstimee ?? 0, now, ...planJ.phases.map((p) => p.fin)) - Math.min(planJ.debut, ...planJ.phases.map((p) => p.debut)) <= 36 * 3600000;
   const otherTimers = activeTimers.filter((s) => isConsulting || s.id !== current.id);
   const otherBoil =
     state.boilStartedAt != null && state.boilFinishedAt == null && (isConsulting || !boiled);
@@ -911,6 +975,49 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       )
     : [];
   const nextGrains = nextStepIngredients.length > 0 && nextStepIngredients.every((i) => i.kind === 'grain');
+  // p2c N09 / A09 : « à 14 h 05 · puis rinçage 76 °C, fin 14 h 50 ». Heures d'A3 ; « ~ » devant une heure estimée (jamais devant celle que l'horloge en marche donne).
+  const heureDit = (h: number | null | undefined, estime: boolean) => (h == null ? null : `${estime ? '~' : ''}${heureCuve(h)}`);
+  const etapeApres = nextStep ? route[routeIndex + 2] : undefined;
+  const etapesPlan = planJ?.etapes ?? {};
+  const debutSuivant = nextStep ? etapesPlan[nextStep.id] : undefined;
+  const debutSuivantDit = heureDit(debutSuivant?.debut, debutSuivant?.origine === 'estime' && !(running && left != null && left > 0));
+  const apresDit = etapeApres
+    ? [
+        `puis ${(isBoilStep(etapeApres) ? 'ébullition' : etapeApres.label).toLowerCase()}${etapeApres.tempC != null ? ` ${fr(etapeApres.tempC)} °C` : ''}`,
+        heureDit(etapesPlan[etapeApres.id]?.fin, true)
+      ]
+        .filter(Boolean)
+        .join(', fin ')
+    : null;
+  const ensuiteSous = [debutSuivantDit ? `à ${debutSuivantDit}` : null, apresDit].filter(Boolean).join(' · ');
+  // p2c N10 / A10 : « Chauffer l'eau de rinçage 76 °C · dès 13 h 50 · prête pour 14 h 15 » ; « Désinfecter le refroidisseur · pendant l'ébullition · ~16 h 00 ».
+  const cote = (id: string) => planJ?.aCote.find((c) => c.id === id);
+  const sparge = state.steps.find((st) => st.id === 'sparge');
+  const phasePrepsDites = phasePreps.map((p) => {
+    if (p.id === 'rinçage') {
+      const dès = heureDit(cote('rinçage')?.heure, true);
+      const pour = heureDit(sparge ? etapesPlan.sparge?.debut : null, true);
+      return {
+        ...p,
+        label: `Chauffer l’eau de rinçage${sparge?.tempC != null ? ` ${fr(sparge.tempC)} °C` : ''}`,
+        sous: [dès ? `dès ${dès}` : null, pour ? `prête pour ${pour}` : null].filter(Boolean).join(' · ') || undefined
+      };
+    }
+    if (p.id === 'froid') {
+      const h = heureDit(cote('froid')?.heure, true);
+      return { ...p, label: 'Désinfecter le refroidisseur', sous: ['pendant l’ébullition', h].filter(Boolean).join(' · ') };
+    }
+    return p;
+  });
+  const stepHasHop = brewIngredients(ingredientDisplayRecipe).some(
+    (i) => i.kind === 'hop' && ingredientAppliesToStep(i, { area, stepId: current.id }) && i.planned > 0
+  );
+  // « durée ± » : amène les boutons −5 −1 +1 +5 de l'horloge sous le doigt.
+  const ajusterDuree = () => {
+    const bouton = contentRef.current?.querySelector<HTMLElement>('.bz-ctl button:not(:disabled)');
+    bouton?.scrollIntoView({ block: 'center' });
+    bouton?.focus({ preventScroll: true });
+  };
   const nextStepMeta = nextStep
     ? nextGrains
       ? `${doseFr(nextStepIngredients.reduce((sum, i) => sum + (actualAmount(i, state) ?? i.planned), 0), 'kg')} kg`
@@ -1028,6 +1135,149 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       )}
     </>
   );
+  // p2c / G3 : « Aide » est une porte à un toucher dans le bilan (Compagnon, aides du jour J, options et alertes). La conception (panneau Houblons)
+  // reste une ligne repliée à part. À l'ensemencement et en consultation (Recette), l'ancien bloc « Aides et repères » garde sa place.
+  const aidesDebut = (
+    <>
+              <button
+                type="button"
+                className="bz-compagnon"
+                onClick={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+              >
+                <MessageCircle size={14} aria-hidden="true" />
+                Compagnon brasseur
+              </button>
+              {/* p3 (n° 3) : le bilan « Ce brassin · mon installation » (six repères) ne passe plus devant la ligne Levure : il vit ici, replié. */}
+              {!displayRecipe && ['preboil', 'ensemencement'].includes(current.id) && <BrewSystemFeedback recipe={recipe} state={state} onMeasure={requestWortPair} onIngredients={()=>{const index=state.steps.findIndex(s=>isMash(s.id));if(index>=0){choose(index);requestAnimationFrame(revealAdditions);}}} compact />}
+              {!displayRecipe &&
+                (!specialExtraction || area === 'boil' || area === 'finish') && (
+                  <BrewAssist
+                    key={current.id}
+                    recipe={executionRecipe}
+                    state={state}
+                    step={current}
+                    now={now}
+                    update={update}
+                    onMeasure={requestMeasure}
+                    thermalHandled
+                    stock={stockItems}
+                    brewhouse={rig}
+                  />
+                )}
+              <NoloBrewDayGuide
+                collapsible
+                overview={displayRecipe}
+                recipe={recipe}
+                state={state}
+                step={current}
+                onMeasure={requestMeasure}
+                onNote={noteNolo}
+              />
+              {(
+                <YeastBrewDayGuide
+                  collapsible
+                  recipe={recipe}
+                  state={state}
+                  phase={displayRecipe ? 'recipe' : area}
+                  onMeasure={displayRecipe ? undefined : requestMeasure}
+                  pitchQuantityMode={currentPitchMode}
+                  pitchQuantityAmount={currentPitchAmount}
+                  pitchQuantityUnit={currentPitchUnit}
+                  preparationExecution={batch.yeastPreparation}
+                  plannedBrewDate={toIsoDate(plannedBrewDate(batch) ?? '') || undefined}
+                  onPitchQuantityModeChange={selectPitchQuantityMode}
+                  onPitchQuantityAmountChange={updatePitchQuantityAmount}
+                  onPitchQuantityUnitChange={updatePitchQuantityUnit}
+                  onChooseQuantity={displayRecipe ? () => setPitchEditToken((t) => t + 1) : undefined}
+                  quantityChosen={pitchChoiceValid}
+                />
+              )}
+              {/* p3 / 2C : à l'ensemencement, les houblons à cru tiennent en une ligne ; 2B : à l'ébullition, plus de panneau Houblons dans les Aides. */}
+              {enseme && <BrewACru recipe={recipe} />}
+    </>
+  );
+  const aideHoublons = (
+    <>
+              {(displayRecipe || (area !== 'boil' && !enseme)) && <BrewAide title="Houblons" summary="vigilances et potentiel">
+                <p className="brew-aide-note">
+                  Quantités du journal si renseignées, au volume prévu de la recette. Les
+                  temps de contact à l’ébullition suivent les ajouts terminés.
+                </p>
+                <HopRecipePanel
+                  recipe={recipeForHopAnalysis(actualRecipe, state)}
+                  batchId={batch.id}
+                />
+                {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
+              </BrewAide>}
+    </>
+  );
+  const aideOptions = (
+    <>
+              <details className="brew-options">
+                <summary>
+                  <span>
+                    <SlidersHorizontal size={14} /> Options et alertes
+                  </span>
+                  <ChevronDown size={14} />
+                </summary>
+                {showTimer && !isConsulting && (
+                  <div className="bz-duree">
+                    <label>
+                      Durée de l’étape
+                      <NumberInput
+                        value={duration}
+                        min={1}
+                        max={480}
+                        integer
+                        onValue={setDuration}
+                        aria-label="Durée totale en minutes"
+                        className="brew-duration-input"
+                      />
+                      <span>min</span>
+                    </label>
+                    {boiled && (
+                      <p>
+                        Les ajouts à venir suivent la nouvelle durée. Les ajouts déjà
+                        faits conservent leur heure réelle.
+                      </p>
+                    )}
+                  </div>
+                )}
+                <details className="brew-sound-settings">
+                  <summary>
+                    Sonnerie · option de test <ChevronDown size={14} />
+                  </summary>
+                  <div>
+                    <h3>Sonnerie</h3>
+                    <BrewTag tone={sound ? 'info' : 'neutral'}>
+                      {sound ? 'Activée' : 'Muette'}
+                    </BrewTag>
+                  </div>
+                  <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
+                  <button
+                    type="button"
+                    className={brewControl}
+                    onClick={() => {
+                      if (alarmSound.ringing) alarmSound.stop();
+                      else if (armAudio()) {
+                        setSoundState(true);
+                        setAudioArmed(true);
+                        if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
+                      } else setNotice('Le navigateur n’a pas pu activer le son.');
+                    }}
+                  >
+                    {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
+                  </button>
+                </details>
+                <BrewAlarmSettings
+                  batchId={batch.id}
+                  alarms={alarms}
+                  ready={!session.pending && session.canStart}
+                />
+              </details>
+    </>
+  );
+  const porteAide = !isConsulting && !enseme && showReadingSummary;
   return (
     <PageShell
       wide
@@ -1075,7 +1325,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             }}
           >
             {sound ? <Volume2 size={14} /> : <VolumeX size={14} />}
-            <span aria-hidden="true">son</span>
+            <span aria-hidden="true">réveil</span>
           </button>
           <button
             type="button"
@@ -1162,39 +1412,56 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             {notice}
           </div>
         )}
-        <nav aria-label="Phases du brassage" className="brew-navigation bz-phases" hidden={isConsulting}>
-          <div className="brew-phases">
-            {(Object.keys(AREA) as BrewArea[]).map((v) => {
-              const phaseSteps = route.filter((s) => areaOf(s.id) === v);
-              const phaseDone =
-                phaseSteps.length > 0 &&
-                phaseSteps.every((s) =>
-                  isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
+        {!isConsulting && friseDessinable && (
+          <nav aria-label="Phases du brassage" className="bz-frise-nav"><BrewFrise
+            plan={planJ}
+            releves={losangesFrise(relevesJ).filter((r): r is ReleveDuJour & { heure: number } => r.heure != null)}
+            maintenant={now}
+            enCours={area}
+            vue={view as BrewArea}
+            libelles={areaLabels}
+            phasesIndisponibles={(Object.keys(AREA) as BrewArea[]).filter(
+              (v) => !session.canStart || !route.some((st) => areaOf(st.id) === v)
+            )}
+            onPhase={(v) => navigate(v)}
+          /></nav>
+        )}
+        {/* Repli honnête : une phase sans heure (vitesse de chauffe inconnue) ne se dessine pas sur la frise ; la barre des phases garde la navigation. */}
+        {!isConsulting && !friseDessinable && (
+          <nav aria-label="Phases du brassage" className="brew-navigation bz-phases" hidden={isConsulting}>
+            <div className="brew-phases">
+              {(Object.keys(AREA) as BrewArea[]).map((v) => {
+                const phaseSteps = route.filter((s) => areaOf(s.id) === v);
+                const phaseDone =
+                  phaseSteps.length > 0 &&
+                  phaseSteps.every((s) =>
+                    isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
+                  );
+                const fill = phaseFill(v);
+                const here = !isConsulting && view === v;
+                return (
+                  <button
+                    type="button"
+                    key={v}
+                    disabled={!phaseSteps.length || !session.canStart}
+                    aria-label={areaLabels[v]}
+                    aria-pressed={here}
+                    aria-current={here ? 'step' : undefined}
+                    className={`brew-phase bz-phase ${phaseDone ? 'is-complete' : ''}`}
+                    data-phase={v}
+                    data-fait={phaseDone ? 'true' : undefined}
+                    data-encours={here && fill > 0 && !phaseDone ? 'true' : undefined}
+                    style={{ '--bz-fill': `${Math.round(fill * 100)}%` } as React.CSSProperties}
+                    onClick={() => navigate(v)}
+                  >
+                    <i aria-hidden="true" />
+                    {areaLabels[v]}
+                  </button>
                 );
-              const fill = phaseFill(v);
-              const here = !isConsulting && view === v;
-              return (
-                <button
-                  type="button"
-                  key={v}
-                  disabled={!phaseSteps.length || !session.canStart}
-                  aria-label={areaLabels[v]}
-                  aria-pressed={here}
-                  aria-current={here ? 'step' : undefined}
-                  className={`brew-phase bz-phase ${phaseDone ? 'is-complete' : ''}`}
-                  data-phase={v}
-                  data-fait={phaseDone ? 'true' : undefined}
-                  data-encours={here && fill > 0 && !phaseDone ? 'true' : undefined}
-                  style={{ '--bz-fill': `${Math.round(fill * 100)}%` } as React.CSSProperties}
-                  onClick={() => navigate(v)}
-                >
-                  <i aria-hidden="true" />
-                  {areaLabels[v]}
-                </button>
-              );
-            })}
-          </div>
-        </nav>
+              })}
+            </div>
+          </nav>
+        )}
         {alerteBande}
         <div className="bz-planning" data-phase={isConsulting ? 'consultation' : area}>
           <BatchSchedule batch={datedBatch} onSave={async updated => {
@@ -1644,12 +1911,18 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           </div>
 
           <div className="brew-side-column">
-            {!isConsulting && nextStep && nextStepIngredients.length > 0 && (
-              <section className="bz-groupe bz-ensuite" data-matiere={nextGrains ? 'grain' : nextStepIngredients[0].kind === 'hop' ? 'houblon' : 'autre'} aria-label={`Ensuite · ${nextStepName}`}>
+            {!isConsulting && nextStep && (
+              <section className="bz-groupe bz-ensuite" data-matiere={nextGrains ? 'grain' : nextStepIngredients[0]?.kind === 'hop' ? 'houblon' : 'autre'} aria-label={`Ensuite · ${nextStepName}`}>
                 <header className="bz-groupe-tete">
-                  <h3>Ensuite · {nextStepName}</h3>
-                  {nextStepMeta && <span className="bz-compte bz-m">{nextStepMeta}</span>}
+                  <h3>Ensuite</h3>
                 </header>
+                <div className="bz-row is-apercu bz-ensuite-etape">
+                  <div className="bz-nom">
+                    <strong>{nextStepName}{nextStepMeta && <> <span className="bz-m">{nextStepMeta}</span></>}</strong>
+                    {ensuiteSous && <small className="bz-m">{ensuiteSous}</small>}
+                  </div>
+                  <span className="bz-case is-apercu" aria-hidden="true" />
+                </div>
                 {nextGrains ? (
                   <div className="bz-releve">
                     {nextStepIngredients.map((i) => (
@@ -1673,13 +1946,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
               </section>
             )}
-            {!isConsulting && showReadingSummary && attendues.length === 0 && (
-              <BrewReadingsSummary
-                state={state}
-                step={measuredStep}
-                recipe={actualRecipe}
-                onMeasure={requestMeasure}
-                cloture={bilanCloture}
+            {!isConsulting && showReadingSummary && (
+              <BrewBilan
+                tuiles={tuilesDuBilan(relevesJ, actualRecipe, state)}
+                faits={compteJ.faits}
+                total={compteJ.total}
+                fin={planJ?.finEstimee ?? null}
+                onDuree={showTimer && !completed ? ajusterDuree : undefined}
+                onDose={stepHasIngredients ? revealAdditions : undefined}
+                onHoublonManquant={stepHasHop ? revealAdditions : undefined}
+                aide={porteAide ? <>{aidesDebut}{aideOptions}</> : undefined}
               />
             )}
             {!isConsulting && (
@@ -1691,7 +1967,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     {preparationCount}/{phasePreps.length}
                   </span>
                 </header>
-                {phasePreps.map((p) => (
+                {phasePrepsDites.map((p) => (
                   <label key={p.id} className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
                     <span>{p.label}{p.sous && <small className="bz-anticiper-sous">{p.sous}</small>}</span>
                     <input
@@ -1730,143 +2006,21 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
               </details>
             )}
-            <BrewAide
-              key={enseme ? 'aides-ensemencement' : 'aides'}
-              defaultOpen={enseme}
-              className="bz-repli bz-aides"
-              quiet
-              icon={<CircleHelp size={14} aria-hidden="true" />}
-              title="Aides et repères"
-            >
-              <button
-                type="button"
-                className="bz-compagnon"
-                onClick={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+            {!porteAide && (
+              <BrewAide
+                key={enseme ? 'aides-ensemencement' : 'aides'}
+                defaultOpen={enseme}
+                className="bz-repli bz-aides"
+                quiet
+                icon={<CircleHelp size={14} aria-hidden="true" />}
+                title="Aides et repères"
               >
-                <MessageCircle size={14} aria-hidden="true" />
-                Compagnon brasseur
-              </button>
-              {/* p3 (n° 3) : le bilan « Ce brassin · mon installation » (six repères) ne passe plus devant la ligne Levure : il vit ici, replié. */}
-              {!displayRecipe && ['preboil', 'ensemencement'].includes(current.id) && <BrewSystemFeedback recipe={recipe} state={state} onMeasure={requestWortPair} onIngredients={()=>{const index=state.steps.findIndex(s=>isMash(s.id));if(index>=0){choose(index);requestAnimationFrame(revealAdditions);}}} compact />}
-              {!displayRecipe &&
-                (!specialExtraction || area === 'boil' || area === 'finish') && (
-                  <BrewAssist
-                    key={current.id}
-                    recipe={executionRecipe}
-                    state={state}
-                    step={current}
-                    now={now}
-                    update={update}
-                    onMeasure={requestMeasure}
-                    thermalHandled
-                    stock={stockItems}
-                    brewhouse={rig}
-                  />
-                )}
-              <NoloBrewDayGuide
-                collapsible
-                overview={displayRecipe}
-                recipe={recipe}
-                state={state}
-                step={current}
-                onMeasure={requestMeasure}
-                onNote={noteNolo}
-              />
-              {(
-                <YeastBrewDayGuide
-                  collapsible
-                  recipe={recipe}
-                  state={state}
-                  phase={displayRecipe ? 'recipe' : area}
-                  onMeasure={displayRecipe ? undefined : requestMeasure}
-                  pitchQuantityMode={currentPitchMode}
-                  pitchQuantityAmount={currentPitchAmount}
-                  pitchQuantityUnit={currentPitchUnit}
-                  preparationExecution={batch.yeastPreparation}
-                  plannedBrewDate={toIsoDate(plannedBrewDate(batch) ?? '') || undefined}
-                  onPitchQuantityModeChange={selectPitchQuantityMode}
-                  onPitchQuantityAmountChange={updatePitchQuantityAmount}
-                  onPitchQuantityUnitChange={updatePitchQuantityUnit}
-                  onChooseQuantity={displayRecipe ? () => setPitchEditToken((t) => t + 1) : undefined}
-                  quantityChosen={pitchChoiceValid}
-                />
-              )}
-              {/* p3 / 2C : à l'ensemencement, les houblons à cru tiennent en une ligne ; 2B : à l'ébullition, plus de panneau Houblons dans les Aides. */}
-              {enseme && <BrewACru recipe={recipe} />}
-              {(displayRecipe || (area !== 'boil' && !enseme)) && <BrewAide title="Houblons" summary="vigilances et potentiel">
-                <p className="brew-aide-note">
-                  Quantités du journal si renseignées, au volume prévu de la recette. Les
-                  temps de contact à l’ébullition suivent les ajouts terminés.
-                </p>
-                <HopRecipePanel
-                  recipe={recipeForHopAnalysis(actualRecipe, state)}
-                  batchId={batch.id}
-                />
-                {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
-              </BrewAide>}
-              <details className="brew-options">
-                <summary>
-                  <span>
-                    <SlidersHorizontal size={14} /> Options et alertes
-                  </span>
-                  <ChevronDown size={14} />
-                </summary>
-                {showTimer && !isConsulting && (
-                  <div className="bz-duree">
-                    <label>
-                      Durée de l’étape
-                      <NumberInput
-                        value={duration}
-                        min={1}
-                        max={480}
-                        integer
-                        onValue={setDuration}
-                        aria-label="Durée totale en minutes"
-                        className="brew-duration-input"
-                      />
-                      <span>min</span>
-                    </label>
-                    {boiled && (
-                      <p>
-                        Les ajouts à venir suivent la nouvelle durée. Les ajouts déjà
-                        faits conservent leur heure réelle.
-                      </p>
-                    )}
-                  </div>
-                )}
-                <details className="brew-sound-settings">
-                  <summary>
-                    Sonnerie · option de test <ChevronDown size={14} />
-                  </summary>
-                  <div>
-                    <h3>Sonnerie</h3>
-                    <BrewTag tone={sound ? 'info' : 'neutral'}>
-                      {sound ? 'Activée' : 'Muette'}
-                    </BrewTag>
-                  </div>
-                  <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
-                  <button
-                    type="button"
-                    className={brewControl}
-                    onClick={() => {
-                      if (alarmSound.ringing) alarmSound.stop();
-                      else if (armAudio()) {
-                        setSoundState(true);
-                        setAudioArmed(true);
-                        if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
-                      } else setNotice('Le navigateur n’a pas pu activer le son.');
-                    }}
-                  >
-                    {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
-                  </button>
-                </details>
-                <BrewAlarmSettings
-                  batchId={batch.id}
-                  alarms={alarms}
-                  ready={!session.pending && session.canStart}
-                />
-              </details>
-            </BrewAide>
+                {aidesDebut}
+                {aideHoublons}
+                {aideOptions}
+              </BrewAide>
+            )}
+            {porteAide && aideHoublons}
           </div>
         </fieldset>
         {session.error && (

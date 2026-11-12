@@ -37,13 +37,14 @@ describe('m2 : l’ordre des blocs de l’étape (DOM)', () => {
     const grains = screen.getByRole('region', { name: 'Ingrédients à ajouter' });
     expect(avant(releves, grains)).toBe(true);
   });
-  it('« Suivi thermique » est replié en bas : après À anticiper, avant Aides et repères, hors de l’horloge', () => {
+  it('« Suivi thermique » est replié en bas : après À anticiper, hors de l’horloge (Aides et repères : derrière la porte Aide)', () => {
     const { container } = monter();
     const suivi = screen.getByText('Suivi thermique').closest('details') as HTMLElement;
     const prep = screen.getByRole('region', { name: 'Préparations' });
-    const aides = screen.getByText('Aides et repères').closest('details') as HTMLElement;
+    // I1a (G3) : « Aides et repères » devient la porte « Aide » du bilan ; le bloc ne reste que hors du jour (ensemencement, Recette).
+    expect(screen.queryByText('Aides et repères')).toBeNull();
+    expect(screen.getByRole('button', { name: /Aide/ })).toBeTruthy();
     expect(avant(prep, suivi)).toBe(true);
-    expect(avant(suivi, aides)).toBe(true);
     expect(container.querySelector('.brew-station')?.contains(suivi)).toBe(false);
     expect(avant(screen.getByRole('region', { name: 'Ingrédients à ajouter' }), suivi)).toBe(true);
   });
