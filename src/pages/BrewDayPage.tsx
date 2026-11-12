@@ -176,15 +176,6 @@ export function dosePrevueLevure(recipe: RecipeSnapshot, sachet: Sachet | null):
   if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
   return recipe.yeast?.form === 'sèche' && sachet ? { amount: 1, unit: 'sachet' } : undefined;
 }
-/**
- * K5 n° 28 (1C, son choix) : la dose que l'écran peut DIRE avant l'ensemencement. Celle de la recette, ou celle que le brasseur a choisie (« 1 sachet » touché) ;
- * jamais le « 1 sachet » dérivé de `dosePrevueLevure` : avant le geste, la ligne Levure dit « à choisir » et la tuile, comme « À anticiper », ne disent aucune dose.
- */
-export function doseDiteLevure(recipe: RecipeSnapshot, state: BrewDayState): { amount: number; unit: string } | undefined {
-  if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
-  const choisie = state.additions?.yeast;
-  return typeof choisie?.amount === 'number' && choisie.amount > 0 && choisie.unit ? { amount: choisie.amount, unit: choisie.unit } : undefined;
-}
 /** « 1 sachet », « 2 sachets », « 11,5 g » : la dose dite comme la ligne Levure de p2c. */
 export function texteDoseLevure(dose: { amount: number; unit: string }): string {
   return dose.unit === 'sachet' ? `${String(dose.amount).replace('.', ',')} sachet${dose.amount >= 2 ? 's' : ''}` : `${doseFr(dose.amount, dose.unit)} ${dose.unit}`;
@@ -232,7 +223,7 @@ export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, s
     // K4 n° 25 (p2c) : « cible 18 °C · 1 sachet » : la dose prévue de levure se lit sur la tuile Ensemencement.
     .map((t) => {
       if (t.id !== 'ensemencement' || !recipe.yeast?.name) return t;
-      const dose = doseDiteLevure(recipe, state);
+      const dose = dosePrevueLevure(recipe, sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products));
       if (!dose) return t;
       const texte = texteDoseLevure(dose);
       return { ...t, cible: t.cible ? `${t.cible} · ${texte}` : texte };
@@ -768,7 +759,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p2c / 1C (test c6 n° 6) : la ligne figure dans chaque phase avant l'ensemencement (où le groupe Levure prend le relais) : « Sortir la levure · SafAle US-05 ·
   // 1 sachet · 11,5 g » et la jauge de la dose sur la plage du fabricant, pour le volume prévu. La dose est celle de la recette, sinon « 1 sachet » d'une
   // levure sèche au poids connu ; sans dose sûre, le nom seul et pas de jauge (l'inconnu n'est jamais 0).
-  const doseRappel = doseDiteLevure(recipe, state);
+  const doseRappel = dosePrevueLevure(recipe, sachetRappel);
   const gRappel = grammesDuChoix(doseRappel, sachetRappel);
   const sousRappel = doseRappel
     ? [recipe.yeast?.name, doseRappel.unit === 'sachet' ? `${String(doseRappel.amount).replace('.', ',')} sachet${doseRappel.amount >= 2 ? 's' : ''}` : doseRappel.unit === 'g' ? null : `${doseFr(doseRappel.amount, doseRappel.unit)} ${doseRappel.unit}`, gRappel != null ? `${frNb(gRappel)} g` : null].filter(Boolean).join(' · ')

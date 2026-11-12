@@ -143,12 +143,11 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
 describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition (là où la maquette z1 la place), avec le poids seulement s’il vient du catalogue', () => {
   const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
   const surEbullition = (yeast: YeastSpec) => monter(lot(yeast, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }));
-  it('US-05 : « Sortir la levure · SafAle US-05 » sans dose dite avant le choix (K5 n° 28, décision du pilote), et la jauge 1C sous la ligne (pour 19 L prévus, plage du fabricant), cochable', () => {
+  it('US-05 : « Sortir la levure · SafAle US-05 · 1 sachet · 11,5 g » et la jauge 1C sous la ligne (pour 19 L prévus, plage du fabricant), cochable', () => {
     surEbullition(SECHE_SANS_QUANTITE);
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
     expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
-    expect(anticiper.getByText('SafAle US-05')).toBeInTheDocument();
-    expect(anticiper.queryByText(/1 sachet/)).not.toBeInTheDocument(); // K5 n° 28 : p2c z1 disait « 1 sachet · 11,5 g » ; la dose ne se dit qu'une fois choisie
+    expect(anticiper.getByText('SafAle US-05 · 1 sachet · 11,5 g')).toBeInTheDocument();
     const jauge = anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' });
     expect(jauge).toHaveTextContent('Pour 19 L prévus');
     expect(jauge).toHaveTextContent('11,5 g');
