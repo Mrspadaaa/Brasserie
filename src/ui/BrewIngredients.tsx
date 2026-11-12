@@ -185,7 +185,8 @@ function IngredientRow({
   const amount = pitchActualUnknown || pitchPlannedUnknown ? undefined : actualAmount(item, state);
   const controlAmount = amount ?? (item.planned > 0 ? item.planned : 0);
   const [alternatives, setAlternatives] = useState(false);
-  const [editingDose, setEditingDose] = useState(false);
+  // c1c : une levure sans quantité prévue ouvre d'emblée son ajustement (jauge, « 1 sachet · Mesurée · Sans mesure ») ; « Fermer l'ajustement » le replie.
+  const [editingDose, setEditingDose] = useState(pitchChoosing && pitchPlannedUnknown);
   const [replacementName, setReplacementName] = useState('');
   const rowRef = useRef<HTMLDivElement>(null);
   const lastToken = useRef(pitch?.token ?? 0);

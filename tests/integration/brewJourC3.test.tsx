@@ -101,7 +101,8 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
 });
 
 describe('n° 7 et 16 : une seule alerte « À vérifier », qui s’éteint quand la cause est réglée', () => {
-  const alertes = () => screen.queryAllByText('À vérifier');
+  // Visibles : un repli fermé cache son contenu, donc l'étiquette du repli imbriqué (dans les Aides fermées) ne compte pas.
+  const alertes = () => screen.queryAllByText('À vérifier').filter((n) => { try { expect(n).toBeVisible(); return true; } catch { return false; } });
   it('BrewAide imbriqué : jamais deux « À vérifier » pour une même cause', () => {
     const { container } = render(
       <BrewAide title="Aides et repères" quiet>
@@ -169,6 +170,8 @@ describe('n° 14 et 17 : le jargon « guide Levure » et « Aucune quantité pr�
   it('la ligne Levure sans quantité ne renvoie pas à un « guide Levure » absent de l’écran', () => {
     monter(lot(SECHE_SANS_QUANTITE));
     expect(ligneIngredients().queryByText(/guide Levure/)).not.toBeInTheDocument();
+    // L'ajustement est ouvert d'emblée (c1c) : refermé, la ligne dit « Pas de dose prévue ».
+    fireEvent.click(ligneIngredients().getByRole('button', { name: 'Fermer l’ajustement' }));
     expect(ligneIngredients().getByText(/Pas de dose prévue/)).toBeInTheDocument();
   });
   it('la confirmation de clôture dit « sans dose prévue », et le bouton ne se coupe pas en deux lignes', () => {

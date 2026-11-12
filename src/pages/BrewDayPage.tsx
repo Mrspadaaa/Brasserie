@@ -76,6 +76,7 @@ import {
 import { BrewIngredients, boilAdditionPoints, doseFr, heureCuve, ingredientAppliesToStep } from '../ui/BrewIngredients';
 import type { PitchEditor } from '../ui/BrewIngredients';
 import { BrewPiste } from '../ui/BrewPiste';
+import { BrewPitchJauge } from '../ui/BrewPitchJauge';
 import { dansDit, pointsPiste, type RendezVous } from '../domain/brewDayPiste';
 import { echelleMaxG, fourchetteG, grammesDuChoix, gParHl, sachetDeLaLevure, statutDose } from '../domain/levure/sachet';
 import type { Sachet } from '../domain/levure/sachet';
@@ -726,13 +727,24 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p3 / 4C : « Sortir la levure … » à l'ébullition (z1, l'écran choisi), tant que la levure n'est pas ajoutée. Le poids du sachet n'est dit que
   // s'il vient du catalogue (sachet.ts) : sans produit sûr, la ligne seule.
   const sachetRappel = sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products);
-  const rappelLevure: { id: string; label: string; area: string; sous?: string }[] = recipe.yeast?.name && state.pitchedAt == null ? [{
+  // p2c / 1C (test c6 n° 6) : la ligne figure dans chaque phase avant l'ensemencement (où le groupe Levure prend le relais) : « Sortir la levure · SafAle US-05 ·
+  // 1 sachet · 11,5 g » et la jauge de la dose sur la plage du fabricant, pour le volume prévu. La dose est celle de la recette, sinon « 1 sachet » d'une
+  // levure sèche au poids connu ; sans dose sûre, le nom seul et pas de jauge (l'inconnu n'est jamais 0).
+  const doseRappel: { amount: number; unit: string } | undefined = typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit
+    ? { amount: recipe.yeast.qty, unit: recipe.yeast.unit }
+    : recipe.yeast?.form === 'sèche' && sachetRappel ? { amount: 1, unit: 'sachet' } : undefined;
+  const gRappel = grammesDuChoix(doseRappel, sachetRappel);
+  const sousRappel = doseRappel
+    ? [recipe.yeast?.name, doseRappel.unit === 'sachet' ? `${String(doseRappel.amount).replace('.', ',')} sachet${doseRappel.amount >= 2 ? 's' : ''}` : doseRappel.unit === 'g' ? null : `${doseFr(doseRappel.amount, doseRappel.unit)} ${doseRappel.unit}`, gRappel != null ? `${frNb(gRappel)} g` : null].filter(Boolean).join(' · ')
+    : recipe.yeast?.name;
+  const rappelLevure: { id: string; label: string; area: string; sous?: string; jauge?: React.ReactNode }[] = recipe.yeast?.name && state.pitchedAt == null && !enseme ? [{
     id: 'levure-sortir',
-    label: `Sortir la levure ${recipe.yeast.name}`,
-    area: 'boil',
-    ...(sachetRappel ? { sous: `quantité choisie à l’ensemencement · 1 sachet = ${String(sachetRappel.grammes).replace('.', ',')} g` } : {})
+    label: 'Sortir la levure',
+    area: '*',
+    sous: sousRappel,
+    jauge: <BrewPitchJauge info={{ sachet: sachetRappel, volumeL: recipe.volumeL, volumeBase: 'prévus' }} choix={doseRappel} />
   }] : [];
-  const phasePreps: { id: string; label: string; area: string; sous?: string }[] = [...PREPARATIONS, ...rappelLevure].filter((p) => p.area === area &&
+  const phasePreps: { id: string; label: string; area: string; sous?: string; jauge?: React.ReactNode }[] = [...PREPARATIONS, ...rappelLevure].filter((p) => (p.area === area || (p.area === '*' && area !== 'finish')) &&
     !(noloProcess === 'secondRunnings' && p.id === 'moulin') &&
     !(specialExtraction && p.id === 'rinçage'));
   const preparationCount = phasePreps.filter((p) => state.preparations?.[p.id]).length;
@@ -1419,6 +1431,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       )
     : [];
   const nextGrains = nextStepIngredients.length > 0 && nextStepIngredients.every((i) => i.kind === 'grain');
+  // p2c e2 (test c6 n° 18) : les houblons de l'étape suivante tiennent en une ligne avec leur moment : « Citra 50 g · Mosaic 50 g / à 80 °C, après la coupure du feu ».
+  // Le moment ne se dit que pour le whirlpool (coupure du feu) ; ailleurs, les lignes d'avant.
+  const ensuiteHoublons = nextStep?.id === 'whirlpool' && nextStepIngredients.length > 0 && nextStepIngredients.every((i) => i.kind === 'hop' && i.planned > 0);
+  const momentHoublons = ensuiteHoublons ? `${nextStep!.tempC != null ? `à ${fr(nextStep!.tempC)} °C, ` : ''}après la coupure du feu` : null;
   // p2c N09 / A09 : « à 14 h 05 · puis rinçage 76 °C, fin 14 h 50 ». Heures d'A3 ; « ~ » devant une heure estimée (jamais devant celle que l'horloge en marche donne).
   const heureDit = (h: number | null | undefined, estime: boolean) => (h == null ? null : `${estime ? '~' : ''}${heureCuve(h)}`);
   const etapeApres = nextStep ? route[routeIndex + 2] : undefined;
@@ -1433,6 +1449,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         .filter(Boolean)
         .join(', fin ')
     : null;
+  // test c6 n° 17 : le texte en police du texte ; les heures et les degrés seuls en chiffres tabulaires, sans coupure.
+  const enHeures = (texte: string) => texte.split(/(~?\d{1,2} h \d{2}|\d+(?:,\d+)? °C)/).map((part, i) => (i % 2 === 1 ? <span key={i} className="bz-m">{part}</span> : part));
   const ensuiteSous = [debutSuivantDit ? `à ${debutSuivantDit}` : null, apresDit].filter(Boolean).join(' · ');
   // p2c N10 / A10 : « Chauffer l'eau de rinçage 76 °C · dès 13 h 50 · prête pour 14 h 15 » ; « Désinfecter le refroidisseur · pendant l'ébullition · ~16 h 00 ».
   const cote = (id: string) => planJ?.aCote.find((c) => c.id === id);
@@ -1665,7 +1683,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 onMeasure={requestMeasure}
                 onNote={noteNolo}
               />
-              {(
+              {(state.pitchedAt == null || isConsulting || displayRecipe) && (
                 <YeastBrewDayGuide
                   collapsible
                   recipe={recipe}
@@ -2473,7 +2491,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <div className="bz-row is-apercu bz-ensuite-etape">
                   <div className="bz-nom">
                     <strong>{nextStepName}{nextStepMeta && <> <span className="bz-m">{nextStepMeta}</span></>}</strong>
-                    {ensuiteSous && <small className="bz-m">{ensuiteSous}</small>}
+                    {ensuiteSous && <small className="bz-m">{enHeures(ensuiteSous)}</small>}
                   </div>
                   <span className="bz-case is-apercu" aria-hidden="true" />
                 </div>
@@ -2487,7 +2505,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     ))}
                   </div>
                 ) : (
-                  nextStepIngredients.map((i) => (
+                  ensuiteHoublons ? (
+                    <div className="bz-row is-apercu">
+                      <div className="bz-nom">
+                        <strong>{nextStepIngredients.map((i) => `${state.additions?.[i.id]?.replacement?.name ?? i.name} ${doseFr(actualAmount(i, state) ?? i.planned, i.unit)} ${i.unit}`).join(' · ')}</strong>
+                        <small className="bz-m">{enHeures(momentHoublons!)}</small>
+                      </div>
+                      <span className="bz-case is-apercu" aria-hidden="true" />
+                    </div>
+                  ) : nextStepIngredients.map((i) => (
                     <div className="bz-row is-apercu" key={i.id}>
                       <div className="bz-nom"><strong>{state.additions?.[i.id]?.replacement?.name ?? i.name}</strong></div>
                       <span className="bz-dose is-lecture">
@@ -2524,7 +2550,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 </header>
                 {phasePrepsDites.map((p) => (
                   <label key={p.id} className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
-                    <span>{p.label}{p.sous && <small className="bz-anticiper-sous">{p.sous}</small>}</span>
+                    <span>{p.label}{p.sous && <small className="bz-anticiper-sous">{p.sous}</small>}{p.jauge}</span>
                     <input
                       type="checkbox"
                       data-booster="prepare"
@@ -2564,7 +2590,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             {!porteAide && (
               <BrewAide
                 key={enseme ? 'aides-ensemencement' : 'aides'}
-                defaultOpen={enseme}
                 className="bz-repli bz-aides"
                 quiet
                 icon={<CircleHelp size={14} aria-hidden="true" />}

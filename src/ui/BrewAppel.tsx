@@ -18,6 +18,9 @@ import './brew-appel.css';
  *  - `sonneDepuis` : début de la sonnerie (ms), `null` si le son est coupé ou n'a pas encore sonné ; `onCoupeSon` coupe le son, ne coche rien.
  */
 
+/** « Pas de Citra ? » mais « Pas d’Amarillo ? » : l'élision devant une voyelle (test c6 n° 20). */
+export const pasDe = (nom: string) => (/^[aeiouyàâäéèêëîïôöùûü]/i.test(nom.trim()) ? `Pas d’${nom.trim()} ?` : `Pas de ${nom.trim()} ?`);
+
 /** Fenêtre pendant laquelle un « Ajouté » reste annulable (G1d : « annulable 10 s »). */
 export const APPEL_ANNULATION_MS = 10_000;
 
@@ -174,7 +177,7 @@ export function BrewAppel(p: BrewAppelProps) {
       </div>
       <AjouteOuAnnule p={p} toucher={toucher} bouton={null} />
       <div className="bap-alt bap-rempl">
-        <span className="bap-pas">{`Pas de ${p.ajout.nom} ?`}</span>
+        <span className="bap-pas">{pasDe(p.ajout.nom)}</span>
         <button type="button" onClick={p.onRemplace}>
           <ArrowLeftRight size={20} aria-hidden="true" />
           Remplacer
@@ -211,7 +214,7 @@ export function BrewAppelPlein(p: BrewAppelProps) {
         <Sub ajout={p.ajout} plein maintenant={p.maintenant} />
         <AjouteOuAnnule p={p} toucher={toucher} bouton={bouton} />
         <div className="bap-alt bap-rempl">
-          <span className="bap-pas">{`Pas de ${p.ajout.nom} ?`}</span>
+          <span className="bap-pas">{pasDe(p.ajout.nom)}</span>
           <button type="button" onClick={p.onRemplace}>
             <ArrowLeftRight size={20} aria-hidden="true" />
             Remplacer

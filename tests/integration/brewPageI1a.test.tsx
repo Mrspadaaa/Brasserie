@@ -88,7 +88,8 @@ describe('port p2c I1a : frise, bilan, heures, porte Aide', () => {
     monter();
     const ensuite = screen.getByRole('region', { name: /^Ensuite/ });
     expect(within(ensuite).getByText(/Mashout/)).toBeTruthy();
-    expect(within(ensuite).getByText(/\d h \d{2}/)).toBeTruthy();
+    // K3 n° 17 : chaque heure est dans son propre élément (chiffres tabulaires, sans coupure), donc il y en a plusieurs.
+    expect(within(ensuite).getAllByText(/\d h \d{2}/).length).toBeGreaterThan(0);
   });
 
   it('la porte « Aide » du bilan ouvre le Compagnon brasseur et les aides du jour J ; fermée, elle est masquée', () => {

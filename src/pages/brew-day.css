@@ -2845,7 +2845,9 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   .brew-page.bz .brew-side-column > details.bz-suivi { order: 4; }
   .brew-page.bz .brew-side-column > .bz-aides { order: 5; }
 }
-.brew-page.bz .bz-ensuite-etape small.bz-m { display: block; font-family: var(--bz-mono, ui-monospace, monospace); font-size: 12px; }
+/* p2c : le texte en police du texte, seules les heures sont tabulaires et ne se coupent pas (test c6 n° 17) */
+.brew-page.bz .bz-ensuite-etape small.bz-m { display: block; font-family: inherit; font-size: 12px; }
+.brew-page.bz .bz-ensuite-etape small .bz-m { white-space: nowrap; }
 
 /* ---- Barre des phases : 4 barres de 4 px, couleur de matière ---- */
 .brew-page.bz .bz-phases { margin: 0; }
@@ -2912,16 +2914,17 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 /* ---- Horloge : temps, fin, −5 −1 ‖ +1 +5, piste ---- */
 .brew-page.bz .bz-horloge { margin-top: 8px; border: 1px solid var(--bz-border); border-radius: 8px; padding: 8px 10px; background: none; }
 .brew-page.bz .bz-haut { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.brew-page.bz .bz-temps { font-size: 28px; line-height: 1; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bz-temps { font-size: 32px; line-height: 1; font-weight: 600; color: var(--bz-t0); }
 .brew-page.bz .bz-temps.is-due { color: var(--bz-alert); }
 .brew-page.bz .bz-fin { color: var(--bz-t2); font-size: 14px; }
-.brew-page.bz .bz-ctl { margin-left: auto; display: flex; gap: 3px; align-self: center; }
+/* p2c : les cinq boutons sur leur propre ligne, pleine largeur, 44 px (test c6 n° 15) */
+.brew-page.bz .bz-ctl { flex: 1 1 100%; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin-top: 4px; }
 .brew-page.bz .bz-ctl button {
   display: grid;
   place-items: center;
-  height: 28px;
-  min-height: 28px;
-  min-width: 30px;
+  height: 44px;
+  min-height: 44px;
+  min-width: 0;
   padding: 0 6px;
   border: 1px solid var(--bz-border2);
   border-radius: 4px;
@@ -2930,7 +2933,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   font-size: 14px;
   font-weight: 500;
 }
-.brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 36px; }
+.brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 0; }
 .brew-page.bz .bz-piste { position: relative; height: 22px; margin-top: 8px; width: 100%; }
 .brew-page.bz .bz-piste-rail { position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-border); }
 .brew-page.bz .bz-piste-fait { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-hop); }
