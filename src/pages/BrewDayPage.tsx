@@ -106,7 +106,7 @@ import { estEtapeCoupure, heureFr, mesureDue, mesuresAttendues } from '../domain
 import type { MesureAttendue } from '../domain/brewMeasures';
 import { cibleMesure, ecartHorsCible, refroidiParDefaut, volumeTarget } from '../domain/brewDay';
 import { lastWortPair } from '../domain/brewAssist';
-import { correctionsAvantEbullition, infusionPourMaische, zonesDeCible } from '../domain/brewDayCalculs';
+import { correctionsAvantEbullition, infusionPourMaische, paireSansCible, zonesDeCible } from '../domain/brewDayCalculs';
 import type { OptionCorrection } from '../domain/brewDayCalculs';
 import { BrewMaintenant } from '../ui/BrewMaintenant';
 import type { MaintenantProps } from '../ui/BrewMaintenant';
@@ -121,7 +121,7 @@ import { compteReleves, heuresTenues, losangesFrise, relevesDuJour, trierTuiles,
 import type { HeuresPrevues, ReleveDuJour } from '../domain/brewDayBilan';
 import { planJournee } from '../domain/brewDayPlan';
 import type { PlanJournee } from '../domain/brewDayPlan';
-import { rendementVise } from '../domain/brewDayCalculs';
+import { grainPourProchain, rendementVise } from '../domain/brewDayCalculs';
 import { BrewFrise } from '../ui/BrewFrise';
 import { BrewBilan, BrewJournalExtrait } from '../ui/BrewBilan';
 import type { EntreeJournalBilan, HeureTenue as HeureTenueBilan, TuileBilan } from '../ui/BrewBilan';
@@ -169,15 +169,23 @@ export function heuresPrevuesDuPlan(plan: PlanJournee | null, state: BrewDayStat
 }
 
 /** « Rendement d'empâtage » (huitième tuile de p2c) : le visé et le lu passent par la même fonction (A2 / `measuredEfficiency`). « ≈ » : un calcul. */
-export function tuileRendement(recipe: RecipeSnapshot, state: BrewDayState): TuileBilan {
+export function tuileRendement(recipe: RecipeSnapshot, state: BrewDayState, mode: 'vise' | 'reel' = 'vise'): TuileBilan {
   const vise = rendementVise(recipe, state);
   const lu = measuredEfficiency(recipe, state, 'preboil');
-  const cible = vise != null ? `visé ≈ ${Math.round(vise)} %` : undefined;
+  // Un visé inconnu s'écrit « visé ? » (K2 n° 9), jamais une cible absente qui laisse croire qu'il n'y en a pas.
+  const cible = vise != null ? `visé ≈ ${Math.round(vise)} %` : 'visé ?';
   const base = { id: 'rendement', nom: 'Rendement d’empâtage', cible, calcul: true } as const;
   if (lu.known && !lu.questionable) {
     // Écart au-delà de 2 points de rendement ; sans cible, le lu n'est ni dans la cible ni hors d'elle : à relever (pas de verdict inventé).
     const etat = vise == null ? 'afaire' : Math.abs(lu.pct - vise) >= 2 ? 'ecart' : 'ok';
-    return { ...base, valeur: `≈ ${Math.round(lu.pct)} %`, quand: `calculé sur ${nombreFr(lu.volumeL, 1)} L à ${sgFr(lu.sg)}`, etat };
+    // p2c e4 : à la clôture, la ligne du bas dit le grain à changer « pour le prochain » (A2 `grainPourProchain`) ; sans lui, le calcul d'origine.
+    const prochain = mode === 'reel' ? grainPourProchain(recipe, state) : null;
+    const quand = prochain
+      ? prochain.kg === 0
+        ? 'pour le prochain : rien à changer'
+        : `pour le prochain : ≈ ${prochain.kg > 0 ? '+' : '−'}${nombreFr(Math.abs(prochain.kg), 1)} kg de grain`
+      : `calculé sur ${nombreFr(lu.volumeL, 1)} L à ${sgFr(lu.sg)}`;
+    return { ...base, valeur: `≈ ${Math.round(lu.pct)} %`, quand, etat };
   }
   return { ...base, valeur: '?', quand: 'calculé au relevé avant ébullition', etat: 'afaire' };
 }
@@ -187,7 +195,7 @@ export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, s
   const base = tuilesDuJour(releves, recipe);
   const i = base.findIndex((t) => t.id === 'ensemencement');
   const avecRendement: TuileBilan[] = [...base];
-  avecRendement.splice(i < 0 ? base.length : i, 0, tuileRendement(recipe, state));
+  avecRendement.splice(i < 0 ? base.length : i, 0, tuileRendement(recipe, state, mode));
   const c = state.boilCorrection;
   return trierTuiles(avecRendement)
     .map((t) => (t.id === 'avant' && t.etat === 'ecart' ? { ...t, grand: mode === 'vise' } : t))
@@ -227,9 +235,13 @@ export function entreesJournalBilan(state: BrewDayState, recipe: RecipeSnapshot,
 }
 
 const frNb = (n: number, d = 1) => n.toFixed(d).replace('.', ',');
+/** K2 n° 8 : un volume au fermenteur noté mais non qualifié à froid reste un volume noté ; « non relevé » ne se dit que sans relevé. */
+const volumeRelevePourLevure = (r?: BrewDayReading | null): number | null => (r && r.unit === 'L' && Number.isFinite(r.value) && r.value > 0 ? r.value : null);
 /** p2c E4 + 1C : la dose de levure posée sur la plage du fabricant, dite deux fois : pour le volume RÉEL au fermenteur, puis pour le volume PRÉVU. */
-function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, volumePrevuL, ajouteeA }: {
-  nom: string; detail: string; sachet: Sachet | null; grammes: number | null; volumeReelL: number | null; volumePrevuL: number | null; ajouteeA: number;
+function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, reelNonQualifie = false, volumePrevuL, ajouteeA }: {
+  nom: string; detail: string; sachet: Sachet | null; grammes: number | null; volumeReelL: number | null;
+  /** Le volume est relevé mais sa référence de température n'est pas confirmée : on le dit « relevé », pas « réel ». */
+  reelNonQualifie?: boolean; volumePrevuL: number | null; ajouteeA: number;
 }) {
   const base = volumeReelL ?? volumePrevuL;
   const plage = sachet?.plageGHl;
@@ -244,7 +256,7 @@ function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, volumePrevuL
   const reel = dit(volumeReelL);
   const prevu = dit(volumePrevuL);
   const phrase = [
-    volumeReelL == null ? 'volume au fermenteur non relevé' : reel ? `pour ${frNb(volumeReelL)} L réels : ${reel}` : null,
+    volumeReelL == null ? 'volume au fermenteur non relevé' : reel ? `pour ${reelNonQualifie ? '≈ ' : ''}${frNb(volumeReelL)} L ${reelNonQualifie ? 'relevés' : 'réels'} : ${reel}` : null,
     volumePrevuL != null && prevu && volumeReelL !== volumePrevuL ? `pour ${frNb(volumePrevuL)} L prévus : ${prevu}` : null
   ].filter(Boolean).join(' · ');
   return (
@@ -826,10 +838,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     setMaintBrouillon(null);
   };
   // Un relevé qui demande une action (pH hors fenêtre, à confirmer à froid) garde sa ligne « Relevés du jour » : le bilan visé ne dit pas le geste.
+  // K2 « écarts dits deux fois » : l'écart à la bande est déjà dans la tuile du bilan (« +1,4 °C », « −2 points ») ; la ligne d'avis ne garde que ce qui demande un geste.
+  const avisAgirDe = (kind: ReadingKind, retour: ReturnType<typeof measuredReadingFeedback>) =>
+    (retour.tone === 'watch' && !retour.bande) || (kind === 'ph' && isMash(measuredStep.id) && retour.tone === 'neutral');
   const avisAgir = attendues.some((a) => {
     if (!a.reading) return false;
-    const tone = measuredReadingFeedback(a.reading, state, measuredStep, actualRecipe).tone;
-    return tone === 'watch' || (a.kind === 'ph' && isMash(measuredStep.id) && tone === 'neutral');
+    const retour = measuredReadingFeedback(a.reading, state, measuredStep, actualRecipe);
+    return avisAgirDe(a.kind, retour);
   });
   const paireLue = !isConsulting && current.id === 'preboil' ? lastWortPair(state, 'preboil') : null;
   const boilIdPlan = state.steps.find(isBoilStep)?.id;
@@ -837,20 +852,35 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     ? correctionsAvantEbullition(actualRecipe, state, { finEbullitionMs: boilIdPlan ? planJ?.etapes[boilIdPlan]?.fin ?? null : null })
     : null;
   // Le choix écrit pour CETTE paire (même heure de relevé) : il survit au rechargement et au hors ligne, et garde ses trois options telles qu'elles étaient proposées.
-  const pairAt = paireLue ? Math.max(paireLue.volume.at, paireLue.gravity.at) : null;
+  // K2 n° 7 : aux réglages par défaut (pas de référence de température, pas d'évaporation) la carte parle quand même, et dit pourquoi.
+  const sansCible = !isConsulting && current.id === 'preboil' && !corrections ? paireSansCible(actualRecipe, state) : null;
+  const paireCarte = paireLue ?? sansCible?.paire ?? null;
+  const pairAt = paireCarte ? Math.max(paireCarte.volume.at, paireCarte.gravity.at) : null;
   const correctionEcrite = state.boilCorrection && pairAt != null && state.boilCorrection.readingAt === pairAt ? state.boilCorrection : null;
   const choisirCorrection = (id: OptionCorrection['id']) => {
-    const proposees = correctionEcrite?.options ?? corrections?.options;
+    const proposees = correctionEcrite?.options ?? corrections?.options ?? sansCible?.options;
     const option = proposees?.find((o) => o.id === id);
     // « bouillir plus » règle l'horloge (durée totale d'A2) ; accepter ou extrait sec la remettent à la durée de la recette. Rien n'est inventé : sans durée de recette, on ne touche pas.
     const voulue = id === 'bouillir' ? option?.minutesEbullition : recipe.boilMin;
     if (!proposees || pairAt == null) return;
-    const noteChoix = correctionEcrite?.note ?? corrections?.note;
+    const noteChoix = correctionEcrite?.note ?? corrections?.note ?? sansCible?.note;
     const at = brewNow();
     update((s) => {
       const dureeOk = voulue != null && voulue > 0 && voulue !== boilMinutes(s, actualRecipe) ? changeBoilMinutes(s, actualRecipe, voulue - boilMinutes(s, actualRecipe)) : s;
       return { ...dureeOk, boilCorrection: { choix: id, at, readingAt: pairAt, options: proposees.map(({ id: oid, titre, detail, minutesEbullition }) => ({ id: oid, titre, detail, ...(minutesEbullition != null ? { minutesEbullition } : {}) })), ...(noteChoix ? { note: noteChoix } : {}) } };
     });
+  };
+  // Les bandes « sous · dans · sur » et leur « Et donc » d'un relevé : les mêmes avant et après Enregistrer (p2c e1-apres : la bande lue s'allume).
+  const bandesDe = (kind: ReadingKind) => {
+    const cible = cibleMesure(kind, measuredStep, actualRecipe);
+    const maische = isMash(measuredStep.id);
+    const infusion = cible && kind === 'temperature' && maische ? infusionPourMaische(actualRecipe, state, cible) : null;
+    const phDes = maische && measuredStep.startedAt != null ? heureFr(measuredStep.startedAt + 10 * 60000) : undefined;
+    return {
+      infusion,
+      zones: cible ? zonesDeCible(kind, cible, { contexte: maische ? 'maische' : undefined, infusion, phA: phDes }) : undefined,
+      note: infusion ? '≈ calculé par l’app · pas de relevé ce palier : l’horloge tourne quand même' : undefined
+    };
   };
   let maintenant: MaintenantProps | null = null;
   if (mesureCarte) {
@@ -858,11 +888,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     const cle = `${measuredStep.id}|${m.kind}`;
     const valeur = maintBrouillon?.cle === cle ? maintBrouillon.valeur : null;
     const scale = measureScale(m.kind, measuredStep, actualRecipe, valeur);
-    const cible = cibleMesure(m.kind, measuredStep, actualRecipe);
-    const maische = isMash(measuredStep.id);
-    const infusion = cible && m.kind === 'temperature' && maische ? infusionPourMaische(actualRecipe, state, cible) : null;
-    const phDes = maische && measuredStep.startedAt != null ? heureFr(measuredStep.startedAt + 10 * 60000) : undefined;
-    const zones = cible ? zonesDeCible(m.kind, cible, { contexte: maische ? 'maische' : undefined, infusion, phA: phDes }) : undefined;
+    const { zones, note: noteBandes } = bandesDe(m.kind);
     maintenant = {
       variante: 'mesure',
       kind: m.kind,
@@ -875,30 +901,32 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       onPose: (v) => setMaintBrouillon({ cle, valeur: v }),
       onEnregistrer: (v) => enregistrerMaintenant(m, v),
       zones,
-      note: infusion ? '≈ calculé par l’app · pas de relevé ce palier : l’horloge tourne quand même' : undefined,
+      note: noteBandes,
       enregistre: null
     };
-  } else if (paireLue && (corrections || correctionEcrite)) {
+  } else if (paireCarte && (corrections || correctionEcrite || sansCible)) {
     const cibleVol = cibleMesure('volume', measuredStep, actualRecipe);
     const cibleDens = cibleMesure('densite', measuredStep, actualRecipe);
-    const volumeHors = ecartHorsCible(cibleVol, paireLue.volume.value) != null;
-    const densiteHors = ecartHorsCible(cibleDens, paireLue.gravity.value) != null;
-    if (volumeHors || densiteHors) {
+    const volumeHors = ecartHorsCible(cibleVol, paireCarte.volume.value) != null;
+    const densiteHors = ecartHorsCible(cibleDens, paireCarte.gravity.value) != null;
+    // Sans cible calculable on ne peut pas dire « dans la cible » : la carte reste, avec sa raison.
+    if (volumeHors || densiteHors || (sansCible && (!cibleVol || !cibleDens))) {
       const choisiParHorloge: OptionCorrection['id'] | null =
-        boilMinutes(state, actualRecipe) > (recipe.boilMin ?? Infinity) && corrections.options.some((o) => o.id === 'bouillir') ? 'bouillir' : null;
+        boilMinutes(state, actualRecipe) > (recipe.boilMin ?? Infinity) && corrections?.options.some((o) => o.id === 'bouillir') ? 'bouillir' : null;
       maintenant = {
         variante: 'paire',
-        heure: heureFr(Math.max(paireLue.volume.at, paireLue.gravity.at)),
-        volumeL: paireLue.volume.value,
+        heure: heureFr(Math.max(paireCarte.volume.at, paireCarte.gravity.at)),
+        volumeL: paireCarte.volume.value,
         volumeCibleL: volumeTarget(measuredStep, actualRecipe) ?? null,
-        densite: paireLue.gravity.value,
+        densite: paireCarte.gravity.value,
         densiteCible: cibleDens ? (cibleDens.min + cibleDens.max) / 2 : null,
         volumeHors,
         densiteHors,
-        options: correctionEcrite?.options ?? corrections?.options ?? [],
+        options: correctionEcrite?.options ?? corrections?.options ?? sansCible?.options ?? [],
         choisi: correctionEcrite?.choix ?? choisiParHorloge,
         onChoix: choisirCorrection,
-        note: correctionEcrite?.note ?? corrections?.note
+        note: correctionEcrite?.note ?? corrections?.note ?? sansCible?.note,
+        sansCible: !corrections && !correctionEcrite?.options.some((o) => o.id !== 'accepter')
       };
     }
   }
@@ -906,6 +934,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   if (!maintenant && !isConsulting && maintFait && maintFait.stepId === current.id && now - maintFait.at < 3 * 60000) {
     const f = maintFait;
     const echelle = measureScale(f.kind, measuredStep, actualRecipe, f.value);
+    const bandes = bandesDe(f.kind);
     maintenant = {
       variante: 'mesure',
       kind: f.kind,
@@ -917,6 +946,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       depart: f.value,
       onPose: () => undefined,
       onEnregistrer: () => undefined,
+      zones: bandes.zones,
+      note: bandes.note,
       enregistre: { entete: f.entete, verdict: f.verdict }
     };
   }
@@ -2391,7 +2422,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       detail={state.pitchQuantityConfirmation === 'unmeasured' || state.additions?.yeast?.amount == null ? 'quantité non mesurée' : `${doseFr(state.additions.yeast.amount, state.additions.yeast.unit ?? '')} ${state.additions.yeast.unit ?? ''}${gLevure != null && state.additions.yeast.unit !== 'g' ? ` · ${frNb(gLevure)} g` : ''}`}
                       sachet={sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products)}
                       grammes={gLevure}
-                      volumeReelL={finishedReadings.volume?.value ?? null}
+                      volumeReelL={finishedReadings.volume?.value ?? volumeRelevePourLevure(finishedReadings.rawVolume)}
+                      reelNonQualifie={finishedReadings.volume == null && volumeRelevePourLevure(finishedReadings.rawVolume) != null}
                       volumePrevuL={recipe.volumeL ?? null}
                       ajouteeA={state.pitchedAt!}
                     />
@@ -2401,7 +2433,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   <section className="bz-avis-releve" aria-label="Avis du relevé">
                     {attendues.filter((a) => a.reading).map((a) => {
                       const retour = measuredReadingFeedback(a.reading!, state, measuredStep, actualRecipe);
-                      if (retour.tone !== 'watch' && !(a.kind === 'ph' && isMash(measuredStep.id) && retour.tone === 'neutral')) return null;
+                      if (!avisAgirDe(a.kind, retour)) return null;
                       return (
                         <p key={a.kind} className={`bz-releve-avis is-${retour.tone}`}>
                           {retour.tone === 'watch' && <TriangleAlert size={14} aria-hidden="true" />}

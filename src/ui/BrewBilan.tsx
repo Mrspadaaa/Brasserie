@@ -81,8 +81,10 @@ export function valeurTuile(t: Pick<TuileBilan, 'valeur' | 'calcul'>): string {
  * seulement s'il est dans la cible ou en écart ; les autres états (dû, à faire, non relevé) restent « ? » au journal.
  */
 export function separerPasReleves(tuiles: TuileBilan[]): { prises: TuileBilan[]; pasReleves: TuileBilan | null } {
-  const prises = tuiles.filter((t) => t.etat === 'ok' || t.etat === 'ecart');
-  const absentes = tuiles.filter((t) => !(t.etat === 'ok' || t.etat === 'ecart'));
+  // Une valeur lue sans cible (rendement, « visé ? ») reste dans la grille : elle est connue, seul le verdict manque.
+  const prise = (t: TuileBilan) => t.etat === 'ok' || t.etat === 'ecart' || (t.etat === 'afaire' && /\d/.test(t.valeur ?? ''));
+  const prises = tuiles.filter(prise);
+  const absentes = tuiles.filter((t) => !prise(t));
   if (!absentes.length) return { prises, pasReleves: null };
   return {
     prises,
@@ -129,7 +131,7 @@ function Tuile({ t }: { t: TuileBilan }) {
       </span>
       {t.cible ? <span className="bz-bilan-c">{t.cible}</span> : null}
       <span className="bz-bilan-w">
-        <span className="bz-bilan-sr">{ETAT_DIT[t.etat]}</span>
+        <span className="bz-bilan-sr">{t.etat === 'afaire' && /\d/.test(valeur) ? 'Relevé, sans cible. ' : ETAT_DIT[t.etat]}</span>
         {t.quand}
       </span>
     </li>

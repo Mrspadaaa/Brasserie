@@ -58,6 +58,8 @@ export interface MaintenantPaire {
   choisi: OptionCorrection['id'] | null;
   onChoix: (id: OptionCorrection['id']) => void;
   note?: string;
+  /** Les trois choix chiffrés n'existent pas (pas de référence de température, d'évaporation ou d'OG) : une cible inconnue s'écrit « cible ? ». */
+  sansCible?: boolean;
 }
 
 export type MaintenantProps = MaintenantMesure | MaintenantPaire;
@@ -160,19 +162,19 @@ function Paire(p: MaintenantPaire) {
           <b className="bm-big" data-testid="maintenant-volume" data-vide={p.volumeL == null ? '' : undefined} data-hors={p.volumeHors ? '' : undefined}>
             {p.volumeL == null ? '?' : fr(p.volumeL, 1)}<small>L</small>
           </b>
-          {p.volumeCibleL != null && <span className="bm-c">cible {fr(p.volumeCibleL, 1)} L</span>}
+          {p.volumeCibleL != null ? <span className="bm-c">cible {fr(p.volumeCibleL, 1)} L</span> : p.sansCible && <span className="bm-c">cible ?</span>}
         </div>
         <div>
           <span className="bm-pnm">Densité</span>
           <b className="bm-big" data-testid="maintenant-densite" data-vide={p.densite == null ? '' : undefined} data-hors={p.densiteHors ? '' : undefined}>
             {p.densite == null ? '?' : fr(p.densite, 3)}
           </b>
-          {p.densiteCible != null && <span className="bm-c">cible {fr(p.densiteCible, 3)}</span>}
+          {p.densiteCible != null ? <span className="bm-c">cible {fr(p.densiteCible, 3)}</span> : p.sansCible && <span className="bm-c">cible ?</span>}
         </div>
       </div>
       {(p.options.length > 0 || p.note) && (
         <div className="bm-donc">
-          {p.options.length > 0 && <div className="bm-t">Et donc, choisis : l’horloge suit</div>}
+          {p.options.length > 0 && <div className="bm-t">{p.sansCible ? 'Et donc, ce qui reste possible' : 'Et donc, choisis : l’horloge suit'}</div>}
           {p.options.map((o) => (
             <button type="button" key={o.id} className="bm-b bm-ch" data-choix={o.id} aria-pressed={p.choisi === o.id} onClick={() => p.onChoix(o.id)}>
               <span className="bm-s">{o.titre}</span>

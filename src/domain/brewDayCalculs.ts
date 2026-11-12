@@ -196,6 +196,61 @@ export interface CorrectionsAvantEbullition {
   note: string;
 }
 
+export interface PaireSansCible {
+  /** Le dernier couple volume + densité d'avant ébullition, relevé sans qu'on puisse en tirer les trois choix. */
+  paire: { volume: BrewDayReading; gravity: BrewDayReading };
+  /** Pourquoi, en mots du brasseur (« évaporation du profil inconnue »). */
+  raisons: string[];
+  /** Les choix qui restent possibles sans cible : « Accepter » seul (bouillir plus se règle à l'horloge). */
+  options: OptionCorrection[];
+  /** La phrase de la carte : « Pas de cible calculable : … ». */
+  note: string;
+}
+
+/**
+ * E3 aux réglages par défaut (lot K2, n° 7) : un couple volume + densité est noté, mais `correctionsAvantEbullition` rend `null`
+ * (pas de référence de température, pas d'évaporation, pas d'OG visée). Plutôt que le silence, la carte dit pourquoi et garde « Accepter ».
+ * `null` : pas de couple (à une seule grandeur, ou séparé par un ajout), ou les trois choix existent déjà.
+ */
+export function paireSansCible(recipe: RecipeSnapshot, state: BrewDayState): PaireSansCible | null {
+  // `lastWortPair` exige la référence de température ; on la lui prête pour retrouver le couple, puis on la contrôle nous-mêmes.
+  const prete: BrewDayState = {
+    ...state,
+    readings: (state.readings ?? []).map((r) => (r.stepId === 'preboil' && (r.kind === 'volume' || r.kind === 'densite') ? { ...r, roomTemp: true } : r))
+  };
+  const prise = lastWortPair(prete, 'preboil');
+  if (!prise) return null;
+  const vrai = lastWortPair(state, 'preboil');
+  const paire = (state.readings ?? []).filter((r) => r.stepId === 'preboil');
+  const volume = paire.find((r) => r.id === prise.volume.id) ?? prise.volume;
+  const gravity = paire.find((r) => r.id === prise.gravity.id) ?? prise.gravity;
+  const raisons: string[] = [];
+  if (!vrai) {
+    raisons.push(
+      volume.roomTemp && !gravity.roomTemp
+        ? 'densité non refroidie ni corrigée à 20 °C'
+        : !volume.roomTemp && gravity.roomTemp
+          ? 'volume non ramené à 20 °C'
+          : 'volume et densité sans référence de température (20 °C)'
+    );
+  }
+  const og = recipe.ogTarget;
+  if (!fini(og) || og <= 1) raisons.push('OG visée inconnue');
+  const evap = state.boilOffLPerHour ?? recipe.brewhouse?.equipment?.boilOffLPerHour;
+  if (!fini(evap)) raisons.push('évaporation inconnue (profil de brasserie)');
+  if (!raisons.length) {
+    // Le couple est à froid, la recette et l'équipement sont connus : si les trois choix existent, la carte normale parle.
+    if (correctionsAvantEbullition(recipe, state)) return null;
+    raisons.push('durée d’ébullition inconnue');
+  }
+  return {
+    paire: { volume, gravity },
+    raisons,
+    options: [{ id: 'accepter', titre: 'Accepter', detail: 'garder ce moût · OG et volume finals non calculés' }],
+    note: `Pas de cible calculable : ${raisons.join(' · ')}. Pour bouillir plus, règle l’horloge (+5).`
+  };
+}
+
 /**
  * Le moût d'avant ébullition est sous la cible : bouillir plus (durée arrondie à 5 min), ajouter de l'extrait sec, ou accepter.
  * Les volumes et densités viennent de `wortRescue` (points recueillis, volume à la cible, évaporation) et de `boilScenario` (OG finale) ;

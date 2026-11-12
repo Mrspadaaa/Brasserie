@@ -348,7 +348,7 @@ export function tuilesDuJour(releves: ReleveDuJour[], recipe?: RecipeSnapshot): 
     const parties = [m, ph].filter((p): p is ReleveDuJour => !!p);
     const cible = [m?.cible ? `cible ${m.cible}` : null, ph?.cible ? `pH ${ph.cible}` : null].filter(Boolean).join(' · ');
     // p2c E1 : « maintenant · pH 13 h 15 » quand rien n'est encore lu.
-    const quand = parties.every((p) => !p.lu) && m && ph?.heure != null ? `${m.quand} · pH ${heureFr(ph.heure)}` : parties.map((p) => p.quand).join(' · ');
+    const quand = parties.every((p) => !p.lu) && m && ph?.heure != null ? `${m.quand} · pH ${heureFr(ph.heure)}` : parties.map((p) => (p.id === 'ph' && !p.lu && m?.lu ? `pH ${p.quand}` : p.quand)).join(' · ');
     const lu = parties.filter((p) => p.lu);
     sortie.push(
       fusion('empatage', 'Empâtage', parties, {
