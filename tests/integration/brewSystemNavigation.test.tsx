@@ -160,6 +160,8 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
     expect(view.latest().steps[0].holdStartedAt).toBe(40 * MIN);
     expect(view.latest().thermalSegments![0].endedAt).toBe(40 * MIN);
     clock.mockReturnValue(50 * MIN);
+    // K4 n° 16 : le suivi thermique vit derrière la porte « Aide » du bilan (p2c n'a pas ce bloc sous la conduite).
+    fireEvent.click(screen.getByRole('button', { name: /^Aide/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Relever le moût' }));
     fireEvent.change(form().getByLabelText('Température (°C)'), { target: { value: '75' } });
     fireEvent.click(form().getByRole('button', { name: 'Enregistrer', exact: true }));

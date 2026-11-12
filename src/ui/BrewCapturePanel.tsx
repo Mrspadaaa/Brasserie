@@ -60,6 +60,9 @@ export function BrewCapturePanel({
     }
   }, [mobile, open]);
   return (
+    <>
+    {/* K4 n° 23 : à l'ordinateur, la saisie flottante a son voile (comme le téléphone) ; un toucher sur le voile la ferme. */}
+    {!mobile && open && <div className="brew-capture-voile" aria-hidden="true" onClick={onClose} />}
     <dialog
       ref={dialog}
       className={`brew-capture ${mobile ? 'is-mobile' : 'is-inline'} ${className}`}
@@ -77,6 +80,7 @@ export function BrewCapturePanel({
       }}
       onKeyDown={(event) => {
         if (mobile && event.key === 'Escape') event.stopPropagation();
+        if (!mobile && open && event.key === 'Escape') onClose();
       }}
     >
       <header className="brew-capture-header">
@@ -90,5 +94,6 @@ export function BrewCapturePanel({
       </header>
       <div className="brew-capture-content">{children}</div>
     </dialog>
+    </>
   );
 }

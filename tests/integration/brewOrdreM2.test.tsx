@@ -39,16 +39,20 @@ describe('m2 : l’ordre des blocs de l’étape (DOM)', () => {
     const grains = screen.getByRole('region', { name: 'Ingrédients à ajouter' });
     expect(avant(releves, grains)).toBe(true);
   });
-  it('« Suivi thermique » est replié en bas : après À anticiper, hors de l’horloge (Aides et repères : derrière la porte Aide)', () => {
+  it('« Suivi thermique » n’est plus sous la conduite : il vit derrière la porte « Aide » du bilan (K4 n° 16, p2c n’en a pas)', () => {
     const { container } = monter();
     const suivi = screen.getByText('Suivi thermique').closest('details') as HTMLElement;
-    const prep = screen.getByRole('region', { name: 'Préparations' });
     // I1a (G3) : « Aides et repères » devient la porte « Aide » du bilan ; le bloc ne reste que hors du jour (ensemencement, Recette).
     expect(screen.queryByText('Aides et repères')).toBeNull();
     expect(screen.getByRole('button', { name: /Aide/ })).toBeTruthy();
-    expect(avant(prep, suivi)).toBe(true);
+    const porte = container.querySelector('.bz-bilan-aide') as HTMLElement;
+    expect(porte.contains(suivi)).toBe(true);
+    expect(porte.hasAttribute('hidden')).toBe(true);
     expect(container.querySelector('.brew-station')?.contains(suivi)).toBe(false);
-    expect(avant(screen.getByRole('region', { name: 'Ingrédients à ajouter' }), suivi)).toBe(true);
+    // Les houblons « vigilances et potentiel » y sont aussi, et nulle part sous la conduite.
+    expect(container.querySelectorAll('.brew-aide').length).toBeGreaterThan(0);
+    expect(container.querySelector('.brew-side-column > .bz-suivi')).toBeNull();
+    expect(container.querySelector('.brew-side-column > .brew-aide')).toBeNull();
   });
 });
 

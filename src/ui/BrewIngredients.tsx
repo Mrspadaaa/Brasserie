@@ -299,7 +299,7 @@ function IngredientRow({
   const doseText = (
     <>
       <strong id={`brew-dose-value-${item.id}`} data-sans-valeur={pitchActualUnknown || pitchPlannedUnknown ? '' : undefined}>{doseLabel}</strong>
-      {doseUnit && ' '}
+      {doseUnit && '\u00a0'}
       {doseUnit &&<small id={`brew-dose-unit-${item.id}`}>{doseUnit}</small>}
     </>
   );
@@ -719,7 +719,8 @@ export function BrewIngredients({
   overview = false,
   now = brewNow(),
   stepId,
-  pitch
+  pitch,
+  finEbullitionEstimee = null
 }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
@@ -730,6 +731,8 @@ export function BrewIngredients({
   now?: number;
   stepId?: string;
   pitch?: PitchEditor;
+  /** K4 n° 19 : la fin d'ébullition du plan (A3), pour dire l'heure estimée des ajouts avant le premier bouillon (« ~15 h 20 »). Absente : pas d'heure inventée. */
+  finEbullitionEstimee?: number | null;
 }) {
   const [extra, setExtra] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
@@ -879,7 +882,8 @@ export function BrewIngredients({
             {group.items.map((i) => {
               let ajout: AjoutLigne | undefined;
               if (group.ajouts && i.beforeEndMin != null) {
-                const at = end != null ? Math.max(state.boilStartedAt!, end - i.beforeEndMin * 60000) : undefined;
+                const at = end != null ? Math.max(state.boilStartedAt!, end - i.beforeEndMin * 60000) : finEbullitionEstimee != null && state.boilStartedAt == null ? finEbullitionEstimee - i.beforeEndMin * 60000 : undefined;
+                const estime = end == null && at != null;
                 const finished = isDone(i);
                 const sauteLigne = isSaute(i);
                 const next = prochain?.id === i.id;
@@ -897,7 +901,9 @@ export function BrewIngredients({
                     ? doneAt != null ? <span className="bz-m">{heureCuve(doneAt)}</span> : null
                     : sauteLigne
                       ? <b className="bz-non-verse">non versé</b>
-                      : !boilRunning || at == null
+                      : estime
+                        ? <span className="bz-m">~{heureCuve(at!)}</span>
+                        : !boilRunning || at == null
                         ? null
                         : enRetard
                           ? <><b>{phraseRetard(reste!)!.court}</b><span className="sr-only"> · prévu à {heureCuve(at)}</span></>

@@ -30,3 +30,7 @@
 
 /* Remplacer un houblon : « Pas de Citra ? » */
 .brew-page.bz .bz-pas-de { font-weight: 600; }
+
+/* K4 n° 19 : l'heure d'un ajout ne se coupe pas, et « 54,3 g » reste d'un bloc (le nombre et l'unité ne se séparent pas à 390). */
+.brew-page.bz .bz-quand { white-space: nowrap; }
+.brew-page.bz .bz-quand .bz-m { font-variant-numeric: tabular-nums; }

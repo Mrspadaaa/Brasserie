@@ -3430,3 +3430,6 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-levure-cloture .bz-case-boite.is-fait { flex: 0 0 auto; background: var(--bz-ok, #3f7a3a); border-color: transparent; color: #fff; }
 .brew-page.bz .bz-avis-releve { display: grid; gap: 6px; }
 .brew-page.bz .bz-avis-releve .bz-releve-avis { margin: 0; display: flex; gap: 6px; align-items: center; font-size: 14px; }
+
+/* K4 n° 23 : le voile de la saisie flottante à 1280 (même teinte que celui du téléphone) ; la saisie passe devant. */
+.brew-page.bz .brew-capture-voile { position: fixed; inset: 0; z-index: 29; background: rgba(0, 0, 0, .35); }

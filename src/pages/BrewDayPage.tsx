@@ -106,7 +106,7 @@ import { readingPrompt } from '../domain/brewAssist';
 import { estEtapeCoupure, heureFr, mesureDue, mesuresAttendues } from '../domain/brewMeasures';
 import type { MesureAttendue } from '../domain/brewMeasures';
 import { cibleMesure, ecartHorsCible, refroidiParDefaut, volumeTarget } from '../domain/brewDay';
-import { lastWortPair } from '../domain/brewAssist';
+import { boilScenario, lastWortPair } from '../domain/brewAssist';
 import { correctionsAvantEbullition, infusionPourMaische, paireSansCible, zonesDeCible } from '../domain/brewDayCalculs';
 import type { OptionCorrection } from '../domain/brewDayCalculs';
 import { BrewMaintenant } from '../ui/BrewMaintenant';
@@ -169,6 +169,18 @@ export function heuresPrevuesDuPlan(plan: PlanJournee | null, state: BrewDayStat
   return prevue;
 }
 
+/**
+ * K4 n° 25 : la dose de levure prévue. Celle de la recette ; sinon « 1 sachet » d'une levure sèche au poids connu ; sinon rien (l'inconnu n'est jamais 0).
+ */
+export function dosePrevueLevure(recipe: RecipeSnapshot, sachet: Sachet | null): { amount: number; unit: string } | undefined {
+  if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
+  return recipe.yeast?.form === 'sèche' && sachet ? { amount: 1, unit: 'sachet' } : undefined;
+}
+/** « 1 sachet », « 2 sachets », « 11,5 g » : la dose dite comme la ligne Levure de p2c. */
+export function texteDoseLevure(dose: { amount: number; unit: string }): string {
+  return dose.unit === 'sachet' ? `${String(dose.amount).replace('.', ',')} sachet${dose.amount >= 2 ? 's' : ''}` : `${doseFr(dose.amount, dose.unit)} ${dose.unit}`;
+}
+
 /** « Rendement d'empâtage » (huitième tuile de p2c) : le visé et le lu passent par la même fonction (A2 / `measuredEfficiency`). « ≈ » : un calcul. */
 export function tuileRendement(recipe: RecipeSnapshot, state: BrewDayState, mode: 'vise' | 'reel' = 'vise'): TuileBilan {
   const vise = rendementVise(recipe, state);
@@ -201,7 +213,21 @@ export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, s
   return trierTuiles(avecRendement)
     .map((t) => (t.id === 'avant' && t.etat === 'ecart' ? { ...t, grand: mode === 'vise' } : t))
     // B11 : « 15 h 05 · accepté : OG ≈ 1,057 ». À la clôture, la tuile garde « relevé à 15 h 05 » : le choix est au journal.
-    .map((t) => (t.id === 'avant' && c && mode === 'vise' ? { ...t, quand: `${heureFr(c.readingAt)} · ${phraseCorrection(c)}` } : t));
+    .map((t) => (t.id === 'avant' && c && mode === 'vise' ? { ...t, quand: `${heureFr(c.readingAt)} · ${phraseCorrection(c)}` } : t))
+    // K4 n° 25 (p2c e3) : hors cible et rien d'accepté, la ligne du bas dit où l'on va sans correction : « OG projetée ≈ 1,057 sans correction » (boilScenario, jamais inventée).
+    .map((t) => {
+      if (t.id !== 'avant' || t.etat !== 'ecart' || c || mode !== 'vise') return t;
+      const og = boilScenario(recipe, state, boilMinutes(state, recipe))?.finalOg;
+      return typeof og === 'number' && Number.isFinite(og) && og > 1 ? { ...t, quand: `OG projetée ≈ ${sgFr(og)} sans correction` } : t;
+    })
+    // K4 n° 25 (p2c) : « cible 18 °C · 1 sachet » : la dose prévue de levure se lit sur la tuile Ensemencement.
+    .map((t) => {
+      if (t.id !== 'ensemencement' || !recipe.yeast?.name) return t;
+      const dose = dosePrevueLevure(recipe, sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products));
+      if (!dose) return t;
+      const texte = texteDoseLevure(dose);
+      return { ...t, cible: t.cible ? `${t.cible} · ${texte}` : texte };
+    });
 }
 
 /** « Heures tenues » d'A1 vers les lignes du bilan. */
@@ -730,9 +756,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p2c / 1C (test c6 n° 6) : la ligne figure dans chaque phase avant l'ensemencement (où le groupe Levure prend le relais) : « Sortir la levure · SafAle US-05 ·
   // 1 sachet · 11,5 g » et la jauge de la dose sur la plage du fabricant, pour le volume prévu. La dose est celle de la recette, sinon « 1 sachet » d'une
   // levure sèche au poids connu ; sans dose sûre, le nom seul et pas de jauge (l'inconnu n'est jamais 0).
-  const doseRappel: { amount: number; unit: string } | undefined = typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit
-    ? { amount: recipe.yeast.qty, unit: recipe.yeast.unit }
-    : recipe.yeast?.form === 'sèche' && sachetRappel ? { amount: 1, unit: 'sachet' } : undefined;
+  const doseRappel = dosePrevueLevure(recipe, sachetRappel);
   const gRappel = grammesDuChoix(doseRappel, sachetRappel);
   const sousRappel = doseRappel
     ? [recipe.yeast?.name, doseRappel.unit === 'sachet' ? `${String(doseRappel.amount).replace('.', ',')} sachet${doseRappel.amount >= 2 ? 's' : ''}` : doseRappel.unit === 'g' ? null : `${doseFr(doseRappel.amount, doseRappel.unit)} ${doseRappel.unit}`, gRappel != null ? `${frNb(gRappel)} g` : null].filter(Boolean).join(' · ')
@@ -1356,8 +1380,19 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     else if (!completed && showTimer && left != null && left > 0) setConfirmAdvance(true);
     else finishAndContinue();
   };
+  // K4 n° 23 : la feuille Mesurer / Note ne reste pas ouverte d'une étape à l'autre. Une ouverture qui vient d'une vue de consultation change l'étape
+  // elle-même (navigate) : ce changement-là ne la ferme pas.
+  const captureNeuve = useRef(false);
+  useEffect(() => {
+    if (captureNeuve.current) { captureNeuve.current = false; return; }
+    setCapture(null);
+  }, [current.id]);
   const openCapture = (kind: 'measure' | 'note') => {
-    if (kind === 'measure' && isConsulting) navigate(areaOf(current.id));
+    if (kind === 'measure' && isConsulting) {
+      captureNeuve.current = true;
+      requestAnimationFrame(() => { captureNeuve.current = false; });
+      navigate(areaOf(current.id));
+    }
     setCapture(kind);
     if (window.matchMedia('(min-width: 901px)').matches)
       requestAnimationFrame(() => {
@@ -1522,6 +1557,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const stepHasHop = brewIngredients(ingredientDisplayRecipe).some(
     (i) => i.kind === 'hop' && ingredientAppliesToStep(i, { area, stepId: current.id }) && i.planned > 0
   );
+  // K4 n° 22 : p2c garde « houblon manquant » à toute étape. Sans houblon à poser ici, la porte le dit au lieu de rester muette ; le remplacement se fait à l'appel de l'ajout.
+  const houblonManquantAilleurs = () => setNotice('Pas de houblon à poser à cette étape : « Remplacer » se trouve à l’ajout, à l’ébullition ou au whirlpool.');
   // « durée ± » : amène les boutons −5 −1 +1 +5 de l'horloge sous le doigt.
   const ajusterDuree = () => {
     const bouton = contentRef.current?.querySelector<HTMLElement>('.bz-ctl button:not(:disabled)');
@@ -1721,6 +1758,20 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               </BrewAide>}
     </>
   );
+  // K4 n° 16 : p2c n'a ni « Suivi thermique » ni « Houblons · vigilances » sous la conduite : ils restent atteignables, derrière « Aide » (ou « Aides et repères »).
+  const suiviThermique = !isConsulting && !displayRecipe && thermalVisible ? (
+    <details
+      className="bz-repli bz-suivi"
+      open={(measuredStep.rampStartedAt != null && measuredStep.holdStartedAt == null)}
+    >
+      <summary>
+        <Thermometer size={14} aria-hidden="true" />
+        <span>Suivi thermique</span>
+        <ChevronDown size={14} aria-hidden="true" />
+      </summary>
+      <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
+    </details>
+  ) : null;
   const aideOptions = (
     <>
               <details className="brew-options">
@@ -2151,9 +2202,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       className={`brew-station bz-station ${showTimer ? 'has-timer' : ''} ${completed ? 'is-complete' : ''}`}
                     >
                       <div className="bz-etape">
-                        <b className="bz-m">{etapeNumero}</b>
+                        <b className="bz-m">{clotureFaite ? route.length + 1 : etapeNumero}</b>
                         <div className="brew-step-select">
-                          {stepsHere.length > 1 ? (
+                          {clotureFaite ? (
+                            <h2>Clôture</h2>
+                          ) : stepsHere.length > 1 ? (
                             <BrewChoice
                               heading
                               label="Choisir une étape"
@@ -2184,11 +2237,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           )}
                         </div>
                         <span className="bz-suite">
-                          ensuite {nextStepName ?? 'passage en fermentation'}
+                          {clotureFaite ? `ensuite fermentation${Number.isFinite(recipe.fermentation?.[0]?.tempC) ? ` à ${fr(recipe.fermentation![0].tempC)} °C` : ''}` : <>ensuite {nextStepName ?? 'passage en fermentation'}</>}
                           {nextStep && isMash(nextStep.id) && nextStep.tempC != null && <> <span className="bz-m">{fr(nextStep.tempC)} °C</span></>}
                         </span>
                       </div>
-                      {completed && (
+                      {completed && !clotureFaite && (
                         <button
                           type="button"
                           className="brew-complete-toggle"
@@ -2426,12 +2479,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <b className="bz-m bz-fin-duree" aria-label="Durée du brassage">{dureeJour}</b>
                       <span className="bz-fin-texte">
                         de <span className="bz-m">{state.startedAt != null ? heureCuve(state.startedAt) : '?'}</span> à <span className="bz-m">{heureDeFinJour}</span>
-                        {planJ?.finPrevue != null && (
-                          <>
-                            <br />~<span className="bz-m">{heureCuve(planJ.finPrevue)}</span> estimé
-                            {avanceJour != null && avanceJour !== 0 && <> · {Math.abs(avanceJour)} min {avanceJour > 0 ? 'd’avance' : 'de retard'}</>}
-                          </>
-                        )}
+                        <br />
+                        {planJ?.finPrevue != null ? <>~<span className="bz-m">{heureCuve(planJ.finPrevue)}</span> estimé</> : <>estimé <span className="bz-m">?</span></>}
+                        {avanceJour != null && (avanceJour !== 0 ? <> · {Math.abs(avanceJour)} min {avanceJour > 0 ? 'd’avance' : 'de retard'}</> : <> · à l’heure</>)}
                       </span>
                     </section>
                     <BrewBilan mode="reel" tuiles={tuilesDuBilan(relevesJ, actualRecipe, state, 'reel')} faits={compteJ.faits} total={compteJ.total} heures={heuresDuBilan(state, actualRecipe)} />
@@ -2471,6 +2521,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   now={now}
                   stepId={current.id}
                   pitch={pitchEditor}
+                  finEbullitionEstimee={boilIdPlan ? planJ?.etapes[boilIdPlan]?.fin ?? null : null}
                 />}
                 {!displayRecipe && current.id === 'ensemencement' && state.pitchedAt == null && (
                   <label className="bz-moutajout">
@@ -2535,8 +2586,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 fin={planJ?.finEstimee ?? null}
                 onDuree={showTimer && !completed ? ajusterDuree : undefined}
                 onDose={stepHasIngredients ? revealAdditions : undefined}
-                onHoublonManquant={stepHasHop ? revealAdditions : undefined}
-                aide={porteAide ? <>{aidesDebut}{aideOptions}</> : undefined}
+                onHoublonManquant={stepHasHop ? revealAdditions : houblonManquantAilleurs}
+                aide={porteAide ? <>{aidesDebut}{suiviThermique}{aideHoublons}{aideOptions}</> : undefined}
               />
             )}
             {!isConsulting && !clotureFaite && (
@@ -2573,20 +2624,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 ))}
               </section>
             )}
-            {!isConsulting && !displayRecipe && thermalVisible && (
-              <details
-                className="bz-repli bz-suivi"
-                // m2 : replié en bas, après « À anticiper », juste avant « Aides et repères » (retouche pilote 10.11) ; ouvert d'emblée pendant la montée.
-                open={(measuredStep.rampStartedAt != null && measuredStep.holdStartedAt == null)}
-              >
-                <summary>
-                  <Thermometer size={14} aria-hidden="true" />
-                  <span>Suivi thermique</span>
-                  <ChevronDown size={14} aria-hidden="true" />
-                </summary>
-                <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
-              </details>
-            )}
             {!porteAide && (
               <BrewAide
                 key={enseme ? 'aides-ensemencement' : 'aides'}
@@ -2596,11 +2633,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 title="Aides et repères"
               >
                 {aidesDebut}
+                {suiviThermique}
                 {aideHoublons}
                 {aideOptions}
               </BrewAide>
             )}
-            {porteAide && aideHoublons}
           </div>
         </fieldset>
         {session.error && (
