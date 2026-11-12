@@ -70,3 +70,30 @@ export function jourSemaine(iso: string | null | undefined, aujourdhui: string):
   const [a, m, j] = iso.slice(0, 10).split('-').map(Number);
   return `${JOURS[new Date(Date.UTC(a, m - 1, j)).getUTCDay()]} ${court}`;
 }
+
+/** « 1 200,5 » : virgule suisse, espace fine en milliers, deux décimales au plus (le format de la maquette B4, `fmt`). */
+export function nombreSuisse(v: number): string {
+  const r = Math.round(v * 100) / 100;
+  const [ent, dec] = String(Math.abs(r)).split('.');
+  const e = ent.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (r < 0 ? '−' : '') + e + (dec ? `,${dec}` : '');
+}
+
+/** La quantité dans l'unité de l'article, sans conversion (« 1 200 g », « 0,35 kg », « 2 sachets ») ; « ? » si inconnue, jamais 0. */
+export function quantiteArticle(v: number | null | undefined, unite: string): string {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return '?';
+  const u = unite === 'sachet' && Math.abs(v) > 1 ? 'sachets' : unite;
+  return `${nombreSuisse(v)} ${u}`.trim();
+}
+
+/** « +30 », « −110 », « ±0 » : la variation d'un mouvement. */
+export function variation(v: number): string {
+  return v > 0 ? `+${nombreSuisse(v)}` : v < 0 ? `−${nombreSuisse(-v)}` : '±0';
+}
+
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+/** « août » d'une date AAAA-MM-JJ ; null si illisible. */
+export function nomDuMois(iso: string | null | undefined): string | null {
+  const m = iso ? /^\d{4}-(\d{2})-\d{2}/.exec(iso) : null;
+  return m ? MOIS[Number(m[1]) - 1] ?? null : null;
+}

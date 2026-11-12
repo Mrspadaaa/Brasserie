@@ -57,6 +57,9 @@ interface StocksTabProps {
   onOpenEquipmentProjects?: () => void;
   /** Ouvre le parcours catalogue houblon V5.5 de l’application. */
   onOpenHopV55?: () => void;
+  /** Fiche d'article : « voir la facture » et « voir le bilan » (absents : les lignes ne sont pas cliquables). */
+  onOpenTransaction?: (id: string) => void;
+  onOpenBatch?: (id: string) => void;
 }
 
 type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
@@ -98,7 +101,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   onOpenItemRequestHandled,
   onSuccessMessage,
   onOpenEquipmentProjects,
-  onOpenHopV55
+  onOpenHopV55,
+  onOpenTransaction,
+  onOpenBatch
 }) => {
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
@@ -110,6 +115,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     [stocks.rawMaterials, stocks.cleaning]
   );
   const savedRecipes = useStorageValue(readRecipes);
+  const movements = useStorageValue(() => StorageService.getStockMovements());
   const recipes = useMemo(() => savedRecipes
     .filter(recipe => !recipe.archivedAt)
     .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
@@ -577,10 +583,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           const result = StorageService.deleteStockItem(typeOf(item), item.ref);
           if (!result.ok && result.refus) onSuccessMessage?.(result.refus);
         }}
-        onCorrectInventory={(item) => {
-          setSelected(null);
-          setCorrecting(item);
-        }}
+        movements={movements}
+        onCorrect={applyCorrection}
+        onCommander={() => { setSelected(null); setSubTab('courses'); }}
+        onOpenHops={onOpenHopV55}
+        onOpenTransaction={onOpenTransaction}
+        onOpenBatch={onOpenBatch}
         onToggleFavorite={(item) => {
           StorageService.toggleFavorite('stockItem', item.ref);
         }}

@@ -1053,6 +1053,8 @@ export const App: React.FC = () => {
             stocks={stocks}
             batches={batches}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
+            onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
+            onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
             onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
             openItemRequest={stockOpenRequest}
