@@ -1,0 +1,101 @@
+/* La journée en frise (port de p2c : work/missions/2026-11-11-brassage-zero/voies/p2/p2c/style.css).
+   Jetons : ceux de la conduite (`--bz-*`, définis par `.brew-page.bz`, clair et cave) ; les replis sont ceux de p2c en clair.
+   14 px partout (heures, à côté, relevés, légende). Classes préfixées `fr-` (L26). */
+.brew-frise {
+  --fr-bg: var(--bz-page, #fff);
+  --fr-pan: var(--bz-panel, #f5f5f5);
+  --fr-sur: var(--bz-raised, #ebebeb);
+  --fr-bd: var(--bz-border, #ddd);
+  --fr-faint: var(--bz-faint, #8a8a8a);
+  --fr-t0: var(--bz-t0, #111);
+  --fr-t1: var(--bz-t1, #333);
+  --fr-t2: var(--bz-t2, #5e5e5e);
+  --fr-att: var(--bz-warn, #9c7020);
+  --fr-hop: var(--bz-hop, #567f45);
+  --fr-ph1: var(--bz-ph1, #2f5f7d);
+  --fr-ph2: var(--bz-ph2, #c87a2c);
+  --fr-ph3: var(--bz-ph3, #a0522d);
+  --fr-ph4: var(--bz-ph4, #567f45);
+  --fr-rows: 20px 12px 20px calc(var(--fr-rangees, 1) * 24px) 22px;
+  margin: 8px 8px 0;
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  position: relative;
+  color: var(--fr-t1);
+}
+.brew-frise button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.brew-frise button:focus-visible { outline: 2px solid var(--fr-att); outline-offset: 2px; }
+.brew-frise button:disabled { cursor: default; }
+.brew-frise .fr-g { display: grid; grid-template-rows: var(--fr-rows); row-gap: 4px; font-size: 14px; color: var(--fr-t2); align-items: center; }
+.brew-frise .fr-tl { position: relative; display: grid; grid-template-rows: var(--fr-rows); row-gap: 4px; min-width: 0; }
+
+/* heures et pastille de l'heure */
+.brew-frise .fr-heures { position: relative; }
+.brew-frise .fr-heures span {
+  position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap;
+  font: 500 14px 'IBM Plex Mono', ui-monospace, monospace; word-spacing: -.3em; color: var(--fr-t2);
+}
+.brew-frise .fr-pastille {
+  position: absolute; top: -1px; transform: translateX(-50%); z-index: 3; white-space: nowrap;
+  font: 600 14px 'IBM Plex Mono', ui-monospace, monospace; word-spacing: -.3em;
+  background: var(--fr-att); color: var(--fr-bg); padding: 0 5px; border-radius: 6px;
+}
+.brew-frise .fr-pastille.fr-droite { transform: translateX(-100%); }
+
+/* la barre : 4 phases proportionnelles à l'heure */
+.brew-frise .fr-barre { position: relative; }
+.brew-frise .fr-seg { position: absolute; top: 0; bottom: 0; background: var(--fr-bd); border-radius: 4px; overflow: hidden; border-right: 2px solid var(--fr-bg); }
+.brew-frise .fr-seg u { position: absolute; left: 0; top: 0; bottom: 0; background: var(--fr-c); }
+.brew-frise .fr-seg.past u { opacity: .55; }
+.brew-frise .fr-seg i { position: absolute; top: 2px; bottom: 2px; width: 2px; background: var(--fr-bg); opacity: .85; }
+
+/* les noms des phases : des boutons (toucher = aller à la phase) */
+.brew-frise .fr-noms { position: relative; }
+.brew-frise .fr-nom { position: absolute; top: 0; height: 20px; font-size: 14px; line-height: 20px; color: var(--fr-t2); white-space: nowrap; padding: 0 3px 0 1px; background: var(--fr-bg); z-index: 3; text-align: left; }
+.brew-frise .fr-nom::after { content: ''; position: absolute; inset: -14px -2px -4px; }
+.brew-frise .fr-nom.cur { color: var(--fr-c); font-weight: 700; }
+.brew-frise .fr-nom:disabled { opacity: .55; }
+
+/* à côté : rond vide, plein une fois fait */
+.brew-frise .fr-cote { position: relative; border-bottom: 1px dashed var(--fr-bd); }
+.brew-frise .fr-ch { position: absolute; height: 24px; display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--fr-t1); white-space: nowrap; padding: 0 2px; background: var(--fr-bg); z-index: 3; }
+.brew-frise .fr-ch.r0 { top: 0; }
+.brew-frise .fr-ch.r1 { top: 24px; }
+.brew-frise .fr-ch.r2 { top: 48px; }
+.brew-frise .fr-ch.r3 { top: 72px; }
+.brew-frise .fr-ch.dr { transform: translateX(-100%); flex-direction: row-reverse; }
+.brew-frise .fr-ch u, .brew-frise .fr-sans u { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--fr-t2); background: var(--fr-bg); box-sizing: border-box; display: inline-block; flex-shrink: 0; }
+.brew-frise .fr-ch u { margin-left: -7px; }
+.brew-frise .fr-ch.dr u { margin-left: 0; margin-right: -7px; }
+.brew-frise .fr-ch.fait, .brew-frise .fr-sans.fait { color: var(--fr-t2); }
+.brew-frise .fr-ch.fait u, .brew-frise .fr-sans.fait u { background: var(--fr-hop); border-color: var(--fr-hop); }
+.brew-frise .fr-cote-sans { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 4px 0 0; font-size: 14px; color: var(--fr-t2); }
+.brew-frise .fr-sans { display: inline-flex; align-items: center; gap: 4px; }
+
+/* relevés : un losange par relevé */
+.brew-frise .fr-rel { position: relative; }
+.brew-frise .fr-dm { display: inline-block; box-sizing: border-box; width: 12px; height: 12px; transform: rotate(45deg); border: 2px solid var(--fr-t2); background: var(--fr-bg); border-radius: 2px; }
+.brew-frise .fr-rel .fr-dm { position: absolute; top: 5px; margin-left: -6px; z-index: 3; }
+.brew-frise .fr-rel .fr-dm::after { content: ''; position: absolute; inset: -10px; }
+.brew-frise .fr-dm.ok { background: var(--fr-hop); border-color: var(--fr-hop); }
+.brew-frise .fr-dm.ecart { background: var(--fr-att); border-color: var(--fr-att); }
+.brew-frise .fr-dm.du { border-color: var(--fr-att); border-width: 3px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--fr-att) 16%, var(--fr-bg)); }
+.brew-frise .fr-dm.manque { border-style: dashed; border-color: var(--fr-faint); background: var(--fr-pan); }
+
+/* trait maintenant */
+.brew-frise .fr-now { position: absolute; top: 20px; bottom: 0; width: 2px; margin-left: -1px; background: var(--fr-att); z-index: 2; pointer-events: none; }
+
+/* légende et nom au toucher */
+.brew-frise .fr-legende { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 0; font-size: 14px; color: var(--fr-t2); }
+.brew-frise .fr-legende span { display: flex; align-items: center; gap: 6px; }
+.brew-frise .fr-legende .fr-dm { width: 10px; height: 10px; }
+.brew-frise .fr-tip { grid-column: 1 / -1; margin: 4px 0 0; font-size: 14px; color: var(--fr-t0); background: var(--fr-sur); border-radius: 8px; padding: 4px 8px; }
+.brew-frise .fr-tip[hidden] { display: none; }
+
+/* 1280 : pleine largeur */
+@media (min-width: 900px) {
+  .brew-frise { grid-template-columns: 64px 1fr; margin: 12px 16px 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brew-frise button:active { transform: scale(.97); }
+}
