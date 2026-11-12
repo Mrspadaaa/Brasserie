@@ -29,7 +29,7 @@ import { ingredientsOf } from '../domain/recipeSnapshot';
 import { breweryDay, brewSessionDatePatch, hasBrewStarted, plannedBrewDate } from '../domain/batchSchedule';
 import { BatchSchedule } from '../ui/production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
-import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep, recordPitch, validPitchQuantityChoice } from '../domain/brewDay';
+import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, phraseQuantiteLevure, READING, restoreBrewDay, startBrewStep, recordPitch, validPitchQuantityChoice } from '../domain/brewDay';
 import type { PitchQuantityChoice } from '../domain/brewDay';
 import { effectiveThermalTarget, startThermalSegment } from '../domain/brewThermal';
 import { pitchTemperatureFeedback } from '../domain/pitchingPlan';
@@ -672,7 +672,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const confirmed = confirmedOther + (ingredients.some(i => i.id === 'yeast') &&
     (state.pitchedAt != null || state.additions?.yeast?.doneAt != null || pitchChoiceValid) ? 1 : 0);
   const pitchQuantityConsequence = currentPitchChoice?.mode === 'measured'
-    ? `Quantité mesurée : ${Units.format(currentPitchChoice.amount, currentPitchChoice.unit)} · ${plannedPitchSummary}.`
+    ? phraseQuantiteLevure(Units.format(currentPitchChoice.amount, currentPitchChoice.unit), currentPitchChoice.amount, currentPitchChoice.unit, plannedPitchSummary)
     : currentPitchChoice?.mode === 'planned'
       ? `Quantité prévue explicitement confirmée : ${Units.format(currentPitchChoice.amount, currentPitchChoice.unit)}.`
       : currentPitchChoice?.mode === 'starter-transferred'
@@ -1533,9 +1533,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                             {isMash(current.id) ? 'Ce palier' : boiled ? 'Cette ébullition' : 'Cette étape'} devait finir à {heureCuve(now + left!)} et la fin n’a pas été validée.
                             Regarde ce qui s’est passé à la cuve.
                           </p>
-                          <button type="button" className={brewControl} onClick={toggleComplete}>
-                            {boiled ? 'Le feu est coupé : valider' : 'C’est fini : valider'}
-                          </button>
+                          {/* Lot F (16) : à l'ébullition, le pied « Coupure du feu · heure » est LE bouton qui coupe le feu ; le bandeau n'en double pas le geste. */}
+                          {!boiled && (
+                            <button type="button" className={brewControl} onClick={toggleComplete}>
+                              C’est fini : valider
+                            </button>
+                          )}
                           <button
                             type="button"
                             className={brewControl}
