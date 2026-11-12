@@ -9,6 +9,7 @@ import {
   heureFrise,
   heuresDeLaFrise,
   positionFrise,
+  placerNoms,
   rangerCote,
   etatDesPhases,
   type PlanFrise,
@@ -230,5 +231,29 @@ describe('BrewFrise : 14 px partout (contrôle du CSS)', () => {
   });
   it('un losange garde une zone de toucher d’au moins 32 px', () => {
     expect(css).toMatch(/\.fr-rel \.fr-dm::after\s*\{[^}]*inset:\s*-10px/);
+  });
+});
+
+describe('BrewFrise : noms et heures sans chevauchement (test d’écran c6, n° 11, 12, 13)', () => {
+  it('placerNoms : « Refroidir » commence près du bord droit : il recule pour tenir dans la piste (320 px)', () => {
+    const l = placerNoms([{ id: 'boil', texte: 'Ébullition', gauche: 60 }, { id: 'finish', texte: 'Refroidir', gauche: 97 }], 320);
+    const largeurFinish = Math.ceil('Refroidir'.length * 7.2) + 4;
+    expect((l.finish / 100) * 320 + largeurFinish).toBeLessThanOrEqual(320.01);
+    expect(l.finish).toBeLessThan(97);
+  });
+  it('placerNoms : deux phases qui commencent à la même heure (Préparer de 0 min) ne se couvrent pas', () => {
+    const l = placerNoms([{ id: 'preparation', texte: 'Préparer', gauche: 0 }, { id: 'mash', texte: 'Empâter', gauche: 0 }], 320);
+    expect(l.preparation).toBe(0);
+    expect((l.mash / 100) * 320).toBeGreaterThanOrEqual(Math.ceil('Préparer'.length * 7.2) + 4);
+  });
+  it('placerNoms : des noms déjà éloignés ne bougent pas', () => {
+    const l = placerNoms([{ id: 'a', texte: 'Préparer', gauche: 0 }, { id: 'b', texte: 'Empâter', gauche: 40 }], 320);
+    expect(l.b).toBeCloseTo(40, 5);
+  });
+  it('heuresDeLaFrise en pixels : la pastille « 16 h 02 » couvre l’heure 15 h à 61 min (8 h sur 322 px), qui disparaît', () => {
+    const heures = heuresDeLaFrise(h(9, 0), h(17, 20), h(16, 2), 322).map((x) => new Date(x).getHours());
+    expect(heures).not.toContain(16);
+    expect(heures).not.toContain(15);
+    expect(heures).toContain(13);
   });
 });

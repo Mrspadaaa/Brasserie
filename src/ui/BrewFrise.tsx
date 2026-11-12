@@ -66,6 +66,9 @@ const COULEUR_PHASE: Record<BrewArea, string> = {
 const LARGEUR_PAR_DEFAUT = 320; // la piste d'un téléphone de 390 px
 const PX_PAR_CARACTERE = 6; // 14 px Source Sans, mesuré sur p2c (≈ 5,8)
 const RAYON_ROND = 14; // rond de 10 px, espace, marge négative
+const PASTILLE_PX = 60; // « 16 h 02 » en 14 px mono, word-spacing −.3 em, plus 2 × 5 px de marge
+const HEURE_PX = 30; // « 16 h » en 14 px mono
+const PX_NOM = 7.2; // 14 px Source Sans, un peu gras pour la phase en cours (≈ 6,3 à 7)
 
 /** Position en % entre `debut` et `fin`, bornée. */
 export const positionFrise = (t: number, debut: number, fin: number): number => {
@@ -80,7 +83,7 @@ export const heureFrise = (t: number): string => {
 };
 
 /** Les heures pleines de la journée, sans celles que la pastille de l'heure couvre (45 min autour ; 90 min avant quand elle se cale à droite). */
-export const heuresDeLaFrise = (debut: number, fin: number, maintenant: number): number[] => {
+export const heuresDeLaFrise = (debut: number, fin: number, maintenant: number, largeur?: number): number[] => {
   const premiere = new Date(debut);
   premiere.setMinutes(0, 0, 0);
   const heures: number[] = [];
@@ -92,6 +95,13 @@ export const heuresDeLaFrise = (debut: number, fin: number, maintenant: number):
     heures.push(t);
   }
   const droite = pastilleADroite(fin, maintenant);
+  if (largeur && largeur > 0) {
+    // Même règle en pixels : la pastille (≈ 60 px) et l'étiquette (≈ 30 px) ne se couvrent jamais, quelle que soit la durée de la journée.
+    const msParPx = (fin - debut) / largeur;
+    const loin = (PASTILLE_PX / 2 + HEURE_PX / 2 + 3) * msParPx;
+    const loinDroite = (PASTILLE_PX + HEURE_PX / 2 + 3) * msParPx;
+    return heures.filter((t) => (droite ? t > maintenant + (HEURE_PX / 2 + 3) * msParPx || t < maintenant - loinDroite : Math.abs(t - maintenant) > loin));
+  }
   return heures.filter((t) => (droite ? t > maintenant + 45 * MIN || t < maintenant - 90 * MIN : Math.abs(t - maintenant) > 45 * MIN));
 };
 
@@ -163,6 +173,26 @@ export const rangerCote = (
   });
 };
 
+/** Place les noms des phases, dans l'ordre, sans qu'aucun en couvre un autre ni sorte de la piste (« Refroidir » coupé au bord, deux noms collés quand deux
+    phases commencent à la même heure). Problème d'école : poser des segments ordonnés sur une droite en minimisant le déplacement, deux passes (poussée vers la
+    droite, puis recul depuis le bord droit). Largeur du texte estimée (pur, testable). Rend la position gauche de chaque nom en % de la piste. */
+export const placerNoms = (
+  noms: readonly { id: string; texte: string; gauche: number }[],
+  largeur: number
+): Record<string, number> => {
+  const marge = 6;
+  const l = noms.map((n) => Math.ceil(n.texte.length * PX_NOM) + 4);
+  const x = noms.map((n) => (n.gauche / 100) * largeur);
+  for (let i = 1; i < x.length; i += 1) x[i] = Math.max(x[i], x[i - 1] + l[i - 1] + marge);
+  for (let i = x.length - 1; i >= 0; i -= 1) {
+    const limite = i === x.length - 1 ? largeur : x[i + 1] - marge;
+    if (x[i] + l[i] > limite) x[i] = limite - l[i];
+  }
+  const sortie: Record<string, number> = {};
+  noms.forEach((n, i) => { sortie[n.id] = (Math.max(0, x[i]) / largeur) * 100; });
+  return sortie;
+};
+
 const pct = (n: number) => `${n.toFixed(2)}%`;
 
 export function BrewFrise({
@@ -203,7 +233,8 @@ export function BrewFrise({
   const maintenantClamp = Math.max(debut, Math.min(fin, maintenant));
   const aDroite = pastilleADroite(fin, maintenant);
   const phases = etatDesPhases(plan.phases, maintenant, enCours);
-  const heures = heuresDeLaFrise(debut, fin, maintenant);
+  const heures = heuresDeLaFrise(debut, fin, maintenant, largeur);
+  const placeNoms = placerNoms(plan.phases.map((p) => ({ id: p.area, texte: noms[p.area], gauche: pos(p.debut) })), largeur);
 
   const cote = rangerCote(
     plan.aCote.map((c) => ({ id: c.id, texte: c.nom, heure: c.heure })),
@@ -255,7 +286,7 @@ export function BrewFrise({
                 key={p.area}
                 type="button"
                 className={`fr-nom ${phases[i].etat}`}
-                style={{ left: pct(pos(p.debut)), '--fr-c': COULEUR_PHASE[p.area] } as React.CSSProperties}
+                style={{ left: pct(placeNoms[p.area]), '--fr-c': COULEUR_PHASE[p.area] } as React.CSSProperties}
                 data-phase={p.area}
                 disabled={phasesIndisponibles.includes(p.area)}
                 aria-pressed={ici}
