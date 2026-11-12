@@ -313,13 +313,15 @@ export function measureScale(
     fmt = (n) => formatCible(kind, n);
   }
   let milieu: number;
+  let sansRepere = false;
   if (band && axis) {
     milieu = (band[0] + band[1]) / 2;
   } else {
     const p = bornesPlausibles(kind, step, recipe);
     axis = [p.min, p.max];
     milieu = p.milieu;
-    fmt = kind === 'ph' ? (n) => n.toFixed(1).replace('.', ',') : kind === 'densite' ? sg : (n) => decimales(n, 1);
+    sansRepere = p.repere === false;
+    fmt =kind === 'ph' ? (n) => n.toFixed(1).replace('.', ',') : kind === 'densite' ? sg : (n) => decimales(n, 1);
   }
   let [min, max] = axis;
   // Un relevé hors de l'axe l'étire : le trait ne se colle jamais à un bord comme s'il y était.
@@ -330,7 +332,8 @@ export function measureScale(
   }
   return band
     ? { min, max, cible: true, bandMin: band[0], bandMax: band[1], milieu, ticks: [min, band[0], band[1], max], fmt }
-    : { min, max, cible: false, bandMin: milieu, bandMax: milieu, milieu, ticks: [min, milieu, max], fmt };
+    // Un volume sans cible d'étape ne porte aucun repère (lot F, 13) : seulement les deux bouts de l'étendue.
+    : { min, max, cible: false, bandMin: milieu, bandMax: milieu, milieu, ticks: sansRepere ? [min, max] : [min, milieu, max], fmt };
 }
 
 /** « +0,12 » au-dessus de la bande, « −0,3 » en dessous, `null` dans la cible : l'écart à la borne la plus proche. */

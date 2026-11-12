@@ -51,7 +51,18 @@ export const READING = {
   }
 } as const;
 export const isMash = (id = '') => /^mash/.test(id);
-export const isFinalWort = (id = '') => ['refroidissement', 'ensemencement'].includes(id);
+/**
+ * Lot F (14) : la clôture ne dit « Quantité mesurée » que pour une masse ou un volume pesé. « 1 sachet » est un toucher (une levure sèche sans
+ * dose prévue) : rien n'a été pesé, la phrase le dit. `quantite` : la quantité déjà écrite (« 1 sachet », « 11,5 g »).
+ */
+const UNITES_DE_COMPTAGE = ['sachet', 'sachets', 'pastille', 'pastilles', 'tube', 'tubes', 'flacon', 'flacons', 'pack', 'packs', 'pièce', 'pièces'];
+export function phraseQuantiteLevure(quantite: string, amount: number, unit: string, dosePrevue: string): string {
+  const compte = UNITES_DE_COMPTAGE.includes(unit.trim().toLowerCase());
+  return compte
+    ? `${quantite} ${amount > 1 ? 'choisis, non pesés' : 'choisi, non pesé'} · ${dosePrevue}.`
+    : `Quantité mesurée : ${quantite} · ${dosePrevue}.`;
+}
+export const isFinalWort =(id = '') => ['refroidissement', 'ensemencement'].includes(id);
 export const readingKey = (r: BrewDayReading) => r.id ?? `${r.at}-${r.kind}-${r.stepId ?? ''}`;
 export const defaultReading = (s?: BrewDayStep): ReadingKind =>
   isMash(s?.id)
@@ -202,11 +213,17 @@ export function volumeTarget(step: BrewDayStep, recipe?: RecipeSnapshot): number
       ?.filter((f) => f.kind === 'grain')
       .reduce((sum, f) => sum + f.weightKg, 0) ??
     0;
-  return step.id === 'ensemencement' || step.id === 'refroidissement'
-    ? recipe?.volumeL
-    : step.id === 'preboil' && plan
-      ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
+  // Lot F (13) : la cible est celle de l'ÉTAPE, jamais le volume du fermenteur partout. L'eau d'empâtage à Eau et sels et Concassage ; le
+  // volume avant ébullition du Premier moût à l'ébullition ; le fermenteur au refroidissement et à l'ensemencement. Ailleurs : rien.
+  if (step.id === 'ensemencement' || step.id === 'refroidissement') return recipe?.volumeL;
+  if (step.id === 'eau' || step.id === 'concassage') return plan?.mashWaterL && plan.mashWaterL > 0 ? plan.mashWaterL : undefined;
+  if (step.id === 'preboil' || step.id === 'fwh' || /^boil-|^hop-/.test(step.id) || step.id === 'sucres') {
+    if (recipe?.preBoilL) return recipe.preBoilL;
+    return plan
+      ? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
       : undefined;
+  }
+  return undefined;
 }
 export function readingFeedback(
   kind: ReadingKind,
@@ -296,9 +313,11 @@ export function readingFeedback(
         title: ecart == null ? `Dans la cible ${texteBande(kind, cible)}` : phraseEcart(kind, ecart, cible),
         bande: true,
         detail:
-          step.id === 'preboil'
-            ? 'Repère eau moins absorption du grain ; le fond de cuve et le volume à chaud peuvent créer un écart.'
-            : 'Volume en fermenteur, à comparer avec la densité.'
+          step.id === 'eau' || step.id === 'concassage'
+            ? 'Eau d’empâtage prévue par le plan d’eau.'
+            : isFinalWort(step.id)
+              ? 'Volume en fermenteur, à comparer avec la densité.'
+              : 'Repère eau moins absorption du grain ; le fond de cuve et le volume à chaud peuvent créer un écart.'
       };
     }
   }
