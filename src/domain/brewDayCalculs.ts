@@ -1,6 +1,6 @@
 import { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import { actualWater, boilScenario, lastWortPair, wortRescue } from './brewAssist';
-import { boilMinutes, effectiveFermentables, measuredEfficiency } from './brewCompanion';
+import { boilMinutes, effectiveFermentables, isBoilStep, measuredEfficiency } from './brewCompanion';
 import { CibleMesure, densiteAvantEbullition, formatCible, sg, volumeTarget } from './brewDay';
 import { nombreFr } from './nombreAffiche';
 
@@ -314,4 +314,47 @@ export function correctionsAvantEbullition(
   if (fini(brut)) morceaux.push(`évaporation ${nombreFr(brut, 1)} L/h`);
   if (lu.known && vise != null) morceaux.push(`rendement ≈ ${Math.round(lu.pct)} %, visé ≈ ${Math.round(vise)} %`);
   return { options, hypotheses, note: morceaux.join(' · ') };
+}
+
+/**
+ * Pause de l'ébullition (lot K5, n° 15 : le ⏸ de p2c à l'ébullition). L'instant de la pause est posé sur l'étape d'ébullition
+ * (`pausedAt`, le champ du minuteur de palier) ; le domaine n'a pas de `boilPausedAt`. `null` : pas d'ébullition en cours, ou en marche.
+ */
+export function boilPausedAt(state: BrewDayState): number | null {
+  if (state.boilStartedAt == null || state.boilFinishedAt != null) return null;
+  const etape = state.steps.find(isBoilStep);
+  return etape?.pausedAt ?? null;
+}
+
+/** Mettre l'ébullition en pause : rien ne change si elle n'est pas en cours ou déjà en pause. */
+export function pauseBoil(state: BrewDayState, now: number): BrewDayState {
+  if (state.boilStartedAt == null || state.boilFinishedAt != null || boilPausedAt(state) != null) return state;
+  const cible = state.steps.find(isBoilStep);
+  if (!cible) return state;
+  return { ...state, steps: state.steps.map((s) => (s === cible ? { ...s, pausedAt: now } : s)) };
+}
+
+/**
+ * Reprendre : `boilStartedAt` avance de la durée de la pause. Les ajouts (alarmes de `brewAlarms`), la fin et la piste se mesurent depuis
+ * `boilStartedAt` : ils sont recalés d'autant, et l'écriture du lot recalcule les alarmes du serveur.
+ */
+export function resumeBoil(state: BrewDayState, now: number): BrewDayState {
+  const depuis = boilPausedAt(state);
+  if (depuis == null) return state;
+  const duree = Math.max(0, now - depuis);
+  return {
+    ...state,
+    boilStartedAt: state.boilStartedAt! + duree,
+    steps: state.steps.map((s) => {
+      if (s.pausedAt == null || !isBoilStep(s)) return s;
+      const { pausedAt: _p, ...reste } = s;
+      return reste;
+    })
+  };
+}
+
+/** L'état tel que l'horloge le lit : pendant la pause, l'ébullition est figée (`boilStartedAt` suit `now`), donc `now − boilStartedAt` ne grandit pas. */
+export function etatEbullitionFigee(state: BrewDayState, now: number): BrewDayState {
+  const depuis = boilPausedAt(state);
+  return depuis == null ? state : { ...state, boilStartedAt: state.boilStartedAt! + Math.max(0, now - depuis) };
 }

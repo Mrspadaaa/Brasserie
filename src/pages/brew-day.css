@@ -2934,6 +2934,8 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   font-weight: 500;
 }
 .brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 0; }
+/* K5 n° 15 : le ⏸ garde sa place avant le lancement (p2c), éteint ; le lancement est le bouton du pied */
+.brew-page.bz .bz-ctl button:disabled { opacity: 0.4; }
 .brew-page.bz .bz-piste { position: relative; height: 22px; margin-top: 8px; width: 100%; }
 .brew-page.bz .bz-piste-rail { position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-border); }
 .brew-page.bz .bz-piste-fait { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-hop); }

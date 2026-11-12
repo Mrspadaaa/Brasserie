@@ -122,7 +122,7 @@ import { compteReleves, heuresTenues, losangesFrise, relevesDuJour, trierTuiles,
 import type { HeuresPrevues, ReleveDuJour } from '../domain/brewDayBilan';
 import { planJournee } from '../domain/brewDayPlan';
 import type { PlanJournee } from '../domain/brewDayPlan';
-import { grainPourProchain, rendementVise } from '../domain/brewDayCalculs';
+import { boilPausedAt, etatEbullitionFigee, grainPourProchain, pauseBoil, rendementVise, resumeBoil } from '../domain/brewDayCalculs';
 import { BrewFrise } from '../ui/BrewFrise';
 import { BrewBilan, BrewJournalExtrait } from '../ui/BrewBilan';
 import type { EntreeJournalBilan, HeureTenue as HeureTenueBilan, TuileBilan } from '../ui/BrewBilan';
@@ -176,6 +176,15 @@ export function dosePrevueLevure(recipe: RecipeSnapshot, sachet: Sachet | null):
   if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
   return recipe.yeast?.form === 'sèche' && sachet ? { amount: 1, unit: 'sachet' } : undefined;
 }
+/**
+ * K5 n° 28 (1C, son choix) : la dose que l'écran peut DIRE avant l'ensemencement. Celle de la recette, ou celle que le brasseur a choisie (« 1 sachet » touché) ;
+ * jamais le « 1 sachet » dérivé de `dosePrevueLevure` : avant le geste, la ligne Levure dit « à choisir » et la tuile, comme « À anticiper », ne disent aucune dose.
+ */
+export function doseDiteLevure(recipe: RecipeSnapshot, state: BrewDayState): { amount: number; unit: string } | undefined {
+  if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
+  const choisie = state.additions?.yeast;
+  return typeof choisie?.amount === 'number' && choisie.amount > 0 && choisie.unit ? { amount: choisie.amount, unit: choisie.unit } : undefined;
+}
 /** « 1 sachet », « 2 sachets », « 11,5 g » : la dose dite comme la ligne Levure de p2c. */
 export function texteDoseLevure(dose: { amount: number; unit: string }): string {
   return dose.unit === 'sachet' ? `${String(dose.amount).replace('.', ',')} sachet${dose.amount >= 2 ? 's' : ''}` : `${doseFr(dose.amount, dose.unit)} ${dose.unit}`;
@@ -223,7 +232,7 @@ export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, s
     // K4 n° 25 (p2c) : « cible 18 °C · 1 sachet » : la dose prévue de levure se lit sur la tuile Ensemencement.
     .map((t) => {
       if (t.id !== 'ensemencement' || !recipe.yeast?.name) return t;
-      const dose = dosePrevueLevure(recipe, sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products));
+      const dose = doseDiteLevure(recipe, state);
       if (!dose) return t;
       const texte = texteDoseLevure(dose);
       return { ...t, cible: t.cible ? `${t.cible} · ${texte}` : texte };
@@ -436,19 +445,21 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const thermalTarget = effectiveThermalTarget(recipe, state, current);
   const measuredStep = thermalTarget == null ? current : { ...current, tempC: thermalTarget };
   const rampBeforeHold = (isMash(current.id) || current.id === 'whirlpool') && current.tempC != null && current.durationMin > 0;
-  const alarms = useMemo(() => brewAlarms(state, recipe), [state, recipe]);
+  // K5 n° 15 : pendant la pause de l'ébullition, l'horloge est figée ; alarmes et plan se lisent sur l'état figé (boilStartedAt suit now).
+  const boilEnPause = boilPausedAt(state);
+  const alarms = useMemo(() => brewAlarms(boilEnPause != null ? etatEbullitionFigee(state, now) : state, recipe), [state, recipe, boilEnPause, boilEnPause != null ? now : 0]);
   const area = view === 'recipe' || view === 'journal' ? areaOf(current.id) : view;
   const boiled = isBoilStep(current);
   const duration = boiled ? boilMinutes(state, recipe) : current.durationMin;
   const left =
     boiled && state.boilStartedAt != null && state.boilFinishedAt == null
-      ? state.boilStartedAt + duration * 60000 - now
+      ? state.boilStartedAt + duration * 60000 - (boilEnPause ?? now)
       : !boiled && isUsefulTimer(current) && current.doneAt == null
         ? remainingMs(current, now)
         : null;
   const stepStarted = boiled ? state.boilStartedAt != null : current.startedAt != null;
   const running = boiled
-    ? state.boilStartedAt != null && state.boilFinishedAt == null
+    ? state.boilStartedAt != null && state.boilFinishedAt == null && boilEnPause == null
     : current.startedAt != null && current.pausedAt == null && current.doneAt == null;
   const showTimer = boiled || isUsefulTimer(current);
   const due = alarms.filter((a) => a.at <= now);
@@ -564,7 +575,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       setSoundState(true);
       setAudioArmed(true);
     }
-    if (boiled)
+    if (boiled && boilEnPause != null) update((s) => resumeBoil(s, brewNow()));
+    else if (boiled)
       update((s) => {
         const n = { ...s, boilStartedAt: s.boilStartedAt ?? brewNow() };
         delete n.boilFinishedAt;
@@ -756,7 +768,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p2c / 1C (test c6 n° 6) : la ligne figure dans chaque phase avant l'ensemencement (où le groupe Levure prend le relais) : « Sortir la levure · SafAle US-05 ·
   // 1 sachet · 11,5 g » et la jauge de la dose sur la plage du fabricant, pour le volume prévu. La dose est celle de la recette, sinon « 1 sachet » d'une
   // levure sèche au poids connu ; sans dose sûre, le nom seul et pas de jauge (l'inconnu n'est jamais 0).
-  const doseRappel = dosePrevueLevure(recipe, sachetRappel);
+  const doseRappel = doseDiteLevure(recipe, state);
   const gRappel = grammesDuChoix(doseRappel, sachetRappel);
   const sousRappel = doseRappel
     ? [recipe.yeast?.name, doseRappel.unit === 'sachet' ? `${String(doseRappel.amount).replace('.', ',')} sachet${doseRappel.amount >= 2 ? 's' : ''}` : doseRappel.unit === 'g' ? null : `${doseFr(doseRappel.amount, doseRappel.unit)} ${doseRappel.unit}`, gRappel != null ? `${frNb(gRappel)} g` : null].filter(Boolean).join(' · ')
@@ -818,7 +830,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // m2 (VB-1) : ce que l'étape attend en mesure, en cases « ? » dans Relevés du jour ; rien en consultation.
   const attendues = isConsulting ? [] : mesuresAttendues(measuredStep, state, actualRecipe, now);
   // p2c : la journée en frise et le bilan visé. Les heures viennent d'A3, les 9 relevés d'A1, le rendement d'A2 ; rien n'est calculé dans la page.
-  const planJ = planJournee(state, actualRecipe, now);
+  const planJ = planJournee(etatEbullitionFigee(state, now), actualRecipe, now);
   const relevesJ = relevesDuJour(state, actualRecipe, now, heuresPrevuesDuPlan(planJ, state));
   const compteJ = compteReleves(relevesJ);
 
@@ -1177,7 +1189,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     state.boilStartedAt != null && state.boilFinishedAt == null && (isConsulting || !boiled);
   // Une horloge tourne : un minuteur de palier en marche (pas en pause) ou l'ébullition commencée et non finie.
   const clockRunning =
-    (state.boilStartedAt != null && state.boilFinishedAt == null) ||
+    (state.boilStartedAt != null && state.boilFinishedAt == null && boilEnPause == null) ||
     state.steps.some((s) => isUsefulTimer(s) && s.startedAt != null && s.pausedAt == null && s.doneAt == null);
   useEffect(() => {
     if (!clockRunning) {
@@ -1198,6 +1210,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     });
     return () => { annule = true; };
   }, [clockRunning, ecranArrete, awake]);
+  // K5 n° 21 : à l'ébullition, la fin se dit par l'horloge (« dépassé ») et le pied « Coupure du feu » ; pas de carte grise en plus (p2c n'en a pas).
+  const dueCartes = due.filter((a) => (a.id !== appelBrut?.id || !appelCourant) && !(a.id === 'boil-end' && boiled));
   const headerAlarm =
     upcoming &&
     // p2c / E2 : la carte d'appel prend la place du bandeau d'un ajout échu.
@@ -2072,7 +2086,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <Clock3 size={14} />
                 <span>Ébullition</span>
                 <strong className="brew-digits">
-                  {formatCountdown(state.boilStartedAt + boilMinutes(state, recipe) * 60000 - now)}
+                  {formatCountdown(state.boilStartedAt + boilMinutes(state, recipe) * 60000 - (boilEnPause ?? now))}
                 </strong>
               </button>
             )}
@@ -2341,24 +2355,25 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   −{-d}
                                 </button>
                               ))}
-                              {!boiled && running && (
-                                <button
-                                  type="button"
-                                  aria-label="Mettre le minuteur en pause"
-                                  data-pause=""
-                                  data-booster="pause"
-                                  onClick={() =>
-                                    update((s) => ({
-                                      ...s,
-                                      steps: s.steps.map((x, i) =>
-                                        i === s.currentIndex ? { ...x, pausedAt: brewNow() } : x
-                                      )
-                                    }))
-                                  }
-                                >
-                                  <Pause size={14} fill="currentColor" />
-                                </button>
-                              )}
+                              {/* K5 n° 15 (p2c) : le ⏸ à chaque minuteur, ébullition et whirlpool compris. En marche il met en pause ; en pause il reprend (▶) ;
+                                  avant le lancement il garde sa place, éteint : le lancement est le bouton du pied. */}
+                              <button
+                                type="button"
+                                aria-label={current.pausedAt != null ? 'Reprendre le minuteur' : 'Mettre le minuteur en pause'}
+                                data-pause=""
+                                data-booster="pause"
+                                disabled={completed || (!running && current.pausedAt == null)}
+                                onClick={() => {
+                                  if (current.pausedAt != null) { start(); return; }
+                                  update((s) =>
+                                    boiled
+                                      ? pauseBoil(s, brewNow())
+                                      : { ...s, steps: s.steps.map((x, i) => (i === s.currentIndex ? { ...x, pausedAt: brewNow() } : x)) }
+                                  );
+                                }}
+                              >
+                                {current.pausedAt != null ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+                              </button>
                               {[1, 5].map((d) => (
                                 <button
                                   type="button"
@@ -2444,11 +2459,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </details>
                         )}
                     </section>
-                    {due.some((a) => a.id !== appelBrut?.id || !appelCourant) && !staleTimer && !headerAlarm && !alarmSound.ringing && (
+                    {dueCartes.length > 0 && !staleTimer && !headerAlarm && !alarmSound.ringing && (
                       <aside role="status" className="brew-due-alert">
                         <BellRing size={16} />
                         <div>
-                          {due.filter((a) => a.id !== appelBrut?.id || !appelCourant).map((a) => (
+                          {dueCartes.map((a) => (
                             <p key={a.id}>
                               <strong>{a.title}</strong>
                               <span>{a.body}</span>
