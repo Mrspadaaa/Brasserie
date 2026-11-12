@@ -2822,6 +2822,10 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   /* p2c : Ensuite (5), À anticiper (6), puis le bilan visé (7). */
   .brew-page.bz .brew-readings-summary { order: 7; }
   .brew-page.bz .bz-bilan { order: 7; }
+  /* p2c E4, 390 : sous l'heure de fin, le bilan contre la cible, puis la levure, puis « Au journal ». */
+  .brew-page.bz .bz-bilan.is-reel { order: 1; }
+  .brew-page.bz .bz-levure-cloture { order: 2; }
+  .brew-page.bz .bz-bilan-journal { order: 3; }
   .brew-page.bz .brew-finish-summary { order: 7; }
   .brew-page.bz .brew-preparations { order: 6; }
   /* m2 : Suivi thermique replié, après « À anticiper », juste avant « Aides et repères » (même rang que À anticiper : il suit dans le DOM). */
@@ -3415,7 +3419,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-fin-jour { display: flex; align-items: center; gap: 16px; padding: 12px 16px; border: 1px solid var(--bz-border); border-radius: 14px; background: var(--bz-surface, transparent); }
 .brew-page.bz .bz-fin-duree { font-size: 38px; line-height: 1; font-weight: 700; white-space: nowrap; }
 .brew-page.bz .bz-fin-texte { font-size: 14px; line-height: 1.35; color: var(--bz-t2); }
-.brew-page.bz .bz-levure-cloture-ligne { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0 4px; }
+.brew-page.bz .bz-levure-cloture-ligne { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px 10px; }
 .brew-page.bz .bz-levure-cloture-txt { flex: 1 1 auto; min-width: 0; font-size: 15px; }
 .brew-page.bz .bz-levure-cloture-sub { color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-levure-cloture-phrase { margin: 4px 0 0; font-size: 14px; color: var(--bz-t2); }
