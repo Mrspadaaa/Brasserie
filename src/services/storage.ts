@@ -37,6 +37,7 @@ import { readIngredientFermentationFacts } from '../../functions/src/ingredientF
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { readYeastProductDocument, type YeastProductDocument } from '../../functions/src/yeastSupplySchema';
 import { nombreFr } from '../domain/nombreAffiche';
+import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
 
 /**
  * Façade de données de l'application.
@@ -1082,6 +1083,11 @@ export const StorageService = {
         `Statut au moment de la suppression : ${target.status}`
       );
     }
+  },
+
+  /** Les mouvements de stock écrits (achat, inventaire, brassage) : la fiche d'article en lit l'historique (voie p1). Lecture seule. */
+  getStockMovements(): MouvementBrut[] {
+    return FirestoreRepo.all<MouvementBrut>('movements');
   },
 
   // 4. RECETTES
