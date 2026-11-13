@@ -30,6 +30,7 @@ import { canonicalStockCategory } from '../../services/stockLineMatching';
 import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
 
+const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
     default: HopIndexWorkspace,
@@ -280,7 +281,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
   const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
   const favoriteCount = allItems.filter(item => item.favorite).length;
-  const visibleItems = useMemo(() => allItems.filter(item => stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true), [allItems, stockFilter, orderRefs]);
+  const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
+  const [rayonMur, setRayonMur] = useState<'Malts' | 'Houblons' | 'Levures' | null>(null);
+  const estIngredient = (item: StockItem) => /^(malt|houblon|levure)/i.test(item.category);
+  const visibleItems = useMemo(() => allItems.filter(item => (ongletMur === 'autres' ? !estIngredient(item) : estIngredient(item) && (!rayonMur || new RegExp('^' + rayonMur.slice(0, -1), 'i').test(item.category))) && (stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true)), [allItems, stockFilter, orderRefs, ongletMur, rayonMur]);
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
     const text = [
@@ -423,6 +427,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </>}
           </div>
         </details>
+        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
+          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={setRayonMur} filtre={rayonMur} onglet={ongletMur} onOnglet={setOngletMur} />
+        </Suspense>
         <EntityList
           className={`flex-1 ${mobile ? 'pb-16' : ''}`}
           items={visibleItems}
