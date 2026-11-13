@@ -3,11 +3,12 @@
 // Le DOM, les classes et les data-* sont ceux de la maquette ; sa mise en page mesurée (murMiseEnPage.ts) est son propre script, repris.
 import React, { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
-import { construireMur, BASE_TEINTE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
+import { construireMur, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
 import { sourcesDeLApp } from '../../domain/stock/murSources';
 import { couleurALaClarte, labDeHex } from '../../domain/stock/mur';
 import { installerMiseEnPage } from './murMiseEnPage';
 import './mur.css';
+import './murAjustements.css';
 
 export type OngletMur = 'ing' | 'autres';
 interface Props {
@@ -43,7 +44,7 @@ function Marque({ a, ink }: { a: MarqueMur; ink: string }) {
   return (
     <svg {...attrs} data-sommet={a.sommet} data-teinte={a.teinte} {...(a.alpha != null ? { 'data-alpha': String(a.alpha) } : {})} className="l1e-b l1e-hs" width={w} height={h} viewBox={`0 0 ${w} ${h}`} focusable="false">
       <title>{a.titre}</title>
-      <path d={a.trace} fill={a.fill} {...(a.hachure ? { stroke: a.hachure, strokeWidth: 1 } : {})} />
+      <path d={a.trace} fill={a.fill} {...(a.hachure ? { stroke: a.hachure, strokeWidth: 1 } : labDeHex(a.fill)[0] > 80 ? { stroke: 'var(--l1-t2)', strokeOpacity: 0.55, strokeWidth: 1 } : {})} />
     </svg>
   );
 }
@@ -115,7 +116,7 @@ function LegendeMalts() {
   );
 }
 function LegendeHoublons() {
-  const teintes: Array<[string, string]> = [['agrumes', 'agrumes'], ['tropical', 'tropical'], ['fruitsrouges', 'fruits rouges'], ['floral', 'floral'], ['resine', 'résine, pin'], ['epice', 'épicé, herbes'], ['nonclasse', 'arôme non classé']];
+  const teintes: Array<[string, string]> = TEINTES_LEGENDE.map((t) => [t.id, t.mot]); // les sept teintes de la maquette fA (murDonnees)
   return (
     <div className="sv-leg" id="sv-leg-f1" role="note" aria-label="Légende de la rangée Houblons" hidden>
       <Li t="pointe : fruité moderne"><Pi d="M0 14V5L4 0L8 5V14Z" fill="#9AA592" stroke="#858f7e" /></Li>
@@ -163,6 +164,19 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
     return () => { mep.current?.arreter(); mep.current = null; };
   }, []);
   useLayoutEffect(() => { mep.current?.repose(); }, [ouvertLegende, visible]);
+  // La mise en page de la maquette se mesure une fois ; quand la largeur du mur change (fiche ouverte, fenêtre, rotation), on la refait.
+  useLayoutEffect(() => {
+    const mur = racine.current?.querySelector<HTMLElement>('.l1-mur'); if (!mur || typeof ResizeObserver === 'undefined') return;
+    let largeur = Math.round(mur.getBoundingClientRect().width); let id = 0;
+    const ro = new ResizeObserver(() => {
+      const w = Math.round(mur.getBoundingClientRect().width);
+      if (w === largeur || w === 0) { largeur = w || largeur; return; }
+      largeur = w; window.clearTimeout(id);
+      id = window.setTimeout(() => { if (!racine.current) return; mep.current?.arreter(); mep.current = installerMiseEnPage(racine.current); }, 80);
+    });
+    ro.observe(mur);
+    return () => { ro.disconnect(); window.clearTimeout(id); };
+  }, []);
 
   // toucher : bulle (nom, quantité, couleur…) ; second toucher ou glisser relâché : la fiche k2 de l'app
   useEffect(() => {

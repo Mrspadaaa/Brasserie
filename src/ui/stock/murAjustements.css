@@ -1,0 +1,44 @@
+/* Ajustements de mise en page du mur du stock (voie sz, correction du 13.11, critique c25).
+   Écrit à la main, après mur.css (généré depuis la maquette sy/fA) : rien ici ne modifie le dessin mobile de la maquette,
+   sauf les gestes (un libellé ne vole plus le toucher du nom du rayon) et le rayon actif, qui se voit. */
+
+/* c25 n° 6 : l'échelle « 250 g » ou « 5 kg » (position absolue) recouvrait le milieu du bouton du nom du rayon et captait le toucher. */
+.stock-mur .l1e-cl,.stock-mur .sw-rl,.stock-mur .sw-rln{pointer-events:none}
+/* le rayon touché se voit : bandeau teinté, nom souligné de la couleur du rayon, ruban plus large */
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true]){background:color-mix(in srgb,var(--l1-k) 12%,transparent)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true])::before{width:7px;left:-1px}
+.stock-mur .l1e-n[aria-pressed=true] b{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:3px;text-decoration-color:var(--l1-k)}
+.stock-mur .l1e-n:focus-visible{outline:2px solid var(--l1-t0);outline-offset:2px;border-radius:4px}
+
+/* c25 n° 3 : la pile de sachets ne monte plus sur le titre de la colonne ; la planche grandit de sa pile (5 briques au plus, comme avant) */
+.stock-mur .l1e-r[data-f=f2] .l1e-gb{height:auto;min-height:var(--hm)}
+
+/* c25 n° 11 : la barre d'une colonne à une seule marque pose sur son socle (le script de la maquette abaissait ce socle de 1 px) */
+.stock-mur .l1e-gb>.sy-so{transform:none!important}
+
+/* c25 n° 4 et 5 : les rayons s'empilent toujours (comme à 390), jamais côte à côte : une légende ouverte se pose sous son rayon,
+   et le mur, comprimé dans le volet de la fiche, garde une ligne par rayon. Le mur tient la largeur : les corps se jugent sur elle. */
+.stock-mur .l1-mur{container-type:inline-size;container-name:mur}
+@media (min-width:900px){
+  .stock-mur .l1-mur{display:block;column-gap:0;padding:0 8px 6px}
+  .stock-mur .l1-mu.l1e-r{border-bottom:1px solid var(--l1-border);grid-template-columns:60px minmax(0,1fr)!important}
+}
+
+/* c25 n° 10 : mur large (rayons pleine largeur) : aucun texte sous 12 px, briques de levure plus grandes pour leur lettre */
+@container mur (min-width:440px){
+  .sx-vd{font-size:12px;line-height:14px;padding-left:5px}
+  .sx-gl,.sx-it,.sx-g0{font-size:12px;line-height:12px}
+  /* largeur fixe : la lettre ne la fait pas varier avec la police chargée (le socle se mesure sur ces largeurs) */
+  .sx-g3 .l1e-s1{width:16px}
+  .sx-g3 .l1e-s1.sx-g{width:16px!important;min-width:16px;padding:0;height:14px;font:700 12px/14px var(--l1-sans,inherit)}
+  .sx-pl small,.sx-nm0,.sx-et0{font-size:12px}
+  .l1e-b.sx-p.l1e-lq>b.l1e-fv{width:10px}
+}
+/* une île, pas une bande de 850 px : les colonnes restent groupées, la pastille « rien en stock » au bout */
+@container mur (min-width:700px){
+  .l1e-r .l1e-pl{max-width:640px}
+}
+
+/* c25 n° 13 : thème sombre, les titres de colonnes (brun, gris de la famille) s'éclaircissent vers le texte du thème */
+html[data-theme="cave"] .stock-mur .l1e-w{color:color-mix(in srgb,var(--ink) 38%,var(--l1-t0))}
+html[data-theme="cave"] .stock-mur .l1e-t{color:var(--l1-t0)}
