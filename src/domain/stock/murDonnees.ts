@@ -59,10 +59,17 @@ export interface MurDonnees { rayons: RayonMur[]; autres: CarteAutre[] }
 const EUROPE = new Set(['DE', 'CZ', 'SI', 'UK', 'GB', 'FR', 'PL', 'BE', 'AT', 'ES', 'PT']);
 const AMERIQUES = new Set(['US', 'CA']);
 const FR_MODERNE = 0.55;
+/** Le catalogue Beer Maverick écrit l'origine en toutes lettres (« États-Unis »), l'article du stock en code (« US ») : un seul code pour les deux. Origine inconnue : null. */
+const PAYS_VERS_CODE: Record<string, string> = { 'etats-unis': 'US', usa: 'US', 'royaume-uni': 'UK', angleterre: 'UK', allemagne: 'DE', tchequie: 'CZ', 'republique tcheque': 'CZ', slovenie: 'SI', france: 'FR', pologne: 'PL', belgique: 'BE', autriche: 'AT', espagne: 'ES', portugal: 'PT', canada: 'CA' };
+export function codePays(o: string | null | undefined): string | null {
+  const t = (o ?? '').trim(); if (!t) return null;
+  if (/^[A-Za-z]{2}$/.test(t)) return t.toUpperCase();
+  return PAYS_VERS_CODE[t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')] ?? t;
+}
 /** H1 : l'école du houblon (règles de gen-taxo, voie sk). Un houblon sans donnée assez nette : `autre` (colonne Pale, dit « par défaut »). */
 export function familleBrasseur(info: InfosHoublon | null, alpha: number | null, frais: number | null): FamilleBrasseur {
   if (!info) return 'autre';
-  const o = info.origine ?? '';
+  const o = codePays(info.origine) ?? '';
   if (info.role === 'bittering' && (frais == null || frais < 0.25)) return 'amerisants';
   if (EUROPE.has(o) && (alpha == null || alpha <= 6)) return 'nobles';
   if (frais == null) return 'autre';
@@ -72,13 +79,24 @@ export function familleBrasseur(info: InfosHoublon | null, alpha: number | null,
 }
 /** Teinte d'arôme d'un houblon : le descripteur le plus fort (≥ 3 sur 5, strictement devant le suivant) parmi les 9 axes de Beer Maverick ; sinon « non classé ». */
 const AXE_VERS_TEINTE = ['agrumes', 'tropical', 'tropical', 'fruitsrouges', 'floral', 'epice', 'epice', 'epice', 'resine'] as const; // BM_AXES : citrus, tropicalFruit, stoneFruit, berry, floral, grassy, herbal, spice, resinPine
-export const BASE_TEINTE: Record<string, string> = { agrumes: '#d9b414', tropical: '#ee9b2f', fruitsrouges: '#a0577f', floral: '#c46bb0', epice: '#8a684b', resine: '#4a776d', nonclasse: '#8c8279' };
-export function teinteArome(arome: number[] | null): string {
+/** Les sept teintes de la légende de sa maquette (fA, c25 point 7), dans son ordre : couleurs de `gen-ha.mjs` (jetons-familles, #8FB43A du vin blanc ajouté au point 2 de c21). Le floral n'a pas de teinte : il est « non classé ». */
+export const TEINTES_LEGENDE: ReadonlyArray<{ id: string; mot: string; couleur: string }> = [
+  { id: 'agrumes', mot: 'agrumes', couleur: '#d9b414' }, { id: 'tropical', mot: 'tropical', couleur: '#ee9b2f' }, { id: 'vinblanc', mot: 'vin blanc, groseille', couleur: '#8FB43A' },
+  { id: 'fruitsrouges', mot: 'fruits rouges', couleur: '#9b3f74' }, { id: 'resine', mot: 'résine, pin', couleur: '#2f6b5f' }, { id: 'epice', mot: 'épicé, herbes', couleur: '#7a4e3a' },
+  { id: 'nonclasse', mot: 'arôme non classé', couleur: '#8C8279' },
+];
+export const BASE_TEINTE: Record<string, string> = Object.fromEntries(TEINTES_LEGENDE.map((t) => [t.id, t.couleur]));
+/** L14 (D100), maquette fA point 2 : trois houblons phares dont la réputation contredit le seul descripteur Beer Maverick. Nelson Sauvin : vin blanc, groseille à maquereau (BM le range en fruits rouges) ; Galaxy : le tropical type (passion, pêche) ; Sabro : mandarine, agrumes. */
+const TEINTE_CONFRONTEE: Record<string, string> = { 'nelson-sauvin': 'vinblanc', galaxy: 'tropical', sabro: 'agrumes' };
+export function teinteArome(arome: number[] | null, idVariete?: string | null): string {
+  const c = idVariete ? TEINTE_CONFRONTEE[idVariete.replace(/^beermaverick-/, '')] : undefined;
+  if (c) return c;
   if (!arome || arome.length < 9) return 'nonclasse';
   const t = new Map<string, number>();
   arome.slice(0, 9).forEach((v, i) => t.set(AXE_VERS_TEINTE[i], Math.max(t.get(AXE_VERS_TEINTE[i]) ?? 0, v)));
   const tri = [...t.entries()].sort((a, b) => b[1] - a[1]);
-  return tri[0][1] >= 3 && (tri.length < 2 || tri[0][1] > tri[1][1]) ? tri[0][0] : 'nonclasse';
+  const dominante = tri[0][1] >= 3 && (tri.length < 2 || tri[0][1] > tri[1][1]) ? tri[0][0] : 'nonclasse';
+  return dominante in BASE_TEINTE ? dominante : 'nonclasse'; // floral : pas de teinte dans sa légende
 }
 const COULEURS_COLONNE_HOUBLON: Array<[string, string]> = [['#2E5420', '#2E5420'], ['#3A6029', '#3A6029'], ['#466D37', '#466D37'], ['#527343', '#5F854E'], ['#567548', '#6B915A'], ['#5A7B4E', '#77A068']];
 
@@ -87,6 +105,24 @@ const GROUPES_MALT: Array<{ id: TypeMalt; mot: string; ink: string; fill: string
   { id: 'base', mot: 'Base', ink: '#7e6429', fill: '#F2C14E' }, { id: 'caramel', mot: 'Caramel', ink: '#965b21', fill: '#C87A2C' },
   { id: 'torrefies', mot: 'Torréfiés', ink: '#3B1F14', fill: '#3B1F14' }, { id: 'speciaux', mot: 'Spéciaux', ink: '#A0522D', fill: '#A0522D' },
 ];
+const sansAccent = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+/**
+ * Le type d'un malt d'après son NOM, puis son EBC (c25 point 1) : les articles du stock portent des noms ordinaires (« Munich Malz », « Caramel 120 », « Malt chocolat »)
+ * que le catalogue Beer Analytics ne reconnaît pas. Ordre : adjuvant cru, fumé ou acide (Spéciaux) ; torréfié (Carafa avant « cara » : il est torréfié) ; caramel ; base.
+ * Sans nom reconnu, l'EBC tranche aux deux bouts seulement (≤ 30 : base ; ≥ 500 : torréfié) ; entre les deux, ou sans EBC : null, jamais un 0 qui ferait un malt de base.
+ */
+export function typeMaltParNom(nom: string, ebc: number | null | undefined): TypeMalt | null {
+  const n = sansAccent(nom);
+  if (/flocon|flak|\bcru\b|\braw\b|unmalted|non malte|torrefied|rauch|fume|smoke|tourbe|peat|sauer|acidul|\bacid/.test(n)) return 'speciaux';
+  if (/choco|carafa|black|noir|roast|torrefie|patent/.test(n)) return 'torrefies';
+  if (/\bcara\w*|caramel|crystal|cristal|special b\b/.test(n)) return 'caramel';
+  if (/\bpils\w*|\bpale\b|munich|munchner|muenchner|vienna|viennois|wiener|weizen\w*|\bble\b|wheat|\blager\b|maris otter|golden promise|\bbase\b/.test(n)) return 'base';
+  if (typeof ebc === 'number' && Number.isFinite(ebc) && ebc >= 0) return ebc <= 30 ? 'base' : ebc >= 500 ? 'torrefies' : null;
+  return null;
+}
+/** Un sucre est un fermentescible : il se range dans le rayon Malts (forme « creux » de sa légende), pas dans Additifs. */
+const EST_SUCRE = /sucre|sugar|candi|dextrose|saccharose|glucose|sirop|\bmiel\b|honey/;
+const estSucre = (i: StockItem): boolean => !/^(houblon|levure)/i.test(i.category) && (/^sucre/i.test(sansAccent(i.category)) || EST_SUCRE.test(sansAccent(i.name)));
 const cerealeDe = (nom: string): string => { const f = formeCereale(nom); return f === 'pointe' ? 'ble' : f === 'biseau' ? 'seigle' : f === 'dome' ? 'avoine' : f === 'creux' ? 'autre' : 'orge'; };
 const NOM_CEREALE: Record<string, string> = { ble: 'blé', seigle: 'seigle', avoine: 'avoine', autre: 'autre céréale', orge: 'orge' };
 
@@ -108,7 +144,7 @@ export function initialeSouche(nom: string): string {
 // ---------- la construction ----------
 export function construireMur(items: StockItem[], src: SourcesMur, equipements: EquipmentItem[] = [], futs: KegItem[] = [], aujourdhui = new Date()): MurDonnees {
   const cat = (i: StockItem) => i.category.toLowerCase();
-  const malts = items.filter((i) => /^malt/.test(cat(i)));
+  const malts = items.filter((i) => /^malt/.test(cat(i)) || estSucre(i));
   const houblons = items.filter((i) => /^houblon/.test(cat(i)));
   const levures = items.filter((i) => /^levure/.test(cat(i)));
   const rayons: RayonMur[] = [];
@@ -116,7 +152,12 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
   // ---- Malts ----
   {
     const par = new Map<TypeMalt, StockItem[]>();
-    for (const i of malts) { const t = src.typeMalt(i) ?? 'speciaux'; par.set(t, [...(par.get(t) ?? []), i]); }
+    // La source d'abord (Beer Analytics) ; son « Spéciaux » ou son silence cèdent au nom puis à l'EBC. Un sucre est un spécial (forme creux).
+    for (const i of malts) {
+      const s = src.typeMalt(i);
+      const t: TypeMalt = estSucre(i) && !/^malt/.test(cat(i)) ? 'speciaux' : s && s !== 'speciaux' ? s : typeMaltParNom(i.name, i.colorEbc) ?? s ?? 'speciaux';
+      par.set(t, [...(par.get(t) ?? []), i]);
+    }
     const groupes: GroupeMur[] = [];
     let premierR2 = true;
     for (const g of GROUPES_MALT) {
@@ -137,7 +178,10 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       const somme = tri.reduce((s, i) => s + (enKg(i) ?? 0), 0);
       groupes.push({ id: g.id, mot: g.mot, titre: g.mot, ink: g.ink, fill: g.fill, total: qMalt(somme), marques, socle: null, r2: g.id !== 'base', r2a: g.id !== 'base' && premierR2 && !(premierR2 = false) });
     }
-    rayons.push({ id: 'f0', nom: 'Malts', systeme: 'M1', total: malts.length, sousTitre: 'rangés par type', echelle: groupes.length ? '5 kg' : null, hc: 11, hm: 28, groupes, vides: pastillesVides(['Fumé'], []), hachures: [] });
+    // Pastilles « rien en stock » (maquette fA, SXV) : les colonnes sans article, puis « Fumé » et « Sucres » (absents du rayon ; masqués quand l'article existe).
+    const fume = malts.some((i) => /rauch|fume|smoke|tourbe|peat/.test(sansAccent(i.name))); const sucre = malts.some(estSucre);
+    const videsMalts = [...GROUPES_MALT.map((g) => g.mot), ...(fume ? [] : ['Fumé']), ...(sucre ? [] : ['Sucres'])];
+    rayons.push({ id: 'f0', nom: 'Malts', systeme: 'M1', total: malts.length, sousTitre: 'rangés par type', echelle: groupes.length ? '5 kg' : null, hc: 11, hm: 28, groupes, vides: pastillesVides(videsMalts, groupes.map((g) => g.mot)), hachures: [] });
   }
 
   // ---- Houblons ----
@@ -158,7 +202,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       const marques = tri.map((i): MarqueMur => {
         const g = enG(i); const a = alphaDe.get(i.ref) ?? null; const inf = infos.get(i.ref) ?? null; const f = fraisDe.get(i.ref);
         const inconnu = !Number.isFinite(i.currentStock) || g == null;
-        const sommet = SOMMET[famille(i)]; const teinte = teinteArome(inf?.arome ?? null);
+        const sommet = SOMMET[famille(i)]; const teinte = teinteArome(inf?.arome ?? null, inf?.id);
         const h = arrondi(inconnu ? 12 : g! <= 0 ? 8 : Math.max(HMIN_MARQUE, hauteurLog(g!, 250, 4000, 11, 28)));
         const base = BASE_TEINTE[teinte];
         let fillM: string; let hach: string | null = null;
@@ -217,7 +261,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
 // ---------- Autres stocks ----------
 const bas = (i: StockItem) => (i.minStock != null && Number.isFinite(i.currentStock) && i.currentStock <= i.minStock) || i.reorder === true;
 export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[]): CarteAutre[] {
-  const autres = items.filter((i) => !/^(malt|houblon|levure)/i.test(i.category));
+  const autres = items.filter((i) => !/^(malt|houblon|levure)/i.test(i.category) && !estSucre(i)); // le sucre est au rayon Malts
   const groupe = (i: StockItem): 'Additifs' | 'Emballage' | 'Nettoyage' => /emballage/i.test(i.category) ? 'Emballage' : /cip|d[ée]sinfect|d[ée]tergent|sols|epi|nettoy/i.test(i.category) ? 'Nettoyage' : 'Additifs';
   const cartes: CarteAutre[] = [];
   for (const nom of ['Additifs', 'Emballage', 'Nettoyage'] as const) {

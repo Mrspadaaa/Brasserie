@@ -7,17 +7,19 @@ import { catalogue } from '../hopIndex/v4/data';
 import { varieteDe } from '../hopIndex/v4/donneesApp';
 import { slugBeerAnalytics } from '../fermentables/noms';
 import type { StockItem } from '../../types';
-import type { ColonneLevure, SourcesMur, TypeMalt } from './murDonnees';
+import { codePays, type ColonneLevure, type SourcesMur, type TypeMalt } from './murDonnees';
 
 const T = typicite as unknown as { parts: Record<string, Record<string, number>>; auFrais?: { parts: Record<string, number> } };
 let parHoublon: Map<string, Record<string, number>> | null = null;
 /** `parts[code][houblon]` retourné en `houblon → {code: part}` : un seul parcours, gardé. */
+/** Le catalogue nomme `beermaverick-citra` ce que la table de typicité nomme `citra` (c25 point 2 : sans ce retrait, aucun houblon n'avait de parts de style). */
+const cleTable = (id: string): string => id.replace(/^beermaverick-/, '').replace(/:cryo$/, '');
 const partsDe = (id: string): Record<string, number> | null => {
   if (!parHoublon) {
     parHoublon = new Map();
     for (const [code, m] of Object.entries(T.parts)) for (const [h, p] of Object.entries(m)) { const o = parHoublon.get(h) ?? {}; o[code] = p; parHoublon.set(h, o); }
   }
-  return parHoublon.get(id) ?? null;
+  return parHoublon.get(cleTable(id)) ?? null;
 };
 
 const TYPE_M1: Record<string, TypeMalt> = { 'Base Malt': 'base', 'Caramel/Crystal Malt': 'caramel', Roasted: 'torrefies', Toasted: 'speciaux', 'Adjunct Malt': 'speciaux', 'Unmalted Adjunct': 'speciaux', 'Other Malt': 'speciaux' };
@@ -43,13 +45,14 @@ const milieu = (v: unknown): number | null => { const m = /(\d{2,3})\s*%?\s*[-�
 
 export const sourcesDeLApp: SourcesMur = {
   houblon(i) {
-    const r = varieteDe(i.name, catalogue());
-    if (!('h' in r)) return { id: null, role: null, origine: i.origin ?? null, arome: null };
+    let r = varieteDe(i.name, catalogue());
+    if (!('h' in r) && i.origin) r = varieteDe(`${i.name} ${i.origin}`, catalogue()); // « Saaz » est ambigu (CZ, US, Late) : l'origine de l'article tranche
+    if (!('h' in r)) return { id: null, role: null, origine: codePays(i.origin), arome: null };
     const h = r.h;
-    return { id: h.id, role: h.purpose ?? null, origine: i.origin ?? h.origin ?? null, arome: h.bm?.arome ?? null };
+    return { id: h.id, role: h.purpose ?? null, origine: codePays(i.origin) ?? codePays(h.origin), arome: h.bm?.arome ?? null };
   },
   parts: partsDe,
-  auFrais: (id) => T.auFrais?.parts[id] ?? null,
+  auFrais: (id) => T.auFrais?.parts[cleTable(id)] ?? null,
   typeMalt(i) { const s = slugBeerAnalytics(i.name); const t = s ? FE[s]?.type : null; return t ? TYPE_M1[t] ?? null : null; },
   colonneLevure,
   attenuation(i) {
