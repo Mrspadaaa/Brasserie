@@ -52,4 +52,13 @@ describe('mur du stock : mise en page (c25)', () => {
   it('c26 n° 4 : le mur borne ses traits à sa largeur (la ligne « 1 kg » ne déborde pas dans la gouttière de la fiche)', () => {
     expect(css).toMatch(/\.stock-mur \.l1-mur\{overflow-x:clip\}/);
   });
+  it('af0763f4 n° 3 : sans aucune levure, le rayon Levures garde le « ? » et une hauteur qui le tient (le « ? » est posé à 29 px + 28 px de haut, marge de 6 px)', () => {
+    const sansLevure = items.filter((i) => i.category !== 'Levure');
+    const { container } = render(<MurStock items={sansLevure} onOpen={vi.fn()} onOnglet={vi.fn()} onglet="ing" />);
+    expect(container.querySelectorAll('.l1e-r[data-f="f2"] [data-art]')).toHaveLength(0);
+    expect(container.querySelectorAll('.l1e-r[data-f="f2"] .sx-q')).toHaveLength(1);
+    const m = css.match(/\.stock-mur \.l1e-r\[data-f=f2\]\{min-height:(\d+)px\}/);
+    expect(m, 'règle min-height du rayon Levures').not.toBeNull();
+    expect(Number(m![1])).toBeGreaterThanOrEqual(29 + 28 + 6);
+  });
 });

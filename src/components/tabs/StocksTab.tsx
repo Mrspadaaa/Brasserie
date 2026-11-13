@@ -281,11 +281,15 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
   const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
-  const favoriteCount = allItems.filter(item => item.favorite).length;
   const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
   const [rayonMur, setRayonMur] = useState<'Malts' | 'Houblons' | 'Levures' | null>(null);
   // Le rayon se lit comme au mur (un sucre est au rayon Malts) : « Malts 7 » au mur, 7 articles dans la liste (c26 n° 2).
-  const visibleItems = useMemo(() => allItems.filter(item => (ongletMur === 'autres' ? rayonDuMur(item) === null : rayonDuMur(item) !== null && (!rayonMur || rayonDuMur(item) === rayonMur)) && (stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true)), [allItems, stockFilter, orderRefs, ongletMur, rayonMur]);
+  // Les trois compteurs de la barre de filtre (Tous, À commander, Épinglés) comptent la même portée que la liste : l'onglet et le rayon touché
+  // (critique af0763f4 n° 1 : « Tous · 18 » au-dessus d'une seule carte). Le badge de la barre d'onglets, lui, reste le compte global.
+  const scopeItems = useMemo(() => allItems.filter(item => ongletMur === 'autres' ? rayonDuMur(item) === null : rayonDuMur(item) !== null && (!rayonMur || rayonDuMur(item) === rayonMur)), [allItems, ongletMur, rayonMur]);
+  const scopeOrderCount = scopeItems.filter(item => orderRefs.has(item.ref)).length;
+  const favoriteCount = scopeItems.filter(item => item.favorite).length;
+  const visibleItems = useMemo(() => scopeItems.filter(item => stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? !!item.favorite : true), [scopeItems, stockFilter, orderRefs]);
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
     const text = [
@@ -442,8 +446,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           resetKey={stockFilter}
           searchPlaceholder="Rechercher un article…"
           header={allItems.length > 0 && <SegmentedControl className={`stock-filters ${mobile ? 'pr-16' : ''}`} label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
-            { value: 'all', label: `Tous · ${allItems.length}` },
-            { value: 'order', label: `À commander · ${totalToOrder}` },
+            { value: 'all', label: `Tous · ${scopeItems.length}` },
+            { value: 'order', label: `À commander · ${scopeOrderCount}` },
             { value: 'favorite', label: `Épinglés · ${favoriteCount}` }
           ]} />}
           toolbarAction={!mobile &&
@@ -459,7 +463,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
               <p className="text-sm text-cave-200">{stockFilter === 'order' ? 'Rien à commander' : 'Aucun article épinglé'}</p>
-              <p className="text-xs text-cave-400">{stockFilter === 'order' ? 'Les besoins planifiés et les seuils sont couverts.' : 'Touchez l’étoile d’un article pour le retrouver ici.'}</p>
+              <p className="text-xs text-cave-400">{stockFilter === 'order' ? (totalToOrder > 0 ? `${totalToOrder} article${totalToOrder > 1 ? 's' : ''} à commander ailleurs : changez d’onglet ou de rayon.` : 'Les besoins planifiés et les seuils sont couverts.') :'Touchez l’étoile d’un article pour le retrouver ici.'}</p>
               <Button size="sm" onClick={() => setStockFilter('all')}>Voir tous les articles</Button>
             </div> : <div className="py-6 text-center space-y-3">
               <p className="text-base text-cave-200">Aucun article en stock</p>

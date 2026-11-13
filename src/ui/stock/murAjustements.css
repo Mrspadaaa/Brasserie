@@ -13,6 +13,11 @@
 /* c25 n° 3 : la pile de sachets ne monte plus sur le titre de la colonne ; la planche grandit de sa pile (5 briques au plus, comme avant) */
 .stock-mur .l1e-r[data-f=f2] .l1e-gb{height:auto;min-height:var(--hm)}
 
+/* af0763f4 n° 3 : sans aucune levure, le rayon n'a que ses pastilles et ne fait que 45 px ; le « ? » (posé à 29 px, 28 px de haut, bas à 57 px)
+   sortait de 12 px et le coin arrondi du mur le tranchait. Hauteur minimale = bas du « ? » + 6 px = 63 px, la hauteur qu'a déjà le rayon avec des
+   levures à 390 : rien ne bouge quand il y en a. */
+.stock-mur .l1e-r[data-f=f2]{min-height:63px}
+
 /* c25 n° 11 : la barre d'une colonne à une seule marque pose sur son socle (le script de la maquette abaissait ce socle de 1 px) */
 .stock-mur .l1e-gb>.sy-so{transform:none!important}
 
