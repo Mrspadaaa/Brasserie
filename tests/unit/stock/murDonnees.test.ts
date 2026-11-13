@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StockItem } from '../../../src/types';
 import { construireMur, familleBrasseur, initialeSouche, teinteArome, cartesAutres, typeMaltParNom, TEINTES_LEGENDE, BASE_TEINTE, type SourcesMur } from '../../../src/domain/stock/murDonnees';
 import { sourcesDeLApp } from '../../../src/domain/stock/murSources';
+import { rayonDuMur } from '../../../src/domain/stock/murRayon';
 
 const it0 = (o: Partial<StockItem>): StockItem => ({ id: o.ref ?? 'x', ref: 'x', name: 'x', category: 'Malt', unit: 'kg', currentStock: 1, reorder: false, ...o } as StockItem);
 const src: SourcesMur = {
@@ -159,5 +160,23 @@ describe('mur du stock : noms ordinaires, sources réelles (c25)', () => {
     expect(m.autres.find((c) => c.nom === 'Additifs')).toBeUndefined();
     const sel = it0({ ref: 'z', name: 'Gypse', category: 'Sels', unit: 'kg', currentStock: 1 });
     expect(cartesAutres([sucre, sel], [], []).find((c) => c.nom === 'Additifs')?.total).toBe(1);
+  });
+
+  it('c26 n° 2. la liste suit le rayon du mur : le sucre est du rayon Malts, le sel est des Autres', () => {
+    expect(rayonDuMur(it0({ category: 'Sucre', name: 'Sucre de table' }))).toBe('Malts');
+    expect(rayonDuMur(it0({ category: 'Additif', name: 'Dextrose' }))).toBe('Malts');
+    expect(rayonDuMur(it0({ category: 'Malt', name: 'Pilsner' }))).toBe('Malts');
+    expect(rayonDuMur(it0({ category: 'Houblon', name: 'Citra' }))).toBe('Houblons');
+    expect(rayonDuMur(it0({ category: 'Levure', name: 'US-05' }))).toBe('Levures');
+    expect(rayonDuMur(it0({ category: 'Sels', name: 'Gypse' }))).toBeNull();
+    expect(rayonDuMur(it0({ category: 'Houblon', name: 'Sugar Hop' }))).toBe('Houblons'); // un houblon au nom trompeur reste houblon
+  });
+
+  it('c26 n° 5. WLP001, WY1056, BRY-97 et « California Ale » sont la souche Chico : colonne IPA ; une lager ou une anglaise ne bascule pas', () => {
+    const col = (name: string) => sourcesDeLApp.colonneLevure(it0({ category: 'Levure', name, unit: 'fiole' }));
+    for (const n of ['WLP001', 'White Labs WLP001 California Ale', 'Wyeast 1056 American Ale', 'Lallemand BRY-97', 'SafAle US-05']) expect(col(n), n).toBe('ipa');
+    expect(col('WLP830 German Lager')).toBe('lager');
+    expect(col('SafAle S-04')).toBe('anglaise');
+    expect(col('Levure inconnue')).toBeNull();
   });
 });

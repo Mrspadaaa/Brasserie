@@ -19,6 +19,9 @@
 /* c25 n° 4 et 5 : les rayons s'empilent toujours (comme à 390), jamais côte à côte : une légende ouverte se pose sous son rayon,
    et le mur, comprimé dans le volet de la fiche, garde une ligne par rayon. Le mur tient la largeur : les corps se jugent sur elle. */
 .stock-mur .l1-mur{container-type:inline-size;container-name:mur}
+/* c26 n° 4 : un trait de repère ne sort jamais du mur (la ligne « 1 kg » entrait de 19 px dans la gouttière de la fiche pendant le recalage
+   du volet) ; coupe en largeur seulement : les bulles et contours verticaux restent entiers */
+.stock-mur .l1-mur{overflow-x:clip}
 @media (min-width:900px){
   .stock-mur .l1-mur{display:block;column-gap:0;padding:0 8px 6px}
   .stock-mur .l1-mu.l1e-r{border-bottom:1px solid var(--l1-border);grid-template-columns:60px minmax(0,1fr)!important}
@@ -42,3 +45,9 @@
 /* c25 n° 13 : thème sombre, les titres de colonnes (brun, gris de la famille) s'éclaircissent vers le texte du thème */
 html[data-theme="cave"] .stock-mur .l1e-w{color:color-mix(in srgb,var(--ink) 38%,var(--l1-t0))}
 html[data-theme="cave"] .stock-mur .l1e-t{color:var(--l1-t0)}
+
+/* c26 n° 1 : les tirets de repère (5 kg, 1 kg, 250 g) et le « - - - » de la légende sont dessinés en noir fixe dans mur.css
+   (rgba(17,17,17,…)) : ils disparaissent sur fond sombre. En sombre, même pointillé, couleur du texte du thème (--l1-t1) à 60 %. */
+html[data-theme="cave"] .stock-mur .sw-rln,
+html[data-theme="cave"] .stock-mur .sv-tir{border-top-color:color-mix(in srgb,var(--l1-t1) 60%,transparent)}
+html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-top-color:color-mix(in srgb,var(--l1-t1) 60%,transparent)}

@@ -2,6 +2,7 @@
 // arrivent par `SourcesMur` (voir murSources.ts), donc le calcul se teste sur des fixtures. Un inconnu reste un inconnu : α absent = marque hachurée,
 // EBC absent = marque grise, atténuation absente = colonne « Autres » en gris. Jamais 0.
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
+import { estSucre } from './murRayon';
 import {
   ALPHA_MIN, ALPHA_MAX, COLONNES_STYLE, SOMMET, bornesAttenuation, classerHoublons, couleurALaClarte, couleurHoublon, couleurLevure, couleurMalt, couleurSocle,
   formeCereale, ordreColonne, pastillesVides, traceCereale, traceHoublon, type FamilleBrasseur, type FormeCereale, type SommetHoublon,
@@ -120,9 +121,6 @@ export function typeMaltParNom(nom: string, ebc: number | null | undefined): Typ
   if (typeof ebc === 'number' && Number.isFinite(ebc) && ebc >= 0) return ebc <= 30 ? 'base' : ebc >= 500 ? 'torrefies' : null;
   return null;
 }
-/** Un sucre est un fermentescible : il se range dans le rayon Malts (forme « creux » de sa légende), pas dans Additifs. */
-const EST_SUCRE = /sucre|sugar|candi|dextrose|saccharose|glucose|sirop|\bmiel\b|honey/;
-const estSucre = (i: StockItem): boolean => !/^(houblon|levure)/i.test(i.category) && (/^sucre/i.test(sansAccent(i.category)) || EST_SUCRE.test(sansAccent(i.name)));
 const cerealeDe = (nom: string): string => { const f = formeCereale(nom); return f === 'pointe' ? 'ble' : f === 'biseau' ? 'seigle' : f === 'dome' ? 'avoine' : f === 'creux' ? 'autre' : 'orge'; };
 const NOM_CEREALE: Record<string, string> = { ble: 'blé', seigle: 'seigle', avoine: 'avoine', autre: 'autre céréale', orge: 'orge' };
 

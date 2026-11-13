@@ -37,7 +37,8 @@ function colonneLevure(i: StockItem): ColonneLevure | null {
   if (/kveik|kviek/.test(n)) return 'autres';
   if (/w3470|saflager|2124|lager|pilsner/.test(n)) return 'lager';
   if (/wb06|weiss|wheat|hefe|witbier/.test(n)) return 'ble';
-  if (/us05|chico|verdant|hazy|vermont|conan|ipa/.test(n)) return 'ipa';
+  // WLP001 / WY1056 / BRY-97 / « California Ale » / « American Ale » : la souche Chico, comme l'US-05 (c26 n° 5)
+  if (/us05|chico|verdant|hazy|vermont|conan|ipa|wlp001|wy1056|1056|bry97|california|americanale/.test(n)) return 'ipa';
   if (/nottingham|s04|english|british|wlp002|1968|1098/.test(n)) return 'anglaise';
   return null;
 }

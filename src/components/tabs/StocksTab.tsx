@@ -29,6 +29,7 @@ import '../../ui/stocks.css';
 import { canonicalStockCategory } from '../../services/stockLineMatching';
 import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
+import { rayonDuMur } from '../../domain/stock/murRayon';
 
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 const HopIndexPanel = lazy(() =>
@@ -283,8 +284,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const favoriteCount = allItems.filter(item => item.favorite).length;
   const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
   const [rayonMur, setRayonMur] = useState<'Malts' | 'Houblons' | 'Levures' | null>(null);
-  const estIngredient = (item: StockItem) => /^(malt|houblon|levure)/i.test(item.category);
-  const visibleItems = useMemo(() => allItems.filter(item => (ongletMur === 'autres' ? !estIngredient(item) : estIngredient(item) && (!rayonMur || new RegExp('^' + rayonMur.slice(0, -1), 'i').test(item.category))) && (stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true)), [allItems, stockFilter, orderRefs, ongletMur, rayonMur]);
+  // Le rayon se lit comme au mur (un sucre est au rayon Malts) : « Malts 7 » au mur, 7 articles dans la liste (c26 n° 2).
+  const visibleItems = useMemo(() => allItems.filter(item => (ongletMur === 'autres' ? rayonDuMur(item) === null : rayonDuMur(item) !== null && (!rayonMur || rayonDuMur(item) === rayonMur)) && (stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true)), [allItems, stockFilter, orderRefs, ongletMur, rayonMur]);
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
     const text = [

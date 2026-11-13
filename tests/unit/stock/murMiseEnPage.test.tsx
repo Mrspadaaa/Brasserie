@@ -42,4 +42,14 @@ describe('mur du stock : mise en page (c25)', () => {
     expect(css).toMatch(/\[data-f=f2\] \.l1e-gb\{height:auto;min-height:var\(--hm\)\}/);
     expect(css).toMatch(/@container mur \(min-width:440px\)[\s\S]*\.sx-vd\{font-size:12px/);
   });
+  it('c26 n° 1 : en sombre, les tirets de repère prennent un jeton du thème, jamais le noir fixe de mur.css (la couleur calculée se contrôle dans Chrome : voies/sz/controle-tirets-sombre.mjs)', () => {
+    const regle = (sel: string) => new RegExp(sel.replace(/[.[\]()*+?]/g, '\\$&') + '[^{]*\\{[^}]*border-top-color:color-mix\\(in srgb,var\\(--l1-t1\\)').test(css);
+    expect(regle('html[data-theme="cave"] .stock-mur .sw-rln')).toBe(true);
+    expect(regle('html[data-theme="cave"] .stock-mur .sv-tir')).toBe(true);
+    expect(regle('html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after')).toBe(true);
+    expect(css.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/rgba\(17,\s*17,\s*17/);
+  });
+  it('c26 n° 4 : le mur borne ses traits à sa largeur (la ligne « 1 kg » ne déborde pas dans la gouttière de la fiche)', () => {
+    expect(css).toMatch(/\.stock-mur \.l1-mur\{overflow-x:clip\}/);
+  });
 });
