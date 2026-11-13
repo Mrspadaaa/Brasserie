@@ -30,6 +30,8 @@ const qHop = (g: number) => (g >= 1000 ? `${nf(g / 1000)} kg` : `${nf(g)} g`);
 export function hauteurLog(q: number, C: number, QM: number, Hc: number, Hm: number): number {
   return Math.max(3, q <= C ? (Hc * q) / C : Hc + ((Hm - Hc) * Math.log(q / C)) / Math.log(QM / C));
 }
+/** Une marque en stock fait 8 px au moins (contrôle de la maquette, controle-distincts) : sous le coude, la droite de la maquette donne 6,6 px à 150 g, trop peu pour être distinguée. */
+const HMIN_MARQUE = 8;
 const arrondi = (x: number) => Math.round(x * 10) / 10;
 
 // ---------- sorties ----------
@@ -124,7 +126,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       const marques = tri.map((i): MarqueMur => {
         const kg = enKg(i); const cer = cerealeDe(i.name); const forme = formeCereale(i.name);
         const inconnu = !Number.isFinite(i.currentStock) || kg == null;
-        const h = arrondi(inconnu ? 12 + (forme === 'droite' ? 0 : 2) : kg! <= 0 ? 8 : hauteurLog(kg!, R, R * 40, 11, 28));
+        const h = arrondi(inconnu ? 12 + (forme === 'droite' ? 0 : 2) : kg! <= 0 ? 8 : Math.max(HMIN_MARQUE, hauteurLog(kg!, R, R * 40, 11, 28)));
         const fill = i.colorEbc != null ? couleurMalt(i.colorEbc) : '#9a9a9a';
         const q = inconnu ? 'à compter' : kg! <= 0 ? 'épuisé' : qMalt(kg!);
         return {
@@ -157,7 +159,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const g = enG(i); const a = alphaDe.get(i.ref) ?? null; const inf = infos.get(i.ref) ?? null; const f = fraisDe.get(i.ref);
         const inconnu = !Number.isFinite(i.currentStock) || g == null;
         const sommet = SOMMET[famille(i)]; const teinte = teinteArome(inf?.arome ?? null);
-        const h = arrondi(inconnu ? 12 : g! <= 0 ? 8 : hauteurLog(g!, 250, 4000, 11, 28));
+        const h = arrondi(inconnu ? 12 : g! <= 0 ? 8 : Math.max(HMIN_MARQUE, hauteurLog(g!, 250, 4000, 11, 28)));
         const base = BASE_TEINTE[teinte];
         let fillM: string; let hach: string | null = null;
         if (a == null) { const bord = couleurALaClarte(base, 38); hach = bord; fillM = `url(#syh-${bord.slice(1)})`; hachures.add(bord.slice(1)); } else fillM = couleurHoublon(base, a);

@@ -7,7 +7,11 @@ export function installerMiseEnPage(racine: HTMLElement): { arreter: () => void;
   const ecouteurs: Array<[string, EventListener]> = [];
   const timers: number[] = [];
   const W: Record<string, any> = {};
-  const doc = { querySelectorAll: (s: string) => racine.querySelectorAll(s), querySelector: (s: string) => racine.querySelector(s), fonts: (document as any).fonts };
+  // Une planche sans aucune colonne (rayon sans article : aucun malt, par exemple) n'a rien à mesurer : la maquette suppose chaque rayon garni
+  // et mesurait « la dernière colonne » (undefined). On ne lui donne donc pas ces planches ; sa pastille « rien en stock » reste posée par le CSS.
+  const garnie = (pl: Element) => !!pl.querySelector('.l1e-g');
+  const liste = (s: string) => { const l = [...racine.querySelectorAll(s)]; return /\.l1e-pl\s*$/.test(s) ? l.filter(garnie) : l; };
+  const doc = { querySelectorAll: (s: string) => liste(s), querySelector: (s: string) => racine.querySelector(s), fonts: (document as any).fonts };
   const addEventListener = (t: string, f: EventListener) => { ecouteurs.push([t, f]); window.addEventListener(t, f); };
   const setTimeout = (f: () => void, ms: number) => { const id = window.setTimeout(f, ms); timers.push(id); return id; };
   (function (document, window, addEventListener, setTimeout) {

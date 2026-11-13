@@ -32,6 +32,11 @@ describe('mur du stock : adaptateur', () => {
     expect(r.groupes[0].marques[0].hachure).toBeNull();
     expect(r.vides.length).toBeLessThanOrEqual(3);
   });
+  it('une marque en stock fait 8 px au moins (150 g de houblon, 0,3 kg de malt)', () => {
+    const m = construireMur([it0({ ref: 'h1', name: 'Simcoe', category: 'Houblon', unit: 'g', currentStock: 150, alphaPct: 13 }), it0({ ref: 'a', name: 'Pilsner', colorEbc: 3.5, currentStock: 0.3 })], src);
+    expect(m.rayons[1].groupes[0].marques[0].hauteur).toBeGreaterThanOrEqual(8);
+    expect(m.rayons[0].groupes[0].marques[0].hauteur).toBeGreaterThanOrEqual(8);
+  });
   it('compte les levures en sachets et en fioles', () => {
     const m = construireMur([it0({ ref: 'l1', name: 'SafAle US-05', category: 'Levure', unit: 'sachet', currentStock: 4, yeastAttenuationPct: 80 }), it0({ ref: 'l2', name: 'WLP002', category: 'Levure', unit: 'fiole', currentStock: 2, yeastForm: 'liquide' })], src);
     const [ipa, autres] = m.rayons[2].groupes;

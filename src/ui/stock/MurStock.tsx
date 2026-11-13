@@ -50,13 +50,15 @@ function Marque({ a, ink }: { a: MarqueMur; ink: string }) {
 const Fiole = () => (
   <b className="l1e-fv"><svg viewBox="0 0 8 13" width="8" height="13" aria-hidden="true"><path className="gl" d="M1.6 2.6V10.4A2.4 2.4 0 0 0 6.4 10.4V2.6Z" /><path className="lq" d="M2.1 6.6Q4 7.6 5.9 6.6V10.4A1.9 1.9 0 0 1 2.1 10.4Z" /><rect className="cp" x="1.1" y="0" width="5.8" height="2.6" rx=".5" /></svg></b>
 );
+const BRIQUES_MAX = 5;
 function Levure({ a, ink, attrs }: { a: MarqueMur; ink: string; attrs: Record<string, string> }) {
   const pale = labDeHex(a.fill)[0] > 78;
   const sty = { ['--fill' as string]: a.fill, height: 'auto' } as React.CSSProperties;
   const d = { ...attrs, 'data-ini': a.ini ?? '', 'data-att': a.att != null ? String(a.att) : '' } as Record<string, string>;
   if (a.etat === 'epuise') return <i {...d} className={`l1e-b sx-p sx-g3 sx-c${a.bord} l1e-ep l1e-sa${pale ? ' l1e-pa' : ''}${a.inconnue ? ' l1e-in' : ''}`} style={sty} title={a.titre}><b className="sx-e0" /><b className="sx-gl">{a.ini}</b></i>;
   const cls = `l1e-b sx-p sx-g3 sx-c${a.bord} ${a.liquide ? 'l1e-lq l1e-lq-a' : 'l1e-sk l1e-sk-a'}${pale ? ' l1e-pa' : ''}${a.inconnue ? ' l1e-in' : ''}${a.ddmDepassee ? ' l1e-dx' : ''}`;
-  const n = Math.max(1, a.n ?? 1);
+  // La rangée Levures a une hauteur fixe (32 px, 5 briques de 6 px) comme la maquette : au-delà de 5 sachets, la pile reste à 5 briques (sinon elle monte sur le titre de la colonne) ; le compte exact est dans le total sous la pile et dans la bulle.
+  const n = Math.min(BRIQUES_MAX, Math.max(1, a.n ?? 1));
   if (a.liquide) return <i {...d} data-forme="liquide" className={cls} style={sty} title={a.titre}>{Array.from({ length: n }, (_, k) => <Fiole key={k} />)}<b className="sx-gl">{a.ini}</b></i>;
   const bg = { background: a.fill };
   return (
