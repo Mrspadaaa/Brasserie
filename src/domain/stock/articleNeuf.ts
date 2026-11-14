@@ -75,3 +75,8 @@ export const ligneDeBrouillon = (line: { description: string; unit: string; quan
   return { description: line.description, unit: line.unit, quantity: line.quantity, stockCategory: line.stockCategory, reference: line.sourceReference, kind: line.kind, ...(vendor?.trim() ? { vendor: vendor.trim() } : {}),
     ...(nomFr ? { nomFr } : {}), ...(nomLu ? { nomLu } : {}) };
 };
+
+export { formeLevureLue } from './formeLevure';
+
+/** L'unité d'un article de levure neuf : la pièce d'une levure est le sachet (le mur dit « fiole » d'après la forme) ; une unité de poids ou de volume lue reste telle quelle. */
+export const uniteLevureNeuve = (unite: string, famille: string): string => (famille === 'piece' || !unite.trim() ? 'sachet' : unite);

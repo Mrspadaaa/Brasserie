@@ -3,6 +3,7 @@
 // EBC absent = marque grise, atténuation absente = colonne « Autres » en gris. Jamais 0.
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
 import { estSucre } from './murRayon';
+import { formeLevureLue } from './formeLevure';
 import {
   ALPHA_MIN, ALPHA_MAX, COLONNES_STYLE, SOMMET, bornesAttenuation, classerHoublons, couleurALaClarte, couleurHoublon, couleurLevure, couleurMalt, couleurSocle,
   formeCereale, ordreColonne, pastillesVides, traceCereale, traceHoublon, type FamilleBrasseur, type FormeCereale, type SommetHoublon,
@@ -158,6 +159,9 @@ export function initialeSouche(nom: string): string {
 }
 
 // ---------- la construction ----------
+/** ST-T33 : la forme écrite de l'article ; à défaut, lue de son nom (un Wyeast ancien, sans forme, n'est pas « sèche »). Rien lu : inconnue, jamais sèche par défaut. */
+const formeDe = (i: StockItem): 'sèche' | 'liquide' | 'levain' | undefined => i.yeastForm ?? formeLevureLue(`${i.name} ${i.yeastStrain ?? ''} ${i.yeastLab ?? ''}`);
+
 export function construireMur(items: StockItem[], src: SourcesMur, equipements: EquipmentItem[] = [], futs: KegItem[] = [], aujourdhui = new Date()): MurDonnees {
   const cat = (i: StockItem) => i.category.toLowerCase();
   const malts = items.filter((i) => /^malt/.test(cat(i)) || estSucre(i));
@@ -249,7 +253,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       const li = par.get(g.id); if (!li?.length) continue; remplies.push(g.mot);
       const tri = ordreColonne(li, (i) => src.attenuation(i), (i) => i.currentStock);
       const marques = tri.map((i): MarqueMur => {
-        const att = src.attenuation(i); const liquide = i.yeastForm === 'liquide';
+        const att = src.attenuation(i); const forme = formeDe(i); const liquide = forme === 'liquide';
         const n = Number.isFinite(i.currentStock) ? Math.max(0, Math.round(i.currentStock)) : 0;
         const inconnu = !Number.isFinite(i.currentStock);
         const fill = g.id === 'autres' ? couleurLevure(g.fill, att, bornes) : couleurLevure(g.fill, att, bornes);
@@ -258,11 +262,11 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const unite = liquide ? (n > 1 ? 'fioles' : 'fiole') : n > 1 ? 'sachets' : 'sachet';
         return {
           ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres', style: g.id === 'autres' ? styleLevureConnu(i) ?? undefined : undefined,
-          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : 'sèche', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
+          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : forme === 'sèche' ? 'sèche' : 'forme non connue', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
         };
       });
-      const sech = tri.filter((i) => i.yeastForm !== 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
-      const liq = tri.filter((i) => i.yeastForm === 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
+      const sech = tri.filter((i) => formeDe(i) !== 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
+      const liq = tri.filter((i) => formeDe(i) === 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
       const socle: Record<string, string> = {};
       const atts = tri.map((i) => src.attenuation(i)).filter((x): x is number => x != null);
       for (const i of tri) { const a = src.attenuation(i); if (a != null && atts.length) { const c = couleurSocle(g.ink, a, Math.min(...atts), Math.max(...atts)); if (c) socle[i.name] = c; } }

@@ -12,7 +12,7 @@ import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO, transactionKind } from '../domain/finance/ledger';
 import { invoiceKey, orderNumbers, paymentReferenceKey, vendorKey } from '../domain/finance/duplicates';
 import { canonicalStockCategory, categorieArticleNeuf, linkUnit, memeNom, nomsPris, pliee, SACHET_MAX_G, STOCK_CATEGORIES, type MembreVirtuel } from './stockLineMatching';
-import { articleNeufDe, ligneDeBrouillon, nomImprimeDe, type ArticleNeuf } from '../domain/stock/articleNeuf';
+import { articleNeufDe, formeLevureLue, ligneDeBrouillon, nomImprimeDe, uniteLevureNeuve, type ArticleNeuf } from '../domain/stock/articleNeuf';
 import { contexteDe } from './stockLineMatching';
 import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
@@ -398,7 +398,11 @@ function newArticleUnit(unit:string):string {
 export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
   const nom=derive?.name??line.description.trim(), garde=nomImprimeDe(line);
   // Choix B : le nom imprimé lu est gardé à la fiche, sauf s'il égale le nom de l'article (jamais de doublon, ni ici ni à l'apprentissage).
-  return {id:ref,ref,name:nom,...(garde&&!memeNom(garde,nom)?{nomsFacture:[garde]}:{}),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(uniteEffective(line)),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+  const categorie=categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind});
+  const unite=newArticleUnit(uniteEffective(line));
+  // ST-T33 : une levure neuve entre en sachet (pas « Stk ») et dit sa forme quand le libellé la dit (Wyeast, White Labs, « liquide » : liquide ; Fermentis, « sèche » : sèche).
+  const forme=categorie==='Levure'?formeLevureLue(`${line.description} ${line.articleName??''}`):undefined;
+  return {id:ref,ref,name:nom,...(garde&&!memeNom(garde,nom)?{nomsFacture:[garde]}:{}),category:categorie,unit:categorie==='Levure'?uniteLevureNeuve(unite,Units.familyOf(linkUnit(unite))):unite,...(forme?{yeastForm:forme}:{}),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
     ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
 }
 /** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
