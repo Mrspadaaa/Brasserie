@@ -42,11 +42,18 @@ const nombreEtat = (c: ComptesEtats, id: FiltreListe): string => {
   return '0';
 };
 
+/** Lu à voix haute : « manque » et « bas » disent à quoi ils servent (les deux sont à commander ; « au moins » = quantité inconnue). */
+export const libelleEtat = (id: FiltreListe, mot: string, n: string, c: ComptesEtats): string => {
+  if (id === 'manque') return c.manquePlus > 0 ? `${mot} : ${c.manque} à commander, plus ${c.manquePlus} « au moins »` : `${mot} : ${n} à commander`;
+  if (id === 'bas') return `${mot} : ${n} pile au seuil, déjà à commander`;
+  return `${mot} : ${n}`;
+};
+
 /** Les pastilles d'état : un seul filtre à la fois, re-toucher la pastille active l'ôte (✕). « Épinglés » reste en sixième, seulement s'il y en a. */
 export function Pastilles({ comptes, filtre, onFiltre, nEpingles }: { comptes: ComptesEtats; filtre: FiltreListe | null; onFiltre: (f: FiltreListe | null) => void; nEpingles: number }) {
   const bascule = (f: FiltreListe) => onFiltre(filtre === f ? null : f);
   const un = (id: FiltreListe, mot: string, n: string) => (
-    <button key={id} type="button" className={`sz-pu${filtre === id ? ' sz-on' : ''}`} data-f={id} aria-pressed={filtre === id} onClick={() => bascule(id)}>
+    <button key={id} type="button" className={`sz-pu${filtre === id ? ' sz-on' : ''}`} data-f={id} aria-pressed={filtre === id} aria-label={libelleEtat(id, mot, n, comptes)} onClick={() => bascule(id)}>
       {mot} <b>{n}</b><span className="sz-pux" aria-hidden="true">✕</span>
     </button>
   );

@@ -248,7 +248,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             ? <p className="flex items-center gap-2 px-2 py-2 text-2xs text-cave-200"><Check size={14} className="text-area-stocks" aria-hidden="true" />Stocks suffisants</p>
             : <>
               <div className="flex flex-wrap items-center gap-x-2 px-2 py-1 text-xs">
-                <span className="text-attention">{compte(itemsToOrder.length, 'article')} au seuil ou en dessous</span>
+                <span className="text-attention">{compte(itemsToOrder.length, 'article')} à commander</span>
                 {ruptures > 0 && <span className="inline-flex items-center gap-1 font-semibold text-alert-strong"><AlertTriangle size={12} aria-hidden="true" />{compte(ruptures, 'rupture')}</span>}
               </div>
               <div className="divide-y divide-cave-800">
