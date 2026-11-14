@@ -73,7 +73,9 @@ export function familleBrasseur(info: InfosHoublon | null, alpha: number | null,
   if (!info) return 'autre';
   const o = codePays(info.origine) ?? '';
   if (info.role === 'bittering' && (frais == null || frais < 0.25)) return 'amerisants';
-  if (EUROPE.has(o) && (alpha == null || alpha <= 6)) return 'nobles';
+  // ST-T25 : un α inconnu ne fait pas un noble d'un houblon européen au profil fruité (Hallertau Blanc : vin blanc, fruit de la passion ; Hüll, 1990). Saaz, Tettnang : profil épicé, restent nobles.
+  const fruite = alpha == null && !!info.arome && Math.max(info.arome[1] ?? 0, info.arome[2] ?? 0, info.arome[3] ?? 0) >= 3; // axes Beer Maverick : fruit tropical, fruit à noyau, fruits rouges
+  if (EUROPE.has(o) && (alpha == null || alpha <= 6) && !fruite) return 'nobles';
   if (frais == null) return 'autre';
   if (frais >= FR_MODERNE) return 'modernes';
   if (AMERIQUES.has(o)) return 'classiques';
@@ -116,7 +118,8 @@ const sansAccent = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-
 export function typeMaltParNom(nom: string, ebc: number | null | undefined): TypeMalt | null {
   const n = sansAccent(nom);
   if (/flocon|flak|flocke|\bcru\b|\braw\b|unmalted|non malte|torrefied|rauch|fume|smoke|tourbe|peat|sauer|acidul|\bacid/.test(n)) return 'speciaux';
-  if (/choco|carafa|black|noir|roast|torrefie|patent/.test(n)) return 'torrefies';
+  // ST-T47 : le malt brown (EBC 130 à 200, séché au four chaud, porter) est un malt torréfié, pas un spécial.
+  if (/choco|carafa|black|noir|roast|torrefie|patent|\bbrown\b|\bbrun\b/.test(n)) return 'torrefies';
   if (/\bcara\w*|caramel|crystal|cristal|special b\b/.test(n)) return 'caramel';
   if (/\bpils\w*|\bpale\b|munich|munchner|muenchner|vienna|viennois|wiener|weizen\w*|\bble\b|wheat|\blager\b|maris otter|golden promise|\bbase\b/.test(n)) return 'base';
   if (typeof ebc === 'number' && Number.isFinite(ebc) && ebc >= 0) return ebc <= 30 ? 'base' : ebc >= 500 ? 'torrefies' : null;
@@ -137,7 +140,8 @@ const STYLE_SOUR = /\bsour|\bacid|brett|lacto|pedio|philly|\bgose\b|berliner/;
 // ST-T6 : un code de souche se lit en MOT entier (ni lettre ni chiffre avant ou après) et sans « lot », « batch », « N° », « # » devant : « F12141 », « lot 1214 », « SK-974 » ne donnent aucun style.
 const DEVANT = String.raw`(?<![a-z0-9])(?<!(?:\blot|\bbatch|\bcharge|\bnr|\bno|\bn°|#)\s?)`;
 const DERRIERE = String.raw`(?![a-z0-9])`;
-const STYLE_KOLSCH = new RegExp(`kolsch|koelsch|${DEVANT}(?:wlp029|2565|k-?97)${DERRIERE}`);
+// ST-T47 : Wyeast 1007 German Ale (propre, froide, Alt et Kölsch) se lit à « german ale » ou à son code.
+const STYLE_KOLSCH = new RegExp(`kolsch|koelsch|german ale|${DEVANT}(?:wlp029|2565|k-?97|1007)${DERRIERE}`);
 const STYLE_BELGE = new RegExp(`belgian|belge|abbaye|abbey|trappist|tripel|dubbel|${DEVANT}(?:t-?58|be-?256|wlp(?:500|530|550)|1214|3787|1762|3522)${DERRIERE}`);
 export function styleLevureConnu(i: Pick<StockItem, 'name' | 'yeastStrain'>): string | null {
   const n = sansAccent(`${i.name} ${i.yeastStrain ?? ''}`);
