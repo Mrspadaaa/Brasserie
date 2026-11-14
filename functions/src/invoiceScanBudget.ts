@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getFirestore } from 'firebase-admin/firestore';
 import { BrewerBudgetError, DEFAULT_BREWER_LIMITS } from './brewerLimits.js';
 import { invoiceScanId, invoiceDocumentHash, LITE_SCAN_MAX_OUTPUT, SCAN_MAX_CALLS, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
-import { GEMINI_LITE_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, assertGeminiModel } from './models.js';
+import { GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, assertGeminiModel } from './models.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { GeminiRequestNotSentError, isGeminiRequestUncharged } from './geminiErrors.js';
 
@@ -19,7 +19,7 @@ function controls(raw: any) {
 /** `model` : le modèle de CET appel (défaut : la 3.8). Il fixe le tarif réservé, le plafond de sortie et l'URL du fournisseur. */
 type Generate = (body: Record<string, unknown>, signal: AbortSignal, model?: string) => Promise<any>;
 /** Le plafond de sortie de chaque modèle : la Flash-Lite a 8 192 jetons (C★v8), la 3.8 aussi depuis le 02.11, Hydrogen 12 000 (la réflexion compte dans la sortie). */
-const outputCap = (model: string) => model === GEMINI_LITE_MODEL ? LITE_SCAN_MAX_OUTPUT : model === INVOICE_STRONG_MODEL ? INVOICE_STRONG_MAX_OUTPUT : SCAN_MAX_OUTPUT;
+const outputCap = (model: string) => model === GEMINI_LITE_MODEL ? LITE_SCAN_MAX_OUTPUT : model === INVOICE_STRONG_MODEL || model === INVOICE_ARGON_MODEL ? INVOICE_STRONG_MAX_OUTPUT : SCAN_MAX_OUTPUT;
 
 /** Dedicated document ledger, shared global limits. Never touches brewerJobs.
  * The byte hash is server-owned; concurrent/repeated requests never pay twice.

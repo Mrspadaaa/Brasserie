@@ -85,8 +85,9 @@ function singleResult(single: ReturnType<typeof finirUneLecture>, readers = 1): 
 }
 
 /** C★ : quand la 3ᵉ lecture est appelée et lisible sur un désaccord, son résultat TRANCHE SEUL. Sinon le repli `finalOfLite`. */
-function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
-  if (r1.normalized && r2.normalized && third?.normalized && needsThird(r1, r2))
+function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote, tranche = false): VoteFinal {
+  // `tranche` : une relecture demandée par l'utilisateur (« Un doute ? ») fait trancher la 3ᵉ lecture même quand les deux Flash-Lite concordent.
+  if (r1.normalized && r2.normalized && third?.normalized && (tranche || needsThird(r1, r2)))
     return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third]);
   return finalOfLite(r1, r2, third);
 }
@@ -96,13 +97,15 @@ function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote): Vot
  * le résultat reste « disputed » et garde les phrases du vote. Les points du vote qui sont des désaccords entre lectures s'ajoutent à
  * ceux de la 3ᵉ lecture seule. Sans 3ᵉ lecture appelée, c'est `finalOfLite`.
  */
-export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
-  const star = finalOfStar(r1, r2, third);
+export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: LectureVote, tranche = false): VoteFinal {
+  const star = finalOfStar(r1, r2, third, tranche);
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
   const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
   dateDuVoteEtoile(result, [r1.normalized!, r2.normalized!, third.normalized]);
+  // Relecture demandée alors que les deux Flash-Lite concordaient : le vote à deux n'a pas appelé la 3ᵉ lecture, mais elle a lu et tranché : trois lecteurs, comme sur un désaccord.
+  if (tranche && !needsThird(r1, r2)) result.review = { ...result.review, readers: star.result.review.readers };
   return { ...star, result };
 }
 /**
@@ -141,6 +144,8 @@ export interface Csv8Io {
    * une levée dit aussi que le morceau n'est pas parti, donc le final ne porte aucun `rangProvisoire`.
    */
   provisoire?(result: any): unknown;
+  /** Relecture demandée par l'utilisateur : la 3ᵉ lecture part même si les deux Flash-Lite concordent, et elle tranche. Pas de premier écran provisoire (le client a déjà une lecture). */
+  forceThird?: boolean;
 }
 
 /**
@@ -272,9 +277,9 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
     attempt.status === 'fulfilled' ? { normalized: attempt.value, cause: null } : { cause: io.causeOf(attempt.reason) };
   const [l1, l2] = attempts.map(asRead);
   let third: LectureVote | undefined, provisoire: any | null = null;
-  if (needsThirdLite(l1, l2) && !io.deadlineReached()) {
+  if ((io.forceThird === true || needsThirdLite(l1, l2)) && !io.deadlineReached()) {
     // D308 : le premier écran part avant la 3ᵉ lecture et ne l'attend pas. Seulement si les deux Flash-Lite sont lisibles ; sinon on attend la 3ᵉ lecture.
-    if (io.provisoire && l1.normalized && l2.normalized) {
+    if (io.provisoire && io.forceThird !== true && l1.normalized && l2.normalized) {
       try {
         const morceau = provisoireDeDeux(l1, l2), sorti = io.provisoire(morceau);
         if (sorti && typeof (sorti as Promise<unknown>).catch === 'function') (sorti as Promise<unknown>).catch(() => undefined);
@@ -283,7 +288,9 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
     }
     try { third = { normalized: await io.readStrong(), cause: null }; } catch (error) { third = { cause: io.causeOf(error) }; }
   }
-  const final = finalOfStarVote(l1, l2, third);
+  // Une relecture demandée qui n'a pas lu (ni Argon, ni la 3.8, ou délai atteint) n'a rien à rendre : jamais le vote des deux Flash-Lite présenté comme une relecture fine.
+  if (io.forceThird === true && !third?.normalized) throw new Error('La relecture plus fine n’a pas abouti. La lecture actuelle reste valable : vérifie-la sur l’original.');
+  const final = finalOfStarVote(l1, l2, third, io.forceThird === true);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
   if (third?.normalized) { const { items, redressees } = redresserDecalage(final.result, l1, l2); if (redressees.length) final.result = { ...final.result, items }; }
   const retirees = retireesParLaTroisieme(l1, l2, third, final.result);

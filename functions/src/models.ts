@@ -43,8 +43,21 @@ export const INVOICE_STRONG_MAX_OUTPUT = 12_000;
  * global de 100 s de la lecture, de quoi tenter le repli sur la 3.8 (le banc, lui, tolère 90 s pour les réflexions hautes qu'il compare).
  */
 export const INVOICE_STRONG_TIMEOUT_MS = 60_000;
+/**
+ * `gemini-4-argon` : la 3ᵉ lecture quand l'utilisateur doute et demande « Relire plus finement » (voie h1, 14.11 : « Argon, réflexion basse 108 / 108 est
+ * aussi bon, ajoute un bouton pour l'appeler explicitement en fallback », « pour les users s'ils ont un doute »). Banc g1, moitié impaire : 108 lignes
+ * justes sur 108 en réflexion basse. Jamais appelé sans cette demande ; le client ne dit que `relecture: 'argon'`, jamais un nom de modèle.
+ * Tarif : 2 $ / 10 $ le million jusqu'au 30.11.2026, 4 $ / 20 $ dès le 1.12 (`geminiCosts.ts`, `RATE_CHANGES`).
+ */
+export const INVOICE_ARGON_MODEL = 'gemini-4-argon';
+/** Les relectures qu'un client peut demander, par leur mot : la seule valeur admise est `'argon'`. */
+export type InvoiceRelecture = 'argon';
+/** Ce que le client a envoyé comme `relecture` : exactement `'argon'`, sinon rien (un nom de modèle, un texte, un nombre : ignoré, jamais transmis ni deviné). */
+export function invoiceRelecture(value: unknown): InvoiceRelecture | undefined {
+  return value === 'argon' ? 'argon' : undefined;
+}
 /** Liste blanche du serveur : aucune requête ne part vers un autre modèle. */
-export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL] as const;
+export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, INVOICE_ARGON_MODEL] as const;
 export type GeminiModel = (typeof GEMINI_MODELS)[number];
 
 /** Une première tentative, puis une seule nouvelle tentative, sur 3.8. */

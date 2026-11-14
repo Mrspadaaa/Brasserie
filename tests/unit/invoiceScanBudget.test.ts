@@ -49,6 +49,14 @@ describe('Budget scan isolé, fournisseur simulé',()=>{
     const quote=quoteGeminiCost('gemini-4-hydrogen',state.monthlyBodies[0]);
     expect(quote.reservedMicroChf).toBe(quoteGeminiCost(GEMINI_MODEL,state.monthlyBodies[0]).reservedMicroChf);
   });
+  it('une génération Argon (relecture demandée) est réservée au tarif d\'Argon, plafond de sortie 12 000, jamais au tarif de la 3.8',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{await gen({...request,generationConfig:{maxOutputTokens:20000}},signal(),'gemini-4-argon');},provider);
+    expect(state.monthlyModels).toEqual(['gemini-4-argon']);expect(provider.mock.calls[0][2]).toBe('gemini-4-argon');
+    expect((provider.mock.calls[0] as any)[0].generationConfig.maxOutputTokens).toBe(12000);
+    const quote=quoteGeminiCost('gemini-4-argon',state.monthlyBodies[0],Date.parse('2026-11-20T12:00:00+01:00'));
+    expect(quote.reservedMicroChf).toBeGreaterThan(quoteGeminiCost(GEMINI_MODEL,state.monthlyBodies[0]).reservedMicroChf);
+  });
   it('un échec réseau ne réessaie pas et conserve la réservation',async()=>{
     const provider=vi.fn().mockRejectedValue(Error('timeout'));
     await expect(runBudgetedInvoiceScan('u',file,gen=>gen(request,signal()),provider)).rejects.toThrow('timeout');

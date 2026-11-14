@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { onCall, HttpsError, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
-import { AiTier, GEMINI_LITE_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
+import { AiTier, GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, invoiceRelecture, type InvoiceRelecture, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { geminiBody, userTextOf } from './geminiBody.js';
@@ -91,6 +91,8 @@ interface AiTaskPayload {
   files?: Array<{ data: string; mimeType: string }>;
   /** D380 : ce fichier est le morceau k sur n d'une longue pièce découpée par l'app (bande ou page) ; seulement avec `file`. */
   morceau?: { k: number; n: number };
+  /** « Un doute ? Relire plus finement » : seule la valeur exacte `'argon'` est admise (`invoiceRelecture`). Jamais un nom de modèle : le serveur choisit. */
+  relecture?: unknown;
   /** D381 : ce fichier est la bande de contrôle à cheval sur la coupe entre les morceaux k et k + 1 (sur n) ; seulement avec `file`. */
   jonction?: { k: number; n: number };
 }
@@ -183,7 +185,7 @@ const SCHEMA_MORCEAU = (() => {
   return { ...base, properties: { ...base.properties, items: { ...base.properties.items, items: { ...item, properties: { suite: { type: 'BOOLEAN' }, ...item.properties }, required: ['suite', ...item.required] } } } };
 })();
 
-export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number; jonction?: true }): Promise<AiTaskResult> {
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number; jonction?: true }, relecture?: InvoiceRelecture): Promise<AiTaskResult> {
   const started = Date.now();
   // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8 (repli de la 3ᵉ lecture ; celui d'Hydrogen est plus haut, mais un test réel ne sert pas cette voie).
   const override = evaluationOptions?.maxOutputTokens;
@@ -195,13 +197,20 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   // « t2 » (08.11) : les totaux se lisent sur chaque partie ; un morceau lu avant, sans total, n'est pas resservi.
   const cleMorceau = (file: InvoiceFile, m: { k: number; n: number; jonction?: true }): InvoiceFile =>
     ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.jonction ? 'j' : 't2:'}${m.k}/${m.n}`)]).toString('base64') });
-  const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : morceau ? cleMorceau(pages[0], morceau) : pages[0], model = SCAN_MODEL;
+  // « Un doute ? » : une relecture est un nouvel appel payé sur la même pièce, avec sa propre clé de budget (comme un morceau) : elle ne ressert jamais la lecture d'avant, et deux
+  // relectures de la même pièce ne se paient pas deux fois (la seconde ressert la première).
+  const cleRelecture = (file: InvoiceFile): InvoiceFile =>
+    ({ mimeType: 'application/x-relecture', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`relecture:${relecture}`)]).toString('base64') });
+  const cleLecture: InvoiceFile = pages.length > 1 ? cleDePages(pages) : morceau ? cleMorceau(pages[0], morceau) : pages[0];
+  const key: InvoiceFile = relecture ? cleRelecture(cleLecture) : cleLecture, model = SCAN_MODEL;
+  // La 3ᵉ lecture : Hydrogen d'ordinaire, Argon quand l'utilisateur a demandé une relecture plus fine. Les deux en réflexion basse, même plafond de sortie, même délai.
+  const strongModel = relecture === 'argon' ? INVOICE_ARGON_MODEL : INVOICE_STRONG_MODEL;
   const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceau.jonction ? jonctionNote() : morceauNote(morceau.k, morceau.n)}` : prompt;
   assertGeminiModel(model);
   assertGeminiModel(GEMINI_LITE_MODEL);
-  assertGeminiModel(INVOICE_STRONG_MODEL);
+  assertGeminiModel(strongModel);
   // `model` (la 3.8) n'est plus que le repli de la 3ᵉ lecture ; `servedBy` dit qui l'a lue, pour le résultat rendu.
-  let servedBy: string = INVOICE_STRONG_MODEL;
+  let servedBy: string = strongModel;
   const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
     assertGeminiModel(callModel);
     const response = await fetch(`${GEMINI_ENDPOINT}/${callModel}:generateContent`, {
@@ -246,8 +255,8 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
       // Hydrogen, réflexion basse ; s'il échoue (erreur, délai, coupure, réponse inutilisable), UNE nouvelle tentative sur la 3.8, comme Flash-Lite → 3.8 ailleurs.
       // Pas de repli si le délai global est atteint (il n'y aurait plus de temps) ni si le budget refuse (il refuserait aussi la 3.8).
       readStrong: async () => {
-        servedBy = INVOICE_STRONG_MODEL;
-        try { return await read(INVOICE_STRONG_MODEL, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_TIMEOUT_MS); }
+        servedBy = strongModel;
+        try { return await read(strongModel, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_TIMEOUT_MS); }
         catch (error) {
           if (deadline.aborted || error instanceof BrewerBudgetError) throw error;
           servedBy = model;
@@ -256,8 +265,9 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
       },
       causeOf: cause,
       deadlineReached: () => deadline.aborted,
+      forceThird: relecture !== undefined,
       ...(flux ? { provisoire: (data: unknown) => {
-        const envoye = flux.onProvisoire(data, { model: INVOICE_STRONG_MODEL, elapsedMs: Date.now() - started, ...(pages.length > 1 ? { pages: pages.length } : {}) });
+        const envoye = flux.onProvisoire(data, { model: strongModel, elapsedMs: Date.now() - started, ...(pages.length > 1 ? { pages: pages.length } : {}) });
         provisoireParti = true;       // une levée de `onProvisoire` passe par-dessus : le morceau n'est pas parti, ni jeton ni rang
         return envoye;
       } } : {})
@@ -348,7 +358,7 @@ export const aiTask = onCall(
   },
   async (request: CallableRequest<AiTaskPayload>, response?: CallableResponse<unknown>): Promise<AiTaskResult> => {
     const email = assertAuthorized(request);
-    const { task, tier: requestedTier, context, instruction, file, files, morceau, jonction } = request.data ?? {};
+    const { task, tier: requestedTier, context, instruction, file, files, morceau, jonction, relecture: relectureDemandee } = request.data ?? {};
 
     // D380 : l'assemblage des morceaux d'une longue pièce ; aucune IA, aucun coût, aucune pièce jointe.
     if ((task as string) === 'assemblerLecture') {
@@ -392,7 +402,9 @@ export const aiTask = onCall(
         if (lu && j) throw new Error('Un morceau ou une jonction, pas les deux.');
         const m = lu ?? j;
         if (m && charge.kind === 'pages') throw new Error('Un morceau est un seul fichier.');
-        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux, m);
+        // Une relecture n'est jamais un morceau (la pièce se relit en entier) ; seule la valeur exacte 'argon' compte, tout le reste est ignoré.
+        const relecture = m ? undefined : invoiceRelecture(relectureDemandee);
+        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux, m, relecture);
       } catch (error: any) {
         return { ok:false, tier:'fast', error:error?.message || 'Lecture indisponible. Complète le justificatif manuellement.' };
       }

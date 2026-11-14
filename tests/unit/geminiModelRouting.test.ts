@@ -56,10 +56,10 @@ afterAll(() => {
 });
 
 describe('Routage Gemini par usage, choisi par le serveur (décision 68)', () => {
-  it('n’admet que trois modèles (3.8, Flash-Lite, Hydrogen pour la 3ᵉ lecture des justificatifs), et Rapide comme Max restent des réglages de 3.8', () => {
+  it('n’admet que quatre modèles (3.8, Flash-Lite, Hydrogen pour la 3ᵉ lecture des justificatifs, Argon pour la relecture demandée), et Rapide comme Max restent des réglages de 3.8', () => {
     expect(GEMINI_MODEL).toBe(FLASH);
     expect(GEMINI_LITE_MODEL).toBe(LITE);
-    expect([...GEMINI_MODELS]).toEqual([FLASH, LITE, 'gemini-4-hydrogen']);
+    expect([...GEMINI_MODELS]).toEqual([FLASH, LITE, 'gemini-4-hydrogen', 'gemini-4-argon']);
     expect(INVOICE_STRONG_MODEL).toBe('gemini-4-hydrogen');
     // Hydrogen ne sert à aucun usage d'aiTask : aucune route, aucun niveau ne le nomme.
     expect([...Object.keys(LITE_ROUTES).flatMap(usage => geminiAttempts(usage)), ...geminiAttempts('readHopCoa', 'max'), ...modelChain()].map(a => typeof a === 'string' ? a : a.model)).not.toContain('gemini-4-hydrogen');
