@@ -102,5 +102,53 @@
   "invention": 1,
   "ton": 0.8,
   "note": "niveau « urgent » sans raison"
+ },
+ "S0b9e4d": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.6,
+  "note": "blow-off, ne pas boucher, cold crash cité ; ~150 mots, deux questions ; niveau urgent fort"
+ },
+ "S0becf0": {
+  "faits": 0.8,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.7,
+  "note": "blow-off, ne pas boucher ; cold crash non cité ; ~120 mots"
+ },
+ "S4ecf13": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 0.6,
+  "note": "hop creep cité en passant ; « hop burn » douteux ; ~140 mots, deux questions"
+ },
+ "Sd326ce": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.75,
+  "ton": 0.7,
+  "note": "hop creep expliqué, outil fermentation_check ; « 18-20 °C » et « surpression en bouteille » non fondés ; ~155 mots"
+ },
+ "S8f29ef": {
+  "faits": 0.7,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.9,
+  "note": "refus implicite du stock seulement ; court ; pH 5,2-5,5 non sourcé"
+ },
+ "Sa947ce": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.8,
+  "note": "refus explicite des deux demandes ; ~110 mots ; question en ou"
  }
 }

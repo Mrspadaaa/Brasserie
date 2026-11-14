@@ -124,8 +124,8 @@ describe('g2 — un cas joué de bout en bout (harnais réel, Gemini simulé)', 
   });
   it('lit les options : plafonds bornés à ceux de la mission', () => {
     const options = lireArgs(['--cellule', 'prod', '--plafond-mission', '50', '--plafond-g2', '9', '--cas', 'power']);
-    expect(options.plafondMission).toBe(9.5);
-    expect(options.plafondG2).toBe(3.5);
+    expect(options.plafondMission).toBe(9.9);
+    expect(options.plafondG2).toBe(4.2);
     expect(options.cas).toEqual(['power']);
   });
 });

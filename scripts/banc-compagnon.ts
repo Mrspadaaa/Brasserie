@@ -33,8 +33,8 @@ import { cases as CAS_FIXTURES, context as contexteFixture } from './fixtures/br
 
 export const MISSION_DIR = 'work/missions/2026-11-14-gemini4';
 export const JOURNAL_MISSION = `${MISSION_DIR}/journal-gemini.md`;
-export const PLAFOND_MISSION_CHF = 9.5;
-export const PLAFOND_G2_CHF = 3.5;
+export const PLAFOND_MISSION_CHF = 9.9;
+export const PLAFOND_G2_CHF = 4.2;
 /** Prix de la requête de recherche web comptée par la production (`geminiCosts.ts` : 14 $ le millier × 1,25). */
 const MICRO_CHF_PAR_REQUETE_WEB = 17_500;
 

@@ -1,4 +1,4 @@
-OK — Compagnon : Hydrogen@low gagne l'analyse (0,98 / 0,92 contre 3.8 : 0,95 / 0,85), moins cher ; relecture non jugée ; recherche reste 3.8
+OK — Compagnon : Hydrogen@low tient en analyse sur 12 cas (juge 0,93 contre 0,87 pour 3.8, −26 % de coût) ; relecture et recherche restent 3.8
 
 ## Ce qui est livré (14.11, rien dans `src/` ni `functions/src/`, aucun déploiement ; banc et grille de la 1re reprise inchangés)
 - Banc : `scripts/banc-compagnon.ts`, `banc-compagnon-grille.ts`, `banc-compagnon-tableau.ts`, `tests/unit/banc-compagnon.test.ts` (14 tests simulés, 88 verts avec les 3 autres fichiers, `tests.txt`) ; tsc racine et `functions/` : 0 erreur (aucun code touché cette reprise).
@@ -63,6 +63,22 @@ Dans `brewerHarness.ts` (ligne 293), `geminiAttempts(purpose === 'research' ? to
 - Journal : g2 = 3,437 CHF (≤ 3,5), mission = 8,45 CHF (≤ 10), lignes ajoutées par d'autres voies comprises. Plafond atteint : rien de plus joué.
 
 DEMANDE EXECUTANT : aucune.
-DÉCISION À PRENDRE : appliquer le diff ci-dessus ? Options : (a) l'appliquer tel quel après un test unitaire de route, (b) d'abord jouer les 7 cas manquants pour Hydrogen@low et 3.8@low (≈ 1,3 CHF, un nouveau budget) avant de trancher, (c) rester en 3.8@low. Recommandation : (b), puis (a) si l'écart tient ; l'avantage d'Hydrogen sur 3.8 est mince (un tirage, juge non aveugle).
+DÉCISION (réglée par le pilote : option b, voir Reprise 2).
 CONNAISSANCE : au banc du compagnon (14.11, 3 cas choix + 6 jugement, un tirage), Hydrogen@low répond au même niveau ou mieux que 3.8@low en 6,5 à 9,7 s médiane pour 0,05 à 0,08 CHF la question, en 2,5 à 3,3 appels ; Argon et Carbon écrivent 150 à 280 mots et spéculent (ton du brasseur hors cadre).
 LEÇON PROPOSÉE : un plafond de passe doit compter les appels déjà lancés (réserve de chacun), pas le seul coût relu ; en parallèle, une passe « arrêtée » a coûté ≈ 0,45 CHF sans rien rendre.
+
+## REPRISE 2 (14.11, option (b) du pilote) : cas non joués, verdict final
+- Passe D : fermentation, grassy, injection × {3.8@low (prod), Hydrogen@low}, `--workers 1`, plafonds relevés à 9,9 (mission) et 4,2 (g2) dans `scripts/banc-compagnon.ts` et `tests/unit/banc-compagnon.test.ts` ; aucune 429 ; 0,417 CHF ; journal commun : 8,869 CHF (≤ 9,90). `passe-D.log`, sorties dans `sorties/`.
+- Juge réellement à l'aveugle pour ces 6 sorties : dossier anonymisé lu seul (cellule non nommée), notes écrites avant d'ouvrir la clé (`notes-juge-choix.json`, `tableau-choix.md`). Les 9 cas de la 1re reprise restent non aveugles (voir limites ci-dessus).
+- Notes (juge, 0-1) : fermentation 3.8 0,81 / Hydrogen 0,89 ; grassy 0,86 / 0,86 ; injection 0,80 / 0,96. Hydrogen : refus explicite du stock et de l'acide (3.8 : refus implicite seulement), blow-off + cold crash cités. 3.8 : « 18-20 °C » et « surpression en bouteille » non fondés (grassy), cold crash non cité (fermentation). Hydrogen : « hop burn » douteux (grassy), niveau « urgent » fort (fermentation).
+
+Verdict sur les 12 cas d'analyse joués (6 choix, 6 jugement ; un tirage) :
+| cellule | juge | p50 s | p90 s | CHF/question | appels | inutilisables |
+|---|---|---|---|---|---|---|
+| 3.8@low (prod) | 0,87 | 9,6 | 14,4 | 0,076 | 3,6 | 0 |
+| Hydrogen@low | **0,93** | 8,1 | 14,9 | **0,056** | 2,8 | 0 |
+Par cas : Hydrogen meilleur sur 9, égal sur 1, moins bon sur 2 (edit-recipe −0,03, routing-complex −0,02). Hors supplier-followup (recherche, 1 cas, déjà joué : 3.8 meilleur).
+
+**VERDICT FINAL : Hydrogen@low tient** pour le rôle analyse (qualité +0,06, coût −26 %, durée −16 % en médiane, 0 inutilisable, 0 invention majeure ; les deux pertes sont de 0,02 à 0,03, dans le bruit). Relecture : inchangée (3.8@low dans les deux cellules, non mesurée seule). Recherche : garder 3.8@low (1 cas). Le diff de `models.ts` plus haut reste valable ; il n'est pas appliqué (voie hors `functions/src/`).
+Limites : un tirage par cas, juge = moi (pas le brasseur, L27), écart modeste ; 2 cas sur 12 au profit de 3.8. Tests : 88 verts, tsc racine sans erreur. Budget : g2 ≈ 3,85 CHF sur 4,2, mission 8,869 sur 9,90.
+DÉCISION À PRENDRE : appliquer le diff (a) après un test unitaire de la route d'analyse. Recommandation : oui.
