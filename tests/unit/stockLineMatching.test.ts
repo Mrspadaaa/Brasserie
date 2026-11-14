@@ -268,8 +268,9 @@ describe('Stocks : lecture tolérante des catégories déjà écrites en minuscu
     render(createElement(VirtuosoMockContext.Provider, { value: { viewportHeight: 1000, itemHeight: 54 } },
       createElement(StocksTab, { stocks: StorageService.getStocks(), batches: [], onOpenQuickAction: () => {} })));
     await screen.findByRole('button', { name: 'Ouvrir Malt ancien du Banc' });
-    const headings = screen.getAllByText(/^malt$/i).filter(node => !node.closest('button'));
-    expect(headings.map(node => node.textContent)).toEqual(['Malt']);
+    // Part z (maquette sy/fA) : les groupes de la liste sont les six familles (« Malts »), « malt » et « Malt » tombent dans le même.
+    const headings = screen.getAllByText(/^malts?$/i).filter(node => !node.closest('button'));
+    expect(headings.map(node => node.textContent)).toEqual(['Malts']);
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'banc-old')?.category).toBe('malt');
     // L'en-tête de groupe porte le nombre d'articles à côté du nom.
     expect(headings[0].nextElementSibling).toHaveTextContent('2');
