@@ -21,6 +21,11 @@ import './operations.css';
  * Une dépense sans justificatif RANGÉ : tant que l'envoi au Drive n'a pas abouti (`finance.proofUpload` en attente ou à renvoyer), elle n'a pas de
  * `proofDocumentId` et reste dans « Sans justificatif » et « À compléter ». Un envoi en cours n'est pas un justificatif.
  */
+/** Le filtre « Matériel · à part » que pose la Synthèse : ce qu'Opérations range sous ce titre (matériel et local et travaux, ou une ligne `equipment` non passée en charge). */
+export const CATEGORIE_A_PART = 'apart';
+const libelleCategorie = (c: string): string => c === CATEGORIE_A_PART ? 'Matériel · à part' : CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ?? c;
+const estAPart = (t: Transaction): boolean => t.category === 'materiel' || t.category === 'renovation'
+  || !!t.finance?.lines.some(l => l.kind === 'equipment' && l.capitalTreatment !== 'expense');
 export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId;
 
 export type JournalScope = 'current' | 'archives' | 'all';
@@ -195,7 +200,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       // Une facture ouverte reste dans la liste du mois, archives comprises aussi : « Tout » montre au moins ce que montrent les courantes (la pastille « en retard » ne promet rien d'absent).
       if (scope !== 'archives' && !year && !chasing && !open && !dansJours(date ?? '', debut, fin)) return false;
       if (needle && !search.includes(needle)) return false;
-      if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
+      if (category === CATEGORIE_A_PART) { if (!estAPart(t)) return false; }
+      else if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
         (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
       return true;
     };
@@ -298,7 +304,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
     ...(filter !== 'all' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
-    ...(category !== 'all' ? [{ cle: 'categorie', libelle: CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category, retirer: () => change({ category: 'all' }) }] : []),
+    ...(category !== 'all' ? [{ cle: 'categorie', libelle: libelleCategorie(category), retirer: () => change({ category: 'all' }) }] : []),
   ];
 
   /** Les groupes : un jour (« Par date », tout périmètre) ou une catégorie (le mois, un suivi, un exercice, les archives). Une écriture paraît UNE fois. */
@@ -392,7 +398,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
 
     {!filtered.length && <div className="ops-vide">
       <h3>{scope === 'archives' && !years.length ? 'Aucune année archivée' : !transactions.length ? 'Aucune opération enregistrée' : 'Aucune opération trouvée'}</h3>
-      <p>{scope === 'archives' && !years.length ? 'Range une année terminée pour la retrouver ici.' : !transactions.length ? 'Enregistre un achat ou une vente pour démarrer le journal.' : `${periodLabel}${query ? ` · « ${query} »` : ''}${category !== 'all' ? ` · ${CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}` : ''}${filter !== 'all' ? ` · ${FILTER_LABELS[filter] ?? filter}` : ''}`}</p>
+      <p>{scope === 'archives' && !years.length ? 'Range une année terminée pour la retrouver ici.' : !transactions.length ? 'Enregistre un achat ou une vente pour démarrer le journal.' : `${periodLabel}${query ? ` · « ${query} »` : ''}${category !== 'all' ? ` · ${libelleCategorie(category)}` : ''}${filter !== 'all' ? ` · ${FILTER_LABELS[filter] ?? filter}` : ''}`}</p>
       <div>{scope === 'archives' && !years.length && <button type="button" className="ops-lien" onClick={onManageArchives}>Choisir une année à archiver</button>}
         {hasFilters && <button type="button" className="ops-mini" onClick={clearFilters}>Retirer les filtres</button>}
         {transactions.length > 0 && <button type="button" className="ops-lien" onClick={showEverything}>Voir toutes les opérations</button>}
@@ -446,7 +452,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
           combien d'opérations attendent derrière. Ces libellés vivent hors des boutons. */}
       <div hidden>{shownFilters.map(({ value }) => <span key={value} id={`${searchId}-${value}`}>{compte(counts[value], 'opération')}</span>)}</div>
       <div className="ops-ligne">
-        <select className="ops-select" aria-label="Catégorie" value={category} onChange={e => change({ category: e.target.value })}><option value="all">Toutes catégories</option>
+        <select className="ops-select" aria-label="Catégorie" value={category} onChange={e => change({ category: e.target.value })}><option value="all">Toutes catégories</option>{category === CATEGORIE_A_PART && <option value={CATEGORIE_A_PART}>{libelleCategorie(CATEGORIE_A_PART)}</option>}
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
         <button type="button" className="ops-chip" aria-pressed={filter === 'void'} onClick={() => change({ filter: filter === 'void' ? 'all' : 'void' })}>Écritures annulées uniquement</button>

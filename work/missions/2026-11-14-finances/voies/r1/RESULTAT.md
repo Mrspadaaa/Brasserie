@@ -15,7 +15,7 @@ OK — Synthèse et Annuel : points 1, 2, 3, 7, 8, 9, 10, 12 corrigés, contrôl
 - G1 `controle-r1.mjs 3000` : `R1 OK` (10 lignes, un point par ligne). Cause du P3 : le domaine ne rédige `message` qu'à partir de 80 % du seuil ; à 5,7 % il est vide, la feuille n'affichait que `<p>{''}</p>`. Elle dit maintenant 5 % du seuil, CA 5 695,00 CHF sur 12 mois, seuil 100 000,00, reste 94 305,00.
 - G2 `lire.mjs temoin-head.txt "R1 ECHEC" TEMOIN` : `TEMOIN OK` (code d'avant : 8 points sur 8 KO ; P2 en partie vrai déjà).
 - G3 `controle-synthese.mjs 3000` : `SYNTHESE OK`. G4 `controle-annuel.mjs 3000` : `ANNUEL OK`.
-- G5 `tests.txt` (`npx vitest run tests/unit --reporter=dot`) : à relire par le pilote avec `vitest-lu.mjs` (le lot tournait encore à l'écriture de ce fichier ; voir la fin).
+- G5 ECHEC pour cause d'environnement : `tests.txt` (`npx vitest run tests/unit --reporter=dot --no-color`) = 6 tests échoués et 55 fichiers non chargés sur 885 (10 249 tests verts). Causes lues : `firebase-admin`, `firebase-functions`, `cheerio` absents du poste (ces fichiers touchent `functions/`, comme les deux erreurs `tsc` à ignorer) et un délai de 15 s dépassé. Aucun fichier de Synthèse ou d'Annuel dans cette liste ; `annuelPiecesAClasser`, `periodeSynthese*` passent. `vitest-lu.mjs` rend donc `VITEST ECHEC` ; le pilote juge s'il l'accepte, ou installe les modules manquants et rejoue.
 - `npx tsc --noEmit` : aucune erreur hors `functions/` (au dernier passage, avant la retouche de taille du « ? »).
 - Essais : 3 passes du contrôle (ajustements : sélecteur de la ligne vente, écart de colonnes ≤ 5 px).
 

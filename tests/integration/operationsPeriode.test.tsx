@@ -16,7 +16,7 @@ import type { FinancialPayment } from '../../src/domain/finance/types';
 /**
  * CP-12 (10.11) : « Toujours pas la bonne vue et je peux pas filtrer pour un intervalle de temps précis ».
  * Une seule vue (v6b : bande, graphe des piles, groupes par catégorie, « Annulées » en fin) pour toute période ; « Par date » ne change
- * que l'ordre des lignes ; « … » ouvre le filtre du … au … ; « Annuler » ne paraît que juste après « ✓ Payé ».
+ * que l'ordre des lignes ; la frise des jours et les champs du … au … (s2ap2, 14.11) bornent la plage ; « Annuler » ne paraît que juste après « ✓ Payé ».
  */
 const today = todayISO();
 const annee = today.slice(0, 4);
@@ -92,26 +92,84 @@ describe('Opérations : une seule vue, quelle que soit la période', () => {
     expect(screen.getByRole('group', { name: /par catégorie/ })).toBeInTheDocument();
   });
 
-  it('(c) « … » → du juin au sept. : seules les pièces de juin à sept., titre « juin – sept. 2026 », piles de la plage', () => {
+  it('(c) champs « du » / « au » (ordinateur) : du 1er juin au 30 sept., seules ces pièces, titre « 1er juin → 30 sept. », piles de la plage', () => {
     const { container } = render(<Hote initial={{ scope: 'all' }}/>);
-    fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
-    // Même rangée que la Synthèse : « du [mois] au [mois] ».
-    const plage = screen.getByRole('group', { name: 'Plage de mois' });
-    fireEvent.change(within(plage).getByLabelText('Du mois'), { target: { value: `${annee}-06` } });
-    fireEvent.change(within(plage).getByLabelText('Au mois'), { target: { value: `${annee}-09` } });
+    // s2ap2 (14.11) remplace « Autre période » : deux champs date posent la plage du jour au jour, la frise la montre.
+    const champs = screen.getByRole('group', { name: 'Plage du … au …' });
+    fireEvent.change(within(champs).getByLabelText('Du'), { target: { value: `${annee}-06-01` } });
+    fireEvent.change(within(champs).getByLabelText('Au'), { target: { value: `${annee}-09-30` } });
     expect(montre('Op JUIN') && montre('Op AOUT') && montre('Op SEPT')).toBe(true);
     expect(montre('Op MARS')).toBe(false);
-    expect(screen.getByRole('button', { name: new RegExp(`Choisir le mois, juin – sept\\. ${annee}`) })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Plage du 1er juin → 30 sept\./)).toBeInTheDocument();
+    expect(screen.getByTestId('frise')).toBeInTheDocument();
+    expect(screen.getAllByRole('slider').map(h => h.getAttribute('aria-label'))).toEqual(['Début', 'Fin']);
     // Les piles : 3 pièces à 100,00.
     expect(screen.getByLabelText(/Payé, à payer et dépensé/).textContent).toMatch(/dépensé\s*300,00/);
     expect(container.querySelector('[data-groupe="jour"]')).toBeNull();
   });
 
-  it('(c bis) une plage se défait par ‹ : retour à un mois', () => {
-    render(<Hote initial={{ scope: 'all', du: `${annee}-06`, au: `${annee}-09` }}/>);
+  it('(c bis) ‹ › glissent la plage de sa durée (122 jours) ; « × mois entier » la défait', () => {
+    render(<Hote initial={{ scope: 'all', du: `${annee}-06-01`, au: `${annee}-09-30` }}/>);
     expect(montre('Op MARS')).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
-    expect(screen.queryByRole('button', { name: /juin – sept\./ })).not.toBeInTheDocument();
+    expect(montre('Op JUIN')).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: '122 jours plus tôt' }));
+    // 1er juin − 122 jours = 30 janv. ; 30 sept. − 122 jours = 31 mai : la plage garde sa durée.
+    expect(screen.getByLabelText(/Plage du 30 janv\. → 31 mai/)).toBeInTheDocument();
+    expect(montre('Op MARS')).toBe(true);
+    expect(montre('Op JUIN')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: '122 jours plus tard' }));
+    expect(montre('Op JUIN')).toBe(true);
+    expect(montre('Op MARS')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir au mois entier' }));
+    expect(screen.queryByLabelText(/^Plage du \d/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Replier les jours de/ })).toBeInTheDocument();
+  });
+
+  it('(c ter) une poignée au clavier resserre la plage (Page ± 7 jours) : la pièce du jour écarté sort de la liste', () => {
+    render(<Hote initial={{ scope: 'all', du: `${annee}-06-01`, au: `${annee}-09-30` }}/>);
+    const fin = screen.getByRole('slider', { name: 'Fin' });
+    fireEvent.keyDown(fin, { key: 'PageDown' });
+    fireEvent.keyDown(fin, { key: 'PageDown' });
+    const debut = screen.getByRole('slider', { name: 'Début' });
+    fireEvent.keyDown(debut, { key: 'PageUp' });
+    fireEvent.keyDown(debut, { key: 'PageUp' });
+    // 30 sept. − 14 jours = 16 sept. ; 1er juin + 14 jours = 15 juin : la pièce du 10 juin sort, celles d'août et de septembre restent.
+    expect(screen.getByLabelText(/^Plage du 15 juin → 16 sept\./)).toBeInTheDocument();
+    expect(montre('Op JUIN')).toBe(false);
+    expect(montre('Op AOUT') && montre('Op SEPT')).toBe(true);
+  });
+});
+
+// Le lien « Matériel à part » de la Synthèse (r1, 14.11) pose le filtre `apart` : tout ce qu'Opérations range sous « Matériel · à part », jamais « Aucune opération ».
+describe('Opérations : filtre « Matériel · à part » posé par la Synthèse', () => {
+  const mois = today.slice(0, 7);
+  const ligne = (kind: string, traitement?: string) => ({ id: `L-${kind}-${traitement ?? 'x'}`, kind, description: 'Ligne', amountCents: 10000, ...(traitement ? { capitalTreatment: traitement } : {}) });
+  const avecLignes = (id: string, category: Transaction['category'], lignes: unknown[]) => tx(id, `${mois}-05`, category, {
+    finance: { version: 1, kind: 'expense', amountCents: 10000, paymentStatus: 'paid', recordedAt: `${today}T12:00:00Z`, lines: lignes } as never,
+  });
+  const jeu = [
+    tx('MAT', `${mois}-05`, 'materiel'), tx('REN', `${mois}-06`, 'renovation'),
+    avecLignes('JOI', 'divers', [ligne('equipment', 'capital')]),
+    avecLignes('JOIX', 'divers', [ligne('equipment', 'expense')]),
+    tx('BRA', `${mois}-07`, 'brassage'),
+  ];
+
+  it('montre le matériel, le local et travaux ET la ligne equipment passée au capital, rien d\'autre', () => {
+    render(<Hote transactions={jeu} initial={{ month: mois, category: 'apart' }}/>);
+    expect(montre('Op MAT') && montre('Op REN') && montre('Op JOI')).toBe(true);
+    expect(montre('Op JOIX')).toBe(false);
+    expect(montre('Op BRA')).toBe(false);
+    expect(screen.queryByText(/Aucune opération/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Retirer le filtre : Matériel · à part' })).toBeInTheDocument();
+  });
+
+  it('le matériel seul et le local et travaux seul s\'affichent aussi (les deux coexistent ou non)', () => {
+    render(<Hote transactions={[tx('MAT', `${mois}-05`, 'materiel'), tx('BRA', `${mois}-07`, 'brassage')]} initial={{ month: mois, category: 'apart' }}/>);
+    expect(montre('Op MAT')).toBe(true);
+    cleanup();
+    render(<Hote transactions={[tx('REN', `${mois}-06`, 'renovation'), tx('BRA', `${mois}-07`, 'brassage')]} initial={{ month: mois, category: 'apart' }}/>);
+    expect(montre('Op REN')).toBe(true);
+    expect(montre('Op BRA')).toBe(false);
   });
 });
 

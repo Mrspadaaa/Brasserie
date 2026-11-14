@@ -74,7 +74,8 @@
 .ops-bulle[data-ancre='gauche'] { transform:translateX(-12px); }
 .ops-bulle[data-ancre='droite'] { transform:translateX(calc(-100% + 12px)); }
 .ops-bulle sup { font-size:9px; line-height:0; }
-.ops-ax { position:relative; height:12px; font-size:12px; line-height:12px; color:var(--ops-t2); }
+/* margin-top : l'anneau d'une poignée descend de 1 px sous le trait ; sans ce jeu, « 1er » ou « 29 oct. » le touche (14.11). La hauteur totale ne change pas. */
+.ops-ax { position:relative; height:9px; margin-top:3px; font-size:12px; line-height:12px; color:var(--ops-t2); }
 .ops-ax span { position:absolute; top:0; white-space:nowrap; transform:translateX(-50%); }
 .ops-ax span[data-ancre='gauche'] { transform:none; }
 .ops-ax span[data-ancre='droite'] { transform:translateX(-100%); }
