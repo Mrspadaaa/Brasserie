@@ -36,7 +36,10 @@ Ses brassins réels : jamais d'écriture.
 | s2 | série B « le prochain geste d'abord », 5 mini maquettes | conception | concepteur | opus | 60 | `work/missions/2026-11-14-brassins/voies/s2/` | a2 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×5 (1 froide, 2 tiède, 2 chaude) |
 | s3 | série C « l'écart au prévu », 5 mini maquettes, brief minimal, créative à fond | conception | concepteur | opus | 60 | `work/missions/2026-11-14-brassins/voies/s3/` | a2 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×5 (1 froide, 2 tiède, 2 chaude) |
 | t1 | classement du panel, défauts par variante, candidates et greffes | jugement | critique | opus | 30 | `work/missions/2026-11-14-brassins/voies/t1/` | s1, s2, s3 | GATES.md, controle-panel.mjs | pilote | tri |
-| p2 | passe 2 des candidates de t1 (défauts corrigés, greffes), page de choix | conception | concepteur | opus | 60 | `work/missions/2026-11-14-brassins/voies/p2/`, `work/missions/2026-11-14-brassins/page/` | t1 | GATES.md, controle-choix.mjs, baseline, verifier-page.mjs --page-lot | brasseur | passe 2 |
+| p2a | passe 2 de s1e (+ s1g fusion s1e, s1c, s2d) (défauts de t1 corrigés, greffes) | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/p2a/` | t1 | GATES.md, controle-choix.mjs, baseline, controle-panel.mjs | brasseur | passe 2 |
+| p2b | passe 2 de s2a (défauts de t1 corrigés, greffes) | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/p2b/` | t1 | GATES.md, controle-choix.mjs, baseline, controle-panel.mjs | brasseur | passe 2 |
+| p2c | passe 2 de s3b (défauts de t1 corrigés, greffes) | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/p2c/` | t1 | GATES.md, controle-choix.mjs, baseline, controle-panel.mjs | brasseur | passe 2 |
+| pg | page de choix : 15 v0 et 4 passes 2, captures, verifier-page | mécanique | executant | haiku | 30 | `work/missions/2026-11-14-brassins/page/` | p2a, p2b, p2c | verifier-page.mjs --page-lot | pilote | — |
 
 ## Agents
 Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids « créatif à fond » de M13 passe en Opus (s3, brief minimal). Le refus « aucune série en Fable » de systeme.mjs reste assumé.
