@@ -97,3 +97,41 @@ export function nomDuMois(iso: string | null | undefined): string | null {
   const m = iso ? /^\d{4}-(\d{2})-\d{2}/.exec(iso) : null;
   return m ? MOIS[Number(m[1]) - 1] ?? null : null;
 }
+
+/** Le remplaçant que la fiche k2 d'un houblon montre (« ou Mosaic · en stock 250 g · proche ») : le meilleur remplaçant du moteur de substitution v4
+ * (`substitutes()`), le premier en stock s'il y en a un, sinon le premier tout court (« à acheter »). Rien n'est inventé : variété inconnue du catalogue = null. */
+export interface RemplacantFiche {
+  cle: string;
+  nom: string;
+  etat: 'en stock' | 'épuisé' | 'à acheter';
+  /** Grammes libres en stock ; null = pas en stock. */
+  libre: number | null;
+  /** « très proche », « proche », « partiel » ou « éloigné » : le palier du score du moteur, dit tel quel. */
+  palier: string;
+  score: number;
+}
+
+/** Le moteur est chargé à la demande (il pèse lourd) ; le stock injecté est celui des articles « Houblon » de l'app. */
+export async function remplacantDe(item: StockItem, tous: StockItem[]): Promise<RemplacantFiche | null> {
+  if (canonicalStockCategory(item.category) !== 'Houblon') return null;
+  const [{ creerMoteur }, { catalogue }, { relierStock, varieteDe }] = await Promise.all([
+    import('../hopIndex/v4/moteur'), import('../hopIndex/v4/data'), import('../hopIndex/v4/donneesApp')
+  ]);
+  const fiches = catalogue();
+  const v = varieteDe(item.name, fiches);
+  if ('raison' in v) return null;
+  const cle = v.h.id + (/cryo/i.test(item.name) ? ':cryo' : '');
+  const stock = relierStock(tous.filter(a => canonicalStockCategory(a.category) === 'Houblon'), fiches).stock;
+  try {
+    const res = creerMoteur({ catalogue: fiches, stock }).substitutes(cle, { stockFirst: true, limit: 60 });
+    const ok = res.remplacants.filter(s => !s.memeVariete);
+    const choisi = ok.find(s => s.stock.etat === 'en stock' && s.palier !== 'éloigné') ?? ok[0];
+    return choisi ? { cle: choisi.key, nom: choisi.name, etat: choisi.stock.etat, libre: choisi.stock.etat === 'en stock' ? choisi.stock.libre : null, palier: choisi.palier, score: choisi.score } : null;
+  } catch { return null; } // une clé que le moteur ne connaît pas (cryo sans fiche) : pas de remplaçant plutôt qu'un faux
+}
+
+/** « ou Mosaic · en stock 250 g · proche » (maquette k2) ; « ou Mosaic · à acheter · proche » quand aucun n'est en stock. */
+export function phraseRemplacant(r: RemplacantFiche): { nom: string; reste: string } {
+  const stock = r.etat === 'en stock' && r.libre !== null ? `en stock ${quantiteArticle(r.libre, 'g')}` : r.etat === 'épuisé' ? 'épuisé' : 'à acheter';
+  return { nom: `ou ${r.nom}`, reste: ` · ${stock} · ${r.palier}` };
+}
