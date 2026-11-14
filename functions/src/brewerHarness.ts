@@ -8,7 +8,7 @@ import { brewerContextForPrompt } from './hopCompanionContext.js';
 import { BREWER_PLAYBOOK, BREWER_SOURCES } from './brewerKnowledge.js';
 import { FINANCE_ADVICE_GUIDANCE } from './prompts.js';
 import { investmentTool, runInvestmentTool } from './brewerFinanceTools.js';
-import { GEMINI_LITE_MODEL, assertGeminiModel, geminiAttempts } from './models.js';
+import { GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, assertGeminiModel, brewerAnalysisAttempts, geminiAttempts } from './models.js';
 import { BrewerBudgetError, BREWER_AGENT_LIMITS } from './brewerLimits.js';
 import { GeminiApiError, GeminiRequestNotSentError, parseGeminiError } from './geminiErrors.js';
 import { encodeGeminiToolsForRest } from './geminiRequestSchema.js';
@@ -278,6 +278,8 @@ export async function runBrewerHarness(
   // First request refused before sending in this turn. Researchers run under Promise.allSettled and report a generic
   // failure, so the tool loop rethrows this original error instead of turning it into a tool error.
   let requestNotSent: GeminiRequestNotSentError | undefined;
+  // Once Hydrogen has failed in this question, the next analysis steps start on 3.8: no wait on a model that is down.
+  let analysisModelDown = false;
   const call = async (
     body: Record<string, unknown>,
     purpose: 'analysis' | 'research' | 'review' = 'analysis',
@@ -288,11 +290,16 @@ export async function runBrewerHarness(
     const deep = purpose !== 'research' && (purpose === 'review' ? deepReview : deepAnalysis);
     // A slow provider cannot restart the entire waiting time on the new attempt.
     const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(deep ? 60000 : purpose === 'review' ? 30000 : 45000)]);
-    // Every role and mode uses 3.8, except the reference lookup that bench #91 measured on Flash-Lite without loss:
-    // a failure, or an unusable Flash-Lite lookup, gets one new attempt on 3.8, never a third model.
-    const route = geminiAttempts(purpose === 'research' ? tool : purpose);
+    // Review, research and the Approfondi mode use 3.8, except the reference lookup that bench #91 measured on Flash-Lite without loss.
+    // The analysis role outside Approfondi starts on Hydrogen at low reasoning (voie h3; bench g2: judged 0.93 against 0.87 for 3.8).
+    // A failure, or an unusable Flash-Lite lookup or Hydrogen answer, gets one new attempt on 3.8, never a third model.
+    const route = purpose === 'analysis' && !deepAnalysis && !analysisModelDown
+      ? brewerAnalysisAttempts()
+      : geminiAttempts(purpose === 'research' ? tool : purpose);
     for (const [index, attempt] of route.entries()) {
-      const candidate = attempt.model, lite = candidate === GEMINI_LITE_MODEL;
+      const candidate = attempt.model, lite = candidate === GEMINI_LITE_MODEL, strong = candidate === INVOICE_STRONG_MODEL;
+      // Hydrogen answers in 8 to 20 s at the bench: past 25 s, 3.8 still has time left in the 45 s of the call.
+      const attemptSignal = strong && index < route.length - 1 ? AbortSignal.any([requestSignal, AbortSignal.timeout(25000)]) : requestSignal;
       requestSignal.throwIfAborted();
       if (++modelCalls > BREWER_AGENT_LIMITS.modelCalls)
         throw new BrewerBudgetError(
@@ -337,8 +344,15 @@ export async function runBrewerHarness(
               }
             }
           },
-          requestSignal
+          attemptSignal
         );
+        // An empty or truncated Hydrogen answer is not served: 3.8 answers the same step if the deadline and the call pool allow it.
+        if (strong && (!result?.candidates?.[0]?.content || unusableGeminiOutput(result)) && index < route.length - 1 && !requestSignal.aborted &&
+            modelCalls < BREWER_AGENT_LIMITS.modelCalls) {
+          analysisModelDown = true;
+          last = new Error('Réponse Hydrogen inutilisable : nouvelle tentative sur 3.8.');
+          continue;
+        }
         // A 3.8 retry must still fit the deadline and the question's call and web pools; otherwise the lookup is kept.
         if (lite && !liteLookupUsable(result) && index < route.length - 1 && !requestSignal.aborted &&
             modelCalls < BREWER_AGENT_LIMITS.modelCalls && groundedCalls < BREWER_AGENT_LIMITS.groundedCalls) {
@@ -356,9 +370,10 @@ export async function runBrewerHarness(
         if (e instanceof GeminiApiError) {
           (diagnostics.providerErrors ??= []).push(e.diagnostic());
           await options.onDiagnostic?.(diagnostics);
-          // A request Flash-Lite refuses (HTTP 400) may still suit 3.8.
-          if (!e.canTryAnotherModel && !(lite && e.kind === 'invalid-request')) throw e;
+          // A request Flash-Lite or Hydrogen refuses (HTTP 400) may still suit 3.8.
+          if (!e.canTryAnotherModel && !((lite || strong) && e.kind === 'invalid-request')) throw e;
         }
+        if (strong) analysisModelDown = true;
         last = e;
         if (requestSignal.aborted) throw e;
         // Independent researchers share a fixed pool of provider attempts. Preserve a

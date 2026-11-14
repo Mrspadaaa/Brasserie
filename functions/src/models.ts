@@ -6,7 +6,8 @@
  * partout, `gemini-3.5-flash-lite` seulement pour les usages où le banc réel
  * #91 l'a mesuré plus rapide sans perte (`LITE_ROUTES`), et, depuis le 14
  * novembre, `gemini-4-hydrogen` pour la seule 3ᵉ lecture des justificatifs
- * (`INVOICE_STRONG_MODEL`). Le client ne choisit jamais le modèle. Le repli
+ * (`INVOICE_STRONG_MODEL`) et, depuis la voie h3, pour l'analyse du compagnon
+ * hors mode Approfondi (`brewerAnalysisAttempts`). Le client ne choisit jamais le modèle. Le repli
  * reste sur 3.8 : une réponse lite ou Hydrogen inutilisable, ou une panne,
  * passe une fois sur 3.8, puis l'utilisateur reçoit une erreur claire.
  *
@@ -28,7 +29,7 @@ export const GEMINI_LITE_MODEL = 'gemini-3.5-flash-lite';
 /**
  * `gemini-4-hydrogen` : la 3ᵉ lecture des justificatifs (voie h1, 14.11 : « pas beaucoup plus long et pas mal mieux »). Banc g1, moitié impaire,
  * réflexion basse : 93 lignes justes sur 108 contre 78 pour la 3.8, 3ᵉ lecture p50 19,8 s contre 14,0 s, même tarif (1,50 $ / 7,50 $ le million).
- * Aucun autre usage ne l'appelle : le compagnon, les imports et les fiches gardent la 3.8.
+ * Autres usages : seulement l'analyse du compagnon (`brewerAnalysisAttempts`, voie h3) ; les imports, les fiches, la relecture et la recherche du compagnon gardent la 3.8.
  */
 export const INVOICE_STRONG_MODEL = 'gemini-4-hydrogen';
 /** La réflexion de la 3ᵉ lecture : basse (medium et high n'ont rien apporté à Hydrogen au banc g1 : 92 lignes justes dans les deux cas). */
@@ -96,7 +97,8 @@ export function aiTier(value: unknown): AiTier {
  * En Rapide seulement : Max (température 0,2, réflexion haute) n'a pas été mesuré
  * ainsi. Tout le reste garde 3.8 tant qu'un banc ne prouve pas l'égalité : import et
  * relecture (lite y omettait des paliers ou un alpha), fiches documentaires,
- * analyse et relecture du compagnon, recherche de fournisseurs. Les justificatifs
+ * relecture du compagnon, recherche de fournisseurs (l'analyse du compagnon
+ * passe à Hydrogen : `brewerAnalysisAttempts`). Les justificatifs
  * ont leur propre vote (`invoiceScanVote.ts`, D247) : deux Flash-Lite, puis une
  * 3ᵉ lecture sur désaccord ou lecture manquante (Hydrogen en réflexion basse
  * depuis le 14.11, la 3.8 en repli ; mesuré aux bancs du 1er et du 14 novembre 2026).
@@ -122,6 +124,17 @@ export function geminiAttempts(usage: string, tier: AiTier = 'fast'): GeminiAtte
   const main: GeminiAttempt = { model: GEMINI_MODEL, thinkingLevel: TIERS[tier].thinkingLevel };
   const lite = tier === 'fast' && Object.hasOwn(LITE_ROUTES, usage) ? LITE_ROUTES[usage] : undefined;
   return lite ? [{ model: GEMINI_LITE_MODEL, thinkingLevel: lite }, main] : Array.from({ length: GEMINI_ATTEMPTS }, () => main);
+}
+
+/**
+ * Le compagnon, rôle « analyse » (la décision et les appels d'outils de chaque tour), hors mode Approfondi : Hydrogen en réflexion basse, puis
+ * UNE nouvelle tentative sur 3.8 si Hydrogen flanche ou rend une réponse inutilisable (voie h3, 14.11 : « surtout regarde pour l'aide au
+ * brasseur »). Banc g2 sur 12 cas, un tirage : note du juge 0,93 contre 0,87 pour 3.8, 2,8 appels contre 3,6, 0,056 contre 0,076 CHF la question,
+ * 0 réponse inutilisable ; Argon et Carbon écrivent 150 à 280 mots et spéculent (ton hors cadre). Relecture et recherche restent sur 3.8 (la
+ * relecture n'a pas été mesurée seule ; en recherche, 1 cas : Hydrogen ne nomme aucun fournisseur). Même tarif que 3.8 (`geminiCosts.ts`).
+ */
+export function brewerAnalysisAttempts(): GeminiAttempt[] {
+  return [{ model: INVOICE_STRONG_MODEL, thinkingLevel: 'low' }, { model: GEMINI_MODEL, thinkingLevel: 'low' }];
 }
 
 /** Ordre d'essai d'un usage resté sur 3.8 : le même modèle, au plus `GEMINI_ATTEMPTS` fois, quel que soit le niveau. */
