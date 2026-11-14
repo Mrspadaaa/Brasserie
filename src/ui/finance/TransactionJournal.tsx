@@ -11,7 +11,7 @@ import { CATEGORY_LABELS } from './FinanceForms';
 import { amountOnly, shortDate } from './financeFormat';
 import { compte } from '../../services/plural';
 import { Bande, type Actif } from './operations/Bande';
-import { dansJours, finDuMois, jourMaxi, lirePlage, periodeSurJours, plageDuMois, titreJours } from './operations/plage';
+import { dansJours, finDuMois, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, redater, titreJours } from './operations/plage';
 import { enRetard, retardTotal } from './operations/calculs';
 import { questionPoste } from './operations/assistant';
 import { GROUPES, ORDRE, groupeDe, type GroupeId } from './operations/groupes';
@@ -145,6 +145,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     };
   }), [transactions, payments]);
   const classified = useMemo(() => entries.map(entry => ({ ...entry, archived: isTransactionArchived(entry.transaction, index) })), [entries, index]);
+  /** s2ap2 : le jour où chaque pièce compte dans la frise et la plage (à payer : l'échéance ; payée : le dernier paiement). Le mois garde la date de pièce. */
+  const joursCompte = useMemo(() => joursDeCompte(classified, payments, aujourdhui), [classified, payments, aujourdhui]);
+  const jourPlage = (entry: { transaction: Transaction; date: string | null }): string | null => (plage ? joursCompte.get(entry.transaction.id) ?? entry.date : entry.date);
   /** AM n° 7 : les achats déjà inscrits plus d'une fois. Un avertissement : rien n'est supprimé ni annulé d'office. */
   // RF-3 : un avertissement écarté (« Ce n'est pas un doublon ») reste écarté sur cet appareil ; aucune écriture n'est modifiée.
   const [ecartes, setEcartes] = useState<Set<string>>(lireEcartes);
@@ -198,7 +201,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       if (scope === 'current' && !chasing && archived && !open) return false;
       if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
       // Une facture ouverte reste dans la liste du mois, archives comprises aussi : « Tout » montre au moins ce que montrent les courantes (la pastille « en retard » ne promet rien d'absent).
-      if (scope !== 'archives' && !year && !chasing && !open && !dansJours(date ?? '', debut, fin)) return false;
+      if (scope !== 'archives' && !year && !chasing && !open && !dansJours(jourPlage(entry) ?? '', debut, fin)) return false;
       if (needle && !search.includes(needle)) return false;
       if (category === CATEGORIE_A_PART) { if (!estAPart(t)) return false; }
       else if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
@@ -208,7 +211,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     const scoped = classified.filter(entry => keep(entry, false));
     // Hors périmètre « courantes », un suivi ne change rien à la période.
     return { scoped, chasing: scope === 'current' ? classified.filter(entry => keep(entry, true)) : scoped };
-  }, [classified, scope, selectedYear, query, category, debut, fin, year]);
+  }, [classified, scope, selectedYear, query, category, debut, fin, year, plage, joursCompte]);
   const matchesState = useMemo(() => {
     const today = todayISO();
     return ({ transaction: t, payment, date, direction }: typeof classified[number], wanted: string) => {
@@ -266,9 +269,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     }
     const sources = scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified;
     const transactions = sources.map(e => e.transaction);
-    if (plage) return periodeSurJours({ transactions, payments, du: plage.du, au: plage.au, aujourdhui });
+    if (plage) return periodeSurJours({ transactions, payments, du: plage.du, au: plage.au, aujourdhui, jours: joursCompte });
     return periodeSynthese({ transactions, payments, mois: debut?.slice(0, 7) ?? null, jusqua: fin?.slice(0, 7), aujourdhui });
-  }, [followingUp, scope, selectedYear, classified, payments, debut, fin, plage, aujourdhui]);
+  }, [followingUp, scope, selectedYear, classified, payments, debut, fin, plage, aujourdhui, joursCompte]);
   /** Apports (+) et prélèvements (−) de la période : hors « dépensé », montrés à part sur le graphe (CP-15). */
   const apportsCents = useMemo(() => {
     if (followingUp) return null;
@@ -284,6 +287,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     }
     return n ? cents : null;
   }, [followingUp, scope, classified, debut, fin]);
+  /** Point 3 du test d'écran : les archives disent ce qu'elles contiennent, jamais « sur tout l'historique » quand l'historique a des opérations. */
+  const videTexte = scope === 'archives'
+    ? (years.length ? `Ni vente ni dépense dans ${selectedYear === 'all' ? 'les années archivées' : `l’année archivée ${selectedYear}`}.` : 'Aucune année archivée.') : undefined;
+  /** Point 11 : la bande vide le dit déjà ; la carte de la liste ne le répète pas (elle garde ses liens, et sa phrase pour le lecteur d'écran). */
+  const pilesVides = !!piles && !piles.entreCents && !piles.materielCents && !piles.postes.length && !apportsCents;
   const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
   // fx1 : la puce IA pose la question du plus gros poste des piles (v6b) ; sans poste, son libellé actuel.
@@ -292,15 +300,16 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const sourcesFrise = useMemo(() => (scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified), [classified, scope]);
   const donneesFrise = useMemo(() => {
     const cache = new Map<string, PeriodeSynthese>(), saisis = new Set<string>();
-    const tx = sourcesFrise.map(e => e.transaction);
-    for (const e of sourcesFrise) if (e.date && isActiveTransaction(e.transaction)) saisis.add(e.date.slice(0, 7));
+    const tx = redater(sourcesFrise.map(e => e.transaction), joursCompte);
+    // Un mois est « saisi » par la date d'une pièce ou par le jour où elle compte (l'échéance d'une facture d'octobre à payer en novembre).
+    for (const e of sourcesFrise) if (e.date && isActiveTransaction(e.transaction)) { saisis.add(e.date.slice(0, 7)); const j = joursCompte.get(e.transaction.id); if (j) saisis.add(j.slice(0, 7)); }
     return {
       periodeJour: (jour: string) => { let p = cache.get(jour); if (!p) { p = periodeSynthese({ transactions: tx, payments, mois: jour, aujourdhui }); cache.set(jour, p); } return p; },
       moisSaisi: (m: string) => saisis.has(m),
     };
-  }, [sourcesFrise, payments, aujourdhui]);
+  }, [sourcesFrise, payments, aujourdhui, joursCompte]);
   const jours = plage ?? (modeMois ? plageDuMois(month) : null);
-  const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => e.date && isActiveTransaction(e.transaction) && dansJours(e.date, jours.du, jours.au)).length : 0, [sourcesFrise, jours?.du, jours?.au]);
+  const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [sourcesFrise, jours?.du, jours?.au, plage, joursCompte]);
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
     ...(filter !== 'all' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
@@ -321,7 +330,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     }
     const parGroupe = new Map<GroupeId, { rows: typeof lignes; hors: typeof lignes }>();
     for (const entry of lignes) {
-      const horsPeriode = !!entry.date && !dansJours(entry.date, debut, fin);
+      const jourEntry = jourPlage(entry);
+      const horsPeriode = !!jourEntry && !dansJours(jourEntry, debut, fin);
       const echue = (modeMois || !!plage) && enRetard(entry.transaction, entry.payment, aujourdhui) && horsPeriode;
       const id = groupeDe(entry.transaction, { retardHorsMois: echue });
       // s2ap2 : une opération encore à régler, hors de la plage mais pas en retard, reste dite en une ligne « hors plage » (ni comptée, ni dans le sous-total).
@@ -335,7 +345,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       const annees = [...new Set(rows.map(r => isoDate(r.transaction.finance?.dueDate)?.slice(0, 4) ?? r.date?.slice(0, 4)).filter(Boolean))].sort();
       return { cle: id, id, etiquette: id === 'retard' ? `En retard${annees.length ? ` · ${annees.join(' · ')}` : ''}` : GROUPES[id].label, rows, hors };
     });
-  }, [filtered, offset, parJour, modeMois, plage, debut, fin, aujourdhui]);
+  }, [filtered, offset, parJour, modeMois, plage, debut, fin, aujourdhui, joursCompte]);
   /** Le compteur d'un groupe : les opérations actives se comptent, les annulées (listées) se disent à part, comme le total. */
   const libelleCompte = (rows: typeof filtered): string => {
     const annulees = rows.filter(r => !isActiveTransaction(r.transaction)).length, actives = rows.length - annulees;
@@ -362,7 +372,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       retardCents={retard.totalCents} onRetard={() => change({ filter: 'late' })}
       rechercheOuverte={loupe || !!query} onLoupe={() => { if (!query) setLoupe(open => !open); }}
       query={query} onQuery={value => { change({ query: value }); if (!value) searchRef.current?.focus(); }} searchRef={searchRef} searchId={searchId}
-      actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)}
+      actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 
     <div className="ops-liste">{groupes.map(groupe => {
@@ -396,7 +406,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       <button type="button" className="ops-mini" aria-label="Page suivante" disabled={page === pageCount} onClick={() => replaceState({ ...journal, page: page + 1 })}><ChevronRight size={16} aria-hidden="true"/></button>
     </nav>}
 
-    {!filtered.length && <div className="ops-vide">
+    {!filtered.length && <div className="ops-vide" data-nu={(pilesVides && !hasFilters) || undefined}>
       <h3>{scope === 'archives' && !years.length ? 'Aucune année archivée' : !transactions.length ? 'Aucune opération enregistrée' : 'Aucune opération trouvée'}</h3>
       <p>{scope === 'archives' && !years.length ? 'Range une année terminée pour la retrouver ici.' : !transactions.length ? 'Enregistre un achat ou une vente pour démarrer le journal.' : `${periodLabel}${query ? ` · « ${query} »` : ''}${category !== 'all' ? ` · ${libelleCategorie(category)}` : ''}${filter !== 'all' ? ` · ${FILTER_LABELS[filter] ?? filter}` : ''}`}</p>
       <div>{scope === 'archives' && !years.length && <button type="button" className="ops-lien" onClick={onManageArchives}>Choisir une année à archiver</button>}

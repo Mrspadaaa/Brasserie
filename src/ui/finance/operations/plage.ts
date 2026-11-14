@@ -1,6 +1,6 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
-import { isoDate } from '../../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, transactionKind, validPayment } from '../../../domain/finance/ledger';
 import { periodeSynthese, type PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import { joursEntre } from './calculs';
 
@@ -188,13 +188,50 @@ export function texteInconnu(p: Plage): string {
  * La liste complète reste passée telle quelle : les avoirs retrouvent leur facture d'origine, même hors plage. Une seule règle de « dépensé » (voie us).
  * Limite : le contrôle de date d'un avoir (jamais avant sa facture) n'y est pas rejoué quand sa facture est hors plage ; le grand livre le fait.
  */
-export function periodeSurJours(entree: { transactions: Transaction[]; payments: FinancialPayment[]; du: string; au: string; aujourdhui: string }): PeriodeSynthese {
+export function periodeSurJours(entree: { transactions: Transaction[]; payments: FinancialPayment[]; du: string; au: string; aujourdhui: string; jours?: Map<string, string> }): PeriodeSynthese {
   const { du, au } = entree, mDu = du.slice(0, 7), mAu = au.slice(0, 7);
   const transactions = entree.transactions.map(tx => {
-    const jour = isoDate(tx.date);
+    const jour = entree.jours?.get(tx.id) ?? isoDate(tx.date);
     if (!jour) return tx;
     const m = jour.slice(0, 7);
-    return m >= mDu && m <= mAu && !dansJours(jour, du, au) ? { ...tx, date: JOUR_MASQUE } : tx;
+    const date = m >= mDu && m <= mAu && !dansJours(jour, du, au) ? JOUR_MASQUE : jour;
+    return date === tx.date ? tx : { ...tx, date };
   });
   return periodeSynthese({ transactions, payments: entree.payments, mois: mDu, jusqua: mAu, aujourdhui: entree.aujourdhui });
 }
+
+/* ---------- Le jour où une pièce compte dans la frise et la plage (s2ap2, test d'écran du 14.11, point 2) ---------- */
+
+/**
+ * s2ap2 : dans la frise et la plage, une opération À PAYER (ou à encaisser) se place à son ÉCHÉANCE (v6a : « à payer · 25 nov. »), une opération
+ * PAYÉE à la date de son DERNIER paiement (« payé 9 nov. »). Une pièce sans échéance, d'état inconnu, un avoir et une facture qui a un avoir
+ * (sa date sert à valider l'avoir, `refundLinkIssue`) gardent leur date de pièce : aucun jour n'est inventé. Ne retourne que les pièces qui
+ * changent de jour. La vue du MOIS n'utilise pas cette règle : elle range une pièce par sa date (`periodeSynthese`, `dansPeriode`) ; on n'y touche pas.
+ */
+export function joursDeCompte(
+  entrees: Array<{ transaction: Transaction; payment: { state: string } }>, payments: FinancialPayment[], aujourdhui: string,
+): Map<string, string> {
+  const sortie = new Map<string, string>();
+  const cibles = new Set<string>();
+  for (const { transaction: tx } of entrees) { const id = tx.finance?.refundOfId; if (id) cibles.add(id); }
+  const dernier = new Map<string, string>();
+  for (const p of payments) {
+    if (!p.transactionId || !validPayment(p)) continue;
+    const jour = isoDate(p.date);
+    if (!jour || jour > aujourdhui) continue;
+    if (!dernier.has(p.transactionId) || jour > dernier.get(p.transactionId)!) dernier.set(p.transactionId, jour);
+  }
+  for (const { transaction: tx, payment } of entrees) {
+    const genre = transactionKind(tx);
+    if (!isActiveTransaction(tx) || (genre !== 'expense' && genre !== 'income') || cibles.has(tx.id)) continue;
+    const propre = isoDate(tx.date);
+    if (!propre) continue;
+    const jour = payment.state === 'paid' ? dernier.get(tx.id) : payment.state === 'unpaid' || payment.state === 'partial' ? isoDate(tx.finance?.dueDate) : null;
+    if (jour && jour !== propre) sortie.set(tx.id, jour);
+  }
+  return sortie;
+}
+
+/** Les pièces redatées par `joursDeCompte` (copies) ; les autres telles quelles. */
+export const redater = (transactions: Transaction[], jours: Map<string, string>): Transaction[] =>
+  jours.size ? transactions.map(tx => (jours.has(tx.id) ? { ...tx, date: jours.get(tx.id)! } : tx)) : transactions;

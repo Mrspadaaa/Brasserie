@@ -206,3 +206,35 @@ describe('CP-15 : apports signés', () => {
     expect(container.querySelector('[data-pile="apports"]')).not.toBeNull();
   });
 });
+
+// Test d'écran du 14.11 (f3) : points 3 et 11.
+describe('f3 : états vides sans phrase fausse ni carte en double', () => {
+  it('Archives sans année archivée : la bande le dit, sans « tout l’historique » alors que l’historique a des opérations', () => {
+    const { container } = render(<Hote initial={{ scope: 'archives', allDates: true }}/>);
+    const bande = container.querySelector('.ops-bande')!;
+    expect(bande.textContent).toContain('Aucune année archivée.');
+    expect(container.textContent).not.toMatch(/Ni vente ni dépense sur tout l.historique/);
+  });
+  it('mois vide : une seule carte (la bande), la carte de la liste ne garde que ses liens', () => {
+    const { container } = render(<Hote initial={{ month: `${annee}-01` }}/>);
+    expect(container.querySelector('.ops-vide[data-piles]')).not.toBeNull();
+    expect(container.querySelectorAll('.ops-vide').length).toBe(2);
+    expect(container.querySelector('.ops-vide:not([data-piles])')?.getAttribute('data-nu')).toBe('true');
+  });
+  it('un filtre actif sans résultat garde sa carte entière', () => {
+    const { container } = render(<Hote initial={{ month: `${annee}-06`, query: 'introuvable' }}/>);
+    const liste = container.querySelector('.ops-vide:not([data-piles])');
+    expect(liste?.getAttribute('data-nu')).toBeNull();
+  });
+});
+
+describe('f3 : le seuil de TVA s’écrit pareil sur la ligne et sur sa feuille (point 8)', () => {
+  it('5 695 / 100 000 : « 5,7 % » ; au-dessus de 10 % l’entier tronqué ; jamais « 80 % » avant 80', async () => {
+    const { pctSeuil } = await import('../../src/ui/finance/annuel/calculs');
+    expect(pctSeuil(5.695)).toBe('5,7 %');
+    expect(pctSeuil(0.72)).toBe('0,7 %');
+    expect(pctSeuil(0)).toBe('0 %');
+    expect(pctSeuil(12.9)).toBe('12 %');
+    expect(pctSeuil(79.9)).toBe('79 %');
+  });
+});

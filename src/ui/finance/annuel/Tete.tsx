@@ -1,8 +1,7 @@
 import React from 'react';
-import { nombreFr } from '../../../domain/nombreAffiche';
 import { ChevronDown, ChevronRight, LayoutGrid } from 'lucide-react';
 import { echelle } from '../../../domain/finance/periodeSynthese';
-import { colonnesAnnee, piecesAClasser, premiereNonPrete, resultatEnAttente, type EtapeEtat } from './calculs';
+import { colonnesAnnee, pctSeuil, piecesAClasser, premiereNonPrete, resultatEnAttente, type EtapeEtat } from './calculs';
 import { couleur, libelleCategorie, texteSur } from '../synthese/libelles';
 import { montant } from '../previsions/format';
 import type { Ctx } from './ctx';
@@ -29,7 +28,7 @@ export function Piste({ etapes, ici, onGo }: { etapes: EtapeEtat[]; ici?: number
 function PuceStock({ c, label, seul }: { c: Ctx; label: string; seul: boolean }) {
   const classe = `ann-stock${seul ? ' ann-stock-seul' : ''} ann-m`;
   if (c.report.inventoryChangeCents != null) return <i className={classe}>Stock au 31 déc. <b>{label}</b></i>;
-  return <button type="button" className={`${classe} ann-stock-q`} aria-label="Compter le stock au 31 déc. (étape 3, Inventaires) : sans lui, la perte reste avant stock" onClick={() => c.act.aller(3)}>Stock au 31 déc. <b>{label}</b><small className="ann-stock-why">sans lui, perte avant stock ›</small></button>;
+  return <button type="button" className={`${classe} ann-stock-q`} aria-label="Compter le stock au 31 déc. (étape 3, Inventaires) : sans lui, la perte reste avant stock" onClick={() => c.act.aller(3)}>Stock au 31 déc. <b>{label}</b>{/* Test d'écran 14.11 (1) : dans le trou de g6 (118 px à la brasserie complète) la puce reste sur UNE ligne, comme g6 ; son « sans lui… » (CP-18) s'écrit quand elle a la place (au-dessus du liseré) et reste dans son nom accessible. */}{seul && <small className="ann-stock-why">sans lui, perte avant stock ›</small>}</button>;
 }
 
 /** « À classer » : une pièce de travaux dont on ne sait pas si c'est une charge ou du matériel. Même état que la puce du stock (hachure jaune, renvoi) : elle mène à l'étape 4, où la pièce se classe. */
@@ -72,7 +71,7 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
           {/* Une pièce attend son classement : le résultat n'est pas ferme (le domaine le refuse aussi, `resultCents` null). Pas de « perdus » ni de « gagnés » : « ? » à la place du nombre, dans le haut de l'Entré (g6). */}
           {attente && enHaut && <div className="ann-hc"><span>&nbsp;</span></div>}
           {attente && !enHaut && <div className="ann-trou-txt" style={{ color: 'var(--ann-attt)' }}><ResultatAttente c={c} cents={col.aClasserCents}/><PuceAClasser c={c} cents={col.aClasserCents}/></div>}
-          {!attente && ech.signe === 'perte' && !ecartMince &&<div className="ann-trou" style={{ height: ech.hEcart }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><PuceStock c={c} label={stockLabel} seul={false}/></div>}
+          {!attente && ech.signe === 'perte' && !ecartMince &&<div className="ann-trou" style={{ height: ech.hEcart, justifyContent: 'flex-start', paddingTop: 8 }}><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><PuceStock c={c} label={stockLabel} seul={false}/></div>}
           {/* Écart trop mince pour porter son texte (g6 : le trou est à l'échelle, jamais gonflé) : le trou reste un liseré hachuré à sa vraie hauteur, le résultat et le stock se posent juste au-dessus. */}
           {!attente && ech.signe === 'perte' && ecartMince && <><div className="ann-trou-txt"><b className="ann-m">{montant(perte)}</b><span>CHF perdus</span><PuceStock c={c} label={stockLabel} seul={true}/></div><div className="ann-trou ann-trou-mince" style={{ height: ech.hEcart }} aria-hidden="true" /></>}
           {!attente && ech.signe !== 'perte' && <PuceStock c={c} label={stockLabel} seul={true}/>}
@@ -104,7 +103,7 @@ export function Tete({ c, onAnnee, onMois, onTva, tva }: { c: Ctx; onAnnee: () =
           <button type="button" className="ann-go" onClick={() => c.act.aller(suivante?.n ?? 9)}>Continuer</button></div>
       </div>
       <button type="button" className="ann-row" onClick={() => c.act.aller(8)}><span className="ann-t">Impôts Fribourg<small>{c.report.generatedAt.slice(0, 10) <= `${c.year}-12-31` ? 'après le 31 déc.' : 'à reporter'}</small></span><ChevronRight size={16}/></button>
-      {tva && <button type="button" className="ann-row" onClick={onTva}><span className="ann-t">TVA<small>{tva.libelle}</small></span><span className="ann-m ann-t2">{nombreFr(tva.pct, tva.pct > 0 && tva.pct < 10 ? 1 : 0)} %</span><ChevronRight size={16}/></button>}
+      {tva && <button type="button" className="ann-row" onClick={onTva}><span className="ann-t">TVA<small>{tva.libelle}</small></span><span className="ann-m ann-t2">{pctSeuil(tva.pct)}</span><ChevronRight size={16}/></button>}
       <button type="button" className="ann-row" onClick={() => c.act.aller(9)}><span className="ann-t">Dossier et archives</span><ChevronRight size={16}/></button>
     </section>
   </div>;

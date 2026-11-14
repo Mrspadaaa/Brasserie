@@ -67,7 +67,8 @@
 .ops-mois-1 { position:absolute; z-index:1; top:-4px; bottom:0; width:0; border-left:1.5px dashed var(--ops-t3); }
 .ops-h { position:absolute; z-index:3; top:-2px; bottom:-8px; width:44px; margin-left:-22px; touch-action:none; cursor:grab; outline:none; }
 .ops-h::before { content:''; position:absolute; top:2px; bottom:3px; left:21px; width:2px; border-radius:1px; background:var(--ops-acc); }
-.ops-gp { position:absolute; left:10px; top:2px; width:24px; height:24px; box-sizing:border-box; border-radius:50%; border:3px solid var(--ops-acc); background:rgb(var(--cave-950)); box-shadow:0 1px 3px rgb(0 0 0 / .25); }
+/* Test d'écran 14.11 (4) : le fond de la poignée laisse voir la barre du jour qu'elle borde (à « 1er → 14 nov. », la seule barre était cachée dessous). */
+.ops-gp { position:absolute; left:10px; top:2px; width:24px; height:24px; box-sizing:border-box; border-radius:50%; border:3px solid var(--ops-acc); background:rgb(var(--cave-950) / .28); box-shadow:0 1px 3px rgb(0 0 0 / .25); }
 .ops-h[data-tenue] .ops-gp { transform:scale(1.15); box-shadow:0 0 0 6px rgb(var(--area-finances) / .22); }
 .ops-h:focus-visible .ops-gp { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
 .ops-bulle { position:absolute; z-index:4; top:-30px; transform:translateX(-50%); max-width:100%; padding:4px 8px; border-radius:8px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:12px; line-height:16px; white-space:nowrap; pointer-events:none; }
@@ -171,7 +172,8 @@
 .ops-pied .finance-assistant strong { font-size:13px; font-weight:400; line-height:18px; }
 .ops-pu { display:inline-flex; align-items:center; gap:4px; min-height:30px; padding:0 10px; border-radius:10px; background:rgb(var(--cave-800)); font-size:13px; color:var(--ops-t2); }
 .ops-pu[aria-pressed=true], .ops-pu[aria-expanded=true] { background:var(--ops-t1); color:rgb(var(--cave-950)); font-weight:600; }
-.ops-pu:disabled { opacity:.5; cursor:default; }
+/* Test d'écran 14.11 (14) : « Doublons » désactivé se lisait à peine (gris sur brun, opacité .5). Désactivé = contour seul, texte du ton courant (≥ 4,5:1). */
+.ops-pu:disabled { opacity:1; background:transparent; box-shadow:inset 0 0 0 1px var(--ops-bord); color:var(--ops-t2); cursor:default; }
 .ops-pu[data-urgent] { box-shadow:inset 0 0 0 1px rgb(var(--attention)); color:rgb(var(--attention-texte)); }
 .ops-n { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; font-weight:600; }
 .ops-panneau { display:flex; flex-direction:column; gap:6px; padding:8px 0 10px; border-top:1px solid var(--ops-bord); }
@@ -211,3 +213,7 @@
 /* « Pas de graph ? » (10.11) : la bande vide le dit. */
 .ops-vide[data-piles] { min-height:calc(var(--ops-haut) + 34px); display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
 .ops-vide { margin: 8px 0 0; padding: 12px; border: 1px dashed rgb(var(--ligne, 200 200 200)); border-radius: 8px; text-align: center; color: rgb(var(--texte-doux, 90 100 110)); font-size: 13px; background: repeating-linear-gradient(135deg, transparent 0 6px, rgb(0 0 0 / .04) 6px 8px); }
+
+/* Test d'écran 14.11 (11) : la bande dit déjà « Ni vente ni dépense » ; la carte de la liste n'en fait pas une seconde, elle garde ses liens (titre et phrase restent pour le lecteur d'écran). */
+.ops-vide[data-nu] { margin:6px 0 0; padding:0 12px; border:0; background:none; text-align:left; }
+.ops-vide[data-nu] h3, .ops-vide[data-nu] p { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }

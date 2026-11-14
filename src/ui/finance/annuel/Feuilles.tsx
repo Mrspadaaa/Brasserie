@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sheet } from '../../Sheet';
 import { ExerciceField, Field } from '../FinanceForms';
-import { moisDeLAnnee, piecesAClasser } from './calculs';
+import { moisDeLAnnee, pctSeuil, piecesAClasser } from './calculs';
 import type { TvaThresholdStatus } from '../../../domain/finance/tvaThreshold';
 import { montant } from '../previsions/format';
 import type { Ctx } from './ctx';
@@ -50,7 +50,7 @@ export function TvaFeuille({ statut, assujetti, onClose }: { statut: TvaThreshol
   const chf = (cents: number) => `${montant(cents)} CHF`, suisse = (iso: string) => iso.split('-').reverse().join('.');
   return <Sheet open title="TVA" onClose={onClose} className="finance-sheet">
     <div className="finance-form">
-      <p><strong>{Math.floor(statut.ratio * 100)} % du seuil de TVA</strong> · {assujetti ? 'assujetti' : 'non assujetti'}</p>
+      <p><strong>{pctSeuil(statut.ratio * 100)} du seuil de TVA</strong> · {assujetti ? 'assujetti' : 'non assujetti'}</p>
       <p className="finance-muted">Chiffre d’affaires hors taxe <span className="ann-m">{chf(statut.turnoverCents)}</span> sur 12 mois glissants (du {suisse(statut.from)} au {suisse(statut.to)}), pour un seuil de <span className="ann-m">{chf(statut.thresholdCents)}</span> : il reste <span className="ann-m">{chf(Math.max(0, statut.thresholdCents - statut.turnoverCents))}</span>.</p>
       {statut.message && <p className="finance-notice">{statut.message}</p>}
       <p className="finance-muted">Au-delà du seuil, l’assujettissement peut devenir obligatoire (art. 10 LTVA) : à vérifier avec l’AFC ou ta fiduciaire.</p>

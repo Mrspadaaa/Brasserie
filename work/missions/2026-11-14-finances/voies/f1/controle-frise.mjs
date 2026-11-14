@@ -1,5 +1,7 @@
 // node controle-frise.mjs <port> : Opérations au banc reprend la frise des jours de s2ap2 (14.11).
 // Jeu : la brasserie complète `?dev-local&finance-demo` (jamais de donnée réelle) : opérations du jour, loyer à payer le 25, « Solde atelier » en retard.
+// Règle de s2ap2 vérifiée (f3, 14.11) : dans la frise et la plage, une opération à payer se place à son ÉCHÉANCE (la barre hachurée du loyer est au 25,
+// « 1er → 14 » le sort en « hors plage », « 1er → 25 » le compte), une opération payée à la date de son PAIEMENT. La vue du mois range par la date de la pièce.
 // 390 tactile :
 //  - au repos : pilule v6a (‹ novembre ›) et AUCUNE frise ; le bouton « Déplier les jours de novembre » existe ;
 //  - toucher « novembre » : la frise paraît, deux role=slider, hauteur ≤ 56 px (« plus compact ») ;
@@ -53,17 +55,43 @@ async function mobile() {
     ok(ouverte.frise === 1 && ouverte.sliders.length === 2, `frise dépliée : 1 frise, ${ouverte.sliders.length} poignées role=slider`);
     ok(ouverte.friseH > 0 && ouverte.friseH <= 56, `frise dépliée compacte : ${ouverte.friseH.toFixed(1)} px (≤ 56)`);
     ok(/^1er nov/.test(ouverte.sliders[0] ?? '') && /^30 nov/.test(ouverte.sliders[1] ?? ''), `poignées au mois entier (${ouverte.sliders.join(' → ')})`);
-    // plage posée au clavier : Fin 30 → 14 nov. (2 × Page−7, 2 × flèche gauche) : les opérations du jour restent, le loyer du 25 sort
+    // RÈGLE DE s2ap2 (test d'écran 14.11, point 2) : une opération À PAYER se place à son ÉCHÉANCE, une opération PAYÉE à la date de son PAIEMENT.
+    // Au banc, tout est payé le 14 (aujourd'hui) et le loyer (daté du 14) est à payer le 25 : sa barre hachurée est au 25, pas au 14.
+    const barres = await page.evaluate(() => [...document.querySelectorAll('.ops-fjours .ops-fj')].map((c) => ({ hach: !!c.querySelector('.ops-hach'), h: c.querySelector('.ops-bk')?.getBoundingClientRect().height ?? 0 })));
+    ok(barres[24]?.hach === true && barres.every((b, i) => i === 24 || !b.hach), `frise : la barre hachurée du loyer à payer est au 25 nov., nulle part ailleurs (jour(s) hachuré(s) : ${barres.map((b, i) => (b.hach ? i + 1 : 0)).filter(Boolean).join(', ') || 'aucun'})`);
+    ok((barres[13]?.h ?? 0) > 0, `frise : les opérations payées sont à leur date de paiement, le 14 nov. (barre de ${barres[13]?.h ?? 0} px)`);
+    // plage posée au clavier : Fin 30 → 14 nov. (2 × Page−7, 2 × flèche gauche) : les opérations payées le 14 restent, le loyer à payer le 25 sort
     await touches(page, '[role=slider][aria-label=Fin]', 'PageDown', 2); await touches(page, '[role=slider][aria-label=Fin]', 'ArrowLeft', 2);
     const q = await etat(page);
     ok(q.plage === '1er → 14 nov.', `la pilule dit la plage (« ${q.plage} »)`);
-    ok(q.lignes.length === repos.lignes.length && q.hors.length === 0, `1er → 14 nov. garde les 14 nov. et le loyer daté du 14 : ${q.lignes.length} lignes, aucune « hors plage »`);
-    ok(Number.isFinite(q.depense) && Math.abs(q.paye + q.aPayer - q.depense) < 0.011 && q.depense === repos.depense, `légende juste : payé ${q.paye} + à payer ${q.aPayer} = dépensé ${q.depense} (le mois : ${repos.depense})`);
+    ok(q.lignes.length === repos.lignes.length - 1 && !q.lignes.some((l) => /Loyer/.test(l)) && q.hors.some((h) => /Loyer/.test(h) && /à payer 25 nov/.test(h)),
+      `1er → 14 nov. : le loyer à payer le 25 sort en ligne « hors plage » (${q.lignes.length} lignes sur ${repos.lignes.length}, hors : ${q.hors.join(' | ')})`);
+    ok(Number.isFinite(q.depense) && Math.abs(q.paye + q.aPayer - q.depense) < 0.011 && q.aPayer === 0 && Math.abs(q.depense - (repos.depense - 400)) < 0.011,
+      `légende recalculée : payé ${q.paye} + à payer ${q.aPayer} = dépensé ${q.depense} (le mois : ${repos.depense}, moins le loyer 400,00)`);
+    // point 4 : à 1er → 14, la poignée Fin borde la seule barre du jour : son fond laisse voir la barre (jamais un disque plein par-dessus)
+    const jour14 = await page.evaluate(() => {
+      const b = document.querySelectorAll('.ops-fjours .ops-fj')[13]?.querySelector('.ops-bk')?.getBoundingClientRect();
+      const g = document.querySelector('[role=slider][aria-label=Fin] .ops-gp'), fond = g ? getComputedStyle(g).backgroundColor : '';
+      const alpha = /rgba?\(([^)]+)\)/.exec(fond)?.[1].split(/[ ,/]+/).filter(Boolean)[3];
+      return { barre: !!b && b.height > 0, alpha: alpha === undefined ? 1 : Number(alpha) };
+    });
+    ok(jour14.barre && jour14.alpha < 0.5, `la barre du 14 reste visible sous la poignée Fin (fond de la poignée : opacité ${jour14.alpha})`);
+    // Fin → 24 : le loyer reste « hors plage » ; Fin → 25 : il entre (en ligne, à payer 400,00)
+    await touches(page, '[role=slider][aria-label=Fin]', 'PageUp', 1); await touches(page, '[role=slider][aria-label=Fin]', 'ArrowRight', 3);
+    const v24 = await etat(page);
+    ok(v24.plage === '1er → 24 nov.' && v24.hors.some((h) => /Loyer/.test(h)) && v24.aPayer === 0, `1er → 24 nov. : le loyer reste hors plage, à payer ${v24.aPayer} (« ${v24.plage} »)`);
+    await touches(page, '[role=slider][aria-label=Fin]', 'ArrowRight', 1);
+    const v25 = await etat(page);
+    ok(v25.plage === '1er → 25 nov.' && v25.lignes.some((l) => /Loyer/.test(l)) && !v25.hors.some((h) => /Loyer/.test(h)) && Math.abs(v25.aPayer - 400) < 0.011 && Math.abs(v25.depense - repos.depense) < 0.011,
+      `1er → 25 nov. : le loyer entre en ligne, à payer ${v25.aPayer}, dépensé ${v25.depense} (le mois : ${repos.depense})`);
+    await touches(page, '[role=slider][aria-label=Fin]', 'PageDown', 1); await touches(page, '[role=slider][aria-label=Fin]', 'ArrowLeft', 4);
+    const q14 = await etat(page);
+    ok(q14.plage === '1er → 14 nov.', `retour à 1er → 14 nov. (« ${q14.plage} »)`);
     // une plage sans opération saisie : « ni vente ni dépense », jamais un 0 inventé
     await touches(page, '[role=slider][aria-label=Fin]', 'ArrowLeft', 1);
     const p = await etat(page);
     ok(p.plage === '1er → 13 nov.' && !p.lignes.some((l) => /Électricité|Joints|Nettoyant|Malt/.test(l)) && p.lignes.some((l) => /Solde/.test(l)), `1er → 13 nov. : les opérations du 14 sortent, le solde en retard reste (${p.lignes.join(' | ')})`);
-    ok(p.hors.some((h) => /Loyer/.test(h) && /hors plage/.test(h)) && !p.lignes.some((l) => /Loyer/.test(l)), `le loyer à payer (daté du 14) reste en ligne « hors plage », hors des lignes (${p.hors.join(' | ')})`);
+    ok(p.hors.some((h) => /Loyer/.test(h) && /hors plage/.test(h) && /25 nov/.test(h)) && !p.lignes.some((l) => /Loyer/.test(l)), `le loyer à payer le 25 reste en ligne « hors plage » (à payer 25 nov.), hors des lignes (${p.hors.join(' | ')})`);
     ok(!Number.isFinite(p.depense) && p.vide, `sans opération dans la plage : « ni vente ni dépense », pas de légende à 0 (vide ${p.vide})`);
     ok(p.nombres === 0, `aucun input[type=number] (${p.nombres})`);
     // ‹ › : la plage glisse de sa durée (13 jours)

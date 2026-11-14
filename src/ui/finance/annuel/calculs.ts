@@ -228,3 +228,13 @@ export function moisDeLAnnee(transactions: FinanceTransaction[], payments: Finan
     return { mois: c.mois, entreCents: p.entreCents, depenseCents: p.depenseCents, gainCents: p.gainCents, materielCents: p.materielCents, etat: c.etat };
   });
 }
+
+/**
+ * Le pourcentage du seuil de TVA, écrit UNE fois pour la ligne TVA de l'Annuel et sa feuille (test d'écran 14.11, point 8 : « 5,7 % » contre « 5 % »).
+ * Sous 10 % une décimale (5 695 / 100 000 = 5,7 %), au-dessus l'entier tronqué : « 80 % » n'est jamais écrit avant le seuil d'avertissement du domaine.
+ */
+export function pctSeuil(pct: number): string {
+  if (!Number.isFinite(pct) || pct < 0) return '?';
+  const n = pct > 0 && pct < 10 ? Math.round(pct * 10) / 10 : Math.floor(pct);
+  return `${String(n).replace('.', ',')} %`;
+}

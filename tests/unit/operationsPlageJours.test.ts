@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { dansJours, duree, etiquettesAxe, fenetreInitiale, finFenetre, glisser, jourMaxi, lirePlage, periodeSurJours, plageDuMois, pousser, titreJours } from '../../src/ui/finance/operations/plage';
+import { dansJours, duree, etiquettesAxe, fenetreInitiale, finFenetre, glisser, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, pousser, redater, titreJours } from '../../src/ui/finance/operations/plage';
 import type { Transaction } from '../../src/types';
+import type { FinancialPayment } from '../../src/domain/finance/types';
 
 const tx = (id: string, date: string, cents: number): Transaction => ({
   id, date, description: id, amountHT: cents / 100, amountTTC: cents / 100, tvaAmount: 0, tvaRate: 0, category: 'brassage', subcategory: '',
@@ -59,6 +60,43 @@ describe('plage du jour au jour (s2ap2)', () => {
     expect(total('2026-11-01', '2026-11-15')).toBe(12000);
     expect(total('2026-11-15', '2026-11-16')).toBe(7000);
     expect(total('2026-10-15', '2026-11-10')).toBe(17000);
+  });
+
+  it('s2ap2 : une pièce à payer compte à son échéance, une pièce payée à son paiement (le loyer du 25 sort de « 1er → 14 »)', () => {
+    const loyer = { ...tx('loyer', '2026-11-14', 40000), finance: { version: 1, kind: 'expense', amountCents: 40000, paymentStatus: 'unpaid', dueDate: '2026-11-25', lines: [] } } as unknown as Transaction;
+    const facture = { ...tx('facture', '2026-11-02', 10000), finance: { version: 1, kind: 'expense', amountCents: 10000, paymentStatus: 'unpaid', lines: [] } } as unknown as Transaction;
+    const sans = { ...tx('sans', '2026-11-03', 5000), finance: { version: 1, kind: 'expense', amountCents: 5000, paymentStatus: 'unpaid', lines: [] } } as unknown as Transaction; // à payer, sans échéance : garde sa date
+    const payments = [
+      { id: 'p1', transactionId: 'facture', date: '2026-11-09', amountCents: 6000, direction: 'out', method: 'bank', recordedAt: '' },
+      { id: 'p2', transactionId: 'facture', date: '2026-11-12', amountCents: 4000, direction: 'out', method: 'bank', recordedAt: '' },
+    ] as FinancialPayment[];
+    const entrees = [
+      { transaction: loyer, payment: { state: 'unpaid' } }, { transaction: facture, payment: { state: 'paid' } }, { transaction: sans, payment: { state: 'unpaid' } },
+    ];
+    const jours = joursDeCompte(entrees, payments, '2026-11-14');
+    expect(jours.get('loyer')).toBe('2026-11-25');
+    expect(jours.get('facture')).toBe('2026-11-12');
+    expect(jours.has('sans')).toBe(false);
+    const piles = (du: string, au: string) => periodeSurJours({ transactions: [loyer, facture, sans], payments, du, au, aujourdhui: '2026-11-14', jours });
+    const a14 = piles('2026-11-01', '2026-11-14');
+    expect(a14.depenseCents).toBe(15000);
+    expect(a14.aPayerCents).toBe(5000);
+    expect(a14.aPayer.map(r => r.id)).toEqual(['sans']);
+    const a25 = piles('2026-11-01', '2026-11-25');
+    expect(a25.depenseCents).toBe(55000);
+    expect(a25.aPayerCents).toBe(45000);
+    expect(piles('2026-11-13', '2026-11-24').depenseCents).toBe(0);
+    expect(piles('2026-11-12', '2026-11-12').depenseCents).toBe(10000);
+    // sans règle de jour (la vue du mois) : la pièce reste à la date de la pièce
+    expect(periodeSurJours({ transactions: [loyer], payments: [], du: '2026-11-01', au: '2026-11-14', aujourdhui: '2026-11-14' }).depenseCents).toBe(40000);
+    expect(redater([loyer, facture], jours).map(t => t.date)).toEqual(['2026-11-25', '2026-11-12']);
+  });
+
+  it('s2ap2 : un avoir et la facture qu’il corrige gardent leur date (le contrôle de date de l’avoir s’y appuie)', () => {
+    const facture = { ...tx('f', '2026-11-02', 10000), finance: { version: 1, kind: 'expense', amountCents: 10000, paymentStatus: 'unpaid', dueDate: '2026-12-02', lines: [] } } as unknown as Transaction;
+    const avoir = { ...tx('a', '2026-11-05', 2000), finance: { version: 1, kind: 'refund', refundOfId: 'f', amountCents: 2000, paymentStatus: 'unpaid', dueDate: '2026-12-05', lines: [] } } as unknown as Transaction;
+    const jours = joursDeCompte([{ transaction: facture, payment: { state: 'unpaid' } }, { transaction: avoir, payment: { state: 'unpaid' } }], [], '2026-11-14');
+    expect(jours.size).toBe(0);
   });
 
   it('les étiquettes de l’axe ne se chevauchent pas : « 29 oct. » collé à gauche chasse le « 1er nov. » (capture du 14.11)', () => {
