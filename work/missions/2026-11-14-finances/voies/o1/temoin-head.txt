@@ -1,0 +1,83 @@
+jeu ?dev-local&finance-demo=reel : opérations 5 (avec geste 5) · en-têtes 4
+  36.0 px · + pièce 24.0 px À CÔTÉ · Vente 10 × Bière · 75 cl — Restaurant du Lac
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Levure US05
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Malt Vienna
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Achats divers
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Local et travaux
+    (geste masqué : 36.0 px)
+  en-tête 24.0 px · Ventes+5 695,00
+  en-tête 24.0 px · Brassage15,20
+  en-tête 24.0 px · Autres frais250,20
+  en-tête 24.0 px · Matériel · à part5 500,0
+jeu ?dev-local&finance-demo : opérations 7 (avec geste 7) · en-têtes 6
+  36.0 px · ✓ Payé 28.0 px À CÔTÉ · Loyer de l’atelier
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Électricité
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Vente au marché
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Malt et houblons · Pale Ale
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Nettoyant alcalin
+    (geste masqué : 36.0 px)
+  36.0 px · + pièce 24.0 px À CÔTÉ · Joints de la cuve
+    (geste masqué : 36.0 px)
+  36.0 px · ✓ Payé 24.0 px À CÔTÉ · Solde atelier · ancienne année
+    (geste masqué : 36.0 px)
+  en-tête 24.0 px · Charges fixes468,00
+  en-tête 24.0 px · Ventes+720,00
+  en-tête 24.0 px · Brassage186,80
+  en-tête 24.0 px · Nettoyage42,00
+  en-tête 24.0 px · Matériel · à part28,60
+  en-tête 24.0 px · En retard · 202560,00
+V6A ECHEC
+  - opération avec geste « Vente 10 × Bière · 75 cl — Restaurant du Lac » : 36.0 px (attendu 47 ± 3)
+  - « Vente 10 × Bière · 75 cl — Restaurant du Lac » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Vente 10 × Bière · 75 cl — Restaurant du Lac » pas sous le montant
+  - opération avec geste « Levure US05 » : 36.0 px (attendu 47 ± 3)
+  - « Levure US05 » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Levure US05 » pas sous le montant
+  - opération avec geste « Malt Vienna » : 36.0 px (attendu 47 ± 3)
+  - « Malt Vienna » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Malt Vienna » pas sous le montant
+  - opération avec geste « Achats divers » : 36.0 px (attendu 47 ± 3)
+  - « Achats divers » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Achats divers » pas sous le montant
+  - opération avec geste « Local et travaux » : 36.0 px (attendu 47 ± 3)
+  - « Local et travaux » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Local et travaux » pas sous le montant
+  - en-tête « Ventes+5 695,00 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Brassage15,20 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Autres frais250,20 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Matériel · à part5 500,0 » : 24.0 px (attendu 28 ± 3)
+  - opération avec geste « Loyer de l’atelier » : 36.0 px (attendu 47 ± 3)
+  - « Loyer de l’atelier » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « ✓ Payé » de « Loyer de l’atelier » pas sous le montant
+  - opération avec geste « Électricité » : 36.0 px (attendu 47 ± 3)
+  - « Électricité » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Électricité » pas sous le montant
+  - opération avec geste « Vente au marché » : 36.0 px (attendu 47 ± 3)
+  - « Vente au marché » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Vente au marché » pas sous le montant
+  - opération avec geste « Malt et houblons · Pale Ale » : 36.0 px (attendu 47 ± 3)
+  - « Malt et houblons · Pale Ale » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Malt et houblons · Pale Ale » pas sous le montant
+  - opération avec geste « Nettoyant alcalin » : 36.0 px (attendu 47 ± 3)
+  - « Nettoyant alcalin » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Nettoyant alcalin » pas sous le montant
+  - opération avec geste « Joints de la cuve » : 36.0 px (attendu 47 ± 3)
+  - « Joints de la cuve » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « + pièce » de « Joints de la cuve » pas sous le montant
+  - opération avec geste « Solde atelier · ancienne année » : 36.0 px (attendu 47 ± 3)
+  - « Solde atelier · ancienne année » sans son geste (masqué) : 36.0 px (attendu 44 ± 3)
+  - geste « ✓ Payé » de « Solde atelier · ancienne année » pas sous le montant
+  - en-tête « Charges fixes468,00 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Ventes+720,00 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Brassage186,80 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Nettoyage42,00 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « Matériel · à part28,60 » : 24.0 px (attendu 28 ± 3)
+  - en-tête « En retard · 202560,00 » : 24.0 px (attendu 28 ± 3)

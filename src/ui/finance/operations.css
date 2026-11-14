@@ -1,4 +1,4 @@
-/* Opérations (v6b : lignes serrées, le geste à côté du montant). Classes préfixées `ops-` (L26), racine `.ops`.
+/* Opérations (v6a : « Lignes serrées », deux étages gardés, le geste sous le montant). Classes préfixées `ops-` (L26), racine `.ops`.
    Clair comme cave : le texte et les fonds prennent les jetons du thème ; seuls les liserés et les piles portent les couleurs de catégorie
    déjà portées (`--c-…`, deux valeurs selon le thème). `journal.css` ne s'applique plus ici (la racine `finance-journal` est abandonnée). */
 .ops { --ops-haut: 88px; --ops-t1: rgb(var(--cave-texte-50)); --ops-t2: rgb(var(--cave-texte-200)); --ops-t3: rgb(var(--cave-texte-400));
@@ -68,10 +68,10 @@
 .ops-legende b { font-size:13px; color:var(--ops-t1); }
 .ops-sw { display:inline-block; width:13px; height:11px; border-radius:3px; }
 
-/* Liste : groupes toujours ouverts, une opération = deux étages */
+/* Liste : groupes toujours ouverts, une opération = deux étages (hauteurs de v6a, filet compris : 44 sans geste, 47 avec ; en-tête 28) */
 .ops-liste { margin-top:2px; }
-.ops-g { display:grid; grid-template-columns:20px 1fr auto; gap:6px; align-items:center; padding:4px 0 0; margin:0; }
-.ops-sq { width:20px; height:20px; border-radius:10px; display:grid; place-items:center; }
+.ops-g { display:grid; grid-template-columns:22px 1fr auto; gap:6px; align-items:center; padding:5px 0 1px; margin:0; }
+.ops-sq { width:22px; height:22px; border-radius:10px; display:grid; place-items:center; }
 .ops-g b { font-size:13px; letter-spacing:.02em; }
 .ops-sub { font-size:13px; color:var(--ops-t2); }
 .ops-sub[data-signe] { color:rgb(var(--area-stocks-texte)); }
@@ -79,21 +79,22 @@
 .ops-part { margin:4px 0 0; border-top:1px dashed var(--ops-t3); }
 .ops-suivi { margin:0; padding-top:4px; font-size:12px; line-height:16px; color:var(--ops-t2); }
 
-.ops-row { position:relative; display:grid; grid-template-columns:4px minmax(0,1fr) auto auto; column-gap:8px; align-items:center; padding:3px 0; border-bottom:1px solid var(--ops-bord); }
+/* Trois colonnes (liseré, nom et état, montant) sur deux rangées : le montant en haut à droite, le geste dessous (v6a). Le bouton principal couvre les deux rangées. */
+.ops-row { position:relative; display:grid; grid-template-columns:4px minmax(0,1fr) auto; grid-template-rows:18px minmax(18px,auto); column-gap:8px; align-items:center; padding:2px 0 5px; border-bottom:1px solid var(--ops-bord); }
 .ops-row[data-flash] { background:rgb(var(--c-20311d)); }
-.ops-bar { align-self:stretch; border-radius:2px; background:var(--ops-couleur); }
+.ops-bar { grid-column:1; grid-row:1 / 3; align-self:stretch; border-radius:2px; background:var(--ops-couleur); }
 .ops-bar[data-hachure] { background:repeating-linear-gradient(135deg, var(--ops-couleur) 0 3px, transparent 3px 6px); box-shadow:inset 0 0 0 1px var(--ops-couleur); }
 /* Le bouton principal garde `finance-op` (crochet du banc d'émulateur) : on défait la grille de `finance.css`. */
-.ops .ops-main.finance-op { display:block; grid-column:2; grid-template-columns:none; grid-template-areas:none; min-height:0; padding:0; min-width:0; width:100%; }
+.ops .ops-main.finance-op { display:block; grid-column:2; grid-row:1 / 3; align-self:start; grid-template-columns:none; grid-template-areas:none; min-height:0; padding:1px 0 0; min-width:0; width:100%; }
 .ops-main::after { content:''; position:absolute; inset:0; }
 .ops-main:focus-visible { outline:none; }
 .ops-main:focus-visible::after { outline:2px solid rgb(var(--ebc-straw)); outline-offset:-2px; border-radius:4px; }
-.ops-q { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px; font-weight:600; line-height:15px; }
+.ops-q { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px; font-weight:600; line-height:16px; }
 .ops-q small { font-weight:400; color:var(--ops-t2); font-size:13px; }
-/* v6b : deux étages, jamais trois (la maquette : « état et pièce sans retour à la ligne »). Quand l'état et le geste prennent la place, c'est la pastille d'état qui se coupe
+/* v6a : deux étages, jamais trois (état et pièce sans retour à la ligne, repris de v6b pour les noms longs). Quand l'état et le geste prennent la place, c'est la pastille d'état qui se coupe
    (« … · ban… »), jamais « sans pièce » ; le détail complet reste dans le nom accessible de la ligne et dans la fiche. */
-.ops-meta { display:flex; flex-wrap:nowrap; align-items:center; gap:0 6px; font-size:12px; color:var(--ops-t2); line-height:14px; min-height:14px; min-width:0; }
-.ops-tg { display:inline-block; flex:0 1 auto; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:0 6px; border-radius:999px; line-height:14px; font-size:12px; white-space:nowrap; }
+.ops-meta { display:flex; flex-wrap:nowrap; align-items:center; gap:0 6px; font-size:12px; color:var(--ops-t2); line-height:16px; min-height:18px; min-width:0; }
+.ops-tg { display:inline-block; flex:0 1 auto; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:0 6px; border-radius:999px; line-height:16px; font-size:12px; white-space:nowrap; }
 .ops-tg-ok { background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); }
 .ops-tg-pay { background:repeating-linear-gradient(135deg, rgb(var(--c-302719)) 0 4px, transparent 4px 8px), rgb(var(--c-302719)); color:rgb(var(--attention-texte)); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }
 .ops-tg-late { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); box-shadow:inset 0 0 0 1px rgb(var(--alert-strong-texte)); }
@@ -102,15 +103,16 @@
 .ops-pc { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; white-space:nowrap; color:var(--ops-t2); }
 .ops-pc svg { flex:0 0 auto; }
 .ops-pc.ops-no { color:rgb(var(--attention-texte)); }
-.ops-a { grid-column:4; font-size:14px; text-align:right; line-height:15px; align-self:start; padding-top:1px; }
+.ops-a { grid-column:3; grid-row:1; font-size:14px; text-align:right; line-height:18px; align-self:center; }
 .ops-a.ops-in { color:rgb(var(--area-stocks-texte)); }
 /* Une annulée se liste mais ne compte pas : montant et nom s'effacent, le montant est barré (même ligne, mêmes jetons ; aucun composant neuf). */
 .ops-row[data-ton=void] .ops-a { color:var(--ops-t3); text-decoration:line-through; }
 .ops-row[data-ton=void] .ops-q { color:var(--ops-t2); font-weight:400; }
-.ops-act { grid-column:3; position:relative; z-index:1; justify-self:end; align-self:center; text-align:center; }
-.ops-btn { min-height:28px; padding:0 10px; border-radius:16px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:13px; font-weight:600; white-space:nowrap; }
+/* Le geste sous le montant, 24 px de haut (cible B12) : 1 px sous l'étage, 4 px rendus au filet, soit 47 px pour la ligne. */
+.ops-act { grid-column:3; grid-row:2; position:relative; z-index:1; justify-self:end; align-self:center; margin:1px 0 -4px; text-align:center; }
+.ops-btn { min-height:24px; padding:0 10px; border-radius:16px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:13px; font-weight:600; white-space:nowrap; }
 .ops-mini { min-height:24px; padding:0 7px; border-radius:10px; border:1px solid var(--ops-bord); font-size:12px; color:var(--ops-t2); white-space:nowrap; }
-.ops-erreur { grid-column:2 / -1; margin:2px 0 0; font-size:12px; line-height:16px; color:rgb(var(--alert-strong-texte)); }
+.ops-erreur { grid-column:2 / -1; grid-row:3; margin:2px 0 0; font-size:12px; line-height:16px; color:rgb(var(--alert-strong-texte)); }
 
 /* Pied : puces, panneau */
 .ops-pied { display:flex; flex-wrap:wrap; gap:6px; padding:10px 0 4px; }

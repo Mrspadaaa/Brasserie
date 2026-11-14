@@ -10,9 +10,9 @@ import { GROUPES, type GroupeId } from './operations/groupes';
 import './operations.css';
 
 /**
- * Une opération du journal (v6b) : deux étages serrés, le geste à côté du montant.
- *   étage 1 : quoi · qui                    [geste]  montant
- *   étage 2 : état · échéance ou date · pièce
+ * Une opération du journal (v6a, « Lignes serrées ») : deux étages serrés, le geste sous le montant.
+ *   étage 1 : quoi · qui                      montant
+ *   étage 2 : état · échéance ou date · pièce   [geste]
  *
  * Un seul geste par ligne, dans l'ordre : payer (ou encaisser), confirmer, annuler le paiement qu'on vient d'écrire, joindre une pièce.
  * ⚠️ « ✓ Payé » écrit un paiement du reste dû, daté d'aujourd'hui, par banque : une hypothèse du geste rapide, dite dans la pastille
@@ -20,11 +20,11 @@ import './operations.css';
  * ⚠️ Un seul bouton contient le texte (le bouton principal) ; son ::after couvre la ligne, le geste est un second bouton au-dessus
  * (jamais un bouton dans un bouton).
  */
-const ICONE_PIECE = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>;
-const ICONE_SANS_PIECE = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeDasharray="3 2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/></svg>;
+const ICONE_PIECE = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>;
+const ICONE_SANS_PIECE = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray="3 2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/></svg>;
 
 /**
- * Les paiements écrits par le geste « ✓ Payé » depuis l'ouverture de l'application (CP-12, v6b état « Après »). « Annuler » ne se montre que pour
+ * Les paiements écrits par le geste « ✓ Payé » depuis l'ouverture de l'application (CP-12, v6a état « Après »). « Annuler » ne se montre que pour
  * eux : une ligne payée aujourd'hui par un autre chemin (la fiche, un import) propose « + pièce » comme toute ligne sans pièce. Hors du composant :
  * la ligne change de groupe en passant à « payé » et se remonte, un état local serait perdu. Il se vide au rechargement : « juste après le geste ».
  */
