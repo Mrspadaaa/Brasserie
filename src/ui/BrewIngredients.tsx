@@ -21,9 +21,11 @@ import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
 import { actualWater } from '../domain/brewAssist';
 import type { PitchQuantityChoice } from '../domain/brewDay';
-import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
+import { amountDecimals, formatAmount, roundAmount } from '../../functions/src/brewAmount';
+import './brew-ingredients-ajouts.css';
 import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
 import { nombreFr } from '../domain/nombreAffiche';
+import { phraseRetard } from '../services/brewTimer';
 import { BrewPitchJauge, type PitchJaugeInfo } from './BrewPitchJauge';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
@@ -77,12 +79,69 @@ export const heureCuve = (at: number) => {
   return `${d.getHours()} h ${String(d.getMinutes()).padStart(2, '0')}`;
 };
 
-/** Ce que la ligne d'ajout de l'ébullition porte en plus : minute, heure, et son rang (prochain, dû). */
+/** Ce que la ligne d'ajout de l'ébullition porte en plus : minute, heure, et son rang (prochain, dû, en retard). */
 interface AjoutLigne {
   minute: number;
   quand: React.ReactNode;
   prochain: boolean;
+  /** Échéance passée et ajout pas fait : ligne rose, case « Fait » rouge (p2c, E2). */
   du: boolean;
+}
+
+/**
+ * Un ajout sauté (A06) : sa dose est posée à 0 et il n'est pas coché. « 0 » est ici une dose connue (« je ne le verse pas »), pas une valeur
+ * inconnue ; `brewAlarms` ne sonne plus un ajout dont la dose est 0.
+ */
+export const estSaute = (s: BrewDayState, id: string) => {
+  const a = s.additions?.[id];
+  return !!a && a.amount === 0 && a.doneAt == null;
+};
+
+type AjoutIdentite = Pick<BrewIngredient, 'id' | 'name' | 'planned' | 'unit' | 'stepId'>;
+const idNonVerse = (id: string) => `non-verse-${id}`;
+
+/** Sauter : dose 0 posée, ligne de journal « Citra 25 g · non versé » (une seule, même après deux touchers). */
+export function sauterAjout(s: BrewDayState, item: AjoutIdentite, at: number): BrewDayState {
+  const existing = s.additions?.[item.id];
+  const { doneAt: _doneAt, ...reste } = existing ?? { amount: 0 };
+  const nom = existing?.replacement?.name ?? item.name;
+  const notes = s.notes ?? [];
+  return {
+    ...s,
+    additions: { ...s.additions, [item.id]: { ...reste, amount: 0 } },
+    notes: notes.some((n) => n.id === idNonVerse(item.id))
+      ? notes
+      : [...notes, { id: idNonVerse(item.id), at, stepId: item.stepId, text: `${nom} ${formatAmount(item.planned, item.unit)} · non versé` }]
+  };
+}
+
+/** Annuler un saut : la dose prévue revient et la ligne « non versé » du journal s'efface (elle ne dirait plus vrai). */
+export function remettreAjout(s: BrewDayState, item: AjoutIdentite): BrewDayState {
+  return {
+    ...s,
+    additions: { ...s.additions, [item.id]: { ...s.additions?.[item.id], amount: item.planned } },
+    notes: (s.notes ?? []).filter((n) => n.id !== idNonVerse(item.id))
+  };
+}
+
+/** Remplacer un ajout (A04, G1e) : le nom change, la dose et le moment restent (le moment vient de la recette, pas de la substitution). */
+export function remplacerAjout(
+  s: BrewDayState,
+  item: AjoutIdentite,
+  replacement: NonNullable<NonNullable<BrewDayState['additions']>[string]['replacement']>
+): BrewDayState {
+  const existing = s.additions?.[item.id];
+  const amount = estSaute(s, item.id) ? item.planned : existing?.amount ?? item.planned;
+  return { ...s, additions: { ...s.additions, [item.id]: { ...existing, amount, replacement } } };
+}
+
+/**
+ * Dose qui garde les mêmes grammes d'acides alpha : dose · α du prévu ÷ α du remplaçant. `null` dès qu'un α est inconnu ou nul
+ * (jamais 0, jamais une dose inventée). Elle ne s'impose pas : le remplacement garde la dose prévue, c'est une aide.
+ */
+export function doseAlphaEquivalente(dose: number, alphaPrevu: number | undefined, alphaRemplacant: number | undefined, unit: string): number | null {
+  if (![dose, alphaPrevu, alphaRemplacant].every((n) => typeof n === 'number' && Number.isFinite(n) && n > 0)) return null;
+  return roundAmount((dose * alphaPrevu!) / alphaRemplacant!, unit);
 }
 
 /**
@@ -126,7 +185,8 @@ function IngredientRow({
   const amount = pitchActualUnknown || pitchPlannedUnknown ? undefined : actualAmount(item, state);
   const controlAmount = amount ?? (item.planned > 0 ? item.planned : 0);
   const [alternatives, setAlternatives] = useState(false);
-  const [editingDose, setEditingDose] = useState(false);
+  // c1c : une levure sans quantité prévue ouvre d'emblée son ajustement (jauge, « 1 sachet · Mesurée · Sans mesure ») ; « Fermer l'ajustement » le replie.
+  const [editingDose, setEditingDose] = useState(pitchChoosing && pitchPlannedUnknown);
   const [replacementName, setReplacementName] = useState('');
   const rowRef = useRef<HTMLDivElement>(null);
   const lastToken = useRef(pitch?.token ?? 0);
@@ -211,11 +271,22 @@ function IngredientRow({
     ? Units.convert(available.currentStock, available.unit, item.unit)
     : null;
   const shortage = availableQty != null && amount != null && availableQty < amount;
-  const changed = amount != null && Math.abs(amount - item.planned) > 0.001;
+  const saute = item.kind === 'hop' && estSaute(state, item.id);
+  const changed = !saute && amount != null && Math.abs(amount - item.planned) > 0.001;
   const checked = actual?.doneAt != null || (item.id === 'yeast' && state.pitchedAt != null);
+  const retard = !!ajout?.du && !checked && !saute;
+  // Un houblon à remplacer (A04, G1e) : le stock en houblons (hors rupture), et l'α prévu pour une dose à α égal.
+  const houblon = item.kind === 'hop';
+  const alphaPrevu = houblon && item.hopIndex != null ? recipe.hops?.[item.hopIndex]?.alpha : undefined;
+  const houblonsStock = houblon
+    ? stock
+        .filter((x) => x.category === 'Houblon' && x.currentStock > 0 && x.name.trim().toLowerCase() !== named.trim().toLowerCase())
+        .sort((a, b) => b.currentStock - a.currentStock)
+        .slice(0, 6)
+    : [];
   // c1c : la pastille d'une levure sans quantité dit « à choisir » ; posée, « 2 sachets » (pluriel), pas « 2 sachet ».
   const uniteLue = item.unit === 'sachet' && (amount ?? 0) >= 2 ? 'sachets' : item.unit;
-  const doseLabel = pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? (pitchChoosing ? 'à choisir' : 'À préciser') : f(amount ?? 0, item.unit);
+  const doseLabel = pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? (pitchChoosing ? 'à choisir' : 'À préciser') : f(saute ? item.planned : amount ?? 0, item.unit);
   const doseUnit = `${pitchActualUnknown || (pitchPlannedUnknown && !item.unit) ? '' : uniteLue}${item.kind === 'water' ? ' à froid' : ''}`;
   const doseProps = {
     type: 'button' as const,
@@ -228,7 +299,7 @@ function IngredientRow({
   const doseText = (
     <>
       <strong id={`brew-dose-value-${item.id}`} data-sans-valeur={pitchActualUnknown || pitchPlannedUnknown ? '' : undefined}>{doseLabel}</strong>
-      {doseUnit && ' '}
+      {doseUnit && '\u00a0'}
       {doseUnit &&<small id={`brew-dose-unit-${item.id}`}>{doseUnit}</small>}
     </>
   );
@@ -239,7 +310,8 @@ function IngredientRow({
       ref={rowRef}
       className={`bz-row brew-ingredient ${checked ? 'is-added' : ''} ${ajout ? 'is-ajout' : ''}`}
       data-prochain={ajout?.prochain ? '' : undefined}
-      data-du={ajout?.du ? '' : undefined}
+      data-du={retard ? '' : undefined}
+      data-saute={saute ? '' : undefined}
       data-fait={checked ? '' : undefined}
     >
       {ajout && <span className="bz-min">{ajout.minute}′</span>}
@@ -273,7 +345,7 @@ function IngredientRow({
         {ajout && <button {...doseProps} className="bz-dose-texte">{doseText}{ajout.minute === 0 && <span className="bz-coupure"> · coupure du feu</span>}</button>}
       </div>
       {ajout ? <span className="bz-quand">{ajout.quand}</span> : <button {...doseProps} className="bz-dose brew-amount">{doseText}</button>}
-      <label className="bz-case" title="Cocher après l’ajout réel">
+      <label className={`bz-case${retard ? ' is-retard' : ''}`} title={checked && actual?.doneAt != null ? `Ajouté · ${heureCuve(actual.doneAt)}` : 'Cocher après l’ajout réel'}>
         <input
           type="checkbox"
           aria-label={`Ajouté : ${nom}`}
@@ -283,7 +355,9 @@ function IngredientRow({
             onInteract();
             // Cocher une levure dont la quantité est inconnue ouvre la saisie de la quantité (Mesurée / Sans mesure) au lieu d'envoyer un ajout invalide.
             if (e.target.checked && (pitchPlannedUnknown || !Number.isFinite(actual?.amount ?? actualAmount(item, state)))) { setEditingDose(true); return; }
-            if (e.target.checked) patch({ doneAt: brewNow(), ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) });
+            // Cocher un ajout sauté, c'est l'avoir finalement versé : la dose prévue revient (et le « non versé » du journal s'efface) avant l'heure du toucher.
+            if (e.target.checked && saute) update((s) => { const r = remettreAjout(s, item); return { ...r, additions: { ...r.additions, [item.id]: { ...r.additions![item.id], doneAt: brewNow() } } }; });
+            else if (e.target.checked) patch({ doneAt: brewNow(), ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) });
             else
               update((s) => {
                 const a = { amount: actualAmount(item, s) ?? item.planned, ...s.additions?.[item.id] };
@@ -292,8 +366,10 @@ function IngredientRow({
               });
           }}
         />
-        <span className="bz-case-boite" aria-hidden="true">{checked && <Check size={18} strokeWidth={3} />}</span>
-        <span className="sr-only">{checked ? 'Ajout consigné' : 'À ajouter'}</span>
+        <span className="bz-case-boite" aria-hidden="true">
+          {checked ? <Check size={18} strokeWidth={3} /> : retard ? <span className="bz-case-fait">Fait</span> : saute ? <span className="bz-case-tiret">–</span> : null}
+        </span>
+        <span className="sr-only">{checked ? 'Ajout consigné' : saute ? 'Non versé' : 'À ajouter'}</span>
       </label>
       {split && (
         <div className="bz-eaux">
@@ -355,6 +431,25 @@ function IngredientRow({
               <span>Remplacer</span>
             </button>
           )}
+          {houblon && (
+            <button
+              type="button"
+              className="brew-replace-button"
+              aria-label="Remplacer ce houblon"
+              title="Remplacer ce houblon"
+              aria-expanded={alternatives}
+              onClick={() => setAlternatives((v) => !v)}
+            >
+              <ArrowLeftRight size={14} />
+              <span>Remplacer</span>
+            </button>
+          )}
+          {/* A06 : « Sauter » pose la dose à 0 et le journal dit « non versé » ; « Remettre » défait le saut. */}
+          {houblon && !checked && (saute
+            ? <button type="button" className="brew-replace-button" aria-label="Remettre cet ajout"
+                onClick={() => { onInteract(); update((s) => remettreAjout(s, item)); }}>Remettre</button>
+            : <button type="button" className="brew-replace-button" aria-label="Sauter"
+                onClick={() => { onInteract(); setEditingDose(false); update((s) => sauterAjout(s, item, brewNow())); }}>Sauter</button>)}
           <div className="brew-dose" data-changed={changed || undefined}>
             <button type="button" {...press(-rung)} aria-label={`Diminuer ${nom}`}>
               −
@@ -402,6 +497,83 @@ function IngredientRow({
               Ajout consigné le{' '}
               {new Date(actual.doneAt).toLocaleString('fr-CH', { dateStyle: 'short', timeStyle: 'short' })}
             </p>
+          )}
+          {houblon && (
+            <div className="brew-alternatives bz-houblon-alt">
+              {actual?.replacement && (
+                <button
+                  type="button"
+                  className="min-h-8 text-2xs text-cave-400 underline ml-2"
+                  onClick={() =>
+                    update((s) => {
+                      const a = { ...s.additions?.[item.id], amount: estSaute(s, item.id) ? 0 : item.planned };
+                      delete a.replacement;
+                      return { ...s, additions: { ...s.additions, [item.id]: a } };
+                    })
+                  }
+                >
+                  Revenir à {item.name}
+                </button>
+              )}
+              {alternatives && (
+                <div className="space-y-1 pb-1">
+                  <p className="text-2xs text-cave-200 bz-pas-de">Pas de {item.name} ?</p>
+                  {houblonsStock.map((x) => {
+                    const equiv = doseAlphaEquivalente(item.planned, alphaPrevu, x.alphaPct, item.unit);
+                    const enStock = Units.convert(x.currentStock, x.unit, item.unit);
+                    return (
+                      <button
+                        key={x.id}
+                        type="button"
+                        className={`${brewControl} w-full !whitespace-normal text-left py-1`}
+                        onClick={() => {
+                          onInteract();
+                          update((s) => remplacerAjout(s, item, { name: x.name }));
+                          setAlternatives(false);
+                        }}
+                      >
+                        {x.name}
+                        <span className="block text-2xs text-cave-400">
+                          {[
+                            x.alphaPct != null && x.alphaPct > 0 ? `α ${nombreFr(x.alphaPct, 1)} %` : null,
+                            equiv != null && Math.abs(equiv - item.planned) > 0.001 ? `α égal : ${f(equiv, item.unit)} ${item.unit}` : null,
+                            enStock != null ? `${f(enStock, item.unit)} ${item.unit} en stock` : null
+                          ].filter(Boolean).join(' · ')}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  {!houblonsStock.length && (
+                    <p className="text-2xs text-cave-200">Aucun autre houblon en stock. Note celui que tu as.</p>
+                  )}
+                  <p className="text-2xs text-cave-400">Dose et moment gardés ; l’α du remplaçant change l’amertume, à vérifier.</p>
+                  <form autoComplete="off"
+                    className="flex flex-wrap gap-1 pt-1"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const name = replacementName.trim();
+                      if (!name) return;
+                      onInteract();
+                      update((s) => remplacerAjout(s, item, { name }));
+                      setReplacementName('');
+                      setAlternatives(false);
+                    }}
+                  >
+                    <Input
+                      aria-label="Autre houblon utilisé"
+                      placeholder="Autre houblon utilisé"
+                      value={replacementName}
+                      maxLength={160}
+                      onChange={(e) => setReplacementName(e.target.value)}
+                      className={brewInput + ' flex-1'}
+                    />
+                    <button type="submit" disabled={!replacementName.trim()} className={brewControl + ' !px-2'}>
+                      Utiliser
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
           )}
           {fermentable?.kind === 'grain' && (
             <div className="brew-alternatives">
@@ -547,7 +719,8 @@ export function BrewIngredients({
   overview = false,
   now = brewNow(),
   stepId,
-  pitch
+  pitch,
+  finEbullitionEstimee = null
 }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
@@ -558,6 +731,8 @@ export function BrewIngredients({
   now?: number;
   stepId?: string;
   pitch?: PitchEditor;
+  /** K4 n° 19 : la fin d'ébullition du plan (A3), pour dire l'heure estimée des ajouts avant le premier bouillon (« ~15 h 20 »). Absente : pas d'heure inventée. */
+  finEbullitionEstimee?: number | null;
 }) {
   const [extra, setExtra] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
@@ -648,6 +823,8 @@ export function BrewIngredients({
   }
   const isDone = (i: BrewIngredient) =>
     state.additions?.[i.id]?.doneAt != null || (i.id === 'yeast' && state.pitchedAt != null);
+  /** Un houblon sauté (A06) est traité : il ne reste pas « prochain » et ne tient plus la case du groupe. */
+  const isSaute = (i: BrewIngredient) => i.kind === 'hop' && estSaute(state, i.id);
   const heading = overview ? 'Tous les ingrédients' : null;
   return (
     <section aria-label="Ingrédients à ajouter" className="brew-ingredients bz-ingredients">
@@ -665,13 +842,14 @@ export function BrewIngredients({
         <BrewMinerals recipe={recipe} state={state} />
       )}
       {[...groups.entries()].map(([key, group]) => {
-        const allAdded = group.items.every((i) => state.additions?.[i.id]?.doneAt != null);
+        const allAdded = group.items.every((i) => state.additions?.[i.id]?.doneAt != null || isSaute(i));
         const due =
           !allAdded && group.at != null && group.at <= now && state.boilFinishedAt == null;
         const Icon = group.icon;
         const done = group.items.filter(isDone).length;
         const sideOptions = group.side && canAddExtra ? extraSaltOptions.filter((o) => o.side === group.side) : [];
-        const prochain = group.ajouts ? group.items.find((i) => !isDone(i)) : undefined;
+        const prochain = group.ajouts ? group.items.find((i) => !isDone(i) && !isSaute(i)) : undefined;
+        const aVerser = group.items.filter((i) => !isSaute(i)).length;
         return (
           <div
             key={key}
@@ -687,7 +865,7 @@ export function BrewIngredients({
                 </span>
               )}
               <span className="bz-compte">
-                {done}/{group.items.length}
+                {done}/{aVerser}
               </span>
               {sideOptions.length > 0 && (
                 <BrewChoice
@@ -704,28 +882,36 @@ export function BrewIngredients({
             {group.items.map((i) => {
               let ajout: AjoutLigne | undefined;
               if (group.ajouts && i.beforeEndMin != null) {
-                const at = end != null ? Math.max(state.boilStartedAt!, end - i.beforeEndMin * 60000) : undefined;
+                const at = end != null ? Math.max(state.boilStartedAt!, end - i.beforeEndMin * 60000) : finEbullitionEstimee != null && state.boilStartedAt == null ? finEbullitionEstimee - i.beforeEndMin * 60000 : undefined;
+                const estime = end == null && at != null;
                 const finished = isDone(i);
+                const sauteLigne = isSaute(i);
                 const next = prochain?.id === i.id;
                 const doneAt = state.additions?.[i.id]?.doneAt;
                 // Plancher, comme l'horloge (1 h 14) et le bandeau : une échéance ne s'écrit pas avec deux arrondis.
                 const reste = at != null ? at - now : undefined;
                 const minutes = reste != null ? Math.floor(reste / 60000) : undefined;
+                // p2c E2 : tout ajout dont l'échéance est passée et qui n'est ni fait ni sauté est en retard (ligne rose, « Fait » rouge), pas seulement le prochain.
+                const enRetard = !finished && !sauteLigne && boilRunning && reste != null && reste <= 0;
                 ajout = {
                   minute: i.beforeEndMin,
                   prochain: next && boilRunning,
-                  du: next && boilRunning && reste != null && reste <= 0,
+                  du: enRetard,
                   quand: finished
                     ? doneAt != null ? <span className="bz-m">{heureCuve(doneAt)}</span> : null
-                    : !boilRunning || at == null
-                      ? null
-                      : next
-                        ? reste! <= 0
-                          ? <b>maintenant</b>
-                          : minutes === 0
-                            ? <>dans <span className="bz-m">&lt;1</span> min</>
-                            : <>dans <span className="bz-m">{minutes}</span> min</>
-                        : <span className="bz-m">{heureCuve(at)}</span>
+                    : sauteLigne
+                      ? <b className="bz-non-verse">non versé</b>
+                      : estime
+                        ? <span className="bz-m">~{heureCuve(at!)}</span>
+                        : !boilRunning || at == null
+                        ? null
+                        : enRetard
+                          ? <><b>{phraseRetard(reste!)!.court}</b><span className="sr-only"> · prévu à {heureCuve(at)}</span></>
+                          : next
+                            ? minutes === 0
+                              ? <>dans <span className="bz-m">&lt;1</span> min</>
+                              : <>dans <span className="bz-m">{minutes}</span> min</>
+                            : <span className="bz-m">{heureCuve(at)}</span>
                 };
               }
               return (
@@ -761,12 +947,15 @@ export const doseFr = f;
  * Les ajouts de l'ébullition, du premier au dernier, pour la piste de l'horloge (z1) : la minute avant la fin, et s'ils sont versés.
  * Même règle que la liste (`BrewIngredients`) : un ajout dont l'heure réelle a été consignée suit l'horloge du brassin.
  */
-export function boilAdditionPoints(recipe: RecipeSnapshot, state: BrewDayState): { id: string; minute: number; done: boolean }[] {
+export function boilAdditionPoints(recipe: RecipeSnapshot, state: BrewDayState): { id: string; nom: string; dose: number; unit: string; minute: number; done: boolean }[] {
   const duree = boilMinutes(state, recipe);
   return brewIngredients(recipe)
     .filter((i) => i.area === 'boil' && i.beforeEndMin != null && i.stepId !== 'whirlpool' && (i.planned > 0 || state.additions?.[i.id]))
     .map((i) => ({
       id: i.id,
+      nom: i.name,
+      dose: state.additions?.[i.id]?.amount ?? i.planned,
+      unit: i.unit,
       minute: state.hopElapsedMin?.[i.id] != null ? Math.max(0, duree - state.hopElapsedMin[i.id]) : i.beforeEndMin!,
       done: state.additions?.[i.id]?.doneAt != null
     }))

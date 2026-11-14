@@ -1,11 +1,11 @@
 import React, { useEffect, useId, useState } from 'react';
 import { Check, ChevronDown, ChevronUp, CircleHelp, Pencil, TriangleAlert } from 'lucide-react';
 import type { BrewDayStep, RecipeSnapshot } from '../types';
-import { parseReading, READING, volumeTarget } from '../domain/brewDay';
-import { bornesPlausibles, departCurseur, formatCurseur, pasCurseur } from '../domain/measureSlider';
+import { parseReading, READING, refroidiParDefaut } from '../domain/brewDay';
+import { departCurseur, formatCurseur, pasCurseur } from '../domain/measureSlider';
 import { raisonMesure } from '../domain/brewMeasures';
 import { Input } from './Input';
-import { ecartCible, MeasureSlider, measureScale, type MeasureScale } from './BrewDayMeasurements';
+import { ecartCible, MeasureSlider, measureScale } from './BrewDayMeasurements';
 
 /**
  * 3C (p3, page v3, choisi le 11.11) : la fenêtre « Confirmer l'ajout de levure ? » porte les deux relevés qui font l'OG et le volume,
@@ -18,21 +18,7 @@ export interface ClotureReleves {
   volume: number | null;
   volumeRefroidi: boolean;
 }
-export const CLOTURE_VIDE: ClotureReleves = { densite: null, densiteRefroidie: false, volume: null, volumeRefroidi: false };
-
-const decimale = (n: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 0, maximumFractionDigits: 1, useGrouping: false }).format(n);
-
-/** Le volume au fermenteur n'a pas de « cible » de brasseur mais un repère : le volume de la recette. L'échelle reste celle des bornes plausibles, sans bande. */
-function echelleVolume(step: BrewDayStep, recipe: RecipeSnapshot | undefined, value: number | null): MeasureScale {
-  const p = bornesPlausibles('volume', step, recipe);
-  let { min, max } = p;
-  if (value != null) {
-    const marge = (max - min) * 0.1;
-    if (value < min) min = value - marge;
-    if (value > max) max = value + marge;
-  }
-  return { min, max, cible: false, bandMin: p.milieu, bandMax: p.milieu, milieu: p.milieu, ticks: [min, p.milieu, max], fmt: decimale };
-}
+export const CLOTURE_VIDE: ClotureReleves = { densite: null, densiteRefroidie: refroidiParDefaut('densite', 'ensemencement'), volume: null, volumeRefroidi: false };
 
 function Bloc({ kind, titre, quoi, step, recipe, value, refroidi, onValue, onRefroidi }: {
   kind: 'densite' | 'volume';
@@ -53,8 +39,8 @@ function Bloc({ kind, titre, quoi, step, recipe, value, refroidi, onValue, onRef
     if (parseReading(raw, kind) !== value) setRaw(value != null ? formatCurseur(kind, value) : '');
   }, [value]);
   const incomplete = /[.,]$/.test(raw.trim());
-  const scale = kind === 'densite' ? measureScale('densite', step, recipe, value) : echelleVolume(step, recipe, value);
-  const repere = kind === 'volume' ? volumeTarget(step, recipe) : undefined;
+  // Une seule source de cible et d'écart (n° 16 de a1) : le volume au fermenteur a la bande de la feuille Mesurer (cible ± 5 %).
+  const scale = measureScale(kind, step, recipe, value);
   const depart = departCurseur(kind, scale, null);
   const pas = pasCurseur(kind).pas;
   const pasTexte = String(pas).replace('.', ',');
@@ -65,7 +51,6 @@ function Bloc({ kind, titre, quoi, step, recipe, value, refroidi, onValue, onRef
     onValue(n);
   };
   const ecart = value != null ? ecartCible(scale, value) : null;
-  const ecartRepere = value != null && repere != null && repere > 0 ? (Math.abs(value - repere) <= repere * 0.05 ? 0 : value - repere) : null;
   const cibleTexte = scale.cible ? `${scale.fmt(scale.bandMin)}–${scale.fmt(scale.bandMax)}` : null;
   return (
     <div role="group" aria-label={titre} className="bz-cl-bloc">
@@ -117,27 +102,17 @@ function Bloc({ kind, titre, quoi, step, recipe, value, refroidi, onValue, onRef
       </label>
       <MeasureSlider scale={scale} kind={kind} value={value} depart={depart} label={READING[kind].label} onPose={poser} />
       <div className="bz-cl-ligne" aria-live="polite">
-        {kind === 'densite' && value != null && (ecart != null ? (
+        {scale.cible && value != null && (ecart != null ? (
           <p className="bz-verdict is-watch bz-ecart" data-k="hors">
             <TriangleAlert size={14} aria-hidden="true" />
-            <span><b className="bz-m">{ecart > 0 ? '+' : '−'}{scale.fmt(Math.abs(ecart))}</b> {ecart > 0 ? 'au-dessus de' : 'sous'} la cible</span>
+            <span><b className="bz-m">{ecart > 0 ? '+' : '−'}{scale.fmt(Math.abs(ecart))}</b> {ecart > 0 ? 'au-dessus de' : 'sous'} la cible{' '}
+              <b className="bz-m">{cibleTexte}{unite ? ` ${unite}` : ''}</b></span>
           </p>
         ) : (
           <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>dans la cible</span></p>
         ))}
-        {kind === 'volume' && ecartRepere != null && (ecartRepere === 0 ? (
-          <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>au repère</span></p>
-        ) : (
-          <p className="bz-verdict is-watch bz-ecart" data-k="hors">
-            <TriangleAlert size={14} aria-hidden="true" />
-            <span><b className="bz-m">{ecartRepere > 0 ? '+' : '−'}{decimale(Math.abs(ecartRepere))}</b> {ecartRepere > 0 ? 'au-dessus du' : 'sous le'} repère</span>
-          </p>
-        ))}
-        {kind === 'densite' && cibleTexte && (
-          <p className="bz-ecart bz-cl-cible" data-k="vide">cible <b className="bz-m">{cibleTexte}</b></p>
-        )}
-        {kind === 'volume' && repere != null && repere > 0 && (
-          <p className="bz-ecart bz-cl-cible" data-k="vide">repère <b className="bz-m">{formatCurseur('volume', repere)}</b> L</p>
+        {cibleTexte && (
+          <p className="bz-ecart bz-cl-cible" data-k="vide">cible <b className="bz-m">{cibleTexte}</b>{unite ? ` ${unite}` : ''}</p>
         )}
       </div>
       {kind === 'densite' && <p className="bz-muet">Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.</p>}
@@ -200,7 +175,8 @@ export function cloturePartirDe(
 ): ClotureReleves {
   return {
     densite: brut.densite?.value ?? null,
-    densiteRefroidie: brut.densite?.roomTemp === true,
+    // 3 : sans relevé, la case est cochée d'office (le moût est à la température d'ensemencement) ; un relevé déjà noté garde son choix.
+    densiteRefroidie: refroidiParDefaut('densite', 'ensemencement', brut.densite ? brut.densite.roomTemp === true : undefined),
     volume: brut.volume?.value ?? null,
     volumeRefroidi: brut.volume ? brut.volume.volumeBasis === 'cold' || (!brut.volume.volumeBasis && brut.volume.roomTemp === true) : false
   };

@@ -40,6 +40,8 @@ export function BrewAide({
     const node = ref.current;
     if (!node) return;
     if (defaultOpen) node.open = true;
+    // Un repli posé dans un repli « quiet » (Aides et repères) reste fermé : l'étiquette « À vérifier » du repli extérieur le signale.
+    const calme = quiet || !!node.parentElement?.closest('[data-aide-calme]');
     const read = () => {
       const alerts = [...node.querySelectorAll('[data-notice]')];
       const found = alerts.length > 0;
@@ -48,7 +50,7 @@ export function BrewAide({
       setNotice(found ? (causes.length === alerts.length && new Set(causes).size === 1 ? causes[0] : 'À vérifier') : false);
       // N'ouvrir qu'au passage à l'avertissement : le brasseur garde le droit
       // de refermer la section après l'avoir lue.
-      if (found && !wasNotified.current && !quiet) { node.open = true; setOpen(true); }
+      if (found && !wasNotified.current && !calme) { node.open = true; setOpen(true); }
       wasNotified.current = found;
     };
     read();
@@ -62,7 +64,7 @@ export function BrewAide({
     return () => observer.disconnect();
   }, []);
   return (
-    <details ref={ref} className={`brew-aide ${className}`} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
+    <details ref={ref} data-aide-calme={quiet ? '' : undefined} className={`brew-aide ${className}`} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
       <summary>
         {icon}
         <span className="brew-aide-title">{title}</span>

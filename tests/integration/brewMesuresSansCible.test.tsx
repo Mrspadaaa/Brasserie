@@ -25,15 +25,16 @@ describe('measureScale : une échelle pour toute mesure, une bande seulement s�
     const r = sans('temperature', refroidi);
     expect([r.min, r.max, r.cible]).toEqual([10, 30, false]);
   });
-  it('pH 4,8–6,0 · densité 1,000–1,120 · volume autour du volume prévu', () => {
+  it('pH 4,8–6,0 · densité 1,000–1,120 · volume : jamais le fermenteur en repère (lot F, 13)', () => {
     const ph = sans('ph', avantEbu);
     expect([ph.min, ph.max, ph.cible]).toEqual([4.8, 6, false]);
     const d = sans('densite', refroidi);
     expect([d.min, d.max, d.cible]).toEqual([1, 1.12, false]);
     const v = sans('volume', ebullition);
     expect(v.cible).toBe(false);
-    expect(v.min).toBeLessThan(24); expect(v.max).toBeGreaterThan(24);
-    expect(v.milieu).toBe(24);
+    // Le 24 L de la recette est le volume au fermenteur, pas celui de l'ébullition : aucune cible d'étape, aucun repère.
+    expect(v.milieu).not.toBe(24);
+    expect(v.ticks).toEqual([v.min, v.max]);
   });
   it('rien d’inventé : sans recette, le volume garde une échelle large, jamais 0 en départ', () => {
     const v = measureScale('volume', ebullition, undefined)!;

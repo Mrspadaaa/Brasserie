@@ -305,7 +305,7 @@ export function changeBoilMinutes(
 export const PREPARATIONS = [
   { id: 'balance', label: 'Vérifier la balance et peser les ajouts', area: 'preparation' },
   { id: 'moulin', label: 'Régler le moulin et concasser le grain', area: 'preparation' },
-  { id: 'phmetre', label: 'Étalonner le pH-mètre et vérifier la sonde', area: 'mash' },
+  { id: 'phmetre', label: 'Étalonner le pH-mètre et vérifier la sonde', area: 'preparation' },
   { id: 'rinçage', label: 'Préparer l’eau de rinçage à la température prévue', area: 'mash' },
   { id: 'ajouts', label: 'Aligner les doses de houblon dans l’ordre des ajouts', area: 'boil' },
   {

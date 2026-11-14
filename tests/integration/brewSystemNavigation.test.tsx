@@ -25,11 +25,14 @@ function mount(over: Partial<BrewDayState> = {}) {
   render(<BrewDayPage batch={batch} config={defaultConfig} onClose={vi.fn()} onSave={save} onFinish={vi.fn()} />);
   return { recipe, original: state, save, latest: () => save.mock.calls.at(-1)?.[0].brewDay as BrewDayState };
 }
+// I1a (G3) : « Aides et repères » est devenu la porte « Aide » du bilan (un toucher).
+const ouvrirAide = () => fireEvent.click(screen.getByRole('button', { name: 'Aide' }));
 const form = () => within(screen.getByRole('region', { name: 'Mesures de cette étape' }));
 
 describe('navigation depuis le retour système vers les vrais gestes du brassin', () => {
   it('Compléter les mesures ouvre le couple pré-ébullition et enregistre un relevé exploitable', () => {
     const view = mount();
+    ouvrirAide();
     fireEvent.click(screen.getByRole('button', { name: 'Compléter les mesures' }));
     expect(screen.getByLabelText('Moment du couple volume et densité')).toHaveValue('preboil');
     expect(screen.getByLabelText('Volume du même moût en litres')).toHaveValue('');
@@ -66,7 +69,7 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
       ],
     });
     // p3 : le bilan « Ce brassin · mon installation » vit dans « Aides et repères » (replié, un toucher plus loin).
-    fireEvent.click(screen.getByText('Aides et repères'));
+    ouvrirAide();
     const feedback = within(screen.getByRole('region', { name: 'Ce brassin · mon installation' }));
     expect(feedback.getByText('Confirme les quantités réellement ajoutées : Pale.', { selector: 'p' })).toBeVisible();
     expect(feedback.queryByRole('button', { name: 'Compléter les mesures' })).not.toBeInTheDocument();
@@ -157,6 +160,8 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
     expect(view.latest().steps[0].holdStartedAt).toBe(40 * MIN);
     expect(view.latest().thermalSegments![0].endedAt).toBe(40 * MIN);
     clock.mockReturnValue(50 * MIN);
+    // K4 n° 16 : le suivi thermique vit derrière la porte « Aide » du bilan (p2c n'a pas ce bloc sous la conduite).
+    fireEvent.click(screen.getByRole('button', { name: /^Aide/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Relever le moût' }));
     fireEvent.change(form().getByLabelText('Température (°C)'), { target: { value: '75' } });
     fireEvent.click(form().getByRole('button', { name: 'Enregistrer', exact: true }));

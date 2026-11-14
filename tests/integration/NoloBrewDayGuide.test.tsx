@@ -122,7 +122,7 @@ describe('Aide NOLO du jour de brassage', () => {
       brewDay: { steps: [mash], currentIndex: 0, readings: [{ at: 10, stepId: mash.id, kind: 'ph', value: 5.8, unit: '', roomTemp: true }] }
     } as unknown as Batch;
     render(<BrewDayPage batch={batch} config={defaultConfig} onSave={vi.fn()} onClose={vi.fn()} onFinish={vi.fn()} />);
-    expect(within(screen.getByRole('region', { name: 'Relevés de cette étape' })).getByText('Au-dessus de la fenêtre de pH')).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Avis du relevé' })).getByText('Au-dessus de la fenêtre de pH')).toBeInTheDocument();
   });
 
   it('le conseil NOLO reçoit la recette figée, jamais les grains remis à zéro pour conduire la seconde extraction', async () => {

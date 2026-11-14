@@ -1825,6 +1825,11 @@ button.brew-consign:disabled { opacity: 0.6; }
   min-height: 32px;
   touch-action: manipulation;
 }
+/* Lot F (15) : « Annuler » ne colle plus à ses bords : une marge intérieure, et il ne se laisse pas écraser par le bouton de confirmation. */
+.brew-confirm > div:last-child .gap-3 > button:not(.bg-alert) {
+  padding-inline: 16px;
+  flex: 1 0 auto;
+}
 .brew-confirm .bg-alert {
   background: rgb(var(--ebc-straw));
   color: rgb(var(--sur-paille));
@@ -2814,9 +2819,15 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   .brew-page.bz .brew-readings-summary[data-attendues] { order: 3; }
   .brew-page.bz .brew-ingredients { order: 4; }
   .brew-page.bz .bz-ensuite { order: 5; }
-  .brew-page.bz .brew-readings-summary { order: 6; }
+  /* p2c : Ensuite (5), À anticiper (6), puis le bilan visé (7). */
+  .brew-page.bz .brew-readings-summary { order: 7; }
+  .brew-page.bz .bz-bilan { order: 7; }
+  /* p2c E4, 390 : sous l'heure de fin, le bilan contre la cible, puis la levure, puis « Au journal ». */
+  .brew-page.bz .bz-bilan.is-reel { order: 1; }
+  .brew-page.bz .bz-levure-cloture { order: 2; }
+  .brew-page.bz .bz-bilan-journal { order: 3; }
   .brew-page.bz .brew-finish-summary { order: 7; }
-  .brew-page.bz .brew-preparations { order: 8; }
+  .brew-page.bz .brew-preparations { order: 6; }
   /* m2 : Suivi thermique replié, après « À anticiper », juste avant « Aides et repères » (même rang que À anticiper : il suit dans le DOM). */
   .brew-page.bz .brew-side-column > details.bz-suivi { order: 8; }
   .brew-page.bz .brew-aides, .brew-page.bz .bz-aides { order: 9; }
@@ -2824,8 +2835,19 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 }
 @media (min-width: 901px) {
   .brew-page.bz > main > div { padding: 12px 24px 72px; }
-  .brew-page.bz .brew-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; column-gap: 24px; align-items: start; }
+  .brew-page.bz .brew-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr); column-gap: 24px; align-items: start; }
+  /* p2c 1280 : colonne de droite = bilan visé, Ensuite, À anticiper. */
+  .brew-page.bz .brew-side-column { display: flex; flex-direction: column; }
+  .brew-page.bz .brew-side-column > details { order: 6; }
+  .brew-page.bz .brew-side-column > .bz-bilan { order: 1; margin-top: 0; }
+  .brew-page.bz .brew-side-column > .bz-ensuite { order: 2; }
+  .brew-page.bz .brew-side-column > .bz-anticiper { order: 3; }
+  .brew-page.bz .brew-side-column > details.bz-suivi { order: 4; }
+  .brew-page.bz .brew-side-column > .bz-aides { order: 5; }
 }
+/* p2c : le texte en police du texte, seules les heures sont tabulaires et ne se coupent pas (test c6 n° 17) */
+.brew-page.bz .bz-ensuite-etape small.bz-m { display: block; font-family: inherit; font-size: 12px; }
+.brew-page.bz .bz-ensuite-etape small .bz-m { white-space: nowrap; }
 
 /* ---- Barre des phases : 4 barres de 4 px, couleur de matière ---- */
 .brew-page.bz .bz-phases { margin: 0; }
@@ -2892,16 +2914,17 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 /* ---- Horloge : temps, fin, −5 −1 ‖ +1 +5, piste ---- */
 .brew-page.bz .bz-horloge { margin-top: 8px; border: 1px solid var(--bz-border); border-radius: 8px; padding: 8px 10px; background: none; }
 .brew-page.bz .bz-haut { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.brew-page.bz .bz-temps { font-size: 28px; line-height: 1; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bz-temps { font-size: 32px; line-height: 1; font-weight: 600; color: var(--bz-t0); }
 .brew-page.bz .bz-temps.is-due { color: var(--bz-alert); }
 .brew-page.bz .bz-fin { color: var(--bz-t2); font-size: 14px; }
-.brew-page.bz .bz-ctl { margin-left: auto; display: flex; gap: 3px; align-self: center; }
+/* p2c : les cinq boutons sur leur propre ligne, pleine largeur, 44 px (test c6 n° 15) */
+.brew-page.bz .bz-ctl { flex: 1 1 100%; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin-top: 4px; }
 .brew-page.bz .bz-ctl button {
   display: grid;
   place-items: center;
-  height: 28px;
-  min-height: 28px;
-  min-width: 30px;
+  height: 44px;
+  min-height: 44px;
+  min-width: 0;
   padding: 0 6px;
   border: 1px solid var(--bz-border2);
   border-radius: 4px;
@@ -2910,7 +2933,9 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
   font-size: 14px;
   font-weight: 500;
 }
-.brew-page.bz .bz-ctl button[data-pause] { min-width: 36px; }
+.brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 0; }
+/* K5 n° 15 : le ⏸ garde sa place avant le lancement (p2c), éteint ; le lancement est le bouton du pied */
+.brew-page.bz .bz-ctl button:disabled { opacity: 0.4; }
 .brew-page.bz .bz-piste { position: relative; height: 22px; margin-top: 8px; width: 100%; }
 .brew-page.bz .bz-piste-rail { position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-border); }
 .brew-page.bz .bz-piste-fait { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-hop); }
@@ -3207,7 +3232,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
     z-index: 30;
   }
 }
-.brew-page.bz .bz-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
+.brew-page.bz .bz-seg { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
 .brew-page.bz .bz-seg button { height: 26px; min-height: 26px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--bz-t2); font-size: 14px; }
 .brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; box-shadow: 0 0 0 1px var(--bz-border2); }
 .brew-page.bz .bz-saisie { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
@@ -3286,9 +3311,12 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 
 /* ---- p3 : corrections du test d'écran du 10.11 (VERDICT-p2) ---- */
 /* n° 9 : l'horloge du palier tient sur une ligne à 390 : le texte de relevé se replie dans sa colonne, les boutons ne passent plus dessous */
-.brew-page.bz .bz-haut { flex-wrap: nowrap; }
+/* K7 n° 15 et 30 : −5 −1 ⏸ +1 +5 sur leur propre ligne (p2c), 44 px ; le temps et son texte reprennent toute la largeur de la ligne du haut. */
+.brew-page.bz .bz-haut { flex-wrap: wrap; }
 .brew-page.bz .bz-haut .bz-fin { min-width: 0; flex: 1 1 0; font-size: 12px; line-height: 1.25; }
-.brew-page.bz .bz-haut .bz-ctl { flex: none; }
+.brew-page.bz .bz-haut .bz-ctl { flex: 1 1 100%; }
+/* K7 n° 26 et 30 : un nombre et son unité ne se séparent jamais dans l'horloge */
+.brew-page.bz .bz-fin .bz-m { white-space: nowrap; }
 /* n° 3 : « Moût à l'ajout » = une ligne de plus sous la ligne Levure (valeur à droite, unité en petit) */
 .brew-page.bz .bz-moutajout { order: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; margin-top: 6px; padding: 2px 10px; border: 1px solid var(--bz-border); border-radius: 8px; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-moutajout-val { display: flex; align-items: center; gap: 4px; }
@@ -3301,7 +3329,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-levure-choix button[aria-checked='true'] { border: 2px solid var(--bz-action); background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
 /* p3 / 1C : la dose dite en g et en g/hL sur la plage du fabricant (maquette c1c : bande vert pâle, trait vert / ambre / pointillé). */
 .brew-page.bz .bz-jauge { flex: 1 1 100%; min-width: 0; padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
-.brew-page.bz .bz-jauge-tete { display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 12px; color: var(--bz-t2); }
 .brew-page.bz .bz-jauge-dose { white-space: nowrap; }
 .brew-page.bz .bz-jauge-dose b { font-size: 16px; font-weight: 600; color: var(--bz-t0); font-variant-numeric: tabular-nums; }
 .brew-page.bz .bz-jauge-verdict { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
@@ -3390,3 +3418,26 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-pourquoi { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 8px; padding: 0; border: 0; background: none; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-raison { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--bz-border2); background: var(--bz-raised); color: var(--bz-t1); font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .brew-page.bz .bz-pouce { transition: none; } }
+
+/* Frise (p2c) : la règle tactile des boutons étirait les losanges ; la zone de toucher reste celle de ::after (24 px). */
+.brew-page.bz .brew-frise .fr-rel .fr-dm { min-width: 0; min-height: 0; padding: 0; width: 12px; height: 12px; }
+.brew-page.bz .brew-frise .fr-nom, .brew-page.bz .brew-frise .fr-ch { min-width: 0; min-height: 0; }
+
+/* p2c E4 (port-I2) : la clôture. Horloge de fin, levure en double phrase, avis d'un relevé qui demande une action. */
+.brew-page.bz .bz-fin-jour { display: flex; align-items: center; gap: 16px; padding: 12px 16px; border: 1px solid var(--bz-border); border-radius: 14px; background: var(--bz-surface, transparent); }
+.brew-page.bz .bz-fin-duree { font-size: 38px; line-height: 1; font-weight: 700; white-space: nowrap; }
+.brew-page.bz .bz-fin-texte { font-size: 14px; line-height: 1.35; color: var(--bz-t2); }
+.brew-page.bz .bz-levure-cloture-ligne { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px 10px; }
+.brew-page.bz .bz-levure-cloture-txt { flex: 1 1 auto; min-width: 0; font-size: 15px; }
+.brew-page.bz .bz-levure-cloture-sub { color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-levure-cloture-phrase { margin: 4px 0 0; font-size: 14px; color: var(--bz-t2); }
+.brew-page.bz .bz-levure-cloture .bz-jauge { border-bottom: 0; margin-bottom: 0; }
+.brew-page.bz .bz-levure-cloture .bz-case-boite.is-fait { flex: 0 0 auto; background: var(--bz-ok, #3f7a3a); border-color: transparent; color: #fff; }
+.brew-page.bz .bz-avis-releve { display: grid; gap: 6px; }
+.brew-page.bz .bz-avis-releve .bz-releve-avis { margin: 0; display: flex; gap: 6px; align-items: center; font-size: 14px; }
+
+/* K4 n° 23 : le voile de la saisie flottante à 1280 (même teinte que celui du téléphone) ; la saisie passe devant. */
+.brew-page.bz .brew-capture-voile { position: fixed; inset: 0; z-index: 29; background: rgba(0, 0, 0, .35); }
+
+/* K6 n° 26 : une heure ou une mesure avec son unité ne se coupe pas en fin de ligne (voir `insecables` de src/ui/brewNombres.tsx). */
+.bz-nw { white-space: nowrap; }

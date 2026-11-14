@@ -2,6 +2,7 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { BrewAide } from '../../src/ui/BrewAide';
 import { BrewReadingsSummary } from '../../src/ui/BrewReadingsSummary';
@@ -76,7 +77,7 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
     // La couleur de réussite (vert) n'annonce pas une consigne : plus de bandeau, l'éditeur parle sur sa ligne.
     expect(screen.queryByText('Choisis la quantité de levure réellement ajoutée.')).not.toBeInTheDocument();
   });
-  it('« 1 sachet » est une quantité choisie : le pied ouvre alors la confirmation, qui clôt avec 1 sachet', () => {
+  it('« 1 sachet » est une quantité choisie : le pied ouvre alors la confirmation, qui clôt avec 1 sachet', async () => {
     const fini = vi.fn();
     monter(lot(SECHE_SANS_QUANTITE), fini);
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
@@ -85,6 +86,7 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     return vi.waitFor(() => {
       expect(fini).toHaveBeenCalledOnce();
       expect((fini.mock.calls[0][0] as Batch).brewDay).toMatchObject({ pitchQuantityConfirmation: 'measured', additions: { yeast: { amount: 1, unit: 'sachet' } } });
@@ -99,7 +101,8 @@ describe('n° 5 et 15 : levure sèche sans quantité, un toucher pose « 1 sache
 });
 
 describe('n° 7 et 16 : une seule alerte « À vérifier », qui s’éteint quand la cause est réglée', () => {
-  const alertes = () => screen.queryAllByText('À vérifier');
+  // Visibles : un repli fermé cache son contenu, donc l'étiquette du repli imbriqué (dans les Aides fermées) ne compte pas.
+  const alertes = () => screen.queryAllByText('À vérifier').filter((n) => { try { expect(n).toBeVisible(); return true; } catch { return false; } });
   it('BrewAide imbriqué : jamais deux « À vérifier » pour une même cause', () => {
     const { container } = render(
       <BrewAide title="Aides et repères" quiet>
@@ -167,6 +170,8 @@ describe('n° 14 et 17 : le jargon « guide Levure » et « Aucune quantité pr�
   it('la ligne Levure sans quantité ne renvoie pas à un « guide Levure » absent de l’écran', () => {
     monter(lot(SECHE_SANS_QUANTITE));
     expect(ligneIngredients().queryByText(/guide Levure/)).not.toBeInTheDocument();
+    // L'ajustement est ouvert d'emblée (c1c) : refermé, la ligne dit « Pas de dose prévue ».
+    fireEvent.click(ligneIngredients().getByRole('button', { name: 'Fermer l’ajustement' }));
     expect(ligneIngredients().getByText(/Pas de dose prévue/)).toBeInTheDocument();
   });
   it('la confirmation de clôture dit « sans dose prévue », et le bouton ne se coupe pas en deux lignes', () => {
@@ -213,7 +218,8 @@ describe('n° 11 : Refroidissement montre « Ensuite · Ensemencement » avec la
     monter(lot(SECHE_SANS_QUANTITE, 0));
     const ensuite = screen.getByRole('region', { name: /Ensuite · Ensemencement/ });
     expect(within(ensuite).getByText('SafAle US-05')).toBeInTheDocument();
-    expect(screen.getByText(/au transfert/)).toBeInTheDocument();
+    // p2c (I2) : l'ancienne case « au transfert » de « Relevés du jour » est retirée ; l'OG et le volume attendus se lisent dans le bilan.
+    expect(within(screen.getByRole('region', { name: /bilan visé/ })).getAllByText(/Au fermenteur/).length).toBeGreaterThan(0);
   });
   it('le volume relevé dans la case « Au fermenteur » du Refroidissement s’enregistre comme volume au fermenteur (décision du pilote, fidèle à m2)', () => {
     const etape: BrewDayStep = { id: 'refroidissement', label: 'Refroidissement', durationMin: 0 };

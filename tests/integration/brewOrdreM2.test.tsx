@@ -33,19 +33,26 @@ const avant = (a: Element, b: Element) => !!(a.compareDocumentPosition(b) & Node
 describe('m2 : l’ordre des blocs de l’étape (DOM)', () => {
   it('« Relevés du jour » vient avant Grains', () => {
     monter();
-    const releves = screen.getByRole('region', { name: 'Relevés de cette étape' });
+    // p2c (I1b) : la carte « Maintenant » prend la place des cases « Relevés du jour » dans la conduite.
+    const releves = document.querySelector('.bm-now') as HTMLElement;
+    expect(releves).toBeTruthy();
     const grains = screen.getByRole('region', { name: 'Ingrédients à ajouter' });
     expect(avant(releves, grains)).toBe(true);
   });
-  it('« Suivi thermique » est replié en bas : après À anticiper, avant Aides et repères, hors de l’horloge', () => {
+  it('« Suivi thermique » n’est plus sous la conduite : il vit derrière la porte « Aide » du bilan (K4 n° 16, p2c n’en a pas)', () => {
     const { container } = monter();
     const suivi = screen.getByText('Suivi thermique').closest('details') as HTMLElement;
-    const prep = screen.getByRole('region', { name: 'Préparations' });
-    const aides = screen.getByText('Aides et repères').closest('details') as HTMLElement;
-    expect(avant(prep, suivi)).toBe(true);
-    expect(avant(suivi, aides)).toBe(true);
+    // I1a (G3) : « Aides et repères » devient la porte « Aide » du bilan ; le bloc ne reste que hors du jour (ensemencement, Recette).
+    expect(screen.queryByText('Aides et repères')).toBeNull();
+    expect(screen.getByRole('button', { name: /Aide/ })).toBeTruthy();
+    const porte = container.querySelector('.bz-bilan-aide') as HTMLElement;
+    expect(porte.contains(suivi)).toBe(true);
+    expect(porte.hasAttribute('hidden')).toBe(true);
     expect(container.querySelector('.brew-station')?.contains(suivi)).toBe(false);
-    expect(avant(screen.getByRole('region', { name: 'Ingrédients à ajouter' }), suivi)).toBe(true);
+    // Les houblons « vigilances et potentiel » y sont aussi, et nulle part sous la conduite.
+    expect(container.querySelectorAll('.brew-aide').length).toBeGreaterThan(0);
+    expect(container.querySelector('.brew-side-column > .bz-suivi')).toBeNull();
+    expect(container.querySelector('.brew-side-column > .brew-aide')).toBeNull();
   });
 });
 

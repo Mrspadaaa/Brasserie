@@ -2,6 +2,7 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { defaultConfig, StorageService } from '../../src/services/storage';
@@ -120,6 +121,9 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
   });
   it('la ligne Levure sans choix garde « Pas de dose prévue » quand l’éditeur est fermé (le test C3 le demande)', () => {
     monter(lot(SECHE_SANS_QUANTITE));
+    // c1c (test c6 n° 6) : l'ajustement est ouvert d'emblée, la jauge et les boutons sous les yeux ; « Fermer l'ajustement » le replie.
+    expect(jauge().getByText('à choisir')).toBeInTheDocument();
+    fireEvent.click(ligneIngredients().getByRole('button', { name: 'Fermer l’ajustement' }));
     expect(ligneIngredients().getByText(/Pas de dose prévue/)).toBeInTheDocument();
   });
   it('c1c : les boutons de quantité sur une seule ligne (flex qui passe à la ligne, plus une grille à 2 colonnes), la jauge sur toute la largeur', () => {
@@ -139,20 +143,33 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
 describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition (là où la maquette z1 la place), avec le poids seulement s’il vient du catalogue', () => {
   const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
   const surEbullition = (yeast: YeastSpec) => monter(lot(yeast, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }));
-  it('US-05 : la ligne et sa sous-ligne « quantité choisie à l’ensemencement · 1 sachet = 11,5 g », cochable', () => {
+  it('US-05 : « Sortir la levure · SafAle US-05 · 1 sachet · 11,5 g » et la jauge 1C sous la ligne (pour 19 L prévus, plage du fabricant), cochable', () => {
     surEbullition(SECHE_SANS_QUANTITE);
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
-    expect(anticiper.getByText('Sortir la levure SafAle US-05')).toBeInTheDocument();
-    expect(anticiper.getByText('quantité choisie à l’ensemencement · 1 sachet = 11,5 g')).toBeInTheDocument();
-    const case_ = anticiper.getByRole('checkbox', { name: /Sortir la levure SafAle US-05/ });
+    expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
+    expect(anticiper.getByText('SafAle US-05 · 1 sachet · 11,5 g')).toBeInTheDocument();
+    const jauge = anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' });
+    expect(jauge).toHaveTextContent('Pour 19 L prévus');
+    expect(jauge).toHaveTextContent('11,5 g');
+    expect(jauge).toHaveTextContent('9,5');
+    expect(jauge).toHaveTextContent('15,2');
+    const case_ = anticiper.getByRole('checkbox', { name: /Sortir la levure/ });
     fireEvent.click(case_);
     expect(case_).toBeChecked();
   });
-  it('une levure sans produit sûr : la ligne, mais aucune sous-ligne de poids', () => {
+  it('la ligne est dite dès l’empâtage et le refroidissement l’a laissée à l’ensemencement (p2c e1 à e3)', () => {
+    monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [{ id: 'mash-0', label: 'Empâtage', durationMin: 60, tempC: 67 }, ...ETAPES].map((s) => ({ ...s })) }));
+    const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
+    expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
+    expect(anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' })).toHaveTextContent('11,5 g');
+  });
+  it('une levure sans produit sûr : le nom seul, aucun poids et aucune jauge', () => {
     surEbullition({ name: 'Levure maison', form: 'sèche' });
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
-    expect(anticiper.getByText('Sortir la levure Levure maison')).toBeInTheDocument();
-    expect(anticiper.queryByText(/1 sachet =/)).not.toBeInTheDocument();
+    expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
+    expect(anticiper.getByText('Levure maison')).toBeInTheDocument();
+    expect(anticiper.queryByText(/sachet/)).not.toBeInTheDocument();
+    expect(anticiper.queryByRole('group', { name: 'Dose de la levure pour le volume' })).not.toBeInTheDocument();
   });
   it('à l’ensemencement, la levure est déjà là : plus de rappel', () => {
     monter(lot(SECHE_SANS_QUANTITE));
@@ -178,7 +195,8 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
     expect(densite().getByRole('button', { name: 'moins 0,001' })).toBeInTheDocument();
     expect(densite().getByRole('button', { name: 'plus 0,001' })).toBeInTheDocument();
-    expect(densite().getByRole('checkbox', { name: 'Densité refroidie ou corrigée à l’étalonnage' })).not.toBeChecked();
+    // v1, n° 3 : à l'ensemencement le moût est à la température d'ensemencement, la case de la densité est cochée d'office (décochable).
+    expect(densite().getByRole('checkbox', { name: 'Densité refroidie ou corrigée à l’étalonnage' })).toBeChecked();
     expect(densite().getByRole('slider', { name: 'Densité, curseur' })).toBeInTheDocument();
     expect(densite().getByText('1,059–1,063').closest('p')).toHaveTextContent('cible 1,059–1,063');
     expect(densite().getByText('Densité sur échantillon refroidi ; 1056 est accepté pour 1,056.')).toBeInTheDocument();
@@ -187,7 +205,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     expect(volume().getByRole('button', { name: 'moins 0,1' })).toBeInTheDocument();
     expect(volume().getByRole('checkbox', { name: 'Volume ramené à 20 °C' })).not.toBeChecked();
     expect(volume().getByRole('slider', { name: 'Volume, curseur' })).toBeInTheDocument();
-    expect(volume().getByText('repère', { exact: false })).toHaveTextContent('repère 19,0 L');
+    expect(volume().getByText('18,1–20', { exact: false }).closest('p')).toHaveTextContent('cible 18,1–20 L');
   });
   it('« Pourquoi maintenant » dit les deux raisons ; la phrase « Densité initiale pas relevée » ne se lit plus qu’aux lecteurs d’écran', () => {
     const { fenetre, noeud } = ouvrirCloture();
@@ -204,11 +222,12 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     const { fini, fenetre } = ouvrirCloture();
     fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
     expect(densite().getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('1,062');
-    fireEvent.click(densite().getByRole('checkbox'));
+    expect(densite().getByRole('checkbox')).toBeChecked();
     fireEvent.click(volume().getByRole('button', { name: 'plus 0,1' }));
     fireEvent.click(volume().getByRole('checkbox'));
-    expect(volume().getByText('au repère')).toBeInTheDocument();
+    expect(volume().getByText('dans la cible')).toBeInTheDocument();
     fireEvent.click(fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(fini).toHaveBeenCalledOnce());
     const lotFini = fini.mock.calls[0][0] as Batch;
     expect(lotFini).toMatchObject({ og: '1.062', volumeBrewedL: 19.1, status: 'fermentation' });
@@ -219,8 +238,10 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
   });
   it('sans la case « refroidie » : le relevé reste au journal, mais l’OG n’est pas qualifiée ; sans rien saisi, aucun relevé écrit', async () => {
     const a = ouvrirCloture();
+    fireEvent.click(densite().getByRole('checkbox')); // cochée d'office : le brasseur la décoche
     fireEvent.click(densite().getByRole('button', { name: 'plus 0,001' }));
     fireEvent.click(a.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(a.fini).toHaveBeenCalledOnce());
     const sans = a.fini.mock.calls[0][0] as Batch;
     expect(sans.og).toBeUndefined();
@@ -228,6 +249,7 @@ describe('3C : la fenêtre de clôture porte les curseurs densité et volume (cr
     cleanup();
     const b = ouvrirCloture();
     fireEvent.click(b.fenetre.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await vi.waitFor(() => expect(b.fini).toHaveBeenCalledOnce());
     expect((b.fini.mock.calls[0][0] as Batch).brewDay!.readings).toHaveLength(0);
   });
@@ -241,10 +263,15 @@ describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à
     { name: 'Galaxy', stage: 'dryHop', weightG: 43, alpha: 0 },
     { name: 'Mosaic', stage: 'dryHop', weightG: 43, alpha: 0 }
   ] as unknown as RecipeSnapshot['hops'];
+  // I1a (G3) : pendant le jour, « Aides et repères » est la porte « Aide » du bilan ; à l'ensemencement et en consultation, l'ancien bloc.
   const ouvrirAides = () => {
-    const resume = screen.getByText('Aides et repères');
-    fireEvent.click(resume);
-    return within(resume.closest('details') as HTMLElement);
+    const resume = screen.queryByText('Aides et repères');
+    if (resume) {
+      fireEvent.click(resume);
+      return within(resume.closest('details') as HTMLElement);
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Aide' }));
+    return within(screen.getByRole('region', { name: 'Aide du jour J' }));
   };
   it('2B : à l’ébullition, le panneau « Houblons — vigilances et potentiel » a disparu des Aides ; l’aide à cette étape reste', () => {
     monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }, A_CRU));
@@ -252,7 +279,7 @@ describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à
     expect(aides.queryByText('vigilances et potentiel')).not.toBeInTheDocument();
     expect(aides.getByText('Aide à cette étape')).toBeInTheDocument();
   });
-  it('2C : à l’ensemencement, « À cru · 171 g · 9 g/L », trois puces, « phase ? » et aucun jour ; Aides ouvert d’emblée', () => {
+  it('2C : à l’ensemencement, « À cru · 171 g · 9 g/L », trois puces, « phase ? » et aucun jour ; Aides fermées d’office (test c6 n° 10)', () => {
     monter(lot(SECHE_SANS_QUANTITE, 1, undefined, A_CRU));
     const ligne = screen.getByRole('group', { name: 'À cru' });
     const l = within(ligne);
@@ -261,7 +288,7 @@ describe('2B et 2C : plus de panneau Houblons dans Aides à l’ébullition ; à
     expect(l.getByText('phase ?')).toBeInTheDocument();
     expect(ligne.textContent).not.toMatch(/\bJ\+|\bjour/i);
     expect(screen.queryByText('vigilances et potentiel')).not.toBeInTheDocument();
-    expect((screen.getByText('Aides et repères').closest('details') as HTMLDetailsElement).open).toBe(true);
+    expect((screen.getByText('Aides et repères').closest('details') as HTMLDetailsElement).open).toBe(false);
   });
   it('2C : dépliée, une ligne par houblon avec ses g, ses g/L et sa phase ; sans dry hop, aucune ligne', () => {
     monter(lot(SECHE_SANS_QUANTITE, 1, undefined, A_CRU));

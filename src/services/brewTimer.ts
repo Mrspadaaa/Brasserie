@@ -363,6 +363,17 @@ export function formatCountdown(ms: number): string {
   return `${negative ? '−' : ''}${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+/**
+ * Un ajout ou une alarme dont l'échéance est passée : « en retard de 4 min » (plancher, comme l'horloge), « 1 h 05 » au-delà d'une heure.
+ * Moins d'une minute de retard : « maintenant ». `null` tant que l'échéance n'est pas passée.
+ */
+export function phraseRetard(resteMs: number): { court: string; retard: boolean } | null {
+  if (!Number.isFinite(resteMs) || resteMs > 0) return null;
+  const min = Math.floor(-resteMs / 60000);
+  if (min < 1) return { court: 'maintenant', retard: false };
+  return { court: min >= 60 ? `en retard de ${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}` : `en retard de ${min} min`, retard: true };
+}
+
 // --- Son ---------------------------------------------------------------------
 
 let audioContext: AudioContext | null = null;
@@ -448,7 +459,7 @@ export function beep(times = 3): void {
 
 // --- Écran allumé ------------------------------------------------------------
 
-type WakeLockSentinelLike = { release: () => Promise<void> };
+type WakeLockSentinelLike = { release: () => Promise<void>; released?: boolean };
 let wakeLock: WakeLockSentinelLike | null = null;
 
 /** Empêche l'écran de s'éteindre. Renvoie `false` si le navigateur ne sait pas. */
@@ -457,6 +468,8 @@ export async function keepScreenAwake(): Promise<boolean> {
     wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinelLike> };
   };
   if (!nav.wakeLock) return false;
+  // Déjà tenu : le navigateur le relâche quand l'onglet se cache (`released`), on n'en empile pas un second à chaque retour.
+  if (wakeLock && wakeLock.released !== true) return true;
   try {
     wakeLock = await nav.wakeLock.request('screen');
     return true;

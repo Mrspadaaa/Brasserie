@@ -1,6 +1,7 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { brewerJobs } from '../../src/services/brewerJobs';
@@ -38,6 +39,12 @@ describe('PC-1 : la clôture du jour de brassage est atteignable avec une recett
     fireEvent.click(sans!);
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    // p2c E4 : la levure confirmée, la page reste sur la clôture et le bilan ; rien n'est fermé avant « Terminer ».
+    await screen.findByRole('region', { name: 'Heure de fin' });
+    expect(screen.getByRole('region', { name: 'Levure' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Synchroniser et clôturer' })).toHaveTextContent(/Terminer · \d+ h \d{2}/);
+    expect(finish).not.toHaveBeenCalled();
+    await terminerLaJournee();
     await waitFor(() => expect(finish).toHaveBeenCalledTimes(1));
     expect(finish.mock.calls[0][0]).toMatchObject({ status: 'fermentation' });
     expect(finish.mock.calls[0][0].brewDay.pitchQuantityConfirmation).toBe('unmeasured');

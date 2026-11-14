@@ -25,7 +25,11 @@ export function poserSurPas(kind: ReadingKind, valeur: number, min: number, max:
  * Ce n'est pas une cible : seulement l'étendue où un relevé de ce moment peut tomber (une ébullition se mesure vers 96–100 °C, pas à 20).
  * Une échelle sans bande ; un relevé hors de l'étendue l'étire (voir `measureScale`). `milieu` : où le pouce attend, jamais un relevé.
  */
-export interface BornesPlausibles { min: number; max: number; milieu: number }
+export interface BornesPlausibles {
+  min: number; max: number; milieu: number;
+  /** `false` : le `milieu` n'est pas une valeur attendue (un volume sans cible d'étape) ; l'échelle ne l'affiche pas. */
+  repere?: boolean;
+}
 
 /** Étapes de l'ébullition (ids de `buildTimeline` : boil-N, boil-fin, hop-…, sucres). */
 const enEbullition = (id: string) => /^boil-|^hop-/.test(id) || id === 'sucres';
@@ -52,10 +56,10 @@ export function bornesPlausibles(
   const plan = recipe?.waterPlan;
   const prevu = volumeTarget(step as BrewDayStep, recipe)
     ?? (/^mash/.test(id) ? plan?.mashWaterL : id === 'sparge' ? plan?.spargeWaterL : undefined)
-    ?? (enEbullition(id) || id === 'preboil' ? recipe?.preBoilL : undefined)
-    ?? recipe?.volumeL;
-  if (prevu && prevu > 0) return { min: prevu * 0.6, max: prevu * 1.4, milieu: prevu };
-  return { min: 1, max: 60, milieu: 30 };
+    ?? (enEbullition(id) || id === 'preboil' ? recipe?.preBoilL : undefined);
+  // Lot F (13) : jamais le volume du fermenteur comme repli : sans cible de l'étape, l'étendue est celle d'une micro-brasserie, sans repère.
+  if (prevu && prevu > 0) return { min: prevu * 0.6, max: prevu * 1.4, milieu: prevu, repere: true };
+  return { min: 1, max: 60, milieu: 30, repere: false };
 }
 
 /** Le pouce attend où le brasseur l'attend : sur son dernier relevé de l'étape, sinon au milieu de la cible (ou de l'échelle sans cible). */

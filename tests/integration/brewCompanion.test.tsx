@@ -178,21 +178,22 @@ describe('Gestes à la cuve', () => {
     fireEvent.change(screen.getByLabelText('Densité (SG)'), { target: { value: '1040' } });
     fireEvent.click(screen.getByLabelText('Densité refroidie ou corrigée à l’étalonnage'));
     fireEvent.click(region.getByRole('button', { name: 'Enregistrer' }));
+    // p2c (I1a) : le rendement se lit dans la tuile « Rendement d’empâtage » du bilan visé (l'ancien tableau est parti).
     const observedYield = () => within(
-      screen.getByRole('row', { name: /Rendement avant ébullition/ })
-    ).getAllByRole('cell')[1];
-    expect(within(observedYield()).getByLabelText('Pas encore mesuré')).toBeInTheDocument();
+      screen.getByRole('region', { name: 'Relevés du jour · bilan visé' })
+    ).getByText('Rendement d’empâtage').closest('li') as HTMLElement;
+    expect(observedYield()).toHaveTextContent('?');
     fireEvent.click(region.getByRole('button', { name: 'Volume', exact: true }));
     expect(screen.getByLabelText('Volume ramené à 20 °C')).not.toBeChecked();
     fireEvent.change(screen.getByLabelText('Volume (L)'), { target: { value: '25' } });
     fireEvent.click(screen.getByLabelText('Volume ramené à 20 °C'));
     fireEvent.click(region.getByRole('button', { name: 'Enregistrer' }));
-    expect(observedYield()).toHaveTextContent('66,6');
+    expect(observedYield()).toHaveTextContent('≈ 67 %');
     expect(v.latest().readings!.every((r) => r.roomTemp)).toBe(true);
     const readings = v.latest().readings;
     phase('Recette');
     phase('Conduite');
-    expect(observedYield()).toHaveTextContent('66,6');
+    expect(observedYield()).toHaveTextContent('≈ 67 %');
     expect(v.latest().readings).toEqual(readings);
   });
   it('fuzz de quantité : les saisies hostiles ne cassent ni l’écran ni les doses des autres lignes', () => {
