@@ -1692,3 +1692,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - (sur Hydrogen, réflexion basse, 93 / 108, 20 s, 0,046 CHF) « Met le à la place de 3.8 pas beaucoup plus long et pas mal mieux »
 - « Et comme Argon, réflexion basse 108 / 108 est aussi bon, ajoute un bouton pour l'appeler explicitement en fallback »
 - « Pour les users si ils ont un doute »
+- (sur « Je garde quand même le bouton « Un doute ? » sur Argon… sauf contre-ordre ») « Un doute ? Oui »
+- « J'ai mis à jour le quota tu peux y aller »
