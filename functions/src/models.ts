@@ -1,13 +1,14 @@
 /**
  * Les modèles Gemini de la brasserie, choisis par le serveur, usage par usage.
  *
- * Deux modèles autorisés (correction humaine du 16 octobre 2026, décision 68 :
+ * Trois modèles autorisés (correction humaine du 16 octobre 2026, décision 68 :
  * « si 3.5 est plus rapide sans perdre en qualité, go ») : `gemini-3.8-flash`
- * partout, et `gemini-3.5-flash-lite` seulement pour les usages où le banc réel
- * #91 l'a mesuré plus rapide sans perte (`LITE_ROUTES`). Le client ne choisit
- * jamais le modèle. Aucun repli vers un troisième modèle : une réponse lite
- * inutilisable ou une panne passe une fois sur 3.8, puis l'utilisateur reçoit
- * une erreur claire.
+ * partout, `gemini-3.5-flash-lite` seulement pour les usages où le banc réel
+ * #91 l'a mesuré plus rapide sans perte (`LITE_ROUTES`), et, depuis le 14
+ * novembre, `gemini-4-hydrogen` pour la seule 3ᵉ lecture des justificatifs
+ * (`INVOICE_STRONG_MODEL`). Le client ne choisit jamais le modèle. Le repli
+ * reste sur 3.8 : une réponse lite ou Hydrogen inutilisable, ou une panne,
+ * passe une fois sur 3.8, puis l'utilisateur reçoit une erreur claire.
  *
  * ⚡ RAPIDE  — le geste courant : lire une facture, compter des bouteilles sur
  *              une photo, proposer une liste de courses. Réflexion basse, pour
@@ -24,8 +25,26 @@
 export const GEMINI_MODEL = 'gemini-3.8-flash';
 /** `gemini-3.5-flash-lite` : seulement pour les usages de `LITE_ROUTES`. */
 export const GEMINI_LITE_MODEL = 'gemini-3.5-flash-lite';
+/**
+ * `gemini-4-hydrogen` : la 3ᵉ lecture des justificatifs (voie h1, 14.11 : « pas beaucoup plus long et pas mal mieux »). Banc g1, moitié impaire,
+ * réflexion basse : 93 lignes justes sur 108 contre 78 pour la 3.8, 3ᵉ lecture p50 19,8 s contre 14,0 s, même tarif (1,50 $ / 7,50 $ le million).
+ * Aucun autre usage ne l'appelle : le compagnon, les imports et les fiches gardent la 3.8.
+ */
+export const INVOICE_STRONG_MODEL = 'gemini-4-hydrogen';
+/** La réflexion de la 3ᵉ lecture : basse (medium et high n'ont rien apporté à Hydrogen au banc g1 : 92 lignes justes dans les deux cas). */
+export const INVOICE_STRONG_THINKING = 'LOW';
+/**
+ * Plafond de sortie de la 3ᵉ lecture : la réflexion compte dans `maxOutputTokens`, et 12 000 est le maximum que le garde-fou de coût accepte
+ * (`quoteGeminiCost`). Le même que le banc (`FORT_MAX_OUT`).
+ */
+export const INVOICE_STRONG_MAX_OUTPUT = 12_000;
+/**
+ * Délai d'un appel Hydrogen. Mesuré au banc g1 en réflexion basse : p50 19,8 s, p90 23,4 s ; 60 s laisse plus du double du p90 et, sur le délai
+ * global de 100 s de la lecture, de quoi tenter le repli sur la 3.8 (le banc, lui, tolère 90 s pour les réflexions hautes qu'il compare).
+ */
+export const INVOICE_STRONG_TIMEOUT_MS = 60_000;
 /** Liste blanche du serveur : aucune requête ne part vers un autre modèle. */
-export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL] as const;
+export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL] as const;
 export type GeminiModel = (typeof GEMINI_MODELS)[number];
 
 /** Une première tentative, puis une seule nouvelle tentative, sur 3.8. */
@@ -65,8 +84,9 @@ export function aiTier(value: unknown): AiTier {
  * ainsi. Tout le reste garde 3.8 tant qu'un banc ne prouve pas l'égalité : import et
  * relecture (lite y omettait des paliers ou un alpha), fiches documentaires,
  * analyse et relecture du compagnon, recherche de fournisseurs. Les justificatifs
- * ont leur propre vote (`invoiceScanVote.ts`, D247) : deux Flash-Lite, puis la 3.8
- * sur désaccord ou lecture manquante, mesuré au banc de lecture du 1er novembre 2026.
+ * ont leur propre vote (`invoiceScanVote.ts`, D247) : deux Flash-Lite, puis une
+ * 3ᵉ lecture sur désaccord ou lecture manquante (Hydrogen en réflexion basse
+ * depuis le 14.11, la 3.8 en repli ; mesuré aux bancs du 1er et du 14 novembre 2026).
  */
 export const LITE_ROUTES: Readonly<Record<string, GeminiThinkingLevel>> = Object.freeze({
   readHopCoa: 'minimal',

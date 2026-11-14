@@ -6,7 +6,9 @@ import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 vi.mock('../../functions/src/invoiceScanBudget', () => ({ runBudgetedInvoiceScan: async (_uid: any, _file: any, work: any, provider: any) => ({ result: await work(provider), cached: false, documentHash: 'document-hash' }) }));
 import { logger } from '../../functions/node_modules/firebase-functions';
 import { scanInvoiceSafely } from '../../functions/src/ai';
-import { GEMINI_LITE_MODEL, GEMINI_MODEL } from '../../functions/src/models';
+import { GEMINI_LITE_MODEL, GEMINI_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL } from '../../functions/src/models';
+// Voie h1 : la 3ᵉ lecture est Hydrogen (réflexion basse, 12 000 jetons) ; elle échoue une fois, la 3.8 la relit (repli) : quatre appels au plus.
+const HYDROGEN = 'gemini-4-hydrogen';
 import { SCAN_MAX_OUTPUT, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
 import { INVOICE_SCAN_PROMPTS } from '../../functions/src/invoiceScanPrompts';
 import { TASKS } from '../../functions/src/prompts';
@@ -76,8 +78,8 @@ describe('fn-csv8 — deux Flash-Lite d\'accord : aucune 3.8', () => {
   });
   it('le résultat porte toujours le modèle d\'arbitrage de la réponse au client (forme inchangée)', async () => {
     jouer({ l1: invoice(), l2: invoice() });
-    expect(await lire()).toMatchObject({ ok: true, model: SCAN_MODEL, tier: 'fast' });
-    expect(SCAN_MODEL).toBe(GEMINI_MODEL);
+    expect(await lire()).toMatchObject({ ok: true, model: HYDROGEN, tier: 'fast' });
+    expect(INVOICE_STRONG_MODEL).toBe(HYDROGEN); expect(SCAN_MODEL).toBe(GEMINI_MODEL);
   });
   it('les pensées du modèle sont ignorées à la lecture', async () => {
     fetchMock.mockImplementation(async () => ({ ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ thought: true, text: 'raisonnement non JSON' }, { text: JSON.stringify(invoice()) }] } }], usageMetadata: { totalTokenCount: 10 } }) }));
@@ -89,7 +91,7 @@ describe('fn-csv8 — désaccord : la 3.8 tranche, avec ses valeurs et le statut
   it('trois lectures toutes différentes : la 3.8 (consigne 3) donne SES valeurs, le statut reste « disputed » (vote à trois)', async () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: invoice('service') });
     const { data } = await lire();
-    expect(appels()).toEqual([{ lecture: 1, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 2, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 3, model: GEMINI_MODEL, max: SCAN_MAX_OUTPUT }]);
+    expect(appels()).toEqual([{ lecture: 1, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 2, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 3, model: HYDROGEN, max: INVOICE_STRONG_MAX_OUTPUT }]);
     expect(data.items[0].kind).toBe('service');
     expect(data.review).toMatchObject({ status: 'disputed', readers: 3 });
     expect(data.points.some((p: any) => p.source === 'désaccord' && p.cle === 'lectures-divergentes:1:kind')).toBe(true);
@@ -98,7 +100,7 @@ describe('fn-csv8 — désaccord : la 3.8 tranche, avec ses valeurs et le statut
   it('majorité de deux sur trois : la valeur de la 3.8, statut « corrected » et trois lecteurs', async () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: invoice('maintenance') });
     const { data } = await lire();
-    expect(appels().map((c: any) => c.model)).toEqual([GEMINI_LITE_MODEL, GEMINI_LITE_MODEL, GEMINI_MODEL]);
+    expect(appels().map((c: any) => c.model)).toEqual([GEMINI_LITE_MODEL, GEMINI_LITE_MODEL, HYDROGEN]);
     expect(data).toMatchObject({ items: [{ kind: 'maintenance' }], review: { status: 'corrected', readers: 3, correctedFields: ['items.0.kind'] } });
   });
   it('la 3.8 ne reçoit pas les montants des deux premières lectures', async () => {
@@ -161,27 +163,27 @@ describe('fn-csv8 — une Flash-Lite manque : la 3.8 est appelée aussi', () => 
     expect(data.review).toMatchObject({ status: 'unavailable', readers: 1 });
     expect(data.points.find((p: any) => p.code === 'lecture-coupee')).toMatchObject({ luTexte: 'sortie' });
   });
-  it('rien de lisible nulle part : l\'erreur de la première lecture remonte (message existant), trois appels seulement', async () => {
+  it('rien de lisible nulle part : l\'erreur de la première lecture remonte (message existant), quatre appels seulement (Hydrogen, puis la 3.8 en repli)', async () => {
     jouer({ l1: CUT, l2: CUT, s3: CUT });
     await expect(lire()).rejects.toThrow('Lecture incomplète');
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
-  it('les trois lectures refusées par le fournisseur : l\'erreur remonte, aucun quatrième appel', async () => {
+  it('les trois lectures refusées par le fournisseur : l\'erreur remonte, aucun cinquième appel', async () => {
     jouer({ l1: refusal(429), l2: refusal(429), s3: refusal(429) });
     await expect(lire()).rejects.toThrow('429');
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 });
 
 describe('fn-csv8 — la 3.8 en échec après un désaccord : repli et coupure dite', () => {
-  it('3.8 coupée : divergences explicites, statut « disputed », phrase et point lecture-coupee « sortie »', async () => {
+  it('3.8 coupée : divergences explicites, statut « disputed », phrase et point lecture-coupee « sortie » (Hydrogen coupée, la 3.8 aussi)', async () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: CUT });
     const { data } = await lire();
     expect(data.items[0].kind).toBe('equipment');
     expect(data.review).toMatchObject({ status: 'disputed' });
     expect(data.issues.join(' ')).toContain('contrôle complémentaire n’a pas abouti');
     expect(data.points.find((p: any) => p.code === 'lecture-coupee')).toMatchObject({ luTexte: 'sortie' });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
   it('3.8 refusée (503) : même repli, cause « delai-saute » faute de coupure connue', async () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: refusal(503) });
@@ -242,7 +244,7 @@ describe('fn-csv8 — journal par lecture, sans contenu de facture', () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: invoice('maintenance') });
     await lire();
     const lignes = info.mock.calls.filter((c: any[]) => c[0] === 'Lecture de facture').map((c: any[]) => c[1]).sort((a: any, b: any) => a.lecture - b.lecture);
-    expect(lignes.map((l: any) => [l.lecture, l.etape, l.model])).toEqual([[1, 'parallele', GEMINI_LITE_MODEL], [2, 'parallele', GEMINI_LITE_MODEL], [3, 'troisieme', GEMINI_MODEL]]);
+    expect(lignes.map((l: any) => [l.lecture, l.etape, l.model])).toEqual([[1, 'parallele', GEMINI_LITE_MODEL], [2, 'parallele', GEMINI_LITE_MODEL], [3, 'troisieme', HYDROGEN]]);
     expect(lignes[0]).toMatchObject({ finishReason: 'STOP', coupee: false, totalTokens: 1750 });
     expect(JSON.stringify(info.mock.calls)).not.toContain('Fournisseur');
   });

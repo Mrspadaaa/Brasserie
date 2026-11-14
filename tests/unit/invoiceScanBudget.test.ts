@@ -36,10 +36,18 @@ describe('Budget scan isolé, fournisseur simulé',()=>{
     state.docs.set('brewerAiControls/current',{limits:{dailyCalls:0}});
     await expect(runBudgetedInvoiceScan('u',file,gen=>gen(request,signal()),provider)).rejects.toThrow('Plafond');expect(provider).not.toHaveBeenCalled();
   });
-  it('borne le document à trois générations sans quatrième appel',async()=>{
+  it('borne le document à quatre générations (deux Flash-Lite, Hydrogen, son repli sur la 3.8) sans cinquième appel',async()=>{
     const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:15}}));
-    await expect(runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());await gen(request,signal());await gen(request,signal());return gen(request,signal());},provider)).rejects.toThrow('trois');
-    expect(provider).toHaveBeenCalledTimes(3);
+    await expect(runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());await gen(request,signal());await gen(request,signal());await gen(request,signal());return gen(request,signal());},provider)).rejects.toThrow('Limite de lectures');
+    expect(provider).toHaveBeenCalledTimes(4);
+  });
+  it('une génération Hydrogen est réservée, envoyée et réglée au tarif d\'Hydrogen, plafond de sortie 12 000 (jamais plus)',async()=>{
+    const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    await runBudgetedInvoiceScan('u',file,async gen=>{await gen({...request,generationConfig:{maxOutputTokens:20000}},signal(),'gemini-4-hydrogen');},provider);
+    expect(state.monthlyModels).toEqual(['gemini-4-hydrogen']);expect(provider.mock.calls[0][2]).toBe('gemini-4-hydrogen');
+    expect((provider.mock.calls[0] as any)[0].generationConfig.maxOutputTokens).toBe(12000);
+    const quote=quoteGeminiCost('gemini-4-hydrogen',state.monthlyBodies[0]);
+    expect(quote.reservedMicroChf).toBe(quoteGeminiCost(GEMINI_MODEL,state.monthlyBodies[0]).reservedMicroChf);
   });
   it('un échec réseau ne réessaie pas et conserve la réservation',async()=>{
     const provider=vi.fn().mockRejectedValue(Error('timeout'));

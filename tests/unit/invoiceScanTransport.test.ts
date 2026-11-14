@@ -21,7 +21,7 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     release();
     const result = await pending;
-    expect(result).toMatchObject({ ok:true, model:SCAN_MODEL, documentHash:'document-hash', data:{ review:{ status:'checked', readers:2 } } });
+    expect(result).toMatchObject({ ok:true, model:'gemini-4-hydrogen', documentHash:'document-hash', data:{ review:{ status:'checked', readers:2 } } });
     expect(fetchMock).toHaveBeenCalledTimes(2);
     for (const [url, options] of fetchMock.mock.calls) {
       expect(url).toContain(`${GEMINI_LITE_MODEL}:generateContent`);
@@ -38,8 +38,8 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
     const result = await scanInvoiceSafely('u', file, 'fake-test-key');
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(result.data).toMatchObject({ items:[{ kind:'maintenance' }], review:{ status:'corrected', readers:3, correctedFields:['items.0.kind'] } });
-    expect(fetchMock.mock.calls[2][0]).toContain(`${SCAN_MODEL}:generateContent`);
-    expect(JSON.parse(fetchMock.mock.calls[2][1].body).generationConfig.maxOutputTokens).toBe(SCAN_MAX_OUTPUT);
+    expect(fetchMock.mock.calls[2][0]).toContain('gemini-4-hydrogen:generateContent');
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body).generationConfig.maxOutputTokens).toBe(12000);
     for (const [, options] of fetchMock.mock.calls.slice(1)) {
       const reviewer = JSON.parse(options.body);
       expect(reviewer.contents[0].parts[0].text).not.toContain('108.1');
@@ -60,11 +60,12 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
     expect(result.data).toMatchObject({ currency:'EUR', review:{ status:'disputed' } });
     expect((result.data as any).issues.join(' ')).toContain('réellement payé en CHF');
   });
-  it('aucun retry après rejet des lectures par le fournisseur : deux Flash-Lite puis la 3.8 une seule fois, jamais une quatrième', async () => {
+  it('aucun retry après rejet des lectures par le fournisseur : deux Flash-Lite, Hydrogen, puis la 3.8 en repli une seule fois, jamais une cinquième', async () => {
     fetchMock.mockResolvedValue(failure(429));
     await expect(scanInvoiceSafely('u', file, 'fake-test-key')).rejects.toThrow('429');
-    expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(fetchMock.mock.calls[2][0]).toContain(`${SCAN_MODEL}:generateContent`);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock.mock.calls[2][0]).toContain('gemini-4-hydrogen:generateContent');
+    expect(fetchMock.mock.calls[3][0]).toContain(`${SCAN_MODEL}:generateContent`);
   });
   it('attend une sœur encore en cours après le rejet de la première, puis appelle la 3.8', async () => {
     let release!: (value:any) => void;
@@ -83,18 +84,18 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
     expect(result.data).toMatchObject({ items:[{ kind:'equipment' }], review:{ status:'checked', readers:2 } });
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
-  it('une seconde lecture échouée et la 3.8 aussi garde la première, sans quatrième appel', async () => {
+  it('une seconde lecture échouée et la 3.8 aussi garde la première, sans cinquième appel (Hydrogen, puis la 3.8 en repli)', async () => {
     fetchMock.mockResolvedValueOnce(response(invoice('equipment'))).mockResolvedValueOnce(failure(503)).mockResolvedValueOnce(failure(503));
     const result = await scanInvoiceSafely('u', file, 'fake-test-key');
     expect(result.data).toMatchObject({ review:{ status:'unavailable', readers:1 } });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
-  it('un arbitrage échoué laisse les divergences explicites sans quatrième appel', async () => {
+  it('un arbitrage échoué laisse les divergences explicites sans cinquième appel', async () => {
     fetchMock.mockResolvedValueOnce(response(invoice('equipment'))).mockResolvedValueOnce(response(invoice('maintenance'))).mockResolvedValueOnce(failure(503));
     const result = await scanInvoiceSafely('u', file, 'fake-test-key');
     expect(result.data).toMatchObject({ items:[{ kind:'equipment' }], review:{ status:'disputed', readers:2 } });
     expect((result.data as any).issues.join(' ')).toContain('complémentaire n’a pas abouti');
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
   it('ignore les pensées du modèle lors de la lecture du JSON', async () => {
     fetchMock.mockResolvedValue(response(invoice(), true));

@@ -47,7 +47,7 @@ describe('Garde-fous du test spécial Gemini 3.8 réel', () => {
   it('contrôle les modèles résolus (liste blanche du serveur) puis le compteur avant l’opt-in payant', () => {
     const optIn = vi.fn();
     for (const models of [['gemini-3.8-flash', 'gemini-3.7-flash'], ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'], ['gemini-3.1-pro-preview'], []])
-      expect(() => livePreflight(models, journal(1), optIn)).toThrow(/hors de la liste blanche \(gemini-3\.8-flash et gemini-3\.5-flash-lite\)/);
+      expect(() => livePreflight(models, journal(1), optIn)).toThrow(/hors de la liste blanche \(gemini-3\.8-flash et gemini-3\.5-flash-lite et gemini-4-hydrogen\)/);
     expect(() => livePreflight(['gemini-3.8-flash'], journal(40), optIn)).toThrow(/Compteur global atteint \(40 \/ 40\)/);
     expect(() => livePreflight(['gemini-3.8-flash'], '# Journal sans compteur', optIn)).toThrow(/aucun appel/);
     expect(optIn).not.toHaveBeenCalled();

@@ -24,11 +24,15 @@ export const GEMINI_SEARCH_COST_POLICY = {
 } as const;
 const MODEL_CONTEXT = 1_048_576;
 /** A call is quoted and settled at the rate of the model that serves it: gemini-3.8-flash, or
- * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES). Older models keep their
- * rates only to read past usage and settlements; none is called anymore.
+ * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES), or gemini-4-hydrogen for the
+ * third invoice reading (INVOICE_STRONG_MODEL). Older models keep their rates only to read past usage
+ * and settlements; none is called anymore.
  */
 const PRICES: Record<string, { input: number; output: number; largeInput?: number; largeOutput?: number; audioInput?: number }> = {
   'gemini-3.5-flash-lite': { input: 300_000, output: 2_500_000 },
+  // Hydrogen: 1.50 / 7.50 USD per million tokens, output counting the reasoning (https://ai.google.dev/gemini-api/docs/pricing, read 14.11.2026).
+  // Same rate as 3.8; never the free tier, whose data may be used by Google.
+  'gemini-4-hydrogen': { input: 1_500_000, output: 7_500_000 },
   'gemini-3.1-flash-lite': { input: 250_000, audioInput: 500_000, output: 1_500_000 },
   // Provision at the announced January 2027 standard rate already: never rely
   // on the temporary 50% discount, and no automatic annual maintenance cliff.

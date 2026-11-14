@@ -43,7 +43,8 @@ describe('g1 — le rôle de la 3.8 : modèle et réflexion au choix (banc seule
   });
   it('chiffre un modèle 4 à son tarif (jamais zéro, jamais celui d’un autre) et le refuse hors liste', () => {
     expect(estGemini4('gemini-4-argon')).toBe(true);
-    expect(estGemini4(STRONG_MODEL)).toBe(false);
+    // Depuis la voie h1, le témoin du banc (STRONG_MODEL) est Hydrogen : un modèle 4 lui aussi.
+    expect(estGemini4(STRONG_MODEL)).toBe(true); expect(STRONG_MODEL).toBe('gemini-4-hydrogen');
     expect(() => assertModeleBanc('gemini-9-inconnu')).toThrow('refusé');
     expect(() => assertModeleBanc('gemini-4-hydrogen')).not.toThrow();
     const usage = { usageMetadata: { promptTokenCount: 1000, candidatesTokenCount: 800, thoughtsTokenCount: 200, totalTokenCount: 2000 } };

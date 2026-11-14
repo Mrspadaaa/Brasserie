@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { onCall, HttpsError, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
-import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
+import { AiTier, GEMINI_LITE_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { geminiBody, userTextOf } from './geminiBody.js';
@@ -164,12 +164,12 @@ export function chargeDeLecture(data: { task?: unknown; file?: unknown; files?: 
 
 /**
  * A separate, fixed-cost path: no model chain, no client tier/context/instruction.
- * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 8 192 jetons depuis le 02.11) sur désaccord
- * ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
+ * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3ᵉ lecture (consigne 3 : Hydrogen en réflexion basse, 12 000 jetons,
+ * repli une fois sur la 3.8 à 8 192 jetons) sur désaccord ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
  */
 /**
- * D308 (lenteur D) : le premier écran en flux. `jeton` est tiré par l'appel ; `onProvisoire` reçoit le provisoire (les deux Flash-Lite, sans la 3.8) et ce
- * qu'il faut pour le morceau (modèle, durée, pages) ; il ne doit jamais retarder la 3.8, et une levée de sa part ne change rien au final (sauf
+ * D308 (lenteur D) : le premier écran en flux. `jeton` est tiré par l'appel ; `onProvisoire` reçoit le provisoire (les deux Flash-Lite, sans la 3ᵉ lecture) et ce
+ * qu'il faut pour le morceau (modèle, durée, pages) ; il ne doit jamais retarder la 3ᵉ lecture, et une levée de sa part ne change rien au final (sauf
  * qu'aucun jeton ni rang n'est posé : le morceau n'est pas parti). Absent (ancien client, appel sans SSE, test réel) : la lecture est celle d'avant.
  */
 export interface FluxProvisoire {
@@ -185,7 +185,7 @@ const SCHEMA_MORCEAU = (() => {
 
 export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number; jonction?: true }): Promise<AiTaskResult> {
   const started = Date.now();
-  // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
+  // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8 (repli de la 3ᵉ lecture ; celui d'Hydrogen est plus haut, mais un test réel ne sert pas cette voie).
   const override = evaluationOptions?.maxOutputTokens;
   if (override !== undefined && (!Number.isSafeInteger(override) || override < 1 || override > SCAN_MAX_OUTPUT)) throw new Error('Plafond de sortie invalide.');
   // n2-pages : un fichier (ou une liste d'un seul) se lit comme toujours ; 2 à 4 images se lisent d'un seul appel, une part `inlineData` par page, dans l'ordre.
@@ -199,6 +199,9 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceau.jonction ? jonctionNote() : morceauNote(morceau.k, morceau.n)}` : prompt;
   assertGeminiModel(model);
   assertGeminiModel(GEMINI_LITE_MODEL);
+  assertGeminiModel(INVOICE_STRONG_MODEL);
+  // `model` (la 3.8) n'est plus que le repli de la 3ᵉ lecture ; `servedBy` dit qui l'a lue, pour le résultat rendu.
+  let servedBy: string = INVOICE_STRONG_MODEL;
   const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
     assertGeminiModel(callModel);
     const response = await fetch(`${GEMINI_ENDPOINT}/${callModel}:generateContent`, {
@@ -230,21 +233,31 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
     const deadline = AbortSignal.timeout(100_000);
     // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
     const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
-    const read = (callModel: string, prompt: string, lecture: number, etape: 'parallele' | 'troisieme', maxOutputTokens: number) => {
+    const read = (callModel: string, prompt: string, lecture: number, etape: 'parallele' | 'troisieme', maxOutputTokens: number, timeoutMs = 45_000, repli = false) => {
       const started = Date.now();
-      return generate(body(TASKS.scanInvoice.system, prompt, morceau ? SCHEMA_MORCEAU : TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(45_000)]), callModel).then(
-        response => { logger.info('Lecture de facture', { ...ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response }), model: callModel }); return normalizeInvoiceScan(parse(response)); },
-        error => { logger.warn('Lecture de facture en échec', { lecture, etape, model: callModel, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
+      return generate(body(TASKS.scanInvoice.system, prompt, morceau ? SCHEMA_MORCEAU : TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(timeoutMs)]), callModel).then(
+        response => { logger.info('Lecture de facture', { ...ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response }), model: callModel, ...(repli ? { repli: true } : {}) }); return normalizeInvoiceScan(parse(response)); },
+        error => { logger.warn('Lecture de facture en échec', { lecture, etape, model: callModel, ...(repli ? { repli: true } : {}), elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
     };
     // Both Flash-Lite see only the original. Every in-flight call is awaited before the budget ledger closes (lireCsv8).
     return lireCsv8({
       readLite: lecture => read(GEMINI_LITE_MODEL, INVOICE_SCAN_PROMPTS[lecture - 1], lecture, 'parallele', LITE_SCAN_MAX_OUTPUT),
       // No competing amounts or classifications are disclosed: a third independent reading.
-      readStrong: () => read(model, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', SCAN_MAX_OUTPUT),
+      // Hydrogen, réflexion basse ; s'il échoue (erreur, délai, coupure, réponse inutilisable), UNE nouvelle tentative sur la 3.8, comme Flash-Lite → 3.8 ailleurs.
+      // Pas de repli si le délai global est atteint (il n'y aurait plus de temps) ni si le budget refuse (il refuserait aussi la 3.8).
+      readStrong: async () => {
+        servedBy = INVOICE_STRONG_MODEL;
+        try { return await read(INVOICE_STRONG_MODEL, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_TIMEOUT_MS); }
+        catch (error) {
+          if (deadline.aborted || error instanceof BrewerBudgetError) throw error;
+          servedBy = model;
+          return read(model, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', SCAN_MAX_OUTPUT, 45_000, true);
+        }
+      },
       causeOf: cause,
       deadlineReached: () => deadline.aborted,
       ...(flux ? { provisoire: (data: unknown) => {
-        const envoye = flux.onProvisoire(data, { model, elapsedMs: Date.now() - started, ...(pages.length > 1 ? { pages: pages.length } : {}) });
+        const envoye = flux.onProvisoire(data, { model: INVOICE_STRONG_MODEL, elapsedMs: Date.now() - started, ...(pages.length > 1 ? { pages: pages.length } : {}) });
         provisoireParti = true;       // une levée de `onProvisoire` passe par-dessus : le morceau n'est pas parti, ni jeton ni rang
         return envoye;
       } } : {})
@@ -252,7 +265,7 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   }, provider, { degraded: (result: any) => result?.review?.status === 'unavailable' && Array.isArray(result?.points) && result.points.some((p: any) => p.code === 'lecture-coupee') });
   // Le jeton va sur une COPIE rendue au client : le résultat gardé par le registre (et son cache) reste sans jeton, et ne le rejoue jamais.
   const data = flux && provisoireParti && !reviewed.cached ? { ...(reviewed.result as object), provisoireJeton: flux.jeton } : reviewed.result;
-  return { ok:true, data, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash, ...(pages.length > 1 ? { pages:pages.length } : {}) };
+  return { ok:true, data, model:servedBy, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash, ...(pages.length > 1 ? { pages:pages.length } : {}) };
 }
 
 /** Aussi lue par `hopReclasserIA` : une seule liste de comptes, une seule règle. */

@@ -6,7 +6,8 @@ import path from 'node:path';
 // Même montage que invoiceScanTransport.test.ts : le budget Firestore est remplacé, le fournisseur est simulé.
 vi.mock('../../functions/src/invoiceScanBudget', () => ({ runBudgetedInvoiceScan: async (_uid: any, _file: any, work: any, provider: any) => ({ result: await work(provider), cached: false, documentHash: 'document-hash' }) }));
 import { scanInvoiceSafely } from '../../functions/src/ai';
-import { SCAN_MAX_OUTPUT, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
+import { SCAN_MAX_OUTPUT } from '../../functions/src/invoiceScanCore';
+import { INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL } from '../../functions/src/models';
 import { INVOICE_SCAN_PROMPTS } from '../../functions/src/invoiceScanPrompts';
 import { quoteGeminiCost } from '../../functions/src/geminiCosts';
 import {
@@ -79,8 +80,8 @@ describe('k1 — le corps du banc pour Csv8 est celui de scanInvoiceSafely, cham
       const spec = callSpec('Csv8', (index + 1) as 1 | 2 | 3);
       const [url, options] = fetchMock.mock.calls[index];
       expect(spec.prompt).toBe(prompt);
-      expect(spec.model).toBe(index < 2 ? LITE_MODEL : SCAN_MODEL);
-      expect(spec.maxOut).toBe(index < 2 ? LITE_RAISED_OUTPUT : SCAN_MAX_OUTPUT);
+      expect(spec.model).toBe(index < 2 ? LITE_MODEL : INVOICE_STRONG_MODEL);
+      expect(spec.maxOut).toBe(index < 2 ? LITE_RAISED_OUTPUT : INVOICE_STRONG_MAX_OUTPUT);
       expect(url).toContain(`${spec.model}:generateContent`);
       const expected = buildReadBody(file, spec.prompt, spec.maxOut, spec.thinking);
       expect(JSON.parse(options.body)).toEqual(expected);
@@ -89,7 +90,7 @@ describe('k1 — le corps du banc pour Csv8 est celui de scanInvoiceSafely, cham
     });
   });
   it('envoyé après la normalisation du budget mensuel : le corps de la production plus candidateCount, rien d’autre (Flash-Lite et 3.8)', () => {
-    for (const [model, lecture] of [[LITE_MODEL, 1], [SCAN_MODEL, 3]] as const) {
+    for (const [model, lecture] of [[LITE_MODEL, 1], [INVOICE_STRONG_MODEL, 3]] as const) {
       const spec = callSpec('Csv8', lecture);
       const body = buildReadBody(file, spec.prompt, spec.maxOut, spec.thinking) as any;
       const sent = quoteGeminiCost(model, body).body as any;
@@ -539,7 +540,7 @@ describe('k2 — les réglages d’appel : plafond relevé et réflexion pour Lm
     expect(callSpec('Lm', 1)).toMatchObject({ model: LITE_MODEL, thinking: 'MEDIUM', maxOut: LITE_RAISED_OUTPUT });
     expect(callSpec('Lh', 2)).toMatchObject({ model: LITE_MODEL, thinking: 'HIGH', maxOut: LITE_RAISED_OUTPUT });
     expect(LITE_RAISED_OUTPUT).toBe(8192);
-    for (const group of ['A', 'C', 'Lm', 'Lh', 'Lp']) expect(callSpec(group, 3)).toMatchObject({ model: STRONG_MODEL, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, prompt: INVOICE_SCAN_PROMPTS[2] });
+    for (const group of ['A', 'C', 'Lm', 'Lh', 'Lp']) expect(callSpec(group, 3)).toMatchObject({ model: STRONG_MODEL, thinking: 'LOW', maxOut: INVOICE_STRONG_MAX_OUTPUT, prompt: INVOICE_SCAN_PROMPTS[2] });
     expect(() => callSpec('Z', 1)).toThrow('Groupe inconnu');
   });
   it('le corps de production ne bouge pas : LOW et le plafond de production par défaut ; la réflexion et le plafond ne changent que ces deux champs', () => {
@@ -605,7 +606,7 @@ describe('k2 — la consigne propre à Flash-Lite (Lp)', () => {
     // une seule 3.8 pour les quatre groupes qui divergent (partagée), toujours LOW au plafond de production
     const thirds = [...seen].filter(([id]) => /3$/.test(id));
     expect(thirds).toHaveLength(1);
-    expect(thirds[0][1]).toBe(`${STRONG_MODEL}|LOW|${SCAN_MAX_OUTPUT}`);
+    expect(thirds[0][1]).toBe(`${STRONG_MODEL}|LOW|${INVOICE_STRONG_MAX_OUTPUT}`);
   });
 });
 

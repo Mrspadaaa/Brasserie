@@ -70,7 +70,7 @@ import { fileURLToPath } from 'node:url';
 import { TASKS } from '../functions/src/prompts';
 import { SCAN_MAX_ITEMS, SCAN_MAX_OUTPUT, SCAN_MODEL, countPdfPages, normalizeInvoiceScan, validateInvoiceFile, type InvoiceFile } from '../functions/src/invoiceScanCore';
 import { SV_SCHEMA, productionToSv, schemaProblems, svSystem, svToProduction } from './banc-lecture-schema';
-import { GEMINI_LITE_MODEL } from '../functions/src/models';
+import { GEMINI_LITE_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL } from '../functions/src/models';
 import { INVOICE_SCAN_PROMPTS } from '../functions/src/invoiceScanPrompts';
 import {
   ScanReadCutError, ajouterCoupure, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
@@ -96,7 +96,8 @@ import { requirePaidAiTestOptIn } from './paid-ai-test-guard.mjs';
 // ---------------------------------------------------------------------------------------------------------------------
 // Constantes
 // ---------------------------------------------------------------------------------------------------------------------
-export const STRONG_MODEL: string = SCAN_MODEL;
+/** Le modèle de la 3ᵉ lecture : la constante de la production (`models.ts`, voie h1 : Hydrogen en réflexion basse), pas une copie. */
+export const STRONG_MODEL: string = INVOICE_STRONG_MODEL;
 export const LITE_MODEL: string = GEMINI_LITE_MODEL;
 /**
  * Accord du brasseur : 5 CHF (D234), puis 20 CHF de plus (D242) = 25 CHF CUMULÉS ; le banc en garde 0,5 de marge (coût réel relu après coup,
@@ -233,8 +234,8 @@ export const UNITE_SUFFIXE = /(?<!\d)\s*[,;]\s*(?:\d+(?:[.,]\d+)?\s*)?(?:kg|g|gr
 export const OPTION_MOTS: ReadonlySet<string> = new Set(['geschrotet', 'ungeschrotet', 'gemahlen', 'ungemahlen', 'schrotung', 'mischung', 'einzelprodukt', 'crushed', 'uncrushed', 'milled', 'macinato', 'concasse', 'moulu', 'mahlgrad']);
 /** La phrase du banc ajoutée à la consigne 3 d'Av : zoomer avant de lire les montants. */
 export const AV_NOTE = 'Tu disposes d’un outil d’exécution de code. Avant de lire les montants, zoome sur le tableau des lignes (recadre et agrandis l’image) pour lire chaque cellule ; puis réponds par le seul JSON demandé.';
-/** Le réglage d'un appel. La 3ᵉ lecture est la 3.8 de production (consigne 3), quel que soit le groupe qui la demande — sauf celle d'Av. */
-/** Les groupes du banc mesurés avant le 02.11 gardent le plafond de sortie de leur mesure ; la 3.8 de production suit `SCAN_MAX_OUTPUT`. */
+/** Le réglage d'un appel. La 3ᵉ lecture est celle de production (consigne 3 : `STRONG_MODEL`), quel que soit le groupe qui la demande — sauf celle d'Av. */
+/** Les groupes du banc mesurés avant le 02.11 gardent le plafond de sortie de leur mesure ; la 3ᵉ lecture de production suit `INVOICE_STRONG_MAX_OUTPUT`. */
 const BANC_MAX_OUT = 5100;
 /**
  * Voie g1 (14.11) : `--fort <modèle>@<niveau>` remplace le modèle et la réflexion de tout appel qui part en `STRONG_MODEL` (la 3ᵉ lecture, les lectures de A).
@@ -247,9 +248,9 @@ export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
 }
 function callSpecBase(group: string, lecture: 1 | 2 | 3): CallSpec {
   // Csv8F : les trois lectures portent `nameFr`, et rien d'autre ne change (Flash-Lite à 8 192 jetons comme Csv8, 3.8 au plafond de production)
-  if (group === 'Csv8F') return { model: lecture === 3 ? STRONG_MODEL : LITE_MODEL, prompt: INVOICE_SCAN_PROMPTS[lecture - 1], thinking: 'LOW', maxOut: lecture === 3 ? SCAN_MAX_OUTPUT : LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, nameFr: true };
+  if (group === 'Csv8F') return { model: lecture === 3 ? STRONG_MODEL : LITE_MODEL, prompt: INVOICE_SCAN_PROMPTS[lecture - 1], thinking: 'LOW', maxOut: lecture === 3 ? INVOICE_STRONG_MAX_OUTPUT : LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, nameFr: true };
   if (lecture === 3 && group === 'Av') return { model: STRONG_MODEL, prompt: `${INVOICE_SCAN_PROMPTS[2]}\n\n${AV_NOTE}`, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS, codeExecution: true };
-  if (lecture === 3) return { model: STRONG_MODEL, prompt: INVOICE_SCAN_PROMPTS[2], thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
+  if (lecture === 3) return { model: STRONG_MODEL, prompt: INVOICE_SCAN_PROMPTS[2], thinking: 'LOW', maxOut: INVOICE_STRONG_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
   const prompt = INVOICE_SCAN_PROMPTS[lecture - 1];
   switch (group) {
     case 'Hv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true };
