@@ -48,3 +48,6 @@ aujourd'hui · sort 180 g du stock » au repos.
 - controle-panel : remplissage médian 0,61, 0 sous 0,50 ; DIVERSITÉ 0,91 → PANEL ECHEC, structurel : la mesure ne porte ici que sur 2 captures
   d'une même variante (repos et geste partagent forcément la frise).
 - controle-commun --sans=mots --profil=sans-houblons : COMMUN OK (couleurs, survol, blocs, contraste, standard, parlant, brutes).
+
+## Correctifs c2f (14.11)
+Bloquants de c2/VERDICT.md corrigés ; détail et preuves dans `voies/c2f/RESULTAT.md`.

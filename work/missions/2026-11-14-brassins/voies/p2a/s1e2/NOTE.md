@@ -37,3 +37,6 @@ Base : `voies/s1/s1e/etat.html`, préfixe `s1e2-`.
 ## Captures (ouvertes)
 repos, geste, dryhop, liste 390 clair ; repos 390 cave ; repos 1280 clair.
 Restes de la reprise corrigés : liste à 4 repères de date (01.11, 08.11, 14.11, 21.11), rangées de 80 px et une ligne Clos de plus (bas plein) ; 1280, courbe ramenée à 600 px et tableau « Relevés de densité · échantillon » sous les boutons (colonne droite pleine) ; °C d'échantillon rendu au repos. Repère 1,020 retiré à 390 (il heurtait « éch. 20,5 °C »).
+
+## Correctifs c2f (14.11)
+Bloquants de c2/VERDICT.md corrigés ; détail et preuves dans `voies/c2f/RESULTAT.md`.

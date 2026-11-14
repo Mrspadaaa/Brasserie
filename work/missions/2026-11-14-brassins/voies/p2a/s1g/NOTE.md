@@ -35,3 +35,6 @@ courbe-gestes (suivre, déclencher sur place), densimetre (ajuster), releve-cuve
 ## Captures (toutes ouvertes)
 s1g-repos-390-clair, s1g-geste-390-clair, s1g-dryhop-390-clair, s1g-liste-390-clair, s1g-repos-390-cave, s1g-repos-1280-clair.
 Limite vue : les cases °C cuve (J+1 à J+9) ne sont pas alignées sur les colonnes de jour de la courbe (J0 à J+12).
+
+## Correctifs c2f (14.11)
+Bloquants de c2/VERDICT.md corrigés ; détail et preuves dans `voies/c2f/RESULTAT.md`.
