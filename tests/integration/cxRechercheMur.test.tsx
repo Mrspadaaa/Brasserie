@@ -55,8 +55,10 @@ describe('ST-T48 : la recherche filtre la liste et le mur', () => {
     expect(nombreRayon(container, 'Houblons')).toBe('2');
     expect(container.querySelectorAll('.l1-pale')).toHaveLength(0);
     fireEvent.change(champ(), { target: { value: 'citra' } });
-    await waitFor(() => expect(nombreRayon(container, 'Houblons')).toBe('1 sur 2'));
-    expect(nombreRayon(container, 'Malts')).toMatch(/^[01] sur 31$/); // 30 malts et le sirop de candi (rayon Malts, sucres compris)
+    // vd2 n° 1 : sous le nom, « 1/2 » (la colonne fait 60 px ; « 1 sur 2 » passait sur le repère d'échelle) ; les lecteurs d'écran gardent « 1 sur 2 »
+    await waitFor(() => expect(nombreRayon(container, 'Houblons')).toBe('1/2'));
+    expect(container.querySelector('.l1e-n[data-filtre="Houblons"]')!.getAttribute('aria-label')).toContain('Houblons : 1 sur 2 articles');
+    expect(nombreRayon(container, 'Malts')).toMatch(/^[01]\/31$/); // 30 malts et le sirop de candi (rayon Malts, sucres compris)
     const pales = [...container.querySelectorAll<HTMLElement>('.stock-mur [data-ref].l1-pale')].map((e) => e.dataset.ref);
     expect(pales).toContain('saaz');
     expect(pales).toContain('m3');

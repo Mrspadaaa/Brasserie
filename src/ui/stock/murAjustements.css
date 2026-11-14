@@ -69,3 +69,7 @@ html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-
 
 /* cx, ST-T48 : sous un filtre ou une recherche, les marques du mur qui n'y répondent pas pâlissent (fA : .l1-pale{opacity:.16}) */
 .stock-mur .l1-pale{opacity:.16}
+
+/* vd2 n° 1 (verdict 5cdcd12e) : sous un filtre, le compte du rayon (« 3/12 ») tient dans la colonne du nom, à gauche du repère d'échelle (« 5 kg », « 250 g », collé à droite de la colonne).
+   Chiffres tabulaires en police du texte, 11 px : « 28/36 » fait 27 px, le repère « 250 g » laisse 27 px. */
+.l1e-n span[data-compte]{font:11px/14px var(--l1-sans,inherit);font-variant-numeric:tabular-nums;letter-spacing:-.02em}

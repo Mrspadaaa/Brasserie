@@ -83,10 +83,11 @@ function TotalLevure({ g }: { g: GroupeMur }) {
   );
 }
 
-/** « 1 sur 2 » : les marques du rayon que le filtre retient, sur le total du rayon (le total seul quand tout est retenu). */
-const compteSur = (r: RayonMur, retenus: ReadonlySet<string>): string => {
+/** Les marques du rayon que le filtre retient, sur le total du rayon (le total seul quand tout est retenu). Aux lecteurs d'écran : « 1 sur 2 » ; sous le nom du rayon : « 1/2 »,
+ *  car la colonne du nom fait 60 px et « 3 sur 12 » passait sur le repère d'échelle (« 5 kg », « 250 g » ; verdict 5cdcd12e n° 1). */
+const compteRayon = (r: RayonMur, retenus: ReadonlySet<string>): { court: string; long: string } => {
   const v = r.groupes.reduce((n, g) => n + g.marques.filter((a) => retenus.has(a.ref)).length, 0);
-  return v === r.total ? String(r.total) : `${v} sur ${r.total}`;
+  return v === r.total ? { court: String(r.total), long: String(r.total) } : { court: `${v}/${r.total}`, long: `${v} sur ${r.total}` };
 };
 
 function Groupe({ g, r }: { g: GroupeMur; r: RayonMur }) {
@@ -238,7 +239,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
           <Fragment key={r.id}>
             <div className={`l1-mu l1e-r${r.hc ? '' : ' l1e-sansc'}`} data-f={r.id} data-systeme={r.systeme} style={{ ['--hc' as string]: `${r.hc}px`, ['--hm' as string]: `${r.hm}px` } as React.CSSProperties}>
               <div className="l1e-c1">
-                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteSur(r, retenus) : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span>{retenus ? compteSur(r, retenus) : r.total}</span></button>
+                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteRayon(r, retenus).long : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span data-compte={retenus ? compteRayon(r, retenus).long : undefined}>{retenus ? compteRayon(r, retenus).court : r.total}</span></button>
                 {r.echelle && <span className="l1e-cl" aria-hidden="true">{r.echelle}</span>}
                 {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>?</button>}
               </div>
