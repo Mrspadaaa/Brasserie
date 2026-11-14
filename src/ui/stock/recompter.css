@@ -42,6 +42,8 @@ html[data-theme=cave] .sz-r-ebc.sz-r-u{box-shadow:inset 0 0 0 1.5px var(--l1r-t2
 .sz-r-rh h2 small{font-size:13px;font-weight:400;color:var(--l1r-t2)}
 .sz-r-mt{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--l1r-t2);margin-top:2px}
 .sz-r-mt b{font-weight:600;color:var(--l1r-t0)}
+.sz-r-mt > span:last-child{white-space:nowrap}
+.sz-r-cr .sz-r-nm b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sz-r-tk{display:flex;gap:2px}
 .sz-r-tk i{width:4px;height:10px;box-shadow:inset 0 0 0 1px var(--l1r-strong)}
 .sz-r-tk i.sz-r-f{background:var(--l1r-t1);box-shadow:none}

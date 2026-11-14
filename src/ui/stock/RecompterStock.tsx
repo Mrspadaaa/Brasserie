@@ -1,7 +1,7 @@
 // Recompter, repris de la maquette choisie sy/fA (q-a3s) : six tuiles de famille, ligne de tri, un rayon par famille avec « 6/15 comptés · 02.11 »,
 // bouton « Compter » (mode saisie : « il en reste », « Enregistrer N comptages »). Les règles sont dans domain/stock/listeFiltres.ts et liste.ts.
 import React, { useMemo, useState } from 'react';
-import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check } from 'lucide-react';
+import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check, ArrowUpDown } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { Units } from '../../services/units';
@@ -65,12 +65,17 @@ interface Props {
 export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtre, onFiltre, filtreActif, onOuvrir, onCompter }: Props) {
   const comptes = useMemo(() => comptesRecompter(items, mouvements), [items, mouvements]);
   const jours = useMemo(() => derniersComptages(mouvements), [mouvements]);
+  // Sens du tri par nom (bouton ⇅ de la maquette q-a3s) : A → Z, ou Z → A ; les épuisés restent en fin de rayon dans les deux sens.
+  const [zVersA, setZVersA] = useState(false);
   const parFamille = useMemo(() => {
     const m = new Map<FamilleRecompter, StockItem[]>();
     for (const f of FAMILLES_RECOMPTER) m.set(f, []);
-    for (const i of trierRecompter(retenus, infos)) m.get(familleDe(i))!.push(i);
+    const ep = (i: StockItem) => infos.get(i.ref)?.etats.includes('epuise') === true;
+    const tries = trierRecompter(retenus, infos);
+    const ordre = zVersA ? [...tries.filter((i) => !ep(i)).reverse(), ...tries.filter(ep).reverse()] : tries;
+    for (const i of ordre) m.get(familleDe(i))!.push(i);
     return m;
-  }, [retenus, infos]);
+  }, [retenus, infos, zVersA]);
   const [saisie, setSaisie] = useState<FamilleRecompter | null>(null);
   const [valeurs, setValeurs] = useState<Record<string, string>>({});
 
@@ -99,7 +104,8 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
           );
         })}
       </div>
-      <div className="sz-r-so"><p>Trié par <b>nom, A → Z</b> · épuisés en fin de rayon</p></div>
+      <div className="sz-r-so"><p>Trié par <b>nom, {zVersA ? 'Z → A' : 'A → Z'}</b> · épuisés en fin de rayon</p>
+        <button type="button" aria-label={zVersA ? "Inverser l'ordre : nom A → Z" : "Inverser l'ordre : nom Z → A"} aria-pressed={zVersA} onClick={() => setZVersA((v) => !v)}><ArrowUpDown size={16} aria-hidden="true" /></button></div>
       <div className="sz-r-ls">
         {FAMILLES_RECOMPTER.map((f, k) => {
           const lignes = parFamille.get(f) ?? [];
@@ -115,8 +121,8 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                 <div>
                   <h2>{COURT[f]} <small>{filtreActif ? `${lignes.length} sur ${c.total}` : c.total}</small></h2>
                   <p className="sz-r-mt">
-                    <span className="sz-r-tk" aria-hidden="true">{items.filter((i) => familleDe(i) === f).slice(0, 40).map((i) => <i key={i.ref} className={jours.has(i.ref) ? 'sz-r-f' : ''} />)}</span>
-                    <span><b className="sz-r-m">{c.compte}</b>/<span className="sz-r-m">{c.total}</span> comptés{c.dernier ? <> · <span className="sz-r-m">{jourCourt(c.dernier)}</span></> : ''}</span>
+                    {!enSaisie && <span className="sz-r-tk" aria-hidden="true">{items.filter((i) => familleDe(i) === f).slice(0, 40).map((i) => <i key={i.ref} className={jours.has(i.ref) ? 'sz-r-f' : ''} />)}</span>}
+                    <span><b className="sz-r-m">{c.compte}</b>/<span className="sz-r-m">{c.total}</span> comptés{c.dernier && !enSaisie ? <> · <span className="sz-r-m">{jourCourt(c.dernier)}</span></> : ''}</span>
                   </p>
                 </div>
                 {enSaisie
