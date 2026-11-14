@@ -1,0 +1,17 @@
+{
+ "reglage": "3.5-flash-lite@minimal",
+ "kind": "reference",
+ "id": "w3470-temp",
+ "utilisable": true,
+ "produits": [],
+ "pertinentes": 0,
+ "exactes": 0,
+ "sourcesPrimaires": 1,
+ "faitCle": true,
+ "ms": 2519,
+ "coutMicro": 18049,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Selon la fiche technique officielle du fabricant Fermentis pour la levure **SafLager W-34/70**, la plage de température de fermentation recommandée est idéalement comprise entre **12 °C et 18 °C** (53,6 °F – 64,4 °F). \n\nIl est toutefois possible de l'utiliser à des températures plus basses (notammen"
+}

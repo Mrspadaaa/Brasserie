@@ -1,0 +1,44 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "D1-calage",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 31 % (±2)",
+   "gravité surveiller ou agir (ni normal, ni urgent)",
+   "cause : température trop basse",
+   "cause : levure (quantité, vitalité, réhydratation)",
+   "action : réchauffer ou remuer"
+  ],
+  "manques": []
+ },
+ "ms": 19045,
+ "coutMicro": 20130,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation bloquée (stuck fermentation) à 1.040, très loin de la DF visée de 1.012. L'atténuation apparente est seulement de 31 % après 8 jours, avec une densité stable depuis 48 heures.",
+  "severity": "agir",
+  "causes": [
+   {
+    "cause": "Température ambiante de cave trop basse (15 °C) pour la SafAle US-05 (plage optimale 18-26 °C), provoquant la mise en dormance et la sédimentation prématurée des levures.",
+    "probability": 0.75,
+    "action": "Réchauffer le fermenteur à 19-21 °C (déplacement hors de la cave ou utilisation d'une ceinture chauffante) et faire tournoyer doucement la cuve fermée pour remettre la levure en suspension sans oxygéner le moût."
+   },
+   {
+    "cause": "Perte de viabilité levurienne due à l'ensemencement à sec direct combiné au froid (17 °C chutant à 15 °C) sur un moût de 24 L à 1.058 (taux d'ensemencement limite).",
+    "probability": 0.15,
+    "action": "Si aucune reprise d'activité n'est observée 48 heures après réchauffement à 20 °C, réensemencer avec un demi-sachet de US-05 préalablement réhydraté à 25 °C."
+   },
+   {
+    "cause": "Erreur de lecture due à un réfractomètre non corrigé pour la présence d'alcool (1.040 brut correspondrait à ~1.026 réel avec correction, signalant tout de même un ralentissement anormal).",
+    "probability": 0.1,
+    "action": "Vérifier immédiatement la densité à l'aide d'un densimètre hydraulique étalonné à 20 °C ou appliquer l'équation de correction réfractométrique standard."
+   }
+  ],
+  "apparentAttenuationPct": 31,
+  "immediateAction": "Réchauffer le moût à 20 °C et remettre délicatement les levures en suspension par rotation du fermenteur sous barboteur."
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "D4-donnees-rares",
+ "tache": "diagnoseBatch",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.75,
+  "utilisable": true,
+  "passes": [
+   "gravité normal ou surveiller (pas agir, pas urgent)",
+   "dit qu’il manque des relevés / mesurer la densité",
+   "pistes : étanchéité du couvercle, patience, délai de démarrage"
+  ],
+  "manques": [
+   "aucune atténuation inventée (un seul relevé)"
+  ]
+ },
+ "ms": 5652,
+ "coutMicro": 12754,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Situation fréquente à 36 heures à 18 °C : l'absence de bulles dans le barboteur ne prouve pas l'absence de fermentation. Aucune mesure de densité n'ayant été prise depuis l'ensemencement, il est impossible de confirmer un blocage.",
+  "severity": "surveiller",
+  "causes": [
+   {
+    "cause": "Phase de latence normale ou légèrement prolongée à 18 °C (bas de plage pour l'US-05, surtout sans réhydratation préalable).",
+    "probability": 0.55,
+    "action": "Attendre jusqu'à 48-72 heures après ensemencement et vérifier visuellement la formation d'un krausen."
+   },
+   {
+    "cause": "Fuite d'étanchéité au niveau du couvercle ou du joint du barboteur laissant échapper le CO2.",
+    "probability": 0.35,
+    "action": "Contrôler le joint du couvercle et du barboteur, puis prendre une mesure de densité au densimètre ou réfractomètre (avec correction) pour vérifier si la gravité baisse."
+   },
+   {
+    "cause": "Viabilité réduite de la levure (sachet âgé ou choc thermique/osmotique lors du saupoudrage).",
+    "probability": 0.1,
+    "action": "Si la densité reste bloquée à 1.048 à 72 heures, monter la température à 20 °C et ré-ensemencer avec un nouveau sachet d'US-05 réhydraté."
+   }
+  ],
+  "apparentAttenuationPct": 0,
+  "immediateAction": "Vérifier l'étanchéité du fermenteur et effectuer une prise de densité à 48 heures avant toute intervention."
+ }
+}

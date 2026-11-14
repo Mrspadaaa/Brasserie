@@ -1,0 +1,17 @@
+{
+ "reglage": "3.8-flash@low",
+ "kind": "reference",
+ "id": "w3470-temp",
+ "utilisable": true,
+ "produits": [],
+ "pertinentes": 0,
+ "exactes": 0,
+ "sourcesPrimaires": 2,
+ "faitCle": true,
+ "ms": 6806,
+ "coutMicro": 38634,
+ "web": 2,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "D'après la fiche technique officielle du fabricant **Fermentis** (division du groupe Lesaffre), les recommandations de température pour la souche **SafLager™ W-34/70** sont les suivantes :\n\n* **Plage de température idéale recommandée :** **12 °C à 18 °C** (53,6 °F à 64,4 °F).\n* **Tolérance basse tem"
+}

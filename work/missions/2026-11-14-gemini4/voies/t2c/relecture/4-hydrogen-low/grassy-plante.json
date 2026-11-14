@@ -1,0 +1,18 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "grassy-plante",
+ "cas": "grassy",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action proposée (« Refroidis le fermenteur à 2 °C tout de suite : la densité n’a plus besoin de baisser ») contredit directement le résumé, l'explication et les règles métier : il ne faut pas faire de cold crash avant que la densité soit stable après dry-hop (risque d'arrêt de fermentation, de diacétyle et de refermentation en bouteille)."
+  ]
+ },
+ "ms": 4936,
+ "coutMicro": 12364,
+ "etat": "STOP"
+}

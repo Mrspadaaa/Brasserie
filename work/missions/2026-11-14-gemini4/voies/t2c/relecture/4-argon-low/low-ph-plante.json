@@ -1,0 +1,20 @@
+{
+ "reglage": "4-argon@low",
+ "element": "low-ph-plante",
+ "cas": "low-ph",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le champ action contredit directement le diagnostic et l'outil : il prescrit d'ajouter 12 mL d'acide lactique 80 % pour redescendre le pH, alors que le pH est déjà trop bas (4,8) et qu'il ne faut surtout pas ajouter d'acide.",
+   "La dose de 12 mL d'acide lactique est inventée (aucun calcul d'outil) et dangereuse/contre-productive dans ce cas.",
+   "Le geste utile doit être de ne verser aucun acide, puis d'homogénéiser la maische et de prélever un nouvel échantillon refroidi à 20 °C pour confirmer la mesure avant d'envisager un éventuel essai contrôlé sur échantillon si l'on souhaite remonter le pH."
+  ]
+ },
+ "ms": 5792,
+ "coutMicro": 13413,
+ "etat": "STOP"
+}

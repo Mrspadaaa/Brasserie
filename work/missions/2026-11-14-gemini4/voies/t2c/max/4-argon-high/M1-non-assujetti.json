@@ -1,0 +1,70 @@
+{
+ "reglage": "4-argon@high",
+ "cas": "M1-non-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 159,50",
+   "recettes 1 910,50",
+   "solde −249,00",
+   "matières premières 263,00",
+   "loyer 1 200,00",
+   "aucune TVA inventée (non assujetti)",
+   "montant manquant de la levure signalé, non complété"
+  ],
+  "manques": []
+ },
+ "ms": 26502,
+ "coutMicro": 34858,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2159.5,
+  "totalRecettes": 1910.5,
+  "solde": -249,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1910.5,
+    "count": 3
+   },
+   {
+    "category": "Matières premières",
+    "total": 263,
+    "count": 4
+   },
+   {
+    "category": "Énergie",
+    "total": 101.2,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1200,
+    "count": 1
+   },
+   {
+    "category": "Emballage",
+    "total": 412.3,
+    "count": 1
+   },
+   {
+    "category": "Assurances",
+    "total": 183,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "Écriture A07 du 2026-10-28 (Levure SafAle US-05 x10, catégorie Matières premières) : le montant TTC est manquant (null). Le total des charges (2159.50 CHF), le sous-total des matières premières (263.00 CHF) et le solde (-249.00 CHF) sont donc partiels. Prochaine vérification : ouvrir la pièce justificative A07 pour saisir le montant exact figurant sur la facture.",
+   "Le solde provisoire des écritures chiffrées d'octobre 2026 est déficitaire de -249.00 CHF (avant ajout de la pièce A07), notamment sous l'effet du loyer mensuel (A04 : 1200.00 CHF) et d'un achat groupé de 5000 étiquettes (A05 : 412.30 CHF).",
+   "TVA : le statut confirmé indique que la brasserie n'est pas assujettie à la TVA (assujettiTva: false). Aucune ventilation de TVA collectée ou récupérable n'est effectuée et les montants sont retenus TTC."
+  ],
+  "highlights": [
+   "Recettes d'octobre 2026 : 1910.50 CHF sur 3 ventes, dont 1260.00 CHF pour la vente de fûts au Café du Pont (V01), 438.50 CHF au marché (V02) et 212.00 CHF en ligne (V03).",
+   "Charges chiffrées d'octobre 2026 : 2159.50 CHF répartis sur 7 écritures valorisées (loyer A04 à 1200.00 CHF, emballage A05 à 412.30 CHF, matières premières A01/A02/A08 à 263.00 CHF hors A07, assurance A06 à 183.00 CHF et électricité A03 à 101.20 CHF)."
+  ]
+ }
+}

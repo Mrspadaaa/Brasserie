@@ -1,0 +1,63 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "M2-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.8333333333333334,
+  "utilisable": true,
+  "passes": [
+   "charges 2 251,20",
+   "recettes 1 621,50 (apport privé exclu)",
+   "solde −629,70",
+   "TVA collectée 121,50",
+   "loyer 1 500,00"
+  ],
+  "manques": [
+   "TVA déductible 51,20"
+  ]
+ },
+ "ms": 21622,
+ "coutMicro": 29714,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2251.2,
+  "totalRecettes": 1621.5,
+  "solde": -629.7,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1621.5,
+    "count": 2
+   },
+   {
+    "category": "Apport privé",
+    "total": 5000,
+    "count": 1
+   },
+   {
+    "category": "Matières premières",
+    "total": 102.6,
+    "count": 1
+   },
+   {
+    "category": "Énergie",
+    "total": 108.1,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1500,
+    "count": 1
+   },
+   {
+    "category": "Équipement",
+    "total": 540.5,
+    "count": 1
+   }
+  ],
+  "tvaCollected": 121.5,
+  "tvaDeductible": 5.120000000000001e-13
+ }
+}

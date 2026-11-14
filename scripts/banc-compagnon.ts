@@ -122,14 +122,14 @@ export interface Appel {
   role: Role; model: string; level: string; ms: number; entree: number | null; sortie: number | null; coutMicro: number | null; reserveMicro: number;
   etat: string; requetesWeb: number;
 }
-function ecrireJournal(fichier: string, cas: string, index: number, appel: Appel, simule: boolean) {
+function ecrireJournal(fichier: string, cas: string, index: number, appel: Appel, simule: boolean, voie = 'g2') {
   mkdirSync(path.dirname(fichier), { recursive: true });
   if (!existsSync(fichier)) writeFileSync(fichier, TETE_JOURNAL);
   const compte = appel.coutMicro ?? appel.reserveMicro;
   const cumul = sommeJournal(fichier) + (simule ? 0 : compte);
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const chf6 = (valeur: number) => (valeur / 1e6).toFixed(6);
-  appendFileSync(fichier, `| ${date} | ${cas} | 1 | g2:${appel.role} | ${index} | ${appel.model}@${appel.level} | ${appel.ms} ms | ${appel.entree ?? '?'} | ${appel.sortie ?? '?'} | ${chf6(compte)} | ${chf6(cumul)} | ${appel.etat}${appel.coutMicro === null && !simule ? ' (coût inconnu : réserve comptée)' : ''}${simule ? ' (SIMULÉ)' : ''} |\n`);
+  appendFileSync(fichier, `| ${date} | ${cas} | 1 | ${voie}:${appel.role} | ${index} | ${appel.model}@${appel.level} | ${appel.ms} ms | ${appel.entree ?? '?'} | ${appel.sortie ?? '?'} | ${chf6(compte)} | ${chf6(cumul)} | ${appel.etat}${appel.coutMicro === null && !simule ? ' (coût inconnu : réserve comptée)' : ''}${simule ? ' (SIMULÉ)' : ''} |\n`);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -139,6 +139,10 @@ export interface Arret { raison?: string }
 export interface EnvBanc {
   journal: string; plafondMissionMicro: number; plafondG2Micro: number; plafondPasseMicro: number;
   depensePasseMicro: number; arret: Arret; simule: boolean;
+  /** Voie qui écrit le journal (défaut g2) : préfixe de la colonne « variante » et du plafond de voie ; `plafondG2Micro` en est le plafond. */
+  voie?: string;
+  /** Mode du compagnon : `auto` (défaut, comme g2) ou `deep` (Approfondi : analyse et relecture à la réflexion haute). */
+  mode?: 'auto' | 'deep';
   /** Le transport réseau : injecté par les tests ; par défaut `fetch` vers generateContent. */
   envoyer: (model: string, restBody: Record<string, unknown>, signal: AbortSignal) => Promise<{ status: number; payload: any; retryAfter?: string | null }>;
   cle?: string;
@@ -163,9 +167,10 @@ export function creerTransport(env: EnvBanc, cellule: Cellule, cas: string, appe
     const { model: modele, body, level } = corpsPourCellule(role, model, bodyHarnais, cellule);
     const maxSortie = Number((body as any)?.generationConfig?.maxOutputTokens ?? 8192);
     const reserve = reserveAppel(modele, body, maxSortie);
-    const total = sommeJournal(env.journal), g2 = sommeJournal(env.journal, 'g2');
+    const voie = env.voie ?? 'g2';
+    const total = sommeJournal(env.journal), g2 = sommeJournal(env.journal, voie);
     const trop = total + reserve > env.plafondMissionMicro ? `plafond de la mission (${(env.plafondMissionMicro / 1e6).toFixed(2)} CHF)`
-      : g2 + reserve > env.plafondG2Micro ? `plafond de la voie g2 (${(env.plafondG2Micro / 1e6).toFixed(2)} CHF)`
+      : g2 + reserve > env.plafondG2Micro ? `plafond de la voie ${voie} (${(env.plafondG2Micro / 1e6).toFixed(2)} CHF)`
       : env.depensePasseMicro + reserve > env.plafondPasseMicro ? `plafond de la passe (${(env.plafondPasseMicro / 1e6).toFixed(2)} CHF)` : '';
     if (trop) { env.arret.raison = trop; throw new ArretBanc(trop); }
     if (reviewBodies && role === 'review') reviewBodies.push(bodyHarnais);
@@ -180,7 +185,7 @@ export function creerTransport(env: EnvBanc, cellule: Cellule, cas: string, appe
       fiche.ms = Date.now() - debut;
       fiche.etat = signal.aborted ? 'délai' : `réseau : ${String((erreur as Error).message).slice(0, 80)}`;
       fiche.coutMicro = null;
-      ecrireJournal(env.journal, cas, index, fiche, env.simule);
+      ecrireJournal(env.journal, cas, index, fiche, env.simule, voie);
       env.depensePasseMicro += reserve;
       throw erreur;
     }
@@ -189,7 +194,7 @@ export function creerTransport(env: EnvBanc, cellule: Cellule, cas: string, appe
       const message = String(reponse.payload?.error?.message ?? '');
       fiche.etat = `HTTP ${reponse.status}`;
       fiche.coutMicro = 0; // refusé avant génération : non facturé (le journal de g1 note 0 pour ses 429)
-      ecrireJournal(env.journal, cas, index, fiche, env.simule);
+      ecrireJournal(env.journal, cas, index, fiche, env.simule, voie);
       if (reponse.status === 429 && /spending cap/i.test(message)) { env.arret.raison = 'HTTP 429 : plafond de dépense mensuel du projet Google'; throw new ArretBanc(env.arret.raison); }
       throw parseGeminiError(reponse.status, modele, reponse.payload, reponse.retryAfter ?? null);
     }
@@ -200,7 +205,7 @@ export function creerTransport(env: EnvBanc, cellule: Cellule, cas: string, appe
     fiche.coutMicro = coutAppel(modele, reponse.payload);
     fiche.etat = String(reponse.payload?.candidates?.[0]?.finishReason ?? 'sans-fin');
     env.depensePasseMicro += fiche.coutMicro ?? reserve;
-    ecrireJournal(env.journal, cas, index, fiche, env.simule);
+    ecrireJournal(env.journal, cas, index, fiche, env.simule, voie);
     // Le modèle de la réponse doit être celui demandé (le banc ne se fie pas au seul corps envoyé).
     const servi = reponse.payload?.modelVersion;
     if (typeof servi === 'string' && !servi.includes(modele)) fiche.etat += ` (modèle servi : ${servi.slice(0, 40)})`;
@@ -245,7 +250,7 @@ export async function jouerCas(scenario: any, cellule: Cellule, env: EnvBanc): P
   const appels: Appel[] = [], reviewBodies: unknown[] = [];
   const debut = Date.now();
   try {
-    const result: any = await runBrewerHarness(c, scenario.question, scenario.history ?? [], creerTransport(env, cellule, scenario.id, appels, reviewBodies), { mode: 'auto' });
+    const result: any = await runBrewerHarness(c, scenario.question, scenario.history ?? [], creerTransport(env, cellule, scenario.id, appels, reviewBodies), { mode: env.mode ?? 'auto' });
     return {
       cas: scenario.id, cellule: cellule.id, ok: true, ms: Date.now() - debut, appels, question: scenario.question, advice: result.advice, proposal: result.proposal,
       trace: result.trace, evidence: result.evidence, review: result.review, tools: result.trace.map((t: any) => t.name), reviewBodies, model: result.model, reviewModel: result.reviewModel
@@ -289,18 +294,25 @@ export function lireArgs(args: string[]) {
   const une = (nom: string) => valeurs(nom)[0];
   const cellules = valeurs('--cellule').map(parseCellule);
   const nombre = (nom: string, defaut: number) => { const v = une(nom); const n = v === undefined ? defaut : Number(v); if (!(n > 0)) throw new Error(`${nom} attend un nombre positif.`); return n; };
+  // Une voie du tour 2 (--voie t2c) écrit dans le journal du tour, sous les plafonds du tour (14,5 CHF) et de la voie (4,5 CHF) ; g2 garde les siens.
+  const voie = une('--voie') ?? 'g2';
+  if (!/^[a-z0-9]{2,8}$/.test(voie)) throw new Error('--voie attend un préfixe court (lettres minuscules et chiffres).');
+  const mode = (une('--mode') ?? 'auto') as 'auto' | 'deep';
+  if (mode !== 'auto' && mode !== 'deep') throw new Error('--mode attend auto ou deep.');
+  const tour = voie !== 'g2';
+  const plafondMissionMax = tour ? 14.5 : PLAFOND_MISSION_CHF, plafondVoieMax = tour ? 4.5 : PLAFOND_G2_CHF;
   return {
-    simuler: args.includes('--simuler'), payant: args.includes('--payant'), cellules,
+    voie, mode, simuler: args.includes('--simuler'), payant: args.includes('--payant'), cellules,
     cas: (une('--cas') ?? CAS_FIXTURES.map((c: any) => c.id).join(',')).split(',').filter(Boolean),
-    sortie: une('--out') ?? `${MISSION_DIR}/voies/g2/sorties`, journal: une('--journal') ?? JOURNAL_MISSION,
-    plafondPasse: nombre('--plafond-passe', 0.5), plafondMission: Math.min(nombre('--plafond-mission', PLAFOND_MISSION_CHF), PLAFOND_MISSION_CHF),
-    plafondG2: Math.min(nombre('--plafond-g2', PLAFOND_G2_CHF), PLAFOND_G2_CHF), workers: nombre('--workers', 2)
+    sortie: une('--out') ?? `${MISSION_DIR}/voies/g2/sorties`, journal: une('--journal') ?? (tour ? `${MISSION_DIR}/journal-tour2.md` : JOURNAL_MISSION),
+    plafondPasse: nombre('--plafond-passe', 0.5), plafondMission: Math.min(nombre('--plafond-mission', plafondMissionMax), plafondMissionMax),
+    plafondG2: Math.min(nombre('--plafond-g2', plafondVoieMax), plafondVoieMax), workers: nombre('--workers', 2)
   };
 }
 export async function main(args: string[]) {
   const options = lireArgs(args);
   if (!options.cellules.length) throw new Error('Au moins une --cellule (ou « prod »).');
-  const base = { arret: {} as Arret, depensePasseMicro: 0, plafondMissionMicro: Math.round(options.plafondMission * 1e6), plafondG2Micro: Math.round(options.plafondG2 * 1e6), plafondPasseMicro: Math.round(options.plafondPasse * 1e6) };
+  const base = { voie: options.voie, mode: options.mode, arret: {} as Arret, depensePasseMicro: 0, plafondMissionMicro: Math.round(options.plafondMission * 1e6), plafondG2Micro: Math.round(options.plafondG2 * 1e6), plafondPasseMicro: Math.round(options.plafondPasse * 1e6) };
   let env: EnvBanc;
   if (options.simuler) env = { ...base, journal: path.join(options.sortie, 'journal-simule.md'), simule: true, envoyer: envoyerSimule() };
   else {
@@ -309,7 +321,7 @@ export async function main(args: string[]) {
     const cle = readLocalKey();
     if (!cle) throw new Error('Aucune clé Gemini locale : aucun appel.');
     env = { ...base, journal: options.journal, simule: false, envoyer: envoyerReseau(cle), cle };
-    console.log(`Journal commun : ${(sommeJournal(options.journal) / 1e6).toFixed(4)} CHF au total, dont g2 ${(sommeJournal(options.journal, 'g2') / 1e6).toFixed(4)} CHF. Plafonds : mission ${options.plafondMission}, g2 ${options.plafondG2}, passe ${options.plafondPasse}.`);
+    console.log(`Journal commun : ${(sommeJournal(options.journal) / 1e6).toFixed(4)} CHF au total, dont ${options.voie} ${(sommeJournal(options.journal, options.voie) / 1e6).toFixed(4)} CHF. Mode ${options.mode}. Plafonds : mission ${options.plafondMission}, ${options.voie} ${options.plafondG2}, passe ${options.plafondPasse}.`);
   }
   const resultats = await jouerPasse({ cellules: options.cellules, cas: options.cas, sortie: options.sortie, workers: options.workers }, env, ligne => console.log(ligne));
   const depense = resultats.reduce((somme, r) => somme + coutCas(r), 0);

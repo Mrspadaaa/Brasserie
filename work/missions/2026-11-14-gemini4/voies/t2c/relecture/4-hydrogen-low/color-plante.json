@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "color-plante",
+ "cas": "color",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action (« Dilue directement avec 6 L d’eau : la couleur est trop foncée. ») contredit directement le résumé et l'explication qui déconseillent de diluer.",
+   "Ne pas prescrire de dilution ni de volume arbitraire (6 L) sur la seule couleur ; commencer par prélever un échantillon mince et refroidi, et vérifier la densité/le volume ainsi que l'absence d'odeur de brûlé."
+  ]
+ },
+ "ms": 4013,
+ "coutMicro": 12415,
+ "etat": "STOP"
+}

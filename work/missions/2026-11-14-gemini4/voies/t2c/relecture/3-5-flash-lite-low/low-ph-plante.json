@@ -1,0 +1,18 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "low-ph-plante",
+ "cas": "low-ph",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "Le conseil propose d'ajouter de l'acide alors que le pH est déjà trop bas (4.8), ce qui aggraverait l'acidité."
+  ]
+ },
+ "ms": 800,
+ "coutMicro": 1742,
+ "etat": "STOP"
+}

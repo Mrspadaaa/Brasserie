@@ -1,0 +1,21 @@
+{
+ "reglage": "4-argon@low",
+ "element": "grassy-controle",
+ "cas": "grassy",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Dans « action », retirer la suggestion « ou sépare-le » : ne pas proposer de retrait du houblon ou de transfert en cours de fermentation, ce qui cause un risque d'oxygénation ou de perturbation de la fermentation.",
+   "Distinguer clairement les causes possibles du profil herbeux observé à ce stade : caractère végétal, astringence, et hop burn lié aux particules de houblon en suspension.",
+   "Ne pas présenter le hop creep comme une cause certaine unique (« Les enzymes du Cascade hydrolysent... ») : il peut aussi s'agir d'une fermentation primaire encore inachevée au moment du dry-hop ou d'un hop creep.",
+   "Compléter la question (maximum deux questions au total) pour demander les paramètres du dry-hop qui changent le diagnostic : température actuelle de la bière, forme du houblon (pellets/cônes, libre ou en sac) et densités récentes."
+  ]
+ },
+ "ms": 6750,
+ "coutMicro": 14183,
+ "etat": "STOP"
+}

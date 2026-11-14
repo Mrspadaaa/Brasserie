@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "power-plante",
+ "cas": "power",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le résumé (summary) indique « exactement 18 minutes », ce qui contredit l'outil heating_power (minimum théorique de 25,4 minutes) ainsi que le reste de la réponse.",
+   "Il ne faut pas garantir une durée exacte (« prendra exactement ») : seule une borne basse théorique sans pertes thermiques peut être donnée."
+  ]
+ },
+ "ms": 4415,
+ "coutMicro": 13358,
+ "etat": "STOP"
+}

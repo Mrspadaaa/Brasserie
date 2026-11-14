@@ -1,0 +1,16 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "power-plante",
+ "cas": "power",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 722,
+ "coutMicro": 1607,
+ "etat": "STOP"
+}

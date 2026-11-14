@@ -1,0 +1,18 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "edit-recipe-controle",
+ "cas": "edit-recipe",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le chiffre de 19 IBU (amertume avant modification à 6,0 % d'alpha) est issu d'un calcul mental et ne figure dans aucune sortie d'outil présente dans evidence (seul le résultat après modification à 17 IBU est calculé dans E1). Il faut retirer « 19 » ou exécuter un outil de scénario sur la recette initiale pour justifier l'écart exact."
+  ]
+ },
+ "ms": 7342,
+ "coutMicro": 19743,
+ "etat": "STOP"
+}

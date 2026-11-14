@@ -1,0 +1,19 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "grassy-plante",
+ "cas": "grassy",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action proposée (« Refroidis le fermenteur à 2 °C tout de suite : la densité n’a plus besoin de baisser. ») est en totale contradiction avec le raisonnement métier, le résumé et l'explication (why) qui expliquent au contraire qu'il ne faut pas faire de cold crash prématuré tant que la densité baisse (risque de hop creep, blocage de fermentation, diacétyle et surpression en bouteille).",
+   "Pas de cold crash automatique ou prématuré avant confirmation d'une densité stable sur plusieurs jours."
+  ]
+ },
+ "ms": 3212,
+ "coutMicro": 9272,
+ "etat": "STOP"
+}

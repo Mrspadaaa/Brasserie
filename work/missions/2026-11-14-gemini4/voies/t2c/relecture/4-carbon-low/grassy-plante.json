@@ -1,0 +1,20 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "grassy-plante",
+ "cas": "grassy",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Contradiction majeure et danger dans le champ 'action' : il ordonne de refroidir immédiatement à 2 °C ('Refroidis le fermenteur à 2 °C tout de suite : la densité n’a plus besoin de baisser'), alors que la densité baisse encore et que le reste du conseil ('summary', 'why', 'watch') explique justement qu'il ne faut surtout pas faire de cold crash avant une densité stable pour éviter l'arrêt de fermentation et la surpression.",
+   "Fausse certitude causale dans 'why' : présenter le hop creep comme un fait établi ('Les enzymes du Cascade hydrolysent...') au lieu d'une cause probable parmi d'autres (ex. fermentation primaire pas encore terminée lors de l'ajout du dry-hop).",
+   "Diagnostic incomplet sur le profil herbeux : il faut distinguer le végétal extrait d'une simple présence de particules en suspension / hop burn (courant à J+3 de dry-hop en fermentation active), et adapter la question (max 2 questions) pour connaître aussi la température actuelle de la bière et la forme/mode d'ajout du houblon (pellets libres, sac, cônes) afin d'ajuster la conduite à tenir."
+  ]
+ },
+ "ms": 11942,
+ "coutMicro": 14910,
+ "etat": "STOP"
+}

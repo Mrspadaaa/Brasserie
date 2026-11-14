@@ -1,0 +1,71 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "M1-non-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 159,50",
+   "recettes 1 910,50",
+   "solde −249,00",
+   "matières premières 263,00",
+   "loyer 1 200,00",
+   "aucune TVA inventée (non assujetti)",
+   "montant manquant de la levure signalé, non complété"
+  ],
+  "manques": []
+ },
+ "ms": 7883,
+ "coutMicro": 22347,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2159.5,
+  "totalRecettes": 1910.5,
+  "solde": -249,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1910.5,
+    "count": 3
+   },
+   {
+    "category": "Matières premières",
+    "total": 263,
+    "count": 4
+   },
+   {
+    "category": "Énergie",
+    "total": 101.2,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1200,
+    "count": 1
+   },
+   {
+    "category": "Emballage",
+    "total": 412.3,
+    "count": 1
+   },
+   {
+    "category": "Assurances",
+    "total": 183,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "Montant manquant (null) pour l'écriture A07 (Levure SafAle US-05 x10 du 2026-10-28, catégorie Matières premières) : le total des charges (2159.50 CHF), le sous-total Matières premières (263.00 CHF) et le solde (-249.00 CHF) sont incomplets et augmenteront en charge une fois le justificatif saisi.",
+   "Solde provisoire négatif de -249.00 CHF sur la période (hors A07), le loyer (1200.00 CHF) et les étiquettes (412.30 CHF) pesant pour 74.7 % des charges chiffrées.",
+   "La brasserie n'est pas assujettie à la TVA (assujettiTva=false) : aucune ventilation de TVA collectée ou déductible n'est effectuée, les montants restent suivis en TTC.",
+   "Synthèse basée uniquement sur les écritures fournies, sans vérification des pièces justificatives originales ni des dates effectives d'encaissement ou de paiement."
+  ],
+  "highlights": [
+   "Recettes totales de 1910.50 CHF réparties sur 3 ventes, dont 66.0 % issus de la vente de fûts au Café du Pont (V01 : 1260.00 CHF).",
+   "Charges chiffrées de 2159.50 CHF sur 7 écritures renseignées (8 écritures au total en incluant A07)."
+  ]
+ }
+}

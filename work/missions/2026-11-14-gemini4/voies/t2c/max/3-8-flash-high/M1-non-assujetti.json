@@ -1,0 +1,71 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "M1-non-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 159,50",
+   "recettes 1 910,50",
+   "solde −249,00",
+   "matières premières 263,00",
+   "loyer 1 200,00",
+   "aucune TVA inventée (non assujetti)",
+   "montant manquant de la levure signalé, non complété"
+  ],
+  "manques": []
+ },
+ "ms": 24789,
+ "coutMicro": 35286,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2159.5,
+  "totalRecettes": 1910.5,
+  "solde": -249,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1910.5,
+    "count": 3
+   },
+   {
+    "category": "Loyer",
+    "total": 1200,
+    "count": 1
+   },
+   {
+    "category": "Emballage",
+    "total": 412.3,
+    "count": 1
+   },
+   {
+    "category": "Matières premières",
+    "total": 263,
+    "count": 4
+   },
+   {
+    "category": "Assurances",
+    "total": 183,
+    "count": 1
+   },
+   {
+    "category": "Énergie",
+    "total": 101.2,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "L'écriture A07 (Levure SafAle US-05 x10) ne comporte aucun montant (null) : les charges et le solde de la période sont donc incomplets et provisoires.",
+   "Statut non assujetti confirmé : aucune TVA collectée ni TVA déductible n'est ventilée ou récupérée.",
+   "Le solde net provisoire est déficitaire de -249.00 CHF sur le mois d'octobre 2026, principalement sous l'effet du loyer fixe (1200.00 CHF) et du stock d'étiquettes (412.30 CHF)."
+  ],
+  "highlights": [
+   "Recettes totales enregistrées : 1'910.50 CHF réparties sur 3 postes (fûts, marché et vente en ligne).",
+   "Charges identifiées : 2'159.50 CHF (hors écriture A07 manquante).",
+   "Nécessité de récupérer la facture de l'écriture A07 pour arrêter définitivement les comptes du mois d'octobre."
+  ]
+ }
+}

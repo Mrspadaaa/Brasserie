@@ -1,0 +1,39 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "D1-calage",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 31 % (±2)",
+   "gravité surveiller ou agir (ni normal, ni urgent)",
+   "cause : température trop basse",
+   "cause : levure (quantité, vitalité, réhydratation)",
+   "action : réchauffer ou remuer"
+  ],
+  "manques": []
+ },
+ "ms": 3935,
+ "coutMicro": 9055,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation bloquée (atténuation apparente de 31,0 % au jour 8, stagnation à 1.040 pour une cible à 1.012).",
+  "severity": "agir",
+  "causes": [
+   {
+    "cause": "Température de fermentation trop basse (15 °C constants) provoquant la dormance précoce de la SafAle US-05 (plage optimale 18-22 °C).",
+    "probability": 0.75,
+    "action": "Déplacer le fermenteur dans un local à 20 °C et remettre la levure en suspension par un léger mouvement circulaire sans oxygéner, puis reprendre la densité dans 48 h."
+   },
+   {
+    "cause": "Perte de viabilité cellulaire due au saupoudrage direct sans réhydratation à 17 °C sur 24 L à 1.058.",
+    "probability": 0.2,
+    "action": "Si la densité reste à 1.040 après 48 h à 20 °C, réhydrater un nouveau sachet de 11,5 g de SafAle US-05 dans de l'eau stérile à 25-27 °C et l'ensemencer."
+   }
+  ],
+  "apparentAttenuationPct": 31,
+  "immediateAction": "Monter le fermenteur à 20 °C et remettre doucement les lies en suspension."
+ }
+}

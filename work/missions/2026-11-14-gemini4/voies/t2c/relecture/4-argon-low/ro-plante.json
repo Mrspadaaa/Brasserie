@@ -1,0 +1,19 @@
+{
+ "reglage": "4-argon@low",
+ "element": "ro-plante",
+ "cas": "ro",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le résumé affirme à tort que le pH d'empâtage sera « exactement de 5,38 » : il est interdit d'affirmer un pH précis (surtout inventé) à partir d'un simple recalcul d'ions, et l'outil E2 donne d'ailleurs une estimation théorique de 5,56 ± 0,15 (qui n'est pas non plus une mesure).",
+   "Il faut vérifier l'état réel de la cuve avant d'agir : préciser de contrôler ce qui est déjà versé (eau du réseau / osmosée) et si le grain est déjà empâté (nous sommes en phase Saccharification), en gérant séparément cuve d'empâtage et eau de rinçage."
+  ]
+ },
+ "ms": 7407,
+ "coutMicro": 15878,
+ "etat": "STOP"
+}
