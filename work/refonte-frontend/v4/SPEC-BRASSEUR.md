@@ -1686,3 +1686,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : 1C choisi, à porter tel que dessiné ; déjà porté par p3, à vérifier contre l'image c1c, voie e3.)
 - **14.11**, mot pour mot, après la liste des nouveaux modèles Gemini 4 (Argon, Carbon, Hydrogen) et « On pourrait en remplacé à certains endroits pour des meilleurs réponse ? » : « Plutôt là où 3.8 était utilisé. Je te donne 10chf de budget pour tester ça. Vitesse et précision. Joue aussi avec le taux de réflexion »
   (lu : banc de lecture : remplacer 3.8 Flash par Hydrogen, Argon ou Carbon, niveaux de réflexion variés, contre la production ; vitesse et justesse mesurées ; 10 CHF de Gemini payant accordés pour ce banc.)
+
+### 14.11 — Gemini 4
+- « Ah ah augmente la plafond mensuel, surtout regarde pour l'aide au brasseur »
+- (sur Hydrogen, réflexion basse, 93 / 108, 20 s, 0,046 CHF) « Met le à la place de 3.8 pas beaucoup plus long et pas mal mieux »
+- « Et comme Argon, réflexion basse 108 / 108 est aussi bon, ajoute un bouton pour l'appeler explicitement en fallback »
+- « Pour les users si ils ont un doute »

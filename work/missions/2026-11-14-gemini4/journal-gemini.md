@@ -113,3 +113,36 @@ Une ligne par appel, écrite juste après lui. Aucune valeur des documents. Coû
 | 2026-11-14 15:35:39 | doc2 | 1 | Csv8 | 3 | gemini-4-argon@low | 352 ms | ? | ? | 0.000000 | 4.027338 | HTTP 429 |
 | 2026-11-14 15:35:39 | doc6 | 1 | Csv8 | 3 | gemini-4-argon@low | 194 ms | ? | ? | 0.000000 | 4.027338 | HTTP 429 |
 | 2026-11-14 15:35:39 | doc10 | 1 | Csv8 | 3 | gemini-4-argon@low | 210 ms | ? | ? | 0.000000 | 4.027338 | HTTP 429 |
+| 2026-11-14 18:07:26 | doc2 | 1 | Csv8 | 3 | gemini-4-argon@low | 19106 ms | 5247 | 1328 | 0.029718 | 4.057056 | STOP |
+| 2026-11-14 18:08:31 | doc6 | 1 | Csv8 | 3 | gemini-4-argon@low | 65496 ms | 5247 | 4042 | 0.063643 | 4.120699 | STOP |
+| 2026-11-14 18:09:48 | doc10 | 1 | Csv8 | 3 | gemini-4-argon@low | 76521 ms | 7468 | 5651 | 0.089308 | 4.210007 | STOP |
+| 2026-11-14 18:10:40 | doc12 | 1 | Csv8 | 3 | gemini-4-argon@low | 52545 ms | 7468 | 4849 | 0.079283 | 4.289290 | STOP |
+| 2026-11-14 18:11:14 | doc14 | 1 | Csv8 | 3 | gemini-4-argon@low | 33916 ms | 5247 | 3223 | 0.053405 | 4.342695 | STOP |
+| 2026-11-14 18:12:03 | doc16 | 1 | Csv8 | 3 | gemini-4-argon@low | 48717 ms | 5233 | 3174 | 0.052758 | 4.395453 | STOP |
+| 2026-11-14 18:12:30 | doc2 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 12509 ms | 5247 | 2580 | 0.034026 | 4.429479 | STOP |
+| 2026-11-14 18:12:53 | doc6 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 22147 ms | 5247 | 5954 | 0.065657 | 4.495136 | STOP |
+| 2026-11-14 18:13:17 | doc10 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 24468 ms | 7468 | 7467 | 0.084006 | 4.579142 | STOP |
+| 2026-11-14 18:13:40 | power | 1 | g2:analysis | 1 | gemini-3.8-flash@low | 2373 ms | 10750 | 35 | 0.020485 | 4.599627 | STOP |
+| 2026-11-14 18:13:40 | edit-recipe | 1 | g2:analysis | 1 | gemini-3.8-flash@low | 2662 ms | 16730 | 94 | 0.032250 | 4.631877 | STOP |
+| 2026-11-14 18:13:43 | doc12 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 25418 ms | 7468 | 6634 | 0.076197 | 4.655339 | STOP |
+| 2026-11-14 18:13:44 | edit-recipe | 1 | g2:analysis | 2 | gemini-3.8-flash@low | 3635 ms | 19980 | 206 | 0.039394 | 4.747468 | STOP |
+| 2026-11-14 18:13:44 | power | 1 | g2:analysis | 2 | gemini-3.8-flash@low | 4117 ms | 10961 | 232 | 0.022727 | 4.770195 | STOP |
+| 2026-11-14 18:13:46 | power | 1 | g2:review | 3 | gemini-3.8-flash@low | 2031 ms | 4197 | 24 | 0.008095 | 4.778290 | STOP |
+| 2026-11-14 18:13:46 | edit-recipe | 1 | g2:review | 3 | gemini-3.8-flash@low | 2309 ms | 7060 | 24 | 0.013463 | 4.791753 | STOP |
+| 2026-11-14 18:13:47 | edit-recipe | 1 | g2:review | 4 | gemini-3.8-flash@low | 3006 ms | 7354 | 24 | 0.014014 | 4.805767 | STOP |
+| 2026-11-14 18:13:58 | doc14 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 15544 ms | 5247 | 4650 | 0.053432 | 4.708771 | STOP |
+| 2026-11-14 18:14:12 | ro | 1 | g2:analysis | 1 | gemini-3.8-flash@low | 2069 ms | 10751 | 39 | 0.020524 | 4.879723 | STOP |
+| 2026-11-14 18:14:12 | low-ph | 1 | g2:analysis | 1 | gemini-3.8-flash@low | 2250 ms | 10747 | 25 | 0.020385 | 4.900108 | STOP |
+| 2026-11-14 18:14:13 | edit-recipe | 1 | g2:analysis | 1 | gemini-4-hydrogen@low | 2962 ms | 16680 | 392 | 0.034950 | 4.935058 | STOP |
+| 2026-11-14 18:14:15 | ro | 1 | g2:analysis | 2 | gemini-3.8-flash@low | 3384 ms | 11864 | 250 | 0.024589 | 4.959647 | STOP |
+| 2026-11-14 18:14:16 | low-ph | 1 | g2:analysis | 2 | gemini-3.8-flash@low | 4030 ms | 10893 | 216 | 0.022450 | 4.982097 | STOP |
+| 2026-11-14 18:14:17 | ro | 1 | g2:review | 3 | gemini-3.8-flash@low | 1817 ms | 5082 | 24 | 0.009754 | 4.991851 | STOP |
+| 2026-11-14 18:14:18 | low-ph | 1 | g2:review | 3 | gemini-3.8-flash@low | 1767 ms | 4121 | 13 | 0.007849 | 4.999700 | STOP |
+| 2026-11-14 18:14:18 | doc16 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 20080 ms | 5233 | 4908 | 0.055825 | 4.764596 | STOP |
+| 2026-11-14 18:14:18 | low-ph | 1 | g2:review | 4 | gemini-3.8-flash@low | 2363 ms | 4415 | 24 | 0.008504 | 5.064029 | STOP |
+| 2026-11-14 18:14:19 | ro | 1 | g2:analysis | 1 | gemini-4-hydrogen@low | 153 ms | ? | ? | 0.000000 | 5.064029 | HTTP 429 |
+| 2026-11-14 18:14:19 | low-ph | 1 | g2:analysis | 1 | gemini-4-hydrogen@low | 1987 ms | 10880 | 122 | 0.021544 | 5.085573 | STOP |
+| 2026-11-14 18:14:25 | edit-recipe | 1 | g2:analysis | 2 | gemini-4-hydrogen@low | 11821 ms | 23417 | 472 | 0.048332 | 5.133905 | STOP |
+| 2026-11-14 18:14:55 | doc1 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 287 ms | ? | ? | 0.000000 | 5.133905 | HTTP 429 |
+| 2026-11-14 18:14:56 | doc5 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 242 ms | ? | ? | 0.000000 | 5.133905 | HTTP 429 |
+| 2026-11-14 18:14:56 | doc11 | 1 | Csv8 | 3 | gemini-4-hydrogen@low | 236 ms | ? | ? | 0.000000 | 5.133905 | HTTP 429 |

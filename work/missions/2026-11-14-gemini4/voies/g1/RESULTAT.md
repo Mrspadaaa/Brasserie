@@ -1,4 +1,21 @@
-ECHEC — critère « jugement sur la moitié paire » : grille impaire mesurée (4,03 CHF), puis HTTP 429 (plafond de dépense mensuel du projet Google) ; Argon@low prometteur, non jugé
+ECHEC — second tirage et Argon@medium (paires) non faits : HTTP 429 (plafond mensuel Google) revenu à 5,13 CHF de cumul ; Hydrogen@low jugé sur les paires, Argon@low non confirmé
+
+## Bilan de la reprise (à lire d'abord)
+- **Hydrogen@low tient sur les paires** (132/152 contre 129 pour 3.8@low, 0 perdue, 0 inventée, 8/8 totaux, p90 3ᵉ lecture 24,9 s), après les impairs (93/108 contre 78). Cumul des deux moitiés : 225/260 contre 207/260 (+18 lignes). Le choix du brasseur est donc soutenu par les mesures ; surcoût de la 3ᵉ lecture réel (+49 % par pièce sur les impairs, +56 % sur les paires, hors tarifs 1.12 : Hydrogen est stable).
+- **Argon@low : non retenu**. 108/108 sur les impairs, mais 122/152 sur les paires (sous le témoin 129) et 3ᵉ p50 50 s : le gain impair était du bruit ou un effet de pièces ; prix doublé au 1.12 (0,92 CHF pour 8 pièces).
+- **Production** : `functions/src/models.ts` (commit fffd62a6, h1) fait déjà de Hydrogen en réflexion basse la 3ᵉ lecture, repli une fois sur la 3.8 (60 s de délai, 12 000 jetons de sortie). **Aucun diff `aiTask` à proposer** : ce que mesure le banc est ce qui est déployé en code. Rien de déployé par cette voie.
+- Non fait : Argon@medium sur les paires ; second tirage (Hydrogen@low, impairs : 3 lectures sur 3 en 429, 0 mesure). Les lignes 429 du journal (0 CHF) ne sont pas des mesures. Pour reprendre : lever le plafond Google une seconde fois (il est atteint vers 5,1 CHF de dépense totale, g2 comprise), puis `--fort gemini-4-hydrogen@low --docs $ODD --out …-odd2` (≈ 0,4 CHF).
+- Coût de cette reprise : 0,737 CHF (Argon@low pairs 0,368 ; Hydrogen@low pairs 0,369), sur 2 CHF. Cumul journalisé de la mission : 5,13 CHF au dernier relevé (g2 y écrit aussi ; 4,03 avant la reprise).
+- Limites : un tirage par cellule, 8 pièces, 6 3ᵉ lectures chacune ; un écart de 3 lignes sur 152 n'est pas un gain, seulement l'absence de recul. Le détail par pièce n'a pas été relu : aucun document en recul n'est affirmé (lignes perdues 0).
+
+## REPRISE (14.11 soir, plafond Google relevé, aucun 429) — moitié paire, 8 pièces, même 3ᵉ lecture prêtée (Flash-Lite identiques)
+Source : `voies/g1/tableau-pairs.md` ; journal : `journal-gemini.md`.
+| cellule | lignes justes /152 | champs /96 | perdues | inventées | total TTC juste | faux verts | 3ᵉ p50 / p90 | parcours p50 / p90 | coût par pièce CHF | coût par 3ᵉ CHF |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 3.8@low (témoin, production) | 129 | 90 | 0 | 0 | 8/8 | 0 | 16,1 / 19,6 s | 20,7 / 28,9 s | 0,0443 | 0,0284 |
+| **Hydrogen@low** (choix du brasseur) | **132** (+3) | 92 (+2) | 0 | 0 | 8/8 | 0 | 21,1 / 24,9 s | 24,6 / 34,4 s | 0,0692 (+56 %) | 0,0615 |
+| Argon@low | 122 (−7) | 94 (+4) | 0 | 0 | 8/8 | 0 | 50,6 / 71,0 s | 48,1 / 77,5 s | 0,0691 (0,921 au 1.12 pour 8 pièces) | 0,0614 |
+Lecture : sur les paires, Hydrogen@low ne perd rien contre le témoin (+3 lignes sur 152, bruit probable) ; **le gain d'Argon@low vu sur les impairs (108 contre 78) ne se confirme pas** (122 contre 129 : sous le témoin) et il est 2 à 3 fois plus lent. Le surcoût d'Hydrogen sur la 3ᵉ lecture (0,0615 contre 0,0284 CHF) est plus lourd que sur les impairs (+49 % par pièce).
 
 ## Mesures (14.11, exécutant)
 Cumul réel journalisé : **4,027 CHF** sur 10 (sonde 0,052 ; P0 témoin 0,681 ; 12 cellules impaires jusqu'à 4,027 ; P2 : 0 CHF, refusé). Journal : `work/missions/2026-11-14-gemini4/journal-gemini.md`. Aucune commande relancée. La sonde Argon@low a été acceptée par `generateContent` (pas de 400) ; doc21 n'a pas de 3ᵉ lecture, la sonde a donc été refaite sur doc1 (Argon@low 22,9 s, 0,0346 CHF).
