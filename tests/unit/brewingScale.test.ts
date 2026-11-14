@@ -91,9 +91,16 @@ describe('Mise à l’échelle', () => {
     expect(r.scaledRecipe.hops[1].weightG).toBe(900);
   });
 
-  it('ensemence par palier, pas au prorata', () => {
+  it('les sachets suivent la proportion de la recette, comme le flacon (plus de palier d’un sachet pour 20 L)', () => {
+    // Fixture : 2 sachets pour 30 L. À 60 L : 4 sachets. Ancienne règle : ceil(60/20) = 3.
     const r = BrewingMath.scaleRecipe(recipe(), 60, bh(), bh());
-    expect(r.scaledRecipe.yeast?.qty).toBe(3); // 60 L ➔ 3 sachets
+    expect(r.scaledRecipe.yeast?.qty).toBe(4);
+  });
+
+  it('2 sachets pour 20 L font 5 sachets pour 50 L, et 1,5 à 15 L (non entier : l’écran dit « à arrondir »)', () => {
+    const base = recipe({ volumeL: 20, yeast: { name: 'W-34/70', form: 'sèche', qty: 2, unit: 'sachet' } } as Partial<Recipe>);
+    expect(BrewingMath.scaleRecipe(base, 50, bh(), bh()).scaledRecipe.yeast?.qty).toBe(5);
+    expect(BrewingMath.scaleRecipe(base, 15, bh(), bh()).scaledRecipe.yeast?.qty).toBe(1.5);
   });
 
   it('ne fabrique pas de levure quand la recette n’en déclare pas', () => {

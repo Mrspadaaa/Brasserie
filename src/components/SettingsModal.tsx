@@ -38,6 +38,8 @@ interface SettingsModalProps {
   config: AppConfig;
   onConfigUpdated: (newConfig: AppConfig) => void;
   onOpenAuditLogs: () => void;
+  /** Onglet à montrer à l'ouverture (ex. « Brasserie » depuis le lancement d'un brassin) ; absent : l'onglet courant. */
+  ouvertSur?: 'fiscal' | 'brewhouse' | 'security' | 'backup';
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -45,7 +47,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   config,
   onConfigUpdated,
-  onOpenAuditLogs
+  onOpenAuditLogs,
+  ouvertSur
 }) => {
   const [activeTab, setActiveTab] = useState<'fiscal' | 'brewhouse' | 'security' | 'backup'>('fiscal');
   const [formData, setFormData] = useSyncedDraft(config, isOpen);
@@ -60,6 +63,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const systemInventory = useStorageValue(StorageService.getStocks);
   const [sourceBatchId,setSourceBatchId] = useState<string>();
   useEffect(()=>{if(isOpen) setSavedSuccess(false);},[isOpen]);
+  useEffect(()=>{if(isOpen && ouvertSur) setActiveTab(ouvertSur);},[isOpen, ouvertSur]);
 
   if (!isOpen) return null;
 

@@ -45,6 +45,40 @@ describe('Nouveau brassin (uv4) : volume de la brasserie, capacités lues, sans 
     expect(screen.getByRole('button', { name: /^Lancer à 60 L$/ })).toBeEnabled();
   });
 
+  it('au-delà du fermenteur : dit en mots, ton attention, sans « < » ni refus (passe 3)', () => {
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    fireEvent.click(screen.getByRole('button', { name: /^Volume de la recette, 60 L/ }));
+    const ligne = screen.getByText(/^fermenteur/);
+    expect(ligne).toHaveTextContent('fermenteur 30 L, trop petit pour 60 L');
+    expect(ligne.textContent).not.toContain('<');
+    expect(ligne.closest('p')).toHaveClass('text-attention');
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('« Ce qui manque » : liste sur place des ingrédients dont le stock est sous la dose à N L, lecture seule (passe 3)', () => {
+    vi.spyOn(StorageService, 'getStocks').mockReturnValue({ rawMaterials: [{ name: 'Pils', currentStock: 3, unit: 'kg' }], cleaning: [], equipment: [] } as unknown as ReturnType<typeof StorageService.getStocks>);
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    expect(screen.queryByRole('region', { name: 'Ce qui manque' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /Ce qui manque/ }));
+    const liste = screen.getByRole('region', { name: 'Ce qui manque' });
+    // 12 kg pour 60 L, à 24 L : 4,8 kg ; en stock 3 kg ; il manque 1,8 kg.
+    expect(liste).toHaveTextContent('Pils');
+    expect(liste).toHaveTextContent('4,8 kg');
+    expect(liste).toHaveTextContent('en stock 3 kg');
+    expect(liste).toHaveTextContent('manque 1,8 kg');
+    expect(StorageService.setUiState).not.toHaveBeenCalled();
+  });
+
+  it('« Ce qui manque » : « Rien ne manque » quand le stock couvre la dose', () => {
+    vi.spyOn(StorageService, 'getStocks').mockReturnValue({ rawMaterials: [{ name: 'Pils', currentStock: 20, unit: 'kg' }], cleaning: [], equipment: [] } as unknown as ReturnType<typeof StorageService.getStocks>);
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    fireEvent.click(screen.getByRole('button', { name: /Ce qui manque/ }));
+    expect(screen.getByRole('region', { name: 'Ce qui manque' })).toHaveTextContent('Rien ne manque pour 24 L');
+  });
+
   it('sans capacité renseignée : « contenance à renseigner › », pas de fermenteur inventé', () => {
     const sansMateriel = { ...config, brewhouses: [{ ...actuel, equipment: undefined }] } as unknown as AppConfig;
     vi.spyOn(StorageService, 'getConfig').mockReturnValue(sansMateriel);
@@ -75,7 +109,11 @@ describe('Nouveau brassin (uv4) : volume de la brasserie, capacités lues, sans 
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[recette]} onClose={close} />);
     fireEvent.click(screen.getByText('Préparer un brassin'));
+    // Passe 3 : « Ce qui manque » déplie la liste sur place ; le lien Stocks › Courses est dedans.
     fireEvent.click(screen.getByRole('button', { name: /Ce qui manque/ }));
+    expect(screen.getByRole('region', { name: 'Ce qui manque' })).toBeVisible();
+    expect(vu).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /Stocks › Courses/ }));
     window.removeEventListener('affinee:ouvrir-stocks', vu);
     expect(vu).toHaveBeenCalledOnce();
     expect(StorageService.setUiState).toHaveBeenCalledWith('stocks_subtab', 'courses');

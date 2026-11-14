@@ -48,8 +48,10 @@ describe('prepare and schedule a reusable recipe', () => {
   it('keeps a scheduled legacy recipe uncreated until its installation is explicitly adopted', () => {
     const onCreated = vi.fn(), close = vi.fn();
     render(<QuickActionModal isOpen recipes={[sourceRecipe]} onClose={close} initialScreen="brew-batch" onBatchCreated={onCreated} />);
+    // Passe 3 : dit avant le geste ; Lancer désactivé tant que la recette n'est pas adaptée.
+    expect(screen.getByText(/Recette à adapter à .* avant de lancer/)).toBeVisible();
+    expect(create()).toBeDisabled();
     fireEvent.click(create());
-    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
     expect(onCreated).not.toHaveBeenCalled();

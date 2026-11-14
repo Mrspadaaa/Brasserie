@@ -45,8 +45,8 @@ import { montantChf } from '../domain/finance/ledger';
 import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
 import type { ApercuDepense } from '../ui/depense/types';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreRepo';
-import { BrewLaunchPanel, BrewLaunchPied } from '../ui/BrewLaunchPanel';
-import { profilsDeLancement, recetteAdaptee, volumeDeDepart } from '../domain/brewLaunch';
+import { BrewLaunchAdoption, BrewLaunchManque, BrewLaunchPanel, BrewLaunchPied } from '../ui/BrewLaunchPanel';
+import { apercuLancement, manquesLancement, profilsDeLancement, recetteAdaptee, volumeDeDepart } from '../domain/brewLaunch';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -172,6 +172,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   /* La brasserie choisie pour ce lancement ; absente = la brasserie active. La date du lot reste « à définir » (la fiche du brassin la change). */
   const [brewhouseId, setBrewhouseId] = useState<string | undefined>();
   const [manqueNote, setManqueNote] = useState(false);
+  const [manqueOuvert, setManqueOuvert] = useState(false);
   const [brewSaving, setBrewSaving] = useState(false);
   const brewBusy = useRef(false);
   const pendingBatch = useRef<Batch | undefined>(undefined);
@@ -182,6 +183,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     setBatchVolumeL(volumeAuRepos(selected));
     setBrewhouseId(undefined);
     setManqueNote(false);
+    setManqueOuvert(false);
     setBrewError('');
     pendingBatch.current = undefined;
   }, [isOpen, initialRecipeId]);
@@ -578,6 +580,20 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if(import.meta.env.DEV && !apercuDepense && new URLSearchParams(location.search).has('depense')) return null;
   if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined} onOpenExpense={onOpenExpense}/>;
 
+  /* Nouveau brassin : dit AVANT le geste ce qui empêcherait de lancer (recette sans le matériel de la brasserie choisie), et lit ce qui manque à ce volume. */
+  const recetteLancement = screen === 'brew-batch' ? recipes.find((r) => r.id === selectedRecipeId) : undefined;
+  const profilLancement = brasserieChoisie ?? brasserieActive;
+  const adoptionTexte = recetteLancement && profilLancement ? recipeInstallationAdoptionIssue(recetteLancement, profilLancement) : undefined;
+  const adoption = adoptionTexte && profilLancement
+    ? (profilLancement.equipment
+      ? { texte: `Recette à adapter à ${profilLancement.name} avant de lancer`, modifiable: true }
+      : { texte: `Matériel de ${profilLancement.name} à renseigner, puis recette à adapter, avant de lancer`, modifiable: false })
+    : undefined;
+  let manques: ReturnType<typeof manquesLancement> = [];
+  if (manqueOuvert && recetteLancement && brasserieActive) {
+    try { manques = manquesLancement(apercuLancement(recetteLancement, batchVolumeL, brasserieActive, brasserieChoisie).etapes, StorageService.getStocks().rawMaterials); } catch { manques = []; }
+  }
+
   return (
     <>
       <ModalShell open={isOpen} onClose={fermer} size={screen === 'quick-sale' ? 'xl' : 'lg'} labelledBy={titleId} abovePage={screen === 'brew-batch'} plein={screen === 'brew-batch'} dismissible={!caisseOccupee && !brewSaving}>
@@ -588,6 +604,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             tight ? 'min-h-9 px-2 py-0.5' : 'min-h-9 px-3 py-0.5'
           }`}
         >
+          <div className={`flex flex-1 min-w-0 items-center justify-between ${screen === 'brew-batch' ? 'mx-auto w-full max-w-2xl' : ''}`}>
           <div className="flex items-center space-x-2">
             {screen !== 'menu' && initialScreen === 'menu' && (
               <button
@@ -643,6 +660,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
           >
             <X className="w-4 h-4" />
           </button>
+          </div>
         </div>
 
         {/* Hidden File Input for Document Scan */}
@@ -1223,21 +1241,32 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </fieldset>
           )}
           {screen === 'brew-batch' && !!recipes.length && <div className="mx-auto w-full max-w-2xl sticky bottom-0 -mx-3 -mb-3 px-3 pb-3 pt-2 bg-cave-950 border-t border-cave-800 space-y-1.5">
+              {adoption && <BrewLaunchAdoption texte={adoption.texte} onModifier={adoption.modifiable ? () => {
+                /* L'assistant s'ouvre sur cette recette (App prend l'événement) ; la modale se ferme devant lui. */
+                const pris = !window.dispatchEvent(new CustomEvent('affinee:modifier-recette', { cancelable: true, detail: { recipeId: selectedRecipeId } }));
+                if (pris) onClose(); else setBrewError('Ouvre la fiche de la recette, puis « Modifier la recette » et « Adapter à mon matériel actuel ».');
+              } : undefined} />}
               {brewError && <p role="alert" className="text-2xs text-alert-strong">{brewError}</p>}
-              {manqueNote && <p role="status" className="text-2xs text-cave-400">Ce qui manque se lit dans Stocks › Courses ; il n’est pas encore calculé pour ce volume.</p>}
+              {manqueNote && <p role="status" className="text-2xs text-cave-400">Stocks › Courses ne s’ouvre pas ici.</p>}
               <BrewLaunchPied
                 volumeL={batchVolumeL}
-                disabled={brewSaving || !selectedRecipeId || !Number.isFinite(batchVolumeL) || batchVolumeL <= 0}
+                disabled={brewSaving || !selectedRecipeId || !Number.isFinite(batchVolumeL) || batchVolumeL <= 0 || !!adoption}
                 saving={brewSaving}
                 pending={!!pendingBatch.current}
-                onManque={() => {
+                manqueOuvert={manqueOuvert}
+                onManque={() => setManqueOuvert((o) => !o)}
+                onLancer={() => void handleLaunchBrew()}
+              />
+              {manqueOuvert && <BrewLaunchManque
+                volumeL={batchVolumeL}
+                manques={manques}
+                onCourses={() => {
                   StorageService.setUiState('stocks_subtab', 'courses');
                   const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-stocks', { cancelable: true, detail: { onglet: 'courses' } }));
                   setManqueNote(!pris);
                   if (pris) onClose();
                 }}
-                onLancer={() => void handleLaunchBrew()}
-              />
+              />}
             </div>
           }
         </div>

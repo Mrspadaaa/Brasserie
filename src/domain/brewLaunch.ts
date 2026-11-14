@@ -10,6 +10,7 @@
 import type { BrewhouseProfile, Fermentable, HopIngredient, Recipe } from '../types';
 import { scaleBrewBudgetRecipe, scaleBrewRecipeScenario } from './finance/brewBudgetScaling';
 import { nombreFr } from './nombreAffiche';
+import { Units } from '../services/units';
 
 export type MatiereLancement = 'malt' | 'eau' | 'houblon' | 'levure';
 export type GroupeLancement = 'brassage' | 'fermentation';
@@ -224,4 +225,57 @@ export function apercuLancement(recette: Recipe, volumeL: number, actif: Brewhou
     } catch { /* eau inconnue : l'étape n'affiche pas de litres */ }
   }
   return { adaptee, etapes: etapesLancement(adaptee, eau) };
+}
+
+/** L'unité accordée à la quantité : « 5 sachets », mais « 1,58 flacon » et « 1 sachet » (pluriel dès 2). Les unités de poids et de volume ne bougent pas. */
+export function uniteAccordee(quantite: number | undefined, unite: string | undefined): string | undefined {
+  if (!unite) return unite;
+  const u = unite.trim();
+  if (fini(quantite) && quantite >= 2 && UNITE_ENTIERE.test(u) && !/s$/i.test(u)) return `${u}s`;
+  return u;
+}
+
+export interface ManqueLancement {
+  nom: string;
+  /** Ce que demande le lancement à ce volume (somme de ses moments), dans l'unité de la recette. */
+  dose: number;
+  unite: string;
+  /** Le stock indiqué, converti dans la même unité. */
+  enStock: number;
+  manque: number;
+}
+
+/** Une ligne de stock, vue de ce module (un `StockItem` convient). */
+export interface LigneStock { name: string; currentStock: number; unit: string }
+
+/**
+ * Ce qui manque pour ce volume : les ingrédients de la frise (malts, houblons, levure) dont le stock indiqué est sous la dose.
+ * Même lecture que `BrewIngredients.tsx` : l'ingrédient se retrouve par son nom (casse et espaces ignorés), le stock se convertit dans l'unité
+ * de la dose. Un ingrédient sans fiche de stock, ou d'une unité qui ne se convertit pas, n'est pas compté (l'inconnu n'est jamais 0).
+ * La dose d'une même matière sur plusieurs moments se cumule. Aucune écriture, aucun calcul de stock neuf.
+ */
+export function manquesLancement(
+  etapes: EtapeLancement[],
+  stock: LigneStock[]
+): ManqueLancement[] {
+  const doses = new Map<string, { nom: string; dose: number; unite: string }>();
+  const ajoute = (nom: string, dose: number, unite: string) => {
+    if (!fini(dose) || dose <= 0) return;
+    const cle = `${nom.trim().toLowerCase()}|${unite}`;
+    const cur = doses.get(cle);
+    if (cur) cur.dose += dose; else doses.set(cle, { nom, dose, unite });
+  };
+  for (const e of etapes) {
+    for (const p of e.pastilles) ajoute(p.nom, p.quantite, p.unite);
+    if (e.levure?.quantite != null && e.levure.unite) ajoute(e.levure.nom, e.levure.quantite, e.levure.unite);
+  }
+  const manques: ManqueLancement[] = [];
+  for (const d of doses.values()) {
+    const ligne = stock.find((s) => s.name.trim().toLowerCase() === d.nom.trim().toLowerCase() && Units.convert(1, s.unit, d.unite) != null);
+    if (!ligne) continue;
+    const enStock = Units.convert(ligne.currentStock, ligne.unit, d.unite);
+    if (enStock == null || !fini(enStock)) continue;
+    if (enStock < d.dose - 0.0005) manques.push({ nom: d.nom, dose: d.dose, unite: d.unite, enStock, manque: d.dose - enStock });
+  }
+  return manques;
 }

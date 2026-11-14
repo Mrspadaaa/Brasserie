@@ -5,7 +5,7 @@
 .bl-regle .bl-tire { position: absolute; left: 10px; top: 38px; height: 4px; border-radius: 2px; background: rgb(var(--cave-50)); }
 .bl-regle .bl-repere { position: absolute; top: 32px; width: 1.5px; height: 14px; background: rgb(var(--cave-50)); }
 .bl-regle .bl-etiq { position: absolute; top: 46px; white-space: nowrap; }
-.bl-regle .bl-eau { position: absolute; left: 10px; top: 77px; height: 6px; border-radius: 3px; background: rgb(var(--area-finances)); }
+.bl-regle .bl-eau { position: absolute; left: 10px; top: 81px; height: 6px; border-radius: 3px; background: rgb(var(--area-finances)); }
 .bl-regle .bl-bulle { position: absolute; top: 2px; transform: translateX(-50%); min-width: 52px; height: 24px; padding: 0 8px; border-radius: 12px; display: grid; place-items: center;
   background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); font-size: 14px; font-weight: 700; pointer-events: none; }
 .bl-regle .bl-bouton { position: absolute; top: 31px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; pointer-events: none;

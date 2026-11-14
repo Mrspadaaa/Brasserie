@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BrewhouseProfile, Recipe } from '../../src/types';
 import { scaleBrewBudgetRecipe } from '../../src/domain/finance/brewBudgetScaling';
-import { apercuLancement, contenanceCuveL, contenanceFermenteurL, volumeDeDepart, detailMoment, echelleRegleL, etapesLancement, facteurVolume, levureArrondir, recetteAdaptee } from '../../src/domain/brewLaunch';
+import { apercuLancement, contenanceCuveL, contenanceFermenteurL, volumeDeDepart, detailMoment, echelleRegleL, etapesLancement, facteurVolume, levureArrondir, recetteAdaptee, manquesLancement, uniteAccordee } from '../../src/domain/brewLaunch';
 
 const systeme30: BrewhouseProfile = { id: 'bh-30', name: 'Système 30L', volumeL: 30, efficiencyPct: 75, boilOffRatePct: 10, deadSpaceL: 1.5, mashRatioLPerKg: 4.2 };
 const systeme50: BrewhouseProfile = { id: 'bh-50', name: 'Système 50L', volumeL: 50, efficiencyPct: 78, boilOffRatePct: 10, deadSpaceL: 2, mashRatioLPerKg: 4.2 };
@@ -194,5 +194,70 @@ describe('brewLaunch — volume, règle, cuve, brasserie', () => {
     expect(detailMoment(20, 82)).toBe('20 min à 82 °C');
     expect(detailMoment(undefined, 82)).toBe('82 °C');
     expect(detailMoment(0, undefined)).toBeUndefined();
+  });
+});
+
+describe('brewLaunch — levure en sachets (passe 3)', () => {
+  const pils = (): Recipe => ({
+    id: 'R-PILS', name: 'ZZ TEST Pils', style: 'Pilsner', volumeL: 20, ogTarget: 1.048, ibuTarget: 32, boilMin: 90, brewhouse: systeme30,
+    fermentables: [{ name: 'Pilsner', kind: 'grain', use: 'empatage', weightKg: 4.5 }],
+    hops: [{ name: 'Saaz', stage: 'boil', weightG: 30, alpha: 3.5, timeMin: 60 }, { name: 'Saaz', stage: 'boil', weightG: 20, alpha: 3.5, timeMin: 15 }],
+    yeast: { name: 'W-34/70', qty: 2, unit: 'sachet', form: 'sèche' },
+    mash: { steps: [{ name: 'Saccharification', tempC: 66, durationMin: 60 }], spargeType: 'batch' },
+    steps: [], notes: []
+  } as unknown as Recipe);
+
+  it('2 sachets pour 20 L font 5 sachets à 50 L, comptés entiers : pas de « à arrondir »', () => {
+    const levure = apercuLancement(pils(), 50, systeme30, systeme50).etapes.find((e) => e.id === 'levure')!.levure!;
+    expect(levure.quantite).toBe(5);
+    expect(levure.arrondir).toBe(false);
+  });
+
+  it('à 30 L : 3 sachets ; à 25 L : 2,5 sachets, « à arrondir »', () => {
+    expect(apercuLancement(pils(), 30, systeme30).etapes.find((e) => e.id === 'levure')!.levure!.quantite).toBe(3);
+    const l = apercuLancement(pils(), 25, systeme30).etapes.find((e) => e.id === 'levure')!.levure!;
+    expect(l.quantite).toBe(2.5);
+    expect(l.arrondir).toBe(true);
+  });
+
+  it('accorde l’unité : « 5 sachets », « 1 sachet », « 1,58 flacon » (pluriel dès 2), g et mL jamais touchés', () => {
+    expect(uniteAccordee(5, 'sachet')).toBe('sachets');
+    expect(uniteAccordee(1, 'sachet')).toBe('sachet');
+    expect(uniteAccordee(1.58, 'flacon')).toBe('flacon');
+    expect(uniteAccordee(2, 'sachets')).toBe('sachets');
+    expect(uniteAccordee(2, 'pochette')).toBe('pochettes');
+    expect(uniteAccordee(12, 'g')).toBe('g');
+    expect(uniteAccordee(3, undefined)).toBeUndefined();
+  });
+});
+
+describe('brewLaunch — ce qui manque pour N L (passe 3)', () => {
+  const etapes = () => apercuLancement(neipa(), 30, systeme30).etapes;
+  const dose = (nom: string) => etapes().flatMap((e) => e.pastilles).filter((p) => p.nom === nom).reduce((s, p) => s + p.quantite, 0);
+
+  it('cumule la dose d’une même matière sur tous ses moments et la compare au stock indiqué', () => {
+    const citra = dose('Citra');
+    expect(citra).toBeGreaterThan(100);
+    const m = manquesLancement(etapes(), [{ name: ' citra ', currentStock: 100, unit: 'g' }]);
+    expect(m).toHaveLength(1);
+    expect(m[0]).toMatchObject({ nom: 'Citra', unite: 'g', enStock: 100 });
+    expect(m[0].dose).toBeCloseTo(citra, 6);
+    expect(m[0].manque).toBeCloseTo(citra - 100, 6);
+  });
+
+  it('convertit le stock dans l’unité de la dose (stock en kg, dose en g)', () => {
+    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 0.1, unit: 'kg' }])[0].enStock).toBeCloseTo(100, 6);
+  });
+
+  it('n’invente rien : sans fiche de stock, ou unité qui ne se convertit pas, rien n’est compté ; stock suffisant : rien', () => {
+    expect(manquesLancement(etapes(), [])).toEqual([]);
+    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 5, unit: 'L' }])).toEqual([]);
+    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 10000, unit: 'g' }, { name: 'US 2-row', currentStock: 99, unit: 'kg' }])).toEqual([]);
+  });
+
+  it('le stock à 0 est un vrai manque (la dose entière), pas un inconnu', () => {
+    const m = manquesLancement(etapes(), [{ name: 'US 2-row', currentStock: 0, unit: 'kg' }]);
+    expect(m).toHaveLength(1);
+    expect(m[0].manque).toBeCloseTo(m[0].dose, 6);
   });
 });

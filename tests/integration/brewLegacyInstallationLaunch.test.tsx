@@ -61,15 +61,30 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     const volume = screen.getByLabelText('Volume du brassin');
     fireEvent.change(volume, { target: { value: String(targetL) } });
     fireEvent.blur(volume);
+    // Passe 3 : la question se dit AVANT le geste (ton attention, pas d'alerte rouge) et Lancer reste désactivé, au lieu d'un refus après le clic.
+    expect(screen.getByText(/Recette à adapter à Installation actuelle avant de lancer/)).toBeVisible();
+    expect(screen.getByRole('button', { name: /Modifier la recette/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /^Lancer à / })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
-    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
     expect(created).toEqual([]);
     expect(recipe).toEqual(original);
     expect(history).toEqual(oldBatch);
     expect(close).not.toHaveBeenCalled();
+  });
+
+  it('« Modifier la recette › » envoie l’événement annulable avec la recette, et ferme la modale quand App le prend', () => {
+    const prend = vi.fn((e: Event) => e.preventDefault());
+    window.addEventListener('affinee:modifier-recette', prend);
+    const close = vi.fn();
+    render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[legacyRecipe(true)]} onClose={close} />);
+    fireEvent.click(screen.getByRole('button', { name: /Modifier la recette/ }));
+    window.removeEventListener('affinee:modifier-recette', prend);
+    expect(prend).toHaveBeenCalledOnce();
+    expect((prend.mock.calls[0][0] as CustomEvent).detail).toEqual({ recipeId: 'legacy' });
+    expect(close).toHaveBeenCalledOnce();
   });
 
   it.each([{ withProfile: false, volumeL: 19 }, { withProfile: true, volumeL: 26 }])('adopte le matériel en conservant les $volumeL L choisis (ancien profil : $withProfile)', async ({ withProfile, volumeL }) => {
