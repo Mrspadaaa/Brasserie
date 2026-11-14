@@ -81,6 +81,9 @@ export const BrewLaunchPanel: React.FC<BrewLaunchPanelProps> = ({ recette, volum
   const pas = (d: number) => onVolume(Math.max(1, Math.round((volumeL + d) * 2) / 2));
   const eauAGauche = eauL != null && pct(eauL) > 78;
   const cap = 'min-h-[44px] min-w-[44px]';
+  /* Capacité connue et dépassée : dit en ton « attention », sans refus (AM-47). Inconnue : rien n'est supposé. */
+  const cuvePleine = cuveL != null && eauL != null && eauL > cuveL + 0.05;
+  const fermenteurPlein = fermenteurL != null && volumeL > fermenteurL + 0.05;
 
   return (
     <div className="space-y-1.5">
@@ -123,16 +126,16 @@ export const BrewLaunchPanel: React.FC<BrewLaunchPanelProps> = ({ recette, volum
         </div>
       </section>
 
-      {/* AM-47 sans alerte : la capacité connue se lit, neutre, à côté de la cuve ; aucun rouge, rien n'est refusé. */}
+      {/* AM-47 : la capacité connue se lit à côté de la cuve ; dépassée, en ton attention ; rien n’est refusé. */}
       <div className="flex items-center gap-2">
         {cuveL == null ? (
           <button type="button" onClick={onContenance} aria-label="Renseigner la contenance de la cuve" className="flex-1 min-w-0 min-h-[44px] flex items-center gap-1.5 pl-2 pr-1 rounded-control border border-dashed border-cave-700 text-2xs text-cave-400 text-left">
             <Database size={14} aria-hidden="true" />contenance à renseigner<b className="ml-auto px-1.5 text-[17px] text-cave-50" aria-hidden="true">›</b>
           </button>
         ) : (
-          <p className="min-h-[32px] flex items-center gap-1.5 pl-2 text-2xs text-cave-400"><Database size={14} aria-hidden="true" />cuve <b className="tabular-nums text-cave-50">{L(cuveL)} L</b></p>
+          <p className={`min-h-[32px] flex items-center gap-1.5 pl-2 text-2xs ${cuvePleine ? 'text-attention' : 'text-cave-400'}`}><Database size={14} aria-hidden="true" />cuve <b className={`tabular-nums ${cuvePleine ? '' : 'text-cave-50'}`}>{L(cuveL)} L</b>{cuvePleine && <span>&lt; eau d’empâtage</span>}</p>
         )}
-        {fermenteurL != null && <p className="min-h-[32px] flex items-center gap-1.5 text-2xs text-cave-400 whitespace-nowrap">fermenteur <b className="tabular-nums text-cave-50">{L(fermenteurL)} L</b></p>}
+        {fermenteurL != null && <p className={`min-h-[32px] flex items-center gap-1.5 text-2xs whitespace-nowrap ${fermenteurPlein ? 'text-attention' : 'text-cave-400'}`}>fermenteur <b className={`tabular-nums ${fermenteurPlein ? '' : 'text-cave-50'}`}>{L(fermenteurL)} L</b>{fermenteurPlein && <span>&lt; brassin</span>}</p>}
       </div>
 
       {apercu ? (
