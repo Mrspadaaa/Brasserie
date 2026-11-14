@@ -960,6 +960,7 @@ export const App: React.FC = () => {
       <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
       <Header
         compactLayout
+        large={activeTab === 'stocks'}
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -976,7 +977,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap="nav" className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px]' : ''} w-full mx-auto px-2 xs:px-3`}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab

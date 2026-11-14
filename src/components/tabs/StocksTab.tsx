@@ -410,7 +410,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   );
 
   return (
-    <div className={`stocks-screen${subTab === 'stock' && vue === 'etagere' ? ' stocks-large' : ''} flex flex-col h-[calc(100dvh-8.5rem)] pt-1 gap-1`}>
+    <div className={`stocks-screen flex flex-col h-[calc(100dvh-8.5rem)] pt-1 gap-1`}>
       <div className="min-w-0 shrink-0">
       <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
       <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
