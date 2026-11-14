@@ -34,7 +34,7 @@ const Titre: React.FC<{ texte: string; tri: TriListe; actuel?: TriListe; onTri?:
  * L'en-tête d'un groupe de la liste : l'icône de la famille (teinte c3b), son nom et son nombre ; pour les trois rayons, la légende de l'ordre,
  * le bouton ⓘ « Lire l'échelle » et la règle de la barre, dite sur elle-même (« à l'échelle », « ⫽ resserrée au-delà de 5 kg »).
  */
-export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; tri?: TriListe; onTri?: (t: TriListe) => void }> = ({ nom, compte, sur, tri, onTri }) => {
+export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; tri?: TriListe; onTri?: (t: TriListe) => void; plie?: boolean; onPli?: () => void; resume?: string }> = ({ nom, compte, sur, tri, onTri, plie = false, onPli, resume }) => {
   const [dit, setDit] = useState(false);
   const rayon = rayonDuGroupe(nom);
   const fam = familleTeinteGroupe(nom);
@@ -42,7 +42,8 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; 
   const affiche = rayon && /^(malt|houblon|levure)/i.test(nom) ? NOM_AFFICHE[rayon] : nom;
   return (
     <div className="stock-liste l1-eh-bloc" data-sec={fam} data-rayon={rayon ?? undefined}>
-      <div className="l1-eh">
+      {/* Toute la ligne plie et déplie le rayon (le <summary> de la maquette g6) ; le chevron est le bouton du clavier et des lecteurs d'écran. */}
+      <div className="l1-eh" onClick={onPli}>
         <span className="l1-ei" aria-hidden="true">
           {fam === 2
             ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="10" r="4" /><circle cx="16" cy="15" r="3" /><circle cx="16.5" cy="7.5" r="1.6" /></svg>
@@ -50,13 +51,17 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; 
         </span>
         <h2>{affiche} <span className="l1-en">{sur !== undefined && sur !== compte ? `${compte} sur ${sur}` : compte}</span></h2>
         {rayon && <span className="l1-ec">{legendeRayon(rayon, tri)}</span>}
-        {rayon && <button type="button" className="l1-ib" aria-label="Lire l'échelle" aria-expanded={dit} onClick={() => setDit((v) => !v)}>
+        {rayon && <button type="button" className="l1-ib" aria-label="Lire l'échelle" aria-expanded={dit} onClick={(e) => { e.stopPropagation(); setDit((v) => !v); }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M12 11v6" /><circle cx="12" cy="7.6" r=".6" fill="currentColor" /></svg>
         </button>}
+        {onPli && <button type="button" className="l1-chev" data-plie={plie ? '' : undefined} aria-label={`${plie ? 'Déplier' : 'Replier'} ${affiche}`} aria-expanded={!plie} onClick={(ev) => { ev.stopPropagation(); onPli(); }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6" /></svg>
+        </button>}
       </div>
-      {e && rayon && <Regle e={e} rayon={rayon} classe="l1-ech-bas" />}
+      {plie && resume && <p className="l1-res" data-resume>{resume}</p>}
+      {!plie && e && rayon && <Regle e={e} rayon={rayon} classe="l1-ech-bas" />}
       {/* L'en-tête de tableau (≥ 900 px) : mêmes colonnes que les lignes (maquette sy/fA g6) ; le chevron de repli de la maquette n'est pas porté. */}
-      <div className="l1-th">
+      {!plie && <div className="l1-th">
         <span />
         <Titre texte="Article" tri="nom" actuel={tri} onTri={onTri} aria="Trier par nom" />
         {rayon ? <Titre texte={REPERE[rayon]} tri="defaut" actuel={tri} onTri={onTri} aria={`Trier par défaut : ${REPERE[rayon]}`} /> : <span />}
@@ -64,8 +69,8 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; 
         {e && rayon ? <Regle e={e} rayon={rayon} classe="l1-ech-th" /> : <span />}
         <span className="l1-thl">Dernier mouvement</span>
         <span className="l1-thl">Fournisseur</span>
-      </div>
-      {dit && rayon && <p className="l1-dit" data-dit>{LIRE_ECHELLE[rayon]}</p>}
+      </div>}
+      {!plie && dit && rayon && <p className="l1-dit" data-dit>{LIRE_ECHELLE[rayon]}</p>}
     </div>
   );
 };

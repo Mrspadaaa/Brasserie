@@ -44,6 +44,8 @@ export interface EntityListProps<T> {
   emptyState?: React.ReactNode;
   /** En-tête d'un groupe, à la place du titre simple (nom, nombre) : l'en-tête de rayon du Stock, avec sa règle. */
   renderGroupHeader?: (nom: string, compte: number) => React.ReactNode;
+  /** Les groupes pliés : leur en-tête reste (avec son vrai compte), leurs lignes ne sont pas rendues (le chevron ⌃ du rayon, maquette g6). */
+  groupesPlies?: ReadonlySet<string>;
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
   toolbarAction?: React.ReactNode;
@@ -60,6 +62,7 @@ export function EntityList<T>({
   groupOf,
   groupOrder,
   renderGroupHeader,
+  groupesPlies,
   searchKeys,
   isFavorite,
   resetKey,
@@ -134,12 +137,15 @@ export function EntityList<T>({
         )
       : Array.from(buckets.keys());
 
+    const reels = names.map((n) => buckets.get(n)!.length);
+    const plie = (n: string) => !!groupesPlies?.has(n);
     return {
       names,
-      counts: names.map((n) => buckets.get(n)!.length),
-      flat: names.flatMap((n) => buckets.get(n)!)
+      reels,
+      counts: names.map((n, k) => (plie(n) ? 0 : reels[k])),
+      flat: names.filter((n) => !plie(n)).flatMap((n) => buckets.get(n)!)
     };
-  }, [filtered, groupOf, groupOrder]);
+  }, [filtered, groupOf, groupOrder, groupesPlies]);
 
   const showSearch = Boolean(searchKeys && searchKeys.length > 0);
   const isEmpty = items.length === 0;
@@ -206,7 +212,7 @@ export function EntityList<T>({
           className={scrollParent ? undefined : "flex-1 min-h-0"}
           customScrollParent={scrollParent ?? undefined}
           groupCounts={grouped.counts}
-          groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.counts[index]) : (
+          groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.reels[index]) : (
             <div
               className="px-1 py-1 bg-cave-950/95 backdrop-blur-sm
                          flex items-baseline justify-between gap-2 border-b border-cave-800"
@@ -215,7 +221,7 @@ export function EntityList<T>({
                 {grouped.names[index]}
               </span>
               <span className="text-xs text-cave-400 font-mono shrink-0">
-                {grouped.counts[index]}
+                {grouped.reels[index]}
               </span>
             </div>
           )}

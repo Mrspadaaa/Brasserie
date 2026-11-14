@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useMemo, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
@@ -33,7 +33,7 @@ import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
 import { createSearch, runSearch } from '../../services/search';
 import { rechercherStock } from '../../domain/stock/recherche';
-import { infoLigne, compterEtats, trierArticles, TRIS, type TriListe } from '../../domain/stock/liste';
+import { infoLigne, compterEtats, trierArticles, resumeRayon, TRIS, type TriListe } from '../../domain/stock/liste';
 import { GROUPES_LISTE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
@@ -325,6 +325,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // Le mur suit la liste : ses marques hors filtre ou recherche pâlissent (maquette fA).
   const refsRetenues = useMemo(() => (filtre || recherche) ? new Set(retenus.map(i => i.ref)) : null, [filtre, recherche, retenus]);
   const visibleItems = useMemo(() => trierArticles(retenus, tri, infos), [retenus, tri, infos]);
+  // Un rayon se plie (chevron ⌃ de la maquette g6) : son en-tête garde son compte et dit en une ligne ce qui compte (manque, épuisés, bas…). L'état vit le temps de l'écran.
+  const [plies, setPlies] = useState<ReadonlySet<string>>(() => new Set());
+  const basculerPli = useCallback((nom: string) => setPlies(p => { const n = new Set(p); if (!n.delete(nom)) n.add(nom); return n; }), []);
+  const resumes = useMemo(() => { const m = new Map<string, string>(); GROUPES_LISTE.forEach(g => m.set(g, resumeRayon(visibleItems.filter(i => groupeListe(i) === g), infos))); return m; }, [visibleItems, infos]);
   const phraseFiltre = texteFiltre({ filtre, q }, retenus.length);
   const toutVoir = () => { setFiltre(null); setQ(''); };
   // Un comptage de Recompter : le stock devient la quantité comptée, un mouvement « comptage » garde l'écart.
@@ -529,7 +533,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           keyOf={(i) => i.ref}
           groupOf={groupeListe}
           groupOrder={GROUPES_LISTE}
-          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} />}
+          groupesPlies={plies}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} />}
           isFavorite={(i) => !!i.favorite}
           resetKey={tri}
           header={allItems.length > 0 && <LigneTri tri={tri} onTri={setTri} />}

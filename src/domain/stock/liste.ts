@@ -68,6 +68,22 @@ export type EtatLigne = 'manque' | 'bas' | 'epuise' | 'compter' | 'ddm';
 export const ETATS: ReadonlyArray<{ id: EtatLigne; mot: string }> = [
   { id: 'manque', mot: 'manque' }, { id: 'bas', mot: 'bas' }, { id: 'epuise', mot: 'épuisés' }, { id: 'compter', mot: 'à compter' }, { id: 'ddm', mot: 'DDM' },
 ];
+/**
+ * Le résumé d'un rayon plié (maquette g6) : chaque état présent, avec son nombre, dans les mots des pastilles ; les articles sont nommés quand ils sont
+ * deux au plus (« manque 1 : Avoine floconnée · épuisés 1 : Maris Otter · bas 3 »). Chaîne vide sans article ; « rien à signaler » quand aucun état ne s'allume.
+ */
+export function resumeRayon(items: ReadonlyArray<StockItem>, infos: ReadonlyMap<string, InfoLigne>): string {
+  if (items.length === 0) return '';
+  const ordre: EtatLigne[] = ['manque', 'epuise', 'bas', 'compter', 'ddm'];
+  const parties = ordre.flatMap((etat) => {
+    const concernes = items.filter((i) => infos.get(i.ref)?.etats.includes(etat));
+    if (concernes.length === 0) return [];
+    const mot = ETATS.find((e) => e.id === etat)!.mot;
+    return [concernes.length <= 2 ? `${mot} ${concernes.length} : ${concernes.map((i) => i.name).join(', ')}` : `${mot} ${concernes.length}`];
+  });
+  return parties.length ? parties.join(' · ') : 'rien à signaler';
+}
+
 export type ClasseLigne = 'assez' | 'seuil' | 'manque' | 'bas' | 'epuise' | 'compter' | 'ddm' | 'sans';
 
 export interface InfoLigne {
