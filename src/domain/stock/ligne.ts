@@ -6,6 +6,7 @@ import { ECHELLES, coupeBarre, quantiteBarre, xBarre, type ClasseLigne, type Inf
 import { rayonDuMur, type RayonMurNom } from './murRayon';
 import { statutDurabilite } from './regles';
 import { nombreFr } from '../nombreAffiche';
+import { Units } from '../../services/units';
 
 /** Les six familles de la teinte c3b : 0 Malts (caramel), 1 Houblons (vert), 2 Levures (crème), 3 additifs (ardoise), 4 emballage (brun), 5 nettoyage (bleu). */
 export type FamilleTeinte = 0 | 1 | 2 | 3 | 4 | 5;
@@ -64,7 +65,7 @@ const unite = (n: number, u: string) => {
   const k = u.trim().toLowerCase();
   if (k === 'kg') return `${nombreFr(n, 2)} kg`;
   if (k === 'g') return n >= 1000 ? `${nombreFr(n / 1000, 2)} kg` : `${nombreFr(n, n >= 10 ? 0 : 1)} g`;
-  return `${nombreFr(n, 2)} ${u}`;
+  return Units.format(n, u); // « 1 sachet », « 4 sachets » : l'unité comptée s'accorde
 };
 
 /** « 0,5 kg » comme la maquette (un kg inférieur à 1 reste en kg) ; « à compter » n'est pas ici : la quantité inconnue est dite par la ligne. */
