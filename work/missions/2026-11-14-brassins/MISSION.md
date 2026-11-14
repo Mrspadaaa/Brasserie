@@ -47,6 +47,7 @@ Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids �
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Brassins · fiche et fermentation (s1e2, s1g, s2a2, s3b2 ; panel v0 de 15 ; critique : s1e, s2a, s3b) | 14.11 passe 2 | https://claude.ai/artifact/Jis8k1YGo26euJoLVKiMDv | `work/missions/2026-11-14-brassins/page/index.html` |
 
 ## Boucle de retour
 Voie en échec : relance ciblée chez un agent neuf (D207), 2 fois au plus. Plainte du brasseur : SPEC, DEFAUTS-RECURRENTS, contrôle.
@@ -59,3 +60,7 @@ Plafond visé : 2 analyses, 3 concepteurs v0, 1 critique, 3 passes 2 légères.
 - `work/refonte-frontend/INVENTAIRE-ECRANS.md`, `work/refonte-frontend/v4/SPEC-BRASSEUR.md`
 
 ## Signature
+- Fait : a1 (banc, 156 captures, TROUS), a2 (36 problèmes, 4 bloquants), jury normal en Opus (fiche), v0 15 (s1 à s3, finis par f1), tri t1 (s1e, s2a, s3b), passes 2 (s1e2, s1g, s2a2, s3b2), critique c2 (7 bloquants, corrigés par c2f), page pg (PAGE OK), publiée.
+- Ouvert : son choix sur la page ; puis port 1:1 (voie à écrire), correctif du filtre de période (App.tsx:171), champs °C de cuve et dry hop daté (accord avant écriture), déploiement (accord).
+- systeme.mjs mission : seul refus restant « aucune série en Fable », assumé (Fable interdit).
+- Leçons proposées, à traiter : concepteurs v0 arrêtés à 200 k (s1, s3, p2a) : brief v0 plus serré, contrôles COMMUN/PANEL laissés au tri ; fichiers de travail dans os.tmpdir() préfixés par l'id de voie (collision p2a/p2b) ; avant « ses mots sont rares », chercher l'objet sous d'autres noms (cuve, rail, J+n) ; une convention (origine de J+n, deux températures) se lit dans le code avant d'être recommandée.
