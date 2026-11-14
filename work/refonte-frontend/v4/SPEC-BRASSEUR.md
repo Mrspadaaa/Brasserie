@@ -1696,3 +1696,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - « J'ai mis à jour le quota tu peux y aller »
 - « D'autres endroits où certains changements vaudrait la peine ? Fait des tableaux de comparaison, budget jusqu'à 15chf »
 - (capture Atelier : Matériel · Bières · Tarifs · Contacts · À faire ; À venir · Réalisés · Archives) « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? »
+- (sur Approfondi et diagnostic en Hydrogen) « Oui branche où ça vaut le coup »
