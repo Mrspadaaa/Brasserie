@@ -102,9 +102,10 @@ export function etatDit(item: StockItem, info: InfoLigne, cmd: ArticleACommander
     default: texte = 'sans seuil';
   }
   if (info.etats.includes('ddm')) {
-    const st = statutDurabilite(item.yeastLot?.expiresOn, aujourdhui).statut;
-    const ddm = st === 'perime' ? 'DDM dépassée' : 'DDM proche';
-    // la maquette ne répète pas le seuil : « DDM dépassée · au seuil »
+    // Une seule phrase pour le fait, avec les jours (verdict 5cdcd12e n° 7) : « périmée depuis 44 j · au seuil », plus de « DDM dépassée » suivi d'un « Périmé depuis 44 j » dessous.
+    const { statut, jours } = statutDurabilite(item.yeastLot?.expiresOn, aujourdhui);
+    const ddm = statut === 'perime' && jours !== null ? `périmée depuis ${-jours} j` : jours === 0 ? 'périme aujourd’hui' : jours !== null ? `périme dans ${jours} j` : 'DDM proche';
+    // la maquette ne répète pas le seuil : « … · au seuil »
     texte = info.classe === 'assez' || info.classe === 'sans' ? ddm : `${ddm} · ${texte.split(' · ')[0]}`;
     classe = 'ddm';
   }

@@ -49,9 +49,9 @@ describe('ce que la ligne dit', () => {
     expect(infoLigne(i, vide, J).pot!.seuil).toBeNull();
     expect(dit(i).texte).toBe('sans seuil');
   });
-  it('levure à DDM dépassée : dit « DDM dépassée »', () => {
+  it('levure à DDM dépassée : dit « périmée depuis 44 j » (vd2 n° 7, une seule phrase)', () => {
     const l = art({ category: 'Levure', unit: 'sachet', currentStock: 1, minStock: 1, yeastLot: { expiresOn: '2026-10-01' } as never });
-    expect(dit(l).texte).toBe('DDM dépassée · au seuil');
+    expect(dit(l).texte).toBe('périmée depuis 44 j · au seuil');
     expect(dit(l).classe).toBe('ddm');
   });
 });

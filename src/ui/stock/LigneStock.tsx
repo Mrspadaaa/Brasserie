@@ -82,9 +82,10 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         <span className="l1-c-mv">{mouvementDit ?? '—'}</span>
         <span className="l1-c-fo">{item.supplier?.trim() || '—'}</span>
       </button>
-      {(reserve || durabilite) && <div className="l1-plus">
+      {/* la DDM qui compte est déjà dite, avec ses jours, au deuxième rang de la ligne (etatDit) : pas de seconde phrase dessous */}
+      {(reserve || (durabilite && !info.etats.includes('ddm'))) && <div className="l1-plus">
         {reserve && <p className={reserve.connue ? 'l1-plus-r' : 'l1-plus-r l1-plus-w'}>{reserve.texte}</p>}
-        {durabilite && <p data-stock-durabilite className={durabilite.perime ? 'l1-plus-a' : 'l1-plus-w'}>{durabilite.texte}</p>}
+        {durabilite && !info.etats.includes('ddm') && <p data-stock-durabilite className={durabilite.perime ? 'l1-plus-a' : 'l1-plus-w'}>{durabilite.texte}</p>}
       </div>}
       <span id={descriptionId} className="sr-only">{description}</span>
       <div className="l1-fav"><FavoriteToggle active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>
