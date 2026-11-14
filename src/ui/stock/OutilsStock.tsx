@@ -27,7 +27,7 @@ export function Recherche({ q, onQ, action }: { q: string; onQ: (q: string) => v
       <label className="sz-ch min-w-0 flex-1">
         <Search size={18} aria-hidden="true" />
         <input type="search" inputMode="search" name="stock_recherche" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true"
-          value={q} onChange={(e) => onQ(e.target.value)} aria-label="Rechercher dans le stock" placeholder="Rechercher : nom, fournisseur, souche…" />
+          value={q} onChange={(e) => onQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }} aria-label="Rechercher dans le stock" placeholder="Rechercher : nom, fournisseur, souche…" />
         {q && <button type="button" className="sz-xc" aria-label="Effacer la recherche" onClick={() => onQ('')}><X size={16} aria-hidden="true" /></button>}
       </label>
       {action}

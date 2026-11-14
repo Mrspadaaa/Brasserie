@@ -19,6 +19,8 @@ interface Props {
   /** Le bouton du nom d'un rayon filtre la liste : le parent reçoit « Malts », « Houblons » ou « Levures » (ou null pour tout). */
   onFiltre?: (rayon: 'Malts' | 'Houblons' | 'Levures' | null) => void;
   filtre?: 'Malts' | 'Houblons' | 'Levures' | null;
+  /** Les références que le filtre et la recherche de la liste retiennent (null : aucun filtre). Les autres marques pâlissent (fA : « l1-pale »), le compte du rayon dit « 1 sur 2 ». */
+  retenus?: ReadonlySet<string> | null;
   onglet: OngletMur;
   onOnglet: (o: OngletMur) => void;
 }
@@ -78,6 +80,12 @@ function TotalLevure({ g }: { g: GroupeMur }) {
     </span></span></span>
   );
 }
+
+/** « 1 sur 2 » : les marques du rayon que le filtre retient, sur le total du rayon (le total seul quand tout est retenu). */
+const compteSur = (r: RayonMur, retenus: ReadonlySet<string>): string => {
+  const v = r.groupes.reduce((n, g) => n + g.marques.filter((a) => retenus.has(a.ref)).length, 0);
+  return v === r.total ? String(r.total) : `${v} sur ${r.total}`;
+};
 
 function Groupe({ g, r }: { g: GroupeMur; r: RayonMur }) {
   const style = { ['--ink' as string]: g.ink, ['--fill' as string]: g.fill } as React.CSSProperties;
@@ -150,13 +158,15 @@ function LegendeLevures({ r }: { r: RayonMur }) {
 }
 
 /* ---------- le mur, avec son comportement mesuré ---------- */
-function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, visible }: { m: MurDonnees; parRef: Map<string, StockItem>; onOpen: (i: StockItem) => void; onFiltre?: Props['onFiltre']; filtre?: Props['filtre']; ouvertLegende: boolean; onLegende: () => void; visible: boolean }) {
+function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLegende, visible }: { m: MurDonnees; parRef: Map<string, StockItem>; onOpen: (i: StockItem) => void; onFiltre?: Props['onFiltre']; filtre?: Props['filtre']; retenus?: Props['retenus']; ouvertLegende: boolean; onLegende: () => void; visible: boolean }) {
   const racine = useRef<HTMLDivElement>(null);
   const bulle = useRef<HTMLDivElement>(null);
   const mep = useRef<ReturnType<typeof installerMiseEnPage> | null>(null);
   const ouvrirRef = useRef(onOpen); ouvrirRef.current = onOpen;
   const refs = useRef(parRef); refs.current = parRef;
 
+  // Comme la maquette fA : sous un filtre ou une recherche, les marques qui n'y répondent pas pâlissent (la mise en page ne bouge pas).
+  useLayoutEffect(() => { racine.current?.querySelectorAll<HTMLElement>('[data-ref]').forEach((e) => e.classList.toggle('l1-pale', !!retenus && !retenus.has(e.dataset.ref ?? ''))); }, [retenus]);
   useLayoutEffect(() => { racine.current?.querySelectorAll<HTMLElement>('.sv-leg').forEach((l) => { l.hidden = !ouvertLegende; }); }, [ouvertLegende]);
   useLayoutEffect(() => {
     if (!racine.current) return;
@@ -226,7 +236,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
           <Fragment key={r.id}>
             <div className={`l1-mu l1e-r${r.hc ? '' : ' l1e-sansc'}`} data-f={r.id} data-systeme={r.systeme} style={{ ['--hc' as string]: `${r.hc}px`, ['--hm' as string]: `${r.hm}px` } as React.CSSProperties}>
               <div className="l1e-c1">
-                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span>{r.total}</span></button>
+                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteSur(r, retenus) : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span>{retenus ? compteSur(r, retenus) : r.total}</span></button>
                 {r.echelle && <span className="l1e-cl" aria-hidden="true">{r.echelle}</span>}
                 {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>?</button>}
               </div>
@@ -245,7 +255,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
   );
 }
 
-export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, onglet, onOnglet }: Props) {
+export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet }: Props) {
   const m = useMemo(() => construireMur(items, sourcesDeLApp, equipements, futs), [items, equipements, futs]);
   const sig = signature(m);
   const parRef = useMemo(() => new Map(items.map((i) => [i.ref, i])), [items]);
@@ -256,7 +266,7 @@ export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre,
         {([['ing', 'Ingrédients'], ['autres', 'Autres stocks']] as const).map(([id, nom]) => <button key={id} type="button" role="tab" className="sv-tab" data-tab={id} aria-selected={onglet === id} onClick={() => onOnglet(id)}>{nom}</button>)}
       </div></div>
       <div style={{ display: onglet === 'ing' ? '' : 'none' }}>
-        <Mur key={sig} m={m} parRef={parRef} onOpen={onOpen} onFiltre={onFiltre} filtre={filtre} ouvertLegende={legende} onLegende={() => setLegende((v) => !v)} visible={onglet === 'ing'} />
+        <Mur key={sig} m={m} parRef={parRef} onOpen={onOpen} onFiltre={onFiltre} filtre={filtre} retenus={retenus} ouvertLegende={legende} onLegende={() => setLegende((v) => !v)} visible={onglet === 'ing'} />
       </div>
       {onglet === 'autres' && (
         <div className="sv-autres">

@@ -66,3 +66,6 @@ html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-
   .stock-mur .l1e-r .l1e-b{zoom:1.5}
   .stock-mur .l1e-r[data-f=f0],.stock-mur .l1e-r[data-f=f1]{--hm:42px!important;--hc:16.5px!important}
 }
+
+/* cx, ST-T48 : sous un filtre ou une recherche, les marques du mur qui n'y répondent pas pâlissent (fA : .l1-pale{opacity:.16}) */
+.stock-mur .l1-pale{opacity:.16}

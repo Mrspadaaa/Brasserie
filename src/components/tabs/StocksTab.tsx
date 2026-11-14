@@ -310,6 +310,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const fuse = useMemo(() => createSearch(allItems, ['name', 'ref', 'category', 'supplier']), [allItems]);
   const recherche = useMemo(() => q.trim().length >= 2 ? new Set(runSearch(fuse, q.trim()).map(i => i.ref)) : null, [fuse, q]);
   const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche }), [allItems, infos, filtre, recherche]);
+  // Le mur suit la liste : ses marques hors filtre ou recherche pâlissent (maquette fA).
+  const refsRetenues = useMemo(() => (filtre || recherche) ? new Set(retenus.map(i => i.ref)) : null, [filtre, recherche, retenus]);
   const visibleItems = useMemo(() => trierArticles(retenus, tri, infos), [retenus, tri, infos]);
   const phraseFiltre = texteFiltre({ filtre, q }, retenus.length);
   const toutVoir = () => { setFiltre(null); setQ(''); };
@@ -483,7 +485,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
         {blocOutils}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
-          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} onglet={ongletMur} onOnglet={setOngletMur} />
+          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={setOngletMur} />
         </Suspense>
         <EntityList
           className={mobile ? 'pb-16' : ''}
