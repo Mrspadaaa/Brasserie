@@ -295,16 +295,30 @@ export function legendeAutres(r: Pick<RayonMur, 'groupes'>): string {
 }
 // ---------- Autres stocks ----------
 const bas = (i: StockItem) => (i.minStock != null && Number.isFinite(i.currentStock) && i.currentStock <= i.minStock) || i.reorder === true;
-export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[]): CarteAutre[] {
+/**
+ * Les cartes d'Autres stocks. Avec `infos` (les états de la liste, `infoLigne`), la carte dit les mêmes mots que les pastilles et les lignes (vd, ST-V6) : « 1 manque » (à commander),
+ * « 1 bas » (pile au seuil), « 1 épuisé », « 1 à compter ». Sans `infos` : l'ancien compte « bas » (au seuil ou en dessous), gardé pour les aperçus.
+ */
+export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[], infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>): CarteAutre[] {
   const autres = items.filter((i) => !/^(malt|houblon|levure)/i.test(i.category) && !estSucre(i)); // le sucre est au rayon Malts
   const groupe = (i: StockItem): 'Additifs' | 'Emballage' | 'Nettoyage' => /emballage/i.test(i.category) ? 'Emballage' : /cip|d[ée]sinfect|d[ée]tergent|sols|epi|nettoy/i.test(i.category) ? 'Nettoyage' : 'Additifs';
   const cartes: CarteAutre[] = [];
   for (const nom of ['Additifs', 'Emballage', 'Nettoyage'] as const) {
     const li = autres.filter((i) => groupe(i) === nom); if (!li.length) continue;
-    const nBas = li.filter(bas).length; const nCompter = li.filter((i) => !Number.isFinite(i.currentStock)).length;
     const lignes: CarteAutre['lignes'] = [];
-    if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
-    if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    if (infos) {
+      const a = (i: StockItem, e: string) => !!infos.get(i.ref)?.etats.includes(e);
+      const nManque = li.filter((i) => a(i, 'manque')).length; const nBas = li.filter((i) => a(i, 'bas')).length;
+      const nEpuise = li.filter((i) => a(i, 'epuise') && !a(i, 'manque')).length; const nCompter = li.filter((i) => a(i, 'compter')).length;
+      if (nManque) lignes.push({ n: nManque, texte: 'manque', alerte: true });
+      if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
+      if (nEpuise) lignes.push({ n: nEpuise, texte: nEpuise > 1 ? 'épuisés' : 'épuisé', alerte: true });
+      if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    } else {
+      const nBas = li.filter(bas).length; const nCompter = li.filter((i) => !Number.isFinite(i.currentStock)).length;
+      if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
+      if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    }
     cartes.push({ id: nom, nom, total: li.length, lignes });
   }
   if (futs.length) { const p = futs.filter((f) => f.state === 'plein').length; cartes.push({ id: 'Fûts', nom: 'Fûts', total: futs.length, lignes: p ? [{ n: p, texte: p > 1 ? 'pleins' : 'plein' }] : [] }); }

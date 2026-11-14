@@ -3,7 +3,7 @@
 // Le DOM, les classes et les data-* sont ceux de la maquette ; sa mise en page mesurée (murMiseEnPage.ts) est son propre script, repris.
 import React, { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
-import { construireMur, legendeAutres, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
+import { construireMur, cartesAutres, legendeAutres, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
 import { sourcesDeLApp } from '../../domain/stock/murSources';
 import { couleurALaClarte, labDeHex } from '../../domain/stock/mur';
 import { installerMiseEnPage } from './murMiseEnPage';
@@ -23,6 +23,8 @@ interface Props {
   retenus?: ReadonlySet<string> | null;
   onglet: OngletMur;
   onOnglet: (o: OngletMur) => void;
+  /** Les états de chaque article (`infoLigne`) : les cartes d'Autres stocks disent les mots des pastilles (« manque », « bas »). */
+  infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>;
 }
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
@@ -255,8 +257,9 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
   );
 }
 
-export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet }: Props) {
+export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet, infos }: Props) {
   const m = useMemo(() => construireMur(items, sourcesDeLApp, equipements, futs), [items, equipements, futs]);
+  const autres = useMemo(() => cartesAutres(items, equipements, futs, infos), [items, equipements, futs, infos]);
   const sig = signature(m);
   const parRef = useMemo(() => new Map(items.map((i) => [i.ref, i])), [items]);
   const [legende, setLegende] = useState(false);
@@ -270,8 +273,8 @@ export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre,
       </div>
       {onglet === 'autres' && (
         <div className="sv-autres">
-          {m.autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
-          {m.autres.map((c) => (
+          {autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
+          {autres.map((c) => (
             <div key={c.id} className="sv-ot" data-autre={c.id}>
               <span><em>{c.nom}</em> {c.total}</span>
               <span>{c.lignes.length ? c.lignes.map((l, k) => <Fragment key={k}>{k ? ' · ' : ''}<b className={l.alerte ? 'sv-al' : undefined}>{l.n}</b> {l.texte}</Fragment>) : 'rien à signaler'}</span>

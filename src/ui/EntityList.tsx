@@ -37,6 +37,8 @@ export interface EntityListProps<T> {
   isFavorite?: (item: T) => boolean;
   /** Quand cette valeur change (filtre choisi, onglet), la liste repart du haut (BR-70). */
   resetKey?: unknown;
+  /** Faux : la liste ne déplace jamais le défilement de son parent quand le filtre change (le Stock garde son champ de recherche à l'écran et se replace lui-même). */
+  repartDuHaut?: boolean;
   searchPlaceholder?: string;
   /** Message quand la liste est vide au départ (pas après filtrage). */
   emptyState?: React.ReactNode;
@@ -61,6 +63,7 @@ export function EntityList<T>({
   searchKeys,
   isFavorite,
   resetKey,
+  repartDuHaut = true,
   searchPlaceholder = 'Rechercher…',
   emptyState,
   header,
@@ -111,7 +114,7 @@ export function EntityList<T>({
 
   // BR-70 : un nouveau filtre ou une nouvelle recherche repart du haut ; sinon la liste garde son défilement et cache ses premières lignes sous l'en-tête.
   const defilement = React.useRef<{ scrollToIndex: (arg: { index: number }) => void } | null>(null);
-  React.useEffect(() => { defilement.current?.scrollToIndex({ index: 0 }); }, [query, resetKey]);
+  React.useEffect(() => { if (repartDuHaut) defilement.current?.scrollToIndex({ index: 0 }); }, [query, resetKey]);
 
   /** Découpage en groupes contigus, dans l'ordre demandé. */
   const grouped = useMemo(() => {

@@ -30,6 +30,7 @@ import '../../ui/stocks.css';
 import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
 import { createSearch, runSearch } from '../../services/search';
+import { rechercherStock } from '../../domain/stock/recherche';
 import { infoLigne, compterEtats, trierArticles, TRIS, type TriListe } from '../../domain/stock/liste';
 import { GROUPES_LISTE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
@@ -313,7 +314,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const totauxGroupes = useMemo(() => { const m = new Map<string, number>(); allItems.forEach(i => { const g = groupeListe(i); m.set(g, (m.get(g) ?? 0) + 1); }); return m; }, [allItems]);
   const nEpingles = allItems.filter(i => i.favorite).length;
   const fuse = useMemo(() => createSearch(allItems, ['name', 'ref', 'category', 'supplier']), [allItems]);
-  const recherche = useMemo(() => q.trim().length >= 2 ? new Set(runSearch(fuse, q.trim()).map(i => i.ref)) : null, [fuse, q]);
+  // Des mots, pas des ressemblances (vd, ST-V4) : « cit » ne ramène que Citra ; le flou de Fuse ne sert que s'il n'y a aucun mot exact.
+  const recherche = useMemo(() => q.trim().length >= 2 ? new Set(rechercherStock(allItems, q.trim(), (s) => runSearch(fuse, s)).map(i => i.ref)) : null, [allItems, fuse, q]);
   const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche }), [allItems, infos, filtre, recherche]);
   // Le mur suit la liste : ses marques hors filtre ou recherche pâlissent (maquette fA).
   const refsRetenues = useMemo(() => (filtre || recherche) ? new Set(retenus.map(i => i.ref)) : null, [filtre, recherche, retenus]);
@@ -370,11 +372,31 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   ];
 
   const mobile = useMobileLayout();
+  // Une frappe ou un filtre ne cache jamais le champ de recherche ni la ligne de filtre (vd, verdict bdd71433 n° 2 et 3) : le bloc défile avec la liste, donc si l'on avait
+  // descendu, on remonte juste assez pour que le champ soit en haut de l'écran ; si le champ est déjà visible, rien ne bouge.
+  const refPanneau = useRef<HTMLDivElement>(null);
+  const refHaut = useRef<HTMLDivElement>(null);
+  const filtreDejaLu = useRef(false);
+  useEffect(() => {
+    if (!filtreDejaLu.current) { filtreDejaLu.current = true; return; }
+    const sc = parentListe; const el = refPanneau.current;
+    if (!sc || !el) return;
+    const cible = sc.scrollTop + el.getBoundingClientRect().top - sc.getBoundingClientRect().top - 4;
+    if (sc.scrollTop > cible) sc.scrollTop = Math.max(0, cible);
+  }, [filtre, q]);
+  // La liste virtualisée mesure sa distance au haut du bloc : quand les outils ou le mur changent de hauteur (onglet Autres stocks plus bas que le mur, légende), on le lui redit (verdict n° 5).
+  useEffect(() => {
+    const haut = refHaut.current; const sc = parentListe;
+    if (!haut || !sc || typeof ResizeObserver === 'undefined') return;
+    const o = new ResizeObserver(() => sc.dispatchEvent(new Event('scroll')));
+    o.observe(haut);
+    return () => o.disconnect();
+  }, [parentListe]);
   // Le bloc d'outils (segment, recherche, pastilles, ligne de filtre) : fixe en Recompter, il défile avec le mur et la liste en Étagère (sinon la liste n'avait que 158 px à 390).
   const blocOutils = (
     <div className="stock-outils shrink-0 pt-1">
       <BasculeVue vue={vue} onVue={setVue} />
-      <div className="sz-pan-h mt-1 px-[10px]">
+      <div ref={refPanneau} className="sz-pan-h mt-1 px-[10px]">
         <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
         <Pastilles comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
         <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
@@ -488,12 +510,15 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </div>
           </>
           : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
+        <div ref={refHaut}>
         {blocOutils}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
-          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={setOngletMur} />
+          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={setOngletMur} infos={infos} />
         </Suspense>
+        </div>
         <EntityList
           className={mobile ? 'pb-16' : ''}
+          repartDuHaut={false}
           scrollParent={parentListe}
           items={visibleItems}
           keyOf={(i) => i.ref}
@@ -501,7 +526,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           groupOrder={GROUPES_LISTE}
           renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} />}
           isFavorite={(i) => !!i.favorite}
-          resetKey={`${filtre ?? ''}|${q}|${tri}`}
+          resetKey={tri}
           header={allItems.length > 0 && <LigneTri tri={tri} onTri={setTri} />}
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
