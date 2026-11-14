@@ -72,9 +72,9 @@ Lire :
 | message de la pilote 08.11 (HX) | HX | 6 | 1 |  |
 | message de la pilote 08.11 (OG) | OG | 1 | 0 |  |
 | C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-ff0f/RAPPORT.md | RL | 15 | 0 | 5a48b64afd33 |
-| C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-1.md | LR1 | 14 | 5 |  |
-| C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/work/missions/2026-11-10-lecture-robuste/critique/REPRISE-EN-LIGNE-2.md | LR2 | 11 | 3 |  |
-| C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md | LR3 | 9 | 3 |  |
+| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-1.md | LR1 | 14 | 5 |  |
+| work/missions/2026-11-10-lecture-robuste/critique/REPRISE-EN-LIGNE-2.md | LR2 | 11 | 3 |  |
+| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md | LR3 | 9 | 3 |  |
 
 Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPPORT.md` (MV : seulement 45 captures et des JSON bruts) ; à verser dès qu'il existe. Les rapports TE (27 constats à cette heure) et BT (en cours, « tableau écran × actionneurs » encore vide) s'écrivent encore : relancer le contrôle pour les suivants. Le rapport AM (audit de code seul, aucun Chrome) numérote A1 à A11, B1 à B22, C1 à C18, D1 à D22 : ici AM-1 à AM-11, AM-12 à AM-33, AM-34 à AM-51, AM-52 à AM-73, dans cet ordre, la colonne « source » redonne le numéro du rapport.
 
