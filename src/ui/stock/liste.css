@@ -73,3 +73,23 @@ html[data-theme="cave"] .stock-liste .l1-sw{box-shadow:0 0 0 1.5px var(--l1-lise
 .stock-liste .l1-ech em.l1-g{left:var(--l1-x0)}
 .stock-liste .l1-ech::before{content:"";position:absolute;left:var(--l1-x0);width:var(--l1-tw);bottom:0;height:2px;background:linear-gradient(90deg,var(--fi) 0 45%,transparent 45% calc(45% + 6px),color-mix(in srgb,var(--fi) 45%,transparent) calc(45% + 6px))}
 .stock-liste .l1-dit{margin:0 10px 6px;padding:8px 10px;border-radius:10px;background:var(--fw);font-size:13px;color:var(--l1-t1)}
+
+/* choix 14 : à partir de 900 px, la liste prend les colonnes de la maquette g6 (pot | Article | repère | En stock | échelle | Dernier mouvement | Fournisseur).
+   En dessous, la ligne reste celle du mobile : l'enveloppe de la barre n'a pas de boîte et ces deux colonnes, comme l'en-tête de tableau, sont cachées. */
+.stock-liste .l1-ec-c{display:contents}
+.stock-liste .l1-c-mv,.stock-liste .l1-c-fo,.stock-liste .l1-th{display:none}
+@media(min-width:900px){
+  .stock-liste .l1-row{grid-template-columns:14px minmax(130px,1.1fr) 104px 84px minmax(190px,1.6fr) minmax(120px,1.1fr) minmax(80px,.8fr)}
+  .stock-liste .l1-ec-c{display:block;position:relative;align-self:stretch;margin:-3px 0;--l1-x0:0px;--l1-tw:100%}
+  .stock-liste[data-rayon] .l1-row::after{display:none}
+  .stock-liste[data-rayon] .l1-ec-c::after{content:"";position:absolute;left:45%;top:0;bottom:0;border-left:1.5px dashed var(--l1-t2);opacity:.6;pointer-events:none}
+  .stock-liste[data-rayon] .l1-n1,.stock-liste[data-rayon] .l1-n2{text-shadow:none}
+  .stock-liste .l1-c-mv,.stock-liste .l1-c-fo{display:block;min-width:0;font-size:13px;line-height:1.25;color:var(--l1-t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stock-liste .l1-c-mv{font-variant-numeric:tabular-nums}
+  .stock-liste .l1-ech-bas{display:none}
+  .stock-liste .l1-th{display:grid;grid-template-columns:14px minmax(130px,1.1fr) 104px 84px minmax(190px,1.6fr) minmax(120px,1.1fr) minmax(80px,.8fr);column-gap:10px;align-items:end;min-height:32px;padding:0 40px 0 10px;box-shadow:inset 3px 0 0 var(--fi);border-top:1px solid var(--l1-border)}
+  .stock-liste .l1-thb,.stock-liste .l1-thl{justify-self:start;min-height:28px;padding:0;font:12px/28px var(--l1-sans);color:var(--l1-t2);white-space:nowrap;background:none;text-align:left}
+  .stock-liste .l1-thb[aria-pressed="true"]{color:var(--l1-t0);font-weight:600}
+  .stock-liste .l1-th > :nth-child(4){justify-self:end;text-align:right}
+  .stock-liste .l1-ech-th{align-self:end;margin:0;--l1-x0:0px;--l1-tw:100%}
+}

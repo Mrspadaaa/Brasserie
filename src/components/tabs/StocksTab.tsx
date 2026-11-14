@@ -6,6 +6,8 @@ import { latestBrewPrices } from '../../domain/finance/brewBudget';
 import { Units } from '../../services/units';
 import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
 import { EnteteRayon } from '../../ui/stock/EnteteRayon';
+import { dernierMouvementDit, mouvementsParRef } from '../../domain/stock/dernierMouvement';
+import type { MouvementBrut } from '../../domain/stock/mouvementsArticle';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
@@ -127,6 +129,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   );
   const savedRecipes = useStorageValue(readRecipes);
   const movements = useStorageValue(readMovements);
+  // Colonne « Dernier mouvement » du tableau (≥ 900 px) : les mouvements regroupés une fois par article, la phrase calculée à la demande de chaque ligne.
+  const mouvementsDeLArticle = useMemo(() => mouvementsParRef(movements as MouvementBrut[]), [movements]);
+  const mouvementDit = (item: StockItem) => dernierMouvementDit(item, mouvementsDeLArticle.get(item.ref) ?? [], batches);
   // « Dernier prix » de la fiche : la dernière ligne d'achat de chaque article (cx, ST-T24).
   const transactions = useStorageValue(readTransactions);
   const achats = useMemo(() => latestBrewPrices(transactions), [transactions]);
@@ -524,7 +529,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           keyOf={(i) => i.ref}
           groupOf={groupeListe}
           groupOrder={GROUPES_LISTE}
-          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} />}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} />}
           isFavorite={(i) => !!i.favorite}
           resetKey={tri}
           header={allItems.length > 0 && <LigneTri tri={tri} onTri={setTri} />}
@@ -549,6 +554,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
               info={infos.get(item.ref)}
               cmd={aCommanderParRef.get(item.ref)}
               batches={batches}
+              mouvementDit={mouvementDit(item)}
               onOpen={setSelected}
               onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}
             />

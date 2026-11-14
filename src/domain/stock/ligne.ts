@@ -61,6 +61,7 @@ export function barreLigne(item: StockItem): BarreLigne | null {
   return { x: xBarre(q, e), coupe: coupeBarre(q, e) };
 }
 
+export const quantiteDite = (n: number, u: string): string => unite(n, u);
 const unite = (n: number, u: string) => {
   const k = u.trim().toLowerCase();
   if (k === 'kg') return `${nombreFr(n, 2)} kg`;

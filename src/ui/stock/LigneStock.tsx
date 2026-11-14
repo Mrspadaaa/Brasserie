@@ -22,6 +22,8 @@ interface LigneStockProps {
   reserve?: { texte: string; connue: boolean };
   durabilite?: { texte: string; perime: boolean } | null;
   aujourdhui: string;
+  /** Le dernier mouvement de l'article, dit (colonne visible à partir de 900 px) ; absent = « — ». */
+  mouvementDit?: string;
   onOpen: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
 }
@@ -31,7 +33,7 @@ interface LigneStockProps {
  * quantité à droite ; pour les trois rayons, une barre derrière la ligne à deux régimes (à l'échelle jusqu'au coude, resserrée au-delà,
  * coupure « ⫽ » et trait du coude), teintée de la famille (c3b) avec son liseré à gauche.
  */
-export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, onOpen, onToggleFavorite }) => {
+export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, onOpen, onToggleFavorite }) => {
   const descriptionId = useId();
   const fam = familleTeinte(item);
   const rayon = rayonDuMur(item);
@@ -44,9 +46,6 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
   return (
     <article className="stock-liste l1-li" data-ligne data-fam={fam} data-et={info.etats.join(' ')} data-rayon={rayon ?? undefined}>
       <button type="button" className="l1-row" onClick={() => onOpen(item)} aria-label={`Ouvrir ${item.name}`} aria-describedby={descriptionId}>
-        {barre && <i className="l1-kg" style={{ ['--x' as string]: barre.x.toFixed(4) }} aria-hidden="true">
-          {barre.coupe !== null && <b className="l1-cut" style={{ left: `${barre.coupe.toFixed(2)}%` }} />}
-        </i>}
         <span className={`l1-mk ${inconnu ? 'l1-mk-q' : info.classe === 'epuise' ? 'l1-mk-ep' : pot === null || pot.seuil === null ? 'l1-mk-ss' : info.classe === 'bas' || info.classe === 'manque' ? 'l1-mk-bas' : ''}`}
           role={niveauConnu && !inconnu ? 'meter' : undefined}
           aria-valuenow={niveauConnu && !inconnu ? Math.round(level.fillPercent) : undefined}
@@ -74,6 +73,14 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
             ? <b className="l1-q l1-q-c">à compter</b>
             : <b className={`l1-q${item.currentStock <= 0 ? ' l1-q-0' : ''}`}>{quantiteDeLigne(item)}</b>}
         </span>
+        {/* La colonne « échelle » du tableau (≥ 900 px) ; en dessous elle n'a pas de boîte (display:contents) et la barre reste derrière la ligne. */}
+        <span className="l1-ec-c" aria-hidden="true">
+          {barre && <i className="l1-kg" style={{ ['--x' as string]: barre.x.toFixed(4) }}>
+            {barre.coupe !== null && <b className="l1-cut" style={{ left: `${barre.coupe.toFixed(2)}%` }} />}
+          </i>}
+        </span>
+        <span className="l1-c-mv">{mouvementDit ?? '—'}</span>
+        <span className="l1-c-fo">{item.supplier?.trim() || '—'}</span>
       </button>
       {(reserve || durabilite) && <div className="l1-plus">
         {reserve && <p className={reserve.connue ? 'l1-plus-r' : 'l1-plus-r l1-plus-w'}>{reserve.texte}</p>}

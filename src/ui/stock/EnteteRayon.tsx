@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ECHELLES, xBarre } from '../../domain/stock/liste';
+import { ECHELLES, xBarre, type Echelle, type TriListe } from '../../domain/stock/liste';
 import { LEGENDE_RAYON, LIRE_ECHELLE, familleTeinteGroupe, rayonDuGroupe } from '../../domain/stock/ligne';
 import './liste.css';
 
@@ -13,11 +13,28 @@ const ICONES: Record<number, string> = {
 };
 const NOM_AFFICHE: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures' };
 
+/** La règle de la barre : dessous le titre sur mobile, dans l'en-tête de tableau (colonne « échelle ») à partir de 900 px. */
+const Regle: React.FC<{ e: Echelle; rayon: string; classe: string }> = ({ e, rayon, classe }) => (
+  <div className={`l1-ech ${classe}`} aria-hidden="true" data-echelle={rayon}>
+    <em className="l1-g">{e.gauche}</em>
+    {e.droite && <em>{e.droite}</em>}
+    {e.graduations.map((g) => <i key={g.q} className={g.coude ? 'l1-c' : ''} style={{ left: `calc(var(--l1-x0) + var(--l1-tw) * ${xBarre(g.q, e).toFixed(4)})` }}>{g.texte}</i>)}
+  </div>
+);
+
+/** Le repère de la ligne par rayon (EBC, α, DDM) : le tri « par défaut » de la liste le range (couleur, amertume, date). */
+const REPERE: Record<string, string> = { Malts: 'EBC', Houblons: 'α', Levures: 'DDM' };
+
+/** Un titre de colonne qui trie vraiment : ↑ quand c'est l'ordre en cours, ↕ sinon (une flèche ne s'affiche que sur les tris que la liste sait faire). */
+const Titre: React.FC<{ texte: string; tri: TriListe; actuel?: TriListe; onTri?: (t: TriListe) => void; aria: string }> = ({ texte, tri, actuel, onTri, aria }) => (
+  <button type="button" className="l1-thb" aria-label={aria} aria-pressed={actuel === tri} onClick={() => onTri?.(tri)}>{texte} <span aria-hidden="true">{actuel === tri ? '↑' : '↕'}</span></button>
+);
+
 /**
  * L'en-tête d'un groupe de la liste : l'icône de la famille (teinte c3b), son nom et son nombre ; pour les trois rayons, la légende de l'ordre,
  * le bouton ⓘ « Lire l'échelle » et la règle de la barre, dite sur elle-même (« à l'échelle », « ⫽ resserrée au-delà de 5 kg »).
  */
-export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number }> = ({ nom, compte, sur }) => {
+export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; tri?: TriListe; onTri?: (t: TriListe) => void }> = ({ nom, compte, sur, tri, onTri }) => {
   const [dit, setDit] = useState(false);
   const rayon = rayonDuGroupe(nom);
   const fam = familleTeinteGroupe(nom);
@@ -37,11 +54,17 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M12 11v6" /><circle cx="12" cy="7.6" r=".6" fill="currentColor" /></svg>
         </button>}
       </div>
-      {e && rayon && <div className="l1-ech" aria-hidden="true" data-echelle={rayon}>
-        <em className="l1-g">{e.gauche}</em>
-        {e.droite && <em>{e.droite}</em>}
-        {e.graduations.map((g) => <i key={g.q} className={g.coude ? 'l1-c' : ''} style={{ left: `calc(var(--l1-x0) + var(--l1-tw) * ${xBarre(g.q, e).toFixed(4)})` }}>{g.texte}</i>)}
-      </div>}
+      {e && rayon && <Regle e={e} rayon={rayon} classe="l1-ech-bas" />}
+      {/* L'en-tête de tableau (≥ 900 px) : mêmes colonnes que les lignes (maquette sy/fA g6) ; le chevron de repli de la maquette n'est pas porté. */}
+      <div className="l1-th">
+        <span />
+        <Titre texte="Article" tri="nom" actuel={tri} onTri={onTri} aria="Trier par nom" />
+        {rayon ? <Titre texte={REPERE[rayon]} tri="defaut" actuel={tri} onTri={onTri} aria={`Trier par défaut : ${REPERE[rayon]}`} /> : <span />}
+        <Titre texte="En stock" tri="quantite" actuel={tri} onTri={onTri} aria="Trier par quantité" />
+        {e && rayon ? <Regle e={e} rayon={rayon} classe="l1-ech-th" /> : <span />}
+        <span className="l1-thl">Dernier mouvement</span>
+        <span className="l1-thl">Fournisseur</span>
+      </div>
       {dit && rayon && <p className="l1-dit" data-dit>{LIRE_ECHELLE[rayon]}</p>}
     </div>
   );
