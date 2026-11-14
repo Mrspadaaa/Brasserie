@@ -1,0 +1,29 @@
+[clair] gain: fond rgb(86, 210, 123), image none, bord dashed 2px, hauteur 286px
+[clair] segment « Brassage 15,20 CHF, voir ces opérations  » 4px, 2 textes
+[clair] segment « Autres frais 250,20 CHF, voir ces opérat » 10px, 2 textes
+[clair] légende « payé » : rgb(152, 86, 210) ABSENTE
+[clair] vente « Vente 10 × Bière · 75 cl — Restaurant du Lac » : 3 ligne(s)
+[cave] gain: fond rgb(86, 210, 123), image none, bord dashed 2px, hauteur 286px
+[cave] segment « Brassage 15,20 CHF, voir ces opérations  » 4px, 2 textes
+[cave] segment « Autres frais 250,20 CHF, voir ces opérat » 10px, 2 textes
+[cave] légende « payé » : rgb(152, 86, 210) ABSENTE
+[cave] vente « Vente 10 × Bière · 75 cl — Restaurant du Lac » : 3 ligne(s)
+ECHEC · [clair] zone du gain remplie (fond rgb(86, 210, 123) none) : g3a la dessine en pointillé vide
+ECHEC · [clair] segment « Brassage 15,20 CHF, voir ces opérations de novembre » 4.3px (< 10 px)
+ECHEC · [clair] « Brassage » déborde du segment « Brassage 15,20 CHF, voir ces o » (texte 444–460, segment 442–446)
+ECHEC · [clair] « 15,20 » déborde du segment « Brassage 15,20 CHF, voir ces o » (texte 444–460, segment 442–446)
+ECHEC · [clair] segment « Autres frais 250,20 CHF, voir ces opérations de novembre » 9.7px (< 10 px)
+ECHEC · [clair] « Autres frais » déborde du segment « Autres frais 250,20 CHF, voir  » (texte 449–465, segment 446–456)
+ECHEC · [clair] « 250,20 » déborde du segment « Autres frais 250,20 CHF, voir  » (texte 449–465, segment 446–456)
+ECHEC · [clair] pastille « payé » rgb(152, 86, 210) : couleur d'aucun segment visible
+ECHEC · [clair] libellé de vente sur 3 lignes (« Vente 10 × Bière · 75 cl — Restaurant du Lac »)
+ECHEC · [cave] zone du gain remplie (fond rgb(86, 210, 123) none) : g3a la dessine en pointillé vide
+ECHEC · [cave] segment « Brassage 15,20 CHF, voir ces opérations de novembre » 4.3px (< 10 px)
+ECHEC · [cave] « Brassage » déborde du segment « Brassage 15,20 CHF, voir ces o » (texte 444–460, segment 442–446)
+ECHEC · [cave] « 15,20 » déborde du segment « Brassage 15,20 CHF, voir ces o » (texte 444–460, segment 442–446)
+ECHEC · [cave] segment « Autres frais 250,20 CHF, voir ces opérations de novembre » 9.7px (< 10 px)
+ECHEC · [cave] « Autres frais » déborde du segment « Autres frais 250,20 CHF, voir  » (texte 449–465, segment 446–456)
+ECHEC · [cave] « 250,20 » déborde du segment « Autres frais 250,20 CHF, voir  » (texte 449–465, segment 446–456)
+ECHEC · [cave] pastille « payé » rgb(152, 86, 210) : couleur d'aucun segment visible
+ECHEC · [cave] libellé de vente sur 3 lignes (« Vente 10 × Bière · 75 cl — Restaurant du Lac »)
+SYNTHESE ECHEC
