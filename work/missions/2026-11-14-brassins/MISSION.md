@@ -40,6 +40,12 @@ Ses brassins réels : jamais d'écriture.
 | p2b | passe 2 de s2a (défauts de t1 corrigés, greffes) | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/p2b/` | t1 | GATES.md, controle-choix.mjs, baseline, controle-panel.mjs | brasseur | passe 2 |
 | p2c | passe 2 de s3b (défauts de t1 corrigés, greffes) | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/p2c/` | t1 | GATES.md, controle-choix.mjs, baseline, controle-panel.mjs | brasseur | passe 2 |
 | pg | page de choix : 15 v0 et 4 passes 2, captures, verifier-page | mécanique | executant | haiku | 30 | `work/missions/2026-11-14-brassins/page/` | p2a, p2b, p2c | verifier-page.mjs --page-lot | pilote | — |
+| pg2 | page de choix neuve : 12 variantes s4 à s7 | mécanique | executant | haiku | 30 | `work/missions/2026-11-14-brassins/page2/` | f2a, f2b | verifier-page.mjs --page-lot | pilote | — |
+| c3 | critique du refus (« Pas super fan de aucun »), causes et 4 genres neufs | jugement | critique | opus | 30 | `work/missions/2026-11-14-brassins/voies/c3/` | pg | GATES.md | pilote | tri |
+| s4 | série G1 « tableau de cuverie », 3 mini maquettes | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/s4/` | c3 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×3 (1 froide, 1 tiède, 1 chaude) |
+| s5 | série G2 « trois cadrans, un bouton », 3 mini maquettes | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/s5/` | c3 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×3 (1 froide, 1 tiède, 1 chaude) |
+| s6 | série G3 « conduite de z1 transposée », 3 mini maquettes | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/s6/` | c3 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×3 (1 froide, 1 tiède, 1 chaude) |
+| s7 | série G4 « dry hop en question », 3 mini maquettes | conception | concepteur | opus | 45 | `work/missions/2026-11-14-brassins/voies/s7/` | c3 | GATES.md, controle-choix.mjs, baseline (BRIEF-AUTEUR, NOTE cochée) | brasseur | v0 ×3 (1 froide, 1 tiède, 1 chaude) |
 
 ## Agents
 Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids « créatif à fond » de M13 passe en Opus (s3, brief minimal). Le refus « aucune série en Fable » de systeme.mjs reste assumé.
@@ -48,6 +54,7 @@ Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids �
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Brassins · fiche et fermentation (s1e2, s1g, s2a2, s3b2 ; panel v0 de 15 ; critique : s1e, s2a, s3b) | 14.11 passe 2 | https://claude.ai/artifact/Jis8k1YGo26euJoLVKiMDv | `work/missions/2026-11-14-brassins/page/index.html` |
+| Brassins · nouvelles versions (12 : s4 à s7, quatre genres, après « Pas super fan de aucun ») | 14.11 v0 corrigée | https://claude.ai/artifact/SqU1y2jQgMAX8tX6MKn9qL | `work/missions/2026-11-14-brassins/page2/index.html` |
 
 ## Boucle de retour
 Voie en échec : relance ciblée chez un agent neuf (D207), 2 fois au plus. Plainte du brasseur : SPEC, DEFAUTS-RECURRENTS, contrôle.
@@ -61,6 +68,7 @@ Plafond visé : 2 analyses, 3 concepteurs v0, 1 critique, 3 passes 2 légères.
 
 ## Signature
 - Fait : a1 (banc, 156 captures, TROUS), a2 (36 problèmes, 4 bloquants), jury normal en Opus (fiche), v0 15 (s1 à s3, finis par f1), tri t1 (s1e, s2a, s3b), passes 2 (s1e2, s1g, s2a2, s3b2), critique c2 (7 bloquants, corrigés par c2f), page pg (PAGE OK), publiée.
-- Ouvert : son choix sur la page ; puis port 1:1 (voie à écrire), correctif du filtre de période (App.tsx:171), champs °C de cuve et dry hop daté (accord avant écriture), déploiement (accord).
+- 14.11, refus de la page 1 (« Pas super fan de aucun ») : critique c3 (7 causes, 4 genres), séries s4 à s7 (12), critiques c4a et c4b (20 bloquants), corrigés par f2a et f2b, page pg2 (PAGE OK), publiée. Réserves : 8 non bloquants de s5 laissés (f2a).
+- Ouvert : son choix sur la page 2 ; puis port 1:1 (voie à écrire), correctif du filtre de période (App.tsx:171), champs °C de cuve et dry hop daté (accord avant écriture), déploiement (accord).
 - systeme.mjs mission : seul refus restant « aucune série en Fable », assumé (Fable interdit).
 - Leçons proposées, à traiter : concepteurs v0 arrêtés à 200 k (s1, s3, p2a) : brief v0 plus serré, contrôles COMMUN/PANEL laissés au tri ; fichiers de travail dans os.tmpdir() préfixés par l'id de voie (collision p2a/p2b) ; avant « ses mots sont rares », chercher l'objet sous d'autres noms (cuve, rail, J+n) ; une convention (origine de J+n, deux températures) se lit dans le code avant d'être recommandée.
