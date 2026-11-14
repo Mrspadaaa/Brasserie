@@ -6,8 +6,8 @@
  * partout, `gemini-3.5-flash-lite` seulement pour les usages où le banc réel
  * #91 l'a mesuré plus rapide sans perte (`LITE_ROUTES`), et, depuis le 14
  * novembre, `gemini-4-hydrogen` pour la seule 3ᵉ lecture des justificatifs
- * (`INVOICE_STRONG_MODEL`) et, depuis la voie h3, pour l'analyse du compagnon
- * hors mode Approfondi (`brewerAnalysisAttempts`). Le client ne choisit jamais le modèle. Le repli
+ * (`INVOICE_STRONG_MODEL`) et, depuis les voies h3 et h4, pour l'analyse du compagnon
+ * (`brewerAnalysisAttempts` ; en Approfondi : réflexion moyenne). Le client ne choisit jamais le modèle. Le repli
  * reste sur 3.8 : une réponse lite ou Hydrogen inutilisable, ou une panne,
  * passe une fois sur 3.8, puis l'utilisateur reçoit une erreur claire.
  *
@@ -29,7 +29,7 @@ export const GEMINI_LITE_MODEL = 'gemini-3.5-flash-lite';
 /**
  * `gemini-4-hydrogen` : la 3ᵉ lecture des justificatifs (voie h1, 14.11 : « pas beaucoup plus long et pas mal mieux »). Banc g1, moitié impaire,
  * réflexion basse : 93 lignes justes sur 108 contre 78 pour la 3.8, 3ᵉ lecture p50 19,8 s contre 14,0 s, même tarif (1,50 $ / 7,50 $ le million).
- * Autres usages : seulement l'analyse du compagnon (`brewerAnalysisAttempts`, voie h3) ; les imports, les fiches, la relecture et la recherche du compagnon gardent la 3.8.
+ * Autres usages : l'analyse du compagnon (`brewerAnalysisAttempts`, voie h3 ; Approfondi : voie h4) ; les imports, les fiches, la relecture et la recherche du compagnon gardent la 3.8.
  */
 export const INVOICE_STRONG_MODEL = 'gemini-4-hydrogen';
 /** La réflexion de la 3ᵉ lecture : basse (medium et high n'ont rien apporté à Hydrogen au banc g1 : 92 lignes justes dans les deux cas). */

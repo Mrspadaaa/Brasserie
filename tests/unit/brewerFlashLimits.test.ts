@@ -79,6 +79,23 @@ describe('Délais de l’équipe Flash', () => {
     expect(generate.mock.calls.map(([model]) => model)).toEqual(['gemini-4-hydrogen', 'gemini-3.8-flash']);
   });
 
+  it('en Approfondi, coupe Hydrogen à 40 secondes et laisse à 3.8 les 20 secondes restantes des 60 secondes de l’appel (voie h4)', async () => {
+    const signals: AbortSignal[] = [];
+    const generate = vi.fn<Generate>((_model, _body, signal) => {
+      signals.push(signal);
+      return untilAborted(signal);
+    });
+    const result = outcome(runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' }));
+    await vi.advanceTimersByTimeAsync(39_999);
+    expect(generate).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(generate).toHaveBeenCalledTimes(2);
+    expect(signals[1].aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(20_000);
+    await expect(result).resolves.toMatchObject({ error: { name: 'TimeoutError' } });
+    expect(generate.mock.calls.map(([model]) => model)).toEqual(['gemini-4-hydrogen', 'gemini-3.8-flash']);
+  });
+
   it('partage les 45 secondes de recherche avec sa nouvelle tentative puis conclut sans inventer de source', async () => {
     const researchSignals: AbortSignal[] = [];
     let analyses = 0;

@@ -287,20 +287,20 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(new Set(result.evidence.map(entry => (entry.data as any).query)).size).toBe(2);
     expect(result.reviewed).toBe(true);
   });
-  it('approfondi reste sur 3.8 avec plus de réflexion à chaque étape, sans retirer la relecture indépendante', async () => {
+  it('approfondi : l’analyse sur Hydrogen en réflexion moyenne à chaque étape (voie h4), la relecture indépendante gardée sur 3.8', async () => {
     const generate = vi
       .fn()
       .mockResolvedValueOnce(toolCall('calculate_recipe', {}))
       .mockResolvedValueOnce(done())
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
-    expect(generate.mock.calls.map((c) => c[0])).toEqual(Array(3).fill('gemini-3.8-flash'));
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([H, H, B]);
     expect(
       generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
-    ).toEqual(['high', 'medium', 'medium']);
+    ).toEqual(['medium', 'medium', 'medium']);
     // Deep reasoning and the structured answer share the output budget.
     expect(generate.mock.calls.map((c) => c[1].generationConfig.maxOutputTokens)).toEqual(Array(3).fill(12000));
-    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash' });
+    expect(result).toMatchObject({ model: H, reviewModel: B });
     expect(
       generate.mock.calls[2][1].generationConfig.responseSchema.properties.approved
     ).toBeDefined();
@@ -315,7 +315,7 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
     expect(
       generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
-    ).toEqual(['high', 'medium', 'high', 'high']);
+    ).toEqual(['medium', 'medium', 'medium', 'high']);
   });
   it.each([undefined, true, false])('redimensionne l’eau et conserve la concentration des sels (tous à l’empâtage : %s)', (allSaltsInMash) => {
     const c = context();
@@ -722,7 +722,7 @@ describe('Validation serveur et relecture indépendante', () => {
     expect(call.mock.calls[3][0]).toBe(B);
     expect(result.reviewReason).toBe('repair');
   });
-  it('garde 3.8 pour l’analyse et la relecture approfondies', async () => {
+  it('approfondi : Hydrogen pour l’analyse, 3.8 pour la relecture', async () => {
     const call = vi
       .fn()
       .mockResolvedValueOnce(done())
@@ -730,12 +730,35 @@ describe('Validation serveur et relecture indépendante', () => {
     const result = await runBrewerHarness(context(), 'Question', [], call, {
       mode: 'deep'
     });
-    expect(call.mock.calls.map((c) => c[0])).toEqual([
-      'gemini-3.8-flash',
-      'gemini-3.8-flash'
-    ]);
-    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash' });
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+    expect(call.mock.calls[0][1].generationConfig).toMatchObject({ maxOutputTokens: 12000, thinkingConfig: { thinkingLevel: 'medium' } });
+    expect(result).toMatchObject({ model: H, reviewModel: B });
     expect(result.reviewReason).toBe('requested');
+  });
+  describe('mode Approfondi sur Hydrogen (voie h4)', () => {
+    it('une panne d’Hydrogen en Approfondi reprend sur 3.8 avec l’ancienne réflexion (haute à la décision), et les étapes suivantes restent sur 3.8', async () => {
+      const call = vi.fn()
+        .mockRejectedValueOnce(new GeminiApiError(503, H, 'server'))
+        .mockResolvedValueOnce(done())
+        .mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B]);
+      expect(call.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)).toEqual(['medium', 'high', 'medium']);
+      expect(result).toMatchObject({ model: B, reviewModel: B, reviewReason: 'requested' });
+    });
+    it('une réponse d’Hydrogen coupée au plafond de sortie en Approfondi reprend sur 3.8', async () => {
+      const cut = { candidates: [{ content: { role: 'model', parts: [{ text: '{"summary":"coup' }] }, finishReason: 'MAX_TOKENS' }] };
+      const call = vi.fn().mockResolvedValueOnce(cut).mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B]);
+      expect(result.model).toBe(B);
+    });
+    it('hors Approfondi, rien ne change : analyse Hydrogen basse, relecture 3.8', async () => {
+      const call = vi.fn().mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+      await runBrewerHarness(context(), 'Question', [], call, { mode: 'fast' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+      expect(call.mock.calls[0][1].generationConfig.thinkingConfig.thinkingLevel).toBe('low');
+    });
   });
   describe('analyse du compagnon sur Hydrogen (voie h3)', () => {
     it('l’analyse part sur Hydrogen en réflexion basse, la relecture sur 3.8, sans changer le plafond de sortie', async () => {
@@ -873,12 +896,12 @@ describe('Validation serveur et relecture indépendante', () => {
       expect(call.mock.calls.at(-1)![1].contents).not.toBe(synthesis.contents);
     }
   );
-  it('approfondi retente une fois sur 3.8, sans aucun autre modèle, lorsque le fournisseur échoue', async () => {
+  it('approfondi retente une fois sur 3.8 après Hydrogen, sans aucun autre modèle, lorsque le fournisseur échoue', async () => {
     const call = vi.fn().mockRejectedValue(new Error('Gemini HTTP 503'));
     await expect(
       runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' })
     ).rejects.toThrow('Gemini HTTP 503');
-    expect(call.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.8-flash']);
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
   });
   it('retente le chercheur web sur 3.8 seulement en cas de panne', async () => {
     const call = vi
