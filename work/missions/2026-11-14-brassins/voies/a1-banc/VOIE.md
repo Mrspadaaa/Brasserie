@@ -45,5 +45,7 @@ Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depui
 
 ## Rendre
 - `RESULTAT.md` tenu au fil (tous les 5 éléments), avec la commande exacte qui rejoue le banc.
-- Pas de test Vitest à écrire ; `tests.txt` : la sortie du banc.
+- Pas de test Vitest à écrire. La ligne « Tests » écrite dans un fichier : la sortie du banc dans `tests.txt`, et les tests
+  existants des brassins rejoués pour l'état de départ : `npx vitest run tests/integration/batch* --reporter=dot > work/missions/2026-11-14-brassins/voies/a1-banc/tests-base.txt` (rouges dits, pas laissés).
+- Voie d'écran : captures 390 tactile et 1280, clair et cave, toutes ouvertes.
 Réponse finale au pilote : une ligne.

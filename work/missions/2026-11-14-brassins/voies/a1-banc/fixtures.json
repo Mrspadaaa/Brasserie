@@ -1,0 +1,497 @@
+[
+  {
+    "id": "ZZ-001",
+    "name": "ZZ Pale Ale planifiée",
+    "style": "American Pale Ale",
+    "volumeL": 45,
+    "status": "planifie",
+    "brewDate": "",
+    "plannedBrewDate": "2026-11-08",
+    "recipeSnapshot": {
+      "name": "ZZ Pale Ale planifiée",
+      "style": "American Pale Ale",
+      "volumeL": 45,
+      "ogTarget": 1.062,
+      "fgTarget": 1.012,
+      "abvTarget": 6.6,
+      "ibuTarget": 55,
+      "colorEbc": 12,
+      "boilMin": 60,
+      "totalGristKg": 10.4,
+      "fermentables": [
+        {
+          "name": "ZZ Pale Ale (malt fictif)",
+          "weightKg": 9.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 88
+        },
+        {
+          "name": "ZZ Froment (malt fictif)",
+          "weightKg": 1.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 12
+        }
+      ],
+      "hops": [
+        {
+          "name": "ZZ Houblon amer",
+          "alpha": 13,
+          "weightG": 40,
+          "stage": "boil",
+          "timeMin": 60
+        },
+        {
+          "name": "ZZ Houblon arôme",
+          "alpha": 12,
+          "weightG": 120,
+          "stage": "whirlpool",
+          "timeMin": 20,
+          "tempC": 80
+        },
+        {
+          "name": "ZZ Houblon arôme",
+          "alpha": 12,
+          "weightG": 180,
+          "stage": "dryHop",
+          "dayOffset": 6
+        }
+      ],
+      "yeast": {
+        "name": "ZZ Levure américaine",
+        "strain": "ZZ-05",
+        "form": "sèche",
+        "qty": 22,
+        "unit": "g"
+      },
+      "fermentation": [
+        {
+          "kind": "primaire",
+          "name": "Primaire",
+          "tempC": 19,
+          "days": 10
+        }
+      ],
+      "steps": [],
+      "notes": []
+    }
+  },
+  {
+    "id": "ZZ-002",
+    "name": "ZZ NEIPA en fermentation",
+    "style": "New England IPA",
+    "volumeL": 45,
+    "status": "fermentation",
+    "brewDate": "2026-11-09",
+    "plannedBrewDate": "2026-11-09",
+    "og": "1,062",
+    "volumeBrewedL": 42.5,
+    "recipeSnapshot": {
+      "name": "ZZ NEIPA en fermentation",
+      "style": "New England IPA",
+      "volumeL": 45,
+      "ogTarget": 1.062,
+      "fgTarget": 1.012,
+      "abvTarget": 6.6,
+      "ibuTarget": 55,
+      "colorEbc": 12,
+      "boilMin": 60,
+      "totalGristKg": 10.4,
+      "fermentables": [
+        {
+          "name": "ZZ Pale Ale (malt fictif)",
+          "weightKg": 9.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 88
+        },
+        {
+          "name": "ZZ Froment (malt fictif)",
+          "weightKg": 1.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 12
+        }
+      ],
+      "hops": [
+        {
+          "name": "ZZ Houblon amer",
+          "alpha": 13,
+          "weightG": 40,
+          "stage": "boil",
+          "timeMin": 60
+        },
+        {
+          "name": "ZZ Houblon arôme",
+          "alpha": 12,
+          "weightG": 120,
+          "stage": "whirlpool",
+          "timeMin": 20,
+          "tempC": 80
+        },
+        {
+          "name": "ZZ Houblon arôme",
+          "alpha": 12,
+          "weightG": 180,
+          "stage": "dryHop",
+          "dayOffset": 6
+        }
+      ],
+      "yeast": {
+        "name": "ZZ Levure américaine",
+        "strain": "ZZ-05",
+        "form": "sèche",
+        "qty": 22,
+        "unit": "g"
+      },
+      "fermentation": [
+        {
+          "kind": "primaire",
+          "name": "Primaire",
+          "tempC": 19,
+          "days": 10
+        }
+      ],
+      "steps": [],
+      "notes": []
+    },
+    "brewDay": {
+      "steps": [],
+      "currentIndex": 0,
+      "startedAt": 1794222000000,
+      "finishedAt": 1794243600000,
+      "pitchedAt": 1794243600000,
+      "pitchTemperatureC": 19,
+      "pitchQuantityConfirmation": "measured"
+    },
+    "gravityLog": [
+      {
+        "date": "2026-11-10",
+        "sg": 1.048,
+        "tempC": 19
+      },
+      {
+        "date": "2026-11-12",
+        "sg": 1.026,
+        "tempC": 19.5
+      },
+      {
+        "date": "2026-11-13",
+        "sg": 1.018,
+        "tempC": 20.5
+      }
+    ],
+    "stockAccountingVersion": 1,
+    "stockConsumption": {
+      "appliedAt": "2026-11-09T17:00:00.000Z",
+      "eventId": "ZZ-evt",
+      "items": [],
+      "pendingItems": [
+        {
+          "stockItemRef": "ZZ-HOP-ARO",
+          "quantity": 180,
+          "unit": "g"
+        }
+      ],
+      "completedStages": [
+        "brewday"
+      ]
+    }
+  },
+  {
+    "id": "ZZ-003",
+    "name": "ZZ Pils en garde froide",
+    "style": "Pilsner",
+    "volumeL": 45,
+    "status": "garde",
+    "brewDate": "2026-10-27",
+    "plannedBrewDate": "2026-10-27",
+    "og": "1,050",
+    "volumeBrewedL": 43,
+    "recipeSnapshot": {
+      "name": "ZZ Pils en garde froide",
+      "style": "Pilsner",
+      "volumeL": 45,
+      "ogTarget": 1.05,
+      "fgTarget": 1.01,
+      "abvTarget": 5.2,
+      "ibuTarget": 55,
+      "colorEbc": 12,
+      "boilMin": 60,
+      "totalGristKg": 10.4,
+      "fermentables": [
+        {
+          "name": "ZZ Pale Ale (malt fictif)",
+          "weightKg": 9.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 88
+        },
+        {
+          "name": "ZZ Froment (malt fictif)",
+          "weightKg": 1.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 12
+        }
+      ],
+      "hops": [],
+      "yeast": {
+        "name": "ZZ Levure américaine",
+        "strain": "ZZ-05",
+        "form": "sèche",
+        "qty": 22,
+        "unit": "g"
+      },
+      "fermentation": [
+        {
+          "kind": "primaire",
+          "name": "Primaire",
+          "tempC": 19,
+          "days": 10
+        }
+      ],
+      "steps": [],
+      "notes": []
+    },
+    "brewDay": {
+      "steps": [],
+      "currentIndex": 0,
+      "finishedAt": 1793120400000,
+      "pitchedAt": 1793120400000,
+      "pitchTemperatureC": 11,
+      "pitchQuantityConfirmation": "measured"
+    },
+    "gravityLog": [
+      {
+        "date": "2026-10-31",
+        "sg": 1.03,
+        "tempC": 11
+      },
+      {
+        "date": "2026-11-05",
+        "sg": 1.014,
+        "tempC": 12
+      },
+      {
+        "date": "2026-11-10",
+        "sg": 1.01,
+        "tempC": 12
+      }
+    ],
+    "stockAccountingVersion": 1,
+    "stockConsumption": {
+      "appliedAt": "2026-10-27T17:00:00.000Z",
+      "eventId": "ZZ-evt",
+      "items": [],
+      "pendingItems": [],
+      "completedStages": [
+        "brewday",
+        "remaining"
+      ]
+    }
+  },
+  {
+    "id": "ZZ-004",
+    "name": "ZZ Stout conditionné",
+    "style": "Stout",
+    "volumeL": 45,
+    "status": "conditionne",
+    "brewDate": "2026-10-15",
+    "plannedBrewDate": "2026-10-15",
+    "og": "1,058",
+    "fg": "1,014",
+    "abv": "5.8%",
+    "volumeBrewedL": 42,
+    "volumePackagedL": 38.5,
+    "bottlingDate": "2026-11-06",
+    "packaging": {
+      "bottles33": 30,
+      "bottles75": 0,
+      "kegIds": [
+        "ZZ-F01"
+      ]
+    },
+    "recipeSnapshot": {
+      "name": "ZZ Stout conditionné",
+      "style": "Stout",
+      "volumeL": 45,
+      "ogTarget": 1.058,
+      "fgTarget": 1.014,
+      "abvTarget": 5.8,
+      "ibuTarget": 55,
+      "colorEbc": 12,
+      "boilMin": 60,
+      "totalGristKg": 10.4,
+      "fermentables": [
+        {
+          "name": "ZZ Pale Ale (malt fictif)",
+          "weightKg": 9.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 88
+        },
+        {
+          "name": "ZZ Froment (malt fictif)",
+          "weightKg": 1.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 12
+        }
+      ],
+      "hops": [],
+      "yeast": {
+        "name": "ZZ Levure américaine",
+        "strain": "ZZ-05",
+        "form": "sèche",
+        "qty": 22,
+        "unit": "g"
+      },
+      "fermentation": [
+        {
+          "kind": "primaire",
+          "name": "Primaire",
+          "tempC": 19,
+          "days": 10
+        }
+      ],
+      "steps": [],
+      "notes": []
+    },
+    "brewDay": {
+      "steps": [],
+      "currentIndex": 0,
+      "finishedAt": 1792080000000,
+      "pitchedAt": 1792080000000,
+      "pitchTemperatureC": 18,
+      "pitchQuantityConfirmation": "measured"
+    },
+    "gravityLog": [
+      {
+        "date": "2026-10-19",
+        "sg": 1.03,
+        "tempC": 18.5
+      },
+      {
+        "date": "2026-10-25",
+        "sg": 1.016,
+        "tempC": 19
+      }
+    ],
+    "carbonation": {
+      "method": "priming",
+      "targetCo2Vol": 2.4,
+      "sugarG": 120
+    },
+    "stockAccountingVersion": 1,
+    "stockConsumption": {
+      "appliedAt": "2026-10-15T16:00:00.000Z",
+      "eventId": "ZZ-evt",
+      "items": [],
+      "pendingItems": [],
+      "completedStages": [
+        "brewday",
+        "remaining"
+      ]
+    }
+  },
+  {
+    "id": "ZZ-005",
+    "name": "ZZ Saison close",
+    "style": "Saison",
+    "volumeL": 45,
+    "status": "termine",
+    "brewDate": "2026-08-31",
+    "plannedBrewDate": "2026-08-31",
+    "og": "1,052",
+    "fg": "1,006",
+    "abv": "6.0%",
+    "volumeBrewedL": 43,
+    "volumePackagedL": 40,
+    "bottlingDate": "2026-09-25",
+    "packaging": {
+      "bottles33": 60,
+      "bottles75": 20,
+      "kegIds": []
+    },
+    "notesTasting": "ZZ Dégustation fictive : sèche, poivrée, belle mousse. À refaire avec un peu plus de houblon.",
+    "recipeSnapshot": {
+      "name": "ZZ Saison close",
+      "style": "Saison",
+      "volumeL": 45,
+      "ogTarget": 1.052,
+      "fgTarget": 1.006,
+      "abvTarget": 6,
+      "ibuTarget": 55,
+      "colorEbc": 12,
+      "boilMin": 60,
+      "totalGristKg": 10.4,
+      "fermentables": [
+        {
+          "name": "ZZ Pale Ale (malt fictif)",
+          "weightKg": 9.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 88
+        },
+        {
+          "name": "ZZ Froment (malt fictif)",
+          "weightKg": 1.2,
+          "kind": "grain",
+          "use": "mash",
+          "pct": 12
+        }
+      ],
+      "hops": [],
+      "yeast": {
+        "name": "ZZ Levure américaine",
+        "strain": "ZZ-05",
+        "form": "sèche",
+        "qty": 22,
+        "unit": "g"
+      },
+      "fermentation": [
+        {
+          "kind": "primaire",
+          "name": "Primaire",
+          "tempC": 19,
+          "days": 10
+        }
+      ],
+      "steps": [],
+      "notes": []
+    },
+    "brewDay": {
+      "steps": [],
+      "currentIndex": 0,
+      "finishedAt": 1788192000000,
+      "pitchedAt": 1788192000000,
+      "pitchTemperatureC": 22,
+      "pitchQuantityConfirmation": "measured"
+    },
+    "gravityLog": [
+      {
+        "date": "2026-09-05",
+        "sg": 1.02,
+        "tempC": 24
+      },
+      {
+        "date": "2026-09-13",
+        "sg": 1.008,
+        "tempC": 25
+      }
+    ],
+    "stockAccountingVersion": 1,
+    "stockConsumption": {
+      "appliedAt": "2026-08-31T16:00:00.000Z",
+      "eventId": "ZZ-evt",
+      "items": [],
+      "pendingItems": [],
+      "completedStages": [
+        "brewday",
+        "remaining"
+      ]
+    }
+  }
+]
