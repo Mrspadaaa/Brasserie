@@ -66,7 +66,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
   const hPileDepense = ecrasee ? Math.min(nSegments * SEGMENT_MIN, HAUTEUR - 10) : ech.hPileDepense;
   const hEcart = ecrasee ? HAUTEUR - hPileDepense : ech.hEcart;
   const segMin = ecrasee ? { minHeight: SEGMENT_MIN } : {};
-  const dominant = payes.reduce<(typeof payes)[number] | null>((m, x) => !m || x.payeCents > m.payeCents ? x : m, null);
+  // Légende « payé » : les couleurs des charges payées dessinées (une pastille par couleur, en bandes quand il y en a plusieurs, comme le « payé » de v6a).
+  const couleursPayees = [...new Set(payes.map(x => couleur(x.categorie)))];
   const pctDe = (cents: number) => p.depenseCents > 0 ? cents * 100 / p.depenseCents : 0;
   // Une étiquette ne s'écrit que si la tranche est assez haute pour la porter : sinon elle déborde sur sa voisine (« tout » : Solde atelier sur Loyer).
   const pxDe = (cents: number) => p.depenseCents > 0 ? Math.max(ecrasee ? SEGMENT_MIN : 0, cents * hPileDepense / p.depenseCents) : 0;
@@ -94,12 +95,14 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
               <span className="syn-tag">À encaisser <span className="syn-m">{amountOnly(p.entreAEncaisserCents)}</span></span>
             </div>}
           </div>
-          : !perte && !vide && <div className="syn-pile syn-pile-zero"/>}
+          : vide ? <div className="syn-pile-vide" style={{ height: HAUTEUR }}><p>Aucune écriture sur cette période.</p></div>
+          : !perte && <div className="syn-pile syn-pile-zero"/>}
       </div>
 
       <div className="syn-col">
         <div className="syn-hc"><span>Dépensé</span><span className="syn-m">{amountOnly(p.depenseCents)}</span></div>
         {gain && <div className="syn-ecart syn-ecart-gain" style={{ height: hEcart }} aria-hidden="true"/>}
+        {vide && <div className="syn-pile-vide" style={{ height: HAUTEUR }} aria-hidden="true"/>}
         {p.depenseCents > 0 && <div className="syn-pile" style={{ height: hPileDepense, borderRadius: gain ? '0 0 10px 10px' : 10 }}>
           {payes.map(x => <button type="button" key={x.categorie} className="syn-s" style={{ flex: x.payeCents, background: couleur(x.categorie), color: texteSur(x.categorie), ...segMin }}
             aria-label={`${libelleCategorie(x.categorie)} ${formatCHF(x.payeCents)}, voir ces opérations de ${nomPeriode}`} onClick={() => onCategorie(x.categorie)}>
@@ -125,11 +128,11 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
         <div className={`syn-gb syn-gb-${ech.signe}`} role="status">{pastille}</div>
         <button type="button" className="syn-why" onClick={onPourquoi}><span aria-hidden="true">✦ </span>Pourquoi ?</button>
       </div>}
-      {vide && <p className="syn-vide">Aucune écriture sur cette période.</p>}
     </div>
     <div className="syn-leg">
       {/* La légende reprend les couleurs vues : le plus gros segment payé, la catégorie du premier reste à payer (jamais le violet des charges fixes par défaut). */}
-      {dominant && <span><i style={{ background: couleur(dominant.categorie) }}/>payé</span>}
+      {couleursPayees.length === 1 && <span><i style={{ background: couleursPayees[0] }}/>payé</span>}
+      {couleursPayees.length > 1 && <span><span className="syn-bandes" aria-hidden="true">{couleursPayees.map(c => <i key={c} style={{ background: c }}/>)}</span>payé</span>}
       {p.aPayer.length > 0 && <span><i style={{ backgroundImage: hachure(p.aPayer[0].categorie) }}/>à payer</span>}
       {p.aEncaisser.length > 0 && <span><i style={{ backgroundImage: hachure('recettes') }}/>à encaisser</span>}
       {/* data-renvoi="aucun" : la légende nomme la hachure ; la ligne-tâche « Confirmer les paiements (n) › » de « À vérifier », juste en dessous, ouvre le journal filtré. */}

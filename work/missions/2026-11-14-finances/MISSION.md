@@ -42,6 +42,7 @@ Fini : Opérations porté en v6a ; un filtre du jour au jour choisi par lui en m
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Opérations du … au … | v0 + passe 2 ; 14.11 | https://claude.ai/artifact/2xGEV9qoGgzadUBHVm2dsU | `work/refonte-frontend/v4/outils/pages/2026-11-14-finances-plage/index.html` |
 
 ## Boucle de retour
 Rejet du critique → agent neuf sur brief serré, 2 fois au plus, ou variante écartée. Plainte du brasseur → SPEC mot pour mot → DEFAUTS-RECURRENTS et contrôle rouge sur la version rejetée.
@@ -56,3 +57,6 @@ D207 : v0 au repos plus un état ; un critique Opus ; agents neufs pour toute re
 
 ## Signature
 (à venir)
+
+## Choix du brasseur
+- s2ap2 choisie : « Ça j'adore / Peut être juste un peu plus compact et toujours un endroit pour mettre des chiffres pour la version de l'ordinateur » (14.11). Port : voie f1.

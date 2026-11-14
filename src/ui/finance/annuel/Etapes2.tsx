@@ -2,7 +2,7 @@ import React from 'react';
 import { nombreFr } from '../../../domain/nombreAffiche';
 import { Beer, Car, Check, Copy, Download, House, Loader2, Lock, Plus, Smartphone, Zap, type LucideIcon } from 'lucide-react';
 import { Cadre, Etoile } from './Etapes';
-import { baseProposee, justificatifs, materielPret, piecesAClasser, resultatEnAttente, ticketFortune, ticketRevenu, TUILES_PRIVEES } from './calculs';
+import { baseProposee, colonnesAnnee, justificatifs, materielPret, piecesAClasser, resultatEnAttente, ticketFortune, ticketRevenu, TUILES_PRIVEES } from './calculs';
 import { TAX_REVIEWS } from '../../../domain/finance/fribourgTax';
 import { montant } from '../previsions/format';
 import { DriveConnection } from '../DriveConnection';
@@ -76,7 +76,8 @@ export function versManque(m: string, c: Ctx): (() => void) | null {
 }
 
 export function Etape8({ c }: { c: Ctx }) {
-  const rev = ticketRevenu(c.report, c.tax), fo = ticketFortune(c.report, c.tax), attente = resultatEnAttente(c.report, piecesAClasser(c.transactions, c.assets, c.year));
+  const rev = ticketRevenu(c.report, c.tax), fo = ticketFortune(c.report, c.tax), aClasserListe = piecesAClasser(c.transactions, c.assets, c.year), attente = resultatEnAttente(c.report, aClasserListe);
+  const aClasserCents = aClasserListe.reduce((n, p) => n + p.chargeCents, 0);
   const champ = (id: string) => c.tax.fields.find(f => f.id === id);
   // Le domaine écrit « Justificatif manquant : <identifiant> — <description>. » : l'identifiant technique ne s'affiche pas, la pièce se reconnaît à sa description.
   const lisible = (m: string) => { const r = /^Justificatif manquant : \S+ — (.*?)\.?$/.exec(m); return r ? `${r[1]} : justificatif manquant` : m; };
@@ -88,7 +89,7 @@ export function Etape8({ c }: { c: Ctx }) {
     {!c.tax.mappingVerified && <a className="ann-gele ann-gele-a" href={c.tax.sourceUrl} target="_blank" rel="noreferrer">Les instructions vérifiées concernent {c.tax.sourceYear} : les codes {c.year} sont à confirmer avant le report ›</a>}
     <div className="ann-cp"><h4>{champ('income')?.label ?? 'Revenu de la brasserie'}</h4>
       {rev.aReporterCents != null ? <span className="ann-m big">{montant(rev.aReporterCents)}</span> : attente ? <><button type="button" className="ann-m big ann-prov-n" aria-label="Classer le matériel : sans lui, le revenu reste inconnu" onClick={() => c.act.aller(4)}>?</button><small>le matériel attend son classement (étape 4)</small></> : <><span className="ann-m big ann-prov-n">{montant(rev.avantStockCents)}</span><small>avant stock : ce n’est pas encore le montant à reporter</small></>}
-      <small>ventes <span className="ann-m">{montant(c.report.revenueCents)}</span> − dépensé <span className="ann-m">{montant(c.report.operatingExpensesCents)}</span> − usure <span className="ann-m">{montant(c.report.depreciationCents)}</span> ± stock {c.report.inventoryChangeCents == null ? <button type="button" className="ann-q-btn ann-m" aria-label="Compter le stock au 31 déc. : sans lui, le revenu reste avant stock" onClick={() => versInventaireCloture(c)}>?</button> : <span className="ann-m">{montant(c.report.inventoryChangeCents)}</span>}{c.tax.correctionCents !== 0 && <> ± corrections <span className="ann-m">{montant(c.tax.correctionCents)}</span></>}</small>
+      <small>ventes <span className="ann-m">{montant(c.report.revenueCents)}</span> − dépensé <span className="ann-m">{montant(colonnesAnnee(c.report, aClasserListe).depenseCents)}</span> − usure <span className="ann-m">{montant(c.report.depreciationCents)}</span> ± stock {c.report.inventoryChangeCents == null ? <button type="button" className="ann-q-btn ann-m" aria-label="Compter le stock au 31 déc. : sans lui, le revenu reste avant stock" onClick={() => versInventaireCloture(c)}>?</button> : <span className="ann-m">{montant(c.report.inventoryChangeCents)}</span>}{c.tax.correctionCents !== 0 && <> ± corrections <span className="ann-m">{montant(c.tax.correctionCents)}</span></>}{aClasserCents > 0 && <> · à classer <button type="button" className="ann-q-btn ann-m ann-hachA" aria-label={`${montant(aClasserCents)} à classer : ni charge ni matériel tant que la pièce n’est pas rangée. Ouvrir l’étape matériel`} onClick={() => c.act.aller(4)}>{montant(aClasserCents)} ›</button> à part</>}</small>
       <span className="cod"><span className={`ann-pa ${rev.pret ? 'ok' : 'at'}`}>{rev.pret ? 'prêt' : 'provisoire'}</span><span className="ann-pa no">{rev.code ? `code ${c.tax.sourceYear} : ${rev.code}` : 'code : choisis principale ou accessoire (étape 7)'}</span></span>
       {copier('income', champ('income')?.label ?? 'Revenu', rev.aReporterCents, rev.pret)}</div>
     <div className="ann-cp"><h4>{champ('wealth')?.label ?? 'Fortune de la brasserie'}</h4>

@@ -208,11 +208,12 @@
    "ecran": "finances-operations",
    "route": "finances/operations",
    "statut": "choisi",
-   "choix": "v6a (2026-11-09-compta-prix p4)",
-   "mots": "Lignes serrées / v6a / v5a à − 12 % ; « ✓ Payé » reste à 24 px, le minimum. / Ça ressemble pas tellement à la mini maquettes ???",
+   "choix": "v6a (2026-11-09-compta-prix p4) + filtre s2ap2 (2026-11-14-finances p2)",
+   "mots": "Toujours pas la bonne vue et je peux pas fitré pour une intervalles de temps précis",
    "capture": "work/missions/2026-11-14-finances/ref/v6a/v6a-page.png",
    "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm",
-   "note": "v6b choisi le 09.11, remplacé par v6a le 10.11 (ses derniers mots). Filtre du … au … : choix ouvert (mission 2026-11-14-finances)."
+   "note": "v6b (09.11) remplacé par v6a (10.11). Plage : s2ap2 « Ça j'adore » (14.11), un peu plus compacte, champs du … au … à l'ordinateur. Page https://claude.ai/artifact/2xGEV9qoGgzadUBHVm2dsU",
+   "controle": "work/missions/2026-11-14-finances/voies/o1/controle-v6a.mjs"
   },
   {
    "ecran": "finances-synthese",

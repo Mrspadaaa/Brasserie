@@ -21,6 +21,10 @@
 .syn-pile { display:flex; flex-direction:column; border-radius:10px; overflow:hidden; border:0; padding:0; width:100%; }
 .syn-pile-entree { background:var(--syn-vert); }
 .syn-pile-zero { height:0; }
+/* Mois sans rien (annexe de g3a) : les colonnes restent en pointillé, « 0,00 » écrit dans l'en-tête ; la phrase est dans la colonne, pas dans le vide. */
+.syn-pile-vide { border:2px dashed var(--syn-t2); border-radius:10px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; padding:8px; text-align:center; }
+.syn-pile-vide p { margin:0; color:var(--syn-t2); font-size:13px; }
+.syn-bandes { display:inline-flex; margin-right:4px; } .syn-bandes i { width:8px; margin:0; border-radius:0; } .syn-bandes i:first-child { border-radius:10px 0 0 10px; } .syn-bandes i:last-child { border-radius:0 10px 10px 0; }
 .syn-s { display:flex; justify-content:space-between; align-items:flex-start; gap:6px; padding:2px 8px; font-size:12px; border:0; border-top:1px solid rgba(255,255,255,.55); min-height:0; min-width:0; overflow:hidden; width:100%; color:var(--syn-page); }
 .syn-s:first-child { border-top:0; }
 .syn-s .syn-m { font-size:12px; }
