@@ -1,0 +1,19 @@
+{
+ "cas": "var-fictive",
+ "usage": "variete",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 3796,
+ "microChf": 6278,
+ "microDecembre": 6278,
+ "entree": 2418,
+ "sortie": 186,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found false · 0 élément(s) inventé(s)",
+ "reponse": "{\n  \"found\": false,\n  \"source\": \"\",\n  \"name\": \"Affinée Gold\",\n  \"aliases\": [],\n  \"form\": \"unknown\",\n  \"analysis\": [],\n  \"descriptions\": []\n}"
+}

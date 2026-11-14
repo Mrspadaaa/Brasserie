@@ -1,0 +1,19 @@
+{
+ "cas": "coa-photo",
+ "usage": "coa",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 9816,
+ "microChf": 17533,
+ "microDecembre": 35065,
+ "entree": 3038,
+ "sortie": 795,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found true · lot « BENCH-LOT-2025-031 » · récolte 2025 · 4/4 mesures · 0 interdite(s)",
+ "reponse": "{\"found\":true,\"analysis\":[{\"analyte\":\"alpha\",\"unit\":\"percentMass\",\"basis\":\"asIs\",\"kind\":\"point\",\"source\":{\"title\":\"Certificate of Analysis - Hop pellets T90\",\"author\":\"Inconnu (FIXTURE DE TEST - document fictif, coa-photo.png, date d'analyse 2026-01-20, variété Cascade, lot BENCH-LOT-2025-031, Moisture 8.9 % w/w non représentée dans le schéma d'analytes standardisés mais conservée en note, aucun organisme émetteur nommé sur le document, voir note générale).\",\"reference\":\"BENCH-COA-0031\",\"year\":2026,\"kind\":\"coa\",\"locator\":\"page 1\"},\"confidence\":\"low\",\"method\":\"EBC 7.4, conductometric\",\"value\":6.8},{\"analyte\":\"beta\",\"unit\":\"percentMass\",\"basis\":\"asIs\",\"kind\":\"point\",\"source\":{\"title\":\"Certificate of Analysis - Hop pellets T90\",\"author\":\"Inconnu (FIXTURE DE TEST - document fictif, coa-photo.png, date d'analyse 2026-01-20, variété Cascade, lot BENCH-LOT-2025-031, aucun organisme émetteur nommé sur le document).\",\"reference\":\"BENCH-COA-0031\",\"year\":2026,\"kind\":\"coa\",\"locator\":\"page 1\"},\"confidence\":\"low\",\"method\":\"EBC 7.7, HPLC\",\"value\":5.9},{\"analyte\":\"totalOil\",\"unit\":\"ml100g\",\"basis\":\"asIs\",\"kind\":\"point\",\"source\":{\"title\":\"Certificate of Analysis - Hop pellets T90\",\"author\":\"Inconnu (FIXTURE DE TEST - document fictif, coa-photo.png, date d'analyse 2026-01-20, variété Cascade, lot BENCH-LOT-2025-031, aucun organisme émetteur nommé sur le document).\",\"reference\":\"BENCH-COA-0031\",\"year\":2026,\"kind\":\"coa\",\"locator\":\"page 1\"},\"confidence\":\"low\",\"method\":\"EBC 7.10, distillation\",\"value\":1.1},{\"analyte\":\"hsi\",\"unit\":\"index\",\"basis\":\"asIs\",\"kind\":\"point\",\"source\":{\"title\":\"Certificate of Analysis - Hop pellets T90\",\"author\":\"Inconnu (FIXTURE DE TEST - document fictif, coa-photo.png, date d'analyse 2026-01-20, variété Cascade, lot BENCH-LOT-2025-031, aucun organisme émetteur nommé sur le document).\",\"reference\":\"BENCH-COA-0031\",\"year\":2026,\"kind\":\"coa\",\"locator\":\"page 1\"},\"confidence\":\"low\",\"method\":\"ASBC Hops-12\",\"value\":0.28}],\"form\":\"pelletT90\",\"harvestYear\":2025,\"lotNumber\":\"BENCH-LOT-2025-031\",\"note\":\"Variété : Cascade. Numéro de COA : BENCH-COA-0031. Date d'analyse : 2026-01-20. Taux d'humidité (Moisture) mesuré sur produit tel quel (as is) : 8.9 % w/w (non inclus dans analysis faute d'analyte correspondant dans le schéma). Mention sur le document : « FIXTURE DE TEST – document fictif » (aucun laboratoire ou fournisseur émetteur n'est mentionné).\"}"
+}

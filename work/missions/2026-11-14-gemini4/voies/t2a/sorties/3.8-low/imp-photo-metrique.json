@@ -1,0 +1,19 @@
+{
+ "cas": "imp-photo-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 10915,
+ "microChf": 11369,
+ "microDecembre": 11369,
+ "entree": 3358,
+ "sortie": 541,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 2/2 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Blonde du Moulin\",\n  \"style\": \"Blonde\",\n  \"volumeL\": 20,\n  \"fermentables\": [\n    {\n      \"name\": \"Malt Pilsner\",\n      \"weightKg\": 4,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Malt Munich\",\n      \"weightKg\": 0.5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 30,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 20,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 10\n    }\n  ],\n  \"ogTarget\": 1.048,\n  \"steps\": [],\n  \"yeast\": {\n    \"name\": \"SafAle US-05\",\n    \"lab\": \"Fermentis\",\n    \"technicalFacts\": [\n      {\n        \"key\": \"attenuation\",\n        \"reported\": \"78-82%\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 78,\n          \"max\": 82\n        },\n        \"unit\": \"%\"\n      },\n      {\n        \"key\": \"temperature\",\n        \"reported\": \"18-26°C\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 18,\n          \"max\": 26\n        },\n        \"unit\": \"°C\"\n      },\n      {\n        \"key\": \"alcoholTolerance\",\n        \"reported\": \"9-11%\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 9,\n          \"max\": 11\n        },\n        \"unit\": \"%\"\n      }\n    ]\n  }\n}"
+}

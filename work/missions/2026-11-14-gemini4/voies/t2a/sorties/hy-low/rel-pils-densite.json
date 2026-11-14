@@ -1,0 +1,19 @@
+{
+ "cas": "rel-pils-densite",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 5503,
+ "microChf": 14357,
+ "microDecembre": 14357,
+ "entree": 1477,
+ "sortie": 1236,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "1/1 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\n  \"verdict\": \"La recette n'est pas prête à brasser en raison d'une incohérence majeure entre la quantité de malt et la densité visée.\",\n  \"findings\": [\n    {\n      \"severity\": \"bloquant\",\n      \"topic\": \"Grain\",\n      \"observation\": \"3 kg de malt Pilsner pour 25 L avec une efficacité de 75 % donneront une densité initiale d'environ 1.027, très loin de la cible ogTarget de 1.060.\",\n      \"suggestion\": \"Ajuster la masse de malt Pilsner à environ 5.2 kg pour viser une densité de style (~1.048), ou à environ 6.6 kg si la cible de 1.060 est maintenue.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Style\",\n      \"observation\": \"La densité initiale visée (ogTarget 1.060) est trop élevée pour une German Pilsner.\",\n      \"suggestion\": \"Ramener ogTarget dans la plage du style (1.044 à 1.050).\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Levure\",\n      \"observation\": \"23 g de SafLager W-34/70 pour 25 L représentent un sous-ensemencement si la densité initiale atteint 1.060 en fermentation basse.\",\n      \"suggestion\": \"Prévoir environ 40 g de levure sèche pour 25 L à 1.060, ou 23 à 30 g si la densité est ramenée autour de 1.048.\"\n    }\n  ],\n  \"missing\": [],\n  \"styleFit\": \"En l'état (3 kg de grain), la bière sera très légère (~1.027) et hors style ; avec une correction à ~1.048, le profil de houblonnage et l'eau douce (Ca 50, SO4 50, Cl 50, HCO3 30 ppm) conviendront bien à une German Pilsner.\"\n}"
+}

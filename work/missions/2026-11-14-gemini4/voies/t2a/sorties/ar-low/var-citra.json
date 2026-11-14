@@ -1,0 +1,18 @@
+{
+ "cas": "var-citra",
+ "usage": "variete",
+ "half": "jugement",
+ "cellule": "ar@low",
+ "ok": false,
+ "ms": 90006,
+ "microChf": 189928,
+ "microDecembre": 189928,
+ "entree": null,
+ "sortie": null,
+ "etat": "délai",
+ "ancrage": "sans objet",
+ "note": 0,
+ "utilisable": false,
+ "inventes": 0,
+ "detail": "délai"
+}

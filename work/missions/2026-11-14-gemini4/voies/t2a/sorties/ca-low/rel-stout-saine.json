@@ -1,0 +1,19 @@
+{
+ "cas": "rel-stout-saine",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 6802,
+ "microChf": 7805,
+ "microDecembre": 15610,
+ "entree": 1517,
+ "sortie": 321,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "0/0 défauts · 0 bloquant(s) dont 0 injustifié(s) · 0 de goût ou pire",
+ "reponse": "{\"verdict\":\"La recette est saine et prête à être brassée, sous réserve de préciser les volumes d'empâtage et de rinçage ainsi que la température de fermentation.\",\"findings\":[{\"severity\":\"detail\",\"topic\":\"Eau\",\"observation\":\"Les volumes d'eau d'empâtage et de rinçage ne sont pas indiqués pour ce brassin de 20 L, et la répartition des sels (2 g de gypse, 2 g de chlorure de calcium) entre ces eaux n'est pas détaillée.\",\"suggestion\":\"\"},{\"severity\":\"detail\",\"topic\":\"Levure\",\"observation\":\"Aucune température de fermentation n'est précisée pour la SafAle S-04 (11.5 g).\",\"suggestion\":\"\"}],\"missing\":[\"Volumes d'eau d'empâtage et de rinçage\",\"Analyse complète de l'eau du réseau initiale\",\"Température de fermentation\"],\"styleFit\":\"Parfaitement dans les clous d'un Irish Dry Stout : densité modérée (DI 1.042, DF 1.010), robe noire (70 EBC) portée par l'orge torréfiée (7.1 % de la mouture) et les flocons d'orge (11.9 %), amertume franche (35 IBU) et profil minéral équilibré (60 ppm sulfate / 60 ppm chlorure) avec un pouvoir tampon adapté (150 ppm de bicarbonates).\"}"
+}

@@ -1,0 +1,19 @@
+{
+ "cas": "rel-defauts-helles",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 5945,
+ "microChf": 6169,
+ "microDecembre": 6169,
+ "entree": 1025,
+ "sortie": 453,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "3/3 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"La recette n'est pas prête à brasser en l'état : l'amertume et le profil minéral sont totalement inadaptés au style, le palier d'empâtage dénaturera le moût et le taux d'acides alpha d'un houblon manque.\",\"findings\":[{\"severity\":\"bloquant\",\"topic\":\"Paliers\",\"observation\":\"Le palier de saccharification est indiqué à 78°C pendant 60 min, ce qui dénaturera les enzymes (bêta et alpha-amylases) avant la conversion complète de l'amidon.\",\"suggestion\":\"Abaisser la température du palier de saccharification entre 65°C et 67°C.\"},{\"severity\":\"gout\",\"topic\":\"Houblons\",\"observation\":\"L'ajout de 60 g de Magnum à 14% d'alpha pendant 60 min pour un volume de 20 L produira plus de 80 IBU, pour une cible de 20 IBU annoncée.\",\"suggestion\":\"Réduire la dose de Magnum à environ 12 g pour 60 min afin d'atteindre ~16-18 IBU en amertume de base.\"},{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"Le traitement d'eau avec 12 g de gypse conduit à 350 ppm de sulfates et un ratio sulfate/chlorure très élevé, asséchant et accentuant l'amertume, à l'opposé de la rondeur maltée attendue pour une Munich Helles.\",\"suggestion\":\"Supprimer ou limiter fortement le gypse et privilégier le chlorure de calcium pour cibler un ratio sulfate/chlorure inférieur à 1 et des sulfates sous 50-75 ppm.\"}],\"missing\":[\"Le pourcentage d'acides alpha pour le houblon Hallertauer Mittelfrüh.\"],\"styleFit\":\"En l'état, la bière sera une lager ultra-amère, sèche et astringente, complètement hors du profil malté, doux et équilibré d'une Munich Helles.\"}"
+}

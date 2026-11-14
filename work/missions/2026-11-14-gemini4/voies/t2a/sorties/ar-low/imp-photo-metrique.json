@@ -1,0 +1,19 @@
+{
+ "cas": "imp-photo-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": true,
+ "ms": 8807,
+ "microChf": 25123,
+ "microDecembre": 50245,
+ "entree": 7599,
+ "sortie": 490,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 1.00 · vol 20 · fer 2/2 · hops 2/2 · levure ok · paliers 2/2",
+ "reponse": "{\n  \"name\": \"Blonde du Moulin\",\n  \"style\": \"\",\n  \"volumeL\": 20,\n  \"fermentables\": [\n    {\n      \"name\": \"Malt Pilsner\",\n      \"weightKg\": 4.0,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Malt Munich\",\n      \"weightKg\": 0.5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 30,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 20,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 10\n    }\n  ],\n  \"fgTarget\": 1.01,\n  \"mash\": {\n    \"steps\": [\n      {\n        \"name\": \"Empâtage\",\n        \"tempC\": 66,\n        \"durationMin\": 60\n      },\n      {\n        \"name\": \"Mash-out\",\n        \"tempC\": 76,\n        \"durationMin\": 10\n      }\n    ]\n  },\n  \"mashSteps\": [\n    {\n      \"name\": \"Empâtage\",\n      \"tempC\": 66,\n      \"durationMin\": 60\n    },\n    {\n      \"name\": \"Mash-out\",\n      \"tempC\": 76,\n      \"durationMin\": 10\n    }\n  ],\n  \"ogTarget\": 1.048,\n  \"yeast\": {\n    \"name\": \"SafAle US-05\",\n    \"lab\": \"Fermentis\",\n    \"strain\": \"US-05\"\n  }\n}"
+}

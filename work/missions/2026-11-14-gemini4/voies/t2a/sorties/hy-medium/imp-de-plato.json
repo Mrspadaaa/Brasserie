@@ -1,0 +1,19 @@
+{
+ "cas": "imp-de-plato",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@medium",
+ "ok": true,
+ "ms": 20778,
+ "microChf": 56867,
+ "microDecembre": 56867,
+ "entree": 6674,
+ "sortie": 4731,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 25 · fer 3/3 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\"name\":\"Dunkles Vollbier – Testrezept (fiktiv)\", \"style\":\"Dunkles Vollbier\", \"volumeL\":25, \"fermentables\":[{\"name\":\"Münchner Malz\", \"weightKg\":5, \"kind\":\"grain\", \"use\":\"empatage\"}, {\"name\":\"Pilsner Malz\", \"weightKg\":1, \"kind\":\"grain\", \"use\":\"empatage\", \"colorEbc\":3.5}, {\"name\":\"Carafa Typ 2\", \"weightKg\":0.2, \"kind\":\"grain\", \"use\":\"empatage\", \"colorEbc\":1150, \"potentialPpg\":29.9}], \"hops\":[{\"name\":\"Tradition\", \"weightG\":40, \"stage\":\"boil\", \"alpha\":6, \"timeMin\":70}, {\"name\":\"Saphir\", \"weightG\":25, \"stage\":\"boil\", \"alpha\":3.5, \"timeMin\":10}], \"boilMin\":70, \"ogTarget\":1.048, \"source\":\"Recette fournie ; fiches techniques Fermentis (SafLager W-34/70) et Weyermann (Pilsner Malz, Carafa Typ 2)\", \"yeast\":{\"name\":\"Saflager W-34/70\", \"lab\":\"Fermentis\", \"strain\":\"W-34/70\", \"technicalSource\":\"Fermentis Technical Data Sheet - SafLager W-34/70\", \"unit\":\"g/hl\"}}"
+}

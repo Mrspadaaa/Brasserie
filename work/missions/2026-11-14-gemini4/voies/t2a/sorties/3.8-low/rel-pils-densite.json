@@ -1,0 +1,19 @@
+{
+ "cas": "rel-pils-densite",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 5725,
+ "microChf": 6567,
+ "microDecembre": 6567,
+ "entree": 992,
+ "sortie": 502,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "1/1 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\n  \"verdict\": \"La recette n'est pas prête à brasser : la quantité de malt est mathématiquement insuffisante pour atteindre la densité visée.\",\n  \"findings\": [\n    {\n      \"severity\": \"bloquant\",\n      \"topic\": \"Grain\",\n      \"observation\": \"Avec 3 kg de malt Pilsner pour 25 L à 75 % d'efficacité, la densité initiale n'atteindra qu'environ 1.026 - 1.028, bien loin de l'ogTarget fixée à 1.060.\",\n      \"suggestion\": \"Augmenter la quantité de malt Pilsner à environ 6.4 kg pour espérer atteindre 1.060 à 75 % d'efficacité sur 25 L.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Grain\",\n      \"observation\": \"Une densité initiale de 1.060 est trop élevée pour le style German Pilsner (qui se situe typiquement entre 1.044 et 1.050).\",\n      \"suggestion\": \"Abaisser la cible de densité initiale vers 1.048 en visant environ 5.1 kg de malt Pilsner pour 25 L.\"\n    },\n    {\n      \"severity\": \"detail\",\n      \"topic\": \"Eau\",\n      \"observation\": \"Le profil d'ions (sulfate 50 ppm, chlorure 50 ppm, ratio 1:1) offre une base très neutre, mais une German Pilsner bénéficie généralement d'une eau plus douce avec un léger avantage aux sulfates pour accentuer le tranchant du houblon.\",\n      \"suggestion\": \"Ajuster éventuellement le ratio sulfate/chlorure vers 1.5:1 ou 2:1 si un profil plus sec et net est recherché.\"\n    }\n  ],\n  \"missing\": [],\n  \"styleFit\": \"En l'état avec 3 kg de grain, la bière sera une bière de table très légère d'environ 2.5 % vol. Si la cible de 1.060 est maintenue, la bière sera trop alcoolisée et dense pour une German Pilsner authentique.\"\n}"
+}
