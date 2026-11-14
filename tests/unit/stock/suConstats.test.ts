@@ -12,6 +12,7 @@ import { brouillonDeLecture } from '../../../src/ui/depense/finale';
 import { stockQuantityFor, uniteEffective } from '../../../src/services/purchaseEntry';
 import { construireMur, legendeAutres, styleLevureConnu } from '../../../src/domain/stock/murDonnees';
 import { Units } from '../../../src/services/units';
+import { articlesACommander } from '../../../src/domain/stockLevel';
 
 const article = (more: Record<string, unknown> = {}): any => ({ id: 'a1', ref: 'MP-A1', name: 'X', category: 'Houblon', unit: 'g', currentStock: 0, minStock: 0, reorder: false, ...more });
 const ligneVide = () => ({ id: 'x', description: '', kind: 'ingredient', unit: '', stockAction: 'none', equipmentAction: 'none' }) as any;
@@ -153,5 +154,26 @@ describe('ST-T4 — la légende du gris dit ce que dit la bulle', () => {
     expect(legendeAutres(seule)).toBe('gris : colonne Autres (type non connu)');
     const deux = autres(mur(levure('l1', 'French Saison M29'), levure('l2', 'Sekt/Champagner Trockenhefe')));
     expect(legendeAutres(deux)).toBe('gris : colonne Autres (style Saison, sans colonne ; ou type non connu)');
+  });
+});
+
+describe('Point 9 — Hallertau à 0 g : quand « À commander » le liste', () => {
+  const houblon = (ref: string, over: Record<string, unknown> = {}) => article({ id: ref, ref, name: `Hallertau ${ref}`, category: 'Houblon', unit: 'g', currentStock: 0, minStock: 0, ...over });
+  const brassinHoublon = (ref: string, g: number): any => ({
+    id: 'B1', name: 'Lager de test', style: 'Lager', volumeL: 20, brewDate: '', plannedBrewDate: '2026-12-20', status: 'planifie', stockAccountingVersion: 1,
+    recipeSnapshot: { name: 'Lager de test', style: 'Lager', volumeL: 20, capturedAt: '2026-11-01T10:00:00.000Z', fermentables: [], hops: [{ name: 'Hallertau', stockItemRef: ref, weightG: g }], yeast: { name: '' } },
+  });
+  it('épuisé avec un seuil renseigné : listé, en rupture, quantité à viser = le seuil', () => {
+    const [a] = articlesACommander([houblon('H1', { minStock: 200 })], [], []);
+    expect(a).toMatchObject({ missing: 200, rupture: true });
+  });
+  it('épuisé avec un besoin (brassin planifié) : listé avec le manque, sans seuil', () => {
+    const [a] = articlesACommander([houblon('H2')], [brassinHoublon('H2', 60)], []);
+    expect(a).toMatchObject({ missing: 60, rupture: true });
+  });
+  it('épuisé sans seuil ni besoin : pas listé (décision n° 49, tests/unit/articlesACommander.test.ts) ; le mur le montre en cadre rouge', () => {
+    expect(articlesACommander([houblon('H3')], [], [])).toEqual([]);
+    const m = construireMur([houblon('H3')], { typeMalt: () => null, houblon: () => null, auFrais: () => null, parts: () => null, colonneLevure: () => null, attenuation: () => null } as any);
+    expect(m.rayons[1].groupes.flatMap((g) => g.marques)[0].etat).toBe('epuise');
   });
 });
