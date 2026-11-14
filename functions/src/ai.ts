@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { onCall, HttpsError, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
-import { AiTier, GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, invoiceRelecture, type InvoiceRelecture, type TierConfig } from './models.js';
+import { AiTier, GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, DIAGNOSTIC_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, invoiceRelecture, type InvoiceRelecture, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { geminiBody, userTextOf } from './geminiBody.js';
@@ -429,14 +429,16 @@ export const aiTask = onCall(
         logger.error('Tâche IA sans temps pour une nouvelle tentative', { task, tier, model, failures });
         return { ok: false, tier, elapsedMs: Date.now() - started, error: OUT_OF_TIME };
       }
-      const lite = model === GEMINI_LITE_MODEL;
+      const lite = model === GEMINI_LITE_MODEL, strong = model === INVOICE_STRONG_MODEL;
+      // Le diagnostic de brassin : Hydrogen a son propre délai, pour que Flash-Lite puis 3.8 gardent le temps de répondre (voie h4, models.ts).
+      const capped = strong && index < route.length - 1;
       try {
         // In Rapide, a fiche, the yeast one included, is capped at 4500 tokens: 12000 let a numeric loop run 69 s (#100).
         // Import and review carry their own cap (TaskDef.maxOutputTokens). Max keeps at least 12000, shared with its
         // high reasoning (callGemini): no screen asks a fiche in Max, and 4500 would cut its answer.
         let data = await callGemini(model, apiKey, def.system, userText, def.schema, { temperature: cfg.temperature, thinkingLevel }, file,
-          def.grounded, def.maxOutputTokens ?? 4500, AbortSignal.timeout(Math.min(ATTEMPT_TIMEOUT_MS, remaining)),
-          lite ? liteUnusable : unusableGeminiOutput);
+          def.grounded, def.maxOutputTokens ?? 4500, AbortSignal.timeout(Math.min(capped ? DIAGNOSTIC_STRONG_TIMEOUT_MS : ATTEMPT_TIMEOUT_MS, remaining)),
+          lite || strong ? liteUnusable : unusableGeminiOutput);
         const elapsedMs = Date.now() - started;
         if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {
           const error = yeastLookupResultError(data);
@@ -449,7 +451,7 @@ export const aiTask = onCall(
         const elapsedMs = Date.now() - started;
         if (err instanceof BrewerBudgetError) return { ok: false, tier, elapsedMs, error: err.message };
         // A Flash-Lite answer the brewer cannot use (cut, looping, refused schema) goes once to 3.8, without asking again.
-        const liteRetry = lite && index < route.length - 1 &&
+        const liteRetry = (lite || strong) && index < route.length - 1 &&
           (err instanceof GeminiUnusableOutputError || err instanceof GeminiApiError && err.kind === 'invalid-request');
         if (err instanceof GeminiApiError && !err.canTryAnotherModel && !liteRetry)
           return { ok: false, tier, elapsedMs, error: err.publicError().message };
@@ -457,7 +459,9 @@ export const aiTask = onCall(
           logger.warn('Réponse Gemini inutilisable, sans nouvelle tentative', { task, model, reason: err.reason, elapsedMs });
           return { ok: false, tier, elapsedMs, error: err.message };
         }
-        if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+        // Hydrogen coupé à son propre délai : la tâche a encore le temps d'un repli, sans nouvelle demande au brasseur.
+        const strongCut = capped && deadline - Date.now() >= AI_TASK_MIN_ATTEMPT_MS;
+        if ((err?.name === 'TimeoutError' || err?.name === 'AbortError') && !strongCut) {
           logger.warn('Gemini hors délai, sans nouvelle tentative', { task, model, elapsedMs });
           return { ok: false, tier, elapsedMs, error: OUT_OF_TIME };
         }

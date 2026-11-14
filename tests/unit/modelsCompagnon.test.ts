@@ -17,4 +17,15 @@ describe('modèles du compagnon : ordre d’essai de l’analyse', () => {
     expect(geminiAttempts('lookup_brewing_reference').map(a => a.model)).toEqual(['gemini-3.5-flash-lite', GEMINI_MODEL]);
     expect(geminiAttempts('analysis', 'max').map(a => a.model)).toEqual([GEMINI_MODEL, GEMINI_MODEL]);
   });
+  it('voie h4 : le diagnostic de brassin en Rapide essaie Hydrogen, puis Flash-Lite, puis 3.8 ; Max et les autres usages ne bougent pas', () => {
+    expect(geminiAttempts('diagnoseBatch', 'fast')).toEqual([
+      { model: 'gemini-4-hydrogen', thinkingLevel: 'low' },
+      { model: 'gemini-3.5-flash-lite', thinkingLevel: 'low' },
+      { model: GEMINI_MODEL, thinkingLevel: 'low' }
+    ]);
+    expect(geminiAttempts('diagnoseBatch', 'fast')[0].model).toBe(INVOICE_STRONG_MODEL);
+    expect(geminiAttempts('diagnoseBatch', 'max')).toEqual([{ model: GEMINI_MODEL, thinkingLevel: 'high' }, { model: GEMINI_MODEL, thinkingLevel: 'high' }]);
+    expect(geminiAttempts('readHopCoa').map(a => a.model)).toEqual(['gemini-3.5-flash-lite', GEMINI_MODEL]);
+    expect(geminiAttempts('importRecipe').map(a => a.model)).toEqual([GEMINI_MODEL, GEMINI_MODEL]);
+  });
 });

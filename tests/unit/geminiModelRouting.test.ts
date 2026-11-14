@@ -61,8 +61,8 @@ describe('Routage Gemini par usage, choisi par le serveur (décision 68)', () =>
     expect(GEMINI_LITE_MODEL).toBe(LITE);
     expect([...GEMINI_MODELS]).toEqual([FLASH, LITE, 'gemini-4-hydrogen', 'gemini-4-argon']);
     expect(INVOICE_STRONG_MODEL).toBe('gemini-4-hydrogen');
-    // Hydrogen ne sert à aucun usage d'aiTask : aucune route, aucun niveau ne le nomme.
-    expect([...Object.keys(LITE_ROUTES).flatMap(usage => geminiAttempts(usage)), ...geminiAttempts('readHopCoa', 'max'), ...modelChain()].map(a => typeof a === 'string' ? a : a.model)).not.toContain('gemini-4-hydrogen');
+    // Hydrogen ne sert, dans aiTask, qu'au diagnostic de brassin en Rapide (voie h4) : aucun autre usage, aucun Max, aucune chaîne 3.8 ne le nomme.
+    expect([...Object.keys(LITE_ROUTES).filter(usage => usage !== 'diagnoseBatch').flatMap(usage => geminiAttempts(usage)), ...geminiAttempts('readHopCoa', 'max'), ...geminiAttempts('diagnoseBatch', 'max'), ...modelChain()].map(a => typeof a === 'string' ? a : a.model)).not.toContain('gemini-4-hydrogen');
     expect(TIERS.fast.primary).toBe(FLASH);
     expect(TIERS.max.primary).toBe(FLASH);
     expect(TIERS.fast).not.toHaveProperty('fallbacks');
@@ -73,10 +73,11 @@ describe('Routage Gemini par usage, choisi par le serveur (décision 68)', () =>
     expect(SCAN_MODEL).toBe(FLASH);
   });
 
-  it('ne passe en 3.5 Flash-Lite que les trois usages mesurés sans perte au banc #91, à leur réflexion', () => {
+  it('ne passe en 3.5 Flash-Lite d’abord que les deux usages mesurés sans perte au banc #91 (le diagnostic l’a en repli d’Hydrogen), à leur réflexion', () => {
     expect({ ...LITE_ROUTES }).toEqual({ readHopCoa: 'minimal', diagnoseBatch: 'low', lookup_brewing_reference: 'minimal' });
     expect(geminiAttempts('readHopCoa')).toEqual([{ model: LITE, thinkingLevel: 'minimal' }, { model: FLASH, thinkingLevel: 'low' }]);
-    expect(geminiAttempts('diagnoseBatch', 'fast')).toEqual([{ model: LITE, thinkingLevel: 'low' }, { model: FLASH, thinkingLevel: 'low' }]);
+    // Le diagnostic de brassin en Rapide : Hydrogen d'abord (voie h4), puis le Flash-Lite mesuré au banc #91, puis 3.8.
+    expect(geminiAttempts('diagnoseBatch', 'fast')).toEqual([{ model: 'gemini-4-hydrogen', thinkingLevel: 'low' }, { model: LITE, thinkingLevel: 'low' }, { model: FLASH, thinkingLevel: 'low' }]);
     expect(geminiAttempts('lookup_brewing_reference')).toEqual([{ model: LITE, thinkingLevel: 'minimal' }, { model: FLASH, thinkingLevel: 'low' }]);
   });
 
@@ -122,11 +123,55 @@ describe('Routage Gemini par usage, choisi par le serveur (décision 68)', () =>
     expect(postedBody().generationConfig).toMatchObject({ temperature: 0, maxOutputTokens: 4500, thinkingConfig: { thinkingLevel: 'minimal' } });
   });
 
-  it('diagnostique un brassin en Rapide avec 3.5 Flash-Lite `low`', async () => {
+  it('diagnostique un brassin en Rapide avec Hydrogen `low`, budgété à son nom, et le dit (voie h4)', async () => {
+    const result = await aiTask.run(call(diagnosis) as any);
+    expect(result).toMatchObject({ ok: true, model: 'gemini-4-hydrogen', tier: 'fast' });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen']);
+    expect(budgetedModels()).toEqual(['gemini-4-hydrogen']);
+    expect(postedBody().generationConfig).toMatchObject({ temperature: 0, maxOutputTokens: 4500, thinkingConfig: { thinkingLevel: 'low' } });
+  });
+
+  it.each([
+    ['coupée au plafond de sortie', () => answer('{"verdict":"x","causes":[', 'MAX_TOKENS')],
+    ['terminée autrement que normalement', () => answer('{"verdict":"x"}', 'SAFETY')],
+    ['en JSON illisible', () => answer('{"verdict":', 'STOP')],
+    ['vide', () => answer('', 'STOP')],
+    ['refusée pour son schéma (HTTP 400)', () => refusal(400, 'INVALID_ARGUMENT')],
+    ['en panne passagère (HTTP 503)', () => outage()]
+  ])('diagnostic : une réponse Hydrogen %s passe sur Flash-Lite, sans redemander au brasseur', async (_label, failed) => {
+    fetchMock.mockResolvedValueOnce(failed()).mockResolvedValueOnce(answer());
     const result = await aiTask.run(call(diagnosis) as any);
     expect(result).toMatchObject({ ok: true, model: LITE, tier: 'fast' });
-    expect(postedModels()).toEqual([LITE]);
-    expect(postedBody().generationConfig).toMatchObject({ temperature: 0, thinkingConfig: { thinkingLevel: 'low' } });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen', LITE]);
+    expect(postedBody(1).generationConfig).toMatchObject({ temperature: 0, thinkingConfig: { thinkingLevel: 'low' } });
+    expect(postedBody(1).contents).toEqual(postedBody(0).contents);
+  });
+
+  it('diagnostic : Hydrogen puis Flash-Lite en panne, 3.8 répond en dernier ; jamais un quatrième essai', async () => {
+    fetchMock.mockResolvedValueOnce(outage()).mockResolvedValueOnce(outage()).mockResolvedValueOnce(answer());
+    const result = await aiTask.run(call(diagnosis) as any);
+    expect(result).toMatchObject({ ok: true, model: FLASH, tier: 'fast' });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen', LITE, FLASH]);
+    fetchMock.mockReset().mockResolvedValue(outage());
+    const failed = await aiTask.run(call(diagnosis) as any);
+    expect(failed).toMatchObject({ ok: false, tier: 'fast' });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen', LITE, FLASH]);
+  });
+
+  it('diagnostic : Hydrogen coupé après son propre délai (20 s) passe sur Flash-Lite ; il ne vide pas les 120 s de la tâche', async () => {
+    fetchMock.mockRejectedValueOnce(Object.assign(new Error('délai'), { name: 'TimeoutError' })).mockResolvedValueOnce(answer());
+    const result = await aiTask.run(call(diagnosis) as any);
+    expect(result).toMatchObject({ ok: true, model: LITE, tier: 'fast' });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen', LITE]);
+  });
+
+  it('diagnostic : un refus du budget ou d’accès n’est jamais contourné par le repli', async () => {
+    gate.mockRejectedValueOnce(new BrewerBudgetError('ai-monthly-limit', 'Budget mensuel IA insuffisant.'));
+    expect(await aiTask.run(call(diagnosis) as any)).toMatchObject({ ok: false, error: 'Budget mensuel IA insuffisant.' });
+    expect(budgetedModels()).toEqual(['gemini-4-hydrogen']);
+    fetchMock.mockReset().mockResolvedValue(refusal(403, 'PERMISSION_DENIED'));
+    expect(await aiTask.run(call(diagnosis) as any)).toMatchObject({ ok: false });
+    expect(postedModels()).toEqual(['gemini-4-hydrogen']);
   });
 
   it('garde 3.8 pour un COA ou un diagnostic en Max, réglage non mesuré en Flash-Lite', async () => {
@@ -181,7 +226,7 @@ describe('Routage Gemini par usage, choisi par le serveur (décision 68)', () =>
 
   it('ne retente pas après un dépassement de délai de Flash-Lite', async () => {
     fetchMock.mockRejectedValueOnce(Object.assign(new Error('délai'), { name: 'TimeoutError' }));
-    const result = await aiTask.run(call(diagnosis) as any);
+    const result = await aiTask.run(call({ task: 'readHopCoa', file: coa }) as any);
     expect(postedModels()).toEqual([LITE]);
     expect(result).toMatchObject({ ok: false, tier: 'fast' });
     expect(result.error).toMatch(/délai/);

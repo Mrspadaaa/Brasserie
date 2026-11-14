@@ -91,7 +91,7 @@ export function aiTier(value: unknown): AiTier {
  * Usages servis d'abord par 3.5 Flash-Lite, à la réflexion mesurée par le banc #91
  * (13 octobre 2026, `AI07-B/resultat.md` §1, même corps que l'app, température 0) :
  * - `readHopCoa`, lecture d'un COA de houblon : `minimal`, 3/3, p95 2,3 s contre 6,5 s ;
- * - `diagnoseBatch`, diagnostic de brassin : `low`, 2/2, p95 1,6 s contre 4,6 s ;
+ * - `diagnoseBatch`, diagnostic de brassin : `low`, 2/2, p95 1,6 s contre 4,6 s (en Rapide, depuis la voie h4, Hydrogen passe d'abord : ce Flash-Lite est son repli, `diagnosticAttempts`) ;
  * - `lookup_brewing_reference`, recherche d'une référence par le compagnon :
  *   `minimal`, 2/2, p95 3,5 s contre 7,6 s.
  * En Rapide seulement : Max (température 0,2, réflexion haute) n'a pas été mesuré
@@ -116,11 +116,33 @@ export interface GeminiAttempt {
 }
 
 /**
+ * Délai de l'essai Hydrogen du diagnostic de brassin. Banc t2b : p50 4,7 s, p90 6,4 s en réflexion basse ; 20 s laissent trois fois le p90, et
+ * le repli (Flash-Lite 1,5 s, 3.8 5 s) garde de quoi répondre sans entamer les 120 s de la tâche (`AI_TASK_DEADLINE_MS`).
+ */
+export const DIAGNOSTIC_STRONG_TIMEOUT_MS = 20_000;
+
+/**
+ * Diagnostic de brassin en Rapide (`diagnoseBatch`, bouton explicite du jour de brassage) : Hydrogen en réflexion basse, puis le Flash-Lite de la
+ * production (`LITE_ROUTES`), puis 3.8 (voie h4, 14.11 : « Oui branche où ça vaut le coup »). Banc t2b, 10 cas à vérité écrite avant les passes,
+ * 14 appels par réglage, un tirage : Hydrogen 100 % juste (14/14) contre 94 % pour Flash-Lite, seul à trouver la gravité du « lager
+ * sous-ensemencé » ; p50 4,7 s contre 1,5 s, 0,0103 contre 0,0010 CHF l'appel (même tarif que 3.8). Le repli sur Flash-Lite, rapide et déjà
+ * en production, est le plus court à tenir si Hydrogen flanche ; la 3.8 ferme la chaîne comme aujourd'hui. Max garde 3.8 haute, deux fois.
+ */
+export function diagnosticAttempts(): GeminiAttempt[] {
+  return [
+    { model: INVOICE_STRONG_MODEL, thinkingLevel: 'low' },
+    { model: GEMINI_LITE_MODEL, thinkingLevel: LITE_ROUTES.diagnoseBatch },
+    { model: GEMINI_MODEL, thinkingLevel: TIERS.fast.thinkingLevel }
+  ];
+}
+
+/**
  * Ordre d'essai d'un usage. Un usage de `LITE_ROUTES`, en Rapide : 3.5 Flash-Lite,
  * puis 3.8 à la réflexion du niveau, si la réponse lite est inutilisable ou si le
  * service flanche. Tout autre usage : 3.8, au plus `GEMINI_ATTEMPTS` fois.
  */
 export function geminiAttempts(usage: string, tier: AiTier = 'fast'): GeminiAttempt[] {
+  if (tier === 'fast' && usage === 'diagnoseBatch') return diagnosticAttempts();
   const main: GeminiAttempt = { model: GEMINI_MODEL, thinkingLevel: TIERS[tier].thinkingLevel };
   const lite = tier === 'fast' && Object.hasOwn(LITE_ROUTES, usage) ? LITE_ROUTES[usage] : undefined;
   return lite ? [{ model: GEMINI_LITE_MODEL, thinkingLevel: lite }, main] : Array.from({ length: GEMINI_ATTEMPTS }, () => main);
