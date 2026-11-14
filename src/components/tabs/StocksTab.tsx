@@ -145,6 +145,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   });
   const setTri = (t: TriListe) => { setTriEtat(t); StorageService.setUiState('stock_tri', t); };
   const [vue, setVueEtat] = useState<VueStock>(() => StorageService.getUiState<VueStock>('stock_vue', 'etagere') === 'recompter' ? 'recompter' : 'etagere');
+  // Le conteneur qui défile en Étagère : la liste virtualisée s'y appuie (customScrollParent).
+  const [parentListe, setParentListe] = useState<HTMLDivElement | null>(null);
   const setVue = (v: VueStock) => { setVueEtat(v); StorageService.setUiState('stock_vue', v); };
 
   /*
@@ -361,6 +363,18 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   ];
 
   const mobile = useMobileLayout();
+  // Le bloc d'outils (segment, recherche, pastilles, ligne de filtre) : fixe en Recompter, il défile avec le mur et la liste en Étagère (sinon la liste n'avait que 158 px à 390).
+  const blocOutils = (
+    <div className="stock-outils shrink-0 pt-1">
+      <BasculeVue vue={vue} onVue={setVue} />
+      <div className="sz-pan-h mt-1 px-[10px]">
+        <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
+        <Pastilles comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
+        <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
+      </div>
+    </div>
+  );
+
   return (
     <div className="stocks-screen flex flex-col h-[calc(100dvh-8.5rem)] pt-1 gap-1">
       <div className="min-w-0 shrink-0">
@@ -459,24 +473,21 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </>}
           </div>
         </details>
-        <div className="stock-outils shrink-0 pt-1">
-          <BasculeVue vue={vue} onVue={setVue} />
-          <div className="sz-pan-h mt-1 px-[10px]">
-            <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
-            <Pastilles comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
-            <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
-          </div>
-        </div>
         {vue === 'recompter'
-          ? <div className={`stock-outils min-h-0 flex-1 overflow-y-auto ${mobile ? 'pb-16' : ''}`}>
+          ? <>
+            {blocOutils}
+            <div className={`stock-outils min-h-0 flex-1 overflow-y-auto ${mobile ? 'pb-16' : ''}`}>
               <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompter={compter} />
             </div>
-          : <>
+          </>
+          : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
+        {blocOutils}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
           <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} onglet={ongletMur} onOnglet={setOngletMur} />
         </Suspense>
         <EntityList
-          className={`flex-1 ${mobile ? 'pb-16' : ''}`}
+          className={mobile ? 'pb-16' : ''}
+          scrollParent={parentListe}
           items={visibleItems}
           keyOf={(i) => i.ref}
           groupOf={groupeListe}
@@ -511,7 +522,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             />
           )}
         />
-          </>}
+          </div>}
         </>
       )}
 

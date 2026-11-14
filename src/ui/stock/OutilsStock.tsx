@@ -81,7 +81,7 @@ export function LigneTri({ tri, onTri }: { tri: TriListe; onTri: (t: TriListe) =
     <div className="px-[10px]">
       <div className="sz-tri">
         <button type="button" className="sz-tb text-left" aria-expanded={ouvert} aria-haspopup="menu" onClick={() => setOuvert((o) => !o)}>
-          Trié par {phraseTri(tri)} ▾
+          Trié par {phraseTri(tri)}{' '}▾
         </button>
       </div>
       {ouvert && (

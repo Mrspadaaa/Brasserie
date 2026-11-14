@@ -45,6 +45,8 @@ export interface EntityListProps<T> {
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
   toolbarAction?: React.ReactNode;
+  /** Un conteneur extérieur qui défile : la liste s'y appuie au lieu d'avoir sa propre zone défilante (l'Étagère du Stock : outils, mur et liste défilent ensemble). */
+  scrollParent?: HTMLElement | null;
   /** Hauteur de la zone défilante. Par défaut, tout l'espace disponible. */
   className?: string;
 }
@@ -63,6 +65,7 @@ export function EntityList<T>({
   emptyState,
   header,
   toolbarAction,
+  scrollParent,
   className = ''
 }: EntityListProps<T>) {
   const [query, setQuery] = useState('');
@@ -197,7 +200,8 @@ export function EntityList<T>({
       {!isEmpty && !noResults && grouped && (
         <GroupedVirtuoso
           ref={defilement as never}
-          className="flex-1 min-h-0"
+          className={scrollParent ? undefined : "flex-1 min-h-0"}
+          customScrollParent={scrollParent ?? undefined}
           groupCounts={grouped.counts}
           groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.counts[index]) : (
             <div
@@ -223,7 +227,8 @@ export function EntityList<T>({
       {!isEmpty && !noResults && !grouped && (
         <Virtuoso
           ref={defilement as never}
-          className="flex-1 min-h-0"
+          className={scrollParent ? undefined : "flex-1 min-h-0"}
+          customScrollParent={scrollParent ?? undefined}
           data={filtered}
           itemContent={(index, item) => (
             <div key={keyOf(item)} className="py-0.5">

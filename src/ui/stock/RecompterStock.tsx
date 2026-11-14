@@ -6,6 +6,8 @@ import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { Units } from '../../services/units';
 import { FAMILLES_RECOMPTER, familleRecompter as familleDe, derniersComptages, jourCourt, type FamilleRecompter, type InfoLigne, type MouvementComptage } from '../../domain/stock/liste';
+// Les tuiles et titres de la maquette q-a3s disent « Additifs » et « Nettoyage » (la liste de l'Étagère garde le titre long).
+const COURT: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures', Additifs: 'Additifs', Emballage: 'Emballage', Nettoyage: 'Nettoyage' };
 import { LIBELLE_FAMILLE, comptesRecompter, lireQuantite, trierRecompter, type FiltreListe } from '../../domain/stock/listeFiltres';
 import './jetons-outils.css';
 import './recompter.css';
@@ -91,7 +93,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
           return (
             <button key={f} type="button" data-fam-btn={k} className={filtre === f ? 'sz-r-on' : ''} aria-pressed={filtre === f} aria-label={`${LIBELLE_FAMILLE[f]} : ${c.total} article${c.total > 1 ? 's' : ''}, ${c.compte} compté${c.compte > 1 ? 's' : ''}`}
               onClick={() => onFiltre(filtre === f ? null : f)}>
-              <span>{ICONES[f]}<em>{LIBELLE_FAMILLE[f]}</em><b className="sz-r-m">{c.total}</b></span>
+              <span>{ICONES[f]}<em>{COURT[f]}</em><b className="sz-r-m">{c.total}</b></span>
               <small><i><i style={{ width: `${c.total ? Math.round((100 * c.compte) / c.total) : 0}%` }} /></i><span className="sz-r-m">{c.compte}/{c.total}</span> comptés</small>
             </button>
           );
@@ -111,7 +113,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
               <header className="sz-r-rh">
                 <span className="sz-r-ti">{ICONES[f]}</span>
                 <div>
-                  <h2>{LIBELLE_FAMILLE[f]} <small>{filtreActif ? `${lignes.length} sur ${c.total}` : c.total}</small></h2>
+                  <h2>{COURT[f]} <small>{filtreActif ? `${lignes.length} sur ${c.total}` : c.total}</small></h2>
                   <p className="sz-r-mt">
                     <span className="sz-r-tk" aria-hidden="true">{items.filter((i) => familleDe(i) === f).slice(0, 40).map((i) => <i key={i.ref} className={jours.has(i.ref) ? 'sz-r-f' : ''} />)}</span>
                     <span><b className="sz-r-m">{c.compte}</b>/<span className="sz-r-m">{c.total}</span> comptés{c.dernier ? <> · <span className="sz-r-m">{jourCourt(c.dernier)}</span></> : ''}</span>
