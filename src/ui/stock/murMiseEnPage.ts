@@ -11,7 +11,7 @@ export function installerMiseEnPage(racine: HTMLElement): { arreter: () => void;
   // et mesurait « la dernière colonne » (undefined). On ne lui donne donc pas ces planches ; sa pastille « rien en stock » reste posée par le CSS.
   const garnie = (pl: Element) => !!pl.querySelector('.l1e-g');
   const liste = (s: string) => { const l = [...racine.querySelectorAll(s)]; return /\.l1e-pl\s*$/.test(s) ? l.filter(garnie) : l; };
-  const doc = { querySelectorAll: (s: string) => liste(s), querySelector: (s: string) => racine.querySelector(s), fonts: (document as any).fonts };
+  const doc = { querySelectorAll: (s: string) => liste(s), querySelector: (s: string) => racine.querySelector(s), createRange: () => document.createRange(), fonts: (document as any).fonts };
   const addEventListener = (t: string, f: EventListener) => { ecouteurs.push([t, f]); window.addEventListener(t, f); };
   const setTimeout = (f: () => void, ms: number) => { const id = window.setTimeout(f, ms); timers.push(id); return id; };
   (function (document, window, addEventListener, setTimeout) {
