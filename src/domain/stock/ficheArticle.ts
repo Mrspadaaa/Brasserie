@@ -7,6 +7,8 @@ import { canonicalStockCategory } from '../../services/stockLineMatching';
 import { sansBis } from './donnees';
 import type { MouvementBrut } from './mouvementsArticle';
 import { nombreFr } from '../nombreAffiche';
+import { Units } from '../../services/units';
+import type { BrewPrice } from '../finance/brewBudget';
 
 const cle = (nom: string) => sansBis(nom).normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
 
@@ -45,6 +47,20 @@ export function lotsDe(famille: StockItem[], bruts: MouvementBrut[]): Lot[] {
       prix: typeof a.pricePerUnit === 'number' && a.pricePerUnit > 0 ? a.pricePerUnit : null
     };
   }).sort((a, b) => a.entree === null ? (b.entree === null ? 0 : 1) : b.entree === null ? -1 : a.entree.localeCompare(b.entree));
+}
+
+/**
+ * Le dernier prix de l'article, par unité de l'article, lu depuis ses achats (cx, ST-T24) : le prix de la dernière ligne de facture rattachée à l'article
+ * (`latestBrewPrices`, factures annulées exclues) ramené à l'unité du stock (« 2,30 CHF / kg » pour deux achats à 2,30). Une ligne dans une unité qui
+ * ne se convertit pas en celle de l'article ne donne rien. Sans achat lu, le prix de la fiche de l'article (ancien champ) ; sinon null : jamais 0.
+ */
+export function prixDernierAchat(article: Pick<StockItem, 'ref' | 'unit' | 'pricePerUnit'>, achats: Readonly<Record<string, BrewPrice>>): number | null {
+  const a = achats[article.ref];
+  if (a && a.amount > 0 && a.quantity > 0 && a.unit) {
+    const quantite = Units.convert(a.quantity, a.unit, article.unit);
+    if (quantite !== null && quantite > 0) return a.amount / quantite;
+  }
+  return typeof article.pricePerUnit === 'number' && article.pricePerUnit > 0 ? article.pricePerUnit : null;
 }
 
 /** « 100 g · 10,10 CHF » : le prix d'une quantité ronde (100 g pour un houblon, 1 unité sinon). Null = prix inconnu. */

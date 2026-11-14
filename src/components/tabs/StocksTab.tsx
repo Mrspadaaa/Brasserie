@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useState, useMemo, useEffect, useRef } from 'rea
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
+import { latestBrewPrices } from '../../domain/finance/brewBudget';
 import { Units } from '../../services/units';
 import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
 import { EnteteRayon } from '../../ui/stock/EnteteRayon';
@@ -45,6 +46,7 @@ const readRecipes = () => StorageService.getRecipes();
 // Hors du composant : `useStorageValue` relit à chaque changement de `read` ; une flèche écrite dans le rendu
 // le changerait à chaque rendu, et `getStockMovements()` rend un tableau neuf tant que la collection est absente (boucle).
 const readMovements = () => StorageService.getStockMovements();
+const readTransactions = () => StorageService.getTransactions();
 
 interface StocksTabProps {
   stocks: {
@@ -124,6 +126,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   );
   const savedRecipes = useStorageValue(readRecipes);
   const movements = useStorageValue(readMovements);
+  // « Dernier prix » de la fiche : la dernière ligne d'achat de chaque article (cx, ST-T24).
+  const transactions = useStorageValue(readTransactions);
+  const achats = useMemo(() => latestBrewPrices(transactions), [transactions]);
   const recipes = useMemo(() => savedRecipes
     .filter(recipe => !recipe.archivedAt)
     .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
@@ -640,6 +645,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           if (!result.ok && result.refus) onSuccessMessage?.(result.refus);
         }}
         movements={movements}
+        achats={achats}
         onCorrect={applyCorrection}
         onCommander={() => { setSelected(null); setSubTab('courses'); }}
         onOpenHops={onOpenHopV55}

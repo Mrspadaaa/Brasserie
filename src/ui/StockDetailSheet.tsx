@@ -18,8 +18,9 @@ import { estVide, ficheDe } from '../domain/stock/ficheValeurs';
 import { champsASaisir, MOT_A_SAISIR, subscribeEnrichissement } from '../services/enrichissement';
 import type { ChampEcrit } from '../services/enrichissementStore';
 import { bandForEbc } from '../domain/beerColor';
-import { familleDe, jourCourt, lotsDe, nombreSuisse, phraseRemplacant, prixLu, quantiteArticle, remplacantDe, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
+import { familleDe, jourCourt, lotsDe, nombreSuisse, phraseRemplacant, prixDernierAchat, prixLu, quantiteArticle, remplacantDe, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
 import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
+import type { BrewPrice } from '../domain/finance/brewBudget';
 import { StockFicheBouge } from './StockFicheBouge';
 import type { InventoryReason } from '../services/storage';
 import './stocks.css';
@@ -37,6 +38,8 @@ interface StockDetailSheetProps {
   onToggleFavorite: (item: StockItem) => void;
   /** Les recettes enregistrées : un article qu'une recette cite ne se supprime pas (AM-55). */
   recipes?: Recipe[];
+  /** Le dernier achat de chaque article (lignes de facture, `latestBrewPrices`) : « Dernier prix » de la fiche (ST-T24). Absent : l'ancien champ de l'article. */
+  achats?: Record<string, BrewPrice>;
   /** Les mouvements de stock (achats, brassages, inventaires) : « Ce qui a bougé ». Absents : la carte dit qu'aucun mouvement n'est enregistré. */
   movements?: MouvementBrut[];
   /** « Corriger le stock » : écrit un mouvement d'inventaire (R4). Absent : le bloc n'est pas montré. */
@@ -91,7 +94,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = props =>
 
 const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   item, batches, stockItems, recipeCheck, onClose, onSave, onDelete, onToggleFavorite, recipes = [],
-  movements = [], onCorrect, onOpenTransaction, onOpenBatch, onCommander, onOpenHops
+  movements = [], achats = {}, onCorrect, onOpenTransaction, onOpenBatch, onCommander, onOpenHops
 }) => {
   const [draft, setDraft] = useSyncedDraft(item, item.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -256,7 +259,8 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const infoEntree = entrees.length === 0 ? 'inconnue'
     : plusieursLots ? `${entrees.map(d => jourCourt(d, aujourdhui)).join(' et ')} · ${famille.length} lots`
       : `${jourCourt(entrees[0], aujourdhui)}${supplier ? ` · ${supplier}` : ''}`;
-  const prix = prixLu(item.pricePerUnit, unite);
+  const prix = prixLu(prixDernierAchat(item, achats), unite);
+  const prixLot = (ref: string) => { const a = famille.find(x => x.ref === ref); return a ? prixDernierAchat(a, achats) : null; };
   const libelleLot = (l: Lot, i: number) => l.entree ? `Entré le ${jourCourt(l.entree, aujourdhui)}` : `Lot ${i + 1} · entrée inconnue`;
   const retourLibelle = `Stock · ${PLURIEL[categorie] ?? categorie}`;
 
@@ -303,7 +307,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
                 <span className="sfp-lotq">{quantiteArticle(l.stock, l.unite)}</span><ChevronDown size={18} aria-hidden="true"/></summary>
               <dl className="sfp-lotd">
                 <dt>Article</dt><dd>{l.nom}</dd>
-                {prixLu(famille.find(a => a.ref === l.ref)?.pricePerUnit, l.unite) && <><dt>Prix</dt><dd>{prixLu(famille.find(a => a.ref === l.ref)?.pricePerUnit, l.unite)}</dd></>}
+                {prixLu(prixLot(l.ref), l.unite) && <><dt>Prix</dt><dd>{prixLu(prixLot(l.ref), l.unite)}</dd></>}
                 {l.factureId && onOpenTransaction && <><dt>Pièce</dt><dd><button type="button" onClick={() => onOpenTransaction(l.factureId as string)}>voir la facture du {jourCourt(l.entree, aujourdhui)}</button></dd></>}
               </dl></details>)}
           </section></div>}
