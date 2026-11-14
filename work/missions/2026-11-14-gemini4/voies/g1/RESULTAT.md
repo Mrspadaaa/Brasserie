@@ -1,4 +1,15 @@
-ECHEC — second tirage et Argon@medium (paires) non faits : HTTP 429 (plafond mensuel Google) revenu à 5,13 CHF de cumul ; Hydrogen@low jugé sur les paires, Argon@low non confirmé
+OK — Hydrogen@low confirmé : 2 tirages impairs identiques (93/108, bruit 0 ligne), 225/260 contre 207 pour 3.8@low ; Argon@medium paires non fait
+
+## Second tirage Hydrogen@low, moitié impaire (14.11 soir, plafond relevé, aucun 429)
+Source : `voies/g1/tableau-impairs-r2.md` ; dossier hors Git `banc-g1-odd-r2-gemini-4-hydrogen-low`. Même commande que le premier tirage (3ᵉ lecture neuve, Flash-Lite prêtées du témoin), lancée une fois.
+| cellule (9 pièces impaires, 5 3ᵉ lectures) | lignes justes /108 | champs /105 | perdues | inventées | totaux TTC | 3ᵉ p50 / p90 | coût par pièce CHF |
+|---|---|---|---|---|---|---|---|
+| 3.8@low (témoin) | 78 | 101 | 0 | 1 | 9/9 | 14,0 / 20,5 s | 0,0305 |
+| Hydrogen@low, tirage 1 | 93 | 103 | 0 | 1 | 9/9 | 19,8 / 23,4 s | 0,0455 |
+| Hydrogen@low, tirage 2 | 93 | 103 | 0 | 1 | 9/9 | 18,4 / 22,5 s | 0,0446 |
+- **Bruit entre tirages : 0 ligne, 0 champ** sur les 5 3ᵉ lectures (temps −1,4 s au p50, dans la dispersion ; coût −2 %). Le résultat se reproduit : l'avantage sur le témoin (+15 lignes impaires, +3 paires, +18 sur 260) n'est pas un coup de dé côté impairs. Sur les paires il reste un seul tirage (+3, faible).
+- **Verdict Hydrogen@low : retenu** comme 3ᵉ lecture (déjà en production via h1, repli 3.8). 225/260 contre 207/260, 0 perdue, totaux justes partout, 0 faux vert ; coût +49 à +56 % par pièce, ≈ +5 s sur la 3ᵉ lecture. Argon@low reste écarté (paires 122 < 129).
+- Coût : ≈ 0,25 CHF de 3ᵉ lectures (plafond de passe 0,6). Cumul journalisé (g2 y écrit aussi) : 5,13 avant, 5,38 à la fin de ce tirage, 6,38 au dernier relevé. Non fait : Argon@medium sur les paires (hors demande).
 
 ## Bilan de la reprise (à lire d'abord)
 - **Hydrogen@low tient sur les paires** (132/152 contre 129 pour 3.8@low, 0 perdue, 0 inventée, 8/8 totaux, p90 3ᵉ lecture 24,9 s), après les impairs (93/108 contre 78). Cumul des deux moitiés : 225/260 contre 207/260 (+18 lignes). Le choix du brasseur est donc soutenu par les mesures ; surcoût de la 3ᵉ lecture réel (+49 % par pièce sur les impairs, +56 % sur les paires, hors tarifs 1.12 : Hydrogen est stable).
