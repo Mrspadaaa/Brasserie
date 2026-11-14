@@ -18,7 +18,7 @@ import { estVide, ficheDe } from '../domain/stock/ficheValeurs';
 import { champsASaisir, MOT_A_SAISIR, subscribeEnrichissement } from '../services/enrichissement';
 import type { ChampEcrit } from '../services/enrichissementStore';
 import { bandForEbc } from '../domain/beerColor';
-import { familleDe, jourCourt, lotsDe, nombreSuisse, prixLu, quantiteArticle, variation, type Lot } from '../domain/stock/ficheArticle';
+import { familleDe, jourCourt, lotsDe, nombreSuisse, phraseRemplacant, prixLu, quantiteArticle, remplacantDe, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
 import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
 import { StockFicheBouge } from './StockFicheBouge';
 import type { InventoryReason } from '../services/storage';
@@ -123,7 +123,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   }, []);
 
   const aujourdhui = todayISO();
-  const tous = stockItems ?? [item];
+  const tous = useMemo(() => stockItems ?? [item], [stockItems, item]);
   const famille = useMemo(() => familleDe(item, tous), [item, tous]);
   const lots = useMemo(() => lotsDe(famille, movements), [famille, movements]);
   const plusieursLots = famille.length > 1;
@@ -133,6 +133,14 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const malt = categorie === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(categorie);
   const levure = categorie === 'Levure';
   const technical = malt || houblon || levure;
+  // Le remplaçant concret (k2 : « ou Mosaic · en stock 250 g · proche ») : le moteur de substitution, chargé à la demande ; undefined = en calcul, null = aucun connu.
+  const [remplacant, setRemplacant] = useState<RemplacantFiche | null | undefined>(undefined);
+  useEffect(() => {
+    if (!houblon) return;
+    let vivant = true;
+    remplacantDe(item, tous).then(r => { if (vivant) setRemplacant(r); }, () => { if (vivant) setRemplacant(null); });
+    return () => { vivant = false; };
+  }, [houblon, item, tous]);
 
   // Quantité, besoin et manque de la FAMILLE (l'article et ses lots « bis ») : une valeur inconnue reste inconnue, jamais 0.
   const dispos = useMemo(() => { const m = disponibilites(tous, batches, recipes).parArticle; return famille.map(a => m.get(a.ref)); }, [tous, batches, recipes, famille]);
@@ -313,7 +321,9 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
               {recipeCheck.comparison.issue && <p>{recipeCheck.comparison.issue}</p>}
               <p className="sfp-t2">Cette prévision ne réserve pas le stock.</p>
             </div>}
-            {houblon && onOpenHops && <button type="button" className="sfp-rempl" onClick={onOpenHops} data-remplacant><ArrowLeftRight size={18} aria-hidden="true"/><span><b>Remplaçants possibles</b> · dans l’outil houblons</span><ChevronRight size={16} aria-hidden="true"/></button>}
+            {houblon && onOpenHops && <button type="button" className="sfp-rempl" onClick={onOpenHops} data-remplacant><ArrowLeftRight size={18} aria-hidden="true"/>{remplacant
+              ? <span data-remplacant-nom={remplacant.cle}><b>{phraseRemplacant(remplacant).nom}</b>{phraseRemplacant(remplacant).reste}</span>
+              : <span><b>Remplaçants possibles</b> · {remplacant === undefined ? 'en calcul…' : 'dans l’outil houblons'}</span>}<ChevronRight size={16} aria-hidden="true"/></button>}
           </section></div>
 
           <StockFicheBouge nom={nomAffiche} famille={famille.map(a => ({ ref: a.ref, currentStock: a.currentStock, supplier: a.supplier }))} unite={unite}
