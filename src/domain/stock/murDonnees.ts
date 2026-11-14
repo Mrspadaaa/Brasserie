@@ -114,7 +114,7 @@ const sansAccent = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-
  */
 export function typeMaltParNom(nom: string, ebc: number | null | undefined): TypeMalt | null {
   const n = sansAccent(nom);
-  if (/flocon|flak|\bcru\b|\braw\b|unmalted|non malte|torrefied|rauch|fume|smoke|tourbe|peat|sauer|acidul|\bacid/.test(n)) return 'speciaux';
+  if (/flocon|flak|flocke|\bcru\b|\braw\b|unmalted|non malte|torrefied|rauch|fume|smoke|tourbe|peat|sauer|acidul|\bacid/.test(n)) return 'speciaux';
   if (/choco|carafa|black|noir|roast|torrefie|patent/.test(n)) return 'torrefies';
   if (/\bcara\w*|caramel|crystal|cristal|special b\b/.test(n)) return 'caramel';
   if (/\bpils\w*|\bpale\b|munich|munchner|muenchner|vienna|viennois|wiener|weizen\w*|\bble\b|wheat|\blager\b|maris otter|golden promise|\bbase\b/.test(n)) return 'base';

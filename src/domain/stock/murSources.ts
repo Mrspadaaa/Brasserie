@@ -36,10 +36,11 @@ function colonneLevure(i: StockItem): ColonneLevure | null {
   }
   if (/kveik|kviek/.test(n)) return 'autres';
   if (/w3470|saflager|2124|lager|pilsner/.test(n)) return 'lager';
-  if (/wb06|weiss|wheat|hefe|witbier/.test(n)) return 'ble';
+  // « hefe » seul n'est pas du blé : « Trockenhefe » veut dire « levure sèche » (une levure de champagne y tombait en Blé) ; le blé se lit à « weizen », « hefeweizen », « weiss », « wheat ».
+  if (/wb06|weiss|weizen|wheat|witbier/.test(n)) return 'ble';
   // WLP001 / WY1056 / BRY-97 / « California Ale » / « American Ale » : la souche Chico, comme l'US-05 (c26 n° 5)
-  if (/us05|chico|verdant|hazy|vermont|conan|ipa|wlp001|wy1056|1056|bry97|california|americanale/.test(n)) return 'ipa';
-  if (/nottingham|s04|english|british|wlp002|1968|1098/.test(n)) return 'anglaise';
+  if (/us05|chico|verdant|hazy|vermont|conan|ipa|wlp001|wy1056|1056|bry97|california|americanale|westcoast|m44/.test(n)) return 'ipa'; // M44 : « US West Coast », la souche Chico de Mangrove Jack's
+  if (/nottingham|windsor|s04|english|british|wlp002|1968|1098/.test(n)) return 'anglaise'; // Windsor (Lallemand) : levure anglaise
   return null;
 }
 const milieu = (v: unknown): number | null => { const m = /(\d{2,3})\s*%?\s*[-–]\s*(\d{2,3})/.exec(String(v ?? '')); return m ? (+m[1] + +m[2]) / 2 : null; };
@@ -47,6 +48,8 @@ const milieu = (v: unknown): number | null => { const m = /(\d{2,3})\s*%?\s*[-�
 export const sourcesDeLApp: SourcesMur = {
   houblon(i) {
     let r = varieteDe(i.name, catalogue());
+    // Un houblon vendu en paquet porte son poids dans le nom (« Cryo Hops Citra 25g ») : sans ce poids ni « Hops », la variété se retrouve (jamais « sans style »).
+    if (!('h' in r)) { const nu = i.name.replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|gr|g)\b/gi, ' ').replace(/\bhops?\b/gi, ' ').replace(/\s+/g, ' ').trim(); if (nu && nu !== i.name) r = varieteDe(nu, catalogue()); }
     if (!('h' in r) && i.origin) r = varieteDe(`${i.name} ${i.origin}`, catalogue()); // « Saaz » est ambigu (CZ, US, Late) : l'origine de l'article tranche
     if (!('h' in r)) return { id: null, role: null, origine: codePays(i.origin), arome: null };
     const h = r.h;
