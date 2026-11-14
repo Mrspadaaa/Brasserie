@@ -53,3 +53,10 @@ export function titreMois(mois: string, anneeCourante: string): string {
   const base = majuscule(MOIS_LONG.format(date(mois)));
   return mois.slice(0, 4) === anneeCourante ? base : `${base} ${mois.slice(0, 4)}`;
 }
+
+/**
+ * Le libellé d'une vente unique sous « Entré » : « Vente 10 × Bière · 75 cl — Restaurant du Lac » tient sur trois lignes dans la colonne (390).
+ * Le segment est déjà sous « Entré » : quand le texte est long, le mot « Vente » est sous-entendu et part ; le texte entier reste dans le nom accessible.
+ */
+export const libelleVente = (libelle: string | null): string | null =>
+  libelle && libelle.length > 26 ? libelle.replace(/^Vente\s+/i, '') : libelle;

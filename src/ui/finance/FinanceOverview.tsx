@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { Batch, Recipe, StockItem, Transaction } from '../../types';
 import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../domain/finance/types';
-import { todayISO, type LedgerSummary } from '../../domain/finance/ledger';
+import { isoDate, todayISO, transactionAmount, type LedgerSummary } from '../../domain/finance/ledger';
 import { periodeSynthese } from '../../domain/finance/periodeSynthese';
 import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
 import type { JournalRequest } from './TransactionJournal';
@@ -52,6 +52,22 @@ interface Props {
 }
 
 /**
+ * « Matériel à part » : la Synthèse y range `materiel` ET `renovation` (périodeSynthese), alors que le filtre « Catégorie » du journal ne prend qu'une valeur.
+ * Le lien passe la catégorie qui porte le plus de montant dans la période (un local et travaux de 5 500,00 ouvre « Rénovation », jamais « Aucune opération »).
+ * Si les deux coexistent, l'autre n'apparaît pas : à lever par un filtre « à part » du journal (voir RESULTAT, « POUR f1 »).
+ */
+function categorieMateriel(transactions: Transaction[], bornes: { du: string; au: string } | null): string {
+  const cents = { materiel: 0, renovation: 0 };
+  for (const t of transactions) {
+    if ((t.category !== 'materiel' && t.category !== 'renovation') || t.finance?.voidedAt) continue;
+    const d = isoDate(t.date)?.slice(0, 7);
+    if (bornes && (!d || d < bornes.du || d > bornes.au)) continue;
+    cents[t.category] += transactionAmount(t);
+  }
+  return cents.renovation > cents.materiel ? 'renovation' : 'materiel';
+}
+
+/**
  * Synthèse (g3a, choisie le 09.11) : entré contre dépensé, l'à-payer hachuré, le gain, la caisse, le litre.
  * Remplace entièrement « Situation » et « Coûts ». Tous les nombres viennent de `periodeSynthese` (domaine) et du grand livre ; l'écran ne calcule rien.
  */
@@ -91,7 +107,7 @@ export function FinanceOverview(props: Props) {
           onCategorie={categorie => ouvrir({ category: categorie, ...portee })}
           onPiece={props.onTransaction}
           onVentes={() => ouvrir({ category: 'recettes', ...portee })}
-          onMateriel={() => ouvrir({ category: 'materiel', ...portee })}
+          onMateriel={() => ouvrir({ category: categorieMateriel(transactions, plage ? { du: plage.du, au: plage.au } : allDates ? null : { du: month, au: month }), ...portee })}
           onPourquoi={() => setPourquoi(true)}/>
         {props.profile && <button type="button" className="syn-row" data-ligne="analyse" onClick={() => setAnalyse(true)}>
           <span className="syn-t">Revoir le mois<small>Caisse jour par jour, sources, budgets, 12 mois</small></span>

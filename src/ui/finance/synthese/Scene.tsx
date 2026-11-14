@@ -3,11 +3,13 @@ import { formatCHF } from '../../../domain/finance/ledger';
 import { echelle, regrouperPetits, type PeriodeSynthese, type Reste } from '../../../domain/finance/periodeSynthese';
 import { amountOnly, shortDate } from '../financeFormat';
 import { PlageMois } from '../PlageMois';
-import { couleur, hachure, libelleCategorie, fenetreMois, moisCourt, texteSur, titreMois, titrePlage } from './libelles';
+import { couleur, hachure, libelleCategorie, libelleVente, fenetreMois, moisCourt, texteSur, titreMois, titrePlage } from './libelles';
 
 /** Hauteur de la plus haute pile, en px : celle de la maquette g3a. */
 export const HAUTEUR = 300;
 const EN_TETE = 34;
+/** Hauteur minimale d'un segment de dépense qui porte son libellé et son montant (une ligne de 12 px) : comme MM-1, la valeur reste écrite, la forme cède. */
+const SEGMENT_MIN = 22;
 
 /** `plage` : début et fin (`AAAA-MM`, bornes incluses) de la période choisie avec « … » (CP-9) ; elle remplace le mois ou « tout ». */
 export interface PeriodeChoix { mois: string; tout: boolean; plage?: { du: string; au: string } | null }
@@ -57,9 +59,18 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
   const vide = p.lignes === 0 && p.materielCents === 0;
   const ech = echelle(p.entreCents, p.depenseCents, HAUTEUR);
   const postes = regrouperPetits(p.postes, p.depenseCents, 4);
+  const payes = postes.filter(x => x.payeCents > 0);
+  // Gain ≫ dépensé : la pile du dépensé serait un trait ; elle grandit juste assez pour que chaque segment porte son libellé, l'écart pointillé cède autant.
+  const nSegments = payes.length + p.aPayer.length;
+  const ecrasee = ech.signe === 'gain' && p.depenseCents > 0 && ech.hPileDepense < nSegments * SEGMENT_MIN;
+  const hPileDepense = ecrasee ? Math.min(nSegments * SEGMENT_MIN, HAUTEUR - 10) : ech.hPileDepense;
+  const hEcart = ecrasee ? HAUTEUR - hPileDepense : ech.hEcart;
+  const segMin = ecrasee ? { minHeight: SEGMENT_MIN } : {};
+  // Légende « payé » : les couleurs des charges payées dessinées (une pastille par couleur, en bandes quand il y en a plusieurs, comme le « payé » de v6a).
+  const couleursPayees = [...new Set(payes.map(x => couleur(x.categorie)))];
   const pctDe = (cents: number) => p.depenseCents > 0 ? cents * 100 / p.depenseCents : 0;
   // Une étiquette ne s'écrit que si la tranche est assez haute pour la porter : sinon elle déborde sur sa voisine (« tout » : Solde atelier sur Loyer).
-  const pxDe = (cents: number) => p.depenseCents > 0 ? cents * ech.hPileDepense / p.depenseCents : 0;
+  const pxDe = (cents: number) => p.depenseCents > 0 ? Math.max(ecrasee ? SEGMENT_MIN : 0, cents * hPileDepense / p.depenseCents) : 0;
   const perte = ech.signe === 'perte', gain = ech.signe === 'gain';
   const pastille = vide ? null : gain
     ? <><b className="syn-m" style={taille(amountOnly(p.gainCents))}>+{amountOnly(p.gainCents)}</b><span>CHF gagnés</span></>
@@ -78,24 +89,26 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
         {p.entreCents > 0
           ? <div className="syn-pile syn-pile-entree" style={{ height: ech.hPileEntree }}>
             <button type="button" className="syn-s syn-s-vente" style={{ flex: Math.max(1, p.entreCents - p.entreAEncaisserCents) }} aria-label={`${p.ventes.libelle ?? 'Ventes'} ${formatCHF(p.entreCents)}, voir ces ventes`} onClick={onVentes}>
-              <span className="syn-lib">{p.ventes.libelle}</span>
+              <span className="syn-lib">{libelleVente(p.ventes.libelle)}</span>
             </button>
             {p.entreAEncaisserCents > 0 && <div className="syn-s syn-ap syn-ap-vente" style={{ height: aEncaisserPx, flex: 'none' }}>
               <span className="syn-tag">À encaisser <span className="syn-m">{amountOnly(p.entreAEncaisserCents)}</span></span>
             </div>}
           </div>
-          : !perte && !vide && <div className="syn-pile syn-pile-zero"/>}
+          : vide ? <div className="syn-pile-vide" style={{ height: HAUTEUR }}><p>Aucune écriture sur cette période.</p></div>
+          : !perte && <div className="syn-pile syn-pile-zero"/>}
       </div>
 
       <div className="syn-col">
         <div className="syn-hc"><span>Dépensé</span><span className="syn-m">{amountOnly(p.depenseCents)}</span></div>
-        {gain && <div className="syn-ecart syn-ecart-gain" style={{ height: ech.hEcart }} aria-hidden="true"/>}
-        {p.depenseCents > 0 && <div className="syn-pile" style={{ height: ech.hPileDepense, borderRadius: gain ? '0 0 10px 10px' : 10 }}>
-          {postes.filter(x => x.payeCents > 0).map(x => <button type="button" key={x.categorie} className="syn-s" style={{ flex: x.payeCents, background: couleur(x.categorie), color: texteSur(x.categorie) }}
+        {gain && <div className="syn-ecart syn-ecart-gain" style={{ height: hEcart }} aria-hidden="true"/>}
+        {vide && <div className="syn-pile-vide" style={{ height: HAUTEUR }} aria-hidden="true"/>}
+        {p.depenseCents > 0 && <div className="syn-pile" style={{ height: hPileDepense, borderRadius: gain ? '0 0 10px 10px' : 10 }}>
+          {payes.map(x => <button type="button" key={x.categorie} className="syn-s" style={{ flex: x.payeCents, background: couleur(x.categorie), color: texteSur(x.categorie), ...segMin }}
             aria-label={`${libelleCategorie(x.categorie)} ${formatCHF(x.payeCents)}, voir ces opérations de ${nomPeriode}`} onClick={() => onCategorie(x.categorie)}>
-            {pctDe(x.payeCents) >= 4 && <><span className="syn-lib">{libelleCategorie(x.categorie)}</span><span className="syn-m">{amountOnly(x.payeCents)}</span></>}
+            {(ecrasee || pctDe(x.payeCents) >= 4) && <><span className="syn-lib">{libelleCategorie(x.categorie)}</span><span className="syn-m">{amountOnly(x.payeCents)}</span></>}
           </button>)}
-          {p.aPayer.map(r => <button type="button" key={r.id} className="syn-s syn-ap" style={{ flex: r.cents, backgroundImage: hachure(r.categorie), flexDirection: 'column', gap: 2 }}
+          {p.aPayer.map(r => <button type="button" key={r.id} className="syn-s syn-ap" style={{ flex: r.cents, backgroundImage: hachure(r.categorie), flexDirection: 'column', gap: 2, ...segMin }}
             aria-label={`${r.libelle} ${formatCHF(r.cents)} à payer ${echeance(r)}${r.enRetard ? ', en retard' : ''}, ouvrir la pièce`} onClick={() => onPiece(r.id)}>
             {pxDe(r.cents) >= 22 && <span className={pxDe(r.cents) >= 46 ? 'syn-tag' : 'syn-tag syn-tag-court'}>{r.libelle} <span className="syn-m">{amountOnly(r.cents)}</span></span>}
             {pxDe(r.cents) >= 46 && <span className="syn-tag">à payer {echeance(r)}</span>}
@@ -115,11 +128,12 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
         <div className={`syn-gb syn-gb-${ech.signe}`} role="status">{pastille}</div>
         <button type="button" className="syn-why" onClick={onPourquoi}><span aria-hidden="true">✦ </span>Pourquoi ?</button>
       </div>}
-      {vide && <p className="syn-vide">Aucune écriture sur cette période.</p>}
     </div>
     <div className="syn-leg">
-      <span><i style={{ background: couleur('chargesFixes') }}/>payé</span>
-      {p.aPayer.length > 0 && <span><i style={{ backgroundImage: hachure('chargesFixes') }}/>à payer</span>}
+      {/* La légende reprend les couleurs vues : le plus gros segment payé, la catégorie du premier reste à payer (jamais le violet des charges fixes par défaut). */}
+      {couleursPayees.length === 1 && <span><i style={{ background: couleursPayees[0] }}/>payé</span>}
+      {couleursPayees.length > 1 && <span><span className="syn-bandes" aria-hidden="true">{couleursPayees.map(c => <i key={c} style={{ background: c }}/>)}</span>payé</span>}
+      {p.aPayer.length > 0 && <span><i style={{ backgroundImage: hachure(p.aPayer[0].categorie) }}/>à payer</span>}
       {p.aEncaisser.length > 0 && <span><i style={{ backgroundImage: hachure('recettes') }}/>à encaisser</span>}
       {/* data-renvoi="aucun" : la légende nomme la hachure ; la ligne-tâche « Confirmer les paiements (n) › » de « À vérifier », juste en dessous, ouvre le journal filtré. */}
       {aConfirmer > 0 && <span data-renvoi="aucun"><i className="syn-confirmer"/>{aConfirmer} à confirmer</span>}

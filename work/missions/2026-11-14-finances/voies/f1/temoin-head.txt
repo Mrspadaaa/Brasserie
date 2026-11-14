@@ -1,0 +1,11 @@
+KO  repos : pilule ‹ novembre › avec l'icône frise ()
+ok  repos : aucune frise (0)
+KO  390 : le parcours s'arrête (No element found for selector: button[aria-label^="Déplier les jours"])
+KO  1280 : deux champs date « Du » et « Au » visibles (false, false)
+KO  1280 : le parcours s'arrête (Illegal invocation)
+FRISE ECHEC
+  - repos : pilule ‹ novembre › avec l'icône frise ()
+  - 390 : le parcours s'arrête (No element found for selector: button[aria-label^="Déplier les jours"])
+  - 1280 : deux champs date « Du » et « Au » visibles (false, false)
+  - 1280 : le parcours s'arrête (Illegal invocation)
+(témoin : HEAD servi depuis un dossier temporaire sur le port 3018, controle-frise.mjs inchangé)

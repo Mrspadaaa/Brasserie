@@ -1,0 +1,11 @@
+KO   P9 légende « payé » = les couleurs des charges payées dessinées (segments rgb(154, 154, 154) / rgb(210, 179, 86) ; pastille rgb(154, 154, 154))
+KO   P1 « Matériel à part » ouvre Opérations sur la pièce (touché : true ; « Local et travaux » : false ; « Aucune opération » : true)
+KO   P12 fiche de la vente : « 10 pièces » (ligne touchée : true ; texte : 10 pièce)
+KO   P10 mois vide : colonne Entré en pointillé (0 px), « 0,00 » écrit (« Entré0,00 »), phrase dans la colonne : false
+KO   P2 tête = colonne ferme (en-tête 26540 ; segments pleins 26540) ; « à classer 5 500,00 » écrit à part, hachuré : false
+KO   P8 résultat « ? » dans le haut de l’Entré : false ; rien de flottant : false ; étiquettes pointillées : 2 ; « perte avant stock » : true ; décalage des colonnes 162.6 / piles 3.0 px
+KO   P2 Mois par mois dit « à classer 5 500,00 » et plus « compte en charge » (« Matér »)
+KO   P8 étape 8 : dépensé ferme 265,40, « à classer 5 500,00 » à part, plus 5 765,40 (« ventes 5 695,00 − dépensé 5 765,40 − usure 0,00 ± stock ?provisoirecode : choisis principale ou accessoire (étape 7)CopierFortune »)
+KO   P3 TVA ouvre une feuille remplie (touchée : true ; « TVATVA »)
+KO   P7 « Stock au 31 déc. ? › » ouvre l’étape 3 « Inventaires » (puce touchée : true ; étape vue : null)
+R1 ECHEC (points 9, 1, 12, 10, 2, 8, 3, 7)

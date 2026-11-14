@@ -61,7 +61,7 @@ export function TaxWorkspace({ report, closing, closings = [], year = report.yea
     {feuille && <TaxClosingSheet closing={closing} report={report} section={feuille} onClose={() => setFeuille(null)} onSaved={onVersion}/>}
     {vue === 'mois' && <MoisParMois c={c} onClose={() => setVue(null)}/>}
     {vue === 'annee' && <AnneeVersions year={year} onYear={onYear} closings={closings} closing={closing} onVersion={onVersion} onProfile={onProfile} onClose={() => setVue(null)}/>}
-    {vue === 'tva' && tvaThreshold && <TvaFeuille message={tvaThreshold.message} onClose={() => setVue(null)}/>}
+    {vue === 'tva' && tvaThreshold && <TvaFeuille statut={tvaThreshold} assujetti={profile.vatRegistered === true} onClose={() => setVue(null)}/>}
     {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Finances de la brasserie" initialOpen hideLauncher initialQuestion={question} suggestedPrompts={[]} onClose={() => setQuestion(undefined)}/></React.Suspense>}
   </div>;
 }

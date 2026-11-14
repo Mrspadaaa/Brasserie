@@ -10,8 +10,13 @@ import { CategoryTag } from './CategoryTag';
 import { longDate } from './financeFormat';
 import { dateAffichee, formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
+import { accord } from '../../services/plural';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
+
+/** Unités comptables qui s'accordent (« 10 pièces », « 1 pièce ») ; une unité de mesure (kg, L, cl) reste telle quelle. */
+const UNITES_COMPTABLES = new Set(['pièce', 'sachet', 'bouteille', 'fût', 'carton', 'caisse', 'boîte', 'paquet', 'canette', 'palette', 'sac', 'unité']);
+const uniteAccordee = (quantite: number, unite?: string): string => unite && UNITES_COMPTABLES.has(unite.toLowerCase()) ? accord(quantite, unite) : (unite ?? '');
 
 export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe}: {
   transaction:Transaction; transactions:Transaction[]; payments:FinancialPayment[]; plans:FinancialPlan[];
@@ -51,7 +56,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
           y renvoie directement : sans ce lien il fallait retenir le nom,
           changer d'onglet et le rechercher dans l'inventaire. */}
       {!!tx.finance?.lines.length&&<div className="finance-list">{tx.finance.lines.map(line=>{
-        const meta=[line.quantity!=null?`${line.quantity} ${line.unit??''}`.trim():'',line.kind==='equipment'?'Matériel':''].filter(Boolean).join(' · ');
+        const meta=[line.quantity!=null?`${line.quantity} ${uniteAccordee(line.quantity,line.unit)}`.trim():'',line.kind==='equipment'?'Matériel':''].filter(Boolean).join(' · ');
         const openStock=line.stockItemRef&&onOpenStockItem?()=>onOpenStockItem(line.stockItemRef!):undefined;
         const body=<><span className="finance-row-main"><strong>{line.description}</strong>{meta&&<span className="finance-muted">{meta}</span>}</span><span className="finance-money">{formatCHF(line.amountCents)}</span>{openStock&&<ChevronRight size={15} className="shrink-0 text-cave-400"/>}</>;
         return openStock
