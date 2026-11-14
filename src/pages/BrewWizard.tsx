@@ -31,7 +31,7 @@ import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCan
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
-import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
+import { EtapePaliers } from '../ui/paliers/EtapePaliers';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
 import { currentInstallation, snapshotBrewhouse, snapshotMashRatio } from '../domain/brewPreferences';
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
@@ -2960,7 +2960,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
             </Suspense>
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
-              <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
+
             </Suspense>
           </div>
         </Section>
@@ -3043,165 +3043,34 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
       {/* ---------------------------------------------------- ÉTAPE 5 */}
       {step === 'paliers' && (
-        <>
-          <RecipeThermalPlan recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setDetails(d=>({...d,mash:next.mash}));}}/>
-          <Section
-            title="Empâtage"
-            hint="Le palier de saccharification décide de la sécheresse de la bière."
-          >
-            <div className={`space-y-2 sm:space-y-3${retraitPalier.verrou ? ' pointer-events-none' : ''}`}>
-              <PresetChips
-                name="Programme d’empâtage"
-                presets={MASH_PROGRAMS}
-                id={(p) => p.id}
-                label={(p) => p.name}
-                purpose={(p) => p.purpose}
-                activeId={activeMashProgram}
-                onApply={(prog) => {
-                  setMashSteps(prog.steps.map((s) => ({ ...s })));
-                  setSpargeType(prog.spargeType);
-                }}
-              />
-
-              <ul className="space-y-1.5">
-                {mashSteps.map((s, i) => (
-                  <li key={i} className="panel p-2 sm:p-2.5 space-y-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <TextInput
-                        aria-label={`Nom du palier ${i + 1}`}
-                        name={`mash_step_name_${i}`}
-                        className={`${inputClass} flex-1 text-sm sm:text-base`}
-                        value={s.name}
-                        onChange={(val) =>
-                          setMashSteps(
-                            mashSteps.map((x, j) => (j === i ? { ...x, name: val } : x))
-                          )
-                        }
-                      />
-                      <button
-                        type="button"
-                        onClick={() => retraitPalier.retirer(i)}
-                        aria-label={`Retirer le palier ${s.name}`}
-                        className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    {/*
-                      ⚠️ Les deux champs portent un `aria-label` NOMMANT LE
-                      PALIER. Trouvé en pilotant l'application : `Field` posait
-                      bien une étiquette « Température (°C) », mais sans
-                      `htmlFor`, et le champ n'avait pas d'identifiant — rien ne
-                      les reliait. Deux conséquences, l'une invisible et l'autre
-                      pas : au lecteur d'écran, les huit champs d'un empâtage à
-                      quatre paliers s'annonçaient « champ de saisie », et
-                      taper sur le libellé ne donnait pas le focus, ce qui sur
-                      téléphone se ressent comme un champ qui ne répond pas.
-
-                      Le nom porte le rang ET le nom du palier : « Température du
-                      palier 2 — Saccharification ». Répété à l'identique, il
-                      n'aurait rien désambiguïsé.
-                    */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field label="Température (°C)">
-                        <NumberInput
-                          aria-label={`Température du palier ${i + 1}${s.name ? ` — ${s.name}` : ''}, en degrés`}
-                          id={`wz-mash-temp-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-mash-temp-${i}`)}
-                          aria-describedby={fieldError(`wz-mash-temp-${i}`) ? 'wz-validation' : undefined}
-                          min={0}
-                          max={100}
-                          value={s.tempC}
-                          onValue={(v) =>
-                            setMashSteps(
-                              mashSteps.map((x, j) =>
-                                j === i ? { ...x, tempC: v } : x
-                              )
-                            )}
-                          pad
-                          className={`${inputClass} font-mono text-center`}
-                        />
-                      </Field>
-                      <Field label="Durée (min)">
-                        <NumberInput
-                          aria-label={`Durée du palier ${i + 1}${s.name ? ` — ${s.name}` : ''}, en minutes`}
-                          id={`wz-mash-duration-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-mash-duration-${i}`)}
-                          aria-describedby={fieldError(`wz-mash-duration-${i}`) ? 'wz-validation' : undefined}
-                          min={0}
-                          value={s.durationMin}
-                          onValue={(v) =>
-                            setMashSteps(
-                              mashSteps.map((x, j) =>
-                                j === i
-                                  ? { ...x, durationMin: v }
-                                  : x
-                              )
-                            )}
-                          integer
-                          pad
-                          className={`${inputClass} font-mono text-center`}
-                        />
-                      </Field>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setMashSteps([...mashSteps, { name: nomPalierAjoute(mashSteps), tempC: 67, durationMin: 30 }])
-                }
-                className="w-full min-h-touch rounded-control border border-cave-700
-                           text-cave-200 text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Ajouter un palier
-              </button>
-
-              <Field label="Rinçage">
-                <SegmentedControl
-                  label="Type de rinçage"
-                  value={spargeType}
-                  onChange={setSpargeType}
-                  options={[
-                    { value: 'batch', label: 'Par bacs' },
-                    { value: 'fly', label: 'Continu' },
-                    { value: 'none', label: 'Aucun' }
-                  ]}
-                />
-              </Field>
-
-              {attenuation != null && yeast.attenuationPct != null && (
-                <p className="text-sm text-cave-400 leading-relaxed">
-                  Atténuation retenue pour ce moût :{' '}
-                  <span className="reading text-ebc-straw">{nombreFr(attenuation, 1)} %</span>
-                  {(() => {
-                    // FG retenue (la cible de la recette, entrées inchangées) ou estimée ; si elles diffèrent, l'écart est dit.
-                    const retenue = fgRecette({ fgTarget: keepTargets ? details.fgTarget : undefined }, null);
-                    if (retenue != null && fgPredicted && formatDensite(retenue) !== formatDensite(fgPredicted)) return ` · FG retenue ${formatDensite(retenue)} · calculée ${formatDensite(fgPredicted)}.`;
-                    const fg = retenue ?? fgPredicted;
-                    return fg ? ` · FG ${retenue != null ? 'retenue' : 'estimée'} ${formatDensite(fg)}.` : '.';
-                  })()}
-                </p>
-              )}
-            </div>
-            {adviceList('wz-mash-')}
-            <AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />
-          </Section>
-
-          <Section
-            title="Fermentation"
-            hint="Phases de fermentation et températures de consigne."
-          >
-            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
-            <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
-            <div className={`space-y-2 sm:space-y-3${retraitPhase.verrou ? ' pointer-events-none' : ''}`}>
+        <EtapePaliers
+          recipe={build()}
+          etat={{ steps: mashSteps, mash: details.mash }}
+          onEmpatage={(next) => {
+            if (next.steps !== mashSteps) setMashSteps(next.steps);
+            if (next.mash !== details.mash) setDetails((d) => ({ ...d, mash: { ...(d.mash ?? {}), ...next.mash } as Recipe['mash'] }));
+          }}
+          programmes={MASH_PROGRAMS}
+          programmeActif={activeMashProgram}
+          onProgramme={(prog) => {
+            setMashSteps(prog.steps.map((s) => ({ ...s })));
+            setSpargeType(prog.spargeType);
+          }}
+          onRetirer={(rang) => retraitPalier.retirer(rang)}
+          verrou={retraitPalier.verrou}
+          avisRetrait={<AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />}
+          erreur={fieldError}
+          spargeType={spargeType}
+          onSparge={setSpargeType}
+          ferment={ferment}
+          onOuvrirLevure={() => setStep('levure')}
+          conseilsEmpatage={adviceList('wz-mash-')}
+          conseilsFermentation={adviceList('wz-ferment-')}
+          contexteLevure={<YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />}
+          erreurFermentation={visibleIssues.find((issue) => issue.field.startsWith('wz-ferment-'))?.message}
+          fermentationDetail={(
+            <div className="space-y-2">
+              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
               <PresetChips
                 name="Programme de fermentation"
                 presets={FERMENT_PROGRAMS}
@@ -3211,79 +3080,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 activeId={activeFermentProgram}
                 onApply={(prog) => setFerment(prog.steps.map((s) => ({ ...s })))}
               />
-
-              <ul className="space-y-1.5">
-                {ferment.map((s, i) => {
-                  const phase = PHASE_LABEL[s.kind];
-                  return (
-                    <li key={i} className="panel p-2 sm:p-2.5 space-y-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="min-w-0 flex-1">
-                          <span
-                            className={`inline-block text-sm px-1.5 py-0.5 rounded-full border ${phase.tone}`}
-                          >
-                            {phase.label}
-                          </span>
-                          <span className="block text-sm sm:text-base text-cave-50 font-medium truncate mt-0.5">
-                            {s.name}
-                          </span>
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => retraitPhase.retirer(i)}
-                          aria-label={`Retirer ${s.name}`}
-                          className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                        {/*
-                          Deux lignes couchées, comme les cartes de houblon. Le
-                          nom porte la PHASE et non son rang : « Température de
-                          Froid court » se distingue, « Température (°C) »
-                          répété trois fois ne se distinguait pas.
-                        */}
-                        <InlineNum
-                          label="T°"
-                          id={`wz-ferment-temp-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-ferment-temp-${i}`)}
-                          aria-describedby={fieldError(`wz-ferment-temp-${i}`) ? 'wz-validation' : undefined}
-                          name={`Température de la phase ${s.name || i + 1}, en degrés`}
-                          unit="°C"
-                          min={0}
-                          value={s.tempC}
-                          onValue={(v) =>
-                            setFerment(ferment.map((x, j) => (j === i ? { ...x, tempC: v } : x)))
-                          }
-                        />
-                        <InlineNum
-                          label="Durée"
-                          id={`wz-ferment-days-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-ferment-days-${i}`)}
-                          aria-describedby={fieldError(`wz-ferment-days-${i}`) ? 'wz-validation' : undefined}
-                          name={`Durée de la phase ${s.name || i + 1}, en jours`}
-                          unit="j"
-                          min={0}
-                          value={s.days}
-                          onValue={(v) =>
-                            setFerment(ferment.map((x, j) => (j === i ? { ...x, days: v } : x)))
-                          }
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
             </div>
-            {adviceList('wz-ferment-')}
-            <AvisRetrait dernier={retraitPhase.dernier} onAnnuler={retraitPhase.annuler} />
-          </Section>
-        </>
+          )}
+        />
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 6 */}
