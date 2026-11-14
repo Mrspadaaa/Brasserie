@@ -97,8 +97,11 @@ export const StockFicheBouge: React.FC<StockFicheBougeProps> = ({ nom, famille, 
         })}</ol>
         {avantLePlusAncien !== null && (toutVoir || liste.length <= TROIS) && plusAncien && <p className="sfp-mva">{quantiteArticle(avantLePlusAncien, unite)} avant le {plusAncien.slice(8, 10)}.{plusAncien.slice(5, 7)}</p>}
         {ecartFinal !== null && <p className="sfp-mva" data-ecart-final>Depuis le dernier mouvement, la fiche a été changée à la main : {variation(ecartFinal)} {unite}.</p>}
-        {liste.length > TROIS && <button type="button" className="sfp-lien" aria-expanded={toutVoir} onClick={() => setToutVoir(v => !v)}>
-          {toutVoir ? 'Réduire' : `Tout voir · ${liste.length} mouvements${depuis ? ` depuis ${depuis}` : ''}`}{Chevron}</button>}
+        {/* k2 (B4) pose « Tout voir · N mouvements depuis <mois> » même quand les N lignes sont déjà toutes à l'écran (verdict 5cdcd12e n° 6) : alors c'est le compte de l'historique, sans bouton ni chevron (rien à déplier). */}
+        {liste.length > TROIS
+          ? <button type="button" className="sfp-lien" aria-expanded={toutVoir} onClick={() => setToutVoir(v => !v)}>
+            {toutVoir ? 'Réduire' : `Tout voir · ${liste.length} mouvements${depuis ? ` depuis ${depuis}` : ''}`}{Chevron}</button>
+          : <p className="sfp-lien" data-historique-complet>{`Tout voir · ${liste.length} mouvement${liste.length > 1 ? 's' : ''}${depuis ? ` depuis ${depuis}` : ''}`}</p>}
       </>}
   </section>;
 };
