@@ -194,7 +194,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       fraisDe.set(i.ref, inf?.id ? src.auFrais(inf.id) : null);
     }
     const famille = (i: StockItem) => familleBrasseur(infos.get(i.ref) ?? null, alphaDe.get(i.ref) ?? null, fraisDe.get(i.ref) ?? null);
-    const classes = classerHoublons(houblons.map((i) => ({ id: i.ref, parts: infos.get(i.ref)?.id ? src.parts(infos.get(i.ref)!.id!) : null, famille: famille(i) })));
+    const classes = classerHoublons(houblons.map((i) => ({ id: i.ref, parts: infos.get(i.ref)?.id ? src.parts(infos.get(i.ref)!.id!) : null, famille: famille(i), origine: codePays(infos.get(i.ref)?.origine), alpha: alphaDe.get(i.ref) ?? null })));
     const groupes: GroupeMur[] = []; const hachures = new Set<string>(); const remplies: string[] = [];
     COLONNES_STYLE.forEach((col, ci) => {
       const li = houblons.filter((i) => classes[i.ref]?.colonne === col.id); if (!li.length) return;

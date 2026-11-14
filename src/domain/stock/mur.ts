@@ -170,7 +170,7 @@ export function flotMin(cout: number[][], cap: number[]): { cout: number; col: n
   return { cout: total, col };
 }
 
-export interface HoublonAClasser { id: string; parts: Record<string, number> | null; famille?: FamilleBrasseur }
+export interface HoublonAClasser { id: string; parts: Record<string, number> | null; famille?: FamilleBrasseur; origine?: string | null; alpha?: number | null }
 /**
  * Typicité minimale (part des recettes d'un style qui contiennent le houblon, Beer Analytics) pour qu'un houblon passe par le flot. Sous 6 %, sa meilleure part
  * est du bruit (Motueka 3,8 % : Stouts, Aramis 0,6 %, Glacier 1,9 %) : le flot le rangeait là où il restait de la place. Réglé sur la moitié A des 55 houblons de
@@ -184,6 +184,14 @@ const meilleurePart = (h: HoublonAClasser): number | null => {
 };
 /** Repli d'un houblon sans part publiée ou sous SEUIL_TYPICITE : sa famille de brasseur dit sa colonne la plus probable ; à défaut, Pale (la plus neutre). Dit « classé par défaut ». */
 const COLONNE_PAR_FAMILLE: Record<FamilleBrasseur, string> = { modernes: 'hazy', classiques: 'westcoast', nobles: 'lager', amerisants: 'westcoast', autre: 'pale' };
+/** La famille affinée par l'origine : un anglais va aux Pale & Session (bitter), un amérisant d'Europe centrale aux Lager, un américain d'α ≤ 6 % (Liberty, Mount Hood, Sterling) aux Pale & Session plutôt qu'en W. Coast. */
+const colonneParDefaut = (h: HoublonAClasser): string => {
+  const o = (h.origine ?? '').toUpperCase(); const f = h.famille ?? 'autre';
+  if (o === 'UK' || o === 'GB') return 'pale';
+  if (f === 'amerisants' && ['DE', 'CZ', 'SI', 'AT', 'PL'].includes(o)) return 'lager';
+  if ((o === 'US' || o === 'CA') && h.alpha != null && h.alpha <= 6 && f !== 'modernes') return 'pale';
+  return COLONNE_PAR_FAMILLE[f];
+};
 
 /**
  * Chaque houblon dans une colonne, six au plus par colonne, en perdant le moins de typicité (coût = 1 − typicité / meilleure typicité du houblon).
@@ -193,7 +201,7 @@ const COLONNE_PAR_FAMILLE: Record<FamilleBrasseur, string> = { modernes: 'hazy',
 export function classerHoublons(hs: HoublonAClasser[]): Record<string, { colonne: string; parDefaut: boolean; deplace: boolean }> {
   const sortie: Record<string, { colonne: string; parDefaut: boolean; deplace: boolean }> = {};
   const connus = hs.filter((h) => (meilleurePart(h) ?? 0) >= SEUIL_TYPICITE);
-  for (const h of hs) if (!connus.includes(h)) sortie[h.id] = { colonne: COLONNE_PAR_FAMILLE[h.famille ?? 'autre'], parDefaut: true, deplace: false };
+  for (const h of hs) if (!connus.includes(h)) sortie[h.id] = { colonne: colonneParDefaut(h), parDefaut: true, deplace: false };
   const cost = connus.map((h) => {
     const t = COLONNES_STYLE.map((c) => typiciteColonne(h.parts, c));
     const best = Math.max(...t.map((x) => x ?? 0));
