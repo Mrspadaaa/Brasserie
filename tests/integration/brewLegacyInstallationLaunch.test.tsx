@@ -61,7 +61,7 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     const volume = screen.getByLabelText('Volume du brassin');
     fireEvent.change(volume, { target: { value: String(targetL) } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
     expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(StorageService.addBatch).not.toHaveBeenCalled();
@@ -100,13 +100,11 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     editor.unmount();
     const close = vi.fn();
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[adapted]} onClose={close} />);
-    fireEvent.click(screen.getByRole('radio', { name: 'Autre date' }));
-    fireEvent.change(screen.getByLabelText('Jour prévu'), { target: { value: '2026-10-24' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     await waitFor(() => expect(close).toHaveBeenCalledOnce());
     expect(created).toHaveLength(1);
     expect(created[0].volumeL).toBe(volumeL);
-    expect(created[0]).toMatchObject({ plannedBrewDate: '24.10.2026', brewDate: '', status: 'planifie' });
+    expect(created[0]).toMatchObject({ plannedBrewDate: '', brewDate: '', status: 'planifie' }); // uv4 : plus de champ date au lancement
     expect(created[0].brewDay).toBeUndefined();
     expect(created[0].recipeSnapshot?.brewhouse?.equipment).toEqual(activeProfile.equipment);
     expect(history).toEqual(oldBatch);

@@ -1,0 +1,18 @@
+/* Lancement d'un brassin (uv4) : la règle de volume. Largeur fluide ; 10 px de marge à chaque bout, comme la maquette. */
+.bl-regle .bl-graduations { position: absolute; left: 10px; right: 10px; top: 33px; height: 7px;
+  background: repeating-linear-gradient(to right, rgb(var(--cave-700)) 0 1px, transparent 1px calc((100% - 1px) * 5 / var(--bl-max))); }
+.bl-regle .bl-piste { position: absolute; left: 10px; right: 10px; top: 39px; height: 2px; background: rgb(var(--cave-700)); }
+.bl-regle .bl-tire { position: absolute; left: 10px; top: 38px; height: 4px; border-radius: 2px; background: rgb(var(--cave-50)); }
+.bl-regle .bl-repere { position: absolute; top: 32px; width: 1.5px; height: 14px; background: rgb(var(--cave-50)); }
+.bl-regle .bl-etiq { position: absolute; top: 46px; white-space: nowrap; }
+.bl-regle .bl-eau { position: absolute; left: 10px; top: 77px; height: 6px; border-radius: 3px; background: rgb(var(--area-finances)); }
+.bl-regle .bl-bulle { position: absolute; top: 2px; transform: translateX(-50%); min-width: 52px; height: 24px; padding: 0 8px; border-radius: 12px; display: grid; place-items: center;
+  background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); font-size: 14px; font-weight: 700; pointer-events: none; }
+.bl-regle .bl-bouton { position: absolute; top: 31px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; pointer-events: none;
+  background: rgb(var(--ebc-straw)); border: 2.5px solid rgb(var(--cave-950)); box-sizing: content-box; transform: translate(-2.5px, -2.5px); }
+/* Le curseur natif est invisible mais reste le geste : glisser, flèches du clavier, lecteur d'écran. Pouce de 20 px = marge de la règle. */
+.bl-regle .bl-curseur { position: absolute; left: 0; right: 0; top: 14px; width: 100%; height: 52px; margin: 0; opacity: 0; cursor: pointer; appearance: none; background: transparent; touch-action: pan-y; }
+.bl-regle .bl-curseur::-webkit-slider-thumb { appearance: none; width: 20px; height: 52px; }
+.bl-regle .bl-curseur::-moz-range-thumb { width: 20px; height: 52px; border: 0; }
+/* La ligne de la frise passe par le centre des ronds. */
+.bl-frise::before { content: ""; position: absolute; left: 9px; top: 22px; bottom: 14px; width: 2px; background: rgb(var(--cave-800)); }

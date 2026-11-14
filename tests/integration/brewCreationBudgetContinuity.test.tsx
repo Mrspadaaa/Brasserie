@@ -51,7 +51,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
     expect(screen.queryByText('Déduction automatique des stocks')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     expect(created).toHaveLength(1);
     const batch = created[0];
     expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 50, brewDate: '', plannedBrewDate: '', status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
@@ -77,13 +77,13 @@ describe('brew budget to doubled-volume batch creation', () => {
     const volume = screen.getByLabelText('Volume du brassin');
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     expect(screen.getByRole('alert')).toHaveTextContent('Réglages → Brasserie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
     fireEvent.change(volume, { target: { value: '30' } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
