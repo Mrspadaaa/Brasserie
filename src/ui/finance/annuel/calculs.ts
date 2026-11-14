@@ -1,9 +1,9 @@
 import type { StockItem } from '../../../types';
 import type { AnnualReport, DepreciationRow, FinanceTransaction, FinancialAsset, FinancialClosing, FinancialPayment, FinancialPlan, FinancialProfile, FribourgTaxReport, TaxReviewKey } from '../../../domain/finance/types';
 import { depreciationForYear } from '../../../domain/finance/annual';
-import { isActiveTransaction, isoDate, transactionAmount } from '../../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, transactionAmount, transactionKind } from '../../../domain/finance/ledger';
 import { planOccurrences } from '../../../domain/finance/forecast';
-import { ordrePile, periodeSynthese, regrouperPetits, type Poste } from '../../../domain/finance/periodeSynthese';
+import { CATEGORIE_MATERIEL, ordrePile, periodeSynthese, regrouperPetits, type Poste } from '../../../domain/finance/periodeSynthese';
 
 /* Annuel (g6) : calculs purs. Centimes entiers, aucune horloge (`today` est un paramètre), aucune règle fiscale réécrite :
    les nombres viennent de `annual.ts`, `fribourgTax.ts` et `periodeSynthese.ts` ; ici on ne fait que les ranger. */
@@ -14,9 +14,32 @@ export const NOMS_ETAPES = ['Opérations', 'Solde d’ouverture', 'Inventaires',
 export const MESSAGES_NON_CLASSES = ['confirmer charge ou immobilisation', 'avoir sur immobilisation', 'une ligne passée en charge'] as const;
 export const piecesNonClassees = (report: AnnualReport): string[] => (report.missing ?? []).filter(m => MESSAGES_NON_CLASSES.some(f => m.includes(f)));
 
+/* ---------- pièces à classer ---------- */
+/** Une dépense de travaux (ou sans fiche) que le domaine compte en charge entière, sans ligne `equipment` ni fiche au registre : charge ou matériel à amortir, le code ne peut pas le deviner. */
+export interface PieceAClasser { id: string; description: string; categorie: string; chargeCents: number }
+/** Même règle que l'étape 4 : « travaux » ou pièce sans fiche de catégorie matériel, sans ligne `equipment`, sans immobilisation liée. Un petit achat de matériel avec fiche reste le « Petit achat » de g6.
+ *  Le montant est la part comptée en charge par `annual.ts` (part pro appliquée). */
+export function piecesAClasser(transactions: FinanceTransaction[], assets: FinancialAsset[], year: number): PieceAClasser[] {
+  return transactions.filter(isActiveTransaction).filter(t => {
+    const d = isoDate(t.date);
+    return !!d && Number(d.slice(0, 4)) === year && transactionKind(t) === 'expense' && (CATEGORIE_MATERIEL as readonly string[]).includes(t.category)
+      && (t.category === 'renovation' || !t.finance) && !(t.finance?.lines ?? []).some(l => l.kind === 'equipment') && !assets.some(a => a.transactionId === t.id);
+  }).map(t => ({ id: t.id, description: t.description, categorie: t.category as string, chargeCents: Math.round(transactionAmount(t) * (t.finance?.businessUsePct ?? 100) / 100) })).filter(p => p.chargeCents > 0);
+}
+/** Le résultat attend un classement : une pièce à classer, ou une alerte du domaine (capital non classé, avoir sur immobilisation). */
+export const resultatEnAttente = (report: AnnualReport, aClasser: PieceAClasser[]): boolean => aClasser.length > 0 || piecesNonClassees(report).length > 0;
+
 /* ---------- tête ---------- */
 export interface Colonnes {
-  entreCents: number; depenseCents: number; usureCents: number; totalDepenseCents: number;
+  entreCents: number;
+  /** Charges fermes : sans les pièces à classer. */
+  depenseCents: number; usureCents: number;
+  /** « Dépensé + usure » ferme (sans les pièces à classer). */
+  totalDepenseCents: number;
+  /** Les pièces à classer, hors du ferme ; la colonne les dessine en hachuré. */
+  aClasser: PieceAClasser[]; aClasserCents: number;
+  /** Hauteur de la colonne : ferme + à classer. */
+  totalAvecAClasserCents: number;
   /** Ventes − dépensé − usure ± ajustements, SANS la variation de stock (inconnue tant que les inventaires ne sont pas confirmés). Jamais le montant à reporter. */
   perteAvantStockCents: number;
   postes: Poste[];
@@ -24,13 +47,17 @@ export interface Colonnes {
 export function perteAvantStock(report: AnnualReport): number {
   return report.revenueCents - report.operatingExpensesCents - report.depreciationCents + (report.adjustmentCents ?? 0) + (report.disposalResultCents ?? 0);
 }
-export function colonnesAnnee(report: AnnualReport): Colonnes {
-  const postes = (report.categories ?? []).filter(c => c.amountCents > 0).map(c => ({ categorie: c.category, cents: c.amountCents, payeCents: c.amountCents, aPayerCents: 0 }));
+export function colonnesAnnee(report: AnnualReport, aClasser: PieceAClasser[] = []): Colonnes {
+  const sorties = new Map<string, number>();
+  for (const p of aClasser) sorties.set(p.categorie, (sorties.get(p.categorie) ?? 0) + p.chargeCents);
+  const postes = (report.categories ?? []).map(c => ({ categorie: c.category, cents: c.amountCents - (sorties.get(c.category) ?? 0) })).filter(c => c.cents > 0).map(c => ({ ...c, payeCents: c.cents, aPayerCents: 0 }));
+  const aClasserCents = aClasser.reduce((n, p) => n + p.chargeCents, 0), depenseCents = Math.max(0, report.operatingExpensesCents - aClasserCents);
   return {
-    entreCents: report.revenueCents, depenseCents: report.operatingExpensesCents, usureCents: report.depreciationCents,
-    totalDepenseCents: report.operatingExpensesCents + report.depreciationCents,
+    entreCents: report.revenueCents, depenseCents, usureCents: report.depreciationCents,
+    totalDepenseCents: depenseCents + report.depreciationCents,
+    aClasser, aClasserCents, totalAvecAClasserCents: depenseCents + report.depreciationCents + aClasserCents,
     perteAvantStockCents: perteAvantStock(report),
-    postes: regrouperPetits(ordrePile(postes), report.operatingExpensesCents)
+    postes: regrouperPetits(ordrePile(postes), depenseCents)
   };
 }
 
