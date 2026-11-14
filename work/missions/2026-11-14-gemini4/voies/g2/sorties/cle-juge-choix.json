@@ -1,0 +1,54 @@
+{
+ "S3a48a4": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-argon@medium"
+ },
+ "S61d613": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "S63f262": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "S6f107c": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-argon@low"
+ },
+ "S852594": {
+  "cas": "edit-recipe",
+  "cellule": "analysis=4-argon@low"
+ },
+ "S9e4efe": {
+  "cas": "edit-recipe",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "Sb13194": {
+  "cas": "ro",
+  "cellule": "analysis=4-argon@low"
+ },
+ "Sc90bc5": {
+  "cas": "edit-recipe",
+  "cellule": "prod"
+ },
+ "Sda54e6": {
+  "cas": "ro",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "Sf9cd94": {
+  "cas": "ro",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "Sfaa342": {
+  "cas": "ro",
+  "cellule": "prod"
+ },
+ "Sfda32a": {
+  "cas": "edit-recipe",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "Sfdd985": {
+  "cas": "low-ph",
+  "cellule": "prod"
+ }
+}

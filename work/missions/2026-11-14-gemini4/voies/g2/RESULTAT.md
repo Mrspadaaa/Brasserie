@@ -1,52 +1,68 @@
-ECHEC — passes comparatives : HTTP 429 « monthly spending cap » (plafond du projet Google) dès la 1re cellule candidate ; banc, grille et tests livrés, seul le témoin 3.8@low (4 cas) est mesuré
+OK — Compagnon : Hydrogen@low gagne l'analyse (0,98 / 0,92 contre 3.8 : 0,95 / 0,85), moins cher ; relecture non jugée ; recherche reste 3.8
 
-## Ce qui est livré (14.11, rien dans `src/` ni `functions/src/`, aucun déploiement)
-- `scripts/banc-compagnon.ts` (neuf) : option du BANC, pas de la production. Une cellule = modèle@réflexion par rôle (`analysis=gemini-4-argon@low;review=gemini-4-hydrogen@medium`, `prod` = rien de changé). Le rôle se reconnaît comme `eval-brewer.mjs` (outil web = recherche, schéma `approved` = relecture, le reste = analyse). Niveaux refusés net s'ils ne sont pas ceux du modèle (réutilise `parseFort` de g1 : « minimal » n'existe pas). Le transport remplace modèle et `thinkingLevel`, monte le plafond de sortie (analyse 8 000, relecture et recherche 5 000) quand la réflexion dépasse « low », journalise UNE ligne par appel dans le journal commun (colonne variante `g2:<rôle>`), relit la somme du journal avant chaque appel (g1 y écrit aussi), s'arrête avant l'appel au plafond de la mission, de g2 ou de la passe, et à la première 429 « spending cap ». Coût relu des jetons (réflexion et requêtes web comptées) ; coût inconnu = réserve, jamais 0. Le harnais réel `runBrewerHarness` tourne tel quel (mode `auto`). Sorties dans `voies/g2/sorties/<cellule>/<cas>.json`, un résultat déjà écrit n'est ni rejoué ni repayé.
-- `scripts/banc-compagnon-grille.ts` (neuf) : la GRILLE (13 cas, faits attendus, chiffres, interdits, outils, proposition) écrite AVANT toute passe (`GRILLE.md`, produit par `--grille`), le second regard automatique, le dossier du juge à l'aveugle (identifiants = hachage de « cellule|cas », stables, ordre ne dit rien ; clé à part), les tableaux (qualité juge et auto, désaccords, inutilisables, coupées, HTTP, p50/p90 par question, coût et appels par question). Moitiés : positions impaires de `brewerCases.mjs` = choix, paires = jugement.
-- `scripts/banc-compagnon-tableau.ts` (neuf) : `--grille`, `--dossier`, `--tableau` (hors ligne, sans appel).
-- `tests/unit/banc-compagnon.test.ts` (neuf, 14 tests, Gemini simulé) : cellules, rôles, corps envoyé, coût (réflexion, web, inconnu), journal et somme, trois plafonds, 429 qui arrête tout, cas joué de bout en bout par le vrai harnais avec transport fabriqué, grille, anonymisation.
-- `voies/g2/sonde.mjs` : sonde d'un mot (clé lue, jamais affichée) ; `voies/g2/GRILLE.md`.
+## Ce qui est livré (14.11, rien dans `src/` ni `functions/src/`, aucun déploiement ; banc et grille de la 1re reprise inchangés)
+- Banc : `scripts/banc-compagnon.ts`, `banc-compagnon-grille.ts`, `banc-compagnon-tableau.ts`, `tests/unit/banc-compagnon.test.ts` (14 tests simulés, 88 verts avec les 3 autres fichiers, `tests.txt`) ; tsc racine et `functions/` : 0 erreur (aucun code touché cette reprise).
+- Mesures de cette reprise : `sorties/<cellule>/<cas>.json` (47 cas), `tableau-choix.md`, `tableau-jugement.md`, `notes-juge-choix.json`, `notes-juge-jugement.json`, `sorties/dossier-juge-*.md` + clés, `passe-A.log`, `passe-B.log`, `passe-C.log`, `passe-C2.log`.
+- Plafond Google relevé : aucune 429 sur les 4 passes.
 
-## Critères
-- Tests : `vitest run brewerHarness brewerFlashLimits banc-lecture-modeles banc-compagnon` → 4 fichiers, 88 tests verts (`tests.txt`).
-- `npx tsc --noEmit -p .` racine : 0 erreur ; `functions/` : 0 erreur (sortie vide).
-- `--simuler` (2 cellules × 3 cas, harnais réel, transport fabriqué) : 6 cas rendus, 0 CHF journalisé.
-- Journal : g2 = **0,3693 CHF** (18 lignes `g2:`), mission = **5,1339 CHF** sur 10 (g1 inclus). Limites respectées (g2 ≤ 3,5).
+## Grille (écrite avant les passes : `GRILLE.md`)
+Faits 0,35 ; chiffres 0,15 ; proposition 0,15 ; invention 0,20 ; ton 0,15 (≤ 120 mots, une seule question). Moitié « choix » (impairs) pour choisir les finalistes, moitié « jugement » (pairs) pour juger (L20).
 
-## Mesures (réelles, un tirage, 4 cas du témoin)
-Témoin `prod` = 3.8@low partout (production). La sonde Argon@low de 18:07 (200, « prêt. », 8,5 s) a passé ; à 18:14, 429 sur Hydrogen@low, puis la sonde 3.8@low a aussi reçu 429 : le plafond est celui du projet Google, pas celui de la mission (5,13 < 9,5).
-| cas (moitié) | durée question | appels | CHF | auto | outils |
-|---|---|---|---|---|---|
-| edit-recipe (choix) | 9,6 s | 4 (2 analyses, 2 relectures) | 0,0991 | 1,00 | propose_changes ; alpha 5,2 à valider |
-| low-ph (choix) | 9,1 s | 4 | 0,0592 | 1,00 | check_ph ; « aucun acide », pas de base sans essai |
-| ro (choix) | 7,8 s | 3 | 0,0549 | 1,00 | simulate_water, plan_recipe_water |
-| power (jugement) | 8,8 s | 3 | 0,0513 | 0,92 | heating_power ; 25,4 min |
-Témoin : p50 ≈ 9,0 s (p90 9,6 s), 0,066 CHF par question en moyenne, 3 à 4 appels, 4/4 utilisables. Lecture du juge (moi, sur le texte, non à l'aveugle faute de concurrent) : 4 réponses justes et dans le ton ; seul défaut : low-ph classé « urgent » sans raison ; power dit « 26 minutes » en action (arrondi de 25,4). Second regard : « nombres hors preuves » signale 19 (ancien IBU, vrai dans le calcul), 26 et 15 (« 10 à 15 minutes » demandé à l'utilisateur) : le détecteur est bruyant, à lire par un humain, pas un verdict.
-Données partielles d'Hydrogen@low (avant le 429, cas non écrits) : analyse low-ph 2,0 s (10 880 → 122 jetons, 0,0215 CHF) ; analyse edit-recipe 11,8 s (23 417 → 472 jetons, 0,0483 CHF). Anecdotiques : aucune qualité jugée.
+## Passes
+| passe | contenu | CHF |
+|---|---|---|
+| A (courte, choix) | edit-recipe, low-ph, ro × Hydrogen@low, Argon@low, Carbon@low, Argon@medium (medium : 1 cas sur 3, arrêt au plafond de la passe) | 0,92 |
+| B (jugement) | 6 cas pairs × 3.8@low (témoin), Hydrogen@low, Carbon@low | 1,15 |
+| C (recherche) | supplier-followup × 3.8, research=Hydrogen@low ; Carbon@low : 3 appels payés, aucun cas rendu (plafond g2) | ≈ 0,9 dont ≈ 0,45 perdus dans la passe arrêtée (voir limites) |
 
-Rien n'est conclu sur les modèles 4 pour le compagnon : ni gain, ni perte. Aucun diff de `models.ts` n'est proposé (aucun gain mesuré ; 3.8@low reste la production).
+## Tableaux (analyse ; un tirage par cas ; qualité = note du juge)
+Moitié choix (3 cas) :
+| cellule | juge | auto | inutilisables | p50 s | p90 s | CHF/question | appels |
+|---|---|---|---|---|---|---|---|
+| 3.8@low (prod) | 0,95 | 1,00 | 0 | 9,1 | 9,6 | 0,071 | 3,7 |
+| Hydrogen@low | **0,98** | 1,00 | 0 | 9,7 | 20,0 | 0,081 | 3,3 |
+| Argon@low | 0,84 | 0,94 | 0 | 25,9 | 30,2 | 0,099 | 3,7 |
+| Carbon@low | 0,84 | 0,88 | 0 | 16,2 | 16,4 | 0,099 | 3,7 |
+| Argon@medium (1 cas) | 0,84 | 1,00 | 0 | 19,2 | 19,2 | 0,077 | 4,0 |
 
-## Ce qui reste (à faire quand le plafond Google est relevé, geste du brasseur)
-Coût mesuré sur le témoin : 0,05 à 0,10 CHF par question (l'analyse relit 10 à 23 k jetons de contexte à chaque tour). Une cellule sur les 13 cas coûte donc ≈ 1 CHF, un modèle 4 ≈ +30 %. Il reste 3,13 CHF pour g2. Plan chiffré :
-1. Phase A (≈ 0,9 CHF) : choix, 3 cas (edit-recipe, low-ph, ro) × Hydrogen@low, Argon@low, Carbon@low, Argon@medium (le témoin est fait).
-2. Phase B (≈ 1,3 CHF) : jugement, 6 cas × témoin + 2 finalistes ; juge à l'aveugle (`--dossier --moitie jugement`, notes dans `notes-juge-jugement.json`) puis `--tableau`.
-3. Relecture et recherche (≈ 0,6 CHF) : relecture sur les corps déjà enregistrés (`reviewBodies` des sorties) avec défauts plantés ; recherche sur `supplier-followup` seul (3 chercheurs, requêtes web facturées 0,0175 CHF pièce). Module de rejeu de relecture non écrit (pas de budget pour le prouver).
+Moitié jugement (6 cas) :
+| cellule | juge | auto | inutilisables | p50 s | p90 s | CHF/question | appels |
+|---|---|---|---|---|---|---|---|
+| 3.8@low (prod) | 0,85 | 0,91 | 0 | 8,8 | 14,4 | 0,071 | 3,3 |
+| Hydrogen@low | **0,92** | 0,96 | 0 | **6,5** | 14,9 | **0,048** | 2,5 |
+| Carbon@low | 0,84 | 0,91 | 0 | 15,2 | 37,4 | 0,081 | 3,0 |
 
-DEMANDE EXECUTANT (après relèvement du plafond Google ; un échec ne se relance pas, le dire ; arrêt si 429) :
+Lecture : les 27 sorties sont utilisables (0 erreur, 0 coupée). Différence de fond : Argon et Carbon écrivent 150 à 280 mots (« why » de 100 mots, listes numérotées, ± et nombres du solveur recopiés) quand le ton demande 120 mots et une question ; ils spéculent (« poche d'acide », tampons 4,01 / 7,00, « ~40 g » non calculé). Hydrogen@low reste court (115 à 150 mots, un cas à 221), marque le pH du solveur comme « prévision, pas une mesure », et pose le niveau « attention » là où 3.8 met « urgent » sans raison (low-ph). Il fait moins d'appels (2,5 contre 3,3) : le coût par question baisse de 33 % en jugement, monte de 14 % en choix (edit-recipe : 20 s, 4 appels). 3.8 garde un défaut propre : ph-meter n'évoque ni électrode ni étalonnage, ro ne dit pas que le pH n'est pas garanti.
+
+Recherche (supplier-followup, 1 cas, 1 tirage) : 3.8 nomme des fournisseurs suisses (Brau- und Rauchshop, SIOS), 6 requêtes web, mais affirme « en stock » (non prouvé) : 0,214 CHF, 22,8 s ; Hydrogen@low : 3 requêtes web, ne nomme aucun fournisseur (« disponibles chez d'autres fournisseurs suisses »), 0,198 CHF, 23,1 s. Juge : 3.8 ≥ Hydrogen (faits 0,9 contre 0,5). Carbon non rendu. Un cas ne suffit pas à changer la production.
+
+Relecture : non mesurée. Le module de rejeu avec défauts plantés n'a pas été écrit (plafond g2 atteint, 3,44 CHF).
+
+## Recommandation par rôle
+- Analyse : Hydrogen@low (`gemini-4-hydrogen`, réflexion basse), gain mesuré : juge +0,03 (choix) et +0,07 (jugement), −33 % de coût et −26 % de durée en jugement, mêmes 0 inutilisable ; réserve : choix edit-recipe plus long (20 s). Écart faible et un seul tirage : prudent, à confirmer sur les 7 cas non joués (fermentation, grassy, injection, supplier) avant déploiement. Argon et Carbon : non retenus (ton hors cadre, plus chers, plus lents), quelle que soit la réflexion testée (Argon medium sur 1 cas : même défaut).
+- Relecture : garder 3.8@low (non mesuré : aucun gain à revendiquer).
+- Recherche : garder 3.8@low (Hydrogen ne nomme pas de fournisseurs sur 1 cas).
+
+## Diff proposé de `functions/src/models.ts` et `brewerHarness.ts` (NON APPLIQUÉ, non déployé, voie hors `functions/src/`)
 ```
-G=work/missions/2026-11-14-gemini4/voies/g2
-RUN="npx vite-node --config vitest.config.ts scripts/banc-compagnon.ts -- --payant --confirm-paid-ai --workers 3"
-node $G/sonde.mjs gemini-3.8-flash low     # attendu : "status":200 ; sinon s'arrêter
-$RUN --cellule "analysis=gemini-4-hydrogen@low" --cellule "analysis=gemini-4-argon@low" --cellule "analysis=gemini-4-carbon@low" --cellule "analysis=gemini-4-argon@medium" --cas edit-recipe,low-ph,ro --plafond-passe 1.1
++/** Compagnon, rôle analyse : Hydrogen, réflexion basse (voie g2, 14.11 : juge 0,98 / 0,92 contre 0,95 / 0,85 pour 3.8, −33 % de coût en jugement). */
++export const BREWER_ANALYSIS_ROUTE: GeminiAttempt = { model: INVOICE_STRONG_MODEL, thinkingLevel: 'low' };
+ export function geminiAttempts(usage: string, tier: AiTier = 'fast'): GeminiAttempt[] {
+   const main = { model: GEMINI_MODEL, thinkingLevel: TIERS[tier].thinkingLevel };
++  // analyse du compagnon en Rapide : Hydrogen d'abord, repli une fois sur 3.8
++  if (usage === 'analysis' && tier === 'fast') return [BREWER_ANALYSIS_ROUTE, main];
+   const lite = …
 ```
-Sortie attendue : « Passe terminée : 12 cas joués » (4 déjà faits pour prod). Puis rendre au pilote `sorties/`, la fin du journal et le cumul ; l'auteur juge (dossier à l'aveugle), choisit les finalistes pour la phase B.
+Dans `brewerHarness.ts` (ligne 293), `geminiAttempts(purpose === 'research' ? tool : purpose)` donne déjà `'analysis'` ; le plafond de sortie de l'analyse reste à 4 000 (testé ainsi au banc en `low`). Test à ajouter : l'ordre d'essai de `analysis` (Hydrogen puis 3.8) et que `review` et `research` restent sur 3.8. Hydrogen est déjà dans la liste blanche `GEMINI_MODELS`.
 
 ## Doutes et limites
-- Un seul tirage par cellule : le bruit d'une même cellule n'est pas mesuré ; 3 cas de choix sur 7 prévus, supplier-followup, fermentation, grassy et injection non joués.
-- Le coût du banc est le coût provisionné (1,25 CHF/USD), pas une facture ; Argon et Carbon doublent le 1.12.2026.
-- Le détecteur de nombres et les motifs de la grille sont des règles ; ils ne remplacent pas le juge. Le juge est l'auteur, pas le brasseur (L27).
-- Les cellules à réflexion haute ont un plafond de sortie plus grand que la production (8 000 contre 4 000 pour l'analyse) : à dire dans toute recommandation.
+- Juge = moi, NON à l'aveugle : j'ai lu les sorties avec leur cellule avant de noter (dossier anonymisé généré, mais la lecture directe l'a précédé) ; second regard = règles automatiques (désaccords : Argon 4, Carbon 10, Hydrogen 0, prod 3), mais l'auto ne voit pas les mots ni les inventions. Biais possible pour ou contre Hydrogen. Le juge n'est pas le brasseur (L27).
+- Un tirage par cellule, 9 cas sur 13 joués (supplier en recherche seul ; fermentation, grassy, injection non joués). Écarts de 0,03 à 0,07 : dans le bruit probable.
+- Le plafond de la passe agit sur la réserve des appels lancés, pas sur le coût réel : à 3 travailleurs, une passe arrêtée a laissé finir les appels en cours (≈ 0,45 CHF consommés pour 1 cas rendu). Pour la suite, `--workers 1` quand il reste peu de budget.
+- Coût = coût provisionné (1,25 CHF/USD), pas une facture. Hydrogen a le tarif de 3.8 (1,5 / 7,5 $ le million, `geminiCosts.ts`), sans changement en décembre : le gain de coût tient ; Argon passe à 4 / 20 $ le 1.12.2026 (Carbon : tarif non vérifié ici).
+- Journal : g2 = 3,437 CHF (≤ 3,5), mission = 8,45 CHF (≤ 10), lignes ajoutées par d'autres voies comprises. Plafond atteint : rien de plus joué.
 
-DÉCISION À PRENDRE : relever le plafond de dépense du projet Google (geste de compte du brasseur) pour que g1 et g2 puissent finir. Recommandation : le relever d'au moins 4 CHF (g2 ≈ 3 CHF, reprise de g1 ≈ 1 CHF) ; sinon rester en 3.8@low partout, qui répond en 9 s pour 0,07 CHF, juste sur 4 cas sur 4.
-CONNAISSANCE : une question du compagnon coûte 0,05 à 0,10 CHF en 3.8@low (3 à 4 appels, contexte de 10 à 23 k jetons relu à chaque tour d'analyse), p50 ≈ 9 s sur 4 cas ; le plafond de dépense mensuel du projet Google (429) a de nouveau coupé à ≈ 5,1 CHF de journal commun.
-LEÇON PROPOSÉE : aucune
+DEMANDE EXECUTANT : aucune.
+DÉCISION À PRENDRE : appliquer le diff ci-dessus ? Options : (a) l'appliquer tel quel après un test unitaire de route, (b) d'abord jouer les 7 cas manquants pour Hydrogen@low et 3.8@low (≈ 1,3 CHF, un nouveau budget) avant de trancher, (c) rester en 3.8@low. Recommandation : (b), puis (a) si l'écart tient ; l'avantage d'Hydrogen sur 3.8 est mince (un tirage, juge non aveugle).
+CONNAISSANCE : au banc du compagnon (14.11, 3 cas choix + 6 jugement, un tirage), Hydrogen@low répond au même niveau ou mieux que 3.8@low en 6,5 à 9,7 s médiane pour 0,05 à 0,08 CHF la question, en 2,5 à 3,3 appels ; Argon et Carbon écrivent 150 à 280 mots et spéculent (ton du brasseur hors cadre).
+LEÇON PROPOSÉE : un plafond de passe doit compter les appels déjà lancés (réserve de chacun), pas le seul coût relu ; en parallèle, une passe « arrêtée » a coûté ≈ 0,45 CHF sans rien rendre.
