@@ -171,6 +171,18 @@ export function contenanceCuveL(profil?: Pick<BrewhouseProfile, 'equipment'>): n
   return fini(c) && c > 0 ? c : undefined;
 }
 
+/** La capacité du fermenteur (`materielActuel.ts` la lit au même endroit), seulement si la brasserie la porte ; jamais 0 par défaut. */
+export function contenanceFermenteurL(profil?: Pick<BrewhouseProfile, 'equipment'>): number | undefined {
+  const c = profil?.equipment?.fermenterCapacityL;
+  return fini(c) && c > 0 ? c : undefined;
+}
+
+/** Le volume au repos du lancement : celui de la brasserie choisie (sinon l'active) ; sans brasserie exploitable, celui de la recette. */
+export function volumeDeDepart(recette: Pick<Recipe, 'volumeL'> | undefined, brasserie?: Pick<BrewhouseProfile, 'volumeL'>): number {
+  if (brasserie && fini(brasserie.volumeL) && brasserie.volumeL > 0) return brasserie.volumeL;
+  return recette && fini(recette.volumeL) && recette.volumeL > 0 ? recette.volumeL : 30;
+}
+
 /** Échelle de la règle : stable pendant le geste (elle ne dépend pas du volume choisi), 60 L au moins. */
 export function echelleRegleL(recetteL: number, brassinL?: number): number {
   const base = Math.max(fini(recetteL) ? recetteL : 0, fini(brassinL) ? brassinL : 0);

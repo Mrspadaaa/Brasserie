@@ -100,6 +100,7 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     editor.unmount();
     const close = vi.fn();
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[adapted]} onClose={close} />);
+    fireEvent.click(screen.getByRole('button', { name: /^Volume de la recette/ })); // « ↻ N L » : le volume au repos est celui de la brasserie (24 L)
     fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     await waitFor(() => expect(close).toHaveBeenCalledOnce());
     expect(created).toHaveLength(1);

@@ -62,7 +62,7 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     const { App } = await import('../../src/App');
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: 'Lancer depuis la recette' }));
-    fireEvent.click(await screen.findByRole('button', { name: /^Lancer à / }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Lancer à / }, { timeout: 8000 })); // première ouverture : le chunk de la modale se charge à froid
     expect(await screen.findByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();

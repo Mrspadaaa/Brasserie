@@ -292,6 +292,16 @@ export const App: React.FC = () => {
     window.addEventListener('affinee:ouvrir-reglages', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
   }, []);
+  // « Ce qui manque pour N L » (Nouveau brassin) : l'événement annulable ouvre Stocks sur le sous-onglet Courses.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      StorageService.setUiState('stocks_subtab', 'courses');
+      setActiveTab('stocks');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-stocks', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-stocks', ouvrir);
+  }, []);
   // CP-13 : « Datés et budgétés, ils entrent dans Finances › Prévisions » (Brassins › Atelier › Matériel) : l'événement annulable ouvre l'onglet Finances sur le sous-onglet demandé.
   const [financeTabRequest, setFinanceTabRequest] = useState<{ onglet: string; at: number } | null>(null);
   useEffect(() => {

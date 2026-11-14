@@ -37,7 +37,12 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
 const create = () => screen.getByRole('button', { name: /^Lancer à / });
-const openCreation = (onBatchCreated = vi.fn(), onClose = vi.fn()) => render(<QuickActionModal isOpen recipes={[recipe]} onClose={onClose} initialScreen="brew-batch" initialRecipeId={recipe.id} onBatchCreated={onBatchCreated} />);
+/* Le volume au repos est celui de la brasserie ; ces tests lancent le volume de la recette, que « ↻ N L » rétablit. */
+const openCreation = (onBatchCreated = vi.fn(), onClose = vi.fn()) => {
+  const rendu = render(<QuickActionModal isOpen recipes={[recipe]} onClose={onClose} initialScreen="brew-batch" initialRecipeId={recipe.id} onBatchCreated={onBatchCreated} />);
+  fireEvent.click(screen.getByRole('button', { name: /^Volume de la recette/ }));
+  return rendu;
+};
 
 describe('prepare and schedule a reusable recipe', () => {
   it('keeps a scheduled legacy recipe uncreated until its installation is explicitly adopted', () => {

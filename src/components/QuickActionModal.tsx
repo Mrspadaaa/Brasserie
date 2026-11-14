@@ -46,7 +46,7 @@ import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
 import type { ApercuDepense } from '../ui/depense/types';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreRepo';
 import { BrewLaunchPanel, BrewLaunchPied } from '../ui/BrewLaunchPanel';
-import { profilsDeLancement, recetteAdaptee } from '../domain/brewLaunch';
+import { profilsDeLancement, recetteAdaptee, volumeDeDepart } from '../domain/brewLaunch';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -161,8 +161,13 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   useEffect(() => {
     if (!recipes.some(r => r.id === selectedRecipeId)) setSelectedRecipeId(recipes[0]?.id || '');
   }, [recipes, selectedRecipeId]);
-  /* Le volume part de celui de la recette : c'est le brassin qu'on refait le plus souvent. */
-  const [batchVolumeL, setBatchVolumeL] = useState<number>(() => recipes[0]?.volumeL ?? 30);
+  /* Le volume au repos est celui de la brasserie choisie (« ↻ N L » ramène à la recette) ; sans brasserie, celui de la recette. */
+  const volumeAuRepos = (recette: Recipe | undefined, choisiId?: string) => {
+    const cfg = StorageService.getConfig();
+    const brasserie = cfg.brewhouses?.find((b) => b.id === (choisiId ?? cfg.activeBrewhouseId)) ?? (choisiId ? undefined : cfg.brewhouses?.[0]);
+    return volumeDeDepart(recette, brasserie);
+  };
+  const [batchVolumeL, setBatchVolumeL] = useState<number>(() => volumeAuRepos(recipes[0]));
   const [brewError, setBrewError] = useState('');
   /* La brasserie choisie pour ce lancement ; absente = la brasserie active. La date du lot reste « à définir » (la fiche du brassin la change). */
   const [brewhouseId, setBrewhouseId] = useState<string | undefined>();
@@ -174,7 +179,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     if (!isOpen) return;
     const selected = recipes.find(recipe => recipe.id === initialRecipeId) ?? recipes[0];
     setSelectedRecipeId(selected?.id ?? '');
-    setBatchVolumeL(selected?.volumeL ?? 30);
+    setBatchVolumeL(volumeAuRepos(selected));
     setBrewhouseId(undefined);
     setManqueNote(false);
     setBrewError('');
@@ -617,9 +622,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 disabled={brewSaving || !!pendingBatch.current}
                 onChange={(e) => {
                   setSelectedRecipeId(e.target.value);
-                  // Le volume suit la recette choisie : c'est la valeur juste neuf fois sur dix, et il reste modifiable sur la règle.
+                  // Le volume revient à celui de la brasserie choisie ; il reste modifiable sur la règle.
                   const found = recipes.find((r) => r.id === e.target.value);
-                  if (found) setBatchVolumeL(found.volumeL);
+                  if (found) setBatchVolumeL(volumeAuRepos(found, brewhouseId));
                   setBrewError('');
                 }}
                 className="min-h-[44px] w-full max-w-[11rem] truncate appearance-none rounded-control border border-cave-700 bg-cave-950 pl-2 pr-7 text-sm text-cave-50"
@@ -1206,8 +1211,12 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   brasseries={brasseries}
                   actif={brasserieActive}
                   choisi={brasserieChoisie}
-                  onBrasserie={(id) => { setBrewhouseId(id === brasserieActive?.id ? undefined : id); setBrewError(''); }}
-                  onContenance={() => { window.dispatchEvent(new CustomEvent('affinee:ouvrir-reglages', { cancelable: true, detail: { section: 'installation' } })); }}
+                  onBrasserie={(id) => { setBrewhouseId(id === brasserieActive?.id ? undefined : id); setBatchVolumeL(volumeAuRepos(recipes.find((r) => r.id === selectedRecipeId), id)); setBrewError(''); }}
+                  onContenance={() => {
+                    /* Réglages s'ouvrirait derrière cette modale plein écran : une fois l'événement pris par App, la modale se ferme (le lancement se rouvre d'un geste). La section « installation » n'existe pas : le matériel est dans Réglages › Brasserie. */
+                    const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-reglages', { cancelable: true, detail: { section: 'brasserie' } }));
+                    if (pris) onClose();
+                  }}
                   disabled={brewSaving || !!pendingBatch.current}
                 />
               )}
@@ -1225,6 +1234,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   StorageService.setUiState('stocks_subtab', 'courses');
                   const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-stocks', { cancelable: true, detail: { onglet: 'courses' } }));
                   setManqueNote(!pris);
+                  if (pris) onClose();
                 }}
                 onLancer={() => void handleLaunchBrew()}
               />

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BrewhouseProfile, Recipe } from '../../src/types';
 import { scaleBrewBudgetRecipe } from '../../src/domain/finance/brewBudgetScaling';
-import { apercuLancement, contenanceCuveL, detailMoment, echelleRegleL, etapesLancement, facteurVolume, levureArrondir, recetteAdaptee } from '../../src/domain/brewLaunch';
+import { apercuLancement, contenanceCuveL, contenanceFermenteurL, volumeDeDepart, detailMoment, echelleRegleL, etapesLancement, facteurVolume, levureArrondir, recetteAdaptee } from '../../src/domain/brewLaunch';
 
 const systeme30: BrewhouseProfile = { id: 'bh-30', name: 'Système 30L', volumeL: 30, efficiencyPct: 75, boilOffRatePct: 10, deadSpaceL: 1.5, mashRatioLPerKg: 4.2 };
 const systeme50: BrewhouseProfile = { id: 'bh-50', name: 'Système 50L', volumeL: 50, efficiencyPct: 78, boilOffRatePct: 10, deadSpaceL: 2, mashRatioLPerKg: 4.2 };
@@ -169,6 +169,21 @@ describe('brewLaunch — volume, règle, cuve, brasserie', () => {
     const autre = recetteAdaptee(neipa(), 30, systeme30, systeme50);
     expect(autre.brewhouse?.id).toBe('bh-50');
     expect(autre.fermentables[0].weightKg).toBeLessThan(defaut.fermentables[0].weightKg); // rendement 78 % contre 75 %
+  });
+
+  it('ne connaît la capacité du fermenteur que si elle est renseignée (jamais 0)', () => {
+    expect(contenanceFermenteurL(systeme30)).toBeUndefined();
+    expect(contenanceFermenteurL(undefined)).toBeUndefined();
+    expect(contenanceFermenteurL({ equipment: { fermenterCapacityL: 60 } as BrewhouseProfile['equipment'] })).toBe(60);
+    expect(contenanceFermenteurL({ equipment: { fermenterCapacityL: 0 } as BrewhouseProfile['equipment'] })).toBeUndefined();
+  });
+
+  it('part du volume de la brasserie choisie ; sans brasserie, du volume de la recette', () => {
+    expect(volumeDeDepart(neipa(), systeme30)).toBe(30);
+    expect(volumeDeDepart(neipa(), systeme50)).toBe(50);
+    expect(volumeDeDepart(neipa(), undefined)).toBe(19);
+    expect(volumeDeDepart(neipa(), { volumeL: 0 })).toBe(19);
+    expect(facteurVolume(volumeDeDepart(neipa(), systeme30), neipa())).toBeCloseTo(30 / 19, 6);
   });
 
   it('lève l’erreur du moteur pour un volume invalide', () => {

@@ -26,15 +26,59 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-describe('Nouveau brassin (uv4) : le volume de la recette, sans avertissement de matériel', () => {
-  it('reprend le volume de la recette sur la règle, ne montre aucune alerte AM-47 et ne bloque pas le lancement', () => {
+describe('Nouveau brassin (uv4) : volume de la brasserie, capacités lues, sans alerte', () => {
+  it('part du volume de la brasserie, lit cuve et fermenteur sans alerte AM-47, et « ↻ N L » ramène à la recette', () => {
     render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
     fireEvent.click(screen.getByText('Préparer un brassin'));
-    expect(screen.getByLabelText('Volume du brassin')).toHaveValue('60');
-    expect(screen.queryByRole('status', { name: /matériel actuel/i })).toBeNull();
+    expect(screen.getByLabelText('Volume du brassin')).toHaveValue('24'); // la brasserie « perso », pas les 60 L de la recette
+    // Capacités connues (practicalEquipment) : lues en neutre, ni rouge ni alerte.
+    expect(screen.getByText(/^cuve/)).toHaveTextContent('cuve 45 L');
+    expect(screen.getByText(/^fermenteur/)).toHaveTextContent('fermenteur 30 L');
+    expect(screen.queryByText(/contenance à renseigner/)).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.queryByText(/Sur ton matériel actuel/)).toBeNull();
+    expect(screen.getByRole('button', { name: /^Lancer à 24 L$/ })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: /^Volume de la recette, 60 L/ }));
+    expect(screen.getByLabelText('Volume du brassin')).toHaveValue('60');
+    // Plus que le fermenteur (30 L) : aucun refus, aucune alerte (AM-47 retiré, la capacité reste lisible).
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('button', { name: /^Lancer à 60 L$/ })).toBeEnabled();
-    fireEvent.change(screen.getByLabelText('Volume du brassin'), { target: { value: '30' } });
-    expect(screen.getByRole('button', { name: /^Lancer à 30 L$/ })).toBeEnabled();
+  });
+
+  it('sans capacité renseignée : « contenance à renseigner › », pas de fermenteur inventé', () => {
+    const sansMateriel = { ...config, brewhouses: [{ ...actuel, equipment: undefined }] } as unknown as AppConfig;
+    vi.spyOn(StorageService, 'getConfig').mockReturnValue(sansMateriel);
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    expect(screen.getByText(/contenance à renseigner/)).toBeInTheDocument();
+    expect(screen.queryByText(/^fermenteur/)).toBeNull();
+  });
+
+  it('« contenance à renseigner › » envoie l’événement vers Réglages et ferme la modale quand App le prend (sinon elle reste)', () => {
+    vi.spyOn(StorageService, 'getConfig').mockReturnValue({ ...config, brewhouses: [{ ...actuel, equipment: undefined }] } as unknown as AppConfig);
+    const prend = vi.fn((e: Event) => e.preventDefault());
+    window.addEventListener('affinee:ouvrir-reglages', prend);
+    const close = vi.fn();
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={close} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    fireEvent.click(screen.getByRole('button', { name: /contenance de la cuve/ }));
+    window.removeEventListener('affinee:ouvrir-reglages', prend);
+    expect(prend).toHaveBeenCalledOnce();
+    expect(close).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: /contenance de la cuve/ })); // sans écouteur : rien ne se ferme
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it('« Ce qui manque » envoie l’événement annulable vers Stocks › Courses (App l’écoute)', () => {
+    const vu = vi.fn((e: Event) => e.preventDefault());
+    window.addEventListener('affinee:ouvrir-stocks', vu);
+    const close = vi.fn();
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={close} />);
+    fireEvent.click(screen.getByText('Préparer un brassin'));
+    fireEvent.click(screen.getByRole('button', { name: /Ce qui manque/ }));
+    window.removeEventListener('affinee:ouvrir-stocks', vu);
+    expect(vu).toHaveBeenCalledOnce();
+    expect(StorageService.setUiState).toHaveBeenCalledWith('stocks_subtab', 'courses');
+    expect(close).toHaveBeenCalledOnce();
   });
 });

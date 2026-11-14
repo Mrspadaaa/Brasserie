@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ChevronDown, Lock, Minus, Plus, Play, RotateCcw, Database } from 'lucide-react';
 import type { BrewhouseProfile, Recipe } from '../types';
-import { apercuLancement, contenanceCuveL, echelleRegleL, facteurVolume, type EtapeLancement, type PastilleLancement } from '../domain/brewLaunch';
+import { apercuLancement, contenanceCuveL, contenanceFermenteurL, echelleRegleL, facteurVolume, type EtapeLancement, type PastilleLancement } from '../domain/brewLaunch';
 import { nombreFr } from '../domain/nombreAffiche';
 import './brew-launch.css';
 
@@ -73,6 +73,7 @@ export const BrewLaunchPanel: React.FC<BrewLaunchPanelProps> = ({ recette, volum
   }, [recette, volumeL, actif, choisi]);
   const facteur = facteurVolume(volumeL, recette);
   const cuveL = contenanceCuveL(lancement);
+  const fermenteurL = contenanceFermenteurL(lancement);
   const eauL = apercu?.etapes.find((e) => e.id === 'empatage')?.eauL;
   const pct = (l: number) => Math.min(100, Math.max(0, (l / maxL) * 100));
   const x = (l: number) => `calc(10px + (100% - 20px) * ${pct(l) / 100})`;
@@ -122,13 +123,17 @@ export const BrewLaunchPanel: React.FC<BrewLaunchPanelProps> = ({ recette, volum
         </div>
       </section>
 
-      {cuveL == null ? (
-        <button type="button" onClick={onContenance} aria-label="Renseigner la contenance de la cuve" className="w-full min-h-[44px] flex items-center gap-1.5 pl-2 pr-1 rounded-control border border-dashed border-cave-700 text-2xs text-cave-400 text-left">
-          <Database size={14} aria-hidden="true" />contenance à renseigner<b className="ml-auto px-1.5 text-[17px] text-cave-50" aria-hidden="true">›</b>
-        </button>
-      ) : (
-        <p className="min-h-[32px] flex items-center gap-1.5 pl-2 text-2xs text-cave-400"><Database size={14} aria-hidden="true" />cuve <b className="tabular-nums text-cave-50">{L(cuveL)} L</b></p>
-      )}
+      {/* AM-47 sans alerte : la capacité connue se lit, neutre, à côté de la cuve ; aucun rouge, rien n'est refusé. */}
+      <div className="flex items-center gap-2">
+        {cuveL == null ? (
+          <button type="button" onClick={onContenance} aria-label="Renseigner la contenance de la cuve" className="flex-1 min-w-0 min-h-[44px] flex items-center gap-1.5 pl-2 pr-1 rounded-control border border-dashed border-cave-700 text-2xs text-cave-400 text-left">
+            <Database size={14} aria-hidden="true" />contenance à renseigner<b className="ml-auto px-1.5 text-[17px] text-cave-50" aria-hidden="true">›</b>
+          </button>
+        ) : (
+          <p className="min-h-[32px] flex items-center gap-1.5 pl-2 text-2xs text-cave-400"><Database size={14} aria-hidden="true" />cuve <b className="tabular-nums text-cave-50">{L(cuveL)} L</b></p>
+        )}
+        {fermenteurL != null && <p className="min-h-[32px] flex items-center gap-1.5 text-2xs text-cave-400 whitespace-nowrap">fermenteur <b className="tabular-nums text-cave-50">{L(fermenteurL)} L</b></p>}
+      </div>
 
       {apercu ? (
         <>
