@@ -70,13 +70,14 @@ import { fileURLToPath } from 'node:url';
 import { TASKS } from '../functions/src/prompts';
 import { SCAN_MAX_ITEMS, SCAN_MAX_OUTPUT, SCAN_MODEL, countPdfPages, normalizeInvoiceScan, validateInvoiceFile, type InvoiceFile } from '../functions/src/invoiceScanCore';
 import { SV_SCHEMA, productionToSv, schemaProblems, svSystem, svToProduction } from './banc-lecture-schema';
-import { GEMINI_LITE_MODEL, assertGeminiModel } from '../functions/src/models';
+import { GEMINI_LITE_MODEL } from '../functions/src/models';
 import { INVOICE_SCAN_PROMPTS } from '../functions/src/invoiceScanPrompts';
 import {
   ScanReadCutError, ajouterCoupure, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
   type CauseCoupure, type InvoiceScanResult
 } from '../functions/src/invoiceVisionReview';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
+import { FORT_MAX_OUT, FORT_TIMEOUT_MS, assertModeleBanc, coutObserveBanc, devisBanc, estGemini4, etiquetteFort, fortCourant, parseFort, poserFort, reserveGemini4, type Fort } from './banc-lecture-modeles';
 import { dateDuVoteEtoile, phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
 import { ALLEGEES, preparerAllegement } from './banc-lecture-alleger';
@@ -167,7 +168,7 @@ export const PARTIAL_GROUPS: ReadonlySet<string> = new Set(['Pv', 'Bv']);
 /** Plafond de sortie relevé de Lm et Lh seuls : la réflexion compte dans `maxOutputTokens`, `high` peut couper à 5 100. */
 export const LITE_RAISED_OUTPUT = 8192;
 const TIMEOUT_MS = 45_000, TIMEOUT_THINKING_MS = 90_000;
-export type ThinkingLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+export type ThinkingLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'XHIGH';
 export interface CallSpec {
   model: string; prompt: string; thinking: ThinkingLevel; maxOut: number; timeoutMs: number;
   /** Hv et suivantes : la consigne vient après les images. */
@@ -235,7 +236,16 @@ export const AV_NOTE = 'Tu disposes d’un outil d’exécution de code. Avant d
 /** Le réglage d'un appel. La 3ᵉ lecture est la 3.8 de production (consigne 3), quel que soit le groupe qui la demande — sauf celle d'Av. */
 /** Les groupes du banc mesurés avant le 02.11 gardent le plafond de sortie de leur mesure ; la 3.8 de production suit `SCAN_MAX_OUTPUT`. */
 const BANC_MAX_OUT = 5100;
+/**
+ * Voie g1 (14.11) : `--fort <modèle>@<niveau>` remplace le modèle et la réflexion de tout appel qui part en `STRONG_MODEL` (la 3ᵉ lecture, les lectures de A).
+ * Sans l'option, aucun changement. Avec elle, la réflexion compte dans la sortie : plafond relevé (FORT_MAX_OUT), délai de 90 s.
+ */
 export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
+  const spec = callSpecBase(group, lecture), fort = fortCourant();
+  if (!fort || spec.model !== STRONG_MODEL) return spec;
+  return { ...spec, model: fort.model, thinking: fort.thinking, maxOut: Math.max(spec.maxOut, FORT_MAX_OUT), timeoutMs: Math.max(spec.timeoutMs, FORT_TIMEOUT_MS) };
+}
+function callSpecBase(group: string, lecture: 1 | 2 | 3): CallSpec {
   // Csv8F : les trois lectures portent `nameFr`, et rien d'autre ne change (Flash-Lite à 8 192 jetons comme Csv8, 3.8 au plafond de production)
   if (group === 'Csv8F') return { model: lecture === 3 ? STRONG_MODEL : LITE_MODEL, prompt: INVOICE_SCAN_PROMPTS[lecture - 1], thinking: 'LOW', maxOut: lecture === 3 ? SCAN_MAX_OUTPUT : LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, nameFr: true };
   if (lecture === 3 && group === 'Av') return { model: STRONG_MODEL, prompt: `${INVOICE_SCAN_PROMPTS[2]}\n\n${AV_NOTE}`, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS, codeExecution: true };
@@ -300,6 +310,12 @@ export interface BenchOptions {
   normaliser?: boolean;
   /** Plafond de dépense de CETTE passe, en CHF (D242 : 3 par défaut en mode payant). */
   plafondPasse?: number;
+  /** Voie g1 : `<modèle>@<niveau>` remplace le modèle et la réflexion de la 3.8 (la 3ᵉ lecture) ; jamais prêtée par `--reprendre`. */
+  fort?: string;
+  /** Voie g1 : le journal de coût de CETTE mission (au lieu de celui du banc du 01.11) et son plafond de cumul en CHF. */
+  journal?: string; plafondCumul?: number;
+  /** Voie g1 : en passe payante, prête aussi les lectures Flash-Lite de Csv8 d'une sortie précédente (même document, même tirage, même consigne). */
+  preterLite?: boolean;
 }
 export class BudgetStop extends Error { constructor(message: string) { super(message); this.name = 'BudgetStop'; } }
 
@@ -330,7 +346,9 @@ export function parseArgs(argv: string[]): BenchOptions & EstimateOptions {
   let budgetChf: number | undefined;
   if (payant) {
     budgetChf = Number(value('--budget-chf'));
-    if (!(budgetChf > 0 && budgetChf <= BUDGET_CAP_CHF)) throw new Error(`Le mode --payant exige --budget-chf <= ${BUDGET_CAP_CHF} (accord D234 : 5 CHF, marge comprise). Aucun appel.`);
+    const cap = value('--plafond-cumul') === undefined ? BUDGET_CAP_CHF : Number(value('--plafond-cumul'));
+    if (!(cap > 0 && cap <= BUDGET_CAP_CHF)) throw new Error(`--plafond-cumul attend un montant de 0 à ${BUDGET_CAP_CHF} CHF.`);
+    if (!(budgetChf > 0 && budgetChf <= cap)) throw new Error(`Le mode --payant exige --budget-chf <= ${cap} (accord D234 : 5 CHF, marge comprise). Aucun appel.`);
   }
   let plafondPasse: number | undefined;
   if (value('--plafond-passe') !== undefined || payant) {
@@ -338,8 +356,12 @@ export function parseArgs(argv: string[]): BenchOptions & EstimateOptions {
     if (!(plafondPasse > 0)) throw new Error('--plafond-passe attend un montant en CHF supérieur à 0.');
   }
   const cas = value('--cas')?.split(',').map(item => item.trim()).filter(Boolean);
+  const fort = value('--fort');
+  if (fort !== undefined) parseFort(fort);
+  const journal = value('--journal'), plafondCumul = value('--plafond-cumul') === undefined ? undefined : Number(value('--plafond-cumul'));
   return { ...(plafondPasse !== undefined ? { plafondPasse } : {}), mode: payant ? 'payant' : horsLigne ? 'hors-ligne' : 'simuler', repeat, out: value('--out'), budgetChf, docs: value('--docs')?.split(',').map(item => item.trim()).filter(Boolean),
-    faults: !args.includes('--sans-fautes'), estimer, ...(cas?.length ? { cas } : {}), ...(args.includes('--av-sans-schema') ? { avSansSchema: true } : {}), ...(variantes ? { variantes: [...new Set(variantes)] } : {}), ...(reprendre ? { reprendre } : {}), ...(args.includes('--normaliser') ? { normaliser: true } : {}) };
+    faults: !args.includes('--sans-fautes'), estimer, ...(cas?.length ? { cas } : {}), ...(args.includes('--av-sans-schema') ? { avSansSchema: true } : {}), ...(variantes ? { variantes: [...new Set(variantes)] } : {}), ...(reprendre ? { reprendre } : {}), ...(args.includes('--normaliser') ? { normaliser: true } : {}),
+    ...(fort !== undefined ? { fort } : {}), ...(journal ? { journal } : {}), ...(plafondCumul !== undefined ? { plafondCumul } : {}), ...(args.includes('--preter-lite') ? { preterLite: true } : {}) };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -438,6 +460,8 @@ export const causeOf = (reason: any): CauseCoupure | null =>
 
 export interface ReadMeta {
   id: string; doc: string; tirage: number; variant: string; lecture: 1 | 2 | 3; model: string; freeJson?: boolean;
+  /** Voie g1 : le niveau de réflexion demandé à un appel « fort » (`--fort`) ; absent = le réglage de la production. */
+  reflexion?: string;
   /** Pv, Bv : cette lecture est la partie k (page ou bande) sur n d'une lecture partielle. */
   part?: { k: number; n: number };
   /** Zv : un appel de zoom (étape `loc` : la boîte ; `lec` : la relecture) pour une cellule en désaccord. */
@@ -820,6 +844,7 @@ export function deriveVariants(reads: DrawReads, want: ReadonlySet<string>): Par
 /** Coût au pire d'un appel de ce modèle : les tarifs viennent de geminiCosts.ts (aucune copie). */
 export function reservationMicro(model: string, maxOut: number = SCAN_MAX_OUTPUT, inputTokens: number = RESERVE_INPUT_TOKENS): number {
   const input = Math.max(inputTokens, RESERVE_INPUT_TOKENS);
+  if (estGemini4(model)) return reserveGemini4(model, maxOut, input);
   const quote = quoteGeminiCost(model, { generationConfig: { maxOutputTokens: maxOut } });
   const worst = observedGeminiCostDetails(quote, { usageMetadata: { promptTokenCount: input, candidatesTokenCount: maxOut, thoughtsTokenCount: 0, totalTokenCount: input + maxOut } });
   if (!worst) throw new Error('Réserve indisponible : tarif inconnu.');
@@ -883,7 +908,7 @@ export function appendJournal(file: string, read: Reading, cumulMicro: number, s
   if (!existsSync(file)) writeFileSync(file, JOURNAL_HEAD);
   const m = read.meta;
   const unknown = read.costMicroChf === null;
-  appendFileSync(file, `| ${new Date().toISOString().slice(0, 19).replace('T', ' ')} | ${m.doc} | ${m.tirage} | ${m.variant === 'Cp' ? 'C′' : m.variant}${m.part ? ` p${m.part.k}/${m.part.n}` : ''}${m.zoom ? ` ${m.zoom.etape}` : ''} | ${m.lecture} | ${m.model} | ${read.ms} ms | ${read.inputTokens ?? '?'} | ${read.outputTokens ?? '?'} | ${chf6(chargedMicro ?? 0)} | ${chf6(cumulMicro)} | ${read.state}${unknown ? ' (coût inconnu : réserve comptée)' : ''}${simulated ? ' (SIMULÉ)' : ''} |\n`);
+  appendFileSync(file, `| ${new Date().toISOString().slice(0, 19).replace('T', ' ')} | ${m.doc} | ${m.tirage} | ${m.variant === 'Cp' ? 'C′' : m.variant}${m.part ? ` p${m.part.k}/${m.part.n}` : ''}${m.zoom ? ` ${m.zoom.etape}` : ''} | ${m.lecture} | ${m.model}${m.reflexion ? `@${m.reflexion.toLowerCase()}` : ''} | ${read.ms} ms | ${read.inputTokens ?? '?'} | ${read.outputTokens ?? '?'} | ${chf6(chargedMicro ?? 0)} | ${chf6(cumulMicro)} | ${read.state}${unknown ? ' (coût inconnu : réserve comptée)' : ''}${simulated ? ' (SIMULÉ)' : ''} |\n`);
 }
 /** Dépense déjà journalisée par les passes payantes précédentes (colonne « coût CHF »). */
 export function spentInJournal(file: string): number {
@@ -1129,7 +1154,7 @@ export function loadLender(dirs: string | string[]): Lender {
 
 export function realTransport(key: string, fetchImpl: typeof fetch = fetch): Transport {
   return async (model, body, _meta, signal) => {
-    assertGeminiModel(model);
+    assertModeleBanc(model);
     const started = Date.now();
     const response = await fetchImpl(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify(body), signal });
@@ -1207,12 +1232,14 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
   if (!cases.length) throw new Error('Aucun cas à lire.');
   if (!deps.readFile) await preparerAllegement(cases, undefined, log);
   const wanted: VariantId[] = options.variantes?.length ? [...options.variantes] : [...K1_VARIANTS];
+  const fortChoisi: Fort | null = options.fort ? parseFort(options.fort) : null;
+  poserFort(fortChoisi);
   // B se déduit des lectures de A : demander B, c'est lire A.
   const want = new Set<string>(wanted);
   const groups = new Set<Group>(wanted.map(id => GROUP_OF[id]));
   const outDir = path.resolve(options.out ?? path.join(REELS_DIR, `banc-k4-${simulated ? 'sim-' : offline ? 'horsligne-' : ''}${stamp()}`));
   mkdirSync(path.join(outDir, 'raw'), { recursive: true });
-  const journalPath = deps.journalPath ?? (simulated || offline ? path.join(outDir, 'journal-gemini.md') : MISSION_JOURNAL);
+  const journalPath = deps.journalPath ?? (simulated || offline ? path.join(outDir, 'journal-gemini.md') : options.journal ? path.resolve(options.journal) : MISSION_JOURNAL);
   const lender: Lender | undefined = deps.lender ?? (options.reprendre ? loadLender(reprendreDirs(options.reprendre)) : undefined);
 
   let transport: Transport;
@@ -1259,7 +1286,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
 
   const records: DrawRecord[] = [];
   const reserveTable = Object.fromEntries([['a', callSpec('A', 1)], ['c', callSpec('C', 1)], ['lm', callSpec('Lm', 1)]].map(([name, spec]) => [name as string, reserveFor((spec as CallSpec).model, (spec as CallSpec).maxOut) / 1e6]));
-  const meta0 = { mode: options.mode, repeat: options.repeat, startedAt: new Date().toISOString(), models: { strong: STRONG_MODEL, lite: LITE_MODEL }, budgetChf: options.budgetChf ?? null,
+  const meta0 = { mode: options.mode, repeat: options.repeat, startedAt: new Date().toISOString(), models: { strong: STRONG_MODEL, lite: LITE_MODEL }, fort: fortChoisi ? etiquetteFort(fortChoisi) : null, budgetChf: options.budgetChf ?? null,
     variantes: wanted, normaliser: !!options.normaliser, reprendre: options.reprendre ? reprendreDirs(options.reprendre).map(dir => path.basename(dir)).join(',') : null,
     docs: cases.map(c => c.id), casFiles: (options.cas?.map(casPath) ?? CAS_FILES).map(file => path.basename(file)), reserve: reserveTable, faults: simulated && options.faults,
     avSansSchema: !!options.avSansSchema };
@@ -1279,15 +1306,16 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
     const spec = extra.zoom?.spec ?? callSpec(group, lecture), model = spec.model;
     const freeJson = !!options.avSansSchema && !!spec.codeExecution;
     const id = extra.zoom?.id ?? `${group}${lecture}${extra.part ? `-p${extra.part.k}` : ''}`;
-    const meta: ReadMeta = { id, doc: c.id, tirage, variant: group, lecture, model, ...(freeJson ? { freeJson: true } : {}), ...(extra.part ? { part: extra.part } : {}),
+    const meta: ReadMeta = { id, doc: c.id, tirage, variant: group, lecture, model, ...(fortCourant() && model !== LITE_MODEL ? { reflexion: spec.thinking } : {}), ...(freeJson ? { freeJson: true } : {}), ...(extra.part ? { part: extra.part } : {}),
       ...(extra.zoom ? { zoom: { cell: extra.zoom.cell, etape: extra.zoom.etape } } : {}) };
     // Prêt : en passe payante, seuls les réglages de k1 (A, C standards, 3ᵉ lecture) se prêtent ; les autres lisent toujours neuf. La 3.8 d'Av et
     // les appels de zoom ne se prêtent jamais. Hors ligne, tout ce que la sortie prêtée a gardé (même id) se rejoue, jamais un appel.
     const lend = (): Loan | undefined => {
       if (!lender) return undefined;
       if (extra.zoom || (lecture === 3 && (group === 'Av' || group === 'Csv8F'))) return offline ? lender(c.id, tirage, [meta.id]) : undefined;
-      if (lecture === 3) return lender(c.id, tirage, THIRD_IDS);
-      return offline || group === 'A' || group === 'C' ? lender(c.id, tirage, [meta.id]) : undefined;
+      // g1 : avec `--fort`, la 3ᵉ lecture est celle du modèle essayé : jamais une 3.8 prêtée (hors ligne : l'id seul, donc l'erreur d'une lecture absente)
+      if (lecture === 3) return options.fort ? (offline ? lender(c.id, tirage, [meta.id]) : undefined) : lender(c.id, tirage, THIRD_IDS);
+      return offline || group === 'A' || group === 'C' || (options.preterLite && group === 'Csv8') ? lender(c.id, tirage, [meta.id]) : undefined;
     };
     const loan = lend();
     // Une seule 3.8 (partagée) par document et par tirage : un second appel est une erreur du banc, jamais une dépense.
@@ -1307,14 +1335,14 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
       ultraHigh: spec.ultraHigh, codeExecution: spec.codeExecution, freeJson, tilesNote: spec.tiles, ...(spec.nameFr ? { nameFr: true } : {}), ...(extra.note ? { note: extra.note } : {}) });
     // Le garde-fou de coût de la production refuse l'outil d'exécution de code : il chiffre le corps sans l'outil, qui est remis à l'envoi.
     const { tools, ...quotable } = body as Record<string, unknown> & { tools?: unknown };
-    const quote = quoteGeminiCost(model, quotable);
+    const quote = devisBanc(model, quotable);
     const reserved = budget.reserve(reserveFor(model, spec.maxOut, inputReserveTokens(files, { ultraImages: spec.ultraHigh, codeExecution: spec.codeExecution })));
     const started = Date.now();
     let read: Reading;
     try {
       const signal = AbortSignal.any([AbortSignal.timeout(100_000), AbortSignal.timeout(spec.timeoutMs)]);
       const answer = await transport(model, tools ? { ...quote.body, tools } : quote.body, meta, signal);
-      const cost = observedGeminiCostDetails(quote, withToolTokens(answer.json))?.chargedMicroChf ?? null;
+      const cost = coutObserveBanc(quote, withToolTokens(answer.json))?.chargedMicroChf ?? null;
       read = extra.zoom ? readingOfRaw(meta, answer.json, answer.ms, cost) : readingFromResponse(meta, answer.json, answer.ms, cost);
       writeFileSync(path.join(outDir, 'raw', `${c.id}-t${tirage}-${meta.id}.json`), JSON.stringify(answer.json));
     } catch (error: any) {
@@ -1472,7 +1500,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
       }
     }
   }
-  } finally { restoreFetch(); }
+  } finally { restoreFetch(); poserFort(null); }
   save(stopped);
   log(simulated ? `Simulation terminée : ${records.length} parcours dans ${outDir} (aucun réseau).`
     : offline ? `Recalcul hors ligne terminé : ${records.length} parcours dans ${outDir} (aucun réseau, aucun appel).`
@@ -1518,14 +1546,14 @@ export function estimateBench(options: BenchOptions, cases: BenchCase[], lender?
         if (group === 'Bv') { sentParts = estimatedBandFiles(files); if (!sentParts.length) continue; }
         for (const lecture of [1, 2] as const) {
           const spec = callSpec(group, lecture);
-          if (lender && (group === 'A' || group === 'C') && lender(c.id, tirage, [`${group}${lecture}`])) { line.lent++; continue; }
+          if (lender && (group === 'A' || group === 'C' || (options.preterLite && group === 'Csv8')) && lender(c.id, tirage, [`${group}${lecture}`])) { line.lent++; continue; }
           for (const partFiles of sentParts) { line.fresh++; line.reservedMicro += reserve(spec, partFiles); }
         }
         // Csv8F a sa propre 3.8 (avec nameFr), comptée à part, jamais prêtée
         if (group === 'Csv8F') { thirdLine.fresh++; thirdLine.reservedMicro += reserve(callSpec('Csv8F', 3), files); } else thirdPossible = true;
       }
       if (thirdPossible) {
-        if (lender?.(c.id, tirage, THIRD_IDS)) thirdLine.lent++; else { thirdLine.fresh++; thirdLine.reservedMicro += reserve(callSpec('A', 3), files); }
+        if (!options.fort && lender?.(c.id, tirage, THIRD_IDS)) thirdLine.lent++; else { thirdLine.fresh++; thirdLine.reservedMicro += reserve(callSpec('A', 3), files); }
       }
       if (wanted.includes('Av')) { avLine.fresh++; avLine.reservedMicro += reserve(callSpec('Av', 3), files); }
       if (wanted.includes('Zv')) for (let cell = 0; cell < MAX_ZOOM_TARGETS; cell++) {
@@ -1573,7 +1601,8 @@ if (isMain()) {
         const cases = loadCases(options.cas?.map(casPath)).filter(c => !options.docs || options.docs.includes(c.id));
         await preparerAllegement(cases);
         const lender = options.reprendre ? loadLender(reprendreDirs(options.reprendre)) : undefined;
-        console.log(estimateBench(options, cases, lender, spentInJournal(MISSION_JOURNAL), options.reprendre ? observedAverages(reprendreDirs(options.reprendre)[0]) : undefined).text.join('\n'));
+        poserFort(options.fort ? parseFort(options.fort) : null);
+        console.log(estimateBench(options, cases, lender, spentInJournal(options.journal ? path.resolve(options.journal) : MISSION_JOURNAL), options.reprendre ? observedAverages(reprendreDirs(options.reprendre)[0]) : undefined).text.join('\n'));
         process.exit(0);
       } catch (error) { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }
     })();
