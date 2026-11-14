@@ -77,7 +77,7 @@ import {
   type CauseCoupure, type InvoiceScanResult
 } from '../functions/src/invoiceVisionReview';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
-import { FORT_MAX_OUT, FORT_TIMEOUT_MS, assertModeleBanc, coutObserveBanc, devisBanc, estGemini4, etiquetteFort, fortCourant, parseFort, poserFort, reserveGemini4, type Fort } from './banc-lecture-modeles';
+import { FORT_MAX_OUT, FORT_TIMEOUT_MS, assertModeleBanc, coutObserveBanc, devisBanc, estGemini4, etiquetteFort, etiquetteLectures, fortCourant, lecturesCourantes, parseFort, parseLectures, poserFort, poserLectures, reserveGemini4, type Fort } from './banc-lecture-modeles';
 import { dateDuVoteEtoile, phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
 import { ALLEGEES, preparerAllegement } from './banc-lecture-alleger';
@@ -169,7 +169,7 @@ export const PARTIAL_GROUPS: ReadonlySet<string> = new Set(['Pv', 'Bv']);
 /** Plafond de sortie relevé de Lm et Lh seuls : la réflexion compte dans `maxOutputTokens`, `high` peut couper à 5 100. */
 export const LITE_RAISED_OUTPUT = 8192;
 const TIMEOUT_MS = 45_000, TIMEOUT_THINKING_MS = 90_000;
-export type ThinkingLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'XHIGH';
+export type ThinkingLevel = 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH' | 'XHIGH';
 export interface CallSpec {
   model: string; prompt: string; thinking: ThinkingLevel; maxOut: number; timeoutMs: number;
   /** Hv et suivantes : la consigne vient après les images. */
@@ -242,7 +242,9 @@ const BANC_MAX_OUT = 5100;
  * Sans l'option, aucun changement. Avec elle, la réflexion compte dans la sortie : plafond relevé (FORT_MAX_OUT), délai de 90 s.
  */
 export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
-  const spec = callSpecBase(group, lecture), fort = fortCourant();
+  const spec = callSpecBase(group, lecture), fort = fortCourant(), lectures = lecturesCourantes();
+  // Voie t2b : `--lectures` remplace le modèle des deux lectures parallèles de Csv8 (jamais la 3ᵉ, jamais un autre groupe)
+  if (lectures && group === 'Csv8' && lecture !== 3) return { ...spec, model: lectures.model, thinking: lectures.thinking, ...(estGemini4(lectures.model) ? { maxOut: Math.max(spec.maxOut, FORT_MAX_OUT), timeoutMs: Math.max(spec.timeoutMs, FORT_TIMEOUT_MS) } : {}) };
   if (!fort || spec.model !== STRONG_MODEL) return spec;
   return { ...spec, model: fort.model, thinking: fort.thinking, maxOut: Math.max(spec.maxOut, FORT_MAX_OUT), timeoutMs: Math.max(spec.timeoutMs, FORT_TIMEOUT_MS) };
 }
@@ -317,6 +319,8 @@ export interface BenchOptions {
   journal?: string; plafondCumul?: number;
   /** Voie g1 : en passe payante, prête aussi les lectures Flash-Lite de Csv8 d'une sortie précédente (même document, même tirage, même consigne). */
   preterLite?: boolean;
+  /** Voie t2b : `<modèle>@<niveau>` remplace le modèle et la réflexion des deux lectures parallèles de Csv8 ; jamais prêtées. */
+  lectures?: string;
 }
 export class BudgetStop extends Error { constructor(message: string) { super(message); this.name = 'BudgetStop'; } }
 
@@ -359,10 +363,12 @@ export function parseArgs(argv: string[]): BenchOptions & EstimateOptions {
   const cas = value('--cas')?.split(',').map(item => item.trim()).filter(Boolean);
   const fort = value('--fort');
   if (fort !== undefined) parseFort(fort);
+  const lectures = value('--lectures');
+  if (lectures !== undefined) parseLectures(lectures);
   const journal = value('--journal'), plafondCumul = value('--plafond-cumul') === undefined ? undefined : Number(value('--plafond-cumul'));
   return { ...(plafondPasse !== undefined ? { plafondPasse } : {}), mode: payant ? 'payant' : horsLigne ? 'hors-ligne' : 'simuler', repeat, out: value('--out'), budgetChf, docs: value('--docs')?.split(',').map(item => item.trim()).filter(Boolean),
     faults: !args.includes('--sans-fautes'), estimer, ...(cas?.length ? { cas } : {}), ...(args.includes('--av-sans-schema') ? { avSansSchema: true } : {}), ...(variantes ? { variantes: [...new Set(variantes)] } : {}), ...(reprendre ? { reprendre } : {}), ...(args.includes('--normaliser') ? { normaliser: true } : {}),
-    ...(fort !== undefined ? { fort } : {}), ...(journal ? { journal } : {}), ...(plafondCumul !== undefined ? { plafondCumul } : {}), ...(args.includes('--preter-lite') ? { preterLite: true } : {}) };
+    ...(fort !== undefined ? { fort } : {}), ...(lectures !== undefined ? { lectures } : {}), ...(journal ? { journal } : {}), ...(plafondCumul !== undefined ? { plafondCumul } : {}), ...(args.includes('--preter-lite') ? { preterLite: true } : {}) };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1235,6 +1241,8 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
   const wanted: VariantId[] = options.variantes?.length ? [...options.variantes] : [...K1_VARIANTS];
   const fortChoisi: Fort | null = options.fort ? parseFort(options.fort) : null;
   poserFort(fortChoisi);
+  const lecturesChoisies = options.lectures ? parseLectures(options.lectures) : null;
+  poserLectures(lecturesChoisies);
   // B se déduit des lectures de A : demander B, c'est lire A.
   const want = new Set<string>(wanted);
   const groups = new Set<Group>(wanted.map(id => GROUP_OF[id]));
@@ -1287,7 +1295,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
 
   const records: DrawRecord[] = [];
   const reserveTable = Object.fromEntries([['a', callSpec('A', 1)], ['c', callSpec('C', 1)], ['lm', callSpec('Lm', 1)]].map(([name, spec]) => [name as string, reserveFor((spec as CallSpec).model, (spec as CallSpec).maxOut) / 1e6]));
-  const meta0 = { mode: options.mode, repeat: options.repeat, startedAt: new Date().toISOString(), models: { strong: STRONG_MODEL, lite: LITE_MODEL }, fort: fortChoisi ? etiquetteFort(fortChoisi) : null, budgetChf: options.budgetChf ?? null,
+  const meta0 = { mode: options.mode, repeat: options.repeat, startedAt: new Date().toISOString(), models: { strong: STRONG_MODEL, lite: LITE_MODEL }, fort: fortChoisi ? etiquetteFort(fortChoisi) : null, lectures: lecturesChoisies ? etiquetteLectures(lecturesChoisies) : null, budgetChf: options.budgetChf ?? null,
     variantes: wanted, normaliser: !!options.normaliser, reprendre: options.reprendre ? reprendreDirs(options.reprendre).map(dir => path.basename(dir)).join(',') : null,
     docs: cases.map(c => c.id), casFiles: (options.cas?.map(casPath) ?? CAS_FILES).map(file => path.basename(file)), reserve: reserveTable, faults: simulated && options.faults,
     avSansSchema: !!options.avSansSchema };
@@ -1307,7 +1315,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
     const spec = extra.zoom?.spec ?? callSpec(group, lecture), model = spec.model;
     const freeJson = !!options.avSansSchema && !!spec.codeExecution;
     const id = extra.zoom?.id ?? `${group}${lecture}${extra.part ? `-p${extra.part.k}` : ''}`;
-    const meta: ReadMeta = { id, doc: c.id, tirage, variant: group, lecture, model, ...(fortCourant() && model !== LITE_MODEL ? { reflexion: spec.thinking } : {}), ...(freeJson ? { freeJson: true } : {}), ...(extra.part ? { part: extra.part } : {}),
+    const meta: ReadMeta = { id, doc: c.id, tirage, variant: group, lecture, model, ...((fortCourant() && model !== LITE_MODEL) || (lecturesCourantes() && group === 'Csv8' && lecture !== 3) ? { reflexion: spec.thinking } : {}), ...(freeJson ? { freeJson: true } : {}), ...(extra.part ? { part: extra.part } : {}),
       ...(extra.zoom ? { zoom: { cell: extra.zoom.cell, etape: extra.zoom.etape } } : {}) };
     // Prêt : en passe payante, seuls les réglages de k1 (A, C standards, 3ᵉ lecture) se prêtent ; les autres lisent toujours neuf. La 3.8 d'Av et
     // les appels de zoom ne se prêtent jamais. Hors ligne, tout ce que la sortie prêtée a gardé (même id) se rejoue, jamais un appel.
@@ -1316,7 +1324,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
       if (extra.zoom || (lecture === 3 && (group === 'Av' || group === 'Csv8F'))) return offline ? lender(c.id, tirage, [meta.id]) : undefined;
       // g1 : avec `--fort`, la 3ᵉ lecture est celle du modèle essayé : jamais une 3.8 prêtée (hors ligne : l'id seul, donc l'erreur d'une lecture absente)
       if (lecture === 3) return options.fort ? (offline ? lender(c.id, tirage, [meta.id]) : undefined) : lender(c.id, tirage, THIRD_IDS);
-      return offline || group === 'A' || group === 'C' || (options.preterLite && group === 'Csv8') ? lender(c.id, tirage, [meta.id]) : undefined;
+      return offline || group === 'A' || group === 'C' || (options.preterLite && !options.lectures && group === 'Csv8') ? lender(c.id, tirage, [meta.id]) : undefined;
     };
     const loan = lend();
     // Une seule 3.8 (partagée) par document et par tirage : un second appel est une erreur du banc, jamais une dépense.
@@ -1501,7 +1509,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
       }
     }
   }
-  } finally { restoreFetch(); poserFort(null); }
+  } finally { restoreFetch(); poserFort(null); poserLectures(null); }
   save(stopped);
   log(simulated ? `Simulation terminée : ${records.length} parcours dans ${outDir} (aucun réseau).`
     : offline ? `Recalcul hors ligne terminé : ${records.length} parcours dans ${outDir} (aucun réseau, aucun appel).`
@@ -1547,7 +1555,7 @@ export function estimateBench(options: BenchOptions, cases: BenchCase[], lender?
         if (group === 'Bv') { sentParts = estimatedBandFiles(files); if (!sentParts.length) continue; }
         for (const lecture of [1, 2] as const) {
           const spec = callSpec(group, lecture);
-          if (lender && (group === 'A' || group === 'C' || (options.preterLite && group === 'Csv8')) && lender(c.id, tirage, [`${group}${lecture}`])) { line.lent++; continue; }
+          if (lender && (group === 'A' || group === 'C' || (options.preterLite && !options.lectures && group === 'Csv8')) && lender(c.id, tirage, [`${group}${lecture}`])) { line.lent++; continue; }
           for (const partFiles of sentParts) { line.fresh++; line.reservedMicro += reserve(spec, partFiles); }
         }
         // Csv8F a sa propre 3.8 (avec nameFr), comptée à part, jamais prêtée
@@ -1603,6 +1611,7 @@ if (isMain()) {
         await preparerAllegement(cases);
         const lender = options.reprendre ? loadLender(reprendreDirs(options.reprendre)) : undefined;
         poserFort(options.fort ? parseFort(options.fort) : null);
+        poserLectures(options.lectures ? parseLectures(options.lectures) : null);
         console.log(estimateBench(options, cases, lender, spentInJournal(options.journal ? path.resolve(options.journal) : MISSION_JOURNAL), options.reprendre ? observedAverages(reprendreDirs(options.reprendre)[0]) : undefined).text.join('\n'));
         process.exit(0);
       } catch (error) { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }

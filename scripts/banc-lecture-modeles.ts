@@ -14,7 +14,7 @@
  * Le tarif du banc est celui d'AUJOURD'HUI ; `TARIF_DECEMBRE` donne celui du 1.12 pour chiffrer la suite.
  */
 import { observedGeminiCostDetails, quoteGeminiCost, type GeminiCostQuote } from '../functions/src/geminiCosts';
-import { GEMINI_MODELS } from '../functions/src/models';
+import { GEMINI_LITE_MODEL, GEMINI_MODELS } from '../functions/src/models';
 
 /** Un niveau de réflexion dans la forme de l'API generateContent (`thinkingConfig.thinkingLevel`) : la même casse que le banc (LOW, MEDIUM, HIGH). */
 export type Reflexion = 'LOW' | 'MEDIUM' | 'HIGH' | 'XHIGH';
@@ -55,6 +55,28 @@ export function parseFort(texte: string): Fort {
   return { model: modele, thinking };
 }
 export const etiquetteFort = (fort: Fort): string => `${fort.model}@${fort.thinking.toLowerCase()}`;
+
+/**
+ * Voie t2b (14.11, tour 2) : `--lectures <modèle>@<niveau>` remplace le modèle et la réflexion des DEUX lectures parallèles (consignes 1 et 2) de Csv8,
+ * là où la production met Flash-Lite en `low`. Acceptés : un modèle 4 (ses niveaux) ou Flash-Lite en `minimal` ou `low`. Jamais prêtées par `--reprendre` :
+ * ce sont d'autres lectures. Sans l'option, rien ne change.
+ */
+export type ReflexionLecture = Reflexion | 'MINIMAL';
+export interface Lectures { model: string; thinking: ReflexionLecture }
+const NIVEAUX_LITE: readonly ReflexionLecture[] = ['MINIMAL', 'LOW'];
+export function parseLectures(texte: string): Lectures {
+  const [model, niveau = ''] = texte.split('@');
+  const modele = model.trim(), thinking = niveau.trim().toUpperCase() as ReflexionLecture;
+  const lite = modele === GEMINI_LITE_MODEL;
+  if (!estGemini4(modele) && !lite) throw new Error(`--lectures attend un modèle parmi ${[GEMINI_LITE_MODEL, ...MODELES_GEMINI4].join(', ')} (reçu : ${modele || 'rien'}).`);
+  const permis: readonly ReflexionLecture[] = lite ? NIVEAUX_LITE : TARIFS_GEMINI4[modele].niveaux;
+  if (!permis.includes(thinking)) throw new Error(`--lectures ${modele}@… : niveaux acceptés ${permis.map(item => item.toLowerCase()).join(', ')} (reçu : ${niveau || 'rien'}).`);
+  return { model: modele, thinking };
+}
+export const etiquetteLectures = (lectures: Lectures): string => `${lectures.model}@${lectures.thinking.toLowerCase()}`;
+let lecturesActif: Lectures | null = null;
+export const poserLectures = (lectures: Lectures | null) => { lecturesActif = lectures; };
+export const lecturesCourantes = (): Lectures | null => lecturesActif;
 
 /**
  * Plafond de sortie d'une lecture « fort » : la réflexion compte dans `maxOutputTokens` (notice Google, /thinking : un niveau haut peut épuiser le plafond
