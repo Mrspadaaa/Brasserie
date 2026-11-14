@@ -27,7 +27,7 @@
 .ops-pill { flex:0 0 auto; }
 .ops-due { white-space:nowrap; }
 /* Une période au libellé long (« Toutes les dates », « juin – sept. 2026 ») + « … » + « en retard » + la loupe ne tiennent pas sur 390 : « en » tombe, la loupe reste sur la ligne. */
-@media (max-width:420px) { .ops-haut[data-serre] { gap:4px; } .ops-haut[data-serre] .ops-en { display:none; } .ops-haut[data-serre] .ops-pill button { width:24px; } .ops-haut[data-serre] .ops-pill .ops-mois { width:auto; } .ops-haut[data-serre] .ops-plus { width:26px; } .ops-haut[data-serre] .ops-due { padding:0 7px; } }
+@media (max-width:420px) { .ops-haut[data-serre] { gap:4px; } .ops-haut[data-serre] .ops-en { display:none; } .ops-haut[data-serre] .ops-pill button { width:24px; } .ops-haut[data-serre] .ops-pill .ops-mois { width:auto; } .ops-haut[data-serre] .ops-due { padding:0 7px; } }
 .ops-mois-champ { position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .ops-due { margin-left:auto; display:flex; align-items:center; gap:5px; min-height:28px; padding:0 9px; border-radius:16px; font-size:13px;
   background:rgb(var(--c-402320)); border:1px solid rgb(var(--alert-strong-texte)); color:rgb(var(--alert-strong-texte)); }
@@ -35,13 +35,60 @@
 .ops-due b { font-size:13px; }
 .ops-loupe { margin-left:auto; display:grid; place-items:center; width:32px; height:32px; border-radius:10px; border:1px solid var(--ops-bord); }
 .ops-due + .ops-loupe { margin-left:0; }
-/* CP-12 : « … » à droite de la pastille de mois ; la rangée « du … au … » est celle de la Synthèse (`PlageMois`), reprise avec les jetons de cet écran. */
-.ops-plus { display:grid; place-items:center; flex:0 0 auto; width:28px; height:32px; border-radius:10px; border:1px solid var(--ops-bord); font-size:15px; font-weight:600; letter-spacing:1px; line-height:1; text-align:center; background:rgb(var(--cave-950)); }
-.ops-plus[aria-pressed='true'], .ops-plus[aria-expanded='true'] { border-color:var(--ops-t2); }
-.ops-bande .syn-plage { display:flex; align-items:center; justify-content:flex-start; gap:12px; margin-top:6px; font-size:12px; color:var(--ops-t2); }
-.ops-bande .syn-plage label { display:flex; align-items:center; gap:6px; }
-.ops-bande .syn-plage input { height:28px; padding:0 8px; border-radius:10px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); color:var(--ops-t1); font-size:12px; font-family:inherit; color-scheme:light; min-width:0; }
-:root[data-theme='cave'] .ops-bande .syn-plage input { color-scheme:dark; }
+/* s2ap2 (14.11) : la plage du jour au jour. Pilule teintée en plage, icône 14 px à côté du mois, frise des jours dépliée à 54 px (la maquette : ~95), deux champs date à l'ordinateur. */
+.ops { --ops-acc: var(--finance-accent, rgb(var(--area-finances-texte))); }
+.ops-pill .ops-mois { display:flex; align-items:center; gap:4px; }
+.ops-ico-frise { flex:0 0 auto; color:var(--ops-acc); }
+.ops-pill[data-plage] { background:rgb(var(--area-finances) / .16); border-color:rgb(var(--area-finances) / .55); }
+.ops-plage-titre { padding:0 4px; font-size:15px; font-weight:600; white-space:nowrap; line-height:28px; }
+.ops-plage-titre sup { font-size:10px; line-height:0; }
+.ops-champs { display:none; }
+@media (min-width:900px) {
+  .ops-champs { display:flex; align-items:center; gap:12px; margin-top:6px; font-size:12px; color:var(--ops-t2); }
+  .ops-champs label { display:flex; align-items:center; gap:6px; }
+  .ops-champs input { height:28px; padding:0 8px; border-radius:10px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); color:var(--ops-t1); font-size:13px; font-family:inherit; color-scheme:light; min-width:0; }
+  :root[data-theme='cave'] .ops-champs input { color-scheme:dark; }
+}
+.ops-frise { margin:6px 12px 0; position:relative; }
+.ops-fr-rd { display:flex; align-items:center; gap:6px; height:18px; font-size:12px; line-height:18px; color:var(--ops-t2); }
+.ops-fr-rd b { font-size:13px; color:var(--ops-t1); }
+.ops-fr-x { margin-left:auto; height:18px; padding:0 8px; border-radius:12px; border:1px solid var(--ops-bord); font-size:12px; line-height:16px; color:var(--ops-t2); background:rgb(var(--cave-950)); }
+.ops-tr { position:relative; height:24px; border-bottom:1.5px solid var(--ops-t1); touch-action:pan-y; cursor:pointer; }
+.ops-sel { position:absolute; top:0; bottom:0; background:rgb(var(--area-finances) / .2); border-radius:6px 6px 0 0; }
+.ops-fjours { position:relative; z-index:1; display:grid; align-items:end; height:100%; }
+.ops-fj { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+.ops-fj[data-hors] { opacity:.3; }
+.ops-fj[data-inconnu] { background:rgb(var(--cave-950) / .5); }
+.ops-bk { display:flex; flex-direction:column; width:66%; min-width:2px; overflow:hidden; border-radius:3px 3px 1px 1px; }
+.ops-bk i { display:block; min-height:1px; }
+.ops-z { width:3px; height:3px; margin-bottom:1px; border-radius:50%; background:var(--ops-t3); }
+.ops-v { position:absolute; z-index:2; bottom:-4px; left:50%; width:8px; height:8px; margin-left:-4px; border-radius:50%; background:rgb(var(--c-56d27b)); border:1.5px solid var(--ops-fond); }
+.ops-lu { position:absolute; z-index:1; bottom:-5px; width:1.5px; height:5px; margin-left:-.75px; background:var(--ops-t1); }
+.ops-mois-1 { position:absolute; z-index:1; top:-4px; bottom:0; width:0; border-left:1.5px dashed var(--ops-t3); }
+.ops-h { position:absolute; z-index:3; top:-2px; bottom:-8px; width:44px; margin-left:-22px; touch-action:none; cursor:grab; outline:none; }
+.ops-h::before { content:''; position:absolute; top:2px; bottom:3px; left:21px; width:2px; border-radius:1px; background:var(--ops-acc); }
+.ops-gp { position:absolute; left:10px; top:2px; width:24px; height:24px; box-sizing:border-box; border-radius:50%; border:3px solid var(--ops-acc); background:rgb(var(--cave-950)); box-shadow:0 1px 3px rgb(0 0 0 / .25); }
+.ops-h[data-tenue] .ops-gp { transform:scale(1.15); box-shadow:0 0 0 6px rgb(var(--area-finances) / .22); }
+.ops-h:focus-visible .ops-gp { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
+.ops-bulle { position:absolute; z-index:4; top:-30px; transform:translateX(-50%); max-width:100%; padding:4px 8px; border-radius:8px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:12px; line-height:16px; white-space:nowrap; pointer-events:none; }
+.ops-bulle[data-ancre='gauche'] { transform:translateX(-12px); }
+.ops-bulle[data-ancre='droite'] { transform:translateX(calc(-100% + 12px)); }
+.ops-bulle sup { font-size:9px; line-height:0; }
+.ops-ax { position:relative; height:12px; font-size:12px; line-height:12px; color:var(--ops-t2); }
+.ops-ax span { position:absolute; top:0; white-space:nowrap; transform:translateX(-50%); }
+.ops-ax span[data-ancre='gauche'] { transform:none; }
+.ops-ax span[data-ancre='droite'] { transform:translateX(-100%); }
+.ops-ax span[data-genre='poignee'] { color:var(--ops-t1); font-weight:700; }
+.ops-ax span[data-genre='auj'] { color:var(--ops-acc); font-weight:700; }
+.ops-ax span[data-genre='mois'], .ops-ax span[data-genre='fin'] { color:var(--ops-t3); }
+.ops-ax sup { font-size:9px; line-height:0; }
+.ops-fr-note { display:flex; align-items:center; gap:6px; margin:4px 12px 0; font-size:12px; line-height:16px; color:var(--ops-t2); }
+.ops-fr-note i { flex:0 0 14px; height:10px; border-radius:2px; background:rgb(var(--area-finances) / .14); box-shadow:inset 0 0 0 1px rgb(var(--area-finances) / .5); }
+/* « hors plage » : une opération à régler que la plage ne contient pas, en une ligne grise sous sa catégorie (montant gris, jamais additionné). */
+.ops-hors { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:6px; align-items:center; min-height:26px; padding:2px 0 2px 22px; border-bottom:1px solid var(--ops-bord); font-size:12px; color:var(--ops-t3); }
+.ops-hors-nom { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ops-hp { padding:0 6px; border:1px dashed var(--ops-t3); border-radius:999px; line-height:16px; color:var(--ops-t2); }
+.ops-hors b { font-size:13px; font-weight:500; color:var(--ops-t3); }
 .ops-contexte { margin:4px 0 0; font-size:12px; line-height:16px; color:var(--ops-t2); }
 .ops-recherche { display:flex; align-items:center; gap:4px; min-height:32px; margin-top:6px; padding-left:8px; border:1px solid var(--ops-bord); border-radius:10px; background:rgb(var(--cave-950)); color:var(--ops-t2); }
 .ops-recherche input { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; font-size:16px; color:var(--ops-t1); }
@@ -161,4 +208,5 @@
 }
 
 /* « Pas de graph ? » (10.11) : la bande vide le dit. */
+.ops-vide[data-piles] { min-height:calc(var(--ops-haut) + 34px); display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
 .ops-vide { margin: 8px 0 0; padding: 12px; border: 1px dashed rgb(var(--ligne, 200 200 200)); border-radius: 8px; text-align: center; color: rgb(var(--texte-doux, 90 100 110)); font-size: 13px; background: repeating-linear-gradient(135deg, transparent 0 6px, rgb(0 0 0 / .04) 6px 8px); }
