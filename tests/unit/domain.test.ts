@@ -65,7 +65,7 @@ describe('Unités', () => {
 
   it('affiche l’équivalent américain en repère', () => {
     expect(Units.formatDual(4.1, 'kg')).toContain('lb');
-    expect(Units.formatDual(3, 'sachet')).toBe('3 sachet');
+    expect(Units.formatDual(3, 'sachet')).toBe('3 sachets'); // l'unité s'accorde (TA3 n° 5)
   });
 
   it('les paliers de stepper suivent l’unité', () => {

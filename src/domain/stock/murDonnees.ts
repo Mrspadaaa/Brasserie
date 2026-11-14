@@ -132,6 +132,18 @@ const GROUPES_LEVURE: Array<{ id: ColonneLevure; mot: string; ink: string; fill:
 /** Le style d'une levure d'après son nom, pour les pastilles vides : Saison (« French Saison M29 », 3724, 3711, WLP565 à 569) et Sour (acidifiantes : Lactobacillus, Pediococcus, Brettanomyces). */
 const STYLE_SAISON = /saison|farmhouse|\bm29\b|\b3724\b|\b3711\b|wlp56[5-9]/;
 const STYLE_SOUR = /\bsour|\bacid|brett|lacto|pedio|philly|\bgose\b|berliner/;
+/** Le style d'une levure rangée en Autres, quand son nom le dit (n° 2 du verdict 2b6a4970) : sa bulle le nomme au lieu de « type non connu ». Rien de reconnu : null. */
+const STYLE_KOLSCH = /kolsch|koelsch|wlp029|2565|k-?97/;
+const STYLE_BELGE = /belgian|belge|abbaye|abbey|trappist|tripel|dubbel|t-?58|be-?256|wlp(?:500|530|550)|(?:1214|3787|1762|3522)/;
+export function styleLevureConnu(i: Pick<StockItem, 'name' | 'yeastStrain'>): string | null {
+  const n = sansAccent(`${i.name} ${i.yeastStrain ?? ''}`);
+  if (STYLE_SAISON.test(n)) return 'Saison';
+  if (STYLE_SOUR.test(n)) return 'Sour';
+  if (STYLE_KOLSCH.test(n)) return 'Kölsch';
+  if (STYLE_BELGE.test(n)) return 'Belge';
+  if (/kveik|kviek/.test(n)) return 'Kveik';
+  return null;
+}
 const MOTS_LABO = /^(saf(ale|lager)?|lalbrew|lallemand|fermentis|wyeast|white|labs|wlp\d*|\d{3,4}|brew|yeast|levure|dry)$/i;
 /** L'initiale qui nomme la souche : « US-05 » U, « WB-06 » B6, « Nottingham » N, « WLP002 English Ale » E. */
 export function initialeSouche(nom: string): string {
@@ -212,7 +224,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         return {
           ref: i.ref, nom: i.name, rayon: 'Houblons', k: i.ref, etat: inconnu ? 'compter' : g! <= 0 ? 'epuise' : null, hauteur: h, trace: traceHoublon(sommet, h), fill: fillM, hachure: hach, sommet, teinte, alpha: a,
           parDefaut: classes[i.ref]?.parDefaut,
-          titre: [i.name, q, a != null ? `α ${nf(a)} %` : 'α non connu', f != null ? `${Math.round(f * 100)} % au frais` : null].filter(Boolean).join(' · '),
+          titre: [i.name, q, a != null ? `α ${nf(a)} %` : 'α non connu', f != null ? `${Math.round(f * 100)} % au frais` : null, classes[i.ref]?.parDefaut ? 'classé par défaut' : null].filter(Boolean).join(' · '),
         };
       });
       const alphas = tri.map((i) => alphaDe.get(i.ref)).filter((x): x is number => x != null);
@@ -243,7 +255,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const unite = liquide ? (n > 1 ? 'fioles' : 'fiole') : n > 1 ? 'sachets' : 'sachet';
         return {
           ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres',
-          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : 'sèche', ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
+          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : 'sèche', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
         };
       });
       const sech = tri.filter((i) => i.yeastForm !== 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);

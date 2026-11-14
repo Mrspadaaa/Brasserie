@@ -197,7 +197,9 @@ export const Units = {
     if (key === 'kg' && Math.abs(qty) > 0 && Math.abs(qty) < 1) {
       return `${number(this.round(qty * 1000, 'g'))} g`;
     }
-    return `${number(this.round(qty, unit))} ${unit}`;
+    // « 1 sachet », « 2 sachets » : l'unité s'accorde (la liste du rayon Levures disait « 2 sachet »).
+    const mot = key === 'sachet' && Math.abs(qty) > 1 ? 'sachets' : unit;
+    return `${number(this.round(qty, unit))} ${mot}`;
   },
 
   /*
