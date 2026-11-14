@@ -1,0 +1,11 @@
+{
+  "intercepte": 360,
+  "nonIntercepte": 0,
+  "urls": [
+    "getBrewerActivity",
+    "getBrewerConversation",
+    "getBrewerAiBudget",
+    "askBrewer",
+    "markBrewerRead"
+  ]
+}
