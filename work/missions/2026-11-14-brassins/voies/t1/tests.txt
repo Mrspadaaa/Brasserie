@@ -1,0 +1,6 @@
+G1
+SYNTHESE OK
+exit 0
+G2
+MESURE OK
+exit 0

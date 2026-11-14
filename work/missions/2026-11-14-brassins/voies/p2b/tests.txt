@@ -1,0 +1,6 @@
+# p2b — sorties des contrôles (aucune suite Vitest : rien dans src/)
+controle-panel :
+2 captures · remplissage médian 0,78, 0 sous 0,50 · ressemblance moyenne 0,71 · paires presque identiques 0/1 (0 %)
+PANEL OK
+G1: PASSE OK
+G2: MESURE OK

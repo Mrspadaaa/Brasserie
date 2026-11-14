@@ -1,0 +1,14 @@
+# tests s1 — sortie des CHECK de GATES.md (racine du dépôt)
+- [ ] G1: 5 variantes, chacune avec repos, geste et NOTE.md portant sa chaleur
+  EXPECT: SERIE OK
+- [ ] G2: deux listes, deux caves, deux 1280, au moins deux chaudes
+  EXPECT: ETATS OK
+- [ ] G3: aucune écriture hors de la mission
+  EXPECT: HORS OK
+--- sorties
+SERIE OK
+exit 0
+ETATS OK
+exit 0
+HORS OK
+exit 0

@@ -1,0 +1,25 @@
+# p2c — sorties des contrôles (14.11), rien dans src/ : aucune suite Vitest
+## controle-panel
+2 captures · remplissage médian 0,61, 0 sous 0,50 · ressemblance moyenne 0,91 · paires presque identiques 0/1 (0 %)
+  - DIVERSITÉ : ressemblance moyenne 0,91 ≥ 0,90 (lot 21 : 0,88) : le panel partage un même squelette
+PANEL ECHEC
+exit 1
+## controle-commun --sans=mots --profil=sans-houblons
+mots       sauté (--sans)
+couleurs   OK
+au-style   sauté (profil sans-houblons : compare à la plage d'un style les arômes d'un houblon : aucun houblon sur cet écran)
+survol     OK
+blocs      OK
+contraste  OK
+fiche      sauté (profil sans-houblons : l'appui long sur un houblon ouvre sa fiche : aucun nom de houblon sur cet écran)
+standard   OK
+trait      sauté (profil sans-houblons : pictos d'arôme au trait : aucune famille d'arômes sur cet écran)
+legende    sauté (profil sans-houblons : légende des familles d'arômes : aucune famille sur cet écran)
+parlant    OK
+brutes     OK
+COMMUN OK
+exit 0
+## G1
+PASSE OK
+## G2
+MESURE OK
