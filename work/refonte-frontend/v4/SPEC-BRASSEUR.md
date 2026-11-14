@@ -1694,3 +1694,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - « Pour les users si ils ont un doute »
 - (sur « Je garde quand même le bouton « Un doute ? » sur Argon… sauf contre-ordre ») « Un doute ? Oui »
 - « J'ai mis à jour le quota tu peux y aller »
+- « D'autres endroits où certains changements vaudrait la peine ? Fait des tableaux de comparaison, budget jusqu'à 15chf »
+- (capture Atelier : Matériel · Bières · Tarifs · Contacts · À faire ; À venir · Réalisés · Archives) « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? »
