@@ -40,21 +40,22 @@ describe('stocks compacts', () => {
     await waitFor(() => expect(opener).toHaveFocus());
     expect(screen.queryByRole('dialog')).toBeNull();
   });
-  it('combine commande, recherche et favoris avec un vrai groupe radio au clavier', async () => {
+  it('combine pastille d\'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)', async () => {
     render(<Catalogue/>);
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeVisible();
-    const order = screen.getByRole('radio', { name: 'À commander · 1' });
-    fireEvent.click(order);
+    const pastille = (mot: string) => screen.getAllByRole('button').find(b => b.hasAttribute('data-f') && (b.textContent ?? '').startsWith(mot))!;
+    fireEvent.click(pastille('manque'));
+    expect(pastille('manque')).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pilsner' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeNull();
-    fireEvent.keyDown(order, { key: 'ArrowRight' });
-    expect(screen.getByRole('radio', { name: 'Épinglés · 1' })).toHaveFocus();
-    expect(screen.getByRole('radio', { name: 'Épinglés · 1' })).toBeChecked();
+    fireEvent.click(pastille('★ épinglés'));
+    expect(pastille('manque')).toHaveAttribute('aria-pressed', 'false');
+    expect(pastille('★ épinglés')).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Retirer Malt Pale Ale des favoris' }));
-    expect(await screen.findByText('Aucun article épinglé')).toBeVisible();
+    expect(await screen.findByText('Aucun article ne correspond')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Voir tous les articles' }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher un article…' }), { target: { value: 'caramunch' } });
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Rechercher dans le stock' }), { target: { value: 'caramunch' } });
     expect(await screen.findByRole('button', { name: 'Ouvrir Caramünch II' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Ouvrir Malt Pilsner' })).toBeNull();
   });

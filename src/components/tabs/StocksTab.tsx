@@ -3,10 +3,8 @@ import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucid
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { articlesACommander, compareRecipeWithStock, type ArticleACommander, type RecipeStockComparison } from '../../domain/stockLevel';
-import { infoLigne } from '../../domain/stock/liste';
+import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
 import { EnteteRayon } from '../../ui/stock/EnteteRayon';
-import { todayISO } from '../../domain/finance/ledger';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
@@ -26,13 +24,15 @@ import { EquipmentSheet } from '../../ui/EquipmentSheet';
 import { KegSheet } from '../../ui/KegSheet';
 import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
 import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
-import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
-import { canonicalStockCategory } from '../../services/stockLineMatching';
 import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
-import { rayonDuMur } from '../../domain/stock/murRayon';
+import { createSearch, runSearch } from '../../services/search';
+import { infoLigne, compterEtats, trierArticles, TRIS, type TriListe } from '../../domain/stock/liste';
+import { GROUPES_LISTE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
+import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
+import { RecompterStock } from '../../ui/stock/RecompterStock';
 
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 const HopIndexPanel = lazy(() =>
@@ -136,7 +136,16 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [selected, setSelected] = useLiveSelection(allItems, 'ref');
   const [creating, setCreating] = useState(false);
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
-  const [stockFilter, setStockFilter] = useState<'all' | 'order' | 'favorite'>('all');
+  // Un seul filtre à la fois (pastille, nom d'un rayon du mur, tuile de Recompter), une recherche et un tri : l'étagère et Recompter les partagent (maquette sy/fA).
+  const [filtre, setFiltre] = useState<FiltreListe | null>(null);
+  const [q, setQ] = useState('');
+  const [tri, setTriEtat] = useState<TriListe>(() => {
+    const t = StorageService.getUiState<TriListe>('stock_tri', 'defaut');
+    return TRIS.some(x => x.id === t) ? t : 'defaut';
+  });
+  const setTri = (t: TriListe) => { setTriEtat(t); StorageService.setUiState('stock_tri', t); };
+  const [vue, setVueEtat] = useState<VueStock>(() => StorageService.getUiState<VueStock>('stock_vue', 'etagere') === 'recompter' ? 'recompter' : 'etagere');
+  const setVue = (v: VueStock) => { setVueEtat(v); StorageService.setUiState('stock_vue', v); };
 
   /*
    * Matériel et fûts : ils n'étaient consultables qu'en lecture. Une fiche
@@ -263,7 +272,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   // Le même compte que le badge de la barre et « À commander » (test en ligne n° 49, 08.11 : « Stock (1) » au-dessus de « À commander · 0 »).
-  const criticalCount = useMemo(() => articlesACommander(allItems, batches, savedRecipes).length, [allItems, batches, savedRecipes]);
+  const aCommander = useMemo(() => articlesACommander(allItems, batches, savedRecipes), [allItems, batches, savedRecipes]);
+  const criticalCount = aCommander.length;
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -272,7 +282,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const shoppingBySupplier = useMemo(() => {
     const map = new Map<string, Array<{ item: StockItem; missing: number; auMoins: boolean; sources: SourceBesoin[] }>>();
 
-    articlesACommander(allItems, batches, savedRecipes).forEach(({ item, missing: toOrder, auMoins, sources }) => {
+    aCommander.forEach(({ item, missing: toOrder, auMoins, sources }) => {
       const supplier = item.supplier?.trim() || 'Fournisseur à préciser';
       const arr = map.get(supplier) ?? [];
       arr.push({ item, missing: toOrder, auMoins, sources });
@@ -280,22 +290,33 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     });
 
     return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
-  }, [allItems, batches, savedRecipes]);
+  }, [aCommander]);
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
-  const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
-  // Les états de chaque ligne (manque, bas, épuisé, à compter, DDM), calculés une fois pour la liste (barres g6, états en mots).
-  const commandes = useMemo(() => new Map<string, ArticleACommander>(shoppingBySupplier.flatMap(([, list]) => list.map(({ item, missing, auMoins, sources }): [string, ArticleACommander] => [item.ref, { item, missing, rupture: item.currentStock <= 0, auMoins, sources }]))), [shoppingBySupplier]);
-  const infosLignes = useMemo(() => { const j = todayISO(); return new Map(allItems.map(i => [i.ref, infoLigne(i, commandes, j)] as const)); }, [allItems, commandes]);
   const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
-  const [rayonMur, setRayonMur] = useState<'Malts' | 'Houblons' | 'Levures' | null>(null);
-  // Le rayon se lit comme au mur (un sucre est au rayon Malts) : « Malts 7 » au mur, 7 articles dans la liste (c26 n° 2).
-  // Les trois compteurs de la barre de filtre (Tous, À commander, Épinglés) comptent la même portée que la liste : l'onglet et le rayon touché
-  // (critique af0763f4 n° 1 : « Tous · 18 » au-dessus d'une seule carte). Le badge de la barre d'onglets, lui, reste le compte global.
-  const scopeItems = useMemo(() => allItems.filter(item => ongletMur === 'autres' ? rayonDuMur(item) === null : rayonDuMur(item) !== null && (!rayonMur || rayonDuMur(item) === rayonMur)), [allItems, ongletMur, rayonMur]);
-  const scopeOrderCount = scopeItems.filter(item => orderRefs.has(item.ref)).length;
-  const favoriteCount = scopeItems.filter(item => item.favorite).length;
-  const visibleItems = useMemo(() => scopeItems.filter(item => stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? !!item.favorite : true), [scopeItems, stockFilter, orderRefs]);
+  // Les états de chaque ligne (pastilles, barres), d'une seule règle : domain/stock/liste.ts. Les compteurs des pastilles et du mur comptent tout le stock.
+  const infos = useMemo(() => {
+    const parRef = new Map(aCommander.map(a => [a.item.ref, a]));
+    const aujourdhui = new Date().toISOString().slice(0, 10);
+    return new Map(allItems.map(i => [i.ref, infoLigne(i, parRef, aujourdhui)] as const));
+  }, [allItems, aCommander]);
+  const aCommanderParRef = useMemo(() => new Map(aCommander.map(a => [a.item.ref, a] as const)), [aCommander]);
+  const comptesEtats = useMemo(() => compterEtats([...infos.values()]), [infos]);
+  // Le total de chaque rayon, pour « 2 sur 15 » dans l'en-tête quand un filtre ou une recherche est actif.
+  const totauxGroupes = useMemo(() => { const m = new Map<string, number>(); allItems.forEach(i => { const g = groupeListe(i); m.set(g, (m.get(g) ?? 0) + 1); }); return m; }, [allItems]);
+  const nEpingles = allItems.filter(i => i.favorite).length;
+  const fuse = useMemo(() => createSearch(allItems, ['name', 'ref', 'category', 'supplier']), [allItems]);
+  const recherche = useMemo(() => q.trim().length >= 2 ? new Set(runSearch(fuse, q.trim()).map(i => i.ref)) : null, [fuse, q]);
+  const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche }), [allItems, infos, filtre, recherche]);
+  const visibleItems = useMemo(() => trierArticles(retenus, tri, infos), [retenus, tri, infos]);
+  const phraseFiltre = texteFiltre({ filtre, q }, retenus.length);
+  const toutVoir = () => { setFiltre(null); setQ(''); };
+  // Un comptage de Recompter : le stock devient la quantité comptée, un mouvement « comptage » garde l'écart.
+  const compter = (item: StockItem, quantite: number): boolean => {
+    const r = StorageService.adjustInventory(typeOf(item), item.ref, quantite, 'comptage');
+    if (r) onSuccessMessage?.(`${item.name} compté : ${Units.format(quantite, item.unit)}.`);
+    return !!r;
+  };
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
     const text = [
@@ -438,40 +459,37 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </>}
           </div>
         </details>
+        <div className="stock-outils shrink-0 pt-1">
+          <BasculeVue vue={vue} onVue={setVue} />
+          <div className="sz-pan-h mt-1 px-[10px]">
+            <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
+            <Pastilles comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
+            <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
+          </div>
+        </div>
+        {vue === 'recompter'
+          ? <div className={`stock-outils min-h-0 flex-1 overflow-y-auto ${mobile ? 'pb-16' : ''}`}>
+              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompter={compter} />
+            </div>
+          : <>
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
-          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={setRayonMur} filtre={rayonMur} onglet={ongletMur} onOnglet={setOngletMur} />
+          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} onglet={ongletMur} onOnglet={setOngletMur} />
         </Suspense>
         <EntityList
           className={`flex-1 ${mobile ? 'pb-16' : ''}`}
           items={visibleItems}
           keyOf={(i) => i.ref}
-          groupOf={(i) => canonicalStockCategory(i.category)}
-          groupOrder={GROUP_ORDER}
-          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} />}
-          searchKeys={['name', 'ref', 'category', 'supplier']}
+          groupOf={groupeListe}
+          groupOrder={GROUPES_LISTE}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} />}
           isFavorite={(i) => !!i.favorite}
-          resetKey={stockFilter}
-          searchPlaceholder="Rechercher un article…"
-          header={allItems.length > 0 && <SegmentedControl className={`stock-filters ${mobile ? 'pr-16' : ''}`} label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
-            { value: 'all', label: `Tous · ${scopeItems.length}` },
-            { value: 'order', label: `À commander · ${scopeOrderCount}` },
-            { value: 'favorite', label: `Épinglés · ${favoriteCount}` }
-          ]} />}
-          toolbarAction={!mobile &&
-            <Button
-              intent="secondary"
-              aria-label="Ajouter un article"
-              onClick={() => setCreating(true)}
-              icon={<Plus className="w-4 h-4" />}
-            >
-              <span className="hidden sm:inline">Ajouter un article</span>
-            </Button>
-          }
+          resetKey={`${filtre ?? ''}|${q}|${tri}`}
+          header={allItems.length > 0 && <LigneTri tri={tri} onTri={setTri} />}
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
-              <p className="text-sm text-cave-200">{stockFilter === 'order' ? 'Rien à commander' : 'Aucun article épinglé'}</p>
-              <p className="text-xs text-cave-400">{stockFilter === 'order' ? (totalToOrder > 0 ? `${totalToOrder} article${totalToOrder > 1 ? 's' : ''} à commander ailleurs : changez d’onglet ou de rayon.` : 'Les besoins planifiés et les seuils sont couverts.') :'Touchez l’étoile d’un article pour le retrouver ici.'}</p>
-              <Button size="sm" onClick={() => setStockFilter('all')}>Voir tous les articles</Button>
+              <p className="text-sm text-cave-200">Aucun article ne correspond</p>
+              <p className="text-xs text-cave-400">{filtre === 'epingles' ? 'Touchez l’étoile d’un article pour le retrouver ici.' : filtre === 'manque' && totalToOrder === 0 ? 'Les besoins planifiés et les seuils sont couverts.' : 'Changez de filtre ou de recherche.'}</p>
+              <Button size="sm" onClick={toutVoir}>Voir tous les articles</Button>
             </div> : <div className="py-6 text-center space-y-3">
               <p className="text-base text-cave-200">Aucun article en stock</p>
               <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
@@ -485,14 +503,15 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           renderItem={(item) => (
             <StockRow stockItems={allItems}
               item={item}
-              info={infosLignes.get(item.ref)}
-              cmd={commandes.get(item.ref)}
+              info={infos.get(item.ref)}
+              cmd={aCommanderParRef.get(item.ref)}
               batches={batches}
               onOpen={setSelected}
               onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}
             />
           )}
         />
+          </>}
         </>
       )}
 
