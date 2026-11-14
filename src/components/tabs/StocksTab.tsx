@@ -3,7 +3,10 @@ import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucid
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
+import { articlesACommander, compareRecipeWithStock, type ArticleACommander, type RecipeStockComparison } from '../../domain/stockLevel';
+import { infoLigne } from '../../domain/stock/liste';
+import { EnteteRayon } from '../../ui/stock/EnteteRayon';
+import { todayISO } from '../../domain/finance/ledger';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
@@ -281,6 +284,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
   const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
+  // Les états de chaque ligne (manque, bas, épuisé, à compter, DDM), calculés une fois pour la liste (barres g6, états en mots).
+  const commandes = useMemo(() => new Map<string, ArticleACommander>(shoppingBySupplier.flatMap(([, list]) => list.map(({ item, missing, auMoins, sources }): [string, ArticleACommander] => [item.ref, { item, missing, rupture: item.currentStock <= 0, auMoins, sources }]))), [shoppingBySupplier]);
+  const infosLignes = useMemo(() => { const j = todayISO(); return new Map(allItems.map(i => [i.ref, infoLigne(i, commandes, j)] as const)); }, [allItems, commandes]);
   const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
   const [rayonMur, setRayonMur] = useState<'Malts' | 'Houblons' | 'Levures' | null>(null);
   // Le rayon se lit comme au mur (un sucre est au rayon Malts) : « Malts 7 » au mur, 7 articles dans la liste (c26 n° 2).
@@ -441,6 +447,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           keyOf={(i) => i.ref}
           groupOf={(i) => canonicalStockCategory(i.category)}
           groupOrder={GROUP_ORDER}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} />}
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
           resetKey={stockFilter}
@@ -478,6 +485,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           renderItem={(item) => (
             <StockRow stockItems={allItems}
               item={item}
+              info={infosLignes.get(item.ref)}
+              cmd={commandes.get(item.ref)}
               batches={batches}
               onOpen={setSelected}
               onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}

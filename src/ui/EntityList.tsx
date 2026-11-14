@@ -40,6 +40,8 @@ export interface EntityListProps<T> {
   searchPlaceholder?: string;
   /** Message quand la liste est vide au départ (pas après filtrage). */
   emptyState?: React.ReactNode;
+  /** En-tête d'un groupe, à la place du titre simple (nom, nombre) : l'en-tête de rayon du Stock, avec sa règle. */
+  renderGroupHeader?: (nom: string, compte: number) => React.ReactNode;
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
   toolbarAction?: React.ReactNode;
@@ -53,6 +55,7 @@ export function EntityList<T>({
   renderItem,
   groupOf,
   groupOrder,
+  renderGroupHeader,
   searchKeys,
   isFavorite,
   resetKey,
@@ -196,7 +199,7 @@ export function EntityList<T>({
           ref={defilement as never}
           className="flex-1 min-h-0"
           groupCounts={grouped.counts}
-          groupContent={(index) => (
+          groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.counts[index]) : (
             <div
               className="px-1 py-1 bg-cave-950/95 backdrop-blur-sm
                          flex items-baseline justify-between gap-2 border-b border-cave-800"

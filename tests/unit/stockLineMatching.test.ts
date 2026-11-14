@@ -268,10 +268,10 @@ describe('Stocks : lecture tolérante des catégories déjà écrites en minuscu
     render(createElement(VirtuosoMockContext.Provider, { value: { viewportHeight: 1000, itemHeight: 54 } },
       createElement(StocksTab, { stocks: StorageService.getStocks(), batches: [], onOpenQuickAction: () => {} })));
     await screen.findByRole('button', { name: 'Ouvrir Malt ancien du Banc' });
-    const headings = screen.getAllByText(/^malt$/i).filter(node => !node.closest('button'));
-    expect(headings.map(node => node.textContent)).toEqual(['Malt']);
+    // L'en-tête de rayon (maquette sy/fA) dit « Malts » et porte le nombre d'articles : un seul groupe pour « malt » et « Malt ».
+    const headings = screen.getAllByRole('heading', { name: /^malts/i });
+    expect(headings).toHaveLength(1);
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'banc-old')?.category).toBe('malt');
-    // L'en-tête de groupe porte le nombre d'articles à côté du nom.
-    expect(headings[0].nextElementSibling).toHaveTextContent('2');
+    expect(headings[0]).toHaveTextContent('2');
   });
 });

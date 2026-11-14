@@ -81,11 +81,11 @@ describe('stocks compacts', () => {
 
   it('ne transforme ni un seuil en brassins ni un niveau inconnu en jauge pleine', () => {
     const view = render(<StockRow item={item('x', 'Article', 2)} batches={[]} onOpen={() => {}} onToggleFavorite={() => {}}/>);
-    expect(screen.getByText('Sous le seuil')).toBeVisible();
+    expect(screen.getByText(/^(bas|au seuil) · seuil/)).toBeVisible();
     expect(screen.getByRole('meter')).toHaveAttribute('aria-valuetext', 'Sous le seuil');
     expect(screen.getByRole('button', { name: 'Ouvrir Article' })).toHaveAccessibleDescription('2 kg · Sous le seuil');
     view.rerender(<StockRow item={item('x', 'Article', 2, 0)} batches={[]} onOpen={() => {}} onToggleFavorite={() => {}}/>);
-    expect(screen.getByText('Niveau inconnu')).toBeVisible();
+    expect(screen.getByText('sans seuil')).toBeVisible(); // la maquette dit « sans seuil » ; la description lue garde « Niveau inconnu »
     expect(screen.queryByRole('meter')).toBeNull();
     expect(screen.getByRole('button', { name: 'Ouvrir Article' })).toHaveAccessibleDescription('2 kg · Niveau inconnu');
   });
