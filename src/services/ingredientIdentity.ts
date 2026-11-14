@@ -205,7 +205,8 @@ export function readProductLabel(label: string, o: ReadOptions = {}): ProductIde
   const raw = label ?? '';
   // SM : un nom de houblon collé (« Idaho7 ») se lit avec ses espaces ; `rawLabel` garde l'imprimé.
   const nfc = espacerNomsHoublons(raw.normalize('NFC'));
-  const folded = fold(nfc);
+  // « 10gr », « 10 gr. » : le gramme abrégé en « gr » se lit « g » pour le poids d'un sachet de levure, comme la regex `MEASURE` de `stockQuantityFor` le compte (même longueur : les positions restent justes).
+  const folded = o.yeast ? fold(nfc).replace(/(\d\s*)gr(?![a-z])/gi, (_m, d: string) => d + 'g ') : fold(nfc);
   const toks = scan(folded);
   const family = o.unit ? Units.familyOf(o.unit) : 'piece';
   const keepUnits = !!o.unit && family === 'piece';

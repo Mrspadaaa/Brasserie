@@ -171,17 +171,28 @@ export function flotMin(cout: number[][], cap: number[]): { cout: number; col: n
 }
 
 export interface HoublonAClasser { id: string; parts: Record<string, number> | null; famille?: FamilleBrasseur }
-/** Repli d'un houblon sans aucune part publiée : sa famille de brasseur dit sa colonne la plus probable ; à défaut, Pale (la plus neutre). Dit « classé par défaut ». */
+/**
+ * Typicité minimale (part des recettes d'un style qui contiennent le houblon, Beer Analytics) pour qu'un houblon passe par le flot. Sous 6 %, sa meilleure part
+ * est du bruit (Motueka 3,8 % : Stouts, Aramis 0,6 %, Glacier 1,9 %) : le flot le rangeait là où il restait de la place. Réglé sur la moitié A des 55 houblons de
+ * référence (ordre alphabétique, rangs pairs), vérifié sur la moitié B ; palier plat de 4 % à 8 % sur A et B, 6 % en son milieu, et au-dessus de Nelson Sauvin (5,5 %)
+ * pour qu'il tombe toujours dans la même colonne. Voir work/missions/2026-11-11-stock/voies/ta/RESULTAT-2.md.
+ */
+export const SEUIL_TYPICITE = 0.06;
+const meilleurePart = (h: HoublonAClasser): number | null => {
+  const t = COLONNES_STYLE.map((c) => typiciteColonne(h.parts, c)).filter((x): x is number => x != null);
+  return t.length ? Math.max(...t) : null;
+};
+/** Repli d'un houblon sans part publiée ou sous SEUIL_TYPICITE : sa famille de brasseur dit sa colonne la plus probable ; à défaut, Pale (la plus neutre). Dit « classé par défaut ». */
 const COLONNE_PAR_FAMILLE: Record<FamilleBrasseur, string> = { modernes: 'hazy', classiques: 'westcoast', nobles: 'lager', amerisants: 'westcoast', autre: 'pale' };
 
 /**
  * Chaque houblon dans une colonne, six au plus par colonne, en perdant le moins de typicité (coût = 1 − typicité / meilleure typicité du houblon).
- * Un houblon qui a ses parts publiées est affecté par le flot ; un houblon hors table (aucune part) va à la colonne de sa famille.
+ * Un houblon dont la meilleure part publiée atteint SEUIL_TYPICITE est affecté par le flot ; un houblon hors table ou trop peu typé va à la colonne de sa famille (dit « par défaut »).
  * Au-delà de 36 houblons classés les colonnes ne peuvent plus tenir six : chacun va alors à sa colonne de plus forte typicité.
  */
 export function classerHoublons(hs: HoublonAClasser[]): Record<string, { colonne: string; parDefaut: boolean; deplace: boolean }> {
   const sortie: Record<string, { colonne: string; parDefaut: boolean; deplace: boolean }> = {};
-  const connus = hs.filter((h) => COLONNES_STYLE.some((c) => typiciteColonne(h.parts, c) != null));
+  const connus = hs.filter((h) => (meilleurePart(h) ?? 0) >= SEUIL_TYPICITE);
   for (const h of hs) if (!connus.includes(h)) sortie[h.id] = { colonne: COLONNE_PAR_FAMILLE[h.famille ?? 'autre'], parDefaut: true, deplace: false };
   const cost = connus.map((h) => {
     const t = COLONNES_STYLE.map((c) => typiciteColonne(h.parts, c));

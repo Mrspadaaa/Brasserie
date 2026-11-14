@@ -129,6 +129,9 @@ const GROUPES_LEVURE: Array<{ id: ColonneLevure; mot: string; ink: string; fill:
   { id: 'ipa', mot: 'IPA', ink: '#7A5C22', fill: '#7A5C22' }, { id: 'anglaise', mot: 'Anglaise', ink: '#7e693b', fill: '#9D8249' },
   { id: 'ble', mot: 'Blé', ink: '#746644', fill: '#C1A971' }, { id: 'lager', mot: 'Lager', ink: '#6e644a', fill: '#E4CF98' }, { id: 'autres', mot: 'Autres', ink: '#5E5E5E', fill: '#9E9E9E' },
 ];
+/** Le style d'une levure d'après son nom, pour les pastilles vides : Saison (« French Saison M29 », 3724, 3711, WLP565 à 569) et Sour (acidifiantes : Lactobacillus, Pediococcus, Brettanomyces). */
+const STYLE_SAISON = /saison|farmhouse|\bm29\b|\b3724\b|\b3711\b|wlp56[5-9]/;
+const STYLE_SOUR = /\bsour|\bacid|brett|lacto|pedio|philly|\bgose\b|berliner/;
 const MOTS_LABO = /^(saf(ale|lager)?|lalbrew|lallemand|fermentis|wyeast|white|labs|wlp\d*|\d{3,4}|brew|yeast|levure|dry)$/i;
 /** L'initiale qui nomme la souche : « US-05 » U, « WB-06 » B6, « Nottingham » N, « WLP002 English Ale » E. */
 export function initialeSouche(nom: string): string {
@@ -250,7 +253,10 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       for (const i of tri) { const a = src.attenuation(i); if (a != null && atts.length) { const c = couleurSocle(g.ink, a, Math.min(...atts), Math.max(...atts)); if (c) socle[i.name] = c; } }
       groupes.push({ id: g.id, mot: g.mot, titre: g.mot, ink: g.ink, fill: g.fill, total: [sech ? `${sech} sachet${sech > 1 ? 's' : ''}` : '', liq ? `${liq} fiole${liq > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ') || '0', marques, socle, sachets: sech, fioles: liq });
     }
-    rayons.push({ id: 'f2', nom: 'Levures', systeme: 'L6', total: levures.length, sousTitre: 'rangées par bière', echelle: null, hc: 0, hm: 32, groupes, vides: pastillesVides(['IPA', 'Anglaise', 'Blé', 'Lager', 'Saison', 'Sour'], remplies), hachures: [] });
+    // Saison et Sour n'ont pas de colonne (la levure va en Autres) : leur pastille « rien en stock » se tait dès qu'une levure du stock porte ce style dans son nom (comme « Fumé » et « Sucres » aux malts).
+    const saison = levures.some((i) => STYLE_SAISON.test(sansAccent(`${i.name} ${i.yeastStrain ?? ''}`))); const sour = levures.some((i) => STYLE_SOUR.test(sansAccent(`${i.name} ${i.yeastStrain ?? ''}`)));
+    const videsLevures = ['IPA', 'Anglaise', 'Blé', 'Lager', ...(saison ? [] : ['Saison']), ...(sour ? [] : ['Sour'])];
+    rayons.push({ id: 'f2', nom: 'Levures', systeme: 'L6', total: levures.length, sousTitre: 'rangées par bière', echelle: null, hc: 0, hm: 32, groupes, vides: pastillesVides(videsLevures, remplies), hachures: [] });
   }
 
   return { rayons, autres: cartesAutres(items, equipements, futs) };
