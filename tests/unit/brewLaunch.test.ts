@@ -238,7 +238,7 @@ describe('brewLaunch — ce qui manque pour N L (passe 3)', () => {
   it('cumule la dose d’une même matière sur tous ses moments et la compare au stock indiqué', () => {
     const citra = dose('Citra');
     expect(citra).toBeGreaterThan(100);
-    const m = manquesLancement(etapes(), [{ name: ' citra ', currentStock: 100, unit: 'g' }]);
+    const m = manquesLancement(etapes(), [{ name: ' citra ', currentStock: 100, unit: 'g' }]).filter((x) => x.enStock != null);
     expect(m).toHaveLength(1);
     expect(m[0]).toMatchObject({ nom: 'Citra', unite: 'g', enStock: 100 });
     expect(m[0].dose).toBeCloseTo(citra, 6);
@@ -249,14 +249,23 @@ describe('brewLaunch — ce qui manque pour N L (passe 3)', () => {
     expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 0.1, unit: 'kg' }])[0].enStock).toBeCloseTo(100, 6);
   });
 
-  it('n’invente rien : sans fiche de stock, ou unité qui ne se convertit pas, rien n’est compté ; stock suffisant : rien', () => {
-    expect(manquesLancement(etapes(), [])).toEqual([]);
-    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 5, unit: 'L' }])).toEqual([]);
-    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 10000, unit: 'g' }, { name: 'US 2-row', currentStock: 99, unit: 'kg' }])).toEqual([]);
+  it('sans aucune ligne de stock : « pas au stock », toute la dose manque, après les manques chiffrés (verdict 050d2ccd n° 1)', () => {
+    const tout = manquesLancement(etapes(), []);
+    expect(tout.length).toBeGreaterThan(0);
+    expect(tout.every((x) => x.enStock == null && Math.abs(x.manque - x.dose) < 1e-9)).toBe(true);
+    const m = manquesLancement(etapes(), [{ name: 'US 2-row', currentStock: 0, unit: 'kg' }]);
+    expect(m[0].nom).toBe('US 2-row');
+    expect(m.slice(1).every((x) => x.enStock == null)).toBe(true);
+  });
+
+  it('n’invente rien : unité qui ne se convertit pas, rien n’est compté ; stock suffisant : rien', () => {
+    const sans = (l: { nom: string }[]) => l.filter((x) => x.nom === 'Citra' || x.nom === 'US 2-row');
+    expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 5, unit: 'L' }]).filter((x) => x.nom === 'Citra')).toEqual([]);
+    expect(sans(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 10000, unit: 'g' }, { name: 'US 2-row', currentStock: 99, unit: 'kg' }]))).toEqual([]);
   });
 
   it('le stock à 0 est un vrai manque (la dose entière), pas un inconnu', () => {
-    const m = manquesLancement(etapes(), [{ name: 'US 2-row', currentStock: 0, unit: 'kg' }]);
+    const m = manquesLancement(etapes(), [{ name: 'US 2-row', currentStock: 0, unit: 'kg' }]).filter((x) => x.enStock != null);
     expect(m).toHaveLength(1);
     expect(m[0].manque).toBeCloseTo(m[0].dose, 6);
   });

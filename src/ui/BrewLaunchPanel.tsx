@@ -183,7 +183,7 @@ export const BrewLaunchManque: React.FC<{ volumeL: number; manques: ManqueLancem
             <span className="min-w-[5.5rem] text-cave-50">{m.nom}</span>
             <span className="ml-auto flex items-baseline gap-2 whitespace-nowrap">
             <span className="tabular-nums">{qte(m.dose, m.unite)} {uniteAccordee(m.dose, m.unite)}</span>
-            <span className="tabular-nums">en stock {qte(m.enStock, m.unite)} {m.unite}</span>
+            {m.enStock == null ? <span>pas au stock</span> : <span className="tabular-nums">en stock {qte(m.enStock, m.unite)} {m.unite}</span>}
             <b className="tabular-nums text-attention">manque {qte(m.manque, m.unite)} {uniteAccordee(m.manque, m.unite)}</b>
             </span>
           </li>

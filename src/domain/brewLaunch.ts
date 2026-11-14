@@ -240,8 +240,8 @@ export interface ManqueLancement {
   /** Ce que demande le lancement à ce volume (somme de ses moments), dans l'unité de la recette. */
   dose: number;
   unite: string;
-  /** Le stock indiqué, converti dans la même unité. */
-  enStock: number;
+  /** Le stock indiqué, converti dans la même unité ; `null` : aucune ligne de stock à ce nom (« pas au stock »). */
+  enStock: number | null;
   manque: number;
 }
 
@@ -251,7 +251,8 @@ export interface LigneStock { name: string; currentStock: number; unit: string }
 /**
  * Ce qui manque pour ce volume : les ingrédients de la frise (malts, houblons, levure) dont le stock indiqué est sous la dose.
  * Même lecture que `BrewIngredients.tsx` : l'ingrédient se retrouve par son nom (casse et espaces ignorés), le stock se convertit dans l'unité
- * de la dose. Un ingrédient sans fiche de stock, ou d'une unité qui ne se convertit pas, n'est pas compté (l'inconnu n'est jamais 0).
+ * de la dose. Un ingrédient sans aucune ligne de stock est listé « pas au stock » (`enStock: null`, toute la dose manque : on ne
+ * peut pas arriver au brassage sans lui, verdict 050d2ccd n° 1) ; une ligne d'une unité qui ne se convertit pas n'est pas comptée.
  * La dose d'une même matière sur plusieurs moments se cumule. Aucune écriture, aucun calcul de stock neuf.
  */
 export function manquesLancement(
@@ -270,12 +271,15 @@ export function manquesLancement(
     if (e.levure?.quantite != null && e.levure.unite) ajoute(e.levure.nom, e.levure.quantite, e.levure.unite);
   }
   const manques: ManqueLancement[] = [];
+  const absents: ManqueLancement[] = [];
   for (const d of doses.values()) {
-    const ligne = stock.find((s) => s.name.trim().toLowerCase() === d.nom.trim().toLowerCase() && Units.convert(1, s.unit, d.unite) != null);
+    const memeNom = stock.filter((s) => s.name.trim().toLowerCase() === d.nom.trim().toLowerCase());
+    if (!memeNom.length) { absents.push({ nom: d.nom, dose: d.dose, unite: d.unite, enStock: null, manque: d.dose }); continue; }
+    const ligne = memeNom.find((s) => Units.convert(1, s.unit, d.unite) != null);
     if (!ligne) continue;
     const enStock = Units.convert(ligne.currentStock, ligne.unit, d.unite);
     if (enStock == null || !fini(enStock)) continue;
     if (enStock < d.dose - 0.0005) manques.push({ nom: d.nom, dose: d.dose, unite: d.unite, enStock, manque: d.dose - enStock });
   }
-  return manques;
+  return [...manques, ...absents];
 }
