@@ -43,6 +43,8 @@ import { nomDeFiche,type Catalogues } from '../../domain/stock/fiche';
 import { donneesDeLigne,nomsPris,pliee,type MembreVirtuel } from '../../services/stockLineMatching';
 import { ChipsBar,TITRES } from '../depense/Verdict';
 import { VerificationCroisee,RechercheLignes,BandeManque } from './controlesCroisesVue';
+import { RelireFin } from '../depense/RelireFin';
+import { relectureGardee } from '../depense/comparerRelecture';
 import { controlesPiece,compterArticles,payeEffectif,type ContexteControles,type LectureControlee } from '../../domain/finance/controlesPiece';
 import { rangsDePiece,notePaiement } from './controlesPieceRangs';
 import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
@@ -251,6 +253,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const pagesRef=useRef<PageRangee[]>([]),pdfRef=useRef<(PdfAssemble&{cle:string})|null>(null),fileAjouts=useRef<Promise<void>>(Promise.resolve()),pagesInput=useRef<HTMLInputElement>(null),etatRef=useRef({attachment:null as File|null,scanOk:false});
   etatRef.current={attachment,scanOk:Boolean(scan?.ok)};
   useEffect(()=>()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);},[]);
+  const [relecture,setRelecture]=useState<{enCours:boolean;erreur:string|null;pasMieux?:boolean}>({enCours:false,erreur:null});
   const [online,setOnline]=useState(apercu?apercu.reseau:typeof navigator==='undefined'||navigator.onLine!==false);
   /* LO-1 : un total de page qui n'est que la somme des bulletins QR de la pièce (aucun n'imprime ce montant) est un total CALCULÉ : dit sous le total, marqué « somme des lignes » à l'enregistrement. */
   const sommeBulletins=scan?.ok&&scan.result?sommeDesBulletins(qrRes,scan.result):null;
@@ -535,7 +538,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
   const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
   /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
-  const effacerLecture=()=>{setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  const effacerLecture=()=>{setRelecture({enCours:false,erreur:null});setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
   /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
   const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -665,6 +668,31 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       finLecture(outcome,documentHash);
     }catch(e:any){if(mounted.current){setError(sansUnDocument(e.message||'Lecture indisponible. Saisis les informations manuellement.'));if(!pose)setAssemblageEchoue(true);}}
     finally{scanLocked.current=false;if(mounted.current){setBusy(false);if(pose)setShowForm(true);if(verifRef.current==='attente')finDePartie();}}
+  };
+  /* h1 (14.11, « Un doute ? Relire plus finement ») : le même fichier (ou les mêmes pages) relu en entier avec `relecture:'argon'`, un mot que le serveur interprète (jamais un nom de modèle).
+     La lecture actuelle reste en place tant que la relecture n'a pas rendu : en échec ou hors ligne elle n'est ni effacée ni remplacée, l'erreur se dit sous le bouton. Réussie, elle prend la place
+     de l'ancienne exactement comme une première lecture (même fusion, mêmes contrôles) ; le QR est relu comme à la première lecture. */
+  const relireFinement=async()=>{
+    const lot=pagesRef.current,source=pagesJointes?null:attachment;
+    if(!scan?.ok||scanLocked.current||saveLocked.current||(!source&&!pagesJointes))return;
+    if(horsLigne()){setRelecture({enCours:false,erreur:'Hors ligne : la relecture reprend avec le réseau.'});return;}
+    const refus=refusDeFichier();if(refus){setRelecture({enCours:false,erreur:refus});return;}
+    scanLocked.current=true;setRelecture({enCours:true,erreur:null});
+    const documentHash=draft.documentHash;
+    lectureAbort.current?.abort();const ctrl=new AbortController();lectureAbort.current=ctrl;
+    try{
+      const options:ScanFluxOptions={signal:ctrl.signal,relecture:'argon'};
+      const outcome=pagesJointes?await GeminiScannerService.scanPages(lot.map(p=>p.file),options):await GeminiScannerService.scanDocument(source!,'fast',options);
+      if(!mounted.current)return;
+      if(!outcome.ok||!outcome.result){setRelecture({enCours:false,erreur:outcome.error||'La relecture n’a pas abouti. La lecture actuelle reste en place.'});return;}
+      /* Décision du pilote (14.11) : moins de lignes ou un statut plus mauvais que la lecture actuelle = on garde l'ancienne, et on le dit (jamais une relecture dégradée qui prend la place d'une bonne lecture, surtout en morceaux). */
+      if(scan.result&&!relectureGardee(scan.result,outcome.result)){setRelecture({enCours:false,erreur:null,pasMieux:true});return;}
+      remettreLaDepenseAZero();effacerLecture();
+      if(pagesJointes){setNPagesLues(outcome.pagesLues??0);lancerQrPages(lot.map(p=>p.file));}else lancerQr(source!);
+      finLecture(outcome,documentHash);
+      setRelecture({enCours:false,erreur:null});
+    }catch(e:any){if(mounted.current)setRelecture({enCours:false,erreur:e?.message||'La relecture n’a pas abouti. La lecture actuelle reste en place.'});}
+    finally{scanLocked.current=false;}
   };
   /* « Changer » sur des pages : l'entrée (« Un document » | « Plusieurs ») s'ouvre au-dessus de la dépense, qui ne bouge pas ; rien n'est remis à zéro avant le premier nouveau fichier. */
   const ouvrirEntree=()=>{const refus=refusDeFichier();if(refus){setError(refus);return;}setEntreeOuverte(true);};
@@ -1640,6 +1668,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {doublons}
         <VerificationCroisee bandeauRef={bandeauRef}
           bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal messages={[hints.amountTTC,...(hints.amountTTC&&result?.lignesPasseesAuTtc&&hints.amountTTC!==LIGNES_HT_PASSEES_AU_TTC?[LIGNES_HT_PASSEES_AU_TTC]:[])]}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true),corriges:enteteCorrige}}
+          relire={<RelireFin enCours={relecture.enCours} erreur={relecture.erreur} pasMieux={relecture.pasMieux===true} horsLigne={!online} desactive={saving||Boolean(pendingId)||Boolean(done)||busy} onRelire={()=>void relireFinement()}/>}
           preuve={{rangs:rangsBloc,drapeau:drapeauBloc,resume:resumeBloc,remarques,visee:viseePreuve,onRenvoi:surRenvoi}}
           comptes={<><Comptes items={comptesItems} onCompte={surCompte}/>{chips.some(c=>!aSaPlace(c)&&!estDesaccord(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={c=>aSaPlace(c)||estDesaccord(c)}/>:null}</>}/>
         {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
