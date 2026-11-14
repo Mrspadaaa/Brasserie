@@ -2,7 +2,7 @@
 // Fonctions pures ; l'écran (LigneStock) ne fait que les dessiner. Une donnée inconnue reste inconnue (jamais 0).
 import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../stockLevel';
-import { ECHELLES, coupeBarre, quantiteBarre, xBarre, type ClasseLigne, type InfoLigne } from './liste';
+import { ECHELLES, coupeBarre, quantiteBarre, xBarre, type ClasseLigne, type InfoLigne, type TriListe } from './liste';
 import { rayonDuMur, type RayonMurNom } from './murRayon';
 import { statutDurabilite } from './regles';
 import { nombreFr } from '../nombreAffiche';
@@ -42,6 +42,12 @@ export const LEGENDE_RAYON: Record<RayonMurNom, string> = {
   Houblons: "par amertume, la plus forte d'abord",
   Levures: 'par date, la plus proche d’abord',
 };
+/** La phrase de l'en-tête de rayon suit le tri choisi (verdict 5cdcd12e n° 2) : l'ordre du métier seulement au tri par défaut. */
+export const legendeRayon = (rayon: RayonMurNom, tri: TriListe = 'defaut'): string =>
+  tri === 'nom' ? 'par nom, de A à Z'
+    : tri === 'quantite' ? 'par quantité, la plus grande d’abord'
+      : tri === 'manque' ? 'par manque, les plus à court d’abord'
+        : LEGENDE_RAYON[rayon];
 
 /** Le paragraphe du bouton ⓘ « Lire l'échelle » : une phrase par rayon. */
 export const LIRE_ECHELLE: Record<RayonMurNom, string> = {
