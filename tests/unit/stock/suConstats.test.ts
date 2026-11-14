@@ -10,6 +10,8 @@ vi.mock('../../../src/services/firebase', () => ({ functions: {} }));
 import { GeminiScannerService } from '../../../src/services/geminiScanner';
 import { brouillonDeLecture } from '../../../src/ui/depense/finale';
 import { stockQuantityFor, uniteEffective } from '../../../src/services/purchaseEntry';
+import { construireMur, legendeAutres, styleLevureConnu } from '../../../src/domain/stock/murDonnees';
+import { Units } from '../../../src/services/units';
 
 const article = (more: Record<string, unknown> = {}): any => ({ id: 'a1', ref: 'MP-A1', name: 'X', category: 'Houblon', unit: 'g', currentStock: 0, minStock: 0, reorder: false, ...more });
 const ligneVide = () => ({ id: 'x', description: '', kind: 'ingredient', unit: '', stockAction: 'none', equipmentAction: 'none' }) as any;
@@ -87,5 +89,69 @@ describe('ST-T2 — Cryo Citra (article en Pck, ligne sans unité lue → Stk) :
       const cible = [cryo].find(a => a.ref === l.stockRef)!;
       expect(stockQuantityFor({ description: l.description, quantity: l.quantity as number, unit: uniteEffective(l) }, cible).ok).toBe(true);
     }
+  });
+});
+
+describe('ST-T6 — le style d’une levure se lit sur un mot entier, jamais dans un numéro de lot', () => {
+  const style = (name: string, yeastStrain?: string) => styleLevureConnu({ name, yeastStrain } as any);
+  it('le code d’une souche seule reste lu (Wyeast 1214, 2565 ; WLP530 ; K-97)', () => {
+    expect(style('Wyeast 1214 Belgian Abbey')).toBe('Belge');
+    expect(style('Wyeast 1214')).toBe('Belge');
+    expect(style('Levure 2565')).toBe('Kölsch');
+    expect(style('WLP530')).toBe('Belge');
+    expect(style('Safale K-97')).toBe('Kölsch');
+    expect(style('Safbrew T-58')).toBe('Belge');
+    expect(style('Safale BE-256')).toBe('Belge');
+  });
+  it('un numéro de lot ou un nombre plus long ne donne aucun style', () => {
+    expect(style('Levure maison F12141')).toBeNull();
+    expect(style('Levure 25651')).toBeNull();
+    expect(style('Levure maison lot 1214')).toBeNull();
+    expect(style('Levure maison N° 2565')).toBeNull();
+    expect(style('Levure WLP5301')).toBeNull();
+    expect(style('Levure SK-974')).toBeNull();
+    expect(style('Levure maison', 'lot 3787')).toBeNull();
+  });
+});
+
+describe('ST-T7 — l’unité comptée s’accorde au pluriel', () => {
+  it('fiole, paquet, sachet, boîte et autres unités comptées', () => {
+    expect(Units.format(2, 'fiole')).toBe('2 fioles');
+    expect(Units.format(1, 'fiole')).toBe('1 fiole');
+    expect(Units.format(0, 'fiole')).toBe('0 fiole');
+    expect(Units.format(3, 'paquet')).toBe('3 paquets');
+    expect(Units.format(2, 'sachet')).toBe('2 sachets');
+    expect(Units.format(4, 'boîte')).toBe('4 boîtes');
+    expect(Units.format(2, 'Fiole')).toBe('2 Fioles');
+    expect(Units.format(3, 'bouteille')).toBe('3 bouteilles');
+    expect(Units.format(2, 'rouleau')).toBe('2 rouleaux');
+  });
+  it('1,5 reste au singulier (le pluriel français commence à 2) ; Stk, Pck, g et kg ne changent pas', () => {
+    expect(Units.format(1.5, 'fiole')).toBe('1,5 fiole');
+    expect(Units.format(2, 'Stk')).toBe('2 Stk');
+    expect(Units.format(2, 'Pck')).toBe('2 Pck');
+    expect(Units.format(250, 'g')).toBe('250 g');
+    expect(Units.format(1500, 'g')).toBe('1,5 kg');
+  });
+});
+
+describe('ST-T4 — la légende du gris dit ce que dit la bulle', () => {
+  const src: any = { typeMalt: () => null, houblon: () => null, auFrais: () => null, parts: () => null, colonneLevure: () => null, attenuation: () => null };
+  const levure = (ref: string, name: string) => article({ ref, name, category: 'Levure', unit: 'sachet', currentStock: 2 });
+  const mur = (...l: any[]) => construireMur(l, src);
+  const autres = (m: any) => m.rayons.find((r: any) => r.id === 'f2');
+  it('French Saison M29 en Autres : la bulle dit « style Saison » et la légende aussi (plus « type non connu » seul)', () => {
+    const r = autres(mur(levure('l1', 'French Saison M29')));
+    const marque = r.groupes[0].marques[0];
+    expect(marque.titre).toContain('style Saison');
+    expect(marque.style).toBe('Saison');
+    expect(legendeAutres(r)).toBe('gris : colonne Autres (style Saison, sans colonne)');
+  });
+  it('une levure sans style lu (Sekt/Champagner) reste « type non connu » ; avec une Saison à côté : les deux', () => {
+    const seule = autres(mur(levure('l2', 'Sekt/Champagner Trockenhefe')));
+    expect(seule.groupes[0].marques[0].titre).toContain('type non connu');
+    expect(legendeAutres(seule)).toBe('gris : colonne Autres (type non connu)');
+    const deux = autres(mur(levure('l1', 'French Saison M29'), levure('l2', 'Sekt/Champagner Trockenhefe')));
+    expect(legendeAutres(deux)).toBe('gris : colonne Autres (style Saison, sans colonne ; ou type non connu)');
   });
 });

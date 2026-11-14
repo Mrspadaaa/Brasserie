@@ -43,7 +43,7 @@ export interface MarqueMur {
   hauteur: number; trace: string; fill: string; hachure: string | null;
   cereale?: string; forme?: FormeCereale; sommet?: SommetHoublon; teinte?: string; alpha?: number | null; parDefaut?: boolean;
   /** Levures : n briques (sachets) ou fioles, initiale de la souche, atténuation, forme, rang de bord. */
-  n?: number; liquide?: boolean; ini?: string; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean;
+  n?: number; liquide?: boolean; ini?: string; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean; /** Style lu dans le nom d'une levure en Autres (Saison…) ; absent = type non connu. */ style?: string;
 }
 export interface GroupeMur {
   id: string; mot: string; court?: string; titre: string; ink: string; fill: string; total: string; marques: MarqueMur[]; socle: Record<string, string> | null;
@@ -133,8 +133,11 @@ const GROUPES_LEVURE: Array<{ id: ColonneLevure; mot: string; ink: string; fill:
 const STYLE_SAISON = /saison|farmhouse|\bm29\b|\b3724\b|\b3711\b|wlp56[5-9]/;
 const STYLE_SOUR = /\bsour|\bacid|brett|lacto|pedio|philly|\bgose\b|berliner/;
 /** Le style d'une levure rangée en Autres, quand son nom le dit (n° 2 du verdict 2b6a4970) : sa bulle le nomme au lieu de « type non connu ». Rien de reconnu : null. */
-const STYLE_KOLSCH = /kolsch|koelsch|wlp029|2565|k-?97/;
-const STYLE_BELGE = /belgian|belge|abbaye|abbey|trappist|tripel|dubbel|t-?58|be-?256|wlp(?:500|530|550)|(?:1214|3787|1762|3522)/;
+// ST-T6 : un code de souche se lit en MOT entier (ni lettre ni chiffre avant ou après) et sans « lot », « batch », « N° », « # » devant : « F12141 », « lot 1214 », « SK-974 » ne donnent aucun style.
+const DEVANT = String.raw`(?<![a-z0-9])(?<!(?:\blot|\bbatch|\bcharge|\bnr|\bno|\bn°|#)\s?)`;
+const DERRIERE = String.raw`(?![a-z0-9])`;
+const STYLE_KOLSCH = new RegExp(`kolsch|koelsch|${DEVANT}(?:wlp029|2565|k-?97)${DERRIERE}`);
+const STYLE_BELGE = new RegExp(`belgian|belge|abbaye|abbey|trappist|tripel|dubbel|${DEVANT}(?:t-?58|be-?256|wlp(?:500|530|550)|1214|3787|1762|3522)${DERRIERE}`);
 export function styleLevureConnu(i: Pick<StockItem, 'name' | 'yeastStrain'>): string | null {
   const n = sansAccent(`${i.name} ${i.yeastStrain ?? ''}`);
   if (STYLE_SAISON.test(n)) return 'Saison';
@@ -254,7 +257,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const depassee = !!ddm && !Number.isNaN(Date.parse(ddm)) && Date.parse(ddm) < aujourdhui.getTime();
         const unite = liquide ? (n > 1 ? 'fioles' : 'fiole') : n > 1 ? 'sachets' : 'sachet';
         return {
-          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres',
+          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres', style: g.id === 'autres' ? styleLevureConnu(i) ?? undefined : undefined,
           titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : 'sèche', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
         };
       });
@@ -274,6 +277,14 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
   return { rayons, autres: cartesAutres(items, equipements, futs) };
 }
 
+/** ST-T4 : le gris dit ce que la bulle dit. Une levure en Autres au style connu (Saison, Sour…) : « style Saison » ; sans style lu : « type non connu » ; les deux cas à la fois : les deux. */
+export function legendeAutres(r: Pick<RayonMur, 'groupes'>): string {
+  const marques = r.groupes.find((g) => g.id === 'autres')?.marques ?? [];
+  const styles = [...new Set(marques.map((a) => a.style).filter((s): s is string => !!s))];
+  const sansStyle = marques.some((a) => !a.style);
+  if (!styles.length) return 'gris : colonne Autres (type non connu)';
+  return `gris : colonne Autres (style ${styles.join(', ')}, sans colonne${sansStyle ? ' ; ou type non connu' : ''})`;
+}
 // ---------- Autres stocks ----------
 const bas = (i: StockItem) => (i.minStock != null && Number.isFinite(i.currentStock) && i.currentStock <= i.minStock) || i.reorder === true;
 export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[]): CarteAutre[] {

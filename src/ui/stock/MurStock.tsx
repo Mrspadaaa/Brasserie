@@ -3,7 +3,7 @@
 // Le DOM, les classes et les data-* sont ceux de la maquette ; sa mise en page mesurée (murMiseEnPage.ts) est son propre script, repris.
 import React, { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
-import { construireMur, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
+import { construireMur, legendeAutres, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
 import { sourcesDeLApp } from '../../domain/stock/murSources';
 import { couleurALaClarte, labDeHex } from '../../domain/stock/mur';
 import { installerMiseEnPage } from './murMiseEnPage';
@@ -133,14 +133,14 @@ function LegendeHoublons() {
     </div>
   );
 }
-function LegendeLevures() {
+function LegendeLevures({ r }: { r: RayonMur }) {
   return (
     <div className="sv-leg" id="sv-leg-f2" role="note" aria-label="Légende de la rangée Levures" hidden>
       <Li t="sachet : sèche, un par sachet"><i className="sv-sk" /></Li>
       <Li t="fiole : liquide, une par fiole"><svg viewBox="0 0 8 13" width="8" height="13" aria-hidden="true"><path d="M1.6 2.6V10.4A2.4 2.4 0 0 0 6.4 10.4V2.6Z" fill="#fff" stroke="#6B5426" /><path d="M2.1 6.6Q4 7.6 5.9 6.6V10.4A1.9 1.9 0 0 1 2.1 10.4Z" fill="#B79A63" /><rect x="1.1" y="0" width="5.8" height="2.6" rx=".5" fill="#6B5426" /></svg></Li>
       <Li t="lettre : la souche (U pour US-05)"><b className="sx-g0">U</b></Li>
       <Li t="bord : un par souche"><i className="sv-sk" /><i className="sv-sk" style={{ boxShadow: 'none', borderRadius: 3 }} /><i className="sv-sk" style={{ boxShadow: 'inset 0 0 0 2.5px #6B5426' }} /></Li>
-      <Li t="gris : colonne Autres (type non connu)"><i className="sv-sk" style={{ background: '#BDBDBD' }} /></Li>
+      <Li t={legendeAutres(r)}><i className="sv-sk" style={{ background: '#BDBDBD' }} /></Li>
       <Li t="rangées par atténuation : la plus forte à gauche ; le socle aussi"><i className="sy-so0" style={{ background: 'linear-gradient(90deg,#5C4515,#E3D6BC)' }} /></Li>
       <Li t="barré : DDM dépassée"><i className="sv-sk sv-dx" /></Li>
       <Li t="cadre rouge : épuisé"><i className="sv-ep" /></Li>
@@ -236,7 +236,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
                 {r.id === 'f0' && <i className="sw-rln" aria-hidden="true" />}
               </div>
             </div>
-            {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures />}
+            {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures r={r} />}
           </Fragment>
         ))}
       </div>
