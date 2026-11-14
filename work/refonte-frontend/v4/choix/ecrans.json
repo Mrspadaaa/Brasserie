@@ -194,6 +194,65 @@
    "provisoire": "étape de Dryhopper",
    "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
   },
-    {"ecran":"onglet-mon-mois","route":"depense+caisse","statut":"choisi","choix":"f2d (2026-11-10-onglet-finances v0)","mots":"C'est top mais les maquettes de base de dépense sont pas vraiment les bonnes attention à bien implémenter ça sur la vrai app, vrai vue","capture":"work/missions/2026-11-10-onglet-finances/v0/f2d/f2d-haut.png","page":"https://claude.ai/artifact/KrAgKX1bDreQQUxZaNZEsK","note":"Choisie le 10.11 sans son titre (« Titre en trop »). Fond = la vraie Nouvelle dépense et la vraie Caisse, jamais le fond dessiné de la maquette."}
+  {
+   "ecran": "onglet-mon-mois",
+   "route": "depense+caisse",
+   "statut": "choisi",
+   "choix": "f2d (2026-11-10-onglet-finances v0)",
+   "mots": "C'est top mais les maquettes de base de dépense sont pas vraiment les bonnes attention à bien implémenter ça sur la vrai app, vrai vue",
+   "capture": "work/missions/2026-11-10-onglet-finances/v0/f2d/f2d-haut.png",
+   "page": "https://claude.ai/artifact/KrAgKX1bDreQQUxZaNZEsK",
+   "note": "Choisie le 10.11 sans son titre (« Titre en trop »). Fond = la vraie Nouvelle dépense et la vraie Caisse, jamais le fond dessiné de la maquette."
+  },
+  {
+   "ecran": "finances-operations",
+   "route": "finances/operations",
+   "statut": "choisi",
+   "choix": "v6a (2026-11-09-compta-prix p4)",
+   "mots": "Lignes serrées / v6a / v5a à − 12 % ; « ✓ Payé » reste à 24 px, le minimum. / Ça ressemble pas tellement à la mini maquettes ???",
+   "capture": "work/missions/2026-11-14-finances/ref/v6a/v6a-page.png",
+   "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm",
+   "note": "v6b choisi le 09.11, remplacé par v6a le 10.11 (ses derniers mots). Filtre du … au … : choix ouvert (mission 2026-11-14-finances)."
+  },
+  {
+   "ecran": "finances-synthese",
+   "route": "finances/synthese",
+   "statut": "choisi",
+   "choix": "g3a (2026-11-09-compta-prix p2)",
+   "mots": "Ta base / g3a et g3c / passe 2 / Non la meilleure on garde celle ci",
+   "capture": "work/missions/2026-11-14-finances/ref/g3a/g3a-page.png",
+   "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su",
+   "note": "Plage de mois demandée le 10.11 (« 6 mois ? 4 mois ECT ? »)."
+  },
+  {
+   "ecran": "finances-previsions",
+   "route": "finances/previsions",
+   "statut": "choisi",
+   "choix": "p5b (2026-11-09-compta-prix p4)",
+   "mots": "Les étiquettes accrochées / p5b / Là je vois tout sur le graphe.",
+   "capture": "work/missions/2026-11-14-finances/ref/p5b/p5b-page.png",
+   "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm",
+   "note": ""
+  },
+  {
+   "ecran": "finances-annuel",
+   "route": "finances/annuel",
+   "statut": "choisi",
+   "choix": "g6 (2026-11-09-compta-prix p3)",
+   "mots": "g4a et ses 9 écrans de clôture, cité sans réserve (09.11)",
+   "capture": "work/missions/2026-11-14-finances/ref/g6/g6-page.png",
+   "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe",
+   "note": ""
+  },
+  {
+   "ecran": "finances-analyse",
+   "route": "finances/synthese/analyse",
+   "statut": "choisi",
+   "choix": "a2a (2026-11-10-analyse-p2)",
+   "mots": "Super ! Ajoute encore un petit peu de clarté dans le protage mais c'est du 19/20 pas besoin de mini maquettes en plus",
+   "capture": "",
+   "page": "https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY",
+   "note": ""
+  }
  ]
 }
