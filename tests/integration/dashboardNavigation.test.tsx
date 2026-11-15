@@ -124,7 +124,8 @@ describe('Dashboard agenda navigation', () => {
     expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Menu', exact: true }));
+    /* m3 : le menu ⋮ n'existe plus ; l'Atelier R&D est un outil de la page Plus, ouverte par le duo d'avatars. */
+    fireEvent.click(screen.getByRole('button', { name: /^Plus : saisie au nom de/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
     expect(screen.getByRole('button', { name: 'Matériel', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'false');
@@ -231,6 +232,7 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(oldBatch.name) }));
     dialog = screen.getByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
-    expect(StorageService.getUiState('app_global_time_filter', '')).toBe('this-month');
+    /* La période de l'app se garde en texte daté (ET-PER) : « this-month » relu au 12.09.2026 devient « month-2026-09 » ; elle n'a pas été élargie. */
+    expect(StorageService.getUiState('app_global_time_filter', '')).toBe('month-2026-09');
   });
 });

@@ -1,3 +1,4 @@
+import type { Transaction } from '../types';
 import React from 'react';
 import { Search } from 'lucide-react';
 import { IconButton } from './ui/Button';
@@ -16,7 +17,8 @@ interface HeaderProps {
   globalTimeFilter: PeriodeEntree;
   onChangeGlobalTimeFilter: (p: Periode) => void;
   /** Dates des écritures, pour les comptes de la grille. */
-  datesEcritures?: ReadonlyArray<string | undefined>;
+  /** Les opérations de l'app : la frise de la période en dessine les dépenses. */
+  transactions?: Transaction[];
   /** Dit que la période vaut pour toute l'app (toast). */
   onAnnoncePeriode?: (message: string) => void;
   /** Ouvre (ou ferme) la page « Plus » : le duo d'avatars prend la place du ⋮ (m3). */
@@ -47,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
   hidePeriod = false,
   globalTimeFilter,
   onChangeGlobalTimeFilter,
-  datesEcritures = [],
+  transactions,
   onAnnoncePeriode,
   onOpenPlus,
   plusOpen = false,
@@ -96,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex-1" />
 
         {!hidePeriod && (
-          <PastillePeriode periode={globalTimeFilter} onChoisir={onChangeGlobalTimeFilter} dates={datesEcritures} onAnnonce={onAnnoncePeriode} />
+          <PastillePeriode periode={globalTimeFilter} onChoisir={onChangeGlobalTimeFilter} transactions={transactions} onAnnonce={onAnnoncePeriode} />
         )}
         {/* Recherche universelle. Au clavier c'est ⌘K / Ctrl+K ; au doigt, cette loupe est le seul chemin — d'où sa place en clair. */}
         <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary" className={compactLayout ? 'min-h-7 min-w-7' : ''}>

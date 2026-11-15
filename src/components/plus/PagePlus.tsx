@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronLeft, Cloud, History, Lightbulb, LogOut, MessageCircle, Moon, Settings, Sun, Wrench } from 'lucide-react';
-import type { AuditLog, Batch } from '../../types';
+import type { AuditLog, Batch, Transaction } from '../../types';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
 import { SaisirAuNom } from '../feuilles/SaisirAuNom';
 import { lireHorodatage, type Personne } from '../feuilles/regles';
-import { GrillePeriode } from '../periode/GrillePeriode';
+import { ChoixPlage } from '../periode/ChoixPlage';
 import { dansPeriode, enPeriode, titre, type Periode, type PeriodeEntree } from '../periode/periode';
 import { useTheme } from '../../theme/theme';
 import './plus.css';
@@ -16,7 +16,8 @@ interface Props {
   periode: PeriodeEntree;
   onChoisirPeriode: (p: Periode) => void;
   /** Dates des écritures (opérations) de l'app : les comptes de la grille. */
-  dates: ReadonlyArray<string | undefined>;
+  /** Les opérations de l'app : la frise de la période en dessine les dépenses. */
+  transactions?: Transaction[];
   logs: AuditLog[];
   batches: Batch[];
   pendingTodosCount: number;
@@ -42,7 +43,7 @@ const PERSONNES: Personne[] = ['Gaëtan', 'Aricia'];
  * Rien ne se perd du menu ⋮ d'avant : chaque ligne ouvre ce qu'elle ouvrait.
  */
 export const PagePlus: React.FC<Props> = ({
-  courant, onSigner, periode, onChoisirPeriode, dates, logs, batches, pendingTodosCount, horsConnexion, entreprise,
+  courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, horsConnexion, entreprise,
   onBack, onAssistant, onAtelier, onConversations, onJournal, onCloud, onReglages, onLogout
 }) => {
   const [theme, choisirTheme] = useTheme();
@@ -101,7 +102,7 @@ export const PagePlus: React.FC<Props> = ({
           </section>
         </div>
         <section className="pl-card pl-per" aria-label="Période">
-          <GrillePeriode periode={p} onChoisir={onChoisirPeriode} dates={dates} />
+          <ChoixPlage periode={p} onChoisir={onChoisirPeriode} transactions={transactions} />
         </section>
         <div className="pl-col">
           <div className="pl-pp pl-outils">

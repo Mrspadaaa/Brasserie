@@ -390,7 +390,6 @@ export const App: React.FC = () => {
   // Reactive state from StorageService (STRICTLY ISOLATED: Empty by default until Google auth validates!)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   /** Les dates des écritures : les comptes de la grille de période. */
-  const datesEcritures = useMemo(() => transactions.map(t => t.date), [transactions]);
   const [stocks, setStocks] = useState<{ rawMaterials: StockItem[]; cleaning: StockItem[]; equipment: EquipmentItem[]; kegs: KegItem[] }>({
     rawMaterials: [],
     cleaning: [],
@@ -1123,7 +1122,7 @@ export const App: React.FC = () => {
         large={activeTab === 'stocks'}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
-        datesEcritures={datesEcritures}
+        transactions={transactions}
         onAnnoncePeriode={showToast}
         onOpenPlus={ouvrirPlus}
         plusOpen={plusOuvert}
@@ -1141,7 +1140,7 @@ export const App: React.FC = () => {
             onSigner={(cible) => { StorageService.setCurrentUser(cible); setSignataireNonce(n => n + 1); }}
             periode={globalTimeFilter}
             onChoisirPeriode={(p) => setGlobalTimeFilter(p)}
-            dates={datesEcritures}
+            transactions={transactions}
             logs={auditLogs}
             batches={batches}
             pendingTodosCount={pendingTodosCount}

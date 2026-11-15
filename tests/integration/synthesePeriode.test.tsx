@@ -28,7 +28,7 @@ function annee() {
   }
 }
 const read = () => StorageService.getTransactions();
-function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" />; }
+function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="this-month" />; }
 const choisir = (nom: string, valeur: string) => fireEvent.change(screen.getByLabelText(nom), { target: { value: valeur } });
 
 beforeEach(() => {

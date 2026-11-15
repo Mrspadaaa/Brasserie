@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-  bornes, comptesAnnee, dansPeriode, depuisPlageFinances, enPeriode, etiquetteCourte, jourSaisi, lire, pas, pourFinances, serialiser, titre,
+  bornes, comptesAnnee, dansPeriode, depuisJournal, depuisJours, depuisPlageFinances, enJournal, enPeriode, etiquetteCourte, jourSaisi, lire, mentionArrondiMois, pas, pourFinances, serialiser, titre,
   type Periode
 } from '../../src/components/periode/periode';
 
@@ -83,6 +83,32 @@ describe('période de l’app (ET-PER) : Finances n’a plus de période à lui'
     expect(enPeriode(depuisPlageFinances('2026-09', '2026-11'))).toEqual({ genre: 'dates', du: '2026-09-01', au: '2026-11-30' });
   });
 
+  it('la plage de Finances : un mois entier reste un mois, trois mois un trimestre, sinon des dates au jour près', () => {
+    expect(depuisJours('2026-11-01', '2026-11-30')).toEqual({ genre: 'mois', annee: 2026, mois: 11 });
+    expect(depuisJours('2026-10-01', '2026-12-31')).toEqual({ genre: 'trimestre', annee: 2026, trimestre: 4 });
+    expect(depuisJours('2026-01-01', '2026-12-31')).toEqual({ genre: 'annee', annee: 2026 });
+    expect(depuisJours('2026-10-12', '2026-11-03')).toEqual({ genre: 'dates', du: '2026-10-12', au: '2026-11-03' });
+  });
+
+  it('les flèches font glisser une plage de sa durée (1er au 15 : quinze jours plus tôt)', () => {
+    expect(pas({ genre: 'dates', du: '2026-11-01', au: '2026-11-15' }, -1)).toEqual({ genre: 'dates', du: '2026-10-17', au: '2026-10-31' });
+    expect(pas({ genre: 'dates', du: '2026-10-12', au: '2026-11-03' }, 1)).toEqual({ genre: 'dates', du: '2026-11-04', au: '2026-11-26' });
+  });
+
+  it('le journal d’Opérations lit la période de l’app et lui rend ce qu’il choisit, sans perte', () => {
+    const toutes: Periode[] = [{ genre: 'tout' }, { genre: 'mois', annee: 2026, mois: 3 }, { genre: 'trimestre', annee: 2026, trimestre: 4 }, { genre: 'annee', annee: 2026 }, { genre: 'dates', du: '2026-10-12', au: '2026-11-03' }];
+    for (const p of toutes) expect(depuisJournal(enJournal(p))).toEqual(p);
+    expect(enJournal({ genre: 'dates', du: '2026-10-12', au: '2026-11-03' })).toMatchObject({ allDates: false, du: '2026-10-12', au: '2026-11-03' });
+  });
+
+  it('des dates libres arrondies par Finances le disent ; rien d’arrondi, rien de dit', () => {
+    expect(mentionArrondiMois({ genre: 'dates', du: '2026-10-12', au: '2026-11-03' })).toBe('Arrondi aux mois entiers : octobre 2026 à novembre 2026');
+    expect(mentionArrondiMois({ genre: 'dates', du: '2026-10-12', au: '2026-10-20' })).toBe('Arrondi au mois entier : octobre 2026');
+    expect(mentionArrondiMois({ genre: 'dates', du: '2026-09-01', au: '2026-11-30' })).toBeNull();
+    expect(mentionArrondiMois({ genre: 'trimestre', annee: 2026, trimestre: 4 })).toBeNull();
+    expect(mentionArrondiMois({ genre: 'tout' })).toBeNull();
+  });
+
   /* Le contrôle qui échoue sur le tag de départ : deux sources indépendantes. Au départ, Finances gardait son mois dans un
      useState à lui et Brassins gardait un filtre de période à lui (30 j, 90 j, année, dates choisies). */
   it('aucun écran ne garde de période à lui (lecture du code)', () => {
@@ -93,6 +119,12 @@ describe('période de l’app (ET-PER) : Finances n’a plus de période à lui'
     expect(toolbar).not.toMatch(/<option value="(30|90|year|custom)"/);
     const catalogue = readFileSync('src/ui/production/ProductionCatalog.tsx', 'utf8');
     expect(catalogue).toMatch(/from '\.\.\/\.\.\/components\/periode\/periode'/);
+    /* Le journal d'Opérations non plus : sa plage est celle de l'app, et le choix de plage est celui de Finances (frise s2ap2), pas une grille à part. */
+    expect(finances).toMatch(/enJournal\(periodeApp\)/);
+    const choix = readFileSync('src/components/periode/ChoixPlage.tsx', 'utf8');
+    expect(choix).toMatch(/from '\.\.\/\.\.\/ui\/finance\/operations\/Frise'/);
+    expect(readFileSync('src/components/plus/PagePlus.tsx', 'utf8')).toMatch(/<ChoixPlage /);
+    expect(readFileSync('src/components/periode/PastillePeriode.tsx', 'utf8')).toMatch(/<ChoixPlage /);
     const app = readFileSync('src/App.tsx', 'utf8');
     expect((app.match(/useState<Periode>/g) ?? []).length).toBe(1);
   });

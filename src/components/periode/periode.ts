@@ -1,5 +1,6 @@
 import type { TimeFilterPeriod } from '../../types';
 import { DateUtils } from '../../services/dateUtils';
+import { PREMIER_JOUR, glisser, jourMaxi, titreJours } from '../../ui/finance/operations/plage';
 
 /**
  * LA période de l'application (m3r-a, choisie provisoirement le 15.11) : une seule, réglable partout, lue partout.
@@ -22,6 +23,8 @@ export type Periode =
 /** Ce que les écrans reçoivent : la période d'aujourd'hui, ou une ancienne valeur (tests, aperçus). */
 export type PeriodeEntree = Periode | TimeFilterPeriod;
 
+/** Aujourd'hui en ISO (jour local). */
+export const aujourdhuiISO = (): string => { const d = new Date(); return `${d.getFullYear()}-${deux(d.getMonth() + 1)}-${deux(d.getDate())}`; };
 const deux = (n: number) => String(n).padStart(2, '0');
 export const MOIS_COURTS = ['Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'] as const;
 export const MOIS_LONGS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'] as const;
@@ -99,7 +102,8 @@ export function etiquetteCourte(p: Periode): string {
     case 'mois': return MOIS_COURTS[p.mois - 1];
     case 'trimestre': return `T${p.trimestre}`;
     case 'annee': return String(p.annee);
-    case 'dates': return `${p.du.slice(8)}.${p.du.slice(5, 7)} – ${p.au.slice(8)}.${p.au.slice(5, 7)}`;
+    /* La plage de Finances (s2ap2), dite comme elle : « 12 oct. → 3 nov. ». */
+    case 'dates': return titreJours(p, aujourdhuiISO());
   }
 }
 
@@ -110,11 +114,11 @@ export function titre(p: Periode): string {
     case 'mois': return `${MOIS_LONGS[p.mois - 1]} ${p.annee}`;
     case 'trimestre': return `${p.trimestre === 1 ? '1er' : `${p.trimestre}e`} trimestre ${p.annee}`;
     case 'annee': return `Exercice ${p.annee}`;
-    case 'dates': return `Du ${p.du.slice(8)}.${p.du.slice(5, 7)}.${p.du.slice(0, 4)} au ${p.au.slice(8)}.${p.au.slice(5, 7)}.${p.au.slice(0, 4)}`;
+    case 'dates': return titreJours(p, aujourdhuiISO());
   }
 }
 
-/** Le pas des flèches : un mois, ou un trimestre si un trimestre est choisi, une année pour un exercice. « Tout » et les dates libres ne s'avancent pas d'un cran : le mois du début les remplace. */
+/** Le pas des flèches : un mois, un trimestre, une année, ou la durée d'une plage de jours. « Tout » ne s'avance pas. */
 export function pas(p: Periode, sens: -1 | 1): Periode {
   switch (p.genre) {
     case 'tout': return p;
@@ -127,10 +131,8 @@ export function pas(p: Periode, sens: -1 | 1): Periode {
       return { genre: 'trimestre', annee: Math.floor(n / 4), trimestre: ((n % 4) + 1) as 1 | 2 | 3 | 4 };
     }
     case 'annee': return { genre: 'annee', annee: p.annee + sens };
-    case 'dates': {
-      const mois = Number(p.du.slice(5, 7)), annee = Number(p.du.slice(0, 4));
-      return pas({ genre: 'mois', annee, mois }, sens);
-    }
+    /* Une plage glisse de sa durée, comme les flèches de la bande de Finances (1er au 15 : quinze jours plus tôt). */
+    case 'dates': { const g = glisser(p, sens, PREMIER_JOUR, jourMaxi(aujourdhuiISO())); return { genre: 'dates', du: g.du, au: g.au }; }
   }
 }
 
@@ -178,6 +180,19 @@ export function pourFinances(p: Periode): { month: string; allDates: boolean; pl
   if (couverts.du === couverts.au) return { month: couverts.du, allDates: false, plage: null };
   return { month: couverts.du, allDates: false, plage: couverts };
 }
+/**
+ * Finances compte au mois : des dates libres qui ne tombent pas sur des mois entiers y sont arrondies. La mention le dit
+ * à l'écran (décision du pilote, 15.11) ; `null` quand rien n'est arrondi (mois, trimestre, exercice, tout, dates calées sur des mois).
+ */
+export function mentionArrondiMois(p: Periode): string | null {
+  if (p.genre !== 'dates') return null;
+  const c = moisCouverts(p);
+  if (!c) return null;
+  const [a1, m1] = c.du.split('-').map(Number), [a2, m2] = c.au.split('-').map(Number);
+  if (p.du === jourISO(a1, m1, 1) && p.au === jourISO(a2, m2, dernierJour(a2, m2))) return null;
+  const nom = (a: number, m: number) => `${MOIS_LONGS[m - 1].toLowerCase()} ${a}`;
+  return c.du === c.au ? `Arrondi au mois entier : ${nom(a1, m1)}` : `Arrondi aux mois entiers : ${nom(a1, m1)} à ${nom(a2, m2)}`;
+}
 const moisCourant = () => { const d = new Date(); return `${d.getFullYear()}-${deux(d.getMonth() + 1)}`; };
 
 /** La période que Finances vient de choisir, remise à la forme la plus parlante : trois mois d'un trimestre sont un trimestre. */
@@ -195,3 +210,33 @@ export const depuisMois = (mois: string): Periode => {
 };
 
 export const memePeriode = (a: Periode, b: Periode) => serialiser(a) === serialiser(b);
+
+/**
+ * Ce que la plage de Finances (frise, champs « du … au ») donne à l'app, remis à la forme la plus parlante : un mois entier est un mois,
+ * trois mois d'un trimestre un trimestre, janvier à décembre un exercice ; sinon des dates libres, au jour près.
+ */
+export function depuisJours(du: string, au: string): Periode {
+  const [a1, m1, j1] = du.split('-').map(Number), [a2, m2] = au.split('-').map(Number);
+  const debutDeMois = j1 === 1, finDeMois = au === jourISO(a2, m2, dernierJour(a2, m2));
+  if (debutDeMois && finDeMois) {
+    if (a1 === a2 && m1 === m2) return { genre: 'mois', annee: a1, mois: m1 };
+    if (a1 === a2 && m1 === 1 && m2 === 12) return { genre: 'annee', annee: a1 };
+    if (a1 === a2 && (m1 - 1) % 3 === 0 && m2 === m1 + 2) return { genre: 'trimestre', annee: a1, trimestre: (((m1 - 1) / 3) + 1) as 1 | 2 | 3 | 4 };
+  }
+  return { genre: 'dates', du, au };
+}
+
+/** Ce que la période de l'app pose dans le journal d'Opérations (mois, tout, ou plage de jours) : le journal n'a plus de période à lui. */
+export function enJournal(p: Periode): { month: string; allDates: boolean; du: string; au: string } {
+  const { du, au } = bornes(p);
+  if (p.genre === 'tout') return { month: moisCourant(), allDates: true, du: '', au: '' };
+  if (p.genre === 'mois') return { month: `${p.annee}-${deux(p.mois)}`, allDates: false, du: '', au: '' };
+  return { month: (du as string).slice(0, 7), allDates: false, du: du as string, au: au as string };
+}
+/** Ce que le journal vient de choisir (mois, plage, tout), remis à la période de l'app. */
+export function depuisJournal(s: { month: string; allDates: boolean; du: string; au: string }): Periode {
+  if (s.allDates) return { genre: 'tout' };
+  if (s.du && s.au) return depuisJours(s.du, s.au);
+  const [annee, mois] = s.month.split('-').map(Number);
+  return { genre: 'mois', annee, mois };
+}

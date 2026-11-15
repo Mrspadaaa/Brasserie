@@ -31,7 +31,7 @@ function demo({ soldeConfirme = false }: { soldeConfirme?: boolean } = {}) {
   if (soldeConfirme) FinanceService.saveProfile({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-11-01', amountCents: 100000, confirmed: true } });
 }
 const read = () => StorageService.getTransactions();
-function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" />; }
+function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="this-month" />; }
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-11-09T10:00:00Z'));
