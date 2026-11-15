@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronLeft, Cloud, History, Lightbulb, LogOut, MessageCircle, Moon, Settings, Sun, Wrench } from 'lucide-react';
+import { AlertTriangle, Check, ChevronLeft, Cloud, History, Lightbulb, LogOut, MessageCircle, Moon, Settings, Sun, Wrench } from 'lucide-react';
 import type { AuditLog, Batch, Transaction } from '../../types';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
 import { SaisirAuNom } from '../feuilles/SaisirAuNom';
@@ -7,6 +7,7 @@ import { lireHorodatage, type Personne } from '../feuilles/regles';
 import { ChoixPlage } from '../periode/ChoixPlage';
 import { dansPeriode, enPeriode, titre, type Periode, type PeriodeEntree } from '../periode/periode';
 import { useTheme } from '../../theme/theme';
+import { suffixeJournal, type EtatLigne } from './etats';
 import './plus.css';
 
 interface Props {
@@ -24,6 +25,10 @@ interface Props {
   horsConnexion: boolean;
   /** Nom de la brasserie, tel que la configuration le dit. */
   entreprise?: string;
+  /** « ✓ Drive · IA Rapide » : lu de l'app (accès Drive, niveau d'IA par défaut). Absent : rien d'écrit. */
+  etatCloud?: EtatLigne | null;
+  /** « ⚠ IBAN à corriger » : lu du bilan des Réglages (erreurs, puis trous). Absent : rien d'écrit. */
+  etatReglages?: EtatLigne | null;
   onBack: () => void;
   onAssistant: () => void;
   onAtelier: () => void;
@@ -37,13 +42,22 @@ interface Props {
 const lettre = (p: Personne) => (p === 'Gaëtan' ? 'G' : 'A');
 const PERSONNES: Personne[] = ['Gaëtan', 'Aricia'];
 
+/** L'état écrit à droite d'une ligne (m3) : ✓ vert, ⚠ rouge, ou le texte seul. */
+const Etat: React.FC<{ e?: EtatLigne | null }> = ({ e }) => e
+  ? <small className="pl-et" data-n={e.niveau}>
+      {e.niveau === 'ok' && <Check size={14} aria-hidden="true" />}
+      {e.niveau === 'alerte' && <AlertTriangle size={14} aria-hidden="true" />}
+      {e.texte}
+    </small>
+  : null;
+
 /**
  * La page « Plus » (m3, choisie) : plein écran à sections, ouverte par le duo d'avatars de l'en-tête.
  * Qui saisit (la bascule), la période (m3r-a : la même grille que la pastille), le thème, les deux outils, puis l'administration.
  * Rien ne se perd du menu ⋮ d'avant : chaque ligne ouvre ce qu'elle ouvrait.
  */
 export const PagePlus: React.FC<Props> = ({
-  courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, horsConnexion, entreprise,
+  courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, horsConnexion, entreprise, etatCloud, etatReglages,
   onBack, onAssistant, onAtelier, onConversations, onJournal, onCloud, onReglages, onLogout
 }) => {
   const [theme, choisirTheme] = useTheme();
@@ -65,7 +79,7 @@ export const PagePlus: React.FC<Props> = ({
 
   const enCuve = batches.find(b => b.status === 'fermentation');
   const jours = enCuve ? joursDepuisBrassage(enCuve) : undefined;
-  const ligneAssistant = enCuve ? `${enCuve.id}${jours !== undefined && jours >= 0 ? ` · J+${jours}` : ''}` : 'Aucun brassin en cuve';
+  const ligneAssistant = enCuve ? `${enCuve.id}${jours !== undefined && jours >= 0 ? ` · J+${jours}` : ''}` : 'Aucun en cuve';
   const ecritures = (n: number) => `${n} écriture${n > 1 ? 's' : ''}`;
 
   return (
@@ -102,6 +116,8 @@ export const PagePlus: React.FC<Props> = ({
           </section>
         </div>
         <section className="pl-card pl-per" aria-label="Période">
+          {/* m3 : « Période » à gauche, la période choisie en gras à droite ; au 1280 comme au 390. */}
+          <h2 className="pl-lb">Période<b>{titre(p)}</b></h2>
           <ChoixPlage periode={p} onChoisir={onChoisirPeriode} transactions={transactions} />
         </section>
         <div className="pl-col">
@@ -116,10 +132,10 @@ export const PagePlus: React.FC<Props> = ({
             </button>
           </div>
           <ul className="pl-liste">
-            <li><button type="button" onClick={onConversations}><MessageCircle size={20} aria-hidden="true" /><span>Mes conversations</span>{horsConnexion && <small>hors ligne</small>}</button></li>
-            <li><button type="button" onClick={onJournal}><History size={20} aria-hidden="true" /><span>Journal des modifications</span><small className="pl-m">{dansLaPeriode} · {titre(p).toLowerCase()}</small></button></li>
-            {onCloud && <li><button type="button" onClick={onCloud}><Cloud size={20} aria-hidden="true" /><span>Connexions cloud et IA</span></button></li>}
-            <li><button type="button" onClick={onReglages}><Settings size={20} aria-hidden="true" /><span>Réglages</span></button></li>
+            <li><button type="button" onClick={onConversations}><MessageCircle size={20} aria-hidden="true" /><span>Mes conversations</span>{horsConnexion && <small className="pl-et">hors ligne</small>}</button></li>
+            <li><button type="button" onClick={onJournal}><History size={20} aria-hidden="true" /><span>Journal des modifications</span><small className="pl-et"><span className="pl-m pl-n">{dansLaPeriode}</span> {suffixeJournal(p)}</small></button></li>
+            {onCloud && <li><button type="button" onClick={onCloud}><Cloud size={20} aria-hidden="true" /><span>Connexions cloud et IA</span><Etat e={etatCloud} /></button></li>}
+            <li><button type="button" onClick={onReglages}><Settings size={20} aria-hidden="true" /><span>Réglages</span><Etat e={etatReglages} /></button></li>
             {onLogout && <li><button type="button" className="pl-sortie" onClick={onLogout}><LogOut size={20} aria-hidden="true" /><span>Se déconnecter</span></button></li>}
           </ul>
         </div>
