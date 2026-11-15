@@ -248,9 +248,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           data-plus-forme={anchor === 'nav' ? forme : 'page'}
           data-plus-ecran={menu.ecran}
           onKeyDown={onKeyDown}
-          className={`rounded-panel border border-cave-700 bg-cave-950 shadow-lift p-2.5 ${anchor === 'nav'
-            ? (rail ? 'plus-liste' : 'plus-feuille')
-            : `absolute right-0 w-[22rem] max-w-[calc(100vw-1.5rem)] ${placement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}`}
+          data-sens={anchor === 'page' && placement === 'bottom' ? 'bas' : 'haut'}
+          className="plus-pile"
         >
           {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
               pour rendre la main au bouton. */}
@@ -288,9 +287,11 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         className={`relative rounded-full items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
-                   ${quiet
-                     ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
-                     : 'bg-ebc-straw text-cave-950'} shadow-lift`}
+                   ${open
+                     ? 'bg-cave-850 text-cave-50 border border-cave-700'
+                     : quiet
+                       ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
+                       : 'bg-ebc-straw text-cave-950'} shadow-lift`}
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
           className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />

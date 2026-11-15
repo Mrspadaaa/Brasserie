@@ -60,7 +60,7 @@ describe('FloatingActions · contrat DOM et clavier', () => {
     expect(opened.items[0].textContent).toContain('Nouveau matériel');
     // b1s-a : l'action de l'écran d'abord, les cinq gestes de partout à cases fixes, le Compagnon en sixième case.
     expect(opened.items.map((item) => item.textContent)).toEqual([
-      'Nouveau matériel', 'Écritureà la main', 'Facturephoto ou PDF', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
+      'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
     ]);
     expect(opened.items.at(-1)!.getAttribute('aria-label')).toBe('Compagnon brasseur · Matériel');
     expect(document.activeElement).toBe(opened.items[0]);

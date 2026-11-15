@@ -332,7 +332,7 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
       render(<Shell page={false} calls={calls} />);
       fireEvent.click(launcherButton());
       expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-        'Nouveau matériel', 'Écritureà la main', 'Facturephoto ou PDF', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
+        'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
       ]);
       for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());

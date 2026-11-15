@@ -81,7 +81,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     // b1s-a : l'action de l'écran d'abord, les cinq gestes de partout à cases fixes, le Compagnon en sixième case.
     const items = screen.getAllByRole('menuitem');
     expect(items.map((item) => item.textContent)).toEqual([
-      'Nouveau matériel', 'Écritureà la main', 'Facturephoto ou PDF', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
+      'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
     ]);
     expect(items.at(-1)).toHaveAttribute('aria-label', 'Compagnon brasseur · Matériel');
     fireEvent.click(screen.getByRole('menuitem', { name: /Nouveau matériel/ }));

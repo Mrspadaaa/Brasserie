@@ -1,6 +1,6 @@
-/* Navigation principale et feuille du + (b1s-a « Deux étages », 15.11). Au téléphone : la barre de cinq onglets égaux, le +
-   flottant 12 px au-dessus d'elle à droite, la feuille posée au-dessus du +. À partir de 1024 px : le rail de 88 px (onglets
-   et Compagnon, plus de + dedans), le + flottant au coin bas droit du contenu, la liste à lettres au-dessus de lui. */
+/* Navigation principale et menu du + (b1s-b2 « La pile au pouce », 15.11). Au téléphone : la barre de cinq onglets égaux, le +
+   flottant 12 px au-dessus d'elle à droite, la pile des actions qui monte du +. À partir de 1024 px : le rail de 88 px (onglets
+   et Compagnon, plus de + dedans), le + flottant au coin bas droit du contenu, la même pile au-dessus de lui. */
 
 :root {
   --rail-width: 88px;
@@ -17,19 +17,30 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   right: var(--sfp-w);
 }
 
-/* Le + flottant : un carré arrondi de 56 px (b1s-a). Sur une page plein écran il garde la forme de sa case (BX-4). */
+/* Le + flottant : un carré arrondi de 56 px (b1s-b2). Sur une page plein écran il garde la forme de sa case (BX-4). */
 .floating-actions[data-floating-actions-anchor='nav'][data-floating-actions-docked='false'] > button {
   width: var(--plus-cote);
   height: var(--plus-cote);
   border-radius: 16px;
 }
-
-/* Fin de liste : la dernière ligne défile au-dessus du +, qui ne couvre plus sa date (72 px sous le +, 88 px au rail). */
-:root [data-floating-actions-gap='nav'] {
-  padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 4.5rem);
+/* Il passe au-dessus du voile flou de la pile : le × reste net. */
+.floating-actions > button {
+  z-index: 3;
 }
 
-/* Le voile sous la feuille : il couvre le contenu, jamais la barre ni le + (le + reste atteignable pour fermer). */
+/* Ouvert, le + devient un × neutre (surface et bord) : un seul accent, l'action de l'écran. Ni anneau de paille, ni ombre lourde. */
+.floating-actions[data-floating-actions-anchor='nav'] > button[aria-expanded='true'] {
+  --tw-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+  --tw-shadow-colored: 0 6px 16px var(--tw-shadow-color);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+/* Fin de liste : 80 px d'air, la dernière ligne défile au-dessus du +, qui ne couvre plus sa date (88 px sous le + au rail). */
+:root [data-floating-actions-gap='nav'] {
+  padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 5rem);
+}
+
+/* Le voile sous la pile : il couvre le contenu, jamais la barre ni le + (le + reste atteignable pour fermer). */
 .plus-voile {
   position: fixed;
   inset: var(--plus-voile-haut, 37px) 0 var(--main-navigation-height, 2.5rem) 0;
@@ -39,15 +50,213 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   background: rgba(0, 0, 0, 0.55);
 }
 
-/* La feuille du téléphone : de bord à bord, à 8 px au-dessus du + (qui est à 12 px de la barre). */
-.plus-feuille {
-  position: fixed;
-  left: 0.5rem;
-  right: 0.5rem;
-  bottom: calc(var(--main-navigation-height, 2.5rem) + var(--plus-bord) + var(--plus-cote) + 8px);
-  max-height: calc(100dvh - var(--main-navigation-height, 2.5rem) - var(--plus-bord) - var(--plus-cote) - 3.5rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+/* ---- La pile : les actions montent du +, alignées à droite. Lue depuis le +, l'action de l'écran d'abord (`column-reverse`). ---- */
+.plus-pile {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 8px;
+  z-index: 2;
+  width: min(300px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 6px;
+}
+/* Posé sous un + docké en haut d'écran : la pile descend, l'action de l'écran reste contre le +. */
+.plus-pile[data-sens='bas'] {
+  bottom: auto;
+  top: 100%;
+  margin: 8px 0 0;
+  flex-direction: column;
+}
+/* Voile propre derrière la pile : fond de page à 80 % et flou de 6 px, fondu vers le haut sur 110 px, aucun texte de la liste entre les pilules. */
+.plus-pile::before {
+  content: '';
+  position: absolute;
+  left: -78px;
+  right: -12px;
+  top: -120px;
+  bottom: -76px;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in srgb, rgb(var(--cave-900)) 80%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 110px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 110px);
+}
+.plus-pile[data-sens='bas']::before {
+  top: -76px;
+  bottom: -120px;
+  -webkit-mask-image: linear-gradient(to top, transparent 0, #000 110px);
+  mask-image: linear-gradient(to top, transparent 0, #000 110px);
+}
+
+/* La couleur de rubrique d'une pilule : `--tc`. Clients et l'accent d'action = la paille (noire en clair). */
+.plus-ton-finances { --tc: rgb(var(--area-finances)); }
+.plus-ton-production { --tc: rgb(var(--area-production)); }
+.plus-ton-stocks { --tc: rgb(var(--area-stocks)); }
+.plus-ton-clients { --tc: rgb(var(--ebc-straw)); }
+.plus-ton-neutre { --tc: rgb(var(--cave-400)); }
+
+.plus-pile-zone {
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  margin-top: 4px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--cave-400));
+  white-space: nowrap;
+}
+.plus-pile-zone em {
+  font-style: normal;
+  color: var(--tc);
+}
+
+.plus-pile-grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Une pilule : libellé, précision, lettre (1280), et sa pastille d'icône à droite. */
+.plus-pp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 5px 0 14px;
+  border-radius: 22px;
+  background: rgb(var(--cave-950));
+  border: 1px solid rgb(var(--cave-700));
+  color: rgb(var(--cave-50));
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: nowrap;
+  min-width: 0;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+.plus-pp:focus-visible {
+  outline: 2px solid rgb(var(--cave-50));
+  outline-offset: -2px;
+}
+.plus-pp-t {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.plus-pp small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: rgb(var(--cave-400));
+}
+.plus-pp kbd {
+  flex: none;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 0 5px;
+  border: 1px solid rgb(var(--cave-700));
+  border-radius: 4px;
+  color: rgb(var(--cave-400));
+}
+.plus-pp-i {
+  margin-left: auto;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--tc) 14%, rgb(var(--cave-950)));
+  color: var(--tc);
+}
+.plus-pp-n {
+  flex: none;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: rgb(var(--attention));
+  color: rgb(var(--cave-950));
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+.plus-pp-i + .plus-pp-n { margin-left: 0; }
+
+/* Les autres actions de l'écran : larges, teintées de la rubrique. */
+.plus-pp--ps {
+  width: 100%;
+  height: 48px;
+  border-radius: 24px;
+  border-color: color-mix(in srgb, var(--tc) 45%, rgb(var(--cave-700)));
+  background: color-mix(in srgb, var(--tc) 8%, rgb(var(--cave-950)));
+}
+/* L'action de l'écran : pleine, couleur de la rubrique, contre le +. */
+.plus-pp--pi {
+  width: 100%;
+  height: 56px;
+  padding-left: 16px;
+  border-radius: 16px;
+  border-color: transparent;
+  background: var(--tc);
+  color: rgb(var(--cave-950));
+}
+.plus-pp--pi b {
+  font-size: 16px;
+  font-weight: 600;
+  color: inherit;
+}
+.plus-pp--pi small {
+  color: inherit;
+  opacity: 0.9;
+}
+.plus-pp--pi .plus-pp-i {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: color-mix(in srgb, rgb(var(--cave-950)) 18%, transparent);
+  color: rgb(var(--cave-950));
+}
+.plus-pp--pi kbd {
+  color: rgb(var(--cave-950));
+  border-color: rgb(var(--cave-950));
+  opacity: 0.85;
+}
+
+/* « Partout » : deux colonnes de pilules de 44 px ; l'impaire reste seule en haut à droite. */
+.plus-pile-grille .plus-pp {
+  padding: 0 4px 0 12px;
+  gap: 6px;
+}
+.plus-pile-grille .plus-pp-i {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+}
+.plus-pile-grille .plus-pp--seule {
+  grid-column: 2;
+}
+.plus-pile-grille .plus-pp--large {
+  grid-column: 1 / -1;
+  height: 36px;
+  padding: 0 12px;
+  color: rgb(var(--cave-200));
 }
 
 @media (min-width: 1024px) {
@@ -68,7 +277,7 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
     right: 24px;
     bottom: 24px;
   }
-  .floating-actions[data-floating-actions-anchor='nav'] > button {
+  .floating-actions[data-floating-actions-anchor='nav'] > button:not([aria-expanded='true']) {
     box-shadow: 0 0 0 3px rgb(var(--ebc-straw) / 0.25), 0 10px 22px -6px rgba(0, 0, 0, 0.5);
   }
 
@@ -81,13 +290,18 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
     bottom: 0;
   }
 
-  /* La liste du 1280 : au-dessus du +, alignée à droite de lui. */
-  .plus-liste {
-    position: fixed;
-    right: 24px;
-    bottom: calc(24px + var(--plus-cote) + 8px);
-    width: 400px;
-    max-height: calc(100dvh - var(--rail-top, 37px) - 24px - var(--plus-cote) - 24px);
-    overflow-y: auto;
+  /* La pile du 1280 : 460 px, 12 px au-dessus du +, libellés entiers et lettres ; le voile s'étend à gauche et se fond. */
+  .floating-actions[data-floating-actions-anchor='nav'] .plus-pile {
+    width: 460px;
+    margin-bottom: 12px;
+  }
+  .floating-actions[data-floating-actions-anchor='nav'] .plus-pile::before {
+    left: -300px;
+    right: -24px;
+    bottom: -92px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 110px), linear-gradient(to right, transparent 0, #000 260px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 110px), linear-gradient(to right, transparent 0, #000 260px);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
 }
