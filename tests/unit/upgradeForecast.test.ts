@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FinancialPlan } from '../../src/domain/finance/types';
 import type { ForecastItem, ForecastMonth } from '../../src/domain/finance/forecast';
-import { avenir, echelleCaisse, effetProjet, estPose, marchesParMois, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt } from '../../src/domain/finance/upgradeForecast';
+import { avenir, caisseAvantSortie, echelleCaisse, effetProjet, estPose, marchesParMois, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt } from '../../src/domain/finance/upgradeForecast';
 
 type Detail = Partial<NonNullable<FinancialPlan['upgrade']>>;
 const projet = (id: string, title: string, cents: number | null, o: { date?: string; status?: FinancialPlan['status']; stage?: NonNullable<FinancialPlan['upgrade']>['stage']; timing?: NonNullable<FinancialPlan['upgrade']>['timing']; detail?: Detail } = {}): FinancialPlan => ({
@@ -116,6 +116,26 @@ describe('upgradeForecast : repères, échelle, noms courts', () => {
   });
   it('l’échelle de la maquette : 5 000 francs → pas de 2 000, sommet 6 000, repères 0, 2 000, 4 000', () => {
     expect(echelleCaisse([418_100, 440_000, 500_000, 425_000, null])).toEqual({ lo: 0, hi: 600_000, pas: 200_000, ticks: [0, 200_000, 400_000] });
+  });
+  it('le sommet de la courbe ne touche jamais le haut du champ (marge pour le pointillé et le titre)', () => {
+    // 1 000 francs pile : sans marge, le sommet était le haut du champ et la graduation du haut manquait
+    const e = echelleCaisse([100_000, 100_000, 50_000]);
+    expect(e.hi).toBeGreaterThan(100_000 * 1.1);
+    expect(e.ticks.length).toBeGreaterThanOrEqual(2);
+  });
+  it('après un paiement : l’échelle d’avant la sortie contient toute la courbe, la courbe abaissée tombe en bas, le haut de l’échelle dépasse le maximum', () => {
+    // maquette kyh1 (sortie) : 3 200 francs payés en novembre, caisse de départ 4 200 ; sans paiement 4 200 puis 4 000, avec 1 000 puis 800
+    const apres = [100_000, 100_000, 80_000, 80_000], avant = caisseAvantSortie(apres, 0, 320_000);
+    expect(avant).toEqual([420_000, 420_000, 400_000, 400_000]);
+    const e = echelleCaisse([...apres, ...avant, 420_000]);
+    expect(e).toEqual({ lo: 0, hi: 600_000, pas: 200_000, ticks: [0, 200_000, 400_000] });
+    expect(Math.max(...apres)).toBeLessThan(e.hi / 3); // la courbe tombée est dans le tiers bas, visible, sous la graduation 2 000
+    expect(Math.max(...avant)).toBeLessThan(e.hi);
+  });
+  it('caisseAvantSortie : seuls les mois dès la facture sont rendus ; sans facture dans la fenêtre ou sans montant, rien ne change ; l’inconnu reste inconnu', () => {
+    expect(caisseAvantSortie([10, 10, null, 10], 1, 5)).toEqual([10, 15, null, 15]);
+    expect(caisseAvantSortie([10, 10], -1, 5)).toEqual([10, 10]);
+    expect(caisseAvantSortie([10, 10], 0, null)).toEqual([10, 10]);
   });
   it('un solde négatif étend le champ sous zéro, zéro reste un repère', () => {
     const e = echelleCaisse([100_000, -250_000]);

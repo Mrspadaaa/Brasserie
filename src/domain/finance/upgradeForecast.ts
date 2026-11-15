@@ -102,10 +102,21 @@ export function echelleCaisse(valeursCents: Array<number | null>): EchelleCaisse
   const v = valeursCents.filter((x): x is number => x != null);
   const hautRaw = Math.max(0, ...v), basRaw = Math.min(0, ...v);
   const pas = joli(Math.max(1, (hautRaw - basRaw) / 100 / 3)) * 100;
-  const hi = Math.max(1, Math.ceil(hautRaw / pas)) * pas, lo = Math.floor(basRaw / pas) * pas;
+  // marge au-dessus de la courbe (15 % de l'étendue) : le sommet ne touche jamais le haut du champ, il reste la place du pointillé et du titre
+  const hi = Math.max(1, Math.ceil((hautRaw + 0.15 * (hautRaw - basRaw)) / pas)) * pas, lo = Math.floor(basRaw / pas) * pas;
   const ticks: number[] = [];
   for (let t = lo; t < hi; t += pas) ticks.push(t);
   return { lo, hi, pas, ticks };
+}
+
+/**
+ * La caisse telle qu'elle était avant la sortie payée : on rend la dépense aux mois dès celui de la facture. Elle sert à garder l'échelle d'avant
+ * le paiement (maquette kyh1, sortie : 0, 2 000, 4 000) pour que la courbe abaissée se voie tomber, au lieu de se recadrer sur elle-même.
+ * Une caisse inconnue reste inconnue.
+ */
+export function caisseAvantSortie(valeursCents: Array<number | null>, indexSortie: number, sortieCents: number | null): Array<number | null> {
+  if (indexSortie < 0 || sortieCents == null) return valeursCents;
+  return valeursCents.map((v, i) => (v != null && i >= indexSortie ? v + sortieCents : v));
 }
 
 /** Le nom court du repère dans le bandeau : « Installation de la hotte » → « hotte », « B100 aio brewtool » → « B100 ». */

@@ -6,7 +6,7 @@ import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
 import { buildForecast, type FinanceForecast } from '../../domain/finance/forecast';
 import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre, type Anneau, type Fournisseur, type TonAnneau } from '../../domain/finance/upgradeRing';
 import type { CreativeItem } from '../../types';
-import { MOIS_BANDEAU, REPERES, echelleCaisse, effetProjet, estPose, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
+import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
@@ -146,7 +146,9 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
     mesurer(); const ro = new ResizeObserver(mesurer); ro.observe(el); return () => ro.disconnect();
   }, []);
   const X0 = 34, X1 = largeur, Y0 = 52, Y1 = 10, W = (X1 - X0) / Math.max(1, mois.length), f = (n: number) => +n.toFixed(2);
-  const ech = echelleCaisse([...vals, prevision.openingCashCents]), y = (v: number) => Y0 - (v - ech.lo) / (ech.hi - ech.lo) * (Y0 - Y1), cx = (i: number) => X0 + W * (i + .5);
+  const iS = sortie && connu ? indexMoisSortie(sortie.date, mois.map(m => m.month)) : -1, vS = iS >= 0 ? vals[iS] : null;
+  // après un paiement, l'échelle reste celle d'avant (la courbe abaissée tombe dans le champ, le pointillé et le titre ont leur place)
+  const ech = echelleCaisse([...vals, ...(iS >= 0 ? caisseAvantSortie(vals, iS, sortie!.cents) : []), prevision.openingCashCents]), y = (v: number) => Y0 - (v - ech.lo) / (ech.hi - ech.lo) * (Y0 - Y1), cx = (i: number) => X0 + W * (i + .5);
   const encre = 'rgb(var(--cave-texte-50))', mut = 'rgb(var(--cave-texte-400))', halo = { paintOrder: 'stroke', stroke: 'var(--kh-bg)', strokeWidth: 4, strokeLinejoin: 'round' } as React.CSSProperties;
   let ligne = '', aire = '';
   if (connu) {
@@ -157,7 +159,6 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
   const iH = effetHero ? mois.findIndex(m => m.month === effetHero.mois) : -1, iF = effetFocus && focus?.id !== hero?.id ? mois.findIndex(m => m.month === effetFocus.mois) : -1;
   const titreF = effetFocus && iF >= 0 && effetFocus.avecCents != null ? `${nomMois(effetFocus.mois, 'short')}${effetFocus.auPlus ? ' au plus' : ''} ${chf0(effetFocus.avecCents)}` : '';
   const finF = iF >= 0 && cx(iF) - 16 + titreF.length * 7 > X1;
-  const iS = sortie && connu ? indexMoisSortie(sortie.date, mois.map(m => m.month)) : -1, vS = iS >= 0 ? vals[iS] : null;
   const titreS = iS >= 0 && sortie ? `${nomMois(mois[iS].month, 'short')} ${titreCourt(sortie.titre)}${sortie.cents != null ? ` −${chf0(sortie.cents)}` : ''}` : '';
   const finS = iS >= 0 && cx(iS) - 16 + titreS.length * 7 > X1;
   return <section className="kh-band" aria-label="Caisse fin de mois" ref={racine}>
@@ -337,7 +338,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
           : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
         <span className="upgrade-price">{detail.budgetKnown ? formatCHF(plan.amountCents) : 'À estimer'}<ChevronRight size={16}/></span>
       </button>
-      {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</p>}
+      {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents ? 'comme prévu' /* un montant une seule fois : il est déjà à droite */ : <>{progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</>}</p>}
       {scope === 'future' && <div className="upgrade-project-actions">
         {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>Inclure dans mes prévisions{/* TE-36 : un seul libellé pour la case, cochée ou non (comme la feuille du projet) */}</label>}
         <button className="finance-link" onClick={() => setPurchase(plan)}>Noter l’achat<ArrowRight size={16}/></button>
