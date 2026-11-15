@@ -23,7 +23,9 @@ describe('Copie, import et relecture de la conduite levure', () => {
        porte la même quantité dans une cellule. Trois endroits, trois rôles : on vise le résumé de la rangée, puis la fiche de la même rangée. */
     const rangee = document.querySelector<HTMLElement>('details.rc2-rlev')!;
     expect(within(rangee).getByText('0,125 L', { selector: '.rc2-m' })).toBeInTheDocument();
-    expect(within(rangee).getByText(/Wyeast 3068 · 0,125 L/, { selector: 'span' })).toBeInTheDocument();
+    // RL-1 : la fiche dépliée ne répète plus le nom ni la quantité ; le résumé au repos garde les deux (m2).
+    expect(rangee.querySelector('summary')).toHaveTextContent(/Wyeast 3068.*0,125 L/);
+    expect(within(rangee).queryByText(/Wyeast 3068 · 0,125 L/, { selector: 'span' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save.mock.calls[0][0].yeast).toMatchObject({ qty: .125, unit: 'L' });
   });
@@ -82,7 +84,8 @@ describe('Copie, import et relecture de la conduite levure', () => {
     expect(screen.queryByText(/undefined undefined/)).not.toBeInTheDocument();
     fireEvent.click(apply);
     allerEtape('Récapitulatif');
-    expect(screen.getAllByText(/quantité à préciser/).length).toBeGreaterThan(0);
+    // Récap m2 : le résumé de la rangée Levure signale la quantité manquante (« quantité, unité »), sans la remplacer par une valeur inventée.
+    expect(document.querySelector('details.rc2-rlev summary')).toHaveTextContent(/quantité, unité/);
     fireEvent.click(screen.getByRole('button', { name: 'Copier la recette en texte' }));
     await waitFor(() => expect(copy).toHaveBeenCalledOnce());
     const copied = readRecipeText(copy.mock.calls[0][0])!;

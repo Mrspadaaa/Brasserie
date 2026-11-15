@@ -128,7 +128,7 @@ describe('Récap m2 : aucune fonction de l’ancien récapitulatif n’est perdu
     recap();
     expect(screen.getAllByLabelText(/^Masse de /).length).toBeGreaterThan(1);
     expect(screen.getAllByLabelText(/^Alpha de /).length).toBeGreaterThan(0);
-    for (const nom of ['Quantité de levure', 'Atténuation', 'Durée de fermentation', 'Eau d’empâtage', 'Eau de rinçage']) expect(screen.getByLabelText(nom), nom).toBeInTheDocument();
+    for (const nom of ['Atténuation', 'Durée de fermentation', 'Eau d’empâtage', 'Eau de rinçage']) expect(screen.getByLabelText(nom), nom).toBeInTheDocument();
     expect(screen.getAllByLabelText(/^Température du palier /).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('button', { name: /^Retirer / }).length).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('button', { name: 'Retourner à l’atelier de l’eau' })).toBeInTheDocument();
@@ -173,11 +173,12 @@ describe('Récap m2 : le geste de la Levure', () => {
     recap();
     rangee('levure').querySelector('details')!.open = true;
     const unite = within(rangee('levure')).getByRole('radiogroup', { name: 'Unité de la levure' });
-    fireEvent.click(within(unite).getByRole('radio', { name: 'g' }));
-    expect(within(unite).getByRole('radio', { name: 'g' })).toHaveAttribute('aria-checked', 'true');
+    // RL-2 : la fixture est une levure liquide (125 mL) : le sélecteur propose sachet | mL, jamais g.
+    fireEvent.click(within(unite).getByRole('radio', { name: 'sachet' }));
+    expect(within(unite).getByRole('radio', { name: 'sachet' })).toHaveAttribute('aria-checked', 'true');
     const curseur = within(rangee('levure')).getByLabelText('Curseur de quantité de levure') as HTMLInputElement;
-    fireEvent.change(curseur, { target: { value: '40' } });
-    expect((screen.getByLabelText('Quantité de levure') as HTMLInputElement).value).toMatch(/^40/);
+    fireEvent.change(curseur, { target: { value: '2.5' } });
+    expect(rangee('levure').querySelector('summary')).toHaveTextContent(/2,5 sachets/);
     fireEvent.click(within(rangee('levure')).getByRole('button', { name: /^Aller à Levure/ }));
     expect(screen.getByRole('main', { name: 'Levure' })).toBeInTheDocument();
   });
