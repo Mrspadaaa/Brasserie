@@ -54,3 +54,8 @@ Fenêtre partagée avec les autres sessions du 14.11 ; agents plafonnés.
 - `scripts/check-brewer-jobs-mobile.mjs`
 
 ## Signature
+
+- 15.11, pilote : p2a portée (branche `claude/compagnon-p2a`, f8739172), critique Opus c3 puis c4 (93 → 33 défauts, 14 corrigés ensuite) ; restes dans `avant-deploiement/b65b418d/VERDICT.md`, 0 bloquant.
+- En ligne : tag `en-ligne/2026-11-15-compagnon` (b65b418d = `en-ligne/2026-11-15-finances` + compagnon), hébergement seul, 307 fichiers, page servie avec le bundle neuf. tsc, 977 tests ciblés, build, gardes OK ; suite complète : 13 rouges connus de la base.
+- Joué en ligne : Finances « Vérifier mes opérations » (ancienne réponse lue) ; Brassin 7 : accueil, une question réelle en Rapide (« Je n'atteins pas la consigne »), attente, carte (feu, À faire, rappel « Au journal », Pourquoi, Détails) ; rien appliqué ; aucun nom de modèle.
+- Ouvert : la réponse Finances du serveur montre des identifiants bruts (TX-…, PREV-…, cashComplete, financialAssets) — côté serveur, hors de cette mission ; rappel 09:00 et limite par question retirés faute de capacité.
