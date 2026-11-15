@@ -60,11 +60,11 @@
 /* « Prévisions › » : cible de 44 px posée dans le bandeau (haut à droite), texte sur la ligne du titre, chevron de 16 px */
 .kh-bh button { position:absolute; top:0; right:0; z-index:1; min-width:44px; height:44px; padding:6px 0 0 14px; display:inline-flex; align-items:flex-start; justify-content:flex-end; gap:2px; color:var(--kh-fin-t); font-weight:400; font-size:14px; line-height:16px; }
 .kh-bh button svg { width:16px; height:16px; flex:none; }
-.kh-band > svg { display:block; width:100%; max-width:460px; height:auto; }
+.kh-band > svg { display:block; width:100%; height:auto; }
 .kh-band svg text { font-family:inherit; font-variant-numeric:tabular-nums; }
 .kh-vide { font-size:13px; color:var(--kh-mut); padding:4px 0 8px; }
 /* grand écran : la colonne se centre dans la page, le bandeau suit la colonne (sans déborder) ; la fiche garde une largeur de feuille */
-@media (min-width:1024px) { .kh { margin-inline:auto; } .kh-band { margin-inline:0; } }
+@media (min-width:1024px) { .kh-band { margin-inline:0; } }
 @media (min-width:768px) { .kh-feuille { width:min(100%, 560px); margin-inline:auto; } }
 
 /* les trois onglets : soulignés comme dans la maquette (À venir · Réalisés · Archives) */
@@ -128,12 +128,15 @@
 .kh-in input::placeholder { color:var(--kh-mut); font-weight:400; }
 .kh-ok { width:44px; height:44px; flex:none; border-radius:10px; background:var(--kh-act); color:var(--kh-onact); display:grid; place-items:center; }
 .kh-ok:disabled, .kh-pan .kh-cta:disabled { opacity:.45; }
+.kh-pan .kh-cta { flex:none; width:100%; min-height:44px; }
 .kh-dl { font-size:12px; color:var(--kh-mut); margin-bottom:-4px; }
-.kh-ct { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-.kh-ct button { height:44px; padding:0 12px; border-radius:10px; border:1.5px solid var(--kh-att); background:var(--kh-bg); color:var(--kh-ink); display:inline-flex; align-items:center; gap:6px; font-size:14px; }
+.kh-ct { display:flex; gap:6px; flex-wrap:nowrap; align-items:center; }
+.kh-ct.kh-ct-tous { flex-wrap:wrap; }
+.kh-ct button { height:44px; min-width:0; flex:0 1 auto; padding:0 12px; border-radius:10px; border:1.5px solid var(--kh-att); background:var(--kh-bg); color:var(--kh-ink); display:inline-flex; align-items:center; gap:6px; font-size:14px; }
 .kh-ct button svg { color:var(--kh-att); }
+.kh-ct button span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .kh-ct .on { background:rgb(var(--attention) / .15); border-width:2px; }
-.kh-ct .more { border-color:var(--kh-line2); width:44px; padding:0; justify-content:center; }
+.kh-ct .more { border-color:var(--kh-line2); width:44px; flex:none; padding:0; justify-content:center; }
 .kh-ct .more svg { color:var(--kh-mut); }
 .kh-note { margin:0; font-size:13px; color:var(--kh-mut); }
 .kh-fr { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); position:relative; }
@@ -153,5 +156,21 @@
 .kh-tt { flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.2; }
 .kh-tt b { font-size:15px; }
 .kh-tt small { font-size:13px; opacity:.85; }
-.kh-voir { min-height:44px; padding:0 8px; font-weight:700; text-decoration:underline; color:inherit; }
+.kh-voir { min-width:44px; min-height:44px; padding:0 8px; font-weight:700; text-decoration:underline; color:inherit; }
 .kh-tx { width:44px; height:44px; flex:none; display:grid; place-items:center; color:inherit; }
+
+/* sortie : la part de l'achat remplit la barre, le texte passe à sa droite (maquette kyh1, sortie) */
+.kh-eff.kh-eff-ext { max-width:none; overflow:visible; border-radius:0; align-items:stretch; gap:8px; }
+.kh-eff-bar { flex:none; display:flex; border-radius:6px; overflow:hidden; }
+.kh-eff-c { flex:0 0 auto; background:rgb(var(--area-finances) / .22); }
+.kh-eff-ext .kh-eff-b { padding:0 8px; }
+.kh-eff-t { flex:1; min-width:0; display:flex; align-items:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--kh-ink); }
+.kh-eff-t b { margin-left:.3em; font-weight:700; }
+
+/* la rangée des vues : À venir · Réalisés · Archives, et « + Besoin » (44 px, avec son mot) sur la même ligne et le même filet */
+.kh-views { display:flex; align-items:flex-end; gap:6px; border-bottom:1px solid rgb(var(--cave-800)); }
+.kh-views .kh-tabs > div, .kh-views .kh-tabs .finance-filter { border-bottom:0; }
+.kh-new { height:44px; padding:0 12px 0 8px; margin-bottom:2px; flex:none; display:inline-flex; align-items:center; gap:4px; border-radius:10px; background:rgb(var(--ebc-straw)); color:rgb(var(--sur-paille)); font-weight:600; font-size:14px; }
+.kh-new:focus-visible { outline:2px solid rgb(var(--area-finances)); outline-offset:2px; }
+/* grand écran : les vues et « + Besoin » ont la largeur de la colonne d'À venir, alignées à gauche comme elle */
+@media (min-width:1024px) { .kh-views { max-width:680px; } }

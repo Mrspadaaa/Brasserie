@@ -137,7 +137,7 @@ describe('upgradeForecast : repères, échelle, noms courts', () => {
 });
 
 /* ───── kyh1 : anneaux d'étape, gestes de prix et de devis, réalisé dérivé des factures ───── */
-import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, parsePrix } from '../../src/domain/finance/upgradeRing';
+import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre } from '../../src/domain/finance/upgradeRing';
 import type { FinanceTransaction, FinancialPayment } from '../../src/domain/finance/types';
 
 describe('upgradeRing : l’anneau se lit des étapes existantes', () => {
@@ -184,5 +184,26 @@ describe('upgradeRing : réalisé = dépense liée payée en entier', () => {
   it('dateFacture rend la dernière date de facture liée, sinon null', () => {
     expect(dateFacture(B100, [tx('T1', 'B', 1, '2026-11-02'), tx('T2', 'B', 1, '2026-11-14'), tx('T3', 'AUTRE', 1, '2026-12-01')])).toBe('2026-11-14');
     expect(dateFacture(B100, [])).toBeNull();
+  });
+  it('fournisseursConnus : seulement ce que les achats disent (jamais un client du carnet), le plus utilisé d’abord, le téléphone vient du carnet', () => {
+    const avecVendor = (id: string, vendor: string, extra = {}) => ({ ...tx(id, 'B', 1), finance: { ...tx(id, 'B', 1).finance, vendor }, ...extra }) as FinanceTransaction;
+    const sols = { ...SOLS, vendor: 'Bati-Sol' };
+    const carnet = [{ title: 'Le Carnotzet Gourmand', contactPhone: '+41 79 000 00 00' }, { title: 'Bâti-Sol' }, { title: 'Inox Gruyère', contactPhone: '+41 26 000 00 00' }];
+    const liste = fournisseursConnus([sols, B100], [avecVendor('T1', 'inox gruyere'), avecVendor('T2', 'Inox Gruyère'), avecVendor('T3', 'Boulangerie du coin', { category: 'ventes', finance: { ...tx('T3', 'B', 1).finance, vendor: 'Boulangerie du coin', planId: undefined } })], carnet);
+    expect(liste).toEqual([{ nom: 'Inox Gruyère', telephone: true }, { nom: 'Bâti-Sol', telephone: false }]);
+    expect(liste.some(f => /carnotzet/i.test(f.nom))).toBe(false);
+    expect(fournisseursConnus([EVIER], [], carnet)).toEqual([]);
+  });
+  it('indexMoisSortie : le mois de la facture, le premier si elle est antérieure, -1 sans date ou après la fenêtre', () => {
+    const fenetre = ['2026-11', '2026-12', '2027-01'];
+    expect(indexMoisSortie('2026-12-03', fenetre)).toBe(1);
+    expect(indexMoisSortie('2026-09-30', fenetre)).toBe(0);
+    expect(indexMoisSortie('2027-06-01', fenetre)).toBe(-1);
+    expect(indexMoisSortie(null, fenetre)).toBe(-1);
+  });
+  it('texteTientDansBarre : au repos oui, quand l’achat remplit la barre non (le texte passe à droite)', () => {
+    expect(texteTientDansBarre('Fin mars, il reste 4 250'.length, 900 / 5150)).toBe(true);
+    expect(texteTientDansBarre('Fin mars, il reste 100'.length, 0.9)).toBe(false);
+    expect(texteTientDansBarre(10, 1)).toBe(false);
   });
 });

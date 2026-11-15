@@ -4,7 +4,7 @@ import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../
 import { isUpgradePlan, UPGRADE_STAGES, UPGRADE_TIMINGS, upgradeDetails, upgradeProgress, upgradeReadiness } from '../../domain/finance/upgrades';
 import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
 import { buildForecast, type FinanceForecast } from '../../domain/finance/forecast';
-import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, parsePrix, type Anneau, type TonAnneau } from '../../domain/finance/upgradeRing';
+import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre, type Anneau, type Fournisseur, type TonAnneau } from '../../domain/finance/upgradeRing';
 import type { CreativeItem } from '../../types';
 import { MOIS_BANDEAU, REPERES, echelleCaisse, effetProjet, estPose, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
@@ -74,9 +74,13 @@ function Frise({ plan }: { plan: FinancialPlan }) {
   </ol>;
 }
 /** L'étape suivante d'un besoin, posée sous sa ligne : le prix trouvé (CHF TTC) ou un devis demandé à un contact du carnet. Rien n'est envoyé : l'app note la demande. */
-function PanneauEtape({ plan, contacts, busy, onPrix, onDevis }: { plan: FinancialPlan; contacts: CreativeItem[]; busy: boolean; onPrix: (cents: number) => void; onDevis: (contact: string) => void }) {
+function PanneauEtape({ plan, contacts, fournisseurs, busy, onPrix, onDevis }: { plan: FinancialPlan; contacts: CreativeItem[]; fournisseurs: Fournisseur[]; busy: boolean; onPrix: (cents: number) => void; onDevis: (contact: string) => void }) {
   const [texte, setTexte] = useState(''), [choix, setChoix] = useState<string | null>(null), [tous, setTous] = useState(false);
-  const r = repereDe(plan), cents = parsePrix(texte), proposes = tous ? contacts : contacts.slice(0, 2);
+  /** Le carnet mêle clients et fournisseurs (même type « prospect ») : d'abord les fournisseurs déjà vus dans les achats ; « autre contact » ouvre le reste du carnet. Sans fournisseur connu, le carnet s'ouvre tout de suite. */
+  const connus = new Set(fournisseurs.map(f => f.nom.toLowerCase()));
+  const autres: Fournisseur[] = contacts.filter(c => !connus.has(c.title.toLowerCase())).map(c => ({ nom: c.title, telephone: !!c.contactPhone }));
+  const surCarnet = fournisseurs.length === 0 || tous, liste = fournisseurs.length === 0 ? autres : tous ? [...fournisseurs, ...autres] : fournisseurs.slice(0, 2);
+  const r = repereDe(plan), cents = parsePrix(texte), encore = !tous && fournisseurs.length > 0 && (fournisseurs.length > 2 || autres.length > 0);
   return <div className="kh-pan" role="group" aria-label={`Étapes : ${plan.title}`}>
     <Frise plan={plan}/>
     {r !== 'prix' && <form className="kh-f" onSubmit={e => { e.preventDefault(); if (cents != null) onPrix(cents); }}>
@@ -86,16 +90,17 @@ function PanneauEtape({ plan, contacts, busy, onPrix, onDevis }: { plan: Financi
     {r === 'devis' && plan.vendor && <p className="kh-note">Devis demandé à {plan.vendor}.</p>}
     {r === 'chercher' && <>
       <div className="kh-dl">Ou un devis</div>
-      {contacts.length === 0 ? <p className="kh-note">Aucun contact dans ton carnet : ajoute-en dans Atelier › Contacts.</p>
-        : <div className="kh-ct">{proposes.map(c => <button type="button" key={c.id} aria-pressed={choix === c.title} className={choix === c.title ? 'on' : ''} onClick={() => setChoix(choix === c.title ? null : c.title)}>{c.contactPhone ? <Phone size={16}/> : <Mail size={16}/>}{c.title}</button>)}
-          {contacts.length > 2 && !tous && <button type="button" className="more" aria-label="Choisir un autre contact" onClick={() => setTous(true)}><Users size={18}/></button>}</div>}
-      {choix && <button type="button" className="kh-cta" disabled={busy} onClick={() => onDevis(choix)}><Mail size={18}/>Devis demandé à {choix}</button>}
+      {liste.length === 0 ? <p className="kh-note">Aucun fournisseur connu ni contact dans ton carnet : ajoute-en dans Atelier › Contacts.</p>
+        : <div className={`kh-ct${surCarnet ? ' kh-ct-tous' : ''}`}>{liste.map(f => <button type="button" key={f.nom} aria-pressed={choix === f.nom} className={choix === f.nom ? 'on' : ''} onClick={() => setChoix(choix === f.nom ? null : f.nom)}>{f.telephone ? <Phone size={16}/> : <Mail size={16}/>}<span>{f.nom}</span></button>)}
+          {encore && <button type="button" className="more" aria-label="Choisir un autre contact" onClick={() => setTous(true)}><Users size={18}/></button>}</div>}
+      {surCarnet && autres.length > 0 && <p className="kh-note">Ton carnet mêle clients et fournisseurs : choisis le bon.</p>}
+      {choix && <button type="button" className="kh-cta" disabled={busy} onClick={() => onDevis(choix)}><Mail size={18}/>Demander un devis à {choix}</button>}
     </>}
     {r === 'prix' && <p className="kh-note">Le besoin passe dans Réalisés quand la dépense est payée.</p>}
   </div>;
 }
 /** L'avis passager quand un besoin devient réalisé : il quitte « À venir », il est dans Réalisés. */
-function Avis({ avis, onVoir, onFermer }: { avis: { titre: string; date: string | null }; onVoir: () => void; onFermer: () => void }) {
+function Avis({ avis, onVoir }: { avis: { titre: string; date: string | null }; onVoir: () => void; onFermer?: () => void }) {
   const quand = avis.date ? new Date(`${avis.date}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' }) : '';
   return <div className="kh-toast" role="status">
     <AnneauSvg anneau={anneauDe({ upgrade: { stage: 'ready', budgetKnown: true } } as FinancialPlan, true)} taille={32} titre={false}/>
@@ -115,15 +120,32 @@ function EffetCaisse({ plan, effet }: { plan: FinancialPlan; effet: EffetProjet 
   if (effet.avecCents == null || effet.sansCents == null) return null;
   const avec = effet.avecCents, nom = titreCourt(plan.title), part = effet.sansCents > 0 ? Math.min(1, effet.marcheCents / effet.sansCents) : 1;
   const plus = effet.auPlus ? ' au plus' : '', moisTxt = nomMois(effet.mois, 'long');
-  return <div className="kh-eff" role="img" aria-label={`Caisse fin ${moisTxt}${avec < 0 ? `, il manque${effet.auPlus ? ' au moins' : ''} ${chf0(-avec)}` : `, il reste${plus} ${chf0(avec)}`} ; part de l’achat : ${nom}`}>
-    <span className="kh-eff-a">{avec < 0 ? <>Fin {moisTxt}, il manque{effet.auPlus ? ' au moins' : ''}<b className="kh-m">{chf0(-avec)}</b></> : <>Fin {moisTxt}, il reste{plus}<b className="kh-m">{chf0(avec)}</b></>}</span>
+  const debut = avec < 0 ? `Fin ${moisTxt}, il manque${effet.auPlus ? ' au moins' : ''}` : `Fin ${moisTxt}, il reste${plus}`, chiffre = chf0(avec < 0 ? -avec : avec);
+  const etiquette = `Caisse fin ${moisTxt}${avec < 0 ? `, il manque${effet.auPlus ? ' au moins' : ''} ${chiffre}` : `, il reste${plus} ${chiffre}`} ; part de l’achat : ${nom}`;
+  const texte = <>{debut}<b className="kh-m">{chiffre}</b></>;
+  // Maquette (sortie) : quand la part de l'achat ne laisse pas la place au texte, la barre raccourcit et le texte passe à sa droite.
+  if (!texteTientDansBarre(debut.length + 1 + chiffre.length, part)) return <div className="kh-eff kh-eff-ext" role="img" aria-label={etiquette}>
+    <span className="kh-eff-bar"><span className="kh-eff-c" style={{ flexBasis: `max(24px, ${((1 - part) * 96).toFixed(1)}px)` }}/><span className="kh-eff-b">{nom}</span></span>
+    <span className="kh-eff-t">{texte}</span>
+  </div>;
+  return <div className="kh-eff" role="img" aria-label={etiquette}>
+    <span className="kh-eff-a">{texte}</span>
     <span className="kh-eff-b" style={{ flexBasis: `max(${Math.min(120, 16 + 7 * nom.length)}px, ${(part * 100).toFixed(1)}%)` }}>{nom}</span>
   </div>;
 }
 /** « Caisse fin de mois » : la courbe en marches de la prévision (mois courant et sept suivants), titres dans un couloir au-dessus ; sans solde de départ, le bandeau le dit. */
-function Bandeau({ prevision, hero, effetHero, focus, effetFocus, onPrevisions }: { prevision: FinanceForecast; hero: FinancialPlan | null; effetHero: EffetProjet | null; focus: FinancialPlan | null; effetFocus: EffetProjet | null; onPrevisions: () => void }) {
+/** Un achat vient d'être payé : la maquette (kyh1, sortie) marque le mois de sa facture sur la courbe, « nov. B100 −3 180 », avec la colonne et le pointillé. */
+interface SortieMarque { titre: string; date: string | null; cents: number | null }
+function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrevisions }: { prevision: FinanceForecast; hero: FinancialPlan | null; effetHero: EffetProjet | null; focus: FinancialPlan | null; effetFocus: EffetProjet | null; sortie: SortieMarque | null; onPrevisions: () => void }) {
   const mois = prevision.months.slice(0, MOIS_BANDEAU), vals = mois.map(m => m.balanceCents), connu = vals.every(v => v != null);
-  const X0 = 34, X1 = 366, Y0 = 52, Y1 = 10, W = (X1 - X0) / Math.max(1, mois.length), f = (n: number) => +n.toFixed(2);
+  // Le dessin est à l'échelle 1:1 : sa largeur est celle du bandeau (366 à 390 px, la maquette), les textes gardent leur taille sur grand écran.
+  const [largeur, setLargeur] = useState(366), racine = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = racine.current; if (!el || typeof ResizeObserver === 'undefined') return;
+    const mesurer = () => { const w = Math.round(el.clientWidth - 24); if (w >= 240) setLargeur(prev => Math.abs(prev - w) >= 1 ? w : prev); };
+    mesurer(); const ro = new ResizeObserver(mesurer); ro.observe(el); return () => ro.disconnect();
+  }, []);
+  const X0 = 34, X1 = largeur, Y0 = 52, Y1 = 10, W = (X1 - X0) / Math.max(1, mois.length), f = (n: number) => +n.toFixed(2);
   const ech = echelleCaisse([...vals, prevision.openingCashCents]), y = (v: number) => Y0 - (v - ech.lo) / (ech.hi - ech.lo) * (Y0 - Y1), cx = (i: number) => X0 + W * (i + .5);
   const encre = 'rgb(var(--cave-texte-50))', mut = 'rgb(var(--cave-texte-400))', halo = { paintOrder: 'stroke', stroke: 'var(--kh-bg)', strokeWidth: 4, strokeLinejoin: 'round' } as React.CSSProperties;
   let ligne = '', aire = '';
@@ -135,16 +157,24 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, onPrevisions }
   const iH = effetHero ? mois.findIndex(m => m.month === effetHero.mois) : -1, iF = effetFocus && focus?.id !== hero?.id ? mois.findIndex(m => m.month === effetFocus.mois) : -1;
   const titreF = effetFocus && iF >= 0 && effetFocus.avecCents != null ? `${nomMois(effetFocus.mois, 'short')}${effetFocus.auPlus ? ' au plus' : ''} ${chf0(effetFocus.avecCents)}` : '';
   const finF = iF >= 0 && cx(iF) - 16 + titreF.length * 7 > X1;
-  return <section className="kh-band" aria-label="Caisse fin de mois">
+  const iS = sortie && connu ? indexMoisSortie(sortie.date, mois.map(m => m.month)) : -1, vS = iS >= 0 ? vals[iS] : null;
+  const titreS = iS >= 0 && sortie ? `${nomMois(mois[iS].month, 'short')} ${titreCourt(sortie.titre)}${sortie.cents != null ? ` −${chf0(sortie.cents)}` : ''}` : '';
+  const finS = iS >= 0 && cx(iS) - 16 + titreS.length * 7 > X1;
+  return <section className="kh-band" aria-label="Caisse fin de mois" ref={racine}>
     <div className="kh-bh">Caisse fin de mois<button type="button" onClick={onPrevisions}>Prévisions<ChevronRight size={16}/></button></div>
     {!connu ? <p className="kh-vide">Solde de départ à renseigner dans Prévisions : sans lui, la caisse reste inconnue (pas de courbe, jamais 0).</p>
-      : <svg viewBox="0 0 366 68" role="img" aria-label={`Caisse en fin de mois, de ${nomMois(mois[0].month, 'long')} à ${nomMois(mois[mois.length - 1].month, 'long')}`}>
+      : <svg viewBox={`0 0 ${X1} 68`} role="img" aria-label={`Caisse en fin de mois, de ${nomMois(mois[0].month, 'long')} à ${nomMois(mois[mois.length - 1].month, 'long')}${titreS ? ` ; ${titreS.replace(' −', ', sortie de ')} CHF` : ''}`}>
         {iF >= 0 && <rect x={f(X0 + W * iF)} y={14} width={f(W)} height={38} style={{ fill: 'var(--kh-fin)', opacity: .12 }}/>}
+        {iS >= 0 && <rect x={f(X0 + W * iS)} y={14} width={f(W)} height={38} style={{ fill: 'var(--kh-fin)', opacity: .12 }}/>}
         {[...ech.ticks].map(t => <g key={t}><line x1={X0} y1={f(y(t))} x2={X1} y2={f(y(t))} style={{ stroke: 'rgb(var(--cave-700))', opacity: t === 0 ? 1 : .55 }}/><text x={30} y={f(y(t)) + 4} fontSize={12} textAnchor="end" fill={mut}>{chf0(t)}</text></g>)}
         <path d={aire} style={{ fill: 'var(--kh-fin)', opacity: .1 }}/><path d={ligne} fill="none" strokeWidth={2.5} style={{ stroke: 'var(--kh-fin)' }}/>
-        {prevision.openingCashCents != null && <circle cx={X0 + 2} cy={f(y(prevision.openingCashCents))} r={3.5} style={{ fill: 'var(--kh-fin)' }}/>}
+        {prevision.openingCashCents != null && iS < 0 && <circle cx={X0 + 2} cy={f(y(prevision.openingCashCents))} r={3.5} style={{ fill: 'var(--kh-fin)' }}/>}
+        {iS >= 0 && vS != null && <><line x1={f(cx(iS))} y1={14} x2={f(cx(iS))} y2={Math.max(14, f(y(vS)) - 5)} strokeWidth={1.5} strokeDasharray="2 2" style={{ stroke: 'var(--kh-fin)' }}/>
+          <circle cx={f(cx(iS))} cy={f(y(vS))} r={4.5} strokeWidth={1.5} style={{ fill: 'var(--kh-fin)', stroke: 'var(--kh-bg)' }}/>
+          {/* courbe au sommet de l'échelle : le titre passerait sur elle, il se pose dessous, dans l'aire */}
+          <text x={f(finS ? X1 : cx(iS) - 16)} y={y(vS) < 26 ? f(y(vS)) + 18 : 11} fontSize={13} fontWeight={700} textAnchor={finS ? 'end' : 'start'} style={{ fill: 'var(--kh-fin-t)', ...halo }}>{titreS}</text></>}
         {iH >= 0 && effetHero?.avecCents != null && <><circle cx={f(cx(iH))} cy={f(y(effetHero.avecCents))} r={4.5} strokeWidth={1.5} style={{ fill: 'var(--kh-fin)', stroke: 'var(--kh-bg)' }}/>
-          <text x={f(Math.min(342, Math.max(24, cx(iH))))} y={11} fontSize={12} fontWeight={700} textAnchor="middle" style={{ fill: 'var(--kh-fin-t)' }}>{titreCourt(hero!.title)}</text></>}
+          <text x={f(Math.min(X1 - 24, Math.max(24, cx(iH))))} y={11} fontSize={12} fontWeight={700} textAnchor="middle" style={{ fill: 'var(--kh-fin-t)' }}>{titreCourt(hero!.title)}</text></>}
         {iF >= 0 && effetFocus?.avecCents != null && <><line x1={f(cx(iF))} y1={14} x2={f(cx(iF))} y2={Math.max(14, f(y(effetFocus.avecCents)) - 5)} strokeWidth={1.5} strokeDasharray="2 2" style={{ stroke: 'var(--kh-fin)' }}/>
           <circle cx={f(cx(iF))} cy={f(y(effetFocus.avecCents))} r={4.5} strokeWidth={1.5} style={{ fill: 'var(--kh-fin)', stroke: 'var(--kh-bg)' }}/>
           <text x={f(finF ? X1 : cx(iF) - 16)} y={11} fontSize={13} fontWeight={700} textAnchor={finF ? 'end' : 'start'} style={{ fill: 'var(--kh-fin-t)', ...halo }}>{titreF}</text></>}
@@ -187,8 +217,8 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
   onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onPrevisions: () => void;
   contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
-  avis: { titre: string; date: string | null } | null; onVoirRealises: () => void; onFermerAvis: () => void }
-function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onPrevisions, contacts, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
+  fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void }
+function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
   const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null), [etape, setEtape] = useState<string | null>(null);
   const hero = prochainAchat(plans), { lignes, connuCents, inconnus } = suivants(plans, hero), mois = prevision.months.slice(1, MOIS_BANDEAU).map(m => m.month);
   const effetHero = hero ? effetProjet(hero, plans, prevision.months, prevision.items) : null;
@@ -221,11 +251,11 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
             {d.budgetKnown ? <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
               : <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
           </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
-          {ouvert && <PanneauEtape plan={plan} contacts={contacts} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
+          {ouvert && <PanneauEtape plan={plan} contacts={contacts} fournisseurs={fournisseurs} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
       })}</>}
     {avis && <Avis avis={avis} onVoir={onVoirRealises} onFermer={onFermerAvis}/>}
-    <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} onPrevisions={onPrevisions}/>
+    <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
       onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
   </div>;
@@ -252,13 +282,15 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
   const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
   const aVenir = useMemo(() => projects.filter(p => !realises.has(p.id)), [data, realises]);
-  const [avis, setAvis] = useState<{ titre: string; date: string | null } | null>(null);
+  const [avis, setAvis] = useState<SortieMarque | null>(null);
   const dejaRealises = useRef<Set<string> | null>(null);
   useEffect(() => {
     const avant = dejaRealises.current; dejaRealises.current = realises;
     const nouveau = avant ? projects.find(p => realises.has(p.id) && !avant.has(p.id)) : undefined;
-    if (nouveau) setAvis({ titre: nouveau.title, date: dateFacture(nouveau, data.transactions) });
+    if (nouveau) { const facture = upgradeProgress(nouveau, data.transactions, data.payments); setAvis({ titre: nouveau.title, date: dateFacture(nouveau, data.transactions), cents: facture.invoicedComplete ? facture.invoicedCents : null }); }
   }, [realises]);
+  // Les fournisseurs déjà vus dans les achats : le carnet ne dit pas qui est fournisseur et qui est client.
+  const fournisseurs = useMemo(() => fournisseursConnus(data.plans, data.transactions, data.contacts), [data]);
   useEffect(() => { if (!avis) return; const t = setTimeout(() => setAvis(null), 8000); return () => clearTimeout(t); }, [avis]);
   const enregistrer = async (plan: FinancialPlan, suite: FinancialPlan): Promise<boolean> => {
     if (busy) return false;
@@ -300,7 +332,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     const detail = upgradeDetails(plan), progress = upgradeProgress(plan, data.transactions, data.payments), missing = upgradeReadiness(plan);
     return <article className="upgrade-item" key={plan.id}>
       <button className="upgrade-project" onClick={() => open(plan)}>
-        <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}{scope === 'future' && <>{' · '}{dansLesPrevisions(plan)
+        <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{realises.has(plan.id) && dateFacture(plan, data.transactions) ? `Payé · facture du ${new Date(`${dateFacture(plan, data.transactions)}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' })}` : upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}{scope === 'future' && <>{' · '}{dansLesPrevisions(plan)
           ? <span className="upgrade-prev upgrade-prev-oui">dans les prévisions · {moisCourtDe(plan)}</span>
           : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
         <span className="upgrade-price">{detail.budgetKnown ? formatCHF(plan.amountCents) : 'À estimer'}<ChevronRight size={16}/></span>
@@ -313,20 +345,21 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     </article>;
   };
   return <div className="finance upgrade-workspace">
-    {!mobile && <>
+    {!mobile && compact && <>
     <p className="finance-muted">Priorise tes équipements et choisis les achats à inclure dans tes prévisions.</p>
     <div className="upgrade-toolbar"><button className="finance-action" onClick={() => open(null)}><Plus size={18}/>Ajouter un projet</button></div>
     </>}
-    <div className="flex items-center gap-2"><div className={`min-w-0 flex-1${compact ? '' : ' kh-tabs'}`}>
+    <div className={compact ? 'flex items-center gap-2' : 'kh-views'}><div className={`min-w-0 flex-1${compact ? '' : ' kh-tabs'}`}>
       <ViewNavigation label="Afficher les projets" value={scope} onChange={setScope} options={[{value:'future',label:'À venir'},{value:'completed',label:'Réalisés'},{value:'archived',label:'Archives'}]}>
         <div className="finance-filter upgrade-scopes" role="group" aria-label="Afficher les projets"><button aria-pressed={scope === 'future'} onClick={() => setScope('future')}>À venir</button><button aria-pressed={scope === 'completed'} onClick={() => setScope('completed')}>Réalisés</button><button aria-pressed={scope === 'archived'} onClick={() => setScope('archived')}>Archives</button></div>
       </ViewNavigation>
-    </div>{mobile && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
+    </div>{!compact ? <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>
+      : mobile && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
     {error && <p className="finance-error" role="alert">{error}</p>}
     {compact && scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
     {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onPrevisions={voirPrevisions}
-      contacts={data.contacts} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
+      contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
       avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
     : vueAVenir ? null : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));

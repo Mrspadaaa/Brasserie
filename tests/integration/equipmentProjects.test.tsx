@@ -149,7 +149,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   it('garde le formulaire et son identifiant après une erreur d’enregistrement', async () => {
     const save = vi.spyOn(FinanceService, 'saveUpgrade').mockRejectedValueOnce(Error('Connexion interrompue'));
-    render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Ajouter un projet' }));
+    render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Ajouter un besoin' }));
     change('Matériel ou aménagement', 'Fermenteur pour la saison');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Connexion interrompue'));

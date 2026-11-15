@@ -1,5 +1,5 @@
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from './types';
-import { isoDate, isActiveTransaction, transactionKind } from './ledger';
+import { isoDate, isActiveTransaction, transactionKind, transactionVendor } from './ledger';
 import { upgradeBudget, upgradeDetails, upgradeProgress } from './upgrades';
 import { repereDe } from './upgradeForecast';
 
@@ -38,6 +38,36 @@ export function estRealise(plan: FinancialPlan, transactions: FinanceTransaction
 export function dateFacture(plan: FinancialPlan, transactions: FinanceTransaction[]): string | null {
   const dates = transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === plan.id).map(tx => isoDate(tx.date)).filter((d): d is string => !!d).sort();
   return dates.length ? dates[dates.length - 1] : null;
+}
+
+/** Où poser la sortie d'un achat payé dans le bandeau : le mois de sa facture, le premier mois si elle est antérieure ; -1 sans date ou après la fenêtre. */
+export function indexMoisSortie(date: string | null, mois: string[]): number {
+  if (!date || mois.length === 0) return -1;
+  const m = date.slice(0, 7);
+  return m < mois[0] ? 0 : mois.indexOf(m);
+}
+/** Le texte « Fin mars, il reste 4 250 » tient-il dans la partie claire de la barre (14 px ≈ 7,4 px par signe, 24 px de marges) ? Sinon il passe à droite de la barre (maquette, sortie). */
+export function texteTientDansBarre(nbSignes: number, partAchat: number, largeurBarre = 340): boolean {
+  return (1 - Math.min(1, Math.max(0, partAchat))) * largeurBarre >= 7.4 * nbSignes + 24;
+}
+export interface Fournisseur { nom: string; telephone: boolean }
+const norme = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+/**
+ * Les fournisseurs déjà connus pour du matériel : ceux d'un autre projet et ceux d'une dépense de matériel (ou liée à un projet).
+ * Le carnet de contacts de l'app ne distingue pas fournisseurs et clients (tous des « prospects ») : on ne peut donc pas filtrer le carnet,
+ * on part de ce que les achats disent. Le plus utilisé d'abord ; le téléphone vient du carnet si le nom y est (comparaison sans accent ni casse).
+ */
+export function fournisseursConnus(plans: FinancialPlan[], transactions: FinanceTransaction[], contacts: Array<{ title: string; contactPhone?: string }>): Fournisseur[] {
+  const compte = new Map<string, { nom: string; n: number }>();
+  const voir = (nom?: string) => {
+    const n = nom?.trim(); if (!n) return;
+    const cle = norme(n), e = compte.get(cle);
+    if (e) e.n++; else compte.set(cle, { nom: n, n: 1 });
+  };
+  plans.filter(p => p.upgrade).forEach(p => voir(p.vendor));
+  transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && (tx.category === 'materiel' || tx.finance?.planId)).forEach(tx => voir(transactionVendor(tx)));
+  return [...compte.entries()].sort((a, b) => b[1].n - a[1].n || a[1].nom.localeCompare(b[1].nom, 'fr'))
+    .map(([cle, { nom }]) => { const c = contacts.find(x => norme(x.title) === cle); return { nom: c?.title ?? nom, telephone: !!c?.contactPhone }; });
 }
 
 /** « 1 234,50 », « 1'234.5 », « 900 » → centimes ; vide, nul, négatif ou illisible → null (l'inconnu n'est jamais 0). */
