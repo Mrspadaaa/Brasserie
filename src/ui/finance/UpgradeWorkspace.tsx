@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
-import { ArrowRight, Archive, Calendar, Check, ChevronDown, ChevronRight, Mail, PenLine, Plus, Search, Tag, Wrench, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowRight, Archive, Calendar, Check, ChevronDown, ChevronRight, Mail, PenLine, Phone, Plus, Receipt, Search, Tag, Users, Wrench, X } from 'lucide-react';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { isUpgradePlan, UPGRADE_STAGES, UPGRADE_TIMINGS, upgradeDetails, upgradeProgress, upgradeReadiness } from '../../domain/finance/upgrades';
 import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
 import { buildForecast, type FinanceForecast } from '../../domain/finance/forecast';
+import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, parsePrix, type Anneau, type TonAnneau } from '../../domain/finance/upgradeRing';
+import type { CreativeItem } from '../../types';
 import { MOIS_BANDEAU, REPERES, echelleCaisse, effetProjet, estPose, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
@@ -17,7 +19,7 @@ import './finance.css';
 import './upgrades.css';
 import './upgrade-plan.css';
 
-const read = () => ({ ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), batches: StorageService.getBatches(), stocks: StorageService.getStocks() });
+const read = () => ({ ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), batches: StorageService.getBatches(), stocks: StorageService.getStocks(), contacts: StorageService.getCreativeItems().filter(i => i.type === 'prospect') });
 export const upgradeDateLabel = (plan: FinancialPlan) => {
   const date = isoDate(plan.date);
   return date ? new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric', ...(upgradeDetails(plan).datePrecision === 'day' ? { day: 'numeric' } : {}) }) : 'Date à choisir';
@@ -39,9 +41,67 @@ const chf0 = (cents: number) => new Intl.NumberFormat('fr-CH', { maximumFraction
 const chf2 = (cents: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100);
 const nomMois = (mois: string, month: 'short' | 'long') => new Date(`${mois}-15T12:00:00`).toLocaleDateString('fr-CH', { month });
 
-function Repere({ plan }: { plan: FinancialPlan }) {
-  const r = repereDe(plan), Icone = r === 'chercher' ? Search : r === 'devis' ? Mail : Tag;
-  return <span className={`kh-st ${r}`} role="img" aria-label={REPERES[r]} title={REPERES[r]}><Icone size={16} strokeWidth={2}/></span>;
+/** Anneau d'étape à trois tiers (kyh1) : un tiers par étape, Besoin · Prix ou devis · Réalisé. Les mesures sont celles de la maquette (32 px par ligne, 16 px à la légende). */
+const GEOM = { 32: { r: 13, dash: '24.23 57.45', off: [18.92, -8.31, -35.54], epais: 3.5, fin: 2.5 }, 16: { r: 6, dash: '10.97 26.73', off: [8.62, -3.95, -16.52], epais: 3, fin: 2 } } as const;
+const TONS: Record<TonAnneau, string> = { mut: 'var(--kh-mut)', att: 'var(--kh-att)', hop: 'var(--kh-hop)' };
+const ICONES = { search: Search, mail: Mail, tag: Tag, check: Check } as const;
+function AnneauSvg({ anneau, taille = 32, seul, titre = true }: { anneau: Anneau; taille?: 32 | 16; seul?: 0 | 1 | 2; titre?: boolean }) {
+  const g = GEOM[taille], Icone = ICONES[anneau.icone], ton = TONS[anneau.ton];
+  return <svg className="kh-ring" width={taille} height={taille} viewBox={taille === 32 ? '0 0 32 32' : '0 0 16 16'} {...(titre ? { role: 'img', 'aria-label': anneau.libelle } : { 'aria-hidden': true })}>
+    {titre && <title>{anneau.libelle}</title>}
+    {anneau.arcs.map((etat, i) => {
+      const plein = seul != null ? seul === i : etat !== 'vide';
+      return <circle key={i} cx={taille / 2} cy={taille / 2} r={g.r} fill="none" stroke={plein ? (seul != null ? TONS.hop : ton) : 'var(--kh-line2)'} strokeWidth={plein ? g.epais : g.fin}
+        strokeDasharray={g.dash} strokeDashoffset={g.off[i]} {...(etat === 'cours' && seul == null ? { strokeLinecap: 'round' as const } : {})}/>;
+    })}
+    {taille === 32 && <Icone x={9} y={9} width={14} height={14} strokeWidth={2.4} color={ton}/>}
+  </svg>;
+}
+/** La légende, une fois : les trois étapes, un tiers allumé chacune. */
+function Legende() {
+  const modele = anneauDe({ upgrade: { stage: 'idea' } } as FinancialPlan);
+  return <div className="kh-key" aria-label="Les étapes d’un achat : un tiers par étape">
+    {ETAPES_ANNEAU.map((nom, i) => <React.Fragment key={nom}><AnneauSvg anneau={modele} taille={16} seul={i as 0 | 1 | 2} titre={false}/><b>{nom}</b></React.Fragment>)}
+  </div>;
+}
+/** La frise des trois étapes : Besoin fait, Prix ou devis (en cours ou fait), Réalisé (« une fois payé »). */
+function Frise({ plan }: { plan: FinancialPlan }) {
+  const prix = repereDe(plan) === 'prix';
+  return <ol className="kh-fr" style={{ '--pc': prix ? '100%' : '50%' } as React.CSSProperties} aria-label="Étapes : Besoin, Prix ou devis, Réalisé">
+    <li className="ok"><i><Check size={15} strokeWidth={2.4}/></i>Besoin</li>
+    <li className={prix ? 'ok' : 'now'}><i>{prix ? <Check size={15} strokeWidth={2.4}/> : <Tag size={15} strokeWidth={2.2}/>}</i>Prix ou devis</li>
+    <li className={prix ? 'now' : ''}><i>{prix && <Receipt size={15} strokeWidth={2.2}/>}</i>Réalisé{prix && <small>une fois payé</small>}</li>
+  </ol>;
+}
+/** L'étape suivante d'un besoin, posée sous sa ligne : le prix trouvé (CHF TTC) ou un devis demandé à un contact du carnet. Rien n'est envoyé : l'app note la demande. */
+function PanneauEtape({ plan, contacts, busy, onPrix, onDevis }: { plan: FinancialPlan; contacts: CreativeItem[]; busy: boolean; onPrix: (cents: number) => void; onDevis: (contact: string) => void }) {
+  const [texte, setTexte] = useState(''), [choix, setChoix] = useState<string | null>(null), [tous, setTous] = useState(false);
+  const r = repereDe(plan), cents = parsePrix(texte), proposes = tous ? contacts : contacts.slice(0, 2);
+  return <div className="kh-pan" role="group" aria-label={`Étapes : ${plan.title}`}>
+    <Frise plan={plan}/>
+    {r !== 'prix' && <form className="kh-f" onSubmit={e => { e.preventDefault(); if (cents != null) onPrix(cents); }}>
+      <label className="kh-in"><small>CHF</small><input type="text" inputMode="decimal" autoComplete="off" placeholder={r === 'devis' ? 'prix du devis' : 'prix trouvé'} aria-label={`Prix de ${plan.title}, CHF TTC`} value={texte} onChange={e => setTexte(e.target.value)}/></label>
+      <button type="submit" className="kh-ok" aria-label="Enregistrer le prix" disabled={cents == null || busy}><Check size={20}/></button>
+    </form>}
+    {r === 'devis' && plan.vendor && <p className="kh-note">Devis demandé à {plan.vendor}.</p>}
+    {r === 'chercher' && <>
+      <div className="kh-dl">Ou un devis</div>
+      {contacts.length === 0 ? <p className="kh-note">Aucun contact dans ton carnet : ajoute-en dans Atelier › Contacts.</p>
+        : <div className="kh-ct">{proposes.map(c => <button type="button" key={c.id} aria-pressed={choix === c.title} className={choix === c.title ? 'on' : ''} onClick={() => setChoix(choix === c.title ? null : c.title)}>{c.contactPhone ? <Phone size={16}/> : <Mail size={16}/>}{c.title}</button>)}
+          {contacts.length > 2 && !tous && <button type="button" className="more" aria-label="Choisir un autre contact" onClick={() => setTous(true)}><Users size={18}/></button>}</div>}
+      {choix && <button type="button" className="kh-cta" disabled={busy} onClick={() => onDevis(choix)}><Mail size={18}/>Devis demandé à {choix}</button>}
+    </>}
+    {r === 'prix' && <p className="kh-note">Le besoin passe dans Réalisés quand la dépense est payée.</p>}
+  </div>;
+}
+/** L'avis passager quand un besoin devient réalisé : il quitte « À venir », il est dans Réalisés. */
+function Avis({ avis, onVoir, onFermer }: { avis: { titre: string; date: string | null }; onVoir: () => void; onFermer: () => void }) {
+  const quand = avis.date ? new Date(`${avis.date}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' }) : '';
+  return <div className="kh-toast" role="status">
+    <AnneauSvg anneau={anneauDe({ upgrade: { stage: 'ready', budgetKnown: true } } as FinancialPlan, true)} taille={32} titre={false}/>
+    <span className="kh-tt"><b>{avis.titre} · dans Réalisés</b><small>payé{quand ? ` · facture du ${quand}` : ''}</small></span>
+    <button type="button" className="kh-voir" onClick={onVoir}>Voir</button>
+  </div>;
 }
 function ChoixMois({ plan, mois, onChoisir }: { plan: FinancialPlan; mois: string[]; onChoisir: (mois: string | null) => void }) {
   const actuel = moisDePlan(plan);
@@ -101,6 +161,7 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
   return <Sheet open bare title={plan.title} onClose={onClose} className="kh-feuille">
     <div className="kh kh-sheet" style={{ overflowY: 'auto' }}>
       <div className="kh-sh"><h2>{plan.title}</h2><span className={`kh-tag ${repereDe(plan)}`}>{etape}</span><button type="button" className="kh-x" aria-label="Fermer" onClick={onClose}><X size={18}/></button></div>
+      <Frise plan={plan}/>
       <div className="kh-lbl">Coût prévu, CHF TTC</div>
       <div className="kh-cost">{lignes.map(([nom, v]) => <React.Fragment key={nom}><span>{nom}</span>{v != null ? <span className="v kh-m">{chf2(v)}</span> : <span className="kh-u" style={{ justifySelf: 'end' }}>à estimer</span>}</React.Fragment>)}
         {connus.length === 0 ? <><span className="t">Aucun prix</span><span className="v t">à estimer</span></>
@@ -124,9 +185,11 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
   </Sheet>;
 }
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
-  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onPrevisions: () => void }
-function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onPrevisions }: AVenirProps) {
-  const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null);
+  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onPrevisions: () => void;
+  contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
+  avis: { titre: string; date: string | null } | null; onVoirRealises: () => void; onFermerAvis: () => void }
+function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onPrevisions, contacts, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
+  const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null), [etape, setEtape] = useState<string | null>(null);
   const hero = prochainAchat(plans), { lignes, connuCents, inconnus } = suivants(plans, hero), mois = prevision.months.slice(1, MOIS_BANDEAU).map(m => m.month);
   const effetHero = hero ? effetProjet(hero, plans, prevision.months, prevision.items) : null;
   const focus = plans.find(p => p.id === marque) ?? null, effetFocus = focus && estPose(focus) ? effetProjet(focus, plans, prevision.months, prevision.items) : null;
@@ -143,19 +206,25 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
     </section>}
     {lignes.length > 0 && <>
       <div className="kh-lt">{hero ? 'Les suivants' : 'Mes achats'}<span>{lignes.length} achat{lignes.length > 1 ? 's' : ''} · {connuCents > 0 ? <>{inconnus ? 'au moins ' : ''}<b className="kh-m">{chf0(connuCents)}</b></> : 'prix à estimer'}</span></div>
+      <Legende/>
       {Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
         const rows = lignes.filter(p => upgradeDetails(p).timing === timing);
         return rows.length ? <section key={timing}><div className="kh-it">{label}</div>{rows.map(plan => {
           const d = upgradeDetails(plan), m = moisDePlan(plan);
           const pose = estPose(plan);
-          return <React.Fragment key={plan.id}><div className={`kh-r${marque === plan.id && pose ? ' kh-on' : ''}`}>
-            {d.budgetKnown ? <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => setPicker(picker === plan.id ? null : plan.id)}>{m ? nomMois(m, 'short') : '+ mois'}</button>
+          const anneau = anneauDe(plan), ouvert = etape === plan.id;
+          return <React.Fragment key={plan.id}><div className={`kh-r${(marque === plan.id && pose) || ouvert ? ' kh-on' : ''}`}>
+            {d.budgetKnown ? <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : '+ mois'}</button>
               : <span className="kh-chip no" aria-label="Sans prix, rien à poser">–</span>}
-            <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><Repere plan={plan}/><b>{plan.title}</b>{d.budgetKnown ? <span className="kh-a kh-m">{chf0(plan.amountCents)}</span> : <span className="kh-u">à estimer</span>}</button>
-            {pose && <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>}
-          </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}</React.Fragment>;
+            <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
+            <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><span className="kh-nm"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
+            {d.budgetKnown ? <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
+              : <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
+          </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
+          {ouvert && <PanneauEtape plan={plan} contacts={contacts} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
       })}</>}
+    {avis && <Avis avis={avis} onVoir={onVoirRealises} onFermer={onFermerAvis}/>}
     <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} onPrevisions={onPrevisions}/>
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
       onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
@@ -180,6 +249,24 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   const handled = React.useRef<number>(undefined);
   React.useEffect(() => { if (createRequest?.kind === 'newIdea' && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
   const projects = data.plans.filter(isUpgradePlan);
+  /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
+  const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
+  const aVenir = useMemo(() => projects.filter(p => !realises.has(p.id)), [data, realises]);
+  const [avis, setAvis] = useState<{ titre: string; date: string | null } | null>(null);
+  const dejaRealises = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    const avant = dejaRealises.current; dejaRealises.current = realises;
+    const nouveau = avant ? projects.find(p => realises.has(p.id) && !avant.has(p.id)) : undefined;
+    if (nouveau) setAvis({ titre: nouveau.title, date: dateFacture(nouveau, data.transactions) });
+  }, [realises]);
+  useEffect(() => { if (!avis) return; const t = setTimeout(() => setAvis(null), 8000); return () => clearTimeout(t); }, [avis]);
+  const enregistrer = async (plan: FinancialPlan, suite: FinancialPlan): Promise<boolean> => {
+    if (busy) return false;
+    setBusy(plan.id); setError('');
+    try { await FinanceService.saveUpgrade(suite); return true; }
+    catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être mis à jour.'); return false; }
+    finally { setBusy(undefined); }
+  };
   /** La vue kh1r est celle de l'Atelier ; ouverte depuis Finances › Prévisions (feuille « Mes projets de matériel », `onOpenProject`), la liste compacte d'avant reste. */
   const compact = !!onOpenProject || !!onVoirPrevisions, vueAVenir = !compact && scope === 'future';
   const prevision = useMemo(() => vueAVenir ? buildForecast({ transactions: data.transactions, payments: data.payments, plans: data.plans, profile: data.profile, asOf: todayISO(), months: 13, batches: data.batches,
@@ -200,7 +287,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être mis à jour.'); return false; }
     finally { setBusy(undefined); }
   };
-  const visible = projects.filter(p => scope === 'future' ? ['draft', 'active'].includes(p.status) : scope === 'completed' ? p.status === 'completed' : p.status === 'cancelled');
+  const visible = projects.filter(p => scope === 'future' ? ['draft', 'active'].includes(p.status) && !realises.has(p.id) : scope === 'completed' ? p.status === 'completed' || realises.has(p.id) : p.status === 'cancelled');
   const changeInclusion = async (plan: FinancialPlan, include: boolean) => {
     if (busy) return;
     if (include && upgradeReadiness(plan).length) { open(plan); return; }
@@ -238,7 +325,9 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     {error && <p className="finance-error" role="alert">{error}</p>}
     {compact && scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
-    {prevision && visible.length > 0 ? <AVenir plans={projects} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onPrevisions={voirPrevisions}/>
+    {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onPrevisions={voirPrevisions}
+      contacts={data.contacts} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
+      avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
     : vueAVenir ? null : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));
       return rows.length ? <section className="upgrade-stage" key={timing}><h3>{label}</h3>{rows.map(renderProject)}</section> : null;

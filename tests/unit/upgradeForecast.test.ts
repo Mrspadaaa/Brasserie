@@ -135,3 +135,54 @@ describe('upgradeForecast : repères, échelle, noms courts', () => {
     expect(titreCourt('Pose du thermoplongeur')).toBe('thermoplong…');
   });
 });
+
+/* ───── kyh1 : anneaux d'étape, gestes de prix et de devis, réalisé dérivé des factures ───── */
+import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, parsePrix } from '../../src/domain/finance/upgradeRing';
+import type { FinanceTransaction, FinancialPayment } from '../../src/domain/finance/types';
+
+describe('upgradeRing : l’anneau se lit des étapes existantes', () => {
+  it('Idée et À étudier : Besoin noté, prix ou devis à chercher', () => {
+    for (const stage of ['idea', 'research'] as const) expect(anneauDe(projet('X', 'Évier', null, { stage }))).toMatchObject({ arcs: ['plein', 'vide', 'vide'], ton: 'mut', icone: 'search' });
+  });
+  it('Devis en cours : deux tiers, ton ocre, arc en cours', () => {
+    expect(anneauDe(SOLS)).toMatchObject({ arcs: ['plein', 'cours', 'vide'], ton: 'att', icone: 'mail', libelle: expect.stringContaining('devis demandé') });
+  });
+  it('Prêt à acheter avec prix : prix trouvé ; sans prix : retombe sur « à chercher »', () => {
+    expect(anneauDe(ARMOIRE)).toMatchObject({ arcs: ['plein', 'plein', 'vide'], ton: 'hop', icone: 'tag' });
+    expect(anneauDe(projet('Z', 'Pompe', null, { stage: 'ready' }))).toMatchObject({ arcs: ['plein', 'vide', 'vide'], icone: 'search' });
+  });
+  it('Réalisé : trois tiers', () => { expect(anneauDe(ARMOIRE, true)).toMatchObject({ etape: 3, arcs: ['plein', 'plein', 'plein'] }); });
+});
+describe('upgradeRing : prix et devis', () => {
+  it('parsePrix lit « 1 234,50 », « 1\'234.5 » et refuse vide, nul, négatif, texte (jamais 0)', () => {
+    expect(parsePrix('1 234,50')).toBe(123450); expect(parsePrix("1'234.5")).toBe(123450); expect(parsePrix('900')).toBe(90000);
+    for (const t of ['', '0', '-5', 'abc', '12,345']) expect(parsePrix(t)).toBeNull();
+  });
+  it('avecPrix chiffre l’achat, garde livraison et installation, passe à Prêt à acheter', () => {
+    const p = avecPrix(EVIER, 85_000);
+    expect(p).toMatchObject({ amountCents: 85_000, upgrade: { budgetKnown: true, purchaseCents: 85_000, stage: 'ready' } });
+    expect(avecPrix(SOLS, 240_000).upgrade).toMatchObject({ estimateSource: 'quote', stage: 'ready' });
+  });
+  it('avecDevisDemande note le fournisseur et l’étape, le prix reste inconnu', () => {
+    const p = avecDevisDemande(EVIER, 'Inox Gruyère');
+    expect(p).toMatchObject({ vendor: 'Inox Gruyère', amountCents: 0, upgrade: { stage: 'quote', budgetKnown: false } });
+  });
+});
+describe('upgradeRing : réalisé = dépense liée payée en entier', () => {
+  const tx = (id: string, planId: string, cents: number, date = '2026-11-14'): FinanceTransaction => ({ id, date, description: 'Facture', category: 'materiel', subcategory: '', amountHT: cents / 100, amountTTC: cents / 100, tvaRate: 0, tvaAmount: 0,
+    finance: { version: 1, kind: 'expense', amountCents: cents, planId, paymentStatus: 'unpaid', lines: [{ id: '1', kind: 'equipment', description: 'Achat', amountCents: cents }] } } as FinanceTransaction);
+  const pay = (transactionId: string, amountCents: number): FinancialPayment => ({ id: `P-${transactionId}`, transactionId, date: '2026-11-14', amountCents, direction: 'out', method: 'bank', recordedAt: '2026-11-14T10:00:00.000Z' } as FinancialPayment);
+  it('sans facture : non ; facture non payée : non ; payée en entier : oui', () => {
+    expect(estRealise(B100, [], [])).toBe(false);
+    expect(estRealise(B100, [tx('T', 'B', 320_000)], [])).toBe(false);
+    expect(estRealise(B100, [tx('T', 'B', 320_000)], [pay('T', 100_000)])).toBe(false);
+    expect(estRealise(B100, [tx('T', 'B', 320_000)], [pay('T', 320_000)])).toBe(true);
+  });
+  it('une facture plus petite que le budget ne suffit pas : « Marquer comme réalisé » reste au brasseur', () => {
+    expect(estRealise(B100, [tx('T', 'B', 100_000)], [pay('T', 100_000)])).toBe(false);
+  });
+  it('dateFacture rend la dernière date de facture liée, sinon null', () => {
+    expect(dateFacture(B100, [tx('T1', 'B', 1, '2026-11-02'), tx('T2', 'B', 1, '2026-11-14'), tx('T3', 'AUTRE', 1, '2026-12-01')])).toBe('2026-11-14');
+    expect(dateFacture(B100, [])).toBeNull();
+  });
+});
