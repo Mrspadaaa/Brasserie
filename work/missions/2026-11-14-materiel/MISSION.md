@@ -109,3 +109,12 @@ Lecture du pilote : zq1 est retenue pour sa pratique ; il faut en garder la stru
 
 ### Avancement 15.11
 - SPEC versée (ses mots sur zq1). BRIEF-APAISE.md ; za1 couleur, za2 ordre, za3 mots, za4 une chose à la fois (concepteurs Opus, une variante par agent). Verdict Opus (critique/VERDICT-V2.md) : za4 1re, za1 et za4 à reprendre → corrigées (rouge seul à la panne ; gestes 44 px). Page neuve publiée. Worktree de port prêt : C:/Users/mrspa/AppData/Local/Temp/materiel-port, branche claude/materiel-port, base en-ligne/2026-11-15-atelier-kckd (01d3de75). Attend son choix.
+- Choix 15.11, mot pour mot : « za3 Une date, pas un compteur mieux ». Porter za3 1:1 (zq1 apaisée), tests, build, captures, mise en ligne.
+
+### Reprise 15.11 (port za3) — état pour la session suivante
+- Choix : za3 (SPEC versée). Inventaire et modèle : PORT.md. Voies d1 (domaine, 55 tests), d2a (liste), d2b (fiche), c1 (13 corrections du test d'écran ECRAN-PORT.md), c2 (ECRAN-PORT-2.md : P7, N1–N5), correctif pilote « janv. » sous la dernière ligne.
+- Code : worktree C:/Users/mrspa/AppData/Local/Temp/materiel-port, branche claude/materiel-port, HEAD 059a8511 = port + fusion de en-ligne/2026-11-15-finances (dernier tag en ligne). Non poussée.
+- Preuves : vitest complet 13 échecs, les mêmes 13 que la base en-ligne/2026-11-15-finances (rejoués dans C:/Users/mrspa/AppData/Local/Temp/materiel-base) ; tsc vert ; VITE_HOP_V4=on npm run build vert ; check-no-dev-auth OK ; check-build-flags OK ; check-firebase-config OK (script pris du dossier partagé, absent du tag). deploiement/vitest-complet.txt, deploiement/build.txt.
+- En cours : exécutant Haiku → captures avant déploiement de 059a8511 dans avant-deploiement/059a8511/ (9 états × 390/1280 × clair/sombre, CAPTURES.md).
+- Prochaine action : critique Opus écrit avant-deploiement/059a8511/VERDICT.md (format de scripts/agents/controle-avant-deploiement.mjs : Version, tableau capture|thème|largeur|état|problèmes|bloquants, Pilote : vu, Bloquants : 0) ; pilote regarde ; node scripts/agents/controle-avant-deploiement.mjs 059a8511 --dossier work/missions/2026-11-14-materiel/avant-deploiement → OK ; puis dans W : npx firebase deploy --only hosting --project brasserie-l-affinee ; ouvrir la page servie ; tag en-ligne/2026-11-15-materiel ; jouer en ligne sur un appareil « ZZ TEST — … » (Fait, Étalonné, Annuler, fiche), puis le supprimer ; note de déploiement dans le dossier de notes partagé ; commit des fichiers de mission par chemins.
+- Ne jamais toucher .codex/hooks.json, functions/.env, firestore.rules.

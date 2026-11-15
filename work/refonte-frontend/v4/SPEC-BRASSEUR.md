@@ -1711,3 +1711,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : zq1 retenue pour sa pratique ; « anxiogène » ambigu (couleur, ordre, mots, nombre d'alertes) : chaque lecture devient une variante apaisée de zq1, montrée avant le port, L13.)
 - **15.11**, mot pour mot, sur « Le + selon l'écran » (page Période et +) : « b1r — Non mais certaines actions doivent toujours être possible, juste celle de l'écran actuel sont plus mis en avant. Et le bouton doit toujours être flottant.... »
   (lu : b1r refusée telle quelle ; le + reste toujours flottant, son menu garde les actions communes et met en tête celles de l'écran courant ; trois variantes, ET-PLUS révisé.)
+- **15.11**, mot pour mot, sur la page « Matériel apaisé · 15.11 » (https://claude.ai/artifact/GtTjLszM1jRHpnoZHYVpAn) : « za3 Une date, pas un compteur mieux »
+  (lu : za3 choisie, zq1 avec un verbe et une date au lieu des compteurs de jours ; à porter 1:1 dans Stocks › Matériel, puis mettre en ligne.)
