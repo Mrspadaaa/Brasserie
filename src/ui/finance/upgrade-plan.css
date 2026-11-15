@@ -2,7 +2,7 @@
    Classes en `kh-` ; couleurs et rayons par les jetons du thème (clair et cave). */
 .kh { --kh-fin:rgb(var(--area-finances)); --kh-fin-t:rgb(var(--area-finances-texte)); --kh-finbg:rgb(var(--area-finances) / .1); --kh-ink:rgb(var(--cave-texte-50)); --kh-mut:rgb(var(--cave-texte-400));
   --kh-line:rgb(var(--cave-800)); --kh-line2:rgb(var(--cave-700)); --kh-bg:rgb(var(--cave-950)); --kh-s1:rgb(var(--cave-900)); --kh-hop:rgb(var(--hop-texte)); --kh-att:rgb(var(--attention-texte));
-  --kh-act:rgb(var(--ebc-straw)); --kh-onact:rgb(var(--sur-paille)); --kh-bas:calc(56px + env(safe-area-inset-bottom, 0px)); max-width:680px; }
+  --kh-act:rgb(var(--ebc-straw)); --kh-onact:rgb(var(--sur-paille)); --kh-bas:var(--main-navigation-height, 2.5rem); max-width:680px; }
 .kh svg { flex:none; }
 .kh .kh-m { font-variant-numeric:tabular-nums lining-nums; white-space:nowrap; }
 .kh button { text-align:left; }
@@ -40,7 +40,7 @@
 .kh-chip.off { border:1.5px solid var(--kh-line2); color:var(--kh-mut); background:var(--kh-bg); text-align:center; }
 .kh-chip.no { color:var(--kh-mut); }
 .kh-rmain { flex:1; min-width:0; min-height:44px; display:flex; align-items:center; gap:7px; }
-.kh-rmain b { flex:1; min-width:0; font-size:16px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kh-rmain b { flex:1; min-width:0; font-size:16px; font-weight:600; line-height:1.2; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; overflow-wrap:anywhere; }
 .kh-a { flex:none; font-size:17px; font-weight:700; text-align:right; }
 .kh-u { flex:none; font-size:14px; color:var(--kh-att); border-bottom:1.5px dashed var(--kh-att); }
 .kh-st { flex:none; display:inline-flex; }
@@ -56,18 +56,30 @@
 
 /* le bandeau : posé au-dessus de la barre du bas, courbe en marches et couloir de titres */
 .kh-band { position:sticky; bottom:var(--kh-bas); z-index:4; margin:8px -12px 0; padding:0 12px 4px; background:var(--kh-bg); border-top:1px solid var(--kh-line); box-shadow:0 -4px 12px rgb(0 0 0 / .06); }
-.kh-bh { display:flex; align-items:center; gap:6px; height:28px; font-size:14px; font-weight:600; }
-.kh-bh button { margin:-6px 0 0 auto; min-height:44px; display:inline-flex; align-items:center; color:var(--kh-fin-t); font-weight:400; font-size:14px; }
-.kh-band svg { display:block; width:100%; max-width:460px; height:auto; }
+.kh-bh { position:relative; display:flex; align-items:center; gap:6px; height:28px; font-size:14px; font-weight:600; }
+/* « Prévisions › » : cible de 44 px posée dans le bandeau (haut à droite), texte sur la ligne du titre, chevron de 16 px */
+.kh-bh button { position:absolute; top:0; right:0; z-index:1; min-width:44px; height:44px; padding:6px 0 0 14px; display:inline-flex; align-items:flex-start; justify-content:flex-end; gap:2px; color:var(--kh-fin-t); font-weight:400; font-size:14px; line-height:16px; }
+.kh-bh button svg { width:16px; height:16px; flex:none; }
+.kh-band > svg { display:block; width:100%; max-width:460px; height:auto; }
 .kh-band svg text { font-family:inherit; font-variant-numeric:tabular-nums; }
 .kh-vide { font-size:13px; color:var(--kh-mut); padding:4px 0 8px; }
-@media (min-width:1024px) { .kh { --kh-bas:0px; } }
+/* grand écran : la colonne se centre dans la page, le bandeau suit la colonne (sans déborder) ; la fiche garde une largeur de feuille */
+@media (min-width:1024px) { .kh { margin-inline:auto; } .kh-band { margin-inline:0; } }
+@media (min-width:768px) { .kh-feuille { width:min(100%, 560px); margin-inline:auto; } }
+
+/* les trois onglets : soulignés comme dans la maquette (À venir · Réalisés · Archives) */
+.kh-tabs > div, .kh-tabs .finance-filter { display:flex; gap:22px; margin:0; padding:0; border:0; border-radius:0; border-bottom:1px solid rgb(var(--cave-800)); background:transparent; flex-wrap:nowrap; overflow:visible; }
+.kh-tabs button, .kh-tabs .finance-filter button { flex:none; min-width:0; min-height:44px; padding:0 2px; border:0; border-bottom:2px solid transparent; border-radius:0; margin-bottom:-1px; background:transparent; color:rgb(var(--cave-texte-400)); font-size:16px; font-weight:500; }
+.kh-tabs button[aria-pressed='true'], .kh-tabs button[aria-selected='true'], .kh-tabs .finance-filter button[aria-pressed='true'] { background:transparent; border-bottom-color:rgb(var(--cave-texte-50)); color:rgb(var(--cave-texte-50)); font-weight:600; }
+.kh-tabs button:hover { background:transparent; }
 
 /* la fiche */
 .kh-sheet { padding:0 12px 16px; color:var(--kh-ink); }
 .kh-sh { display:flex; align-items:center; gap:8px; }
 .kh-sh h2 { flex:1; min-width:0; margin:0; font-size:19px; font-weight:600; }
 .kh-tag { height:22px; padding:0 7px; border-radius:999px; font-size:12px; display:inline-flex; align-items:center; background:rgb(var(--hop) / .15); color:var(--kh-hop); white-space:nowrap; }
+.kh-tag.chercher { background:rgb(var(--cave-texte-400) / .15); color:var(--kh-mut); }
+.kh-tag.devis { background:rgb(var(--attention) / .15); color:var(--kh-att); }
 .kh-x { width:44px; height:44px; flex:none; border:1px solid var(--kh-line2); border-radius:10px; display:grid; place-items:center; }
 .kh-lbl { font-size:12px; color:var(--kh-mut); margin:9px 0 4px; display:flex; gap:6px; align-items:baseline; }
 .kh-lbl b { color:var(--kh-ink); }
@@ -96,3 +108,4 @@
 .kh-ends { display:flex; justify-content:space-between; }
 .kh-ends button { height:44px; display:inline-flex; align-items:center; gap:6px; font-size:14px; padding:0 4px; }
 .kh-hbtn { font:inherit; font-weight:inherit; min-height:44px; display:inline-flex; align-items:center; text-align:left; }
+.upgrade-workspace .kh-tabs [aria-label="Afficher les projets"] > button[aria-pressed="true"] { background:transparent; box-shadow:none; color:rgb(var(--cave-texte-50)); }

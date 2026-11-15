@@ -37,9 +37,10 @@ export const moisDePlan = (plan: FinancialPlan): string | null => isoDate(plan.d
 export const estPose = (plan: FinancialPlan): boolean => isUpgradePlan(plan) && plan.status === 'active' && upgradeReadiness(plan).length === 0;
 
 const ORDRE_HORIZON = Object.keys(UPGRADE_TIMINGS);
+/** L'ordre de la liste : horizon, date, puis l'ordre où le brasseur les a notés (sa maquette), enfin le nom. */
 const parHorizon = (a: FinancialPlan, b: FinancialPlan) => ORDRE_HORIZON.indexOf(upgradeDetails(a).timing) - ORDRE_HORIZON.indexOf(upgradeDetails(b).timing)
-  || (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr');
-/** Les projets à venir (idées et inclus), dans l'ordre de la liste : horizon, date, nom. */
+  || (a.date || '9999').localeCompare(b.date || '9999') || (a.createdAt || '').localeCompare(b.createdAt || '') || a.title.localeCompare(b.title, 'fr');
+/** Les projets à venir (idées et inclus), dans l'ordre de la liste : horizon, date, ordre de saisie, nom. */
 export const avenir = (plans: FinancialPlan[]): FinancialPlan[] => plans.filter(p => isUpgradePlan(p) && ['draft', 'active'].includes(p.status)).sort(parHorizon);
 
 /** Le prochain achat : le projet posé dont le mois vient en premier (à mois égal, l'horizon puis le nom). Aucun posé, aucun prochain achat. */

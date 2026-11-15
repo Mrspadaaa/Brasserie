@@ -96,11 +96,11 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
   onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; onPrevisions: () => void }) {
   const d = upgradeDetails(plan), pose = estPose(plan), effet = pose ? effetProjet(plan, plans, prevision.months, prevision.items) : null, progress = upgradeProgress(plan, transactions, payments);
   const lignes: Array<[string, number | undefined]> = [['Achat', d.purchaseCents], ['Livraison', d.deliveryCents], ['Installation', d.installationCents]], connus = lignes.filter(([, v]) => v != null);
-  const etape = d.stage === 'ready' ? 'Prêt' : UPGRADE_STAGES[d.stage];
-  const mTxt = effet ? nomMois(effet.mois, 'long') : '';
-  return <Sheet open bare title={plan.title} onClose={onClose}>
+  const etape = REPERES[repereDe(plan)];
+  const mTxt = effet ? nomMois(effet.mois, 'long') : '', moisPose = moisDePlan(plan);
+  return <Sheet open bare title={plan.title} onClose={onClose} className="kh-feuille">
     <div className="kh kh-sheet" style={{ overflowY: 'auto' }}>
-      <div className="kh-sh"><h2>{plan.title}</h2><span className="kh-tag">{etape}</span><button type="button" className="kh-x" aria-label="Fermer" onClick={onClose}><X size={18}/></button></div>
+      <div className="kh-sh"><h2>{plan.title}</h2><span className={`kh-tag ${repereDe(plan)}`}>{etape}</span><button type="button" className="kh-x" aria-label="Fermer" onClick={onClose}><X size={18}/></button></div>
       <div className="kh-lbl">Coût prévu, CHF TTC</div>
       <div className="kh-cost">{lignes.map(([nom, v]) => <React.Fragment key={nom}><span>{nom}</span>{v != null ? <span className="v kh-m">{chf2(v)}</span> : <span className="kh-u" style={{ justifySelf: 'end' }}>à estimer</span>}</React.Fragment>)}
         {connus.length === 0 ? <><span className="t">Aucun prix</span><span className="v t">à estimer</span></>
@@ -111,7 +111,10 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
       <button type="button" role="switch" aria-checked={plan.status === 'active'} className="kh-sw" disabled={!!busy} onClick={() => onInclusion(plan.status !== 'active')}><i/>Dans mes prévisions</button>
       {effet && effet.avecCents != null && effet.sansCents != null
         ? <><div className="kh-lbl">Fin {mTxt}</div><div className="kh-vs"><button type="button" className="w" onClick={onPrevisions}><small>Avec {titreCourt(plan.title)}{effet.auPlus ? ', au plus' : ''}</small><b className="kh-m">{chf0(effet.avecCents)}</b></button><div className="wo"><small>Sans</small><b className="kh-m">{chf0(effet.sansCents)}</b></div></div></>
-        : <p className="finance-muted" style={{ marginTop: 8 }}>{pose ? 'Caisse inconnue : renseigne ton solde de départ dans Prévisions.' : 'Pas dans tes prévisions : pose-le sur un mois pour voir ce qu’il fait à la caisse.'}</p>}
+        : !d.budgetKnown ? null
+        : <p className="finance-muted" style={{ marginTop: 8 }}>{pose ? 'Caisse inconnue : renseigne ton solde de départ dans Prévisions.'
+          : moisPose ? `Posé sur ${nomMois(moisPose, 'long')}, mais hors de tes prévisions : allume l’interrupteur pour le compter.`
+          : 'Pas dans tes prévisions : pose-le sur un mois pour voir ce qu’il fait à la caisse.'}</p>}
       <div className="kh-lbl">Achats liés <b>{progress.invoiceCount ? `${progress.invoiceCount} · ${progress.invoicedComplete ? chf0(progress.invoicedCents) : 'à répartir'}` : 'aucun'}</b></div>
       <button type="button" className="kh-cta kh-cta-fiche" onClick={onEdit}><PenLine size={18}/>Modifier</button>
       <details className="kh-fold"><summary>Après l’achat<ChevronDown size={18}/></summary><p>Ta facture se range dans Dépenses › Matériel, liée à ce projet ; la fiche d’usure se lit dans Annuel.</p></details>
@@ -144,11 +147,12 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
         const rows = lignes.filter(p => upgradeDetails(p).timing === timing);
         return rows.length ? <section key={timing}><div className="kh-it">{label}</div>{rows.map(plan => {
           const d = upgradeDetails(plan), m = moisDePlan(plan);
-          return <React.Fragment key={plan.id}><div className={`kh-r${marque === plan.id ? ' kh-on' : ''}`}>
+          const pose = estPose(plan);
+          return <React.Fragment key={plan.id}><div className={`kh-r${marque === plan.id && pose ? ' kh-on' : ''}`}>
             {d.budgetKnown ? <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => setPicker(picker === plan.id ? null : plan.id)}>{m ? nomMois(m, 'short') : '+ mois'}</button>
               : <span className="kh-chip no" aria-label="Sans prix, rien à poser">–</span>}
             <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><Repere plan={plan}/><b>{plan.title}</b>{d.budgetKnown ? <span className="kh-a kh-m">{chf0(plan.amountCents)}</span> : <span className="kh-u">à estimer</span>}</button>
-            <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
+            {pose && <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>}
           </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}</React.Fragment>;
         })}</section> : null;
       })}</>}
@@ -226,7 +230,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     <p className="finance-muted">Priorise tes équipements et choisis les achats à inclure dans tes prévisions.</p>
     <div className="upgrade-toolbar"><button className="finance-action" onClick={() => open(null)}><Plus size={18}/>Ajouter un projet</button></div>
     </>}
-    <div className="flex items-center gap-2"><div className="min-w-0 flex-1">
+    <div className="flex items-center gap-2"><div className={`min-w-0 flex-1${compact ? '' : ' kh-tabs'}`}>
       <ViewNavigation label="Afficher les projets" value={scope} onChange={setScope} options={[{value:'future',label:'À venir'},{value:'completed',label:'Réalisés'},{value:'archived',label:'Archives'}]}>
         <div className="finance-filter upgrade-scopes" role="group" aria-label="Afficher les projets"><button aria-pressed={scope === 'future'} onClick={() => setScope('future')}>À venir</button><button aria-pressed={scope === 'completed'} onClick={() => setScope('completed')}>Réalisés</button><button aria-pressed={scope === 'archived'} onClick={() => setScope('archived')}>Archives</button></div>
       </ViewNavigation>

@@ -83,7 +83,9 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     const legacy = { id: 'OLD-HOTTE', type: 'equipment' as const, title: 'Hotte historique', status: 'quote' as const, estimatedCost: 750, description: 'Évacuer la vapeur', notes: 'Devis fournisseur conservé' };
     StorageService.addCreativeItem(legacy); render(<UpgradeWorkspace/>);
     expect(FirestoreRepo.all('financialPlans')).toHaveLength(0);
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier Hotte historique' })); // kh1r : le crayon ouvre la feuille d'édition
+    // kh1r : une ligne non posée n'a pas de crayon (la maquette n'en met que sur la ligne posée) ; son titre ouvre la fiche, dont « Modifier » ouvre la feuille d'édition
+    expect(screen.queryByRole('button', { name: 'Modifier Hotte historique' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Hotte historique')); fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();

@@ -48,6 +48,12 @@ describe('upgradeForecast : les suivants', () => {
     expect(s.connuCents).toBe(45_000 + 320_000);
     expect(s.inconnus).toBe(2);
   });
+  it('à horizon égal, l’ordre de saisie du brasseur prime sur l’ordre alphabétique (sa maquette : sols avant armoire)', () => {
+    const sols = { ...SOLS, createdAt: '2026-11-01T10:00:00.000Z' }, armoire = { ...ARMOIRE, createdAt: '2026-11-01T10:00:01.000Z' };
+    expect(suivants([armoire, sols], null).lignes.map(p => p.id)).toEqual(['S', 'A']);
+    // même saisie : le nom départage
+    expect(suivants([SOLS, ARMOIRE], null).lignes.map(p => p.id)).toEqual(['A', 'S']);
+  });
   it('tous chiffrés : plus aucun inconnu', () => {
     expect(suivants([ARMOIRE, B100], null)).toMatchObject({ connuCents: 365_000, inconnus: 0 });
   });
