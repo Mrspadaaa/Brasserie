@@ -118,8 +118,34 @@ export interface EquipmentItem {
   state: string; // 'Neuf', 'Bon', 'À entretenir', 'À réparer'
   purchaseDate?: string;
   purchasePrice?: number;
+  /** Ancien texte libre d'entretien : lu comme sous-ligne quand `task` manque ; sans rythme → « sans échéance ». */
   maintenance?: string;
   notes?: string;
+  /** Verbe du geste périodique : « Étalonner », « Détartrer »… */
+  task?: string;
+  /** Rythme ; `brassin` compte les brassins depuis `lastDone`, sans date. « an » = 12 mois. */
+  rhythm?: EquipmentRhythm;
+  /** Dernier entretien fait (ISO AAAA-MM-JJ). */
+  lastDone?: string;
+  /** Panne en cours : date ISO du début ; absent = en état de marche. */
+  brokenSince?: string;
+  brokenNote?: string;
+  history?: EquipmentEvent[];
+  /** Étalonnage de l'instrument ; à défaut, préréglage par nom (domain/equipment). */
+  calibration?: EquipmentCalibration;
+  /** Sorti du parc (vendu ou réformé) : hors du fil et du compte. */
+  retired?: { date: string; reason: 'vendu' | 'réformé' };
+}
+
+export interface EquipmentRhythm { every: number; unit: 'jour' | 'semaine' | 'mois' | 'brassin' }
+export type EquipmentEventKind = 'entretien' | 'etalonnage' | 'panne' | 'reparation' | 'sortie';
+export interface EquipmentReading { label: string; expected: number; read: number }
+export interface EquipmentEvent { date: string; kind: EquipmentEventKind; readings?: EquipmentReading[]; note?: string }
+export interface EquipmentCalibration {
+  points: { label: string; expected: number }[];
+  tolerance: number;
+  /** Unité d'affichage des valeurs (« pH », « °Bx »), vide pour une densité. */
+  unit?: string;
 }
 
 export type KegState = 'lavage' | 'propre' | 'plein' | 'livre';

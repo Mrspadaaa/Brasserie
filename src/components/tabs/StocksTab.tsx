@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
+import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop, Undo2 } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
@@ -14,7 +14,10 @@ import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
 import { StockDetailSheet } from '../../ui/StockDetailSheet';
 import { KegBoard } from '../../ui/KegBoard';
-import { EquipmentList } from '../../ui/EquipmentList';
+import { EquipmentList, aujourdhuiIso } from '../../ui/EquipmentList';
+import { EquipmentDetail } from '../../ui/equipment/Detail';
+import { aTraiter } from '../../domain/equipment';
+import type { FinanceTransaction } from '../../domain/finance/types';
 import { Sheet } from '../../ui/Sheet';
 import { Button } from '../ui/Button';
 import { FormNav, Field, TextInput, inputClass } from '../../ui/FormNav';
@@ -168,6 +171,36 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    */
   const [equipmentSheet, setEquipmentSheet] = useLiveSelection(stocks.equipment, 'ref');
   const [purchasingEquipment, setPurchasingEquipment] = useState(false);
+  // Matériel (za3) : à ≥ 1024 px la fiche s'ouvre à côté de la liste (premier appareil à traiter par défaut), en dessous dans la feuille.
+  const [grandEcran, setGrandEcran] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 1024px)').matches);
+  useEffect(() => {
+    const q = typeof window !== 'undefined' ? window.matchMedia?.('(min-width: 1024px)') : undefined;
+    if (!q) return;
+    const maj = () => setGrandEcran(q.matches);
+    q.addEventListener?.('change', maj);
+    return () => q.removeEventListener?.('change', maj);
+  }, []);
+  const [paneRef, setPaneRef] = useState<string | null>(null);
+  const [payingMaintenance, setPayingMaintenance] = useState<string | null>(null);
+  const [annulerMateriel, setAnnulerMateriel] = useState<{ message: string; previous: EquipmentItem } | null>(null);
+  /** Un geste fait dans la fiche (Étalonné, Fait) : la liste en tire la note « à jour jusqu'au » et la ligne surlignée à sa nouvelle date (N1). */
+  const [traiteMateriel, setTraiteMateriel] = useState<{ avant: EquipmentItem; apres: EquipmentItem; id: number } | null>(null);
+  const changerDepuisFiche = (item: EquipmentItem, toast?: string) => {
+    const avant = stocks.equipment.find((e) => e.ref === item.ref);
+    ecrireMateriel(item, undefined, toast);
+    if (toast && avant) setTraiteMateriel({ avant, apres: item, id: Date.now() });
+  };
+  const nomPaiement = payingMaintenance ? stocks.equipment.find((e) => e.ref === payingMaintenance)?.name : undefined;
+  useEffect(() => { if (!annulerMateriel) return; const t = setTimeout(() => setAnnulerMateriel(null), 8000); return () => clearTimeout(t); }, [annulerMateriel]);
+  const vivantsMateriel = useMemo(() => stocks.equipment.filter((e) => !e.retired), [stocks.equipment]);
+  const volet = useMemo(() => vivantsMateriel.find((e) => e.ref === paneRef)
+    ?? aTraiter(vivantsMateriel, { today: aujourdhuiIso(), batches })[0]?.item ?? vivantsMateriel[0] ?? null, [vivantsMateriel, paneRef, batches]);
+  /** Un geste ou un changement de fiche : on écrit l'appareil neuf ; avec un toast, l'ancien reste pour « Annuler ». */
+  const ecrireMateriel = (next: EquipmentItem, previous?: EquipmentItem, toast?: string) => {
+    StorageService.updateEquipment(next);
+    const avant = previous ?? stocks.equipment.find((e) => e.ref === next.ref);
+    if (toast && avant) setAnnulerMateriel({ message: toast, previous: avant });
+  };
   /** « Ajouter des fûts » : ouvert par le bouton rond « + » de l'onglet Fûts. */
   const [addingKegs, setAddingKegs] = useState(false);
 
@@ -621,18 +654,52 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         addOpen={addingKegs} onAddClose={() => setAddingKegs(false)} onMessage={onSuccessMessage} />}
 
       {subTab === 'materiel' && (
-        <><MobileDetails title="Actions du matériel"><div className="flex flex-wrap gap-1"><Button intent="primary" size="sm" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" size="sm" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button>{onOpenEquipmentProjects&&<Button intent="ghost" size="sm" onClick={onOpenEquipmentProjects} icon={<Wrench size={14}/>}>Projets d’équipement</Button>}</div></MobileDetails><EquipmentList
-          equipment={stocks.equipment}
-          onOpen={setEquipmentSheet}
-          className="flex-1"
-        /></>
+        <div className={grandEcran ? 'mt mt-wide' : undefined}>
+          <div className={grandEcran ? 'mt-gauche' : undefined}>
+            <EquipmentList
+              equipment={stocks.equipment}
+              batches={batches}
+              wide={grandEcran}
+              selectedRef={grandEcran ? volet?.ref ?? null : null}
+              onOpen={(item) => (grandEcran ? setPaneRef(item.ref) : setEquipmentSheet(item))}
+              onWrite={ecrireMateriel}
+              traite={traiteMateriel}
+              onAdd={(item) => { StorageService.addEquipment(item); onSuccessMessage?.(`${item.name} ajouté.`); }}
+              onBuy={() => setPurchasingEquipment(true)}
+              onProjects={onOpenEquipmentProjects}
+              className="flex-1"
+            />
+          </div>
+          {grandEcran && volet && (
+            <section className="mt-droite" aria-label={`Fiche : ${volet.name}`}>
+              <EquipmentDetail
+                key={volet.ref} item={volet} batches={batches} transactions={transactions as unknown as FinanceTransaction[]} today={aujourdhuiIso()} layout="pane"
+                onChange={changerDepuisFiche}
+                onClose={() => setPaneRef(null)}
+                onPayMaintenance={(item) => setPayingMaintenance(item.ref)}
+                onDelete={(item) => { StorageService.deleteEquipment(item.ref); setPaneRef(null); onSuccessMessage?.(`${item.name} supprimé.`); }}
+              />
+            </section>
+          )}
+        </div>
+      )}
+
+      {annulerMateriel && (
+        <div className="mt mt-toast" role="status"><Check size={18} aria-hidden="true" /><span>{(() => { const [verbe, ...suite] = annulerMateriel.message.split(' · '); return suite.length ? <><b>{verbe}</b> · {suite.join(' · ')}</> : <b>{verbe}</b>; })()}</span><span className="flex-1" />
+          <button type="button" onClick={() => { StorageService.updateEquipment(annulerMateriel.previous); setAnnulerMateriel(null); }}><Undo2 size={18} aria-hidden="true" />Annuler</button></div>
       )}
 
       {purchasingEquipment && <ExpenseSheet initialIntent="equipment" onClose={()=>setPurchasingEquipment(false)} onSaved={()=>onSuccessMessage?.("Achat et matériel enregistrés.")}/>}
+      {payingMaintenance && <ExpenseSheet initialIntent="expense" existingEquipmentId={payingMaintenance} existingEquipmentName={nomPaiement} onClose={()=>setPayingMaintenance(null)} onSaved={()=>onSuccessMessage?.("Dépense enregistrée.")}/>}
       {/* Le matériel se modifie et se supprime : il n'était que consultable. */}
       <EquipmentSheet
         item={equipmentSheet}
+        batches={batches}
+        transactions={transactions as unknown as FinanceTransaction[]}
+        today={aujourdhuiIso()}
         onClose={() => setEquipmentSheet(null)}
+        onChange={changerDepuisFiche}
+        onPayMaintenance={(item) => { setEquipmentSheet(null); setPayingMaintenance(item.ref); }}
         onSave={(item) => {
           const exists = stocks.equipment.some((e) => e.ref === item.ref);
           if (exists) StorageService.updateEquipment(item);

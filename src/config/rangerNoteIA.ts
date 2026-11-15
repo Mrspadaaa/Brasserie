@@ -21,5 +21,8 @@ const param = (nom: string): string | null => (typeof location === 'undefined' ?
 /** La clé reste écrite dans le paquet (`VITE_RANGER_NOTE_IA:"production"`) : `check-build-flags.mjs` la lit avant tout déploiement. */
 const DRAPEAU = { VITE_RANGER_NOTE_IA: import.meta.env.VITE_RANGER_NOTE_IA as unknown };
 
-/** Lu à l'appel, jamais au chargement du module. Hors serveur de développement, `?dev-local` et `?ia` ne font rien. */
-export const modeRangerNote = (): ModeIA => modeDe(DRAPEAU.VITE_RANGER_NOTE_IA, import.meta.env.DEV, param('dev-local') !== null, param('ia'));
+/**
+ * Lu à l'appel, jamais au chargement du module. Au banc seulement : `?dev-local&ia=eteint` rejoue le mode éteint. Hors serveur de
+ * développement, le paramètre n'est pas lu (la chaîne ne reste pas dans le paquet de production).
+ */
+export const modeRangerNote = (): ModeIA => modeDe(DRAPEAU.VITE_RANGER_NOTE_IA, import.meta.env.DEV, import.meta.env.DEV && param('dev-local') !== null, param('ia'));
