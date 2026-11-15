@@ -10,7 +10,7 @@ import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
 import type { BrewerJob } from '../../functions/src/companionTypes';
 
 vi.mock('../../src/services/brewerChat', () => ({
-  BrewerChat: { userKey: vi.fn(), history: vi.fn(), activity: vi.fn(), reset: vi.fn(), submit: vi.fn(), status: vi.fn(), markRead: vi.fn() },
+  BrewerChat: { userKey: vi.fn(), history: vi.fn(), activity: vi.fn(), reset: vi.fn(), submit: vi.fn(), status: vi.fn(), markRead: vi.fn(), retry: vi.fn() },
   brewerChatError: () => 'Erreur de connexion.'
 }));
 vi.mock('../../src/ui/Sheet', () => ({
@@ -139,7 +139,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await plus();
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByRole('dialog')).toHaveTextContent('Brouillon actuel');
-    expect(screen.getByRole('dialog')).toHaveTextContent('Brouillon en cours');
+    expect(screen.getByRole('dialog')).toHaveTextContent('Agir, mesurer ou attendre');
     await ask();
     expect(api.submit).toHaveBeenCalledWith(expect.objectContaining({ draft: { name: 'Brouillon actuel', volumeL: 24 }, phase: 'Eau et sels', editableTargets: ['recipe'] }));
     expect(draftApply).not.toHaveBeenCalled();
@@ -165,7 +165,9 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     vi.mocked(api.reset).mockImplementation(() => new Promise((done) => { resolve = done; }));
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 3 questions/ }));
-    expect(screen.getAllByRole('button', { name: /Supprimer la conversation/ })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: /Plus d’actions/ })).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: /Supprimer la conversation/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     expect(api.reset).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
@@ -173,14 +175,32 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await act(async () => resolve({ generation: 1 }));
     expect(brewerJobs.snapshot().jobs).toEqual([expect.objectContaining({ scope: other.scope })]);
     await act(async () => { brewerJobs.merge([a, b]); });
-    expect(screen.queryByRole('button', { name: 'Supprimer la conversation REC-A' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Supprimer la conversation REC-B' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Plus d’actions : REC-A' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Plus d’actions : REC-B' })).toBeVisible();
+  });
+  it('résume les conversations par statut, sans nom de modèle, et relance un échec en un geste', async () => {
+    const prete = { ...job('1', 'REC-A'), status: 'done' as const, readAt: 1 };
+    const echec = { ...job('2', 'REC-B'), status: 'error' as const, stage: 'saving' as const };
+    const cours = job('3', 'REC-C');
+    vi.mocked(api.activity).mockResolvedValue([prete, echec, cours]);
+    vi.mocked(api.retry).mockResolvedValue({ job: { ...echec, status: 'running' as const } });
+    render(<BrewerActivity />);
+    fireEvent.click(await screen.findByRole('button', { name: /Compagnon :/ }));
+    expect(screen.getByRole('img', { name: '1 prête, 1 en cours, 1 à relancer' })).toBeVisible();
+    expect(screen.getByText(/Échec · à relancer/)).toBeVisible();
+    expect(screen.getByText(/En cours · \d+:\d\d/)).toBeVisible();
+    expect(screen.getByText('Réponse prête')).toBeVisible();
+    expect(screen.getByRole('dialog', { name: 'Mes conversations' }).textContent).not.toMatch(/Gemini|Flash|Google/);
+    fireEvent.click(screen.getByRole('button', { name: 'Relancer la conversation REC-B' }));
+    await waitFor(() => expect(api.retry).toHaveBeenCalled());
+    expect(screen.getByRole('switch', { name: 'Me notifier à chaque réponse' })).toBeVisible();
   });
   it('garde une suppression échouée visible et réutilise son opération lors de la reprise', async () => {
     vi.mocked(api.activity).mockResolvedValue([job('1')]);
     vi.mocked(api.reset).mockRejectedValueOnce(Error('offline')).mockResolvedValueOnce({ generation: 1 });
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 1 question/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
     await screen.findByText(/Suppression non confirmée/);

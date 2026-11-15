@@ -57,7 +57,7 @@ it('applique la sélection au vrai brouillon, conserve date et dossier, puis enr
   const initial = { ...companionRecipe(), brewDate: '24.10.2026' }, save = vi.fn(), view = mount(initial, save);
   allerEtape(/^Levure/); const dialog = await propose();
   expect(save).not.toHaveBeenCalled(); expect(api.apply).not.toHaveBeenCalled();
-  expect(dialog.getByText('78 %')).toBeInTheDocument(); expect(dialog.getByText('75 %')).toBeInTheDocument();
+  expect(dialog.getByText('78')).toBeInTheDocument(); expect(dialog.getByText('75')).toBeInTheDocument();
   fireEvent.click(dialog.getByRole('checkbox', { name: 'Nom de la recette' }));
   fireEvent.click(dialog.getByRole('button', { name: 'Valider 5 modifications' }));
   await dialog.findByText('Champs appliqués au brouillon'); expect(save).not.toHaveBeenCalled();

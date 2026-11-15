@@ -1,0 +1,88 @@
+/* Page de la recette : maquette r1 (14.11). Classes préfixées rc-, jetons du thème (cave-*), échelle 12/14/16. */
+.rc-sec { border:1px solid rgb(var(--cave-700)); border-radius:1rem; background:rgb(var(--cave-950)); min-width:0; }
+.rc-sec[open] > .rc-sh .rc-chev { transform:rotate(180deg); }
+.rc-sh { display:flex; align-items:center; gap:.5rem; min-height:40px; padding:0 .625rem; list-style:none; cursor:pointer; border-radius:1rem; }
+.rc-sh::-webkit-details-marker { display:none; }
+.rc-sh:focus-visible { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
+.rc-sh h2 { font-size:.875rem; font-weight:600; color:rgb(var(--cave-texte-50)); margin:0; }
+.rc-s { flex:1; min-width:0; display:flex; align-items:center; gap:.375rem; font-size:.875rem; color:rgb(var(--cave-texte-400)); }
+.rc-rf, .rc-ro { display:inline-flex; align-items:center; gap:.375rem; }
+.rc-ro { display:none; }
+.rc-sec[open] > summary .rc-a-ro .rc-ro { display:inline-flex; }
+.rc-sec[open] > summary .rc-a-ro .rc-rf { display:none; }
+.rc-ly-t { flex:1; min-width:0; }
+.rc-ly-t > span { font-size:1rem; font-weight:600; color:rgb(var(--cave-texte-50)); }
+.rc-ly-t .block { font-size:.75rem; font-weight:400; color:rgb(var(--cave-texte-400)); display:block; }
+.rc-chev { width:16px; height:16px; flex-shrink:0; color:rgb(var(--cave-texte-400)); }
+.rc-body { padding:0 .625rem .625rem; display:flex; flex-direction:column; gap:.5rem; min-width:0; }
+.rc-m { font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+.rc-barre { display:flex; height:10px; border-radius:10px; overflow:hidden; flex-shrink:0; background:rgb(var(--cave-700)); }
+.rc-barre i { display:block; height:100%; }
+/* Bandeau et pastilles de mesure */
+.rc-bandeau { display:flex; align-items:baseline; justify-content:space-between; gap:.5rem; padding:.375rem .625rem; background:rgb(var(--cave-900)); border:1px solid rgb(var(--cave-700)); border-radius:1rem; flex-wrap:wrap; }
+.rc-bandeau > div { display:flex; align-items:baseline; gap:.25rem; }
+.rc-l { font-size:.875rem; color:rgb(var(--cave-texte-400)); }
+.rc-v { font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; font-size:.875rem; font-weight:600; color:rgb(var(--cave-texte-50)); }
+.rc-note { font-size:.75rem; color:rgb(var(--cave-texte-400)); }
+.rc-piste { position:relative; align-self:center; width:40px; height:8px; border-radius:10px; background:rgb(var(--cave-700)); flex-shrink:0; }
+.rc-piste b { position:absolute; top:0; bottom:0; border-radius:10px; background:rgb(var(--cave-600)); }
+.rc-piste em { position:absolute; top:-4px; bottom:-4px; width:2px; background:rgb(var(--cave-texte-50)); }
+.rc-pastille { display:inline-flex; align-items:center; gap:.375rem; height:28px; padding:0 .5rem; border-radius:.625rem; background:rgb(var(--cave-900)); border:1px solid rgb(var(--cave-700)); font-size:.75rem; color:rgb(var(--cave-texte-400)); }
+.rc-pastille .rc-v { font-size:.875rem; }
+/* Maquette : la mini piste d'une pastille hors bandeau fait 28 px, et le style, FG et ABV tiennent sur une rangée à 390. */
+.rc-pastille .rc-piste { width:28px; }
+.rc-pastille.rc-sty { padding:0 .5rem 0 .25rem; }
+/* Pastille de style : le turquoise de la maquette r1 (rond #2BB59F, fond #D5F2EC, filet #8ED5C7, texte #0E5A50) ; en cave, le même rond sur fond sombre teinté. */
+.rc-sty { background:#D5F2EC; border-color:#8ED5C7; color:#0E5A50; font-weight:600; font-size:.875rem; }
+.rc-sty small { font-size:.75rem; font-weight:400; color:inherit; }
+.rc-sty i { width:18px; height:18px; border-radius:50%; background:#2BB59F; flex-shrink:0; }
+:root[data-theme='cave'] .rc-sty { background:rgb(43 181 159 / .16); border-color:rgb(43 181 159 / .55); color:rgb(var(--cave-texte-50)); }
+:root[data-theme='cave'] .rc-sty small { color:rgb(var(--cave-texte-200)); }
+/* Geste : la section qu'on vient de déplier prend le filet noir (clair) ou blanc (cave) de la maquette ; Houblons, ouverte au repos, garde le sien. */
+.rc-sec[open]:not([data-element="r1-houblons"]) { border-color:rgb(var(--cave-texte-50)); }
+.rc-body .rc-sec[open] { border-color:rgb(var(--cave-700)); }
+.rc-rang {display:flex; align-items:center; gap:.375rem; flex-wrap:wrap; }
+/* Houblons : variété × moment */
+.rc-body .rc-sec { border-radius:.625rem; background:transparent; }
+.rc-sub-t { font-size:.875rem; font-weight:600; }
+.rc-colonne { display:flex; flex-direction:column; gap:.5rem; min-width:0; }
+@media (min-width:700px) { .rc-colonne { max-width:540px; margin-left:auto; margin-right:auto; } }
+.rc-hg { display:grid; column-gap:.625rem; padding:0 0 .5rem; align-items:center; overflow-x:auto; }
+/* Les en-têtes se centrent sur leur colonne : « 0′ » et « whirlpool » ne se lisent plus d'un bloc. */
+.rc-col { white-space:nowrap; font-size:.75rem; color:rgb(var(--cave-texte-400)); text-align:center; padding-bottom:2px; }
+.rc-hn { display:flex; flex-direction:column; gap:2px; padding:.375rem 0; border-top:1px solid rgb(var(--cave-700)); min-width:0; }
+.rc-hn1 { display:flex; align-items:baseline; gap:.375rem; }
+/* Le nom du houblon se touche (maquette : souligné en pointillé) : il ouvre le détail des ajouts. */
+.rc-hnm { font-size:1rem; font-weight:600; color:rgb(var(--cave-texte-50)); background:none; border:0; padding:0; text-align:left; cursor:pointer; text-decoration:underline dotted rgb(var(--cave-600)); text-underline-offset:3px; }
+.rc-hnm:focus-visible, .rc-lien:focus-visible { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; border-radius:4px; }
+.rc-al { font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.875rem; color:rgb(var(--cave-texte-200)); }
+/* Rôle, points et mot d'arôme : le mot s'écrit en entier (jamais « … » ni coupé) ; quand la ligne manque de place, il passe à la ligne sous les points. */
+.rc-hn2 { display:flex; align-items:center; gap:.125rem .25rem; font-size:.75rem; color:rgb(var(--cave-texte-400)); flex-wrap:wrap; min-width:0; }
+.rc-mot { color:var(--rc-t); white-space:nowrap; }
+/* Hors des 12 familles : la pastille pointillée de la maquette r1 (r1-hf). */
+.rc-hf { color:rgb(var(--cave-texte-200)); border:1px dashed rgb(var(--cave-600)); border-radius:.625rem; padding:0 .25rem; line-height:1rem; }
+/* `texte` des familles vise 4,5:1 sur blanc : en cave, la couleur de la famille éclaircie. */
+:root[data-theme='cave'] .rc-mot { color:color-mix(in srgb, var(--rc-b) 60%, #fff); }
+.rc-liens { display:flex; flex-wrap:wrap; align-items:center; column-gap:.75rem; row-gap:.125rem; padding-top:.25rem; font-size:.75rem; }
+.rc-lien { background:none; border:0; padding:.125rem 0; font-size:.75rem; color:rgb(var(--cave-texte-200)); text-decoration:underline; text-decoration-color:rgb(var(--cave-600)); text-underline-offset:3px; cursor:pointer; }
+.rc-lien[aria-expanded="true"] { color:rgb(var(--cave-texte-50)); text-decoration-color:rgb(var(--cave-texte-50)); }
+/* Le détail ou le potentiel d'un houblon : posé sous le tableau, sans carte (un filet pointillé, comme l'annexe de la maquette). */
+.rc-ann { border-top:1px dashed rgb(var(--cave-600)); padding-top:.5rem; display:flex; flex-direction:column; gap:.5rem; min-width:0; }
+.rc-ann[hidden] { display:none; }
+.rc-ar { display:inline-flex; gap:2px; }
+.rc-ar i { width:10px; height:10px; border-radius:50%; display:block; }
+.rc-g { font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; font-size:.875rem; color:rgb(var(--cave-texte-50)); text-align:right; border-top:1px solid rgb(var(--cave-700)); align-self:stretch; display:flex; align-items:center; justify-content:flex-end; }
+.rc-dh { background:rgba(224,160,46,.22); border-radius:.625rem; padding:0 .25rem; }
+.rc-total { border:0; font-weight:600; padding-top:.25rem; color:rgb(var(--ebc-amber-texte)); }
+/* Levure au premier plan */
+.rc-ly { display:flex; align-items:center; gap:.5rem; min-height:40px; padding:.25rem .625rem; list-style:none; cursor:pointer; border-radius:1rem; }
+.rc-ly::-webkit-details-marker { display:none; }
+.rc-ly b { font-size:1rem; font-weight:600; color:rgb(var(--cave-texte-50)); }
+.rc-ly .rc-obj { display:block; font-size:.75rem; color:rgb(var(--cave-texte-400)); }
+/* Pied de page : Dupliquer à gauche, Supprimer éloigné à droite */
+.rc-sup { margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
+.rc-act { display:inline-flex; align-items:center; gap:.25rem; height:28px; padding:0 .5rem; border:1px solid rgb(var(--cave-700)); border-radius:.625rem; font-size:.875rem; color:rgb(var(--cave-texte-200)); background:transparent; cursor:pointer; }
+.rc-act:focus-visible, .rc-del:focus-visible { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
+.rc-del { height:28px; padding:0 .625rem; border-radius:.625rem; border:1px solid rgb(var(--alert) / .55); color:rgb(var(--alert-texte)); font-size:.875rem; background:transparent; cursor:pointer; }
+.rc-entete { position:sticky; top:0; z-index:5; display:flex; gap:.375rem; padding:.375rem 0; background:rgb(var(--cave-950)); border-bottom:1px solid rgb(var(--cave-700)); }
+.rc-puces { display:flex; gap:.375rem; flex-wrap:wrap; }

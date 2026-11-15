@@ -2,7 +2,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
-vi.mock('../../src/ui/Sheet', () => ({ Sheet: ({ open, title, children, footer }: any) => open ? <div role="dialog" aria-label={title}>{children}{footer}</div> : null }));
+vi.mock('../../src/ui/Sheet', () => ({ Sheet: ({ open, title, children, footer }: any) => open ? <div role="dialog" aria-label={title}>{children}{footer}</div> : null, ConfirmSheet: ({ open, title }: any) => open ? <div role="dialog" aria-label={title} /> : null }));
 vi.mock('recharts', () => ({ ResponsiveContainer: () => null, AreaChart: () => null, Area: () => null, XAxis: () => null, YAxis: () => null, Tooltip: () => null, CartesianGrid: () => null }));
 import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { FinanceService } from '../../src/services/financeService';
@@ -33,6 +33,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     render(<Navigation/>);
     expect(screen.getByRole('dialog', { name: 'Prévoir du matériel' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler', exact: true }));
+    // ks4 (15.11) : Bières est un filtre du Carnet.
+    fireEvent.click(screen.getByRole('button', { name: 'Carnet', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Matériel', exact: true }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

@@ -5,22 +5,27 @@ import { loadFinanceDocument } from '../../services/financeDocuments';
 import { Sheet } from '../Sheet';
 import { DriveConnection } from './DriveConnection';
 
-export function DocumentProofLink({transaction,className=''}:{transaction:FinanceTransaction;className?:string}) {
+/**
+ * `document` : le justificatif d'un PAIEMENT (m5pa-d : un virement, un original, lié à chaque paiement). Sans lui, le lien lit le justificatif de la pièce.
+ * Avec lui, il ne lit que ce document : jamais le justificatif de la pièce, qui est un autre fichier.
+ */
+export function DocumentProofLink({transaction,className='',document}:{transaction:FinanceTransaction;className?:string;document?:{id:string;fileName?:string}}) {
   const [open,setOpen]=useState(false),[loading,setLoading]=useState(false),[error,setError]=useState(''),[proof,setProof]=useState<{url:string;name:string;mime:string}|null>(null);
   const request=useRef(0);
+  const documentId=document?document.id:transaction.finance?.proofDocumentId, ancien=document?undefined:transaction.proofUrl;
   const [driveAuthError,setDriveAuthError]=useState(false);
   useEffect(()=>{
     request.current+=1;
     setOpen(false);setLoading(false);setError('');setProof(null);setDriveAuthError(false);
     return()=>{request.current+=1;};
-  },[transaction.id,transaction.finance?.proofDocumentId,transaction.proofUrl]);
+  },[transaction.id,documentId,ancien]);
   useEffect(()=>()=>{if(proof?.url.startsWith('blob:'))URL.revokeObjectURL(proof.url);},[proof]);
-  if (!transaction.proofUrl && !transaction.finance?.proofDocumentId) return null;
+  if (!ancien && !documentId) return null;
   const show=async()=>{
     setOpen(true);if(proof||loading)return;setLoading(true);setError('');setDriveAuthError(false);
     const current=++request.current;
     try {
-      const original=transaction.finance?.proofDocumentId ? await loadFinanceDocument(transaction.finance.proofDocumentId) : {dataUrl:transaction.proofUrl,fileName:transaction.proofFileName||'Justificatif',mimeType:transaction.proofType||''};
+      const original=documentId ? await loadFinanceDocument(documentId) : {dataUrl:ancien!,fileName:transaction.proofFileName||'Justificatif',mimeType:transaction.proofType||''};
       if(current!==request.current)return;
       let url=original.dataUrl;
       if(url.startsWith('data:')) { const binary=atob(url.split(',')[1]); const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0)); url=URL.createObjectURL(new Blob([bytes],{type:original.mimeType})); }

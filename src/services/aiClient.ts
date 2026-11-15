@@ -39,7 +39,9 @@ export type AiTaskId =
   /** D280 : la désignation en français des noms de base d'une facture, texte seul (`src/services/nomsFr.ts`). */
   | 'traduireNoms'
   /** D380 : recolle les lectures des morceaux d'une longue pièce (aucune IA, aucun coût). */
-  | 'assemblerLecture';
+  | 'assemblerLecture'
+  /** ks4 : une note du Carnet → choses proposées (`functions/src/rangerNote.ts`, écrite, pas déployée : drapeau `src/config/rangerNoteIA.ts`). */
+  | 'rangerNote';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',

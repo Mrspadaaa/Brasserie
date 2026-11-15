@@ -1,211 +1,58 @@
-import { Input, Textarea } from './Input';
-import React, { useEffect, useState } from 'react';
-import { NumberInput } from './NumberInput';
+import React from 'react';
 import { EquipmentItem } from '../types';
-import { Sheet, ConfirmSheet } from './Sheet';
-import { FormNav, Field, TextInput, inputClass } from './FormNav';
-import { SegmentedControl } from './SegmentedControl';
-import { DateField, toSwissDate } from './DateField';
-import { isoDate } from '../domain/finance/ledger';
-import { Trash2 } from 'lucide-react';
-import { useSyncedDraft } from '../hooks/useLiveData';
-import { Button } from '../components/ui/Button';
+import type { FinanceTransaction } from '../domain/finance/types';
+import { Sheet } from './Sheet';
+import { EquipmentDetail } from './equipment/Detail';
+import { EquipmentEditSheet } from './equipment/DetailEdit';
+import { aujourdhuiIso } from './equipment/DetailModel';
 import './equipment-compact.css';
 
 /**
- * Fiche matériel : créer, modifier, supprimer.
+ * Fiche matériel (za3, port 15.11) : un appareil existant s'ouvre sur sa fiche (`EquipmentDetail` dans la feuille : étalonnage, historique,
+ * rythme, état, dépenses reliées, Gestion) ; un appareil sans nom est une création, qui garde le formulaire (TE-46, TE-47, BR-94 :
+ * voir `equipment/DetailEdit.tsx`).
  *
- * ⚠️ Ce que ça règle : le matériel s'affichait en lecture seule. Aucune
- * méthode d'écriture n'existait côté données non plus — un appareil vendu ou
- * cassé restait dans la liste pour toujours, et un nouvel achat ne pouvait y
- * entrer qu'en réécrivant tout le tableau.
+ * ⚠️ Ce que ça règle (historique) : le matériel s'affichait en lecture seule, et un appareil vendu ou cassé restait dans la liste pour toujours.
  */
 
-const STATES: Array<{ value: string; label: string }> = [
-  { value: 'Neuf', label: 'Neuf' },
-  { value: 'Bon', label: 'Bon' },
-  { value: 'À entretenir', label: 'À entretenir' },
-  { value: 'À réparer', label: 'À réparer' }
-];
-
-const CATEGORIES = ['Brassage', 'Mesure', 'Embouteillage', 'Stockage', 'Atelier'];
-
 interface EquipmentSheetProps {
-  /** `null` ferme la feuille ; un objet sans `ref` vaut création. */
+  /** `null` ferme la feuille ; un objet sans nom vaut création. */
   item: EquipmentItem | null;
   onClose: () => void;
+  /** Création, ou correction faite par ⋯ › Modifier (sans bandeau). */
   onSave: (item: EquipmentItem) => void;
   onDelete: (item: EquipmentItem) => void;
+  /** Un geste de la fiche (Étalonné, Fait, Réparée, Vendu, rythme, état) : l'appareil modifié et la phrase du bandeau. Absent : `onSave`. */
+  onChange?: (item: EquipmentItem, toast?: string) => void;
+  /** Les brassins (leur `brewDate`) et les transactions : pour « utilisé dans N brassins » et les dépenses reliées. */
+  batches?: { brewDate?: string }[];
+  transactions?: FinanceTransaction[];
+  /** « Payer un entretien » : ouvre la Dépense avec une ligne d'entretien reliée à l'appareil. Absent : le bouton ne fait rien. */
+  onPayMaintenance?: (item: EquipmentItem) => void;
+  /** AAAA-MM-JJ ; par défaut le jour de l'appareil. */
+  today?: string;
 }
 
+const AUCUN: never[] = [];
+
 export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
-  item,
-  onClose,
-  onSave,
-  onDelete
+  item, onClose, onSave, onDelete, onChange, batches = AUCUN, transactions = AUCUN, onPayMaintenance, today,
 }) => {
-  const [draft, setDraft] = useSyncedDraft(item, item?.ref);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [saveAttempted, setSaveAttempted] = useState(false);
-  // TE-47 (rejeu 649bcc54) : le prix est dans la section repliable « Achat ». Un prix refusé l'ouvre, et son message vit HORS de la section
-  // (toujours visible, annoncé, relié au champ et au bouton éteint).
-  const [achatOuvert, setAchatOuvert] = useState(false);
-  const prixRefuse = draft?.purchasePrice !== undefined && !(Number.isFinite(draft.purchasePrice) && draft.purchasePrice >= 0);
-  useEffect(() => { if (prixRefuse) setAchatOuvert(true); }, [prixRefuse]);
-
-  if (!item || !draft) return null;
-
-  const isNew = !item.name;
-  const canSave = draft.name.trim().length >= 2;
-  const nameError = !canSave && (saveAttempted || draft.name.length > 0 || !isNew) ? 'Indique un nom d’au moins 2 caractères.' : undefined;
-  const categories = CATEGORIES.includes(draft.category) || !draft.category ? CATEGORIES : [draft.category, ...CATEGORIES];
-  const states = STATES.some(state => state.value === draft.state) ? STATES : [...STATES, { value: draft.state, label: draft.state || 'Non renseigné' }];
-  // TE-47 : un prix négatif n'existe pas ; vide = non renseigné (jamais 0).
-  const priceError = prixRefuse ? 'Le prix payé ne peut pas être négatif.' : undefined;
-  // BR-94 : la date enregistrée peut être en AAAA-MM-JJ (achat, démo) ou JJ.MM.AAAA (saisie) ; le champ lit toujours le format suisse.
-  const iso = isoDate(draft.purchaseDate);
-  const purchaseDateSwiss = iso ? toSwissDate(iso) : '';
-  // TE-46 : la référence interne d'un matériel créé par un achat (EQ-<uuid>-0) n'est pas à montrer, comme dans la liste.
-  const automaticRef = /^EQ-[0-9a-f]{8}-[0-9a-f]{4}-/i.test(item.ref);
-  const save = () => {
-    setSaveAttempted(true);
-    if (!canSave || priceError) return;
-    onSave({ ...draft, name: draft.name.trim() });
-    onClose();
-  };
-
+  if (!item) return null;
+  if (!item.name) return <EquipmentEditSheet item={item} onClose={onClose} onSave={onSave} />;
   return (
-    <>
-      <Sheet
-        open={Boolean(item)}
+    <Sheet open onClose={onClose} title="Stocks · Matériel" bare plein className="equipment-sheet equipment-detail-sheet">
+      <EquipmentDetail
+        item={item}
+        batches={batches}
+        transactions={transactions}
+        today={today ?? aujourdhuiIso()}
+        layout="sheet"
+        onChange={(modifie, toast) => (onChange ?? ((m: EquipmentItem) => onSave(m)))(modifie, toast)}
         onClose={onClose}
-        title={isNew ? 'Nouveau matériel' : draft.name || item.name}
-        subtitle={isNew ? undefined : automaticRef ? item.category : `${item.category} · ${item.ref}`}
-        className="equipment-sheet"
-        footer={
-          <div className="equipment-footer">
-            <Button intent="secondary" onClick={onClose}>Annuler</Button>
-            <Button intent="primary" onClick={save} disabled={!canSave || Boolean(priceError)} aria-describedby={priceError ? 'eq-price-error' : undefined}>Enregistrer</Button>
-          </div>
-        }
-      >
-        <FormNav className="equipment-form" onSubmit={save}>
-          <Field label="Nom" htmlFor="eq-name" error={nameError}>
-            <TextInput
-              id="eq-name"
-              name="equipment_item_label"
-              aria-invalid={Boolean(nameError)}
-              placeholder="Cuve 50 L, réfractomètre, pompe…"
-              value={draft.name}
-              onChange={(name) => setDraft({ ...draft, name })}
-            />
-          </Field>
-
-          <Field label="Catégorie" htmlFor="eq-category">
-            <select id="eq-category" className={inputClass} value={draft.category} onChange={event => setDraft({ ...draft, category: event.target.value })}>
-              {!draft.category && <option value="">Choisir une catégorie</option>}
-              {categories.map(category => <option key={category} value={category}>{category}</option>)}
-            </select>
-          </Field>
-
-          <Field label="État">
-            <SegmentedControl
-              label="État du matériel"
-              className="equipment-choice"
-              value={draft.state}
-              onChange={(state) => setDraft({ ...draft, state })}
-              options={states}
-            />
-          </Field>
-
-          <Field label="Entretien" htmlFor="eq-maintenance" hint="Action à faire ou fréquence à respecter.">
-            <Input
-              id="eq-maintenance"
-              name="equipment_maintenance_notes"
-              type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              data-form-type="other"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-              className={inputClass}
-              placeholder="Joint à changer chaque année"
-              value={draft.maintenance ?? ''}
-              onChange={(e) => setDraft({ ...draft, maintenance: e.target.value })}
-            />
-          </Field>
-
-          <details className="equipment-disclosure" open={achatOuvert} onToggle={(e) => setAchatOuvert(e.currentTarget.open)}>
-          <summary>Achat <span>· {purchaseDateSwiss || 'Date non renseignée'}{draft.purchasePrice !== undefined ? ` · ${draft.purchasePrice.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF` : ' · Prix non renseigné'}</span></summary>
-          <div className="equipment-form-pair">
-            <DateField
-              label="Date d’achat"
-              value={purchaseDateSwiss}
-              onChange={(purchaseDate) => setDraft({ ...draft, purchaseDate })}
-              shortcuts={[]}
-            />
-            <Field label="Prix payé (CHF)" htmlFor="eq-price">
-              <NumberInput
-                id="eq-price"
-                aria-describedby={priceError ? 'eq-price-error' : undefined}
-                /* Pas de `min` : il ramenait « -1 » à « 0 » à la sortie du champ, en silence (TE-47, rejeu ff0f822e). Le refus se dit (priceError) et bloque Enregistrer. */
-                aria-invalid={Boolean(priceError)}
-                value={draft.purchasePrice}
-                onValue={(v) =>
-                  setDraft({ ...draft, purchasePrice: v })}
-                emptyValue={undefined}
-                pad
-                className={`${inputClass} font-mono`}
-              />
-            </Field>
-          </div>
-          </details>
-          {priceError && <p id="eq-price-error" role="alert" className="text-xs text-alert leading-snug">{priceError}</p>}
-
-          <details className="equipment-disclosure">
-          <summary>Notes <span>· {draft.notes || 'Aucune'}</span></summary>
-          <Field label="Notes sur le matériel" htmlFor="eq-notes">
-            <Textarea
-              id="eq-notes"
-              name="equipment_general_notes"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              data-form-type="other"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-              rows={2}
-              className={`${inputClass} py-1 leading-snug resize-y`}
-              value={draft.notes ?? ''}
-              onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
-            />
-          </Field>
-          </details>
-        </FormNav>
-
-        {!isNew && (
-          <details className="equipment-disclosure equipment-management"><summary>Gestion du matériel</summary>
-            <Button intent="danger" size="sm" className="equipment-danger" onClick={() => setConfirmDelete(true)} icon={<Trash2 size={14}/>}>Supprimer</Button>
-          </details>
-        )}
-      </Sheet>
-
-      <ConfirmSheet
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        title="Supprimer ce matériel ?"
-        what={`${item.name} — ${item.category}`}
-        consequence="Il quitte l’inventaire. La suppression est journalisée."
-        confirmLabel="Supprimer"
-        onConfirm={() => {
-          setConfirmDelete(false);
-          onDelete(item);
-          onClose();
-        }}
+        onPayMaintenance={(a) => onPayMaintenance?.(a)}
+        onDelete={onDelete}
       />
-    </>
+    </Sheet>
   );
 };

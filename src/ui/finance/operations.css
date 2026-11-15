@@ -143,6 +143,9 @@
 /* v6a : deux étages, jamais trois (état et pièce sans retour à la ligne, repris de v6b pour les noms longs). Quand l'état et le geste prennent la place, c'est la pastille d'état qui se coupe
    (« … · ban… »), jamais « sans pièce » ; le détail complet reste dans le nom accessible de la ligne et dans la fiche. */
 .ops-meta { display:flex; flex-wrap:nowrap; align-items:center; gap:0 6px; font-size:12px; color:var(--ops-t2); line-height:16px; min-height:18px; min-width:0; }
+/* q6, point 10 : une pièce en partie payée garde sa pastille entière ; « sans pièce » passe dessous plutôt que de la couper. */
+.ops-row[data-partiel] .ops-meta { flex-wrap:wrap; }
+.ops-row[data-partiel] .ops-tg { flex:0 0 auto; }
 .ops-tg { display:inline-block; flex:0 1 auto; min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:0 6px; border-radius:999px; line-height:16px; font-size:12px; white-space:nowrap; }
 .ops-tg-ok { background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); }
 .ops-tg-pay { background:repeating-linear-gradient(135deg, rgb(var(--c-302719)) 0 4px, transparent 4px 8px), rgb(var(--c-302719)); color:rgb(var(--attention-texte)); box-shadow:inset 0 0 0 1px var(--ops-hach-a); }

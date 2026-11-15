@@ -89,6 +89,9 @@ describe('TE-46, TE-47, TE-48, BR-94 — la fiche du matériel', () => {
   const achat: EquipmentItem = { id: 'EQ-6c0b6340-dcdb-4e5c-bb04-355931fc1d2e-0', ref: 'EQ-6c0b6340-dcdb-4e5c-bb04-355931fc1d2e-0', name: 'Cuve de fermentation', category: 'Fermentation', state: 'Bon', purchaseDate: '2025-02-01', purchasePrice: 1800 };
   it('la référence interne n’est pas montrée, la date d’achat ISO remplit son champ', () => {
     render(<EquipmentSheet item={achat} onClose={() => {}} onSave={() => {}} onDelete={() => {}} />);
+    // za3 : la fiche s'ouvre d'abord ; la date d'achat se corrige sous ⋯ › Modifier.
+    fireEvent.click(screen.getByRole('button', { name: /Gestion du matériel/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Modifier' }));
     expect(screen.queryByText(/EQ-6c0b6340/)).toBeNull();
     expect(screen.getByText(/01\.02\.2025/)).toBeInTheDocument();
     expect((document.querySelector('input[type="date"]') as HTMLInputElement).value).toBe('2025-02-01');

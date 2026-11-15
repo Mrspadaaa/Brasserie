@@ -220,7 +220,7 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     }));
     render(<BrewerChat {...baseProps} initialQuestion="  Question normale  " />);
     await openChat();
-    expect(screen.getByText('On regarde ça ensemble.')).toBeVisible();
+    expect(screen.getByText('Agir, mesurer ou attendre ?')).toBeVisible();
     expect(screen.getByRole('button', { name: /Vérifie ma recette et mon matériel/ })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
@@ -283,7 +283,7 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     await act(async () => { local.publish(localJob); });
     expect(screen.getByText('Réponse simulée en attente')).toBeVisible();
     expect(screen.getByText('Traitement local · réponse simulée')).toBeVisible();
-    expect(screen.queryByText('Gemini analyse ta question')).not.toBeInTheDocument();
+    expect(screen.queryByText('Analyse de ta question')).not.toBeInTheDocument();
     expect(screen.queryByText('Enregistrée sur le serveur')).not.toBeInTheDocument();
 
     cleanup();
@@ -295,8 +295,8 @@ describe('BrewerChat — raccord de lecture assistée', () => {
       onBeforeSend: vi.fn(async (_input: BrewerChatInput) => {}), onAssistedTurn: vi.fn() }} />);
     await openChat();
     await act(async () => { host.publish(hostJob); });
-    expect(screen.getByText('Gemini analyse ta question')).toBeVisible();
-    expect(screen.getByText('Enregistrée sur le serveur')).toBeVisible();
+    expect(screen.queryByText('Analyse de ta question')).not.toBeInTheDocument(); // fx2b : texte d'étape retiré (maquette)
+    expect(screen.queryByText('Enregistrée sur le serveur')).not.toBeInTheDocument();
   });
 
   it.each([

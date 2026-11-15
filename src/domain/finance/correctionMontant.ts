@@ -1,0 +1,153 @@
+import type { Transaction } from '../../types';
+import type { FinancialPayment } from './types';
+import { isActiveTransaction, isoDate, paidForTransaction, transactionAmount, transactionDirection, transactionKind, validPayment } from './ledger';
+
+/**
+ * Corriger le montant d'une pièce, payée ou non (maquette m5mo-c, décision du pilote du 15.11).
+ *
+ * Problème d'école : corriger une écriture comptable immuable par contre-écriture (storno). Les règles Firestore l'imposent : un paiement ne se
+ * modifie jamais ; une correction est un paiement `CONTRE-<id>` de même montant et de sens inverse ; le solde réglé d'une pièce ne dépasse jamais son
+ * montant ; créer un paiement ne change sur la pièce que `settlementBalanceCents` et `lastPaymentId`. L'ordre des écritures compte donc :
+ *   · hausse    : le montant monte d'abord (le solde réglé tient encore), puis le paiement de la différence ;
+ *   · baisse    : les contre-paiements d'abord (le solde réglé redescend sous le nouveau montant), puis le montant, puis le nouveau paiement.
+ * Centimes entiers partout ; aucune horloge, aucun identifiant ici : l'écran les fournit en exécutant le plan.
+ */
+
+export type ChoixPaiement = 'suit' | 'reste';
+
+export type EtapeCorrection =
+  | { type: 'contre'; paiementId: string }
+  | { type: 'montant'; cents: number }
+  /** `date` : celle du dernier paiement inversé pour une baisse (une correction n'est pas un nouveau virement) ; absente pour une hausse (le complément se paie aujourd'hui). */
+  | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string };
+
+export interface EffetCorrection { montantCents: number; payeCents: number; resteCents: number }
+
+/** Les paiements réels de la pièce encore en vigueur : ni contre-paiement, ni paiement déjà annulé, du sens de la pièce. */
+function paiementsVivants(piece: Transaction, paiements: FinancialPayment[]): FinancialPayment[] {
+  const annules = new Set(paiements.filter(p => p.reversalOfId).map(p => p.reversalOfId));
+  return paiements
+    .filter(p => p.transactionId === piece.id && validPayment(p) && !p.reversalOfId && !annules.has(p.id))
+    .sort((a, b) => a.date.localeCompare(b.date) || a.recordedAt.localeCompare(b.recordedAt));
+}
+
+/** Réglé net de la pièce (paiements moins contre-paiements), en centimes. */
+export function payeNet(piece: Transaction, paiements: FinancialPayment[], transactions: Transaction[] = []): number {
+  return paidForTransaction(piece, paiements, transactions);
+}
+
+/**
+ * « Le paiement suit / Reste à payer » n'a de sens que pour une pièce entièrement réglée : sinon il n'y a rien qui doive « suivre ».
+ * Une pièce partielle ou ouverte n'écrit que son nouveau montant.
+ */
+export function choixPertinent(piece: Transaction, paiements: FinancialPayment[], transactions: Transaction[] = []): boolean {
+  const paye = payeNet(piece, paiements, transactions);
+  return paye > 0 && paye >= transactionAmount(piece);
+}
+
+/** Une baisse qui passe SOUS ce qui est déjà payé (q6, point 1) : seul « Le paiement suit » a un sens ; l'excédent versé est un avoir à enregistrer, pas un reste à payer. */
+export function baisseSousLePaye(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, transactions: Transaction[] = []): boolean {
+  return Number.isSafeInteger(nouveauMontantCents) && nouveauMontantCents > 0 && nouveauMontantCents < transactionAmount(piece) && payeNet(piece, paiements, transactions) > nouveauMontantCents;
+}
+
+/**
+ * La suite d'écritures qui amène la pièce à `nouveauMontantCents`, dans l'ordre où les règles Firestore l'acceptent.
+ * Sous le payé, le choix est ignoré : le paiement suit toujours (voir `baisseSousLePaye`). Vide si le montant ne change pas. Lève une erreur si le montant est invalide ou si un paiement à inverser est introuvable.
+ */
+export function planCorrection(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, choix: ChoixPaiement): EtapeCorrection[] {
+  if (!Number.isSafeInteger(nouveauMontantCents) || nouveauMontantCents <= 0) throw new Error('Montant invalide : un nombre positif en CHF est requis.');
+  const ancien = transactionAmount(piece);
+  if (nouveauMontantCents === ancien) return [];
+  const paye = payeNet(piece, paiements);
+  const solde = paye > 0 && paye >= ancien;
+  const vivants = paiementsVivants(piece, paiements);
+  const dernier = vivants[vivants.length - 1];
+  const direction = dernier?.direction ?? transactionDirection(piece);
+  const mode = dernier?.method ?? 'bank';
+
+  if (nouveauMontantCents > ancien) {
+    const etapes: EtapeCorrection[] = [{ type: 'montant', cents: nouveauMontantCents }];
+    if (solde && choix === 'suit') etapes.push({ type: 'paiement', cents: nouveauMontantCents - ancien, direction, method: mode });
+    return etapes;
+  }
+
+  // Baisse : si le réglé tient encore sous le nouveau montant, le montant seul suffit.
+  if (nouveauMontantCents >= paye) return [{ type: 'montant', cents: nouveauMontantCents }];
+
+  // Baisse sous le réglé : on inverse les derniers paiements jusqu'à ce que le réglé tienne sous le nouveau montant.
+  const etapes: EtapeCorrection[] = [];
+  let reste = paye;
+  let dateInversee = '';
+  for (let i = vivants.length - 1; i >= 0 && reste > nouveauMontantCents; i--) {
+    etapes.push({ type: 'contre', paiementId: vivants[i].id });
+    reste -= vivants[i].amountCents;
+    // Le plus récent des paiements inversés donne la date : l'argent est sorti ce jour-là, la correction ne le déplace pas (M2).
+    const jour = isoDate(vivants[i].date) ?? vivants[i].date;
+    if (jour > dateInversee) dateInversee = jour;
+  }
+  if (reste > nouveauMontantCents) throw new Error('Aucun paiement à inverser pour descendre sous le montant déjà réglé.');
+  etapes.push({ type: 'montant', cents: nouveauMontantCents });
+  // q6, point 1 : sous le payé, « Reste à payer » n'existe pas (le payé ne disparaît jamais, aucune échéance inventée pour une pièce payée) : le paiement suit toujours, quel que soit `choix`.
+  if (nouveauMontantCents - reste > 0) etapes.push({ type: 'paiement', cents: nouveauMontantCents - reste, direction, method: mode, date: dateInversee });
+  return etapes;
+}
+
+/** Ce que le plan laisse : le montant, le réglé net et le reste dû, en centimes. */
+export function effetCorrection(piece: Transaction, paiements: FinancialPayment[], etapes: EtapeCorrection[]): EffetCorrection {
+  let montant = transactionAmount(piece);
+  let paye = payeNet(piece, paiements);
+  for (const etape of etapes) {
+    if (etape.type === 'montant') montant = etape.cents;
+    else if (etape.type === 'paiement') paye += etape.cents;
+    else {
+      const p = paiements.find(x => x.id === etape.paiementId);
+      if (p) paye -= p.amountCents;
+    }
+  }
+  return { montantCents: montant, payeCents: paye, resteCents: Math.max(0, montant - paye) };
+}
+
+export interface ContexteVerrou {
+  /** Années pour lesquelles une clôture confirmée existe (voir `anneesCloses`). */
+  anneesCloturees: number[];
+  /** L'année de la pièce est archivée (au sens de `isTransactionArchived`, calculé par l'appelant). */
+  archivee: boolean;
+  /** La date saisie dans le formulaire, si elle diffère de celle de la pièce : son année est jugée aussi (M3). */
+  dateNouvelle?: string;
+  /** L'année de `dateNouvelle` est archivée (calculé par l'appelant sur la pièce à cette date). */
+  archiveeNouvelleDate?: boolean;
+}
+
+/** Une clôture « confirmée » est une clôture figée (`report` présent : `finalizeClosing`). Un brouillon d'inventaire ne ferme rien (M4). */
+export function anneesCloses(clotures: ReadonlyArray<{ year: number; report?: unknown }>): number[] {
+  return [...new Set(clotures.filter(c => !!c.report).map(c => c.year))];
+}
+
+/**
+ * Pourquoi le montant ne se modifie pas, en une ligne ; `null` si tout se modifie. Décision du pilote (15.11) : le verrou ne tient que si l'année de la
+ * pièce est close ou archivée, ou si la pièce est annulée. L'année de la nouvelle date compte autant que celle d'origine : on ne déplace pas une pièce
+ * vers un exercice clos en changeant son montant (M3). Deux contraintes de données s'y ajoutent (écart dit au RESULTAT) : un avoir (borné par sa
+ * facture) et une pièce à plusieurs lignes (le total est la somme des lignes).
+ */
+export function verrouMontant(piece: Transaction, ctx: ContexteVerrou): string | null {
+  if (!isActiveTransaction(piece)) return 'Opération annulée : crée une nouvelle opération pour la remplacer.';
+  const jours: Array<{ annee: number; archivee: boolean }> = [{ annee: Number((isoDate(piece.date) ?? '').slice(0, 4)), archivee: ctx.archivee }];
+  const nouvelle = ctx.dateNouvelle ? isoDate(ctx.dateNouvelle) : null;
+  if (nouvelle && nouvelle !== isoDate(piece.date)) jours.push({ annee: Number(nouvelle.slice(0, 4)), archivee: !!ctx.archiveeNouvelleDate });
+  for (const { annee, archivee } of jours) {
+    if (annee && ctx.anneesCloturees.includes(annee)) return `Exercice ${annee} clôturé : corrige par un avoir ou annule l’opération.`;
+    if (archivee) return `Exercice ${annee || 'de la pièce'} archivé : corrige par un avoir ou annule l’opération.`;
+  }
+  if (transactionKind(piece) === 'refund') return 'Un avoir se corrige en l’annulant, puis en le recréant.';
+  const lignes = piece.finance?.lines?.length ?? 0;
+  if (lignes > 1) return `Le total vient des ${lignes} lignes de la facture : corrige-les ou annule l’opération.`;
+  return null;
+}
+
+/** Un nouveau montant que les données refusent (hors verrou) : les avoirs actifs liés à la pièce ne la dépassent jamais. `null` si rien ne s'y oppose. */
+export function erreurNouveauMontant(piece: Transaction, nouveauMontantCents: number, transactions: Transaction[]): string | null {
+  const avoirs = transactions
+    .filter(t => t.id !== piece.id && isActiveTransaction(t) && t.finance?.refundOfId === piece.id)
+    .reduce((somme, t) => somme + transactionAmount(t), 0);
+  return avoirs > nouveauMontantCents ? 'Les avoirs liés à cette pièce dépassent ce montant : corrige d’abord les avoirs.' : null;
+}

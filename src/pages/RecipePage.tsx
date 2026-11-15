@@ -18,13 +18,20 @@ import { WaterRadar } from '../ui/WaterRadar';
 import { WaterTargetStatus } from '../ui/water/WaterTargetStatus';
 import { describeSavedRecipeWater } from '../domain/recipeWaterReadings';
 import { PHASE_LABEL } from '../domain/brewPrograms';
-import { PageShell } from './PageShell';
-import { RecipeDisclosure, RecipeWaterVolumes } from '../ui/RecipeDisclosure';
+import { ActionDock, nextActionDockPriority, PageShell } from './PageShell';
+import { RecipeWaterVolumes } from '../ui/RecipeDisclosure';
 import { LazySurface } from '../ui/LazySurface';
 import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
-const Section=({hint,...props}:React.ComponentProps<typeof RecipeDisclosure>&{hint?:string})=><RecipeDisclosure {...props} summary={hint??props.summary}/>;
-import { ConfirmSheet } from '../ui/Sheet';
-import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react';
+import { ConfirmSheet, Sheet } from '../ui/Sheet';
+import { Pencil, Copy, Download, Dna, FlaskConical, AlertTriangle } from 'lucide-react';
+import { FicheSection } from '../ui/recette/FicheSection';
+import { TableauHoublons } from '../ui/recette/TableauHoublons';
+import { Rep } from '../ui/recette/Reperes';
+import { BarreGrain, BarrePart, CourbeEmpatage, MiniCourbe, Piste, pointsEmpatage } from '../ui/recette/Dessins';
+import { pointsFermentation, segmentsEmpatage } from '../ui/recette/donneesCourbes';
+import { recipeToText } from '../domain/recipeText';
+import { RecipeTextExport } from '../ui/RecipeTextExport';
+import { brewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 
 /**
  * La fiche recette — le document de référence.
@@ -84,40 +91,6 @@ interface RecipePageProps {
   onOpenBatch: (batch: Batch) => void;
   onOpenHopV55?: () => void;
 }
-
-/** Une des cinq mesures de tête. */
-const Metric: React.FC<{
-  label: string;
-  value: string | null;
-  hint?: string;
-  /** Seconde lecture sous la valeur : cible annoncée, mesure réelle. */
-  note?: string;
-  swatch?: string;
-  tone?: string;
-}> = ({ label, value, hint, note, swatch, tone = 'text-cave-50' }) => (
-  <div className="min-w-0">
-    <dt className="text-xs text-cave-400">{label}</dt>
-    {value ? (
-      <>
-        <dd className="flex items-center gap-1">
-          {swatch && (
-            <span
-              className={`w-4 h-4 rounded-full border border-cave-700 shrink-0 ${swatch}`}
-              aria-hidden
-            />
-          )}
-          <span className={`reading text-sm ${tone}`}>{value}</span>
-        </dd>
-        {note && <dd className="text-xs text-cave-400 leading-tight">{note}</dd>}
-      </>
-    ) : (
-      // Une case de chiffre ne porte jamais une consigne : « — », et la raison en une ligne sous la carte (test en ligne n° 11).
-      <dd className="reading text-sm text-cave-400" title={hint ?? 'incalculable'}>
-        —<span className="sr-only"> {hint ?? 'incalculable'}</span>
-      </dd>
-    )}
-  </div>
-);
 
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
@@ -234,40 +207,41 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     .filter((h) => h.stage === 'dryHop')
     .reduce((s, h) => s + h.weightG, 0);
 
+
+  const [exportOpen, setExportOpen] = useState(false);
+  const [dockPriority] = useState(nextActionDockPriority);
+  /** Le détail des ajouts et le potentiel aromatique : deux états de la section Houblons (liens de la ligne du total, ou toucher d'un nom), jamais deux cartes au repos. */
+  const [panneau, setPanneau] = useState<'detail' | 'potentiel' | null>(null);
+  const [potentielVu, setPotentielVu] = useState(false);
+  const basculer = (p: 'detail' | 'potentiel') => { setPanneau((cur) => cur === p ? null : p); if (p === 'potentiel') setPotentielVu(true); };
+  const styleResolu = useMemo(() => resolveBrewingStyle(recipe.style, recipe.styleRef, brewingStyles(knowledge)), [recipe.style, recipe.styleRef, knowledge]);
+  /** Plage documentée du style (null : pas de piste, jamais une plage inventée). */
+  const plage = (k: 'ibu' | 'fg' | 'abv'): [number, number] | null => { const r = styleResolu?.stats[k]; return r ? [r.min, r.max] : null; };
+  const empatage = useMemo(() => segmentsEmpatage(recipe), [recipe]);
+  const ferment = useMemo(() => pointsFermentation(recipe.fermentation), [recipe.fermentation]);
+  const eauTotale = recipe.waterPlan ? recipe.waterPlan.mashWaterL + recipe.waterPlan.spargeWaterL : null;
+  const osmoseeL = recipe.waterPlan ? (recipe.waterPlan.mashWaterL * recipe.waterPlan.diRatioPct + recipe.waterPlan.spargeWaterL * (recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct)) / 100 : 0;
+  /** Écart de chaque brassin mesuré à l'OG de sa recette figée, en points : un brassin sans OG mesurée n'entre pas dans la moyenne. */
+  const ecartsOg = relatedBatches.flatMap((b) => {
+    const mesure = b.og ? parseFloat(b.og) : null, cible = b.recipeSnapshot?.ogTarget;
+    return mesure && cible != null ? [Math.abs(Math.round((mesure - cible) * 1000))] : [];
+  });
+  const buildText = () => recipeToText({
+    recipe, name: recipe.name, style: recipe.style ?? '', volumeL: recipe.volumeL, boilMin: recipe.boilMin ?? 60,
+    og: og > 1 ? og : null, fg, abv, ibu: ibuTotal, ebc: color?.ebc ?? null,
+    efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? null,
+    fermentables, totalGristKg: totalGrist, hops, hopIbu: (h) => ibuOf(h),
+    yeast: recipe.yeast, mashSteps: recipe.mash?.steps ?? [], fermentation: recipe.fermentation ?? []
+  });
+  const conduiteDansFermentation = !recipe.nolo?.enabled && !readYeastRecipeDesign(recipe);
+  const grainTitre = recipe.nolo?.enabled && recipe.nolo.process === 'secondRunnings' ? 'Drêches d’origine' : 'Grain';
+
   return (
     <PageShell
       className="recipe-reference"
-      title={recipe.name}
-      subtitle={[recipe.style, formatLitres(recipe.volumeL)].filter(Boolean).join(' · ')}
+      // Maquette r1 : l'en-tête tient sur une ligne, « New England IPA 19 L » (le style est dans la pastille sous le bandeau).
+      title={`${recipe.name} ${formatLitres(recipe.volumeL)}`}
       onClose={onClose}
-      actions={
-        <>
-          <button
-            type="button"
-            onClick={onEdit}
-            aria-label="Modifier la recette"
-            className="touch-target rounded-control text-cave-200 hover:text-cave-50"
-          >
-            <Pencil className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={onDuplicate}
-            aria-label="Dupliquer la recette"
-            className="touch-target rounded-control text-cave-200 hover:text-cave-50"
-          >
-            <Copy className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setConfirmDelete(true)}
-            aria-label="Supprimer la recette"
-            className="touch-target rounded-control text-cave-400 hover:text-alert"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        </>
-      }
       footer={!simulatingNolo &&
         <div className="flex items-center gap-2">
         <button
@@ -279,176 +253,95 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <FlaskConical className="w-5 h-5" />
           Préparer un brassin
         </button>
+        {/* Maquette r1 : le « + » rond à droite de « Préparer un brassin », dans le pied, rien de couvert. Le lanceur se pose sur cette case
+            (même mécanisme que la case d'en-tête clavier ouvert) ; sa priorité reste sous celle de la case d'en-tête, qui garde la main au clavier. */}
+        <ActionDock kind="page-compact" priority={dockPriority} className="shrink-0 h-11 w-11" />
         </div>
       }
     >
+      {/* Maquette r1 : à 700 px et plus, la fiche tient en une colonne de 540 px (les doses restent près des noms) ; au téléphone, toute la largeur. */}
+      <div className="rc-colonne" data-element="r1-colonne">
       <BrewerChat hideLauncher scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
-      {/* --- Les cinq mesures ------------------------------------------- */}
-      <section className="panel p-2">
-        {recipe.nolo?.enabled && <div className="mb-2 border-b border-cave-800 pb-2"><NoloRecipeOverview recipe={recipe} saved={knowledge}/></div>}
-        <dl aria-label="Repères de la recette" className="grid gap-x-2 gap-y-1" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
-          <Metric
+      {/* --- Actions nommées (maquette r1) : Modifier, Exporter ------------- */}
+      <div className="rc-entete" data-element="r1-actions">
+        <button type="button" className="rc-act" onClick={onEdit} aria-label="Modifier la recette"><Pencil className="w-3.5 h-3.5" aria-hidden="true" />Modifier</button>
+        <button type="button" className="rc-act" onClick={() => setExportOpen(true)} aria-label="Exporter la recette"><Download className="w-3.5 h-3.5" aria-hidden="true" />Exporter</button>
+      </div>
+
+      {/* --- Bandeau Grain · OG · IBU · EBC, puis style, FG, ABV --------------- */}
+      <div role="group" aria-label="Repères de la recette" className="space-y-1.5">
+        {recipe.nolo?.enabled && <NoloRecipeOverview recipe={recipe} saved={knowledge}/>}
+        <div className="rc-bandeau" data-element="r1-bandeau" data-commun="bandeau">
+          <Rep label="Grain" value={totalGrist > 0 ? Units.format(totalGrist, 'kg') : null} hint="aucun malt renseigné" />
+          <Rep
             label={recipe.nolo?.enabled ? og > 1 ? noloWort?.origin === 'measurement' ? 'OG mesurée' : 'OG calculée' : 'OG à mesurer' : 'OG'}
             value={og > 1 ? formatDensite(og) : null}
             hint={recipe.nolo?.enabled ? 'moût à caractériser' : 'renseigne le potentiel des malts'}
-            tone="text-ebc-straw"
           />
-          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? formatDensite(fg) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
           {/*
-            L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
-            houblon. Quand la recette d'origine en annonce un autre, on montre
-            les deux — les modèles d'amertume diffèrent d'un calculateur à
-            l'autre, surtout sur le premier moût et le whirlpool, et masquer
-            l'écart laisserait croire à une erreur.
+            L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un houblon. Quand la recette d'origine en annonce
+            un autre, on montre les deux (les modèles d'amertume diffèrent) ; masquer l'écart laisserait croire à une erreur.
+            C'est l'IBU à chaud : le dry hop n'y entre pas (info-bulle).
           */}
-          <Metric
-            label={dryHopTotal > 0 ? "IBU à chaud" : "IBU"}
+          <Rep
+            label="IBU"
+            title={dryHopTotal > 0 ? 'IBU à chaud : le dry hop n’y compte pas' : undefined}
             value={ibuTotal !== null ? String(ibuTotal) : null}
             hint="vérifie les ajouts de houblons"
-            note={
-              ibuTotal !== null &&
-              recipe.ibuTarget &&
-              Math.abs(recipe.ibuTarget - ibuTotal) > Math.max(5, ibuTotal * 0.1)
-                ? `${recipe.ibuTarget} annoncé`
-                : undefined
-            }
-          />
-          <Metric
-            label="EBC"
-            value={color ? formatDecimal(color.ebc) : null}
-            hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'}
-            swatch={color?.swatch}
-          />
-          {!recipe.nolo?.enabled&&<Metric
-            label="ABV"
-            value={abv ? `${formatDecimal(abv, 1)} %` : null}
-            hint={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}
-            note={!projection?.abv.range && recipe.abvTarget != null ? 'cible' : undefined}
-            tone="text-ebc-amber"
-          />}
-        </dl>
-
+            note={ibuTotal !== null && recipe.ibuTarget && Math.abs(recipe.ibuTarget - ibuTotal) > Math.max(5, ibuTotal * 0.1) ? `${recipe.ibuTarget} annoncé` : undefined}
+          >
+            {ibuTotal !== null && <Piste valeur={ibuTotal} plage={plage('ibu')} etiquette="IBU" />}
+          </Rep>
+          <Rep label="EBC" value={color ? formatDecimal(color.ebc) : null} hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'} swatch={color?.swatch} />
+        </div>
+        <div className="rc-rang" data-element="r1-style">
+          {/* Le nom du catalogue des styles (BJCP) quand le style se résout (« NEIPA » → « Hazy IPA 21C »), le nom saisi sinon. */}
+          {recipe.style && <span className="rc-pastille rc-sty" data-role="style"><i aria-hidden="true" />{styleResolu?.name ?? recipe.style}{styleResolu && <small>{styleResolu.code}</small>}</span>}
+          {!recipe.nolo?.enabled && <span className="rc-pastille" data-booster="plage-fg">
+            <span className="rc-l">FG</span>
+            {fg ? <b className="rc-v reading">{formatDensite(fg)}</b> : <b className="rc-v reading" title={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}>—</b>}
+            {fg && <Piste valeur={fg} plage={plage('fg')} etiquette="FG" />}
+          </span>}
+          {!recipe.nolo?.enabled && <span className="rc-pastille" data-booster="plage-abv">
+            <span className="rc-l">ABV</span>
+            {abv ? <b className="rc-v reading">{`${formatDecimal(abv, 1)} %`}</b> : <b className="rc-v reading" title={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}>—</b>}
+            {abv && <Piste valeur={abv} plage={plage('abv')} etiquette="ABV" />}
+            {abv && !projection?.abv.range && recipe.abvTarget != null && <span className="rc-note">cible</span>}
+          </span>}
+        </div>
         {(colorMissing.length > 0 || hopsMissingAlpha.length > 0) && (
-          <div className="mt-4 pt-3 border-t border-cave-800 space-y-1.5">
+          <div className="space-y-1">
             {colorMissing.length > 0 && (
               <p className="flex items-start gap-2 text-sm text-cave-400">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-ebc-amber" />
-                <span>
-                  Couleur EBC manquante sur {colorMissing.join(', ')} — elle figure sur la fiche
-                  technique du malteur.
-                </span>
+                <span>Couleur EBC manquante sur {colorMissing.join(', ')} — elle figure sur la fiche technique du malteur.</span>
               </p>
             )}
             {hopsMissingAlpha.length > 0 && (
               <p className="flex items-start gap-2 text-sm text-cave-400">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-ebc-amber" />
-                <span>
-                  Taux d’alpha manquant sur {[...new Set(hopsMissingAlpha)].join(', ')} — sans lui,
-                  leur amertume n’est pas comptée.
-                </span>
+                <span>Taux d’alpha manquant sur {[...new Set(hopsMissingAlpha)].join(', ')} — sans lui, leur amertume n’est pas comptée.</span>
               </p>
             )}
           </div>
         )}
+        {raisonsDeTete.length > 0 && <p className="rc-note" data-role="raisons-tete">{raisonsDeTete.join(' · ')}</p>}
+      </div>
 
-        {raisonsDeTete.length > 0 && (
-          <p className="mt-1 text-xs text-cave-400" data-role="raisons-tete">{raisonsDeTete.join(' · ')}</p>
-        )}
-        {color && (
-          <p className="mt-1 text-xs text-cave-400">
-            Couleur attendue : <span className="text-cave-200">{color.label}</span> — {nombreFr(color.ebc, 1)} EBC.
-          </p>
-        )}
-      </section>
-      <BrewBudgetButton recipe={recipe} />
-
-      {recipe.waterPlan&&!measuredExtraction&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
-      {/* --- Facture de grain -------------------------------------------- */}
-      <Section
-        title={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Drêches d’origine' : 'Grain'}
-        hint={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Malt du brassin d’origine · aucun nouveau débit' : measuredExtraction ? `${Units.format(totalGrist, 'kg')} à extraire · rendement à mesurer` : `${Units.format(totalGrist, 'kg')} au total · ${
-          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${nombreFr((recipe.efficiencyPct ?? brewhouse?.efficiencyPct) as number, 1)} % d’efficacité` : 'efficacité inconnue'
-        }`}
-      >
-        {grains.length === 0 ? (
-          <p className="text-sm text-cave-400">Aucun malt renseigné.</p>
-        ) : (
-          <ul className="divide-y divide-cave-850">
-            {grains.map((m, i) => {
-              const pct = partsGrain[i] ?? 0;
-              return (
-                <li key={`${m.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
-                  <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
-                    {nombreFr(pct, 0)} %
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-cave-50 break-words">{m.name}</span>
-                    {m.colorEbc != null && (
-                      <span className="block text-sm text-cave-400">{nombreFr(m.colorEbc, 1)} EBC</span>
-                    )}
-                  </span>
-                  <span className="reading text-sm text-cave-50 shrink-0">
-                    {Units.format(m.weightKg, 'kg')}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </Section>
-
-      {/*
-        --- Sucres, lactose, fruits --------------------------------------
-        Séparés du grain volontairement : ils n'entrent pas dans la facture de
-        grain, n'apportent pas de couleur, et surtout ne fermentent pas tous.
-      */}
-      {others.length > 0 && (
-        <Section
-          title="Sucres et ajouts"
-          hint={resumeAjouts(others)}
-        >
-          {(points?.unfermentable ?? 0) > 2 && (
-            <p className="pb-1 text-sm text-cave-400">{nombreFr(points!.unfermentable, 0)} points de densité que la levure ne peut pas manger : ils restent dans la bière.</p>
-          )}
-          <ul className="divide-y divide-cave-850">
-            {others.map((f, i) => (
-              <li key={`${f.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm text-cave-50 break-words">{f.name}</span>
-                  <span className="block text-sm text-cave-400">
-                    {f.use === 'fermentation'
-                      ? `en fermentation, J+${f.dayOffset ?? 0}`
-                      : f.use === 'ebullition'
-                        ? 'à l’ébullition'
-                        : 'à l’empâtage'}
-                    {' · '}
-                    {f.fermentabilityPct === 0
-                      ? 'non fermentescible'
-                      : `${nombreFr(f.fermentabilityPct ?? 100, 1)} % fermentescible`}
-                  </span>
-                </span>
-                <span className="reading text-sm shrink-0">
-                  {Units.format(f.weightKg, 'kg')}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {/* --- Houblons, groupés par moment -------------------------------- */}
-      <Section
-        title="Houblons"
-        hint={
-          dryHopTotal > 0
-            ? `dont ${Units.format(dryHopTotal, 'g')} à cru · effet simulé séparément`
-            : `${nombreAccorde(hops.length, 'ajout')} · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
-        }
-      >
+      {/* --- Houblons : variété × moment, ouverte ---------------------------- */}
+      <FicheSection title="Houblons" defaultOpen dataElement="r1-houblons">
+        <TableauHoublons
+          hops={hops}
+          onNom={() => setPanneau('detail')}
+          actions={<>
+            <button type="button" className="rc-lien" aria-expanded={panneau === 'detail'} aria-controls="rc-detail-ajouts" onClick={() => basculer('detail')}>Détail des ajouts et IBU</button>
+            <button type="button" className="rc-lien" aria-expanded={panneau === 'potentiel'} aria-controls="rc-potentiel" onClick={() => basculer('potentiel')}>Potentiel aromatique</button>
+          </>}
+        />
+        {/* Le tableau ne porte pas l'IBU par ajout, ni la température du whirlpool, ni le jour du dry hop : ils vivent ici, dans le DOM dès le repos. */}
+        <div id="rc-detail-ajouts" className="rc-ann" data-element="r1-detail-ajouts" hidden={panneau !== 'detail'}>
         <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
-        {grouped.length === 0 ? (
-          <p className="text-sm text-cave-400">Aucun houblon renseigné.</p>
-        ) : (
+        {grouped.length === 0 ? null : (
           <div className="space-y-2">
             {grouped.map(({ stage, hops: list }) => {
               const style = HOP_STAGE[stage];
@@ -498,19 +391,25 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             })}
           </div>
         )}
-      </Section>
-
-      <Section title="Potentiel aromatique" deferContent>
-        <LazySurface resetKey={`aroma:${recipe.id}`} fallback={<div role="status">Préparation du potentiel aromatique…</div>}>
+        </div>
+        {/* Le potentiel aromatique ne se monte qu'à la première ouverture (rapport lourd). */}
+        <div id="rc-potentiel" className="rc-ann" data-element="r1-potentiel" hidden={panneau !== 'potentiel'}>
+        {potentielVu && <LazySurface resetKey={`aroma:${recipe.id}`} fallback={<div role="status">Préparation du potentiel aromatique…</div>}>
           <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
           <HopRecipePanel recipe={recipe} onEdit={onEdit} />
           {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={onOpenHopV55}>Ouvrir l’atelier Houblons V5.5</button>}
-        </LazySurface>
-      </Section>
+        </LazySurface>}
+        </div>
+      </FicheSection>
 
-      {/* --- Levure ------------------------------------------------------ */}
-      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation" deferContent><LazySurface resetKey={`nolo:${recipe.id}`} fallback={<div role="status">Préparation du suivi NOLO…</div>}><NoloPanel recipe={recipe} showOverview={false} onVariantChange={setSimulatingNolo}/></LazySurface></Section>}
-      <Section title="Levure" deferContent={!!readYeastRecipeDesign(recipe)} summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
+      {/* --- Levure au premier plan : la ligne de la maquette ----------------- */}
+      <FicheSection
+        title="Levure"
+        dataElement="r1-levure"
+        deferContent={!!readYeastRecipeDesign(recipe)}
+        icone={<Dna className="w-[18px] h-[18px] shrink-0 text-cave-200" aria-hidden="true" />}
+        entete={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}
+      >
         {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface> : !recipe.yeast?.name ? (
           <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
         ) : (
@@ -545,13 +444,144 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
           </div>
         )}
-      </Section>
+      </FicheSection>
 
-      {!recipe.nolo?.enabled&&!readYeastRecipeDesign(recipe)&&<Section title="Conduite de levure" deferContent><LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface></Section>}
+      {/* Cas hors maquette, rangé dans un état de la maquette : le suivi NOLO est une section de plus, seulement en NOLO. */}
+      {recipe.nolo?.enabled&&<FicheSection title="Suivi NOLO" resume="Simuler, analyses et conservation" deferContent><LazySurface resetKey={`nolo:${recipe.id}`} fallback={<div role="status">Préparation du suivi NOLO…</div>}><NoloPanel recipe={recipe} showOverview={false} onVariantChange={setSimulatingNolo}/></LazySurface></FicheSection>}
 
-      {/* --- Additifs ---------------------------------------------------- */}
-      {recipe.adjuncts && recipe.adjuncts.length > 0 && (
-        <Section title="Additifs">
+      {/* --- Grain : la barre des parts en résumé ----------------------------- */}
+      <FicheSection
+        title={grainTitre}
+        dataElement="r1-grain"
+        resume={recipe.nolo?.enabled && recipe.nolo.process === 'secondRunnings' ? 'Malt du brassin d’origine · aucun nouveau débit'
+          : measuredExtraction ? `${Units.format(totalGrist, 'kg')} à extraire · rendement à mesurer`
+          : <BarreGrain parts={partsGrain} noms={grains.map((g) => g.name)} ebc={grains.map((g) => g.colorEbc)} />}
+      >
+        <p className="rc-note">
+          {color && <>Couleur attendue : <span className="text-cave-200">{color.label}</span> — {nombreFr(color.ebc, 1)} EBC · </>}
+          {`${Units.format(totalGrist, 'kg')} au total · ${(recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${nombreFr((recipe.efficiencyPct ?? brewhouse?.efficiencyPct) as number, 1)} % d’efficacité` : 'efficacité inconnue'}`}.
+        </p>
+        {grains.length === 0 ? (
+          <p className="text-sm text-cave-400">Aucun malt renseigné.</p>
+        ) : (
+          <ul className="divide-y divide-cave-850">
+            {grains.map((m, i) => {
+              const pct = partsGrain[i] ?? 0;
+              return (
+                <li key={`${m.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
+                  <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
+                    {nombreFr(pct, 0)} %
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm text-cave-50 break-words">{m.name}</span>
+                    {m.colorEbc != null && (
+                      <span className="block text-sm text-cave-400">{nombreFr(m.colorEbc, 1)} EBC</span>
+                    )}
+                  </span>
+                  <span className="reading text-sm text-cave-50 shrink-0">
+                    {Units.format(m.weightKg, 'kg')}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {/* Sucres, lactose, fruits : séparés du grain (ils n'entrent ni dans la facture de grain ni dans la couleur, et ne fermentent pas tous). */}
+        {others.length > 0 && (
+          <div data-role="sucres-ajouts" className="space-y-1">
+            <h3 className="rc-sub-t text-cave-200">Sucres et ajouts · <span className="rc-note">{resumeAjouts(others)}</span></h3>
+          {(points?.unfermentable ?? 0) > 2 && (
+            <p className="pb-1 text-sm text-cave-400">{nombreFr(points!.unfermentable, 0)} points de densité que la levure ne peut pas manger : ils restent dans la bière.</p>
+          )}
+          <ul className="divide-y divide-cave-850">
+            {others.map((f, i) => (
+              <li key={`${f.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm text-cave-50 break-words">{f.name}</span>
+                  <span className="block text-sm text-cave-400">
+                    {f.use === 'fermentation'
+                      ? `en fermentation, J+${f.dayOffset ?? 0}`
+                      : f.use === 'ebullition'
+                        ? 'à l’ébullition'
+                        : 'à l’empâtage'}
+                    {' · '}
+                    {f.fermentabilityPct === 0
+                      ? 'non fermentescible'
+                      : `${nombreFr(f.fermentabilityPct ?? 100, 1)} % fermentescible`}
+                  </span>
+                </span>
+                <span className="reading text-sm shrink-0">
+                  {Units.format(f.weightKg, 'kg')}
+                </span>
+              </li>
+            ))}
+          </ul>
+          </div>
+        )}
+      </FicheSection>
+
+      {/* --- Empâtage : mini courbe en résumé, courbe graduée ouverte ----------- */}
+      {recipe.mash?.steps?.length > 0 && (coldPilot ? (
+        <FicheSection title="Extraction à froid prévue" dataElement="r1-empatage" resume={<span className="rc-m">{`${coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C · ${coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h`}</span>}>
+          <p className="text-sm text-cave-50">Maintenir {coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C pendant {coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h, puis filtrer.</p>
+          <p className="text-xs text-cave-200">Consignes du pilote ; relever la température, le volume, la densité et le pH réellement obtenus.</p>
+        </FicheSection>
+      ) : (
+        <FicheSection
+          title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'}
+          dataElement="r1-empatage"
+          resume={!measuredExtraction && empatage.principal != null
+            ? <><MiniCourbe points={pointsEmpatage(empatage.segments)} couleur="rgb(var(--ebc-copper-texte))" /><span className="rc-m">{nombreFr(empatage.principal, 0)} °C</span></>
+            : nombreAccorde(recipe.mash.steps.length, 'palier')}
+          resumeOuvert={!measuredExtraction && empatage.holdMin != null ? <span className="rc-m">≈ {nombreFr(empatage.holdMin, 0)}′ de maintien</span> : undefined}
+        >
+          {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
+          {!measuredExtraction && <CourbeEmpatage segments={empatage.segments} />}
+          {!measuredExtraction && recipe.waterPlan && (
+            <div className="rc-puces" data-element="r1-puces-empatage">
+              <span className="rc-pastille">empâtage <b className="rc-v">{nombreFr(recipe.waterPlan.mashWaterL, 1)} L</b>{recipe.mash.ratioLPerKg ? <> · <b className="rc-v">{nombreFr(recipe.mash.ratioLPerKg, 1)} L/kg</b></> : null}</span>
+              {recipe.waterPlan.spargeWaterL > 0 && <span className="rc-pastille">{recipe.mash.spargeType === 'batch' ? 'rinçage par bacs' : recipe.mash.spargeType === 'fly' ? 'rinçage continu' : 'rinçage'} <b className="rc-v">{nombreFr(recipe.waterPlan.spargeWaterL, 1)} L</b>{recipe.mash.spargeTempC != null ? <> · <b className="rc-v">{nombreFr(recipe.mash.spargeTempC, 0)} °C</b></> : null}</span>}
+            </div>
+          )}
+          {/* Maquette r1 : l'Empâtage ouvert = la courbe et les deux pastilles d'eau. Les paliers en liste, l'eau de rinçage et le repère de chauffe vivent dans le repli « Montées… ». */}
+          {(() => { const liste = (<>
+                <h3 className="sr-only">
+                  Empâtage
+                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
+                  {recipe.mash.spargeType === 'fly'
+                    ? ' · rinçage continu'
+                    : recipe.mash.spargeType === 'batch'
+                      ? ' · rinçage par bacs'
+                      : ''}
+                </h3>
+                <ul className="divide-y divide-cave-850">
+                  {[...recipe.mash.steps, ...(recipe.mash.mashoutEnabled !== false && recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
+                    <li key={i} className="py-1.5 flex items-baseline gap-2">
+                      <span className="flex-1 text-base text-cave-50">{s.name}</span>
+                      <span className="reading text-sm text-water">{nombreFr(s.tempC, 1)} °C</span>
+                      <span className="reading text-sm text-cave-400 w-16 text-right">
+                        {s.durationMin} min
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-water mt-2">Eau de rinçage : {nombreFr(recipe.mash.spargeTempC ?? 76, 1)} °C · les durées indiquent le maintien à la consigne.</p>
+                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {nombreFr(recipe.mash.heatingRateCPerMin, 2)} °C/min. La montée est suivie séparément dans le journal.</p>}
+          </>);
+          return <>
+            {measuredExtraction && liste}
+            {/* Le détail des montées vit dans la section, replié : RecipeThermalPlan est repris tel quel. */}
+            {!measuredExtraction && <FicheSection title="Montées, repères de chauffe, refroidissement">{liste}<RecipeThermalPlan recipe={recipe}/></FicheSection>}
+          </>; })()}
+        </FicheSection>
+      ))}
+
+      {/* --- Ébullition ---------------------------------------------------- */}
+      <FicheSection title="Ébullition" dataElement="r1-ebullition" resume={<span className="rc-m">{recipe.boilMin ?? 60}′</span>}>
+        <p className="rc-note">Ébullition de {recipe.boilMin ?? 60} min{boilOg ? ` · densité en début d’ébullition ${formatDensite(boilOg)}` : ''}.</p>
+        {recipe.adjuncts && recipe.adjuncts.length > 0 && (
+          <div className="space-y-1">
+            <h3 className="rc-sub-t text-cave-200">Additifs</h3>
           <ul className="divide-y divide-cave-850">
             {recipe.adjuncts.map((a, i) => (
               <li key={`${a.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
@@ -565,26 +595,27 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </li>
             ))}
           </ul>
-        </Section>
-      )}
+          </div>
+        )}
+      </FicheSection>
 
-      {/* --- Eau : le plan complet, empâtage et rinçage séparés ----------- */}
+      {/* --- Eau : barre osmosée / réseau et total en résumé ; le plan complet reste dans la section --- */}
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && recipe.waterPlan && (
-        <Section
-          title={coldPilot ? 'Eau prévue pour le pilote' : measuredExtraction ? 'Eau de référence' : 'Eau et sels'}
-          /*
-           * ⚠️ `targetProfileId` porte un CODE BJCP (« 21C »), et il était
-           * cherché dans `TARGET_PROFILES`, dont les identifiants sont des noms
-           * d'eaux historiques (« neipa », « burton »). Aucun ne correspondait
-           * jamais : la fiche affichait « personnalisé » sur toutes les
-           * recettes. C'est `styleByCode` qui connaît ces codes.
-           */
-          hint={`${nombreFr(recipe.waterPlan.diRatioPct, 2)} % d’osmosée · ${
-            recipe.waterPlan.targetIons
-              ? recipe.waterPlan.targetName ?? 'cible de la recette'
-              : styleByCode(recipe.waterPlan.targetProfileId).name
-          }`}
+        <FicheSection
+          title={coldPilot ? 'Eau prévue pour le pilote' : measuredExtraction ? 'Eau de référence' : 'Eau'}
+          dataElement="r1-eau"
+          resume={<>
+            <BarrePart part={recipe.waterPlan.diRatioPct} a="rgb(var(--water) / .4)" b="rgb(var(--water))" libelle={`osmosée ${nombreFr(recipe.waterPlan.diRatioPct, 0)} %, réseau ${nombreFr(100 - recipe.waterPlan.diRatioPct, 0)} %`} />
+            <span className="rc-m">{nombreFr(eauTotale ?? 0, 1)} L</span>
+            {recipe.waterPlan.spargeWaterL <= 0 && <span>1 eau</span>}
+          </>}
         >
+          {/*
+           * ⚠️ `targetProfileId` porte un CODE BJCP (« 21C »), et il était cherché dans `TARGET_PROFILES`, dont les identifiants sont
+           * des noms d'eaux historiques : « personnalisé » sur toutes les recettes. C'est `styleByCode` qui connaît ces codes.
+           */}
+          <p className="rc-note">{nombreFr(recipe.waterPlan.diRatioPct, 2)} % d’osmosée · {recipe.waterPlan.targetIons ? recipe.waterPlan.targetName ?? 'cible de la recette' : styleByCode(recipe.waterPlan.targetProfileId).name}</p>
+          {!measuredExtraction && <RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={osmoseeL}/>}
           <div className="space-y-3">
             {coldPilot ? <p className="text-xs text-cave-200">Volumes estimés pour l’extraction froide et la préparation du pilote. Confirmer l’eau ajoutée, le volume récupéré et le pH ; aucune dose d’acide chaude n’est reprise.</p> : measuredExtraction && <p className="text-sm text-cave-200">Plan d’empâtage chaud conservé comme référence. Les volumes, acides et paliers d’extraction à froid restent à établir et à mesurer.</p>}
             {!measuredExtraction&&waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
@@ -748,15 +779,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </p></details>
             )}
           </div>
-        </Section>
+        </FicheSection>
       )}
 
       {/* --- Eau (ancien format, lu tel quel) ----------------------------- */}
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && !recipe.waterPlan && recipe.water?.salts && (
-        <Section
-          title="Eau"
-          hint={`${recipe.water.sourceName} · ${nombreFr(recipe.water.diRatioPct, 1)} % d’osmosée`}
-        >
+        <FicheSection title="Eau" dataElement="r1-eau" resume={`${recipe.water.sourceName} · ${nombreFr(recipe.water.diRatioPct, 1)} % d’osmosée`}>
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <dt className="text-sm text-cave-400">Gypse</dt>
@@ -779,49 +807,27 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <dd className="reading text-sm text-water">{recipe.water.targetPh}</dd>
             </div>
           </dl>
-        </Section>
+        </FicheSection>
       )}
 
-      {/* --- Empâtage et fermentation ------------------------------------ */}
-      {!measuredExtraction && <RecipeThermalPlan recipe={recipe}/>}
-      {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
-        <>
-            {recipe.mash?.steps?.length > 0 && (coldPilot ? <Section title="Extraction à froid prévue" hint={`${coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C · ${coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h`}>
-              <p className="text-sm text-cave-50">Maintenir {coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C pendant {coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h, puis filtrer.</p>
-              <p className="text-xs text-cave-200">Consignes du pilote ; relever la température, le volume, la densité et le pH réellement obtenus.</p>
-            </Section> :
-              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={nombreAccorde(recipe.mash.steps.length, 'palier')}>
-                {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
-                <h3 className="text-sm text-cave-400 mb-1.5">
-                  Empâtage
-                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
-                  {recipe.mash.spargeType === 'fly'
-                    ? ' · rinçage continu'
-                    : recipe.mash.spargeType === 'batch'
-                      ? ' · rinçage par bacs'
-                      : ''}
-                </h3>
-                <ul className="divide-y divide-cave-850">
-                  {[...recipe.mash.steps, ...(recipe.mash.mashoutEnabled !== false && recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
-                    <li key={i} className="py-1.5 flex items-baseline gap-2">
-                      <span className="flex-1 text-base text-cave-50">{s.name}</span>
-                      <span className="reading text-sm text-water">{nombreFr(s.tempC, 1)} °C</span>
-                      <span className="reading text-sm text-cave-400 w-16 text-right">
-                        {s.durationMin} min
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-sm text-water mt-2">Eau de rinçage : {nombreFr(recipe.mash.spargeTempC ?? 76, 1)} °C · les durées indiquent le maintien à la consigne.</p>
-                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {nombreFr(recipe.mash.heatingRateCPerMin, 2)} °C/min. La montée est suivie séparément dans le journal.</p>}
-              </Section>
-            )}
-
-            {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <Section title="Fermentation" hint={nombreAccorde(recipe.fermentation.length, 'phase')}>
+      {/* --- Fermentation : mini courbe et durée en résumé ----------------------- */}
+      {((recipe.fermentation?.length ?? 0) > 0 || conduiteDansFermentation) && (
+        <FicheSection
+          title="Fermentation"
+          dataElement="r1-fermentation"
+          resume={(recipe.fermentation?.length ?? 0) === 0 ? undefined : ferment.jours != null
+            ? <><MiniCourbe points={ferment.points} couleur="rgb(var(--water))" /><span className="rc-m">{nombreFr(ferment.jours, 0)} j</span></>
+            : nombreAccorde(recipe.fermentation!.length, 'phase')}
+          // La conduite de levure (et « Simuler une variante ») n'a pas de rangée à elle : elle se range ici, dans la Fermentation dépliée
+          // (avec un plan de levure enregistré, elle reste dans la ligne Levure dont le résumé la décrit).
+          apresOuverture={conduiteDansFermentation && <div className="space-y-1" data-element="r1-conduite-levure">
+            <h3 className="rc-sub-t text-cave-200">Conduite de levure</h3>
+            <LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface>
+          </div>}
+        >
                 <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
-                  {recipe.fermentation.map((s, i) => {
+                  {(recipe.fermentation ?? []).map((s, i) => {
                     // Le type de phase se lit d'un coup : repos diacétyle et
                     // garde ne sont pas de la fermentation primaire.
                     const phase = PHASE_LABEL[s.kind ?? 'primaire'];
@@ -848,26 +854,24 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     );
                   })}
                 </ul>
-              </Section>
-            )}
-        </>
+        </FicheSection>
       )}
 
-      {/* --- Déroulé ----------------------------------------------------- */}
+      {/* --- Déroulé (cas hors maquette : seulement s'il existe) ------------------ */}
       {recipe.instructions && (
-        <Section title="Déroulé" hint="Tel qu’il figure sur la recette d’origine.">
-          <p className="text-base text-cave-200 leading-relaxed whitespace-pre-line">
-            {recipe.instructions}
-          </p>
-        </Section>
+        <FicheSection title="Déroulé" resume="Tel qu’il figure sur la recette d’origine.">
+          <p className="text-base text-cave-200 leading-relaxed whitespace-pre-line">{recipe.instructions}</p>
+        </FicheSection>
       )}
 
-      {/* --- Brassins issus de cette recette ------------------------------ */}
-      {relatedBatches.length > 0 && (
-        <Section
-          title="Brassins"
-          hint="Ce qui est réellement sorti de la cuve, comparé à la cible."
-        >
+      {/* --- Brassins : la section reste même sans brassin ; le budget s'y range -------- */}
+      <FicheSection
+        title="Brassins"
+        dataElement="r1-brassins"
+        resume={relatedBatches.length === 0 ? 'aucun brassin' : <span className="rc-m">{relatedBatches.length}{ecartsOg.length ? ` · OG ± ${nombreFr(ecartsOg.reduce((s, e) => s + e, 0) / ecartsOg.length, 0)} pts` : ''}</span>}
+      >
+        <BrewBudgetButton recipe={recipe} />
+        {relatedBatches.length > 0 && (
           <ul className="divide-y divide-cave-850">
             {relatedBatches.map((b) => {
               const measured = b.og ? parseFloat(b.og) : null;
@@ -908,9 +912,19 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               );
             })}
           </ul>
-        </Section>
-      )}
+        )}
+      </FicheSection>
 
+      {/* --- Dupliquer à gauche, Supprimer éloigné à droite, bord rouge ------------------ */}
+      <div className="rc-sup" data-element="r1-supprimer">
+        <button type="button" className="rc-act" onClick={onDuplicate} aria-label="Dupliquer la recette"><Copy className="w-3.5 h-3.5" aria-hidden="true" />Dupliquer</button>
+        <button type="button" className="rc-del" onClick={() => setConfirmDelete(true)} aria-label="Supprimer la recette">Supprimer la recette</button>
+      </div>
+      </div>
+
+      <Sheet open={exportOpen} onClose={() => setExportOpen(false)} title="Exporter la recette" className="lg:max-w-3xl lg:mx-auto">
+        <RecipeTextExport buildText={buildText} />
+      </Sheet>
       <ConfirmSheet
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
