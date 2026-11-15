@@ -284,3 +284,27 @@ export function iconeQuestion(question: string): IconeQuestion {
   if (/jour|garde|quand|dur[ée]e/.test(q)) return 'calendrier';
   return 'defaut';
 }
+
+/**
+ * Suite de l'en-tête de la feuille : « Brassin 31 · J+8 » (portée brassin), sinon le nom de la recette ou de l'écran.
+ * Dérivé des props déjà passées au chat, sans appel serveur : le numéro vient de l'identifiant du brassin (« LOT-031 » → 31),
+ * le jour du levurage du journal local (`pitchedAt`, J+0 = jour de la levure) ; l'un ou l'autre absent n'est ni inventé ni mis à 0.
+ */
+export function suiteEnTete(
+  scope: { kind: string; id: string },
+  label: string,
+  localJournal?: unknown,
+  maintenant: number = Date.now()
+): string {
+  if (scope.kind !== 'batch') return label;
+  const numero = /^LOT-0*(\d+)$/i.exec(scope.id)?.[1];
+  const leve = (localJournal as { pitchedAt?: unknown } | undefined)?.pitchedAt;
+  let jour: number | undefined;
+  if (typeof leve === 'number' && Number.isFinite(leve) && leve > 1e11) {
+    const jourDe = (t: number) => { const d = new Date(t); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+    const ecart = Math.round((jourDe(maintenant) - jourDe(leve)) / 86400000);
+    if (ecart >= 0) jour = ecart;
+  }
+  const morceaux = [numero ? `Brassin ${numero}` : label, ...(jour !== undefined ? [`J+${jour}`] : [])];
+  return morceaux.join(' · ');
+}

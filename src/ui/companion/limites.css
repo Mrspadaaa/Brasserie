@@ -16,7 +16,7 @@
   --t0: rgb(var(--cave-texte-50));
   --act: rgb(var(--ebc-straw));
   --sur-act: rgb(var(--sur-paille));
-  --hop: rgb(var(--hop));
+  --cmp-hop: rgb(var(--hop));
   --hopt: rgb(var(--hop-texte));
   --hopf: rgb(var(--hop) / 0.1);
   --hopl: rgb(var(--hop) / 0.28);
@@ -56,7 +56,7 @@
 .cmp-lx .cmp-btn.cmp-g { color: var(--t); }
 .cmp-lx .cmp-act { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 .cmp-lx .cmp-piste { display: block; height: 10px; border-radius: 5px; background: var(--bord); position: relative; overflow: hidden; margin: 6px 0 8px; }
-.cmp-lx .cmp-piste i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--hop); min-width: 4px; }
+.cmp-lx .cmp-piste i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--cmp-hop); min-width: 4px; }
 .cmp-lx .cmp-piste-n i { background: var(--t2); }
 .cmp-lx .cmp-piste-alerte i { background: var(--att); }
 .cmp-lx .cmp-grad { display: flex; justify-content: space-between; font-size: 12px; color: var(--t2); }
@@ -76,7 +76,7 @@
 .cmp-lx .cmp-bascule { width: 40px; height: 24px; border-radius: 12px; background: var(--bordm); position: relative; flex: none; border: 0; padding: 0; }
 .cmp-lx .cmp-bascule::after { content: ''; position: absolute; inset: -10px -6px; }
 .cmp-lx .cmp-bascule i { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--page); transition: left 0.12s; }
-.cmp-lx .cmp-bascule[aria-checked='true'] { background: var(--hop); }
+.cmp-lx .cmp-bascule[aria-checked='true'] { background: var(--cmp-hop); }
 .cmp-lx .cmp-bascule[aria-checked='true'] i { left: 19px; }
 .cmp-lx .cmp-bascule:disabled[aria-checked='true'] { opacity: 1; }
 .cmp-lx .cmp-bascule-alerte[aria-checked='true'] { background: var(--att); }
@@ -123,14 +123,14 @@
 .cmp-lx .cmp-cu-val { position: absolute; bottom: 100%; margin-bottom: 2px; left: calc(12px + (100% - 24px) * var(--pct)); transform: translateX(-50%); font-size: 13px; font-weight: 600; color: var(--t0); white-space: nowrap; pointer-events: none; }
 .cmp-lx .cmp-cu-ancien { position: absolute; top: 6px; width: 2px; height: 16px; background: var(--t2); left: calc(12px + (100% - 24px) * var(--ancien)); pointer-events: none; }
 .cmp-lx .cmp-curseur input[type='range'] { position: absolute; inset: 0; width: 100%; height: 28px; margin: 0; background: transparent; appearance: none; -webkit-appearance: none; touch-action: pan-y; }
-.cmp-lx .cmp-curseur input[type='range']::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--hop) calc(12px + (100% - 24px) * var(--pct)), var(--bord) 0); }
+.cmp-lx .cmp-curseur input[type='range']::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--cmp-hop) calc(12px + (100% - 24px) * var(--pct)), var(--bord) 0); }
 .cmp-lx .cmp-curseur input[type='range']::-moz-range-track { height: 6px; border-radius: 3px; background: var(--bord); }
-.cmp-lx .cmp-curseur input[type='range']::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--hop); }
-.cmp-lx .cmp-curseur input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -9px; border-radius: 50%; background: var(--page); border: 2px solid var(--hop); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
-.cmp-lx .cmp-curseur input[type='range']::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--page); border: 2px solid var(--hop); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
+.cmp-lx .cmp-curseur input[type='range']::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--cmp-hop); }
+.cmp-lx .cmp-curseur input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -9px; border-radius: 50%; background: var(--page); border: 2px solid var(--cmp-hop); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
+.cmp-lx .cmp-curseur input[type='range']::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--page); border: 2px solid var(--cmp-hop); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
 .cmp-lx .cmp-pts { display: flex; align-items: center; gap: 4px; }
 .cmp-lx .cmp-pts i { width: 8px; height: 8px; border-radius: 50%; margin-left: 4px; display: inline-block; }
 .cmp-lx .cmp-pts i:first-child { margin-left: 0; }
-.cmp-lx .cmp-pv { background: var(--hop); }
+.cmp-lx .cmp-pv { background: var(--cmp-hop); }
 .cmp-lx .cmp-pa { background: var(--att); }
 .cmp-lx .cmp-pr { background: var(--alr); }

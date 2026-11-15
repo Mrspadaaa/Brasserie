@@ -4,7 +4,7 @@
  * sources, onConversations?, onLimites?, intro?} ; Modes {mode, onMode, disabled?, conseille?} ; PiedSaisie {id, valeur, onValeur,
  * peutEnvoyer, …} ; Zero {portee, onConfirmer, onAnnuler, busy?}. Présentatif : la préférence de mode et l'envoi restent à l'écran.
  */
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { BrewerMode } from '../../../functions/src/companionTypes';
 import { Textarea } from '../Input';
 import { ICONE_DE_QUESTION, ICONE_DE_SOURCE } from './icones';
@@ -278,6 +278,14 @@ export function PiedSaisie({
   modes?: ReactNode;
   children?: ReactNode;
 }) {
+  // Une ligne de 44 px au repos ; la hauteur suit le texte jusqu'à 120 px (la zone haute de Finances garde ses 4 lignes).
+  const champ = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const t = champ.current;
+    if (!t || haute) return;
+    t.style.height = '44px';
+    t.style.height = `${Math.min(Math.max(t.scrollHeight + 2, 44), 120)}px`;
+  }, [valeur, haute]);
   return (
     <div className="cmp-pied">
       {avant}
@@ -288,11 +296,12 @@ export function PiedSaisie({
           {etiquette}
         </label>
         <Textarea
+          ref={champ}
           id={id}
           className={`cmp-champ cmp-plein${haute ? ' cmp-zone' : ''}`}
           value={valeur}
           maxLength={maxLength}
-          rows={haute ? 4 : 2}
+          rows={haute ? 4 : 1}
           placeholder={placeholder}
           readOnly={readOnly}
           onChange={(e) => onValeur(e.target.value)}

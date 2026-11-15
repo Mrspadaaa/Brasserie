@@ -15,6 +15,8 @@ import './companion/limites.css';
 export type BrewerBudgetStatus = BrewerAiBudget;
 
 const format = (n: number) => new Intl.NumberFormat('fr-CH').format(n);
+// « CHF » collé au nombre qui précède (espace insécable). Les nombres passent par nombreTexte / nombreFr (virgule) ; l'unité seule n'est pas un nombre.
+const UNITE_CHF = NBSP + 'CHF';
 /** Un montant en CHF à deux décimales, virgule suisse, indépendant de la locale du navigateur (« 2,10 »). */
 const chf2 = (micro: number) => (Math.round(micro / 10_000) / 100).toFixed(2).replace('.', ',');
 type LimitKey = keyof BrewerAiLimits;
@@ -72,7 +74,7 @@ export function budgetResume(status?: BrewerBudgetStatus): { appelsJour: string;
   const pris = m.usedMicroChf + m.reservedMicroChf;
   return {
     appelsJour,
-    mois: `mois ${chf2(pris)} sur ${nombreTexte(m.limitMicroChf / 1_000_000)}${NBSP}CHF`,
+    mois: `mois ${chf2(pris)} sur ${nombreTexte(m.limitMicroChf / 1_000_000)}${UNITE_CHF}`,
     atteint: m.limitMicroChf > 0 && pris >= m.limitMicroChf
   };
 }
@@ -314,7 +316,7 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
                   <span className="cmp-n">{chf2(pris)}</span> sur{' '}
                   <span className="cmp-m">
                     <span className="cmp-n">{nombreTexte(m.limitMicroChf / 1_000_000)}</span>
-                    {NBSP}CHF
+                    {UNITE_CHF}
                   </span>
                 </span>
               )}
@@ -336,7 +338,7 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
             {Boolean(m?.reservedMicroChf) && (
               <p className="cmp-note">
                 Dont {nombreFr(m!.reservedMicroChf / 1_000_000, 3)}
-                {NBSP}CHF réservés pour les appels en cours ou dont le coût n’a pas été confirmé.
+                {UNITE_CHF} réservés pour les appels en cours ou dont le coût n’a pas été confirmé.
               </p>
             )}
             {m?.pricing === 'expired' && (
@@ -592,7 +594,7 @@ export function BrewerBudgetCapView({
                   <span className="cmp-n">{chf2(pris)}</span>/
                   <span className="cmp-m">
                     <span className="cmp-n">{nombreTexte(limite)}</span>
-                    {NBSP}CHF
+                    {UNITE_CHF}
                   </span>
                 </span>
               </div>
@@ -615,7 +617,7 @@ export function BrewerBudgetCapView({
                     </>
                   )}
                   <span className="cmp-n">{valeur}</span>
-                  {NBSP}CHF
+                  {UNITE_CHF}
                 </span>
               </span>
             </div>
@@ -627,7 +629,7 @@ export function BrewerBudgetCapView({
               <span className="cmp-cu-val" aria-hidden="true">
                 <span className="cmp-m">
                   <span className="cmp-n">{valeur}</span>
-                  {NBSP}CHF
+                  {UNITE_CHF}
                 </span>
               </span>
               <input
@@ -645,13 +647,13 @@ export function BrewerBudgetCapView({
               <span>
                 <span className="cmp-m">
                   <span className="cmp-n">{min}</span>
-                  {NBSP}CHF
+                  {UNITE_CHF}
                 </span>
               </span>
               <span>
                 <span className="cmp-m">
                   <span className="cmp-n">{max}</span>
-                  {NBSP}CHF
+                  {UNITE_CHF}
                 </span>
               </span>
             </div>
@@ -667,7 +669,7 @@ export function BrewerBudgetCapView({
               >
                 <Check className="cmp-i" size={16} aria-hidden="true" />
                 Relever à {valeur}
-                {NBSP}CHF
+                {UNITE_CHF}
               </button>
             </div>
           </div>

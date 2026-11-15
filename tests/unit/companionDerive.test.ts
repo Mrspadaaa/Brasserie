@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   feuDuNiveau, barreAvantApres, jaugeDuree, dureeTexte, etapeIndex, etatsEtapes, libellesRelecture, sansNomDeModele,
-  statutsConversations, renouvellement, modeConseille, partDe, estPlafondAtteint, nombreTexte, BORNE_SERVEUR_S, habituelTexte
+  statutsConversations, renouvellement, modeConseille, partDe, estPlafondAtteint, nombreTexte, BORNE_SERVEUR_S, habituelTexte, suiteEnTete
 } from '../../src/ui/companion/derive';
 
 describe('compagnon · feu du niveau', () => {
@@ -148,5 +148,20 @@ describe('compagnon · mode conseillé', () => {
     expect(modeConseille('Vérifie les incohérences de mes opérations enregistrées.')).toBe('deep');
     expect(modeConseille('Densité : je mesure quand ?')).toBe('fast');
     expect(modeConseille('Galaxy : je garde 43 g, ou je change de houblon ?')).toBe('auto');
+  });
+});
+
+describe('compagnon · suite de l’en-tête', () => {
+  const midi = (j: number) => new Date(2026, 10, j, 12).getTime();
+  it('brassin : numéro tiré de LOT-031 et jour depuis la levure', () => {
+    expect(suiteEnTete({ kind: 'batch', id: 'LOT-031' }, 'NEIPA', { pitchedAt: midi(7) }, midi(15))).toBe('Brassin 31 · J+8');
+  });
+  it('sans levurage, pas de jour inventé ; sans numéro, le nom de la recette', () => {
+    expect(suiteEnTete({ kind: 'batch', id: 'LOT-031' }, 'NEIPA', {}, midi(15))).toBe('Brassin 31');
+    expect(suiteEnTete({ kind: 'batch', id: 'abc' }, 'NEIPA', { pitchedAt: midi(14) }, midi(15))).toBe('NEIPA · J+1');
+    expect(suiteEnTete({ kind: 'batch', id: 'abc' }, 'NEIPA', undefined, midi(15))).toBe('NEIPA');
+  });
+  it('hors brassin : le nom de la recette ou de l’écran', () => {
+    expect(suiteEnTete({ kind: 'recipe', id: 'R1' }, 'New England IPA')).toBe('New England IPA');
   });
 });

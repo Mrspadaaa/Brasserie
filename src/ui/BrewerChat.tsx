@@ -30,7 +30,7 @@ import './companion/companion.css';
 import './companion/plus.css';
 import { Accueil, Amorces, Modes, PiedSaisie, Zero, type PorteeZero } from './companion/accueil';
 import { Attente, BandeauHorsLigne, Echec, HorsLigne, Plafond } from './companion/attente';
-import { estPlafondAtteint, etapeIndex, partDe, sansNomDeModele, sourcesLues, statutJob, statutsConversations } from './companion/derive';
+import { estPlafondAtteint, etapeIndex, partDe, sansNomDeModele, sourcesLues, suiteEnTete, statutJob, statutsConversations } from './companion/derive';
 import { Fournisseurs } from './companion/fournisseurs';
 import { Icone } from './companion/parts';
 import { Controle, Pourquoi, Question, Verdict } from './companion/reponse';
@@ -901,9 +901,11 @@ function ScopedChat({
           if (!applying) fermer();
         }}
         dismissible={!applying}
-        title={vue === 'limites' ? 'Limites IA' : 'Compagnon'}
-        subtitle={label}
-        className={`brewer-chat-sheet cmp-root${finance ? ' cmp-fin' : ''}`}
+        // Nom accessible : « Compagnon brasseur » (comme le bouton qui l'ouvre) ; la ligne visible « Compagnon · Brassin 31 · J+8 »
+        // est la description (CSS `cmp-une`, plus.css), « Compagnon » en gras venant de la feuille de style.
+        title={vue === 'limites' ? 'Limites IA' : 'Compagnon brasseur'}
+        subtitle={vue === 'limites' ? undefined : `· ${suiteEnTete(scope, label, localJournal)}`}
+        className={`brewer-chat-sheet cmp-root${vue === 'limites' ? '' : ' cmp-une'}${finance ? ' cmp-fin' : ''}`}
         footer={
           vue === 'limites' ? undefined : (
             <form

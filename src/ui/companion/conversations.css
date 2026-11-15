@@ -17,7 +17,7 @@
 .cmp-lx .cmp-conv-t small { font-size: 12px; font-weight: 600; }
 .cmp-lx .cmp-etat { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; }
 .cmp-lx .cmp-etat svg.cmp-i { width: 15px; height: 15px; stroke-width: 2.5; }
-.cmp-lx .cmp-c-pret .cmp-etat { background: var(--hop); color: var(--sur-act); }
+.cmp-lx .cmp-c-pret .cmp-etat { background: var(--cmp-hop); color: var(--sur-act); }
 .cmp-lx .cmp-c-pret small { color: var(--hopt); }
 .cmp-lx .cmp-c-echec .cmp-etat { border: 2px solid var(--alr); color: var(--alrt); }
 .cmp-lx .cmp-c-echec small { color: var(--alrt); }

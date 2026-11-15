@@ -3,7 +3,7 @@
  * Props : aucune (table seule). `Icone` (parts.tsx) la lit ; `iconeQuestion` (derive.ts) choisit le nom d'une tuile.
  */
 import {
-  ArrowLeft, ArrowUpRight, Bell, BookOpen, Calculator, CalendarDays, Check, CheckCheck, ChevronDown, ChevronRight, Clock,
+  ArrowLeft, ArrowUpRight, Bell, BookOpen, Calculator, CalendarDays, Check, ChevronDown, ChevronRight, Clock,
   Copy, CornerDownRight, Droplet, Gauge, Leaf, Lock, MessagesSquare, NotebookPen, Paperclip, Pause, Pencil, Plus, Receipt,
   RotateCcw, Send, ServerOff, ShieldCheck, ShoppingBasket, Smartphone, Snowflake, Thermometer, TriangleAlert, TrendingUp,
   Wallet, WifiOff, Wrench, X
@@ -39,7 +39,7 @@ export const ICONES = {
   plus: Plus,
   portefeuille: Wallet,
   pression: Gauge,
-  relu: CheckCheck,
+  relu: ShieldCheck,
   retour: ArrowLeft,
   serveur: ServerOff,
   sortie: ArrowUpRight,

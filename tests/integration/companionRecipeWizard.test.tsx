@@ -48,7 +48,7 @@ const mount = (recipe: Recipe, save = vi.fn()) => render(<BrewWizard seed={{ rec
 async function propose() {
   act(() => { expect(brewerLauncher.open()).toBe(true); });
   await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
-  const dialog = within(screen.getByRole('dialog', { name: 'Compagnon' }));
+  const dialog = within(screen.getByRole('dialog', { name: 'Compagnon brasseur' }));
   fireEvent.change(dialog.getByRole('textbox', { name: 'Question au compagnon brasseur' }), { target: { value: 'Prépare les six ajustements demandés.' } });
   fireEvent.click(dialog.getByRole('button', { name: 'Envoyer la question' }));
   await dialog.findByRole('button', { name: 'Valider 6 modifications' }); return dialog;
