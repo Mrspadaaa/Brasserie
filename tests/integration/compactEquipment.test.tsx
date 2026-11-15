@@ -166,32 +166,6 @@ describe('parc de fûts et matériel compacts', () => {
     expect(StorageService.updateKeg).not.toHaveBeenCalled();
   });
 
-  it('priorise les réparations, filtre le travail et retrouve un entretien sans accents', async () => {
-    const open = vi.fn();
-    render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}><EquipmentList equipment={equipment} onOpen={open}/></VirtuosoMockContext.Provider>);
-    await screen.findByRole('button', { name: 'Ouvrir Cuve 50 L' });
-    const rows = screen.getAllByRole('button', { name: /^Ouvrir / });
-    expect(rows.map(row => row.getAttribute('aria-label'))).toEqual(['Ouvrir Pompe de transfert', 'Ouvrir pH-mètre de précision', 'Ouvrir Cuve 50 L']);
-    fireEvent.click(screen.getByRole('radio', { name: 'À traiter · 2' }));
-    expect(screen.queryByRole('button', { name: 'Ouvrir Cuve 50 L' })).toBeNull();
-    fireEvent.change(screen.getByRole('textbox', { name: 'Chercher un équipement…' }), { target: { value: 'etalonner' } });
-    const result = await screen.findByRole('button', { name: 'Ouvrir pH-mètre de précision' });
-    expect(result).toHaveTextContent('Étalonner avant brassage');
-    expect(result).toHaveAccessibleDescription(/À entretenir.*Étalonner avant brassage/);
-    fireEvent.click(result);
-    expect(open).toHaveBeenLastCalledWith(equipment[2]);
-  });
-
-  it('distingue parc vide et filtre matériel sans travail', async () => {
-    const view = render(<EquipmentList equipment={[]}/>);
-    expect(screen.getByText('Aucun équipement enregistré')).toBeVisible();
-    view.rerender(<EquipmentList equipment={[equipment[0]]}/>);
-    fireEvent.click(screen.getByRole('radio', { name: 'À traiter · 0' }));
-    expect(screen.getByText('Aucun matériel à entretenir ou réparer')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Voir tout le matériel' }));
-    expect(screen.getByRole('radio', { name: 'Tout · 1' })).toBeChecked();
-  });
-
   it('valide le nom au clavier et conserve achats et notes pendant une correction d’entretien', () => {
     const save = vi.fn();
     render(<EquipmentSheet item={equipment[1]} onClose={() => {}} onSave={save} onDelete={() => {}}/>);

@@ -1,73 +1,98 @@
-import React, { useId, useMemo, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { EquipmentItem } from '../types';
-import { EntityList } from './EntityList';
-import { isoDate } from '../domain/finance/ledger';
-import { SegmentedControl } from './SegmentedControl';
-import { Button } from '../components/ui/Button';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Search, ShoppingCart, X } from 'lucide-react';
+import type { EquipmentItem } from '../types';
+import { aTraiter, dateCourte, filDuTemps, markRepaired, nextDueAfter, parcValue, recordDone } from '../domain/equipment';
+import { createSearch, runSearch } from '../services/search';
+import { FilHaut, FilPied, FilSans, FilVide, type GesteKind, type Recent } from './equipment/ListFil';
+import { NewEquipment } from './equipment/NewEquipment';
+import './equipment/list.css';
 import './equipment-compact.css';
 
 /**
- * Matériel de la brasserie.
- *
- * Volontairement sobre : contrairement au stock, le matériel ne se consomme pas
- * et n'a donc ni jauge ni compteur. Ce qui compte, c'est son état d'entretien.
+ * Matériel de la brasserie (za3, choix du 15.11) : un fil du temps. À traiter en haut, « aujourd'hui », puis l'avenir à sa vraie
+ * distance ; le sans-échéance et le pied dessous. Chaque ligne dit un verbe et une date, jamais un compteur de jours.
+ * Les gestes (Réparée, Fait) écrivent l'appareil neuf par `onWrite(next, previous, toast)` : l'appelant l'enregistre et montre le
+ * toast avec Annuler (il réécrit `previous`). « Étalonner » ouvre la fiche.
  */
-
-const SEARCH_KEYS = ['name', 'ref', 'category', 'state', 'maintenance', 'notes'];
-const needsWork = (item: EquipmentItem) => item.state === 'À réparer' || item.state === 'À entretenir';
-const statePriority = (item: EquipmentItem) => item.state === 'À réparer' ? 0 : item.state === 'À entretenir' ? 1 : 2;
-
-export const EquipmentList: React.FC<{
+export interface EquipmentListProps {
   equipment: EquipmentItem[];
-  /** Ouvre la fiche : modifier l'état, l'entretien, ou supprimer. */
-  onOpen?: (item: EquipmentItem) => void;
+  batches: { brewDate?: string }[];
+  /** AAAA-MM-JJ ; le jour de l'écran par défaut. */
+  today?: string;
+  /** ≥ 1024 px : libellés longs de la maquette 1280. */
+  wide?: boolean;
+  /** Appareil dont la fiche est ouverte à côté (1280). */
+  selectedRef?: string | null;
+  onOpen: (item: EquipmentItem) => void;
+  onWrite: (next: EquipmentItem, previous: EquipmentItem, toast: string) => void;
+  onAdd: (item: EquipmentItem) => void;
+  onBuy: () => void;
+  onProjects?: () => void;
   className?: string;
-}> = ({ equipment, onOpen, className = '' }) => {
-  const listId = useId();
-  const [filter, setFilter] = useState<'all' | 'work'>('all');
-  const workCount = equipment.filter(needsWork).length;
-  const filtered = useMemo(() => {
-    const items = filter === 'work' ? equipment.filter(needsWork) : [...equipment];
-    return items.sort((a, b) => statePriority(a) - statePriority(b) || a.name.localeCompare(b.name, 'fr'));
-  }, [equipment, filter]);
+}
+
+const SEARCH_KEYS = ['name', 'category', 'task', 'maintenance', 'notes'];
+export const aujourdhuiIso = (): string => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+
+export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches, today: todayProp, wide = false, selectedRef, onOpen, onWrite, onAdd, onBuy, onProjects, className = '' }) => {
+  const today = todayProp ?? aujourdhuiIso();
+  const [mode, setMode] = useState<'tout' | 'work'>('tout');
+  const [recherche, setRecherche] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [recent, setRecent] = useState<Recent | null>(null);
+  useEffect(() => { if (!recent) return; const t = setTimeout(() => setRecent(null), 8000); return () => clearTimeout(t); }, [recent]);
+
+  const ctx = useMemo(() => ({ today, batches }), [today, batches]);
+  const vivants = useMemo(() => equipment.filter(e => !e.retired), [equipment]);
+  const nbTraiter = useMemo(() => aTraiter(vivants, ctx).length, [vivants, ctx]);
+  const visibles = useMemo(() => recherche?.trim() ? runSearch(createSearch(vivants, SEARCH_KEYS), recherche) : vivants, [vivants, recherche]);
+  const fil = useMemo(() => filDuTemps(visibles, ctx), [visibles, ctx]);
+  const parc = useMemo(() => parcValue(vivants), [vivants]);
+  const aJour = vivants.length - fil.haut.length - (recent && fil.avenir.some(a => a.item.ref === recent.ref) ? 1 : 0);
+
+  const geste = (row: { item: EquipmentItem; status: { kind: string } }, g: GesteKind) => {
+    if (g === 'etalonne') { onOpen(row.item); return; }
+    const index = fil.haut.findIndex(h => h.item.ref === row.item.ref);
+    if (g === 'repare') { onWrite(markRepaired(row.item, { date: today }), row.item, 'Réparée'); return; }
+    const next = recordDone(row.item, { date: today });
+    const du = nextDueAfter(next, today);
+    setRecent({ ref: row.item.ref, nom: row.item.name, jusquau: du, index: Math.max(0, index), lectures: null });
+    onWrite(next, row.item, du ? `Fait · à jour jusqu'au ${dateCourte(du)}` : 'Fait');
+  };
+
+  const filtre = (valeur: 'tout' | 'work', libelle: string, n: number, extra = '') => (
+    <button type="button" role="radio" aria-checked={mode === valeur} className={`mt-f${mode === valeur ? ' mt-on' : ''}${extra}`} onClick={() => setMode(valeur)}>{libelle} <b>{n}</b></button>
+  );
+
   return (
-  <EntityList
-    className={`equipment-list ${className}`}
-    items={filtered}
-    keyOf={(e) => e.ref}
-    searchKeys={SEARCH_KEYS}
-    searchPlaceholder="Chercher un équipement…"
-    header={<SegmentedControl label="Filtrer le matériel" className="equipment-filters" value={filter} onChange={setFilter} options={[
-      { value: 'all', label: `Tout · ${equipment.length}` },
-      { value: 'work', label: `À traiter · ${workCount}` }
-    ]}/>}
-    emptyState={
-      <div className="equipment-empty">
-        <p>{equipment.length ? 'Aucun matériel à entretenir ou réparer' : 'Aucun équipement enregistré'}</p>
-        {equipment.length > 0 && <Button intent="secondary" size="sm" onClick={() => setFilter('all')}>Voir tout le matériel</Button>}
+    <div className={`mt${wide ? ' mt-large' : ''} ${className}`}>
+      <div className="mt-outils">
+        <div role="radiogroup" aria-label="Filtrer le matériel" className="mt-filtres">
+          {filtre('tout', 'Tout', vivants.length)}
+          {filtre('work', 'À traiter', nbTraiter, nbTraiter === 0 ? ' mt-eteint' : ' mt-chaud')}
+        </div>
+        <span className="mt-sp" />
+        {vivants.length > 0 && <button type="button" className="mt-rd" aria-label="Chercher un équipement" aria-pressed={recherche !== null} onClick={() => setRecherche(recherche === null ? '' : null)}><Search size={18} aria-hidden="true" /></button>}
+        <button type="button" className="mt-achat" onClick={onBuy}><ShoppingCart size={20} aria-hidden="true" />{wide ? 'Enregistrer un achat' : 'Achat'}</button>
       </div>
-    }
-    renderItem={item => {
-      const descriptionId = `${listId}-${encodeURIComponent(item.ref)}`;
-      const purchaseDate = isoDate(item.purchaseDate);
-      const automaticRef = /^EQ-[0-9a-f]{8}-[0-9a-f]{4}-/i.test(item.ref);
-      const content = <>
-        <span id={`${descriptionId}-content`} className="equipment-row-main">
-          <strong className="equipment-row-title">{item.name}</strong>
-          <span className="equipment-meta-line">
-            <span className="equipment-row-meta">{item.category}{!automaticRef && ` · ${item.ref}`}{automaticRef && purchaseDate && ` · Acquis le ${new Date(`${purchaseDate}T12:00:00`).toLocaleDateString('fr-CH')}`}{item.notes && onOpen && ' · Note'}</span>
-            <span className="equipment-state" data-equipment-state={item.state}>{item.state || 'État non renseigné'}</span>
-          </span>
-          {item.maintenance && <span className="equipment-row-context">{item.maintenance}</span>}
-          {item.notes && !onOpen && <span className="equipment-row-meta">{item.notes}</span>}
-        </span>
-        {onOpen && <ChevronRight className="equipment-row-chevron" size={14} aria-hidden="true"/>}
-      </>;
-      return onOpen
-        ? <button type="button" className="equipment-row equipment-item-row" aria-label={`Ouvrir ${item.name}`} aria-describedby={`${descriptionId}-content`} onClick={() => onOpen(item)}>{content}</button>
-        : <article className="equipment-row equipment-item-row">{content}</article>;
-    }}
-  />
+      {recherche !== null && (
+        <div className="mt-cherche">
+          <input type="search" autoFocus autoComplete="off" aria-label="Chercher un équipement…" placeholder="Chercher un équipement…" value={recherche} onChange={e => setRecherche(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') setRecherche(null); }} />
+          <button type="button" className="mt-rd" aria-label="Effacer la recherche" onClick={() => setRecherche(null)}><X size={18} aria-hidden="true" /></button>
+        </div>
+      )}
+      <section className="mt-fil">
+        {vivants.length === 0 ? <FilVide today={today} onBuy={onBuy} onAddOwned={() => setAdding(true)} onProjects={onProjects} /> : (
+          <>
+            {recherche?.trim() && visibles.length === 0 && <p className="mt-rien">Rien ne correspond à « {recherche.trim()} »</p>}
+            <FilHaut fil={fil} mode={mode} aJour={aJour} recent={recent} selectedRef={selectedRef} onOpen={onOpen} onGeste={geste} onToutVoir={() => setMode('tout')} />
+            {mode === 'tout' && <FilSans rows={fil.sansEcheance} onOpen={onOpen} />}
+            {mode === 'tout' && <FilPied wide={wide} parc={parc} onAddOwned={() => setAdding(true)} onProjects={onProjects} />}
+          </>
+        )}
+      </section>
+      <NewEquipment open={adding} today={today} refs={equipment.map(e => e.ref)} wide={wide} onClose={() => setAdding(false)} onAdd={item => { setAdding(false); onAdd(item); }}
+        onBuy={() => { setAdding(false); onBuy(); }} onProjects={onProjects ? () => { setAdding(false); onProjects(); } : undefined} />
+    </div>
   );
 };
