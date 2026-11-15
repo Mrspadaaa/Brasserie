@@ -44,7 +44,7 @@ export const NewEquipment: React.FC<{
 
   return (
     <Sheet open={open} onClose={onClose} title="Nouveau matériel"
-      footer={<div className="mt-fbtn"><button type="button" className="mt-sec" onClick={onClose}>Annuler</button><button type="button" className="mt-pri" disabled={!valide} onClick={ajouter}><Check size={18} aria-hidden="true" />Ajouter</button></div>}>
+      footer={<div className="mt-fbtn mt-vars"><button type="button" className="mt-sec" onClick={onClose}>Annuler</button><button type="button" className="mt-pri" disabled={!valide} onClick={ajouter}><Check size={18} aria-hidden="true" />Ajouter</button></div>}>
       <div className="mt-feuille">
         <div className="mt-choix">
           <button type="button" className="mt-ch" onClick={onBuy}><ShoppingCart size={20} aria-hidden="true" />Enregistrer un achat</button>
