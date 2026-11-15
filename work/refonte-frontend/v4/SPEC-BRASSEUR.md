@@ -1733,3 +1733,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : une action en déclenche les effets ailleurs sans saisie en plus : laver un fût décompte le nettoyant, brasser décompte le Star San, etc. Les règles de consommation sont réglables et chaque effet se voit et s'annule.)
 - **15.11**, mot pour mot, correction : « C'est juste des exemples, être générique et général, pas focus sur ces exemples !!! »
   (lu : les effets en cascade forment un mécanisme général, valable pour toute action de l'app ; le fût et le Star San ne sont que des illustrations.)
+- **15.11**, mot pour mot, sur la page Tarifs et À venir (https://claude.ai/artifact/YSCoGAHWoumj4636YtdQn3) : « un couloir par format (strip plot de Cleveland), puces de bière kx2 C'est c'est bien, comme c'est déjà cassé par type, peut être utilisé un icône spécialisé qui donne plus d'info mais ça c'est top, et aussi au on clic sur un point ( icône) ça ouvre ou focus sur la vente »
+  (lu : kx2 choisie ; chaque point devient une icône qui porte plus d'information, puisque le couloir donne déjà le format ; un toucher sur le point ouvre la vente ou la met en avant.)
