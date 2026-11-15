@@ -37,6 +37,7 @@ describe('m1ar-c : la frise des années', () => {
   it('une colonne par année, la limite enregistrée, le compte du journal ; l’année en cours ne se range pas', () => {
     rendre();
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', `rangé jusqu’à fin ${A}`);
+    expect(screen.getByRole('slider')).not.toHaveAttribute('data-bord');
     expect(screen.getByText(/rangé jusqu’à/).textContent).toContain(`fin ${A}`);
     expect(screen.getByRole('button', { name: new RegExp(`^${an} : 1 pièce, année en cours`) })).toBeDisabled();
     expect(screen.getByRole('button', { name: `Ranger ${B}` })).toBeEnabled();
@@ -78,6 +79,7 @@ describe('m1ar-c : la frise des années', () => {
     const { onSaved } = rendre();
     fireEvent.click(screen.getByRole('button', { name: 'Remettre' }));
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', 'rien n’est rangé');
+    expect(screen.getByRole('slider')).toHaveAttribute('data-bord', 'debut'); // t2, point 6 : au repos la poignée est posée sur la limite, bouton vers la frise
     fireEvent.click(screen.getByRole('button', { name: `Remettre ${A}` }));
     await waitFor(() => expect(setYearArchived).toHaveBeenCalledWith(A, false));
     expect(onSaved).toHaveBeenCalledWith(`Année ${A} réintégrée dans le journal courant.`);

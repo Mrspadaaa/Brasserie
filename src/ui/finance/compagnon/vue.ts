@@ -8,10 +8,16 @@ export function posteVise(periode: PeriodeSynthese): string | null {
   return plus ? plus.categorie : null;
 }
 
+/** Un mois `AAAA-MM` dit en brasseur : « novembre 2026 » (t2, point 5) ; la forme machine ne se montre jamais. */
+export function moisDit(mois: string): string {
+  const d = new Date(`${mois}-15T12:00:00`);
+  return Number.isNaN(d.getTime()) ? mois : new Intl.DateTimeFormat('fr-CH', { month: 'long', year: 'numeric' }).format(d);
+}
+
 /** Quelle période la question de la puce couvre : `mois` (celui de la barre), `tout`, ou `autre` (une plage que la feuille ne connaît pas). */
 export function periodeDeLaQuestion(question: string | undefined, mois: string, toutesDates: boolean): 'mois' | 'tout' | 'autre' {
   if (!question) return toutesDates ? 'tout' : 'mois';
-  if (question.includes(`le mois ${mois}`)) return 'mois';
+  if (question.includes(`le mois ${moisDit(mois)}`)) return 'mois';
   if (/tout l[’']historique/.test(question)) return 'tout';
   return 'autre';
 }

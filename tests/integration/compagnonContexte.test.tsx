@@ -50,7 +50,7 @@ describe('compagnon m4ia-c : ce que le contexte contient', () => {
   });
   it('la consigne écrite dans la question nomme ce qui est exclu', () => {
     const { consigne } = contexteCompagnon({ ...REGLAGES_DEFAUT, aPayer: false }, donnees());
-    expect(consigne).toContain('le mois 2026-11');
+    expect(consigne).toContain('le mois novembre 2026');
     expect(consigne).toContain('N’utilise pas');
     expect(consigne).toContain('les pièces à payer');
     expect(consigne).toContain('les archives');
@@ -62,7 +62,7 @@ const depense = (id: string, date: string, description: string, category: string
   id, date, description, category, amountTTC: cents / 100, amountHT: cents / 100, proofUrl: proof ? 'https://exemple.test/p.pdf' : undefined,
   finance: { version: 2, kind: 'expense', amountCents: cents, lines: [], paymentStatus: impaye ? 'unpaid' : undefined },
 });
-const POSE = { libelle: 'Pourquoi les charges fixes pèsent autant ?', question: 'Pourquoi les charges fixes pèsent autant sur le mois 2026-11 ? Explique ce qui compose ce poste.' };
+const POSE = { libelle: 'Pourquoi les charges fixes pèsent autant ?', question: 'Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ? Explique ce qui compose ce poste.' };
 const jeu = () => {
   MOCK.tx = [depense('T1', '2026-11-03', 'Loyer atelier', 'chargesFixes', 40000, false, true), depense('T2', '2026-11-09', 'Malt Pilsner', 'brassage', 9000, true), depense('T3', '2026-10-02', 'Facture octobre', 'chargesFixes', 12000)];
 };
@@ -97,9 +97,10 @@ describe('feuille m4ia-c : jouée', () => {
     fireEvent.click(f.getByRole('button', { name: 'Envoyer' }));
     expect(screen.queryByRole('dialog', { name: /Compagnon brasseur/ })).toBeNull();
     const envoye = MOCK.chat.mock.calls.at(-1)![0].initialQuestion as string;
-    expect(envoye).toContain('Contexte choisi par le brasseur : le mois 2026-11');
+    expect(MOCK.chat.mock.calls.at(-1)![0].autoSend).toBe(true); expect(envoye).not.toMatch(/2026-11/); // t2, points 4 et 5
+    expect(envoye).toContain('Contexte choisi par le brasseur : le mois novembre 2026');
     expect(envoye).toContain('les pièces à payer');
-    expect(envoye).toContain('Pourquoi les charges fixes pèsent autant sur le mois 2026-11');
+    expect(envoye).toContain('Pourquoi les charges fixes pèsent autant sur le mois novembre 2026');
     expect(envoye).toContain('400,00 sur 490,00 dépensés.');
     expect(screen.getByRole('dialog', { name: 'Chat' })).toBeTruthy();
   });
@@ -111,6 +112,7 @@ describe('feuille m4ia-c : jouée', () => {
     fireEvent.change(f.getByLabelText('Ta question'), { target: { value: 'Et le loyer ?' } });
     fireEvent.click(f.getByRole('button', { name: 'Envoyer' }));
     const envoye = MOCK.chat.mock.calls.at(-1)![0].initialQuestion as string;
+    expect(MOCK.chat.mock.calls.at(-1)![0].autoSend).toBe(true); expect(envoye).not.toMatch(/2026-11/); // t2, points 4 et 5
     expect(envoye).toContain('tout l’historique');
     // t1, problème 5 : la question du brasseur est la première ligne du champ du chat, la consigne du contexte vient après.
     expect(envoye.startsWith('Et le loyer ?')).toBe(true);

@@ -14,6 +14,7 @@ import { Bande, type Actif } from './operations/Bande';
 import { dansJours, finDuMois, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, redater, titreJours } from './operations/plage';
 import { enRetard, retardTotal } from './operations/calculs';
 import { questionPoste } from './operations/assistant';
+import { moisDit } from './compagnon/vue';
 import { PaireDoublons, type GroupeDoublon } from './operations/PaireDoublons';
 import { GROUPES, ORDRE, groupeDe, type GroupeId } from './operations/groupes';
 import './operations.css';
@@ -300,7 +301,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
   // fx1 : la puce IA pose la question du plus gros poste des piles (v6b) ; sans poste, son libellé actuel.
-  const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `le mois ${month}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
+  const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `le mois ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
   /** La frise (s2ap2) : un jour à la fois, par `periodeSynthese` (une seule règle de « dépensé ») ; un mois sans aucune opération saisie est inconnu, pas vide. */
   const sourcesFrise = useMemo(() => (scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified), [classified, scope]);
   const donneesFrise = useMemo(() => {

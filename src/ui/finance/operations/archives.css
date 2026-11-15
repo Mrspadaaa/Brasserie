@@ -19,6 +19,8 @@
 .arc-old { position:absolute; top:-10px; height:70px; border-left:2px dashed rgb(var(--cave-texte-400)); pointer-events:none; }
 .arc-hdl { position:absolute; top:-16px; height:76px; width:0; border-left:3px solid rgb(var(--cave-texte-50)); touch-action:none; cursor:ew-resize; }
 .arc-hdl::before { content:''; position:absolute; left:-22px; top:-14px; width:44px; height:44px; }
+/* t2, point 6 : au repos (rien rangé) la poignée est sur la limite, au bord gauche de la frise ; le bouton s'étend vers la frise au lieu de sortir de la feuille. */
+.arc-hdl[data-bord="debut"]::before, .arc-hdl[data-bord="debut"] .arc-knob { left:-3px; }
 .arc-hdl:focus-visible { outline:none; }
 .arc-hdl:focus-visible .arc-knob { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
 .arc-knob { position:absolute; left:-22px; top:-14px; width:44px; height:28px; border-radius:14px; background:rgb(var(--cave-texte-50)); color:rgb(var(--cave-950)); display:grid; place-items:center; font-size:13px; font-weight:700; }

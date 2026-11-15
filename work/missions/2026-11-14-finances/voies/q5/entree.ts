@@ -2,3 +2,4 @@
 export { planCorrection } from '../../../../../src/domain/finance/correctionMontant';
 export { contrePaiement } from '../../../../../src/ui/finance/operations/calculs';
 export { repartirVirement } from '../../../../../src/domain/finance/repartition';
+export { creanceDeTropPaye, paiementDeCreance } from '../../../../../src/ui/finance/modifier/creance';

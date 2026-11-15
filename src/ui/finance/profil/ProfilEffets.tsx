@@ -146,7 +146,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
         <div className="pfc-eff" aria-live="polite">
           <span>charges fixes<b className="pfc-m">{coutFixes != null ? `${litreFr(coutFixes)}/L` : '—'}</b>{coutFixes != null ? `${montantEntier(Math.round(fixes.amountCHF! * 100))} ÷ ${montantEntier(litres! * 100)}` : litres == null ? 'production à saisir' : fixes.amountCHF == null ? 'charges à classer' : ''}</span>
           <span>soit<b className="pfc-m">{nbBrassins != null ? `≈ ${Math.round(nbBrassins)}` : '—'}</b>{brassin?.litres ? `brassins de ${montantEntier(Math.round(brassin.litres) * 100)} L` : 'aucun brassin planifié'}</span>
-          <span><i className="pfc-nom">{brassin?.titre ?? 'Prochain brassin'}</i><b className="pfc-m">{litreBrassin != null ? `${litreFr(litreBrassin)}/L` : '—'}</b>{litreBrassin != null ? 'avec ce réglage' : brassin?.manque ? `manque : ${brassin.manque}` : 'coût à compléter'}</span>
+          <span><i className="pfc-nom">{brassin?.titre ?? 'Prochain brassin'}</i><b className="pfc-m">{litreBrassin != null ? `≥ ${litreFr(litreBrassin)}/L` : '—'}</b>{litreBrassin != null ? 'avec ce réglage' : brassin?.manque ? `manque : ${brassin.manque}` : 'coût à compléter'}</span>
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import { buildFinanceAssistantContext, type FinanceAssistantInput } from '../../../domain/finance/assistantContext';
 import { isUpgradePlan } from '../../../domain/finance/upgrades';
 import { isoDate } from '../../../domain/finance/ledger';
+import { moisDit } from './vue';
 
 /**
  * m4ia-c (choix du 15.11) : « ce qu'il va lire », en pastilles cochées. Le contexte est celui du domaine (`buildFinanceAssistantContext`),
@@ -44,7 +45,7 @@ export function contexteCompagnon(r: ReglagesContexte, d: DonneesContexte) {
     coverage: { transactions: n(transactions.length), financialPayments: n(payments.length), financialPlans: n(plans.length), financialAssets: n(d.assets.length), financialClosings: n(d.closings.length),
       creativeItems: n(0), stockItems: n(0), batches: n(0), recipes: n(0), equipment: n(0) } });
   const non = [!r.archives && 'les archives', !r.projets && 'les projets de matériel', !r.profil && 'le profil financier', !r.aPayer && 'les pièces à payer', !r.sansPiece && 'les pièces sans justificatif'].filter(Boolean);
-  const quoi = r.toutHistorique ? 'tout l’historique' : r.periode ? `le mois ${d.mois}` : 'aucune période';
+  const quoi = r.toutHistorique ? 'tout l’historique' : r.periode ? `le mois ${moisDit(d.mois)}` : 'aucune période';
   const consigne = `Contexte choisi par le brasseur : ${r.operations ? quoi : 'aucune opération'}${non.length ? `. N’utilise pas : ${non.join(', ')}.` : '.'}`;
   return { contexte, consigne, transactionIds: [...ids] };
 }

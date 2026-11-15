@@ -7,8 +7,8 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-const etat = vi.hoisted(() => ({ saveProfile: vi.fn(), transactions: [] as unknown[], payments: [] as unknown[], plans: [] as unknown[] }));
-vi.mock('../../src/services/storage', () => ({ StorageService: { getTransactions: () => etat.transactions, getStocks: () => ({ rawMaterials: [], cleaning: [], equipment: [] }), getBatches: () => [],
+const etat = vi.hoisted(() => ({ saveProfile: vi.fn(), transactions: [] as unknown[], payments: [] as unknown[], plans: [] as unknown[], stocks: [] as unknown[] }));
+vi.mock('../../src/services/storage', () => ({ StorageService: { getTransactions: () => etat.transactions, getStocks: () => ({ rawMaterials: etat.stocks, cleaning: [], equipment: [] }), getBatches: () => [],
   getConfig: () => ({ fiscal: { isTvaRegistered: false, tvaThresholdTurnover: 100000 } }), subscribe: () => () => {} } }));
 vi.mock('../../src/services/financeService', () => ({ FinanceService: { getPayments: () => etat.payments, getPlans: () => etat.plans, getAssets: () => [], saveProfile: (...a: unknown[]) => etat.saveProfile(...a) } }));
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: (read: () => unknown) => read() }));
@@ -17,6 +17,9 @@ import { annualBrewFixedCosts, estimateBrewBudget } from '../../src/domain/finan
 import { summarizeLedger } from '../../src/domain/finance/ledger';
 import { tvaThresholdStatus } from '../../src/domain/finance/tvaThreshold';
 import { moisCompletsDepuis, courbeDeCaisse } from '../../src/ui/finance/profil/ProfilEffets';
+import { coutLitre, troisNotions } from '../../src/domain/finance/chaineLitre';
+import { nomCourtBrassin } from '../../src/ui/finance/profil/brassinProfil';
+import { litreFr } from '../../src/ui/finance/previsions/format';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
 import type { FinanceTransaction } from '../../src/domain/finance/types';
 
@@ -29,7 +32,7 @@ const vente = (id: string, date: string, chf: number) => ({ id, date, descriptio
 const nbsp = (s: string) => s.replace(/[\s  ]/g, ' ');
 
 beforeEach(() => { cleanup(); vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date(`${AUJ}T10:00:00Z`));
-  etat.saveProfile.mockReset(); etat.transactions = []; etat.plans = [loyer]; etat.payments = [paiement('P1', '2026-03-10', 50_000, 'in'), paiement('P2', '2026-06-01', 20_000, 'out')]; });
+  etat.saveProfile.mockReset(); etat.stocks = []; etat.transactions = []; etat.plans = [loyer]; etat.payments = [paiement('P1', '2026-03-10', 50_000, 'in'), paiement('P2', '2026-06-01', 20_000, 'out')]; });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 const ouvrir = (p: FinancialProfile = profil, parametres = false) => render(<ProfileSheet profile={p} parametres={parametres} onClose={() => {}} />);
 const dialogue = () => within(screen.getByRole('dialog', { name: 'Solde et paramètres' }));
@@ -164,6 +167,31 @@ describe('t1, bloquant 3 : le prochain brassin du profil', () => {
     expect(nbsp(zone.textContent!)).toContain('≈ 44');
     expect(nbsp(zone.textContent!)).toContain('brassins de 27 L');
     expect(zone.textContent).toContain('Pale Ale');
+  });
+  it('t2, point 2 : le prix du litre du profil est celui du budget du même brassin (mêmes réglages enregistrés, même fonction), pas un second calcul', () => {
+    // La pièce du banc de démonstration : 25 kg de Pilsner achetés 186,80, une recette de 6 kg, un budget complet de 27 L nets (c3a).
+    const malt = { id: 'DEMO-MALT', ref: 'DEMO-MALT', name: 'Pilsner', category: 'Malt', unit: 'kg', currentStock: 3, minStock: 2, reorder: false, kind: 'rawMaterials' };
+    const achat = { id: 'DEMO-T1', date: '2026-11-15', description: 'Malt', amountHT: 186.8, amountTTC: 186.8, tvaAmount: 0, tvaRate: 0, category: 'brassage', subcategory: '',
+      finance: { version: 1, kind: 'expense', amountCents: 18680, vendor: 'Comptoir', paymentStatus: 'unpaid', recordedAt: '2026-11-15T10:00:00Z', lines: [{ id: 'malt', description: 'Pilsner', kind: 'ingredient', quantity: 25, unit: 'kg', stockItemRef: 'DEMO-MALT', amountCents: 18680 }] } };
+    etat.stocks = [malt]; etat.transactions = [achat];
+    const recette = { id: 'DEMO-PALE', name: 'Pale Ale', style: 'Pale Ale', volumeL: 30, fermentables: [{ name: 'Pilsner', weightKg: 6, kind: 'grain', use: 'empatage', stockItemRef: 'DEMO-MALT' }], hops: [], yeast: { name: '', qty: 0, unit: 'sachet', form: 'sèche' }, ogTarget: 1.05, abvTarget: 5.2 } as never;
+    const reglages = { costs: { energy: { enabled: true, amountTTC: 8 }, cleaning: { enabled: true, amountTTC: 3 }, packaging: { enabled: true, amountTTC: 24 }, beerTax: { enabled: true, amountTTC: 6.84 } }, annualVolumeL: 1200, annualFixedCHF: 4800, annualDepreciationCHF: 360, includeFixed: true, includeDepreciation: true };
+    const calcul = (settings: object) => estimateBrewBudget({ recipe: recette, stockItems: [malt] as never, batches: [], transactions: [achat] as never, brewDate: '2026-11-20', netVolumeL: 27, og: 1.05, abv: 5.2, settings, now: '2026-11-15T10:00:00Z' });
+    const snap = { ...calcul(reglages), netVolumeSource: 'saisi' as const };
+    etat.plans = [loyer, { id: 'BUDGET', title: 'Pale Ale', date: '2026-11-20', amountCents: 6426, direction: 'out', category: 'brassage', source: 'brew', status: 'active', createdAt: '2026-11-01T00:00:00Z', brewEstimate: snap } as unknown as FinancialPlan];
+    // Le loyer vit à 6 000 CHF/an : le budget enregistré garde ses 4 800 ; le profil ne doit pas les remplacer.
+    const attendu = coutLitre({ notions: troisNotions(snap), litres: 27 })!.affiche.complet;
+    expect(attendu).toBeGreaterThan(0);
+    ouvrir();
+    expect(nbsp(dialogue().getByLabelText('Production prévue').textContent!)).toContain(`≥ ${litreFr(attendu)}/L`);
+  });
+  it('t2, point 3 : la tuile du brassin porte un nom court sans coupure et « ≥ » comme m4pf-c', () => {
+    expect(nomCourtBrassin('Pale Ale de septembre')).toBe('Pale Ale');
+    expect(nomCourtBrassin('IPA d’octobre')).toBe('IPA');
+    expect(nomCourtBrassin('Stout · 20 nov.')).toBe('Stout');
+    expect(nomCourtBrassin('Saison de ferme')).toBe('Saison de ferme');
+    expect(nomCourtBrassin('Blanche 12.11')).toBe('Blanche');
+    expect(nomCourtBrassin('Mai')).toBe('Mai');
   });
   it('sans aucun brassin ni budget : « aucun brassin planifié » reste dit (l’inconnu n’est jamais 0)', () => {
     ouvrir();

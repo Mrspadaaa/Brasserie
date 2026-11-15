@@ -58,7 +58,7 @@ const { initializeApp } = await import('firebase/app');
 const fs = await import('firebase/firestore');
 const { getFirestore, connectFirestoreEmulator, writeBatch, doc, collection, getDoc, getDocs, query, where, increment, terminate } = fs;
 const app = await import(pathToFileURL(process.argv[process.argv.indexOf('--inner') + 1]).href);
-const { planCorrection, contrePaiement, repartirVirement } = app;
+const { planCorrection, contrePaiement, repartirVirement, creanceDeTropPaye, paiementDeCreance } = app;
 
 const sortir = (texte) => console.log(`Q5| ${texte}`);
 const base = initializeApp({ projectId: PROJET, apiKey: 'banc' });
@@ -109,22 +109,33 @@ async function semer(id, cents, paiements = [], extra = {}) {
 async function opsDeEtape(etape, id, originaux) {
   if (etape.type === 'contre') return opsPaiement({ ...contrePaiement(originaux.find(p => p.id === etape.paiementId), MAINTENANT), note: 'Contre-écriture : montant de la pièce corrigé' });
   if (etape.type === 'montant') return opsMontant(id, etape.cents);
-  // FN-10 (s4) : l'avoir à recevoir, écrit comme `avoirDeTropPaye` (un refund lié à la pièce, non encaissé), dans son propre lot, sans paiement.
+  // FN-10 (t2) : la créance « À récupérer », écrite comme `creanceDeTropPaye` (une dépense de l'excédent), dans son propre lot ; sa sortie suit (étape `creance-sortie`, un lot de plus).
   if (etape.type === 'avoir') {
-    const avoirId = neuf('MOUV'), cents = etape.cents;
-    return [{ ref: doc(db, 'transactions', avoirId), data: { id: avoirId, date: '15.11.2026', description: 'ZZ TEST — trop payé', category: 'nettoyage', subcategory: 'Avoir', amountHT: cents / 100, amountTTC: cents / 100, tvaRate: 0, tvaAmount: 0,
-      finance: { version: 1, kind: 'refund', amountCents: cents, lines: [], refundOfId: id, refundDirection: etape.direction, refundApplication: 'cash', paymentStatus: 'unpaid', recordedAt: MAINTENANT } } }];
+    const creance = creanceDeTropPaye({ ...(await lire(id)) }, etape, { aujourdhui: AUJOURDHUI, maintenant: MAINTENANT }, neuf('MOUV'), originaux.map(p => p.date).sort().at(-1));
+    creanceEcrite = creance;
+    return [{ ref: doc(db, 'transactions', creance.id), data: creance }];
   }
+  if (etape.type === 'creance-sortie') return opsPaiement(etape.paiement);
   return opsPaiement({ id: neuf('PAI'), transactionId: id, date: etape.date || AUJOURDHUI, amountCents: etape.cents, direction: etape.direction, method: etape.method, note: 'Paiement après correction du montant de la pièce', recordedAt: MAINTENANT });
 }
 /** `parLot` : un lot par étape (la correction de q5). `false` : toutes les étapes dans un seul lot (l'ancien regroupement, le témoin). */
 async function jouer(id, plan, parLot) {
   const originaux = await paiementsDe(id);
-  if (parLot) { for (const etape of plan) await commit(await opsDeEtape(etape, id, originaux)); return; }
+  if (parLot) {
+    for (const etape of plan) {
+      await commit(await opsDeEtape(etape, id, originaux));
+      // FN-10 (t2) : après l'étape « avoir », la sortie qui porte la créance, dans son propre lot (la pièce existe déjà), comme `executerPlan`.
+      if (etape.type === 'avoir') {
+        await commit(await opsDeEtape({ type: 'creance-sortie', paiement: paiementDeCreance(creanceEcrite, etape, originaux, { aujourdhui: AUJOURDHUI, maintenant: MAINTENANT }, neuf('PAI')) }, id, originaux));
+      }
+    }
+    return;
+  }
   const tout = [];
   for (const etape of plan) tout.push(...await opsDeEtape(etape, id, originaux));
   await commit(tout);
 }
+let creanceEcrite = null;
 const piecePourPlan = async (id) => ({ ...(await lire(id)) });
 const planDe = async (id, cents, choix) => planCorrection(await piecePourPlan(id), await paiementsDe(id), cents, choix);
 
@@ -162,17 +173,24 @@ try {
   await scenario('baisse sous le payé + le paiement suit', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'suit', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
   // q6, point 1 : sous le payé, « reste à payer » n'existe plus (le payé ne disparaît jamais) : le plan demandé en « reste » est celui du paiement qui suit.
   await scenario('baisse sous le payé, « reste à payer » demandé : le paiement suit quand même (q6)', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'reste', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
-  // FN-10 (s4) : « j'ai bien payé 42,00 : 2,00 trop payé » : contre-paiement, montant, paiement, puis l'avoir à recevoir (un lot chacun), contre les règles du dépôt.
+  // FN-10 (t2) : virement de 52,00 sur deux pièces (42,00 + 10,00), « j'ai bien payé 42,00 : 2,00 trop payé » sur la première : contre-paiement, montant, paiement, pièce « À récupérer », sa sortie (un lot chacun), contre les règles du dépôt.
+  // Les sorties du virement restent 52,00 à leur date et par leur moyen ; la créance est une dépense de 2,00 payée par une vraie sortie de 2,00 ; aucun avoir.
   {
-    const id = neuf('T');
+    const id = neuf('T'), autre = neuf('T'), jour = '2026-11-09';
     try {
-      await semer(id, 4200, [[4200, '2026-11-09']]);
+      await semer(id, 4200, [[4200, jour]]);
+      await semer(autre, 1000, [[1000, jour]]);
+      const sorties = async () => (await getDocs(collection(db, 'financialPayments'))).docs.map(d => d.data()).filter(p => p.date === jour && p.method === 'bank' && [id, autre, creanceEcrite?.id].includes(p.transactionId)).reduce((n, p) => n + (p.direction === 'out' ? p.amountCents : -p.amountCents), 0);
+      const avant = await sorties();
       const plan = await planDe(id, 4000, 'avoir');
       await jouer(id, plan, true);
-      const e = await etat(id);
-      const avoirs = (await getDocs(query(collection(db, 'transactions'), where('finance.refundOfId', '==', id)))).docs.map(d => d.data());
-      const bon = plan.at(-1)?.type === 'avoir' && e.montant === 4000 && e.solde === 4000 && avoirs.length === 1 && avoirs[0].finance.amountCents === 200 && avoirs[0].finance.refundDirection === 'in' && !avoirs[0].settlementBalanceCents;
-      verifier('baisse sous le payé + « j’ai bien payé » : l’avoir à recevoir de 2,00 est accepté', bon, `${plan.length} étapes : montant ${e.montant}, réglé ${e.solde}, ${avoirs.length} avoir(s) ${avoirs[0]?.finance.amountCents ?? '—'} à recevoir`);
+      const e = await etat(id), apres = await sorties();
+      const creance = creanceEcrite ? await lire(creanceEcrite.id) : null;
+      const sortiesCreance = creance ? await paiementsDe(creance.id) : [];
+      const avoirs = (await getDocs(query(collection(db, 'transactions'), where('finance.refundOfId', '==', id)))).docs.length;
+      const bon = plan.at(-1)?.type === 'avoir' && e.montant === 4000 && e.solde === 4000 && avant === 5200 && apres === 5200 && avoirs === 0 && creance?.finance.kind === 'expense' && creance.finance.amountCents === 200
+        && creance.settlementBalanceCents === 200 && sortiesCreance.length === 1 && sortiesCreance[0].direction === 'out' && sortiesCreance[0].date === jour && sortiesCreance[0].method === 'bank';
+      verifier('baisse sous le payé + « j’ai bien payé » : la créance « À récupérer » de 2,00 et sa sortie sont acceptées, les 52,00 du virement restent sortis', bon, `${plan.length} étapes : montant ${e.montant}, réglé ${e.solde}, sorties du jour ${avant} puis ${apres}, créance ${creance?.finance.amountCents ?? '—'} réglée ${creance?.settlementBalanceCents ?? '—'}, ${avoirs} avoir(s)`);
     } catch (e) { verifier('baisse sous le payé + « j’ai bien payé »', false, `refusé : ${refus(e)}`); }
   }
   await scenario('baisse avec deux paiements inversés + le paiement suit', { cents: 4200, paiements: [[3000, '2026-11-05'], [1200, '2026-11-09']], nouveau: 2500, choix: 'suit', attendu: { montant: 2500, solde: 2500, dateRemplacement: '2026-11-09' } });

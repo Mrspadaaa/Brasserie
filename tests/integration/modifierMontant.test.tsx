@@ -19,6 +19,7 @@ import { FinanceService } from '../../src/services/financeService';
 import { executerPlan } from '../../src/ui/finance/modifier/executerCorrection';
 import { PayerVirement } from '../../src/ui/finance/payer/PayerVirement';
 import { saveFinanceDocumentConfirmed } from '../../src/services/financeDocuments';
+import { periodeSynthese } from '../../src/domain/finance/periodeSynthese';
 import * as correction from '../../src/domain/finance/correctionMontant';
 import type { Transaction } from '../../src/types';
 
@@ -138,17 +139,37 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
     expect(apercu).not.toHaveTextContent(/reste 30,00/);
   });
 
-  it('FN-10 : « J’ai bien payé 42,00 » écrit le contre-paiement, le montant, le paiement au nouveau montant ET un avoir à recevoir de 12,00 lié à la pièce', async () => {
+  it('FN-10 (t2, point 1) : « J’ai bien payé 42,00 » garde la sortie du virement : la pièce vaut 30,00, le trop-payé de 12,00 est une créance « à récupérer » portée par une vraie sortie de 12,00', async () => {
+    // Le virement du 09.11 : 42,00 sur la pièce T-NET + 2,00 sur une autre pièce, moyen « bank » : 44,00 sortis.
+    StorageService.addTransaction({ ...piece(), id: 'T-B', description: 'Autre pièce', amountHT: 2, amountTTC: 2, finance: { version: 1, kind: 'expense', amountCents: 200, lines: [], paymentStatus: 'unpaid' } });
+    FinanceService.recordPayment({ id: 'PAI-B', transactionId: 'T-B', date: '2026-11-09', amountCents: 200, direction: 'out', method: 'bank', recordedAt: '2026-11-09T08:00:00.000Z' });
+    const sortiesDuJour = () => FinanceService.getPayments().filter(p => p.date === '2026-11-09' && p.method === 'bank').reduce((n, p) => n + (p.direction === 'out' ? p.amountCents : -p.amountCents), 0);
+    const synthese = () => periodeSynthese({ transactions: StorageService.getTransactions(), payments: FinanceService.getPayments(), mois: '2026-11', aujourdhui: '2026-11-15' });
+    expect(sortiesDuJour()).toBe(4400);
+    const avant = synthese();
     const { onSave } = ouvrir();
     taper('30');
     fireEvent.click(screen.getByRole('radio', { name: /J’ai bien payé 42,00/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(onSave).toHaveBeenCalled());
+    // La pièce vaut son nouveau montant, payée en entier.
     expect(vivante().finance?.amountCents).toBe(3000);
     expect(vivante().settlementBalanceCents).toBe(3000);
-    const avoir = StorageService.getTransactions().find(t => t.finance?.kind === 'refund' && t.finance.refundOfId === 'T-NET');
-    expect(avoir?.finance).toMatchObject({ amountCents: 1200, refundDirection: 'in', refundApplication: 'cash', paymentStatus: 'unpaid' });
-    expect(FinanceService.getPayments().filter(p => p.transactionId === avoir!.id)).toHaveLength(0); // à recevoir, pas encaissé
+    // Les 44,00 sortis restent sortis, à leur date et par leur moyen : le contre-paiement efface les 42,00, le nouveau paiement (30,00) et la sortie du trop-payé (12,00) les rendent.
+    expect(sortiesDuJour()).toBe(4400);
+    // La créance : une vraie pièce de 12,00, payée par une sortie de 12,00 du même jour et du même moyen. Ni avoir (recette sans sortie), ni retrait de la dépense.
+    const toutes = StorageService.getTransactions();
+    expect(toutes.some(t => t.finance?.kind === 'refund')).toBe(false);
+    const creance = toutes.find(t => t.id !== 'T-NET' && t.id !== 'T-B' && /À récupérer/.test(t.description));
+    expect(creance?.finance).toMatchObject({ kind: 'expense', amountCents: 1200 });
+    expect(creance?.description).toContain('Nettoyant alcalin');
+    expect(creance?.settlementBalanceCents).toBe(1200);
+    expect(FinanceService.getPayments().filter(p => p.transactionId === creance!.id)).toMatchObject([{ amountCents: 1200, direction: 'out', method: 'bank', date: '2026-11-09' }]);
+    // Opérations : « payé » reste celui du virement (44,00 en tout), la pièce compte 30,00 et n'est pas retirée une seconde fois.
+    const apres = synthese();
+    expect(apres.payeCents).toBe(avant.payeCents);
+    expect(apres.depenseCents).toBe(avant.depenseCents);
+    expect(apres.aVerifier.avoirsInvalides).toEqual([]);
   });
   it('une baisse au-dessus du payé et une hausse gardent les deux choix', () => {
     ouvrir();

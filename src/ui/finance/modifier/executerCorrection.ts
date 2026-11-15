@@ -1,9 +1,12 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
-import { avoirDeTropPaye, type EtapeCorrection } from '../../../domain/finance/correctionMontant';
+import type { EtapeCorrection } from '../../../domain/finance/correctionMontant';
+import { isoDate, validateFinanceTransaction } from '../../../domain/finance/ledger';
 import { StorageService } from '../../../services/storage';
-import { FinanceService, validateRefundTransaction } from '../../../services/financeService';
+import { FinanceService } from '../../../services/financeService';
 import { contrePaiement } from '../operations/calculs';
+import { creanceDeTropPaye, paiementDeCreance } from './creance';
+export { creanceDeTropPaye, paiementDeCreance };
 import { idFor } from '../FinanceForms';
 
 /** La note d'un contre-paiement écrit par une correction du montant (le champ `note` d'un paiement est libre ; l'immutabilité ne le concerne pas). */
@@ -44,11 +47,14 @@ export function simulerPlan(piece: Transaction, paiements: FinancialPayment[], e
   return { piece: courante, paiements: suite };
 }
 
-/** Pour `executerPlan` : l'avoir est bâti et validé sur la pièce VIVANTE (déjà au nouveau montant), comme `MovementSheet` ; `verifierAvoir` le rejoue avant la première écriture. */
-export function verifierAvoir(pieceCorrigee: Transaction, etape: Extract<EtapeCorrection, { type: 'avoir' }>, ctx: ContexteExecution, transactions: Transaction[], paiements: FinancialPayment[]): Transaction {
-  const avoir = avoirDeTropPaye(pieceCorrigee, etape, ctx, 'AVOIR-VERIF');
-  validateRefundTransaction(avoir, [...transactions.filter(t => t.id !== pieceCorrigee.id), pieceCorrigee], paiements);
-  return avoir;
+/** Pour `executerPlan` : la créance est bâtie et validée sur la pièce VIVANTE (déjà au nouveau montant) ; `verifierAvoir` la rejoue avant la première écriture. */
+export function verifierAvoir(pieceCorrigee: Transaction, etape: Extract<EtapeCorrection, { type: 'avoir' }>, ctx: ContexteExecution, _transactions: Transaction[], paiements: FinancialPayment[]): Transaction {
+  const creance = creanceDeTropPaye(pieceCorrigee, etape, ctx, 'CREANCE-VERIF');
+  validateFinanceTransaction(creance);
+  const inverses = paiements.filter(p => p.transactionId === pieceCorrigee.id && !p.reversalOfId);
+  const paiement = paiementDeCreance(creance, etape, inverses, ctx, 'PAI-VERIF');
+  if (!isoDate(paiement.date)) throw new Error('Date du paiement conservé invalide.');
+  return creance;
 }
 
 /**
@@ -67,12 +73,14 @@ export function verifierAvoir(pieceCorrigee: Transaction, etape: Extract<EtapeCo
 export async function executerPlan(etapes: EtapeCorrection[], pieceId: string, ctx: ContexteExecution, ecrireMontant: (vivante: Transaction) => Transaction): Promise<void> {
   const id = ctx.idPaiement ?? (() => idFor('PAI'));
   const faites: string[] = [];
+  const inverses: FinancialPayment[] = []; // les paiements inversés : ils donnent le jour et le moyen de la sortie conservée
   for (const etape of etapes) {
     try {
       if (etape.type === 'contre') {
         const original = FinanceService.getPayments().find(p => p.id === etape.paiementId);
         if (!original) throw new Error('Paiement à inverser introuvable.');
         FinanceService.recordPayment({ ...contrePaiement(original, ctx.maintenant), note: NOTE_CONTRE });
+        inverses.push(original);
         faites.push('paiement inversé');
       } else if (etape.type === 'montant') {
         const vivante = StorageService.getTransactions().find(t => t.id === pieceId);
@@ -80,12 +88,17 @@ export async function executerPlan(etapes: EtapeCorrection[], pieceId: string, c
         StorageService.updateTransaction(ecrireMontant(vivante));
         faites.push('montant changé');
       } else if (etape.type === 'avoir') {
+        // Deux lots : la pièce « À récupérer », puis la sortie qui la porte (un paiement ne s'écrit qu'après l'existence de sa pièce).
         const vivante = StorageService.getTransactions().find(t => t.id === pieceId);
         if (!vivante) throw new Error('Opération introuvable.');
-        const avoir = avoirDeTropPaye(vivante, etape, ctx, idFor('MOUV'));
-        validateRefundTransaction(avoir, StorageService.getTransactions(), FinanceService.getPayments());
-        StorageService.addTransaction(avoir);
-        faites.push('avoir à recevoir enregistré');
+        const jour = inverses.map(p => isoDate(p.date) ?? '').sort().at(-1) || ctx.aujourdhui;
+        const creance = creanceDeTropPaye(vivante, etape, ctx, idFor('MOUV'), jour);
+        validateFinanceTransaction(creance);
+        StorageService.addTransaction(creance);
+        faites.push('créance à récupérer enregistrée');
+        await Promise.resolve();
+        FinanceService.recordPayment(paiementDeCreance(creance, etape, inverses, ctx, id()));
+        faites.push('sortie conservée écrite');
       } else {
         FinanceService.recordPayment(paiementDeEtape(etape, pieceId, ctx, id()));
         faites.push('paiement écrit');

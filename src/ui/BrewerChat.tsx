@@ -149,6 +149,8 @@ interface CommonProps {
   onApplied?: () => void;
   initialOpen?: boolean;
   initialQuestion?: string;
+  /** t2 : envoie `initialQuestion` dès l'ouverture, une seule fois (compagnon des finances : « Envoyer » envoie en un toucher). Absent : rien ne change. */
+  autoSend?: boolean;
   suggestedPrompts?: Array<{ label: string; question: string }>;
   hideLauncher?: boolean;
   onClose?: () => void;
@@ -268,6 +270,7 @@ function ScopedChat({
   onApplied,
   initialOpen = false,
   initialQuestion = '',
+  autoSend = false,
   suggestedPrompts,
   assistedAdvice,
   assistedRuntime,
@@ -597,6 +600,15 @@ function ScopedChat({
     setQuestion('');
     setError('');
   };
+  const autoEnvoye = useRef(false);
+  const askCourant = useRef(ask);
+  askCourant.current = ask;
+  useEffect(() => {
+    if (!autoSend || autoEnvoye.current || !open || question.trim().length < 2) return;
+    autoEnvoye.current = true;
+    void askCourant.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSend, open]);
   const older = async () => {
     if (hasAssistedSession && !assistedRuntimeReady) {
       setError('Le transport dédié à l’historique assisté est indisponible.');

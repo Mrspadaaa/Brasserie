@@ -328,7 +328,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                   Erreur de saisie : j’ai payé {amountOnly(nouveauCents)}<small>{mots('suit')}</small>
                 </button>
                 <button type="button" role="radio" aria-checked={choixSous === 'avoir'} onClick={() => setChoixManuel('avoir')}>
-                  J’ai bien payé {amountOnly(payeNet(transaction, paiements, ecritures))} : {amountOnly(tropPayeCents)} {sortant ? 'trop payé' : 'trop encaissé'}<small>{sortant ? 'avoir à recevoir' : 'avoir à rembourser'} de {amountOnly(tropPayeCents)}{sortant ? ' du fournisseur' : ''}</small>
+                  J’ai bien payé {amountOnly(payeNet(transaction, paiements, ecritures))} : {amountOnly(tropPayeCents)} {sortant ? 'trop payé' : 'trop encaissé'}<small>{amountOnly(tropPayeCents)} {sortant ? 'à récupérer du fournisseur' : 'à rembourser'} · la sortie reste comptée</small>
                 </button>
               </div>
             )}

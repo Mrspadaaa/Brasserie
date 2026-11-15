@@ -55,7 +55,7 @@ export function FriseArchives({ annees, limite, stockee, maxMois, suivi, onLimit
     {limite != null && <span className="arc-rang" style={{ width: `${pos}%` }} aria-hidden="true"/>}
     {stockee != null && stockee !== limite && <span className="arc-old" style={{ left: `${apres(stockee)}%` }} aria-hidden="true"/>}
     {suivi && <span className="arc-out" style={{ left: `clamp(0px, calc(${pos}% - 150px), calc(100% - 150px))` }}><span className="arc-late">{suivi} ↓</span></span>}
-    <span className="arc-hdl" style={{ left: `${pos}%` }} role="slider" tabIndex={0} aria-label="Limite du rangement : ranger jusqu’à la fin de l’année"
+    <span className="arc-hdl" style={{ left: `${pos}%` }} data-bord={pos <= 0 ? 'debut' : undefined} role="slider" tabIndex={0} aria-label="Limite du rangement : ranger jusqu’à la fin de l’année"
       aria-valuemin={0} aria-valuemax={positions.length - 1} aria-valuenow={Math.max(0, positions.indexOf(limite))}
       aria-valuetext={limite == null ? 'rien n’est rangé' : `rangé jusqu’à fin ${limite}`} onKeyDown={touche}
       onPointerDown={e => { e.currentTarget.setPointerCapture?.(e.pointerId); }}
