@@ -15,7 +15,9 @@ vi.mock('../../src/services/brewerChat', () => ({
     markRead: vi.fn(),
     status: vi.fn(),
     reset: vi.fn(),
-    apply: vi.fn()
+    apply: vi.fn(),
+    budget: vi.fn(),
+    setBudget: vi.fn()
   },
   brewerChatError: () => 'Question conservée, réessaie.'
 }));
@@ -58,6 +60,7 @@ async function open() {
 beforeEach(() => {
   brewerJobs.stop();
   vi.clearAllMocks();
+  vi.mocked(api.budget).mockReset();
   localStorage.clear();
   vi.mocked(api.history).mockResolvedValue([]);
   vi.mocked(api.status).mockResolvedValue({});
@@ -77,7 +80,7 @@ describe('Conversation dans la recette / le brassin', () => {
     await waitFor(() => expect(api.history).toHaveBeenCalledWith({ kind: 'app', id: 'finances' }));
     await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('2026-08');
-    expect(screen.getByText(/Gemini reçoit un résumé de tes comptes/)).toBeVisible();
+    expect(screen.getByText(/L’IA reçoit un résumé de tes comptes/)).toBeVisible();
     expect(api.submit).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Compare acheter, réparer ou attendre');
@@ -106,7 +109,7 @@ describe('Conversation dans la recette / le brassin', () => {
     render(<FinanceAssistant view="forecast" month="2026-09" allDates={false} year={2026} horizon={30} />);
     fireEvent.click(screen.getByRole('button', { name: /Prévoir mes prochains paiements/ }));
     await screen.findByText('Analyse précédente');
-    fireEvent.click(screen.getByText('Autres questions utiles'));
+    fireEvent.click(screen.getByText('Autres questions'));
     fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('achat de matériel');
     expect(api.submit).not.toHaveBeenCalled();
@@ -185,7 +188,7 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Trouve un nom')).toBeVisible();
     expect(screen.getByRole('textbox')).toHaveValue('');
     expect(screen.getByRole('textbox')).not.toHaveAttribute('readonly');
-    expect(screen.queryByText('On regarde ça ensemble.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Agir, mesurer ou attendre ?')).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Et si je remplace' } });
     await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
     await act(async () =>
@@ -244,8 +247,9 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.activity).mockResolvedValue([job]);
     render(<BrewerChat {...props} />);
     await open();
-    expect(screen.getByText('Relecture du conseil')).toBeVisible();
-    expect(screen.getByText('Gemini 3.1 Pro')).toBeVisible();
+    expect(screen.queryByText('Relecture du conseil')).not.toBeInTheDocument(); // fx2b : texte d'étape retiré (maquette)
+    expect(screen.getByText(/en Approfondi/)).toBeVisible();
+    expect(document.body.textContent).not.toMatch(/Gemini|Flash|gemini-3/);
     await act(async () =>
       brewerJobs.merge([
         {
@@ -282,10 +286,17 @@ describe('Conversation dans la recette / le brassin', () => {
         retryable: true
       }
     }]);
+    vi.mocked(api.budget).mockResolvedValue({
+      paused: false, limits: { dailyCalls: 120 }, day: '2026-09-07', usage: { calls: 4, proCalls: 1, tokens: 4200 },
+      monthly: { month: '2026-09', limitMicroChf: 5_000_000, usedMicroChf: 5_000_000, reservedMicroChf: 0, pricing: 'current' }
+    } as any);
     render(<BrewerChat {...props} />);
     await open();
-    expect(await screen.findByRole('alert')).toHaveTextContent('plafond de dépenses Gemini');
-    expect(screen.getByRole('link', { name: 'Ouvrir les dépenses Google' })).toHaveAttribute('href', 'https://ai.studio/spend');
+    const alertes = await screen.findAllByRole('alert');
+    expect(alertes.some((a) => /plafond de dépenses l’IA du projet/.test(a.textContent ?? ''))).toBe(true);
+    expect(screen.queryByRole('link', { name: /Ouvrir les dépenses/ })).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/Google|Gemini|ai\.studio/);
+    expect(await screen.findByRole('button', { name: 'Régler toutes les limites' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Relancer l’analyse' })).toBeEnabled();
     expect(api.submit).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox')).toHaveValue('');
@@ -361,8 +372,8 @@ describe('Conversation dans la recette / le brassin', () => {
       />
     );
     await open();
-    expect(screen.getByText('60 min')).toBeVisible();
-    expect(screen.getByText('70 min')).toBeVisible();
+    expect(screen.getByText('60')).toBeVisible();
+    expect(screen.getByText('70')).toBeVisible();
     expect(api.apply).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('checkbox', { name: 'Nom' }));
@@ -432,7 +443,7 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(api.history).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();
     await open();
-    expect(screen.getByText('On regarde ça ensemble.')).toBeVisible();
+    expect(screen.getByText('Agir, mesurer ou attendre ?')).toBeVisible();
   });
   it('envoie le brouillon actuel, continue la conversation et garde sur action explicite', async () => {
     const keep = vi.fn();
@@ -460,7 +471,7 @@ describe('Conversation dans la recette / le brassin', () => {
       })
     );
     expect(keep).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByText('Garder dans les notes du journal'));
+    fireEvent.click(screen.getByText('Au journal'));
     expect(keep).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
@@ -515,13 +526,15 @@ describe('Conversation dans la recette / le brassin', () => {
     const mounted = render(<BrewerChat {...props} />);
     await open();
     expect(screen.getByRole('radio', { name: 'Auto' })).toBeChecked();
-    expect(screen.getByText('Flash adapte ses recherches et vérifie le conseil')).toBeVisible();
+    expect(document.body.textContent).not.toMatch(/Flash|Gemini|Google/);
     fireEvent.click(screen.getByRole('radio', { name: 'Rapide' }));
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Propose un nom' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await waitFor(() => expect(api.submit).toHaveBeenCalled());
     expect(vi.mocked(api.submit).mock.calls[0][0].mode).toBe('fast');
     expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.getByRole('textbox')).toBeEnabled();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Autre question' } });
     expect(screen.getByRole('radio', { name: 'Approfondi' })).toBeEnabled();
     mounted.unmount();
     render(<BrewerChat {...props} scope={{ kind: 'recipe', id: 'REC-B' }} />);
@@ -594,9 +607,10 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Annoncé en stock')).toBeVisible();
     expect(screen.getByText('Stock à revérifier')).toBeVisible();
     const currentProduct = screen.getByRole('link', { name: /Maris Otter/ });
-    expect(currentProduct).toHaveTextContent('1 kg · CHF 4.50 · prix annoncé');
-    expect(currentProduct).toHaveTextContent('Lien produit vérifié');
-    expect(screen.getByRole('link', { name: /Röstgerste/ })).not.toHaveTextContent('Lien produit vérifié');
+    expect(currentProduct).toHaveTextContent('1 kg');
+    // fx2a : prix à la française (« 4,50 CHF »), plus de texte « Lien produit vérifié ».
+    expect(currentProduct).toHaveTextContent(/4,50\s*CHF/);
+    expect(currentProduct).not.toHaveTextContent('Lien produit vérifié');
   });
   it('garde les petits conditionnements et deux boutiques sans affirmer un stock sans preuve', async () => {
     const t = turn();
