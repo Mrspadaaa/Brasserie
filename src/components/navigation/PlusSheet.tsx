@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ArrowUp, Beer, ClipboardCopy, CloudOff, Database, FileText, Hop, Lightbulb, MessageCircle, MessagesSquare, LoaderCircle,
+  Beer, ClipboardCopy, CloudOff, Database, Droplet, FileText, Hop, Lightbulb, MessageCircle, MessagesSquare, LoaderCircle,
   Package, Plus, Receipt, Tag, TrendingUp, UserPlus, Wheat, Wrench
 } from 'lucide-react';
 import type { FabIntent } from '../../domain/fabActions';
@@ -19,7 +19,7 @@ import './navigation.css';
 
 const ICONES: Record<PlusCle, typeof Plus> = {
   ecriture: Receipt, facture: FileText, vente: TrendingUp, brassin: Beer, recette: Wheat, idee: Lightbulb,
-  courses: ClipboardCopy, houblon: Hop, article: Package, fut: Database, client: UserPlus, tarif: Tag, materiel: Wrench
+  courses: ClipboardCopy, houblon: Hop, article: Package, fut: Database, client: UserPlus, tarif: Tag, materiel: Wrench, densite: Droplet
 };
 
 const ICONES_ECRAN: Record<FabIntent, typeof Plus> = {
@@ -70,13 +70,6 @@ const Lettre: React.FC<{ lettre: string }> = ({ lettre }) => (
   <kbd aria-hidden="true" className="ml-auto shrink-0 font-mono text-footnote leading-[18px] min-w-5 px-1 text-center rounded border border-cave-700 bg-cave-900 text-cave-200">{lettre}</kbd>
 );
 
-/** Le renvoi ↑ d'un geste commun aussi monté « Sur cet écran » : la case reste pleine et active. */
-const Renvoi: React.FC = () => (
-  <ArrowUp size={14} strokeWidth={2.5} aria-hidden="true" className="shrink-0 text-cave-400" />
-);
-
-const RENVOI = 'Aussi en tête de cette feuille';
-
 /** « Sur cet écran » : l'action pleine, puis ses autres actions en rangées. */
 function ZoneEcran({ menu, forme, onChoisir }: Pick<Props, 'menu' | 'forme' | 'onChoisir'>) {
   const { action, autres } = menu;
@@ -122,8 +115,7 @@ function Ligne({ e, onChoisir }: { e: PlusEntree; onChoisir: Props['onChoisir'] 
       <I size={18} aria-hidden="true" className={`shrink-0 ${TON[e.ton].texte}`} />
       <span>{e.label}</span>
       {e.hint && <span className="text-footnote text-cave-400 truncate">{e.hint}</span>}
-      {e.monte && <span title={RENVOI} className="ml-auto inline-flex"><Renvoi /></span>}
-      <span className={e.monte ? 'inline-flex' : 'ml-auto inline-flex'}><Lettre lettre={e.lettre} /></span>
+      <span className="ml-auto inline-flex"><Lettre lettre={e.lettre} /></span>
     </button>
   );
 }
@@ -136,7 +128,6 @@ function Case({ e, onChoisir }: { e: PlusEntree; onChoisir: Props['onChoisir'] }
       className={`${BOUTON} relative min-h-[68px] px-2 py-[7px] rounded-[10px] bg-cave-900 border border-cave-800 text-cave-50 flex flex-col gap-[3px] overflow-hidden leading-[1.15]`}>
       <span className="flex items-center justify-between">
         <I size={20} aria-hidden="true" className={`shrink-0 ${TON[e.ton].texte}`} />
-        {e.monte && <span title={RENVOI}><Renvoi /></span>}
       </span>
       <span className="text-sm">{e.court ?? e.label}</span>
       {e.hint && <span className="text-footnote leading-[14px] text-cave-400 truncate">{e.hint}</span>}
@@ -192,6 +183,8 @@ function Compagnon({ forme, compagnon, onCompagnon, onConversations }: Pick<Prop
 }
 
 export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, onCompagnon, onConversations }) => {
+  /* b1s-a : « Partout » = les communes moins celle déjà montée en tête (pas de doublon). Sa lettre reste active (`lettresActives`). */
+  const partout = menu.partout.filter((e) => !e.monte);
   const enTete = !!menu.action || menu.autres.length > 0;
   return (
     <>
@@ -199,12 +192,12 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
       <Zone titre="Partout" ton={menu.ton} haut={!enTete} />
       {forme === 'feuille' ? (
         <div className="grid grid-cols-3 gap-1.5">
-          {menu.partout.map((e) => <Case key={e.cle} e={e} onChoisir={onChoisir} />)}
+          {partout.map((e) => <Case key={e.cle} e={e} onChoisir={onChoisir} />)}
           <Compagnon forme={forme} compagnon={compagnon} onCompagnon={onCompagnon} onConversations={onConversations} />
         </div>
       ) : (
         <>
-          {menu.partout.map((e) => <Ligne key={e.cle} e={e} onChoisir={onChoisir} />)}
+          {partout.map((e) => <Ligne key={e.cle} e={e} onChoisir={onChoisir} />)}
           <Compagnon forme={forme} compagnon={compagnon} onCompagnon={onCompagnon} onConversations={onConversations} />
         </>
       )}

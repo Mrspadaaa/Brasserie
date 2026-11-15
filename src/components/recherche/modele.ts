@@ -66,7 +66,8 @@ export const VERBE: Record<PlusCle, string> = {
   fut: 'Nouveau fût',
   client: 'Nouveau client',
   tarif: 'Nouveau tarif',
-  materiel: 'Nouveau matériel'
+  materiel: 'Nouveau matériel',
+  densite: 'Saisir une densité'
 };
 
 /** Les quatre créations toujours au même endroit (« Créer », fixe) ; le Compagnon est la cinquième tuile, ajoutée à l'écran. */

@@ -24,7 +24,7 @@ import { fabActionFor, type AnySubTab, type FabAction } from './fabActions';
 
 export type PlusCle =
   | 'ecriture' | 'facture' | 'vente' | 'brassin' | 'recette' | 'idee' | 'courses'
-  | 'houblon' | 'article' | 'fut' | 'client' | 'tarif' | 'materiel';
+  | 'houblon' | 'article' | 'fut' | 'client' | 'tarif' | 'materiel' | 'densite';
 
 /** Couleur de rubrique : finances, brassins, stocks ; clients reste neutre. */
 export type PlusTon = 'finances' | 'production' | 'stocks' | 'clients';
@@ -43,6 +43,8 @@ export interface PlusContexte {
   aCommander?: number;
   /** Brassins en fermentation ou en garde. */
   enCuve?: number;
+  /** Le brassin en fermentation dont on saisirait la densité (« B-031 », J+4 quand le jour est connu). Absent : pas de geste. */
+  enFermentation?: { id: string; jours?: number };
 }
 
 export interface PlusEntree {
@@ -86,12 +88,15 @@ export const COMMUNS: PlusCle[] = ['ecriture', 'facture', 'vente', 'recette', 'b
 /** Lettre de chaque geste ; N est l'action de l'écran, C le compagnon. */
 export const LETTRES: Record<PlusCle, string> = {
   ecriture: 'E', facture: 'F', vente: 'V', brassin: 'B', recette: 'R', idee: 'I', courses: 'L',
-  houblon: 'H', article: 'A', fut: 'U', client: 'K', tarif: 'T', materiel: 'M'
+  houblon: 'H', article: 'A', fut: 'U', client: 'K', tarif: 'T', materiel: 'M', densite: 'D'
 };
 
 type Precision = string | ((c: PlusContexte) => string | undefined);
 
 const sera = (c: PlusContexte) => (c.prochainBrassin ? `sera ${c.prochainBrassin}` : undefined);
+const brassinEnCuve = (c: PlusContexte) => c.enFermentation
+  ? `${c.enFermentation.id}${c.enFermentation.jours !== undefined && c.enFermentation.jours >= 0 ? ` · J+${c.enFermentation.jours}` : ''}`
+  : undefined;
 const aCommander = (c: PlusContexte) => (c.aCommander && c.aCommander > 0 ? `${c.aCommander} à commander` : undefined);
 
 /** Libellé (même verbe aux deux largeurs), couleur et précision d'usage de chaque geste. */
@@ -108,7 +113,9 @@ const FICHE: Record<PlusCle, { label: string; court?: string; ton: PlusTon; hint
   fut: { label: 'Nouveau fût', ton: 'stocks' },
   client: { label: 'Nouveau client', ton: 'clients' },
   tarif: { label: 'Nouveau tarif', ton: 'clients' },
-  materiel: { label: 'Nouveau matériel', ton: 'stocks' }
+  materiel: { label: 'Nouveau matériel', ton: 'stocks' },
+  /* b1s-a : « Saisir une densité · B-031 · J+4 » ; ouvre la fiche du brassin aux Mesures. Absent sans brassin en fermentation. */
+  densite: { label: 'Saisir une densité', ton: 'production', hint: brassinEnCuve }
 };
 
 interface Fiche {
@@ -125,7 +132,7 @@ const enCuve = (c: PlusContexte) => (c.enCuve && c.enCuve > 0 ? `${c.enCuve} en 
 const MENUS: Record<EcranId, Fiche> = {
   bord: { chemin: 'Bord', ton: 'finances', autres: ['courses'] },
   finances: { chemin: 'Finances', ton: 'finances', autres: ['facture', 'vente'] },
-  brassins: { chemin: 'Brassins › Brassins', ton: 'production', autres: ['courses'], etat: enCuve },
+  brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'courses'], etat: enCuve },
   recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
   atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: ['brassin'] },
   volumes: { chemin: 'Brassins › Volumes', ton: 'production', autres: ['brassin', 'courses'] },
@@ -187,7 +194,9 @@ export function plusMenuFor(tab: TabType, subTab?: AnySubTab | null, contexte: P
   const brute = fabActionFor(tab, subTab);
   // `quickAction` = l'écran ne crée rien (BX-4) : pas d'action pleine.
   const action = brute.intent === 'quickAction' ? null : actionDeLEcran(brute, fiche.ton, contexte);
-  const montes = new Set<PlusCle>(fiche.autres);
+  /* Un geste qui dépend de l'app (la densité d'un brassin en fermentation) n'est proposé que si l'app a de quoi l'ouvrir : jamais un geste vide. */
+  const autres = fiche.autres.filter((cle) => cle !== 'densite' || contexte.enFermentation);
+  const montes = new Set<PlusCle>(autres);
   const reprise = COMMUN_DE_L_ACTION[brute.intent];
   if (action && reprise) montes.add(reprise);
   return {
@@ -196,7 +205,7 @@ export function plusMenuFor(tab: TabType, subTab?: AnySubTab | null, contexte: P
     etat: fiche.etat?.(contexte),
     ton: fiche.ton,
     action,
-    autres: fiche.autres.map((cle) => entree(cle, contexte)),
+    autres: autres.map((cle) => entree(cle, contexte)),
     partout: COMMUNS.map((cle) => entree(cle, contexte, montes.has(cle))),
     ici: []
   };

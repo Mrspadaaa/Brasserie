@@ -66,6 +66,9 @@ import {
   CreativeItem 
 } from './types';
 import { FirebaseAuthService } from './services/firebaseAuth';
+import { etatConnexions, etatReglages } from './components/plus/etats';
+import { bilanReglages } from './components/reglages/regles';
+import { COMPANY_FALLBACK } from './domain/companyDefaults';
 import { runMigrationIfNeeded } from './services/migration';
 import { User } from 'firebase/auth';
 
@@ -651,12 +654,15 @@ export const App: React.FC = () => {
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
+  /* Le brassin dont « Saisir une densité » ouvre la fiche : le premier en fermentation (le même que l'assistant de Plus). */
+  const brassinEnFermentation = batches.find(b => b.status === 'fermentation');
   /* Le menu du + de l'écran (b1r). Les précisions viennent de l'app : prochain numéro de brassin et de fût, articles à commander. */
   const plusMenu = plusMenuFor(activeTab, subTab, {
     prochainBrassin: nextBatchId(batches.map(b => b.id)),
     prochainFut: nextRef('F', stocks.kegs.map(k => k.id)),
     aCommander: criticalStockCount,
-    enCuve: batches.filter(b => b.status === 'fermentation' || b.status === 'garde').length
+    enCuve: batches.filter(b => b.status === 'fermentation' || b.status === 'garde').length,
+    enFermentation: brassinEnFermentation ? { id: brassinEnFermentation.id, jours: joursDepuisBrassage(brassinEnFermentation) } : undefined
   });
   const [navNonce, setNavNonce] = useState(0);
   const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
@@ -683,6 +689,10 @@ export const App: React.FC = () => {
       case 'recette': openWizard(); break;
       case 'idee': setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
       case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
+      // Le geste « Mesure » de la recherche : la fiche du brassin s'ouvre à la section Mesures.
+      case 'densite':
+        if (brassinEnFermentation) { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: brassinEnFermentation.id, at: Date.now() }); }
+        break;
       case 'houblon': vers('stocks', 'stocks_subtab', 'hops', 'newHopVariety'); break;
       case 'article': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
       case 'fut': vers('stocks', 'stocks_subtab', 'futs', 'newKeg'); break;
@@ -1149,6 +1159,11 @@ export const App: React.FC = () => {
             pendingTodosCount={pendingTodosCount}
             horsConnexion={horsConnexion}
             entreprise={config.company?.name}
+            etatCloud={etatConnexions(
+              FirebaseAuthService.hasDriveAccess() ? 'connecte' : FirebaseAuthService.driveTokenExpired() ? 'a-renouveler' : 'a-connecter',
+              StorageService.getUiState<string>('ai_default_tier', 'fast')
+            )}
+            etatReglages={etatReglages(bilanReglages(config, { ibanEffectif: config.company.iban || COMPANY_FALLBACK.iban, compteConnecte: !!FirebaseAuthService.getCurrentUser() }))}
             onBack={fermerPlus}
             onAssistant={() => { fermerPlus(); navigateToBrewAssistant(); }}
             onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
