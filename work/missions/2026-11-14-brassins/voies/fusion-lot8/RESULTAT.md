@@ -35,3 +35,36 @@ Commit de fusion : `87f03403` (parents `c6cbf480` et `8919bf3f`, le tag). Messag
 
 CONNAISSANCE : aucune
 LEÇON PROPOSÉE : aucune
+
+## Atelier après fusion
+
+**Constat.** `npx vite build` passait, mais `node scripts/check-build-flags.mjs dist` refusait : `VITE_RANGER_NOTE_IA` introuvable. Côté tag (ks4, commit bfce9dcc), `CreativeLabTab.tsx` importait `modeRangerNote` et rendait `<NoteCarnet mode={modeRangerNote()} tarifs bieres …>`. La fusion a gardé notre `CreativeLabTab` (Atelier e9na, `Ecrire` + tiroirs) : plus aucun module du bundle ne lisait le drapeau, et le rangement par l'IA ne se déclenchait plus.
+
+**Ce qui était perdu (tag ↔ HEAD).**
+- Le rangement de la note par le modèle (`rangerNote`, niveau Rapide, « + » vers le modèle plus précis, une fois par note) : plus aucun appel ; les fichiers `NoteCarnet.tsx`, `NoteAiguillage.tsx`, `rangerNoteSimule.ts`, `domain/rangerNote.ts`, `config/rangerNoteIA.ts` étaient arrivés, mais rien ne les rendait.
+- Les tarifs (prix d'une livraison deviné) et les bières connues passés au rangement.
+- L'étiquette « exemple » de la réponse simulée du banc.
+- La structure ks4 elle-même (rangée Matériel · Carnet · Tarifs, fil de messages, compositeur) : perdue exprès, remplacée par e9na.
+
+**Règle appliquée.** La structure d'écran choisie la plus récente gagne : e9na (Atelier) et e3gb (Carnet de Brassins), choisies le 15.11 sur « six questions » (SPEC-BRASSEUR.md, ligne 1779 : « Carnet : e3gb · … · Atelier : e9na »). Leur fonction est rebranchée dans cet écran, pas à côté. La fonction est fondée sur le mot du même jour (SPEC, ligne 1704) : « utiliser l'ia pas chère pour remettre en place des note en vrac » ; l'accord « la moins chère, et bouton + » est cité dans `src/config/rangerNoteIA.ts`.
+
+**Ce qui est rebranché.**
+- `src/ui/atelier/rangerIA.ts` (neuf) : `demanderRangement` (réponse simulée au banc, `AiClient.run({task:'rangerNote'})` seulement en `production`, garde `lireReponse`), `lignesDePropositions` (cases cochées → lignes de la carte e9na ; prix deviné par `prixDevine` dans Tarifs ; contact connu lié, jamais recréé), `bieresConnues`.
+- `src/ui/atelier/Ecrire.tsx` : la carte « Rangement proposé » reste celle de e9na (Corriger, Ranger ainsi). Si l'IA est allumée et le réseau là, l'IA propose (« L'IA range ta note… », puis « exemple » au banc, et « + modèle plus précis » une seule fois). IA éteinte, hors ligne, muette ou en panne : lecture locale d'avant, avec une ligne qui le dit. La note n'est jamais perdue (elle reste dans la carte jusqu'à « Ranger ainsi »).
+- `src/components/CreativeLabTab.tsx` : `mode={modeRangerNote()}` et le contexte (contacts, tarifs, bières des recettes et des tarifs). Le drapeau est de nouveau lu dans le paquet.
+- Test : `tests/unit/port-q10-ranger-ia.test.tsx` (6 tests, tout simulé : aucun appel réel).
+
+**Preuves.**
+- `npx vite build` OK ; `node scripts/check-build-flags.mjs dist` : 3 lignes `DRAPEAUX OK` (Houblons « on », enrichissement « production », Carnet rangée par l'IA « production »). `check-no-dev-auth.mjs` propre.
+- TSC OK hors `functions/`.
+- `npx vitest run port- tests/unit/atelier tests/integration` : `newfails2.cjs` → `FAILS 7 BASE 64 NEW 0` (aucun échec neuf). Après le dernier déplacement du bouton « + », rejeu de port-q10, port-q7, port-q4-carnet, rangerNote : 48 verts.
+- Banc `banc.mjs` (`?dev-local`, 390, fixtures « ZZ », simulé) : `BANC OK 5 captures`, ouvertes : `captures/atelier-repos-390.png` (carnet au repos), `atelier-range-simule-390.png` (« Livrer 2 fûts de 20 L · Le Carnotzet Gourmand », « exemple », « + plus précis »), `atelier-plus-precis-390.png` (après le « + », bouton retiré), `atelier-apres-ranger-390.png` (la tâche dans le carnet, toast Annuler). Le dossier `captures/` est ignoré par Git (`.gitignore:108`).
+
+**Doutes et limites.**
+- Pas gardés en e9na : la note brute enregistrée d'abord comme `type:'note'` (ks4 la gardait avant l'appel), la note « rangée au retour du réseau » (hors ligne, e9na range en lecture locale à la place), la case « Convertir en client » (la fiche Contact garde « Convertir »), les indices « Date/Prix/Bière à poser » et la date corrigeable dans la carte (Corriger modifie le texte et le tiroir). À décider par le pilote si l'un d'eux est voulu.
+- `src/ui/atelier/NoteCarnet.tsx`, `NoteAiguillage.tsx`, `TarifsFrise.tsx`, `TodoTimeline.tsx`, `ContactsView.tsx` ne sont plus rendus par l'Atelier (non supprimés).
+- En `production`, l'appel réel part vers la tâche serveur `rangerNote` : le commentaire d'`aiClient.ts` la dit « écrite, pas déployée ». Si elle ne l'est pas, l'appel échoue et l'écran retombe sur la lecture locale avec « L'IA n'a pas répondu » (testé au banc seulement en simulé).
+- Le tag n'a pas de ligne « ks4 » dans SPEC-BRASSEUR.md (grep vide) : la fonction se fonde sur les lignes 1704 et 1779.
+
+CONNAISSANCE : une fusion qui garde notre écran peut perdre la seule lecture d'un drapeau de build ; `check-build-flags.mjs` après `vite build` l'attrape (3 lignes `DRAPEAUX OK`).
+LEÇON PROPOSÉE : après une fusion, rejouer `check-build-flags.mjs dist` avec le build, pas seulement `vite build` ; pour tout écran gardé « de notre côté », lister les imports du fichier côté tag et vérifier un à un qu'ils sont encore atteints.

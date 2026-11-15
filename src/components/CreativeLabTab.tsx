@@ -9,6 +9,8 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
 import { useMobileLayout } from '../ui/useViewport';
 import { Ecrire } from '../ui/atelier/Ecrire';
+import { modeRangerNote } from '../config/rangerNoteIA';
+import { bieresConnues } from '../ui/atelier/rangerIA';
 import { EssaiPrix, type TarifGarde } from '../ui/atelier/EssaiPrix';
 import { FicheContact } from '../ui/atelier/FicheContact';
 import { FicheIdee } from '../ui/atelier/FicheIdee';
@@ -71,6 +73,11 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const [fiche, setFiche] = useLiveSelection(items, 'id');
   const [contact, setContact] = useLiveSelection(items, 'id');
   const recettes = useStorageValue(StorageService.getRecipes).map(r => r.name);
+  /** Le rangement par l'IA (ks4, passe 3) : le prix d'une livraison se devine dans Tarifs, la bière est une bière connue (recettes, tarifs). */
+  const tarifs = useStorageValue(StorageService.getTarifs);
+  const bieres = React.useMemo(() => bieresConnues(recettes, tarifs), [recettes, tarifs]);
+  const contacts = React.useMemo(() => items.filter(i => i.type === 'prospect'), [items]);
+  const contexteRangement = React.useMemo(() => ({ contacts, tarifs, bieres }), [contacts, tarifs, bieres]);
   const conversions = useRef(new Set<string>());
 
   useEffect(() => {
@@ -150,7 +157,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     <div className="animate-in fade-in space-y-3 text-sm">
       {!mobile && <div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
 
-      <Ecrire primaire={tiroir !== 'tarif'} amorce={amorce} onReflechir={() => setAssistantOpen(true)} onRanger={rangerLignes} />
+      <Ecrire primaire={tiroir !== 'tarif'} amorce={amorce} onReflechir={() => setAssistantOpen(true)} onRanger={rangerLignes} mode={modeRangerNote()} contexte={contexteRangement} />
 
       {!vide && (
         <div role="group" aria-label="Tiroirs du carnet" className="-mx-3 flex gap-1.5 overflow-x-auto px-3 [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]">
