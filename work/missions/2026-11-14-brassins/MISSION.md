@@ -106,3 +106,10 @@ Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (gr
 - 15.11, mot pour mot : « · L'Atelier R&D toujours pas super convaincu ». e9 (Atelier R&D) refusé à nouveau → 3 ou 4 versions d'un autre genre, en partant de ses mots dans SPEC sur l'Atelier R&D. Tous les groupes e1–e11 ont maintenant leur réponse.
 
 - 15.11, fait : greffes gf (s4a × s6c, critique kg, 8 bloquants corrigés par gk), g6 (e6a × e6c) et e5n (Créer un brassin, 4 genres neufs), critique k6 (9 bloquants, corrigés par g6f), IDENTITE OK 11/11, page pg5 (PAGE OK) publiée : https://claude.ai/artifact/PUbMUHbiuv8Z3eucLQTffU. Ouvert : son choix sur cette page, puis port de e1a, e4c, e7a et des choisis.
+
+## État de reprise — 15.11 (pilote)
+- Pages : choix et suite https://claude.ai/artifact/PUbMUHbiuv8Z3eucLQTffU (`page5/`), tous les écrans PVfjKmT4U9rvXxsKQTPPDp (`page3/`), fermentation SqU1y2jQgMAX8tX6MKn9qL (`page2/`).
+- Retenues à porter : e1a (fiche planifiée), e4c (saisies de passage), e7a (bilan). En attente de son choix : gfa–gfd, g6a–g6c, e5na–e5nd, e2, e3, e8–e11.
+- Outils : `outils/controle-identite.mjs` (BR-ID, 0 écart exigé), trousse `outils/identite/`, données `DONNEES-COMMUNES.md` ; générateurs de voies dans le scratchpad (non versés).
+- Prochaine action : relever son choix, puis voie de port 1:1 (BatchDetailSheet, production/*, ProductionCatalog), tests, build, captures côte à côte ; correctif du filtre de période (App.tsx:171) ; champs °C de cuve et dry hop daté (accord) ; déploiement (accord).
+- Risques : leçon proposée non versée (savoir chargé > 30 000 car.) ; défauts non bloquants listés dans les VERDICT k1–k4, kg, k6.
