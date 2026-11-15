@@ -1773,3 +1773,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : f1 vaut 8/10 pour lui ; la passer à 10/10 par une revue en plusieurs regards (parcours, affichage UX/UI, besoin du brasseur), chaque écart chiffré, puis f1r.)
 - **15.11**, mot pour mot, sur f1 (Caisse et semaines) : « Aussi faire des filtres de plannif, car il y a aussi, brassage, event, ou autre activité... Ajouter tout ça... Ça serait un calendrier, prévision et finance global... À voir à quel point c'est adaptable »
   (lu : la frise de f1 devient le calendrier global : prévisions, temps et finances. Elle porte tout ce qui se planifie (brassages, événements, achats, rénovations, activités, etc.), avec des filtres par type. Mesurer ce qui est déjà dans l'app (brassins planifiés, prévisions Finances) avant d'ajouter.)
+- **15.11**, mot pour mot, sur la boucle de nuit : « 90 % du quota non non99% »
+  (lu : cette nuit, le seuil d'arrêt passe à 99 % du quota hebdomadaire au lieu de 90 % ; [[fermeture-et-quota]] reste la règle par défaut.)
