@@ -29,6 +29,7 @@ import { diagnoseWaterProfile } from "../../domain/water/profileDiagnosis";
 import { useWaterAnalysis } from "./useWaterAnalysis";
 import { useWaterAnalysisInputs, waterStateWithRetainedAcid } from "./useWaterAnalysisInputs";
 import { completeWaterProposal } from "../../domain/water/proposal";
+import { noteAcideProfil } from "./acideProfil";
 type Tab = "empatage" | "rincage";
 type MobileStep = "eau" | "sels";
 
@@ -299,6 +300,16 @@ export function useWaterWorkshop({
 
   const acideSuffit = placeAcide !== "haut";
 
+  // RL-5 : acide dosé par le profil du style alors que l'alcalinité est déjà dans le repère. Le calcul ne change pas ; l'écran le dit.
+  const acideProfil = useMemo(
+    () => noteAcideProfil({
+      ra, raBand, placeAcide, acidAmount: mashAcid.amount, manual: state.acidOverride?.mash != null,
+      phSansAcide: waterModelIssue ? null : estimateMashPh(brew?.grist, ra, mashRatioLPerKg),
+      profil: { code: style.code, name: style.name },
+    }),
+    [ra, raBand, placeAcide, mashAcid.amount, state.acidOverride?.mash, waterModelIssue, brew?.grist, mashRatioLPerKg, style.code, style.name],
+  );
+
   const messagesSolveur = useMemo(
     () =>
       planApplied
@@ -470,6 +481,7 @@ export function useWaterWorkshop({
     mashAcidDiffers,
     raApresAcide,
     placeAcide,
+    acideProfil,
     acideSuffit,
     messagesSolveur,
     spargeAlkalinity,

@@ -30,6 +30,7 @@ import { Rep } from '../ui/recette/Reperes';
 import { BarreGrain, BarrePart, CourbeEmpatage, MiniCourbe, Piste, pointsEmpatage } from '../ui/recette/Dessins';
 import { pointsFermentation, segmentsEmpatage } from '../ui/recette/donneesCourbes';
 import { recipeToText } from '../domain/recipeText';
+import { identiteLevure, noteLevureAJour, densiteDebutEbullition } from '../domain/levure/affichage';
 import { RecipeTextExport } from '../ui/RecipeTextExport';
 import { brewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 
@@ -89,7 +90,6 @@ interface RecipePageProps {
   onDelete: () => void;
   onBrew: () => void;
   onOpenBatch: (batch: Batch) => void;
-  onOpenHopV55?: () => void;
 }
 
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
@@ -106,8 +106,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onDuplicate,
   onDelete,
   onBrew,
-  onOpenBatch,
-  onOpenHopV55
+  onOpenBatch
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [simulatingNolo, setSimulatingNolo] = useState(false);
@@ -168,6 +167,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : ogRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75) || ogPredicted || 0;
 
   const boilOg = useMemo(() => recipe.nolo?.enabled ? og || null : yeastRecipeBoilOg({ ...recipe, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og: og || null }).og, [recipe, og, brewhouse?.efficiencyPct]);
+  // RL-4 : « densité en début d'ébullition » n'est pas l'OG : le moût a perdu de l'eau à l'ébullition (conservation des points, une seule source).
+  // L'inconnu (pas de volume avant ébullition, pas d'évaporation) ne se montre pas : jamais l'OG à sa place.
+  const debutEbullition = useMemo(() => recipe.nolo?.enabled || !boilOg ? undefined : densiteDebutEbullition({ ...recipe, ogTarget: boilOg } as never),
+    [recipe, boilOg]);
   const bitterness = useMemo(() => amertumeRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75, { og: og || null, nolo: !!recipe.nolo?.enabled }),
     [recipe, og, brewhouse?.efficiencyPct]);
   const ibuOf = (hop: HopIngredient) => ibuDeLAjout(hops, hop, recipe.volumeL, boilOg, recipe.boilMin ?? 60);
@@ -397,7 +400,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         {potentielVu && <LazySurface resetKey={`aroma:${recipe.id}`} fallback={<div role="status">Préparation du potentiel aromatique…</div>}>
           <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
           <HopRecipePanel recipe={recipe} onEdit={onEdit} />
-          {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={onOpenHopV55}>Ouvrir l’atelier Houblons V5.5</button>}
         </LazySurface>}
         </div>
       </FicheSection>
@@ -415,11 +417,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         ) : (
           <div className="space-y-2">
             <p className="text-base text-cave-50">
-              {recipe.yeast.lab && <span className="text-cave-400">{recipe.yeast.lab} </span>}
-              {recipe.yeast.name}
-              {recipe.yeast.strain && (
-                <span className="text-cave-400"> · {recipe.yeast.strain}</span>
-              )}
+              {identiteLevure(recipe.yeast)}
             </p>
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
@@ -432,16 +430,25 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <dt className="text-sm text-cave-400">Forme</dt>
                 <dd className="text-base text-cave-50">{recipe.yeast.form}</dd>
               </div>
-              <div>
-                <dt className="text-sm text-cave-400">Ensemencement</dt>
-                <dd className="reading text-sm">
-                  {recipe.yeast.pitchTempC != null ? `${nombreFr(recipe.yeast.pitchTempC, 1)} °C` : '—'}
-                </dd>
-              </div>
+              {/* RL-3 : « Ensemencement – » alors que la température est réglée aux Paliers : on dit ce qui est réglé (l'ensemencement, sinon le primaire), jamais un tiret. */}
+              {(() => {
+                const primaire = recipe.fermentation?.find(s => s.kind === 'primaire')?.tempC;
+                const [libelle, valeur] = recipe.yeast.pitchTempC != null ? ['Ensemencement', recipe.yeast.pitchTempC] : ['Primaire', primaire];
+                return typeof valeur === 'number' && Number.isFinite(valeur) ? (
+                  <div>
+                    <dt className="text-sm text-cave-400">{libelle}</dt>
+                    <dd className="reading text-sm">{`${nombreFr(valeur, 1)} °C`}</dd>
+                  </div>
+                ) : null;
+              })()}
             </dl>
-            {recipe.yeast.notes && (
-              <p className="text-sm text-cave-400 leading-snug">{recipe.yeast.notes}</p>
-            )}
+            {(() => {
+              const note = noteLevureAJour(recipe.yeast.notes, {
+                quantiteSaisie: recipe.yeast.qty != null && recipe.yeast.qty > 0,
+                conduiteSaisie: (recipe.fermentation ?? []).some(s => s.kind === 'primaire' && typeof s.tempC === 'number')
+              });
+              return note ? <p className="text-sm text-cave-400 leading-snug">{note}</p> : null;
+            })()}
           </div>
         )}
       </FicheSection>
@@ -578,7 +585,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
       {/* --- Ébullition ---------------------------------------------------- */}
       <FicheSection title="Ébullition" dataElement="r1-ebullition" resume={<span className="rc-m">{recipe.boilMin ?? 60}′</span>}>
-        <p className="rc-note">Ébullition de {recipe.boilMin ?? 60} min{boilOg ? ` · densité en début d’ébullition ${formatDensite(boilOg)}` : ''}.</p>
+        <p className="rc-note">Ébullition de {recipe.boilMin ?? 60} min{debutEbullition ? ` · densité en début d’ébullition ${formatDensite(debutEbullition)}` : ''}.</p>
         {recipe.adjuncts && recipe.adjuncts.length > 0 && (
           <div className="space-y-1">
             <h3 className="rc-sub-t text-cave-200">Additifs</h3>

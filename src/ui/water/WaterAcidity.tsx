@@ -26,6 +26,7 @@ type Props = Pick<
   | "spargeAcid"
   | "raApresAcide"
   | "placeAcide"
+  | "acideProfil"
   | "spargeAlkalinity"
   | "hasSparge"
   | "activeTab"
@@ -62,6 +63,7 @@ export function WaterAcidity({
   spargeAcid,
   raApresAcide,
   placeAcide,
+  acideProfil,
   spargeAlkalinity,
   hasSparge,
   activeTab,
@@ -191,6 +193,8 @@ export function WaterAcidity({
                 <p className="ew-note">
                   {alkaliGoal.limitedByGrist
                     ? "— effet inclus dans l’estimation du pH ci-dessous."
+                    : acideProfil
+                      ? `— ${acideProfil}`
                     : placeAcide === "juste"
                       ? "— dans le repère des malts."
                       : placeAcide === "haut"

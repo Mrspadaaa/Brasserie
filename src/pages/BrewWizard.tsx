@@ -126,7 +126,7 @@ import type { VueLevure } from '../ui/etapeLevure/props';
 import { useYeastSupply } from '../hooks/useYeastSupply';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
-import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesign';
+import { completeYeastRecipeDesignApplication, readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
 import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState, type WaterChangeIntent } from '../ui/SaltSolver';
@@ -3188,7 +3188,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         <>
         <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
           onLearnIngredient={onLearnIngredient}
-          yeastSummary={!details.nolo?.enabled ? <Suspense fallback={<span>{yeast.name || 'Souche à préciser'}</span>}><YeastRecipeHeading recipe={build()} /></Suspense> : undefined}
+          yeastSummary={!details.nolo?.enabled && readYeastRecipeDesign(build()) ? <Suspense fallback={null}><YeastRecipeHeading recipe={build()} seulementObjectif /></Suspense> : undefined}
           reviewData={{
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,

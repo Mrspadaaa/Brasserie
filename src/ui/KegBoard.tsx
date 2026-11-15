@@ -22,7 +22,7 @@ import {
 
 const KEG_STATE: Record<KegState, { label: string; filter: string; hint: string; Icon: typeof Beer }> = {
   lavage: { label: 'À laver', filter: 'À laver', hint: 'Revenu vide, à nettoyer avant remplissage.', Icon: Droplets },
-  propre: { label: 'Propre', filter: 'Propres', hint: 'Nettoyé et désinfecté, prêt à remplir.', Icon: Sparkles },
+  propre: { label: 'Propre', filter: 'Propres', hint: 'Marqué propre, prêt à remplir.', Icon: Sparkles },
   plein: { label: 'Plein', filter: 'Pleins', hint: 'Rempli, en garde ou prêt à partir.', Icon: Beer },
   livre: { label: 'Livré', filter: 'Livrés', hint: 'Chez le client, en attente de retour.', Icon: Truck }
 };

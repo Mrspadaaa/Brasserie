@@ -72,8 +72,6 @@ interface StocksTabProps {
   onOpenItemRequestHandled?: () => void;
   onSuccessMessage?: (msg: string) => void;
   onOpenEquipmentProjects?: () => void;
-  /** Ouvre le parcours catalogue houblon V5.5 de l’application. */
-  onOpenHopV55?: () => void;
   /** Fiche d'article : « voir la facture » et « voir le bilan » (absents : les lignes ne sont pas cliquables). */
   onOpenTransaction?: (id: string) => void;
   onOpenBatch?: (id: string) => void;
@@ -119,7 +117,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   onOpenItemRequestHandled,
   onSuccessMessage,
   onOpenEquipmentProjects,
-  onOpenHopV55,
   onOpenTransaction,
   onOpenBatch
 }) => {
@@ -477,10 +474,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </div>
 
       {subTab === 'hops' && <>
-        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="shrink-0">
-          {/* BR-109 : une ligne, un bouton. Trois lignes de texte collées sous la barre prenaient 22 % de l'écran à 390. */}
-          <Button intent="secondary" size="sm" full onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
-        </section>}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
       </>}
 
@@ -730,7 +723,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         achats={achats}
         onCorrect={applyCorrection}
         onCommander={() => { setSelected(null); setSubTab('courses'); }}
-        onOpenHops={onOpenHopV55}
         onOpenTransaction={onOpenTransaction}
         onOpenBatch={onOpenBatch}
         onToggleFavorite={(item) => {

@@ -41,6 +41,7 @@ import { inputClass } from '../FormNav';
 import { RecipeReview } from '../RecipeReview';
 import { formatDecimal, messageRefus } from '../numericInput';
 import { uniteAccordee } from '../../domain/fermentables/parts';
+import { reglageQuantiteLevure } from '../../domain/levure/affichage';
 import { masseLigneRetenue } from '../../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from '../identite/regles';
 
@@ -370,6 +371,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
   const plageSo4: Plage | undefined = water?.style && !water.style.untargetedIons?.includes('so4') ? water.style.ions.so4 : undefined;
   const nomsMalts = fermentables.filter(f => f.name.trim()).map(f => f.name.trim());
   const qteLevure = finie(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${uniteAccordee(yeast.unit, yeast.qty)}` : '';
+  const reglage = reglageQuantiteLevure(yeast.form, yeast.unit, yeast.qty);
   const pisteIbu = <Piste nom="IBU" domaine={{ min: 0, max: 100 }} plageStyle={stats?.ibu} point={ibu} droite={stats?.ibu ? texteSuisse(stats.ibu) : '—'}
     aria={`IBU ${finie(ibu) ? ibu : 'inconnu'}, ${posTxt(ibu, stats?.ibu)}${stats?.ibu ? ` ${codeStyle ?? 'style'} ${texteSuisse(stats.ibu)}` : ''}`} />;
   const rangees: Partial<Record<RangeeId, ResumeRangee>> = {
@@ -404,13 +406,13 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
         <div className="rc2-p2">
           <span className="rc2-lb">Unité <b>1/2</b></span>
           <span className="rc2-seg" role="radiogroup" aria-label="Unité de la levure">
-            {['sachet', 'g'].map(u => <button key={u} type="button" role="radio" aria-checked={yeast.unit === u} onClick={() => onYeast({ ...yeast, unit: u as YeastSpec['unit'] })}>{u}</button>)}
+            {reglage.unites.map(u => <button key={u} type="button" role="radio" aria-checked={yeast.unit === u} onClick={() => onYeast({ ...yeast, unit: u as YeastSpec['unit'] })}>{u}</button>)}
           </span>
         </div>
         <div className="rc2-p2">
           <span className="rc2-lb">Quantité <b>2/2</b></span>
           <span className="rc2-sl">
-            <input type="range" aria-label="Curseur de quantité de levure" min={0} max={yeast.unit === 'g' ? 100 : Math.max(6, Math.ceil(finie(yeast.qty) ? yeast.qty : 0))} step={yeast.unit === 'g' ? 1 : 0.5}
+            <input type="range" aria-label="Curseur de quantité de levure" min={reglage.min} max={reglage.max} step={reglage.step}
               value={finie(yeast.qty) ? yeast.qty : 0} onChange={e => onYeast({ ...yeast, qty: Number(e.target.value) })} />
           </span>
         </div>
@@ -678,17 +680,8 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
       {/* --- Levure -------------------------------------------------------- */}
       <Block id="levure" title="Levure">
         {yeastSummary && <div className="py-1">{yeastSummary}</div>}
-        {/* BR-26 : la ligne de la quantité se lit « Quantité », la souche passe en dessous (le nom seul ne disait pas ce que le champ attend). */}
-        <Row label="Quantité" hint={[yeast.name, yeast.strain].filter(Boolean).join(' · ') || undefined}>
-          <Cell
-            label="Quantité de levure"
-            value={yeast.qty}
-            onValue={(v) => onYeast({ ...yeast, qty: v })}
-            unit={yeast.unit}
-            width="w-16"
-            min={0}
-          />
-        </Row>
+        {/* RL-1/RL-2 (recette en ligne 15.11) : la quantité se règle une seule fois, au curseur de la rangée (m2 : unité 1/2, quantité 2/2) ;
+            le nom et la quantité sont dans le résumé de la rangée : la fiche ne les redit pas. Atténuation et durée restent (fiche d'aujourd'hui). */}
         <Row label="Atténuation" hint="Sert à prédire la densité finale.">
           <Cell
             label="Atténuation"
