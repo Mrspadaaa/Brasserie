@@ -1,0 +1,35 @@
+/* m4ia-c : feuille « Compagnon brasseur ». Classes `cpg-` (L26), racine `.ops.cpg` (jetons clair/cave d'operations.css).
+   Maquette : bande crème « Ta question vise », question cerclée de bleu, pastilles 44 px (cochées bleu pâle ✓, à ajouter gris plein +), Auto ⌄ / Envoyer. */
+.cpg { --cpg-haut: 58px; --cpg-bleu: rgb(var(--area-finances)); gap:0; padding:2px 0 8px; }
+/* operations.css range `.ops` en deux colonnes dès 900 px (bande à gauche) : la feuille garde une seule colonne. */
+.ops.cpg { display:flex; flex-direction:column; align-items:stretch; }
+.cpg-band { border-radius:16px; background:rgb(var(--cave-950)); border:1px solid var(--ops-bord); padding:6px 8px 8px; }
+.cpg-t { font-size:12px; line-height:16px; color:var(--ops-t3); display:flex; justify-content:space-between; }
+.cpg-piles { display:flex; align-items:flex-end; gap:4px; height:calc(var(--cpg-haut) + 38px); margin-top:4px; }
+.cpg-p { flex:1 1 0; min-width:0; display:flex; flex-direction:column; justify-content:flex-end; height:100%; gap:2px; text-align:center; opacity:.35; }
+.cpg-p.cpg-on { opacity:1; }
+.cpg-p b { font-size:12px; line-height:14px; white-space:nowrap; }
+.cpg-p b[data-signe] { color:rgb(var(--area-stocks-texte)); }
+.cpg-st { display:flex; flex-direction:column; overflow:hidden; border-radius:8px 5px 2px 2px; min-height:4px; }
+.cpg-st i { display:block; min-height:1px; }
+.cpg-st.cpg-cible { outline:2.5px solid var(--cpg-bleu); outline-offset:2px; }
+.cpg-nom { display:block; border-top:2px solid var(--ops-t1); padding-top:2px; font-size:12px; line-height:14px; color:var(--ops-t2); white-space:nowrap; }
+.cpg-nom-on { color:var(--ops-t1); font-weight:600; }
+.cpg-vide { margin:6px 0 2px; font-size:13px; color:var(--ops-t2); }
+.cpg-qlab { font-size:12px; line-height:16px; color:var(--ops-t3); margin:10px 0 4px; }
+.cpg-q { width:100%; resize:none; overflow:hidden; display:block; border:1.5px solid var(--cpg-bleu); border-radius:10px; padding:8px 10px; font:inherit; font-size:15px; line-height:20px; color:var(--ops-t1); background:transparent; box-shadow:0 0 0 3px rgb(var(--area-finances) / .16); }
+.cpg-k { font-size:12px; line-height:16px; color:var(--ops-t3); margin:10px 0 4px; }
+.cpg-pills { display:flex; flex-wrap:wrap; gap:6px; }
+.cpg-pl { display:inline-flex; align-items:center; gap:5px; min-height:44px; padding:0 10px; border-radius:16px; border:1px solid var(--ops-bord); font-size:13px; color:var(--ops-t1); background:transparent; }
+.cpg-pl.cpg-in { background:rgb(var(--area-finances) / .16); border-color:rgb(var(--area-finances) / .5); }
+.cpg-pl.cpg-in::before { content:"✓"; font-weight:700; }
+.cpg-pl.cpg-outp { color:var(--ops-t2); background:rgb(var(--cave-800)); border-color:rgb(var(--cave-800)); }
+.cpg-pl.cpg-outp::before { content:"+"; }
+.cpg-pl.cpg-pay { background:repeating-linear-gradient(135deg, var(--ops-hach-b) 0 4px, transparent 4px 8px), var(--ops-hach-b); border-color:var(--ops-hach-a); box-shadow:inset 0 0 0 1px var(--ops-hach-a); color:rgb(var(--attention-texte)); }
+:root:not([data-theme='cave']) .cpg-pl.cpg-pay { background:repeating-linear-gradient(135deg, rgb(251 235 201) 0 4px, rgb(255 247 230) 4px 8px); border-color:rgb(227 194 126); box-shadow:inset 0 0 0 1px rgb(227 194 126); color:rgb(110 80 15); }
+.cpg-ex { font-size:12px; line-height:15px; color:var(--ops-t3); margin:6px 0 0; }
+.cpg-send { display:flex; gap:6px; margin-top:12px; }
+.cpg-mode { position:relative; display:inline-flex; }
+.cpg-mode select { appearance:none; -webkit-appearance:none; height:44px; min-width:84px; padding:0 26px 0 12px; border-radius:10px; border:1px solid var(--ops-bord); background:transparent; color:var(--ops-t1); font:inherit; font-size:13px; }
+.cpg-mode span { position:absolute; right:10px; top:50%; transform:translateY(-60%); pointer-events:none; color:var(--ops-t2); }
+.cpg-pri { display:flex; align-items:center; justify-content:center; flex:1; height:44px; border-radius:10px; background:rgb(var(--cave-texte-50)); color:rgb(var(--cave-950)); font-weight:600; font-size:14px; }

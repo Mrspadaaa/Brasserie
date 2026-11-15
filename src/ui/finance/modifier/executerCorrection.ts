@@ -1,8 +1,8 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
-import type { EtapeCorrection } from '../../../domain/finance/correctionMontant';
+import { avoirDeTropPaye, type EtapeCorrection } from '../../../domain/finance/correctionMontant';
 import { StorageService } from '../../../services/storage';
-import { FinanceService } from '../../../services/financeService';
+import { FinanceService, validateRefundTransaction } from '../../../services/financeService';
 import { contrePaiement } from '../operations/calculs';
 import { idFor } from '../FinanceForms';
 
@@ -36,11 +36,19 @@ export function simulerPlan(piece: Transaction, paiements: FinancialPayment[], e
     } else if (etape.type === 'contre') {
       const p = paiements.find(x => x.id === etape.paiementId);
       if (p) suite.push({ ...contrePaiement(p, ctx.maintenant), note: NOTE_CONTRE });
-    } else {
+    } else if (etape.type === 'paiement') {
       suite.push(paiementDeEtape(etape, piece.id, ctx, `SIM-${i}`));
     }
+    // « avoir » : une pièce neuve à recevoir ; elle ne change ni le montant ni le réglé de celle-ci (l'aperçu garde sa rangée).
   });
   return { piece: courante, paiements: suite };
+}
+
+/** Pour `executerPlan` : l'avoir est bâti et validé sur la pièce VIVANTE (déjà au nouveau montant), comme `MovementSheet` ; `verifierAvoir` le rejoue avant la première écriture. */
+export function verifierAvoir(pieceCorrigee: Transaction, etape: Extract<EtapeCorrection, { type: 'avoir' }>, ctx: ContexteExecution, transactions: Transaction[], paiements: FinancialPayment[]): Transaction {
+  const avoir = avoirDeTropPaye(pieceCorrigee, etape, ctx, 'AVOIR-VERIF');
+  validateRefundTransaction(avoir, [...transactions.filter(t => t.id !== pieceCorrigee.id), pieceCorrigee], paiements);
+  return avoir;
 }
 
 /**
@@ -71,6 +79,13 @@ export async function executerPlan(etapes: EtapeCorrection[], pieceId: string, c
         if (!vivante) throw new Error('Opération introuvable.');
         StorageService.updateTransaction(ecrireMontant(vivante));
         faites.push('montant changé');
+      } else if (etape.type === 'avoir') {
+        const vivante = StorageService.getTransactions().find(t => t.id === pieceId);
+        if (!vivante) throw new Error('Opération introuvable.');
+        const avoir = avoirDeTropPaye(vivante, etape, ctx, idFor('MOUV'));
+        validateRefundTransaction(avoir, StorageService.getTransactions(), FinanceService.getPayments());
+        StorageService.addTransaction(avoir);
+        faites.push('avoir à recevoir enregistré');
       } else {
         FinanceService.recordPayment(paiementDeEtape(etape, pieceId, ctx, id()));
         faites.push('paiement écrit');

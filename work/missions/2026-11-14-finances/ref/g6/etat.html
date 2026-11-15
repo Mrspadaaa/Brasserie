@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>g6 — Annuel, passe 3 : g4a en tête, puis les neuf écrans de la clôture 2026 (09.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finA:#86B9E6;--fint:#E6EFF8;--gain:#2F6B22;--vert:#56D27B;--perte:#C8382F;--att:#E3B55D;--attT:#7A5300;--attF:#FFF2D6;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+a{color:inherit}
+.g6-m{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.g6-hd{position:sticky;top:0;z-index:5;background:var(--page)}
+.g6-tb{display:flex;align-items:center;gap:6px;height:44px;padding:0 8px;border-bottom:1px solid var(--bord)}
+.g6-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.g6-nom{font-weight:600;font-size:16px;color:var(--t0);flex:1}
+.g6-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.g6-ic.b{border:1px solid var(--bordm);background:var(--panel)}
+.g6-rail{display:flex;border-bottom:1px solid var(--bord);padding:0 8px}
+.g6-rail button{flex:1;height:36px;font-size:14px;color:var(--t2);border-bottom:2px solid transparent;text-align:center}
+.g6-rail button[aria-selected=true]{color:var(--fin);font-weight:600;border-color:var(--fin)}
+.g6-main{padding:8px 10px 130px;max-width:1080px;margin:0 auto}
+.g6-ecran{display:none}
+.g6-ecran:target,#annuel{display:block}
+body:has(.g6-ecran:target) #annuel:not(:target){display:none}
+/* --- tête Annuel (g4a) --- */
+.g6-top{display:flex;align-items:center;gap:8px}
+.g6-an{display:flex;align-items:center;gap:4px;height:32px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);font-weight:600;color:var(--t0)}
+.g6-prov{font-size:12px;font-weight:600;color:var(--attT);background:var(--attF);border-radius:10px;padding:2px 8px}
+.g6-tool{margin-left:auto;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:10px;background:var(--fint);color:var(--fin);font-weight:600;font-size:13px;text-decoration:none}
+.g6-scene{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end;height:330px;margin-top:6px;position:relative}
+.g6-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.g6-hc{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--t2);padding:0 2px 4px}
+.g6-hc .g6-m{font-size:14px;font-weight:600;color:var(--t0)}
+.g6-pile{display:flex;flex-direction:column;border-radius:10px;overflow:hidden}
+.g6-s{display:flex;justify-content:space-between;align-items:flex-start;padding:2px 8px;font-size:12px;border-top:1px solid rgba(255,255,255,.75)}
+.g6-trou{border:2px dashed var(--perte);border-bottom:0;border-radius:10px 10px 0 0;background:repeating-linear-gradient(135deg,#FBE3E0 0 5px,#fff 5px 10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--perte)}
+.g6-trou b{font-family:var(--mono);font-size:28px;line-height:1}
+.g6-trou span{font-size:12px;font-weight:600}
+.g6-stock{position:absolute;left:8px;bottom:172px;width:calc(50% - 21px);height:30px;border:2px dashed var(--att);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;background:#FFF8E8;font-size:12px;color:var(--attT);font-weight:600}
+.g6-cl{margin-top:10px;padding:8px;border-radius:10px;background:var(--panel)}
+.g6-clh{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--t0);font-weight:600}
+.g6-clh small{font-size:12px;color:var(--t2);font-weight:400}
+.g6-next{display:flex;align-items:center;gap:8px;margin-top:8px}
+.g6-next span{flex:1;font-size:12px;color:var(--t2)}
+.g6-next span b{display:block;font-size:14px;color:var(--t0);font-weight:600}
+.g6-go{height:36px;padding:0 14px;border-radius:10px;background:#111;color:#fff;font-weight:600;display:grid;place-items:center;text-decoration:none}
+.g6-row{display:flex;align-items:center;gap:8px;min-height:44px;border-bottom:1px solid var(--bord);width:100%;text-decoration:none}
+.g6-row .g6-t{flex:1;font-size:14px;color:var(--t0)}
+.g6-row .g6-t small{display:block;font-size:12px;color:var(--t2)}
+/* piste de clôture : neuf stations */
+.g6-pi{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-top:6px}
+.g6-pi a{height:10px;border-radius:10px;background:#DADADA;display:block}
+.g6-pi a.ok{background:var(--gain)}
+.g6-pi a.now{background:var(--att)}
+.g6-pi a.ici{outline:2px solid #111;outline-offset:1px}
+/* --- tête d'étape --- */
+.g6-sh{display:flex;align-items:center;gap:8px;height:32px}
+.g6-back{display:flex;align-items:center;gap:2px;font-size:14px;color:var(--fin);text-decoration:none;min-height:32px}
+.g6-back::before{content:"\2039";font-size:20px;margin-right:2px}
+.g6-sh b{flex:1;text-align:center;font-size:14px;color:var(--t0)}
+.g6-sh .g6-m{font-size:13px;color:var(--t2)}
+.g6-q{font-size:20px;font-weight:700;color:var(--t0);margin-top:10px;line-height:1.15}
+.g6-terme{font-size:12px;color:var(--t2);margin-top:2px}
+.g6-pa{display:inline-block;font-size:12px;font-weight:600;border-radius:10px;padding:2px 8px}
+.g6-pa.ok{color:#fff;background:var(--gain)}
+.g6-pa.at{color:var(--attT);background:var(--attF)}
+.g6-pa.no{color:#555;background:#ECECEC}
+.g6-pa.r{color:#9C2A22;background:#FBE3E0}
+.g6-fin{display:flex;gap:8px;margin-top:14px}
+.g6-fin button,.g6-fin a{height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:600;text-decoration:none}
+.g6-ia{flex:0 0 auto;padding:0 12px;background:var(--fint);color:var(--fin)}
+.g6-pri{flex:1;background:#111;color:#fff;font-size:15px}
+.g6-hach{background:repeating-linear-gradient(135deg,#F0F0F0 0 4px,#fff 4px 8px)}
+.g6-hachA{background:repeating-linear-gradient(135deg,#FCEBC5 0 4px,#fff 4px 8px)}
+/* 1 opérations */
+.g6-mois{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:10px}
+.g6-mo{border-radius:10px;border:1px solid var(--bord);min-height:52px;padding:4px;display:flex;flex-direction:column;justify-content:space-between}
+.g6-mo small{font-size:12px;color:var(--t2)}
+.g6-mo .g6-m{font-size:14px;font-weight:600;color:var(--t0)}
+.g6-mo.q{border:1.5px dashed var(--att)}
+.g6-mo.q .g6-m{color:var(--attT)}
+.g6-mo.n{background:#EAF3FC;border-color:var(--finA)}
+.g6-mo.av{border-style:dashed}
+.g6-lst{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.g6-it{display:flex;align-items:center;gap:8px;border-radius:12px;background:var(--panel);padding:8px}
+.g6-it .g6-t{flex:1;font-size:14px;color:var(--t0);font-weight:600}
+.g6-it .g6-t small{display:block;font-size:12px;color:var(--t2);font-weight:400}
+.g6-it .g6-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.g6-it button{height:32px;padding:0 10px;border-radius:10px;background:#fff;border:1px solid var(--bordm);font-size:13px;font-weight:600}
+.g6-seg{display:flex;background:#fff;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.g6-seg span{height:32px;padding:0 8px;display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--t1)}
+.g6-seg span+span{border-left:1px solid var(--bordm)}
+/* 2 ouverture */
+.g6-ok{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px;border-radius:12px;background:#EEF6EA}
+.g6-ok .g6-t{flex:1;font-size:13px;color:var(--t1)}
+.g6-ok .g6-t .g6-m{display:block;font-size:20px;font-weight:600;color:var(--t0)}
+.g6-svg{display:block;width:100%;height:auto;margin-top:8px}
+.g6-choix{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.g6-ch{border:1.5px solid var(--bordm);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--t1)}
+.g6-ch b{font-size:14px;color:var(--t0)}
+.g6-ch.on{border-color:#111;box-shadow:inset 0 0 0 1px #111}
+/* 3 inventaires */
+.g6-inv{display:grid;grid-template-columns:1fr 80px 80px;gap:4px 6px;margin-top:10px;align-items:stretch}
+.g6-inv .h{font-size:12px;color:var(--t2);font-weight:600;text-align:center;padding-bottom:2px}
+.g6-inv .h:first-child{text-align:left}
+.g6-inv .n{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t0);min-height:48px}
+.g6-inv .n small{display:block;font-size:12px;color:var(--t2)}
+.g6-inv .c{border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-size:14px;color:var(--attT);border:1.5px dashed var(--att)}
+.g6-inv .c.p{border:1.5px solid var(--gain);color:var(--gain);background:#EEF6EA;font-weight:600}
+.g6-var{margin-top:10px;border-radius:12px;background:var(--panel);padding:8px;display:flex;align-items:center;gap:10px}
+.g6-var .g6-t{flex:1;font-size:13px;color:var(--t1)}
+/* 4 matériel */
+.g6-reg{margin-top:10px}
+/* 5 dettes */
+.g6-bal{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.g6-pan{border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.g6-pan h4{font-size:13px;color:var(--t2);font-weight:600}
+.g6-pan .tot{font-family:var(--mono);font-size:22px;font-weight:600}
+.g6-pan.d{background:#FFF6F5;border:1px solid #F0C4BF}
+.g6-pan.d .tot{color:#9C2A22}
+.g6-pan.c{background:#F2F8EF;border:1px solid #CFE3C6}
+.g6-pan.c .tot{color:var(--gain)}
+.g6-li{display:flex;justify-content:space-between;align-items:baseline;gap:4px;font-size:13px;color:var(--t0);border-top:1px solid rgba(0,0,0,.08);padding-top:4px}
+.g6-li small{display:block;font-size:12px;color:var(--t2)}
+.g6-li.f{opacity:.75}
+/* 6 privé */
+.g6-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.g6-ti{border-radius:12px;border:1px solid var(--bord);padding:8px 6px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;gap:2px}
+.g6-ti small{font-size:12px;color:var(--t2)}
+.g6-ti b{font-size:13px;color:var(--t0)}
+.g6-sl{margin-top:10px;border-radius:12px;background:var(--panel);padding:8px}
+.g6-sl .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--t0)}
+.g6-track{position:relative;height:28px;margin-top:6px}
+.g6-track i{position:absolute;left:0;right:0;top:12px;height:4px;border-radius:2px;background:repeating-linear-gradient(90deg,#BFBFBF 0 6px,transparent 6px 10px)}
+.g6-track b{position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px dashed var(--att)}
+.g6-sl .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+/* 7 vérifications */
+.g6-vh{display:flex;align-items:center;gap:12px;margin-top:10px}
+.g6-vh .g6-t{font-size:13px;color:var(--t2)}
+.g6-vg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.g6-v{text-decoration:none;border-radius:12px;border:1px solid var(--bord);padding:8px;display:flex;flex-direction:column;gap:4px;min-height:76px}
+.g6-v b{font-size:13px;color:var(--t0);line-height:1.2}
+.g6-v small{font-size:12px;color:var(--t2)}
+.g6-v .st{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.g6-v .st i{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;display:inline-block}
+.g6-v.a{border-color:#EED29B;background:#FFFBF2}.g6-v.a .st{color:var(--attT)}
+.g6-v.h .st{color:var(--attT)}.g6-v.h .st i{background:linear-gradient(90deg,var(--gain) 50%,transparent 50%);border-color:var(--gain)}
+.g6-v.g .st{color:#555}
+.g6-act{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;border-radius:12px;background:var(--panel);padding:8px;font-size:13px;color:var(--t0)}
+/* 8 reporter */
+.g6-cp{border-radius:14px;border:1.5px solid #111;padding:10px;margin-top:10px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+.g6-cp h4{font-size:13px;color:var(--t1)}
+.g6-cp .g6-m.big{font-size:28px;font-weight:600}
+.g6-cp small{font-size:12px;color:var(--t2)}
+.g6-cp .cpy{position:absolute;right:10px;top:10px;height:32px;padding:0 10px;border-radius:10px;background:var(--panel);border:1px solid var(--bordm);font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px}
+.g6-cp .cod{display:flex;gap:6px;flex-wrap:wrap}
+/* 9 dossier */
+.g6-dos{margin-top:10px;border-radius:16px;background:#EAF3FC;padding:28px 10px 10px;position:relative}
+.g6-dos::before{content:"";position:absolute;left:0;top:0;width:120px;height:22px;background:#CFE2F5;border-radius:16px 12px 0 0}
+.g6-dos .tt{position:absolute;left:12px;top:3px;font-size:12px;font-weight:600;color:var(--fin)}
+.g6-docs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.g6-doc{border-radius:10px;background:#fff;border:1px solid var(--bord);padding:8px 4px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center}
+.g6-doc b{font-size:12px;color:var(--t0);line-height:1.15}
+.g6-doc.miss{border:1.5px dashed var(--att);background:repeating-linear-gradient(135deg,#FCEBC5 0 4px,#fff 4px 8px)}
+.g6-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--panel);border-top:1px solid var(--bord);display:flex;padding-right:84px;z-index:6}
+.g6-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t2)}
+.g6-nav button.on{color:var(--t0);font-weight:600;background:#E3EAF2;box-shadow:inset 0 2px 0 var(--fin)}
+.g6-fab{position:fixed;right:10px;bottom:6px;width:64px;height:44px;border-radius:22px;background:#111;color:#fff;display:grid;place-items:center;z-index:7}
+.g6-sp::before{content:"\2726";margin-right:2px}.g6-cv::before{content:"\203A"}.g6-dt::before{content:"\00B7";margin:0 4px}
+@media (min-width:900px){.g6-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:0 40px;align-items:start}.g6-cl{margin-top:0}.g6-nav{padding-right:calc(50% - 300px);padding-left:calc(50% - 380px)}.g6-ecran:not(#annuel){max-width:560px;margin:0 auto}}
+</style></head><body>
+<header class="g6-hd">
+ <div class="g6-tb">
+  <span class="g6-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0A02E" stroke-width="2"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/><path d="M6 7c0-2 2-3 5-3s5 1 5 3"/></svg></span>
+  <span class="g6-nom">L'Affinée</span>
+  <button class="g6-ic" aria-label="Thème"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a7 7 0 0 0 10 10z"/></svg></button>
+  <button class="g6-ic b" aria-label="Rechercher"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+  <button class="g6-ic b" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+ </div>
+ <nav class="g6-rail" role="tablist"><button role="tab">Synthèse</button><button role="tab">Opérations</button><button role="tab">Prévisions</button><button role="tab" aria-selected="true">Annuel</button></nav>
+</header>
+
+<main class="g6-main">
+
+<!-- ========== Annuel : g4a en tête ========== -->
+<div class="g6-ecran" id="annuel">
+<div class="g6-wrap">
+ <section>
+  <div class="g6-top">
+   <button class="g6-an" data-booster="annee">2026 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+   <span class="g6-prov">provisoire</span>
+   <a class="g6-tool" href="#annuel" data-booster="outil-mois"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Mois par mois</a>
+  </div>
+  <div class="g6-scene" data-booster="balance-annee">
+   <div class="g6-col">
+    <div class="g6-trou" style="height:114px"><b>−477,80</b><span>CHF perdus</span></div>
+    <div class="g6-pile" style="height:172px;background:var(--vert);border-radius:0 0 10px 10px">
+     <div class="g6-s" style="flex:1;flex-direction:column;justify-content:space-between;color:#123d1f;padding:30px 8px 6px;border:0"><span style="font-size:14px">Entré <span class="g6-m" style="font-weight:600">720,00</span></span><span>Vente au marché</span></div>
+    </div>
+   </div>
+   <div class="g6-col">
+    <div class="g6-hc">Dépensé + usure <span class="g6-m">1 197,80</span></div>
+    <div class="g6-pile" style="height:286px">
+     <div class="g6-s" style="flex:288;background:repeating-linear-gradient(135deg,#567BD2 0 4px,#DCE6FA 4px 9px);color:#0E2A5E;flex-direction:column;gap:2px"><span style="background:#fff;border-radius:10px;padding:0 6px;font-weight:600;color:#0E2A5E">Usure du matériel <span class="g6-m">288,00</span></span><span style="background:#fff;border-radius:10px;padding:0 6px">cuve<i class="g6-dt" aria-hidden="true" style="font-style:normal"></i>estimé</span></div>
+     <div class="g6-s" style="flex:213;background:#A7A7A7;color:#1b1b1b">Petits achats <span class="g6-m">213,00</span></div>
+     <div class="g6-s" style="flex:42;background:#56C1D2;color:#0f3a40">Nettoyage <span class="g6-m">42,00</span></div>
+     <div class="g6-s" style="flex:186.8;background:#D2B356;color:#3a2f10">Brassage <span class="g6-m">186,80</span></div>
+     <div class="g6-s" style="flex:468;background:#9856D2;color:#fff">Charges fixes <span class="g6-m">468,00</span></div>
+    </div>
+   </div>
+   <div class="g6-stock" data-booster="stock-inconnu">Stock au 31 déc. <span class="g6-m">?</span></div>
+  </div>
+ </section>
+ <section>
+  <div class="g6-cl" data-booster="piste-cloture">
+   <div class="g6-clh">Clôture 2026 <small><span class="g6-m">2 / 9</span> prêtes</small></div>
+   <div class="g6-pi" aria-label="Clôture : 2 étapes sur 9 prêtes">
+    <a class="now" href="#operations" aria-label="Opérations"></a><a class="ok" href="#ouverture" aria-label="Solde d'ouverture"></a><a href="#inventaires" aria-label="Inventaires"></a><a class="ok" href="#materiel" aria-label="Matériel et usure"></a><a href="#dettes" aria-label="Dettes et créances"></a><a href="#prive" aria-label="Parts privées"></a><a href="#verifications" aria-label="Vérifications"></a><a href="#reporter" aria-label="Montants à reporter"></a><a href="#dossier" aria-label="Dossier"></a>
+   </div>
+   <div class="g6-next"><span>Ensuite<b>Vérifier les opérations</b></span><a class="g6-go" href="#operations">Continuer</a></div>
+  </div>
+  <a class="g6-row" href="#reporter"><span class="g6-t">Impôts Fribourg<small>après le 31 déc.</small></span><i class="g6-cv" aria-hidden="true" style="font-style:normal"></i></a>
+  <a class="g6-row" href="#annuel"><span class="g6-t">TVA<small>non assujetti</small></span><span class="g6-m" style="font-size:12px;color:var(--t2)">0,7 %</span><i class="g6-cv" aria-hidden="true" style="font-style:normal"></i></a>
+  <a class="g6-row" href="#dossier"><span class="g6-t">Dossier et archives</span><i class="g6-cv" aria-hidden="true" style="font-style:normal"></i></a>
+ </section>
+</div>
+</div>
+
+<!-- ========== 1 · Opérations à vérifier ========== -->
+<section class="g6-ecran" id="operations">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">1 / 9</span></div>
+ <div class="g6-pi"><a class="now ici" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Tout est noté ?</h2>
+ <p class="g6-terme">terme : opérations et justificatifs</p>
+ <div class="g6-mois" data-booster="mois-notes">
+  <div class="g6-mo q g6-hachA"><small>janv.</small><span class="g6-m">?</span></div>
+  <div class="g6-mo q g6-hachA"><small>févr.</small><span class="g6-m">?</span></div>
+  <div class="g6-mo q g6-hachA"><small>mars</small><span class="g6-m">?</span></div>
+  <div class="g6-mo q g6-hachA"><small>avr.</small><span class="g6-m">?</span></div>
+  <div class="g6-mo"><small>mai</small><span class="g6-m">1</span></div>
+  <div class="g6-mo"><small>juin</small><span class="g6-m">1</span></div>
+  <div class="g6-mo"><small>juil.</small><span class="g6-m">1</span></div>
+  <div class="g6-mo"><small>août</small><span class="g6-m">1</span></div>
+  <div class="g6-mo"><small>sept.</small><span class="g6-m">1</span></div>
+  <div class="g6-mo"><small>oct.</small><span class="g6-m">1</span></div>
+  <div class="g6-mo n"><small>nov.</small><span class="g6-m">6</span></div>
+  <div class="g6-mo av"><small>déc.</small><span style="font-size:12px;color:var(--t2)">à venir</span></div>
+ </div>
+ <p class="g6-terme" style="margin-top:4px">opérations notées par mois</p>
+ <div class="g6-lst">
+  <div class="g6-it"><span class="g6-dot" style="background:var(--att)"></span><span class="g6-t">Janv. à avr. : rien noté<small>vraiment rien acheté ni vendu ?</small></span><button>Rien</button></div>
+  <div class="g6-it"><span class="g6-dot" style="background:var(--att)"></span><span class="g6-t">Loyer : noté en nov. seulement<small>400,00 chaque mois, prévu</small></span><button>Ajouter</button></div>
+  <div class="g6-it"><span class="g6-dot" style="background:#BFBFBF"></span><span class="g6-t">Justificatifs<small><span class="g6-m">0 / 12</span> joints</small></span><button>Joindre</button></div>
+ </div>
+ <div class="g6-fin"><button class="g6-ia" data-booster="ia-oublis"><i class="g6-sp" aria-hidden="true" style="font-style:normal"></i>Chercher les oublis</button><a class="g6-pri" href="#ouverture">Tout est noté</a></div>
+</section>
+
+<!-- ========== 2 · Solde d'ouverture ========== -->
+<section class="g6-ecran" id="ouverture">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">2 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok ici" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Avec combien as-tu commencé l'année ?</h2>
+ <p class="g6-terme">terme : solde d'ouverture</p>
+ <div class="g6-ok"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2F6B22" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span class="g6-t">En caisse au 1er janv. 2026<span class="g6-m">4 000,00 CHF</span></span><span class="g6-pa ok">confirmé</span></div>
+ <svg class="g6-svg" viewBox="0 0 370 250" data-booster="pont-caisse" aria-label="4 000,00 au 1er janvier, plus 720,00 entrés, moins 538,40 payés, égale 4 181,60 aujourd'hui">
+  <!-- axe coupé à 3 400 CHF ; 1 400 CHF = 200 px -->
+  <line x1="0" y1="226" x2="370" y2="226" stroke="#333"/>
+  <path d="M0,232 l6,-6 l6,6 l6,-6" stroke="#999" fill="none"/>
+  <text x="24" y="242" font-family="Source Sans 3" font-size="12" fill="#666">axe coupé à 3 400</text>
+  <rect x="8" y="140.3" width="72" height="85.7" rx="6" fill="#86B9E6"/>
+  <text x="44" y="132" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#111">4 000,00</text>
+  <text x="44" y="216" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#0E2A5E">1er janv.</text>
+  <rect x="100" y="37.4" width="72" height="102.9" rx="6" fill="#56D27B"/>
+  <text x="136" y="29" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#2F6B22">+720,00</text>
+  <text x="136" y="94" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#123d1f">entré</text>
+  <line x1="80" y1="140.3" x2="100" y2="140.3" stroke="#999" stroke-dasharray="3 2"/>
+  <rect x="192" y="37.4" width="72" height="76.9" rx="6" fill="#A7A7A7"/>
+  <text x="228" y="132" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#333">−538,40</text>
+  <text x="228" y="80" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#1b1b1b">payé</text>
+  <line x1="172" y1="37.4" x2="192" y2="37.4" stroke="#999" stroke-dasharray="3 2"/>
+  <line x1="264" y1="114.3" x2="284" y2="114.3" stroke="#999" stroke-dasharray="3 2"/>
+  <rect x="284" y="114.3" width="80" height="111.7" rx="6" fill="#1F64A3"/>
+  <text x="324" y="106" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#111">4 181,60</text>
+  <text x="324" y="216" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#fff">aujourd'hui</text>
+ </svg>
+ <p style="font-size:14px;color:var(--t0);font-weight:600;margin-top:6px">Ta banque dit la même chose ?</p>
+ <div class="g6-choix"><div class="g6-ch on"><b>Oui</b><span class="g6-m">4 181,60</span></div><div class="g6-ch"><b>Non, corriger</b><span>relevé du jour</span></div></div>
+ <div class="g6-fin"><a class="g6-pri" href="#inventaires">C'est juste</a></div>
+</section>
+
+<!-- ========== 3 · Inventaires ========== -->
+<section class="g6-ecran" id="inventaires">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">3 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a class="ici" href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Qu'avais-tu en stock, au début et à la fin ?</h2>
+ <p class="g6-terme">terme : inventaires d'ouverture et de clôture</p>
+ <div class="g6-inv" data-booster="etageres">
+  <span class="h">CHF</span><span class="h">1er janv.</span><span class="h">31 déc.</span>
+  <span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B08A2E" stroke-width="1.8"><path d="M12 3v18M12 7c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4zm0 5c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4zm0 5c-3 0-4-2-4-4 3 0 4 2 4 4zm0 0c3 0 4-2 4-4-3 0-4 2-4 4z"/></svg><span>Malt<small>Pilsner 3 kg aujourd'hui</small></span></span><span class="c g6-hachA">?</span><span class="c p">≈ 22,42</span>
+  <span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="1.8"><path d="M12 3c4 3 5 7 3 11-1 2-2 3-3 3s-2-1-3-3c-2-4-1-8 3-11z"/><path d="M12 7v10"/></svg><span>Houblons</span></span><span class="c g6-hachA">?</span><span class="c g6-hachA">?</span>
+  <span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="1.8"><path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3z"/></svg><span>Emballages<small>bouteilles, capsules</small></span></span><span class="c g6-hachA">?</span><span class="c g6-hachA">?</span>
+  <span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9A4F1E" stroke-width="1.8"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></svg><span>Bière en cave<small>Pale Ale, 27 L nets</small></span></span><span class="c g6-hachA">?</span><span class="c g6-hachA">?</span>
+ </div>
+ <div class="g6-var"><span class="g6-t">Ce qui a changé dans le stock corrige la perte de <span class="g6-m">−477,80</span></span><span class="g6-pa at">à compter</span></div>
+ <p class="g6-terme" style="margin-top:4px">≈ 22,42 : 3 kg au prix de la dernière facture, estimé</p>
+ <div class="g6-fin"><button class="g6-ia" data-booster="ia-stock"><i class="g6-sp" aria-hidden="true" style="font-style:normal"></i>Proposer depuis le stock</button><a class="g6-pri" href="#materiel">Noter l'inventaire</a></div>
+</section>
+
+<!-- ========== 4 · Matériel et usure ========== -->
+<section class="g6-ecran" id="materiel">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">4 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok ici" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Ce que ta cuve a perdu en 2026</h2>
+ <p class="g6-terme">terme : amortissement · 20 % par an, dégressif</p>
+ <svg class="g6-svg" viewBox="0 0 370 236" data-booster="usure-escalier" aria-label="Cuve : 1 800,00 à l'achat, 1 440,00 au 1er janvier 2026, 1 152,00 au 31 décembre, usure 288,00">
+  <defs><pattern id="g6-hb" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)"><rect width="8" height="8" fill="#DCE6FA"/><rect width="3.5" height="8" fill="#567BD2"/></pattern></defs>
+  <!-- 1 800 CHF = 170 px ; base y = 200 -->
+  <line x1="0" y1="200" x2="370" y2="200" stroke="#333"/>
+  <rect x="6" y="30" width="78" height="170" rx="6" fill="#C9D7F4"/>
+  <text x="45" y="22" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#333">1 800,00</text>
+  <text x="45" y="218" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#666">achat, févr. 2025</text>
+  <rect x="100" y="64" width="78" height="136" rx="6" fill="#567BD2"/>
+  <text x="139" y="56" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#111">1 440,00</text>
+  <text x="139" y="218" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#666">1er janv. 2026</text>
+  <rect x="194" y="64" width="86" height="27.2" fill="url(#g6-hb)" stroke="#567BD2"/>
+  <rect x="194" y="91.2" width="86" height="108.8" rx="6" fill="#1F64A3"/>
+  <rect x="200" y="68" width="74" height="19" rx="9" fill="#fff"/>
+  <text x="237" y="82" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#0E2A5E">−288,00</text>
+  <text x="237" y="115" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="#fff">1 152,00</text>
+  <text x="237" y="218" text-anchor="middle" font-family="Source Sans 3" font-size="12" font-weight="600" fill="#111">31 déc. 2026</text>
+  <rect x="296" y="113" width="68" height="87" rx="6" fill="none" stroke="#567BD2" stroke-dasharray="4 3"/>
+  <text x="330" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#666">921,60</text>
+  <text x="330" y="218" text-anchor="middle" font-family="Source Sans 3" font-size="12" fill="#666">2027, prévu</text>
+  <line x1="84" y1="64" x2="100" y2="64" stroke="#999" stroke-dasharray="3 2"/>
+  <line x1="178" y1="64" x2="194" y2="64" stroke="#999" stroke-dasharray="3 2"/>
+ </svg>
+ <div class="g6-lst">
+  <div class="g6-it"><span class="g6-dot" style="background:var(--att)"></span><span class="g6-t">Joints de la cuve <span class="g6-m">28,60</span><small>novembre</small></span><span class="g6-seg"><span>Matériel</span><span>Petit achat</span></span></div>
+  <div class="g6-it" style="background:#fff;border:1px dashed var(--bordm)"><span class="g6-dot" style="background:#BFBFBF"></span><span class="g6-t" style="font-weight:400">Fermenteur <span class="g6-m">750,00</span><small>prévu janv. 2027 : pas cette année</small></span></div>
+ </div>
+ <div class="g6-fin"><a class="g6-pri" href="#dettes">Garder l'usure <span class="g6-m">288,00</span></a></div>
+</section>
+
+<!-- ========== 5 · Dettes et créances ========== -->
+<section class="g6-ecran" id="dettes">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">5 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a class="ici" href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Au 31 déc., qui doit quoi ?</h2>
+ <p class="g6-terme">terme : dettes et créances</p>
+ <div class="g6-bal" data-booster="deux-plateaux">
+  <div class="g6-pan d"><h4>Tu dois</h4><span class="tot">460,00</span>
+   <div class="g6-li"><span>Solde atelier<small>depuis 20 déc. 2025</small></span><span class="g6-m">60,00</span></div>
+   <div class="g6-li"><span>Loyer nov.<small>25 nov.</small></span><span class="g6-m">400,00</span></div>
+   <div class="g6-li f"><span>Loyer déc.<small>prévu 25 déc.</small></span><span class="g6-m">400,00 ?</span></div>
+  </div>
+  <div class="g6-pan c"><h4>On te doit</h4><span class="tot">0,00</span>
+   <div class="g6-li"><span>Ventes 2026<small>toutes payées</small></span><span class="g6-pa ok">payé</span></div>
+  </div>
+ </div>
+ <div class="g6-lst">
+  <div class="g6-it"><span class="g6-dot" style="background:var(--att)"></span><span class="g6-t">Un prêt, une avance ?<small>avec le nom de la personne</small></span><button>Ajouter</button></div>
+ </div>
+ <p class="g6-terme" style="margin-top:6px">aujourd'hui ; « ? » : payé ou non le 31 déc.</p>
+ <div class="g6-fin"><a class="g6-pri" href="#prive">C'est complet</a></div>
+</section>
+
+<!-- ========== 6 · Parts privées ========== -->
+<section class="g6-ecran" id="prive">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">6 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a class="ici" href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Qu'as-tu pris pour toi ?</h2>
+ <p class="g6-terme">terme : parts privées</p>
+ <div class="g6-tiles" data-booster="tuiles-prive">
+  <div class="g6-ti g6-hach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9A4F1E" stroke-width="1.8"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></svg><b>Bière bue, offerte</b><span class="g6-m">? L</span></div>
+  <div class="g6-ti g6-hach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9856D2" stroke-width="1.8"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><b>Électricité</b><span class="g6-m">? %</span></div>
+  <div class="g6-ti g6-hach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8"><path d="M3 11 12 4l9 7v9H3z"/></svg><b>Local</b><span class="g6-m">? %</span></div>
+  <div class="g6-ti g6-hach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><b>Téléphone</b><span class="g6-m">? %</span></div>
+  <div class="g6-ti g6-hach"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8"><path d="M3 14l2-6h14l2 6v4H3z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><b>Véhicule</b><span class="g6-m">? %</span></div>
+  <div class="g6-ti" style="border-style:dashed"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><b>Autre</b><small>ajouter</small></div>
+ </div>
+ <div class="g6-sl" data-booster="curseur-part">
+  <div class="lab"><span>Électricité <span class="g6-m">68,00</span> : part pour toi</span><span class="g6-pa at">à confirmer</span></div>
+  <div class="g6-track"><i></i><b></b></div>
+  <div class="ends"><span class="g6-m">0 %</span><span class="g6-m">100 %</span></div>
+ </div>
+ <div class="g6-choix"><div class="g6-ch"><b>Rien pris pour moi</b><span>tout reste pro</span></div><div class="g6-ch"><b>J'ai pris quelque chose</b><span>toucher une tuile</span></div></div>
+ <div class="g6-fin"><a class="g6-pri" href="#verifications">Valider</a></div>
+</section>
+
+<!-- ========== 7 · Vérifications ========== -->
+<section class="g6-ecran" id="verifications">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">7 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a class="ici" href="#verifications"></a><a href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Six questions avant d'envoyer</h2>
+ <p class="g6-terme">terme : vérifications de l'année</p>
+ <div class="g6-vh" data-booster="anneau-verifs">
+  <svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#E5E5E5" stroke-width="8"/><circle cx="32" cy="32" r="26" fill="none" stroke="#2F6B22" stroke-width="8" stroke-dasharray="13.6 150" transform="rotate(-90 32 32)"/><text x="32" y="37" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="600" fill="#111">0/6</text></svg>
+  <span class="g6-t">la moitié d'une est déjà vue : le matériel (étape 4)</span>
+ </div>
+ <div class="g6-vg">
+  <a class="g6-v a" href="#operations"><b>Ventes et dépenses complètes</b><span class="st"><i></i>étape 1 à faire</span></a>
+  <a class="g6-v a" href="#prive"><b>Usage privé</b><span class="st"><i></i>étape 6 à faire</span></a>
+  <div class="g6-v g"><b>Cotisations AVS</b><span class="st"><i></i>à comparer au décompte</span></div>
+  <a class="g6-v h" href="#inventaires"><b>Stock et matériel</b><span class="st"><i></i>matériel vu, stock ?</span></a>
+  <a class="g6-v a" href="#dettes"><b>Comptes, dettes, créances</b><span class="st"><i></i>étape 5 à faire</span></a>
+  <div class="g6-v g"><b>Cas particuliers</b><span class="st"><i></i>pertes passées, personnel…</span></div>
+ </div>
+ <div class="g6-act"><span>Ta brasserie, c'est ton activité</span><span class="g6-seg"><span>principale</span><span>accessoire</span></span></div>
+ <div class="g6-fin"><a class="g6-pri" href="#reporter">Cocher ce que j'ai vu</a></div>
+</section>
+
+<!-- ========== 8 · Montants à reporter ========== -->
+<section class="g6-ecran" id="reporter">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">8 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a class="ici" href="#reporter"></a><a href="#dossier"></a></div>
+ <h2 class="g6-q">Ce que tu recopies dans ta déclaration</h2>
+ <p class="g6-terme">terme : montants à reporter · Fribourg</p>
+ <div class="g6-cp" data-booster="ticket-report">
+  <h4>Revenu de la brasserie</h4>
+  <span class="g6-m big" style="color:var(--perte)">−477,80</span>
+  <small>ventes <span class="g6-m">720,00</span> − dépensé <span class="g6-m">909,80</span> − usure <span class="g6-m">288,00</span> ± stock <span class="g6-m">?</span></small>
+  <span class="cod"><span class="g6-pa at">provisoire : stock ?</span><span class="g6-pa no">code 2025 : 1.210 ou 1.220</span></span>
+  <button class="cpy"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></svg>Copier</button>
+ </div>
+ <div class="g6-cp">
+  <h4>Fortune de la brasserie</h4>
+  <span class="g6-m big">4 873,60 <span style="font-size:16px;color:var(--attT)">+ stock ?</span></span>
+  <small>caisse <span class="g6-m">4 181,60</span> + cuve <span class="g6-m">1 152,00</span> − dettes <span class="g6-m">460,00</span></small>
+  <span class="cod"><span class="g6-pa at">provisoire</span><span class="g6-pa no">code 2025 : 3.570</span></span>
+  <button class="cpy"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></svg>Copier</button>
+ </div>
+ <p class="g6-terme" style="margin-top:6px">codes 2026 à confirmer quand Fribourg publie le guide</p>
+ <div class="g6-fin"><button class="g6-ia" data-booster="ia-expliquer"><i class="g6-sp" aria-hidden="true" style="font-style:normal"></i>Expliquer</button><a class="g6-pri" href="#dossier">Ouvrir la déclaration</a></div>
+</section>
+
+<!-- ========== 9 · Dossier ========== -->
+<section class="g6-ecran" id="dossier">
+ <div class="g6-sh"><a class="g6-back" href="#annuel">Annuel</a><b>Clôture 2026</b><span class="g6-m">9 / 9</span></div>
+ <div class="g6-pi"><a class="now" href="#operations"></a><a class="ok" href="#ouverture"></a><a href="#inventaires"></a><a class="ok" href="#materiel"></a><a href="#dettes"></a><a href="#prive"></a><a href="#verifications"></a><a href="#reporter"></a><a class="ici" href="#dossier"></a></div>
+ <h2 class="g6-q">Ton dossier 2026</h2>
+ <p class="g6-terme">pour l'impôt, la fiduciaire ou tes archives</p>
+ <div class="g6-dos" data-booster="classeur"><span class="tt">2026, provisoire</span>
+  <div class="g6-docs">
+   <div class="g6-doc"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#C8382F" stroke-width="1.8"><path d="M4 2h11l5 5v19H4z"/><path d="M15 2v5h5"/></svg><b>Comptes</b><span class="g6-pa no">PDF</span></div>
+   <div class="g6-doc"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#2F6B22" stroke-width="1.8"><path d="M4 2h11l5 5v19H4z"/><path d="M8 13h8M8 17h8M8 21h8"/></svg><b>Opérations</b><span class="g6-pa no">Excel</span></div>
+   <div class="g6-doc miss g6-hachA"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#7A5300" stroke-width="1.8"><path d="M4 2h11l5 5v19H4z"/><path d="M9 15l6 0M12 12v6"/></svg><b>Justificatifs</b><span class="g6-m" style="font-size:13px;color:var(--attT)">0 / 12</span></div>
+   <div class="g6-doc miss g6-hachA"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#7A5300" stroke-width="1.8"><rect x="3" y="4" width="18" height="20" rx="2"/><path d="M3 11h18M3 18h18"/></svg><b>Inventaires</b><span class="g6-m" style="font-size:13px;color:var(--attT)">?</span></div>
+   <div class="g6-doc"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#1F64A3" stroke-width="1.8"><rect x="5" y="6" width="14" height="18" rx="3"/><path d="M5 12h14"/></svg><b>Matériel</b><span class="g6-pa ok">prêt</span></div>
+   <div class="g6-doc"><svg width="24" height="28" viewBox="0 0 24 28" fill="none" stroke="#333" stroke-width="1.8"><path d="M4 2h11l5 5v19H4z"/><path d="M8 14h8M8 18h5"/></svg><b>Montants à reporter</b><span class="g6-pa at">provisoire</span></div>
+  </div>
+ </div>
+ <a class="g6-row" href="#dossier" style="margin-top:6px"><span class="g6-t">Figer la version 2026<small>une copie de référence, intouchable</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></a>
+ <a class="g6-row" href="#dossier"><span class="g6-t">Archives<small>années passées</small></span><i class="g6-cv" aria-hidden="true" style="font-style:normal"></i></a>
+ <div class="g6-fin"><a class="g6-pri" href="#dossier"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>Télécharger le dossier</a></div>
+</section>
+
+</main>
+
+<nav class="g6-nav">
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</button>
+ <button class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A4F1E" stroke-width="1.8"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></svg>Brassins</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/></svg>Stocks</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/></svg>Clients</button>
+</nav>
+<button class="g6-fab" data-commun aria-label="Ajouter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+</body></html>

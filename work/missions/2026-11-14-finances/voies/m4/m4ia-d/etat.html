@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4ia-d · Le compagnon sur la ligne touchée (libre)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4ia-d-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4ia-d-scr{position:relative;height:844px;overflow:hidden}
+.m4ia-d-scr img{width:390px;display:block}
+.m4ia-d-dim{position:absolute;left:0;right:0;background:rgba(17,17,17,.30)}
+.m4ia-d-hl{position:absolute;left:4px;right:4px;top:328px;height:48px;border-radius:10px;box-shadow:0 0 0 2.5px #2F6EA8,0 0 0 6px rgba(47,110,168,.18)}
+.m4ia-d-pop{position:absolute;left:8px;right:8px;bottom:10px;background:#fff;border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.28);padding:8px 10px 10px}
+.m4ia-d-pop::before{content:"";position:absolute;top:-8px;left:60px;border:8px solid transparent;border-top:0;border-bottom-color:#fff}
+.m4ia-d-hd{display:flex;align-items:center;gap:6px;font-size:13px;color:#555}
+.m4ia-d-hd b{color:#2F6EA8;font-size:14px}
+.m4ia-d-hd button{margin-left:auto;width:44px;height:44px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:16px;color:#111}
+.m4ia-d-qs{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.m4ia-d-q{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border-radius:10px;background:#F5F5F5;text-align:left;font-size:14px}
+.m4ia-d-q.m4ia-d-on{background:#E6EFF8;color:#123F68;font-weight:600;box-shadow:inset 3px 0 0 #2F6EA8}
+.m4ia-d-q span{flex:1}
+.m4ia-d-q i{font-style:normal;color:#777}
+.m4ia-d-free{display:flex;align-items:center;gap:6px;margin-top:6px;min-height:44px;border-radius:10px;border:1px solid #CFCFCF;padding:0 4px 0 10px;color:#777;font-size:14px}
+.m4ia-d-free span{flex:1}.m4ia-d-mode{min-height:44px;padding:0 10px;border-radius:10px;border:1px solid #D9D9D9;font-size:13px;color:#111;flex:none}.m4ia-d-free .m4ia-d-send{min-height:44px}
+.m4ia-d-send{height:36px;padding:0 14px;border-radius:10px;background:#111;color:#fff;font-weight:600}
+.m4ia-d-cap{font-size:12px;color:#555;margin-top:6px}
+.m4ia-d-pop::before,.m4ia-d-pop::after{display:none}
+</style></head><body>
+<div class="m4ia-d-scr">
+ <img src="../../../ref/v6a/v6a-haut.png" alt="">
+ <div class="m4ia-d-dim" style="top:0;height:324px"></div>
+ <div class="m4ia-d-dim" style="top:380px;bottom:0"></div>
+ <div class="m4ia-d-hl" data-booster="ligne-visee"></div>
+ <section class="m4ia-d-pop" aria-label="Compagnon brasseur, sur cette ligne" data-booster="questions-de-la-ligne">
+  <div class="m4ia-d-hd"><b>✦ Sur cette ligne</b> · Loyer de l'atelier <span class="m4ia-d-m">400,00</span><button aria-label="Fermer">×</button></div>
+  <div class="m4ia-d-qs">
+   <button class="m4ia-d-q m4ia-d-on"><span>Pourquoi pèse-t-il 85 % des charges fixes ?</span><i>›</i></button>
+   <button class="m4ia-d-q"><span>Est-il bien compté dans mes prévisions ?</span><i>›</i></button>
+   <button class="m4ia-d-q"><span>Quelle pièce lui manque, et où la trouver ?</span><i>›</i></button>
+  </div>
+  <div class="m4ia-d-free"><span>Ta question sur ce loyer…</span><button class="m4ia-d-mode">Auto ⌄</button><button class="m4ia-d-send">Envoyer</button></div>
+ </section>
+</div>
+</body></html>

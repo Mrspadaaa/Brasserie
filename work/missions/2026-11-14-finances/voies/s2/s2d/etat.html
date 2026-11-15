@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s2d · Opérations v6a + plage du … au … (mini maquette statique)</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.s2d-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.s2d-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.s2d-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.s2d-hd b{font-size:18px;font-weight:600;flex:1}
+.s2d-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.s2d-bx{background:#F5F5F5;border:1px solid #DADADA}
+.s2d-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.s2d-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.s2d-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.s2d-tabs a.s2d-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.s2d-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.s2d-top{display:flex;align-items:center;gap:6px}
+.s2d-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.s2d-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.s2d-pill b{font-size:15px;padding:0 4px}
+.s2d-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.s2d-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.s2d-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.s2d-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.s2d-p b{font-size:12px;line-height:14px}
+.s2d-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.s2d-st i{display:block}
+.s2d-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.s2d-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.s2d-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.s2d-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.s2d-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.s2d-key span{display:flex;align-items:center;gap:4px}
+.s2d-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.s2d-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.s2d-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.s2d-g .s2d-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.s2d-g b{font-size:13px;letter-spacing:.02em}
+.s2d-g .s2d-sub{font-size:13px;color:#444}
+.s2d-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.s2d-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.s2d-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s2d-q small{font-weight:400;color:#555;font-size:13px}
+.s2d-a{font-size:14px;text-align:right}
+.s2d-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.s2d-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.s2d-ok{background:#E8F5EC;color:#22663A}
+.s2d-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.s2d-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.s2d-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.s2d-pc.s2d-no{color:#7A5500}
+.s2d-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.s2d-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.s2d-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.s2d-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.s2d-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.s2d-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.s2d-foot .s2d-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.s2d-ex{font-size:12px;color:#666;padding:0 10px}
+.s2d-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.s2d-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.s2d-nav a.s2d-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.s2d-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.s2d-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.s2d-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.s2d-flash{background:#F1FAF3}
+@media (min-width:900px){.s2d-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.s2d-full{grid-column:1/3}.s2d-left{position:sticky;top:0}.s2d-piles{height:200px}.s2d-nav{justify-content:center}}
+
+body{background:#ECECEC}
+.s2d-shot{margin:0 0 20px}
+.s2d-shot figcaption{font-size:14px;line-height:20px;padding:10px 10px 6px;color:#333;font-weight:600}
+.s2d-frame{position:relative;width:390px;height:844px;overflow:hidden;background:#fff;margin:0}
+.s2d-frame .s2d-nav,.s2d-frame .s2d-fab{position:absolute}
+.s2d-frame .s2d-app{padding-bottom:0}
+.s2d-frame .s2d-g{position:static}
+.s2d-ref img{display:block;width:390px;height:auto}
+.s2d-hors{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;min-height:26px;padding:2px 10px 2px 22px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#666}
+.s2d-hors b{font-size:13px;color:#8A8A8A;font-weight:500}
+.s2d-hp{border:1px dashed #BDBDBD;border-radius:999px;padding:0 6px;line-height:16px;color:#555}
+.s2d-days{position:relative;z-index:1;display:grid;grid-template-columns:repeat(30,1fr);align-items:end;height:36px}
+.s2d-d{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.s2d-bk{width:66%;min-width:4px;border-radius:3px 3px 1px 1px;overflow:hidden;display:flex;flex-direction:column}
+.s2d-bk i{display:block}
+.s2d-z{width:3px;height:3px;border-radius:50%;background:#BDB6A6;margin-bottom:1px}
+.s2d-v{width:6px;height:6px;border-radius:50%;background:#2FA855;margin-bottom:2px}
+.s2d-dim{opacity:.25}
+.s2d-ax{display:grid;grid-template-columns:repeat(30,1fr);height:16px;font-size:12px;line-height:16px;color:#555}
+.s2d-ax span{grid-row:1;justify-self:center;white-space:nowrap}
+.s2d-ax .s2d-auj{color:#2F6EA8;font-weight:700}
+.s2d-ax .s2d-sb{color:#111;font-weight:700}
+
+.s2d-hs{margin:4px 4px 2px}
+.s2d-lb{position:relative;height:30px;display:flex;align-items:center}
+.s2d-hint{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
+.s2d-tr{position:relative;height:42px;padding-top:4px;border-bottom:1.5px solid #111}
+.s2d-bg{position:absolute;top:0;bottom:0;background:#DCE8F5;border-radius:8px}
+.s2d-wk{position:absolute;top:4px;bottom:0;border-left:1px solid #E6E1D5}
+.s2d-win{position:absolute;top:-2px;bottom:-4px;border:2px solid #111;border-radius:8px;background:none;z-index:2}
+.s2d-e{position:absolute;top:50%;width:8px;height:22px;margin-top:-11px;border-radius:4px;background:#111}
+.s2d-tab{position:absolute;bottom:100%;left:50%;transform:translate(-50%,-4px);display:flex;align-items:center;gap:2px;min-height:26px;padding:0 0 0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;white-space:nowrap}
+.s2d-tab button{width:26px;height:26px;border-radius:50%;color:#fff;font-size:16px}
+.s2d-gh{display:flex;flex-direction:column;justify-content:flex-end;border:1.5px dashed #A79F8C;border-bottom:0;border-radius:10px 6px 0 0}
+.s2d-gh .s2d-st{border-radius:2px}</style>
+</head>
+<body>
+<figure class="s2d-shot" data-shot="repos"><figcaption>Repos : l’histogramme des jours au-dessus des piles</figcaption>
+<div class="s2d-frame">
+ <header class="s2d-hd">
+  <span class="s2d-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s2d-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s2d-ic s2d-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s2d-ic s2d-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+ <div class="s2d-app">
+  <nav class="s2d-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s2d-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <section class="s2d-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s2d-top"><span class="s2d-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span><button class="s2d-due" data-booster="pastille-retard"><i></i>en retard <b class="s2d-m">60,00</b></button></div>
+   <div class="s2d-hs" data-booster="brush-jours">
+    <div class="s2d-lb"><span class="s2d-hint"><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#555" stroke-width="1.6"><rect x="3" y="1" width="10" height="10" rx="2" stroke-dasharray="2 1.6"/><path d="M1 6h3M12 6h3"/></svg>glisser sur les jours</span></div>
+    <div class="s2d-tr">
+     
+     <i class="s2d-wk" style="left:3.333%"></i><i class="s2d-wk" style="left:26.667%"></i><i class="s2d-wk" style="left:50.000%"></i><i class="s2d-wk" style="left:73.333%"></i><i class="s2d-wk" style="left:96.667%"></i>
+     <div class="s2d-days"><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-v"></i><span class="s2d-bk" style="height:29px"><i style="flex:68;background:#9856D2"></i><i style="flex:186.8;background:#D2B356"></i><i style="flex:42;background:#56C1D2"></i><i style="flex:28.6;background:#567BD2"></i></span></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><span class="s2d-bk" style="height:36px"><i class="s2d-hat" style="flex:400"></i></span></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span></div>
+     
+    </div>
+    <div class="s2d-ax"><span style="grid-column:2">lun. 2</span><span style="grid-column:9" class="s2d-auj">auj. 9</span><span style="grid-column:16">16</span><span style="grid-column:23">23</span><span style="grid-column:30">30</span></div>
+   </div>
+   <div class="s2d-piles">
+    <div class="s2d-p"><b class="s2d-m" style="color:#2A7240">+720,00</b><span class="s2d-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s2d-sep"></span>
+    <div class="s2d-p"><b class="s2d-m">468,00</b><span class="s2d-st" style="height:57px"><i class="s2d-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s2d-p"><b class="s2d-m">186,80</b><span class="s2d-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s2d-p"><b class="s2d-m">42,00</b><span class="s2d-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s2d-sep"></span>
+    <div class="s2d-p"><b class="s2d-m">28,60</b><span class="s2d-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s2d-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   
+   <div class="s2d-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s2d-m">325,40</b></span><span><i class="s2d-hat"></i>à payer <b class="s2d-m">400,00</b></span><span>dépensé <b class="s2d-m">696,80</b></span></div>
+  </section>
+  <div data-mots="lignes" data-booster="lignes-entieres"><!-- Charges fixes -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s2d-sub s2d-m">468,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar s2d-hat"></span>
+   <span class="s2d-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s2d-a s2d-m">400,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-pay">à payer · 25 nov. · dans 16 j</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-btn s2d-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#9856D2"></span>
+   <span class="s2d-q">Électricité <small>· Énergie</small></span><span class="s2d-a s2d-m">68,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov. · banque</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s2d-sub s2d-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#56D27B"></span>
+   <span class="s2d-q">Vente au marché <small>· Marché du village</small></span><span class="s2d-a s2d-m" style="color:#2A7240">+720,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ encaissé 9 nov. · banque</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s2d-sub s2d-m">186,80</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#D2B356"></span>
+   <span class="s2d-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s2d-a s2d-m">186,80</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s2d-sub s2d-m">42,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#56C1D2"></span>
+   <span class="s2d-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s2d-a s2d-m">42,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s2d-part"></div>
+  <div class="s2d-g"><span class="s2d-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s2d-sub s2d-m">28,60</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#567BD2"></span>
+   <span class="s2d-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s2d-a s2d-m">28,60</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s2d-sub s2d-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#D6453D"></span>
+   <span class="s2d-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s2d-a s2d-m">60,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-late">à payer depuis le 20 déc. 2025</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">✓ Payé</button>
+  </div>
+  <p class="s2d-ex">Pièces jointes : exemple.</p>
+  <div class="s2d-foot"><button class="s2d-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  </div>
+ </div>
+ <nav class="s2d-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s2d-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s2d-fab" aria-label="Ajouter">+</button>
+ 
+</div>
+</figure>
+<figure class="s2d-shot" data-shot="apres"><figcaption>Après : la semaine du 9 au 15 glissée ; les piles suivent, le mois en pointillé</figcaption>
+<div class="s2d-frame">
+ <header class="s2d-hd">
+  <span class="s2d-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s2d-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s2d-ic s2d-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s2d-ic s2d-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+ <div class="s2d-app">
+  <nav class="s2d-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s2d-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <section class="s2d-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s2d-top"><span class="s2d-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span><button class="s2d-due" data-booster="pastille-retard"><i></i>en retard <b class="s2d-m">60,00</b></button></div>
+   <div class="s2d-hs" data-booster="brush-jours">
+    <div class="s2d-lb"></div>
+    <div class="s2d-tr">
+     <span class="s2d-bg" style="left:26.667%;width:23.333%"></span>
+     <i class="s2d-wk" style="left:3.333%"></i><i class="s2d-wk" style="left:26.667%"></i><i class="s2d-wk" style="left:50.000%"></i><i class="s2d-wk" style="left:73.333%"></i><i class="s2d-wk" style="left:96.667%"></i>
+     <div class="s2d-days"><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-v"></i><span class="s2d-bk" style="height:29px"><i style="flex:68;background:#9856D2"></i><i style="flex:186.8;background:#D2B356"></i><i style="flex:42;background:#56C1D2"></i><i style="flex:28.6;background:#567BD2"></i></span></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><span class="s2d-bk" style="height:36px"><i class="s2d-hat" style="flex:400"></i></span></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span><span class="s2d-d s2d-dim"><i class="s2d-z"></i></span></div>
+     <span class="s2d-win" style="left:26.667%;width:23.333%" role="slider" aria-label="Fenêtre de jours"><i class="s2d-e" style="left:-6px"></i><i class="s2d-e" style="right:-6px"></i><span class="s2d-tab"><b>lun. 9 → dim. 15 nov.</b><button aria-label="Revenir au mois">×</button></span></span>
+    </div>
+    <div class="s2d-ax"><span style="grid-column:2">lun. 2</span><span style="grid-column:9" class="s2d-auj">auj. 9</span><span style="grid-column:16">16</span><span style="grid-column:23">23</span><span style="grid-column:30">30</span></div>
+   </div>
+   <div class="s2d-piles">
+    <div class="s2d-p"><b class="s2d-m" style="color:#2A7240">+720,00</b><span class="s2d-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s2d-sep"></span>
+    <div class="s2d-p"><b class="s2d-m">68,00</b><span class="s2d-gh" style="height:57px"><span class="s2d-st" style="height:8px"><i style="flex:68;background:#9856D2"></i></span></span></div>
+    <div class="s2d-p"><b class="s2d-m">186,80</b><span class="s2d-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s2d-p"><b class="s2d-m">42,00</b><span class="s2d-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s2d-sep"></span>
+    <div class="s2d-p"><b class="s2d-m">28,60</b><span class="s2d-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s2d-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   
+   <div class="s2d-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s2d-m">325,40</b></span><span><i class="s2d-hat"></i>à payer <b class="s2d-m">0,00</b></span><span>dépensé <b class="s2d-m">296,80</b></span></div>
+  </section>
+  <div data-mots="lignes" data-booster="lignes-entieres"><!-- Charges fixes -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s2d-sub s2d-m">68,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#9856D2"></span>
+   <span class="s2d-q">Électricité <small>· Énergie</small></span><span class="s2d-a s2d-m">68,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov. · banque</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <div class="s2d-hors"><span class="s2d-hp">hors plage</span><span>Loyer de l'atelier · à payer 25 nov.</span><b class="s2d-m">400,00</b></div>
+  <!-- Ventes -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s2d-sub s2d-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#56D27B"></span>
+   <span class="s2d-q">Vente au marché <small>· Marché du village</small></span><span class="s2d-a s2d-m" style="color:#2A7240">+720,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ encaissé 9 nov. · banque</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s2d-sub s2d-m">186,80</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#D2B356"></span>
+   <span class="s2d-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s2d-a s2d-m">186,80</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s2d-sub s2d-m">42,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#56C1D2"></span>
+   <span class="s2d-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s2d-a s2d-m">42,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s2d-part"></div>
+  <div class="s2d-g"><span class="s2d-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s2d-sub s2d-m">28,60</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#567BD2"></span>
+   <span class="s2d-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s2d-a s2d-m">28,60</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-ok">✓ payé 9 nov.</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s2d-g"><span class="s2d-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s2d-sub s2d-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s2d-op">
+   <span class="s2d-bar" style="background:#D6453D"></span>
+   <span class="s2d-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s2d-a s2d-m">60,00</span>
+   <span class="s2d-meta"><span class="s2d-tg s2d-late">à payer depuis le 20 déc. 2025</span><span class="s2d-pc s2d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2d-mini s2d-act">✓ Payé</button>
+  </div>
+  <p class="s2d-ex">Pièces jointes : exemple.</p>
+  <div class="s2d-foot"><button class="s2d-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  </div>
+ </div>
+ <nav class="s2d-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s2d-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s2d-fab" aria-label="Ajouter">+</button>
+ 
+</div>
+</figure>
+<figure class="s2d-shot s2d-ref"><figcaption>Aujourd’hui en ligne : « … » ouvre des mois, pas des jours</figcaption><img src="../../../analyse/cap/ops-plage-390-clair.png" alt="Opérations en ligne, plage par mois"></figure>
+</body>
+</html>

@@ -109,6 +109,12 @@ async function semer(id, cents, paiements = [], extra = {}) {
 async function opsDeEtape(etape, id, originaux) {
   if (etape.type === 'contre') return opsPaiement({ ...contrePaiement(originaux.find(p => p.id === etape.paiementId), MAINTENANT), note: 'Contre-écriture : montant de la pièce corrigé' });
   if (etape.type === 'montant') return opsMontant(id, etape.cents);
+  // FN-10 (s4) : l'avoir à recevoir, écrit comme `avoirDeTropPaye` (un refund lié à la pièce, non encaissé), dans son propre lot, sans paiement.
+  if (etape.type === 'avoir') {
+    const avoirId = neuf('MOUV'), cents = etape.cents;
+    return [{ ref: doc(db, 'transactions', avoirId), data: { id: avoirId, date: '15.11.2026', description: 'ZZ TEST — trop payé', category: 'nettoyage', subcategory: 'Avoir', amountHT: cents / 100, amountTTC: cents / 100, tvaRate: 0, tvaAmount: 0,
+      finance: { version: 1, kind: 'refund', amountCents: cents, lines: [], refundOfId: id, refundDirection: etape.direction, refundApplication: 'cash', paymentStatus: 'unpaid', recordedAt: MAINTENANT } } }];
+  }
   return opsPaiement({ id: neuf('PAI'), transactionId: id, date: etape.date || AUJOURDHUI, amountCents: etape.cents, direction: etape.direction, method: etape.method, note: 'Paiement après correction du montant de la pièce', recordedAt: MAINTENANT });
 }
 /** `parLot` : un lot par étape (la correction de q5). `false` : toutes les étapes dans un seul lot (l'ancien regroupement, le témoin). */
@@ -156,6 +162,19 @@ try {
   await scenario('baisse sous le payé + le paiement suit', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'suit', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
   // q6, point 1 : sous le payé, « reste à payer » n'existe plus (le payé ne disparaît jamais) : le plan demandé en « reste » est celui du paiement qui suit.
   await scenario('baisse sous le payé, « reste à payer » demandé : le paiement suit quand même (q6)', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'reste', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
+  // FN-10 (s4) : « j'ai bien payé 42,00 : 2,00 trop payé » : contre-paiement, montant, paiement, puis l'avoir à recevoir (un lot chacun), contre les règles du dépôt.
+  {
+    const id = neuf('T');
+    try {
+      await semer(id, 4200, [[4200, '2026-11-09']]);
+      const plan = await planDe(id, 4000, 'avoir');
+      await jouer(id, plan, true);
+      const e = await etat(id);
+      const avoirs = (await getDocs(query(collection(db, 'transactions'), where('finance.refundOfId', '==', id)))).docs.map(d => d.data());
+      const bon = plan.at(-1)?.type === 'avoir' && e.montant === 4000 && e.solde === 4000 && avoirs.length === 1 && avoirs[0].finance.amountCents === 200 && avoirs[0].finance.refundDirection === 'in' && !avoirs[0].settlementBalanceCents;
+      verifier('baisse sous le payé + « j’ai bien payé » : l’avoir à recevoir de 2,00 est accepté', bon, `${plan.length} étapes : montant ${e.montant}, réglé ${e.solde}, ${avoirs.length} avoir(s) ${avoirs[0]?.finance.amountCents ?? '—'} à recevoir`);
+    } catch (e) { verifier('baisse sous le payé + « j’ai bien payé »', false, `refusé : ${refus(e)}`); }
+  }
   await scenario('baisse avec deux paiements inversés + le paiement suit', { cents: 4200, paiements: [[3000, '2026-11-05'], [1200, '2026-11-09']], nouveau: 2500, choix: 'suit', attendu: { montant: 2500, solde: 2500, dateRemplacement: '2026-11-09' } });
   await scenario('baisse avec un seul paiement inversé (le reste tient)', { cents: 4200, paiements: [[3000, '2026-11-05'], [1200, '2026-11-09']], nouveau: 4000, choix: 'suit', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
 

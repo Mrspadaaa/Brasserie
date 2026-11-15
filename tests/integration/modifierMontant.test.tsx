@@ -41,6 +41,9 @@ const taper = (valeur: string) => {
   fireEvent.blur(champ);
 };
 
+/** FN-10 : sous le payé, il faut dire ce qui s'est passé ; ici « Erreur de saisie : j'ai payé… » (le paiement suit). */
+const taperSous = (valeur: string) => { taper(valeur); fireEvent.click(screen.getByRole('radio', { name: /Erreur de saisie/ })); };
+
 beforeEach(async () => {
   const vrai = await vi.importActual<typeof import('../../src/domain/finance/correctionMontant')>('../../src/domain/finance/correctionMontant');
   vi.mocked(correction.planCorrection).mockImplementation(vrai.planCorrection);
@@ -100,8 +103,8 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
 
   it('baisse sous le payé : contre-paiement CONTRE-PAI-1, montant, puis paiement du nouveau montant, daté du paiement inversé (M2)', async () => {
     const { onSave } = ouvrir();
-    taper('40');
-    expect(screen.getByRole('radio', { name: /Le paiement suit/ })).toHaveAttribute('aria-checked', 'true');
+    taperSous('40');
+    expect(screen.getByRole('radio', { name: /Erreur de saisie/ })).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(onSave).toHaveBeenCalled());
     const paiements = FinanceService.getPayments();
@@ -115,19 +118,37 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
     expect(vivante().settlementBalanceCents).toBe(4000);
   });
 
-  it('q6 point 1 : sous le payé, seul « Le paiement suit » est proposé, avec « Trop payé 12,00 ? » vers l’avoir ; jamais de « Reste à payer »', () => {
-    ouvrir();
+  it('FN-10 : sous le payé, deux choix explicites (erreur de saisie / bien payé : trop payé), aucun d’office, jamais « Reste à payer »', async () => {
+    const { onSave } = ouvrir();
     taper('30');
     const groupe = screen.getByRole('radiogroup', { name: 'Le paiement déjà noté' });
-    expect(within(groupe).getAllByRole('radio')).toHaveLength(1);
-    expect(within(groupe).getByRole('radio', { name: /Le paiement suit/ })).toHaveAttribute('aria-checked', 'true');
-    expect(within(groupe).getByRole('radio')).toHaveTextContent('payé 30,00');
+    expect(within(groupe).getAllByRole('radio')).toHaveLength(2);
+    expect(within(groupe).getByRole('radio', { name: /Erreur de saisie : j’ai payé 30,00/ })).toHaveAttribute('aria-checked', 'false');
+    expect(within(groupe).getByRole('radio', { name: /J’ai bien payé 42,00 : 12,00 trop payé/ })).toHaveAttribute('aria-checked', 'false');
     expect(screen.queryByRole('radio', { name: /Reste à payer/ })).toBeNull();
-    expect(screen.getByText(/Trop payé/)).toHaveTextContent('Trop payé 12,00 ? Enregistre un avoir depuis la fiche');
+    // Sans choix, rien ne s'écrit.
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(screen.getAllByText(/Choisis/).length).toBeGreaterThan(0));
+    expect(onSave).not.toHaveBeenCalled();
+    expect(vivante().finance?.amountCents).toBe(4200);
     // L'aperçu « après » garde le payé : aucune échéance inventée, aucun « à payer ».
+    fireEvent.click(screen.getByRole('radio', { name: /Erreur de saisie/ }));
     const apercu = screen.getByText('Dans Opérations').parentElement!;
     expect(apercu).not.toHaveTextContent(/à payer/);
     expect(apercu).not.toHaveTextContent(/reste 30,00/);
+  });
+
+  it('FN-10 : « J’ai bien payé 42,00 » écrit le contre-paiement, le montant, le paiement au nouveau montant ET un avoir à recevoir de 12,00 lié à la pièce', async () => {
+    const { onSave } = ouvrir();
+    taper('30');
+    fireEvent.click(screen.getByRole('radio', { name: /J’ai bien payé 42,00/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(vivante().finance?.amountCents).toBe(3000);
+    expect(vivante().settlementBalanceCents).toBe(3000);
+    const avoir = StorageService.getTransactions().find(t => t.finance?.kind === 'refund' && t.finance.refundOfId === 'T-NET');
+    expect(avoir?.finance).toMatchObject({ amountCents: 1200, refundDirection: 'in', refundApplication: 'cash', paymentStatus: 'unpaid' });
+    expect(FinanceService.getPayments().filter(p => p.transactionId === avoir!.id)).toHaveLength(0); // à recevoir, pas encaissé
   });
   it('une baisse au-dessus du payé et une hausse gardent les deux choix', () => {
     ouvrir();
@@ -173,7 +194,7 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
   it('M3 : changer la date vers un exercice clos verrouille le montant, et l’enregistrement n’écrit aucun montant', async () => {
     FinanceService.saveClosing({ id: 'C-2025', year: 2025, createdAt: '2026-01-05T08:00:00.000Z', openingInventory: [], closingInventory: [], inventoriesConfirmed: true, adjustments: [], report: { generatedAt: '2026-01-05T08:00:00.000Z' } as never });
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     fireEvent.change(screen.getByPlaceholderText('JJ.MM.AAAA'), { target: { value: '03.04.2025' } });
     expect(screen.getByLabelText('Montant (CHF)')).toBeDisabled();
     expect(screen.getByText(/Exercice 2025 clôturé/)).toBeInTheDocument();
@@ -187,7 +208,7 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
   it('M1 : un plan impossible et un montant changé : l’erreur s’affiche et rien ne s’écrit', async () => {
     vi.mocked(correction.planCorrection).mockImplementation(() => { throw new Error('Aucun paiement à inverser pour descendre sous le montant déjà réglé.'); });
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     expect(screen.getByText(/Aucun paiement à inverser/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(screen.getAllByText(/Aucun paiement à inverser/).length).toBeGreaterThan(0));
@@ -229,7 +250,7 @@ describe('B1 : un lot Firestore par étape', () => {
   it('ne dit « mise à jour » qu’après la mise en file de toutes les étapes, et sans attendre le serveur', async () => {
     const attente = vi.spyOn(FirestoreRepo, 'waitForWrites');
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(onSave).not.toHaveBeenCalled(); // les étapes sont encore en train de partir, lot par lot
     await waitFor(() => expect(onSave).toHaveBeenCalled());

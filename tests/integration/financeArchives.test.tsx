@@ -44,13 +44,16 @@ describe('Archives accessibles et journal quotidien', () => {
     savePaid('ANCIEN'); const original = JSON.stringify(StorageService.getTransactions()); render(<Workspace/>);
     fireEvent.click(screen.getByRole('button', { name: /^Filtres/ })); // v6b : le panneau « Filtres » porte « Gérer les archives »
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: `Archiver ${previousYear}`, exact: true }));
+    // m1ar-c : la frise. Toucher l'année pose la poignée (aperçu, rien n'est écrit) ; « Ranger <année> » écrit, sans second bouton de confirmation.
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${previousYear} : 1 pièce, ranger jusqu’à fin ${previousYear}`) }));
     expect(FinancialArchiveService.getArchives()).toHaveLength(0);
-    fireEvent.click(screen.getByRole('button', { name: 'Confirmer l’archivage', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: `Ranger ${previousYear}`, exact: true }));
     await waitFor(() => expect(screen.getByText(`Année ${previousYear} archivée. Les factures ouvertes restent dans le suivi.`)).toBeInTheDocument());
     expect(JSON.stringify(StorageService.getTransactions())).toBe(original);
-    fireEvent.click(screen.getByRole('button', { name: `Réintégrer ${previousYear}`, exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: 'Réintégrer cette année', exact: true }));
+    // « Remettre » (poignée reculée : l'effet se lit), puis « Remettre <année> » écrit.
+    fireEvent.click(screen.getByRole('button', { name: 'Remettre', exact: true }));
+    expect(FinancialArchiveService.getArchives()[0].status).toBe('archived');
+    fireEvent.click(screen.getByRole('button', { name: `Remettre ${previousYear}`, exact: true }));
     await waitFor(() => expect(FinancialArchiveService.getArchives()[0].status).toBe('open'));
     expect(JSON.stringify(StorageService.getTransactions())).toBe(original);
   });

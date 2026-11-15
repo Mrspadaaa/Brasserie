@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4pf-a · Solde et paramètres, rangés en v6a (tiède)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-700.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4pf-a-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4pf-a-back{position:relative;height:150px;overflow:hidden}.m4pf-a-back img{width:390px;display:block}
+.m4pf-a-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4pf-a-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 0 14px;min-height:714px}
+.m4pf-a-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 4px}
+.m4pf-a-hd{display:flex;align-items:center;padding:0 10px 6px}.m4pf-a-hd h1{font-size:18px;line-height:22px;flex:1}
+.m4pf-a-x{width:32px;height:32px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:18px}
+.m4pf-a-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:8px 10px 4px}
+.m4pf-a-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m4pf-a-g b{font-size:13px;letter-spacing:.02em}.m4pf-a-g span:last-child{font-size:12px;color:#555}
+.m4pf-a-box{margin:0 10px;border-radius:16px;background:#FAF8F3;padding:8px}
+.m4pf-a-two{display:grid;grid-template-columns:1.2fr 1fr;gap:6px}
+.m4pf-a-f{display:flex;flex-direction:column;gap:2px;font-size:12px;color:#555}
+.m4pf-a-in{height:44px;border-radius:10px;border:1px solid #CFCFCF;background:#fff;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:16px;color:#111}
+.m4pf-a-in em{font-style:normal;font-size:13px;color:#777}
+.m4pf-a-tog{display:flex;align-items:center;gap:10px;margin-top:8px;min-height:44px;width:100%;text-align:left}
+.m4pf-a-sw{width:44px;height:26px;border-radius:13px;background:#2A7240;position:relative;flex:none}
+.m4pf-a-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+.m4pf-a-tog small{display:block;color:#555;font-size:12px}
+.m4pf-a-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:4px 10px 5px;border-bottom:1px solid #F0F0F0;align-items:center;width:100%;text-align:left;min-height:44px}
+.m4pf-a-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m4pf-a-q{font-size:14px;font-weight:600;line-height:16px}
+.m4pf-a-a{font-size:14px;text-align:right}
+.m4pf-a-meta{font-size:12px;color:#555;line-height:16px}
+.m4pf-a-tg{display:inline-flex;padding:0 6px;border-radius:999px;font-size:12px;line-height:16px}
+.m4pf-a-ok{background:#E8F5EC;color:#22663A}
+.m4pf-a-ro{background:#F2F2F2;color:#444}
+.m4pf-a-foot{display:flex;gap:6px;padding:14px 10px 0}
+.m4pf-a-foot button{height:44px;border-radius:10px;padding:0 14px;font-weight:600}
+.m4pf-a-sec{background:#F5F5F5}.m4pf-a-pri{flex:1;background:#111;color:#fff}
+</style></head><body>
+<div class="m4pf-a-back"><img src="../../../ref/g3a/g3a-haut.png" alt=""></div>
+<section class="m4pf-a-sheet" aria-label="Solde et paramètres">
+ <div class="m4pf-a-grip"></div>
+ <div class="m4pf-a-hd"><h1>Solde et paramètres</h1><button class="m4pf-a-x" aria-label="Fermer">×</button></div>
+
+ <div class="m4pf-a-g"><span class="m4pf-a-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.6"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M16 13h2"/></svg></span><b>Caisse au départ</b><span>sert à l'argent disponible</span></div>
+ <div class="m4pf-a-box" data-booster="solde-depart">
+  <div class="m4pf-a-two">
+   <label class="m4pf-a-f">Solde de départ<span class="m4pf-a-in" role="textbox" inputmode="decimal"><span class="m4pf-a-m">3 250,00</span><em>CHF</em></span></label>
+   <label class="m4pf-a-f">Date du solde<span class="m4pf-a-in"><span>1 janv. 2025</span><em>⌄</em></span></label>
+  </div>
+  <button class="m4pf-a-tog" role="switch" aria-checked="true" data-booster="bascule-verifie"><span class="m4pf-a-sw"></span><span><b>Vérifié</b>, avant les paiements de ce jour<small>Sans elle, ce solde n'entre ni en caisse ni en prévisions.</small></span></button>
+ </div>
+
+ <div class="m4pf-a-g"><span class="m4pf-a-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.6"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg></span><b>Prévisions et brassins</b><span>ouvert</span></div>
+ <button class="m4pf-a-op"><span class="m4pf-a-bar" style="background:#56C1D2"></span><span class="m4pf-a-q">Tout est noté depuis</span><span class="m4pf-a-a">janv. 2025 ⌄</span><span class="m4pf-a-meta"><span class="m4pf-a-tg m4pf-a-ok">✓ tendance calculée · 10 mois complets</span></span></button>
+ <button class="m4pf-a-op"><span class="m4pf-a-bar" style="background:#D2B356"></span><span class="m4pf-a-q">Production prévue</span><span class="m4pf-a-a"><span class="m4pf-a-m">1 800 L</span> / an</span><span class="m4pf-a-meta">répartit les charges fixes : <b class="m4pf-a-m">3,88</b> CHF/L · ton temps n'est pas compté</span></button>
+
+ <div class="m4pf-a-g"><span class="m4pf-a-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.6"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Ta brasserie</b><span>pour l'Annuel</span></div>
+ <div class="m4pf-a-op"><span class="m4pf-a-bar" style="background:#9856D2"></span><span class="m4pf-a-q">Indépendant · Fribourg</span><span class="m4pf-a-a"></span><span class="m4pf-a-meta"><span class="m4pf-a-tg m4pf-a-ro">comptabilité simple</span></span></div>
+ <div class="m4pf-a-op"><span class="m4pf-a-bar" style="background:#9856D2"></span><span class="m4pf-a-q">TVA</span><span class="m4pf-a-a">non assujetti</span><span class="m4pf-a-meta">ventes sur 12 mois <b class="m4pf-a-m">18 640</b> sur le seuil <b class="m4pf-a-m">100 000</b></span></div>
+
+ <div class="m4pf-a-foot"><button class="m4pf-a-sec">Annuler</button><button class="m4pf-a-pri">Enregistrer</button></div>
+</section></body></html>

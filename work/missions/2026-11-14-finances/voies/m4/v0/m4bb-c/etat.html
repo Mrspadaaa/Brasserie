@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4bb-c · La frise des paiements du brassin (chaude)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-700.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4bb-c-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4bb-c-back{position:relative;height:96px;overflow:hidden}
+.m4bb-c-back img{width:390px;display:block}
+.m4bb-c-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4bb-c-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 0 12px}
+.m4bb-c-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 4px}
+.m4bb-c-hd{display:flex;align-items:center;gap:8px;padding:0 10px}
+.m4bb-c-hd h1{font-size:18px;line-height:22px}
+.m4bb-c-sel{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 10px;border-radius:16px;border:1px solid #D9D9D9;background:#fff}
+.m4bb-c-x{margin-left:auto;width:32px;height:32px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:18px}
+.m4bb-c-lbl{font-size:12px;color:#555;padding:10px 10px 2px;display:flex;justify-content:space-between}
+/* la frise */
+.m4bb-c-frise{position:relative;margin:0 10px;height:238px;border-radius:16px;background:#FAF8F3}
+.m4bb-c-axe{position:absolute;left:10px;right:10px;top:126px;border-top:2px solid #111}
+.m4bb-c-mo{position:absolute;top:132px;font-size:12px;color:#555}
+.m4bb-c-tick{position:absolute;top:120px;width:1px;height:12px;background:#111}
+.m4bb-c-today{position:absolute;top:8px;bottom:62px;border-left:2px dashed #2F6EA8}
+.m4bb-c-today span{position:absolute;top:138px;left:4px;font-size:12px;color:#2F6EA8;white-space:nowrap}
+.m4bb-c-stem{width:1px;background:#B9A57A}
+.m4bb-c-ev{position:absolute;bottom:112px;display:flex;flex-direction:column;align-items:center;width:84px;margin-left:-42px}
+.m4bb-c-col{width:22px;border-radius:6px 6px 2px 2px}
+.m4bb-c-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m4bb-c-tag{margin-bottom:3px;padding:1px 6px;border-radius:10px;background:#fff;border:1px solid #DCCFAF;text-align:center;line-height:14px;font-size:12px;white-space:nowrap}
+.m4bb-c-tag b{display:block;font-size:13px;line-height:16px}
+.m4bb-c-paid .m4bb-c-tag{border-color:#BFE0C9}
+.m4bb-c-year{position:absolute;left:10px;right:10px;top:182px;height:46px;border-radius:10px;background:repeating-linear-gradient(90deg,#EFE5FA 0 10px,#F6F0FC 10px 20px);border:1px solid #D5C2EE;display:flex;align-items:center;padding:0 8px;gap:8px;font-size:12px;color:#4E2A7A}
+.m4bb-c-year b{font-size:14px}
+/* le litre en jauge */
+.m4bb-c-litre{margin:10px 10px 0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center}
+.m4bb-c-litre .m4bb-c-big{font-size:30px;line-height:32px;grid-row:1/3}
+.m4bb-c-big small{font-size:13px;color:#555}
+.m4bb-c-jauge{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid #DADADA}
+.m4bb-c-jauge i{display:block}
+.m4bb-c-jk{display:flex;gap:8px;font-size:12px;color:#444;flex-wrap:wrap;line-height:14px}
+.m4bb-c-jk span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;background:var(--c)}
+.m4bb-c-task{display:flex;align-items:center;gap:8px;width:calc(100% - 20px);margin:10px 10px 0;min-height:44px;padding:0 10px;border-radius:10px;border:1px dashed #8A8A8A;text-align:left}
+.m4bb-c-task i{font-style:normal;width:22px;height:22px;border-radius:50%;border:1.5px dotted #555;display:grid;place-items:center;font-weight:700}
+.m4bb-c-task span{flex:1}
+.m4bb-c-task small{color:#555;font-size:12px}
+.m4bb-c-foot{display:flex;gap:6px;padding:10px 10px 0}
+.m4bb-c-foot button{height:44px;border-radius:10px;padding:0 12px;font-weight:600}
+.m4bb-c-ia{border:1px dashed #A9C9E8;color:#2F6EA8}
+.m4bb-c-sec{background:#F5F5F5}
+.m4bb-c-pri{flex:1;background:#E3E3E3;color:#6A6A6A}
+.m4bb-c-why{font-size:12px;color:#6E500F;padding:4px 10px 0}
+/* annexe : choisir sur le calendrier des brassins */
+.m4bb-c-annex{margin:16px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:8px 10px 10px}
+.m4bb-c-annex h2{font-size:13px;color:#2F6EA8;font-weight:600}
+.m4bb-c-annex h3{font-size:16px;margin:2px 0 6px}
+.m4bb-c-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.m4bb-c-d{height:34px;border-radius:6px;background:#F7F7F7;font-size:12px;color:#777;padding:2px 4px;position:relative}
+.m4bb-c-d.m4bb-c-b{background:#111;color:#fff}
+.m4bb-c-d.m4bb-c-b b{position:absolute;bottom:2px;left:4px;font-size:12px;font-weight:600}
+.m4bb-c-d.m4bb-c-t{box-shadow:inset 0 0 0 2px #2F6EA8;color:#2F6EA8}
+.m4bb-c-rec{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.m4bb-c-rec button{min-height:32px;padding:0 10px;border-radius:16px;border:1px solid #D9D9D9;font-size:13px}
+.m4bb-c-rec small{color:#666}
+</style>
+</head>
+<body>
+<div class="m4bb-c-back"><img src="../../../ref/p5b/p5b-haut.png" alt=""></div>
+<section class="m4bb-c-sheet" aria-label="Coût du brassin">
+ <div class="m4bb-c-grip"></div>
+ <div class="m4bb-c-hd">
+  <button class="m4bb-c-sel" data-booster="choix-brassin"><h1>Pale Ale</h1><span style="color:#555">20 nov. · <span class="m4bb-c-m">27 L</span> nets ⌄</span></button>
+  <button class="m4bb-c-x" aria-label="Fermer">×</button>
+ </div>
+ <p class="m4bb-c-lbl"><span>Quand tu paies</span><span>à payer <b class="m4bb-c-m">64,26</b></span></p>
+
+ <div class="m4bb-c-frise" data-booster="frise-paiements">
+  <div class="m4bb-c-axe"></div>
+  <span class="m4bb-c-tick" style="left:22px"></span><span class="m4bb-c-mo" style="left:24px">nov.</span>
+  <span class="m4bb-c-tick" style="left:165px"></span><span class="m4bb-c-mo" style="left:167px">déc.</span>
+  <span class="m4bb-c-tick" style="left:310px"></span><span class="m4bb-c-mo" style="left:312px">janv.</span>
+  <div class="m4bb-c-today" style="left:84px"><span>auj. 14</span></div>
+  <!-- 9 nov. : déjà payé -->
+  <div class="m4bb-c-ev m4bb-c-paid" style="left:52px"><span class="m4bb-c-tag">payé 9 nov.<b class="m4bb-c-m">20,94</b></span><span class="m4bb-c-col" style="height:10px;background:#D2B356"></span></div>
+  <!-- 20 nov. : avant le brassage -->
+  <div class="m4bb-c-ev" style="left:122px"><span class="m4bb-c-tag">20 nov. · achats<b class="m4bb-c-m">−26,70</b></span><span class="m4bb-c-stem" style="height:58px"></span><span class="m4bb-c-col m4bb-c-hat" style="height:36px"></span></div>
+  <!-- ~4 déc. : emballage -->
+  <div class="m4bb-c-ev" style="left:204px"><span class="m4bb-c-tag">~4 déc. · emballage<b class="m4bb-c-m">−30,72</b></span><span class="m4bb-c-col m4bb-c-hat" style="height:52px"></span></div>
+  <!-- ~18 déc. : impôt -->
+  <div class="m4bb-c-ev" style="left:300px"><span class="m4bb-c-tag">~18 déc. · impôt<b class="m4bb-c-m">−6,84</b></span><span class="m4bb-c-stem" style="height:20px"></span><span class="m4bb-c-col m4bb-c-hat" style="height:12px"></span></div>
+  <div class="m4bb-c-year"><span>Part de l'année, répartie sur le litre :<br>charges fixes <span class="m4bb-c-m">104,67</span> · usure <span class="m4bb-c-m">12,90</span></span><b class="m4bb-c-m" style="margin-left:auto">117,57</b></div>
+ </div>
+
+ <div class="m4bb-c-litre" data-booster="jauge-litre">
+  <span class="m4bb-c-big m4bb-c-m">≥ 7,51<small> CHF/L</small></span>
+  <span class="m4bb-c-jauge" aria-label="Le litre par poste"><i style="flex:.54;background:#D2B356"></i><i style="flex:.72;background:#8DBF5A"></i><i style="flex:1.90;background:#56C1D2"></i><i style="flex:4.35;background:#9856D2"></i><i style="flex:.12;background:repeating-linear-gradient(180deg,#999 0 2px,#fff 2px 4px)"></i></span>
+  <span class="m4bb-c-jk"><span style="--c:#D2B356">malt <b class="m4bb-c-m">0,54</b></span><span style="--c:#8DBF5A">houblon, levure <b class="m4bb-c-m">0,72</b></span><span style="--c:#56C1D2">frais <b class="m4bb-c-m">1,90</b></span><span style="--c:#9856D2">année <b class="m4bb-c-m">4,35</b></span><span style="--c:#999">?</span></span>
+ </div>
+
+ <button class="m4bb-c-task" data-booster="tache-filtrante"><i>?</i><span><b>Acide lactique</b> <small>· en stock, prix à compléter</small></span>›</button>
+
+ <div class="m4bb-c-foot"><button class="m4bb-c-ia" data-booster="ia-expliquer">✦ Expliquer</button><button class="m4bb-c-sec">Enregistrer</button><button class="m4bb-c-pri" disabled>Prévoir 3 dates</button></div>
+ <p class="m4bb-c-why">Prévoir attend le prix de l'acide lactique ›</p>
+
+ <section class="m4bb-c-annex" aria-label="Le choix du brassin, ouvert par ⌄">
+  <h2>⌄ ouvert : le choix du brassin</h2>
+  <h3>Quel brassin veux-tu estimer ?</h3>
+  <div class="m4bb-c-cal">
+   <span class="m4bb-c-d">10</span><span class="m4bb-c-d">11</span><span class="m4bb-c-d">12</span><span class="m4bb-c-d">13</span><span class="m4bb-c-d m4bb-c-t">14</span><span class="m4bb-c-d">15</span><span class="m4bb-c-d">16</span>
+   <span class="m4bb-c-d">17</span><span class="m4bb-c-d">18</span><span class="m4bb-c-d">19</span><span class="m4bb-c-d m4bb-c-b">20<b>Pale Ale</b></span><span class="m4bb-c-d">21</span><span class="m4bb-c-d">22</span><span class="m4bb-c-d">23</span>
+  </div>
+  <div class="m4bb-c-rec"><button>Saison des vignes <small>25 L</small></button><button>Stout d'hiver <small>20 L</small></button><button>Blanche <small>30 L</small></button><button>Pale Ale <small>recette · 30 L</small></button></div>
+ </section>
+</section>
+</body>
+</html>

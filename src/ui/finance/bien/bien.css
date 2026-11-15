@@ -1,0 +1,56 @@
+/* Bien amorti (m3im-c). Classes `bic-` (L26). Clair comme cave : les jetons du thème. Pas de hachure : elle veut dire « à payer ». */
+.bic { --bi-t1: rgb(var(--cave-texte-50)); --bi-t2: rgb(var(--cave-texte-200)); --bi-bord: rgb(var(--cave-800)); --bi-bordm: rgb(var(--cave-600)); --bi-fond: rgb(var(--cave-950)); --bi-pan: rgb(var(--cave-900)); --bi-fin: rgb(var(--area-finances));
+  display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 18px; color: var(--bi-t1); }
+.bic * { box-sizing: border-box; }
+.bic .bic-m { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+.bic-pan { background: var(--bi-pan); border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.bic-seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--bi-bordm); border-radius: 10px; overflow: hidden; min-height: 44px; background: var(--bi-fond); }
+.bic-seg button { border: 0; background: none; font: inherit; font-size: 13px; line-height: 15px; color: var(--bi-t2); padding: 2px 4px; cursor: pointer; }
+.bic-seg button b { display: block; font-size: 14px; color: var(--bi-t1); }
+.bic-seg button + button { border-left: 1px solid var(--bi-bordm); }
+.bic-seg button[aria-pressed='true'] { background: var(--bi-t1); color: var(--bi-fond); } .bic-seg button[aria-pressed='true'] b { color: var(--bi-fond); }
+.bic-g { display: block; width: 100%; max-width: 420px; margin: 0 auto; overflow: visible; }
+.bic-zero { stroke: var(--bi-t1); }
+.bic-b0 { fill: rgb(var(--area-finances) / .28); } .bic-bp { fill: rgb(var(--area-finances) / .62); } .bic-bc { fill: var(--bi-fin); }
+.bic-bf { fill: rgb(var(--area-finances) / .07); stroke: rgb(var(--area-finances) / .62); stroke-width: 1; }
+.bic-v, .bic-vc, .bic-pe { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; fill: var(--bi-t1); }
+.bic-vc { font-size: 13px; font-weight: 700; fill: var(--bi-fin); } .bic-pe { font-weight: 700; }
+.bic-a, .bic-ac { font-size: 12px; fill: var(--bi-t2); } .bic-ac { fill: var(--bi-t1); font-weight: 700; }
+.bic-lg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--bi-t2); align-items: center; }
+.bic-sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.bic-sw1 { background: var(--bi-fin); } .bic-sw2 { background: rgb(var(--area-finances) / .07); border: 1px solid rgb(var(--area-finances) / .62); }
+.bic-alt { margin-left: auto; } .bic-alt b { color: var(--bi-t1); }
+.bic-note { font-size: 12px; line-height: 16px; color: var(--bi-t2); margin: 0; }
+.bic-res { display: flex; align-items: baseline; gap: 6px; border-top: 1px solid var(--bi-bord); padding-top: 6px; }
+.bic-res span { flex: 1; font-size: 13px; font-weight: 600; } .bic-res b { font-size: 20px; }
+/* part pro : curseur */
+.bic-cur { display: flex; align-items: center; gap: 8px; }
+.bic-cur label { font-size: 13px; width: 62px; } .bic-cur b { font-size: 14px; width: 52px; text-align: right; }
+.bic-range { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; --pos: 100%; }
+.bic-range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--bi-fin) var(--pos), rgb(var(--cave-800)) var(--pos)); }
+.bic-range::-moz-range-track { height: 4px; border-radius: 2px; background: rgb(var(--cave-800)); } .bic-range::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--bi-fin); }
+.bic-range::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: var(--bi-fond); border: 2px solid var(--bi-fin); box-shadow: 0 2px 6px -2px rgba(0, 0, 0, .4); }
+.bic-range::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--bi-fond); border: 2px solid var(--bi-fin); }
+.bic-range:focus-visible { outline: 2px solid var(--bi-fin); outline-offset: 2px; border-radius: 6px; }
+/* six cases */
+.bic-g3 { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 6px; }
+.bic-cell { position: relative; display: flex; flex-direction: column; justify-content: center; border: 1px solid var(--bi-bord); border-radius: 10px; padding: 3px 8px; min-height: 44px; min-width: 0; background: var(--bi-fond); }
+.bic-cell > span { display: block; font-size: 12px; line-height: 14px; color: var(--bi-t2); }
+.bic-cell > b { font-size: 14px; font-weight: 600; line-height: 20px; }
+.bic .bic-in, .bic input.bic-in { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--bi-t1); font-size: 14px; padding: 0; height: 22px; min-height: 0; }
+.bic-cell:focus-within { outline: 2px solid var(--bi-fin); outline-offset: 1px; }
+.bic-date :is(input, select) { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; cursor: pointer; }
+/* confirmation : la ligne verte */
+.bic-conf { position: relative; display: flex; align-items: center; gap: 6px; min-height: 44px; font-size: 13px; font-weight: 600; color: var(--bi-t2); cursor: pointer; border-radius: 10px; }
+.bic-conf.bic-ok { color: rgb(var(--hop-texte)); }
+.bic-conf input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: pointer; }
+.bic-conf:focus-within { outline: 2px solid var(--bi-fin); outline-offset: 1px; }
+/* plis */
+.bic-row > summary { display: flex; align-items: center; gap: 6px; min-height: 44px; border-bottom: 1px solid var(--bi-bord); font-size: 14px; list-style: none; cursor: pointer; }
+.bic-row > summary::-webkit-details-marker { display: none; } .bic-row > summary > span { flex: 1; } .bic-row > summary em { font-style: normal; font-size: 12px; color: var(--bi-t2); }
+.bic-row[open] > summary .bic-chev { transform: rotate(90deg); }
+.bic-ouvert { padding: 8px 0 4px; display: grid; gap: 8px; }
+.bic-ouvert select { width: 100%; min-height: 44px; border: 1px solid var(--bi-bordm); border-radius: 10px; background: var(--bi-fond); color: var(--bi-t1); padding: 0 8px; }
+.bic-avoirs { display: grid; gap: 4px; border: 1px solid var(--bi-bord); border-radius: 10px; padding: 8px; }
+.bic-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; }
+@media (min-width: 640px) { .bic { max-width: 520px; margin: 0 auto; } }

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v6b · v5a, lignes serrées : le geste à côté du montant · passe 4</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.v6b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.v6b-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.v6b-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.v6b-hd b{font-size:18px;font-weight:600;flex:1}
+.v6b-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.v6b-bx{background:#F5F5F5;border:1px solid #DADADA}
+.v6b-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.v6b-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.v6b-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.v6b-tabs a.v6b-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.v6b-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.v6b-top{display:flex;align-items:center;gap:6px}
+.v6b-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.v6b-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.v6b-pill b{font-size:15px;padding:0 4px}
+.v6b-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.v6b-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.v6b-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.v6b-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.v6b-p b{font-size:12px;line-height:14px}
+.v6b-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.v6b-st i{display:block}
+.v6b-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.v6b-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.v6b-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.v6b-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.v6b-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.v6b-key span{display:flex;align-items:center;gap:4px}
+.v6b-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.v6b-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.v6b-g{display:grid;grid-template-columns:20px 1fr auto;gap:6px;align-items:center;padding:4px 10px 0;position:sticky;top:0;background:#fff}
+.v6b-g .v6b-sq{width:20px;height:20px;border-radius:10px;display:grid;place-items:center}
+.v6b-g b{font-size:13px;letter-spacing:.02em}
+.v6b-g .v6b-sub{font-size:13px;color:#444}
+.v6b-op{display:grid;grid-template-columns:4px 1fr auto auto;column-gap:8px;padding:3px 10px 3px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.v6b-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.v6b-q{font-size:14px;font-weight:600;line-height:15px;grid-column:2;grid-row:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6b-q small{font-weight:400;color:#555;font-size:13px}
+.v6b-a{font-size:14px;text-align:right;line-height:15px;grid-column:4;grid-row:1}
+.v6b-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:14px;min-height:14px;grid-column:2;grid-row:2}
+.v6b-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:14px;font-size:12px;white-space:nowrap}
+.v6b-ok{background:#E8F5EC;color:#22663A}
+.v6b-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.v6b-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.v6b-pc{display:inline-flex;align-items:center;gap:2px;color:#555;white-space:nowrap}
+.v6b-pc.v6b-no{color:#7A5500}
+.v6b-act{grid-column:3;grid-row:1/3;justify-self:end;align-self:center}
+.v6b-btn{min-height:28px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.v6b-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.v6b-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.v6b-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.v6b-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.v6b-foot .v6b-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.v6b-ex{font-size:12px;color:#666;padding:0 10px}
+.v6b-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.v6b-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.v6b-nav a.v6b-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.v6b-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.v6b-annex{margin:18px 0 0;border-top:1px solid #DADADA;border-bottom:1px solid #DADADA;padding:10px 0 6px;background:#fff}
+.v6b-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.v6b-flash{background:#F1FAF3}
+@media (min-width:900px){.v6b-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.v6b-full{grid-column:1/3}.v6b-left{position:sticky;top:0}.v6b-piles{height:200px}.v6b-nav{justify-content:center}}
+</style>
+</head>
+<body>
+<header class="v6b-hd">
+  <span class="v6b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="v6b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="v6b-ic v6b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="v6b-ic v6b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+
+<div class="v6b-app">
+ <div class="v6b-full">
+  <nav class="v6b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="v6b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+
+ <div class="v6b-left">
+  <section class="v6b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="v6b-top">
+    <span class="v6b-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="v6b-due" data-booster="pastille-retard"><i></i>en retard <b class="v6b-m">60,00</b></button>
+   </div>
+   <div class="v6b-piles">
+    <div class="v6b-p"><b class="v6b-m" style="color:#2A7240">+720,00</b><span class="v6b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="v6b-sep"></span>
+    <div class="v6b-p"><b class="v6b-m">468,00</b><span class="v6b-st" style="height:57px"><i class="v6b-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="v6b-p"><b class="v6b-m">186,80</b><span class="v6b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="v6b-p"><b class="v6b-m">42,00</b><span class="v6b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="v6b-sep"></span>
+    <div class="v6b-p"><b class="v6b-m">28,60</b><span class="v6b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="v6b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="v6b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="v6b-m">325,40</b></span><span><i class="v6b-hat"></i>à payer <b class="v6b-m">400,00</b></span><span>dépensé <b class="v6b-m">696,80</b></span></div>
+  </section>
+ </div>
+
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <!-- Charges fixes -->
+  <div class="v6b-g"><span class="v6b-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="v6b-sub v6b-m">468,00</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar v6b-hat"></span>
+   <span class="v6b-q">Loyer de l'atelier <small>· Atelier</small></span><span class="v6b-a v6b-m">400,00</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-pay">à payer · 25 nov. · dans 16 j</span><span class="v6b-pc v6b-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="v6b-btn v6b-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#9856D2"></span>
+   <span class="v6b-q">Électricité <small>· Énergie</small></span><span class="v6b-a v6b-m">68,00</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ payé 9 nov. · banque</span><span class="v6b-pc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="v6b-g"><span class="v6b-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="v6b-sub v6b-m" style="color:#2A7240">+720,00</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#56D27B"></span>
+   <span class="v6b-q">Vente au marché <small>· Marché du village</small></span><span class="v6b-a v6b-m" style="color:#2A7240">+720,00</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ encaissé 9 nov. · banque</span><span class="v6b-pc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="v6b-g"><span class="v6b-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="v6b-sub v6b-m">186,80</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#D2B356"></span>
+   <span class="v6b-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="v6b-a v6b-m">186,80</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ payé 9 nov.</span><span class="v6b-pc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="v6b-g"><span class="v6b-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="v6b-sub v6b-m">42,00</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#56C1D2"></span>
+   <span class="v6b-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="v6b-a v6b-m">42,00</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ payé 9 nov.</span><span class="v6b-pc v6b-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="v6b-mini v6b-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="v6b-part"></div>
+  <div class="v6b-g"><span class="v6b-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="v6b-sub v6b-m">28,60</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#567BD2"></span>
+   <span class="v6b-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="v6b-a v6b-m">28,60</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ payé 9 nov.</span><span class="v6b-pc v6b-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="v6b-mini v6b-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="v6b-g"><span class="v6b-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="v6b-sub v6b-m" style="color:#8E2A23">60,00</span></div>
+  <div class="v6b-op">
+   <span class="v6b-bar" style="background:#D6453D"></span>
+   <span class="v6b-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="v6b-a v6b-m">60,00</span>
+   <span class="v6b-meta"><span class="v6b-tg v6b-late">à payer depuis le 20 déc. 2025</span><span class="v6b-pc v6b-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="v6b-mini v6b-act">✓ Payé</button>
+  </div>
+  <p class="v6b-ex">Pièces jointes : exemple.</p>
+  <div class="v6b-foot"><button class="v6b-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  <section class="v6b-annex" id="etat" aria-label="État : loyer payé">
+   <h2>Après « ✓ Payé » sur le loyer</h2>
+   <div class="v6b-band" style="margin-top:0">
+    <div class="v6b-piles" style="height:96px">
+     <div class="v6b-p"><b class="v6b-m" style="color:#2A7240">+720,00</b><span class="v6b-st" style="height:72px"><i style="flex:1;background:#56D27B"></i></span></div>
+     <span class="v6b-sep"></span>
+     <div class="v6b-p"><b class="v6b-m">468,00</b><span class="v6b-st" style="height:47px"><i style="flex:1;background:#9856D2"></i></span></div>
+     <div class="v6b-p"><b class="v6b-m">186,80</b><span class="v6b-st" style="height:19px"><i style="flex:1;background:#D2B356"></i></span></div>
+     <div class="v6b-p"><b class="v6b-m">42,00</b><span class="v6b-st" style="height:5px"><i style="flex:1;background:#56C1D2"></i></span></div>
+     <span class="v6b-sep"></span>
+     <div class="v6b-p"><b class="v6b-m">28,60</b><span class="v6b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+    </div>
+    <div class="v6b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+    <div class="v6b-key"><span>payé <b class="v6b-m">725,40</b></span><span><i class="v6b-hat"></i>à payer <b class="v6b-m">0,00</b></span><span>dépensé <b class="v6b-m">696,80</b></span></div>
+   </div>
+   <div class="v6b-op v6b-flash">
+    <span class="v6b-bar" style="background:#9856D2"></span>
+    <span class="v6b-q">Loyer de l'atelier <small>· Atelier</small></span><span class="v6b-a v6b-m">400,00</span>
+    <span class="v6b-meta"><span class="v6b-tg v6b-ok">✓ payé aujourd'hui · banque</span><span class="v6b-pc v6b-no"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+    <button class="v6b-mini v6b-act">Annuler</button>
+   </div>
+  </section>
+ </div>
+</div>
+
+<nav class="v6b-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="v6b-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="v6b-fab" aria-label="Ajouter">+</button>
+</body>
+</html>

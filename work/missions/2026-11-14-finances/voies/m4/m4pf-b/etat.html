@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4pf-b · Cinq lignes, une ouverte (froide)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4pf-b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4pf-b-back{position:relative;height:300px;overflow:hidden}.m4pf-b-back img{width:390px;display:block}
+.m4pf-b-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4pf-b-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 10px 14px;min-height:564px}
+.m4pf-b-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 8px}
+.m4pf-b-hd{display:flex;align-items:center;margin-bottom:4px}.m4pf-b-hd h1{font-size:16px;flex:1}
+.m4pf-b-x{width:32px;height:32px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:18px}
+.m4pf-b-r{display:grid;grid-template-columns:1fr auto 14px;gap:8px;align-items:center;width:100%;min-height:44px;border-bottom:1px solid #EBEBEB;text-align:left}
+.m4pf-b-r span:first-child{color:#444}
+.m4pf-b-ok{color:#22663A;font-size:13px}
+/* la ligne ouverte, éditée sur place */
+.m4pf-b-open{border:1.5px solid #2F6EA8;border-radius:16px;padding:8px;margin:6px -4px;box-shadow:0 0 0 3px #E6EFF8}
+.m4pf-b-open h2{font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.m4pf-b-open h2 small{font-weight:400;color:#555;font-size:12px}
+.m4pf-b-row{display:grid;grid-template-columns:1.25fr 1fr;gap:6px;margin-top:6px}
+.m4pf-b-in{height:44px;border-radius:10px;border:1.5px solid #2F6EA8;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:16px}
+.m4pf-b-in em{font-style:normal;color:#777;font-size:13px}
+.m4pf-b-in.m4pf-b-idle{border:1px solid #CFCFCF}
+.m4pf-b-was{font-size:12px;color:#555;margin-top:4px}
+.m4pf-b-was s{color:#777}
+.m4pf-b-tog{display:flex;align-items:center;gap:10px;margin-top:8px;min-height:44px;width:100%;text-align:left;padding:4px 8px;border-radius:10px;background:#FFF7E6;box-shadow:inset 0 0 0 1px #E3C27E}
+.m4pf-b-sw{width:44px;height:26px;border-radius:13px;background:#BDBDBD;position:relative;flex:none}
+.m4pf-b-sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+.m4pf-b-tog small{display:block;color:#6E500F;font-size:12px;line-height:15px}
+.m4pf-b-foot{display:flex;gap:6px;margin-top:12px}
+.m4pf-b-foot button{height:44px;border-radius:10px;padding:0 14px;font-weight:600}
+.m4pf-b-sec{background:#F5F5F5}.m4pf-b-pri{flex:1;background:#111;color:#fff}
+.m4pf-b-r small{display:block;font-size:12px;color:#555;line-height:14px}div.m4pf-b-r{color:#333}
+</style></head><body>
+<div class="m4pf-b-back"><img src="../../../ref/g3a/g3a-haut.png" alt=""></div>
+<section class="m4pf-b-sheet" aria-label="Solde et paramètres">
+ <div class="m4pf-b-grip"></div>
+ <div class="m4pf-b-hd"><h1>Solde et paramètres</h1><button class="m4pf-b-x" aria-label="Fermer">×</button></div>
+
+ <div class="m4pf-b-open" data-booster="edition-sur-place">
+  <h2>Solde de départ</h2>
+  <div class="m4pf-b-row">
+   <span class="m4pf-b-in" role="textbox" inputmode="decimal"><span class="m4pf-b-m">3 410,00|</span><em>CHF</em></span>
+   <span class="m4pf-b-in m4pf-b-idle"><span>1 janv. 2025</span><em>⌄</em></span>
+  </div>
+  <p class="m4pf-b-was">avant : <s class="m4pf-b-m">3 250,00</s> · caisse d'aujourd'hui <b class="m4pf-b-m">+160,00</b> si vérifié</p>
+  <button class="m4pf-b-tog" role="switch" aria-checked="false" data-booster="bascule-verifie"><span class="m4pf-b-sw"></span><span><b>À revérifier</b><small>Éteinte : hors caisse et hors prévisions.</small></span></button>
+ </div>
+
+ <button class="m4pf-b-r"><span>Tout est noté depuis</span><b>janv. 2025</b>›</button>
+ <button class="m4pf-b-r"><span>Production prévue<small>charges fixes : <b class="m4pf-b-m">3,88</b> CHF/L</small></span><b class="m4pf-b-m">1 800 L/an</b>›</button>
+ <div class="m4pf-b-r"><span>Statut</span><b>indépendant · Fribourg</b><span></span></div>
+ <div class="m4pf-b-r"><span>TVA</span><span class="m4pf-b-ok">✓ sous le seuil</span><span></span></div>
+
+ <div class="m4pf-b-foot"><button class="m4pf-b-sec">Annuler</button><button class="m4pf-b-pri">Enregistrer</button></div>
+</section></body></html>

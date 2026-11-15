@@ -14,6 +14,7 @@ import { Bande, type Actif } from './operations/Bande';
 import { dansJours, finDuMois, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, redater, titreJours } from './operations/plage';
 import { enRetard, retardTotal } from './operations/calculs';
 import { questionPoste } from './operations/assistant';
+import { PaireDoublons, type GroupeDoublon } from './operations/PaireDoublons';
 import { GROUPES, ORDRE, groupeDe, type GroupeId } from './operations/groupes';
 import './operations.css';
 
@@ -160,6 +161,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   };
   const duplicateGroups = useMemo(() => ledgerDuplicates(transactions).filter(group => !ecartes.has(group.key)), [transactions, ecartes]);
   const duplicateIds = useMemo(() => new Set(duplicateGroups.flatMap(group => group.ids)), [duplicateGroups]);
+  // m1do-a : plus aucun doublon à montrer (écarté, ou annulé) : le filtre se referme.
+  useEffect(() => { if (filter === 'doublon' && duplicateGroups.length === 0) replaceState({ ...journal, filter: 'all', page: 1 }); });
+  const vueDoublons = filter === 'doublon' && duplicateGroups.length > 0;
 
   useEffect(() => { onScopeChange?.(scope); }, [scope, onScopeChange]);
   useEffect(() => {
@@ -177,7 +181,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   useEffect(() => { if (query) setLoupe(true); }, [query]);
 
   // Archiving never settles a bill. Follow-up includes earlier and archived years.
-  const followingUp = scope === 'current' && FOLLOW_UP_FILTERS.has(filter);
+  // m1do-a : « Doublons » garde la bande du mois ; seuls les autres suivis (sur tous les exercices) la remplacent.
+  const followingUp = scope === 'current' && FOLLOW_UP_FILTERS.has(filter) && filter !== 'doublon';
   /** Le mois de la bande : une période civile, ni un suivi, ni un exercice, ni « Par date », ni les archives. */
   // Le mois se change toujours (10.11 : « Pourquoi je peux pas changer de mois ? Je veux !! ») : archives comprises, il filtre aussi ce mois.
   const modeMois = scope !== 'archives' && !followingUp && !year && !allDates && !plage;
@@ -312,7 +317,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [sourcesFrise, jours?.du, jours?.au, plage, joursCompte]);
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
-    ...(filter !== 'all' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
+    // m1do-a : « Doublons » ouvert se lit sur sa propre pastille (pleine) ; ni pastille « Doublons possibles × » sous le mois ni « Filtres 1 » (la maquette n'en a pas).
+    ...(filter !== 'all' && filter !== 'doublon' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
     ...(category !== 'all' ? [{ cle: 'categorie', libelle: libelleCategorie(category), retirer: () => change({ category: 'all' }) }] : []),
   ];
 
@@ -366,6 +372,16 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     return `${cents < 0 ? '−' : (id === 'recettes' || id === 'apports' || id === 'jour') && cents > 0 ? '+' : ''}${texte}`;
   };
 
+  /** m1do-a : un cadre par groupe de doublons, ses lignes complètes dans l'ordre de saisie. */
+  const entreeParId = useMemo(() => new Map(classified.map(entry => [entry.transaction.id, entry] as const)), [classified]);
+  const groupesDoublons = useMemo<GroupeDoublon[]>(() => !vueDoublons ? [] : duplicateGroups.map(group => {
+    const lignes = group.ids.map(id => entreeParId.get(id)).filter((entry): entry is NonNullable<typeof entry> => !!entry)
+      .sort((a, b) => a.recordedAt - b.recordedAt || a.transaction.id.localeCompare(b.transaction.id));
+    return { cle: group.key, titre: group.titre, detail: group.detail, groupe: lignes[0] ? groupeDe(lignes[0].transaction, { retardHorsMois: false }) : 'divers',
+      transactions: lignes.map(entry => entry.transaction),
+      lignes: lignes.map(entry => <React.Fragment key={entry.transaction.id}>{renderRow(entry.transaction, entry.payment)}</React.Fragment>) };
+  }), [vueDoublons, duplicateGroups, entreeParId, renderRow]);
+
   return <div className="ops">
     <Bande libellePeriode={periodLabel} contexte={followingUp ? 'Suivi sur tous les exercices, archives comprises.' : scope === 'all' ? 'Archives comprises' : undefined} moisActif={modeMois} month={month} today={aujourdhui}
       onMonth={value => change({ month: value, allDates: false, year: '', du: '', au: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}
@@ -375,7 +391,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 
-    <div className="ops-liste">{groupes.map(groupe => {
+    {vueDoublons && <PaireDoublons groupes={groupesDoublons} nombre={duplicateIds.size} onEcarter={ecarter}/>}
+
+    {!vueDoublons && <div className="ops-liste">{groupes.map(groupe => {
       const meta = groupe.id === 'jour' ? null : GROUPES[groupe.id];
       const total = sousTotal(groupe.id, groupe.rows);
       return <section key={groupe.cle} className="ops-groupe" data-groupe={groupe.id} aria-label={[groupe.etiquette, groupe.rows.length ? libelleCompte(groupe.rows) : '', total].filter(Boolean).join(' · ')}>
@@ -398,27 +416,21 @@ export function TransactionJournal({ transactions, payments, archives, request, 
           </div>;
         })}
       </section>;
-    })}</div>
+    })}</div>}
 
-    {pageCount > 1 && <nav className="ops-pages" aria-label="Pages du journal">
+    {!vueDoublons && pageCount > 1 && <nav className="ops-pages" aria-label="Pages du journal">
       <button type="button" className="ops-mini" aria-label="Page précédente" disabled={page === 1} onClick={() => replaceState({ ...journal, page: page - 1 })}><ChevronLeft size={16} aria-hidden="true"/></button>
       <span aria-live="polite">Page {page} sur {pageCount}</span>
       <button type="button" className="ops-mini" aria-label="Page suivante" disabled={page === pageCount} onClick={() => replaceState({ ...journal, page: page + 1 })}><ChevronRight size={16} aria-hidden="true"/></button>
     </nav>}
 
-    {!filtered.length && <div className="ops-vide" data-nu={(pilesVides && !hasFilters) || undefined}>
+    {!vueDoublons && !filtered.length && <div className="ops-vide" data-nu={(pilesVides && !hasFilters) || undefined}>
       <h3>{scope === 'archives' && !years.length ? 'Aucune année archivée' : !transactions.length ? 'Aucune opération enregistrée' : 'Aucune opération trouvée'}</h3>
       <p>{scope === 'archives' && !years.length ? 'Range une année terminée pour la retrouver ici.' : !transactions.length ? 'Enregistre un achat ou une vente pour démarrer le journal.' : `${periodLabel}${query ? ` · « ${query} »` : ''}${category !== 'all' ? ` · ${libelleCategorie(category)}` : ''}${filter !== 'all' ? ` · ${FILTER_LABELS[filter] ?? filter}` : ''}`}</p>
       <div>{scope === 'archives' && !years.length && <button type="button" className="ops-lien" onClick={onManageArchives}>Choisir une année à archiver</button>}
         {hasFilters && <button type="button" className="ops-mini" onClick={clearFilters}>Retirer les filtres</button>}
         {transactions.length > 0 && <button type="button" className="ops-lien" onClick={showEverything}>Voir toutes les opérations</button>}
       </div>
-    </div>}
-
-    {duplicateGroups.length > 0 && filter === 'doublon' && <div className="ops-doublons" role="note" data-testid="journal-duplicates">
-      <p><strong>{compte(duplicateIds.size, 'écriture')} possiblement en double.</strong> Rien n’est supprimé : vérifie, puis annule les écritures en trop, ou écarte l’avertissement s’il se trompe.</p>
-      <ul>{duplicateGroups.map(group => <li key={group.key}>{group.reason} · {compte(group.ids.length, 'écriture')}
-        {' '}<button type="button" className="ops-lien" onClick={() => ecarter(group.key)}>Ce n’est pas un doublon</button></li>)}</ul>
     </div>}
 
     {scope === 'archives' && <div className="ops-archives">

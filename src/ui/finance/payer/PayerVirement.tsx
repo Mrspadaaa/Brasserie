@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
 import { ChampVirement } from './ChampVirement';
+import { couleursPieces, etiquettesPieces } from './etiquettes';
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { formatCHF, isoDate, paymentState, todayISO, transactionVendor } from '../../../domain/finance/ledger';
@@ -31,7 +32,6 @@ const couleurDe = (p: PieceOuverte, aujourdhui: string): string => {
   const groupe = GROUPES[(GROUPE_DE[p.transaction.category] ?? p.transaction.category) as GroupeId] ?? GROUPES.divers;
   return groupe.liseré;
 };
-const premierMot = (texte: string) => (texte.trim().split(/\s+/)[0] ?? '').toLowerCase();
 
 interface Joint { nom: string; dataUrl: string; mime: string }
 const IcoDoc = ({ plein }: { plein?: boolean }) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray={plein ? undefined : '3 2.4'} aria-hidden="true"><path d="M7 3h7l4 4v14H7z" />{plein && <path d="M9.5 14l2 2 3.5-4" />}</svg>;
@@ -129,7 +129,11 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
   const reste = rep ? total - rep.imputeCents : 0;
   const troncons = touchees.map(t => ({ ...t, piece: pieces.find(p => p.id === t.id)! }));
   const legende: string[] = [];
-  troncons.slice(0, troncons.length > 3 ? 2 : 3).forEach(t => legende.push(`${t.piece.echeance && t.piece.echeance < aujourdhui ? 'retard' : premierMot(t.piece.transaction.description)} ${amountOnly(t.partCents)}`));
+  // FN-3, FN-4 : une couleur par pièce (celles de m5pa-d, variées si deux pièces ont la même) et un nom court qui les distingue.
+  const teintes = couleursPieces(troncons.map(t => couleurDe(t.piece, aujourdhui)));
+  const noms = etiquettesPieces(troncons.map(t => t.piece.transaction.description));
+  const enRetard = troncons.filter(t => t.piece.echeance && t.piece.echeance < aujourdhui).length;
+  troncons.slice(0, troncons.length > 3 ? 2 : 3).forEach((t, i) => legende.push(`${t.piece.echeance && t.piece.echeance < aujourdhui ? (enRetard > 1 ? `retard · ${noms[i]}` : 'retard') : noms[i]} ${amountOnly(t.partCents)}`));
   if (troncons.length > 3) legende.push(`${troncons.length - 2} autres ${amountOnly(troncons.slice(2).reduce((s, t) => s + t.partCents, 0))}`);
   if (reste > 0) legende.push(`reste ${amountOnly(reste)}`);
 
@@ -145,7 +149,7 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
         onValeur={v => setSaisi(v)} />
       {refus && saisi !== null && !(saisi !== undefined && saisi > total) && <p className="pay-err" role="alert">{refus}</p>}
       <div className="pay-flow" data-booster="repartition" aria-hidden="true">
-        {troncons.map(t => <i key={t.id} style={{ flex: t.partCents, background: couleurDe(t.piece, aujourdhui) }} />)}
+        {troncons.map((t, i) => <i key={t.id} style={{ flex: t.partCents, background: teintes[i] }} />)}
         {reste > 0 && <i className="pay-hach" style={{ flex: reste }} />}
       </div>
       <div className="pay-fk">{legende.map((l, i) => <span key={i}>{l}</span>)}</div>

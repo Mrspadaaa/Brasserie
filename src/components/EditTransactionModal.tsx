@@ -11,13 +11,13 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell } from '../ui/ModalShell';
 import { archiveIndex, isTransactionArchived } from '../domain/finance/archive';
-import { dateAffichee, isoDate, montantChf, sensDeCategorie, todayISO, toCents, transactionAmount, validateFinanceTransaction } from '../domain/finance/ledger';
-import { anneesCloses, baisseSousLePaye, choixPertinent, effetCorrection, erreurNouveauMontant, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
+import { dateAffichee, isoDate, montantChf, sensDeCategorie, todayISO, toCents, transactionAmount, transactionDirection, validateFinanceTransaction } from '../domain/finance/ledger';
+import { anneesCloses, baisseSousLePaye, choixPertinent, effetCorrection, erreurNouveauMontant, estMouvementPrive, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
 import { amountOnly } from '../ui/finance/financeFormat';
 import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
 import { RangeeApercu } from '../ui/finance/modifier/ApercuRangee';
-import { executerPlan, simulerPlan } from '../ui/finance/modifier/executerCorrection';
+import { executerPlan, simulerPlan, verifierAvoir } from '../ui/finance/modifier/executerCorrection';
 import '../ui/finance/modifier/modifier.css';
 
 interface EditTransactionModalProps {
@@ -39,6 +39,15 @@ const cheminEnMots = (date: string, categorie: FinanceCategory): string => {
   const iso = isoDate(date);
   return `Drive · ${iso ? MOIS[Number(iso.slice(5, 7)) - 1] : 'Mois à vérifier'} › ${CATEGORY_LABELS[categorie] ?? categorie}`;
 };
+/** Le champ « Fournisseur, n° de pièce » réécrit le fournisseur (avant le premier « · ») et le n° de pièce (le reste) de la pièce saisie par facture. */
+const avecTiers = (finance: NonNullable<Transaction['finance']>, texte: string): NonNullable<Transaction['finance']> => {
+  const [fournisseur, ...reste] = texte.split('·');
+  const sortie = { ...finance };
+  const vendor = fournisseur.trim(), numero = reste.join('·').trim();
+  if (vendor) sortie.vendor = vendor; else delete sortie.vendor;
+  if (numero) sortie.invoiceNumber = numero; else delete sortie.invoiceNumber;
+  return sortie;
+};
 const groupeDe = (c: FinanceCategory) => GROUPES[(c === 'materiel' || c === 'renovation' ? 'part' : GROUPES[c as GroupeId] ? c : 'divers') as GroupeId];
 
 export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
@@ -51,6 +60,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const [copiedDrive, setCopiedDrive] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [choixManuel, setChoixManuel] = useState<ChoixPaiement | null>(null);
+  /** FN-8 : le texte du champ « Fournisseur, n° de pièce » une fois touché ; tant qu'il ne l'est pas, le champ montre ce que la pièce a déjà. */
+  const [notesSaisies, setNotesSaisies] = useState<string | null>(null);
   const paiements = useStorageValue(lirePaiements);
   const clotures = useStorageValue(lireClotures);
   const archives = useStorageValue(lireArchives);
@@ -59,7 +70,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const titreId = useId();
   if (!isOpen || !transaction || !draft) return null;
   const { description, category, subcategory = '', date, amountHT, tvaRate,
-    proofNotes = '', proofUrl, proofFileName } = draft;
+    proofNotes: notesPiece = '', proofUrl, proofFileName } = draft;
+  // FN-8 : une pièce saisie par la facture porte son fournisseur et son n° dans `finance`, pas dans `proofNotes` ; le champ les montre. Sans eux, il montre `proofNotes`.
+  const tiersDeFinance = !notesPiece.trim() ? [transaction.finance?.vendor, transaction.finance?.invoiceNumber].filter(Boolean).join(' · ') : '';
+  const champTiers = notesSaisies ?? (tiersDeFinance || notesPiece);
+  const proofNotes = notesSaisies !== null && !tiersDeFinance ? notesSaisies : notesPiece;
   const field = <K extends keyof Transaction>(key: K, value: Transaction[K]) =>
     setDraft(current => current?.id === transaction.id ? { ...current, [key]: value } : current);
 
@@ -88,11 +103,15 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const nouveauCents = toCents(amountTTC);
   const change = !verrou && nouveauCents !== ancienCents;
   const montantInvalide = change && (!Number.isFinite(amountTTC) || nouveauCents <= 0);
-  const pertinent = change && !montantInvalide && choixPertinent(transaction, paiements, ecritures);
-  // q6, point 1 : sous ce qui est déjà payé, seul « Le paiement suit » existe (le payé ne disparaît jamais) ; l'excédent versé se règle par un avoir.
+  // FN-12 : un apport ou un prélèvement n'a pas de « Reste à payer » : son paiement suit toujours (jamais une créance « À encaisser »).
+  const prive = estMouvementPrive(transaction);
+  const pertinent = change && !montantInvalide && !prive && choixPertinent(transaction, paiements, ecritures);
+  // FN-10 : sous ce qui est déjà payé, « Reste à payer » n'existe pas (le payé ne disparaît jamais). Deux choix, à faire explicitement : une erreur de saisie (le paiement suit) ou un trop-payé réel (avoir à recevoir).
   const sousLePaye = pertinent && baisseSousLePaye(transaction, paiements, nouveauCents, ecritures);
   const tropPayeCents = sousLePaye ? payeNet(transaction, paiements, ecritures) - nouveauCents : 0;
-  const choix: ChoixPaiement = sousLePaye ? 'suit' : choixManuel ?? (nouveauCents > ancienCents ? 'reste' : 'suit');
+  const choixSous: ChoixPaiement | null = choixManuel === 'suit' || choixManuel === 'avoir' ? choixManuel : null;
+  const choix: ChoixPaiement = prive ? 'suit' : sousLePaye ? choixSous ?? 'suit' : choixManuel === 'reste' || choixManuel === 'suit' ? choixManuel : (nouveauCents > ancienCents ? 'reste' : 'suit');
+  const choixAFaire = sousLePaye && !choixSous;
   const erreurDonnees = change && !montantInvalide ? erreurNouveauMontant(transaction, nouveauCents, ecritures) : null;
   /** Le plan, ou la raison pour laquelle il n'existe pas (M1) : un plan impossible ne se remplace jamais par une écriture directe. */
   const planPour = (c: ChoixPaiement): { plan: EtapeCorrection[] | null; erreur: string | null } => {
@@ -100,10 +119,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     try { return { plan: planCorrection(transaction, paiements, nouveauCents, c), erreur: null }; }
     catch (e) { return { plan: null, erreur: e instanceof Error ? e.message : 'Correction impossible.' }; }
   };
-  const { plan, erreur: erreurPlan } = planPour(choix);
+  const { plan, erreur: erreurPlan } = choixAFaire ? { plan: null, erreur: null } : planPour(choix);
   const ctx = { aujourdhui: todayISO(), maintenant: new Date().toISOString() };
   const effet = (c: ChoixPaiement) => { const { plan: p } = planPour(c); return p ? effetCorrection(transaction, paiements, p) : null; };
   const apres = plan ? simulerPlan(transaction, paiements, plan, ctx) : null;
+  const sortant = transactionDirection(transaction, ecritures) === 'out';
   const gauche = groupeDe(category);
 
   const currentDrivePath = DriveService.generateDrivePath({ ...draft, category, date, amountHT, amountTTC, proofNotes });
@@ -129,13 +149,14 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       ...(lastPaymentId !== undefined ? { lastPaymentId } : {}),
       description: description.trim(),
       category,
-      subcategory: subcategory.trim() || 'Divers',
+      // FN-9 : « Précision » ne se remplit jamais seule ; vide elle reste vide.
+      subcategory: subcategory.trim(),
       date: date.trim(),
       amountHT,
       tvaRate,
       tvaAmount,
       amountTTC,
-      ...(finance ? { finance } : {}),
+      ...(finance ? { finance: finance && notesSaisies !== null && tiersDeFinance && notesSaisies !== tiersDeFinance ? avecTiers(finance, notesSaisies) : finance } : {}),
       proofNotes: proofNotes.trim(),
       proofUrl,
       proofFileName
@@ -150,12 +171,15 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       if (montantInvalide) throw new Error('Montant invalide : un nombre positif en CHF est requis.');
       if (erreurDonnees) throw new Error(erreurDonnees);
       if (verrou && toCents(amountTTC) !== ancienCents) throw new Error(verrou);
+      if (choixAFaire) throw new Error('Choisis : erreur de saisie, ou bien payé comme avant (avoir à recevoir).');
       if (change && erreurPlan) throw new Error(erreurPlan);
       const vivante = StorageService.getTransactions().find(t => t.id === transaction.id) ?? transaction;
       const candidate = aEnregistrer(vivante);
       // Vérifié avant la première écriture : une correction ne s'arrête pas à mi-chemin sur une saisie qu'on pouvait refuser d'emblée.
       if (candidate.finance) validateFinanceTransaction(candidate);
       const etapes = plan ?? [];
+      const etapeAvoir = etapes.find((s): s is Extract<EtapeCorrection, { type: 'avoir' }> => s.type === 'avoir');
+      if (etapeAvoir) verifierAvoir(candidate, etapeAvoir, { ...ctx, maintenant: new Date().toISOString() }, StorageService.getTransactions(), FinanceService.getPayments());
       if (etapes.some(s => s.type === 'montant')) {
         // Un lot Firestore par étape (B1) : on n'annonce « mise à jour » qu'une fois toutes les étapes mises en file ; un refus ultérieur du serveur reste le bandeau « Enregistrement refusé ».
         await executerPlan(etapes, transaction.id, { ...ctx, maintenant: new Date().toISOString() }, aEnregistrer);
@@ -188,7 +212,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const mots = (c: ChoixPaiement) => {
     const e = effet(c);
     if (!e) return '';
-    return c === 'suit' ? `payé ${amountOnly(e.payeCents)}` : `payé ${amountOnly(e.payeCents)} · reste ${amountOnly(e.resteCents)}`;
+    return c === 'reste' ? `payé ${amountOnly(e.payeCents)} · reste ${amountOnly(e.resteCents)}` : `payé ${amountOnly(e.payeCents)}`;
   };
 
   return (
@@ -197,7 +221,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <div className="mod-grab" aria-hidden="true" />
         <div className="mod-tete">
           <span className="mod-sq" style={{ background: gauche.fond }} aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={gauche.trait} strokeWidth="2.8"><path d={gauche.chemin} /></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={gauche.trait} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d={gauche.chemin} /></svg>
           </span>
           <h3 id={titreId}>{transaction.description}</h3>
           <button type="button" onClick={onClose} aria-label="Fermer" className="mod-x"><span><X size={18} /></span></button>
@@ -235,7 +259,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           <div className="mod-g2">
             <label className="mod-f"><span className="mod-lib">Catégorie</span>
               <span className="mod-sel">
-                <span className="mod-sq" style={{ background: gauche.fond }} aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={gauche.trait} strokeWidth="2.8"><path d={gauche.chemin} /></svg></span>
+                <span className="mod-sq" style={{ background: gauche.fond }} aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={gauche.trait} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d={gauche.chemin} /></svg></span>
                 <select name="tx_edit_category" autoComplete="off" data-form-type="other" value={category} onChange={(e) => field('category', e.target.value as FinanceCategory)}>
                   {/* AM-62 : seules les catégories du même sens que l'écriture d'origine ; une charge ne devient pas une recette. */}
                   {sensDeCategorie(transaction.category) === 'charge' && <>
@@ -289,16 +313,26 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
           {/* Le choix du paiement, puis l'aperçu avant / après */}
           {change && !montantInvalide && <>
-            {pertinent && (
-              <div className={sousLePaye ? 'mod-ch mod-ch-un' : 'mod-ch'} role="radiogroup" aria-label="Le paiement déjà noté">
-                {(sousLePaye ? ['suit'] as const : ['suit', 'reste'] as const).map(c => (
+            {pertinent && !sousLePaye && (
+              <div className="mod-ch" role="radiogroup" aria-label="Le paiement déjà noté">
+                {(['suit', 'reste'] as const).map(c => (
                   <button key={c} type="button" role="radio" aria-checked={choix === c} onClick={() => setChoixManuel(c)}>
                     {c === 'suit' ? 'Le paiement suit' : 'Reste à payer'}<small>{mots(c)}</small>
                   </button>
                 ))}
               </div>
             )}
-            {sousLePaye && <p className="mod-pourquoi" data-booster="trop-paye">Trop payé <b className="mod-m">{amountOnly(tropPayeCents)}</b> ? Enregistre un avoir depuis la fiche (« Avoir ou remboursement »).</p>}
+            {sousLePaye && (
+              <div className="mod-ch mod-ch-sous" role="radiogroup" aria-label="Le paiement déjà noté">
+                <button type="button" role="radio" aria-checked={choixSous === 'suit'} onClick={() => setChoixManuel('suit')}>
+                  Erreur de saisie : j’ai payé {amountOnly(nouveauCents)}<small>{mots('suit')}</small>
+                </button>
+                <button type="button" role="radio" aria-checked={choixSous === 'avoir'} onClick={() => setChoixManuel('avoir')}>
+                  J’ai bien payé {amountOnly(payeNet(transaction, paiements, ecritures))} : {amountOnly(tropPayeCents)} {sortant ? 'trop payé' : 'trop encaissé'}<small>{sortant ? 'avoir à recevoir' : 'avoir à rembourser'} de {amountOnly(tropPayeCents)}{sortant ? ' du fournisseur' : ''}</small>
+                </button>
+              </div>
+            )}
+            {choixAFaire && <p className="mod-pourquoi" data-booster="trop-paye" role="status">Le montant passe sous ce qui est déjà payé ({amountOnly(payeNet(transaction, paiements, ecritures))}) : choisis ce qui s’est passé.</p>}
             {apres && (
               <div className="mod-ap" aria-live="polite"><h4>Dans Opérations</h4>
                 <RangeeApercu piece={transaction} paiements={paiements} transactions={ecritures} mot="avant" ancien nom={transaction.description} />
@@ -312,7 +346,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
           <label className="mod-f"><span className="mod-lib">Fournisseur, n° de pièce</span>
             <Input type="text" name="tx_edit_proof_notes" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-              value={proofNotes} onChange={(e) => field('proofNotes', e.target.value)} placeholder="Brau-Rauchshop cmd 686863, Bauhaus…" className="mod-in" />
+              value={champTiers} onChange={(e) => setNotesSaisies(e.target.value)} placeholder="Brau-Rauchshop cmd 686863, Bauhaus…" className="mod-in" />
           </label>
 
           {category === 'recettes' && (

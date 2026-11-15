@@ -294,6 +294,86 @@
    "capture": "work/missions/2026-11-14-finances/voies/m5/m5pa-d/m5pa-d.png",
    "page": "https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP",
    "note": ""
+  },
+  {
+   "ecran": "finances-doublons",
+   "route": "finances/operations/doublons",
+   "statut": "choisi",
+   "choix": "m1do-a (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m1/m1do-a/m1do-a.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-archives",
+   "route": "finances/operations/archives",
+   "statut": "choisi",
+   "choix": "m1ar-c (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m1/m1ar-c/m1ar-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-prevision-ajout",
+   "route": "finances/previsions/ajout",
+   "statut": "choisi",
+   "choix": "m3pr-c (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m3/m3pr-c/m3pr-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-projet-materiel",
+   "route": "finances/previsions/projet",
+   "statut": "choisi",
+   "choix": "m3pm-d (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m3/m3pm-d/m3pm-d.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-bien-amorti",
+   "route": "finances/annuel/bien",
+   "statut": "choisi",
+   "choix": "m3im-c (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m3/m3im-c/m3im-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-budget-brassin",
+   "route": "finances/budget",
+   "statut": "choisi",
+   "choix": "m4bb-a (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m4/m4bb-a/m4bb-a.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": "c3a (09.11) reste à un toucher."
+  },
+  {
+   "ecran": "finances-profil",
+   "route": "finances/profil",
+   "statut": "choisi",
+   "choix": "m4pf-c (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m4/m4pf-c/m4pf-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
+  },
+  {
+   "ecran": "finances-compagnon",
+   "route": "finances/compagnon",
+   "statut": "choisi",
+   "choix": "m4ia-c (2026-11-14-finances, sous-vues)",
+   "mots": "m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c",
+   "capture": "work/missions/2026-11-14-finances/voies/m4/m4ia-c/m4ia-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": ""
   }
  ]
 }
