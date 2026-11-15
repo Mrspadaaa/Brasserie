@@ -81,6 +81,43 @@ export interface MinimalDilution {
 export const HCO3_ACID_TOLERANCE_PPM = 100;
 
 export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
+  return searchDilution(input, true);
+}
+
+/**
+ * Le balayage d'origine, sans raccourci : chaque part de 5 % en 5 % est évaluée en entier.
+ * Référence des tests d'équivalence (`minimumOsmosee*.test.ts`) ; l'app appelle `minimalDilution`.
+ */
+export function minimalDilutionExhaustive(input: MinimalDilutionInput): MinimalDilution {
+  return searchDilution(input, false);
+}
+
+/**
+ * Un ion du RÉSEAU au-dessus du maximum du style (ou un bicarbonate au-delà du repère) : critères qui ne dépendent que de la part d'osmosée,
+ * sans résoudre les sels. `dilute` ne fait que BAISSER ces concentrations quand la part monte : l'ensemble des parts qui les passent
+ * est donc fermé vers le haut, et une part qui les rate rate aussi le critère complet. Même formules, mêmes messages que `evaluate`.
+ */
+function reseauReasons(input: MinimalDilutionInput, start: WaterIons): string[] {
+  const reasons: string[] = [];
+  (['ca', 'mg', 'na', 'so4', 'cl'] as Array<keyof WaterIons>).forEach((ion) => {
+    const max = input.ranges?.[ion]?.max;
+    if (max == null || !Number.isFinite(max)) return;
+    if (start[ion] > max + 2) {
+      reasons.push(`${ION_LABEL[ion].toLowerCase()} du réseau à ${Math.round(input.source[ion])} ppm pour ${max} au maximum du style`);
+    }
+  });
+
+  /** Repère de confort maison pour limiter les acides. Ce seuil de dilution est une politique, pas une limite chimique de neutralisation. */
+  const hco3Max = input.ranges?.hco3?.max;
+  if (hco3Max != null && Number.isFinite(hco3Max) && start.hco3 > hco3Max + HCO3_ACID_TOLERANCE_PPM) {
+    reasons.push(
+      `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${nombreFr(hco3Max + HCO3_ACID_TOLERANCE_PPM, 1)} ppm pour limiter la charge d’acide`
+    );
+  }
+  return reasons;
+}
+
+function searchDilution(input: MinimalDilutionInput, skipImpossible: boolean): MinimalDilution {
   const total = input.totalWaterL;
   if (!total || !Number.isFinite(total) || total <= 0) {
     const def = ACIDS[input.acid];
@@ -143,21 +180,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
         reasons.push(`${ION_LABEL[deviation.ion]} après traitement : ${nombreFr(deviation.value, 1)} ppm pour ${deviation.min}–${deviation.max} visés`);
     }
 
-    (['ca', 'mg', 'na', 'so4', 'cl'] as Array<keyof WaterIons>).forEach((ion) => {
-      const max = input.ranges?.[ion]?.max;
-      if (max == null || !Number.isFinite(max)) return;
-      if (start[ion] > max + 2) {
-        reasons.push(`${ION_LABEL[ion].toLowerCase()} du réseau à ${Math.round(input.source[ion])} ppm pour ${max} au maximum du style`);
-      }
-    });
-
-    /** Repère de confort maison pour limiter les acides. Ce seuil de dilution est une politique, pas une limite chimique de neutralisation. */
-    const hco3Max = input.ranges?.hco3?.max;
-    if (hco3Max != null && Number.isFinite(hco3Max) && start.hco3 > hco3Max + HCO3_ACID_TOLERANCE_PPM) {
-      reasons.push(
-        `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${nombreFr(hco3Max + HCO3_ACID_TOLERANCE_PPM, 1)} ppm pour limiter la charge d’acide`
-      );
-    }
+    reasons.push(...reseauReasons(input, start));
 
     if (input.acid === 'lactique' && input.beerVolumeL > 0) {
       const treatment = treatmentAt(pct);
@@ -194,6 +217,9 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
   const retainedAcidExceedsTaste = input.acid === 'lactique'
     && lactateInBeer(retainedMash + retainedSparge, input.beerVolumeL) > LACTATE_TASTE_THRESHOLD;
   for (let pct = retainedAcidExceedsTaste ? 100 : 5; pct <= 100; pct += 5) {
+    // Une part qui rate déjà le réseau (ion, bicarbonate) rate le critère complet : inutile de résoudre les sels pour la rejeter
+    // (méthode : pas de recherche à l'aveugle, on part de la première part que les critères du réseau laissent passer ; résultat identique).
+    if (skipImpossible && reseauReasons(input, dilute(input.source, pct)).length) continue;
     if (evaluate(pct).length === 0) return { feasible: true, pct, reasons: atZero, acid: acidAt(pct),stepPct:5,proposal:proposals.get(pct) };
   }
   return { feasible: false, pct: 100, reasons: [

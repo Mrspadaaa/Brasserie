@@ -7,6 +7,7 @@ import { SaltSolver, type WaterState } from '../../src/ui/SaltSolver';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 import { WaterVolumes } from '../../src/ui/water/WaterVolumes';
 import { WaterDilution } from '../../src/ui/water/WaterDilution';
+import { computeWaterAnalysis } from '../../src/ui/water/computeWaterAnalysis';
 
 afterEach(cleanup);
 
@@ -172,7 +173,7 @@ function Demo() {
 describe('RC-1 : la valeur du minimum arrive en moins de 2 s, même si le worker ne répond jamais', () => {
   afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
-  it('worker muet : « — » d’abord (jamais « Calcul… »), puis « 45 % » avant 2 s, bouton actif', () => {
+  it('worker muet : « — » d’abord (jamais « Calcul… »), puis « 45 % » dès la course sur place (moins de 100 ms simulées), bouton actif', () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     vi.stubGlobal('Worker', WorkerMuet);
     render(<Demo />);
@@ -180,9 +181,26 @@ describe('RC-1 : la valeur du minimum arrive en moins de 2 s, même si le worker
     expect(bouton()).toHaveTextContent('—');
     expect(bouton()).toBeDisabled();
     expect(screen.queryByText(/Calcul…/)).not.toBeInTheDocument();
-    act(() => { vi.advanceTimersByTime(1999); });
+    act(() => { vi.advanceTimersByTime(99); });
     expect(bouton()).toHaveTextContent('45 %');
     expect(bouton()).toBeEnabled();
+    expect(screen.queryByText(/Calcul…/)).not.toBeInTheDocument();
+    // Le chien de garde de 1,5 s arrête ensuite le worker muet sans rien changer à la valeur affichée.
+    act(() => { vi.advanceTimersByTime(2000); });
+    expect(bouton()).toHaveTextContent('45 %');
+  });
+
+  it('worker lent mais vivant (réponse à 400 ms) : la valeur est déjà là avant, et la réponse tardive ne change rien', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const lent: WorkerMuet[] = [];
+    vi.stubGlobal('Worker', class extends WorkerMuet { constructor() { super(); lent.push(this); } });
+    render(<Demo />);
+    act(() => { vi.advanceTimersByTime(99); });
+    expect(screen.getByRole('button', { name: /Minimum trouvé d’osmosée/ })).toHaveTextContent('45 %');
+    const requete = lent[0].postMessage.mock.calls[0][0];
+    const reponse = { kind: 'result', id: requete.id, key: requete.key, result: computeWaterAnalysis(requete.input) };
+    act(() => { vi.advanceTimersByTime(300); (lent[0].onmessage as (e: unknown) => void)({ data: reponse }); });
+    expect(screen.getByRole('button', { name: /Minimum trouvé d’osmosée/ })).toHaveTextContent('45 %');
   });
 
   it('sans Worker du tout : la valeur est là au premier rendu (calcul sur place, même résultat)', () => {
