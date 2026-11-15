@@ -45,7 +45,8 @@
 .mod-f > .mod-lib { display:flex; align-items:baseline; gap:4px; font-size:13px; font-weight:600; color:var(--mod-t2); margin-bottom:4px; }
 .mod-lib s { font-size:12px; font-weight:500; opacity:.8; }
 .mod-g2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.mod-in { width:100%; height:44px; padding:0 12px; font-size:16px; border-radius:12px; border:1px solid var(--mod-bord); background:var(--mod-champ); color:var(--mod-t1); font-family:inherit; }
+.mod-in { width:100%; height:44px; padding:0 12px; font-size:16px; line-height:42px; border-radius:12px; border:1px solid var(--mod-bord); background:var(--mod-champ); color:var(--mod-t1); font-family:inherit; }
+/* Tactile : le champ est un <textarea> d'une ligne dont le texte se pose en haut ; la hauteur de ligne égale à celle du champ le centre (q6, point 6). */
 .mod-in:focus, .mod-sel select:focus { outline:2px solid var(--mod-acc); outline-offset:-1px; }
 .mod-sel { position:relative; display:flex; align-items:center; gap:8px; height:44px; border:1px solid var(--mod-bord); border-radius:12px; padding:0 10px; background:var(--mod-champ); }
 .mod-sel .mod-sq { width:20px; height:20px; border-radius:7px; }
@@ -53,7 +54,7 @@
 .mod-sel .mod-chev { position:absolute; right:10px; pointer-events:none; color:var(--mod-t2); }
 .mod-mt { display:flex; align-items:center; gap:8px; height:44px; border:1px solid var(--mod-bord); background:var(--mod-champ); border-radius:12px; padding:0 10px; }
 .mod-mt .mod-pre { font-size:13px; color:var(--mod-t2); white-space:nowrap; flex:none; }
-.mod-mt .mod-mt-in { flex:1; min-width:0; width:100%; border:0; outline:0; background:none; color:var(--mod-t1); text-align:right; font-family:'IBM Plex Mono',ui-monospace,monospace; font-weight:600; font-size:18px; padding:0; height:100%; }
+.mod-mt .mod-mt-in { flex:1; min-width:0; width:100%; border:0; outline:0; background:none; color:var(--mod-t1); text-align:right; font-family:'IBM Plex Mono',ui-monospace,monospace; font-weight:600; font-size:18px; line-height:42px; padding:0; height:100%; }
 .mod-mt[data-edite] { border-color:var(--mod-acc); box-shadow:0 0 0 1px var(--mod-acc); }
 .mod-mt[data-verrou] { background:var(--mod-gris); border-color:var(--mod-bord); }
 .mod-mt[data-verrou] .mod-mt-in { color:var(--mod-t2); }
@@ -67,6 +68,7 @@
 .mod-ch { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--mod-bord); border-radius:12px; overflow:hidden; margin-top:8px; }
 .mod-ch button { min-height:44px; font-size:14px; line-height:16px; padding:4px 6px; background:var(--mod-champ); color:var(--mod-t1); border:0; border-left:1px solid var(--mod-bord); text-align:center; }
 .mod-ch button:first-child { border-left:0; }
+.mod-ch-un { grid-template-columns:1fr; }
 .mod-ch button[aria-checked='true'] { background:var(--mod-t1); color:rgb(var(--cave-950)); font-weight:600; }
 .mod-ch button:focus-visible { outline:2px solid var(--mod-acc); outline-offset:-3px; }
 .mod-ch small { display:block; font-size:12px; font-weight:400; opacity:.9; }

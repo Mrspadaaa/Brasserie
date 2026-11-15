@@ -154,7 +154,8 @@ try {
   await scenario('hausse + le paiement suit', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4550, choix: 'suit', attendu: { montant: 4550, solde: 4550 } });
   await scenario('hausse + reste à payer', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4550, choix: 'reste', attendu: { montant: 4550, solde: 4200 } });
   await scenario('baisse sous le payé + le paiement suit', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'suit', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
-  await scenario('baisse sous le payé + reste à payer', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'reste', attendu: { montant: 4000, solde: 0 } });
+  // q6, point 1 : sous le payé, « reste à payer » n'existe plus (le payé ne disparaît jamais) : le plan demandé en « reste » est celui du paiement qui suit.
+  await scenario('baisse sous le payé, « reste à payer » demandé : le paiement suit quand même (q6)', { cents: 4200, paiements: [[4200, '2026-11-09']], nouveau: 4000, choix: 'reste', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
   await scenario('baisse avec deux paiements inversés + le paiement suit', { cents: 4200, paiements: [[3000, '2026-11-05'], [1200, '2026-11-09']], nouveau: 2500, choix: 'suit', attendu: { montant: 2500, solde: 2500, dateRemplacement: '2026-11-09' } });
   await scenario('baisse avec un seul paiement inversé (le reste tient)', { cents: 4200, paiements: [[3000, '2026-11-05'], [1200, '2026-11-09']], nouveau: 4000, choix: 'suit', attendu: { montant: 4000, solde: 4000, dateRemplacement: '2026-11-09' } });
 

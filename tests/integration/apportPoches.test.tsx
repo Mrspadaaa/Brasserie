@@ -70,7 +70,8 @@ describe('Apport = m5ap-a : les deux poches, avec justificatif', () => {
   });
 
   it('l’effet se lit du registre : la caisse change de +120,50, ventes − dépenses reste à +23,20', () => {
-    grandLivre = [depenseOuVente('VENTE-1', 'income', 100000), depenseOuVente('ACHAT-1', 'expense', 97680)];
+    // Le banc de m5ap-a : 720,00 de ventes, 696,80 dépensés, et 28,60 de matériel à amortir, À PART comme dans Opérations (q6, point 4 : −5,40 avant).
+    grandLivre = [depenseOuVente('VENTE-1', 'income', 72000), depenseOuVente('ACHAT-1', 'expense', 69680), { ...depenseOuVente('MAT-1', 'expense', 2860), category: 'materiel' }];
     ouvrir(); saisir('120,50', 'Apport pour le malt');
     const effet = screen.getByLabelText('Effet de ce mouvement');
     expect(within(effet).getByText('+120,50')).toBeVisible();

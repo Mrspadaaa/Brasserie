@@ -45,9 +45,14 @@ export function choixPertinent(piece: Transaction, paiements: FinancialPayment[]
   return paye > 0 && paye >= transactionAmount(piece);
 }
 
+/** Une baisse qui passe SOUS ce qui est déjà payé (q6, point 1) : seul « Le paiement suit » a un sens ; l'excédent versé est un avoir à enregistrer, pas un reste à payer. */
+export function baisseSousLePaye(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, transactions: Transaction[] = []): boolean {
+  return Number.isSafeInteger(nouveauMontantCents) && nouveauMontantCents > 0 && nouveauMontantCents < transactionAmount(piece) && payeNet(piece, paiements, transactions) > nouveauMontantCents;
+}
+
 /**
  * La suite d'écritures qui amène la pièce à `nouveauMontantCents`, dans l'ordre où les règles Firestore l'acceptent.
- * Vide si le montant ne change pas. Lève une erreur si le montant est invalide ou si un paiement à inverser est introuvable.
+ * Sous le payé, le choix est ignoré : le paiement suit toujours (voir `baisseSousLePaye`). Vide si le montant ne change pas. Lève une erreur si le montant est invalide ou si un paiement à inverser est introuvable.
  */
 export function planCorrection(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, choix: ChoixPaiement): EtapeCorrection[] {
   if (!Number.isSafeInteger(nouveauMontantCents) || nouveauMontantCents <= 0) throw new Error('Montant invalide : un nombre positif en CHF est requis.');
@@ -82,7 +87,8 @@ export function planCorrection(piece: Transaction, paiements: FinancialPayment[]
   }
   if (reste > nouveauMontantCents) throw new Error('Aucun paiement à inverser pour descendre sous le montant déjà réglé.');
   etapes.push({ type: 'montant', cents: nouveauMontantCents });
-  if (choix === 'suit' && nouveauMontantCents - reste > 0) etapes.push({ type: 'paiement', cents: nouveauMontantCents - reste, direction, method: mode, date: dateInversee });
+  // q6, point 1 : sous le payé, « Reste à payer » n'existe pas (le payé ne disparaît jamais, aucune échéance inventée pour une pièce payée) : le paiement suit toujours, quel que soit `choix`.
+  if (nouveauMontantCents - reste > 0) etapes.push({ type: 'paiement', cents: nouveauMontantCents - reste, direction, method: mode, date: dateInversee });
   return etapes;
 }
 

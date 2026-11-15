@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Transaction } from '../../src/types';
 import type { FinancialPayment } from '../../src/domain/finance/types';
-import { anneesCloses, choixPertinent, effetCorrection, erreurNouveauMontant, planCorrection, verrouMontant } from '../../src/domain/finance/correctionMontant';
+import { anneesCloses, baisseSousLePaye, choixPertinent, effetCorrection, erreurNouveauMontant, planCorrection, verrouMontant } from '../../src/domain/finance/correctionMontant';
 
 const piece = (cents: number, extra: Partial<Transaction> = {}): Transaction => ({
   id: 'T-1', date: '09.11.2026', description: 'Nettoyant alcalin', category: 'nettoyage', subcategory: 'CIP',
@@ -35,11 +35,24 @@ describe('planCorrection : la suite d’écritures, en centimes', () => {
       { type: 'paiement', cents: 4000, direction: 'out', method: 'bank', date: '2026-11-09' }
     ]);
   });
-  it('baisse sous le payé + reste à payer : contre-paiement et montant, aucun nouveau paiement', () => {
-    expect(planCorrection(piece(4200), [p1], 4000, 'reste')).toEqual([
+  it('q6 point 1 : sous le payé, « reste à payer » n’existe pas : le plan est celui du paiement qui suit, aucune échéance inventée', () => {
+    const suit = planCorrection(piece(4200), [p1], 3000, 'suit');
+    expect(planCorrection(piece(4200), [p1], 3000, 'reste')).toEqual(suit);
+    expect(suit).toEqual([
       { type: 'contre', paiementId: 'PAI-1' },
-      { type: 'montant', cents: 4000 }
+      { type: 'montant', cents: 3000 },
+      { type: 'paiement', cents: 3000, direction: 'out', method: 'bank', date: '2026-11-09' }
     ]);
+    // Le payé ne disparaît jamais : la pièce reste entièrement réglée, rien à payer.
+    expect(effetCorrection(piece(4200), [p1], suit)).toEqual({ montantCents: 3000, payeCents: 3000, resteCents: 0 });
+  });
+  it('baisseSousLePaye : vrai seulement quand le nouveau montant passe sous le réglé net', () => {
+    expect(baisseSousLePaye(piece(4200), [p1], 3000)).toBe(true);
+    expect(baisseSousLePaye(piece(4200), [p1], 4200)).toBe(false);
+    expect(baisseSousLePaye(piece(4200), [p1], 4550)).toBe(false);
+    expect(baisseSousLePaye(piece(4200), [], 3000)).toBe(false);
+    expect(baisseSousLePaye(piece(4200), [paiement('PAI-P', 1000)], 3000)).toBe(false);
+    expect(baisseSousLePaye(piece(4200), [p1], 0)).toBe(false);
   });
   it('baisse sous le payé, deux paiements : on n’inverse que le dernier quand le reste tient', () => {
     const a = paiement('PAI-A', 3000, '2026-11-05'), b = paiement('PAI-B', 1200, '2026-11-09');
@@ -111,9 +124,9 @@ describe('effetCorrection : ce que le plan laisse', () => {
     const e = planCorrection(piece(4200), [p1], 4000, 'suit');
     expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
   });
-  it('baisse + reste : le réglé retombe à 0 et tout le montant reste à payer', () => {
+  it('baisse + reste demandé : sous le payé il ne reste rien à payer (le payé ne disparaît jamais)', () => {
     const e = planCorrection(piece(4200), [p1], 4000, 'reste');
-    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4000, payeCents: 0, resteCents: 4000 });
+    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
   });
 });
 

@@ -30,7 +30,7 @@ afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
 describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
   it('montre les deux pièces du même fournisseur, la plus ancienne d’abord, sans celle d’un autre', () => {
     ouvre(loyer());
-    expect(screen.getByRole('dialog', { name: 'Payer Atelier' })).toBeVisible();
+    expect(screen.getByRole('dialog', { name: 'Payer l’Atelier' })).toBeVisible();
     expect(screen.getByText('2 pièces à payer au même fournisseur')).toBeVisible();
     const noms = screen.getAllByRole('checkbox').map(c => c.getAttribute('aria-label'));
     expect(noms).toEqual(['Inclure Solde atelier · ancienne année dans le virement', 'Inclure Loyer de l’atelier dans le virement']);
@@ -62,9 +62,47 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     expect(FinanceService.getPayments()).toHaveLength(0);
     montant('450');
     expect(screen.getByRole('button', { name: /^✓ Payer 450,00/ })).toBeEnabled();
-    fireEvent.click(screen.getByRole('checkbox', { name: /Loyer/ }));
-    expect(screen.getByRole('alert')).toHaveTextContent(/dépasse ce qui reste à payer \(60,00/);
+    montant('');
+    expect(screen.getByRole('alert')).toHaveTextContent(/Indique le montant du virement/);
     expect(screen.getByRole('button', { name: /^✓ Payer/ })).toBeDisabled();
+    expect(FinanceService.getPayments()).toHaveLength(0);
+  });
+  it('q6 points 2 et 3 : au-delà du total, le champ est ramené au total ; champ, barre et bouton disent le même nombre ; le message est une ligne sous le champ', () => {
+    ouvre(loyer());
+    montant('700');
+    const champ = screen.getByLabelText('Montant du virement (CHF)');
+    expect(champ).toHaveValue('460,00');
+    expect(screen.getByRole('button', { name: /^✓ Payer 460,00/ })).toBeEnabled();
+    expect(screen.getByText('retard 60,00')).toBeVisible();
+    const message = screen.getByRole('alert');
+    expect(message).toHaveTextContent('Ramené à 460,00 CHF : c’est tout ce qui reste à payer.');
+    expect(message.tagName).toBe('P');
+    expect(champ.compareDocumentPosition(message) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy(); // sous le champ, pas à sa droite
+    expect(champ.parentElement).not.toContainElement(message);
+  });
+  it('q6 point 9 : décocher une pièce recale le montant au nouveau total quand il le dépassait', () => {
+    ouvre(loyer());
+    montant('300');
+    expect(screen.getByRole('button', { name: /^✓ Payer 300,00/ })).toBeEnabled();
+    fireEvent.click(screen.getByRole('checkbox', { name: /Loyer/ }));
+    expect(screen.getByLabelText('Montant du virement (CHF)')).toHaveValue('60,00');
+    expect(screen.getByRole('button', { name: /^✓ Payer 60,00/ })).toBeEnabled();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+  it('q6 point 8 : le titre élide l’article devant une voyelle (« Payer l’Atelier ») et garde le nom tel quel sinon', () => {
+    ouvre(loyer());
+    expect(screen.getByRole('dialog', { name: 'Payer l’Atelier' })).toBeVisible();
+    cleanup();
+    ouvre(autre());
+    expect(screen.getByRole('dialog', { name: 'Payer Müller' })).toBeVisible();
+  });
+  it('q6 point 7 : « autre » date vide, le bouton dit « Choisis la date » et ne paie rien ; la date posée, il redit le montant', () => {
+    ouvre(autre());
+    fireEvent.click(screen.getByRole('button', { name: 'autre', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Choisis la date' }));
+    expect(FinanceService.getPayments()).toHaveLength(0);
+    fireEvent.change(screen.getByLabelText('Date réelle du paiement'), { target: { value: '2026-01-05' } });
+    expect(screen.getByRole('button', { name: /^✓ Payer 90,00/ })).toBeEnabled();
   });
   it('décocher une pièce l’exclut du virement', async () => {
     const fermer = vi.fn();
@@ -103,7 +141,7 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     ouvre(StorageService.getTransactions().find(t => t.id === 'HIST')!);
     expect(screen.getByText(/paiement historique est inconnu/)).toBeVisible();
     expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue('');
-    expect(screen.getByRole('button', { name: /^✓ Payer/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Choisis la date' })).toHaveAttribute('aria-disabled', 'true'); // q6 point 7 : le bouton dit pourquoi
   });
   it('justificatif : un seul original rangé, lié aux deux paiements ; sans justificatif le paiement s’enregistre quand même', async () => {
     const fermer = vi.fn();

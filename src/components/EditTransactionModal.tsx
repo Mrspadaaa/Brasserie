@@ -12,7 +12,7 @@ import { ReceiptService } from '../services/receiptService';
 import { ModalShell } from '../ui/ModalShell';
 import { archiveIndex, isTransactionArchived } from '../domain/finance/archive';
 import { dateAffichee, isoDate, montantChf, sensDeCategorie, todayISO, toCents, transactionAmount, validateFinanceTransaction } from '../domain/finance/ledger';
-import { anneesCloses, choixPertinent, effetCorrection, erreurNouveauMontant, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
+import { anneesCloses, baisseSousLePaye, choixPertinent, effetCorrection, erreurNouveauMontant, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
 import { amountOnly } from '../ui/finance/financeFormat';
 import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
@@ -89,7 +89,10 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const change = !verrou && nouveauCents !== ancienCents;
   const montantInvalide = change && (!Number.isFinite(amountTTC) || nouveauCents <= 0);
   const pertinent = change && !montantInvalide && choixPertinent(transaction, paiements, ecritures);
-  const choix: ChoixPaiement = choixManuel ?? (nouveauCents > ancienCents ? 'reste' : 'suit');
+  // q6, point 1 : sous ce qui est déjà payé, seul « Le paiement suit » existe (le payé ne disparaît jamais) ; l'excédent versé se règle par un avoir.
+  const sousLePaye = pertinent && baisseSousLePaye(transaction, paiements, nouveauCents, ecritures);
+  const tropPayeCents = sousLePaye ? payeNet(transaction, paiements, ecritures) - nouveauCents : 0;
+  const choix: ChoixPaiement = sousLePaye ? 'suit' : choixManuel ?? (nouveauCents > ancienCents ? 'reste' : 'suit');
   const erreurDonnees = change && !montantInvalide ? erreurNouveauMontant(transaction, nouveauCents, ecritures) : null;
   /** Le plan, ou la raison pour laquelle il n'existe pas (M1) : un plan impossible ne se remplace jamais par une écriture directe. */
   const planPour = (c: ChoixPaiement): { plan: EtapeCorrection[] | null; erreur: string | null } => {
@@ -287,14 +290,15 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           {/* Le choix du paiement, puis l'aperçu avant / après */}
           {change && !montantInvalide && <>
             {pertinent && (
-              <div className="mod-ch" role="radiogroup" aria-label="Le paiement déjà noté">
-                {(['suit', 'reste'] as const).map(c => (
+              <div className={sousLePaye ? 'mod-ch mod-ch-un' : 'mod-ch'} role="radiogroup" aria-label="Le paiement déjà noté">
+                {(sousLePaye ? ['suit'] as const : ['suit', 'reste'] as const).map(c => (
                   <button key={c} type="button" role="radio" aria-checked={choix === c} onClick={() => setChoixManuel(c)}>
                     {c === 'suit' ? 'Le paiement suit' : 'Reste à payer'}<small>{mots(c)}</small>
                   </button>
                 ))}
               </div>
             )}
+            {sousLePaye && <p className="mod-pourquoi" data-booster="trop-paye">Trop payé <b className="mod-m">{amountOnly(tropPayeCents)}</b> ? Enregistre un avoir depuis la fiche (« Avoir ou remboursement »).</p>}
             {apres && (
               <div className="mod-ap" aria-live="polite"><h4>Dans Opérations</h4>
                 <RangeeApercu piece={transaction} paiements={paiements} transactions={ecritures} mot="avant" ancien nom={transaction.description} />

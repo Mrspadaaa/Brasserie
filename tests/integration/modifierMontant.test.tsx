@@ -115,6 +115,26 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
     expect(vivante().settlementBalanceCents).toBe(4000);
   });
 
+  it('q6 point 1 : sous le payé, seul « Le paiement suit » est proposé, avec « Trop payé 12,00 ? » vers l’avoir ; jamais de « Reste à payer »', () => {
+    ouvrir();
+    taper('30');
+    const groupe = screen.getByRole('radiogroup', { name: 'Le paiement déjà noté' });
+    expect(within(groupe).getAllByRole('radio')).toHaveLength(1);
+    expect(within(groupe).getByRole('radio', { name: /Le paiement suit/ })).toHaveAttribute('aria-checked', 'true');
+    expect(within(groupe).getByRole('radio')).toHaveTextContent('payé 30,00');
+    expect(screen.queryByRole('radio', { name: /Reste à payer/ })).toBeNull();
+    expect(screen.getByText(/Trop payé/)).toHaveTextContent('Trop payé 12,00 ? Enregistre un avoir depuis la fiche');
+    // L'aperçu « après » garde le payé : aucune échéance inventée, aucun « à payer ».
+    const apercu = screen.getByText('Dans Opérations').parentElement!;
+    expect(apercu).not.toHaveTextContent(/à payer/);
+    expect(apercu).not.toHaveTextContent(/reste 30,00/);
+  });
+  it('une baisse au-dessus du payé et une hausse gardent les deux choix', () => {
+    ouvrir();
+    taper('45,50');
+    expect(within(screen.getByRole('radiogroup', { name: 'Le paiement déjà noté' })).getAllByRole('radio')).toHaveLength(2);
+    expect(screen.queryByText(/Trop payé/)).toBeNull();
+  });
   it('année close (clôture confirmée) : le montant se verrouille et dit pourquoi en une ligne', () => {
     FinanceService.saveClosing({ id: 'C-2026', year: 2026, createdAt: '2026-11-01T08:00:00.000Z', openingInventory: [], closingInventory: [], inventoriesConfirmed: true, adjustments: [], report: { generatedAt: '2026-11-01T08:00:00.000Z' } as never });
     ouvrir();

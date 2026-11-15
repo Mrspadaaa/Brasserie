@@ -15,7 +15,7 @@
 /* Ton virement : un seul montant, grand */
 .pay-who { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; }
 .pay-who > span { flex: 1; font-size: 15px; font-weight: 600; color: var(--pay-t1); }
-.pay-who :is(input, textarea) { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 24px; line-height: 28px; width: 150px; height: 52px; min-height: 52px; padding: 0 12px; text-align: right;
+.pay-who :is(input, textarea) { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 24px; line-height: 50px; width: 150px; height: 52px; min-height: 52px; padding: 0 12px; text-align: right;
   background: var(--pay-fond); color: var(--pay-t1); border: 1px solid var(--pay-bord); border-radius: 12px; resize: none; overflow: hidden; }
 .pay-who :is(input, textarea):focus { outline: 2px solid rgb(var(--area-finances)); outline-offset: -1px; }
 .pay-who :is(input, textarea)[aria-invalid='true'] { border-color: var(--pay-late); }
@@ -74,5 +74,7 @@
 .pay-b1 { background: var(--pay-t1); color: var(--pay-fond); border: 0; font-weight: 600; }
 .pay-b2 { background: rgb(var(--cave-850)); color: var(--pay-t1); border: 1px solid var(--pay-bord); }
 .pay-b1:disabled { opacity: .45; cursor: not-allowed; }
+/* Date « autre » vide : le bouton dit pourquoi (« Choisis la date ») et mène au champ au lieu d'être gris muet (q6, point 7). */
+.pay-b1[data-attend] { opacity: .75; }
 .pay-corps button:focus-visible, .pay-ft button:focus-visible { outline: 2px solid rgb(var(--area-finances)); outline-offset: 2px; }
-@media (min-width: 900px) { .pay-corps { max-width: 560px; } }
+/* À 1280 le corps prend toute la largeur de la feuille, comme la fiche (q6, point 5) : plus de plafond à 560 px. */

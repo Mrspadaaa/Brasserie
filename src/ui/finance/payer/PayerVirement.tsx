@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
-import { ChampNombre } from '../../depense/ChampNombre';
+import { ChampVirement } from './ChampVirement';
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { formatCHF, isoDate, paymentState, todayISO, transactionVendor } from '../../../domain/finance/ledger';
@@ -59,9 +59,11 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
 
   const choisies = pieces.filter(p => !exclues.has(p.id));
   const total = totalDu(choisies);
-  const valeur = saisi === null ? (choisies.length ? total : undefined) : saisi;
+  // Une seule valeur (q6, points 2, 3, 9) : jamais au-delà du total dû des pièces cochées ; décocher une pièce recale un montant qui le dépassait.
+  const valeur = saisi === null ? (choisies.length ? total : undefined) : saisi === undefined ? undefined : Math.min(saisi, total);
   const refus = choisies.length === 0 ? 'Coche au moins une pièce.' : refusDuVirement(choisies, valeur);
   const rep = refus ? null : repartirVirement(choisies, valeur!);
+  const dateRef = useRef<HTMLInputElement>(null);
   const parts = new Map((rep?.parts ?? []).map(p => [p.id, p]));
   const touchees = (rep?.parts ?? []).filter(p => p.partCents > 0);
   const date = modeDate === 'auj' ? aujourdhui : autreDate;
@@ -117,7 +119,9 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
     } finally { setOccupe(false); }
   };
 
-  const titre = `${verbe} ${tiers || transaction.description}`;
+  // « Payer l’Atelier » (m5pa-d) : l'article s'élide devant une voyelle ; sinon « Payer » et le nom tel quel (q6, point 8).
+  const voyelle = /^[aeiou]/i.test((tiers ?? '').normalize('NFD').replace(/\p{M}/gu, '').trim());
+  const titre = tiers ? `${verbe} ${voyelle ? 'l’' : ''}${tiers}` : `${verbe} ${transaction.description}`;
   const n = pieces.length;
   const sousTitre = n > 1 ? `${n} pièces à ${entrant ? 'encaisser du même client' : 'payer au même fournisseur'}` : `Une pièce à ${entrant ? 'encaisser' : 'payer'}`;
 
@@ -132,16 +136,14 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
   return <Sheet open title={titre} subtitle={sousTitre} onClose={onClose} dismissible={!occupe} className="finance-sheet pay" footer={
     <div className="pay-ft">
       <button type="button" className="pay-b2" onClick={onClose} disabled={occupe}>Annuler</button>
-      <button type="button" className="pay-b1" onClick={() => void enregistrer()} disabled={occupe || !rep || !dateOk}>{occupe ? 'Enregistrement…' : <>✓ {verbe} <span className="pay-m">{valeur != null && rep ? amountOnly(valeur) : '—'}</span></>}</button>
+      <button type="button" className="pay-b1" data-attend={!dateOk && !!rep && !occupe ? '' : undefined} aria-disabled={!dateOk && !!rep && !occupe ? true : undefined}
+        onClick={() => { if (rep && !dateOk && !occupe) { dateRef.current?.focus(); return; } void enregistrer(); }} disabled={occupe || !rep}>{occupe ? 'Enregistrement…' : rep && !dateOk ? 'Choisis la date' : <>✓ {verbe} <span className="pay-m">{valeur != null && rep ? amountOnly(valeur) : '—'}</span></>}</button>
     </div>}>
     <div className="pay-corps">
       {inconnu && <p className="pay-note" role="note">Le paiement historique est inconnu. Indique la date et le montant réellement réglés.</p>}
-      <div className="pay-who" data-booster="un-virement">
-        <span>{entrant ? 'Ton encaissement' : 'Ton virement'}</span>
-        <ChampNombre aria-label={entrant ? 'Montant de l’encaissement (CHF)' : 'Montant du virement (CHF)'} value={valeur == null ? undefined : valeur / 100} onValue={v => setSaisi(v == null ? undefined : Math.round(v * 100))}
-          max={Math.max(total, 1) / 100} maxDecimales={2} fractionDigits={2} dire />
-      </div>
-      {refus && saisi !== null && <p className="pay-err" role="alert">{refus}</p>}
+      <ChampVirement libelle={entrant ? 'Ton encaissement' : 'Ton virement'} aria={entrant ? 'Montant de l’encaissement (CHF)' : 'Montant du virement (CHF)'} valeurCents={valeur} maxCents={Math.max(total, 1)}
+        onValeur={v => setSaisi(v)} />
+      {refus && saisi !== null && !(saisi !== undefined && saisi > total) && <p className="pay-err" role="alert">{refus}</p>}
       <div className="pay-flow" data-booster="repartition" aria-hidden="true">
         {troncons.map(t => <i key={t.id} style={{ flex: t.partCents, background: couleurDe(t.piece, aujourdhui) }} />)}
         {reste > 0 && <i className="pay-hach" style={{ flex: reste }} />}
@@ -185,7 +187,7 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg></button>
       </div>
       {(moyensOuverts || moyen !== 'bank') && <div className="pay-moyens" role="group" aria-label="Moyen de paiement">{MOYENS.filter(m => m.id !== 'bank').map(m => <button type="button" key={m.id} aria-pressed={moyen === m.id} onClick={() => setMoyen(m.id)}>{m.texte}</button>)}</div>}
-      {modeDate === 'autre' && <label className="pay-date">Date réelle du paiement<input type="date" value={autreDate} max={aujourdhui} onChange={e => setAutreDate(e.target.value)} required /></label>}
+      {modeDate === 'autre' && <label className="pay-date">Date réelle du paiement<input ref={dateRef} type="date" value={autreDate} max={aujourdhui} onChange={e => setAutreDate(e.target.value)} required /></label>}
       {erreur && <p className="pay-err" role="alert" style={{ marginTop: 8 }}>{erreur}</p>}
     </div>
   </Sheet>;

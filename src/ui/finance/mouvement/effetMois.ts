@@ -1,12 +1,13 @@
 import { isoDate, summarizeLedger, todayISO } from '../../../domain/finance/ledger';
+import { periodeSynthese } from '../../../domain/finance/periodeSynthese';
 import type { Transaction } from '../../../types';
 import type { FinancialPayment, FinancialProfile } from '../../../domain/finance/types';
 
 /**
  * L'effet d'un apport ou d'un prélèvement privé (m5ap-a, « effet sur le mois »).
- * Tout est lu du registre : la caisse vient du solde de départ confirmé (`null` sinon : jamais 0), le résultat du mois est la différence
- * de deux photographies du même registre (les ventes et les dépenses cumulées à la fin du mois, moins celles de la veille de son premier jour),
- * donc les avoirs liés à une pièce d'un autre mois sont traités comme partout ailleurs.
+ * Tout est lu du registre : la caisse vient du solde de départ confirmé (`null` sinon : jamais 0), le résultat du mois vient de
+ * `periodeSynthese` pour le mois de la date choisie : la même fonction que la bande d'Opérations (matériel à part exclu des dépenses,
+ * avoirs traités comme partout ailleurs), jamais une copie (q6, point 4).
  */
 export interface EffetMouvement {
   /** Caisse aujourd'hui ; `null` tant que le solde de départ n'est pas confirmé. */
@@ -20,16 +21,6 @@ export interface EffetMouvement {
   mois: string;
 }
 
-const ajouterJours = (iso: string, jours: number): string => {
-  const d = new Date(`${iso}T12:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + jours);
-  return d.toISOString().slice(0, 10);
-};
-const finDeMois = (mois: string): string => {
-  const [a, m] = mois.split('-').map(Number);
-  return new Date(Date.UTC(a, m, 0, 12)).toISOString().slice(0, 10);
-};
-
 export function effetMouvement(input: {
   transactions: Transaction[]; payments: FinancialPayment[]; profile: FinancialProfile;
   date: string; sens: 'in' | 'out'; amountCents: number | undefined; today?: string;
@@ -37,13 +28,11 @@ export function effetMouvement(input: {
   const today = input.today ?? todayISO();
   const jour = isoDate(input.date) ?? today;
   const mois = jour.slice(0, 7);
-  const fin = finDeMois(mois) < today ? finDeMois(mois) : today;
-  const veille = ajouterJours(`${mois}-01`, -1);
-  const jusqualaFin = summarizeLedger(input.transactions, input.payments, input.profile, fin);
-  const avant = summarizeLedger(input.transactions, input.payments, input.profile, veille);
   const aujourdhui = summarizeLedger(input.transactions, input.payments, input.profile, today);
-  const ventesCents = jusqualaFin.incomeCents - avant.incomeCents;
-  const depensesCents = jusqualaFin.expenseCents - avant.expenseCents;
+  // Ventes et dépenses du mois : `periodeSynthese`, la fonction de la bande d'Opérations, pas une copie : « dépensé » met le matériel à part (q6, point 4).
+  const periode = periodeSynthese({ transactions: input.transactions, payments: input.payments, mois, aujourdhui: today });
+  const ventesCents = periode.entreCents;
+  const depensesCents = periode.depenseCents;
   const montant = input.amountCents;
   return {
     caisseCents: aujourdhui.cashComplete ? aujourdhui.cashCents : null,
