@@ -41,3 +41,6 @@ Déployé 2c78e80d, tag en-ligne/2026-11-15-futs (base en-ligne/2026-11-15-ateli
 ## Joué en ligne (15.11, Chrome du brasseur)
 F-005 « ZZ TEST — essai fûts » : ajouté (bouton rond › Nouveau fût › Ajouter des fûts), filtre combiné À laver + Propres, Remplir depuis un lot (LOT-002 refusé : déjà couvert ; LOT-001 Milk Stout accepté), Livrer (client de la liste), Retour vide, Marquer propre, Retirer du parc. Parc revenu à 4 fûts (F-001 à F-004 intacts), 0 erreur de console. Communs C1–C5 : « Fut ok » (brasseur, relayé).
 Défauts vus : message de refus du remplissage ambigu (« couvrent 30 L pour 30 L produits ») ; fiche Propre affirme « Nettoyé et désinfecté » sans saisie.
+
+## Redéployé (15.11)
+c18530a8 : refus « Ce lot est déjà tout en fût (N L) : plus rien à remplir. » ou « Trop de fûts choisis : il reste N L à mettre en fût, un fût resterait vide. Retires-en un. » ; Propre : « Marqué propre, prêt à remplir. ». Fusion de en-ligne/2026-11-15-recette, 107 tests fûts verts, build et drapeaux OK, déployé 24386cd5, tag en-ligne/2026-11-15-futs2 ; StocksTab servi vérifié (nouveaux textes, anciens absents).
