@@ -1731,3 +1731,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : même revue que kt2 pour À venir, centrée sur le parcours besoin → prix ou devis → scan relié → sortie de la liste ; kh1r reste la base visuelle choisie, sa mise en ligne attend la revue.)
 - **15.11**, mot pour mot, pour la mission simplicité : « Dans le workflow simplicité, notamment quand je lave un fût ou fait une action ça a des conséquences sur tout. Par exemple lavé un fût fait baisser les consommables de nettoyage. Faire une bière pareil, baisse le starsan ect... Ce genre d'action qui est dynamique sur toute l'app »
   (lu : une action en déclenche les effets ailleurs sans saisie en plus : laver un fût décompte le nettoyant, brasser décompte le Star San, etc. Les règles de consommation sont réglables et chaque effet se voit et s'annule.)
+- **15.11**, mot pour mot, correction : « C'est juste des exemples, être générique et général, pas focus sur ces exemples !!! »
+  (lu : les effets en cascade forment un mécanisme général, valable pour toute action de l'app ; le fût et le Star San ne sont que des illustrations.)

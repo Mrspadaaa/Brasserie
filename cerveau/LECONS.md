@@ -13,7 +13,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L01 — Reformuler la portée d'une décision avant de la propager
 - Erreur : 12.10, « seul 3.8 » (tests) mis partout. 01.11 : « sans clavier » lu « sans focus » (D230).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
-- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
+- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée. Ses exemples illustrent une règle générale : le brief nomme la règle, jamais ses exemples comme périmètre (15.11 : « C'est juste des exemples… !!! »).
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
