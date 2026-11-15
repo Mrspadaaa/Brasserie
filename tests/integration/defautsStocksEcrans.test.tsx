@@ -137,23 +137,22 @@ describe('BR-69, BR-70, BR-74 — la liste', () => {
   });
 });
 
-describe('TE-45 — créer un fût', () => {
-  it('le bouton fourni s’affiche dans la barre de la liste, même sans fût', () => {
+describe('TE-45 — créer des fûts', () => {
+  it('« Remplir depuis un lot » est dans la barre de la liste, même sans fût', () => {
     render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
-      <KegBoard kegs={[]} batches={[]} toolbarAction={<button type="button">Ajouter un fût</button>} />
+      <KegBoard kegs={[]} batches={[]} />
     </VirtuosoMockContext.Provider>);
-    expect(screen.getByRole('button', { name: 'Ajouter un fût' })).toBeInTheDocument();
-    expect(screen.getByText(/Ajoute un fût avec le bouton/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remplir depuis un lot' })).toBeInTheDocument();
+    expect(screen.getByText(/Ajoute des fûts avec le bouton/)).toBeInTheDocument();
   });
-  // VI-10 (rejeu b47cd90b n° 10) : à 390 le bouton n'est qu'un « + » sans libellé (« Ajouter un fût » n'apparaît qu'à partir de sm) : la phrase ne doit citer
-  // que ce qui est à l'écran aux deux largeurs, le « + ».
-  it('la phrase du vide cite le « + », présent à toutes les largeurs, pas le libellé caché au téléphone', () => {
+  // VI-10 : la phrase du vide ne cite que ce qui est à l'écran aux deux largeurs, le « + » rond.
+  it('la phrase du vide cite le « + » rond, pas un libellé qui n’existe plus', () => {
     render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
-      <KegBoard kegs={[]} batches={[]} toolbarAction={<button type="button" aria-label="Ajouter un fût"><span aria-hidden="true">+</span><span className="hidden sm:inline">Ajouter un fût</span></button>} />
+      <KegBoard kegs={[]} batches={[]} />
     </VirtuosoMockContext.Provider>);
-    const phrase = screen.getByText(/Ajoute un fût avec le bouton/).textContent ?? '';
+    const phrase = screen.getByText(/Ajoute des fûts avec le bouton/).textContent ?? '';
     expect(phrase).toContain('« + »');
-    expect(phrase).not.toContain('« Ajouter un fût »');
+    expect(phrase).not.toContain('Ajouter un fût');
   });
 });
 void within;

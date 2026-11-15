@@ -17,6 +17,8 @@ const fautes = [], sortie = [];
 const ok = (cond, msg) => { sortie.push(`${cond ? 'ok ' : 'KO '} ${msg}`); if (!cond) fautes.push(msg); };
 
 async function vers(page) {
+  // Horloge figée au 14.11.2026 midi : le banc date « aujourd'hui » ses opérations payées (contrôle rejouable tout jour).
+  await page.evaluateOnNewDocument(() => { const T = new Date(2026, 10, 14, 12).getTime(), D = Date, d0 = D.now(); class F extends D { constructor(...a) { super(...(a.length ? a : [T + (D.now() - d0)])); } static now() { return T + (D.now() - d0); } } globalThis.Date = F; });
   await page.goto(URL); await calme(page, 1500);
   await page.evaluate(() => localStorage.setItem('laffinee.theme', 'clair')); await page.reload(); await calme(page, 1500);
   await page.evaluate(() => [...document.querySelectorAll('nav button, nav a, [role=tab]')].find((e) => /^Finances$/.test(e.textContent.trim()))?.click()); await calme(page, 1200);

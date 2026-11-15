@@ -98,14 +98,17 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   const lisereCouleur = etat.retard ? 'rgb(var(--alert-strong-texte))' : GROUPES[groupe].liseré;
   const money = `${entrant ? '+ ' : ''}${formatCHF(montant)}`;
   const lisible = etat.texte.replace(/^✓\s*/, '');
+  // Pièce en partie payée (q6, point 10) : « Reste 160,00 CHF à payer · 25 nov. · dans 10 j » se coupait à 390 ; la pastille garde le reste et l'échéance, le geste « Payé » dit déjà « à payer ». Le nom accessible garde la phrase entière.
+  const partiel = ouvert && state.state === 'partial';
+  const texteTg = partiel ? etat.texte.replace(/^(Reste \S+) CHF à (?:payer|encaisser)/, (_, reste: string) => reste) : etat.texte;
 
-  return <div className="ops-row" data-flash={flash || undefined} data-ton={etat.ton}>
+  return <div className="ops-row" data-flash={flash || undefined} data-ton={etat.ton} data-partiel={partiel ? '' : undefined}>
     <span className="ops-bar" data-hachure={liseré} style={{ '--ops-couleur': lisereCouleur } as React.CSSProperties} aria-hidden="true"/>
     <button type="button" className="ops-main finance-op" onClick={onOpen}
       aria-label={`${transaction.description} · ${categorie}${tiers ? ` · ${tiers}` : ''} · ${money} · ${lisible} · ${piece.texte}`}>
       <span className="ops-q" title={`${transaction.description}${tiers ? ` · ${tiers}` : ''}`}><span className="ops-nom" id={nomId}>{transaction.description}</span>{tiers && <small> · {tiers}</small>}</span>
       <span className="ops-meta">
-        <span className={`ops-tg ops-tg-${etat.ton}`}>{etat.texte}</span>
+        <span className={`ops-tg ops-tg-${etat.ton}`}>{texteTg}</span>
         {!(etat.ton === 'void') && <span className={`ops-pc${piece.manque ? ' ops-no' : ''}`}>{piece.manque ? ICONE_SANS_PIECE : ICONE_PIECE}{piece.texte}</span>}
       </span>
     </button>

@@ -3,6 +3,8 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase',()=>({db:{},functions:{}}));
 vi.mock('../../src/ui/Sheet',()=>({Sheet:({open,title,children,footer}:any)=>open?<div role="dialog" aria-label={title}>{children}{footer}</div>:null}));
+const docs=vi.hoisted(()=>({load:vi.fn()}));
+vi.mock('../../src/services/financeDocuments',async importOriginal=>({...(await importOriginal<typeof import('../../src/services/financeDocuments')>()),loadFinanceDocument:(id:string)=>docs.load(id)}));
 vi.mock('recharts',()=>({ResponsiveContainer:()=>null,AreaChart:()=>null,Area:()=>null,XAxis:()=>null,YAxis:()=>null,Tooltip:()=>null,CartesianGrid:()=>null}));
 import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { StorageService, defaultConfig } from '../../src/services/storage';
@@ -93,11 +95,17 @@ describe('Comptabilité quotidienne intégrée',()=>{
   it('demande une date réelle au paiement historique et propose la date du jour pour une facture suivie',()=>{
     const unknown=tx({finance:undefined});
     const {unmount}=render(<PaymentSheet transaction={unknown} payments={[]} transactions={[unknown]} onClose={()=>{}}/>);
+    // m5pa-d : « Le [aujourd’hui] [autre] avec [banque] ». Une pièce sans suivi (historique) s'ouvre sur « autre » : la date réelle est demandée, vide, obligatoire.
     expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue('');
     expect(screen.getByLabelText('Date réelle du paiement')).toBeRequired();
+    expect(screen.getByRole('button',{name:'autre'})).toHaveAttribute('aria-pressed','true');
     unmount();
+    // Une facture suivie s'ouvre sur « aujourd’hui » (date du jour), sans champ ; « autre » ouvre la date réelle, plafonnée à aujourd’hui.
     render(<PaymentSheet transaction={tx()} payments={[]} transactions={[tx()]} onClose={()=>{}}/>);
-    expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue(todayISO());
+    expect(screen.getByRole('button',{name:'aujourd’hui'})).toHaveAttribute('aria-pressed','true');
+    expect(screen.queryByLabelText('Date réelle du paiement')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'autre'}));
+    expect(screen.getByLabelText('Date réelle du paiement')).toHaveAttribute('max',todayISO());
   });
   it('guide la préparation annuelle du solde vers les opérations de l’exercice',()=>{
     StorageService.addTransaction(tx());
@@ -186,6 +194,21 @@ describe('Comptabilité quotidienne intégrée',()=>{
     fireEvent.click(screen.getByRole('button',{name:/Vérifier les pièces sans date/}));
     expect(screen.getByRole('button',{name:/Achat mixte/})).toBeInTheDocument();
   });
+  it('m5pa-d / m5fo-a : le justificatif d’un virement se montre sur la ligne du paiement concerné, distinct de celui de la pièce',async()=>{
+    docs.load.mockReset();docs.load.mockImplementation(async(id:string)=>({dataUrl:`https://example.test/${id}.pdf`,fileName:`${id}.pdf`,mimeType:'application/pdf'}));
+    const piece=tx({id:'T-PJ',finance:{version:1,kind:'expense',amountCents:15000,paymentStatus:'unpaid',lines:[],proofDocumentId:'proof-facture'}});StorageService.addTransaction(piece);
+    const base={transactionId:'T-PJ',direction:'out' as const,method:'bank' as const,recordedAt:new Date().toISOString()};
+    const payments=[{...base,id:'P1',date:'2026-11-03',amountCents:5000,proofDocumentId:'proof-virement',proofFileName:'Virement 3 nov.pdf'},{...base,id:'P2',date:'2026-11-09',amountCents:2000}];
+    const {container}=render(<TransactionDetails transaction={piece} transactions={[piece]} payments={payments} plans={[]} onClose={()=>{}} onEdit={()=>{}} onPay={()=>{}} onRefund={()=>{}}/>);
+    const lignes=[...container.querySelectorAll<HTMLElement>('.fiche-hist')];expect(lignes).toHaveLength(2);
+    // Le paiement P1 porte son justificatif (nom + lien) ; P2, payé sans justificatif, n'en montre aucun.
+    expect(within(lignes[0]).getByText('Virement 3 nov.pdf')).toBeVisible();
+    expect(within(lignes[1]).queryByRole('button',{name:'Justificatif'})).not.toBeInTheDocument();
+    // Un seul lien porté par la ligne ; le lien de la pièce reste dans son bandeau, avec son propre document.
+    fireEvent.click(within(lignes[0]).getByRole('button',{name:'Justificatif'}));
+    await waitFor(()=>expect(screen.getByTitle('proof-virement.pdf')).toHaveAttribute('src','https://example.test/proof-virement.pdf'));
+    expect(docs.load).toHaveBeenCalledExactlyOnceWith('proof-virement');
+  });
   it('fait choisir la véritable échéance récurrente remplacée par une facture',()=>{
     const item=tx({date:'01.02.2026'});StorageService.addTransaction(item);
     FinanceService.savePlan({id:'RECUR',title:'Loyer',date:'2026-01-31',amountCents:15000,direction:'out',category:'chargesFixes',source:'recurring',status:'active',recurrence:{frequency:'monthly'},createdAt:new Date().toISOString()});
@@ -219,7 +242,9 @@ describe('Comptabilité quotidienne intégrée',()=>{
     const onSaved=vi.fn();render(<MovementSheet onSaved={onSaved} onClose={()=>{}}/>);
     fireEvent.change(screen.getByLabelText('Montant (CHF)'),{target:{value:'120,50'}});fireEvent.blur(screen.getByLabelText('Montant (CHF)'));
     fireEvent.change(screen.getByLabelText('Motif'),{target:{value:'Fonds pour les prochains brassins'}});
-    fireEvent.click(screen.getByRole('button',{name:'Enregistrer ce mouvement'}));await waitFor(()=>expect(onSaved).toHaveBeenCalledOnce());
+    // m5ap-a : sans avoir, la feuille est « De ta poche à la brasserie » et son bouton « Enregistrer l’apport » (« Enregistrer ce mouvement » reste celui de l'avoir, ci-dessous).
+    expect(screen.getByRole('dialog',{name:'De ta poche à la brasserie'})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Enregistrer l’apport'}));await waitFor(()=>expect(onSaved).toHaveBeenCalledOnce());
     const summary=summarizeLedger(StorageService.getTransactions(),FinanceService.getPayments(),FinanceService.getProfile());
     expect(summary.cashCents).toBe(22050);expect(summary.incomeCents).toBe(0);expect(summary.contributionCents).toBe(12050);
   });
