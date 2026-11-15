@@ -851,6 +851,7 @@ export const App: React.FC = () => {
   };
 
   // --- Recherche universelle ------------------------------------------------
+
   /** « Aller à » de la recherche : les mêmes ouvertures que la barre et le + (sous-onglet mémorisé, puis l'onglet). */
   const allerA = (id: DestinationId) => {
     const stocksVers = (sous: string) => { StorageService.setUiState('stocks_subtab', sous); setNavNonce(n => n + 1); setActiveTab('stocks'); };
@@ -877,7 +878,6 @@ export const App: React.FC = () => {
     }
   };
 
-
   const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
   const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
   const commandGroups: CommandGroup[] = [
@@ -888,8 +888,8 @@ export const App: React.FC = () => {
         label: r.name,
         detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
         icon: <Beaker className="w-4 h-4" />,
-        gestes: [{ id: 'brasser' as const, label: 'Brasser', run: () => { setBrewRecipeId(r.id); setQuickAction('brew-batch', actionLauncherRef.current); } }],
         keywords: [r.style, r.id],
+        gestes: [{ id: 'brasser' as const, label: 'Brasser', run: () => { setBrewRecipeId(r.id); setQuickAction('brew-batch', actionLauncherRef.current); } }],
         onSelect: () => openRecipe(r)
       }))
     },
@@ -900,12 +900,12 @@ export const App: React.FC = () => {
         label: `${b.id} — ${b.name}`,
         detail: [b.style, batchDisplayDate(b), b.status].filter(Boolean).join(' · '),
         icon: <FlaskConical className="w-4 h-4" />,
+        keywords: [b.style, b.status],
         // Un brassin en cours de fermentation ou de garde : le jour J+N seulement s'il est connu, et le geste « Mesure » ouvre sa fiche à la section Mesures.
         ...((b.status === 'fermentation' || b.status === 'garde') ? {
           valeur: joursDepuisBrassage(b) !== undefined ? `J+${joursDepuisBrassage(b)}` : undefined,
           gestes: [{ id: 'mesure' as const, label: 'Mesure', run: () => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: b.id, at: Date.now() }); } }]
         } : {}),
-        keywords: [b.style, b.status],
         onSelect: () => openBrewDay(b)
       }))
     },
@@ -948,8 +948,8 @@ export const App: React.FC = () => {
         detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: motsCleEcriture(t),
-        ...(t.proofUrl ? { gestes: [{ id: 'piece' as const, label: 'Pièce', run: () => { setActiveTab('finances'); setFinanceOpenRequest({ id: t.id, at: Date.now() }); } }] } : {}),
         archived: isTransactionArchived(t, financialArchiveIndex),
+        ...(t.proofUrl ? { gestes: [{ id: 'piece' as const, label: 'Pièce', run: () => { setActiveTab('finances'); setFinanceOpenRequest({ id: t.id, at: Date.now() }); } }] } : {}),
         onSelect: () => {
           setActiveTab('finances');
           setFinanceOpenRequest({ id: t.id, at: Date.now() });
@@ -1343,11 +1343,12 @@ export const App: React.FC = () => {
       <CommandPalette
         open={isPaletteOpen}
         onOpenChange={setIsPaletteOpen}
+        groups={commandGroups}
         menu={view.view === 'tabs' ? plusMenu : undefined}
         onGeste={runPlus}
         onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
         onAllerA={allerA}
-        groups={commandGroups}
+      />
       {/* Le geste « Corriger » d'une ligne de la recherche : la même feuille de correction d'inventaire que la fiche de l'article. */}
       <DeferredSurface active={correctingItem !== null} fallback={<Sheet open={correctingItem !== null} title="Chargement…" onClose={() => setCorrectingItem(null)}><p role="status">Ouverture…</p></Sheet>}><InventoryCorrectionSheet
         open={correctingItem !== null}
@@ -1364,7 +1365,6 @@ export const App: React.FC = () => {
           setCorrectingItem(null);
         }}
       /></DeferredSurface>
-      />
 
       {/* --- Pages plein écran ------------------------------------------
           Elles se ferment au geste retour du téléphone, contrairement aux

@@ -96,6 +96,13 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     expect(plusMenuFor('dashboard', null, contexte).partout[1].lettre).toBe(LETTRES.facture);
   });
 
+  it('les tuiles du 390 portent les libellés courts de b1s-a, le geste courses dit « Courses » (il ouvre l’écran, il n’ajoute rien)', () => {
+    const m = plusMenuFor('production', 'batches', contexte);
+    expect(m.partout.map((e) => e.court)).toEqual(['Écriture', 'Facture', 'Vente', 'Recette', 'Brassin']);
+    expect(m.partout.map((e) => e.label)).toEqual(['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin']);
+    expect(m.autres.find((e) => e.cle === 'courses')?.label).toBe('Courses');
+  });
+
   it('une page plein écran garde les gestes de partout, sans action d’écran', () => {
     const m = plusMenuPage(contexte);
     expect(m.action).toBeNull();

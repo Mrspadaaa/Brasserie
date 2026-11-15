@@ -135,8 +135,8 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       // b1s-a : « Sur cet écran » = Nouvelle écriture (+ Facture et Vente sur Finances, Courses au Bord) ; « Partout » garde les
       // cinq gestes communs à cases fixes, sur les deux écrans.
       const attendues = tab === 'dashboard'
-        ? ['Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin', 'Ajouter aux courses']
-        : ['Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin'];
+        ? ['Facture', 'Vente', 'Recette', 'Brassin', 'Courses']
+        : ['Facture', 'Vente', 'Recette', 'Brassin'];
       for (const other of attendues) {
         expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
       }

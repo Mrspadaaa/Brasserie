@@ -48,6 +48,8 @@ export interface PlusContexte {
 export interface PlusEntree {
   cle: PlusCle;
   label: string;
+  /** Libellé court de la tuile au téléphone (b1s-a au 390 : « Écriture », « Facture »…) ; absent = le libellé plein. */
+  court?: string;
   hint?: string;
   /** Lettre de raccourci au clavier, fixe d'un écran à l'autre. */
   lettre: string;
@@ -93,14 +95,14 @@ const sera = (c: PlusContexte) => (c.prochainBrassin ? `sera ${c.prochainBrassin
 const aCommander = (c: PlusContexte) => (c.aCommander && c.aCommander > 0 ? `${c.aCommander} à commander` : undefined);
 
 /** Libellé (même verbe aux deux largeurs), couleur et précision d'usage de chaque geste. */
-const FICHE: Record<PlusCle, { label: string; ton: PlusTon; hint?: Precision }> = {
-  ecriture: { label: 'Nouvelle écriture', ton: 'finances', hint: 'à la main' },
-  facture: { label: 'Entrer une facture', ton: 'finances', hint: 'photo ou PDF' },
-  vente: { label: 'Encaisser une vente', ton: 'finances' },
-  brassin: { label: 'Lancer un brassin', ton: 'production', hint: sera },
-  recette: { label: 'Créer une recette', ton: 'production' },
+const FICHE: Record<PlusCle, { label: string; court?: string; ton: PlusTon; hint?: Precision }> = {
+  ecriture: { label: 'Nouvelle écriture', court: 'Écriture', ton: 'finances', hint: 'à la main' },
+  facture: { label: 'Entrer une facture', court: 'Facture', ton: 'finances', hint: 'photo ou PDF' },
+  vente: { label: 'Encaisser une vente', court: 'Vente', ton: 'finances' },
+  brassin: { label: 'Lancer un brassin', court: 'Brassin', ton: 'production', hint: sera },
+  recette: { label: 'Créer une recette', court: 'Recette', ton: 'production' },
   idee: { label: 'Nouvelle idée', ton: 'production' },
-  courses: { label: 'Ajouter aux courses', ton: 'stocks', hint: aCommander },
+  courses: { label: 'Courses', ton: 'stocks', hint: aCommander },
   houblon: { label: 'Nouvelle variété', ton: 'stocks' },
   article: { label: 'Nouvel article', ton: 'stocks' },
   fut: { label: 'Nouveau fût', ton: 'stocks' },
@@ -175,7 +177,7 @@ function actionDeLEcran(action: FabAction, ton: PlusTon, c: PlusContexte): PlusE
 function entree(cle: PlusCle, c: PlusContexte, monte?: boolean): PlusEntree {
   const f = FICHE[cle];
   const hint = typeof f.hint === 'function' ? f.hint(c) : f.hint;
-  return { cle, label: f.label, hint, lettre: LETTRES[cle], ton: f.ton, ...(monte ? { monte: true } : {}) };
+  return { cle, label: f.label, ...(f.court ? { court: f.court } : {}), hint, lettre: LETTRES[cle], ton: f.ton, ...(monte ? { monte: true } : {}) };
 }
 
 /** Le menu du + pour l'écran (onglet, sous-onglet) et ce que l'app en sait. */

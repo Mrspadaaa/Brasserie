@@ -12,7 +12,7 @@ import './navigation.css';
  * l'écran en plein, puis ses autres actions), « Partout » dessous (les gestes communs à cases fixes, le Compagnon en
  * sixième case). Au téléphone c'est une feuille posée au-dessus du + ; au 1280 la même matière en liste à lettres.
  *
- * Chaque geste a le même libellé aux deux largeurs : la tuile « Encaisser une vente » du 390 est la ligne du 1280.
+ * Les tuiles de « Partout » au 390 portent le libellé court de b1s-a (« Écriture », « Facture », « Vente », « Recette », « Brassin ») ; au 1280 la ligne dit le libellé plein (« Encaisser une vente »).
  * Un geste commun déjà monté en tête garde sa case de « Partout », marquée ↑ et active : le brasseur retrouve toujours
  * la même grille (« certaines actions doivent toujours être possible »).
  */
@@ -132,13 +132,13 @@ function Ligne({ e, onChoisir }: { e: PlusEntree; onChoisir: Props['onChoisir'] 
 function Case({ e, onChoisir }: { e: PlusEntree; onChoisir: Props['onChoisir'] }) {
   const I = ICONES[e.cle];
   return (
-    <button type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)}
+    <button type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)} aria-label={e.hint ? `${e.label}, ${e.hint}` : e.label}
       className={`${BOUTON} relative min-h-[68px] px-2 py-[7px] rounded-[10px] bg-cave-900 border border-cave-800 text-cave-50 flex flex-col gap-[3px] overflow-hidden leading-[1.15]`}>
       <span className="flex items-center justify-between">
         <I size={20} aria-hidden="true" className={`shrink-0 ${TON[e.ton].texte}`} />
         {e.monte && <span title={RENVOI}><Renvoi /></span>}
       </span>
-      <span className="text-sm">{e.label}</span>
+      <span className="text-sm">{e.court ?? e.label}</span>
       {e.hint && <span className="text-footnote leading-[14px] text-cave-400 truncate">{e.hint}</span>}
     </button>
   );
