@@ -82,7 +82,7 @@ describe('Dashboard agenda navigation', () => {
     const view = render(<React.StrictMode><CreativeLabTab openSectionRequest={request} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
 
     expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
     view.rerender(<React.StrictMode><CreativeLabTab openSectionRequest={{ ...request }} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
@@ -92,7 +92,7 @@ describe('Dashboard agenda navigation', () => {
 
     view.rerender(<React.StrictMode><CreativeLabTab openSectionRequest={{ section: 'event', at: 2 }} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
     expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(2);
     expect(create).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -110,8 +110,10 @@ describe('Dashboard agenda navigation', () => {
     const agenda = await screen.findByRole('region', { name: 'Agenda', exact: true });
     fireEvent.click(within(agenda).getByRole('button', { name: 'Gérer', exact: true }));
     expect(await screen.findByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Rincer les fûts' })).toBeInTheDocument();
+    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
+    // kd4 : une tâche faite monte dans « Faites » (repliée) ; on l'ouvre pour la lire.
+    fireEvent.click(screen.getByRole('button', { name: /^Faites/ }));
+    expect(screen.getByText('Rincer les fûts')).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
@@ -119,7 +121,7 @@ describe('Dashboard agenda navigation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
     fireEvent.click(within(screen.getByRole('region', { name: 'Agenda', exact: true })).getByRole('button', { name: 'Gérer', exact: true }));
     expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
     fireEvent.click(screen.getByRole('button', { name: 'Menu', exact: true }));

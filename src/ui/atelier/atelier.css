@@ -11,8 +11,8 @@
   --a-evt: rgb(var(--water) / .22); --a-evtx: rgb(var(--water-texte));
   color: var(--a-ink); font-size: 14px; line-height: 1.25;
 }
-.ct button, .tl button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
-.ct a { color: inherit; text-decoration: none; }
+:where(.ct, .tl) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+:where(.ct) a { color: inherit; text-decoration: none; }
 .ct-num, .tl-num { font-variant-numeric: tabular-nums lining-nums; }
 .ct-sp, .tl-sp { flex: 1; }
 .ct-pill, .tl-demo { height: 24px; padding: 0 8px; border-radius: 999px; border: 1px solid var(--a-line2); font-size: 12px; color: var(--a-mut); display: inline-flex; align-items: center; white-space: nowrap; }
@@ -73,7 +73,13 @@
 .ct-two .a { flex: 1; border: 1px solid var(--a-line2); }
 .ct-two .b { flex: 2; background: var(--a-act); color: var(--a-onact); }
 
+.ct-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 520px; margin: 0 auto; }
+.ct-toast button { white-space: nowrap; min-height: 44px; min-width: 44px; padding: 0 12px; font-weight: 700; color: rgb(var(--ebc-gold-texte)); filter: brightness(1.6); display: inline-flex; align-items: center; justify-content: center; }
+
 /* Fil du temps */
+.tl-go { display: flex; align-items: center; gap: 8px; min-height: 44px; width: 100%; margin-top: 8px; border-top: 1px solid var(--a-line); font-size: 14px; }
+.tl-goc { font-weight: 700; }
+.tl-gom { color: var(--a-fin); }
 .tl-done { display: flex; align-items: center; gap: 8px; min-height: 44px; width: 100%; font-size: 14px; color: var(--a-mut); }
 .tl-done b { color: var(--a-hop); }
 .tl-beads { display: flex; gap: 4px; }
@@ -82,7 +88,9 @@
 .tl-fait { display: flex; align-items: center; gap: 4px; min-height: 44px; color: var(--a-mut); }
 .tl-fresh { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; background: var(--a-donebg); border-radius: 999px; padding: 3px 10px; border: 1px solid var(--a-hop); margin-bottom: 6px; }
 .tl-fil { position: relative; margin-top: 4px; }
-.tl-fil::before { content: ""; position: absolute; left: 69px; top: 0; bottom: 0; width: 4px; border-radius: 999px; background: linear-gradient(var(--a-late) 0, var(--a-line2) 72px, var(--a-line2) 85%, transparent); }
+.tl-rest { position: relative; }
+/* Le fil commence sous les retards et finit au centre de « Poser » (la hauteur du fil dépasse de 30 px). */
+.tl-rest::before { content: ""; position: absolute; left: 69px; top: 0; bottom: 30px; width: 4px; border-radius: 999px; background: var(--a-line2); }
 .tl-late { position: relative; display: flex; align-items: center; min-height: 68px; border-radius: 16px; background: var(--a-latebg); margin-bottom: 4px; }
 .tl-dl { width: 48px; text-align: right; font-size: 13px; font-weight: 700; color: var(--a-late); flex: none; line-height: 1.1; }
 .tl-dl small { display: block; font-weight: 400; font-size: 12px; }
@@ -103,7 +111,7 @@
 .tl-fut { position: relative; touch-action: pan-y; }
 .tl-tk { position: absolute; left: 0; width: 60px; text-align: right; font-size: 12px; color: var(--a-mut); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
 .tl-tk::after { content: ""; position: absolute; right: -12px; top: 50%; width: 8px; height: 2px; background: var(--a-line2); }
-.tl-tk.rupt { font-weight: 600; }
+.tl-tk.rupt { font-weight: 600; white-space: nowrap; left: -12px; width: 72px; }
 .tl-tk.rupt::after { width: 16px; right: -16px; background: var(--a-ink); }
 .tl-note { position: absolute; left: 92px; font-size: 12px; color: var(--a-mut); }
 .tl-gap { position: absolute; left: 92px; font-size: 13px; color: var(--a-mut); display: flex; align-items: center; gap: 6px; transform: translateY(-50%); }
@@ -128,7 +136,7 @@
 .tl-free p { font-size: 15px; line-height: 1.35; }
 .tl-free button { margin-top: 12px; height: 48px; width: 100%; border-radius: 10px; background: var(--a-act); color: var(--a-onact); font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .tl-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); max-width: 520px; margin: 0 auto; }
-.tl-toast button { min-height: 44px; padding: 0 12px; font-weight: 700; color: rgb(var(--ebc-gold-texte)); filter: brightness(1.6); }
+.tl-toast button { white-space: nowrap; min-height: 44px; padding: 0 12px; font-weight: 700; color: rgb(var(--ebc-gold-texte)); filter: brightness(1.6); }
 .tl-sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; margin: 0 auto; max-width: 560px; background: var(--a-bg); border-radius: 16px 16px 0 0; padding: 6px 14px 14px; box-shadow: 0 -8px 24px rgba(0, 0, 0, .18); border: 1px solid var(--a-line); }
 .tl-grab { width: 40px; height: 4px; border-radius: 999px; background: var(--a-line2); margin: 0 auto 8px; }
 .tl-sh { display: flex; align-items: center; gap: 8px; }

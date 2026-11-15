@@ -20,7 +20,6 @@ import {
   Layers, 
   UserCheck 
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { CreativeItem, Recipe, Client } from '../types';
 import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
@@ -125,6 +124,10 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'prospect', title: c.lieu.trim(), status: 'idea', contactName: c.personne.trim() || undefined, contactPhone: c.numero.trim() || undefined, notes: c.note.trim() || undefined });
     setIsAdding(false);
   };
+  /** Contacts (kc1) : « Ajouter le numéro » et « Modifier » passent par la feuille de la maquette, mêmes champs que l'ajout. */
+  const updateContact = (item: CreativeItem, c: NouveauContact) => {
+    StorageService.updateCreativeItem({ ...item, title: c.lieu.trim(), contactName: c.personne.trim() || undefined, contactPhone: c.numero.trim() || undefined, notes: c.note.trim() || undefined });
+  };
   /** À faire (kd4) : une tâche posée sur le fil ; date `JJ.MM.AAAA`, ou aucune (« sans date »). */
   const createTask = (titre: string, date: string) => {
     StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'event', title: titre, status: 'todo', date: date || undefined });
@@ -179,11 +182,12 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
   const convertingIds = React.useRef(new Set<string>());
-  const handleConvertToClient = (item: CreativeItem) => {
+  /** `true` : une fiche Clients vient d'être créée (le message, sans confettis, est dit par la vue Contacts). */
+  const handleConvertToClient = (item: CreativeItem): boolean => {
     /* BE-22 : un double toucher créait deux fiches. Le verrou est synchrone (le rendu n'a pas le temps de masquer le bouton) ; un contact déjà converti ne se convertit pas deux fois. */
-    if (convertingIds.current.has(item.id)) return;
+    if (convertingIds.current.has(item.id)) return false;
     const dejaConverti = StorageService.getCreativeItems().find(i => i.id === item.id)?.status === 'validated';
-    if (dejaConverti) { onSuccessMessage?.(`« ${item.title} » est déjà un client : rien n’a été recréé.`); return; }
+    if (dejaConverti) return false;
     convertingIds.current.add(item.id);
     const newClientId = nextClientId(StorageService.getClients().map(c => c.id));
     const newClient: Client = {
@@ -197,7 +201,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       phone: item.contactPhone || '',
       email: '',
       // Statut et CA sont dérivés des ventes réelles : rien à initialiser ici.
-      notes: item.description
+      notes: item.notes || item.description
     };
 
     const currentClients = StorageService.getClients();
@@ -206,13 +210,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     // Update creative item status to validated
     StorageService.updateCreativeItem({ ...item, status: 'validated' });
 
-    try {
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#3B82F6', '#10B981'] });
-    } catch {}
-
-    if (onSuccessMessage) {
-      onSuccessMessage(`Prospect "${item.title}" converti en client (${newClientId}) ! 👥`);
-    }
+    // Pas de confettis ni de toast global : la vue Contacts dit « … est dans Clients » au bas de l'écran (maquette kc1).
+    return true;
   };
 
   return (
@@ -286,7 +285,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
       {activeSection==='pricing-test'&&<><p className="finance-muted">Pour fixer un prix : Clients › Prix (le coût y vient du brassin). Ici, tes idées de tarif.</p><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
 
-      {activeSection === 'prospect' && <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onEdit={setEditing} onRemove={(item) => { handleDelete(item.id); onSuccessMessage?.(`« ${item.title} » retiré des contacts.`); }} />}
+      {activeSection === 'prospect' && <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />}
       {activeSection === 'event' && <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} />}
 
       {/* Form modal when adding an item */}

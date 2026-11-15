@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronDown, ChevronUp, GripVertical, Plus, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, ChevronUp, GripVertical, LayoutGrid, Plus, X } from 'lucide-react';
 import type { CreativeItem } from '../../types';
 import {
   ajouterJours, construireFil, enSuisse, joursDepuisY, jourComplet, jourMois, MARGE_HAUT, positionY, relatif
@@ -26,12 +26,13 @@ const JOURS_PAR_DEFAUT = 14;
 export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit }) => {
   const aujourdhui = useMemo(() => new Date(), []);
   const taches = useMemo(() => items.map((i) => ({ id: i.id, title: i.title, date: i.date, status: i.status })), [items]);
-  const fil = useMemo(() => construireFil(taches, aujourdhui), [taches, aujourdhui]);
+  const [jours, setJours] = useState(JOURS_PAR_DEFAUT);
+  const fil = useMemo(() => construireFil(taches, aujourdhui, adding ? jours : null), [taches, aujourdhui, adding, jours]);
   const parId = (id: string) => items.find((i) => i.id === id)!;
   const [faitesOuvertes, setFaitesOuvertes] = useState(false);
   const [recent, setRecent] = useState<CreativeItem | null>(null);
   const [titre, setTitre] = useState('');
-  const [jours, setJours] = useState(JOURS_PAR_DEFAUT);
+  const [indiceBord, setIndiceBord] = useState(false);
   const futRef = useRef<HTMLDivElement>(null);
   const fantomeRef = useRef<HTMLButtonElement>(null);
   const glisse = useRef(false);
@@ -53,6 +54,12 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
     onCreate(titre.trim(), avecDate ? enSuisse(dateChoisie) : '');
     fermer();
   };
+
+  const versBord = () => {
+    const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-bord', { cancelable: true }));
+    if (!pris) setIndiceBord(true);
+  };
+  const nbAgenda = items.filter((i) => i.status !== 'done').length;
 
   const surFil = (e: React.PointerEvent) => {
     const r = futRef.current?.getBoundingClientRect();
@@ -91,6 +98,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
             <div className="tl-lt"><button type="button" className="tl-title" onClick={() => onEdit(parId(r.id))}>{r.titre}</button><span className="r">{r.relatif}</span></div>
           </div>
         ))}
+        <div className="tl-rest">
         {fil.sansDate.length > 0 && (
           <div className="tl-pocket">
             <div className="h"><GripVertical size={14} aria-hidden="true" />sans date</div>
@@ -108,7 +116,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           onPointerMove={adding ? (e) => { if (glisse.current) surFil(e); } : undefined}
           onPointerUp={() => { glisse.current = false; }} onPointerCancel={() => { glisse.current = false; }}>
           {fil.reperes.map((r) => <span key={`${r.jours}-${r.etiquette}`} className={`tl-tk${r.rupture ? ' rupt' : ''}`} style={{ top: r.y }}>{r.etiquette}</span>)}
-          {fil.resserre && <span className="tl-note" style={{ top: MARGE_HAUT + positionY(42) + 10 }}>échelle resserrée</span>}
+          {fil.noteRupture !== null && <span className="tl-note" style={{ top: fil.noteRupture }}>échelle resserrée</span>}
           {fil.ecarts.map((g) => <span key={g.y} className="tl-gap" style={{ top: g.y }}>{g.texte}</span>)}
           {fil.futur.map((p) => (
             <div key={p.id}>
@@ -140,7 +148,13 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
             </>
           )}
         </div>
+        </div>
       </div>
+
+      <button type="button" className="tl-go" onClick={versBord}>
+        <LayoutGrid size={18} aria-hidden="true" /><span>Agenda du Bord</span><span className="tl-num tl-goc">{nbAgenda}</span><span className="tl-sp" />
+        <span className="tl-gom">{indiceBord ? 'dans la barre du bas' : 'Bord'}</span><ChevronRight size={18} aria-hidden="true" />
+      </button>
 
       {recent && (
         <div className="tl-toast" role="status"><Check size={18} aria-hidden="true" /><span>Faite · montée dans Faites</span><span className="tl-sp" /><button type="button" onClick={annuler}>Annuler</button></div>

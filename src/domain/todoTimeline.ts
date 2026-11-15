@@ -16,6 +16,11 @@ export const JOURS_ECHELLE = 42;
 export const MARGE_HAUT = 20;
 export const HAUT_CARTE = 56;
 export const ECART_CARTES = 8;
+/** Écarts minimaux entre étiquettes (px) : deux repères ; un repère et une carte ou la perle neuve ; deux textes de la colonne de droite ; texte de droite et perle neuve. */
+export const ECART_REPERE = 18;
+export const ECART_REPERE_CARTE = 34;
+export const ECART_DROITE = 22;
+export const ECART_DROITE_FANTOME = 38;
 /** Resserrement : y(j) = 420 + A·ln(1 + (j − 42)/B) au-delà de 42 jours ; 6 mois ≈ 630 px, 1 an ≈ 715 px. */
 const A = 120;
 const B = 30;
@@ -59,6 +64,8 @@ export interface Fil {
   faites: Faite[];
   reperes: Repere[];
   ecarts: EcartLibre[];
+  /** Position de « échelle resserrée » ; `null` quand le fil ne se resserre pas, ou quand le texte ne tient pas. */
+  noteRupture: number | null;
   /** Hauteur du fil (px), du jour 0 à la fin. */
   hauteur: number;
   /** Centre du bouton « Poser » en bas du fil ; `null` quand le fil est libre (le bouton est alors dans la carte). */
@@ -139,13 +146,14 @@ function texteLibre(jours: number): string {
 }
 
 /**
- * Pose les tâches sur le fil. `aujourdhui` est injecté (jamais d'horloge ici).
+ * Pose les tâches sur le fil. `aujourdhui` est injecté (jamais d'horloge ici). `fantomeJours` : le jour où se trouve la perle neuve
+ * pendant la pose (ses étiquettes ne recouvrent rien de ce qui l'entoure).
  * - faites : hors du fil (en haut, en perles) ;
  * - en retard (date passée, non faite) : poche rouge au-dessus du trait « aujourd'hui », la plus ancienne en haut ;
  * - sans date : poche à part (le composant la place hors du fil : elle ne change aucune distance) ;
  * - datées à venir (aujourd'hui compris) : sur le fil, à l'échelle.
  */
-export function construireFil(taches: readonly TacheEntree[], aujourdhui: Date): Fil {
+export function construireFil(taches: readonly TacheEntree[], aujourdhui: Date, fantomeJours: number | null = null): Fil {
   const retard: Retard[] = [];
   const sansDate: SansDate[] = [];
   const faites: Faite[] = [];
@@ -177,7 +185,8 @@ export function construireFil(taches: readonly TacheEntree[], aujourdhui: Date):
 
   const dernierJour = avenir.length ? avenir[avenir.length - 1].jours : 0;
   const reperes: Repere[] = [];
-  const maxHebdo = Math.min(JOURS_ECHELLE, Math.max(21, Math.ceil((dernierJour + 1) / 7) * 7));
+  // Pas de repère au-delà de la dernière carte : il tomberait sur « Poser ». Fil libre : trois semaines, pour donner l'échelle.
+  const maxHebdo = Math.min(JOURS_ECHELLE, Math.max(21, Math.floor(dernierJour / 7) * 7));
   for (let j = 7; j <= maxHebdo; j += 7) {
     reperes.push({ y: MARGE_HAUT + positionY(j), jours: j, etiquette: jourMois(ajouterJours(aujourdhui, j)) });
   }
@@ -185,30 +194,56 @@ export function construireFil(taches: readonly TacheEntree[], aujourdhui: Date):
   if (dernierJour > JOURS_ECHELLE) {
     resserre = true;
     reperes.push({ y: MARGE_HAUT + positionY(JOURS_ECHELLE), jours: JOURS_ECHELLE, etiquette: '6 semaines', rupture: true });
-    // Au-delà : le 1er de chaque mois, au plus un repère tous les 30 px.
-    let dernierY = MARGE_HAUT + positionY(JOURS_ECHELLE);
+    // Au-delà : le 1er de chaque mois.
     const fin = ajouterJours(aujourdhui, dernierJour);
     for (let m = new Date(aujourdhui.getFullYear(), aujourdhui.getMonth() + 1, 1, 12); m <= fin; m = new Date(m.getFullYear(), m.getMonth() + 1, 1, 12)) {
       const j = ecartJours(aujourdhui, m);
       if (j <= JOURS_ECHELLE) continue;
-      const y = MARGE_HAUT + positionY(j);
-      if (y - dernierY < 30) continue;
-      reperes.push({ y, jours: j, etiquette: `1 ${MOIS_COURTS[m.getMonth()]}` });
-      dernierY = y;
+      reperes.push({ y: MARGE_HAUT + positionY(j), jours: j, etiquette: `1 ${MOIS_COURTS[m.getMonth()]}` });
     }
   }
 
-  // Un repère à moins de 34 px d'une carte est superflu : la carte porte sa date, et les deux textes se chevaucheraient.
-  const reperesVisibles = reperes.filter((r) => r.rupture || !futur.some((p) => Math.abs(p.yCarte - r.y) < 34));
+  // Étiquettes : aucune n'en recouvre une autre. Une étiquette qui ne tient pas se tait (la rupture « 6 semaines » a priorité).
+  // - colonne de gauche (repères, dates des cartes, perle neuve) : 18 px d'écart entre deux textes ; 34 px d'une carte ou de la perle neuve
+  //   (leur date porte déjà la même information, et les deux textes se chevaucheraient) ;
+  // - colonne de droite (« échelle resserrée », « n semaines libres », bulle de la perle neuve) : 22 px d'écart.
+  const fantomeY = fantomeJours === null ? null : MARGE_HAUT + positionY(fantomeJours);
+  const reperesVisibles: Repere[] = [];
+  const parPriorite = [...reperes].sort((a, b) => Number(!!b.rupture) - Number(!!a.rupture) || a.y - b.y);
+  for (const r of parPriorite) {
+    const surCarte = futur.some((p) => Math.abs(p.yCarte - r.y) < ECART_REPERE_CARTE);
+    const surFantome = fantomeY !== null && Math.abs(fantomeY - r.y) < ECART_REPERE_CARTE;
+    const surVoisin = reperesVisibles.some((v) => Math.abs(v.y - r.y) < ECART_REPERE);
+    if (!r.rupture && (surCarte || surFantome || surVoisin)) continue;
+    reperesVisibles.push(r);
+  }
+  reperesVisibles.sort((a, b) => a.y - b.y);
+
+  const noteCandidate = resserre ? MARGE_HAUT + positionY(JOURS_ECHELLE) + 10 : null;
+  const noteLibre = noteCandidate !== null
+    && !futur.some((p) => Math.abs(p.yCarte - noteCandidate) < HAUT_CARTE / 2 + 10)
+    && (fantomeY === null || Math.abs(fantomeY - noteCandidate) >= ECART_DROITE_FANTOME);
+  const noteRupture = noteLibre ? noteCandidate : null;
 
   // Espaces libres entre deux ancres (aujourd'hui, puis chaque carte) : dits en semaines, jamais devinés.
+  // Le texte se pose au milieu de l'espace ; s'il touche la note ou la perle neuve, il glisse dans l'espace libre, sinon il se tait.
   const ecarts: EcartLibre[] = [];
   let ancreJour = 0;
   let ancreBas = MARGE_HAUT;
+  const gene = (y: number) => (noteRupture !== null && Math.abs(y - noteRupture) < ECART_DROITE)
+    || (fantomeY !== null && Math.abs(y - fantomeY) < ECART_DROITE_FANTOME);
   for (const p of futur) {
     const jours = p.jours - ancreJour;
     const haut = p.yCarte - HAUT_CARTE / 2;
-    if (jours >= 14 && haut - ancreBas >= 40) ecarts.push({ y: (ancreBas + haut) / 2, jours, texte: texteLibre(jours) });
+    if (jours >= 14 && haut - ancreBas >= 40) {
+      const milieu = (ancreBas + haut) / 2;
+      const [mini, maxi] = [ancreBas + 14, haut - 14];
+      let y: number | null = null;
+      for (let d = 0; d <= (maxi - mini) / 2 && y === null; d += 4) {
+        for (const c of [milieu + d, milieu - d]) if (y === null && c >= mini && c <= maxi && !gene(c)) y = c;
+      }
+      if (y !== null) ecarts.push({ y, jours, texte: texteLibre(jours) });
+    }
     ancreJour = p.jours;
     ancreBas = p.yCarte + HAUT_CARTE / 2;
   }
@@ -222,5 +257,5 @@ export function construireFil(taches: readonly TacheEntree[], aujourdhui: Date):
     yPoser = futur[futur.length - 1].yCarte + HAUT_CARTE / 2 + 52;
     hauteur = yPoser + 30;
   }
-  return { retard, futur, sansDate, faites, reperes: reperesVisibles, ecarts, hauteur, yPoser, vide, resserre };
+  return { retard, futur, sansDate, faites, reperes: reperesVisibles, ecarts, noteRupture, hauteur, yPoser, vide, resserre };
 }

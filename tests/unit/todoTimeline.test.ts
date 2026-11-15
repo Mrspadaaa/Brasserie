@@ -109,3 +109,42 @@ describe('todoTimeline : dates', () => {
     ]);
   });
 });
+
+// Passe 2 (critique t-kckd n° 4, 11, 12) : aucune étiquette n'en recouvre une autre. Écart minimal ; celle qui ne tient pas se tait.
+describe('todoTimeline : étiquettes qui ne se chevauchent pas', () => {
+  const ECART_GAUCHE = 18; // texte de 12 px en colonne de gauche
+  const ecartsMin = (ys: number[]) => ys.slice().sort((a, b) => a - b).reduce((m, y, i, t) => (i ? Math.min(m, y - t[i - 1]) : m), Infinity);
+  const gauche = (fil: ReturnType<typeof construireFil>) => [...fil.reperes.map((r) => r.y), ...fil.futur.map((p) => p.yCarte)];
+
+  it('à six mois, la date de la 6e semaine et « 6 semaines » ne tombent pas au même endroit', () => {
+    const fil = construireFil([tache('n', '13.12.2026'), tache('m', '17.05.2027')], AUJ);
+    expect(ecartsMin(fil.reperes.map((r) => r.y))).toBeGreaterThanOrEqual(ECART_GAUCHE);
+    expect(fil.reperes.filter((r) => r.jours === 42)).toHaveLength(1);
+    expect(fil.reperes.find((r) => r.jours === 42)?.rupture).toBe(true);
+  });
+  it('« échelle resserrée » ne couvre ni une carte ni « n mois libres »', () => {
+    const fil = construireFil([tache('n', '13.12.2026'), tache('m', '17.05.2027')], AUJ);
+    expect(fil.noteRupture).not.toBeNull();
+    for (const g of fil.ecarts) expect(Math.abs(g.y - fil.noteRupture!)).toBeGreaterThanOrEqual(22);
+    for (const p of fil.futur) expect(Math.abs(p.yCarte - fil.noteRupture!)).toBeGreaterThanOrEqual(HAUT_CARTE / 2 + 10);
+  });
+  it('pendant la pose, la perle neuve ne recouvre ni repère ni « n semaines libres »', () => {
+    for (const jours of [7, 14, 21, 28, 35, 42, 60]) {
+      const fil = construireFil([tache('n', '13.12.2026')], AUJ, jours);
+      const y = MARGE_HAUT + positionY(jours);
+      for (const r of fil.reperes) expect(Math.abs(r.y - y)).toBeGreaterThanOrEqual(34);
+      for (const g of fil.ecarts) expect(Math.abs(g.y - y)).toBeGreaterThanOrEqual(38);
+    }
+  });
+  it('aucun repère ne tombe sur « Poser » (le « 20 déc. » coupé de la critique)', () => {
+    const fil = construireFil([tache('n', '13.12.2026')], AUJ); // 13 déc. = jour 29 ; la 5e semaine tomberait à 80 px sous la carte
+    expect(fil.yPoser).not.toBeNull();
+    for (const r of fil.reperes) expect(Math.abs(r.y - fil.yPoser!)).toBeGreaterThanOrEqual(34);
+    expect(fil.reperes.every((r) => r.y < fil.futur[0].yCarte)).toBe(true);
+  });
+  it('sans pose, les repères d’un fil ordinaire gardent leur écart minimal avec les cartes', () => {
+    const fil = construireFil([tache('a', '21.11.2026'), tache('b', '13.12.2026')], AUJ);
+    const ys = gauche(fil);
+    expect(ecartsMin(ys)).toBeGreaterThanOrEqual(ECART_GAUCHE);
+  });
+});
