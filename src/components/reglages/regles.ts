@@ -5,6 +5,7 @@ import type { AppConfig, BrewhouseProfile } from '../../types';
 import { equipmentErrors, profileVolumeErrors } from '../../domain/brewEquipment';
 import { brewingPreferenceErrors } from '../../domain/brewPreferences';
 import { ibanCompact, ibanValide } from '../../domain/finance/iban';
+import { nombreFr } from '../../domain/nombreAffiche';
 import { uidValide, adresseBrasserie } from '../../domain/companyDefaults';
 import { BAREME_IMPOT_BIERE, TAUX_NORMAL_PAR_HL } from '../../domain/finance/swissBeerTax';
 
@@ -108,7 +109,7 @@ export function ventilationVente(ttc: number, taux: number): { ht: number; tva: 
 
 /** Les trois tranches de l'impôt sur la bière (CHF/hl), et celle de la bière normale, surlignée. */
 export const TRANCHES_PLATO = BAREME_IMPOT_BIERE.map((t, i, tous) => ({
-  libelle: i === 0 ? `jusqu’à ${t.jusquaPlato} °P` : t.jusquaPlato === Infinity ? `dès ${tous[i - 1].jusquaPlato + 0.1} °P` : `${tous[i - 1].jusquaPlato + 0.1} à ${t.jusquaPlato} °P`,
+  libelle: i === 0 ? `jusqu’à ${nombreFr(t.jusquaPlato, 0)} °P` : t.jusquaPlato === Infinity ? `dès ${nombreFr(tous[i - 1].jusquaPlato + 0.1, 1)} °P` : `${nombreFr(tous[i - 1].jusquaPlato + 0.1, 1)} à ${nombreFr(t.jusquaPlato, 0)} °P`,
   chfParHl: t.chfParHl,
   normale: t.chfParHl === TAUX_NORMAL_PAR_HL
 }));
