@@ -24,7 +24,7 @@ import {
   type ClientBrewerJob
 } from '../services/brewerJobs';
 import { useBrewerNotifications } from './BrewerNotifications';
-import { BrewerLimitsView, budgetResume, useBrewerBudget } from './BrewerBudget';
+import { BandeauPlafond, BrewerLimitsView, PLACEHOLDER_PLAFOND, budgetResume, useBrewerBudget } from './BrewerBudget';
 import './brewer-chat.css';
 import './companion/companion.css';
 import './companion/plus.css';
@@ -829,6 +829,8 @@ function ScopedChat({
       /* Optional preference. */
     }
   };
+  // Budget du mois atteint (cadre « plafond ») : bandeau au-dessus de la saisie ; la question tapée reste gardée.
+  const plafondAtteint = budgetResume(useBrewerBudget().status).atteint && !finance;
   const ouvrirConversations = () => {
     fermer();
     window.dispatchEvent(new CustomEvent('brewer-inbox-open', { detail: { scope } }));
@@ -929,13 +931,14 @@ function ScopedChat({
                     if (!v) setConseille(undefined);
                   }}
                   maxLength={assistedAdvice ? 4000 : 3000}
-                  placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : travaux.length ? 'Ajouter une question…' : 'Décris ce que tu observes…'}
+                  placeholder={plafondAtteint ? PLACEHOLDER_PLAFOND : finance ? 'Une dépense à comprendre, un achat à préparer…' : travaux.length ? 'Ajouter une question…' : 'Décris ce que tu observes…'}
                   readOnly={applying || resetting || assistedSubmitting}
                   peutEnvoyer={!envoiInterdit}
                   haute={finance}
                   avant={
                     <>
                       {!enLigne && <BandeauHorsLigne />}
+                      {enLigne && plafondAtteint && <BandeauPlafond />}
                       <Amorces
                         amorces={!timeline.length && scope.kind === 'batch' && !finance && !assistedAdvice ? AMORCES_BRASSIN : []}
                         suite={suite}
