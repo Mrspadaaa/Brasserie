@@ -2,16 +2,20 @@ import type { TabType } from '../components/BottomNav';
 import { fabActionFor, type AnySubTab, type FabAction } from './fabActions';
 
 /**
- * Le menu du + selon l'écran (b1r, choisi le 15.11).
+ * Le menu du + (b1s-a « Deux étages », choisi le 15.11).
  *
  * ⚠️ Ce que ça règle : le + ouvrait le même menu partout — facture, vente,
  * recette, brassin — alors que chaque écran a ses propres gestes (BX-4, 09.11 :
  * « sur plein d'écran il est pas au bon endroit. Différents, donne pas les
- * bonnes actions »). Une table par écran dit ce que la feuille montre :
- *  - « Sur cet écran » : l'action de l'écran (`fabActionFor`, pleine, couleur de
- *    sa rubrique) puis, s'il en a, ses autres actions (demi-largeur) ;
- *  - « Depuis ici » : 0 à 3 gestes choisis pour cet écran, avec une précision
- *    quand elle informe (prochain numéro de brassin, articles à commander).
+ * bonnes actions »). Puis b1r avait fait disparaître le commun : ses mots du
+ * 15.11, « certaines actions doivent toujours être possible, juste celle de
+ * l'écran actuel sont plus mis en avant ». Deux étages :
+ *  - « Sur cet écran » (en tête) : l'action de l'écran (`fabActionFor`, pleine,
+ *    couleur de sa rubrique), puis ses autres actions ;
+ *  - « Partout » : les cinq gestes communs (écriture, facture, vente, recette,
+ *    brassin) à CASES FIXES, plus le Compagnon (dans la feuille). Un geste déjà
+ *    monté en tête garde sa case, marquée d'un renvoi ↑ et toujours active
+ *    (`monte`) : aucune case vide, aucun geste qui semble avoir disparu.
  *
  * La table est un `Record` exhaustif par écran : un écran ajouté sans menu casse
  * la compilation. Les précisions viennent de l'app (`PlusContexte`), jamais d'un
@@ -37,6 +41,8 @@ export interface PlusContexte {
   prochainFut?: string;
   /** Articles à commander (le même compte que la pastille de Stocks). */
   aCommander?: number;
+  /** Brassins en fermentation ou en garde. */
+  enCuve?: number;
 }
 
 export interface PlusEntree {
@@ -46,6 +52,8 @@ export interface PlusEntree {
   /** Lettre de raccourci au clavier, fixe d'un écran à l'autre. */
   lettre: string;
   ton: PlusTon;
+  /** Geste commun déjà monté « Sur cet écran » : sa case reste en « Partout », avec ↑, active. */
+  monte?: boolean;
 }
 
 export interface PlusEcranAction extends FabAction {
@@ -57,14 +65,21 @@ export interface PlusMenu {
   ecran: EcranId;
   /** « Brassins › Recettes » : la rubrique et l'écran, à droite de la zone. */
   chemin: string;
+  /** L'état de l'écran en une ligne (« 2 en cuve »), seulement quand l'app le sait. */
+  etat?: string;
   ton: PlusTon;
   /** L'action de l'écran ; `null` quand l'écran ne crée rien (Volumes, Impôt bière). */
   action: PlusEcranAction | null;
-  /** Les autres actions de l'écran, en demi-largeur. */
+  /** Les autres actions de l'écran, montées en tête avec l'action. */
   autres: PlusEntree[];
-  /** « Depuis ici » : 0 à 3 gestes. */
+  /** « Partout » : les cinq gestes communs, dans un ordre figé (`COMMUNS`). */
+  partout: PlusEntree[];
+  /** Ancien « Depuis ici » (b1r) : toujours vide, gardé pour la recherche qui lit `autres` et `ici`. */
   ici: PlusEntree[];
 }
+
+/** Les gestes communs et leur ordre figé : la même case d'un écran à l'autre. */
+export const COMMUNS: PlusCle[] = ['ecriture', 'facture', 'vente', 'recette', 'brassin'];
 
 /** Lettre de chaque geste ; N est l'action de l'écran, C le compagnon. */
 export const LETTRES: Record<PlusCle, string> = {
@@ -72,51 +87,54 @@ export const LETTRES: Record<PlusCle, string> = {
   houblon: 'H', article: 'A', fut: 'U', client: 'K', tarif: 'T', materiel: 'M'
 };
 
-const FICHE: Record<PlusCle, { label: string; ton: PlusTon }> = {
-  ecriture: { label: 'Écriture', ton: 'finances' },
-  facture: { label: 'Facture', ton: 'finances' },
-  vente: { label: 'Vente', ton: 'finances' },
-  brassin: { label: 'Brassin', ton: 'production' },
-  recette: { label: 'Recette', ton: 'production' },
-  idee: { label: 'Idée', ton: 'production' },
-  courses: { label: 'Courses', ton: 'stocks' },
-  houblon: { label: 'Houblon', ton: 'stocks' },
-  article: { label: 'Article', ton: 'stocks' },
-  fut: { label: 'Fût', ton: 'stocks' },
-  client: { label: 'Client', ton: 'clients' },
-  tarif: { label: 'Tarif', ton: 'clients' },
-  materiel: { label: 'Matériel', ton: 'stocks' }
-};
-
 type Precision = string | ((c: PlusContexte) => string | undefined);
-interface Ligne { cle: PlusCle; hint?: Precision }
-
-interface Fiche {
-  chemin: string;
-  ton: PlusTon;
-  autres: Ligne[];
-  ici: Ligne[];
-}
 
 const sera = (c: PlusContexte) => (c.prochainBrassin ? `sera ${c.prochainBrassin}` : undefined);
 const aCommander = (c: PlusContexte) => (c.aCommander && c.aCommander > 0 ? `${c.aCommander} à commander` : undefined);
 
-/** Une table par écran : ce que la feuille du + montre là, et rien d'autre. */
+/** Libellé (même verbe aux deux largeurs), couleur et précision d'usage de chaque geste. */
+const FICHE: Record<PlusCle, { label: string; ton: PlusTon; hint?: Precision }> = {
+  ecriture: { label: 'Nouvelle écriture', ton: 'finances', hint: 'à la main' },
+  facture: { label: 'Entrer une facture', ton: 'finances', hint: 'photo ou PDF' },
+  vente: { label: 'Encaisser une vente', ton: 'finances' },
+  brassin: { label: 'Lancer un brassin', ton: 'production', hint: sera },
+  recette: { label: 'Créer une recette', ton: 'production' },
+  idee: { label: 'Nouvelle idée', ton: 'production' },
+  courses: { label: 'Ajouter aux courses', ton: 'stocks', hint: aCommander },
+  houblon: { label: 'Nouvelle variété', ton: 'stocks' },
+  article: { label: 'Nouvel article', ton: 'stocks' },
+  fut: { label: 'Nouveau fût', ton: 'stocks' },
+  client: { label: 'Nouveau client', ton: 'clients' },
+  tarif: { label: 'Nouveau tarif', ton: 'clients' },
+  materiel: { label: 'Nouveau matériel', ton: 'stocks' }
+};
+
+interface Fiche {
+  chemin: string;
+  ton: PlusTon;
+  /** Les autres gestes de l'écran, en tête sous l'action. */
+  autres: PlusCle[];
+  etat?: (c: PlusContexte) => string | undefined;
+}
+
+const enCuve = (c: PlusContexte) => (c.enCuve && c.enCuve > 0 ? `${c.enCuve} en cuve` : undefined);
+
+/** Une table par écran : ce que la feuille met en tête là (l'action de l'écran vient de `fabActions`). */
 const MENUS: Record<EcranId, Fiche> = {
-  bord: { chemin: 'Bord', ton: 'finances', autres: [{ cle: 'facture', hint: 'photo' }, { cle: 'vente' }], ici: [{ cle: 'brassin', hint: sera }, { cle: 'courses', hint: aCommander }, { cle: 'recette' }] },
-  finances: { chemin: 'Finances', ton: 'finances', autres: [{ cle: 'facture', hint: 'photo ou PDF' }, { cle: 'vente' }], ici: [] },
-  brassins: { chemin: 'Brassins › Brassins', ton: 'production', autres: [], ici: [{ cle: 'recette' }, { cle: 'idee' }, { cle: 'courses', hint: aCommander }] },
-  recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: [], ici: [{ cle: 'brassin', hint: sera }, { cle: 'idee' }, { cle: 'houblon' }] },
-  atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: [], ici: [{ cle: 'recette' }, { cle: 'brassin', hint: sera }] },
-  volumes: { chemin: 'Brassins › Volumes', ton: 'production', autres: [], ici: [{ cle: 'brassin', hint: sera }, { cle: 'recette' }, { cle: 'courses', hint: aCommander }] },
-  stock: { chemin: 'Stocks › Articles', ton: 'stocks', autres: [], ici: [{ cle: 'facture', hint: 'achat reçu' }, { cle: 'courses', hint: aCommander }, { cle: 'houblon' }] },
-  courses: { chemin: 'Stocks › Courses', ton: 'stocks', autres: [], ici: [{ cle: 'article' }, { cle: 'facture', hint: 'achat reçu' }] },
-  futs: { chemin: 'Stocks › Fûts', ton: 'stocks', autres: [], ici: [{ cle: 'vente', hint: 'fût vendu' }, { cle: 'client' }, { cle: 'materiel' }] },
-  materiel: { chemin: 'Stocks › Matériel', ton: 'stocks', autres: [], ici: [{ cle: 'fut' }, { cle: 'ecriture', hint: 'achat' }] },
-  houblons: { chemin: 'Stocks › Houblons', ton: 'stocks', autres: [], ici: [{ cle: 'article', hint: 'en stock' }, { cle: 'recette' }, { cle: 'courses', hint: aCommander }] },
-  clients: { chemin: 'Clients › Carnet', ton: 'clients', autres: [], ici: [{ cle: 'vente' }, { cle: 'tarif' }, { cle: 'fut', hint: 'en prêt' }] },
-  impot: { chemin: 'Clients › Impôt bière', ton: 'clients', autres: [], ici: [{ cle: 'vente' }] },
-  tarifs: { chemin: 'Clients › Prix', ton: 'clients', autres: [], ici: [{ cle: 'client' }, { cle: 'vente' }] }
+  bord: { chemin: 'Bord', ton: 'finances', autres: ['courses'] },
+  finances: { chemin: 'Finances', ton: 'finances', autres: ['facture', 'vente'] },
+  brassins: { chemin: 'Brassins › Brassins', ton: 'production', autres: ['courses'], etat: enCuve },
+  recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
+  atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: ['brassin'] },
+  volumes: { chemin: 'Brassins › Volumes', ton: 'production', autres: ['brassin', 'courses'] },
+  stock: { chemin: 'Stocks › Articles', ton: 'stocks', autres: ['courses'], etat: aCommander },
+  courses: { chemin: 'Stocks › Courses', ton: 'stocks', autres: ['article'], etat: aCommander },
+  futs: { chemin: 'Stocks › Fûts', ton: 'stocks', autres: ['vente'] },
+  materiel: { chemin: 'Stocks › Matériel', ton: 'stocks', autres: [] },
+  houblons: { chemin: 'Stocks › Houblons', ton: 'stocks', autres: ['courses'], etat: aCommander },
+  clients: { chemin: 'Clients › Carnet', ton: 'clients', autres: ['vente', 'tarif'] },
+  impot: { chemin: 'Clients › Impôt bière', ton: 'clients', autres: [] },
+  tarifs: { chemin: 'Clients › Prix', ton: 'clients', autres: ['client'] }
 };
 
 /** L'écran affiché, depuis l'onglet et le sous-onglet. Un sous-onglet absent = le premier de l'onglet. */
@@ -138,6 +156,11 @@ const tonDe = (intent: FabAction['intent'], repli: PlusTon): PlusTon => {
   return repli;
 };
 
+/** Le geste commun que l'action de l'écran reprend, quand il y en a un : sa case de « Partout » porte alors ↑. */
+const COMMUN_DE_L_ACTION: Partial<Record<FabAction['intent'], PlusCle>> = {
+  newTransaction: 'ecriture', newBatch: 'brassin', newRecipe: 'recette'
+};
+
 /** L'action de l'écran porte une précision quand l'app la connaît (prochain numéro, articles). */
 function actionDeLEcran(action: FabAction, ton: PlusTon, c: PlusContexte): PlusEcranAction {
   const hint =
@@ -149,10 +172,10 @@ function actionDeLEcran(action: FabAction, ton: PlusTon, c: PlusContexte): PlusE
   return { ...action, hint, lettre: 'N', ton: tonDe(action.intent, ton) };
 }
 
-function entree(l: Ligne, c: PlusContexte): PlusEntree {
-  const f = FICHE[l.cle];
-  const hint = typeof l.hint === 'function' ? l.hint(c) : l.hint;
-  return { cle: l.cle, label: f.label, hint, lettre: LETTRES[l.cle], ton: f.ton };
+function entree(cle: PlusCle, c: PlusContexte, monte?: boolean): PlusEntree {
+  const f = FICHE[cle];
+  const hint = typeof f.hint === 'function' ? f.hint(c) : f.hint;
+  return { cle, label: f.label, hint, lettre: LETTRES[cle], ton: f.ton, ...(monte ? { monte: true } : {}) };
 }
 
 /** Le menu du + pour l'écran (onglet, sous-onglet) et ce que l'app en sait. */
@@ -160,26 +183,37 @@ export function plusMenuFor(tab: TabType, subTab?: AnySubTab | null, contexte: P
   const ecran = ecranId(tab, subTab);
   const fiche = MENUS[ecran];
   const brute = fabActionFor(tab, subTab);
+  // `quickAction` = l'écran ne crée rien (BX-4) : pas d'action pleine.
+  const action = brute.intent === 'quickAction' ? null : actionDeLEcran(brute, fiche.ton, contexte);
+  const montes = new Set<PlusCle>(fiche.autres);
+  const reprise = COMMUN_DE_L_ACTION[brute.intent];
+  if (action && reprise) montes.add(reprise);
   return {
     ecran,
     chemin: fiche.chemin,
+    etat: fiche.etat?.(contexte),
     ton: fiche.ton,
-    // `quickAction` = l'écran ne crée rien (BX-4) : pas d'action pleine.
-    action: brute.intent === 'quickAction' ? null : actionDeLEcran(brute, fiche.ton, contexte),
-    autres: fiche.autres.map((l) => entree(l, contexte)),
-    ici: fiche.ici.map((l) => entree(l, contexte))
+    action,
+    autres: fiche.autres.map((cle) => entree(cle, contexte)),
+    partout: COMMUNS.map((cle) => entree(cle, contexte, montes.has(cle))),
+    ici: []
   };
 }
 
-/** Menu d'une page plein écran (assistant, jour de brassage…) : les gestes de partout, sans action d'écran. */
-export function plusMenuPage(contexte: PlusContexte = {}): PlusMenu {
+/**
+ * Menu d'une page plein écran (assistant, jour de brassage…) : les gestes de partout. Sans `action`, aucune action d'écran ;
+ * avec, elle est en tête et son geste commun garde sa case, marquée ↑ (le même contrat que `plusMenuFor`).
+ */
+export function plusMenuPage(contexte: PlusContexte = {}, action?: FabAction | null): PlusMenu {
+  const reprise = action ? COMMUN_DE_L_ACTION[action.intent] : undefined;
   return {
     ecran: 'bord',
     chemin: '',
     ton: 'finances',
-    action: null,
+    action: action ? { ...action, lettre: 'N', ton: 'clients' } : null,
     autres: [],
-    ici: [{ cle: 'facture' }, { cle: 'vente' }, { cle: 'recette' }, { cle: 'brassin', hint: sera }].map((l) => entree(l as Ligne, contexte))
+    partout: COMMUNS.map((cle) => entree(cle, contexte, cle === reprise)),
+    ici: []
   };
 }
 

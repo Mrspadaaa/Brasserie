@@ -78,10 +78,10 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     render(screenWith({ action: { intent: 'newEquipment', label: 'Nouveau matériel' }, onAction: create, companionLabel: 'Matériel' },
       brewerAppScreen('stocks', 'materiel')));
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    // b1r : l'action de l'écran d'abord, les quatre gestes de partout, le Compagnon séparé en pied de feuille.
+    // b1s-a : l'action de l'écran d'abord, les cinq gestes de partout à cases fixes, le Compagnon en sixième case.
     const items = screen.getAllByRole('menuitem');
     expect(items.map((item) => item.textContent)).toEqual([
-      'Nouveau matériel', 'Facture', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
+      'Nouveau matériel', 'Nouvelle écritureà la main', 'Entrer une facturephoto ou PDF', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin', 'CompagnonMatériel'
     ]);
     expect(items.at(-1)).toHaveAttribute('aria-label', 'Compagnon brasseur · Matériel');
     fireEvent.click(screen.getByRole('menuitem', { name: /Nouveau matériel/ }));
@@ -94,7 +94,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
   it('ouvre chaque saisie à son écran, sans repasser par un sommaire', () => {
     const calls = { invoice: vi.fn(), sale: vi.fn(), recipe: vi.fn(), brew: vi.fn() };
     render(screenWith({ onInvoice: calls.invoice, onSale: calls.sale, onRecipe: calls.recipe, onBrew: calls.brew }));
-    for (const name of [/Facture/, /Vente/, /Recette/, /Brassin/]) {
+    for (const name of [/Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
       fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
       fireEvent.click(screen.getByRole('menuitem', { name }));
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -111,7 +111,8 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
       try {
         render(actions({ action: { intent: 'newTransaction', label: 'Nouvelle écriture' }, onAction: create }));
         fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-        fireEvent.click(screen.getByRole('menuitem', { name: /Nouvelle écriture/ }));
+        // L'action de l'écran est en tête ; sa case de « Partout » porte ↑ et reste active (b1s-a) : la première est celle de l'écran.
+        fireEvent.click(screen.getAllByRole('menuitem', { name: /Nouvelle écriture/ })[0]);
       } finally { cleanup(); match?.mockRestore(); }
     }
     expect(create).toHaveBeenCalledTimes(2);

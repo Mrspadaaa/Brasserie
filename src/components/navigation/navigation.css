@@ -1,8 +1,32 @@
-/* Navigation principale et feuille du + (b1r). Au téléphone : la barre d'aujourd'hui, le + à sa droite, la feuille posée
-   au-dessus d'elle. À partir de 1024 px : le rail de 88 px de b1, le + en tête, la liste à lettres sous le +. */
+/* Navigation principale et feuille du + (b1s-a « Deux étages », 15.11). Au téléphone : la barre de cinq onglets égaux, le +
+   flottant 12 px au-dessus d'elle à droite, la feuille posée au-dessus du +. À partir de 1024 px : le rail de 88 px (onglets
+   et Compagnon, plus de + dedans), le + flottant au coin bas droit du contenu, la liste à lettres au-dessus de lui. */
 
 :root {
   --rail-width: 88px;
+  /* Le + flottant : côté, hauteur du bord, et place qu'il prend (carré de 56 px). */
+  --plus-cote: 56px;
+  --plus-bord: 12px;
+}
+
+/* La barre n'a plus de case pour le + : cinq onglets égaux, de bord à bord. */
+.app-bottom-dock > nav.nav-principale {
+  right: 0;
+}
+body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
+  right: var(--sfp-w);
+}
+
+/* Le + flottant : un carré arrondi de 56 px (b1s-a). Sur une page plein écran il garde la forme de sa case (BX-4). */
+.floating-actions[data-floating-actions-anchor='nav'][data-floating-actions-docked='false'] > button {
+  width: var(--plus-cote);
+  height: var(--plus-cote);
+  border-radius: 16px;
+}
+
+/* Fin de liste : la dernière ligne défile au-dessus du +, qui ne couvre plus sa date (72 px sous le +, 88 px au rail). */
+:root [data-floating-actions-gap='nav'] {
+  padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 4.5rem);
 }
 
 /* Le voile sous la feuille : il couvre le contenu, jamais la barre ni le + (le + reste atteignable pour fermer). */
@@ -15,13 +39,13 @@
   background: rgba(0, 0, 0, 0.55);
 }
 
-/* La feuille du téléphone : posée à 8 px de la barre, de bord à bord. */
+/* La feuille du téléphone : de bord à bord, à 8 px au-dessus du + (qui est à 12 px de la barre). */
 .plus-feuille {
   position: fixed;
   left: 0.5rem;
   right: 0.5rem;
-  bottom: calc(var(--main-navigation-height, 2.5rem) + 0.5rem);
-  max-height: calc(100dvh - var(--main-navigation-height, 2.5rem) - 3.5rem);
+  bottom: calc(var(--main-navigation-height, 2.5rem) + var(--plus-bord) + var(--plus-cote) + 8px);
+  max-height: calc(100dvh - var(--main-navigation-height, 2.5rem) - var(--plus-bord) - var(--plus-cote) - 3.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -33,32 +57,23 @@
     top: var(--rail-top, 37px);
     bottom: 0;
     width: var(--rail-width);
-    padding-top: 66px;
+    padding-top: 16px;
     padding-bottom: 0;
     border-right: 1px solid rgb(var(--cave-800));
     background: rgb(var(--cave-950));
   }
 
-  /* Le + prend la tête du rail : 56 × 44, rayon 16, un halo discret (b1). */
-  .app-bottom-dock .app-bottom-dock-cell {
-    left: 16px;
-    right: auto;
-    top: calc(var(--rail-top, 37px) + 12px);
-    bottom: auto;
-    width: 56px;
-    height: 44px;
-    background: transparent;
-    padding: 0;
+  /* Au 1280, le + est au coin bas droit du contenu, à 24 px des bords. */
+  .floating-actions[data-floating-actions-anchor='nav'] {
+    right: 24px;
+    bottom: 24px;
   }
-  .app-bottom-dock .app-bottom-dock-cell > span {
-    display: none;
+  .floating-actions[data-floating-actions-anchor='nav'] > button {
+    box-shadow: 0 0 0 3px rgb(var(--ebc-straw) / 0.25), 0 10px 22px -6px rgba(0, 0, 0, 0.5);
   }
-  .floating-actions > button {
-    border-radius: 16px;
-    box-shadow: 0 0 0 3px rgb(var(--ebc-straw) / 0.25);
-  }
-  .floating-actions[data-floating-actions-docked='true'] > button {
-    box-shadow: 0 0 0 3px rgb(var(--ebc-straw) / 0.25);
+
+  :root [data-floating-actions-gap='nav'] {
+    padding-bottom: 5.5rem;
   }
 
   .plus-voile {
@@ -66,13 +81,13 @@
     bottom: 0;
   }
 
-  /* La liste du 1280 : sous le +, à droite du rail. */
+  /* La liste du 1280 : au-dessus du +, alignée à droite de lui. */
   .plus-liste {
     position: fixed;
-    left: calc(var(--rail-width) + 8px);
-    top: calc(var(--rail-top, 37px) + 8px);
-    width: 380px;
-    max-height: calc(100dvh - var(--rail-top, 37px) - 24px);
+    right: 24px;
+    bottom: calc(24px + var(--plus-cote) + 8px);
+    width: 400px;
+    max-height: calc(100dvh - var(--rail-top, 37px) - 24px - var(--plus-cote) - 24px);
     overflow-y: auto;
   }
 }

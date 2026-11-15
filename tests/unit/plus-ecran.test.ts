@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ecranId, LETTRES, plusMenuFor, plusMenuPage, type EcranId } from '../../src/domain/plusEcran';
+import { COMMUNS, ecranId, LETTRES, plusMenuFor, plusMenuPage, type EcranId } from '../../src/domain/plusEcran';
 import type { TabType } from '../../src/components/BottomNav';
 import type { AnySubTab } from '../../src/domain/fabActions';
 
@@ -9,9 +9,16 @@ const ECRANS: Array<[EcranId, TabType, AnySubTab]> = [
   ['stock', 'stocks', 'stock'], ['courses', 'stocks', 'courses'], ['futs', 'stocks', 'futs'], ['materiel', 'stocks', 'materiel'], ['houblons', 'stocks', 'hops'],
   ['clients', 'clients', 'crm'], ['impot', 'clients', 'ofdf'], ['tarifs', 'clients', 'tarifs']
 ];
-const contexte = { prochainBrassin: 'LOT-004', prochainFut: 'F-007', aCommander: 2 };
+const contexte = { prochainBrassin: 'LOT-004', prochainFut: 'F-007', aCommander: 2, enCuve: 2 };
 
-describe('Menu du + selon l’écran (b1r)', () => {
+/** Ce que la feuille met en tête : l'action de l'écran et ses autres actions. */
+const enTete = (id: EcranId) => {
+  const [, tab, sub] = ECRANS.find((e) => e[0] === id)!;
+  const m = plusMenuFor(tab, sub, contexte);
+  return [m.action ? `ecran:${m.action.intent}` : null, ...m.autres.map((e) => e.cle)].filter(Boolean).join('|');
+};
+
+describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
   it('chaque écran est reconnu depuis son onglet et son sous-onglet', () => {
     for (const [id, tab, sub] of ECRANS) expect(ecranId(tab, sub)).toBe(id);
   });
@@ -25,46 +32,60 @@ describe('Menu du + selon l’écran (b1r)', () => {
     for (const [id, tab, sub] of ECRANS) expect(plusMenuFor(tab, sub, contexte).action?.label ?? null, id).toBe(attendu[id]);
   });
 
-  it('ET-PLUS : le menu diffère d’un écran à l’autre au-delà de la première ligne', () => {
-    const signature = (id: EcranId) => {
-      const [, tab, sub] = ECRANS.find((e) => e[0] === id)!;
+  it('le commun est toujours là : les cinq gestes de « Partout », dans le même ordre, sur les 14 écrans', () => {
+    for (const [id, tab, sub] of ECRANS) {
       const m = plusMenuFor(tab, sub, contexte);
-      return [...m.autres, ...m.ici].map((e) => e.cle).join('|');
-    };
-    const signatures = ECRANS.map(([id]) => signature(id));
-    // Quatorze écrans, au plus deux menus identiques (Brassins/Volumes se ressemblent, pas les autres).
-    expect(new Set(signatures).size).toBeGreaterThanOrEqual(12);
-  });
-
-  it('une seule entrée Brassin par menu : jamais l’action de l’écran répétée plus bas', () => {
-    for (const [, tab, sub] of ECRANS) {
-      const m = plusMenuFor(tab, sub, contexte);
-      const cles = [...m.autres, ...m.ici].map((e) => e.cle);
-      expect(new Set(cles).size).toBe(cles.length);
-      if (m.action?.intent === 'newBatch') expect(cles).not.toContain('brassin');
-      if (m.action?.intent === 'newRecipe') expect(cles).not.toContain('recette');
-      if (m.action?.intent === 'newIdea') expect(cles).not.toContain('idee');
-      expect(m.ici.length).toBeLessThanOrEqual(3);
+      expect(m.partout.map((e) => e.cle), id).toEqual(COMMUNS);
+      expect(m.partout.map((e) => e.label), id).toEqual(
+        ['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin']
+      );
     }
   });
 
-  it('rien de perdu : Écriture, Facture et Vente restent sur Bord et Finances ; Vente sur Fûts et Clients', () => {
-    const bord = plusMenuFor('dashboard', null, contexte);
-    expect([bord.action?.intent, ...bord.autres.map((e) => e.cle)]).toEqual(['newTransaction', 'facture', 'vente']);
+  it('ET-PLUS : ce que l’écran met en tête diffère d’un écran à l’autre', () => {
+    const signatures = ECRANS.map(([id]) => enTete(id));
+    // Quatorze écrans : au plus trois en tête identiques (Matériel, Impôt bière… presque vides).
+    expect(new Set(signatures).size).toBeGreaterThanOrEqual(11);
+  });
+
+  it('un geste commun déjà en tête garde sa case de « Partout », marquée et active (jamais retirée)', () => {
+    const marques = (id: EcranId) => {
+      const [, tab, sub] = ECRANS.find((e) => e[0] === id)!;
+      return plusMenuFor(tab, sub, contexte).partout.filter((e) => e.monte).map((e) => e.cle);
+    };
+    expect(marques('bord')).toEqual(['ecriture']);
+    expect(marques('finances')).toEqual(['ecriture', 'facture', 'vente']);
+    expect(marques('brassins')).toEqual(['brassin']);
+    expect(marques('recettes')).toEqual(['recette', 'brassin']);
+    expect(marques('volumes')).toEqual(['brassin']);
+    expect(marques('futs')).toEqual(['vente']);
+    expect(marques('clients')).toEqual(['vente']);
+    expect(marques('materiel')).toEqual([]);
+    expect(marques('impot')).toEqual([]);
+  });
+
+  it('rien de perdu : Facture et Vente sont en tête de Finances, Vente en tête de Fûts et Clients, Courses en tête de Bord', () => {
+    expect(plusMenuFor('dashboard', null, contexte).autres.map((e) => e.cle)).toEqual(['courses']);
     expect(plusMenuFor('finances', null, contexte).autres.map((e) => e.cle)).toEqual(['facture', 'vente']);
-    expect(plusMenuFor('stocks', 'futs', contexte).ici.map((e) => e.cle)).toContain('vente');
-    expect(plusMenuFor('clients', 'crm', contexte).ici.map((e) => e.cle)).toContain('vente');
+    expect(plusMenuFor('stocks', 'futs', contexte).autres.map((e) => e.cle)).toContain('vente');
+    expect(plusMenuFor('clients', 'crm', contexte).autres.map((e) => e.cle)).toContain('vente');
+    expect(plusMenuFor('stocks', 'courses', contexte).autres.map((e) => e.cle)).toContain('article');
   });
 
   it('les précisions viennent de l’app ; une donnée inconnue ne donne ni précision ni zéro', () => {
     expect(plusMenuFor('production', 'batches', contexte).action?.hint).toBe('sera LOT-004');
+    expect(plusMenuFor('production', 'batches', contexte).partout.find((e) => e.cle === 'brassin')?.hint).toBe('sera LOT-004');
+    expect(plusMenuFor('production', 'batches', contexte).etat).toBe('2 en cuve');
     expect(plusMenuFor('stocks', 'futs', contexte).action?.hint).toBe('sera F-007');
     expect(plusMenuFor('stocks', 'courses', contexte).action?.hint).toBe('2 articles');
-    expect(plusMenuFor('production', 'batches', contexte).ici.find((e) => e.cle === 'courses')?.hint).toBe('2 à commander');
+    expect(plusMenuFor('production', 'batches', contexte).autres.find((e) => e.cle === 'courses')?.hint).toBe('2 à commander');
     const inconnu = plusMenuFor('production', 'batches', {});
     expect(inconnu.action?.hint).toBeUndefined();
-    expect(inconnu.ici.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
-    expect(plusMenuFor('production', 'batches', { aCommander: 0 }).ici.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
+    expect(inconnu.etat).toBeUndefined();
+    expect(inconnu.autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
+    expect(inconnu.partout.find((e) => e.cle === 'brassin')?.hint).toBeUndefined();
+    expect(plusMenuFor('production', 'batches', { aCommander: 0, enCuve: 0 }).autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
+    expect(plusMenuFor('production', 'batches', { enCuve: 0 }).etat).toBeUndefined();
   });
 
   it('les lettres sont uniques et fixes', () => {
@@ -72,12 +93,14 @@ describe('Menu du + selon l’écran (b1r)', () => {
     expect(new Set(lettres).size).toBe(lettres.length);
     expect(lettres).not.toContain('N');
     expect(lettres).not.toContain('C');
-    expect(plusMenuFor('dashboard', null, contexte).autres[0].lettre).toBe(LETTRES.facture);
+    expect(plusMenuFor('dashboard', null, contexte).partout[1].lettre).toBe(LETTRES.facture);
   });
 
-  it('une page plein écran garde les quatre gestes de partout, sans action d’écran', () => {
+  it('une page plein écran garde les gestes de partout, sans action d’écran', () => {
     const m = plusMenuPage(contexte);
     expect(m.action).toBeNull();
-    expect(m.ici.map((e) => e.cle)).toEqual(['facture', 'vente', 'recette', 'brassin']);
+    expect(m.autres).toEqual([]);
+    expect(m.partout.map((e) => e.cle)).toEqual(COMMUNS);
+    expect(m.partout.some((e) => e.monte)).toBe(false);
   });
 });

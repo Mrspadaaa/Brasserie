@@ -132,13 +132,14 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       expect(items[0]).toHaveTextContent(/^Nouvelle écriture/);
       expect(items[0]).toHaveTextContent('facture ou à la main');
       const labels = items.map(item => item.textContent ?? '');
-      // b1r : « Sur cet écran » = Nouvelle écriture, puis Facture et Vente ; le Bord ajoute « Depuis ici » (brassin, courses, recette).
-      // Finances n'a pas de « Depuis ici » : ses saisies sont l'écriture, la facture et la vente.
-      const attendues = tab === 'dashboard' ? ['Facture', 'Vente', 'Brassin', 'Recette'] : ['Facture', 'Vente'];
+      // b1s-a : « Sur cet écran » = Nouvelle écriture (+ Facture et Vente sur Finances, Courses au Bord) ; « Partout » garde les
+      // cinq gestes communs à cases fixes, sur les deux écrans.
+      const attendues = tab === 'dashboard'
+        ? ['Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin', 'Ajouter aux courses']
+        : ['Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin'];
       for (const other of attendues) {
         expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
       }
-      expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
       expect(items.at(-1)).toHaveAttribute('aria-label', expect.stringContaining('Compagnon brasseur'));
       await user.click(items[0]);
       expect(await screen.findByRole('dialog', { name: 'Saisie scan' })).toBeInTheDocument();

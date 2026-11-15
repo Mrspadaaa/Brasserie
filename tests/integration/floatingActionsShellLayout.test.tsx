@@ -210,10 +210,10 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     fireEvent.click(button);
     const items = screen.getAllByRole('menuitem');
     expect(document.activeElement).toBe(items[0]);
-    // b1r : sur une page, les gestes de partout d'abord, le Compagnon en pied.
-    expect(items[0]).toHaveTextContent('Facture');
+    // b1s-a : sur une page, les gestes de partout d'abord (l'écriture, la facture…), le Compagnon en dernière case.
+    expect(items[0]).toHaveTextContent('Nouvelle écriture');
     expect(items.at(-1)).toHaveTextContent('Compagnon');
-    fireEvent.click(screen.getByRole('menuitem', { name: /Recette/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
     expect(screen.queryByRole('menu')).toBeNull();
   });
@@ -242,7 +242,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
 
     fireEvent.click(launcherButton());
     expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
-    fireEvent.click(screen.getByRole('menuitem', { name: /Brassin/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Lancer un brassin/ }));
     expect(calls.brew).toHaveBeenCalledOnce();
   });
 
@@ -268,7 +268,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     button.focus();
     expect(button).toHaveFocus();
     fireEvent.click(button);
-    fireEvent.click(screen.getByRole('menuitem', { name: /Recette/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
 
     await act(async () => { brewerJobs.merge([doneJob()]); });
@@ -332,9 +332,9 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
       render(<Shell page={false} calls={calls} />);
       fireEvent.click(launcherButton());
       expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-        'Nouveau matériel', 'Facture', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
+        'Nouveau matériel', 'Nouvelle écritureà la main', 'Entrer une facturephoto ou PDF', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin', 'CompagnonMatériel'
       ]);
-      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Facture/, /Vente/, /Recette/, /Brassin/]) {
+      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());
         fireEvent.click(screen.getByRole('menuitem', { name }));
         expect(screen.queryByRole('menu')).toBeNull();

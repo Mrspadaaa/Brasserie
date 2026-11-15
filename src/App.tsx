@@ -71,7 +71,7 @@ import { User } from 'firebase/auth';
 
 import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
-import { ActionDock, PageShell } from './pages/PageShell';
+import { PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 import { prechargerVuesAuRepos } from './services/prechargeVues';
 import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
@@ -655,7 +655,8 @@ export const App: React.FC = () => {
   const plusMenu = plusMenuFor(activeTab, subTab, {
     prochainBrassin: nextBatchId(batches.map(b => b.id)),
     prochainFut: nextRef('F', stocks.kegs.map(k => k.id)),
-    aCommander: criticalStockCount
+    aCommander: criticalStockCount,
+    enCuve: batches.filter(b => b.status === 'fermentation' || b.status === 'garde').length
   });
   const [navNonce, setNavNonce] = useState(0);
   const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
@@ -1107,7 +1108,7 @@ export const App: React.FC = () => {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div role="status" data-toast className="pointer-events-none fixed z-50 inset-x-2 mx-auto max-w-md bottom-[calc(var(--main-navigation-height,2.5rem)+0.5rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
+        <div role="status" data-toast className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -1275,10 +1276,7 @@ export const App: React.FC = () => {
           criticalStockCount={criticalStockCount}
           horsConnexion={horsConnexion}
         />
-        <div aria-hidden="true" className="app-bottom-dock-cell fixed bottom-0 right-0 z-40 bg-cave-900 pb-safe">
-          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-cave-800" />
-          <ActionDock kind="nav" className="h-10 w-16 ml-1 mr-3 min-[1024px]:h-11 min-[1024px]:w-14 min-[1024px]:m-0" />
-        </div>
+        {/* b1s-a (15.11) : plus de case pour le + dans la barre, il flotte (FloatingActions). */}
       </div>
 
       {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,

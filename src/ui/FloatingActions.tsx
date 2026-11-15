@@ -19,8 +19,11 @@ import './floating-actions.css';
  * portait quel bouton. Ici, le même geste au même endroit ouvre les six
  * actions, et l'action de l'écran courant reste la première de la liste.
  *
- * ⚠️ Sur les onglets, le bouton se pose sur la case réservée à droite de la
- * barre (`ActionDock`, dans `PageShell.tsx`), hors de toute zone défilante.
+ * ⚠️ Sur les onglets (b1s-a, 15.11 : « le bouton doit toujours être flottant »),
+ * le + FLOTTE aux deux largeurs : 56 px, 12 px au-dessus de la barre à droite
+ * au téléphone, au coin bas droit du contenu au 1280. La barre n'a plus de case
+ * pour lui ; la fin des listes réserve 72 px (`navigation.css`). Une case
+ * `ActionDock` reste suivie quand une page ou un écran en réserve une.
  * Sur une page plein écran, il FLOTTE en bas à droite, au-dessus du pied de la
  * page s'il y en a un (#114 : une case de pied coûtait une bande basse sur
  * chaque page). La page réserve en fin de contenu la place du bouton : son
@@ -144,10 +147,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const choose = (run: () => void) => () => { close(); run(); };
 
   /* Le menu : celui de l'écran quand l'App le donne ; sinon l'action reçue et les quatre gestes de partout. */
-  const menu: PlusMenu = menuProp ?? {
-    ...plusMenuPage(),
-    action: action ? { ...action, lettre: 'N', ton: 'clients' } : null
-  };
+  const menu: PlusMenu = menuProp ?? plusMenuPage({}, action);
   const lancer = (cle: PlusCle | 'ecran') => {
     if (onPlus) return onPlus(cle);
     ({ ecran: onAction, facture: onInvoice, vente: onSale, recette: onRecipe, brassin: onBrew } as Record<string, (() => void) | undefined>)[cle]?.();
@@ -212,9 +212,10 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
      décollé de 16 px du bas — zone sûre ou pied de la page compris. */
   const fallbackBottom = anchor === 'page'
     ? 'calc(var(--page-footer-height, 0px) + 1rem)'
-    : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)';
-  /* BX-4 (09.11, « Différents ») : flottant, il garde la forme de sa case (64 × 40, icône 22) au lieu d'un rond de 48. */
-  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 22;
+    : 'calc(var(--main-navigation-height, 2.5rem) + 12px)';
+  /* b1s-a (15.11, « le bouton doit toujours être flottant ») : sur les onglets, le + est un carré arrondi de 56 px à
+     12 px au-dessus de la barre (24 px du coin au 1280), icône 28 ; sur une page plein écran, la forme de sa case (BX-4). */
+  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : anchor === 'nav' ? 28 : 22;
   /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
   const quiet = !geometry && anchor === 'page' && pageFooter;
 
@@ -224,6 +225,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       data-page-overlay
       data-floating-actions-dock={dock?.kind ?? 'none'}
       data-floating-actions-docked={geometry ? 'true' : 'false'}
+      data-floating-actions-anchor={anchor}
       data-floating-actions-tone={quiet ? 'quiet' : 'primary'}
       className="floating-actions fixed z-[51]"
       style={{
