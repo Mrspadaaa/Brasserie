@@ -332,11 +332,14 @@ describe('Recipe and batch catalog interactions', () => {
         onOpenRecipe={onOpenRecipe}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier la recette Écume' }));
-    expect(onEditRecipe).toHaveBeenCalledWith(recipes[0]);
+    // r2a (15.11) : une ligne par lignée (la dernière version, ici « Écume v2 ») ; le nom ouvre la feuille de la recette, « Modifier » y édite, la ligne détail ouvre la fiche : lecture et édition restent séparées.
+    fireEvent.click(screen.getByRole('button', { name: /Écume v2/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
+    expect(onEditRecipe).toHaveBeenCalledWith(recipes[1]);
     expect(onOpenRecipe).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir la recette Écume' }));
-    expect(onOpenRecipe).toHaveBeenCalledWith(recipes[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Écume v2/ }));
+    fireEvent.click(screen.getByRole('button', { name: /couleur, alcool|Couleur, alcool/ }));
+    expect(onOpenRecipe).toHaveBeenCalledWith(recipes[1]);
     expect(screen.queryByRole('button', { name: /Adapter le volume/ })).not.toBeInTheDocument();
   });
   it('combines a hop filter with numeric criteria and exposes removable active filters', () => {

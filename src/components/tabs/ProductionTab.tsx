@@ -6,11 +6,11 @@ import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
+import { CarnetRecettes } from '../../ui/production/recettes/CarnetRecettes';
 import type { BatchDetailSection } from '../../domain/productionInsights';
 import '../../ui/production/compact.css';
-import { SegmentsCoque, PhraseReponse } from '../../ui/production/volumes/Coque';
+import { SegmentsCoque } from '../../ui/production/volumes/Coque';
 import { AdapterVolumes } from '../../ui/production/volumes/AdapterVolumes';
-import { phraseBrassins, phraseRecettes } from '../../ui/production/volumes/phrase';
 import { batchesVisiblesSousPeriode } from '../../ui/production/volumes/periode';
 import { loadRecipePage } from '../../pages/recipePageLoader';
 import { OUTILS_HOUBLONS_EVENT } from '../../domain/fabActions';
@@ -177,8 +177,6 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   // La période de l'application ne juge que les brassins terminés : un brassin en cours reste visible sous toute période.
   const brassinsListe = useMemo(() => batchesVisiblesSousPeriode(batches, globalTimeFilter), [batches, globalTimeFilter]);
   const nbBrassins = useMemo(() => brassinsListe.filter(isCurrent).length, [brassinsListe]);
-  // e11a : la phrase-réponse, de vraies données ; absente quand rien ne la fonde.
-  const phrase = useMemo(() => subTab === 'batches' ? phraseBrassins(batches.filter(isCurrent)) : subTab === 'recipes' ? phraseRecettes(batches.filter(isCurrent)) : [], [subTab, batches]);
 
   return (
     <div className="production-screen space-y-2 pb-12 pt-1">
@@ -190,9 +188,15 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       ]}/>
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
-        {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : phrase.length ? <PhraseReponse fragments={phrase} /> : <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>}
-        <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={subTab === 'batches' ? 'all' : globalTimeFilter}
-          onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
+        {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : <h2 className="sr-only">Le carnet de recettes</h2>}
+        {subTab === 'batches' ? (
+          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter="all"
+            onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
+        ) : (
+          /* r2a (choix du 15.11) : le carnet dit ce qui est prêt à brasser et ce qui manque ; « Brasser » ouvre la feuille de préparation actuelle. */
+          <CarnetRecettes recipes={recipes} batches={batches} onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe}
+            onOpenBatch={(batch) => { setDetailSection('measurements'); setDetailBatch(batch); }} onBrew={(id) => (onRebrewRecipe ? onRebrewRecipe(id) : onOpenCreateBatch())} onNewRecipe={onOpenCreateBatch} />
+        )}
       </>}
 
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}

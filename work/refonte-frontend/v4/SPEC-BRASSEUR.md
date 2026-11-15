@@ -1782,3 +1782,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **15.11**, mot pour mot, sur la page Brassins « deux questions refaites » (https://claude.ai/artifact/2KzzuYs2orjYwtfkJAzM6R), avec sa capture de la feuille « Brasser Blonde de soif · v4 » (r2a, après « Brasser ») : « Créer : c2a · Recettes : r2a
 
 Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a et r2a retenues ; la feuille « Brasser » de r2a est à revoir, d abord le choix de la date (Demain / Sam. 21 / Plus tard) : variantes montrées, L24 ; capture : `work/missions/2026-11-14-brassins/voies/d1/ref/sa-capture-c2a-geste.jpg`.)
+
+- **15.11**, mot pour mot (relayé par la session « Houblons v4 maquette »), sur la page « Feuille Brasser · le jour » (https://claude.ai/artifact/W9Lm1mN8cafAYAu2n8dq4B) : « Feuille Brasser : d1b »
+  (lu : la feuille « Brasser » sera le damier de trois semaines, où chaque jour porte l'état de la cuve ; elle se porte 1:1 avec r2a et c2a.)
