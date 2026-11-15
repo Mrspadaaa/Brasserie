@@ -99,7 +99,7 @@ describe('G4 — le filtre à choix multiple', () => {
     expect(ids()).toHaveLength(8);
     fireEvent.click(seg('Pleins 2'));
     expect(ids()).toEqual(['F-008', 'F-001']);
-    fireEvent.click(screen.getByRole('button', { name: 'Retirer le filtre' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Voir tout' }));
     expect(ids()).toHaveLength(8);
   });
   it('la recherche se combine au filtre', () => {

@@ -155,7 +155,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
             <p className="keg-legende">
               {filtre.length === 0
                 ? <><span>{resume.gauche}</span><span>{resume.droite}</span></>
-                : <><span>Filtre : {filtreTexte}</span><button type="button" aria-label="Retirer le filtre" onClick={() => setFiltre([])}>Voir tout</button></>}
+                : <span>Filtre : {filtreTexte}</span>}
             </p>
             {confirmeLavage && counts.lavage > 0 && (
               <div ref={confirmeRef} tabIndex={-1} role="group" aria-labelledby={`${listId}-conf`} className="keg-confirme">

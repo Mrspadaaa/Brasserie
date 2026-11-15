@@ -6,7 +6,7 @@
 .keg-voirtout[aria-pressed="true"] { border-color: rgb(var(--cave-texte-50)); background: rgb(var(--cave-800)); font-weight: 700; }
 /* La jauge : un segment par état présent, sa largeur suit le nombre de fûts (base = son texte, le reste se partage au prorata). */
 .keg-jauge { display: flex; flex: 1; min-width: 0; border: 1px solid rgb(var(--cave-800)); border-radius: .5rem; overflow: hidden; background: rgb(var(--cave-900)); }
-.keg-jauge > button { flex: 1 1 auto; display: inline-flex; align-items: baseline; justify-content: center; gap: .25rem; min-width: 0; padding: 0 .375rem; overflow: hidden; white-space: nowrap; font-weight: 600; }
+.keg-jauge > button { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: .25rem; min-width: 0; padding: 0 .375rem; overflow: hidden; white-space: nowrap; font-weight: 600; }
 .keg-jauge > button > span { overflow: hidden; text-overflow: ellipsis; }
 .keg-jauge > button > b { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-weight: 700; }
 .keg-jauge > button[data-etat="lavage"] { background: color-mix(in srgb, rgb(var(--alert)) 24%, rgb(var(--cave-900))); }
