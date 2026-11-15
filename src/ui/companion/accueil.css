@@ -55,3 +55,6 @@
 .cmp-cf svg.cmp-i { color: var(--fint); }
 /* zone haute de Finances : grandit jusqu'à 4 lignes et montre tout le texte (la saisie règle sa hauteur) */
 .cmp-root .cmp-saisie-haute .cmp-zone { min-height: 44px; }
+
+/* fx3 accueil 5 : le × de la feuille est nu à l'ouverture (maquette) ; l'anneau ne se montre qu'au clavier (:focus-visible). */
+.cmp-root > header button[aria-label='Fermer']:focus:not(:focus-visible) { outline: none; box-shadow: none; }

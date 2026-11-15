@@ -116,13 +116,29 @@ export function libelleCourt(label: string): string {
   return label.replace(/^Température\s+(?:du |de la |de l['’]|des |de |d['’])?/i, 'Temp. ').replace(/\s·\s/g, ' ');
 }
 
-/** Écart de dose en grammes des changements de poids cochés (`unit` g, valeurs numériques) ; `null` si aucune dose ne change. */
-export function ecartDoseG(changes: BrewerProposal['changes'], cochees: string[]): { ecartG: number; existe: boolean } {
+/**
+ * Écarts de dose en grammes des changements de poids (`unit` g, valeurs numériques) : `ecartG` sur les lignes cochées (ce que la
+ * sélection change déjà), `ecartToutG` sur toutes les lignes de dose, cochées ou non (ce que donnerait la proposition entière,
+ * lignes facultatives comprises). `existe` : au moins une dose change. Un « si cochée » calculé sur les seules cochées dirait 0 g
+ * pour une ligne facultative décochée (Mosaic 43 → 35 g, soit −8 g).
+ */
+export function ecartDoseG(
+  changes: BrewerProposal['changes'],
+  cochees: string[]
+): { ecartG: number; ecartToutG: number; existe: boolean } {
   const doses = changes.filter((ch) => ch.unit === 'g' && typeof ch.before === 'number' && typeof ch.value === 'number' && /weight|dose/i.test(ch.path ?? ''));
+  const somme = (lignes: typeof doses) => lignes.reduce((s, ch) => s + (ch.value as number) - (ch.before as number), 0);
   return {
     existe: doses.length > 0,
-    ecartG: doses.filter((ch) => cochees.includes(ch.id)).reduce((s, ch) => s + (ch.value as number) - (ch.before as number), 0)
+    ecartG: somme(doses.filter((ch) => cochees.includes(ch.id))),
+    ecartToutG: somme(doses)
   };
+}
+
+/** Dose totale en g/L, une décimale (virgule) ; « 9,0 » pour 171 g sur 19 L. `null` si le total ou le volume manque : l'inconnu n'est jamais 0. */
+export function doseGParLitre(totalG: number | undefined, volumeL: number | undefined): string | null {
+  if (typeof totalG !== 'number' || typeof volumeL !== 'number' || !(volumeL > 0) || !Number.isFinite(totalG)) return null;
+  return (Math.round((totalG / volumeL) * 10) / 10).toFixed(1).replace('.', ',');
 }
 
 /**
@@ -222,22 +238,32 @@ export function BrewerProposalCard({
             );
           })}
           {(() => {
-            const { ecartG, existe } = ecartDoseG(proposal.changes, selected);
+            const { ecartG, ecartToutG, existe } = ecartDoseG(proposal.changes, selected);
             if (!existe) return null;
-            const connu = typeof dosesTotalesG === 'number' && typeof volumeL === 'number' && volumeL > 0;
-            const gl = (g: number) => nombreTexte(Math.round((g / (volumeL as number)) * 10) / 10);
-            const ecart = `${ecartG < 0 ? '−' : ecartG > 0 ? '+' : ''}${nombreTexte(Math.abs(ecartG))}`;
+            const connu = doseGParLitre(dosesTotalesG, volumeL) !== null;
+            const gl = (g: number) => doseGParLitre(g, volumeL) as string;
+            const signe = (g: number) => `${g < 0 ? '−' : g > 0 ? '+' : ''}${nombreTexte(Math.abs(g))}`;
+            // « inchangée » : la dose avec les lignes déjà cochées ; « si cochée » : avec toutes les lignes de dose, facultatives comprises.
+            const pareil = ecartG === ecartToutG;
             return (
               <div className="cmp-total">
                 <span>{connu ? 'Dose totale' : 'Écart de dose'}</span>
                 <span>
                   {connu ? (
-                    <>
-                      <M n={gl(dosesTotalesG as number)} u="g/L" /> inchangée · <M n={gl((dosesTotalesG as number) + ecartG)} u="g/L" /> si cochée
-                    </>
+                    pareil ? (
+                      <>
+                        <M n={gl((dosesTotalesG as number) + ecartG)} u="g/L" /> avec ta sélection
+                      </>
+                    ) : (
+                      <>
+                        <M n={gl((dosesTotalesG as number) + ecartG)} u="g/L" /> inchangée · <M n={gl((dosesTotalesG as number) + ecartToutG)} u="g/L" /> si cochée
+                      </>
+                    )
+                  ) : pareil ? (
+                    <M n={signe(ecartG)} u="g" />
                   ) : (
                     <>
-                      inchangé · <M n={ecart} u="g" /> si coché
+                      {ecartG === 0 ? <>inchangé</> : <><M n={signe(ecartG)} u="g" /> déjà coché</>} · <M n={signe(ecartToutG)} u="g" /> si coché
                     </>
                   )}
                 </span>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { ShieldCheck, Pause, Play, ChevronRight, Check, Smartphone, Wallet, History, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Pause, Play, ChevronRight, Check, Smartphone, Wallet, MessagesSquare, ArrowLeft } from 'lucide-react';
 import { BrewerChat as api } from '../services/brewerChat';
 import { useBrewerJobs } from '../services/brewerJobs';
 import { NumberInput } from './NumberInput';
@@ -684,7 +684,7 @@ export function BrewerBudgetCapView({
 
           {statuts.prets + statuts.enCours + statuts.echecs > 0 && (
             <div className="cmp-reglage-l">
-              <History className="cmp-i" size={16} aria-hidden="true" />
+              <MessagesSquare className="cmp-i" size={16} aria-hidden="true" />
               <span>Les réponses prêtes restent lisibles</span>
               <span className="cmp-pts" role="img" aria-label={`${statuts.prets} prêtes, ${statuts.enCours} en cours, ${statuts.echecs} à relancer`}>
                 <i className="cmp-pv" />

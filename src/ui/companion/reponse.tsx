@@ -78,6 +78,37 @@ export function rythmeDe(texte: string | undefined): { intervalleMin: number; du
   return { intervalleMin, ...(dureeMin && dureeMin > 0 ? { dureeMin } : {}) };
 }
 
+/** Un changement de la proposition, tel que le geste le reprend (`proposal.changes` : libellé, avant, après, unité). */
+export interface ChangementGeste {
+  label: string;
+  before?: unknown;
+  value?: unknown;
+  unit?: string;
+}
+export interface GesteChiffre {
+  houblon: string;
+  avant: number;
+  apres: number;
+  /** « jour de contact » / « jours de contact », accordé sur la valeur proposée. */
+  suite: string;
+}
+
+/**
+ * Quand un geste daté (« J+9 ») correspond à un changement de contact de la proposition (« Mosaic · contact J+9 », avant 3, après 2,
+ * unité j), le geste se dit avec ses deux valeurs : « Mosaic : ~~3~~ → 2 jours de contact. ». Sans changement correspondant, `null` :
+ * le texte de la réponse reste tel quel.
+ */
+export function gesteChiffre(quand: string, changes: ChangementGeste[] | undefined): GesteChiffre | null {
+  if (!changes?.length || !/^J\+\d+$/.test(quand)) return null;
+  for (const ch of changes) {
+    const m = /^(.+?)\s·\scontact\s(J\+\d+)$/i.exec(ch.label);
+    if (!m || m[2].toUpperCase() !== quand) continue;
+    if (typeof ch.before !== 'number' || typeof ch.value !== 'number' || !/^j(?:ours?)?$/i.test(ch.unit ?? '')) continue;
+    return { houblon: m[1], avant: ch.before, apres: ch.value, suite: Math.abs(ch.value) > 1 ? 'jours de contact' : 'jour de contact' };
+  }
+  return null;
+}
+
 const dureeCourte = (min: number): string => (min < 60 ? `${nombreTexte(min)}${NBSP}min` : `${nombreTexte(min / 60)}${NBSP}h`);
 
 /** Créneaux de relevé : « maintenant », puis un par intervalle tant qu'on est avant la durée (sans durée connue : le premier seul). */
@@ -136,11 +167,14 @@ export function Question({ children }: { children: ReactNode }) {
 /** Verdict : feu du niveau, titre, une ligne par geste daté. Un niveau « urgent » prend la dalle rouge. */
 export function Verdict({
   advice,
-  viseeC
+  viseeC,
+  changes
 }: {
   advice: Pick<BrewerAdvice, 'level' | 'summary' | 'action'> & Partial<Pick<BrewerAdvice, 'watch'>>;
   /** Température visée de la recette (°C), si le chat la connaît : repère du thermomètre de l'urgence. */
   viseeC?: number;
+  /** Changements de la proposition : un geste daté qui en reprend un se dit avec ses deux valeurs (« Mosaic : 3 → 2 jours de contact »). */
+  changes?: ChangementGeste[];
 }) {
   const feu = feuDuNiveau(advice.level);
   if (feu.niveau === 'urgent') return <Urgent advice={advice} viseeC={viseeC} />;
@@ -155,14 +189,25 @@ export function Verdict({
           {feu.libelle}
         </span>
         <h3>{typoFr(advice.summary)}</h3>
-        {gestes.map((g, i) => (
-          <p key={i} className="cmp-geste">
-            <span className="cmp-quand" aria-hidden={g.quand ? undefined : true}>
-              {g.quand}
-            </span>
-            <span>{typoFr(g.texte)}</span>
-          </p>
-        ))}
+        {gestes.map((g, i) => {
+          const chiffre = gesteChiffre(g.quand, changes);
+          return (
+            <p key={i} className="cmp-geste">
+              <span className="cmp-quand" aria-hidden={g.quand ? undefined : true}>
+                {g.quand}
+              </span>
+              {chiffre ? (
+                <span>
+                  {chiffre.houblon}{NBSP}: <s className="cmp-n">{nombreTexte(chiffre.avant)}</s>
+                  {NBSP}→{NBSP}
+                  <span className="cmp-n">{nombreTexte(chiffre.apres)}</span> {chiffre.suite}.
+                </span>
+              ) : (
+                <span>{typoFr(g.texte)}</span>
+              )}
+            </p>
+          );
+        })}
       </div>
     </div>
   );
@@ -286,6 +331,17 @@ export function Controle({
   disabled?: boolean;
 }) {
   if (!watch && !onKeep) return null;
+  // Sans contrôle à surveiller, « Au journal » ne s'enferme pas dans une carte vide : le bouton seul, sans cadre.
+  if (!watch) {
+    return (
+      <div className="cmp-ctl-seul">
+        <button type="button" className="cmp-btn cmp-s" disabled={gardee || disabled} onClick={onKeep}>
+          <Icone nom="journal" />
+          {gardee ? 'Ajouté au journal' : 'Au journal'}
+        </button>
+      </div>
+    );
+  }
   const rythme = rythmeDe(watch);
   const { jalon, texte } = rythme ? { jalon: dureeCourte(rythme.intervalleMin), texte: watch } : jalonDe(watch);
   const creneaux = rythme ? creneauxReleves(rythme) : [];

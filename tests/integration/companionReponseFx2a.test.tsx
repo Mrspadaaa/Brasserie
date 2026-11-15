@@ -109,8 +109,9 @@ describe('proposition', () => {
     expect(libelleCourt('Mosaic · J+9')).toBe('Mosaic J+9');
     expect(estFacultatif(changes[2])).toBe(true);
     expect(estFacultatif(changes[0])).toBe(false);
-    expect(ecartDoseG(changes, ['a', 'b'])).toEqual({ existe: true, ecartG: 0 });
-    expect(ecartDoseG(changes, ['a', 'b', 'c']).ecartG).toBe(-8);
+    // fx3 : ligne facultative décochée → ecartG 0 (cochées) mais ecartToutG −8 (« si cochée »).
+    expect(ecartDoseG(changes, ['a', 'b'])).toEqual({ existe: true, ecartG: 0, ecartToutG: -8 });
+    expect(ecartDoseG(changes, ['a', 'b', 'c'])).toEqual({ existe: true, ecartG: -8, ecartToutG: -8 });
   });
   it('la ligne facultative démarre décochée : 2 modifications, puis la dose totale se recalcule', () => {
     render(<BrewerProposalCard proposal={{ target: 'recipe', title: 'Raccourcir', changes }} disabled={false} draft={false} dosesTotalesG={171} volumeL={19} onDecide={async () => {}} />);

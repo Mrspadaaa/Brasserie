@@ -40,3 +40,6 @@
   body:has(.cmp-root) [data-vaul-overlay] { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .cmp-root.cmp-root { width: 420px !important; max-width: 420px !important; }
 }
+
+/* fx3 communs 3 : « Au journal » sans contrôle à surveiller : le bouton seul, sans carte autour. */
+.cmp-ctl-seul { display: flex; justify-content: flex-end; }

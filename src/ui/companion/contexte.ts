@@ -27,6 +27,8 @@ export interface ContexteBrassin {
   /** Numéro du brassin (« LOT-031 » → 31). */
   numero?: string;
   nomRecette?: string;
+  /** Température de fermentation visée par la recette du brassin (°C) : palier de fermentation primaire. Absente si non datée. */
+  viseeC?: number;
 }
 
 const JOUR_MS = 86400000;
@@ -36,7 +38,7 @@ const jourCivil = (t: number) => {
 };
 
 type HopLike = { name?: unknown; weightG?: unknown; stage?: unknown; dayOffset?: unknown };
-type RecetteLike = { name?: unknown; volumeL?: unknown; hops?: unknown };
+type RecetteLike = { name?: unknown; volumeL?: unknown; hops?: unknown; fermentation?: unknown };
 
 /** Dry hops datés d'une recette, triés par jour ; un houblon sans `dayOffset` n'a pas de jour : il n'est pas montré. */
 export function jalonsDeRecette(recette: RecetteLike | undefined): Jalon[] {
@@ -54,6 +56,19 @@ export function jalonsDeRecette(recette: RecetteLike | undefined): Jalon[] {
     else parCle.set(cle, { nom: h.name, jour, g });
   }
   return [...parCle.values()].sort((a, b) => a.jour - b.jour);
+}
+
+/**
+ * Température visée de la fermentation : le palier « primaire » de la recette, à défaut le premier palier de fermentation qui n'est
+ * pas la garde. Pas de moyenne d'une plage de levure : une visée inventée ne se dessine pas.
+ */
+export function viseeDeRecette(recette: RecetteLike | undefined): number | undefined {
+  const paliers = Array.isArray(recette?.fermentation) ? (recette!.fermentation as Array<{ kind?: unknown; tempC?: unknown }>) : [];
+  const valide = (p: { tempC?: unknown }) => typeof p?.tempC === 'number' && Number.isFinite(p.tempC);
+  const primaire = paliers.find((p) => p?.kind === 'primaire' && valide(p));
+  const autre = paliers.find((p) => valide(p) && p?.kind !== 'garde' && p?.kind !== 'refermentation');
+  const palier = primaire ?? autre;
+  return palier ? (palier.tempC as number) : undefined;
 }
 
 type Releve = { kind?: unknown; at?: unknown; value?: unknown; medium?: unknown };
@@ -114,6 +129,7 @@ export function contexteBrassin(
     jalons: scope.kind === 'batch' ? jalonsDeRecette(recette) : [],
     ...(scope.kind === 'batch' ? { temperature: temperatureDuJournal(journal, maintenant) } : {}),
     ...(numero ? { numero } : {}),
+    ...(scope.kind === 'batch' && viseeDeRecette(recette) !== undefined ? { viseeC: viseeDeRecette(recette) } : {}),
     ...(typeof recette?.name === 'string' ? { nomRecette: recette.name } : {})
   };
 }
@@ -123,6 +139,25 @@ export function prochainJalon(c: ContexteBrassin): (Jalon & { dans: number }) | 
   if (c.jour === undefined) return undefined;
   const j = c.jalons.find((x) => x.jour >= c.jour!);
   return j ? { ...j, dans: j.jour - c.jour } : undefined;
+}
+
+export interface QuestionFermentation {
+  question: string;
+  icone: 'pression' | 'goutte' | 'feuille' | 'calendrier';
+}
+
+/**
+ * Les questions d'un brassin en fermentation (tuiles de l'accueil) : la pression, la densité, le prochain dry hop daté avec sa dose
+ * (de la recette du brassin) et la garde. Sans dry hop à venir, la tuile du houblon se tait : rien d'inventé.
+ */
+export function questionsFermentation(c: ContexteBrassin): QuestionFermentation[] {
+  const p = prochainJalon(c);
+  return [
+    { question: 'La pression monte : je purge ?', icone: 'pression' },
+    { question: 'Densité : je mesure quand ?', icone: 'goutte' },
+    ...(p ? [{ question: `${p.nom} : je garde ${grammes(p.g)} g ?`, icone: 'feuille' as const }] : []),
+    { question: 'Combien de jours de garde ?', icone: 'calendrier' }
+  ];
 }
 
 export const doseTotale = (jalons: Jalon[]): number => jalons.reduce((s, j) => s + j.g, 0);

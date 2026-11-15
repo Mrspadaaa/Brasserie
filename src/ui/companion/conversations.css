@@ -43,3 +43,7 @@
 .cmp-conv-sheet > div.flex-1 { min-height: 0; }
 /* « Repartir à zéro ? » : la confirmation est la carte elle-même, sans filet de tête. */
 .cmp-lx .cmp-carte > .cmp-confirme { border-top: 0; padding-top: 0; }
+
+/* fx3 conversations 3 : une ligne en échec garde sa question entière (deux lignes) et un « Relancer » compact (10 px, 36 px de haut). */
+.cmp-lx .cmp-c-echec .cmp-conv-t > span { white-space: normal; overflow: visible; text-overflow: clip; }
+.cmp-lx .cmp-c-echec > .cmp-btn.cmp-s { height: 36px; padding: 0 10px; flex: none; }

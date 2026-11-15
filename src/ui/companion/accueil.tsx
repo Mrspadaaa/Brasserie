@@ -19,6 +19,8 @@ export interface TuileQuestion {
   question: string;
   /** Texte affiché et nom accessible, si différent de la question envoyée (ex. Finances). */
   label?: string;
+  /** Icône imposée (tuiles dérivées du brassin) ; sinon elle vient du sujet de la question. */
+  icone?: NomIcone;
 }
 
 /** « Je lis à chaque question » : les sources que le serveur recharge (`sourcesLues`). */
@@ -176,7 +178,7 @@ export function Accueil({
             const info = modeInfo(mode);
             return (
               <button key={t.question} type="button" className="cmp-tuile" onClick={() => onChoisir(t.question, mode)}>
-                <Icone nom={ICONE_DE_QUESTION[iconeQuestion(t.question)] ?? 'fleche'} />
+                <Icone nom={t.icone ?? ICONE_DE_QUESTION[iconeQuestion(t.question)] ?? 'fleche'} />
                 <span>{t.label ?? t.question}</span>
                 <Tag label={info.label} pips={info.pips} />
               </button>
@@ -350,8 +352,24 @@ export function PiedSaisie({
   useLayoutEffect(() => {
     const t = champ.current;
     if (!t) return;
-    t.style.height = '44px';
-    t.style.height = `${Math.min(Math.max(t.scrollHeight + 2, 44), 120)}px`;
+    const ajuster = () => {
+      t.style.height = '44px';
+      // Champ vide : 44 px sans mesure (le placeholder, ou une feuille encore en train de s'ouvrir, ne doit pas le doubler).
+      if (!t.value) return;
+      t.style.height = `${Math.min(Math.max(t.scrollHeight + 2, 44), 120)}px`;
+    };
+    ajuster();
+    // La largeur change à l'ouverture de la feuille et à la rotation : la hauteur se remesure.
+    if (typeof ResizeObserver === 'undefined') return;
+    let largeur = t.clientWidth;
+    const suivi = new ResizeObserver(() => {
+      if (t.clientWidth !== largeur) {
+        largeur = t.clientWidth;
+        ajuster();
+      }
+    });
+    suivi.observe(t);
+    return () => suivi.disconnect();
   }, [valeur, haute]);
   return (
     <div className="cmp-pied">

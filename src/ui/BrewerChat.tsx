@@ -30,10 +30,11 @@ import './companion/companion.css';
 import './companion/plus.css';
 import { Accueil, Amorces, Modes, PiedSaisie, Zero, type PorteeZero } from './companion/accueil';
 import { Attente, BandeauHorsLigne, Calcule, Echec, HorsLigne, Marge, Plafond } from './companion/attente';
-import { gParLitre, prochainJalon, quand, useContexteBrassin, type ContexteBrassin } from './companion/contexte';
+import { doseTotale, gParLitre, prochainJalon, quand, questionsFermentation, useContexteBrassin, type ContexteBrassin } from './companion/contexte';
 import { estPlafondAtteint, etapeIndex, nombreTexte, partDe, sansNomDeModele, sourcesLues, suiteEnTete, statutJob, statutsConversations } from './companion/derive';
 import { Fournisseurs } from './companion/fournisseurs';
 import { Icone, N } from './companion/parts';
+import type { NomIcone } from './companion/icones';
 import { Controle, Pourquoi, Question, Verdict } from './companion/reponse';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import { brewerLauncher } from '../services/brewerLauncher';
@@ -292,12 +293,18 @@ function ScopedChat({
   const assistedRequestKey = assistedSessionKey(assistedAdvice);
   const hasAssistedSession = !!assistedAdvice;
   const finance = scope.kind === 'app' && scope.id === 'finances';
-  const questions = suggestedPrompts ?? (finance ? [
-    'Explique mes principaux postes de dépenses et les variations.',
-    'Quels paiements dois-je anticiper pour mes prochains brassins ?',
-    'Aide-moi à préparer un investissement de matériel.',
-    'Quelles opérations ou valeurs d’amortissement faut-il vérifier ?'
-  ] : prompts(scope.kind, phase)).map((text) => ({ label: text, question: text }));
+  const ctx = useContexteBrassin(scope, draft, localJournal);
+  // Brassin en fermentation : les quatre questions de la maquette, dérivées du brassin (pression, densité, prochain dry hop et sa dose, garde).
+  const enFermentation = scope.kind === 'batch' && (/ferment|garde|condition|termin/.test(phase ?? '') || (ctx.jour ?? 0) >= 1);
+  const tuilesFermentation = !suggestedPrompts && enFermentation ? questionsFermentation(ctx) : undefined;
+  const questions: Array<{ label: string; question: string; icone?: NomIcone }> = tuilesFermentation
+    ? tuilesFermentation.map((q) => ({ label: q.question, question: q.question, icone: q.icone }))
+    : (suggestedPrompts ?? (finance ? [
+        'Explique mes principaux postes de dépenses et les variations.',
+        'Quels paiements dois-je anticiper pour mes prochains brassins ?',
+        'Aide-moi à préparer un investissement de matériel.',
+        'Quelles opérations ou valeurs d’amortissement faut-il vérifier ?'
+      ] : prompts(scope.kind, phase)) as Array<string | { label: string; question: string }>).map((p) => (typeof p === 'string' ? { label: p, question: p } : p));
   const [loading, setLoading] = useState(false),
     [error, setError] = useState(''),
     [more, setMore] = useState(false),
@@ -794,7 +801,6 @@ function ScopedChat({
   const [vue, setVue] = useState<'chat' | 'limites'>('chat');
   const [conseille, setConseille] = useState<BrewerMode>();
   const enLigne = useEnLigne();
-  const ctx = useContexteBrassin(scope, draft, localJournal);
   const depuisFinances = finance && origine === 'Vérifier mes opérations';
   useEffect(() => {
     // Depuis « Vérifier mes opérations » : Approfondi présélectionné et conseillé, sans écrire la préférence enregistrée.
@@ -835,6 +841,9 @@ function ScopedChat({
     fermer();
     window.dispatchEvent(new CustomEvent('brewer-inbox-open', { detail: { scope } }));
   };
+  // « Brassin 31 · J+8 » : le jour vient du levurage du journal local ; à défaut (feuille ouverte hors page Brassage), du jour de brassage du brassin enregistré.
+  const enTeteBase = suiteEnTete(scope, label, localJournal);
+  const enTete = scope.kind === 'batch' && ctx.jour !== undefined && !/J\+\d/.test(enTeteBase) ? `${enTeteBase} · J+${ctx.jour}` : enTeteBase;
   const accueilProps = {
     titre: hasAssistedSession ? 'Lecture assistée' : finance ? undefined : 'Agir, mesurer ou attendre ?',
     sousTitre: hasAssistedSession
@@ -910,7 +919,7 @@ function ScopedChat({
         // Nom accessible : « Compagnon brasseur » (comme le bouton qui l'ouvre) ; la ligne visible « Compagnon · Brassin 31 · J+8 »
         // est la description (CSS `cmp-une`, plus.css), « Compagnon » en gras venant de la feuille de style.
         title={vue === 'limites' ? 'Limites IA' : 'Compagnon brasseur'}
-        subtitle={vue === 'limites' ? undefined : `· ${suiteEnTete(scope, label, localJournal)}`}
+        subtitle={vue === 'limites' ? undefined : `· ${enTete}`}
         className={`brewer-chat-sheet cmp-root${vue === 'limites' ? '' : ' cmp-une'}${finance ? ' cmp-fin' : ''}`}
         footer={
           vue === 'limites' ? undefined : (
@@ -940,7 +949,7 @@ function ScopedChat({
                       {!enLigne && <BandeauHorsLigne />}
                       {enLigne && plafondAtteint && <BandeauPlafond />}
                       <Amorces
-                        amorces={!timeline.length && scope.kind === 'batch' && !finance && !assistedAdvice ? AMORCES_BRASSIN : []}
+                        amorces={scope.kind === 'batch' && !finance && !assistedAdvice ? (timeline.length ? AMORCES_SUITE : AMORCES_BRASSIN) : []}
                         suite={suite}
                         disabled={resetting}
                         onChoisir={(q) => setQuestion(q.endsWith('…') ? `${q.slice(0, -1)} ` : q)}
@@ -1125,12 +1134,14 @@ function ScopedChat({
                   ) : t ? (
                     <article key={t.id} className="cmp-tour">
                       <Question>{t.question}</Question>
-                      <Verdict advice={t.advice} />
+                      <Verdict advice={t.advice} viseeC={ctx.viseeC} changes={t.proposal?.changes} />
                       <Fournisseurs products={t.evidence.flatMap((e) => e.products ?? [])} selectedUrls={t.advice.productUrls} />
                       {t.proposal && !hasAssistedSession && (
                         <BrewerProposalCard
                           proposal={t.proposal}
                           draft={scope.kind === 'draft'}
+                          dosesTotalesG={ctx.jalons.length ? doseTotale(ctx.jalons) : undefined}
+                          volumeL={ctx.volumeL}
                           disabled={applying || resetting || (scope.kind === 'draft' && !onDraftApply)}
                           onDecide={(ids, decision) => decide(t, ids, decision)}
                         />
@@ -1812,6 +1823,8 @@ const CASES_VERIFIEES = [
 ] as const;
 /** Débuts de phrase de la saisie, portée brassin à l'accueil. */
 const AMORCES_BRASSIN = ['La pression monte…', 'Ça sent…', 'La densité…'];
+/** Après une réponse : l'amorce fixe de la maquette, à côté de la suite proposée par la réponse. */
+const AMORCES_SUITE = ['Ça sent encore…'];
 
 /** « 19 °C depuis 36 h · 19 L · Citra demain » : ce que le brassin et son journal disent déjà ; une part absente se tait. */
 function ligneContexte(c: ContexteBrassin): React.ReactNode {
@@ -1821,7 +1834,8 @@ function ligneContexte(c: ContexteBrassin): React.ReactNode {
   if (c.volumeL) parts.push(<><N>{nombreTexte(c.volumeL)}</N> L</>);
   const p = prochainJalon(c);
   if (p) parts.push(<>{p.nom} {quand(p.dans)}</>);
-  if (!parts.length) return undefined;
+  // La ligne a ses trois parts (température, volume, prochain geste) ou se tait : « 19 L » seul ne dit rien.
+  if (parts.length < 3) return undefined;
   return parts.map((x, i) => <React.Fragment key={i}>{i ? ' · ' : ''}{x}</React.Fragment>);
 }
 
@@ -1937,24 +1951,33 @@ function BrewerWorkCard({
       </>
     );
   } else if (failed && !job.sendError && estPlafondAtteint(job.error?.code)) {
+    // Maquette « plafond » : rien entre la carte des réponses lisibles et le pied. Le cadre porte déjà « Relever à 20 CHF » (qui relance la
+    // question gardée par `onRaised`) et « Plus tard » ; ni message rouge, ni Relancer, ni Reformuler (la question reste gardée dans la saisie).
+    // Seul le budget du mois (qu'on relève ici) prend ce cadre nu ; le plafond de dépenses du projet côté fournisseur ne se relève pas
+    // ici : son message et ses gestes restent, sans quoi le brasseur ne saurait pas pourquoi rien ne part.
+    const duMois = job.error?.code !== 'gemini-spend-cap';
     corps = (
       <>
         <Plafond question={job.question} onLimits={() => onLimits?.()} onLater={() => onFermer?.()} onRaised={relancer} />
-        <p role="alert" className="cmp-note cmp-erreur">
-          {message}
-        </p>
-        <div className="cmp-act">
-          {relancer && (
-            <button type="button" className="cmp-btn cmp-s" onClick={relancer}>
-              Relancer l’analyse
-            </button>
-          )}
-          {onEdit ? (
-            <button type="button" className="cmp-btn cmp-g" onClick={onEdit}>
-              Reformuler
-            </button>
-          ) : null}
-        </div>
+        {duMois ? null : (
+          <>
+            <p role="alert" className="cmp-note cmp-erreur">
+              {message}
+            </p>
+            <div className="cmp-act">
+              {relancer && (
+                <button type="button" className="cmp-btn cmp-s" onClick={relancer}>
+                  Relancer l’analyse
+                </button>
+              )}
+              {onEdit ? (
+                <button type="button" className="cmp-btn cmp-g" onClick={onEdit}>
+                  Reformuler
+                </button>
+              ) : null}
+            </div>
+          </>
+        )}
       </>
     );
   } else if (onRetry && (job.sendError || (job.sending && !enLigne))) {
