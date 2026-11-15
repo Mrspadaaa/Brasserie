@@ -21,7 +21,7 @@ describe('recherche universelle — accès aux archives', () => {
     expect(toggle).not.toBeChecked();
     expect(screen.queryByRole('option', { name: /Cuve ancienne fictive/ })).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'cuve ancienne' } });
-    expect(screen.getByText('Rien ne correspond')).toBeInTheDocument();
+    expect(screen.getByText(/Rien pour « cuve ancienne »/)).toBeInTheDocument();
     fireEvent.click(toggle);
     const result = screen.getByRole('option', { name: /Cuve ancienne fictive/ });
     expect(screen.getByText('Archivée')).toBeInTheDocument();
@@ -40,6 +40,9 @@ describe('recherche universelle — accès aux archives', () => {
       id: `tx-${i}`, label: `Achat fictif ${i}`, keywords: [`REFERENCE-${i}`],
       onSelect: i === 310 ? selectOld : vi.fn()
     })) }]} />);
+    // r3p2 : rien tapé, la feuille montre les gestes (Aller à, Créer, Reprendre, Ici), pas la liste ; une saisie large reste bornée à 12.
+    expect(screen.queryAllByRole('option')).toHaveLength(0);
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Achat fictif' } });
     expect(screen.getAllByRole('option')).toHaveLength(12);
     expect(screen.getByRole('status')).toHaveTextContent('12 sur 350 résultats');
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'REFERENCE-310' } });
@@ -54,6 +57,7 @@ describe('recherche universelle — accès aux archives', () => {
       { id: 'one', label: 'Achat identique', onSelect: selectedFirst },
       { id: 'two', label: 'Achat identique', onSelect: selectedSecond }
     ] }]} />);
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Achat identique' } });
     fireEvent.click(screen.getAllByRole('option', { name: 'Achat identique' })[1]);
     expect(selectedSecond).toHaveBeenCalledTimes(1);
     expect(selectedFirst).not.toHaveBeenCalled();

@@ -28,6 +28,10 @@ import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { plusMenuFor, type PlusCle } from './domain/plusEcran';
+import { joursDepuisBrassage } from './domain/productionInsights';
+import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
+import type { DestinationId } from './components/recherche/modele';
+import { INVENTORY_REASONS } from './services/storage';
 import { nextBatchId, nextRef } from './services/refs';
 import { batchDisplayDate } from './domain/batchSchedule';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
@@ -76,6 +80,7 @@ import { montantChf } from './domain/finance/ledger';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
+const InventoryCorrectionSheet = lazy(() => import('./ui/InventoryCorrectionSheet').then(module => ({ default: module.InventoryCorrectionSheet })));
 const AuditLogModal = lazy(() => import('./components/AuditLogModal').then(module => ({ default: module.AuditLogModal })));
 const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then(module => ({ default: module.CloudConfigModal })));
 const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
@@ -375,6 +380,8 @@ export const App: React.FC = () => {
   }, []);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
+  /** L'article dont la recherche ouvre la correction d'inventaire (le geste « Corriger » de sa ligne). */
+  const [correctingItem, setCorrectingItem] = useState<StockItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [writeError, setWriteError] = useState<string | null>(null);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -844,6 +851,32 @@ export const App: React.FC = () => {
   };
 
   // --- Recherche universelle ------------------------------------------------
+  /** « Aller à » de la recherche : les mêmes ouvertures que la barre et le + (sous-onglet mémorisé, puis l'onglet). */
+  const allerA = (id: DestinationId) => {
+    const stocksVers = (sous: string) => { StorageService.setUiState('stocks_subtab', sous); setNavNonce(n => n + 1); setActiveTab('stocks'); };
+    const clientsVers = (sous: string) => { StorageService.setUiState('clients_subtab', sous); setNavNonce(n => n + 1); setActiveTab('clients'); };
+    const production = (sous: 'batches' | 'recipes' | 'lab' | 'scaler') => { setProductionSubTab(sous); setActiveTab('production'); };
+    switch (id) {
+      case 'bord': setActiveTab('dashboard'); break;
+      case 'finances': setActiveTab('finances'); break;
+      case 'brassins': production('batches'); break;
+      case 'recettes': production('recipes'); break;
+      case 'atelier': production('lab'); break;
+      case 'volumes': production('scaler'); break;
+      case 'stock': stocksVers('stock'); break;
+      case 'courses': stocksVers('courses'); break;
+      case 'futs': stocksVers('futs'); break;
+      case 'materiel': stocksVers('materiel'); break;
+      case 'houblons': stocksVers('hops'); break;
+      case 'clients': clientsVers('crm'); break;
+      case 'impot': clientsVers('ofdf'); break;
+      case 'tarifs': clientsVers('tarifs'); break;
+      case 'assistant': navigateToBrewAssistant(); break;
+      case 'journal': setIsAuditLogsOpen(true); break;
+      case 'reglages': setIsSettingsOpen(true); break;
+    }
+  };
+
 
   const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
   const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
@@ -855,6 +888,7 @@ export const App: React.FC = () => {
         label: r.name,
         detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
         icon: <Beaker className="w-4 h-4" />,
+        gestes: [{ id: 'brasser' as const, label: 'Brasser', run: () => { setBrewRecipeId(r.id); setQuickAction('brew-batch', actionLauncherRef.current); } }],
         keywords: [r.style, r.id],
         onSelect: () => openRecipe(r)
       }))
@@ -866,6 +900,11 @@ export const App: React.FC = () => {
         label: `${b.id} — ${b.name}`,
         detail: [b.style, batchDisplayDate(b), b.status].filter(Boolean).join(' · '),
         icon: <FlaskConical className="w-4 h-4" />,
+        // Un brassin en cours de fermentation ou de garde : le jour J+N seulement s'il est connu, et le geste « Mesure » ouvre sa fiche à la section Mesures.
+        ...((b.status === 'fermentation' || b.status === 'garde') ? {
+          valeur: joursDepuisBrassage(b) !== undefined ? `J+${joursDepuisBrassage(b)}` : undefined,
+          gestes: [{ id: 'mesure' as const, label: 'Mesure', run: () => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: b.id, at: Date.now() }); } }]
+        } : {}),
         keywords: [b.style, b.status],
         onSelect: () => openBrewDay(b)
       }))
@@ -875,10 +914,18 @@ export const App: React.FC = () => {
       items: allStockItems.map((s) => ({
         id: `stk-${s.ref}`,
         label: s.name,
-        detail: `${Units.format(s.currentStock, s.unit)} · ${s.category}`,
+        // Un houblon se lit à son α (L04), les autres articles à leur catégorie ; la quantité est la valeur de la ligne.
+        detail: formaterAlpha(s.alphaPct) ? `α ${formaterAlpha(s.alphaPct)}` : s.category,
+        valeur: Units.format(s.currentStock, s.unit),
         icon: <Package className="w-4 h-4" />,
         keywords: [s.ref, s.category, s.supplier ?? ''],
-        onSelect: () => setActiveTab('stocks')
+        gestes: [
+          { id: 'corriger' as const, label: 'Corriger', run: () => setCorrectingItem(s) },
+          { id: 'courses' as const, label: 'Courses', run: () => runPlus('courses') }
+        ],
+        apercu: () => apercuArticle(s, recipes, transactions),
+        // La fiche de l'article, comme avant mais jusqu'à la donnée : Stocks › Stock, la fiche ouverte (le mécanisme du renvoi existant).
+        onSelect: () => { StorageService.setUiState('stocks_subtab', 'stock'); setNavNonce(n => n + 1); setActiveTab('stocks'); setStockOpenRequest({ ref: s.ref, at: Date.now() }); }
       }))
     },
     {
@@ -886,9 +933,10 @@ export const App: React.FC = () => {
       items: clients.map((c) => ({
         id: `cli-${c.id}`,
         label: c.name,
-        detail: [c.type, c.contact].filter(Boolean).join(' · '),
+        detail: [c.contact].filter(Boolean).join(' · '),
+        valeur: c.type || undefined,
         icon: <Users className="w-4 h-4" />,
-        keywords: [c.email, c.phone],
+        keywords: [c.email, c.phone, c.type],
         onSelect: () => setActiveTab('clients')
       }))
     },
@@ -900,6 +948,7 @@ export const App: React.FC = () => {
         detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: motsCleEcriture(t),
+        ...(t.proofUrl ? { gestes: [{ id: 'piece' as const, label: 'Pièce', run: () => { setActiveTab('finances'); setFinanceOpenRequest({ id: t.id, at: Date.now() }); } }] } : {}),
         archived: isTransactionArchived(t, financialArchiveIndex),
         onSelect: () => {
           setActiveTab('finances');
@@ -1297,7 +1346,27 @@ export const App: React.FC = () => {
       <CommandPalette
         open={isPaletteOpen}
         onOpenChange={setIsPaletteOpen}
+        menu={view.view === 'tabs' ? plusMenu : undefined}
+        onGeste={runPlus}
+        onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+        onAllerA={allerA}
         groups={commandGroups}
+      {/* Le geste « Corriger » d'une ligne de la recherche : la même feuille de correction d'inventaire que la fiche de l'article. */}
+      <DeferredSurface active={correctingItem !== null} fallback={<Sheet open={correctingItem !== null} title="Chargement…" onClose={() => setCorrectingItem(null)}><p role="status">Ouverture…</p></Sheet>}><InventoryCorrectionSheet
+        open={correctingItem !== null}
+        item={correctingItem}
+        onClose={() => setCorrectingItem(null)}
+        onConfirm={(qty, reason, note) => {
+          const item = correctingItem;
+          if (!item) return;
+          const type = stocks.cleaning.some(c => c.ref === item.ref) ? 'cleaning' : 'rawMaterials';
+          const result = StorageService.adjustInventory(type, item.ref, qty, reason, note);
+          showToast(!result ? `${item.name} : correction refusée, le stock n’a pas changé.`
+            : result.delta === 0 ? `${item.name} : inventaire confirmé.`
+            : `${item.name} : ${result.delta > 0 ? '+' : ''}${Units.format(result.delta, item.unit)} — ${INVENTORY_REASONS[reason]}.`);
+          setCorrectingItem(null);
+        }}
+      /></DeferredSurface>
       />
 
       {/* --- Pages plein écran ------------------------------------------
