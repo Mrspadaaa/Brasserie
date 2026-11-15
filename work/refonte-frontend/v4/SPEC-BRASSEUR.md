@@ -1759,3 +1759,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : « peu résoudre mes problèmes » visait l'embouteilleuse elle-même : le dossier compare des prix, mais n'aide pas à résoudre son problème d'embouteillage (temps passé, volume par brassin, cadence, oxygène, carbonatation, coût par bouteille, rentabilité). Chaque solution doit se juger sur le problème qu'elle résout chez lui. Ma lecture « Excel » était fausse.)
 - **15.11**, mot pour mot, sur le planificateur (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « Il faudrait une vue exprès détaillé de t1b2 La frise sous la caisse. C'est top ça avec temps et argent !! »
   (lu : t1b2 choisie ; à part, une vue détaillée de la frise sous la caisse : chaque chose sur ses semaines, ses jours actifs, l'argent mis de côté, avec l'effet sur la caisse.)
+- **15.11**, mot pour mot, précision : « Une nouvelle vue »
+  (lu : la frise détaillée de t1b2 est un écran à part entière, un nouvel endroit de l'app atteint depuis À venir et la caisse, et non une feuille ou un repli dans À venir.)
