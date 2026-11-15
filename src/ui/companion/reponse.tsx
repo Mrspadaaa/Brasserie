@@ -97,6 +97,7 @@ type TourPourquoi = Pick<BrewerTurn, 'advice' | 'evidence' | 'reviewed' | 'revie
 /** « Pourquoi » : en repos, trois puces (relu, calculs, sources) ; au toucher, la raison, le contexte, les calculs et les liens https. */
 export function Pourquoi({ turn, finance = false }: { turn: TourPourquoi; finance?: boolean }) {
   const relecture = libellesRelecture(turn);
+  const secondePasse = !!turn.reviewModel;
   return (
     <details className="cmp-pourquoi-d">
       <summary className="cmp-plis">
@@ -125,7 +126,7 @@ export function Pourquoi({ turn, finance = false }: { turn: TourPourquoi; financ
         {turn.advice.why ? <p>{turn.advice.why}</p> : null}
         <small>{turn.contextLabel}</small>
         {turn.mode === 'fast' ? <small>Mode rapide · calculs et relecture conservés.</small> : null}
-        {turn.reviewModel ? <small>Relecture : {motifRelecture(turn.reviewReason)}.</small> : null}
+        {secondePasse ? <small>Relecture : {motifRelecture(turn.reviewReason)}.</small> : null}
         {turn.reviewed ? (
           <small>
             {finance

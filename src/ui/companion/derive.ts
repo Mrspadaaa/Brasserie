@@ -180,7 +180,9 @@ export function sansNomDeModele(texte: string): string {
   return texte
     .replace(/\bGoogle\s+AI\s+Studio\b|\bAI\s+Studio\b/gi, 'le service IA')
     .replace(/\bGemini(?:[\s-]*\d+(?:\.\d+)?)?(?:[\s-]*(?:Pro|Flash))?\b/gi, 'l’IA')
-    .replace(/\bFlash\b/g, 'l’IA');
+    .replace(/\bFlash\b/g, 'l’IA')
+    .replace(/\bGoogle\b/g, 'le service IA')
+    .replace(/^le service IA/, 'Le service IA');
 }
 
 // ---------- Statuts des conversations ----------

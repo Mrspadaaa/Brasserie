@@ -124,7 +124,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent('Matériel');
     await ask();
     expect(api.submit).toHaveBeenCalledWith(expect.objectContaining({ scope: { kind: 'app', id: 'stocks-materiel' }, editableTargets: [] }));
-    fireEvent.click(screen.getByRole('button', { name: 'Fermer Compagnon brasseur' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer Compagnon' }));
     view.rerender(screenWith({ companionLabel: 'Finances' }, brewerAppScreen('finances')));
     await plus();
     expect(screen.getByRole('dialog')).toHaveTextContent('Finances');
@@ -152,7 +152,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     const view = render(renderPage(true));
     await plus();
     expect(api.history).toHaveBeenLastCalledWith({ kind: 'batch', id: 'LOT-A' });
-    fireEvent.click(screen.getByRole('button', { name: 'Fermer Compagnon brasseur' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer Compagnon' }));
     view.rerender(renderPage(false));
     await plus();
     expect(api.history).toHaveBeenLastCalledWith({ kind: 'recipe', id: 'REC-A' });

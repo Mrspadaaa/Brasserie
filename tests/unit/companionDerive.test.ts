@@ -97,7 +97,8 @@ describe('compagnon · relecture sans nom de modèle', () => {
   });
   it('un texte serveur ne laisse passer aucun nom de modèle ni de fournisseur', () => {
     const sortie = sansNomDeModele('Gemini 3.1 Pro bloque ; vérifie la console AI Studio. Flash a répondu, Google aussi : Gemini-Flash.');
-    expect(sortie).not.toMatch(/Gemini|Flash|Pro\b|AI Studio/);
+    expect(sortie).not.toMatch(/Gemini|Flash|Pro\b|AI Studio|Google/);
+    expect(sansNomDeModele('Google bloque les appels.')).toBe('Le service IA bloque les appels.');
     expect(sansNomDeModele('Aucun modèle ici.')).toBe('Aucun modèle ici.');
   });
 });

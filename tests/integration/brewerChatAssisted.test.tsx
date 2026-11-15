@@ -283,7 +283,7 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     await act(async () => { local.publish(localJob); });
     expect(screen.getByText('Réponse simulée en attente')).toBeVisible();
     expect(screen.getByText('Traitement local · réponse simulée')).toBeVisible();
-    expect(screen.queryByText('Gemini analyse ta question')).not.toBeInTheDocument();
+    expect(screen.queryByText('Analyse de ta question')).not.toBeInTheDocument();
     expect(screen.queryByText('Enregistrée sur le serveur')).not.toBeInTheDocument();
 
     cleanup();
@@ -295,7 +295,7 @@ describe('BrewerChat — raccord de lecture assistée', () => {
       onBeforeSend: vi.fn(async (_input: BrewerChatInput) => {}), onAssistedTurn: vi.fn() }} />);
     await openChat();
     await act(async () => { host.publish(hostJob); });
-    expect(screen.getByText('Gemini analyse ta question')).toBeVisible();
+    expect(screen.getByText('Analyse de ta question')).toBeVisible();
     expect(screen.getByText('Enregistrée sur le serveur')).toBeVisible();
   });
 

@@ -14,6 +14,8 @@ import { Dur, Icone, N, Piste, Tag } from './parts';
 export interface TuileQuestion {
   /** La question envoyée telle quelle dans la saisie. Nom accessible de la tuile (le mode est décoratif). */
   question: string;
+  /** Texte affiché et nom accessible, si différent de la question envoyée (ex. Finances). */
+  label?: string;
 }
 
 /** « Je lis à chaque question » : les sources que le serveur recharge (`sourcesLues`). */
@@ -111,7 +113,7 @@ export function Accueil({
             return (
               <button key={t.question} type="button" className="cmp-tuile" onClick={() => onChoisir(t.question, mode)}>
                 <Icone nom={ICONE_DE_QUESTION[iconeQuestion(t.question)] ?? 'fleche'} />
-                <span>{t.question}</span>
+                <span>{t.label ?? t.question}</span>
                 <Tag label={info.label} pips={info.pips} />
               </button>
             );
@@ -143,7 +145,7 @@ export function Accueil({
               <Icone nom="droite" className="cmp-chev" />
             </button>
           ) : null}
-          {limites ? (
+          {limites && (limites.appels || limites.mois) ? (
             <button type="button" className="cmp-mini cmp-lim" onClick={onLimites} aria-label="Limites IA, régler">
               <span className="cmp-lim-l">
                 <span>

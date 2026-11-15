@@ -54,3 +54,9 @@ textarea.cmp-champ { display: block; height: auto; min-height: 40px; max-height:
 .cmp-fournisseurs { display: flex; flex-direction: column; gap: 6px; }
 .cmp-stock:not(.cmp-ok):not(.cmp-non) { border: 1.5px dashed var(--bordm); color: var(--t2); }
 .cmp-four-v { font-size: 12px; color: var(--t2); }
+
+/* Tours et fil de la conversation : une pile verticale dans le corps de la feuille. */
+.cmp-tour { display: flex; flex-direction: column; gap: 8px; }
+.cmp-histo { display: flex; flex-direction: column; gap: 14px; }
+.cmp-histo:empty { display: none; }
+.cmp-act:empty { display: none; }

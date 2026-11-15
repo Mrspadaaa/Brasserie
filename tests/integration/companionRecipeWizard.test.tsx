@@ -48,7 +48,7 @@ const mount = (recipe: Recipe, save = vi.fn()) => render(<BrewWizard seed={{ rec
 async function propose() {
   act(() => { expect(brewerLauncher.open()).toBe(true); });
   await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
-  const dialog = within(screen.getByRole('dialog', { name: 'Compagnon brasseur' }));
+  const dialog = within(screen.getByRole('dialog', { name: 'Compagnon' }));
   fireEvent.change(dialog.getByRole('textbox', { name: 'Question au compagnon brasseur' }), { target: { value: 'Prépare les six ajustements demandés.' } });
   fireEvent.click(dialog.getByRole('button', { name: 'Envoyer la question' }));
   await dialog.findByRole('button', { name: 'Valider 6 modifications' }); return dialog;
@@ -57,7 +57,7 @@ it('applique la sélection au vrai brouillon, conserve date et dossier, puis enr
   const initial = { ...companionRecipe(), brewDate: '24.10.2026' }, save = vi.fn(), view = mount(initial, save);
   allerEtape(/^Levure/); const dialog = await propose();
   expect(save).not.toHaveBeenCalled(); expect(api.apply).not.toHaveBeenCalled();
-  expect(dialog.getByText('78 %')).toBeInTheDocument(); expect(dialog.getByText('75 %')).toBeInTheDocument();
+  expect(dialog.getByText('78')).toBeInTheDocument(); expect(dialog.getByText('75')).toBeInTheDocument();
   fireEvent.click(dialog.getByRole('checkbox', { name: 'Nom de la recette' }));
   fireEvent.click(dialog.getByRole('button', { name: 'Valider 5 modifications' }));
   await dialog.findByText('Champs appliqués au brouillon'); expect(save).not.toHaveBeenCalled();

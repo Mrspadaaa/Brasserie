@@ -44,6 +44,7 @@ export function Attente({
   stage,
   file = [],
   notifier = true,
+  masquerEtape = false,
   onFermer,
   children
 }: {
@@ -54,6 +55,8 @@ export function Attente({
   stage?: string;
   file?: Array<{ id: string; question: string }>;
   notifier?: boolean;
+  /** Fixture locale : l’étape serveur n’existe pas, son texte ne se montre pas. */
+  masquerEtape?: boolean;
   onFermer?: () => void;
   children?: ReactNode;
 }) {
@@ -93,7 +96,7 @@ export function Attente({
           </span>
         </div>
         <Etapes courante={maximum.current} />
-        <p className="cmp-etape-t">{etapeTexte(stage)}</p>
+        {masquerEtape ? null : <p className="cmp-etape-t">{etapeTexte(stage)}</p>}
         {children}
         {onFermer ? (
           <div className="cmp-act">
@@ -258,7 +261,18 @@ export function BandeauHorsLigne() {
 }
 
 /** Budget du mois atteint : la question gardée, puis la vue du plafond de port-b (`BrewerBudgetCapView`). */
-export function Plafond({ question, onLimits, onLater }: { question?: string; onLimits: () => void; onLater: () => void }) {
+export function Plafond({
+  question,
+  onLimits,
+  onLater,
+  onRaised
+}: {
+  question?: string;
+  onLimits: () => void;
+  onLater: () => void;
+  /** Appelée quand le serveur a confirmé le plafond relevé (ex. relancer la question gardée). */
+  onRaised?: () => void;
+}) {
   return (
     <>
       {question ? (
@@ -270,7 +284,7 @@ export function Plafond({ question, onLimits, onLater }: { question?: string; on
           </small>
         </div>
       ) : null}
-      <BrewerBudgetCapView onLimits={onLimits} onLater={onLater} />
+      <BrewerBudgetCapView onLimits={onLimits} onLater={onLater} onRaised={onRaised} />
     </>
   );
 }
