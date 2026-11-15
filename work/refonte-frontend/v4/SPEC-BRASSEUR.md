@@ -1743,3 +1743,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : kx2r1 choisie ; l'axe des prix doit rendre lisibles les petits écarts : axe resserré sur la plage réelle, écart normalisé (% autour de la médiane) ou échelle logarithmique ; à montrer côte à côte, le brasseur choisit.)
 - **15.11**, mot pour mot, sur kh1r (en regard de la greffe kyg) : « retouchée Avril tombe ; son titre reste au-dessus de la courbe kh1r On voit mieux les conséquences sur le graph avec cette version.. »
   (lu : le graphe « Caisse fin de mois » de kh1r, avec la marche d'avril et son titre, est l'étalon ; la greffe d'À venir le reprend tel quel, sans le réduire ni le simplifier.)
+- **15.11**, mot pour mot, sur l'étape « Scan relié par l'IA » d'À venir : « Scan relié par l'IA Je comprends toujours pas en théorie il y en a pas besoin ?? »
+  (lu : le lien se fait seul, au scan dans Nouvelle dépense ; À venir n'a ni étape, ni anneau, ni bouton pour ça. Le besoin sort de la liste et garde une trace « payé · facture du … » dans Réalisés ; une proposition incertaine se confirme dans la dépense, pas dans À venir.)
