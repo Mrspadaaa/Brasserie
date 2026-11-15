@@ -36,7 +36,7 @@ export const KegAddSheet: React.FC<Props> = ({ existants, today, onClose, onAdd 
 
   return (
     <Sheet open onClose={onClose} title="Ajouter des fûts" subtitle="Numéros donnés à la suite du parc" className="equipment-sheet"
-      footer={<div className="equipment-footer"><Button intent="secondary" onClick={onClose}>Annuler</Button>
+      footer={<div className="equipment-footer keg-footer"><Button intent="secondary" onClick={onClose}>Annuler</Button>
         <Button intent="primary" disabled={!ok} onClick={valider}>{combien > 1 ? `Ajouter ${combien} fûts` : 'Ajouter 1 fût'}</Button></div>}>
       <FormNav className="equipment-form" onSubmit={valider}>
         <Field label="Capacité">

@@ -32,3 +32,6 @@
 .keg-step > button:disabled { color: rgb(var(--cave-600)); }
 .keg-step > output { text-align: center; color: rgb(var(--cave-texte-50)); font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 1rem; font-weight: 600; }
 .keg-preview { margin: 0; color: rgb(var(--cave-texte-50)); font-size: .8125rem; line-height: 1.125rem; }
+/* Maquettes F2 et R1 : le geste principal prend la largeur restante. */
+.keg-footer { justify-content: stretch; flex-wrap: nowrap; }
+.keg-footer > :last-child { flex: 1; }

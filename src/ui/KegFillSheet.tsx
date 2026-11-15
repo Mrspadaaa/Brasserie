@@ -62,7 +62,7 @@ export const KegFillSheet: React.FC<Props> = ({ kegs, batches, today, initialKeg
 
   return (
     <Sheet open onClose={onClose} title="Remplir depuis un lot" subtitle="Choisis le lot, puis les fûts propres" className="equipment-sheet"
-      footer={<div className="equipment-footer"><Button intent="secondary" onClick={onClose}>Annuler</Button>
+      footer={<div className="equipment-footer keg-footer"><Button intent="secondary" onClick={onClose}>Annuler</Button>
         <Button intent="primary" disabled={!pret} onClick={valider}>{choisis.length > 1 ? `Remplir ${choisis.length} fûts` : choisis.length === 1 ? 'Remplir 1 fût' : 'Remplir'}</Button></div>}>
       <FormNav className="equipment-form" onSubmit={valider}>
         <Field label="Lot" htmlFor="keg-fill-lot">

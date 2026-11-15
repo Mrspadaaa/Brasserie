@@ -85,8 +85,8 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
   }
 
   const pied = keg.state === 'livre'
-    ? <div className="equipment-footer"><Button intent="secondary" onClick={() => done(revenuPlein(keg, today))}>Revenu plein</Button><Button intent="primary" onClick={act}>Retour vide</Button></div>
-    : <div className="equipment-footer">
+    ? <div className="equipment-footer keg-footer"><Button intent="secondary" onClick={() => done(revenuPlein(keg, today))}>Revenu plein</Button><Button intent="primary" onClick={act}>Retour vide</Button></div>
+    : <div className="equipment-footer keg-footer">
         <Button intent="secondary" onClick={onClose}>Annuler</Button>
         <Button intent="primary" disabled={keg.state === 'plein' && !client} onClick={act}>
           {{ plein: 'Livrer', propre: 'Remplir depuis un lot', lavage: 'Marquer propre' }[keg.state as 'plein' | 'propre' | 'lavage']}
