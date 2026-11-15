@@ -677,30 +677,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               );
             })()}
           </div>
-          {screen === 'brew-batch' && !!recipes.length && (
-            <label className="relative ml-auto min-w-0">
-              <span className="sr-only">Recette à brasser</span>
-              <select
-                name="qa_brew_recipe_select"
-                aria-label="Recette à brasser"
-                autoComplete="off"
-                data-form-type="other"
-                value={selectedRecipeId}
-                disabled={brewSaving || !!pendingBatch.current}
-                onChange={(e) => {
-                  setSelectedRecipeId(e.target.value);
-                  // d1b : le volume est celui de la recette ; il reste modifiable sur la règle.
-                  const found = recipes.find((r) => r.id === e.target.value);
-                  if (found) setBatchVolumeL(found.volumeL ?? 30);
-                  setBrewError('');
-                }}
-                className="min-h-[44px] w-full max-w-[11rem] truncate appearance-none rounded-control border border-cave-700 bg-cave-950 pl-2 pr-7 text-sm text-cave-50"
-              >
-                {recipes.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-              </select>
-              <ChevronRight size={14} aria-hidden="true" className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rotate-90 text-cave-50" />
-            </label>
-          )}
+          {/* d1b et c2a n'ont pas de sélecteur de recette (venu du tag, 15.11) : elle se choisit sur la carte de c2a ou dans le carnet r2a. */}
           <button
             type="button"
             aria-label="Fermer"

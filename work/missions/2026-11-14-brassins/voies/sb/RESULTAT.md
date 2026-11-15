@@ -67,3 +67,15 @@ Doutes de la critique
 - Liste e6a « Tous 5 / 6 brassins » : hors OWNS (e6a). Écarté, à router vers la voie e6a.
 - Bandeau « Compagnon hors connexion » sur la 2e carte : banc local. Écarté.
 - Captures manquantes (c2a cave, d1b cave 1280, stock déplié, semaine suivante, ZZ-021 à 390) : non reprises ; à 1280 la carte « Brasser ZZ-021 » est visible. Capture cave d1b 390 refaite et ouverte.
+
+## Après fusion (16.11)
+
+La fusion du tag atelier-lot8 (87f03403) avait abîmé d1b et c2a. Trois défauts, trois corrections :
+
+1. **Sélecteur de recette dans l'en-tête** (« ZZ Blond… ⌄ ») : venu du tag (`name="qa_brew_recipe_select"`, ajouté dans `QuickActionModal.tsx`). Retiré. Dans l'app, l'écran « brew-batch » montre toujours c2a ou d1b, qui n'en ont pas ; le seul lecteur restant est `scripts/check-yeast-refonte-ui.mjs`, déjà périmé (cherche « Préparer un brassin » et « Quand brasser ? », écrans remplacés).
+2. **Barre des sous-onglets en double** : oui, la fusion rendait deux barres dans `ProductionTab.tsx` : `SegmentsCoque` (e11a, la nôtre) et le `ViewNavigation` du tag avec ses quatre boutons. Le bloc `ViewNavigation` et son import sont retirés ; une seule barre reste (vérifiée sur d1b-conflit et c2a-apres).
+3. **d1b-repos 390 clair sans bouton « Brasser »** : la double barre met deux boutons `Recettes (n)` ; le banc cliquait le premier de la liste, qui pouvait ne pas être celui qui montre le carnet, et la boucle de 12 essais retombait sur le même bouton. Cause probable, non prouvée à part : le banc rejoué après correction, serveur neuf, trouve le bouton dès le premier scénario. Banc inchangé.
+
+Preuves : `BANC OK 11 captures` (sb, port 3122) ; `BANC OK 27 captures` (s1, port 3121) ; tsc sans erreur hors functions/ ; vitest `port-` + les 5 tests d'intégration : 29 fichiers, 290 tests verts ; `npx vite build` vert.
+Captures ouvertes : les 11 d1b et c2a refaites (d1b repos/geste/loin/conflit 390 clair, repos 390 cave, repos 1280 clair ; c2a repos/geste/après/vide 390 clair, repos 1280 clair). Plus de sélecteur, une seule barre. Les captures d'avant la fusion ne sont pas dans Git (`captures/` ignoré) : seule `d1b-repos-app-390-clair.png` du 15.11 22:43 a servi de référence, et elle est identique en mise en page.
+Limite : `scripts/check-yeast-refonte-ui.mjs` (hors Possède) cherche encore le sélecteur retiré ; à retirer ou adapter par le pilote.
