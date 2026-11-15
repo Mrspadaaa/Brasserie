@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { RecipeReview } from '../../src/ui/RecipeReview';
 import { AiClient } from '../../src/services/aiClient';
@@ -19,7 +19,11 @@ describe('Copie, import et relecture de la conduite levure', () => {
     const initial = yeastFlowRecipe(), save = vi.fn();
     initial.yeast = { ...initial.yeast, form: 'liquide', qty: .125, unit: 'L' };
     mount(initial, save); allerEtape('Récapitulatif');
-    expect(screen.getByText(/0,125 L/, { selector: 'span' })).toBeInTheDocument();
+    /* Récap m2 : la rangée Levure (un <details>) montre la quantité dans son résumé et, dépliée, dans la ligne de sa fiche ; le tableau des besoins
+       porte la même quantité dans une cellule. Trois endroits, trois rôles : on vise le résumé de la rangée, puis la fiche de la même rangée. */
+    const rangee = document.querySelector<HTMLElement>('details.rc2-rlev')!;
+    expect(within(rangee).getByText('0,125 L', { selector: '.rc2-m' })).toBeInTheDocument();
+    expect(within(rangee).getByText(/Wyeast 3068 · 0,125 L/, { selector: 'span' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save.mock.calls[0][0].yeast).toMatchObject({ qty: .125, unit: 'L' });
   });
