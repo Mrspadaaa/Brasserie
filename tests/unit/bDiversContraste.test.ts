@@ -14,15 +14,16 @@ const contraste = (a: number[], b: number[]) => { const [x, y] = [luminance(a), 
 
 describe('BE-24 : « Visuel : … » de l’atelier, en thème clair', () => {
   it('garde la couleur de texte or sans transparence, assez contrastée sur le gris #dedede mesuré', () => {
-    const source = lire('src/components/CreativeLabTab.tsx');
-    const ligne = source.split('\n').find(l => l.includes('Visuel') === false && l.includes('italic bg-ebc-straw/10')) ?? '';
-    expect(ligne).toMatch(/text-ebc-gold italic/);
-    expect(ligne).not.toMatch(/text-ebc-gold\/\d+/);
+    // e9na (15.11) : la ligne « 🎨 Visuel : … » n'existe plus ; les notes libres de l'idée se lisent en texte normal (FicheIdee). La règle BE-24 reste : tout texte or de l'atelier est opaque, jamais `text-ebc-gold/NN`.
+    const sources = ['src/components/CreativeLabTab.tsx', 'src/ui/atelier/Ecrire.tsx', 'src/ui/atelier/FicheIdee.tsx', 'src/ui/atelier/NoteCarte.tsx', 'src/ui/atelier/EssaiPrix.tsx', 'src/ui/atelier/FicheContact.tsx'].map(lire).join('\n');
+    expect(sources).toMatch(/text-ebc-gold/);
+    expect(sources).not.toMatch(/text-ebc-gold\/\d+/);
     const themes = lire('src/theme/themes.css');
     const clair = themes.slice(themes.indexOf(":root,\n[data-theme='clair']"), themes.indexOf("[data-theme='cave']"));
     const m = /--ebc-gold-texte:\s*(\d+)\s+(\d+)\s+(\d+)/.exec(clair);
     expect(m).not.toBeNull();
     const or = [Number(m![1]), Number(m![2]), Number(m![3])];
     expect(contraste(or, [0xde, 0xde, 0xde])).toBeGreaterThanOrEqual(4.5);
+    expect(contraste(or, [0xff, 0xff, 0xff])).toBeGreaterThanOrEqual(4.5); // la page blanche du thème clair (bg-cave-950)
   });
 });

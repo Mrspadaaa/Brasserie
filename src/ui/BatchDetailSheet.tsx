@@ -39,6 +39,13 @@ import { StageLadder, type Conditionnement } from './production/fiche/StageLadde
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
 import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
 import { Ellipsis, ChevronRight, Package } from 'lucide-react';
+import { useCarnet } from './production/carnet/useCarnet';
+import { CarnetFil, CarnetPied } from './production/carnet/CarnetFil';
+import { DossierFil, DossierPied, rappelDryHop } from './production/carnet/DossierFil';
+import { FicheFermentation, PanneauMesure, PiedFermentation } from './production/fermentation/FicheFermentation';
+import { avecTacheFaite, mesureInitiale, modeleFiche, releveDepuisEtat, sansTacheFaite, type ContexteStock, type EtatMesure, type Houblon } from './production/fermentation/modele';
+import { planDestockageHoublon } from './production/fermentation/destockage';
+import { FirestoreRepo } from '../services/firestoreRepo';
 
 /** « Budget » : un bouton de la grille de la fiche (même gabarit que Compagnon et Étape) qui ouvre le budget du brassin. */
 const BudgetLien: React.FC<{ batch: Batch; className?: string; children?: React.ReactNode }> = ({ batch, className, children }) => {
@@ -99,6 +106,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [fgError, setFgError] = useState('');
   const [fgUndo, setFgUndo] = useState<{ fg: string; abv: string } | null>(null);
   const [plusOpen, setPlusOpen] = useState(false);
+  /** gfc : le geste « Mesurer » de la fiche en fermentation (curseur m2) ; `null` = fermé. */
+  const [mesure, setMesure] = useState<EtatMesure | null>(null);
+  useEffect(() => { setMesure(null); }, [batch?.id]);
   const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
   const releveRef = React.useRef<HTMLDivElement>(null);
   useEffect(() => { if (!fgUndo) return; const t = window.setTimeout(() => setFgUndo(null), 8000); return () => window.clearTimeout(t); }, [fgUndo]);
@@ -127,6 +137,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     if (initialSection === 'measurements' && batch?.status === 'annule') setSection('overview');
   }, [batch?.id, initialSection]);
 
+  // e3gb : le carnet d'un brassin en fermentation (hook avant tout retour ; inerte dans les autres états).
+  const carnet = useCarnet(draft ?? null, patch => setDraft(d => (d ? { ...d, ...patch } : d)));
+  // gfc n° 3 et 4 : « Ajouté auj. » sort UN houblon du stock ; le toast garde Annuler dix secondes.
+  const [toastStock, setToastStock] = useState<{ nom: string; g: number; annuler: () => void } | null>(null);
+  useEffect(() => { setToastStock(null); }, [batch?.id]);
+  useEffect(() => { if (!toastStock) return; const t = window.setTimeout(() => setToastStock(null), 10000); return () => window.clearTimeout(t); }, [toastStock]);
   if (!batch || !draft) return null;
 
   const style = statusOfBatch(draft);
@@ -222,8 +238,66 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   // p1 : e1a (planifié), e2a (garde, conditionné, terminé, annulé) ; « en fermentation » garde sa fiche (choix ouvert s4a × s6c).
   const planned = draft.status === 'planifie';
   const post = draft.status === 'garde' || draft.status === 'conditionne' || draft.status === 'termine' || draft.status === 'annule';
-  const Enveloppe: React.ElementType = post ? 'details' : React.Fragment;
+  // gfc : un brassin en fermentation s'ouvre sur sa fiche (graphe, houblons, tâches, Mesurer) ; les mesures de dossier se replient dessous.
+  // Ce que le stock sait pour dire, houblon par houblon, ce qui est sorti et ce qui attend (gfc n° 3).
+  const stockCtx: ContexteStock | undefined = (() => {
+    if (!(draft.status === 'fermentation' && section === 'measurements')) return undefined;
+    try {
+      const st = StorageService.getStocks();
+      const plan = FirestoreRepo.all<any>('financialPlans').filter(p => p.brewEstimate?.batchId === draft.id).sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
+      return { stocks: [...st.rawMaterials, ...st.cleaning], bindings: plan?.brewEstimate?.bindings, mouvements: FirestoreRepo.all<{ id?: string; timestamp?: string }>('movements') };
+    } catch { return undefined; }
+  })();
+  const ficheM = draft.status === 'fermentation' && section === 'measurements' ? modeleFiche(draft, Date.now(), stockCtx) : null;
+  // gfc n° 10 : les mesures de dossier se rangent sous le Dossier d'un brassin en fermentation, plus sous la fiche.
+  const mesuresDansDossier = draft.status === 'fermentation' && section === 'overview';
+  const Enveloppe: React.ElementType = post || ficheM || mesuresDansDossier ? 'details' : React.Fragment;
   const nowMs = Date.now();
+  // e3gb : Carnet et Dossier ne changent que pour un brassin en fermentation ; les autres états gardent leurs choix (e1a, e2a, e4c).
+  const fermentation = draft.status === 'fermentation';
+  const rappel = fermentation && section === 'overview' ? rappelDryHop(draft, nowMs) : null;
+  const enregistrerReleve = () => {
+    if (!mesure) return;
+    const r = releveDepuisEtat(mesure, toIsoDate(breweryDay(nowMs)));
+    if ('erreur' in r) { setMesure({ ...mesure, erreur: r.erreur }); return; }
+    save({ gravityLog: [...(draft.gravityLog ?? []), r.reading] });
+    setMesure(null);
+  };
+  const destockerHoublon = (h: Houblon) => {
+    if (!stockCtx) return;
+    const live = StorageService.getBatches().find(b => b.id === draft.id);
+    if (!live) return;
+    const plan = planDestockageHoublon(live, { name: h.nom, weightG: h.doseG, stockItemRef: h.ref ?? undefined }, stockCtx.stocks, stockCtx.bindings);
+    if (!plan.ok || !plan.batch) { setStockMessage(plan.issues.join(' ')); return; }
+    const apres = plan.batch;
+    for (const mv of plan.mouvements) {
+      const st = plan.stockUpdates.find(x => x.ref === mv.itemRef);
+      FirestoreRepo.adjustNumber('stockItems', mv.itemRef, 'currentStock', mv.delta, st ? { reorder: st.reorder } : {});
+      FirestoreRepo.put('movements', mv.id, mv);
+    }
+    StorageService.updateBatch(apres, { previous: live.stockConsumption });
+    setDraft(d => (d ? { ...d, stockConsumption: apres.stockConsumption } : d));
+    setStockMessage('');
+    setToastStock({
+      nom: h.nom, g: h.doseG,
+      annuler: () => {
+        for (const mv of plan.mouvements) {
+          const avant = stockCtx.stocks.find(x => x.ref === mv.itemRef);
+          FirestoreRepo.adjustNumber('stockItems', mv.itemRef, 'currentStock', -mv.delta, avant ? { reorder: avant.reorder } : {});
+          FirestoreRepo.remove('movements', mv.id);
+        }
+        StorageService.updateBatch(live, { previous: apres.stockConsumption });
+        setDraft(d => (d ? { ...d, stockConsumption: live.stockConsumption } : d));
+        setToastStock(null);
+      }
+    });
+  };
+  // gfc n° 2 : cocher une tâche pose une entrée datée du Carnet dans les notes du jour de brassage ; décocher la retire.
+  const basculerTache = (i: number) => {
+    const t = ficheM?.taches[i];
+    if (!t) return;
+    save({ notesBrewDay: t.faite ? sansTacheFaite(draft.notesBrewDay, t) : avecTacheFaite(draft.notesBrewDay, t) });
+  };
   const dernierSg = releves(draft).slice(-1)[0]?.sg;
   const fgDepart = Math.round((dernierSg ?? draft.recipeSnapshot?.fgTarget ?? 1.01) * 1000);
   const openLadder = () => { setKegList(StorageService.getStocks().kegs); setLadder(true); };
@@ -283,10 +357,18 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       <Sheet
         open={!!batch}
         onClose={onClose}
-        title={draft.name}
-        subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)}${planned ? '' : ''}${planned || post ? '' : ' visés'}`}
-        className="md:max-w-2xl md:mx-auto"
-        footer={planned ? (
+        title={fermentation ? `${draft.name} en fermentation` : draft.name}
+        subtitle={fermentation
+          ? [draft.id, 'cuve', section === 'measurements' ? formatLitres(draft.volumeL) : draft.brewDay?.pitchedAt != null ? `levuré le ${breweryDay(draft.brewDay.pitchedAt).slice(0, 5)}` : null].filter(Boolean).join(' · ')
+          : `${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)}${planned ? '' : ''}${planned || post ? '' : ' visés'}`}
+        className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto'}
+        footer={fermentation && section === 'tasting' ? <CarnetPied c={carnet} /> : rappel ? <DossierPied batch={draft} now={nowMs} ajoute={() => setConfirmStock('remaining')} /> : ficheM ? (
+          <div className="space-y-2">
+            {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} /></div>}
+            <PiedFermentation ouvert={mesure !== null} ouvrir={() => setMesure(mesureInitiale(ficheM, draft.recipeSnapshot?.fgTarget))}
+              annuler={() => setMesure(null)} enregistrer={enregistrerReleve} />
+          </div>
+        ) : planned ? (
           <PiedPlanifie geste={datePlan} now={nowMs} plus={() => setPlusOpen(open => !open)}
             commencer={onOpenBrewDay ? () => onOpenBrewDay(draft) : undefined}
             annuler={() => { setDatePlan(null); setDateError(''); }} enregistrer={() => datePlan !== null && saveDate(joursDuCurseur(nowMs)[datePlan])} />
@@ -310,15 +392,20 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             ? <PlannedDate batch={draft} now={nowMs} geste={datePlan} onGeste={setDatePlan} onSave={date => void saveDate(date)} erreur={dateError} />
             : post
               ? <HeroEtat batch={draft} now={nowMs} />
+              : ficheM
+              ? <FicheFermentation m={ficheM} verbe={draft.brewDay?.pitchedAt != null ? 'levuré' : 'brassé'} toast={toastStock} onTache={basculerTache}
+                  reserve={pending.map(l => `${stockNames.get(l.stockItemRef) ?? l.stockItemRef} · ${Units.format(l.quantity, l.unit)}`)}
+                  onAjoute={destockerHoublon}
+                  onAcces={k => setSection(k === 'carnet' ? 'tasting' : 'overview')} />
               : <BatchSchedule batch={draft} onSave={async updated => {
                   const saved = await saveBatchSchedule(draft, updated.plannedBrewDate ?? '', value => StorageService.updateBatch(value));
                   setDraft(saved);
                 }} />}
-          {!planned && !post && <YeastPreparationPanel batch={draft} onSave={save} />}
+          {!planned && !post && !ficheM && <YeastPreparationPanel batch={draft} onSave={save} />}
           {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
           {noloRecipeForBatch(draft)&&(plusOpen || (!planned && !post))&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
-            className="grid grid-cols-3 border-b border-cave-700"
+            className={`grid grid-cols-3 border-b border-cave-700 ${ficheM ? 'hidden' : ''}`}
             aria-label="Rubriques du brassin"
           >
             {(
@@ -340,13 +427,13 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             ))}
           </nav>
           {/* TE-41 : le bandeau complet vit dans Mesures ; les autres rubriques n'ont qu'une ligne qui y renvoie, au lieu de le répéter. */}
-          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && !stockBannerHere && (
+          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && !stockBannerHere && !(fermentation && !historicalStock && !needsBrewStock && stockIssues.length === 0) && (
             <button type="button" onClick={() => setSection('measurements')} className="min-h-touch flex items-center gap-2 text-left text-sm text-ebc-amber">
               <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>{historicalStock ? 'Stock à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés à confirmer'} · voir Mesures</span>
             </button>
           )}
-          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && stockBannerHere && (
+          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || (pending.length > 0 && !ficheM)) && stockBannerHere && (
             <section aria-label="Suivi du stock du brassin" className="rounded-xl border border-ebc-amber/30 bg-cave-950 p-2 space-y-2">
               <div className="flex items-start gap-2"><AlertTriangle className="w-4 h-4 shrink-0 text-ebc-amber mt-0.5" /><div><h3 className="text-sm font-semibold text-cave-50">{historicalStock ? 'Stock de ce brassin à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés pour la fermentation'}</h3><p className="text-2xs text-cave-400 leading-snug mt-1">{historicalStock ? 'Ce brassin vient de l’ancien suivi. Indiquez ce qui a déjà été retiré pour éviter une double déduction.' : needsBrewStock ? 'Les relevés sont conservés. Vérifiez les ingrédients puis confirmez leur sortie de stock.' : 'Les réservations protègent ces ingrédients pour ce brassin jusqu’à leur ajout réel.'}</p></div></div>
               {stockIssues.length > 0 && <ul className="list-disc pl-5 text-sm text-ebc-amber space-y-1">{stockIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
@@ -368,7 +455,13 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             const conflict = fermenterConflict(draft, StorageService.getBatches());
             return conflict ? <p role="alert" className="text-sm text-attention">{fermenterConflictMessage(conflict)}</p> : null;
           })()}
-          {section === 'overview' && (
+          {section === 'overview' && fermentation && (
+            <DossierFil batch={draft} now={nowMs} suivant={suivant} options={options} blocage={blockedReason}
+              onStatut={changeStatus} onSupprimer={() => setConfirmDelete(true)}
+              budget={cls => <BudgetLien batch={draft} className={cls}>Budget</BudgetLien>}
+              compagnon={<BrewerChat scope={{ kind: 'batch', id: batch.id }} label={draft.name} phase={draft.status} />} />
+          )}
+          {section === 'overview' && !fermentation && (
             <>
               {draft.status !== 'annule' && <BudgetLien batch={draft}>Estimer le budget de ce brassin</BudgetLien>}
               <section className="space-y-2">
@@ -434,9 +527,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
             </>
           )}
-          {section === 'measurements' && !planned && (
-            <Enveloppe {...(post ? { className: 'rounded-xl border border-cave-800 bg-cave-900 px-2.5 py-1' } : {})}>
-              {post && <summary className="min-h-touch cursor-pointer text-sm text-cave-200">Corriger les mesures (OG, FG, volumes)</summary>}
+          {((section === 'measurements' && !planned && !ficheM) || mesuresDansDossier) && (
+            <Enveloppe {...(post || ficheM || mesuresDansDossier ? { className: 'rounded-xl border border-cave-800 bg-cave-900 px-2.5 py-1' } : {})}>
+              {(post || ficheM || mesuresDansDossier) && <summary className="min-h-touch cursor-pointer text-sm text-cave-200">Corriger les mesures (OG, FG, volumes)</summary>}
               <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Mesures</h3>
 
@@ -569,7 +662,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}
             </Enveloppe>
           )}
-          {section === 'tasting' && (
+          {section === 'tasting' && fermentation && <CarnetFil batch={draft} c={carnet} now={nowMs} />}
+          {section === 'tasting' && !fermentation && (
             <>
               <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Carnet</h3>
@@ -594,7 +688,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               <HopTastingsPanel batch={draft} />
             </>
           )}
-          {section === 'overview' && draft.status !== 'annule' && (
+          {section === 'overview' && !fermentation && draft.status !== 'annule' && (
             <>
               <BrewerChat
                 scope={{ kind: 'batch', id: batch.id }}

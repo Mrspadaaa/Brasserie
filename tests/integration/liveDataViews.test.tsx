@@ -76,14 +76,18 @@ describe('Live records and unsaved forms', () => {
       onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenBrewDay={vi.fn()} onOpenRecipe={vi.fn()} />;
     const { rerender } = render(view(batch));
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin B-live' }));
-    const density = document.querySelector('input[name="batch_sheet_og"]')!;
-    fireEvent.change(density, { target: { value: '1.054' } });
+    // gfc (15.11) : la lecture en cours est le geste « Mesurer » (« Taper » : saisie décimale) ; elle doit survivre à une mise à jour serveur.
+    if (!screen.queryByRole('button', { name: /Mesurer/ })) fireEvent.click(screen.getByRole('button', { name: 'Mesures' }));
+    fireEvent.click(screen.getByRole('button', { name: /Mesurer/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Taper' })[0]);
+    const density = screen.getByLabelText('Densité du relevé');
+    fireEvent.change(density, { target: { value: '1,054' } });
     rerender(view({ ...batch, name: 'Nom confirmé par IA', volumeL: 24 }));
-    expect(screen.getByRole('dialog', { name: 'Nom confirmé par IA' })).toBeInTheDocument();
-    expect(density).toHaveValue('1.054');
+    expect(screen.getByRole('dialog', { name: 'Nom confirmé par IA en fermentation' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Densité du relevé')).toHaveValue('1,054');
     const save = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
-    fireEvent.blur(density);
-    expect(save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Nom confirmé par IA', volumeL: 24, og: '1.054' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le relevé' }));
+    expect(save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Nom confirmé par IA', volumeL: 24, gravityLog: [expect.objectContaining({ sg: 1.054 })] }));
   });
 
   it('recalculates the selected recipe in the scaler when its fermentables change', () => {
@@ -98,6 +102,8 @@ describe('Live records and unsaved forms', () => {
 
   it('refreshes the creative lab after a delayed write notification and a later external edit', () => {
     render(<CreativeLabTab />);
+    // e9na (15.11) : une idée de matériel ne vit plus dans le carnet « Tout » mais dans le tiroir Matériel (Rénovation) ; carnet vide : le lien y mène.
+    fireEvent.click(screen.getByRole('button', { name: /Projets de matériel/ }));
     expect(screen.queryByText('Nouvelle idée')).not.toBeInTheDocument();
     act(() => StorageService.addCreativeItem({ id: 'CR-new', type: 'equipment', status: 'idea', title: 'Nouvelle idée' }));
     expect(screen.getByText('Nouvelle idée')).toBeInTheDocument();

@@ -28,7 +28,9 @@ function monter(extra: Partial<React.ComponentProps<typeof ProductionTab>> = {},
   return render(<ProductionTab recipes={recettes} batches={LOTS} brewhouses={[brewhouse]} activeBrewhouseId="qa" globalTimeFilter="all" targetSubTab="batches"
     onOpenCreateBatch={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} {...extra} />);
 }
-beforeEach(() => { localStorage.clear(); vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {}); });
+// q6 : la liste démarre sur « le mois + les en cours » ; ces tests ouvrent un Terminé vieux de 60 jours, donc « Toutes ».
+const TOUTES = { 'catalog-batches-criteres': { periode: { mode: 'toutes', de: '', a: '', enCours: true } } };
+beforeEach(() => { localStorage.clear(); localStorage.setItem('laffinee_ui_state', JSON.stringify(TOUTES)); vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {}); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('e11a : la phrase-réponse de la liste', () => {
@@ -38,9 +40,11 @@ describe('e11a : la phrase-réponse de la liste', () => {
 
   it('elle ouvre la page des brassins (titre visible), puis disparaît seulement dans le Bilan et revient', () => {
     monter();
-    const titre = () => screen.queryByRole('heading', { level: 2, name: /Pils à confirmer/ });
+    // q2 : la liste porte sa propre phrase (e6a : « 2 en cuve / 1 à brasser ») ; q6 : les analyses se rangent dans la feuille de filtres.
+    const titre = () => screen.queryByRole('heading', { level: 2, name: /2 en cuve/ });
     expect(titre()).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrer' }));
+    fireEvent.click(screen.getByRole('button', { name: /Voir les analyses des brassins/ }));
     expect(titre()).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Retour aux brassins' }));
     expect(titre()).toBeInTheDocument();

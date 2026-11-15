@@ -1,36 +1,45 @@
-# Voie c2 — Critique des passes 2 avant de montrer
+# Voie c2 — Créer un brassin, série v0 n° 2 (genre neuf)
 
-- Mission : 2026-11-14-brassins · Agent : critique · Modèle : opus (Fable interdit) · Niveau : jugement · Plafond : 25 tours · Dépend de : p2a, p2b, p2c · Décideur : pilote
+- Mission : 2026-11-14-brassins · Agent : concepteur · Modèle : opus (Fable interdit) · Niveau : conception · Plafond : 45 tours · Dépend de : — · Décideur : brasseur (il choisit sur la page)
 
 ## Objectif
-Pour s1e2, s1g, s2a2 et s3b2 : « combien et quels problèmes il y a ? », comme le brasseur, avant qu'on les lui montre. Un verdict
-par variante (MONTRER ou CORRIGER), et pour CORRIGER la liste exacte des défauts à corriger.
+Ses mots : « Créer : aucune · … · Recettes : aucune · Atelier : e9na Refait pour celle aucune... Ça resoud aucune de mes problématique » (15.11), après trois séries refusées (e5a–e5d, e5na–e5nd, e5ga–e5gb). Il ne s'agit plus d'améliorer une forme : partir de SES problèmes (`work/missions/2026-11-14-brassins/voies/a2/PROBLEMES.md` § Créer un brassin, « Ses problèmes »,
+mot pour mot et datés) et changer de genre de solution (L13). Série 2 sur 2 : prendre les genres 5 à 7, et un quatrième de ton cru (une combinaison ou une référence qu'il connaît) de
+« Genres de solution pas encore essayés » ; une maquette par genre, chacune résolvant nommément au moins deux de ses problèmes (numéros dans NOTE.md).
 
 ## Entrées
-- Images : `work/missions/2026-11-14-brassins/voies/p2a/s1e2/`, `p2a/s1g/`, `p2b/s2a2/`, `p2c/s3b2/` (six PNG chacune) et leurs `NOTE.md`.
-- `work/missions/2026-11-14-brassins/voies/t1/SYNTHESE.md` § Candidates, § Retouches communes (ce qui devait être corrigé).
-- `work/missions/2026-11-14-brassins/BRIEF-AUTEUR.md` § Obligatoire et § Les chiffres (baseline et vrais chiffres).
-- Calibrage : `work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md`.
+- `work/missions/2026-11-14-brassins/voies/a2/PROBLEMES.md` § Créer un brassin (tout) : ses problèmes, ce que fait l'app, pourquoi les refusées n'ont rien résolu, les genres.
+- Ses choix acquis, à respecter tels quels autour : liste e6a (`work/missions/2026-11-14-brassins/voies/e6/e6a/`), fiche planifiée e1a (`work/missions/2026-11-14-brassins/voies/e1/e1a/`), coque e11a (`work/missions/2026-11-14-brassins/voies/e11/e11a/`), Atelier e9na (`work/missions/2026-11-14-brassins/voies/e9n/e9na/`) : repos seulement.
+- Gabarit de capture : `work/missions/2026-11-14-brassins/voies/e5g/capture.mjs`.
+- Revue de la page précédente (pourquoi « pas très clair ») : `work/missions/2026-11-14-brassins/revue-page5/SYNTHESE.md`, puis `critique.md` § B.
 
 ## Possède (seuls chemins où écrire, avec RESULTAT.md)
-- `work/missions/2026-11-14-brassins/voies/c2/` (`VERDICT.md`, `RESULTAT.md`, `tests.txt`).
+- `work/missions/2026-11-14-brassins/voies/c2/` : `c2a` à `c2d` (`etat.html`, PNG, `NOTE.md`), `capture.mjs`, `RESULTAT.md`, `tests.txt`. Rien dans `src/`.
 
 ## Consignes
-- Ouvre chaque image (24) ; ne relis pas les etat.html. Vérifie chaque chiffre contre « Les chiffres » (L14).
-- `VERDICT.md` : ligne 1 `OK — <n> problèmes, <n> bloquants` ; puis une section `## <id> — MONTRER|CORRIGER` par variante, liste
-  numérotée (bloquant : chiffre faux, élément de la baseline absent, illisible, geste sans effet, texte coupé ou chevauché).
-- MONTRER si aucun bloquant ; les autres problèmes restent listés (ils iront sur la page comme réserves).
+- 1 froide, 2 tièdes, 1 chaude. Aucune ne reprend une forme refusée (lire les `Idée` des NOTE.md refusées citées par PROBLEMES.md, pas leurs images).
+- NOTE.md ajoute « Problèmes résolus : n° … » (numéros de PROBLEMES.md).
+- `geste` : pendant le geste de création (le moment clé du genre) ; `apres` : le brassin créé, là où il vit ensuite (sa fiche planifiée est e1a, retenue : ne la redessine pas, montre l'arrivée) ; `vide` : sans recette au carnet.
+- Images par variante : `<id>-repos-390-clair.png`, `<id>-geste-390-clair.png`, `<id>-apres-390-clair.png`, `<id>-vide-390-clair.png`, `<id>-repos-390-cave.png` ; la meilleure ajoute `<id>-repos-1280-clair.png`. Ouvrir chaque image (Read) une fois.
+- D'abord, dans RESULTAT.md, en 5 lignes : ce qu'il a dit, ce qu'on en lit, les 4 genres choisis et en quoi ils diffèrent au repos.
 
 ## Exigences transversales et acquis (recopiés, leçons L05 et L06)
-- Baseline du brief (geste m2, z1, J+n depuis le levurage, deux températures, FG en bande, dry hop nommé et fusionné au stock,
-  premier plan actionnable, pas de cockpit) ; inconnu = « — » ; cibles ≥ 44 px ; deux thèmes ; 390 et 1280.
+- Identité de l'app : trousse `work/missions/2026-11-14-brassins/outils/identite/` (LISEZMOI.md d'abord) ; `node work/missions/2026-11-14-brassins/outils/controle-identite.mjs <dossier>` → IDENTITE OK.
+- Saisie au curseur (m2), jamais `type="number"` ; chiffres à la virgule ; inconnu dit en mots (« non mesurée »), jamais un chiffre inventé ;
+  cibles ≥ 44 px ; clair et cave ; 390 tactile et 1280 ; données de `work/missions/2026-11-14-brassins/BRIEF-AUTEUR.md` § Les chiffres et `work/missions/2026-11-14-brassins/DONNEES-COMMUNES.md`.
+- Premier plan actionnable, pas de cockpit ni de code interne ; une information dite une fois (la revue du 15.11 a compté 2 à 5 redites par écran).
+- Plancher à enrichir (L07). Classes et globales JS préfixées par l'id de la variante (L26).
+- Page « pas très clair » (15.11) : chaque variante doit se distinguer des autres AU REPOS, à 390, en un coup d'œil (« toutes les
+  propositions se ressemblent » : refus connu). `NOTE.md` porte quatre lignes : « Chaleur : », « Idée : » (nom en 6 mots au plus),
+  « Ce qui change : » (15 mots au plus, en mots de brasseur, sans code de variante), « Geste : » (le geste montré par l'image geste,
+  nommé : « après "Planifier" », « après Citra coché »).
 
 ## Critères
-`work/missions/2026-11-14-brassins/voies/c2/GATES.md`, depuis la racine du dépôt.
+`work/missions/2026-11-14-brassins/voies/c2/GATES.md`, depuis la racine du dépôt. Ne pas le modifier.
 
 ## Rendre
-- `RESULTAT.md` tenu au fil (tous les 5 éléments).
-- La ligne « Tests » écrite dans un fichier : aucune suite Vitest (rien dans `src/`) ; `tests.txt` porte la sortie des CHECK, au même
-  format que `--reporter=dot > …`.
-- Voie d'écran : captures 390 tactile et 1280, clair et cave, toutes ouvertes.
+- `RESULTAT.md` tenu au fil (tous les 5 éléments) ; vers 150 k de contexte, finir les images en cours et rendre « REPRISE : RESULTAT.md ».
+- La ligne « Tests » écrite dans un fichier : aucune suite Vitest (rien dans `src/`) ; `tests.txt` porte la sortie des CHECK.
+- Voie d'écran : captures 390 tactile et 1280, clair et cave, toutes ouvertes (Read) avant de cocher.
+- Fable interdit sous toute forme. Ni commit ni stash. Fichiers de travail : ton OWNS ou `os.tmpdir()` préfixés de l'id de la voie.
 Réponse finale au pilote : une ligne.

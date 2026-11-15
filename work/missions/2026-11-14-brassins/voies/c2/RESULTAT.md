@@ -1,31 +1,32 @@
-OK — accepté : 26 problèmes, 7 bloquants ; MONTRER s2a2 ; CORRIGER s1e2, s1g, s3b2 (VERDICT.md)
+REPRISE — voie c2 (Créer un brassin, série v0 n° 2) : 4 maquettes faites, captures en partie à rouvrir, GATES à rejouer
 
-Les 24 captures ont été ouvertes : 390 clair (repos, geste, dry hop, liste), 390 cave et 1280 clair pour chaque variante. Quatre
-zones ont été agrandies ×3. Les chiffres ont été comparés à BRIEF-AUTEUR § « Les chiffres ». Le détail, une liste numérotée par
-variante, est dans `VERDICT.md`.
+## Cadrage (5 lignes)
+1. Il a dit : « Créer : aucune … Ça resoud aucune de mes problématique » (15.11), après e5a–e5d, e5na–e5nd, e5ga–e5gb.
+2. On en lit : la question n'était pas « comment saisir recette, volume, date » ; ses problèmes sont les gestes (n° 2), le stock (n° 4), la répercussion (n° 5), l'accès d'ailleurs (n° 6) et le peu de temps (n° 8).
+3. Genres : c2a froide = la création montre ses effets, chacun s'annule (genre 7) ; c2b tiède = brasser depuis la ligne de stock (genre 5) ; c2c tiède = brasser maintenant, le brassage crée le brassin (genre 6) ; c2d chaude = la facture appelle le brassin (de mon cru : sa chaîne recette → achat → stock, l.89 et l.1663).
+4. Au repos, à 390 : c2a = la liste des recettes, un « Brasser » par carte ; c2b = l'écran Stocks, un bouton bière par ingrédient ; c2c = la page de la Pale Ale, grand bloc noir « Brasser maintenant » et la journée en frise ; c2d = un ticket de facture lu et un tampon « De quoi brasser : NEIPA ».
+5. Aucune ne redemande recette, volume et date : un toucher crée, la date reste « à définir » et se règle sur la fiche e1a.
 
-- **s1e2** (La courbe pointe le geste) — ACCEPTÉ, à CORRIGER avant de montrer. Il y a trois bloquants : la Blanche LOT-011 est
-  inventée dans la liste ; la pastille ① est cachée sous la ② ; à 1280, les °C d'échantillon sont faux (20,1 et 19,8 au lieu de 20,5
-  et 20,0) et celui du 09.11 est inventé.
-  Phrase prédite : « très bien, mais c'est quoi cette Blanche ? ».
-  Corrections : retirer la Blanche, décaler ②, reprendre les °C d'échantillon des chiffres (« — » au 09.11), caler les marches à J+7
-  et J+10.
-- **s1g** (La courbe porte les gestes) — ACCEPTÉ, à CORRIGER avant de montrer. Il y a trois bloquants : la Blanche et la Brune sont
-  inventées ; à 1280, on retrouve les mêmes °C d'échantillon faux ; à 1280, la courbe chevauche « 1,018 ».
-  Phrase prédite : « j'aime beaucoup, mais les cases tombent pas sous les bons jours ».
-  Corrections : les mêmes, plus aligner les cases °C sur les colonnes de jour et dire « sort 180 g du stock » au repos.
-- **s2a2** (Le prochain geste d'abord) — ACCEPTÉ, MONTRER. Aucun bloquant et tous les chiffres sont justes.
-  Phrase prédite : « ça c'est clair, très bien ».
-  Réserves : espaces doubles dans « 21 °C » et « 2 °C » ; aucun crayon sur la valeur du geste ; « provisoire » en jaune dans le
-  thème cave ; textes de 12 px à 1280.
-- **s3b2** (Le plan en filigrane) — ACCEPTÉ, à CORRIGER avant de montrer. Un bloquant : au dry hop, le fil pointillé chevauche
-  « 1,018 ».
-  Phrase prédite : « ça me parle, mais pourquoi c'est en orange ? ».
-  Corrections : arrêter le fil au-dessus de l'étiquette, écrire « — » au lieu du « ? », retirer la teinte ambre de « bande
-  +0,004 », montrer « éch. 20,5 °C », et remplir le 1280.
+## Fait (agent arrêté par le hook à 200 k)
+- Fichiers : `c2a/` à `c2d/` (`etat.html`, `NOTE.md`, 5 PNG chacun, `c2a-repos-1280-clair.png`), `capture.mjs`. Générateur hors OWNS : scratchpad de l'agent `c2-gen.mjs` (les `etat.html` sont statiques, modifiables à la main).
+- G2 : `IDENTITE OK 4/4` (dernier passage, après patch2).
+- Captures régénérées après patch2 (classe `-go` de c2c séparée en `-lgo` ; geste c2c : bouton puis la journée ; trace c2b en une phrase).
+- Captures ouvertes et jugées : toutes c2a (repos, geste, après, vide, cave, 1280), c2b (repos, geste, après, vide, cave), c2c repos et geste (avant patch2), c2d repos et geste (avant patch1).
 
-Tests : aucune suite Vitest (rien dans `src/`) ; la sortie du CHECK G1 est dans `tests.txt` (VERDICT OK).
+## Reste à faire (agent neuf)
+1. Rejouer G1 et G3 de GATES.md depuis la racine, écrire leurs sorties et celle de G2 dans `tests.txt`.
+2. Ouvrir (Read) une fois : `c2c/c2c-apres-390-clair.png` (vérifier que les boutons de carte ne sont plus les grands blocs noirs), `c2c/c2c-geste-390-clair.png`, `c2c/c2c-vide-390-clair.png`, `c2c/c2c-repos-390-cave.png`, `c2d/c2d-repos-390-clair.png`, `c2d/c2d-geste-390-clair.png`, `c2d/c2d-apres-390-clair.png`, `c2d/c2d-vide-390-clair.png`, `c2d/c2d-repos-390-cave.png`.
+3. Si un défaut se voit : corriger dans `etat.html` (classes préfixées), relancer `node work/missions/2026-11-14-brassins/voies/c2/capture.mjs c2c c2d`, rejouer G2.
+4. Remplacer ce fichier par le RESULTAT final (ligne 1 `OK — …`, les 5 lignes de cadrage ci-dessus, sorties, captures, prédiction).
 
-LEÇON PROPOSÉE : une liste maquettée se remplit des seuls lots du brief. Deux variantes ont inventé des lots clos (Blanche, Brune)
-pour remplir le bas, et deux tableaux 1280 ont inventé des °C d'échantillon. Ajouter au contrôle des maquettes une recherche des
-noms de lot et des valeurs absents de « Les chiffres ».
+## Défauts connus, à juger
+- c2a après : « Défaire » passe à la ligne sous la trace (mineur).
+- c2a 1280 : grille de deux colonnes, bas de l'écran vide.
+- c2c : la levure de la Pale Ale n'est pas nommée (e1a, fictive, lui donne un starter « trop tard pour aujourd'hui ») ; dit dans sa NOTE.
+- Données fictives listées dans chaque NOTE.md (stock, facture, durées du brassage).
+
+Prédiction : « La facture qui propose la NEIPA, ça c'est malin ; le reste je l'ai déjà vu en partie. »
+
+DÉCISION À PRENDRE : c2c suppose qu'aucun brassin ne naît « prévu » ; à vérifier sur ses brassins réels avant de la montrer (PROBLEMES.md, genre 6).
+CONNAISSANCE : aucune
+LEÇON PROPOSÉE : un générateur de maquettes qui partage une fonction de liste entre variantes doit préfixer aussi ses classes internes par rôle (`-lgo`), pas seulement par variante : `c2c-go` (bloc héros) et `c2c-go` (bouton de carte) se sont écrasés sans que le contrôle d'identité le voie.

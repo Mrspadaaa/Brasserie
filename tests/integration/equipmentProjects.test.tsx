@@ -31,10 +31,10 @@ describe('Projets de matériel, du besoin à l’achat', () => {
       return <><button onClick={()=>setAtelier(!atelier)}>Changer d’espace</button>{atelier&&<CreativeLabTab createRequest={request} onCreateRequestHandled={()=>setRequest(null)}/>}</>;
     }
     render(<Navigation/>);
-    expect(screen.getByRole('dialog', { name: 'Prévoir du matériel' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Annuler', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: 'Matériel', exact: true }));
+    // e9na (15.11) : l'Atelier s'ouvre sur « Tout » ; l'ajout rapide R&D y donne la main à « Ta note » (plus de feuille « Prévoir du matériel » d'office) et se consomme une fois.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Ta note')).toHaveFocus();
+    fireEvent.click(screen.getByRole('button', { name: /Projets de matériel/ })); // carnet vide : le lien vers Matériel
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Changer d’espace', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Changer d’espace', exact: true }));

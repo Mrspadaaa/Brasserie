@@ -190,8 +190,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       ]}/>
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
-        {subTab === 'batches' && bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : phrase.length ? <PhraseReponse fragments={phrase} /> : <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>}
-        <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={subTab === 'batches' ? brassinsListe : batches} globalTimeFilter={subTab === 'batches' ? 'all' : globalTimeFilter}
+        {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : phrase.length ? <PhraseReponse fragments={phrase} /> : <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>}
+        <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={subTab === 'batches' ? 'all' : globalTimeFilter}
           onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
       </>}
 

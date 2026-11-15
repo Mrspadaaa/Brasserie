@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-const open = (b: Batch) => render(<BatchDetailSheet batch={b} initialSection="measurements" onClose={vi.fn()} />);
+const open = (b: Batch) => render(<BatchDetailSheet batch={b} initialSection="overview" onClose={vi.fn()} />);
 const typeBlur = (el: HTMLElement, value: string) => { fireEvent.change(el, { target: { value } }); fireEvent.blur(el); };
 
 describe('Brassins › carte : la densité cible a trois décimales (RJ-5)', () => {

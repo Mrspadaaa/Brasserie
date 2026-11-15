@@ -22,6 +22,8 @@ describe('Convertir un contact en client', () => {
     const avant = StorageService.getClients().length;
     const message = vi.fn();
     render(<CreativeLabTab onSuccessMessage={message} openSectionRequest={{ section: 'prospect', at: 1 }} />);
+    // e9na (15.11) : « Convertir en client » est au pied de la fiche du contact ; on l'ouvre d'abord depuis la carte du carnet.
+    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir : ZZ Bar du Test' }));
     const bouton = screen.getByRole('button', { name: /Convertir en client/ });
     act(() => { fireEvent.click(bouton); fireEvent.click(bouton); });
     expect(StorageService.getClients().length).toBe(avant + 1);

@@ -36,7 +36,7 @@ describe('l’alcool d’une OG confirmée', () => {
   });
 
   it('OG 1,140 gardée puis FG 1,012 : « Alcool calculé 17,7 % vol », jamais « non calculé », et l’alcool est écrit', () => {
-    render(<BatchDetailSheet batch={base()} initialSection="measurements" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base()} initialSection="overview" onClose={vi.fn()} />);
     typeBlur(og(), '1,140');
     fireEvent.click(screen.getByRole('button', { name: 'Garder cette valeur' }));
     typeBlur(fg(), '1,012');
@@ -47,13 +47,13 @@ describe('l’alcool d’une OG confirmée', () => {
   });
 
   it('une fiche déjà gardée (OG 1,140, FG 1,012) affiche l’alcool à la réouverture', () => {
-    render(<BatchDetailSheet batch={base({ og: '1,140', fg: '1,012' })} initialSection="measurements" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base({ og: '1,140', fg: '1,012' })} initialSection="overview" onClose={vi.fn()} />);
     expect(screen.getByText(/Alcool calculé/)).toHaveTextContent('17,7');
     expect(screen.queryByText(/Alcool non calculé/)).not.toBeInTheDocument();
   });
 
   it('au-delà de 18 % : non calculé, et la raison le dit (pas « densités hors bornes »)', () => {
-    render(<BatchDetailSheet batch={base({ og: '1,150', fg: '0,995' })} initialSection="measurements" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base({ og: '1,150', fg: '0,995' })} initialSection="overview" onClose={vi.fn()} />);
     expect(screen.getByText(/Alcool non calculé/)).toHaveTextContent(/18 % vol/);
     expect(screen.getByText(/Alcool non calculé/)).not.toHaveTextContent(/hors bornes/);
   });

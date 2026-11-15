@@ -33,7 +33,9 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
   it.each(['annule'] as const)('preserves a legacy actual date when changing to %s', status => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: status } });
+    // e3gb (15.11) : le sélecteur d'étape n'existe plus en fermentation ; l'abandon passe par « Revenir · abandon ».
+    fireEvent.click(screen.getByRole('button', { name: /Revenir · abandon/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Annulé (abandon)' }));
     expect(update).not.toHaveBeenCalled(); // RJ-15 : l'abandon se confirme dans la page
     fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ status, brewDate: '01.09.2026', plannedBrewDate: '' }));
@@ -56,10 +58,12 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
 
   it('appends a comma-decimal reading while preserving OG, FG and previous readings, without inventing temperature', () => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
-    render(<BatchDetailSheet batch={{ ...batch, fg: '1.015' }} onClose={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un relevé de densité' }));
+    // gfc (15.11) : le relevé se fait par « Mesurer » dans la rubrique Mesures ; « Taper » ouvre la saisie décimale au clavier.
+    render(<BatchDetailSheet batch={{ ...batch, fg: '1.015' }} initialSection="measurements" onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Mesurer/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Taper' })[0]); // le premier : la densité (puis °C cuve, °C échantillon)
     fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: '1,024' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le relevé' }));
     expect(update).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         og: '1.065',
@@ -68,7 +72,9 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
         gravityLog: [...batch.gravityLog!, { date: '2026-09-08', sg: 1.024 }]
       })
     );
-    expect(screen.getByText('Relevé ajouté au suivi.')).toBeInTheDocument();
+    // Le geste se referme sur le « Mesurer » du pied : le relevé est écrit (vérifié ci-dessus), plus rien d'ouvert.
+    expect(screen.queryByRole('button', { name: 'Enregistrer le relevé' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Mesurer/ })).toBeInTheDocument();
   });
   it('rejects invalid SG and future or pre-brew measurements, accepts an actually measured zero temperature', () => {
     const onAdd = vi.fn();

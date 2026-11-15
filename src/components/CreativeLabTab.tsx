@@ -1,38 +1,22 @@
-import { Input, Textarea } from '../ui/Input';
-import React, { useState } from 'react';
-import { parseDecimal } from '../ui/numericInput';
+import React, { useEffect, useRef, useState } from 'react';
+import { ExternalLink, Wallet } from 'lucide-react';
+import { CreativeItem } from '../types';
 import { nextClientId } from '../services/refs';
-import { NumberInput } from '../ui/NumberInput';
-import { 
-  X,
-  Lightbulb, 
-  Plus, 
-  Trash2, 
-  CheckCircle2, 
-  Circle, 
-  Sparkles, 
-  ArrowRight, 
-  Calendar, 
-  Phone, 
-  Coins, 
-  Sliders, 
-  Beer, 
-  Layers, 
-  UserCheck 
-} from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { CreativeItem, Recipe, Client } from '../types';
 import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
 import { UpgradeWorkspace } from '../ui/finance/UpgradeWorkspace';
-import { CreativePricing } from '../ui/finance/CreativePricing';
 import { BrewerChat } from '../ui/BrewerChat';
-import { Pencil } from 'lucide-react';
-import { ModalShell, StickyActions } from '../ui/ModalShell';
-import { inputClass } from '../ui/FormNav';
 import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
-import { ViewNavigation } from '../ui/ViewNavigation';
 import { useMobileLayout } from '../ui/useViewport';
+import { Ecrire } from '../ui/atelier/Ecrire';
+import { EssaiPrix, type TarifGarde } from '../ui/atelier/EssaiPrix';
+import { FicheContact } from '../ui/atelier/FicheContact';
+import { FicheIdee } from '../ui/atelier/FicheIdee';
+import { NoteCarte } from '../ui/atelier/NoteCarte';
+import {
+  LIBELLE_TIROIR, chf, compteurs, enClient, enEntree, genreDe, tiroirDe, trierNotes,
+  type LigneRangee, type Tiroir
+} from '../ui/atelier/atelierModel';
 
 export interface CreativeLabSectionRequest {
   section: CreativeItem['type'];
@@ -54,497 +38,191 @@ interface CreativeLabTabProps {
   onOpenSectionRequestHandled?: () => void;
 }
 
+const FILTRES: Tiroir[] = ['tout', 'biere', 'tarif', 'contact', 'faire'];
+const EXEMPLES: Array<{ texte: string; point: string }> = [
+  { texte: 'Une saison à l’épeautre pour le printemps', point: 'bg-ebc-amber' },
+  { texte: '33 cl à 6, elle me coûte 2,10', point: 'bg-hop' },
+  { texte: 'Rappeler Lucie du Café du Midi', point: 'bg-water' }
+];
+const QUESTION_MATERIEL = 'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.';
+const SUJET_QUESTION: Record<Tiroir, string> = {
+  tout: 'notes de l’atelier', biere: 'idées de bières', tarif: 'notes de tarifs enregistrées', contact: 'contacts et débouchés', faire: 'événements et tâches', materiel: 'projets de matériel'
+};
+
+/**
+ * Atelier R&D : « le carnet que l'IA range » (e9na, choisi le 15.11). On note en vrac, le rangement se propose, le brasseur valide ;
+ * Bières, Tarifs, Contacts et À faire sont des tiroirs du même carnet ; le Matériel reste la section de la mission Rénovation.
+ */
 export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
-  onSuccessMessage,
-  onDraftRecipe,
-  createRequest,
-  onCreateRequestHandled,
-  openSectionRequest,
-  onOpenSectionRequestHandled
+  onSuccessMessage, onDraftRecipe, createRequest, onCreateRequestHandled, openSectionRequest, onOpenSectionRequestHandled
 }) => {
   const mobile = useMobileLayout();
-  const [activeSection, setActiveSection] = useState<CreativeItem['type']>(() => openSectionRequest?.section ?? 'equipment');
-  const handledSectionRequest = React.useRef<CreativeLabSectionRequest | null>(null);
-  const [assistantOpen,setAssistantOpen] = useState(false);
+  const [tiroir, setTiroir] = useState<Tiroir>(() => (openSectionRequest ? tiroirDe(openSectionRequest.section) : 'tout'));
+  const handledSectionRequest = useRef<CreativeLabSectionRequest | null>(null);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [amorce, setAmorce] = useState<{ texte: string; at: number } | null>(null);
+  const [equipmentCreateRequest, setEquipmentCreateRequest] = useState<{ kind: string; at: number } | null>(null);
+  const [toast, setToast] = useState<{ texte: string; ids: string[] } | null>(null);
 
   const items = useStorageValue(StorageService.getCreativeItems);
+  const config = useStorageValue(StorageService.getConfig);
+  const tva = config.fiscal.isTvaRegistered ? config.fiscal.tvaNormalRate : 0;
+  const [editing, setEditing] = useLiveSelection(items, 'id');
+  const [fiche, setFiche] = useLiveSelection(items, 'id');
+  const [contact, setContact] = useLiveSelection(items, 'id');
+  const recettes = useStorageValue(StorageService.getRecipes).map(r => r.name);
+  const conversions = useRef(new Set<string>());
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!openSectionRequest) return;
     const handled = handledSectionRequest.current;
     if (handled?.section === openSectionRequest.section && handled.at === openSectionRequest.at) return;
     handledSectionRequest.current = openSectionRequest;
-    setActiveSection(openSectionRequest.section);
+    setTiroir(tiroirDe(openSectionRequest.section));
     onOpenSectionRequestHandled?.();
   }, [openSectionRequest, onOpenSectionRequestHandled]);
 
-  // Quick addition state
-  const [isAdding, setIsAdding] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDescription, setNewDescription] = useState('');
-  const [newCost, setNewCost] = useState<string>('');
-  const [newDate, setNewDate] = useState('');
-  const [newContact, setNewContact] = useState('');
-  const [equipmentCreateRequest,setEquipmentCreateRequest]=useState<{kind:string;at:number}|null>(null);
-
-  /** Le bouton d'action ouvre le formulaire d'ajout de la section courante. */
-  React.useEffect(() => {
-    if (createRequest?.kind === 'newIdea') { if(activeSection==='equipment')setEquipmentCreateRequest(createRequest);else setIsAdding(true); onCreateRequestHandled?.(); }
+  /** Le bouton d'action : un projet de matériel dans son tiroir, sinon le champ « Noter en vrac » prend la main. */
+  useEffect(() => {
+    if (createRequest?.kind !== 'newIdea') return;
+    if (tiroir === 'materiel') setEquipmentCreateRequest(createRequest);
+    else setAmorce({ texte: '', at: createRequest.at });
+    onCreateRequestHandled?.();
   }, [createRequest?.at]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 7000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
-  const currentItems = items.filter(i => i.type === activeSection);
+  const nb = compteurs(items);
+  const notes = trierNotes(items.filter(i => genreDe(i)));
+  const visibles = tiroir === 'tout' ? notes : notes.filter(i => genreDe(i) === tiroir);
+  const vide = nb.tout === 0 && tiroir !== 'materiel' && tiroir !== 'tarif';
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-
-    const newItem: CreativeItem = {
-      id: `CR-${Date.now()}`,
-      type: activeSection,
-      title: newTitle.trim(),
-      description: newDescription.trim() || undefined,
-      status: activeSection === 'event' ? 'todo' : 'idea',
-      estimatedCost: newCost ? parseDecimal(newCost) ?? undefined : undefined,
-      date: newDate.trim() || undefined,
-      contactName: newContact.trim() || undefined
-    };
-
-    StorageService.addCreativeItem(newItem);
-    setNewTitle('');
-    setNewDescription('');
-    setNewCost('');
-    setNewDate('');
-    setNewContact('');
-    setIsAdding(false);
+  const garder = (nouvelles: CreativeItem[], texte: string) => {
+    nouvelles.forEach(n => StorageService.addCreativeItem(n));
+    setToast({ texte, ids: nouvelles.map(n => n.id) });
   };
-
-  const handleToggleStatus = (item: CreativeItem) => {
-    let nextStatus: CreativeItem['status'] = 'idea';
-    if (item.type === 'event') {
-      nextStatus = item.status === 'done' ? 'todo' : 'done';
-    } else {
-      const flow: Record<string, CreativeItem['status']> = {
-        idea: 'research',
-        research: 'quote',
-        quote: 'validated',
-        validated: 'idea'
-      };
-      nextStatus = flow[item.status] || 'idea';
-    }
-
-    const updated = { ...item, status: nextStatus };
-    StorageService.updateCreativeItem(updated);
+  const rangerLignes = (lignes: LigneRangee[]) => {
+    const base = Date.now();
+    garder(lignes.map((l, i) => enEntree(l, `CR-${base + i}`)), lignes.length > 1 ? `${lignes.length} notes gardées dans l’Atelier` : 'Note gardée dans l’Atelier');
   };
-
-  /** Entrée en cours d'édition. Ouvre la fiche, qui porte aussi la suppression. */
-  const [editing, setEditing] = useLiveSelection(items, 'id');
-
-  const handleDelete = (id: string) => {
-    StorageService.deleteCreativeItem(id);
+  const garderTarif = (t: TarifGarde) => {
+    const e = enEntree({ genre: 'tarif', titre: `${t.format} à ${chf(t.prix)} CHF`, description: t.format, targetPrice: t.prix, estimatedCost: t.cout }, `CR-${Date.now()}`);
+    garder([e], 'Tarif gardé dans l’Atelier');
   };
+  const annuler = () => { toast?.ids.forEach(id => StorageService.deleteCreativeItem(id)); setToast(null); };
 
-  const handleSaveEdit = (updated: CreativeItem) => {
-    StorageService.updateCreativeItem(updated);
-    onSuccessMessage?.(`« ${updated.title} » mis à jour.`);
+  const cocher = (item: CreativeItem) => StorageService.updateCreativeItem({ ...item, status: item.status === 'done' ? 'todo' : 'done' });
+  const etapeSuivante = (item: CreativeItem) => {
+    const flux: Partial<Record<CreativeItem['status'], CreativeItem['status']>> = { idea: 'research', research: 'quote', quote: 'validated', validated: 'idea' };
+    StorageService.updateCreativeItem({ ...item, status: flux[item.status] ?? 'idea' });
   };
-
+  /** Une idée de bière s'ouvre en fiche ; les autres notes, directement en édition. */
+  const ouvrir = (item: CreativeItem) => (item.type === 'recipe-idea' ? setFiche(item) : item.type === 'prospect' ? setContact(item) : setEditing(item));
   /**
-   * Passer d'une idée à une recette.
-   *
-   * ⚠️ Cette fonction FABRIQUAIT auparavant une recette entière : style deviné
-   * d'après le titre, 30 L, OG 1.060, FG 1.015, 35 IBU, 6.5 kg de grain, deux
-   * malts et deux houblons génériques, une levure US-05. Aucune de ces valeurs
-   * ne venait de l'idée ni du stock. Gaëtan récupérait une recette d'apparence
-   * complète, entièrement inventée, sur laquelle il aurait pu brasser.
-   *
-   * Elle ouvre désormais l'assistant de création avec le seul élément réel :
-   * ce que l'idée contient. Tout le reste se saisit.
+   * Prospect → fiche client. BE-22 : un double toucher créait deux fiches ; le verrou est synchrone (le rendu n'a pas le temps de masquer le bouton),
+   * et un contact déjà converti ne se convertit pas deux fois. Un contact ou un numéro absent reste vide : jamais un faux numéro.
    */
-  const handleConvertToOfficialRecipe = (item: CreativeItem) => {
-    onDraftRecipe?.({ title: item.title, description: item.description });
-  };
-
-  // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
-  const convertingIds = React.useRef(new Set<string>());
-  const handleConvertToClient = (item: CreativeItem) => {
-    /* BE-22 : un double toucher créait deux fiches. Le verrou est synchrone (le rendu n'a pas le temps de masquer le bouton) ; un contact déjà converti ne se convertit pas deux fois. */
-    if (convertingIds.current.has(item.id)) return;
-    const dejaConverti = StorageService.getCreativeItems().find(i => i.id === item.id)?.status === 'validated';
-    if (dejaConverti) { onSuccessMessage?.(`« ${item.title} » est déjà un client : rien n’a été recréé.`); return; }
-    convertingIds.current.add(item.id);
-    const newClientId = nextClientId(StorageService.getClients().map(c => c.id));
-    const newClient: Client = {
-      id: newClientId,
-      name: item.title,
-      type: 'Pro',
-      // Un contact et un numéro absents restent VIDES. La version précédente
-      // écrivait « Responsable » et « +41 26 000 00 00 » — un faux numéro
-      // suisse qu'on aurait fini par composer.
-      contact: item.contactName || '',
-      phone: item.contactPhone || '',
-      email: '',
-      // Statut et CA sont dérivés des ventes réelles : rien à initialiser ici.
-      notes: item.description
-    };
-
-    const currentClients = StorageService.getClients();
-    StorageService.saveClients([newClient, ...currentClients]);
-
-    // Update creative item status to validated
+  const convertir = (item: CreativeItem) => {
+    if (conversions.current.has(item.id)) return;
+    if (StorageService.getCreativeItems().find(i => i.id === item.id)?.status === 'validated') { onSuccessMessage?.(`« ${item.title} » est déjà un client : rien n’a été recréé.`); return; }
+    conversions.current.add(item.id);
+    const id = nextClientId(StorageService.getClients().map(c => c.id));
+    StorageService.saveClients([enClient(item, id), ...StorageService.getClients()]);
     StorageService.updateCreativeItem({ ...item, status: 'validated' });
-
-    try {
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#3B82F6', '#10B981'] });
-    } catch {}
-
-    if (onSuccessMessage) {
-      onSuccessMessage(`Prospect "${item.title}" converti en client (${newClientId}) ! 👥`);
-    }
+    setContact(null);
+    onSuccessMessage?.(`Prospect « ${item.title} » converti en client (${id}).`);
   };
+  /**
+   * Passer d'une idée à une recette : l'assistant de création s'ouvre avec le seul contenu réel de l'idée.
+   * (Une version ancienne fabriquait une recette entière : style, volume, malts, houblons inventés. Jamais.)
+   */
+  const enRecette = (item: CreativeItem) => { setFiche(null); onDraftRecipe?.({ title: item.title, description: item.description }); };
+
+  const question = tiroir === 'materiel'
+    ? QUESTION_MATERIEL
+    : `Aide-moi à faire le point sur mes ${SUJET_QUESTION[tiroir]} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`;
 
   return (
-    <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
-      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
-      <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Essais de tarifs',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
-      <div className="creative-nav" role="group" aria-label="Mon atelier">
-        {([['equipment','Matériel'],['recipe-idea','Bières'],['pricing-test','Tarifs'],['prospect','Contacts'],['event','À faire']] as const).map(([key,label])=><button key={key} aria-pressed={activeSection===key} onClick={()=>setActiveSection(key)}>{label}</button>)}
-      </div>
-      </ViewNavigation>
-      {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
+    <div className="animate-in fade-in space-y-3 text-sm">
+      {!mobile && <div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
 
-      {/* 4. SECTION 2: RECIPE STUDIO & PASSERELLE EN 1 CLIC */}
-      {activeSection === 'recipe-idea' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Noter une idée de bière / style décalé</span>
-          </button>
+      <Ecrire primaire={tiroir !== 'tarif'} amorce={amorce} onReflechir={() => setAssistantOpen(true)} onRanger={rangerLignes} />
 
-          <div className="space-y-2.5">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 shadow-sm hover:border-cave-700 transition"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-50 flex items-center">
-                      <Beer className="w-4 h-4 text-ebc-straw mr-1.5" />
-                      {item.title}
-                    </h4>
-                    {item.description && (
-                      <p className="text-sm text-cave-400 mt-1 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-                    {item.notes && (
-                      <div className="mt-1 text-footnote text-ebc-gold italic bg-ebc-straw/10 p-1.5 rounded-lg border border-ebc-straw/20 inline-block">
-                        🎨 Visuel : {item.notes}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-400 hover:text-alert p-1"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* PASSERELLE MAGIQUE EN 1 CLIC */}
-                <div className="pt-2 border-t border-cave-800/80 flex justify-end">
-                  <button
-                    onClick={() => handleConvertToOfficialRecipe(item)}
-                    className="px-3.5 py-1.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 mr-1" />
-                    <span>Passer dans mes recettes</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeSection==='pricing-test'&&<><CreativePricing/><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
-
-      {/* 6. SECTION 4: PROSPECTS & PASSERELLE CRM EN 1 CLIC */}
-      {activeSection === 'prospect' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Noter un contact / bistrot intéressé</span>
-          </button>
-
-          <div className="space-y-2.5">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 shadow-sm hover:border-cave-700 transition"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-50 flex items-center">
-                      <span className="text-base mr-1.5">🍽️</span>
-                      {item.title}
-                    </h4>
-                    {item.contactName && (
-                      <div className="text-sm text-cave-200 font-semibold mt-0.5">
-                        Contact : {item.contactName} · {item.contactPhone || 'Sans tél'}
-                      </div>
-                    )}
-                    {item.notes && (
-                      <p className="text-sm text-cave-400 mt-1 leading-relaxed bg-cave-950/60 p-2 rounded-xl border border-cave-800">
-                        {item.notes}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-400 hover:text-alert p-1"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* PASSERELLE MAGIQUE CRM EN 1 CLIC */}
-                <div className="pt-2 border-t border-cave-800/80 flex items-center justify-between">
-                  {item.contactPhone && (
-                    <a
-                      href={`tel:${item.contactPhone}`}
-                      className="text-sm text-cave-200 hover:text-hop font-bold flex items-center"
-                    >
-                      <Phone className="w-3 h-3 mr-1 text-hop" /> Appeler
-                    </a>
-                  )}
-                  <button
-                    onClick={() => handleConvertToClient(item)}
-                    className="px-3.5 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 ml-auto"
-                  >
-                    <UserCheck className="w-3.5 h-3.5 mr-1" />
-                    <span>Convertir en client</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 7. SECTION 5: EVENTS & TO-DO */}
-      {activeSection === 'event' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Ajouter un événement / marché artisanal</span>
-          </button>
-
-          <div className="space-y-2">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-3.5 bg-cave-900 border border-cave-800 rounded-2xl flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => handleToggleStatus(item)}
-                    className="text-cave-400 hover:text-hop"
-                  >
-                    {item.status === 'done' ? (
-                      <CheckCircle2 className="w-5 h-5 text-hop" />
-                    ) : (
-                      <Circle className="w-5 h-5" />
-                    )}
-                  </button>
-                  <div>
-                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-400' : 'text-cave-50'}`}>
-                      {item.title}
-                    </h4>
-                    {item.date && (
-                      <span className="text-footnote text-cave-400 flex items-center mt-0.5">
-                        <Calendar className="w-3 h-3 mr-1 text-ebc-straw" /> {item.date}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                  className="text-cave-400 hover:text-alert p-1"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Form modal when adding an item */}
-      <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>
-      {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
-      {isAdding && (
-        <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
-          <div className="flex justify-between items-center px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
-            <h4 className="font-bold text-base text-cave-50">Nouvelle note / piste</h4>
-            <button
-              type="button"
-              onClick={() => setIsAdding(false)}
-              aria-label="Fermer"
-              className="p-2 text-cave-400 hover:text-cave-200 bg-cave-850 rounded-full transition"
-            >
-              <X className="w-4 h-4" />
+      {!vide && (
+        <div role="group" aria-label="Tiroirs du carnet" className="-mx-3 flex gap-1.5 overflow-x-auto px-3 [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]">
+          {FILTRES.map(f => (
+            <button key={f} type="button" aria-pressed={tiroir === f} onClick={() => setTiroir(f)}
+              className={`relative inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full border px-3 text-sm after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-[''] ${tiroir === f ? 'border-cave-50 bg-cave-850 font-semibold text-cave-50' : 'border-cave-700 bg-cave-850 text-cave-200'}`}>
+              {LIBELLE_TIROIR[f]} <b className="font-mono text-xs font-semibold">{nb[f]}</b>
             </button>
-          </div>
-
-          <form onSubmit={handleCreate} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
-            <div>
-              <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Titre de la note / piste</label>
-              <Input
-                type="text"
-                name="creative_item_title"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                data-bwignore="true"
-                required
-                placeholder="ex: Embouteilleuse, Bière d'Hiver, Bistrot..."
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                className={`${inputClass} font-bold`}
-              />
-            </div>
-
-            <div>
-              <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Description & Détails</label>
-              <Textarea
-                name="creative_item_notes"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                data-bwignore="true"
-                rows={2}
-                placeholder="Détails, notes, profil arômatique, contacts..."
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {activeSection === 'equipment' && (
-                <div>
-                  <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Budget estimé (CHF)</label>
-                  <Input
-                    type="text"
-                    name="creative_item_budget"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    inputMode="decimal"
-                    placeholder="ex: 1200"
-                    value={newCost}
-                    onChange={(e) => setNewCost(e.target.value)}
-                    className={`${inputClass} font-mono`}
-                  />
-                </div>
-              )}
-              {activeSection === 'event' && (
-                <div>
-                  <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Date (JJ.MM.AAAA)</label>
-                  <Input
-                    type="text"
-                    name="creative_item_date"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    placeholder="ex: 15.06.2026"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className={`${inputClass} font-mono`}
-                  />
-                </div>
-              )}
-              {activeSection === 'prospect' && (
-                <div>
-                  <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Téléphone du contact</label>
-                  <Input
-                    type="text"
-                    name="creative_contact_tel"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    inputMode="tel"
-                    placeholder="026 408 33 33"
-                    value={newContact}
-                    onChange={(e) => setNewContact(e.target.value)}
-                    className={`${inputClass} font-mono`}
-                  />
-                </div>
-              )}
-            </div>
-
-            <StickyActions>
-              <button
-                type="button"
-                onClick={() => setIsAdding(false)}
-                className="flex-1 py-2.5 bg-cave-850 hover:bg-cave-800 text-cave-200 rounded-xl font-bold transition text-sm"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="flex-1 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-bold rounded-xl shadow transition text-sm"
-              >
-                Enregistrer
-              </button>
-            </StickyActions>
-          </form>
-        </ModalShell>
+          ))}
+          <button type="button" aria-pressed={tiroir === 'materiel'} onClick={() => setTiroir('materiel')}
+            className={`relative mr-6 inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full border px-3 text-sm after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-[''] ${tiroir === 'materiel' ? 'border-cave-50 bg-cave-850 font-semibold text-cave-50' : 'border-cave-700 bg-cave-850 text-cave-200'}`}>
+            Matériel <ExternalLink className="h-3 w-3" aria-hidden="true" />
+          </button>
+        </div>
       )}
 
-      {/* Fiche d'édition : c'est elle qui porte aussi la suppression, avec
-          confirmation nommée. La corbeille des cartes l'ouvre. */}
-      <CreativeItemSheet
-        item={editing}
-        onClose={() => setEditing(null)}
-        onSave={handleSaveEdit}
-        onDelete={(item) => {
-          handleDelete(item.id);
-          onSuccessMessage?.(`« ${item.title} » supprimé.`);
-        }}
-      />
+      {tiroir === 'materiel' && <UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={() => setEquipmentCreateRequest(null)} />}
+
+      {tiroir === 'tarif' && <EssaiPrix tva={tva} onGarder={garderTarif} />}
+
+      {tiroir !== 'materiel' && visibles.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {tiroir === 'tarif' && <p className="mx-0.5 text-xs text-cave-400">Tarifs gardés</p>}
+          {visibles.map(i => <NoteCarte key={i.id} item={i} tva={tva} onOuvrir={ouvrir} onCocher={cocher} onEnRecette={enRecette} />)}
+        </div>
+      )}
+
+      {tiroir !== 'materiel' && tiroir !== 'tout' && tiroir !== 'tarif' && visibles.length === 0 && nb.tout > 0 && (
+        <p className="px-1 text-sm text-cave-400">Rien dans {LIBELLE_TIROIR[tiroir]} pour l’instant. Note-le ci-dessus.</p>
+      )}
+
+      {vide && (
+        <section className="mt-3 flex flex-col gap-2.5 rounded-2xl border border-cave-800 bg-cave-900 px-3 py-4">
+          <h2 className="text-lg font-semibold text-cave-50">Ton carnet est vide</h2>
+          <p className="text-sm text-cave-200">Écris comme ça vient. Le rangement se propose dans Bières, Tarifs, Contacts ou À faire ; tu valides.</p>
+          <div className="flex flex-col gap-1.5">
+            {EXEMPLES.map(e => (
+              <button key={e.texte} type="button" onClick={() => setAmorce({ texte: e.texte, at: Date.now() })}
+                className="flex min-h-11 items-center gap-2.5 rounded-control border border-dashed border-cave-700 px-3 text-left text-sm text-cave-200">
+                <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${e.point}`} aria-hidden="true" />« {e.texte} »
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => setTiroir('tarif')} className="relative inline-flex min-h-8 items-center gap-1 self-start text-sm font-semibold text-cave-50 after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']">
+            <Wallet className="h-4 w-4" aria-hidden="true" />Essayer un prix de vente
+          </button>
+          <button type="button" onClick={() => setTiroir('materiel')} className="relative inline-flex min-h-8 items-center gap-1 self-start text-sm font-semibold text-cave-50 after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']">
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />Projets de matériel : dans Rénovation
+          </button>
+        </section>
+      )}
+
+      {toast && (
+        <div role="status" className="fixed inset-x-3 bottom-[52px] z-[46] flex items-center justify-between gap-2 rounded-control bg-cave-50 px-3 py-2.5 text-sm text-[rgb(var(--cave-950))]">
+          {/* Bandeau sombre en clair, clair en cave : le texte prend la couleur de la surface (--cave-950), pas celle de l'encre. */}
+          <span>{toast.texte}</span>
+          <button type="button" onClick={annuler} className="relative min-h-7 px-1 font-semibold underline after:absolute after:left-0 after:right-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']">Annuler</button>
+        </div>
+      )}
+
+      {assistantOpen && <BrewerChat scope={{ kind: 'app', id: 'production-lab' }} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={() => setAssistantOpen(false)} initialQuestion={question} />}
+
+      <FicheIdee item={fiche} tva={tva} carnet={items} recettes={recettes} onClose={() => setFiche(null)} onEtape={etapeSuivante} onEnRecette={enRecette}
+        onModifier={i => { setFiche(null); setEditing(i); }}
+        onSupprimer={i => { StorageService.deleteCreativeItem(i.id); setFiche(null); onSuccessMessage?.(`« ${i.title} » supprimé.`); }} />
+
+      <FicheContact item={contact} onClose={() => setContact(null)} onModifier={i => { setContact(null); setEditing(i); }} onConvertir={convertir} />
+
+      {/* Fiche d'édition : elle porte aussi la suppression, avec confirmation nommée. */}
+      <CreativeItemSheet item={editing} onClose={() => setEditing(null)}
+        onSave={u => { StorageService.updateCreativeItem(u); onSuccessMessage?.(`« ${u.title} » mis à jour.`); }}
+        onDelete={i => { StorageService.deleteCreativeItem(i.id); onSuccessMessage?.(`« ${i.title} » supprimé.`); }} />
     </div>
   );
 };

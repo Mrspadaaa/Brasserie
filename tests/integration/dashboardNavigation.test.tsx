@@ -70,6 +70,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+// e9na (15.11) : les rubriques sont des tiroirs du carnet (« À faire 2 », compteur dans le nom) et chaque note est une carte « Ouvrir : <titre> » (plus de titre en en-tête).
 describe('Dashboard agenda navigation', () => {
   it('garde l’initialisation dev-local et laisse le compagnon hors connexion', async () => {
     const startSync = vi.spyOn(StorageService, 'startSync');
@@ -86,18 +87,18 @@ describe('Dashboard agenda navigation', () => {
     const request = { section: 'event' as const, at: 1 };
     const view = render(<React.StrictMode><CreativeLabTab openSectionRequest={request} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
 
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^À faire/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Ouvrir : Préparer le marché' })).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^Bières/ }));
     view.rerender(<React.StrictMode><CreativeLabTab openSectionRequest={{ ...request }} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
-    expect(screen.getByRole('button', { name: 'Bières', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Essai de saison' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Bières/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Ouvrir : Essai de saison' })).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(1);
 
     view.rerender(<React.StrictMode><CreativeLabTab openSectionRequest={{ section: 'event', at: 2 }} onOpenSectionRequestHandled={handled} /></React.StrictMode>);
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^À faire/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Ouvrir : Préparer le marché' })).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(2);
     expect(create).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -114,23 +115,24 @@ describe('Dashboard agenda navigation', () => {
 
     const agenda = await screen.findByRole('region', { name: 'Agenda', exact: true });
     fireEvent.click(within(agenda).getByRole('button', { name: 'Gérer', exact: true }));
-    expect(await screen.findByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Rincer les fûts' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /^À faire/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Ouvrir : Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ouvrir : Rincer les fûts' })).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
-    expect(screen.getByRole('heading', { name: 'Essai de saison' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Bières/ }));
+    expect(screen.getByRole('button', { name: 'Ouvrir : Essai de saison' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
     fireEvent.click(within(screen.getByRole('region', { name: 'Agenda', exact: true })).getByRole('button', { name: 'Gérer', exact: true }));
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^À faire/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Ouvrir : Préparer le marché' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
     fireEvent.click(screen.getByRole('button', { name: 'Menu', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
-    expect(screen.getByRole('button', { name: 'Matériel', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'false');
+    // e9na : l'entrée générique de l'Atelier ouvre « Tout » (le carnet entier), plus la seule rubrique Matériel.
+    expect(screen.getByRole('button', { name: /^Tout/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^À faire/ })).toHaveAttribute('aria-pressed', 'false');
     expect(create).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();
   });
