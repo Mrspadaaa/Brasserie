@@ -133,12 +133,20 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       expect(items[0]).toHaveTextContent('facture ou à la main');
       const labels = items.map(item => item.textContent ?? '');
       // b1s-a : « Sur cet écran » = Nouvelle écriture (+ Facture et Vente sur Finances, Courses au Bord) ; « Partout » garde les
-      // cinq gestes communs à cases fixes, sur les deux écrans.
-      const attendues = tab === 'dashboard'
-        ? ['Facture', 'Vente', 'Recette', 'Brassin', 'Courses']
-        : ['Facture', 'Vente', 'Recette', 'Brassin'];
-      for (const other of attendues) {
-        expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
+      // gestes communs à cases fixes. Une action en tête n'est pas répétée dans « Partout » : chaque geste apparaît une seule fois,
+      // sous son libellé plein s'il est en tête (Finances : « Entrer une facture »), sous son libellé court sinon.
+      const attendues: Array<[string, string]> = tab === 'dashboard'
+        ? [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin'], ['Courses', 'Courses']]
+        : [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin']];
+      for (const [court, plein] of attendues) {
+        const trouves = labels.filter(label => label.startsWith(court) || label.startsWith(plein));
+        expect(trouves, `${court} : une seule fois dans le menu`).toHaveLength(1);
+      }
+      expect(labels.filter(label => label.startsWith('Nouvelle écriture'))).toHaveLength(1);
+      if (tab === 'finances') {
+        // Facture et Vente montent en tête : sous leur libellé plein, avant Recette (« Partout »).
+        expect(labels.findIndex(label => label.startsWith('Entrer une facture'))).toBeLessThan(labels.findIndex(label => label.startsWith('Recette')));
+        expect(labels.findIndex(label => label.startsWith('Encaisser une vente'))).toBeLessThan(labels.findIndex(label => label.startsWith('Recette')));
       }
       expect(items.at(-1)).toHaveAttribute('aria-label', expect.stringContaining('Compagnon brasseur'));
       await user.click(items[0]);
