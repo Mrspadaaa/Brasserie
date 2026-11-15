@@ -153,6 +153,8 @@ interface CommonProps {
   autoSend?: boolean;
   suggestedPrompts?: Array<{ label: string; question: string }>;
   hideLauncher?: boolean;
+  /** Classe ajoutée à la feuille du compagnon (Finances : croix simple, contrastes en clair). */
+  classeFeuille?: string;
   onClose?: () => void;
 }
 
@@ -275,6 +277,7 @@ function ScopedChat({
   assistedAdvice,
   assistedRuntime,
   hideLauncher = false,
+  classeFeuille,
   onClose
 }: LegacyProps) {
   const [savedDraft, setSavedDraft] = useState<unknown>();
@@ -838,7 +841,7 @@ function ScopedChat({
         dismissible={!applying}
         title="Compagnon brasseur"
         subtitle={label}
-        className="brewer-chat-sheet"
+        className={classeFeuille ? `brewer-chat-sheet ${classeFeuille}` : 'brewer-chat-sheet'}
         footer={
           <form autoComplete="off"
             className="brewer-chat-compose"

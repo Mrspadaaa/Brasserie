@@ -26,7 +26,10 @@ import { UpgradeSheet } from '../../ui/finance/UpgradeSheet';
 import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { EditTransactionModal } from '../EditTransactionModal';
 import '../../ui/finance/finance.css';
+import { installerModeClavier } from '../../ui/finance/modeClavier';
 import { ChoixBrassin } from '../../ui/finance/budget/ChoixBrassin';
+
+installerModeClavier();
 
 interface FinancesTabProps {
   transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig; globalTimeFilter:TimeFilterPeriod;
@@ -132,7 +135,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} remplace={remplace??undefined} onClose={()=>{setPaying(null);setRemplace(null);}}/>}
     {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
     {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}
-    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setRemplace(null);setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{setSelected(null);onOpenRecipe(id);})}/>}
+    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setRemplace(null);setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{setSelected(null);onOpenRecipe(id);})} onOpenTransaction={t=>setSelected(t)}/>}
     {budgetPicker&&<Sheet open title="Quel brassin veux-tu estimer ?" onClose={()=>setBudgetPicker(false)} className="finance-sheet"><ChoixBrassin batches={batches} recipes={recipes} onBatch={b=>{setBudget({batch:b});setBudgetPicker(false);}} onRecipe={r=>{setBudget({recipe:r});setBudgetPicker(false);}}/></Sheet>}
     {budget&&<BrewBudgetDialog {...budget} onClose={()=>setBudget(null)} onOpenForecast={target=>{setBudget(null);selectView('forecast');setCible({...target,at:Date.now()});}}/>}
   </div>;

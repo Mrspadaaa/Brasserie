@@ -122,6 +122,6 @@ export function FinanceAssistant({ view, month, allDates, year, horizon, include
     </button>
     {etape === 'feuille' && <Feuille view={view} month={month} allDates={allDates} includeEquipmentProjects={includeEquipmentProjects} pose={pose} choisie={{ libelle, question: selected.question }}
       onClose={() => setEtape(undefined)} onEnvoyer={q => { setQuestion(q); setEtape('chat'); }}/>}
-    {etape === 'chat' && <BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Finances de la brasserie" initialOpen hideLauncher initialQuestion={question} autoSend suggestedPrompts={suggestions} onClose={() => setEtape(undefined)} />}
+    {etape === 'chat' && <BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Finances de la brasserie" initialOpen hideLauncher classeFeuille="brewer-chat-finances" initialQuestion={question} autoSend suggestedPrompts={suggestions} onClose={() => setEtape(undefined)} />}
   </>;
 }

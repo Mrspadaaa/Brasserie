@@ -11,7 +11,7 @@ import { etatDeLigne } from './operations/calculs';
 import { GROUPES, groupeDe } from './operations/groupes';
 import { FactureLignes } from './fiche/FactureLignes';
 import { dateFiche, MODE_COURT } from './fiche/format';
-import { dateAffichee, formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
+import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { estMouvementPrive } from '../../domain/finance/correctionMontant';
 import { StorageService } from '../../services/storage';
@@ -33,13 +33,15 @@ function lienVirement(p:FinancialPayment):string{
   return Number.isFinite(nombre)&&nombre>0?`virement de ${amountOnly(Math.round(nombre*100))} · ${m[2]} pièces`:'';
 }
 
-export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe}: {
+export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe,onOpenTransaction}: {
   transaction:Transaction; transactions:Transaction[]; payments:FinancialPayment[]; plans:FinancialPlan[];
   onClose:()=>void; onEdit:()=>void; onPay:()=>void; onRefund:()=>void;
   /** Renvoi vers l'article acheté, quand la ligne sait de quel article il s'agit (segment de la barre comme rangée). */
   onOpenStockItem?:(ref:string)=>void;
   /** Renvoi vers la recette estimée par le budget auquel cette facture se rattache. */
   onOpenRecipe?:(recipeId:string)=>void;
+  /** t3 (A2) : renvoi vers une autre opération (la créance « À récupérer » née d'un trop-payé sur cette pièce). */
+  onOpenTransaction?:(transaction:Transaction)=>void;
 }) {
   const [error,setError]=useState(''), [correction,setCorrection]=useState<string|null>(null);
   const state=paymentState(tx,payments,transactions), plan=plans.find(p=>p.id===tx.finance?.planId);
@@ -47,6 +49,8 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const brewRecipeId=estimate?.recipeId, brewTitle=estimate?.title;
   const outgoing=transactionDirection(tx,transactions)==='out';
   const voided=!!tx.finance?.voidedAt;
+  /* t3 (A2) : le franc de trop payé a une adresse. La créance écrite par la correction porte « « <pièce> » » dans son motif (`creanceDeTropPaye`) ; la pièce la montre et y renvoie. */
+  const creances=transactions.filter(c=>c.id!==tx.id&&isActiveTransaction(c)&&(c.subcategory==='À récupérer'||c.subcategory==='À rembourser')&&(c.description??'').includes(`« ${tx.description} »`));
   const etat=etatDeLigne(tx,state,!outgoing,payments,todayISO());
   /* Payé : le texte de la maquette (✓ payé 9 nov. · banque). Ouvert : les mots que cette fiche a toujours dits (« Reste à payer : 100,00 CHF »), l'échéance en dessous ; la couleur (hachure, rouge) vient de l'état. */
   const ouvert=state.state==='unpaid'||state.state==='partial';
@@ -75,6 +79,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
       </div>
       {error&&<p role="alert" className="fiche-erreur">{error}</p>}
       <div className="fiche-sum"><strong className="fiche-amt fiche-m reading">{amountOnly(transactionAmount(tx))}</strong><span className="fiche-cur">CHF</span>{!voided&&<span className={`fiche-tg fiche-tg-${etat.ton}`}>{pastille}</span>}</div>
+      {!voided&&creances.map(c=><button type="button" key={c.id} className="fiche-rec" disabled={!onOpenTransaction} onClick={()=>onOpenTransaction?.(c)}>{amountOnly(c.finance?.amountCents??0)} CHF {c.subcategory==='À récupérer'?'à récupérer':'à rembourser'} : voir la créance<ChevronRight size={16} aria-hidden="true"/></button>)}
       {voided&&<p className="fiche-note">Écriture annulée. Justificatif et historique conservés.</p>}
       {!voided&&!prive&&tx.finance?.dueDate&&state.remainingCents>0&&<p className="fiche-note">Échéance : {new Date(`${tx.finance.dueDate}T12:00:00`).toLocaleDateString('fr-CH')}</p>}
       {!voided&&state.state==='partial'&&state.paidCents>0&&<p className="fiche-note">{outgoing?'Déjà payé':'Déjà encaissé'} : {formatCHF(state.paidCents)}</p>}

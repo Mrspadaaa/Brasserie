@@ -69,7 +69,6 @@ export function CompagnonFeuille({ open, onClose, periode, nomPeriode, vise, tex
         {pastilles.map(p => <button key={p.cle} type="button" aria-pressed={p.coche} data-pastille={p.cle}
           className={`cpg-pl ${p.coche ? 'cpg-in' : 'cpg-outp'}${p.hachure ? ' cpg-pay' : ''}`} onClick={() => onBascule(p.cle)}>{p.libelle}</button>)}
       </div>
-      <p className="cpg-ex">Il lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.</p>
       <div className="cpg-send">
         <span className="cpg-mode"><select aria-label="Mode de réponse" value={mode} onChange={e => onMode(e.target.value as ModeReponse)}>
           {MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}

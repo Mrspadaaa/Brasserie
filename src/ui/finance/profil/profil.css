@@ -62,4 +62,5 @@
 .pfc-row > summary::-webkit-details-marker { display: none; } .pfc-row > summary > span { flex: 1; }
 .pfc-row[open] > summary .pfc-chev { transform: rotate(90deg); }
 .pfc-ouvert { padding: 8px 0 4px; font-size: 12px; line-height: 16px; color: var(--pf-t2); } .pfc-ouvert p { margin: 0 0 6px; }
-@media (min-width: 640px) { .pfc { max-width: 520px; margin: 0 auto; } }
+/* t3 (problème 6) : à 1280 le contenu prend toute la largeur de la feuille (jamais une colonne de 300 px, `margin: auto` dans la grille du formulaire le faisait rétrécir). */
+@media (min-width: 640px) { .pfc { width: 100%; max-width: none; } }

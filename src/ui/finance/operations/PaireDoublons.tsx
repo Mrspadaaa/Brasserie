@@ -14,13 +14,14 @@ import { ContextePaire, DELAI_RETABLIR_MS, annulerEcriture, saisiesLe, type Gest
  */
 export interface GroupeDoublon { cle: string; titre: string; detail: string; groupe: GroupeId; transactions: Transaction[]; lignes: React.ReactNode[] }
 
-export function PaireDoublons({ groupes, nombre, onEcarter }: { groupes: GroupeDoublon[]; nombre: number; onEcarter: (cle: string) => void }) {
+export function PaireDoublons({ groupes, nombre, onEcarter, onAnnulees }: { groupes: GroupeDoublon[]; nombre: number; onEcarter: (cle: string) => void; /** Les pièces annulées dans le délai : le journal recompte le bandeau et la pastille. */ onAnnulees?: (ids: ReadonlySet<string>) => void }) {
   const [enAttente, setEnAttente] = useState<Set<string>>(() => new Set());
   const [erreurs, setErreurs] = useState<Record<string, string>>({});
   const minuteurs = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const transactions = useRef(new Map<string, Transaction>());
   transactions.current = useMemo(() => new Map(groupes.flatMap(g => g.transactions.map(t => [t.id, t] as const))), [groupes]);
   const jour = useMemo(() => shortDate(todayISO()), []);
+  useEffect(() => { onAnnulees?.(enAttente); }, [enAttente, onAnnulees]);
 
   /** L'écriture part ici : après le délai, au départ de l'écran, ou à la fermeture de la page. Un refus remet la ligne et dit pourquoi. */
   const ecrire = useCallback(async (id: string) => {
@@ -57,8 +58,10 @@ export function PaireDoublons({ groupes, nombre, onEcarter }: { groupes: GroupeD
   return <ContextePaire.Provider value={geste}>
     <div className="ops-doublons" role="note" data-testid="journal-duplicates">
       <div className="ops-dbl-avis">
-        <span className="ops-dbl-x" aria-hidden="true">×{nombre}</span>
-        <div><b>{compte(nombre, 'pièce')} peut-être en double</b><p>Rien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.</p></div>
+        <span className="ops-dbl-x" aria-hidden="true">{nombre > 0 ? `×${nombre}` : '✓'}</span>
+        {nombre > 0
+          ? <div><b>{compte(nombre, 'pièce')} peut-être en double</b><p>Rien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.</p></div>
+          : <div><b>Plus de doublon</b><p>L’annulation s’écrit dans quelques secondes ; « Rétablir » la reprend d’ici là.</p></div>}
       </div>
       {groupes.map(g => {
         const meta = GROUPES[g.groupe];

@@ -17,7 +17,7 @@ export function moisDit(mois: string): string {
 /** Quelle période la question de la puce couvre : `mois` (celui de la barre), `tout`, ou `autre` (une plage que la feuille ne connaît pas). */
 export function periodeDeLaQuestion(question: string | undefined, mois: string, toutesDates: boolean): 'mois' | 'tout' | 'autre' {
   if (!question) return toutesDates ? 'tout' : 'mois';
-  if (question.includes(`le mois ${moisDit(mois)}`)) return 'mois';
+  if (question.includes(`en ${moisDit(mois)}`) || question.includes(`le mois ${moisDit(mois)}`)) return 'mois';
   if (/tout l[’']historique/.test(question)) return 'tout';
   return 'autre';
 }

@@ -231,7 +231,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       {raisonPrevoir && (raisonAgir
         ? <button type="button" className="cbf-statut cbf-raison cbf-lien-ligne" aria-label={`Compléter : ${raisonPrevoir}`} aria-live="polite" data-booster="prevoir-raison" style={{ maxWidth: 390, margin: '0 auto 6px', width: '100%' }} onClick={raisonAgir}>Prévoir attend : {raisonPrevoir} ›</button>
         : <p className="cbf-statut cbf-raison" aria-live="polite" data-booster="prevoir-raison" style={{ maxWidth: 390, margin: '0 auto 6px', width: '100%' }}>Prévoir attend : {raisonPrevoir}</p>)}
-      <div className="cbf-act">
+      <div className={`cbf-act${futureBatch ? ' cbf-act-3' : ''}`}>
       <button type="button" className="cbf-ia" data-booster="ia-expliquer" onClick={expliquer}><Sparkles size={17} aria-hidden="true" />Expliquer</button>
       {/* m4bb-a : « Enregistrer » est au pied à côté de Prévoir, budget complet ou non (t1, problème 2). */}
       {futureBatch && <button type="button" className="cbf-sec" data-booster="enregistrer" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}

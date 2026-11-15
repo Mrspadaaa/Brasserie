@@ -87,7 +87,7 @@ describe('feuille m4ia-c : jouée', () => {
     expect(f.getByRole('button', { name: '1 sans pièce' })).toHaveAttribute('aria-pressed', 'true');
     expect(f.getByRole('button', { name: 'profil : sans TVA' })).toHaveAttribute('aria-pressed', 'true');
     for (const n of ['tout l’historique', 'archives', 'projets de matériel']) expect(f.getByRole('button', { name: n })).toHaveAttribute('aria-pressed', 'false');
-    expect(f.getByText(/Il lit aussi le registre/)).toBeTruthy();
+    expect(f.queryByText(/Il lit aussi le registre/)).toBeNull(); // t3 : phrase absente de m4ia-c, retirée
   });
 
   it('une pastille décochée sort du contexte : le compte baisse, la consigne la nomme, la question part préremplie et le chat ne démarre pas seul', () => {

@@ -162,6 +162,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   };
   const duplicateGroups = useMemo(() => ledgerDuplicates(transactions).filter(group => !ecartes.has(group.key)), [transactions, ecartes]);
   const duplicateIds = useMemo(() => new Set(duplicateGroups.flatMap(group => group.ids)), [duplicateGroups]);
+  /* t3 (problème 4) : une pièce annulée dans la paire (en attente d'écriture) ne compte plus ; un groupe qui n'en garde qu'une n'est plus un doublon. Bandeau et pastille se recomptent. */
+  const [doublonsAnnules, setDoublonsAnnules] = useState<ReadonlySet<string>>(() => new Set());
+  const nombreDoublons = useMemo(() => new Set(duplicateGroups.flatMap(group => { const vivantes = group.ids.filter(id => !doublonsAnnules.has(id)); return vivantes.length > 1 ? vivantes : []; })).size, [duplicateGroups, doublonsAnnules]);
   // m1do-a : plus aucun doublon à montrer (écarté, ou annulé) : le filtre se referme.
   useEffect(() => { if (filter === 'doublon' && duplicateGroups.length === 0) replaceState({ ...journal, filter: 'all', page: 1 }); });
   const vueDoublons = filter === 'doublon' && duplicateGroups.length > 0;
@@ -301,7 +304,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
   // fx1 : la puce IA pose la question du plus gros poste des piles (v6b) ; sans poste, son libellé actuel.
-  const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `le mois ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
+  const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `en ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
   /** La frise (s2ap2) : un jour à la fois, par `periodeSynthese` (une seule règle de « dépensé ») ; un mois sans aucune opération saisie est inconnu, pas vide. */
   const sourcesFrise = useMemo(() => (scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified), [classified, scope]);
   const donneesFrise = useMemo(() => {
@@ -314,7 +317,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       moisSaisi: (m: string) => saisis.has(m),
     };
   }, [sourcesFrise, payments, aujourdhui, joursCompte]);
-  const jours = plage ?? (modeMois ? plageDuMois(month) : null);
+  /* t3 (problème 5) : une année d'archive consultée remplit les champs « du … au … » à cette année ; « toutes les années » les laisse vides (aucune plage unique). */
+  const jours = plage ?? (modeMois ? plageDuMois(month) : scope === 'archives' && /^d{4}$/.test(String(selectedYear)) ? { du: `${selectedYear}-01-01`, au: `${selectedYear}-12-31` } : null);
   const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [sourcesFrise, jours?.du, jours?.au, plage, joursCompte]);
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
@@ -392,7 +396,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 
-    {vueDoublons && <PaireDoublons groupes={groupesDoublons} nombre={duplicateIds.size} onEcarter={ecarter}/>}
+    {vueDoublons && <PaireDoublons groupes={groupesDoublons} nombre={nombreDoublons} onEcarter={ecarter} onAnnulees={setDoublonsAnnules}/>}
 
     {!vueDoublons && <div className="ops-liste">{groupes.map(groupe => {
       const meta = groupe.id === 'jour' ? null : GROUPES[groupe.id];
@@ -450,7 +454,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         Filtres{actifs.length > 0 && <span className="ops-n">{actifs.length}</span>}<ChevronDown size={13} aria-hidden="true"/></button>
       <button type="button" className="ops-pu" aria-pressed={filter === 'doublon'} disabled={duplicateGroups.length === 0 && filter !== 'doublon'}
         data-urgent={duplicateGroups.length > 0 || undefined} onClick={() => change({ filter: filter === 'doublon' ? 'all' : 'doublon' })}>
-        Doublons{duplicateGroups.length > 0 && <span className="ops-n">{duplicateIds.size}</span>}</button>
+        Doublons{duplicateGroups.length > 0 && nombreDoublons > 0 && <span className="ops-n">{nombreDoublons}</span>}</button>
       {scope !== 'archives' && <button type="button" className="ops-pu" onClick={onPrivateMovement}>Apport ou prélèvement privé</button>}
       <button type="button" className="ops-pu" aria-pressed={scope === 'archives'} onClick={() => changeScope(scope === 'archives' ? 'current' : 'archives')}>Archives</button>
     </div>

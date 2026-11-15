@@ -33,6 +33,8 @@ export function ProjetPiste(props: ProjetPisteProps) {
   const budget = detail.budgetKnown ? montant(draft.amountCents) : null;
   const ferme = !['draft', 'active'].includes(draft.status);
   const bascule = (id: StationId) => setOuvert(ouvert === id ? null : id);
+  /* t3 (problème 3), m3pm-d : toucher le titre d'une étape saisie en fait l'étape en cours (les précédentes se cochent), comme son cercle ; Acheté et En service se déduisent et ne font que s'ouvrir. */
+  const toucher = (id: StationId) => { if (estEtapeSaisie(id) && detail.stage !== id) { patch({ stage: id as EquipmentUpgrade['stage'] }); setOuvert(id); } else bascule(id); };
   const quandTexte = quand(draft), usure = resumeUsure(draft);
   const devisNote = !!(draft.vendor?.trim() || detail.quoteReference?.trim()) || detail.estimateSource === 'quote';
   const n = invoices.length;
@@ -126,7 +128,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
             : <span className="pjd-o" aria-hidden="true">{cercle}</span>}
           <div className="pjd-n">
             <div className="pjd-hl">
-              <h3><button type="button" className="pjd-ent" aria-expanded={ouverte} aria-controls={`pjd-c-${s.id}`} onClick={() => bascule(s.id)}>{s.label}{t.em && <em>{t.em}</em>}</button></h3>
+              <h3><button type="button" className="pjd-ent" aria-expanded={ouverte} aria-controls={`pjd-c-${s.id}`} onClick={() => toucher(s.id)}>{s.label}{t.em && <em>{t.em}</em>}</button></h3>
               {t.action}
             </div>
             {!ouverte && t.resume}
