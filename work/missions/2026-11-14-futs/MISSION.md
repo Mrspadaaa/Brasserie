@@ -28,3 +28,6 @@ Pas d'algorithme non trivial : interface et cycle d'états (machine à états fi
 
 ## Prochaine action
 Attendre son choix (une lettre par série), puis port 1:1 dans un worktree neuf depuis le dernier tag `en-ligne/*`, tests, build, contrôles, déploiement, jeu en ligne sur « ZZ TEST » retirées.
+
+## Choix (15.11)
+« Entre l1 et l2 » ; R1 ; F2. R1 et F2 en port (worktree Temp/futs-port, branche claude/futs-port). Liste : 4 greffes G1-G4 (critique Opus 3 bloquants + 5 mineurs corrigés), artefact https://claude.ai/artifact/Djany6t5RUMnMex8VdcKpE. Planche 1 : https://claude.ai/artifact/VXdbfJ4GixfwWoVLfmBKdJ
