@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Check, ExternalLink, Package, ShoppingCart } from 'lucide-react';
+import { Check, ExternalLink, Package, ShoppingCart, X } from 'lucide-react';
 import type { EquipmentItem, EquipmentRhythm } from '../../types';
-import { dateCourte, lireDate, nextDueAfter } from '../../domain/equipment';
+import { dateCourte, daysBetween, lireDate, nextDueAfter } from '../../domain/equipment';
 import { nextUniqueRef } from '../../services/refs';
 import { Sheet } from '../Sheet';
 
@@ -15,6 +15,30 @@ const ENTRETIENS: { label: string; rhythm: EquipmentRhythm | null }[] = [
   { label: 'an', rhythm: { every: 12, unit: 'mois' } },
 ];
 const swiss = (iso: string) => { const [y, m, d] = iso.split('-'); return `${d}.${m}.${y}`; };
+
+/**
+ * La petite réglette de za3 devant « prochain le … » : le point plein est le dernier fait, le trait ambre le temps déjà écoulé,
+ * le rond le prochain. Longueur proportionnelle au rythme (3 mois = la mesure de la maquette, 103 px ; l'an est plafonné à la règle).
+ */
+const REGLE_DEBUT = 8, REGLE_FIN = 142, PX_3_MOIS = 103, JOURS_3_MOIS = 92;
+export function reglette(dernier: string, prochain: string, today: string): { prochainX: number; ecouleX: number } {
+  const jours = Math.max(0, daysBetween(dernier, prochain));
+  const prochainX = Math.min(REGLE_FIN - 8, REGLE_DEBUT + Math.round(PX_3_MOIS * jours / JOURS_3_MOIS));
+  const ecoule = Math.max(0, Math.min(daysBetween(dernier, today), jours));
+  const ecouleX = Math.min(prochainX - 12, REGLE_DEBUT + Math.round(PX_3_MOIS * ecoule / JOURS_3_MOIS));
+  return { prochainX, ecouleX };
+}
+const Reglette: React.FC<{ dernier: string; prochain: string; today: string }> = ({ dernier, prochain, today }) => {
+  const { prochainX, ecouleX } = reglette(dernier, prochain, today);
+  return (
+    <svg className="mt-regle" viewBox="0 0 150 28" role="img" aria-label={`du dernier fait au prochain, le ${dateCourte(prochain)}`}>
+      <path d={`M${REGLE_DEBUT} 14H${REGLE_FIN}`} className="mt-regle-trait" />
+      {ecouleX > REGLE_DEBUT + 2 && <path d={`M${REGLE_DEBUT} 14H${ecouleX}`} className="mt-regle-ecoule" />}
+      <circle data-dernier cx={REGLE_DEBUT} cy="14" r="6" className="mt-regle-dernier" />
+      <circle data-prochain cx={prochainX} cy="14" r="8" className="mt-regle-prochain" />
+    </svg>
+  );
+};
 
 export const NewEquipment: React.FC<{
   open: boolean; today: string; refs: string[]; wide?: boolean;
@@ -43,9 +67,13 @@ export const NewEquipment: React.FC<{
   );
 
   return (
-    <Sheet open={open} onClose={onClose} title="Nouveau matériel"
+    <Sheet open={open} onClose={onClose} title="Nouveau matériel" bare className="mt-feuille-coque"
       footer={<div className="mt-fbtn mt-vars"><button type="button" className="mt-sec" onClick={onClose}>Annuler</button><button type="button" className="mt-pri" disabled={!valide} onClick={ajouter}><Check size={18} aria-hidden="true" />Ajouter</button></div>}>
       <div className="mt-feuille">
+        <div className="mt-feuille-tete">
+          <div className="mt-feuille-titre" aria-hidden="true">Nouveau matériel</div>
+          <button type="button" className="mt-feuille-x" aria-label="Fermer" onClick={onClose}><X size={20} aria-hidden="true" /></button>
+        </div>
         <div className="mt-choix">
           <button type="button" className="mt-ch" onClick={onBuy}><ShoppingCart size={20} aria-hidden="true" />Enregistrer un achat</button>
           <button type="button" className="mt-ch mt-on" aria-pressed="true"><Package size={20} aria-hidden="true" />Déjà possédé</button>
@@ -61,7 +89,7 @@ export const NewEquipment: React.FC<{
           <div><div className="mt-lab">Entretien</div><div className="mt-pills" role="radiogroup" aria-label="Entretien">{ENTRETIENS.map((e, i) => puce(e.label, entretien === i, () => setEntretien(i), 'Entretien'))}</div></div>
           <div><label className="mt-lab" htmlFor="mt-dernier">Dernier fait</label><input id="mt-dernier" className="mt-in mt-m" type="text" inputMode="numeric" autoComplete="off" value={dernier} onChange={e => setDernier(e.target.value)} aria-invalid={!!rhythm && !dernierIso} /></div>
         </div>
-        {prochain && <div className="mt-apercu"><span>prochain le <b className="mt-m">{dateCourte(prochain)}</b></span></div>}
+        {prochain && dernierIso && <div className="mt-apercu"><Reglette dernier={dernierIso} prochain={prochain} today={today} /><span>prochain le <b className="mt-m">{dateCourte(prochain)}</b></span></div>}
       </div>
     </Sheet>
   );

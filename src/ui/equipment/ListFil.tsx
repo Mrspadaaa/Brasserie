@@ -19,7 +19,7 @@ export type GesteKind = 'repare' | 'etalonne' | 'fait';
 export const gesteDe = (r: StatusRow): GesteKind => r.status.kind === 'panne' ? 'repare' : calibrationPreset(r.item) ? 'etalonne' : 'fait';
 const LIBELLE: Record<GesteKind, string> = { repare: 'Réparée', etalonne: 'Étalonner', fait: 'Fait' };
 
-export interface Recent { ref: string; nom: string; jusquau: string | null; index: number; lectures: string | null }
+export interface Recent { ref: string; nom: string; jusquau: string | null; /** Rythme au brassin : « à jour pour N brassins » quand il n'y a pas de date. */ brassins?: number | null; index: number; lectures: string | null }
 
 export interface FilProps {
   fil: FilDuTemps;
@@ -48,7 +48,7 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
         {fil.haut.flatMap((r, i) => {
           const geste = gesteDe(r);
           const note = recent && recent.index === i && !fil.haut.some(h => h.item.ref === recent.ref)
-            ? <div key={`note-${recent.ref}`} className="mt-fantome" role="status"><Check size={14} aria-hidden="true" />{recent.nom} à jour{recent.jusquau ? <> jusqu'au <span className="mt-m">{dateCourte(recent.jusquau)}</span></> : null}</div> : null;
+            ? <div key={`note-${recent.ref}`} className="mt-fantome" role="status"><Check size={14} aria-hidden="true" />{recent.nom} à jour{recent.jusquau ? <> jusqu'au <span className="mt-m">{dateCourte(recent.jusquau)}</span></> : recent.brassins ? <> pour <span className="mt-m">{recent.brassins}</span> brassins</> : null}</div> : null;
           const ligne = (
             <div key={r.item.ref} className={`mt-r${selectedRef === r.item.ref ? ' mt-choisi' : ''}`}>
               <span className={`mt-noeud${r.status.kind === 'panne' ? ' mt-al' : r.status.kind === 'jamais' ? ' mt-tir' : ''}`}><EquipmentPicto name={r.item.name} /></span>
@@ -77,12 +77,17 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
           ))}
           {lignes.map(a => {
             const flash = recent?.ref === a.item.ref;
+            // Une ligne descendue pour ne pas toucher la précédente garde son nœud de rappel à sa vraie date.
+            const decalage = a.yLigne - a.y;
             return (
-              <button key={a.item.ref} type="button" className={`mt-ar${flash ? ' mt-flash' : ''}${selectedRef === a.item.ref ? ' mt-choisi' : ''}`} style={{ top: a.yLigne }} aria-label={`Ouvrir ${a.item.name}`} onClick={() => onOpen(a.item)}>
+              <React.Fragment key={a.item.ref}>
+              {decalage > 2 && <span className="mt-rappel" style={{ top: a.y, height: decalage }} aria-hidden="true" />}
+              <button type="button" className={`mt-ar${flash ? ' mt-flash' : ''}${selectedRef === a.item.ref ? ' mt-choisi' : ''}`} style={{ top: a.yLigne }} aria-label={`Ouvrir ${a.item.name}`} onClick={() => onOpen(a.item)}>
                 <span className={`mt-pn${flash ? ' mt-okn' : ''}`}><EquipmentPicto name={a.item.name} /></span>
                 <span className="mt-t"><b>{a.item.name}</b><span className={flash && recent?.lectures ? 'mt-m' : undefined}>{flash && recent?.lectures ? recent.lectures : a.status.verb}</span></span>
                 <span className="mt-j">{a.status.dueDate ? dateCourte(a.status.dueDate) : ''}</span>
               </button>
+              </React.Fragment>
             );
           })}
           {mode === 'work' && <button type="button" className="mt-autres" style={{ top: carteY }} onClick={onToutVoir}>{aJour} à jour<span className="mt-sp" /><b>Tout</b><ChevronRight size={16} aria-hidden="true" /></button>}
@@ -100,7 +105,7 @@ export const FilSans: React.FC<{ rows: StatusRow[]; onOpen: (item: EquipmentItem
         {rows.map(r => (
           <button key={r.item.ref} type="button" className="mt-c" aria-label={`Ouvrir ${r.item.name}`} onClick={() => onOpen(r.item)}>
             <EquipmentPicto name={r.item.name} />
-            <span>{r.item.name}{r.status.kind === 'avenir' && <small>{r.status.line}</small>}</span>
+            <span>{r.item.name}</span>
           </button>
         ))}
       </div>
@@ -108,11 +113,12 @@ export const FilSans: React.FC<{ rows: StatusRow[]; onOpen: (item: EquipmentItem
   )
 );
 
+/** Le total se lit « 1 739 CHF » : l'apostrophe (U+0027) ou le guillemet (U+2019) du séparateur suisse devient une espace insécable (U+00A0, dans le code). */
 export const FilPied: React.FC<{ wide: boolean; parc: { totalCents: number; known: number }; onAddOwned: () => void; onProjects?: () => void }> = ({ wide, parc, onAddOwned, onProjects }) => (
   <div className="mt-pied">
     <button type="button" className="mt-tuile" onClick={onAddOwned}><Package size={18} aria-hidden="true" />{wide ? 'Matériel déjà possédé' : 'Déjà possédé'}</button>
     {onProjects && <button type="button" className="mt-tuile" onClick={onProjects}><Wrench size={18} aria-hidden="true" />{wide ? "Projets d'équipement" : 'Projets'}<ExternalLink size={14} aria-hidden="true" /></button>}
-    {parc.known > 0 && <span className="mt-parc"><b>{(parc.totalCents / 100).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).replace(/’/g, ' ')} CHF</b>{parc.known} prix connu{parc.known > 1 ? 's' : ''}</span>}
+    {parc.known > 0 && <span className="mt-parc"><b>{(parc.totalCents / 100).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).replace(/[’']/g, ' ')} CHF</b>{parc.known} prix connu{parc.known > 1 ? 's' : ''}</span>}
   </div>
 );
 

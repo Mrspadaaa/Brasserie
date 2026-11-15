@@ -119,3 +119,18 @@
 .mt-wide .mt-outils, .mt-wide .mt-cherche { padding-left: 0; }
 .mt-droite { flex: 1; min-width: 0; position: relative; border-left: 1px solid var(--m-line); }
 .mt-large .mt-fil .mt-auj i { margin-right: 0; }
+/* c1 (test d'écran) : ligne descendue pour ne pas toucher la précédente → un petit trait de rappel garde son nœud à sa vraie date (P6). */
+.mt-rappel { position: absolute; left: 47.5px; width: 2px; background: var(--m-mut); z-index: 1; pointer-events: none; }
+.mt-rappel::before { content: ""; position: absolute; left: -2.5px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--m-mut); }
+/* Nouveau matériel (P11) : fond de surface, titre gras de 22 px, × dans un rond de 44 px. */
+.mt-feuille-coque.mt-feuille-coque { background: rgb(var(--cave-950)); }
+.mt-feuille-tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 10px; }
+.mt-feuille-titre { font-size: 22px; line-height: 28px; font-weight: 700; margin: 0; }
+.mt-feuille-x { width: 44px; height: 44px; flex: none; border: 1px solid var(--m-line2) !important; border-radius: 22px; display: grid; place-items: center; }
+/* Réglette de l'aperçu (P5) : dernier fait (point plein), temps écoulé (ambre), prochain (rond). */
+.mt-apercu { gap: 10px; }
+.mt-regle { width: 150px; height: 28px; flex: none; }
+.mt-regle-trait { stroke: var(--m-line2); stroke-width: 2.5; fill: none; }
+.mt-regle-ecoule { stroke: var(--m-att); stroke-width: 2.5; fill: none; opacity: .5; }
+.mt-regle-dernier { fill: var(--m-ink); }
+.mt-regle-prochain { fill: var(--m-bg); stroke: var(--m-ink); stroke-width: 2; }

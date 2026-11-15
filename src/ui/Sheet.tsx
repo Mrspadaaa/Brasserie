@@ -34,6 +34,11 @@ interface SheetProps {
   /** Empêche la fermeture accidentelle quand une saisie est en cours. */
   dismissible?: boolean;
   className?: string;
+  /**
+   * Sans en-tête : le titre reste pour les lecteurs d'écran, et le contenu dessine le sien (retour, ⋯, ×), comme la maquette za3.
+   * Réservé au matériel ; les autres feuilles gardent leur en-tête.
+   */
+  bare?: boolean;
 }
 
 export const Sheet: React.FC<SheetProps> = ({
@@ -45,7 +50,8 @@ export const Sheet: React.FC<SheetProps> = ({
   footer,
   snapPoints,
   dismissible = true,
-  className = ''
+  className = '',
+  bare = false
 }) => {
   /*
    * ⚠️ Le clavier virtuel ne réduit NI `dvh`, NI `window.innerHeight` : une
@@ -121,6 +127,12 @@ export const Sheet: React.FC<SheetProps> = ({
           <div className="w-8 h-1 rounded-full bg-cave-700" aria-hidden="true" />
         </div>
 
+        {bare ? (
+          <>
+            <Drawer.Title className="sr-only">{title}</Drawer.Title>
+            <Drawer.Description className="sr-only">{subtitle || title}</Drawer.Description>
+          </>
+        ) : (
         <header
           className="shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"
         >
@@ -145,6 +157,7 @@ export const Sheet: React.FC<SheetProps> = ({
             <X className="w-4 h-4" />
           </button>
         </header>
+        )}
 
         {/*
           `scroll-pb-20` réserve la place du pied.

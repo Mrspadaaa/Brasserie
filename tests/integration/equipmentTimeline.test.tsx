@@ -54,14 +54,16 @@ describe('le fil du matériel (za3)', () => {
   });
 
   it('Fait écrit l’appareil neuf et garde l’ancien pour Annuler ; la note dit jusqu’à quand', () => {
-    const { props } = monter();
+    const { props, ...vue } = monter();
     fireEvent.click(screen.getByRole('button', { name: 'Fait : Refroidisseur à plaques' }));
     expect(props.onWrite).toHaveBeenCalledTimes(1);
     const [suivant, avant, toast] = props.onWrite.mock.calls[0];
     expect(avant).toBe(parc[5]);
     expect(suivant.lastDone).toBe(TODAY);
     expect(suivant.history.at(-1)).toMatchObject({ date: TODAY, kind: 'entretien' });
-    expect(toast).toBe('Fait');
+    expect(toast).toBe('Fait · à jour pour 5 brassins');
+    vue.rerender(<EquipmentList {...props} equipment={[...parc.slice(0, 5), suivant]} />);
+    expect(screen.getByRole('status')).toHaveTextContent('Refroidisseur à plaques à jour');
     expect(parc[5].lastDone).toBeUndefined();
   });
 
@@ -102,5 +104,40 @@ describe('le fil du matériel (za3)', () => {
     expect(pictoKindOf('Cuve fermentation 100L')).toBe('ferm');
     expect(pictoKindOf('Cuve d’ébullition 100L')).toBe('cuve');
     expect(pictoKindOf('Machine inconnue')).toBe('cle');
+  });
+});
+
+describe('c1 — corrections du test d’écran (P5, P8, P10, P11, P12)', () => {
+  it('P5 : le fil de l’ajout porte la petite réglette de za3 devant « prochain le … », plus longue pour 3 mois que pour 1 mois', () => {
+    monter();
+    fireEvent.click(screen.getByRole('button', { name: /Déjà possédé/ }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Entretien : mois' }));
+    const x1 = Number(screen.getByRole('img', { name: /prochain/ }).querySelector('[data-prochain]')!.getAttribute('cx'));
+    fireEvent.click(screen.getByRole('radio', { name: 'Entretien : 3 mois' }));
+    const regle = screen.getByRole('img', { name: /prochain/ });
+    const x3 = Number(regle.querySelector('[data-prochain]')!.getAttribute('cx'));
+    expect(x3).toBeGreaterThan(x1);
+    expect(regle.querySelector('[data-dernier]')).not.toBeNull();
+    expect(screen.getByText(/prochain le/)).toBeVisible();
+  });
+
+  it('P10 : le total du parc se lit « 1 739 CHF » (espace, jamais l’apostrophe)', () => {
+    monter({ equipment: [...parc, e({ ref: 'EQ-9', name: 'Cuve', purchasePrice: 1500 })] });
+    expect(document.querySelector('.mt-parc b')!.textContent).toMatch(/^1\s739 CHF$/);
+  });
+
+  it('P12 : « sans échéance » garde le picto et le nom ; le compte de brassins reste dans la fiche', () => {
+    monter({ equipment: [e({ ref: 'EQ-6', name: 'Refroidisseur à plaques', task: 'Détartrer', rhythm: { every: 5, unit: 'brassin' }, lastDone: '2026-07-01' }), e({ ref: 'EQ-5', name: 'Moulin à malt' })], batches: [{ brewDate: '2026-08-15' }] });
+    const cellule = screen.getByRole('button', { name: 'Ouvrir Refroidisseur à plaques' });
+    expect(cellule.querySelector('small')).toBeNull();
+    expect(cellule).not.toHaveTextContent(/encore/);
+  });
+
+  it('P11 : « Nouveau matériel » a un titre de feuille gras et un × dans un rond de 44 px', () => {
+    monter();
+    fireEvent.click(screen.getByRole('button', { name: /Déjà possédé/ }));
+    expect(screen.getByText('Nouveau matériel', { selector: '.mt-feuille-titre' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Nouveau matériel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Fermer' })).toHaveClass('mt-feuille-x');
   });
 });

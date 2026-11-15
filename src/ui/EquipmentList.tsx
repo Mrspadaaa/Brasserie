@@ -56,8 +56,9 @@ export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches
     if (g === 'repare') { onWrite(markRepaired(row.item, { date: today }), row.item, 'Réparée'); return; }
     const next = recordDone(row.item, { date: today });
     const du = nextDueAfter(next, today);
-    setRecent({ ref: row.item.ref, nom: row.item.name, jusquau: du, index: Math.max(0, index), lectures: null });
-    onWrite(next, row.item, du ? `Fait · à jour jusqu'au ${dateCourte(du)}` : 'Fait');
+    const brassins = !du && next.rhythm?.unit === 'brassin' ? next.rhythm.every : null;
+    setRecent({ ref: row.item.ref, nom: row.item.name, jusquau: du, brassins, index: Math.max(0, index), lectures: null });
+    onWrite(next, row.item, du ? `Fait · à jour jusqu'au ${dateCourte(du)}` : brassins ? `Fait · à jour pour ${brassins} brassins` : 'Fait');
   };
 
   const filtre = (valeur: 'tout' | 'work', libelle: string, n: number, extra = '') => (

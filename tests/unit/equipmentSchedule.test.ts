@@ -177,8 +177,9 @@ describe('filDuTemps : à sa vraie distance, 3,5 px par jour', () => {
     const at = (days: number, ref: string) => base({ ref, task: 'Huiler', rhythm: { every: days, unit: 'jour' }, lastDone: TODAY });
     const f = filDuTemps([at(100, 'A'), at(101, 'B'), at(300, 'C')], ctx);
     const ys = f.avenir.map(r => r.y);
-    expect(ys[1] - ys[0]).toBeGreaterThanOrEqual(28);
-    expect(ys[2] - ys[1]).toBeGreaterThanOrEqual(28);
+    // P6 : deux lignes de 28 px ne se touchent pas : 34 px de pas au moins (un blanc de 6 px)
+    expect(ys[1] - ys[0]).toBeGreaterThanOrEqual(34);
+    expect(ys[2] - ys[1]).toBeGreaterThanOrEqual(34);
   });
   it('repères de mois : déc. et janv. sur l’échelle, mars après la coupure', () => {
     const r = fil.reperes;

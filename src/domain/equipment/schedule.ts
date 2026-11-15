@@ -26,7 +26,8 @@ export const BANDE_JOURS = 30;
 /** Au-delà de 50 jours (réfractomètre à 44 j sur l'échelle, cuve à 108 j coupée : za3), la distance cesse d'être à l'échelle. */
 export const COUPURE_APRES_JOURS = 50;
 export const SAUT_COUPURE_PX = 39;
-export const ESPACEMENT_MIN_PX = 28;
+/** Une ligne de la liste fait 28 px : 34 px de pas laissent un blanc de 6 px entre deux appareils (P6 : « dégivrer » collait à « Réfractomètre »). */
+export const ESPACEMENT_MIN_PX = 34;
 
 const yDe = (jours: number): number => PX_PAR_JOUR * jours + ORIGINE_PX;
 const minuscule = (s: string): string => s.charAt(0).toLocaleLowerCase('fr') + s.slice(1);
