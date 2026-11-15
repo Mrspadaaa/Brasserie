@@ -202,6 +202,13 @@
 .nc-big { background: var(--a-bg); border: 1.5px solid var(--a-ia); border-radius: 16px; padding: 10px 12px 12px; }
 .nc-aih { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--a-ia); margin-bottom: 6px; }
 .nc-aih em { font-style: normal; font-weight: 400; color: var(--a-mut); margin-left: auto; border: 1px solid var(--a-line2); border-radius: 999px; padding: 0 7px; }
+/* passe 3 : le « + » (modèle plus précis). Cible 44 px, cercle visible de 30 px ; marges négatives : l'en-tête garde sa hauteur. */
+.nc-aih .nc-niv { font-weight: 400; color: var(--a-mut); }
+.nc-plus { position: relative; z-index: 1; width: 44px; height: 44px; margin: -14px -8px -14px auto; flex: none; display: grid; place-items: center; background: none; border: 0; color: var(--a-ia); border-radius: 999px; }
+.nc-plus::before { content: ''; position: absolute; width: 30px; height: 30px; border-radius: 999px; border: 1.5px solid var(--a-ia); background: var(--a-bg); z-index: -1; }
+.nc-aih em + .nc-plus { margin-left: 0; }
+.nc-plus:focus-visible { outline: 2px solid var(--a-ink); outline-offset: -4px; }
+.nc-plus-l { margin-top: 6px; color: var(--a-ia); }
 .nc-big .nc-ph { border-width: 1px; border-color: var(--a-line2); }
 .nc-big .nc-sw { padding-top: 8px; background-size: 3px 8px; }
 .nc-big .nc-br::after { box-shadow: 0 0 0 3px var(--a-bg); }

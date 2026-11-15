@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CreativeItem, PricingItem } from '../../src/types';
-import { apresAnnuler, contexteModele, ecrire, envoi, lireReponse, nbCochees, prixDevine, proposer, statutEnvoi, type ItemCarnet } from '../../src/domain/rangerNote';
+import { apresAnnuler, contexteModele, ecrire, envoi, lireReponse, nbCochees, niveauAppel, prixDevine, proposer, statutEnvoi, type ItemCarnet } from '../../src/domain/rangerNote';
 import { modeDe } from '../../src/config/rangerNoteIA';
 import { reponseSimulee } from '../../src/ui/atelier/rangerNoteSimule';
 import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from '../../functions/src/rangerNote';
@@ -128,14 +128,29 @@ describe('rangerNote : envoi et drapeau', () => {
     expect(envoi('eteint', true)).toBe('brute');
     expect(envoi('eteint', false)).toBe('brute');
   });
-  it('production éteinte par défaut ; simulé seulement en développement au banc', () => {
-    expect(modeDe(undefined, false, true)).toBe('eteint');
-    expect(modeDe(undefined, true, false)).toBe('eteint');
-    expect(modeDe(undefined, true, true)).toBe('simule');
+  it('passe 3 : production allumée par le build ; le banc toujours simulé ; sans valeur, éteint', () => {
+    // Le build pose `production` (vite.config.ts) : la production appelle vraiment aiTask.
     expect(modeDe('production', false, false)).toBe('production');
-    expect(modeDe(undefined, true, true, 'eteint')).toBe('eteint');
-    expect(modeDe(undefined, false, true, 'eteint')).toBe('eteint');
     expect(modeDe('production', false, false, 'eteint')).toBe('production');
+    expect(modeDe('production', false, true)).toBe('production'); // `?dev-local` hors serveur de développement ne fait rien
+    // Au banc `?dev-local` (serveur de développement) : simulé, même si la valeur dit production ; `ia=eteint` y rejoue l'éteint.
+    expect(modeDe('production', true, true)).toBe('simule');
+    expect(modeDe(undefined, true, true)).toBe('simule');
+    expect(modeDe('production', true, true, 'eteint')).toBe('eteint');
+    // Éteint exprès au build, ou sans valeur (serveur de développement hors banc, Vitest) : jamais d'appel Gemini par accident.
+    expect(modeDe('eteint', false, false)).toBe('eteint');
+    expect(modeDe(undefined, false, false)).toBe('eteint');
+    expect(modeDe(undefined, true, false)).toBe('eteint');
+    expect(modeDe(undefined, false, true, 'eteint')).toBe('eteint');
+  });
+  it('passe 3 : le rangement part en Rapide ; le « + » relance en Max, une fois, en ligne, IA allumée', () => {
+    expect(niveauAppel(false, 'production', true, false)).toBe('fast');
+    expect(niveauAppel(false, 'production', true, true)).toBe('fast'); // « Ranger » d'une note brute : toujours Rapide
+    expect(niveauAppel(true, 'production', true, false)).toBe('max');
+    expect(niveauAppel(true, 'simule', true, false)).toBe('max');
+    expect(niveauAppel(true, 'production', true, true)).toBeNull(); // une seule fois par note
+    expect(niveauAppel(true, 'production', false, false)).toBeNull(); // hors ligne
+    expect(niveauAppel(true, 'eteint', true, false)).toBeNull(); // IA éteinte : pas de « + »
   });
   it('le modèle reçoit la date de saisie et son jour', () => {
     expect(contexteModele(NOTE, CTX)).toMatchObject({ saisie: '2026-11-14', jourSaisie: 'sam.', contacts: ['Le Carnotzet Gourmand'] });
@@ -143,8 +158,9 @@ describe('rangerNote : envoi et drapeau', () => {
 });
 
 describe('tâche serveur rangerNote (modèle simulé)', () => {
-  it('schéma strict, tier rapide, sans pièce jointe ; la consigne interdit les prix', () => {
-    expect(RANGER_NOTE.tier).toBe('fast');
+  it('schéma strict, Rapide par défaut sans niveau figé (le « + » demande Max), sans pièce jointe ; la consigne interdit les prix', () => {
+    expect(RANGER_NOTE.defaultTier).toBe('fast');
+    expect(RANGER_NOTE).not.toHaveProperty('tier');
     expect(RANGER_NOTE.acceptsFile).toBe(false);
     expect(JSON.stringify(RANGER_NOTE.schema)).toContain('"enum":["tache","contact","client","idee-biere"]');
     expect(RANGER_NOTE.system).toMatch(/Aucun prix/);

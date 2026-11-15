@@ -243,6 +243,17 @@ export function envoi(mode: ModeIA, enLigne: boolean): 'ia' | 'attente' | 'brute
   if (mode === 'eteint') return 'brute';
   return enLigne ? 'ia' : 'attente';
 }
+/**
+ * Le niveau d'un appel (passe 3, accord du 15.11 : « Oui la moins chère, et bouton + pour utiliser l'autre meilleure mais un peu plus chère »).
+ * Le rangement part en Rapide (`fast`, Flash-Lite au serveur) ; le « + » relance la même note en Max (`max`, Hydrogen), une seule fois par
+ * note. `null` : pas de « + » (déjà relancée, IA éteinte ou hors ligne). Le client ne nomme jamais un modèle.
+ */
+export type NiveauIA = 'fast' | 'max';
+export function niveauAppel(plus: boolean, mode: ModeIA, enLigne: boolean, dejaPlus: boolean): NiveauIA | null {
+  if (!plus) return 'fast';
+  return mode !== 'eteint' && enLigne && !dejaPlus ? 'max' : null;
+}
+
 /** Statut de la note à l'envoi. */
 export const statutEnvoi = (e: ReturnType<typeof envoi>): CreativeItem['status'] => (e === 'attente' ? 'todo' : 'idea');
 

@@ -5,8 +5,9 @@ import type { TaskDef } from './prompts.js';
  * Extraction structurée d'une phrase courte : sortie imposée (`responseSchema`), date de saisie fournie, rien d'inventé.
  * L'app revérifie tout (`src/domain/rangerNote.ts` : dates, nombres, contacts et bières connus) et n'écrit qu'au toucher « Ranger ».
  *
- * ÉCRITE ET TESTÉE, PAS DÉPLOYÉE : la déployer attend son accord (Gemini en production). Le client ne l'appelle qu'avec
- * `VITE_RANGER_NOTE_IA=production`.
+ * Modèles (accord du brasseur, 15.11 : « Oui la moins chère, et bouton + pour utiliser l'autre meilleure mais un peu plus chère ») :
+ * Rapide = 3.5 Flash-Lite, Max = Hydrogen en réflexion basse, la 3.8 en repli des deux (`models.ts`, `rangerNoteAttempts`). Le client
+ * ne dit que `tier`, jamais un modèle ; la tâche ne fige donc pas son niveau (`defaultTier` seulement).
  */
 const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 'OBJECT', properties, required });
 const str = { type: 'STRING', nullable: true };
@@ -33,8 +34,9 @@ export const RANGER_NOTE_SCHEMA = S({
 
 export const RANGER_NOTE: TaskDef = {
   defaultTier: 'fast',
-  tier: 'fast',
-  maxOutputTokens: 1200,
+  // La réflexion basse compte dans ce plafond (Flash-Lite comme Hydrogen) : 1 200 laissait couper une réponse de 6 effets.
+  // Une réponse coupée part une fois sur la 3.8 (`liteUnusable`) ; 4 000 reste sous le garde-fou de coût (12 000, `quoteGeminiCost`).
+  maxOutputTokens: 4000,
   acceptsFile: false,
   system: `Tu assistes une micro-brasserie suisse. Le brasseur a noté une phrase courte dans son carnet. Range-la en choses
 concrètes, sans rien inventer.

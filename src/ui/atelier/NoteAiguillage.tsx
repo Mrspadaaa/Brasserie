@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Sparkles, UserCheck, UserPlus, Users, Utensils } from 'lucide-react';
+import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Plus, Sparkles, UserCheck, UserPlus, Users, Utensils } from 'lucide-react';
 import type { CreativeItem, PricingItem } from '../../types';
 import {
-  chf, dateDeNote, jourComplet, jourMois, JOURS, lireSuisse, nbCochees, prixDevine, type ItemCarnet, type Proposition
+  chf, dateDeNote, jourComplet, jourMois, JOURS, lireSuisse, nbCochees, prixDevine, type ItemCarnet, type NiveauIA, type Proposition
 } from '../../domain/rangerNote';
 import './atelier.css';
 
@@ -21,13 +21,19 @@ interface CarteProps {
   simule: boolean;
   tarifs: readonly PricingItem[];
   bieres: readonly string[];
+  /** `max` : la proposition vient du modèle plus précis (le « + »), et le dit. */
+  niveau: NiveauIA;
+  /** Ce que le « + » a donné quand il n'a rien changé (la proposition d'avant reste). */
+  info?: string;
+  /** Le « + » : relance la même note au modèle plus précis ; absent une fois fait, hors ligne ou IA éteinte. */
+  onPlus?: () => void;
   onChange: (props: Proposition[]) => void;
   onRanger: () => void;
   onGarder: () => void;
 }
 
 /** Geste : ta phrase, puis une case par chose qu'elle peut créer ; « Corriger » ouvre les titres et la date à la main. */
-export const CarteAiguillage: React.FC<CarteProps> = ({ note, props, simule, tarifs, bieres, onChange, onRanger, onGarder }) => {
+export const CarteAiguillage: React.FC<CarteProps> = ({ note, props, simule, tarifs, bieres, niveau, info, onPlus, onChange, onRanger, onGarder }) => {
   const [corriger, setCorriger] = useState(false);
   const n = nbCochees(props);
   const maj = (cle: string, patch: Partial<Proposition>) => onChange(props.map((p) => (p.cle === cle ? ({ ...p, ...patch } as Proposition) : p)));
@@ -62,8 +68,10 @@ export const CarteAiguillage: React.FC<CarteProps> = ({ note, props, simule, tar
 
   return (
     <div className="nc-big" role="group" aria-label="Proposé par l'IA">
-      <div className="nc-aih"><Sparkles size={14} aria-hidden="true" />Proposé par l'IA{simule && <em>exemple</em>}</div>
+      <div className="nc-aih"><Sparkles size={14} aria-hidden="true" />Proposé par l'IA{niveau === 'max' && <span className="nc-niv">· modèle plus précis</span>}{simule && <em>exemple</em>}
+        {onPlus && <button type="button" className="nc-plus" aria-label="Relancer avec le modèle plus précis" title="Relancer avec le modèle plus précis" onClick={onPlus}><Plus size={18} aria-hidden="true" /></button>}</div>
       <div className="nc-ph">{note.title}</div>
+      {info && <p className="nc-msg" role="status">{info}</p>}
       <div className="nc-sw">
         {props.map((p) => (
           <div key={p.cle} className={`nc-br${p.coche ? '' : ' off'}`} style={{ ['--c' as string]: couleur[p.sorte] }}>

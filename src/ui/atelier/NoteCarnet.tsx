@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUp, Clock, Sparkles, WifiOff, X } from 'lucide-react';
+import { ArrowUp, Clock, Plus, Sparkles, WifiOff, X } from 'lucide-react';
 import type { CreativeItem, PricingItem } from '../../types';
 import {
-  apresAnnuler, contexteModele, ecrire, envoi, estNote, lireReponse, lireSuisse, nbCochees, proposer, statutEnvoi, versStockage,
-  type Contexte, type ItemCarnet, type ModeIA, type Proposition
+  apresAnnuler, contexteModele, ecrire, envoi, estNote, lireReponse, lireSuisse, nbCochees, niveauAppel, proposer, statutEnvoi, versStockage,
+  type Contexte, type ItemCarnet, type ModeIA, type NiveauIA, type Proposition
 } from '../../domain/rangerNote';
 import { AiClient } from '../../services/aiClient';
 import { ConfirmSheet } from '../Sheet';
@@ -53,9 +53,12 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
   const items = bruts as unknown as ItemCarnet[];
   const enLigne = useEnLigne();
   const [texte, setTexte] = useState('');
-  const [geste, setGeste] = useState<{ note: ItemCarnet; props: Proposition[] } | null>(null);
+  const [geste, setGeste] = useState<{ note: ItemCarnet; props: Proposition[]; niveau: NiveauIA; info?: string } | null>(null);
   const [charge, setCharge] = useState<ItemCarnet | null>(null);
-  const [fiche, setFiche] = useState<{ note: ItemCarnet; creees: ItemCarnet[]; contactId?: string; reste: Array<'Bière' | 'Date' | 'Prix'>; props: Proposition[]; nb: number; converti: boolean } | null>(null);
+  const [niveauCharge, setNiveauCharge] = useState<NiveauIA>('fast');
+  /** Les notes déjà relancées par le « + » (modèle plus précis) : une fois par note. */
+  const [plusFait, setPlusFait] = useState<ReadonlySet<string>>(() => new Set());
+  const [fiche, setFiche] = useState<{ note: ItemCarnet; creees: ItemCarnet[]; contactId?: string; reste: Array<'Bière' | 'Date' | 'Prix'>; props: Proposition[]; nb: number; converti: boolean; niveau: NiveauIA } | null>(null);
   /** `noteId` : le message vit dans la carte de cette note (brute) ; sans `noteId`, au-dessus de la proposition. */
   const [message, setMessage] = useState<{ texte: string; noteId?: string } | null>(null);
   const ancre = useRef<HTMLDivElement>(null);
@@ -77,18 +80,33 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
 
   const contexte = (): Contexte => ({ saisie: new Date(), contacts: bruts.filter((i) => i.type === 'prospect'), tarifs, bieres });
 
-  /** La note part à l'IA : simulée au banc, réelle seulement si le drapeau le permet. `null` : rien d'utilisable, la note reste brute. */
-  const demander = async (note: ItemCarnet) => {
+  /** Le « + » est-il offert pour cette note ? (une fois par note, en ligne, IA allumée) */
+  const plusOffert = (note: ItemCarnet) => niveauAppel(true, mode, enLigne, plusFait.has(note.id)) !== null;
+
+  /**
+   * La note part à l'IA : simulée au banc, réelle seulement si le drapeau le permet. `null` : rien d'utilisable, la note reste brute.
+   * `plus` : le « + », la même note au modèle plus précis (Max) ; s'il ne rend rien, la proposition d'avant revient, sans perte.
+   */
+  const demander = async (note: ItemCarnet, plus = false) => {
+    const niveau = niveauAppel(plus, mode, enLigne, plusFait.has(note.id));
+    if (!niveau) return;
+    const avant = geste?.note.id === note.id ? geste : null;
     const ctx = contexte();
-    setCharge(note); setFiche(null); setMessage(null);
-    let brut: unknown = null;
+    setCharge(note); setNiveauCharge(niveau); setGeste(null); setFiche(null); setMessage(null);
+    if (niveau === 'max') setPlusFait((s) => new Set(s).add(note.id));
+    let brut: unknown = null, panne = false;
     if (mode === 'simule') { await new Promise((r) => setTimeout(r, 500)); brut = reponseSimulee(note.title, ctx.saisie, ctx.contacts.map((c) => c.title)); }
-    else if (mode === 'production') { const r = await AiClient.run({ task: 'rangerNote', tier: 'fast', context: contexteModele(note.title, ctx) }); brut = r.ok ? r.data : null; }
+    else if (mode === 'production') { const r = await AiClient.run({ task: 'rangerNote', tier: niveau, context: contexteModele(note.title, ctx) }); brut = r.ok ? r.data : null; panne = !r.ok; }
     setCharge(null);
     const effets = lireReponse(brut, note.title, ctx.saisie);
     const props = effets ? proposer(effets, ctx) : [];
-    if (props.length === 0) { setMessage({ texte: 'L’IA n’a rien proposé : ta note reste telle quelle.', noteId: note.id }); return; }
-    setGeste({ note, props });
+    if (props.length === 0) {
+      if (avant) { setGeste({ ...avant, info: panne ? 'Le modèle plus précis n’a pas répondu : la proposition reste.' : 'Le modèle plus précis n’a rien proposé d’autre : la proposition reste.' }); return; }
+      const qui = niveau === 'max' ? 'Le modèle plus précis' : 'L’IA';
+      setMessage({ texte: `${qui} ${panne ? 'n’a pas répondu' : 'n’a rien proposé'} : ta note reste telle quelle.`, noteId: note.id });
+      return;
+    }
+    setGeste({ note, props, niveau });
   };
 
   /** Au retour du réseau, les notes en attente redeviennent brutes ; la première part à l'IA. */
@@ -122,7 +140,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
     contactId ??= e.creer.find((c) => c.type === 'prospect')?.id;
     let converti = false;
     if (e.convertir) { const cible = [...bruts, ...e.creer.map(versStockage)].find((c) => c.id === e.convertir); if (cible) converti = onConvert(cible); }
-    setFiche({ note: e.note, creees: e.creer, contactId, reste: e.reste, props: geste.props, nb: nbCochees(geste.props), converti });
+    setFiche({ note: e.note, creees: e.creer, contactId, reste: e.reste, props: geste.props, nb: nbCochees(geste.props), converti, niveau: geste.niveau });
     setGeste(null);
   };
   const annuler = () => {
@@ -130,7 +148,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
     fiche.creees.forEach((c) => onRetirer(c.id));
     onMaj(versStockage({ ...fiche.note, status: 'idea' }));
     // La proposition revient telle que corrigée ; une fiche Clients déjà créée n'est pas retirée d'ici, et le dit.
-    setGeste({ note: { ...fiche.note, status: 'idea' }, props: apresAnnuler(fiche.props, fiche.converti) });
+    setGeste({ note: { ...fiche.note, status: 'idea' }, props: apresAnnuler(fiche.props, fiche.converti), niveau: fiche.niveau });
     setMessage(fiche.converti ? { texte: `Annulé. « ${ficheContact?.title ?? 'Le contact'} » reste dans Clients : Annuler ne retire pas une fiche Clients.` } : null);
     setFiche(null);
   };
@@ -173,13 +191,15 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
               if (!estNote(i)) return <React.Fragment key={i.id}>{carte(i as unknown as CreativeItem)}</React.Fragment>;
               const enf = fil.enfants.get(i.id) ?? [];
               if (enf.length > 0) return <NoteRangee key={i.id} note={i} enfants={enf} carte={carte} />;
-              return <div key={i.id} className="nc-ph nc-brute"><span><small>ta note</small>{i.title}{message?.noteId === i.id && <small className="nc-msg" role="status">{message.texte}</small>}</span>
+              return <div key={i.id} className="nc-ph nc-brute"><span><small>ta note</small>{i.title}{message?.noteId === i.id && <small className="nc-msg" role="status">{message.texte}</small>}
+                {message?.noteId === i.id && plusOffert(i) && <button type="button" className="nc-add nc-plus-l" aria-label="Relancer avec le modèle plus précis" onClick={() => void demander(i, true)}><Plus size={16} aria-hidden="true" />modèle plus précis</button>}</span>
                 {mode !== 'eteint' && enLigne && <button type="button" className="nc-add" onClick={() => void demander(i)}><Sparkles size={14} aria-hidden="true" />Ranger</button>}
                 <button type="button" className="nc-x" aria-label={`Retirer la note « ${i.title} »`} onClick={() => setRetirer(i)}><X size={18} aria-hidden="true" /></button></div>;
             })}
-            {charge && <div className="nc-big" role="status"><div className="nc-aih"><Sparkles size={14} aria-hidden="true" />L’IA range ta note…{mode === 'simule' && <em>exemple</em>}</div><div className="nc-ph">{charge.title}</div></div>}
+            {charge && <div className="nc-big" role="status"><div className="nc-aih"><Sparkles size={14} aria-hidden="true" />{niveauCharge === 'max' ? 'Le modèle plus précis range ta note…' : 'L’IA range ta note…'}{mode === 'simule' && <em>exemple</em>}</div><div className="nc-ph">{charge.title}</div></div>}
             {message && !message.noteId && <p className="nc-msg" role="status">{message.texte}</p>}
             {geste && <div ref={ancre} className="nc-ancre"><CarteAiguillage note={geste.note} props={geste.props} simule={mode === 'simule'} tarifs={tarifs} bieres={bieres}
+              niveau={geste.niveau} info={geste.info} onPlus={plusOffert(geste.note) ? () => void demander(geste.note, true) : undefined}
               onChange={(props) => setGeste({ ...geste, props })} onRanger={ranger} onGarder={() => setGeste(null)} /></div>}
           </>}
         </div>

@@ -66,6 +66,9 @@ export default defineConfig(({ command }) => ({
     // D378 (08.11, « Baisse à 20 et go ») : l'enrichissement des fiches par l'IA est allumé en production, 20 recherches par jour au plus
     // (enrichissementReglages.ts). VITE_ENRICHISSEMENT_IA=eteinte au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
     'import.meta.env.VITE_ENRICHISSEMENT_IA': JSON.stringify(process.env.VITE_ENRICHISSEMENT_IA || 'production'),
+    // ks4 passe 3 (15.11, « Oui la moins chère, et bouton + ») : la note du Carnet rangée par l'IA, allumée en production
+    // (src/config/rangerNoteIA.ts). VITE_RANGER_NOTE_IA=eteint au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
+    'import.meta.env.VITE_RANGER_NOTE_IA': JSON.stringify(process.env.VITE_RANGER_NOTE_IA || 'production'),
   } } : {}),
   server: {
     // 3000 par défaut ; `PORT` permet de lancer un second serveur en parallèle
