@@ -123,20 +123,23 @@ afterEach(() => { cleanup(); });
 
 describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écriture', () => {
   for (const tab of ['dashboard', 'finances']) {
-    it(`${tab} : « Nouvelle écriture » en tête du menu, les autres saisies dessous`, async () => {
+    it(`${tab} : « Nouvelle écriture » en tête du menu, les autres saisies dessous (b1r)`, async () => {
       ui.activeTab = tab;
       const user = userEvent.setup();
       render(<App />);
       await user.click(await screen.findByRole('button', { name: 'Actions rapides' }));
       const items = within(await screen.findByRole('menu', { name: 'Actions rapides' })).getAllByRole('menuitem');
       expect(items[0]).toHaveTextContent(/^Nouvelle écriture/);
-      expect(items[0]).toHaveTextContent('Facture ou saisie à la main');
+      expect(items[0]).toHaveTextContent('facture ou à la main');
       const labels = items.map(item => item.textContent ?? '');
-      // BX-4 (09.11) : « Nouvelle écriture » ouvre l'entrée de la facture ; « Entrer une facture » ne se répète pas dessous.
-      expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
-      for (const other of ['Vendre', 'Créer une recette', 'Lancer un brassin']) {
+      // b1r : « Sur cet écran » = Nouvelle écriture, puis Facture et Vente ; le Bord ajoute « Depuis ici » (brassin, courses, recette).
+      // Finances n'a pas de « Depuis ici » : ses saisies sont l'écriture, la facture et la vente.
+      const attendues = tab === 'dashboard' ? ['Facture', 'Vente', 'Brassin', 'Recette'] : ['Facture', 'Vente'];
+      for (const other of attendues) {
         expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
       }
+      expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
+      expect(items.at(-1)).toHaveAttribute('aria-label', expect.stringContaining('Compagnon brasseur'));
       await user.click(items[0]);
       expect(await screen.findByRole('dialog', { name: 'Saisie scan' })).toBeInTheDocument();
       expect(screen.queryByRole('dialog', { name: 'Saisie menu' })).not.toBeInTheDocument();

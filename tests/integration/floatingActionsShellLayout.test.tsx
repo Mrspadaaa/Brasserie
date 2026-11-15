@@ -210,8 +210,10 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     fireEvent.click(button);
     const items = screen.getAllByRole('menuitem');
     expect(document.activeElement).toBe(items[0]);
-    expect(items[0]).toHaveTextContent('Compagnon brasseur');
-    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
+    // b1r : sur une page, les gestes de partout d'abord, le Compagnon en pied.
+    expect(items[0]).toHaveTextContent('Facture');
+    expect(items.at(-1)).toHaveTextContent('Compagnon');
+    fireEvent.click(screen.getByRole('menuitem', { name: /Recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
     expect(screen.queryByRole('menu')).toBeNull();
   });
@@ -240,7 +242,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
 
     fireEvent.click(launcherButton());
     expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
-    fireEvent.click(screen.getByRole('menuitem', { name: /Lancer un brassin/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Brassin/ }));
     expect(calls.brew).toHaveBeenCalledOnce();
   });
 
@@ -266,7 +268,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     button.focus();
     expect(button).toHaveFocus();
     fireEvent.click(button);
-    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
 
     await act(async () => { brewerJobs.merge([doneJob()]); });
@@ -330,14 +332,9 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
       render(<Shell page={false} calls={calls} />);
       fireEvent.click(launcherButton());
       expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-        'Nouveau matérielSur cet écran',
-        'Compagnon brasseurMatériel',
-        'Entrer une factureDocument, puis vérification',
-        'Vendre',
-        'Créer une recette',
-        'Lancer un brassinÀ partir d’une recette existante'
+        'Nouveau matériel', 'Facture', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
       ]);
-      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Vendre/, /Créer une recette/, /Lancer un brassin/]) {
+      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Facture/, /Vente/, /Recette/, /Brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());
         fireEvent.click(screen.getByRole('menuitem', { name }));
         expect(screen.queryByRole('menu')).toBeNull();

@@ -58,7 +58,9 @@ describe('FloatingActions · contrat DOM et clavier', () => {
     expect(opened.trigger.getAttribute('aria-controls')).toBe(opened.menu.id);
     expect(opened.items).toHaveLength(6);
     expect(opened.items[0].textContent).toContain('Nouveau matériel');
-    expect(opened.items[1].textContent).toContain('Compagnon brasseur');
+    // b1r : l'action de l'écran d'abord, les gestes de partout, puis le Compagnon en pied de feuille.
+    expect(opened.items.map((item) => item.textContent)).toEqual(['Nouveau matériel', 'Facture', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel']);
+    expect(opened.items.at(-1)!.getAttribute('aria-label')).toBe('Compagnon brasseur · Matériel');
     expect(document.activeElement).toBe(opened.items[0]);
 
     fireEvent.click(opened.items[0]);
@@ -70,10 +72,10 @@ describe('FloatingActions · contrat DOM et clavier', () => {
   it('route chaque choix du menu vers son callback ou événement précis', () => {
     const callbacks = renderActions(null);
     const destinations = [
-      { label: /Entrer une facture/, run: callbacks.invoice },
-      { label: /Vendre/, run: callbacks.sale },
-      { label: /Créer une recette/, run: callbacks.recipe },
-      { label: /Lancer un brassin/, run: callbacks.brew }
+      { label: /Facture/, run: callbacks.invoice },
+      { label: /Vente/, run: callbacks.sale },
+      { label: /Recette/, run: callbacks.recipe },
+      { label: /Brassin/, run: callbacks.brew }
     ];
 
     for (const destination of destinations) {

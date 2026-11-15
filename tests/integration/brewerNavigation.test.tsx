@@ -78,14 +78,12 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     render(screenWith({ action: { intent: 'newEquipment', label: 'Nouveau matériel' }, onAction: create, companionLabel: 'Matériel' },
       brewerAppScreen('stocks', 'materiel')));
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
-      'Nouveau matérielSur cet écran',
-      'Compagnon brasseurMatériel',
-      'Entrer une factureDocument, puis vérification',
-      'Vendre',
-      'Créer une recette',
-      'Lancer un brassinÀ partir d’une recette existante'
+    // b1r : l'action de l'écran d'abord, les quatre gestes de partout, le Compagnon séparé en pied de feuille.
+    const items = screen.getAllByRole('menuitem');
+    expect(items.map((item) => item.textContent)).toEqual([
+      'Nouveau matériel', 'Facture', 'Vente', 'Recette', 'Brassin', 'CompagnonMatériel'
     ]);
+    expect(items.at(-1)).toHaveAttribute('aria-label', 'Compagnon brasseur · Matériel');
     fireEvent.click(screen.getByRole('menuitem', { name: /Nouveau matériel/ }));
     expect(create).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -96,7 +94,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
   it('ouvre chaque saisie à son écran, sans repasser par un sommaire', () => {
     const calls = { invoice: vi.fn(), sale: vi.fn(), recipe: vi.fn(), brew: vi.fn() };
     render(screenWith({ onInvoice: calls.invoice, onSale: calls.sale, onRecipe: calls.recipe, onBrew: calls.brew }));
-    for (const name of [/Entrer une facture/, /Vendre/, /Créer une recette/, /Lancer un brassin/]) {
+    for (const name of [/Facture/, /Vente/, /Recette/, /Brassin/]) {
       fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
       fireEvent.click(screen.getByRole('menuitem', { name }));
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -202,8 +200,13 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
   });
   it('n’interroge pas le compagnon en mode dev-local et affiche son état hors connexion', async () => {
     window.history.replaceState({}, '', '/?dev-local');
-    render(<BrewerActivity localOnly />);
-    expect(screen.getByRole('status')).toHaveTextContent('Compagnon hors connexion · mode local');
+    render(<><BrewerActivity localOnly />{actions({ horsConnexion: true })}</>);
+    // b1r : plus de pastille flottante ; l'état se lit dans l'entrée Compagnon du +.
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+    const compagnon = screen.getByRole('menuitem', { name: /Compagnon brasseur/ });
+    expect(compagnon).toHaveTextContent('hors connexion');
+    expect(compagnon).toHaveAttribute('aria-label', expect.stringContaining('hors connexion'));
     await act(async () => {});
     expect(api.activity).not.toHaveBeenCalled();
     expect(api.userKey).not.toHaveBeenCalled();
