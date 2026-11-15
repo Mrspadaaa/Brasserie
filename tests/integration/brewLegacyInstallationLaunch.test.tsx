@@ -48,20 +48,19 @@ beforeEach(() => {
   vi.spyOn(StorageService, 'subscribe').mockReturnValue(() => {});
   vi.spyOn(GoogleDriveService, 'isConnected').mockReturnValue(false);
 });
-afterEach(() => { cleanup(); brewerJobs.stop(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); brewerJobs.stop(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 describe('nouveau lancement depuis une recette sans capacités figées', () => {
   it.each([
     { withProfile: false, targetL: 30 }, { withProfile: false, targetL: 24 },
     { withProfile: true, targetL: 30 }, { withProfile: true, targetL: 24 }
-  ])('refuse la source legacy avant tout changement vers $targetL L (profil : $withProfile)', ({ withProfile, targetL }) => {
-    const recipe = legacyRecipe(withProfile), original = structuredClone(recipe), oldBatch = structuredClone(history);
+  ])('refuse la source legacy au volume de la recette, $targetL L (profil : $withProfile)', ({ withProfile, targetL }) => {
+    // d1b : plus de curseur de volume ; la feuille brasse le volume de la recette, qui prend ici les deux valeurs.
+    const recipe = legacyRecipe(withProfile, targetL), original = structuredClone(recipe), oldBatch = structuredClone(history);
     const close = vi.fn();
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[recipe]} onClose={close} />);
-    const volume = screen.getByLabelText('Volume du brassin');
-    fireEvent.change(volume, { target: { value: String(targetL) } });
-    fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Planifier/ }));
     expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
     expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(StorageService.addBatch).not.toHaveBeenCalled();
@@ -99,14 +98,15 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     expect(original).toEqual(before);
     editor.unmount();
     const close = vi.fn();
+    vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-09-20T12:00:00Z')); // dim. 20.09 : le damier d1b va du 14.09 au 04.10
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[adapted]} onClose={close} />);
-    fireEvent.click(screen.getByRole('radio', { name: 'Autre date' }));
-    fireEvent.change(screen.getByLabelText('Jour prévu'), { target: { value: '2026-10-24' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^samedi 26 septembre/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Planifier sam. 26.09' }));
     await waitFor(() => expect(close).toHaveBeenCalledOnce());
     expect(created).toHaveLength(1);
     expect(created[0].volumeL).toBe(volumeL);
-    expect(created[0]).toMatchObject({ plannedBrewDate: '24.10.2026', brewDate: '', status: 'planifie' });
+    expect(created[0]).toMatchObject({ plannedBrewDate: '26.09.2026', brewDate: '', status: 'planifie' });
     expect(created[0].brewDay).toBeUndefined();
     expect(created[0].recipeSnapshot?.brewhouse?.equipment).toEqual(activeProfile.equipment);
     expect(history).toEqual(oldBatch);

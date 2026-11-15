@@ -219,6 +219,7 @@ export const App: React.FC = () => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const [batchCree, setBatchCree] = useState<{ id: string; at: number } | null>(null);
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
   const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
@@ -1000,6 +1001,8 @@ export const App: React.FC = () => {
             createRequest={createRequest}
             openBatchRequest={batchOpenRequest}
             onOpenBatchRequestHandled={() => setBatchOpenRequest(null)}
+            batchCree={batchCree}
+            onBatchCreeHandled={() => setBatchCree(null)}
             openLabSectionRequest={labSectionRequest}
             onOpenLabSectionRequestHandled={() => setLabSectionRequest(null)}
             onDraftRecipe={(seed) => openWizard(seed)}
@@ -1078,7 +1081,14 @@ export const App: React.FC = () => {
         initialScreen={quickAction ?? 'menu'}
         onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
         initialRecipeId={brewRecipeId}
-        onBatchCreated={batch => route.open({ view: 'brewday', batchId: batch.id })}
+        onBatchCreated={batch => {
+          // c2a « après » : le brassin créé arrive en tête de la liste des brassins, avec ses effets et « Défaire » (plus de saut au jour de brassage).
+          setProductionSubTab('batches');
+          setActiveTab('production');
+          if (view.view !== 'tabs') route.close();
+          setBatchCree({ id: batch.id, at: Date.now() });
+        }}
+        onOpenBatch={batch => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: batch.id, at: Date.now() }); }}
         onOpenExpense={id => { setQuickAction(null); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}

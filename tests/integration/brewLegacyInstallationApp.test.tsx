@@ -62,7 +62,8 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     const { App } = await import('../../src/App');
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: 'Lancer depuis la recette' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Créer le brassin à brasser' }));
+    // d1b : la recette ouvre la feuille « Brasser » ; « Planifier » est le geste qui crée.
+    fireEvent.click(await screen.findByRole('button', { name: /^Planifier/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
@@ -82,6 +83,6 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(screen.queryByRole('button', { name: 'Créer le brassin à brasser' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Planifier/ })).not.toBeInTheDocument();
   });
 });

@@ -7,6 +7,8 @@ import { useLiveSelection } from '../../hooks/useLiveData';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
 import { CarnetRecettes } from '../../ui/production/recettes/CarnetRecettes';
+import { CarteApres } from '../../ui/production/creer/CarteApres';
+import { useStorageValue } from '../../hooks/useLiveData';
 import type { BatchDetailSection } from '../../domain/productionInsights';
 import '../../ui/production/compact.css';
 import { SegmentsCoque } from '../../ui/production/volumes/Coque';
@@ -39,6 +41,9 @@ interface ProductionTabProps {
   /** Ouvre un brassin précis, même hors de la période du catalogue. */
   openBatchRequest?: { id: string; at: number } | null;
   onOpenBatchRequestHandled?: () => void;
+  /** c2a, état « après » : le brassin que « Planifier » vient de créer ; la liste le montre en tête avec ses effets. */
+  batchCree?: { id: string; at: number } | null;
+  onBatchCreeHandled?: () => void;
   openLabSectionRequest?: CreativeLabSectionRequest | null;
   onOpenLabSectionRequestHandled?: () => void;
   /** Ouvre la fiche recette en plein écran. */
@@ -54,6 +59,8 @@ interface ProductionTabProps {
   onRebrewRecipe?: (recipeId: string) => void;
 }
 
+const lireArticles = () => { try { return StorageService.getStocks().rawMaterials ?? []; } catch { return []; } };
+
 export const ProductionTab: React.FC<ProductionTabProps> = ({
   visible = true,
   batches,
@@ -68,6 +75,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onCreateRequestHandled,
   openBatchRequest,
   onOpenBatchRequestHandled,
+  batchCree,
+  onBatchCreeHandled,
   openLabSectionRequest,
   onOpenLabSectionRequestHandled,
   onOpenRecipe,
@@ -156,6 +165,18 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     }
   }, [createRequest?.at]);
 
+  // c2a « après » : la liste des brassins, le lot neuf en tête avec ses effets ; « Défaire » supprime le brassin créé (geste existant).
+  const [apres, setApres] = useState<string | null>(null);
+  const articles = useStorageValue(lireArticles);
+  useEffect(() => {
+    if (!batchCree) return;
+    setSubTab('batches');
+    setApres(batchCree.id);
+    onBatchCreeHandled?.();
+  }, [batchCree?.at]);
+  const lotApres = apres ? batches.find((b) => b.id === apres) : undefined;
+  const recetteApres = lotApres ? recipes.find((r) => r.id === lotApres.recipeRef) : undefined;
+
   useEffect(() => {
     if (!openBatchRequest) return;
     const handled = handledOpenBatchRequest.current;
@@ -189,6 +210,11 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
         {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : <h2 className="sr-only">Le carnet de recettes</h2>}
+        {subTab === 'batches' && lotApres && !bilanOuvert && (
+          <CarteApres batch={lotApres} recipe={recetteApres} batches={batches} stock={articles}
+            onOuvrir={() => { setDetailSection('measurements'); setDetailBatch(lotApres); }}
+            onDefaire={() => { StorageService.deleteBatch(lotApres.id); setApres(null); onSuccessMessage?.(`${lotApres.id} défait : le brassin est supprimé.`); }} />
+        )}
         {subTab === 'batches' ? (
           <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter="all"
             onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />

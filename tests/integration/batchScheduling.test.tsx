@@ -36,15 +36,22 @@ beforeEach(() => {
   vi.spyOn(FirestoreRepo, 'waitForDocument').mockImplementation(async (_name, id) => batches.find(batch => batch.id === id));
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
-const create = () => screen.getByRole('button', { name: 'Créer le brassin à brasser' });
+// d1b (choix du brasseur) : plus de liste, de curseur ni de « À définir / Aujourd’hui / Autre date ». On touche un jour du damier (3 semaines, lundi → dimanche), puis « Planifier <jour> ».
+// Aujourd’hui = dim. 20.09.2026 (le damier va du lu. 14.09 au di. 04.10 ; « Semaines d’après » avance d’une semaine).
+const jourBtn = (jour: string) => screen.getByRole('button', { name: new RegExp(`^${jour}`) });
+const choisir = (jour: string) => fireEvent.click(jourBtn(jour));
+const planifier = (court: string) => screen.getByRole('button', { name: `Planifier ${court}` });
+const apres = (fois: number) => { for (let i = 0; i < fois; i++) fireEvent.click(screen.getByRole('button', { name: 'Semaines d\'après' })); };
 const openCreation = (onBatchCreated = vi.fn(), onClose = vi.fn()) => render(<QuickActionModal isOpen recipes={[recipe]} onClose={onClose} initialScreen="brew-batch" initialRecipeId={recipe.id} onBatchCreated={onBatchCreated} />);
 
 describe('prepare and schedule a reusable recipe', () => {
   it('keeps a scheduled legacy recipe uncreated until its installation is explicitly adopted', () => {
     const onCreated = vi.fn(), close = vi.fn();
     render(<QuickActionModal isOpen recipes={[sourceRecipe]} onClose={close} initialScreen="brew-batch" onBatchCreated={onCreated} />);
-    fireEvent.click(screen.getByRole('radio', { name: 'Aujourd’hui' }));
-    fireEvent.click(create());
+    // c2a : la liste des recettes d’abord, « Brasser » ouvre la feuille d1b.
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    choisir('dimanche 20 septembre');
+    fireEvent.click(planifier('dim. 20.09'));
     expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
@@ -53,53 +60,62 @@ describe('prepare and schedule a reusable recipe', () => {
     expect(sourceRecipe).not.toHaveProperty('brewhouse');
   });
 
-  it('defaults to no date, confirms one frozen batch, and leaves its recipe unchanged', async () => {
+  it('creates nothing before « Planifier », then confirms one frozen batch on the touched day and leaves its recipe unchanged', async () => {
     const created = vi.fn(); openCreation(created);
-    expect(screen.getByRole('radio', { name: 'À définir' })).toHaveAttribute('aria-checked', 'true');
-    fireEvent.click(create());
+    expect(screen.getByRole('heading', { name: /Brasser .* · v\d+/ })).toBeInTheDocument();
+    expect(batches).toHaveLength(0);
+    choisir('dimanche 27 septembre');
+    expect(batches).toHaveLength(0);
+    fireEvent.click(planifier('dim. 27.09'));
     await waitFor(() => expect(created).toHaveBeenCalledOnce());
-    expect(batches[0]).toMatchObject({ brewDate: '', plannedBrewDate: '', recipeRef: recipe.id, status: 'planifie' });
+    expect(batches[0]).toMatchObject({ brewDate: '', plannedBrewDate: '27.09.2026', recipeRef: recipe.id, status: 'planifie' });
     expect(batches[0].recipeSnapshot?.yeast).toEqual(recipe.yeast);
     expect(batches[0].brewDay).toBeUndefined(); expect(recipe.brewDate).toBe('15.09.2020');
   });
-  it('requires an explicit valid day, then stores that plan without an actual date', async () => {
+  it('past days are inert; a distant day, reached with « Semaines d’après », is stored as the planned day without an actual date', async () => {
     const created = vi.fn(); openCreation(created);
-    fireEvent.click(screen.getByRole('radio', { name: 'Autre date' }));
-    expect(create()).toBeDisabled();
-    fireEvent.change(screen.getByLabelText('Jour prévu'), { target: { value: '2026-10-24' } });
-    fireEvent.click(create());
+    expect(screen.getByRole('button', { name: 'Semaines d\'avant' })).toBeDisabled();
+    expect(jourBtn('samedi 19 septembre')).toBeDisabled();
+    apres(3);
+    expect(screen.getByRole('button', { name: 'Semaines d\'avant' })).toBeEnabled();
+    choisir('samedi 24 octobre');
+    expect(screen.getByRole('status')).toHaveTextContent('Dans 34 jours');
+    fireEvent.click(planifier('sam. 24.10'));
     await waitFor(() => expect(created).toHaveBeenCalledOnce());
     expect(batches[0]).toMatchObject({ plannedBrewDate: '24.10.2026', brewDate: '' });
   });
   it('today is also an intention until the brewer starts', async () => {
-    openCreation(); fireEvent.click(screen.getByRole('radio', { name: 'Aujourd’hui' })); fireEvent.click(create());
+    openCreation(); choisir('dimanche 20 septembre'); fireEvent.click(planifier('dim. 20.09'));
     await waitFor(() => expect(batches).toHaveLength(1));
     expect(batches[0]).toMatchObject({ plannedBrewDate: '20.09.2026', brewDate: '' });
   });
   it('keeps a failed acknowledgement reviewable and retries without a duplicate', async () => {
     const created = vi.fn(), close = vi.fn();
     vi.mocked(FirestoreRepo.waitForDocument).mockRejectedValueOnce(new Error('Confirmation en attente'));
-    openCreation(created, close); fireEvent.click(create());
+    openCreation(created, close); choisir('dimanche 27 septembre'); fireEvent.click(planifier('dim. 27.09'));
     expect(await screen.findByRole('alert')).toHaveTextContent('Confirmation en attente');
     expect(close).not.toHaveBeenCalled(); expect(created).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Recette à brasser')).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Confirmer l’enregistrement' }));
+    // Le brassin est déjà écrit : son jour est figé, et « Confirmer l’enregistrement » rejoue seulement la confirmation.
+    expect(jourBtn('dimanche 20 septembre')).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: "Confirmer l'enregistrement" }));
     await waitFor(() => expect(created).toHaveBeenCalledOnce()); expect(batches).toHaveLength(1);
+    expect(batches[0].plannedBrewDate).toBe('27.09.2026');
   });
   it('allows correction after a confirmed rejected creation', async () => {
     vi.mocked(FirestoreRepo.waitForDocument).mockImplementationOnce(async () => { batches = []; throw new DocumentWriteError('rejected', 'batches/LOT-001', undefined, 'Enregistrement refusé'); });
-    openCreation(); fireEvent.click(create());
+    openCreation(); choisir('dimanche 27 septembre'); fireEvent.click(planifier('dim. 27.09'));
     expect(await screen.findByRole('alert')).toHaveTextContent('refusé');
-    expect(screen.getByLabelText('Recette à brasser')).toBeEnabled();
-    fireEvent.click(screen.getByRole('radio', { name: 'Aujourd’hui' })); fireEvent.click(create());
+    expect(jourBtn('dimanche 20 septembre')).toBeEnabled();
+    choisir('dimanche 20 septembre'); fireEvent.click(planifier('dim. 20.09'));
     await waitFor(() => expect(batches).toHaveLength(1)); expect(batches[0].plannedBrewDate).toBe('20.09.2026');
   });
   it('locks double clicks and closing while the exact batch awaits confirmation', async () => {
     let acknowledge!: () => void;
     vi.mocked(FirestoreRepo.waitForDocument).mockImplementation(() => new Promise(resolve => { acknowledge = () => resolve(batches[0]); }));
-    const created = vi.fn(); openCreation(created); const button = create();
+    const created = vi.fn(); openCreation(created); choisir('dimanche 27 septembre'); const button = planifier('dim. 27.09');
     fireEvent.click(button); fireEvent.click(button);
     expect(batches).toHaveLength(1); expect(screen.getByRole('button', { name: 'Fermer' })).toBeDisabled();
+    expect(jourBtn('dimanche 20 septembre')).toBeDisabled();
     await act(async () => acknowledge()); expect(created).toHaveBeenCalledOnce();
   });
 });

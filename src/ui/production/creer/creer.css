@@ -1,0 +1,82 @@
+/*
+ * « Créer un brassin » (c2a) : choix du brasseur du 15.11, porté depuis sa maquette (voies/c2/c2a/etat.html). Classes préfixées c2a- (L26).
+ */
+.c2a-ecran { display: block; container-type: inline-size; }
+.c2a-ecran > .c2a-h1 { margin: 4px 0 10px; }
+.c2a-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin: 4px 0 8px; }
+.c2a-h1 { display: flex; flex-direction: column; font-size: 28px; line-height: 1.12; font-weight: 600; letter-spacing: -0.01em; color: rgb(var(--cave-texte-50)); }
+.c2a-ok { color: rgb(var(--hop-texte)); }
+.c2a-att { color: rgb(var(--attention-texte)); }
+.c2a-cnt { text-align: right; font-size: 12px; line-height: 1.2; color: rgb(var(--cave-texte-400)); flex: none; }
+.c2a-cnt b { display: block; font-family: theme('fontFamily.mono'); font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.c2a-cuve { display: flex; align-items: center; min-height: 44px; padding: 0 10px; border-radius: 10px; background: rgb(var(--cave-850)); font-size: 14px; color: rgb(var(--cave-texte-200)); gap: 8px; }
+.c2a-cuve svg { flex: none; width: 18px; height: 18px; color: rgb(var(--cave-texte-400)); }
+.c2a-cuve b { color: rgb(var(--cave-texte-50)); font-weight: 600; }
+.c2a-tris { display: flex; gap: 6px; margin: 12px 0; }
+.c2a-sel { position: relative; min-height: 44px; border-radius: 10px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600;
+  color: rgb(var(--cave-texte-50)); border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); }
+.c2a-sel svg { width: 16px; height: 16px; }
+.c2a-sel[aria-pressed='true'] { background: rgb(var(--hop) / 0.12); border-color: rgb(var(--hop) / 0.6); color: rgb(var(--hop-texte)); }
+.c2a-grille { display: flex; flex-direction: column; gap: 8px; }
+@container (min-width: 640px) { .c2a-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; } }
+.c2a-rec { border-radius: 16px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); padding: 10px 12px; }
+.c2a-rh { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.c2a-rn { font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.c2a-style { min-width: 0; overflow: hidden; display: inline-flex; }
+.c2a-st { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; flex: none; }
+.c2a-st[data-ton='hop'] { color: rgb(var(--hop-texte)); background: rgb(var(--hop) / 0.12); }
+.c2a-st[data-ton='attention'] { color: rgb(var(--attention-texte)); background: rgb(var(--attention) / 0.14); }
+.c2a-st[data-ton='eteint'] { color: rgb(var(--cave-texte-200)); background: rgb(var(--cave-850)); }
+.c2a-tr { display: inline-flex; gap: 2px; }
+.c2a-tr u { display: block; width: 4px; height: 12px; border-radius: 2px; background: rgb(var(--hop)); }
+.c2a-tr u[data-t='manque'] { background: transparent; box-shadow: inset 0 0 0 1px rgb(var(--attention)); }
+.c2a-tr u[data-t='inconnu'] { background: transparent; box-shadow: inset 0 0 0 1px rgb(var(--cave-texte-400)); }
+.c2a-st[data-ton='eteint'] .c2a-tr u { background: rgb(var(--cave-texte-400)); }
+.c2a-rp { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.c2a-rc { display: flex; gap: 18px; flex: 1; min-width: 0; }
+.c2a-rc > span { display: flex; flex-direction: column; min-width: 0; }
+.c2a-rc small { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.c2a-rc b { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); white-space: nowrap; }
+.c2a-dern { margin-top: 4px; font-size: 14px; color: rgb(var(--cave-texte-400)); }
+.c2a-dern b { font-weight: 600; color: rgb(var(--cave-texte-200)); }
+.c2a-dern b.c2a-att { color: rgb(var(--attention-texte)); }
+.c2a-btn { min-height: 44px; padding: 0 12px; border-radius: 10px; font-size: 16px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-50)); }
+.c2a-btn svg { width: 18px; height: 18px; }
+.c2a-btn:focus-visible, .c2a-sel:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+.c2a-primaire { background: rgb(var(--ebc-straw)); border-color: transparent; color: rgb(var(--sur-paille)); }
+
+/* Après : le brassin neuf en tête de la liste, ses effets en rangées */
+.c2a-cree { border-radius: 16px; border: 2px solid rgb(var(--hop)); background: rgb(var(--hop) / 0.07); padding: 12px 12px 10px; margin-bottom: 10px; }
+.c2a-ct { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.c2a-pastille { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: rgb(var(--hop-texte)); background: rgb(var(--hop) / 0.15); }
+.c2a-pastille svg { width: 14px; height: 14px; }
+.c2a-lot { font-size: 14px; color: rgb(var(--cave-texte-200)); }
+.c2a-vol { margin-left: auto; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.c2a-ef { list-style: none; margin: 8px 0 0; padding: 0; }
+.c2a-ef li { display: flex; align-items: center; gap: 10px; min-height: 52px; border-top: 1px solid rgb(var(--cave-800)); }
+.c2a-ei { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; color: rgb(var(--hop-texte)); background: rgb(var(--hop) / 0.15); }
+.c2a-ei svg { width: 18px; height: 18px; }
+.c2a-ef li[data-ton='attention'] .c2a-ei { color: rgb(var(--attention-texte)); background: rgb(var(--attention) / 0.18); }
+.c2a-ef li[data-ton='neutre'] .c2a-ei { color: rgb(var(--cave-texte-200)); background: rgb(var(--cave-850)); }
+.c2a-et { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.c2a-et b { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.c2a-et small { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.c2a-cp { display: flex; gap: 8px; margin-top: 8px; }
+.c2a-cp .c2a-btn { flex: 1; }
+
+/* Vide */
+.c2a-vide { border-radius: 16px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); padding: 16px; }
+.c2a-vide-t { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); margin-bottom: 4px; }
+.c2a-vide-p { font-size: 14px; color: rgb(var(--cave-texte-400)); }
+.c2a-voies { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.c2a-voies .c2a-btn { min-height: 48px; justify-content: flex-start; padding: 0 14px; gap: 10px; }
+.c2a-fant { margin-top: 16px; border-radius: 16px; border: 1px dashed rgb(var(--cave-700)); padding: 4px 12px 8px; }
+.c2a-fant h4 { font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); margin: 8px 0 2px; }
+.c2a-fant ul { margin: 0; padding: 0; }
+.c2a-fant li { display: flex; align-items: center; gap: 10px; min-height: 48px; font-size: 16px; color: rgb(var(--cave-texte-200)); opacity: 0.6; list-style: none; border-top: 1px solid rgb(var(--cave-800)); }
+.c2a-fant li:first-child { border-top: 0; }
+.c2a-fant li > span:nth-child(2) { flex: 1; }
+.c2a-fant .c2a-ei svg, .c2a-fant li > svg { width: 18px; height: 18px; }
+.c2a-fant li > svg { color: rgb(var(--cave-texte-400)); }
+.c2a-fant li[data-ton='attention'] .c2a-ei { color: rgb(var(--attention-texte)); background: rgb(var(--attention) / 0.18); }

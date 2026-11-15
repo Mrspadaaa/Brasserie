@@ -54,7 +54,9 @@ import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreR
 import { purchaseIsoDate } from '../services/purchaseEntry';
 import { TextInput } from '../ui/TextInput';
 import { Field, inputClass } from '../ui/FormNav';
-import { BrewScheduleField } from '../ui/production/BrewScheduleField';
+import { FeuilleBrasser } from '../ui/production/brasser/FeuilleBrasser';
+import { ListeCreer } from '../ui/production/creer/ListeCreer';
+import { useStorageValue } from '../hooks/useLiveData';
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { nombreFr } from '../domain/nombreAffiche';
 import { avertissementMaterielActuel } from '../domain/materielActuel';
@@ -69,9 +71,15 @@ interface QuickActionModalProps {
   initialScreen?: QuickActionScreen;
   initialRecipeId?: string;
   onBatchCreated?: (batch: Batch) => void;
+  /** c2a : « Brasser LOT-xxx » sur une recette déjà prévue ouvre ce brassin. */
+  onOpenBatch?: (batch: Batch) => void;
   /** Une pièce déjà enregistrée : ouvrir sa dépense dans Finances. */
   onOpenExpense?: (id: string) => void;
 }
+
+/* Lecteurs au niveau du module : `useStorageValue` se réabonne à chaque nouvelle fonction. */
+const lireLots = (): Batch[] => StorageService.getBatches();
+const lireArticles = (): StockItem[] => { try { return StorageService.getStocks().rawMaterials ?? []; } catch { return []; } };
 
 /** Points d'entrée directs, ouverts depuis le bouton d'action. */
 export type QuickActionScreen = 'menu' | 'quick-sale' | 'quick-expense' | 'scan' | 'brew-batch';
@@ -98,6 +106,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   initialScreen = 'menu',
   initialRecipeId,
   onBatchCreated,
+  onOpenBatch,
   onOpenExpense
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
@@ -180,18 +189,23 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   /* Le volume part de celui de la recette : c'est le brassin qu'on refait le plus souvent. */
   const [batchVolumeL, setBatchVolumeL] = useState<number>(() => recipes[0]?.volumeL ?? 30);
   const [brewError, setBrewError] = useState('');
-  const [plannedDate, setPlannedDate] = useState<string | undefined>();
+  /** d1b : la feuille « Brasser » est ouverte sur la recette choisie (depuis le carnet, une fiche, ou une carte de la liste c2a). */
+  const [recettePosee, setRecettePosee] = useState(false);
   const [brewSaving, setBrewSaving] = useState(false);
+  const lots = useStorageValue(lireLots);
+  const articles = useStorageValue(lireArticles);
   const brewBusy = useRef(false);
   const pendingBatch = useRef<Batch | undefined>(undefined);
+  /** Le jour du brassin déjà écrit dont la confirmation n'est pas reçue : la feuille le fige (pendingBatch est une ref, elle ne redessine pas). */
+  const [jourAttente, setJourAttente] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (!isOpen) return;
     const selected = recipes.find(recipe => recipe.id === initialRecipeId) ?? recipes[0];
     setSelectedRecipeId(selected?.id ?? '');
     setBatchVolumeL(selected?.volumeL ?? 30);
-    setPlannedDate(undefined);
+    setRecettePosee(!!initialRecipeId && !!selected);
     setBrewError('');
-    pendingBatch.current = undefined;
+    pendingBatch.current = undefined; setJourAttente(undefined);
   }, [isOpen, initialRecipeId]);
 
   /* AM-47 : le volume repris de la recette est comparé au matériel actuel ; on avertit et on propose, sans refuser ni changer seul. */
@@ -201,6 +215,15 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     const cfg = StorageService.getConfig();
     return avertissementMaterielActuel(recetteChoisie, batchVolumeL, cfg.brewhouses.find((b) => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0]);
   }, [isOpen, recipes, selectedRecipeId, batchVolumeL]);
+
+  const recetteChoisie = recipes.find((r) => r.id === selectedRecipeId);
+  /** La capacité du fermenteur : celle de la recette, sinon celle de l'installation active. Absente : la cuve n'est pas connue (d1b ne dit jamais « libre »). */
+  const capaciteCuveL = useMemo(() => {
+    const cfg = StorageService.getConfig();
+    const profil = recetteChoisie?.brewhouse ?? cfg.brewhouses.find((b) => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
+    const c = profil?.equipment?.fermenterCapacityL;
+    return typeof c === 'number' && Number.isFinite(c) && c > 0 ? c : undefined;
+  }, [recetteChoisie, isOpen]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const saleFileInputRef = useRef<HTMLInputElement>(null);
@@ -585,12 +608,14 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   };
 
   // Launch Brew Batch
-  const handleLaunchBrew = async () => {
+  /** d1b : `jour` est le jour choisi sur la feuille (« 21.11.2026 »). */
+  const handleLaunchBrew = async (jour: string) => {
     if (brewBusy.current) return;
     const selected = recipes.find((r) => r.id === selectedRecipeId);
     if (!selected || !(batchVolumeL > 0)) return;
-    if (plannedDate !== undefined && !normalizeBrewDate(plannedDate)) {
-      setBrewError('Choisis un jour valide ou « À définir ».');
+    const plannedDate = jour;
+    if (!normalizeBrewDate(plannedDate)) {
+      setBrewError('Choisis un jour valide.');
       return;
     }
     const cfg = StorageService.getConfig();
@@ -626,6 +651,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
       onBatchCreated?.(batch);
     } catch (error) {
       if (isConfirmedWriteRejection(error)) pendingBatch.current = undefined;
+      setJourAttente(pendingBatch.current?.plannedBrewDate || undefined);
       setBrewError(error instanceof Error ? error.message : 'Enregistrement non confirmé. Réessaie.');
     } finally { brewBusy.current = false; setBrewSaving(false); }
   };
@@ -637,7 +663,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   return (
     <>
-      <ModalShell open={isOpen} onClose={resetAndClose} size="lg" labelledBy={titleId} abovePage={screen === 'brew-batch'} dismissible={!saleSaving && !brewSaving}>
+      <ModalShell open={isOpen} onClose={resetAndClose} size={screen === 'brew-batch' && !(recettePosee && recetteChoisie) ? 'xl' : 'lg'} labelledBy={titleId} abovePage={screen === 'brew-batch'} dismissible={!saleSaving && !brewSaving}>
+        {screen === 'brew-batch' && <div className="sm:hidden shrink-0 flex justify-center pt-1.5 bg-cave-900/60" aria-hidden="true"><span className="h-1 w-8 rounded-full bg-cave-600" /></div>}
         {/* En-tête : réduit au titre et aux deux boutons quand le clavier
             occupe l'écran — c'est 28 px rendus à la saisie. */}
         <div
@@ -645,7 +672,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             tight ? 'min-h-9 px-2 py-0.5' : 'min-h-9 px-3 py-0.5'
           }`}
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 min-w-0">
             {screen !== 'menu' && initialScreen === 'menu' && (
               <button
                 disabled={saleSaving || brewSaving}
@@ -658,14 +685,22 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               </button>
             )}
             {screen === 'brew-batch' ? <Beer className="w-4 h-4 shrink-0 text-area-production" aria-hidden="true" /> : <Sparkles className="w-4 h-4 text-area-finances" />}
-            <h2 id={titleId} className="font-semibold text-lg text-cave-50">
-              {screen === 'menu' && 'Nouvelle action'}
-              {screen === 'scan' && 'Lire un justificatif'}
-              {screen === 'matching' && 'Matching & Contrôle Stocks'}
-              {screen === 'quick-expense' && 'Saisie Dépense'}
-              {screen === 'quick-sale' && 'Enregistrer une vente'}
-              {screen === 'brew-batch' && 'Préparer un brassin'}
-            </h2>
+            <div className="min-w-0">
+              <h2 id={titleId} className={`font-semibold text-cave-50 ${screen === 'brew-batch' ? 'text-sm' : 'text-lg'}`}>
+                {screen === 'menu' && 'Nouvelle action'}
+                {screen === 'scan' && 'Lire un justificatif'}
+                {screen === 'matching' && 'Matching & Contrôle Stocks'}
+                {screen === 'quick-expense' && 'Saisie Dépense'}
+                {screen === 'quick-sale' && 'Enregistrer une vente'}
+                {screen === 'brew-batch' && (recettePosee && recetteChoisie ? `Brasser ${recetteChoisie.name} · v${recetteChoisie.version ?? 1}` : 'Nouveau brassin')}
+              </h2>
+              {/* d1b : le sous-titre de sa maquette, collé au titre, dans l'en-tête. */}
+              {screen === 'brew-batch' && recettePosee && recetteChoisie && (
+                <p className="text-xs leading-tight text-cave-400">
+                  {batchVolumeL} L{capaciteCuveL ? ` · cuve de ${capaciteCuveL} L` : ' · cuve : capacité non renseignée'} · le stock se réserve à la planification
+                </p>
+              )}
+            </div>
           </div>
           <button
             type="button"
@@ -1252,86 +1287,34 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </div>
           )}
 
-          {/* SCREEN 6: BREW BATCH — brasser une recette déjà au carnet. */}
+          {/* SCREEN 6: BREW BATCH — c2a (liste des recettes) puis d1b (la feuille « Brasser », trois semaines de cuve). Une recette inconnue : l'assistant. */}
           {screen === 'brew-batch' && !recipes.length && (
-            <div className="space-y-2 text-2xs text-cave-200">
-              <p>Aucune recette au carnet. Un brassin part toujours d’une recette enregistrée.</p>
-              <button
-                type="button"
-                onClick={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }}
-                className="min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 font-semibold"
-              >
-                Créer une recette
-              </button>
-            </div>
+            <ListeCreer recipes={[]} batches={lots} stock={articles} capaciteL={undefined}
+              onBrasser={() => undefined} onOuvrirBrassin={() => undefined}
+              onNouvelleRecette={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }} />
           )}
-          {screen === 'brew-batch' && !!recipes.length && (
-            <fieldset disabled={brewSaving || !!pendingBatch.current} className="min-w-0 space-y-2 text-2xs">
-              <label className="block space-y-1 text-footnote text-cave-400">
-                Recette à brasser
-                <select
-                  name="qa_brew_recipe_select"
-                  aria-label="Recette à brasser"
-                  autoComplete="off"
-                  data-form-type="other"
-                  value={selectedRecipeId}
-                  onChange={(e) => {
-                    setSelectedRecipeId(e.target.value);
-                    // Le volume suit la recette choisie : c'est la valeur juste
-                    // neuf fois sur dix, et elle reste modifiable juste dessous.
-                    const found = recipes.find((r) => r.id === e.target.value);
-                    if (found) setBatchVolumeL(found.volumeL);
-                    setBrewError('');
-                  }}
-                  className="w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
-                >
-                  {recipes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name} · {nombreFr(r.volumeL, 1)} L · {r.style}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <QuantityStepper
-                compact
-                label="Volume du brassin"
-                unit="L"
-                min={1}
-                customLadder={[1, 5, 10]}
-                value={batchVolumeL}
-                onChange={(next) => { setBatchVolumeL(next); setBrewError(''); }}
-              />
-
-              {materielActuel && <div role="status" aria-label="Volume et matériel actuel" className="space-y-1 border-l-2 border-ebc-straw pl-2 text-footnote font-normal text-cave-200">
-                <p>{materielActuel.message}</p>
-                {materielActuel.adaptationL != null && <button type="button" className="min-h-touch rounded-control border border-cave-600 px-2 text-2xs text-cave-50" onClick={() => { setBatchVolumeL(materielActuel.adaptationL!); setBrewError(''); }}>Adapter à {nombreFr(materielActuel.adaptationL, 1)} L</button>}
-              </div>}
-
-              <p className="text-footnote text-cave-400">
-                Stock déduit après validation des ajouts en production.
-              </p>
-
-              <BrewScheduleField value={plannedDate} onChange={setPlannedDate} disabled={brewSaving || !!pendingBatch.current} />
-
-            </fieldset>
+          {screen === 'brew-batch' && !!recipes.length && !(recettePosee && recetteChoisie) && (
+            <ListeCreer recipes={recipes} batches={lots} stock={articles} capaciteL={capaciteCuveL}
+              onBrasser={(id) => {
+                const trouvee = recipes.find((r) => r.id === id);
+                setSelectedRecipeId(id); if (trouvee) setBatchVolumeL(trouvee.volumeL);
+                setBrewError(''); pendingBatch.current = undefined; setJourAttente(undefined); setRecettePosee(true);
+              }}
+              onOuvrirBrassin={(b) => { onClose(); onOpenBatch?.(b); }}
+              onNouvelleRecette={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }} />
           )}
-          {screen === 'brew-batch' && !!recipes.length && <div className="mt-2 space-y-2">
-
-              {brewError && <p role="alert" className="text-2xs text-alert-strong">{brewError}</p>}
-
-              <button
-                type="button"
-                disabled={brewSaving || !selectedRecipeId || !Number.isFinite(batchVolumeL) || batchVolumeL <= 0 || plannedDate !== undefined && !normalizeBrewDate(plannedDate)}
-                onClick={() => void handleLaunchBrew()}
-                className="w-full min-h-touch-lg rounded-control bg-ebc-straw text-cave-950 font-semibold
-                           flex items-center justify-center gap-1 disabled:bg-cave-800 disabled:text-cave-400"
-              >
-                <Beer className="w-4 h-4" aria-hidden="true" />
-                {brewSaving ? 'Enregistrement…' : pendingBatch.current ? 'Confirmer l’enregistrement' : 'Créer le brassin à brasser'}
-              </button>
-            </div>
-          }
+          {screen === 'brew-batch' && !!recipes.length && recettePosee && recetteChoisie && (
+            <FeuilleBrasser key={recetteChoisie.id} recipe={recetteChoisie} batches={lots} stock={articles} capaciteL={capaciteCuveL} volumeL={batchVolumeL}
+              erreur={brewError} enCours={brewSaving} jourFige={jourAttente}
+              avertissement={materielActuel && (
+                <div role="status" aria-label="Volume et matériel actuel" className="space-y-1 border-l-2 border-ebc-straw pl-2 text-footnote font-normal text-cave-200">
+                  <p>{materielActuel.message}</p>
+                  {materielActuel.adaptationL != null && <button type="button" className="min-h-touch rounded-control border border-cave-600 px-2 text-2xs text-cave-50" onClick={() => { setBatchVolumeL(materielActuel.adaptationL!); setBrewError(''); }}>Adapter à {nombreFr(materielActuel.adaptationL, 1)} L</button>}
+                </div>
+              )}
+              onAnnuler={() => { if (initialRecipeId) resetAndClose(); else { setRecettePosee(false); setBrewError(''); } }}
+              onPlanifier={(jour) => void handleLaunchBrew(jour)} />
+          )}
         </div>
       </ModalShell>
 

@@ -26,14 +26,14 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('AM-47 — Préparer un brassin : le volume de la recette contre le matériel actuel', () => {
   it('avertit, propose d’adapter, ne change pas le volume seul et ne bloque pas le bouton', () => {
-    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} />);
-    fireEvent.click(screen.getByText('Préparer un brassin'));
-    expect(screen.getByLabelText('Volume du brassin')).toHaveValue('60');
+    // d1b : la feuille « Brasser » n’a plus de curseur ; le volume (60 L) est dit en tête, et « Adapter à N L » le change.
+    render(<QuickActionModal isOpen recipes={[recette]} onClose={() => {}} initialScreen="brew-batch" initialRecipeId="R" />);
+    expect(screen.getByText(/^60 L ·/)).toBeInTheDocument();
     const alerte = screen.getByRole('status', { name: /matériel actuel/i });
     expect(alerte).toHaveTextContent(/Sur ton matériel actuel \(Mon installation\)/);
-    expect(screen.getByRole('button', { name: 'Créer le brassin à brasser' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Planifier/ })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: /Adapter à \d+(,\d)? L/ }));
-    expect(Number(String((screen.getByLabelText('Volume du brassin') as HTMLInputElement).value).replace(',', '.'))).toBeLessThan(30);
+    expect(Number(/^(\d+(?:[.,]\d+)?) L ·/.exec(screen.getByText(/^\d+(?:[.,]\d+)? L ·/).textContent ?? '')?.[1].replace(',', '.'))).toBeLessThan(30);
     expect(screen.queryByRole('status', { name: /matériel actuel/i })).toBeNull();
   });
 });
