@@ -36,7 +36,7 @@ function monter(kegs: KegItem[], extra: Partial<React.ComponentProps<typeof KegB
 const ouvrir = async (id: string) => fireEvent.click(await screen.findByRole('button', { name: `Ouvrir le fût ${id}` }));
 
 describe('F2 — fût plein', () => {
-  it('titre, sous-titre, bière, jauge 13 j sur 30 j, aide, historique des 3 dernières étapes', async () => {
+  it('titre, sous-titre, bière, jauge 13 j sur 30 j, aide, historique des 4 dernières étapes (F2b)', async () => {
     monter([f001]); await ouvrir('F-001');
     const d = screen.getByRole('dialog', { name: 'Fût F-001' });
     expect(d).toHaveTextContent('30 L · en cave');
@@ -46,14 +46,15 @@ describe('F2 — fût plein', () => {
     const jauge = within(d).getByRole('meter');
     expect(jauge).toHaveAttribute('aria-valuetext', '13 jours sur 30');
     const items = within(within(d).getByRole('list', { name: /Historique/ })).getAllByRole('listitem').map((li) => li.textContent);
-    expect(items).toEqual(['02.11Rempli · NEIPA Test LOT-002', '01.11Lavé', '28.10Revenu vide · Café du Marché']);
+    expect(items).toHaveLength(4);
+    expect(items.slice(0, 3)).toEqual(['02.11Rempli · NEIPA Test LOT-002', '01.11Lavé', '28.10Revenu vide · Café du Marché']);
   });
   it('« Tout voir » déplie les six étapes, « Réduire » les replie', async () => {
     monter([f001]); await ouvrir('F-001');
     fireEvent.click(screen.getByRole('button', { name: 'Tout voir' }));
     expect(screen.getAllByRole('listitem')).toHaveLength(6);
     fireEvent.click(screen.getByRole('button', { name: 'Réduire' }));
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(screen.getAllByRole('listitem')).toHaveLength(4);
   });
   it('Livrer éteint sans client ; un client choisi dans la liste Clients, favoris en tête, livre et ferme', async () => {
     const onSaveKeg = vi.fn();
