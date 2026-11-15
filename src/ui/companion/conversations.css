@@ -1,0 +1,39 @@
+/*
+ * « Mes conversations » : forme du cadre `conversations` de la maquette p2a.
+ * Les jetons et les primitives (carte, bouton, interrupteur, pastilles) viennent de `limites.css` (racine `.cmp-lx`).
+ */
+.cmp-lx .cmp-resume { display: flex; flex-direction: column; gap: 8px; }
+.cmp-lx .cmp-resume-b { display: flex; gap: 3px; height: 10px; }
+.cmp-lx .cmp-resume-b i { border-radius: 5px; }
+.cmp-lx .cmp-resume-l { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--t); }
+.cmp-lx .cmp-resume-l span { display: inline-flex; align-items: center; gap: 5px; }
+.cmp-lx .cmp-pt { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+
+.cmp-lx .cmp-conv { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--page); border: 1px solid var(--bord); border-radius: 16px; padding: 8px 6px 8px 10px; min-height: 66px; }
+.cmp-lx .cmp-conv-ouvre { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; text-align: left; background: none; border: 0; padding: 0; min-height: 48px; color: inherit; }
+.cmp-lx .cmp-conv-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.cmp-lx .cmp-conv-t b { font-size: 14px; color: var(--t0); font-weight: 700; }
+.cmp-lx .cmp-conv-t > span { font-size: 13px; color: var(--t); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmp-lx .cmp-conv-t small { font-size: 12px; font-weight: 600; }
+.cmp-lx .cmp-etat { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.cmp-lx .cmp-etat svg.cmp-i { width: 15px; height: 15px; stroke-width: 2.5; }
+.cmp-lx .cmp-c-pret .cmp-etat { background: var(--hop); color: var(--sur-act); }
+.cmp-lx .cmp-c-pret small { color: var(--hopt); }
+.cmp-lx .cmp-c-echec .cmp-etat { border: 2px solid var(--alr); color: var(--alrt); }
+.cmp-lx .cmp-c-echec small { color: var(--alrt); }
+.cmp-lx .cmp-c-cours small { color: var(--attt); }
+.cmp-lx .cmp-anneau { background: conic-gradient(var(--att) 0 var(--tour, 33%), var(--bord) 0 100%); }
+.cmp-lx .cmp-anneau i { width: 20px; height: 20px; border-radius: 50%; background: var(--page); }
+.cmp-lx .cmp-c-fin { border-left: 3px solid var(--fin); }
+.cmp-lx .cmp-ouvert { border-color: var(--bordm); }
+.cmp-lx .cmp-ic { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; color: var(--t2); flex: none; background: none; border: 0; }
+.cmp-lx .cmp-ic[aria-expanded='true'] { background: var(--sur); color: var(--t0); }
+.cmp-lx .cmp-menu { flex-basis: 100%; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid var(--bord); padding-top: 6px; }
+.cmp-lx .cmp-btn.cmp-suppr { color: var(--t); }
+.cmp-lx .cmp-btn.cmp-suppr svg.cmp-i { color: var(--t2); }
+.cmp-lx .cmp-confirme { flex-basis: 100%; border-top: 1px solid var(--bord); padding-top: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--t0); }
+.cmp-lx .cmp-confirme p { margin: 0; }
+.cmp-lx .cmp-btn.cmp-d-plein { border: 1px solid var(--alr); background: var(--alrf); color: var(--alrt); }
+.cmp-lx .cmp-vide { color: var(--t2); padding: 20px 4px; line-height: 1.5; margin: 0; }
+.cmp-lx .cmp-pied.cmp-pied-fixe { position: static; margin: 0; padding: 6px 0; border-top: 0; background: none; }
+.cmp-lx .cmp-pied-t { font-size: 12px; color: var(--t2); max-width: 180px; }

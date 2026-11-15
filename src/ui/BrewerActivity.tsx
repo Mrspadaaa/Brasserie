@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState, lazy } from 'react';
 import { useMobileLayout } from './useViewport';
-import { MessageCircle, LoaderCircle, Trash2 } from 'lucide-react';
-import { brewerJobs, useBrewerJobs, isBrewerWorking, brewerJobStatus, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
+import { MessageCircle, LoaderCircle, Trash2, Check, X, RotateCw, MoreHorizontal, Plus } from 'lucide-react';
+import { brewerJobs, useBrewerJobs, isBrewerWorking, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
+import { BrewerNotifySwitch } from './BrewerNotifications';
+import { BORNE_SERVEUR_S, NBSP, dureeTexte, etapeTexte, statutJob, statutsConversations, type StatutJob } from './companion/derive';
+import './companion/limites.css';
+import './companion/conversations.css';
 import { BrewerChat as api } from '../services/brewerChat';
 import { brewerLauncher, useBrewerDialogOpen } from '../services/brewerLauncher';
 import { LazySurface } from './LazySurface';
@@ -20,6 +24,28 @@ export function brewerConversations(jobs: ClientBrewerJob[]) {
     else groups.push({ latest: job, jobs: [job] });
   }
   return groups;
+}
+
+const pluriel = (n: number, un: string, plusieurs: string) => `${n} ${n > 1 ? plusieurs : un}`;
+
+/** Ce que la ligne d'une conversation dit en une demi-ligne : prête, en cours (chrono), à relancer. Rien d'inventé : seuls le statut et l'horloge du job parlent. */
+function ligneStatut(jobs: ClientBrewerJob[], now: number): { statut: StatutJob; texte: string; secondes: number; etape: string } {
+  const latest = jobs[0];
+  const travail = jobs.filter(isBrewerWorking);
+  const statut: StatutJob = travail.length ? 'cours' : statutJob(latest);
+  const debut = Math.min(...travail.map((j) => j.startedAt ?? j.createdAt));
+  const secondes = travail.length ? Math.max(0, Math.floor((now - debut) / 1000)) : 0;
+  const echanges = jobs.length > 1 ? ` · ${jobs.length} échanges` : '';
+  if (statut === 'cours')
+    return {
+      statut,
+      secondes,
+      etape: latest.sending ? 'Envoi de ta question' : etapeTexte(latest.stage),
+      texte: `${travail.length > 1 ? pluriel(travail.length, 'question', 'questions') + ' en cours' : latest.sending ? 'Envoi' : 'En cours'} · ${dureeTexte(secondes)}${echanges}`
+    };
+  if (statut === 'echec')
+    return { statut, secondes, etape: '', texte: `${latest.sendError ? 'Envoi à confirmer' : 'Échec · à relancer'}${echanges}` };
+  return { statut, secondes, etape: '', texte: `Réponse prête${echanges}` };
 }
 
 /**
@@ -82,6 +108,15 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   const pending = state.jobs.filter(isBrewerWorking),
     unread = state.jobs.filter((j) => !j.readAt && ['done', 'error'].includes(j.status)),
     unconfirmed = state.jobs.filter((j) => j.sendError);
+  /* Le chrono des questions en cours ne tourne que feuille ouverte. */
+  const [now, setNow] = useState(() => Date.now()), [menu, setMenu] = useState<string | null>(null);
+  const working = pending.length > 0;
+  useEffect(() => {
+    if (!inbox || !working) return;
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [inbox, working]);
   const badge = unread.length
     ? `${unread.length} ${unread.length > 1 ? 'réponses à consulter' : unread[0].status === 'error' ? 'analyse à relancer' : 'réponse prête'}`
     : unconfirmed.length ? `${unconfirmed.length} envois à confirmer`
@@ -110,35 +145,70 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
         {pending.length && !unread.length ? <LoaderCircle size={17} className="brewer-chat-spin" /> : <MessageCircle size={18} />}
         <span role="status">{badge}</span>
       </button>}
-    <Sheet open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); } }} dismissible={!deleting}
-      title="Mes conversations" subtitle="Tes questions continuent pendant que tu brasses">
-      <div className="brewer-activity-list">
-        {state.connectionError && <p role="status">{state.connectionError}</p>}
-        {notice && <p role="status">{notice}</p>}
-        {!state.jobs.length && <p className="brewer-inbox-empty">Aucune conversation. Le bouton + ouvre le compagnon sur l’écran en cours.</p>}
-        {brewerConversations(state.jobs).map(({ latest: j, jobs }) => {
-          const selected = removal && sameBrewerScope(removal.job.scope, j.scope);
-          const working = jobs.filter(isBrewerWorking).length;
-          return <div className="brewer-conversation" key={`${j.scope.kind === 'draft' ? 'recipe' : j.scope.kind}:${j.scope.id}`}>
-            <div className="brewer-conversation-row">
-              <button type="button" className="brewer-conversation-open" disabled={deleting}
-                onClick={() => { setInbox(false); setRemoval(null); if (!brewerLauncher.open(j.scope)) setFocus({ scope: j.scope, label: j.label, phase: j.scope.kind === 'app' ? j.label : undefined }); }}>
-                <strong>{j.label}</strong><span>{j.question}</span>
-                <small>{working ? `${working} ${working > 1 ? 'questions en cours' : 'question en cours'}` : brewerJobStatus(j)}{jobs.length > 1 ? ` · ${jobs.length} échanges` : ''}</small>
-              </button>
-              <button type="button" className="brewer-conversation-delete" aria-label={`Supprimer la conversation ${j.label}`} disabled={deleting}
-                onClick={() => { setNotice(''); setRemoval({ job: j, operationId: crypto.randomUUID() }); }}><Trash2 size={19} /></button>
+    <Sheet open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); setMenu(null); } }} dismissible={!deleting}
+      title="Mes conversations" className="cmp-conv-sheet"
+      footer={<div className="cmp-lx"><div className="cmp-pied cmp-pied-fixe">
+        <span className="cmp-pied-t">Tes questions continuent pendant que tu brasses.</span>
+        <button type="button" className="cmp-btn cmp-p" disabled={deleting}
+          onClick={() => { setInbox(false); setRemoval(null); setMenu(null); if (!brewerLauncher.open()) setFocus(contextRef.current); }}>
+          <Plus className="cmp-i" size={16} aria-hidden="true" />Nouvelle question</button>
+      </div></div>}>
+      <div className="cmp-lx">
+        {state.connectionError && <p role="status" className="cmp-note">{state.connectionError}</p>}
+        {notice && <p role="status" className="cmp-note">{notice}</p>}
+        {!state.jobs.length && <p className="cmp-vide">Aucune conversation. Le bouton + ouvre le compagnon sur l’écran en cours.</p>}
+        {state.jobs.length > 0 && (() => {
+          const s = statutsConversations(state.jobs);
+          const parts = [
+            { n: s.prets, cls: 'cmp-pv', texte: s.prets > 1 ? 'prêtes' : 'prête' },
+            { n: s.enCours, cls: 'cmp-pa', texte: 'en cours' },
+            { n: s.echecs, cls: 'cmp-pr', texte: 'à relancer' }
+          ];
+          return <div className="cmp-carte cmp-resume">
+            <div className="cmp-resume-b" role="img" aria-label={parts.map((p) => `${p.n} ${p.texte}`).join(', ')}>
+              {parts.filter((p) => p.n > 0).map((p) => <i key={p.cls} className={p.cls} style={{ flex: p.n }} />)}
             </div>
-            {selected && <div className="brewer-conversation-confirm">
+            <div className="cmp-resume-l">
+              {parts.map((p) => <span key={p.cls}><i className={`cmp-pt ${p.cls}`} /><span className="cmp-n">{p.n}</span>{NBSP}{p.texte}</span>)}
+            </div>
+          </div>;
+        })()}
+        {brewerConversations(state.jobs).filter(({ jobs }) => jobs.some((j) => j.status !== 'cancelled')).map(({ latest: j, jobs }) => {
+          const cle = `${j.scope.kind === 'draft' ? 'recipe' : j.scope.kind}:${j.scope.id}`;
+          const selected = removal && sameBrewerScope(removal.job.scope, j.scope);
+          const l = ligneStatut(jobs, now);
+          const ouvert = menu === cle || Boolean(selected);
+          const finances = j.scope.kind === 'app' && /financ/i.test(j.scope.id);
+          return <div className={`cmp-conv cmp-c-${l.statut}${finances ? ' cmp-c-fin' : ''}${ouvert ? ' cmp-ouvert' : ''}`} key={cle}>
+            <button type="button" className="cmp-conv-ouvre" disabled={deleting}
+              onClick={() => { setInbox(false); setRemoval(null); setMenu(null); if (!brewerLauncher.open(j.scope)) setFocus({ scope: j.scope, label: j.label, phase: j.scope.kind === 'app' ? j.label : undefined }); }}>
+              {l.statut === 'cours'
+                ? <span className="cmp-etat cmp-anneau" role="img" aria-label={`En cours, ${dureeTexte(l.secondes)} · ${l.etape}`}
+                    style={{ ['--tour' as string]: `${Math.min(100, Math.max(6, (l.secondes / BORNE_SERVEUR_S) * 100))}%` } as React.CSSProperties}><i /></span>
+                : <span className="cmp-etat" aria-hidden="true">{l.statut === 'pret' ? <Check className="cmp-i" /> : <X className="cmp-i" />}</span>}
+              <span className="cmp-conv-t"><b>{j.label}</b><span>{j.question}</span><small>{l.texte}</small></span>
+            </button>
+            {l.statut === 'echec' && !j.unsupportedReadOnly && <button type="button" className="cmp-btn cmp-s" disabled={deleting}
+              aria-label={`Relancer la conversation ${j.label}`} onClick={() => { if (j.sendError) brewerJobs.retry(j); else brewerJobs.retrySaved(j); }}>
+              <RotateCw className="cmp-i" aria-hidden="true" />Relancer</button>}
+            <button type="button" className="cmp-ic" aria-label={`Plus d’actions : ${j.label}`} aria-expanded={ouvert} disabled={deleting}
+              onClick={() => { setNotice(''); setRemoval(null); setMenu(menu === cle ? null : cle); }}><MoreHorizontal className="cmp-i" aria-hidden="true" /></button>
+            {menu === cle && !selected && <div className="cmp-menu">
+              <button type="button" className="cmp-btn cmp-g cmp-suppr" aria-label={`Supprimer la conversation ${j.label}`} disabled={deleting}
+                onClick={() => { setNotice(''); setRemoval({ job: j, operationId: crypto.randomUUID() }); }}>
+                <Trash2 className="cmp-i" aria-hidden="true" />Supprimer</button>
+            </div>}
+            {selected && <div className="cmp-confirme">
               <p>Supprimer les échanges de « {j.label} » ? Les analyses en cours seront arrêtées.</p>
-              <div><button type="button" disabled={deleting} onClick={() => setRemoval(null)}>Annuler</button>
-                <button type="button" className="is-destructive" disabled={deleting} onClick={() => void remove()}>{deleting ? 'Suppression…' : 'Supprimer les échanges'}</button></div>
+              <div className="cmp-act"><button type="button" className="cmp-btn cmp-g" disabled={deleting} onClick={() => setRemoval(null)}>Annuler</button>
+                <button type="button" className="cmp-btn cmp-d-plein" disabled={deleting} onClick={() => void remove()}>{deleting ? 'Suppression…' : 'Supprimer les échanges'}</button></div>
             </div>}
           </div>;
         })}
+        <BrewerNotifySwitch label="Me notifier à chaque réponse" />
       </div>
     </Sheet>
-    {focus && <LazySurface fallback={<Sheet open title="Compagnon brasseur" onClose={() => setFocus(null)}><p role="status">Ouverture de la conversation…</p></Sheet>}><BrewerChat key={`${focus.scope.kind}:${focus.scope.id}`} {...focus} initialOpen hideLauncher onClose={() => {
+    {focus && <LazySurface fallback={<Sheet open title="Compagnon" onClose={() => setFocus(null)}><p role="status">Ouverture de la conversation…</p></Sheet>}><BrewerChat key={`${focus.scope.kind}:${focus.scope.id}`} {...focus} initialOpen hideLauncher onClose={() => {
       setFocus(null);
       const url = new URL(location.href);
       url.searchParams.delete('companion');
