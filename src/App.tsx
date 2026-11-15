@@ -1085,6 +1085,7 @@ export const App: React.FC = () => {
           <StocksTab
             stocks={stocks}
             batches={batches}
+            clients={clients}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
             onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}

@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
-import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
+import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
 import { Units } from '../../services/units';
@@ -24,7 +24,6 @@ import { InventoryCorrectionSheet } from '../../ui/InventoryCorrectionSheet';
 import { INVENTORY_REASONS, InventoryReason } from '../../services/storage';
 import { ExpenseSheet } from '../../ui/finance/ExpenseSheet';
 import { EquipmentSheet } from '../../ui/EquipmentSheet';
-import { KegSheet } from '../../ui/KegSheet';
 import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
 import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
 import { useMobileLayout } from '../../ui/useViewport';
@@ -59,6 +58,8 @@ interface StocksTabProps {
     kegs: KegItem[];
   };
   batches: Batch[];
+  /** Les clients de l'onglet Clients : la fiche d'un fût plein en choisit un pour livrer. */
+  clients?: Client[];
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */
   onSubTabChange?: (sub: string) => void;
   /** Demande de création émise par le bouton d'action. */
@@ -108,6 +109,7 @@ const GROUP_ORDER = [
 export const StocksTab: React.FC<StocksTabProps> = ({
   stocks,
   batches,
+  clients = [],
   onSubTabChange,
   createRequest,
   openItemRequest,
@@ -166,7 +168,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    */
   const [equipmentSheet, setEquipmentSheet] = useLiveSelection(stocks.equipment, 'ref');
   const [purchasingEquipment, setPurchasingEquipment] = useState(false);
-  const [kegSheet, setKegSheet] = useLiveSelection(stocks.kegs, 'id');
+  /** « Ajouter des fûts » : ouvert par le bouton rond « + » de l'onglet Fûts. */
+  const [addingKegs, setAddingKegs] = useState(false);
 
   const blankEquipment = (): EquipmentItem => ({
     id: `EQ-${Date.now()}`,
@@ -176,14 +179,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     state: 'Neuf'
   });
 
-  const blankKeg = (): KegItem => ({
-    id: nextUniqueRef('F', stocks.kegs.map((k) => k.id)),
-    capacityL: 30,
-    state: 'propre'
-  });
-
   const setCreatingEquipment = (on: boolean) => setEquipmentSheet(on ? blankEquipment() : null);
-  const setCreatingKeg = (on: boolean) => setKegSheet(on ? blankKeg() : null);
 
   /** Toute la liste de courses, tous fournisseurs confondus. */
   const copyEverything = () => {
@@ -220,7 +216,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         setCreating(true);
         break;
       case 'newKeg':
-        setCreatingKeg(true);
+        setAddingKegs(true);
         break;
       case 'newEquipment':
         setPurchasingEquipment(true);
@@ -621,8 +617,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </div>
       )}
 
-      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1"
-        toolbarAction={<Button intent="secondary" aria-label="Ajouter un fût" onClick={() => setCreatingKeg(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un fût</span></Button>} />}
+      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} clients={clients} className="flex-1"
+        addOpen={addingKegs} onAddClose={() => setAddingKegs(false)} onMessage={onSuccessMessage} />}
 
       {subTab === 'materiel' && (
         <><MobileDetails title="Actions du matériel"><div className="flex flex-wrap gap-1"><Button intent="primary" size="sm" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" size="sm" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button>{onOpenEquipmentProjects&&<Button intent="ghost" size="sm" onClick={onOpenEquipmentProjects} icon={<Wrench size={14}/>}>Projets d’équipement</Button>}</div></MobileDetails><EquipmentList
@@ -646,23 +642,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         onDelete={(item) => {
           StorageService.deleteEquipment(item.ref);
           onSuccessMessage?.(`${item.name} supprimé.`);
-        }}
-      />
-
-      <KegSheet
-        keg={kegSheet}
-        batches={batches}
-        kegs={stocks.kegs}
-        onClose={() => setKegSheet(null)}
-        onSave={(keg) => {
-          const exists = stocks.kegs.some((k) => k.id === keg.id);
-          if (exists) StorageService.updateKeg(keg);
-          else StorageService.addKeg(keg);
-          onSuccessMessage?.(`Fût ${keg.id} enregistré.`);
-        }}
-        onDelete={(keg) => {
-          StorageService.deleteKeg(keg.id);
-          onSuccessMessage?.(`Fût ${keg.id} supprimé.`);
         }}
       />
 

@@ -133,7 +133,22 @@ export interface KegItem {
   style?: string;
   fillDate?: string;
   clientName?: string;
+  /** Lien vers l'onglet Clients (`Client.id`). `clientName` reste le libellé lu par la liste et les anciens lecteurs. */
+  clientId?: string;
+  /** Jour de la livraison en cours, `JJ.MM.AAAA`. Absent chez un fût livré avant l'historique : on ne devine pas. */
+  deliveryDate?: string;
+  /** Étapes du fût, de la plus ancienne à la plus récente, plafonnées à 30 (domain/stock/futs). Absent sur un ancien fût. */
+  historique?: KegHistoryEntry[];
   notes?: string;
+}
+
+export type KegHistoryKind = 'ajoute' | 'lave' | 'rempli' | 'livre' | 'retour-vide' | 'retour-plein';
+export interface KegHistoryEntry {
+  /** `JJ.MM.AAAA` */
+  date: string;
+  quoi: KegHistoryKind;
+  /** Bière, lot ou client, déjà mis en forme pour l'affichage. */
+  detail?: string;
 }
 
 /**

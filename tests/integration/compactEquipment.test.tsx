@@ -7,7 +7,7 @@ import { KegSheet } from '../../src/ui/KegSheet';
 import { EquipmentList } from '../../src/ui/EquipmentList';
 import { EquipmentSheet } from '../../src/ui/EquipmentSheet';
 import { StorageService } from '../../src/services/storage';
-import type { Batch, EquipmentItem, KegItem } from '../../src/types';
+import type { Batch, Client, EquipmentItem, KegItem } from '../../src/types';
 
 vi.mock('../../src/services/storage', () => ({
   StorageService: { updateKeg: vi.fn(), deleteKeg: vi.fn() }
@@ -19,9 +19,10 @@ const fullKeg: KegItem = {
   clientName: 'Café de la Rive', notes: 'Joint remplacé'
 };
 
-function board(kegs: KegItem[], batches: Batch[] = []) {
+const rive = { id: 'CL-7', name: 'Café de la Rive', type: 'Pro', contact: '', phone: '', email: '' } as Client;
+function board(kegs: KegItem[], batches: Batch[] = [], clients: Client[] = [rive]) {
   return <VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
-    <KegBoard kegs={kegs} batches={batches}/>
+    <KegBoard kegs={kegs} batches={batches} clients={clients} today="15.11.2026"/>
   </VirtuosoMockContext.Provider>;
 }
 
@@ -95,22 +96,38 @@ describe('parc de fûts et matériel compacts', () => {
     expect(StorageService.updateKeg).toHaveBeenCalledWith({ ...synced, state: 'livre' });
   });
 
-  it('conserve le contenu du fût livré puis le détache seulement au retour à laver', async () => {
+  it('conserve le contenu du fût livré puis le détache seulement au retour vide', async () => {
     const view = render(board([fullKeg]));
     const kegOpener = await screen.findByRole('button', { name: /F-001/ });
     expect(kegOpener).toHaveAccessibleDescription(/30 L.*IPA du lac.*Plein/);
     fireEvent.click(kegOpener);
-    fireEvent.click(screen.getByRole('button', { name: /Passer à « Livré »|Livrer le fût/ }));
-    expect(StorageService.updateKeg).toHaveBeenLastCalledWith({ ...fullKeg, state: 'livre' });
+    expect(screen.getByRole('button', { name: 'Livrer' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('combobox', { name: 'Client' }));
+    fireEvent.click(screen.getByRole('option', { name: /Café de la Rive/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Livrer' }));
+    const livre = (StorageService.updateKeg as unknown as ReturnType<typeof vi.fn>).mock.lastCall![0] as KegItem;
+    expect(livre).toMatchObject({ ...fullKeg, state: 'livre', clientId: 'CL-7', clientName: 'Café de la Rive', deliveryDate: '15.11.2026' });
+    expect(livre.historique).toEqual([{ date: '15.11.2026', quoi: 'livre', detail: 'Café de la Rive' }]);
 
-    view.rerender(board([{ ...fullKeg, state: 'livre' }]));
+    view.rerender(board([livre]));
     fireEvent.click(await screen.findByRole('button', { name: /F-001/ }));
     expect(screen.getByRole('dialog')).toHaveTextContent('IPA du lac');
-    fireEvent.click(screen.getByRole('button', { name: /Passer à « À laver »|Retour à laver/ }));
-    expect(StorageService.updateKeg).toHaveBeenLastCalledWith({
-      ...fullKeg, state: 'lavage', batchRef: undefined, beerName: undefined,
-      style: undefined, fillDate: undefined, clientName: undefined
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Retour vide' }));
+    const vide = (StorageService.updateKeg as unknown as ReturnType<typeof vi.fn>).mock.lastCall![0] as KegItem;
+    expect(vide).toMatchObject({ id: 'F-001', capacityL: 30, state: 'lavage', notes: 'Joint remplacé' });
+    ['batchRef', 'beerName', 'style', 'fillDate', 'clientName', 'clientId', 'deliveryDate'].forEach((cle) => expect(vide).not.toHaveProperty(cle));
+    expect(vide.historique!.at(-1)).toEqual({ date: '15.11.2026', quoi: 'retour-vide', detail: 'Café de la Rive' });
+  });
+
+  it('revenu plein : le fût livré repasse en cave, garde sa bière, perd son client', async () => {
+    const livre: KegItem = { ...fullKeg, state: 'livre', clientId: 'CL-7', deliveryDate: '04.11.2026' };
+    render(board([livre]));
+    fireEvent.click(await screen.findByRole('button', { name: /F-001/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenu plein' }));
+    const plein = (StorageService.updateKeg as unknown as ReturnType<typeof vi.fn>).mock.lastCall![0] as KegItem;
+    expect(plein).toMatchObject({ state: 'plein', beerName: 'IPA du lac', batchRef: 'B-IPA', fillDate: '10.09.2026' });
+    ['clientName', 'clientId', 'deliveryDate'].forEach((cle) => expect(plein).not.toHaveProperty(cle));
+    expect(plein.historique!.at(-1)).toEqual({ date: '15.11.2026', quoi: 'retour-plein', detail: 'Café de la Rive' });
   });
 
   it('combine filtre des fûts, recherche du client et récupération après résultat vide', async () => {
@@ -140,27 +157,29 @@ describe('parc de fûts et matériel compacts', () => {
     expect(revealAll).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
   });
 
-  it('demande une bière éligible puis une confirmation explicite pour remplir', async () => {
+  it('remplir depuis un lot : seuls les lots éligibles, le fût de la fiche arrive coché, puis une confirmation explicite', async () => {
     const clean: KegItem = { id: 'F-010', capacityL: 50, state: 'propre', notes: 'Désinfecté' };
     render(board([clean], [batch('OK', 'garde'), batch('FUTUR', 'planifie'), batch('ANNULE', 'annule'), batch('ARCHIVE', 'conditionne', { archivedAt: '2026-09-10' })]));
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir le fût F-010' }));
-    const fill = screen.getByRole('button', { name: 'Remplir le fût' });
+    fireEvent.click(screen.getByRole('button', { name: 'Remplir depuis un lot' }));
+    expect(screen.getByRole('checkbox', { name: /F-010/ })).toBeChecked();
+    const fill = screen.getByRole('button', { name: 'Remplir 1 fût' });
     expect(fill).toBeDisabled();
-    const picker = screen.getByRole('combobox', { name: 'Brassin à enfûter' });
-    fireEvent.click(picker);
+    fireEvent.click(screen.getByRole('combobox', { name: 'Lot' }));
     expect(screen.getAllByRole('option')).toHaveLength(1);
     fireEvent.click(screen.getByRole('option', { name: /Bière OK/ }));
     expect(StorageService.updateKeg).not.toHaveBeenCalled();
     expect(fill).toBeEnabled();
     fireEvent.click(fill);
-    expect(StorageService.updateKeg).toHaveBeenLastCalledWith(expect.objectContaining({ ...clean, state: 'plein', batchRef: 'OK', beerName: 'Bière OK', style: 'Pale Ale', fillDate: expect.stringMatching(/^\d{2}\.\d{2}\.\d{4}$/) }));
+    expect(StorageService.updateKeg).toHaveBeenLastCalledWith(expect.objectContaining({ ...clean, state: 'plein', batchRef: 'OK', beerName: 'Bière OK', style: 'Pale Ale', fillDate: '15.11.2026' }));
   });
 
-  it('garde la sortie accessible pour un fût sans brassin disponible', async () => {
+  it('garde la sortie accessible pour un fût sans lot disponible', async () => {
     render(board([{ id: 'F-011', capacityL: 20, state: 'propre' }]));
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir le fût F-011' }));
-    expect(screen.getByText(/Aucun brassin disponible à enfûter/)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Remplir le fût' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Remplir depuis un lot' }));
+    expect(screen.getByText(/Aucun lot à mettre en fût/)).toBeVisible();
+    expect(screen.getByRole('button', { name: /^Remplir 1 fût$/ })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(StorageService.updateKeg).not.toHaveBeenCalled();
