@@ -1697,3 +1697,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - « D'autres endroits où certains changements vaudrait la peine ? Fait des tableaux de comparaison, budget jusqu'à 15chf »
 - (capture Atelier : Matériel · Bières · Tarifs · Contacts · À faire ; À venir · Réalisés · Archives) « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? »
 - (sur Approfondi et diagnostic en Hydrogen) « Oui branche où ça vaut le coup »
+- (15.11, sous-session Fûts, après l'arrêt du banc local) « ??? » ; puis « Fait moi des mini maquettes »
+- **15.11**, mot pour mot, sur la page « Recherche, menu, barre et + » (https://claude.ai/artifact/64BnDUYmehXQUv2kTJRUAu) :
+  « Dessiné / d3p2 / Le métier dessiné, bilan des réglages en tête. » ; « Page « Plus » / m3 -> attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits, attention à ce détails très important !! / Duo d'avatars, page plein écran. » ; « Le + à ordre figé / b1 -> le + doit être dynamique en fonction de l'écran ou on est »
+  (lu : choisis d3p2 (ce qu'ouvrent le menu et le +), m3 (menu de l'en-tête), b1 (barre et +) ; la recherche reste ouverte (aucun mot). m3 : la période (« l'interval de temps ») est à mieux dessiner, et elle se règle à plusieurs endroits (en-tête, Finances, Brassins…) : ces endroits doivent rester cohérents — lecture ambiguë (une seule période partout, ou des périodes locales marquées), montrée en variantes. b1 : le menu du + change selon l'écran où l'on est, pas seulement sa première ligne.)
+- **15.11**, mot pour mot, sur la page « Compagnon brasseur : choisir sa forme » (https://claude.ai/artifact/V4JfNqJvtKUWRFLMoxYLam) : « Tout se lit sans lire / p2a · de s3b / Parfait »
+  (lu : p2a choisie telle quelle, ses 12 vues ; à porter 1:1 dans le compagnon, puis déployer.)

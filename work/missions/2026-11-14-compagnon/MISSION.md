@@ -17,7 +17,7 @@ Brasseur, 14.11 : « J'ai l'impression que tout les écrans sous les boutons de 
 | Décision | Options | Décideur | État |
 |---|---|---|---|
 | Nom du modèle à l'écran | brut ; aucun nom (DESIGN.md « Le nom du fournisseur du modèle ne s'affiche pas ») | pilote | tranchée : aucun nom de fournisseur ni de modèle à l'écran |
-| Variante portée | 12 mini maquettes | brasseur | ouverte |
+| Variante portée | 12 mini maquettes | brasseur | tranchée : p2a choisie : « Tout se lit sans lire / p2a · de s3b / Parfait » (15.11) |
 
 ## Voies
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |
@@ -30,6 +30,7 @@ Brasseur, 14.11 : « J'ai l'impression que tout les écrans sous les boutons de 
 | p2a | passe 2 de s3b, 12 cadres | conception | concepteur | opus | 60 | work/missions/2026-11-14-compagnon/voies/p2a | c1 | baseline, sans controle-choix : le choix vient de cette page, controle-serie.mjs --complet, verifier-page.mjs | brasseur | passe 2 |
 | p2b | passe 2 de s2a, 12 cadres | conception | concepteur | opus | 60 | work/missions/2026-11-14-compagnon/voies/p2b | c1 | baseline, sans controle-choix : le choix vient de cette page, controle-serie.mjs --complet, verifier-page.mjs | brasseur | passe 2 |
 | p2c | passe 2 de s2d, 12 cadres | conception | concepteur | opus | 60 | work/missions/2026-11-14-compagnon/voies/p2c | c1 | baseline, sans controle-choix : le choix vient de cette page, controle-serie.mjs --complet, verifier-page.mjs | brasseur | passe 2 |
+| port | p2a portée 1:1 dans le worktree compagnon-p2a | jugement | auteur | sonnet | 120 | C:/Users/mrspa/AppData/Local/Temp/compagnon-p2a/src/ui, work/missions/2026-11-14-compagnon/voies/port | p2a | controle-port.mjs (noms, tsc, tests, build) | pilote | reprise |
 
 Écarts assumés à M13 : « aucune série en Fable » (Fable interdit jusqu'à nouvel ordre, 10.11, et brief de la session parente : « FABLE INTERDIT ») ; « série libre au brief minimal » (chaque série porte sa chaude libre). `systeme.mjs mission` garde ces lignes en échec.
 
