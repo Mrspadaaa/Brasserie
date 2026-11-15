@@ -88,20 +88,30 @@ const Statut = () => {
 function LigneIban({ company, onChange, erreur, ibanDeConfig }: { company: AppConfig['company']; onChange: (c: AppConfig['company']) => void; erreur: string; ibanDeConfig: boolean }) {
   const valeur = company.iban || COMPANY_FALLBACK.iban;
   const diag = erreur ? diagnosticIban(valeur) : null;
-  let n = -1;
-  const miroir = [...valeur].map((c, i) => { if (c !== ' ') n++; return diag?.cle && n >= diag.cle[0] && n < diag.cle[1] && c !== ' ' ? <u key={i}>{c}</u> : c; });
+  /* Le miroir est une seule ligne, comme d3p2 : « CH44 0076 … 4920 1 › » (début et fin) ; les chiffres de contrôle sont surlignés. Le champ entier reste à la saisie. */
+  const compact = ibanCompact(valeur);
+  const groupes = compact.match(/.{1,4}/g) ?? [];
+  const court = groupes.length > 4 ? [groupes[0], groupes[1], '…', ...groupes.slice(-2)] : groupes;
+  const miroir = court.map((g, gi) => {
+    const debut = gi * 4;
+    const cle = diag?.cle;
+    const surligne = (c: string, k: number) => (cle && debut + k >= cle[0] && debut + k < cle[1] && g !== '…' ? <u key={k}>{c}</u> : c);
+    return <React.Fragment key={gi}>{gi > 0 ? ' ' : ''}{g === '…' ? g : [...g].map(surligne)}</React.Fragment>;
+  });
   return <>
-    <Ligne label="IBAN" err={!!erreur}>
+    <Ligne label="IBAN" sub={ibanDeConfig ? 'valeur de l’app' : undefined} err={!!erreur}>
       <span className="rg-ibanw">
-        {diag && <span className="rg-mir" aria-hidden="true">{miroir}</span>}
+        {diag && <span className="rg-mir" aria-hidden="true"><span>{miroir}</span><b>›</b></span>}
         <Input id="settings-company-iban" aria-label="IBAN Brasserie (factures par virement)" type="text" name="settings_company_qr_ref" autoComplete="off" autoCorrect="off" spellCheck={false}
           data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="CH00 0000 0000 0000 0000 0"
           value={valeur} aria-invalid={erreur ? true : undefined} aria-describedby={erreur ? 'settings-company-iban-erreur' : undefined}
           onChange={e => onChange({ ...company, iban: e.target.value })} className="rg-in rg-wide" />
       </span>
     </Ligne>
-    {erreur && <div className="rg-hint" id="settings-company-iban-erreur" role="alert"><AlertCircle size={14} aria-hidden="true" /><span>{diag?.court ?? 'IBAN à corriger'}</span>
-      <small>{ibanDeConfig ? 'IBAN de la configuration de l’app (aucun n’est enregistré ici). ' : ''}{erreur}</small></div>}
+    {erreur && <div className="rg-hint" id="settings-company-iban-erreur" role="alert"><AlertCircle size={15} aria-hidden="true" /><span>{diag?.court ?? 'IBAN à corriger'}</span>
+      <button type="button" className="rg-b2" onClick={() => document.getElementById('settings-company-iban')?.focus()}>Corriger</button>
+      {/* le message entier, pour les lecteurs d'écran : la ligne visible n'en garde que la cause */}
+      <span className="rg-sr">{erreur}</span></div>}
   </>;
 }
 
@@ -119,7 +129,7 @@ export function Fiscalite({ f, setF, company, setCompany, ibanErreur, ibanDeConf
   const adr = adresseBrasserie(company);
   return (
     <div className="rg-two">
-      <div>
+      <div className="rg-blk-tva">
         <div className="rg-gt"><span>TVA</span></div>
         <Ligne label={<label htmlFor="settings-tva">Brasserie assujettie à la TVA</label>}>
           <Statut />
@@ -127,19 +137,8 @@ export function Fiscalite({ f, setF, company, setCompany, ibanErreur, ibanDeConf
         </Ligne>
         {taux('settings-vat-reduced', 'TVA réduite (denrées admissibles)', 'tvaReducedRate', 'denrées admissibles')}
         {taux('settings-vat-normal', 'TVA normale (bière alcoolisée, matériel)', 'tvaNormalRate', 'bière alcoolisée, matériel')}
-        <div className="rg-gt"><span>Factures par virement</span></div>
-        <LigneIban company={company} onChange={setCompany} erreur={ibanErreur} ibanDeConfig={ibanDeConfig} />
-        <details className="rg-r" style={{ display: 'block' }}>
-          <summary style={{ minHeight: 32, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>Identité de la brasserie{!company.uid?.trim() || !adr ? ' · à compléter' : ''}</summary>
-          <label htmlFor="identite-nom" className="rg-note">Nom sur les factures</label>
-          <Input id="identite-nom" name="identite_nom_label" autoComplete="off" value={company.name} onChange={e => setCompany({ ...company, name: e.target.value })} className="rg-in rg-wide" style={{ width: '100%', textAlign: 'left' }} />
-          <label htmlFor="identite-uid" className="rg-note">Numéro UID (CHE-123.456.789)</label>
-          <Input id="identite-uid" name="identite_uid_label" autoComplete="off" value={company.uid ?? ''} onChange={e => setCompany({ ...company, uid: e.target.value })} aria-invalid={company.uid?.trim() && !uidValide(company.uid) ? true : undefined} className="rg-in rg-wide" style={{ width: '100%', textAlign: 'left' }} />
-          {company.uid?.trim() && !uidValide(company.uid) && <p className="rg-note">Le numéro UID a la forme CHE-123.456.789.</p>}
-          <AdresseChamps legende="Adresse de la brasserie" value={company.adresse ?? (adr ? { rue: adr.rue, numero: adr.numero, npa: adr.npa, localite: adr.localite, pays: adr.pays } : a)} onChange={adresse => setCompany({ ...company, adresse })} />
-        </details>
       </div>
-      <div>
+      <div className="rg-blk-impot">
         <div className="rg-gt"><span>Impôt sur la bière</span><span>{nombreFr(par33, 3)} CHF / 33 cl</span></div>
         <Ligne label={<label htmlFor="ofdf-red">Réduction annuelle OFDF</label>}>
           <NumberInput id="ofdf-red" aria-label="Réduction annuelle OFDF (%)" value={reduction} onValue={value => setF({ ...f, beerTaxAnnualReductionPct: value })} min={0} max={40} placeholder="à saisir" className={`rg-in${reduction === undefined ? ' rg-todo' : ''}`} />{reduction !== undefined && <span className="rg-v">%</span>}
@@ -162,6 +161,19 @@ export function Fiscalite({ f, setF, company, setCompany, ibanErreur, ibanDeConf
           <p>Sans taux annuel confirmé, aucune réduction n’est supposée. Les paiements et décomptes s’effectuent selon les décisions de l’OFDF, via Taxas.</p>
           <a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline' }}>Consulter les informations OFDF</a></div>}
       </div>
+      <div className="rg-blk-fact">
+        <div className="rg-gt"><span>Factures par virement</span></div>
+        <LigneIban company={company} onChange={setCompany} erreur={ibanErreur} ibanDeConfig={ibanDeConfig} />
+        <details className="rg-r" style={{ display: 'block' }}>
+          <summary style={{ minHeight: 32, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>Identité de la brasserie{!company.uid?.trim() || !adr ? ' · à compléter' : ''}</summary>
+          <label htmlFor="identite-nom" className="rg-note">Nom sur les factures</label>
+          <Input id="identite-nom" name="identite_nom_label" autoComplete="off" value={company.name} onChange={e => setCompany({ ...company, name: e.target.value })} className="rg-in rg-wide" style={{ width: '100%', textAlign: 'left' }} />
+          <label htmlFor="identite-uid" className="rg-note">Numéro UID (CHE-123.456.789)</label>
+          <Input id="identite-uid" name="identite_uid_label" autoComplete="off" value={company.uid ?? ''} onChange={e => setCompany({ ...company, uid: e.target.value })} aria-invalid={company.uid?.trim() && !uidValide(company.uid) ? true : undefined} className="rg-in rg-wide" style={{ width: '100%', textAlign: 'left' }} />
+          {company.uid?.trim() && !uidValide(company.uid) && <p className="rg-note">Le numéro UID a la forme CHE-123.456.789.</p>}
+          <AdresseChamps legende="Adresse de la brasserie" value={company.adresse ?? (adr ? { rue: adr.rue, numero: adr.numero, npa: adr.npa, localite: adr.localite, pays: adr.pays } : a)} onChange={adresse => setCompany({ ...company, adresse })} />
+        </details>
+      </div>
     </div>
   );
 }
@@ -174,6 +186,17 @@ function SchemaCuve({ bh }: { bh: BrewhouseProfile }) {
   const L = (l: number) => 150 - Math.min(l, K) * (126 / K);
   const F = (l: number) => 150 - Math.min(l, Fc) * (96 / Fc);
   const mousse = Fc * (1 - e.fermenterHeadspacePct / 100);
+  /* Les repères de la cuve (haut, limite utile, volume avant ébullition, perte) peuvent tomber à quelques pixels l'un de l'autre (35 L utile, 35,8 L avant ébullition) :
+     on les range de haut en bas et on les écarte d'au moins 12 px, avec un petit trait vers le niveau qu'ils désignent. */
+  const ECART = 12;
+  const etiquettes = ([
+    { id: 'haut', valeur: K, unite: 'L', cible: L(K) + 4 },
+    { id: 'utile', valeur: e.kettleWorkingL, unite: 'utile', cible: L(e.kettleWorkingL) + 4 },
+    { id: 'avant', valeur: avant, unite: 'L', cible: L(avant) + 4 },
+    { id: 'perte', valeur: bh.deadSpaceL, unite: 'L perte', cible: L(bh.deadSpaceL) + 2 }
+  ] as { id: string; valeur: number; unite: string; cible: number; y: number }[])
+    .sort((a, b) => a.cible - b.cible || (a.id === 'utile' ? -1 : 1))
+    .map((t, i, tous) => { t.y = t.cible; if (i > 0) t.y = Math.max(t.cible, tous[i - 1].y + ECART); return t; });
   return (
     <>
       <div className="rg-cap">Pour <b>{nombreFr(bh.volumeL, 1)} L</b> en fermenteur, il faut <b>{nombreFr(avant, 1)} L</b> avant ébullition (1 h)</div>
@@ -182,10 +205,10 @@ function SchemaCuve({ bh }: { bh: BrewhouseProfile }) {
         <rect x="23.5" y={L(avant)} width="109" height={150 - L(avant) - 1.5} rx="4" fill="var(--rg-c)" opacity=".42" />
         <rect x="23.5" y={L(bh.deadSpaceL)} width="109" height={Math.max(0, 150 - L(bh.deadSpaceL) - 1.5)} fill="var(--rg-c)" />
         <line x1="16" x2="140" y1={L(e.kettleWorkingL)} y2={L(e.kettleWorkingL)} stroke="var(--rg-t0)" strokeWidth="1.4" strokeDasharray="4 3" />
-        <text x="142" y={L(K) + 4}><tspan className="rg-n">{nombreFr(K, 1)}</tspan> L</text>
-        <text x="142" y={L(e.kettleWorkingL) + 4}><tspan className="rg-n">{nombreFr(e.kettleWorkingL, 1)}</tspan> utile</text>
-        <text x="142" y={L(avant) + 4} className="rg-c"><tspan className="rg-n">{nombreFr(avant, 1)}</tspan> L</text>
-        <text x="142" y={L(bh.deadSpaceL) + 2}><tspan className="rg-n">{nombreFr(bh.deadSpaceL, 1)}</tspan> L perte</text>
+        {etiquettes.map(t => <g key={t.id}>
+          {Math.abs(t.y - t.cible) > 2 && <path d={`M136 ${t.cible} L140 ${t.y - 3}`} stroke="var(--rg-t2)" strokeWidth="0.8" fill="none" />}
+          <text x="142" y={t.y} className={t.id === 'avant' ? 'rg-c' : undefined}><tspan className="rg-n">{nombreFr(t.valeur, 1)}</tspan> {t.unite}</text>
+        </g>)}
         <text x="30" y={L(avant) - 12} className="rg-s">{nombreFr(e.boilOffLPerHour, 1)} L/h</text>
         <text x="40" y="168" className="rg-s">Cuve</text>
         <path d="M182 98 h30" stroke="var(--rg-t0)" strokeWidth="1.6" markerEnd="url(#rg-ar)" />
@@ -216,7 +239,7 @@ export function Brasserie({ draft, setDraft, batches, inventaire, setMessage }: 
       {draft.brewhouses.map(bh => {
         const actif = bh.id === draft.activeBrewhouseId;
         const e = bh.equipment;
-        const prop = actif ? systemCalibrationProposals(bh, batches).find(p => p.parameter === 'fermenterYield' as never && p.eligible && p.value !== p.previousValue) : undefined;
+        const prop = actif ? systemCalibrationProposals(bh, batches).find(p => p.parameter === 'efficiencyPct' && p.eligible && p.value !== p.previousValue) : undefined;
         return (
           <section key={bh.id} aria-label={bh.name}>
             <Ligne label={actif ? 'Installation active' : bh.name}><span className="rg-v">{actif ? bh.name : ''} · {nombreFr(e?.kettleCapacityL ?? bh.volumeL, 1)} L</span></Ligne>
@@ -257,7 +280,7 @@ export function BandeauAcces({ email, drive }: { email?: string | null; drive: b
 export function Acces({ email, modifs14j, onOuvrirJournal, onExporter }: { email?: string | null; modifs14j: number; onOuvrirJournal: () => void; onExporter: () => void }) {
   return (
     <div>
-      <Ligne label="Compte Google" sub="authentification Firebase"><span className="rg-v" style={{ color: 'var(--rg-hopt)' }}>{email ? <><Check size={14} aria-hidden="true" /> connecté</> : 'non connecté'}</span></Ligne>
+      <Ligne label="Compte Google" sub="authentification Firebase"><span className={`rg-st${email ? ' rg-bon' : ''}`}>{email ? <><Check size={14} aria-hidden="true" /> connecté</> : <><i aria-hidden="true" /> non connecté</>}</span></Ligne>
       <Ligne label="Journal des modifications" sub="qui a fait quoi, quand"><span className="rg-v">{modifs14j} en 14 j</span><button type="button" className="rg-b2" onClick={onOuvrirJournal}>Ouvrir</button></Ligne>
       <Ligne label="Arborescence Google Drive" sub="liste classée des justificatifs"><button type="button" className="rg-b2" onClick={onExporter}><Download size={14} aria-hidden="true" />Exporter</button></Ligne>
     </div>
@@ -273,13 +296,13 @@ export function Sauvegardes({ visible, setBackupBusy, setMigrationBusy, backupRu
 }) {
   return (
     <div hidden={!visible} className="rg-flat">
-      <div className="rg-gt"><span>Garder une copie · Restaurer · Justificatifs sur Drive</span></div>
+      {/* L'ordre de d3p2 (Garder, Restaurer, Justificatifs, Cet appareil) : les deux panneaux gardent leur code, la mise en page les range. */}
       <DriveStoragePanel onBusyChange={setMigrationBusy} disabled={backupRunning} />
       <BackupPanel onBusyChange={setBackupBusy} disabled={migrationBusy} />
-      <details><summary style={{ minHeight: 32, cursor: 'pointer' }}>Cet appareil</summary>
-        <button type="button" onClick={onReset} disabled={busy || backupRunning || migrationBusy} className="rg-r" style={{ width: '100%', color: 'var(--rg-alt)', background: 'none' }}>
-          <RotateCcw size={16} aria-hidden="true" /><span className="rg-l" style={{ color: 'var(--rg-alt)' }}>Réinitialiser l’affichage de cet appareil</span></button>
-      </details>
+      <div className="rg-gt rg-dernier"><span>Cet appareil</span></div>
+      <button type="button" onClick={onReset} disabled={busy || backupRunning || migrationBusy} className="rg-r rg-dernier" style={{ width: '100%', color: 'var(--rg-alt)', background: 'none', textAlign: 'left' }}>
+        <span className="rg-l" style={{ color: 'var(--rg-alt)' }}>Réinitialiser l’affichage de cet appareil</span><span className="rg-ld" /><RotateCcw size={16} aria-hidden="true" />
+      </button>
     </div>
   );
 }
