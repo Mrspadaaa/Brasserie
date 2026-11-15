@@ -77,7 +77,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
   } else if (keg.state === 'propre') {
     const lave = derniereDate(keg, 'lave');
     titre = lave ? `Lavé le ${dateCourte(lave)}` : 'Propre';
-    aide = 'Nettoyé et désinfecté, prêt à remplir.';
+    aide = 'Marqué propre, prêt à remplir.';
   } else {
     const revenu = derniereDate(keg, 'retour-vide');
     titre = revenu ? `Revenu le ${dateCourte(revenu)}` : 'À laver';

@@ -91,7 +91,7 @@ describe('AM-70 — le tableau des fûts (remplir, livrer) suit les mêmes règl
     fireEvent.click(screen.getByRole('combobox', { name: 'Lot' }));
     expect(screen.queryByRole('option', { name: /B-PLAN/ })).toBeNull();
     fireEvent.click(screen.getByRole('option', { name: /B-COND/ }));
-    expect(screen.getByText(/couvrent 20 L pour 20 L produits/)).toBeInTheDocument();
+    expect(screen.getByText(/Ce lot est déjà tout en fût/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Remplir 1 fût' })).toBeDisabled();
   });
   it('livrer : sans client, le bouton est éteint', () => {
