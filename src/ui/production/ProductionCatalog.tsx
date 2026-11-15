@@ -33,7 +33,8 @@ export function ProductionCatalog({
   onOpenRecipe,
   onEditRecipe,
   onOpenBatch,
-  onOpenBrewDay
+  onOpenBrewDay,
+  onVueChange
 }: {
   kind: CatalogKind;
   recipes: Recipe[];
@@ -43,6 +44,8 @@ export function ProductionCatalog({
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
   onOpenBrewDay: (batch: Batch) => void;
+  /** Dit à l'écran parent si le bilan est ouvert : il masque alors sa phrase-réponse (e7a). */
+  onVueChange?: (view: 'list' | 'analysis') => void;
 }) {
   const mobile = useMobileLayout();
   const [filters, setFilters] = useState<CatalogFilters>(() =>
@@ -99,6 +102,7 @@ export function ProductionCatalog({
   }, [analysisFolder, kind]);
   useEffect(() => {
     StorageService.setUiState(`catalog-${kind}-view`, view);
+    if (kind === 'batches') onVueChange?.(view);
   }, [view, kind]);
   useEffect(() => {
     if (kind === 'batches') StorageService.setUiState('catalog-batches-work', work);
@@ -167,12 +171,17 @@ export function ProductionCatalog({
       });
     }
   };
+  const bilanBrassins = kind === 'batches' && view === 'analysis';
+  const bilanEntries = useMemo(
+    () => bilanBrassins ? filterCatalog(entries, { ...DEFAULT_CATALOG_FILTERS, folder: 'all' }, globalTimeFilter) : [],
+    [bilanBrassins, entries, globalTimeFilter]
+  );
   const hasCriteria = catalogCriteria(effectiveFilters, work, globalTimeFilter).length > 0;
   const scopeCount = entries.filter((e) => inCatalogFolder(e, effectiveFilters.folder)).length;
   const archiveCount = entries.filter(isArchived).length;
   return (
     <div className="space-y-3">
-      <CatalogToolbar
+      {!bilanBrassins && <CatalogToolbar
         kind={kind}
         entries={entries}
         facetEntries={facetEntries}
@@ -190,7 +199,7 @@ export function ProductionCatalog({
           setSelectedIds([]);
           setView('list');
         }}
-      />
+      />}
       {notice && (
         <div
           className={`flex items-center gap-2 rounded-control border px-3 ${notice.error ? 'border-alert/40 text-alert' : 'border-water/40 text-water'}`}
@@ -247,7 +256,7 @@ export function ProductionCatalog({
           </button>
         </div>
       )}
-      {filtered.length === 0 ? (
+      {(bilanBrassins ? bilanEntries.length === 0 : filtered.length === 0) ? (
         <div className="panel p-6 text-center space-y-3">
           <SearchX className="h-7 w-7 mx-auto text-cave-400" />
           <h3 className="font-semibold text-cave-50">
@@ -270,7 +279,12 @@ export function ProductionCatalog({
                   ? 'Élargis les filtres ou la période pour retrouver tes fiches.'
                   : 'Crée une recette, puis planifie son brassin.'}
           </p>
-          {hasCriteria && (
+          {bilanBrassins && (
+            <button type="button" onClick={() => setView('list')} className="min-h-touch px-4 rounded-control border border-cave-700 text-ebc-straw">
+              Retour aux brassins
+            </button>
+          )}
+          {!bilanBrassins && hasCriteria && (
             <button
               type="button"
               onClick={reset}
@@ -292,8 +306,10 @@ export function ProductionCatalog({
       ) : view === 'analysis' ? (
         <CatalogAnalysis
           kind={kind}
-          entries={filtered}
+          entries={bilanBrassins ? bilanEntries : filtered}
           includeArchivedBatches={effectiveFilters.folder !== 'current'}
+          onBack={bilanBrassins ? () => setView('list') : undefined}
+          onFolder={bilanBrassins ? setAnalysisFolder : undefined}
           onOpenBatch={onOpenBatch}
           onFilter={(field, value) => {
             setFilters((f) => ({

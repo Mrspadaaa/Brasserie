@@ -26,18 +26,24 @@ const selector = () => screen.getByRole('combobox', { name: 'Étape du brassin' 
 const optionLabels = () => within(selector()).getAllByRole('option').map(o => o.textContent);
 const open = (b: Batch, section: 'overview' | 'measurements' = 'overview') => render(<BatchDetailSheet batch={b} initialSection={section} onClose={vi.fn()} />);
 
+// p4 : e1a, e2a et e4c ont retiré le sélecteur « Étape du brassin » du planifié et des étapes d'après (choix du 15.11) ; les mêmes règles se jouent par l'échelle des étapes (e4c) et le panneau « ⋯ ». « En fermentation » garde son sélecteur.
+const ouvrirEchelle = (b: Batch) => { open(b, 'measurements'); fireEvent.click(screen.getByRole('button', { name: /Étape|Ouvrir l’échelle des étapes/ })); };
+
 describe('AM 4 · le sélecteur d’étape n’offre que ce qui est permis', () => {
-  it('planifié sans levure ajoutée : seulement Annulé, et la raison est écrite', () => {
+  it('planifié sans levure ajoutée : seulement l’abandon, et la raison est écrite', () => {
     open(base({ status: 'planifie', stockAccountingVersion: 1 }));
-    expect(optionLabels()).toEqual(['Planifié', 'Annulé (abandon)']);
+    expect(screen.queryByRole('combobox', { name: 'Étape du brassin' })).not.toBeInTheDocument();
+    expect(screen.getByText(/la fermentation commence à cet instant/)).toBeInTheDocument();
+    cleanup();
+    ouvrirEchelle(base({ status: 'planifie', stockAccountingVersion: 1 }));
     expect(screen.queryByRole('button', { name: /Passer en/ })).not.toBeInTheDocument();
     expect(screen.getByText(/la fermentation commence à cet instant/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Abandonner le lot/ })).toBeInTheDocument();
   });
 
   it('planifié avec levure ajoutée : Fermentation s’offre et suit le service de stock', () => {
-    open(base({ status: 'planifie', brewDay: pitchedDay }));
-    expect(optionLabels()).toContain('Fermentation');
-    fireEvent.click(screen.getByRole('button', { name: 'Passer en « Fermentation »' }));
+    ouvrirEchelle(base({ status: 'planifie', brewDay: pitchedDay }));
+    fireEvent.click(screen.getByRole('button', { name: 'Passer en fermentation' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'fermentation' }), 'brewday', false);
   });
 
@@ -47,59 +53,57 @@ describe('AM 4 · le sélecteur d’étape n’offre que ce qui est permis', () 
   });
 
   it('un retour en arrière se confirme dans la page, dit ce qu’il défait et n’appelle jamais confirm()', () => {
-    open(base({ status: 'conditionne', stockConsumption: consumed }));
-    expect(optionLabels()).toEqual(['Conditionné', 'Revenir à « Garde froide »', 'Terminé', 'Annulé (abandon)']);
-    fireEvent.change(selector(), { target: { value: 'garde' } });
+    ouvrirEchelle(base({ status: 'conditionne', stockConsumption: consumed }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à Garde' }));
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(screen.getByRole('heading', { name: 'Revenir à « Garde froide » ?' })).toBeInTheDocument();
-    expect(screen.getByText(/Le stock déjà retiré reste retiré/)).toBeInTheDocument();
-    expect(screen.getByText(/aucun ingrédient n’est remis en rayon/)).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Étape du brassin', hidden: true })).toHaveValue('conditionne');
-    fireEvent.click(screen.getByRole('button', { name: 'Revenir à « Garde froide »' }));
+    // e4c (15.11, sa maquette) : la marche de retour dit « Aucun ingrédient remis en rayon » : le stock déjà retiré le reste.
+    expect(screen.getByText(/Aucun ingrédient remis en rayon/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir en garde' }));
     expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ status: 'garde' }));
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(confirmSpy).not.toHaveBeenCalled();
   });
 
-  it('RJ-15 · « Annulé (abandon) » se confirme dans la page, comme le retour en arrière, sans confirm()', () => {
-    open(base({ status: 'planifie' }));
-    fireEvent.change(selector(), { target: { value: 'annule' } });
+  it('RJ-15 · l’abandon se confirme dans la page, comme le retour en arrière, sans confirm()', () => {
+    ouvrirEchelle(base({ status: 'planifie' }));
+    fireEvent.click(screen.getByRole('button', { name: /Abandonner le lot/ }));
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(screen.getByRole('heading', { name: 'Abandonner ce brassin ?' })).toBeInTheDocument();
     expect(screen.getByText(/Rien n’a été déstocké/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Garder le lot' }));
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(selector()).toHaveValue('planifie');
-    fireEvent.change(selector(), { target: { value: 'annule' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
+    fireEvent.click(screen.getByRole('button', { name: /Abandonner le lot/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner' }));
     expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ status: 'annule' }));
     expect(confirmSpy).not.toHaveBeenCalled();
   });
 
-  it('annuler la confirmation laisse le brassin tel quel', () => {
+  it('terminé : « ⋯ » rouvre le brassin en Conditionné par une confirmation dans la page ; l’annuler le laisse tel quel', () => {
     open(base({ status: 'termine' }));
-    fireEvent.change(selector(), { target: { value: 'conditionne' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à « Conditionné »' }));
+    expect(screen.getByRole('heading', { name: 'Revenir à « Conditionné » ?' })).toBeInTheDocument();
     expect(screen.getByText(/Rien n’a été déstocké/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(selector()).toHaveValue('termine');
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à « Conditionné »' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Revenir à « Conditionné »' }).at(-1)!);
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ status: 'conditionne' }));
   });
 
-  it('une étape non permise ne s’applique pas, même forcée', () => {
-    open(base({ status: 'garde' }));
-    fireEvent.change(selector(), { target: { value: 'termine' } });
+  it('une étape non permise ne s’offre pas depuis la garde (pas de « Terminé » direct) et rien ne s’écrit', () => {
+    open(base({ status: 'garde', fg: '1.010', og: '1.050' }), 'measurements');
+    fireEvent.click(screen.getByRole('button', { name: /Conditionner · bouteilles et fût/ }));
+    expect(screen.queryByRole('button', { name: /Clôturer|Passer en terminé/ })).not.toBeInTheDocument();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
-    expect(screen.getByRole('status')).toHaveTextContent('n’est pas une étape permise');
   });
 
   it('si le déstockage est refusé, le statut ne change pas, ni à l’écran ni dans le stockage', () => {
     vi.mocked(StorageService.completeBrewStock).mockReturnValue({ success: false, issues: ['Pale : stock insuffisant'] });
     vi.mocked(StorageService.getBatches).mockReturnValue([base({ status: 'planifie', brewDay: pitchedDay })]);
-    open(base({ status: 'planifie', brewDay: pitchedDay }));
-    fireEvent.click(screen.getByRole('button', { name: 'Passer en « Fermentation »' }));
+    ouvrirEchelle(base({ status: 'planifie', brewDay: pitchedDay }));
+    fireEvent.click(screen.getByRole('button', { name: 'Passer en fermentation' }));
     expect(screen.getByRole('status')).toHaveTextContent('Le statut reste « Planifié »');
-    expect(selector()).toHaveValue('planifie');
     expect(screen.getByText('Pale : stock insuffisant')).toBeInTheDocument();
     // Réessayer depuis « Revérifier et déstocker » vise de nouveau la fermentation.
     vi.mocked(StorageService.completeBrewStock).mockClear();

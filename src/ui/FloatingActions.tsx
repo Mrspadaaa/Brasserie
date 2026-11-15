@@ -1,6 +1,6 @@
 import React from 'react';
-import { Beer, ClipboardList, FileText, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
-import type { FabAction } from '../domain/fabActions';
+import { Beer, ClipboardList, FileText, Hop, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
+import { OUTILS_HOUBLONS_EVENT, type FabAction } from '../domain/fabActions';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
 import './floating-actions.css';
@@ -77,6 +77,10 @@ interface DockGeometry {
 
 const ROW = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs text-cave-200 ' +
   'hover:bg-cave-850 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
+
+/** e11a : l'action de l'écran, en aplat plein comme le bouton lui-même (noir en clair, paille en cave). */
+const ROW_FORTE = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs rounded-control bg-ebc-straw text-cave-950 ' +
+  'focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
 
 /** Suit la case réservée : sa taille, et sa place quand la page se déplace (clavier, pied qui change). */
 function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null {
@@ -160,7 +164,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       tone: 'text-ebc-straw', run: onAction
     }]);
   }
-  groups.push([
+  const compagnon: Item[] = [
     {
       key: 'companion', label: 'Compagnon brasseur', hint: companionLabel,
       // `hop` dit « disponible, validé » : DESIGN.md le refuse pour un assistant.
@@ -173,17 +177,28 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       Icon: MessagesSquare, tone: 'text-cave-400',
       run: () => window.dispatchEvent(new Event('brewer-inbox-open'))
     }] : [])
-  ]);
+  ];
+  /* e11a : sur Brassins, le menu de la maquette, dans son ordre : action de l'écran, Créer une recette, Outils houblons | facture, vente | Compagnon. */
+  const menuBrassins = action?.menu === 'brassins';
+  if (!menuBrassins) groups.push(compagnon);
   /* BX-4 (09.11) : l'action de l'écran ne se répète pas plus bas (« Nouvelle recette » et « Créer une recette », « Nouvelle écriture » et « Entrer une facture »). */
   const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
-  groups.push([
-    { key: 'invoice', label: 'Entrer une facture', hint: 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
+  const facture: Item[] = [
+    { key: 'invoice', label: 'Entrer une facture', hint: menuBrassins ? undefined : 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
     { key: 'sale', label: 'Encaisser une vente', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
-  ]);
-  groups.push([
+  ];
+  const production: Item[] = [
     { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },
     { key: 'brew', label: 'Lancer un brassin', hint: 'À partir d’une recette existante', Icon: Beer, tone: 'text-area-production', run: onBrew }
-  ]);
+  ];
+  if (menuBrassins) {
+    /* La maquette ne garde que « Créer une recette » : « Lancer un brassin » double l'action de l'écran sur Brassins, et « Brasser » est sur chaque recette. */
+    const outils: Item = { key: 'hops', label: 'Outils houblons', Icon: Hop, tone: 'text-hop', run: () => window.dispatchEvent(new Event(OUTILS_HOUBLONS_EVENT)) };
+    groups[0].push(production[0], outils);
+    groups.push(facture, compagnon);
+  } else {
+    groups.push(facture, production);
+  }
 
   const groupes = groups.map(g => g.filter(item => item.key !== doublon)).filter(g => g.length);
 
@@ -228,6 +243,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 22;
   /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
   const quiet = !geometry && anchor === 'page' && pageFooter;
+  /* e11a : « + Brassin », « + Recette ». Docké, la case des onglets s'élargit (variable lue par `floating-actions.css`) et le bouton garde son bord droit. */
+  const court = action?.court;
+  React.useLayoutEffect(() => {
+    if (!court || !geometry) return;
+    const root = document.documentElement;
+    root.style.setProperty('--floating-actions-nav-dock', '7.75rem');
+    return () => { root.style.removeProperty('--floating-actions-nav-dock'); };
+  }, [court, geometry !== null]);
 
   return (
     <div
@@ -241,7 +264,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         '--floating-actions-bottom': geometry ? `${geometry.bottom}px` : fallbackBottom,
         ...(geometry ? {
           '--floating-actions-right': `${geometry.right}px`,
-          '--floating-actions-width': `${geometry.width}px`,
+          ...(court ? { '--floating-actions-right': '0.75rem' } : {}),
+          '--floating-actions-width': court ? 'auto' : `${geometry.width}px`,
           '--floating-actions-height': `${geometry.height}px`
         } : {}),
         '--floating-actions-icon': `${iconSize}px`
@@ -254,7 +278,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           role="menu"
           aria-label="Actions rapides"
           onKeyDown={onKeyDown}
-          className={`absolute right-0 w-[15rem] max-w-[calc(100vw-1.5rem)] overflow-hidden
+          className={`absolute right-0 ${menuBrassins ? 'w-[18rem] p-1 space-y-0.5' : 'w-[15rem]'} max-w-[calc(100vw-1.5rem)] overflow-hidden
                       rounded-panel border border-cave-700 bg-cave-900 shadow-lift
                       ${placement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}
         >
@@ -263,12 +287,13 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           {groupes.map((group, index) => (
             <div key={group[0].key} className={index ? 'border-t border-cave-800' : undefined}>
               {group.map(({ key, label, hint, Icon, tone, count, busy, strong, run }) => (
-                <button key={key} type="button" role="menuitem" tabIndex={-1} className={ROW} onClick={choose(run)}>
+                <button key={key} type="button" role="menuitem" tabIndex={-1} onClick={choose(run)}
+                  className={strong && menuBrassins ? ROW_FORTE : ROW}>
                   <Icon size={16} aria-hidden="true"
-                    className={`shrink-0 ${tone} ${busy ? 'motion-safe:animate-spin' : ''}`} />
+                    className={`shrink-0 ${strong && menuBrassins ? 'text-cave-950' : tone} ${busy ? 'motion-safe:animate-spin' : ''}`} />
                   <span className="min-w-0 flex-1">
-                    <span className={strong ? 'font-semibold text-cave-50' : undefined}>{label}</span>
-                    {hint && <span className="block text-footnote text-cave-400">{hint}</span>}
+                    <span className={strong ? 'font-semibold ' + (menuBrassins ? '' : 'text-cave-50') : undefined}>{label}</span>
+                    {hint && <span className={`block text-footnote ${strong && menuBrassins ? 'opacity-75' : 'text-cave-400'}`}>{hint}</span>}
                   </span>
                   {!!count && (
                     <span className="shrink-0 min-w-4 px-1 rounded-full bg-attention text-cave-950
@@ -308,7 +333,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         }}
         // En ligne : aucune règle d'écran ne retire le bouton de sa case (voir en tête).
         style={{ display: 'flex' }}
-        className={`relative rounded-full items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
+        className={`relative rounded-full items-center justify-center ${court ? 'gap-1 pl-3 pr-4' : ''} select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
                    ${quiet
@@ -317,6 +342,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
           className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
+        {court && <span className="text-sm font-semibold">{court}</span>}
         {waiting > 0 && (
           <span aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-4 min-h-4 px-1 rounded-full

@@ -994,6 +994,7 @@ export const App: React.FC = () => {
             onOpenRecipe={openRecipe}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onEditRecipe={(recipe) => openWizard({ recipe })}
+            onRebrewRecipe={(recipeId) => { setBrewRecipeId(recipeId); setQuickAction('brew-batch'); }}
             onOpenBrewDay={openBrewDay}
             onSubTabChange={handleProductionSubTabChange}
             createRequest={createRequest}

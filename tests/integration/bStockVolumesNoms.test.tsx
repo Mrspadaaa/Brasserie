@@ -25,7 +25,8 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('TE-38 — les accents des ingrédients survivent à l’adaptation au volume', () => {
   it('« Röstgerste (orge torréfiée) » et « Caramünch Typ 2 » s’écrivent comme dans la recette', () => {
     mount();
-    const table = screen.getByRole('table');
+    const table = document.querySelector('[data-role="etapes"]') as HTMLElement;
+    expect(table).not.toBeNull();
     expect(within(table).getByText('Röstgerste (orge torréfiée)')).toBeInTheDocument();
     expect(within(table).getByText('Caramünch Typ 2')).toBeInTheDocument();
     expect(table.textContent).not.toMatch(/Rstgerste|Caramnch/);

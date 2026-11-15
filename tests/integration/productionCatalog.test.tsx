@@ -384,12 +384,10 @@ describe('Recipe and batch catalog interactions', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
     expect(screen.getByLabelText('Analyses des recettes')).toHaveTextContent('3 recettes');
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Explorer les profils et ingrédients'
-      })
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 3' }));
+    // p2 (bilan) : les puces de houblons sont toujours visibles, sans bouton « Explorer » ; elles disent le nombre de fiches.
+    const citra = screen.getByRole('button', { name: 'Filtrer : Citra' });
+    expect(citra).toHaveTextContent('2 fiches');
+    fireEvent.click(citra);
     expect(screen.getByRole('button', { name: 'Afficher la liste' })).toHaveAttribute(
       'aria-pressed',
       'true'
@@ -398,12 +396,7 @@ describe('Recipe and batch catalog interactions', () => {
       within(screen.getByLabelText('Liste des recettes')).getAllByRole('article')
     ).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Explorer les profils et ingrédients'
-      })
-    );
-    expect(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 2' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filtrer : Citra' })).toHaveTextContent('2 fiches');
     expect(screen.queryByRole('button', { name: /Filtrer : Fuggle/ })).not.toBeInTheDocument();
   });
   it('filters usage and preserves access to every version by default', () => {
@@ -428,8 +421,8 @@ describe('Recipe and batch catalog interactions', () => {
     expect(list).not.toHaveTextContent('Ingrédients déduits');
     expect(list).not.toHaveTextContent('50/50 DI');
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
-    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('23');
-    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('1 lot');
+    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('23 L brassés');
+    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent(/IPA\s*1/); // un lot IPA, compté dans Styles et avancement
   });
   it('compares exactly two recipes with normalized doses, without editing them', () => {
     const { actions } = mount();
@@ -518,9 +511,10 @@ describe('Recipe and batch catalog interactions', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
     const outcomes = screen.getByLabelText('Écarts entre cible et résultat');
-    expect(outcomes).toHaveTextContent('-4,7 pts');
+    expect(outcomes).toHaveTextContent('−0,005'); // OG mesurée 1,060 contre la cible : écart signé, sur les mêmes lots filtrés
+    expect(outcomes).toHaveTextContent(/Alcool—/); // sans FG mesurée, l'alcool n'est plus inventé : « — », jamais un écart
     fireEvent.click(within(outcomes).getByRole('button', { name: 'Comparer volume en cuve' }));
-    expect(outcomes).toHaveTextContent('-4 L');
+    expect(outcomes).toHaveTextContent('−4 L');
     fireEvent.click(within(outcomes).getByRole('button', { name: 'Mesures du brassin LOT1' }));
     expect(actions.onOpenBatch).toHaveBeenCalledWith(lot, 'measurements');
   });

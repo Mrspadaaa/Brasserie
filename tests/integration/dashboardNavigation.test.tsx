@@ -31,6 +31,11 @@ const oldBatch: Batch = {
   id: 'DASHBOARD-OLD', name: 'Garde du mois précédent', style: 'Saison',
   volumeL: 30, status: 'garde', brewDate: '15.08.2026', og: '1.050'
 };
+// Voie p3 : la période de l'application ne juge que les brassins finis ; un brassin en garde reste visible sous toute période.
+const finiBatch: Batch = {
+  id: 'DASHBOARD-DONE', name: 'Terminé du mois précédent', style: 'Stout',
+  volumeL: 20, status: 'termine', brewDate: '10.08.2026', og: '1.060'
+};
 const currentBatch: Batch = {
   id: 'CURRENT', name: 'Brassin de septembre', style: 'IPA',
   volumeL: 24, status: 'planifie', brewDate: '10.09.2026'
@@ -43,7 +48,7 @@ const creativeItems: CreativeItem[] = [
 
 function productionProps(): React.ComponentProps<typeof ProductionTab> {
   return {
-    batches: [oldBatch, currentBatch], recipes: [],
+    batches: [oldBatch, finiBatch, currentBatch], recipes: [],
     brewhouses: defaultConfig.brewhouses, activeBrewhouseId: defaultConfig.activeBrewhouseId,
     globalTimeFilter: 'this-month', targetSubTab: 'batches',
     onOpenRecipe: vi.fn(), onOpenBrewDay: vi.fn(), onDraftRecipe: vi.fn()
@@ -139,7 +144,8 @@ describe('Direct batch navigation from the dashboard', () => {
     const view = render(<ProductionTab {...props} />);
     const catalog = screen.getByLabelText('Liste des brassins');
     expect(within(catalog).getByRole('button', { name: 'Ouvrir le brassin CURRENT' })).toBeInTheDocument();
-    expect(within(catalog).queryByRole('button', { name: `Ouvrir le brassin ${oldBatch.id}` })).not.toBeInTheDocument();
+    expect(within(catalog).getByRole('button', { name: `Ouvrir le brassin ${oldBatch.id}` })).toBeInTheDocument(); // en garde : visible sous toute période
+    expect(within(catalog).queryByRole('button', { name: `Ouvrir le brassin ${finiBatch.id}` })).not.toBeInTheDocument(); // fini hors du mois : la période le juge encore
 
     view.rerender(<ProductionTab {...props} openBatchRequest={request} />);
     let dialog = screen.getByRole('dialog', { name: oldBatch.name });
@@ -149,13 +155,14 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(within(dialog).getAllByRole('button', { name: 'Fermer', exact: true })[0]);
 
     const updated = { ...oldBatch, name: 'Garde actualisée', og: '1.052' };
-    view.rerender(<ProductionTab {...props} batches={[updated, currentBatch]} openBatchRequest={{ ...request }} />);
+    view.rerender(<ProductionTab {...props} batches={[updated, finiBatch, currentBatch]} openBatchRequest={{ ...request }} />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText('Liste des brassins')).toHaveTextContent(currentBatch.name);
-    expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(updated.name);
+    expect(screen.getByLabelText('Liste des brassins')).toHaveTextContent(updated.name); // en garde : reste listé
+    expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(finiBatch.name); // fini hors période : jamais élargi
 
-    view.rerender(<ProductionTab {...props} batches={[updated, currentBatch]} openBatchRequest={{ id: oldBatch.id, at: 2 }} />);
+    view.rerender(<ProductionTab {...props} batches={[updated, finiBatch, currentBatch]} openBatchRequest={{ id: oldBatch.id, at: 2 }} />);
     dialog = screen.getByRole('dialog', { name: updated.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.052');
     expect(within(dialog).getByRole('button', { name: 'Mesures', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -199,7 +206,7 @@ describe('Direct batch navigation from the dashboard', () => {
   it('wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab', async () => {
     vi.spyOn(StorageService, 'startSync').mockImplementation(() => {});
     vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
-    vi.spyOn(StorageService, 'getBatches').mockReturnValue([oldBatch, currentBatch]);
+    vi.spyOn(StorageService, 'getBatches').mockReturnValue([oldBatch, finiBatch, currentBatch]);
     const { App } = await import('../../src/App');
     render(<App />);
 
@@ -219,7 +226,7 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
     expect(screen.getByRole('menuitem', { name: /Nouveau brassin/ })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(oldBatch.name);
+    expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(finiBatch.name);
 
     const navigation = screen.getByRole('navigation', { name: 'Navigation principale' });
     fireEvent.click(within(navigation).getByRole('button', { name: 'Bord', exact: true }));

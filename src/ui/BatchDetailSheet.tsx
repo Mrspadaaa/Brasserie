@@ -1,6 +1,6 @@
 import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
-import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
+import { Trash2, ArrowRight, AlertTriangle, PackageCheck, X } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
@@ -19,7 +19,7 @@ import { BatchGravityEntry } from './production/BatchGravityEntry';
 import { formatDecimal, parseDecimal } from './numericInput';
 import { NoloPanel } from './NoloPanel';
 import { noloRecipeForBatch } from '../domain/nolo';
-import { BrewBudgetButton } from './finance/BrewBudgetDialog';
+import { BrewBudgetDialog } from './finance/BrewBudgetDialog';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
@@ -33,6 +33,21 @@ import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
+import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/PlannedDate';
+import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, EtapesPills, VerdictPuces, LigneRepliee } from './production/fiche/PostFiche';
+import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
+import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
+import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
+import { Ellipsis, ChevronRight, Package } from 'lucide-react';
+
+/** « Budget » : un bouton de la grille de la fiche (même gabarit que Compagnon et Étape) qui ouvre le budget du brassin. */
+const BudgetLien: React.FC<{ batch: Batch; className?: string; children?: React.ReactNode }> = ({ batch, className, children }) => {
+  const [open, setOpen] = useState(false);
+  return <>
+    <Cible onClick={() => setOpen(true)} className={className}>{children ?? 'Budget'}</Cible>
+    {open && <BrewBudgetDialog batch={batch} onClose={() => setOpen(false)} />}
+  </>;
+};
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -52,12 +67,18 @@ interface BatchDetailSheetProps {
   batch: Batch | null;
   onClose: () => void;
   initialSection?: BatchDetailSection;
+  /** e1a « Commencer le brassage » : ouvre la page du jour de brassage (App). */
+  onOpenBrewDay?: (batch: Batch) => void;
+  /** e2a « Rebrasser cette <style> » (pied d'un brassin terminé) : ouvre la création d'un brassin de la même recette (App). Sans lui, « Fermer ». */
+  onRebrew?: (batch: Batch) => void;
 }
 
 export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   batch,
   onClose,
-  initialSection = 'measurements'
+  initialSection = 'measurements',
+  onOpenBrewDay,
+  onRebrew
 }) => {
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -70,6 +91,27 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
   const [packaging, setPackaging] = useState<{ target: Batch['status'] | null } | null>(null);
   const [pendingStatus, setPendingStatus] = useState<Batch['status'] | null>(null);
+  /** p1 : geste Reporter de e1a (index du jour au curseur), échelle e4c ouverte, FG au curseur (millièmes) et son annulation, « ⋯ ». */
+  const [datePlan, setDatePlan] = useState<number | null>(null);
+  const [dateError, setDateError] = useState('');
+  const [ladder, setLadder] = useState(false);
+  const [fgMilli, setFgMilli] = useState<number | null>(null);
+  const [fgError, setFgError] = useState('');
+  const [fgUndo, setFgUndo] = useState<{ fg: string; abv: string } | null>(null);
+  const [plusOpen, setPlusOpen] = useState(false);
+  const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
+  const releveRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!fgUndo) return; const t = window.setTimeout(() => setFgUndo(null), 8000); return () => window.clearTimeout(t); }, [fgUndo]);
+  // p5 : à l'ouverture, le focus auto de la feuille tombe sur le × et l'entoure d'un anneau. On le pose sur la feuille elle-même ; le clavier reprend ensuite normalement.
+  useEffect(() => {
+    if (!batch?.id) return;
+    const t = window.setTimeout(() => {
+      const actif = document.activeElement as HTMLElement | null;
+      const dialog = actif?.closest<HTMLElement>('[role="dialog"]');
+      if (actif && dialog && actif.getAttribute('aria-label') === 'Fermer') { if (dialog.tabIndex < 0) dialog.tabIndex = -1; dialog.focus({ preventScroll: true }); }
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [batch?.id]);
   const [gravityAlert, setGravityAlert] = useState<{ field: 'og' | 'fg'; problem: GravityProblem | 'unreadable'; value: number | null; keepable: boolean } | null>(null);
   useEffect(() => {
     setPackaging(null);
@@ -79,6 +121,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     setStockMessage('');
     setPendingStatus(null);
     setGravityAlert(null);
+    setDatePlan(null); setDateError(''); setLadder(false); setFgMilli(null); setFgError(''); setFgUndo(null); setPlusOpen(false);
+    // e2a : un brassin terminé s'ouvre sur son Carnet, un brassin annulé sur son Dossier (initialSection par défaut seulement).
+    if (initialSection === 'measurements' && batch?.status === 'termine') setSection('tasting');
+    if (initialSection === 'measurements' && batch?.status === 'annule') setSection('overview');
   }, [batch?.id, initialSection]);
 
   if (!batch || !draft) return null;
@@ -173,34 +219,111 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     ? 'Valeur illisible : tape un nombre, par exemple 1,048.'
     : gravityMessage(alert.problem, alert.value!, alert.field === 'fg' ? og : null, alert.keepable, alert.field === 'og' ? fg : null);
 
+  // p1 : e1a (planifié), e2a (garde, conditionné, terminé, annulé) ; « en fermentation » garde sa fiche (choix ouvert s4a × s6c).
+  const planned = draft.status === 'planifie';
+  const post = draft.status === 'garde' || draft.status === 'conditionne' || draft.status === 'termine' || draft.status === 'annule';
+  const Enveloppe: React.ElementType = post ? 'details' : React.Fragment;
+  const nowMs = Date.now();
+  const dernierSg = releves(draft).slice(-1)[0]?.sg;
+  const fgDepart = Math.round((dernierSg ?? draft.recipeSnapshot?.fgTarget ?? 1.01) * 1000);
+  const openLadder = () => { setKegList(StorageService.getStocks().kegs); setLadder(true); };
+  const ouvrirReleve = () => {
+    const zone = releveRef.current;
+    zone?.closest('details')?.setAttribute('open', '');
+    zone?.scrollIntoView?.({ block: 'center' });
+    zone?.querySelector('button')?.click();
+  };
+  const saveDate = async (date: string) => {
+    setDateError('');
+    try { setDraft(await saveBatchSchedule(draft, date, value => StorageService.updateBatch(value))); setDatePlan(null); }
+    catch (e) { setDateError(e instanceof Error ? e.message : 'La date n’a pas pu être enregistrée. Réessaie.'); }
+  };
+  const confirmFg = (milli: number) => {
+    const value = milli / 1000;
+    const problem = gravityProblem('fg', value, null, og);
+    if (problem) { setFgError(gravityMessage(problem, value, og, gravityKeepable('fg', value, null, og), null)); return; }
+    setFgError('');
+    setFgUndo({ fg: draft.fg ?? '', abv: draft.abv ?? '' });
+    const found = nolo || og === null ? null : abvFromGravities(og, value);
+    save({ fg: formatDecimal(value, 3), ...(nolo || og === null ? {} : { abv: found !== null ? `${found}%` : '' }) });
+    setFgMilli(null);
+  };
+  const conditionner = (valeurs: Conditionnement, kegIds: string[]) => {
+    const base = { ...draft, packaging: valeurs.packaging, volumePackagedL: valeurs.volumePackagedL, bottlingDate: valeurs.bottlingDate };
+    kegIds.forEach(id => { const keg = kegList.find(k => k.id === id); if (keg) StorageService.updateKeg({ ...keg, state: 'plein', batchRef: draft.id, beerName: draft.name, style: draft.style, fillDate: toIsoDate(valeurs.bottlingDate) }); });
+    setLadder(false);
+    applyStatus('conditionne', base);
+  };
+  /** Un champ de note du Carnet (Textarea enregistré au blur) ; `sansLabel` quand la ligne repliée porte déjà le libellé. */
+  const champNote = (key: 'notesTasting' | 'notesBrewDay' | 'notesCreation', label: string, sansLabel = false) => (
+    <label key={key} className="block space-y-1.5">
+      {!sansLabel && <span className="text-sm text-cave-400">{label}</span>}
+      <Textarea
+        name={`batch_sheet_${key}`}
+        aria-label={sansLabel ? label : undefined}
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
+        data-form-type="other"
+        data-lpignore="true"
+        data-1p-ignore="true"
+        data-bwignore="true"
+        rows={3}
+        className={`${field} py-2 resize-y leading-relaxed`}
+        value={draft[key] || ''}
+        onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+        onBlur={() => save({ [key]: draft[key] })}
+      />
+    </label>
+  );
+  const stockShown = !planned || plusOpen || stockIssues.length > 0 || historicalStock;
+
   return (
     <>
       <Sheet
         open={!!batch}
         onClose={onClose}
         title={draft.name}
-        subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)} visés`}
+        subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)}${planned ? '' : ''}${planned || post ? '' : ' visés'}`}
         className="md:max-w-2xl md:mx-auto"
-        footer={
+        footer={planned ? (
+          <PiedPlanifie geste={datePlan} now={nowMs} plus={() => setPlusOpen(open => !open)}
+            commencer={onOpenBrewDay ? () => onOpenBrewDay(draft) : undefined}
+            annuler={() => { setDatePlan(null); setDateError(''); }} enregistrer={() => datePlan !== null && saveDate(joursDuCurseur(nowMs)[datePlan])} />
+        ) : post ? (
+          <div className="flex items-center gap-2">
+            <Cible aria-label="Plus" onClick={() => setPlusOpen(open => !open)} className="w-10 shrink-0 px-0"><Ellipsis size={18} aria-hidden="true" /></Cible>
+            {draft.status === 'garde' && <Cible className="flex-1" onClick={ouvrirReleve}>+ Relevé de densité</Cible>}
+            {draft.status === 'conditionne' && <Cible ton="prim" className="flex-1" onClick={() => changeStatus('termine')}>Tout écoulé · Terminer</Cible>}
+            {draft.status === 'termine' && onRebrew
+              ? <Cible ton="prim" className="flex-1" onClick={() => onRebrew(draft)}>Rebrasser cette {draft.style || 'bière'}</Cible>
+              : (draft.status === 'termine' || draft.status === 'annule') && <Cible className="flex-1" onClick={onClose}>Fermer</Cible>}
+          </div>
+        ) : (
           <Button intent="primary" full onClick={onClose}>
             Fermer
           </Button>
-        }
+        )}
       >
         <div className="space-y-2">
-          <BatchSchedule batch={draft} onSave={async updated => {
-            const saved = await saveBatchSchedule(draft, updated.plannedBrewDate ?? '', value => StorageService.updateBatch(value));
-            setDraft(saved);
-          }} />
-          <YeastPreparationPanel batch={draft} onSave={save} />
-          {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
+          {planned
+            ? <PlannedDate batch={draft} now={nowMs} geste={datePlan} onGeste={setDatePlan} onSave={date => void saveDate(date)} erreur={dateError} />
+            : post
+              ? <HeroEtat batch={draft} now={nowMs} />
+              : <BatchSchedule batch={draft} onSave={async updated => {
+                  const saved = await saveBatchSchedule(draft, updated.plannedBrewDate ?? '', value => StorageService.updateBatch(value));
+                  setDraft(saved);
+                }} />}
+          {!planned && !post && <YeastPreparationPanel batch={draft} onSave={save} />}
+          {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
+          {noloRecipeForBatch(draft)&&(plusOpen || (!planned && !post))&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className="grid grid-cols-3 border-b border-cave-700"
             aria-label="Rubriques du brassin"
           >
             {(
               [
-                ['measurements', 'Mesures'],
+                ['measurements', planned ? 'Préparer' : 'Mesures'],
                 ['tasting', 'Carnet'],
                 ['overview', 'Dossier']
               ] as const
@@ -217,13 +340,13 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             ))}
           </nav>
           {/* TE-41 : le bandeau complet vit dans Mesures ; les autres rubriques n'ont qu'une ligne qui y renvoie, au lieu de le répéter. */}
-          {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && !stockBannerHere && (
+          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && !stockBannerHere && (
             <button type="button" onClick={() => setSection('measurements')} className="min-h-touch flex items-center gap-2 text-left text-sm text-ebc-amber">
               <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>{historicalStock ? 'Stock à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés à confirmer'} · voir Mesures</span>
             </button>
           )}
-          {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && stockBannerHere && (
+          {stockShown && (historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && stockBannerHere && (
             <section aria-label="Suivi du stock du brassin" className="rounded-xl border border-ebc-amber/30 bg-cave-950 p-2 space-y-2">
               <div className="flex items-start gap-2"><AlertTriangle className="w-4 h-4 shrink-0 text-ebc-amber mt-0.5" /><div><h3 className="text-sm font-semibold text-cave-50">{historicalStock ? 'Stock de ce brassin à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés pour la fermentation'}</h3><p className="text-2xs text-cave-400 leading-snug mt-1">{historicalStock ? 'Ce brassin vient de l’ancien suivi. Indiquez ce qui a déjà été retiré pour éviter une double déduction.' : needsBrewStock ? 'Les relevés sont conservés. Vérifiez les ingrédients puis confirmez leur sortie de stock.' : 'Les réservations protègent ces ingrédients pour ce brassin jusqu’à leur ajout réel.'}</p></div></div>
               {stockIssues.length > 0 && <ul className="list-disc pl-5 text-sm text-ebc-amber space-y-1">{stockIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
@@ -239,6 +362,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             confirmLabel={packaging.target ? `Passer en « ${BATCH_STATUS[packaging.target].label} »` : 'Enregistrer le volume'}
             onCancel={() => setPackaging(null)}
             onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) applyStatus(target, { ...draft, ...values }); else save(values); }}/>}
+          {fgUndo && <div role="status" data-toast-fg className="fixed inset-x-3 bottom-20 z-50 mx-auto flex max-w-md items-center justify-between gap-2 rounded-control bg-ebc-straw px-3 py-1.5 text-sm font-semibold text-cave-950 shadow-lg">FG {draft.fg} enregistrée<button type="button" className="relative min-h-8 rounded-control border border-cave-950/40 px-3 font-semibold text-cave-950 after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']" onClick={() => { save({ fg: fgUndo.fg, abv: fgUndo.abv }); setFgUndo(null); }}>Annuler</button></div>}
           {stockMessage && <p role="status" className="text-sm text-hop flex items-start gap-2"><PackageCheck className="w-4 h-4 shrink-0 mt-0.5" />{stockMessage}</p>}
           {draft.status === 'fermentation' && (() => {
             const conflict = fermenterConflict(draft, StorageService.getBatches());
@@ -246,16 +370,16 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           })()}
           {section === 'overview' && (
             <>
-              <BrewBudgetButton batch={draft} />
+              {draft.status !== 'annule' && <BudgetLien batch={draft}>Estimer le budget de ce brassin</BudgetLien>}
               <section className="space-y-2">
-                <div className="flex items-center gap-2">
+                {draft.status !== 'annule' && <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>
                     {style.label}
                   </span>
                   <span className="text-sm text-cave-400">{style.hint}</span>
-                </div>
+                </div>}
 
-                {suivant && (
+                {suivant && !planned && !post && (
                   <Button
                     intent="primary"
                     full
@@ -267,17 +391,52 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 )}
               </section>
 
-              <label className="block space-y-1 text-xs text-cave-400">Étape du brassin
+              {draft.status === 'annule' && (() => { const retour = options.find(o => o.kind === 'back'); return <>
+                <Panneau className="space-y-2 p-2.5"><div className="text-sm font-semibold text-cave-50">Étape</div><EtapesPills courante={-1} annulee />{retour && <Cible ton="prim" plein onClick={() => changeStatus(retour.status)}>Revenir à « {BATCH_STATUS[retour.status].label} »</Cible>}</Panneau>
+                <Panneau label="Dossier du brassin annulé" className="divide-y divide-cave-800 px-2.5" >
+                  <BudgetLien batch={draft} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-cave-50">Budget du brassin <ChevronRight size={16} className="text-cave-400" aria-hidden="true" /></BudgetLien>
+                  <Cible onClick={() => setSection('measurements')} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-cave-50">Historique conservé <ChevronRight size={16} className="text-cave-400" aria-hidden="true" /></Cible>
+                  <Cible ton="danger" onClick={() => setConfirmDelete(true)} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-alert">Supprimer ce brassin <X size={16} aria-hidden="true" /></Cible>
+                </Panneau>
+              </>; })()}
+              {!planned && !post && <label className="block space-y-1 text-xs text-cave-400">Étape du brassin
                 <select className={field} value={draft.status} onChange={event => changeStatus(event.target.value as Batch['status'])}>
                   <option value={draft.status}>{style.label}</option>
                   {options.map(({ status, kind }) => <option key={status} value={status}>{kind === 'back' ? `Revenir à « ${BATCH_STATUS[status].label} »` : kind === 'cancel' ? 'Annulé (abandon)' : BATCH_STATUS[status].label}</option>)}
                 </select>
-              </label>
+              </label>}
               {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
-          {section === 'measurements' && (
+          {section === 'measurements' && planned && (
             <>
+              <YeastPreparationPanel batch={draft} onSave={save} carte apercu={datePlan !== null ? joursDuCurseur(nowMs)[datePlan] : jourPropose(planDeStarter(draft), plannedBrewDate(draft) ?? null, nowMs)} />
+              <div className="grid grid-cols-3 gap-1.5" data-cibles>
+                <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">OG visée</small><span className="font-mono text-xl font-semibold text-cave-50">{draft.recipeSnapshot?.ogTarget != null ? formatDecimal(draft.recipeSnapshot.ogTarget, 3) : '—'}</span><i className="block text-xs not-italic text-cave-400">mesurée {og !== null ? formatDecimal(og, 3) : '—'}</i></Panneau>
+                <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">FG cible</small><span className="font-mono text-xl font-semibold text-cave-50">{draft.recipeSnapshot?.fgTarget != null ? formatDecimal(draft.recipeSnapshot.fgTarget, 3) : '—'}</span><i className="block text-xs not-italic text-cave-400">mesurée {fg !== null ? formatDecimal(fg, 3) : '—'}</i></Panneau>
+                <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">Stock</small><span className="mt-0.5 flex items-center gap-1 text-sm font-semibold text-hop"><Package size={16} aria-hidden="true" />{pending.length > 0 ? 'réservé' : needsBrewStock || stockIssues.length > 0 ? 'à vérifier' : 'à brasser'}</span></Panneau>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                <BudgetLien batch={draft} />
+                <Cible onClick={() => setSection('overview')}>Compagnon</Cible>
+                <Cible onClick={openLadder}>Étape <ChevronRight size={14} aria-hidden="true" /></Cible>
+              </div>
+            </>
+          )}
+          {section === 'measurements' && post && (
+            <>
+              {draft.status === 'garde' && (parseDecimal(draft.fg || '') === null
+                ? <CurseurFg batch={draft} valeur={fgMilli ?? fgDepart} onValeur={setFgMilli} onConfirmer={() => confirmFg(fgMilli ?? fgDepart)} erreur={fgError} />
+                : <TuilesFg batch={draft} onConditionner={openLadder} />)}
+              {draft.status === 'conditionne' && <Contenants batch={draft} futs={(draft.packaging?.kegIds ?? []).map(id => StorageService.getStocks().kegs.find(k => k.id === id)).filter((k): k is import('../types').KegItem => !!k)} onCorriger={() => setPackaging({ target: null })} />}
+              <CarteDensite batch={draft} />
+              {draft.status === 'garde' && <LignesCuve batch={draft} onReleve={ouvrirReleve} onVolume={() => setPackaging({ target: null })} />}
+              {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
+            </>
+          )}
+          {section === 'measurements' && !planned && (
+            <Enveloppe {...(post ? { className: 'rounded-xl border border-cave-800 bg-cave-900 px-2.5 py-1' } : {})}>
+              {post && <summary className="min-h-touch cursor-pointer text-sm text-cave-200">Corriger les mesures (OG, FG, volumes)</summary>}
               <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Mesures</h3>
 
@@ -379,11 +538,11 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               </section>
 
               {(draft.status === 'fermentation' || draft.status === 'garde') && (
-                <BatchGravityEntry
+                <div ref={releveRef}><BatchGravityEntry
                   key={draft.id}
                   batch={draft}
                   onAdd={(reading) => save({ gravityLog: [...(draft.gravityLog ?? []), reading] })}
-                />
+                /></div>
               )}
               <div className="grid grid-cols-2 gap-2 text-sm text-cave-400 border-y border-cave-800 py-1.5">
                 <p>
@@ -408,44 +567,34 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${nombreFr(draft.brewDay.pitchTemperatureC, 1)} °C` : ' · température non relevée'}.</p>}
               {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
               {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}
-            </>
+            </Enveloppe>
           )}
           {section === 'tasting' && (
             <>
               <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Carnet</h3>
 
-                {(
+                {post ? <>
+                  {/* e2a : la note de dégustation reste un champ ouvert, ses trois verdicts dessous ; les deux autres notes se replient en lignes. */}
+                  <Panneau label="Dégustation" className="space-y-2 p-2.5">
+                    {champNote('notesTasting', 'Dégustation et prochain essai')}
+                    <VerdictPuces notes={draft.notesTasting} onChange={notes => save({ notesTasting: notes })} />
+                  </Panneau>
+                  {([['notesBrewDay', 'Observations du jour de brassage'], ['notesCreation', 'Inspiration et profil visé']] as const)
+                    .map(([key, label]) => <LigneRepliee key={key} label={label} valeur={draft[key] || ''}>{champNote(key, label, true)}</LigneRepliee>)}
+                </> : (
                   [
                     ['notesTasting', 'Dégustation et prochain essai'],
                     ['notesBrewDay', 'Observations du jour de brassage'],
                     ['notesCreation', 'Inspiration et profil visé']
                   ] as const
-                ).map(([key, label]) => (
-                  <label key={key} className="block space-y-1.5">
-                    <span className="text-sm text-cave-400">{label}</span>
-                    <Textarea
-                      name={`batch_sheet_${key}`}
-                      autoComplete="off"
-                      autoCorrect="off"
-                      spellCheck={false}
-                      data-form-type="other"
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                      data-bwignore="true"
-                      rows={3}
-                      className={`${field} py-2 resize-y leading-relaxed`}
-                      value={draft[key] || ''}
-                      onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
-                      onBlur={() => save({ [key]: draft[key] })}
-                    />
-                  </label>
-                ))}
+                ).map(([key, label]) => champNote(key, label))}
               </section>
+              {post && <CarteDensite batch={draft} />}
               <HopTastingsPanel batch={draft} />
             </>
           )}
-          {section === 'overview' && (
+          {section === 'overview' && draft.status !== 'annule' && (
             <>
               <BrewerChat
                 scope={{ kind: 'batch', id: batch.id }}
@@ -467,6 +616,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         </div>
       </Sheet>
 
+      {ladder && <StageLadder batch={draft} now={nowMs} kegs={kegList} onClose={() => setLadder(false)}
+        onAvancer={s => { setLadder(false); changeStatus(s); }} onConditionner={conditionner}
+        onRetour={s => { setLadder(false); applyStatus(s); }} onAbandonner={() => { setLadder(false); applyStatus('annule'); }} />}
       <ConfirmSheet
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
@@ -510,7 +662,7 @@ const preparationDate = (value: string | number) => {
     : 'Date inconnue';
 };
 
-function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch: Partial<Batch>) => void }) {
+function YeastPreparationPanel({ batch, onSave, apercu }: { batch: Batch; onSave: (patch: Partial<Batch>) => void; carte?: boolean; apercu?: string | null }) {
   const yeast = batch.recipeSnapshot?.yeast;
   const planned = yeast?.pitching?.preparation;
   const execution = batch.yeastPreparation;
@@ -540,6 +692,9 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
   const rawMaterials = StorageService.getStocks().rawMaterials;
   const linkedUnit = rawMaterials.find(item => item.ref === correctionRef)?.unit;
   const inoculumUnitOptions = Array.from(new Set(['g', 'kg', 'mL', 'L', 'sachet', 'flacon', 'paquet', ...(yeast?.unit ? [yeast.unit] : []), ...(linkedUnit ? [linkedUnit] : [])]));
+  // Aperçu (e1a) : le jour du curseur décale le plan pour dire si le starter tient ce jour-là ; rien n'est écrit, aucune case n'est cochable.
+  const enApercu = !!apercu && !execution;
+  const vu = enApercu ? planDecale(plan, apercu!) : plan;
   const completed = new Set(execution?.steps.map(step => step.id) ?? []);
   const stepCueCounts = new Map<string, number>();
   plan.steps.forEach(step => {
@@ -563,12 +718,12 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
     : 'La notice ne date pas séparément toutes les opérations annexes, notamment l’activation et le refroidissement.';
   const regularized = (kind: 'inoculum' | 'medium') => execution?.stockRegularization?.filter(entry => entry.kind === kind) ?? [];
 
-  const begin = () => {
+  const begin = (firstStepId?: string) => {
     if (!planned || !yeast || !active || execution || preparationState !== 'due' || expired || planned.status !== 'planned') return;
     const inoculumUsed = Number.isFinite(inoculumAmount) && inoculumAmount! > 0 && inoculumUnit.trim()
       ? { amount: inoculumAmount!, unit: inoculumUnit.trim(), ...(correctionRef ? { stockItemRef: correctionRef } : {}) }
       : undefined;
-    onSave({ yeastPreparation: { plan: structuredClone(planned), status: 'started', startedAt: Date.now(), steps: [], ...(inoculumUsed ? { inoculumUsed } : {}) } });
+    onSave({ yeastPreparation: { plan: structuredClone(planned), status: 'started', startedAt: Date.now(), steps: firstStepId ? [{ id: firstStepId, at: Date.now() }] : [], ...(inoculumUsed ? { inoculumUsed } : {}) } });
   };
   const markStep = (id: string, checked: boolean) => {
     if (!execution || execution.status !== 'started' && execution.status !== 'ready') return;
@@ -590,6 +745,26 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
             : preparationState === 'due' ? 'À commencer maintenant' : preparationState === 'stale' ? 'Plan à revalider' : 'Préparation planifiée';
   const canBegin = !!planned && active && !execution && preparationState === 'due' && !expired && planned.status === 'planned' &&
     !(inoculumAmount !== undefined && inoculumAmount <= 0) && !(inoculumAmount !== undefined && !inoculumUnit.trim());
+  const enCours = execution?.status === 'started' || execution?.status === 'ready';
+  const premiereOuverte = plan.steps.findIndex(step => !completed.has(step.id));
+  const quand = (step: YeastPreparationPlan['steps'][number], i: number) => {
+    if (!step.dueAt) return 'brassage';
+    const due = Date.parse(step.dueAt);
+    if (i > 0) return `+${Math.round((due - Date.parse(vu.startAt)) / 3600000)} h`;
+    const jours = Math.round((Date.parse(new Date(due).toISOString().slice(0, 10)) - Date.parse(new Date(now).toISOString().slice(0, 10))) / 86400000);
+    return jours === 0 ? (new Date(due).getHours() >= 17 ? 'ce soir' : 'aujourd’hui') : jours === 1 ? 'demain' : new Intl.DateTimeFormat('fr-CH', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Zurich' }).format(due);
+  };
+  const apercuLance = enApercu && !!vu.steps[0]?.dueAt && breweryDay(Date.parse(vu.steps[0].dueAt)) === breweryDay(now);
+  const pastille: { ton: 'hop' | 'water' | 'attention' | 'alert' | 'neutre'; texte: string } =
+    enApercu ? (faisabilite(plan, apercu!, now) === 'non' ? { ton: 'alert', texte: 'trop tard pour ce jour' } : apercuLance ? { ton: 'attention', texte: 'à lancer ce soir' } : { ton: 'hop', texte: 'à temps' })
+    : execution?.status === 'transferred' ? { ton: 'hop', texte: 'transférée' }
+      : execution?.status === 'ready' ? { ton: 'hop', texte: 'prête' }
+        : enCours ? { ton: 'water', texte: `${execution!.steps.length}/${execution!.plan.steps.length} faites` }
+          : execution?.status === 'cancelled' || plan.status === 'cancelled' ? { ton: 'neutre', texte: 'annulée' }
+            : staleExecution || preparationState === 'stale' ? { ton: 'alert', texte: 'plan à revalider' }
+              : expired || preparationState === 'too-late' ? { ton: 'alert', texte: 'trop tard pour ce jour' }
+                : withinShortWindow ? { ton: 'attention', texte: 'à lancer ce soir' }
+                  : preparationState === 'due' ? { ton: 'hop', texte: 'à temps' } : { ton: 'neutre', texte: 'planifié' };
   const correctionStatus = (kind: 'inoculum' | 'medium') => regularized(kind).length > 0;
 
   const confirmInventoryCorrection = (item: StockItem, counted: number, reason: import('../services/storage').InventoryReason, note?: string) => {
@@ -608,11 +783,28 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
   };
 
   return <>
-    <section aria-label="Préparation de levure" className="rounded-xl border border-cave-800 bg-cave-950 p-2 space-y-2">
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <h3 className="text-sm font-semibold text-cave-50">Starter · {productLabel}</h3>
-        <span className="text-xs text-cave-200">{startLabel}</span>
+    <section aria-label="Préparation de levure" className="overflow-hidden rounded-2xl border border-cave-700 bg-cave-900">
+      <div className="flex items-center justify-between gap-2 px-3 py-2.5">
+        <h3 className="min-w-0 text-base font-semibold text-cave-50">Starter <span className="text-sm font-normal text-cave-400">{productLabel} · <Mono>{plan.volumeL.toLocaleString('fr-CH')} L</Mono></span></h3>
+        <Pastille ton={pastille.ton} className="shrink-0">{pastille.texte}</Pastille>
       </div>
+      <ol className="border-t border-cave-700" aria-label="Étapes du starter">
+        {vu.steps.map((step, i) => {
+          const fait = completed.has(step.id);
+          const peut = !enApercu && (enCours || (i === 0 && canBegin));
+          return <li key={step.id} className={`flex min-h-11 items-center gap-3 border-b border-cave-800 px-3 last:border-b-0 ${!fait && i === premiereOuverte && active ? 'bg-attention/10' : ''}`}>
+            <span className={`w-[4.5rem] shrink-0 text-sm ${!fait && i === premiereOuverte && active ? 'font-semibold text-attention' : 'text-cave-400'}`}>{quand(step, i)}</span>
+            <span className="min-w-0 flex-1 text-sm text-cave-50">{step.label}</span>
+            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center">
+              <input type="checkbox" className="h-6 w-6 accent-hop" checked={fait} disabled={!peut} aria-label={`Étape du starter : ${step.label}`}
+                onChange={event => enCours ? markStep(step.id, event.target.checked) : begin(step.id)} />
+            </span>
+          </li>;
+        })}
+      </ol>
+      <div className="space-y-2 p-2">
+      <details className="rounded-control border border-cave-800 px-2"><summary className="min-h-touch cursor-pointer py-2 text-sm text-water">Produit, inoculum, régularisation</summary><div className="space-y-2 pb-2">
+      <p className="text-xs text-cave-400">{startLabel}</p>
       {staleExecution && <p role="alert" className="text-sm text-alert-strong">L’exécution conserve le plan {execution?.plan.id} · révision {execution?.plan.revision}. La date ou le plan courant a changé ; vérifie la notice avant de poursuivre.</p>}
       {!execution && preparationState === 'stale' && <p role="alert" className="text-sm text-alert-strong">Le plan ne correspond plus à la date prévue ou aux données de levure figées. Revalide-le avant de commencer.</p>}
       {!execution && preparationState === 'too-late' && <p role="alert" className="text-sm text-alert-strong">{expired
@@ -627,23 +819,9 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
       {execution?.status !== 'transferred' && execution?.status !== 'cancelled' && <p className="text-xs text-cave-400">Repères indicatifs. Garde une marge pour l’activation de l’inoculum et le refroidissement selon la notice.</p>}
 
       {withinShortWindow && <p role="status" className="text-sm text-cave-200">Il reste {hoursText(hoursUntilPitch)} h, soit {hoursText(plan.protocol.leadHours.max - hoursUntilPitch)} h de moins que la borne haute publiée ({hoursText(plan.protocol.leadHours.max)} h). Le minimum publié ({hoursText(plan.protocol.leadHours.min)} h) est atteint, mais cette fenêtre ne garantit pas l’achèvement ni la viabilité. {shortWindowMessage}</p>}
-      {active && !execution && preparationState === 'due' && !expired && plan.status === 'planned' && <Button intent="primary" full disabled={!canBegin} onClick={begin}>Commencer la préparation du starter</Button>}
+      {active && !execution && preparationState === 'due' && !expired && plan.status === 'planned' && <Button intent="primary" full disabled={!canBegin} onClick={() => begin()}>Commencer la préparation du starter</Button>}
       {execution && (execution.status === 'started' || execution.status === 'ready') && <p role="status" className="text-sm text-cave-200">{execution.steps.length}/{execution.plan.steps.length} étapes consignées · {execution.status === 'ready' ? 'préparation prête' : 'à poursuivre'}.</p>}
       {execution?.status === 'transferred' && <p role="status" className="text-sm text-cave-200">Culture transférée · Volume réellement transféré : {execution.cultureVolumeL != null ? `${execution.cultureVolumeL.toLocaleString('fr-CH')} L` : 'non renseigné'}.</p>}
-      {execution && (execution.status === 'started' || execution.status === 'ready') && <ol className="space-y-1 border-t border-cave-800 pt-2 text-sm text-cave-200" aria-label="Étapes de la préparation">
-        {plan.steps.map(step => <li key={step.id}>
-          <label className="flex items-start gap-2">
-            <input type="checkbox" checked={completed.has(step.id)} onChange={event => markStep(step.id, event.target.checked)} aria-label={`Étape du starter : ${step.label}`} />
-            <span className="flex-1">{step.label}{stepCue(step) && <small className="block text-xs text-cave-400">{stepCue(step)}</small>}</span>
-            {completed.has(step.id) && <small className="text-cave-400">Consignée · {preparationDate(execution.steps.find(done => done.id === step.id)!.at)}</small>}
-          </label>
-        </li>)}
-      </ol>}
-      {execution && !started && execution.steps.length > 0 && <ol className="space-y-1 border-t border-cave-800 pt-2 text-sm text-cave-200" aria-label="Étapes de la préparation consignées">
-        {plan.steps.filter(step => completed.has(step.id)).map(step => <li key={step.id}>
-          <span>{step.label}<small className="block text-xs text-cave-400">Consignée · {preparationDate(execution.steps.find(done => done.id === step.id)!.at)}</small></span>
-        </li>)}
-      </ol>}
       {active && !execution && preparationState === 'due' && !expired && plan.status === 'planned' && <section className="border-t border-cave-800 pt-2 space-y-2" aria-label="Prélèvement de l’inoculum">
         <p className="text-xs text-cave-400">Consigne l’inoculum réellement prélevé si tu le connais. Le texte prévu du plan n’est pas une quantité consommée.</p>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 items-end">
@@ -721,6 +899,8 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
           {plan.note && <p className="text-xs text-cave-400">Note · {plan.note}</p>}
         </div>
       </details>
+      </div></details>
+      </div>
     </section>
     <InventoryCorrectionSheet open={!!correctionItem} item={correctionItem} onClose={() => setCorrectionItem(null)} onConfirm={(counted, reason, note) => correctionItem && confirmInventoryCorrection(correctionItem, counted, reason, note)} />
   </>;

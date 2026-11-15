@@ -38,16 +38,19 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ status, brewDate: '01.09.2026', plannedBrewDate: '' }));
     expect(screen.queryByRole('button', { name: 'Planifier' })).not.toBeInTheDocument();
-    expect(screen.getByText(`${status === 'planifie' ? 'Commencé' : 'Brassé'} le 01.09.2026`)).toBeInTheDocument();
+    // p4 : e2a ne montre plus la ligne « Brassé le » ; le bloc d'état dit que le lot a bien été brassé (les dates restent écrites, vérifié ci-dessus).
+    expect(screen.getByText('Abandonnée en cours de route')).toBeInTheDocument();
   });
 
   it('cancels a legacy plan without turning it into an actual brewing day', () => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
-    render(<BatchDetailSheet batch={{ ...batch, status: 'planifie' }} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: 'annule' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
+    render(<BatchDetailSheet batch={{ ...batch, status: 'planifie' }} initialSection="measurements" onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Étape/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Abandonner le lot/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '', plannedBrewDate: '01.09.2026' }));
-    expect(screen.getByText('Était prévu le 01.09.2026')).toBeInTheDocument();
+    // p4 : e2a ne montre plus « Était prévu le » ; le bloc d'état dit que le lot n'a jamais été brassé, et la date prévue reste écrite (vérifié ci-dessus).
+    expect(screen.getByText('Abandonnée, jamais brassée')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Changer la date' })).not.toBeInTheDocument();
   });
 

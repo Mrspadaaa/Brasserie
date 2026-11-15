@@ -92,13 +92,22 @@ describe('brew budget to doubled-volume batch creation', () => {
   it('shows doubled adjuncts in the calculator and preserves the scientific results for a different target cuverie', () => {
     const target = { ...rig, id: 'large', name: 'Grande cuverie', volumeL: 300, efficiencyPct: 85, deadSpaceL: 5 };
     render(<ProductionTab batches={[]} recipes={[recipe]} brewhouses={[rig, target]} activeBrewhouseId={rig.id} globalTimeFilter="all" targetSubTab="scaler" onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} />);
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '50' } });
-    expect(screen.getByRole('row', { name: /^Vanille\s*Fermenteur 4 gousse$/ })).toBeInTheDocument();
-    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent('29,6 L') /* CF-9 : avant ébullition à froid */;
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '300' } });
+    // Maquette e10c : le volume se tape après « Taper le volume », validé au blur ; les étapes sont dans [data-role="etapes"].
+    const taperVolume = (valeur: string) => {
+      fireEvent.click(screen.getByRole('button', { name: 'Taper le volume' }));
+      const champ = screen.getByRole('textbox', { name: 'Volume cible' });
+      fireEvent.change(champ, { target: { value: valeur } });
+      fireEvent.blur(champ);
+    };
+    const etape = (id: string) => document.querySelector(`[data-role="etapes"] [data-etape="${id}"]`) as HTMLElement;
+    taperVolume('50');
+    const vanille = within(etape('levurage')).getByText('Vanille').closest('.pv-row') as HTMLElement;
+    expect(vanille).toHaveTextContent(/Vanille\s*4,00\s*gousse/);
+    expect(etape('rincage')).toHaveTextContent('29,6') /* CF-9 : avant ébullition à froid */;
+    taperVolume('300');
     const scientific = BrewingMath.scaleRecipe(recipe, 300, rig, target);
     const scenario = scaleBrewRecipeScenario(recipe, 300, rig, target);
-    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent(`${scientific.spargeWaterL.toLocaleString('fr-CH', { maximumFractionDigits: 3 })} L`);
+    expect(etape('rincage').textContent).toContain(scientific.spargeWaterL.toLocaleString('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace('.', ','));
     expect(scenario).toEqual(expect.objectContaining({ mashWaterL: scientific.mashWaterL, spargeWaterL: scientific.spargeWaterL, preBoilVolumeL: scientific.preBoilVolumeL, grainAbsorptionL: scientific.grainAbsorptionL }));
     expect(scenario.scaledRecipe.id).toBe('R');
     expect(scenario.scaledRecipe.brewhouse).toEqual(target);
