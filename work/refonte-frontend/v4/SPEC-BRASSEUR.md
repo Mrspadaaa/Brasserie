@@ -1761,3 +1761,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : t1b2 choisie ; à part, une vue détaillée de la frise sous la caisse : chaque chose sur ses semaines, ses jours actifs, l'argent mis de côté, avec l'effet sur la caisse.)
 - **15.11**, mot pour mot, précision : « Une nouvelle vue »
   (lu : la frise détaillée de t1b2 est un écran à part entière, un nouvel endroit de l'app atteint depuis À venir et la caisse, et non une feuille ou un repli dans À venir.)
+- **15.11**, mot pour mot, sur les pages de choix : « Dans les artefacts fait le bouton copier et choisir. Et met cote à cote les propal »
+  (lu : règle pour toutes les pages de choix. Chaque proposition a un bouton « Choisir » ; une barre fixe assemble la réponse (ids et mots) avec un bouton « Copier » ; les propositions d'un même choix sont côte à côte, en défilement horizontal à 390.)

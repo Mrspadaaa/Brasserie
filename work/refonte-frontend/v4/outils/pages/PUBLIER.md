@@ -41,3 +41,9 @@ texte de l'écran tombait à 7 px. Elle reste en l'état, comme archive de ses v
 4. Ajouter sa ligne à la table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source). `systeme.mjs voies`
    refuse deux versions sur la même adresse ou la même source, et une mission d'écrans sans cette table.
 5. Donner le lien à l'utilisateur.
+
+## Page de choix (règle du brasseur, 15.11)
+« Dans les artefacts fait le bouton copier et choisir. Et met cote à cote les propal ».
+- Chaque proposition a un bouton « Choisir » ; un nouveau toucher le retire.
+- Une barre fixe en bas assemble la réponse (« t1b2 · c2 · … »), avec un bouton « Copier » : `navigator.clipboard.writeText` dans le clic, et en cas de refus, sélection du texte.
+- Les propositions d'un même choix sont côte à côte ; à 390 px, défilement horizontal dans le groupe, jamais sur la page.
