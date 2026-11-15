@@ -10,6 +10,9 @@ import { Textarea } from '../Input';
 import { ICONE_DE_QUESTION, ICONE_DE_SOURCE } from './icones';
 import { MODES, iconeQuestion, modeConseille, modeInfo } from './derive';
 import { Dur, Icone, N, Piste, Tag } from './parts';
+import type { NomIcone } from './icones';
+import type { Jalon } from './contexte';
+import './accueil.css';
 
 export interface TuileQuestion {
   /** La question envoyée telle quelle dans la saisie. Nom accessible de la tuile (le mode est décoratif). */
@@ -19,19 +22,53 @@ export interface TuileQuestion {
 }
 
 /** « Je lis à chaque question » : les sources que le serveur recharge (`sourcesLues`). */
-export function Lit({ sources, titre = 'Je lis à chaque question' }: { sources: string[]; titre?: string }) {
+export function Lit({ sources, titre }: { sources: string[]; titre?: string }) {
   if (!sources.length) return null;
   return (
     <div className="cmp-lit">
-      <span className="cmp-lbl1">{titre}</span>
+      <span className="cmp-lbl1">{titre ?? 'Je lis à chaque question'}</span>
       {sources.map((s) => (
         <span key={s} className="cmp-puce">
-          <Icone nom={ICONE_DE_SOURCE[s] ?? 'livre'} />
+          <Icone nom={ICONE_DE_SOURCE[s] ?? ICONE_DE_SOURCE[s.replace(/ [0-9]+$/, '')] ?? 'livre'} />
           {s}
         </span>
       ))}
     </div>
   );
+}
+
+/**
+ * Frise du brassin : un trait de J+0 au bout (dernier jalon + 3 jours), le repère « auj. » et un cercle par dry hop daté
+ * (nom au-dessus, « J+n » dessous ; cercle plein une fois le jour passé). Les jalons viennent de la recette du brassin.
+ */
+export function Frise({ jour, jalons }: { jour: number; jalons: Jalon[] }) {
+  if (!jalons.length) return null;
+  const bout = Math.max(jalons[jalons.length - 1].jour + 3, jour + 1);
+  const pct = (j: number) => (j / bout) * 100;
+  const decrit = jalons.map((j) => `${j.nom} J+${j.jour}`).join(', ');
+  return (
+    <div className="cmp-frise" role="img" aria-label={`Brassin : aujourd’hui J+${jour}, ${decrit}`}>
+      <span className="cmp-fr-rail" />
+      <span className="cmp-fr-fait" style={{ width: `${pct(jour)}%` }} />
+      <span className="cmp-fr-auj" style={{ left: `${pct(jour)}%` }}>
+        <b>auj.</b>
+      </span>
+      {jalons.map((j) => (
+        <span key={`${j.nom}-${j.jour}`} className={`cmp-fr-pt${j.jour < jour ? ' cmp-fait' : ''}`} style={{ left: `${pct(j.jour)}%` }}>
+          <b>{j.nom}</b>
+          <small>J+{j.jour}</small>
+        </span>
+      ))}
+      <span className="cmp-fr-bout">
+        <small>J+{bout}</small>
+      </span>
+    </div>
+  );
+}
+
+export interface CaseVerifiee {
+  label: string;
+  icone: NomIcone;
 }
 
 export interface ResumeConversations {
@@ -60,6 +97,9 @@ export function Accueil({
   origine,
   finances = false,
   intro,
+  frise,
+  portee,
+  titreSources,
   tuiles,
   onChoisir,
   conversations,
@@ -73,6 +113,11 @@ export function Accueil({
   origine?: string;
   finances?: boolean;
   intro?: ReactNode;
+  /** Frise des jalons, sous le titre (portée brassin) : jour courant et dry hops datés. */
+  frise?: { jour: number; jalons: Jalon[] };
+  /** « Je vérifie · N sur N » : les points de la vérification demandée (libellés fixes de l'origine). */
+  portee?: { titre: string; cases: CaseVerifiee[] };
+  titreSources?: string;
   tuiles: TuileQuestion[];
   onChoisir: (question: string, modeConseille: BrewerMode) => void;
   conversations?: ResumeConversations;
@@ -98,7 +143,26 @@ export function Accueil({
           {sousTitre ? <p>{sousTitre}</p> : null}
         </div>
       ) : null}
+      {frise && frise.jalons.length ? <Frise jour={frise.jour} jalons={frise.jalons} /> : null}
       {intro}
+      {portee ? (
+        <div className="cmp-carte cmp-portee">
+          <div className="cmp-lbl">
+            <span>{portee.titre}</span>
+            <span>
+              {portee.cases.length} sur {portee.cases.length}
+            </span>
+          </div>
+          <div className="cmp-cases">
+            {portee.cases.map((c) => (
+              <span key={c.label} className="cmp-cf">
+                <Icone nom={c.icone} />
+                {c.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {tuiles.length > 0 && finances ? (
         <div className="cmp-lbl">
           <span>Autres questions</span>
@@ -140,7 +204,7 @@ export function Accueil({
                   <N>{conversations.echecs}</N>
                 </span>
               ) : (
-                <span>Aucune conversation</span>
+                <span className="sr-only">Aucune conversation</span>
               )}
               <Icone nom="droite" className="cmp-chev" />
             </button>
@@ -164,7 +228,7 @@ export function Accueil({
           ) : null}
         </div>
       ) : null}
-      <Lit sources={sources} />
+      <Lit sources={sources} titre={titreSources} />
     </>
   );
 }
@@ -177,12 +241,15 @@ export function Modes({
   mode,
   onMode,
   disabled = false,
-  conseille
+  conseille,
+  motif = 'pour cette question'
 }: {
   mode: BrewerMode;
   onMode: (mode: BrewerMode) => void;
   disabled?: boolean;
   conseille?: BrewerMode;
+  /** « pour cette vérification » depuis Finances ; « pour cette question » sinon. */
+  motif?: string;
 }) {
   const segment = (
     <div className="cmp-modes" role="radiogroup" aria-label="Mode de réponse">
@@ -207,7 +274,7 @@ export function Modes({
     <div className="cmp-modes-w">
       <span className="cmp-mode-cons">
         <Icone nom="ok" />
-        {modeInfo(conseille).label} conseillé pour cette question
+        {modeInfo(conseille).label} conseillé {motif}
       </span>
       {segment}
     </div>
@@ -282,7 +349,7 @@ export function PiedSaisie({
   const champ = useRef<HTMLTextAreaElement>(null);
   useLayoutEffect(() => {
     const t = champ.current;
-    if (!t || haute) return;
+    if (!t) return;
     t.style.height = '44px';
     t.style.height = `${Math.min(Math.max(t.scrollHeight + 2, 44), 120)}px`;
   }, [valeur, haute]);
@@ -301,7 +368,7 @@ export function PiedSaisie({
           className={`cmp-champ cmp-plein${haute ? ' cmp-zone' : ''}`}
           value={valeur}
           maxLength={maxLength}
-          rows={haute ? 4 : 1}
+          rows={1}
           placeholder={placeholder}
           readOnly={readOnly}
           onChange={(e) => onValeur(e.target.value)}
@@ -320,13 +387,30 @@ export function PiedSaisie({
 }
 
 export type PorteeZero = 'batch' | 'recipe' | 'draft' | 'finances' | 'ecran';
-const RESTE: Record<PorteeZero, string[]> = {
-  batch: ['Ta recette', 'Ton brassin et son journal', 'Tes notes déjà gardées'],
-  recipe: ['Ta recette', 'Tes notes déjà gardées'],
-  draft: ['Ton brouillon de recette', 'Tes notes déjà gardées'],
-  finances: ['Tes opérations, paiements et budgets'],
-  ecran: ['Les données de l’écran', 'Tes notes déjà gardées']
+/** Ce qui s'efface : les échanges de la portée (ce brassin, cette recette…). */
+const ECHANGES: Record<PorteeZero, string> = {
+  batch: 'Les échanges de ce brassin',
+  recipe: 'Les échanges de cette recette',
+  draft: 'Les échanges de ce brouillon',
+  finances: 'Les échanges de cette conversation',
+  ecran: 'Les échanges de cette conversation'
 };
+/** Ce qui reste, avec le nom de la recette et le numéro du brassin quand on les connaît (sinon sans eux, jamais inventés). */
+function resteDe(portee: PorteeZero, nom?: string, numero?: string): string[] {
+  const recette = nom ? `Recette ${nom}` : 'La recette';
+  switch (portee) {
+    case 'batch':
+      return [recette, numero ? `Brassin ${numero} et son journal` : 'Le brassin et son journal', 'Notes déjà gardées'];
+    case 'recipe':
+      return [recette, 'Notes déjà gardées'];
+    case 'draft':
+      return [nom ? `Brouillon ${nom}` : 'Le brouillon de recette', 'Notes déjà gardées'];
+    case 'finances':
+      return ['Opérations, paiements et budgets'];
+    default:
+      return ['Les données de l’écran', 'Notes déjà gardées'];
+  }
+}
 
 /**
  * Remise à zéro : ce qui s'efface (les échanges ; la réponse et la file seulement s'il y en a), ce qui reste (selon la portée).
@@ -338,8 +422,13 @@ export function Zero({
   onAnnuler,
   busy = false,
   reponseEnCours = false,
-  enFile = 0
+  enFile = 0,
+  nom,
+  numero
 }: {
+  /** Nom de la recette et numéro du brassin, pour la colonne « Reste ». */
+  nom?: string;
+  numero?: string;
   portee: PorteeZero;
   onConfirmer: () => void;
   onAnnuler: () => void;
@@ -360,7 +449,7 @@ export function Zero({
             <span className="cmp-lbl1">S’efface</span>
             <p>
               <Icone nom="x" />
-              Les échanges de cette conversation
+              {ECHANGES[portee]}
             </p>
             {reponseEnCours ? (
               <p>
@@ -377,7 +466,7 @@ export function Zero({
           </div>
           <div className="cmp-col cmp-col-reste">
             <span className="cmp-lbl1">Reste</span>
-            {RESTE[portee].map((r) => (
+            {resteDe(portee, nom, numero).map((r) => (
               <p key={r}>
                 <Icone nom="ok" />
                 {r}

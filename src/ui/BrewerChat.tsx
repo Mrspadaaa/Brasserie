@@ -29,10 +29,11 @@ import './brewer-chat.css';
 import './companion/companion.css';
 import './companion/plus.css';
 import { Accueil, Amorces, Modes, PiedSaisie, Zero, type PorteeZero } from './companion/accueil';
-import { Attente, BandeauHorsLigne, Echec, HorsLigne, Plafond } from './companion/attente';
-import { estPlafondAtteint, etapeIndex, partDe, sansNomDeModele, sourcesLues, suiteEnTete, statutJob, statutsConversations } from './companion/derive';
+import { Attente, BandeauHorsLigne, Calcule, Echec, HorsLigne, Marge, Plafond } from './companion/attente';
+import { gParLitre, prochainJalon, quand, useContexteBrassin, type ContexteBrassin } from './companion/contexte';
+import { estPlafondAtteint, etapeIndex, nombreTexte, partDe, sansNomDeModele, sourcesLues, suiteEnTete, statutJob, statutsConversations } from './companion/derive';
 import { Fournisseurs } from './companion/fournisseurs';
-import { Icone } from './companion/parts';
+import { Icone, N } from './companion/parts';
 import { Controle, Pourquoi, Question, Verdict } from './companion/reponse';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import { brewerLauncher } from '../services/brewerLauncher';
@@ -793,6 +794,12 @@ function ScopedChat({
   const [vue, setVue] = useState<'chat' | 'limites'>('chat');
   const [conseille, setConseille] = useState<BrewerMode>();
   const enLigne = useEnLigne();
+  const ctx = useContexteBrassin(scope, draft, localJournal);
+  const depuisFinances = finance && origine === 'Vérifier mes opérations';
+  useEffect(() => {
+    // Depuis « Vérifier mes opérations » : Approfondi présélectionné et conseillé, sans écrire la préférence enregistrée.
+    if (depuisFinances) { setMode('deep'); setConseille('deep'); }
+  }, [depuisFinances]);
   const envoiInterdit =
     applying ||
     loading ||
@@ -827,31 +834,26 @@ function ScopedChat({
     window.dispatchEvent(new Event('brewer-inbox-open'));
   };
   const accueilProps = {
-    titre: hasAssistedSession ? 'Lecture assistée' : 'On regarde ça ensemble.',
+    titre: hasAssistedSession ? 'Lecture assistée' : finance ? undefined : 'Agir, mesurer ou attendre ?',
     sousTitre: hasAssistedSession
       ? 'Cette question reste liée à la lecture enregistrée et à son contexte exact. Pour changer sa formulation, relis une nouvelle demande dans l’atelier.'
       : finance
-        ? 'Comprendre où va ton argent, anticiper un brassin ou décider d’un achat utile à ta brasserie.'
-        : 'Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du prochain geste.',
+        ? undefined
+        : ligneContexte(ctx),
+    frise: !hasAssistedSession && ctx.jour !== undefined && ctx.jalons.length ? { jour: ctx.jour, jalons: ctx.jalons } : undefined,
+    portee: depuisFinances ? { titre: 'Je vérifie', cases: [...CASES_VERIFIEES] } : undefined,
+    titreSources: finance ? 'Je lis' : undefined,
     origine,
     finances: finance,
-    intro: (
+    intro: assistedAdvice ? (
       <>
+        <p className="cmp-note">Lecture assistée liée à sa question et à sa source</p>
         <p className="cmp-note">
-          {assistedAdvice
-            ? 'Lecture assistée liée à sa question et à sa source'
-            : `${scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte actualisé à chaque question`}
-        </p>
-        <p className="cmp-note">
-          {hasAssistedSession
-            ? 'Le conseil reste une proposition. Rien n’est confirmé tant que tu n’as pas choisi une suggestion dans l’atelier.'
-            : finance
-              ? 'Choisis une question, adapte-la puis envoie-la. Ouvrir cette aide ne lance aucune analyse.'
-              : 'Les simulations restent des propositions. Les relevés et les gestes se consignent dans le journal.'}
+          Le conseil reste une proposition. Rien n’est confirmé tant que tu n’as pas choisi une suggestion dans l’atelier.
         </p>
       </>
-    ),
-    tuiles: hasAssistedSession ? [] : questions,
+    ) : undefined,
+    tuiles: hasAssistedSession ? [] : depuisFinances ? questions.filter((q) => q.label !== origine) : questions,
     onChoisir: (q: string, m: BrewerMode) => {
       setQuestion(q);
       setMode(m);
@@ -860,7 +862,9 @@ function ScopedChat({
     conversations: assistedAdvice ? undefined : statutsConversations(activity.jobs),
     onConversations: ouvrirConversations,
     onLimites: () => setVue('limites'),
-    sources: sourcesLues(scope.kind, finance)
+    sources: finance
+      ? [...sourcesLues(scope.kind, finance), 'Relu deux fois']
+      : sourcesLues(scope.kind, finance).map((x) => (x === 'Brassin' && ctx.numero ? `Brassin ${ctx.numero}` : x))
   };
   return (
     <>
@@ -925,14 +929,19 @@ function ScopedChat({
                     if (!v) setConseille(undefined);
                   }}
                   maxLength={assistedAdvice ? 4000 : 3000}
-                  placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : 'Décris ce que tu observes…'}
+                  placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : travaux.length ? 'Ajouter une question…' : 'Décris ce que tu observes…'}
                   readOnly={applying || resetting || assistedSubmitting}
                   peutEnvoyer={!envoiInterdit}
                   haute={finance}
                   avant={
                     <>
                       {!enLigne && <BandeauHorsLigne />}
-                      <Amorces amorces={[]} suite={suite} disabled={resetting} onChoisir={(q) => setQuestion(q)} />
+                      <Amorces
+                        amorces={!timeline.length && scope.kind === 'batch' && !finance && !assistedAdvice ? AMORCES_BRASSIN : []}
+                        suite={suite}
+                        disabled={resetting}
+                        onChoisir={(q) => setQuestion(q.endsWith('…') ? `${q.slice(0, -1)} ` : q)}
+                      />
                     </>
                   }
                   modes={
@@ -941,7 +950,7 @@ function ScopedChat({
                         disabled={applying || resetting || assistedSubmitting || assistedTicketLocked}
                         style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
                       >
-                        <Modes mode={mode} onMode={choisirMode} conseille={conseille} />
+                        <Modes mode={mode} onMode={choisirMode} conseille={conseille} motif={depuisFinances ? 'pour cette vérification' : undefined} />
                       </fieldset>
                     ) : undefined
                   }
@@ -1014,6 +1023,8 @@ function ScopedChat({
               {confirmReset && (
                 <Zero
                   portee={portee}
+                  nom={ctx.nomRecette ?? (scope.kind === 'app' ? undefined : label)}
+                  numero={ctx.numero}
                   busy={resetting}
                   reponseEnCours={travaux.length > 0}
                   enFile={Math.max(0, travaux.length - 1)}
@@ -1065,6 +1076,7 @@ function ScopedChat({
                         mode={mode}
                         file={travaux[0] === job ? travaux.slice(1).map((j) => ({ id: j.operationId, question: j.question })) : []}
                         localFixture={localAssistedFixture}
+                        contexte={ctx}
                         notifier={!assistedAdvice}
                         enLigne={enLigne}
                         onFermer={fermer}
@@ -1789,6 +1801,35 @@ function useEnLigne(): boolean {
   );
 }
 
+const CASES_VERIFIEES = [
+  { label: 'Doublons possibles', icone: 'doublon' },
+  { label: 'Paiements', icone: 'portefeuille' },
+  { label: 'Classement du matériel', icone: 'outil' },
+  { label: 'Pièces à compléter', icone: 'trombone' }
+] as const;
+/** Débuts de phrase de la saisie, portée brassin à l'accueil. */
+const AMORCES_BRASSIN = ['La pression monte…', 'Ça sent…', 'La densité…'];
+
+/** « 19 °C depuis 36 h · 19 L · Citra demain » : ce que le brassin et son journal disent déjà ; une part absente se tait. */
+function ligneContexte(c: ContexteBrassin): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  if (c.temperature)
+    parts.push(<><N>{nombreTexte(c.temperature.c)}</N> °C{c.temperature.depuisH !== undefined ? <> depuis <N>{c.temperature.depuisH}</N> h</> : null}</>);
+  if (c.volumeL) parts.push(<><N>{nombreTexte(c.volumeL)}</N> L</>);
+  const p = prochainJalon(c);
+  if (p) parts.push(<>{p.nom} {quand(p.dans)}</>);
+  if (!parts.length) return undefined;
+  return parts.map((x, i) => <React.Fragment key={i}>{i ? ' · ' : ''}{x}</React.Fragment>);
+}
+
+/** Ligne du budget du mois sous « Rien n'est perdu » : « Ce mois · 2,10/15 CHF ». L'inconnu se tait ; « rien compté » n'est pas dit par le serveur. */
+function BudgetMois() {
+  const { status } = useBrewerBudget();
+  const mois = budgetResume(status).mois.replace(/^mois\s+/, '').replace(/\s+sur\s+/, '/');
+  if (!status || !/[0-9]/.test(mois)) return null;
+  return <>Ce mois · <N>{mois}</N></>;
+}
+
 /** Accueil avec la carte des limites : le budget n'est lu qu'à l'ouverture de la feuille, jamais ligne à ligne. */
 function AccueilBudget(props: Omit<ComponentProps<typeof Accueil>, 'limites'>) {
   const { status } = useBrewerBudget();
@@ -1839,10 +1880,12 @@ function BrewerWorkCard({
   localFixture = false,
   notifier = false,
   enLigne = true,
+  contexte,
   onEdit,
   onFermer,
   onLimits
 }: {
+  contexte?: ContexteBrassin;
   job: ClientBrewerJob;
   mode: BrewerMode;
   file?: Array<{ id: string; question: string }>;
@@ -1868,6 +1911,7 @@ function BrewerWorkCard({
   if (!failed && lue > atteinte.current) atteinte.current = lue;
   const modeDuJob: BrewerMode = job.input?.mode ?? (job.model?.includes('pro') ? 'deep' : mode);
   const message = sansNomDeModele(job.sendError || job.error?.message || '');
+  const prochain = contexte ? prochainJalon(contexte) : undefined;
   const relancer = (job.sendError || job.error?.retryable) && onRetry ? onRetry : undefined;
   const libelleRelance = localFixture ? 'Relancer la simulation locale' : 'Réessayer l’envoi';
 
@@ -1914,8 +1958,11 @@ function BrewerWorkCard({
     corps = (
       <HorsLigne
         question={job.question}
-        message={job.sendError ? message : undefined}
-        libelleEnvoi={libelleRelance}
+        // Réseau coupé : le texte et le bouton de la maquette. Réseau là mais accusé manquant : le message exact du serveur.
+        message={job.sendError && enLigne ? message : undefined}
+        libelleEnvoi={localFixture ? libelleRelance : enLigne ? libelleRelance : undefined}
+        libelleAccessible={localFixture ? undefined : libelleRelance}
+        resume={<BudgetMois />}
         onEnvoyer={onRetry}
         onReformuler={onEdit}
       />
@@ -1945,33 +1992,27 @@ function BrewerWorkCard({
         file={file}
         onFermer={onFermer}
         notifier={false}
-        masquerEtape={localFixture}
+        marge={prochain ? <Marge jour={prochain.jour} nom={prochain.nom} dans={prochain.dans} /> : undefined}
+        calcule={contexte && !localFixture ? <Calcule jalons={contexte.jalons} jour={contexte.jour} gParL={gParLitre(contexte.jalons, contexte.volumeL)} temperature={contexte.temperature} /> : undefined}
       >
         {localFixture && (
           <p className="cmp-note" role="status">
             {localAssistedFixtureStatus(job)}
           </p>
         )}
-        {job.detail && <p className="cmp-note">{job.detail}</p>}
-        <p className="cmp-note">
-          {localFixture
-            ? 'Traitement local · réponse simulée'
-            : job.sending
-              ? 'En attente de l’accusé de réception'
-              : 'Enregistrée sur le serveur'}
-          {job.attempt > 1 ? ' · reprise' : ''}
-        </p>
-        {!job.sending && (
+        {/* Les cinq textes d'aide de l'attente (étape, détail, « Enregistrée sur le serveur », « Tu peux continuer ailleurs », « Cette étape prend du temps ») ne sont pas dans la maquette : retirés. */}
+        {localFixture ? (
           <p className="cmp-note">
-            {localFixture ? 'Tu peux continuer; cette fixture garde le parcours local dans ce navigateur.'
-              : 'Tu peux continuer ailleurs. La réponse restera dans ce fil.'}
+            Traitement local · réponse simulée{job.attempt > 1 ? ' · reprise' : ''}
           </p>
+        ) : job.sending ? (
+          <p className="cmp-note">En attente de l’accusé de réception{job.attempt > 1 ? ' · reprise' : ''}</p>
+        ) : null}
+        {localFixture && !job.sending && (
+          <p className="cmp-note">Tu peux continuer; cette fixture garde le parcours local dans ce navigateur.</p>
         )}
-        {job.status === 'running' && now - job.updatedAt > 90000 && (
-          <p className="cmp-note">
-            {localFixture ? 'La simulation locale reste en attente; aucun modèle distant n’est appelé.'
-              : 'Cette étape prend du temps. Le serveur poursuit l’analyse et signalera tout échec ici.'}
-          </p>
+        {localFixture && job.status === 'running' && now - job.updatedAt > 90000 && (
+          <p className="cmp-note">La simulation locale reste en attente; aucun modèle distant n’est appelé.</p>
         )}
         {onRecover && (
           <div className="cmp-act">

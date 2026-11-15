@@ -188,7 +188,7 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Trouve un nom')).toBeVisible();
     expect(screen.getByRole('textbox')).toHaveValue('');
     expect(screen.getByRole('textbox')).not.toHaveAttribute('readonly');
-    expect(screen.queryByText('On regarde ça ensemble.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Agir, mesurer ou attendre ?')).not.toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Et si je remplace' } });
     await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
     await act(async () =>
@@ -247,7 +247,7 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.activity).mockResolvedValue([job]);
     render(<BrewerChat {...props} />);
     await open();
-    expect(screen.getByText('Relecture du conseil')).toBeVisible();
+    expect(screen.queryByText('Relecture du conseil')).not.toBeInTheDocument(); // fx2b : texte d'étape retiré (maquette)
     expect(screen.getByText(/en Approfondi/)).toBeVisible();
     expect(document.body.textContent).not.toMatch(/Gemini|Flash|gemini-3/);
     await act(async () =>
@@ -443,7 +443,7 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(api.history).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();
     await open();
-    expect(screen.getByText('On regarde ça ensemble.')).toBeVisible();
+    expect(screen.getByText('Agir, mesurer ou attendre ?')).toBeVisible();
   });
   it('envoie le brouillon actuel, continue la conversation et garde sur action explicite', async () => {
     const keep = vi.fn();

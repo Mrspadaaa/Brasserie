@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
 import type { BrewerMode } from '../../../functions/src/companionTypes';
 import { BrewerBudgetCapView } from '../BrewerBudget';
 import {
-  BORNE_SERVEUR_S, ETAPES, dureeTexte, etapeIndex, etapeTexte, etatsEtapes, habituelTexte, jaugeDuree, modeInfo
+  BORNE_SERVEUR_S, ETAPES, dureeTexte, etapeIndex, etatsEtapes, habituelTexte, jaugeDuree, modeInfo
 } from './derive';
 import type { EtatEtape } from './derive';
 import { Icone, N, useSecondes } from './parts';
@@ -44,10 +44,15 @@ export function Attente({
   stage,
   file = [],
   notifier = true,
-  masquerEtape = false,
   onFermer,
+  marge,
+  calcule,
   children
 }: {
+  /** Bandeau « Prochain geste J+n, le Citra : tu as le temps. » (dry hop suivant de la recette), sous les étapes. */
+  marge?: ReactNode;
+  /** Bloc « Déjà lu et calculé » sous la carte (doses de la recette, température du journal). */
+  calcule?: ReactNode;
   question?: string;
   mode: BrewerMode;
   debut: number | undefined;
@@ -96,7 +101,7 @@ export function Attente({
           </span>
         </div>
         <Etapes courante={maximum.current} />
-        {masquerEtape ? null : <p className="cmp-etape-t">{etapeTexte(stage)}</p>}
+        {marge}
         {children}
         {onFermer ? (
           <div className="cmp-act">
@@ -107,6 +112,7 @@ export function Attente({
           </div>
         ) : null}
       </div>
+      {calcule}
       {file.map((f, i) => (
         <div key={f.id} className="cmp-file">
           <span className="cmp-rang">{i + 2}</span>
@@ -116,6 +122,81 @@ export function Attente({
           </div>
         </div>
       ))}
+    </>
+  );
+}
+
+/** Bandeau du prochain geste : « Prochain geste J+2, le Citra : tu as le temps. » */
+export function Marge({ jour, nom, dans }: { jour: number; nom: string; dans: number }) {
+  return (
+    <p className="cmp-marge">
+      <Icone nom="calendrier" />
+      <span>
+        Prochain geste <b>J+{jour}</b>, le {nom}{dans > 0 ? ' : tu as le temps.' : '.'}
+      </span>
+    </p>
+  );
+}
+
+/**
+ * « Déjà lu et calculé » : barres hachurées proportionnelles aux doses des dry hops, puis la température du journal.
+ * `jalons` : dry hops de la recette ; `gParL` : texte déjà formaté ou absent (volume inconnu) ; la pression n'est pas lue.
+ */
+export function Calcule({
+  jalons,
+  jour,
+  gParL,
+  temperature
+}: {
+  jalons: Array<{ nom: string; jour: number; g: number }>;
+  jour?: number;
+  gParL?: string;
+  temperature?: { c: number; depuisH?: number };
+}) {
+  if (!jalons.length && !temperature) return null;
+  const total = jalons.reduce((s, j) => s + j.g, 0);
+  const colonnes = jalons.map((j) => `${j.g}fr`).join(' ');
+  return (
+    <>
+      <div className="cmp-lbl">
+        <span>Déjà lu et calculé</span>
+        {jalons.length ? (
+          <span>
+            <N>{Math.round(total * 10) / 10}</N> g{gParL ? <> · <N>{gParL}</N> g/L</> : null}
+          </span>
+        ) : null}
+      </div>
+      <div className="cmp-carte cmp-calc">
+        {jalons.length ? (
+          <>
+            <div className="cmp-pile" role="img" aria-label={jalons.map((j) => `${j.nom} ${j.g} g à J+${j.jour}`).join(', ')}>
+              {jalons.map((j) => (
+                <i key={`${j.nom}-${j.jour}`} style={{ flex: j.g }} />
+              ))}
+            </div>
+            <div className="cmp-leg" style={{ gridTemplateColumns: colonnes }}>
+              {jalons.map((j) => (
+                <span key={`${j.nom}-${j.jour}`}>
+                  <b>
+                    {j.nom} J+{j.jour}
+                  </b>
+                  <span>
+                    <N>{j.g}</N> g{jour !== undefined && j.jour === jour + 1 ? ' · demain' : ''}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </>
+        ) : null}
+        {temperature ? (
+          <div className="cmp-ligne">
+            <span>Température</span>
+            <span>
+              <N>{temperature.c}</N> °C{temperature.depuisH !== undefined ? <> depuis <N>{temperature.depuisH}</N> h</> : null}
+            </span>
+          </div>
+        ) : null}
+      </div>
     </>
   );
 }
@@ -148,17 +229,24 @@ export function Echec({
       <div>
         <b>Réponse interrompue</b>
         {connue ? <small>À l’étape {ETAPES[etape!]}</small> : null}
-        <p role="alert" className="cmp-srv-msg">
-          {message}
-        </p>
+        {/* Le texte générique du serveur (« Le serveur n’a pas pu terminer l’analyse. Rien n’a été modifié… ») n'apprend rien : seul un message précis se montre. */}
+        {message && !/^Le serveur n[’']a pas pu terminer l[’']analyse/.test(message) ? (
+          <p role="alert" className="cmp-srv-msg">
+            {message}
+          </p>
+        ) : (
+          <span role="alert" className="sr-only">
+            {message}
+          </span>
+        )}
         {connue ? <Etapes courante={etape!} rompu mini /> : null}
       </div>
       {onRelancer || onReformuler ? (
         <div className="cmp-srv-act">
           {onRelancer ? (
-            <button type="button" className="cmp-btn cmp-s" disabled={busy} onClick={onRelancer}>
+            <button type="button" className="cmp-btn cmp-s" disabled={busy} onClick={onRelancer} aria-label={libelleRelancer}>
               <Icone nom="zero" />
-              {libelleRelancer}
+              Relancer
             </button>
           ) : null}
           {onReformuler ? (
@@ -183,11 +271,14 @@ export function HorsLigne({
   onEnvoyer,
   onReformuler,
   libelleEnvoi = 'Envoyer au retour du réseau',
+  libelleAccessible,
   busy = false
 }: {
+  /** Nom accessible du bouton, si différent du texte visible (ex. « Réessayer l’envoi »). */
+  libelleAccessible?: string;
   question?: string;
   message?: string;
-  resume?: string;
+  resume?: ReactNode;
   onEnvoyer: () => void;
   onReformuler?: () => void;
   libelleEnvoi?: string;
@@ -227,7 +318,7 @@ export function HorsLigne({
         <h3>Envoi à confirmer</h3>
         <p role="alert">{message}</p>
         <div className="cmp-act cmp-gauche">
-          <button type="button" className="cmp-btn cmp-p" disabled={busy} onClick={onEnvoyer}>
+          <button type="button" className="cmp-btn cmp-p" disabled={busy} onClick={onEnvoyer} aria-label={libelleAccessible}>
             <Icone nom="envoyer" />
             {libelleEnvoi}
           </button>

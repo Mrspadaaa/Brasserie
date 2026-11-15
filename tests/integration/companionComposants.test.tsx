@@ -100,7 +100,7 @@ describe('accueil, modes, pied, zéro', () => {
     const choisir = vi.fn();
     render(
       <Accueil
-        titre="On regarde ça ensemble."
+        titre="Agir, mesurer ou attendre ?"
         tuiles={[{ question: 'Préparer un achat de matériel' }, { question: 'La pression monte : je purge ?' }]}
         onChoisir={choisir}
         sources={['Recette', 'Matériel']}
@@ -137,7 +137,7 @@ describe('accueil, modes, pied, zéro', () => {
     const confirmer = vi.fn();
     render(<Zero portee="finances" onConfirmer={confirmer} onAnnuler={() => {}} />);
     const groupe = screen.getByRole('group', { name: 'Confirmer la remise à zéro' });
-    expect(within(groupe).getByText('Tes opérations, paiements et budgets')).toBeTruthy();
+    expect(within(groupe).getByText('Opérations, paiements et budgets')).toBeTruthy();
     expect(within(groupe).queryByText('La réponse en cours')).toBeNull();
     fireEvent.click(within(groupe).getByRole('button', { name: 'Effacer les échanges' }));
     expect(confirmer).toHaveBeenCalledTimes(1);

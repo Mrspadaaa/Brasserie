@@ -139,7 +139,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await plus();
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByRole('dialog')).toHaveTextContent('Brouillon actuel');
-    expect(screen.getByRole('dialog')).toHaveTextContent('Brouillon en cours');
+    expect(screen.getByRole('dialog')).toHaveTextContent('Agir, mesurer ou attendre');
     await ask();
     expect(api.submit).toHaveBeenCalledWith(expect.objectContaining({ draft: { name: 'Brouillon actuel', volumeL: 24 }, phase: 'Eau et sels', editableTargets: ['recipe'] }));
     expect(draftApply).not.toHaveBeenCalled();
