@@ -1,6 +1,5 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
-import { RecapEtat } from '../ui/RecapEtat';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -73,6 +72,7 @@ import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
 import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOverview';
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
+import { styleNomme } from '../ui/recap/styleRecette';
 import { StorageService } from '../services/storage';
 import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
@@ -136,7 +136,7 @@ import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import type { ImportedRecipe } from '../ui/RecipeImportSheet';
 import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoComplete';
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
-import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
+import { EtapeRecap as SyncBrewSheet } from '../ui/recap/EtapeRecap';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
 import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
@@ -718,7 +718,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   // --- Étape 1 : identité ---------------------------------------------------
   const [name, setNameRaw] = useState(base?.name ?? seed?.title ?? '');
-  const [style, setStyleRaw] = useState(base?.style ?? '');
+  // RC-2 : un style écrit en code seul (« 21A ») devient son nom, sinon ni l'eau ni la levure ne le reconnaissent (`styleRecette.ts`).
+  const styleDeBase = useMemo(() => styleNomme(base?.style ?? '', styles), [base?.style, styles]);
+  const [style, setStyleRaw] = useState(styleDeBase);
   const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
   const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
   const [equipmentNotice,setEquipmentNotice]=useState('');
@@ -772,13 +774,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
   const [mashSteps, setMashStepsRaw] = useState<TempStep[]>(
-    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
+    () => base?.mash?.steps ?? mashProgramForStyle(styleDeBase,base?.styleRef,styles).steps
   );
   const [spargeType, setSpargeTypeRaw] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
   const [ferment, setFermentRaw] = useState<FermentationStep[]>(
-    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
+    () => base?.fermentation ?? fermentProgramForStyle(styleDeBase,base?.styleRef,styles).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
@@ -817,7 +819,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     spargeDiRatioPct: base?.waterPlan?.spargeDiRatioPct,
     // Le style d'eau se devine du style de bière saisi — c'est le point de
     // départ le plus juste, et il reste modifiable.
-    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(base?.style ?? '').code,
+    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(styleDeBase).code,
     // Une cible chiffrée enregistrée reprend la main sur le style deviné du nom.
     customTarget: base?.waterPlan?.targetIons
       ? {
@@ -3189,20 +3191,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       */}
       {step === 'recap' && (
         <>
-        <RecapEtat readiness={readiness} etape={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
-          onCorriger={issue => requestCorrection([issue])} />
-        {waterSourceNotice}
-        {/*
-          Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
-          potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand
-          la fiche est complète.
-        */}
-
-        {details.nolo?.enabled&&<>
-          <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
-          {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
-          <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure>
-        </>}
         <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
           onLearnIngredient={onLearnIngredient}
           yeastSummary={!details.nolo?.enabled ? <Suspense fallback={<span>{yeast.name || 'Souche à préciser'}</span>}><YeastRecipeHeading recipe={build()} /></Suspense> : undefined}
@@ -3219,6 +3207,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           }}
           recipeForCompanion={build()}
           knowledge={knowledge}
+          styleRepere={resolveBrewingStyle(style, details.styleRef, styles)}
+          readiness={readiness}
+          etapeLabel={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
+          onCorriger={issue => requestCorrection([issue])}
+          onAllerEtape={setStep}
+          ibu={ibu}
+          ebc={color && !ogHorsBornes(og) ? color.ebc : null}
+          fgRange={yeastProjection?.fg.range ?? null}
+          abvRange={yeastProjection?.abv.range ?? null}
+          onBrasser={() => submitRecipe(true)}
+          budget={<BrewBudgetButton recipe={build()} />}
+          sousVerdict={<>
+            {waterSourceNotice}
+            {details.nolo?.enabled&&<>
+              <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
+              {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
+            </>}
+          </>}
+          atelierNolo={details.nolo?.enabled ? <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure> : undefined}
           name={name}
           onName={setName}
           style={style}
@@ -3308,7 +3315,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             })
           }
         /></Suspense>
-        <BrewBudgetButton recipe={build()} />
         </>
       )}
 
