@@ -374,6 +374,8 @@ export function knownCategoriesOf(key: string): string[] {
 
 const PIECE_UNITS = new Set(['stk', 'stuck', 'pce', 'pces', 'pcs', 'pc', 'piece', 'pieces', 'unite', 'unites']);
 const SACHET_UNITS = new Set(['sachet', 'sachets']);
+/** ST-T2 : un paquet (Pck, paquet, Packung) est une pièce comme Stk pour le rattachement ; `isPieceUnit` (affichage, regroupement) ne change pas. */
+const PACK_UNITS = new Set(['pck', 'pckg', 'pkg', 'pack', 'packs', 'paquet', 'paquets', 'paket', 'pakete', 'packung', 'packungen']);
 const unitKey = (unit: string) => normalize(unit).replace(/\./g, '').trim();
 /** Valeurs imprimées à la place d'une unité (« n/a », « k.A. » = keine Angabe, « n.d. », « x »), lettres seules après retrait de la ponctuation. */
 const UNIT_PLACEHOLDERS = new Set(['na', 'ka', 'nd', 'x']);
@@ -402,7 +404,8 @@ export const isSachetUnit = (unit: string) => SACHET_UNITS.has(unitKey(unit));
 export function pieceUnitsEquivalent(lineUnit: string, itemUnit: string, itemCategory: string): boolean {
   const a = unitKey(lineUnit), b = unitKey(itemUnit);
   if (!a || !b) return false;
-  if (PIECE_UNITS.has(a) && PIECE_UNITS.has(b)) return true;
+  const piece = (k: string) => PIECE_UNITS.has(k) || PACK_UNITS.has(k);
+  if (piece(a) && piece(b)) return true;
   if (SACHET_UNITS.has(a) && SACHET_UNITS.has(b)) return true;
   return itemCategory === 'Levure' && ((PIECE_UNITS.has(a) && SACHET_UNITS.has(b)) || (SACHET_UNITS.has(a) && PIECE_UNITS.has(b)));
 }

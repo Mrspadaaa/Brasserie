@@ -1,6 +1,7 @@
 import { Input } from '../ui/Input';
 import React, { useState } from 'react';
-import { Batch, StockItem } from '../types';
+import { Batch, Client, KegHistoryEntry, KegItem, StockItem } from '../types';
+import { KegBoard } from '../ui/KegBoard';
 import { StockRow } from '../ui/StockRow';
 import { EntityList } from '../ui/EntityList';
 import { QuantityStepper } from '../ui/QuantityStepper';
@@ -100,7 +101,7 @@ const BATCHES: Batch[] = [
   }
 ];
 
-export const StockPreview: React.FC = () => {
+const StockBench: React.FC = () => {
   const [count, setCount] = useState(24);
   const [items, setItems] = useState(() => makeItems(24));
   const [qty, setQty] = useState(18.5);
@@ -280,3 +281,56 @@ export const StockPreview: React.FC = () => {
     </div>
   );
 };
+
+/* ───────────── Banc des fûts (?preview=stock&vue=futs) : le parc de la planche des mini maquettes, en mémoire, dev seulement ───────────── */
+
+const H = (date: string, quoi: KegHistoryEntry['quoi'], detail?: string): KegHistoryEntry => (detail ? { date, quoi, detail } : { date, quoi });
+const FUTS_PARC: KegItem[] = [
+  { id: 'F-001', capacityL: 30, state: 'plein', batchRef: 'LOT-002', beerName: 'NEIPA Test', style: 'NEIPA', fillDate: '02.11.2026', historique: [
+    H('10.09.2026', 'ajoute'), H('20.09.2026', 'rempli', 'Pale Ale LOT-001'), H('24.09.2026', 'livre', 'Café du Marché'), H('28.10.2026', 'retour-vide', 'Café du Marché'), H('01.11.2026', 'lave'), H('02.11.2026', 'rempli', 'NEIPA Test LOT-002')] },
+  { id: 'F-002', capacityL: 30, state: 'lavage', historique: [H('10.09.2026', 'ajoute'), H('13.11.2026', 'retour-vide', 'Café du Marché')] },
+  { id: 'F-003', capacityL: 30, state: 'lavage', historique: [H('10.09.2026', 'ajoute'), H('10.11.2026', 'retour-vide', 'Bar Le Zinc')] },
+  { id: 'F-004', capacityL: 30, state: 'lavage', historique: [H('10.09.2026', 'ajoute'), H('10.11.2026', 'retour-vide', 'Bar Le Zinc')] },
+  { id: 'F-005', capacityL: 20, state: 'propre', historique: [H('10.09.2026', 'ajoute'), H('12.11.2026', 'lave')] },
+  { id: 'F-006', capacityL: 30, state: 'livre', batchRef: 'LOT-002', beerName: 'NEIPA Test', style: 'NEIPA', fillDate: '02.11.2026', clientId: 'CL-001', clientName: 'Café du Marché', deliveryDate: '04.11.2026', historique: [
+    H('10.09.2026', 'ajoute'), H('25.09.2026', 'rempli', 'Pale Ale LOT-001'), H('29.09.2026', 'livre', 'Café du Marché'), H('24.10.2026', 'retour-vide', 'Café du Marché'), H('31.10.2026', 'lave'), H('02.11.2026', 'rempli', 'NEIPA Test LOT-002'), H('04.11.2026', 'livre', 'Café du Marché')] },
+  { id: 'F-007', capacityL: 30, state: 'livre', batchRef: 'LOT-001', beerName: 'Pale Ale', style: 'Pale Ale', fillDate: '03.10.2026', clientId: 'CL-002', clientName: 'Bar Le Zinc', deliveryDate: '06.10.2026', historique: [H('10.09.2026', 'ajoute'), H('03.10.2026', 'rempli', 'Pale Ale LOT-001'), H('06.10.2026', 'livre', 'Bar Le Zinc')] },
+  { id: 'F-008', capacityL: 20, state: 'plein', batchRef: 'LOT-001', beerName: 'Pale Ale', style: 'Pale Ale', fillDate: '03.10.2026', historique: [H('10.09.2026', 'ajoute'), H('03.10.2026', 'rempli', 'Pale Ale LOT-001')] }
+];
+const FUTS_LOTS = [
+  { id: 'LOT-001', name: 'Pale Ale', style: 'Pale Ale', volumeL: 50, volumePackagedL: 50, brewDate: '15.09.2026', status: 'conditionne' },
+  { id: 'LOT-002', name: 'NEIPA Test', style: 'NEIPA', volumeL: 60, volumePackagedL: 60, brewDate: '20.10.2026', status: 'garde' },
+  { id: 'LOT-003', name: 'Ambrée', style: 'Ambrée', volumeL: 60, volumePackagedL: 60, brewDate: '05.11.2026', status: 'garde' }
+] as unknown as Batch[];
+const FUTS_CLIENTS = [
+  { id: 'CL-001', name: 'Café du Marché', type: 'Pro', contact: '', phone: '', email: '', favorite: true },
+  { id: 'CL-002', name: 'Bar Le Zinc', type: 'Pro', contact: '', phone: '', email: '', favorite: true }
+] as Client[];
+
+/** `&parc=propres` : F-002 à F-004 déjà lavés (le cas de la maquette R1, quatre fûts propres). */
+const FutsBench: React.FC = () => {
+  const propres = new URLSearchParams(window.location.search).get('parc') === 'propres';
+  const [kegs, setKegs] = useState<KegItem[]>(() => propres
+    ? FUTS_PARC.map((k) => (k.state === 'lavage' ? { ...k, state: 'propre' as const, historique: [...(k.historique ?? []), H('15.11.2026', 'lave')] } : k))
+    : FUTS_PARC);
+  const [adding, setAdding] = useState(false);
+  const [message, setMessage] = useState('');
+  return (
+    <div className="min-h-screen bg-cave-950 text-cave-200 font-sans">
+      <div className="max-w-2xl mx-auto px-3 py-3 flex flex-col gap-2 h-screen">
+        <h1 className="text-base font-semibold text-cave-50">Stocks › Fûts <span className="text-xs font-normal text-cave-400">banc de développement · parc fictif au 15.11.2026</span></h1>
+        <KegBoard className="flex-1" kegs={kegs} batches={FUTS_LOTS} clients={FUTS_CLIENTS} today="15.11.2026"
+          addOpen={adding} onAddClose={() => setAdding(false)} onMessage={setMessage}
+          onSaveKeg={(keg) => setKegs((prev) => prev.map((k) => (k.id === keg.id ? keg : k)))}
+          onAddKegs={(list) => setKegs((prev) => [...prev, ...list])}
+          onRemoveKeg={(id) => setKegs((prev) => prev.filter((k) => k.id !== id))}/>
+        {message && <p role="status" className="text-xs text-cave-400">{message}</p>}
+        <button type="button" aria-label="Ajouter des fûts" onClick={() => setAdding(true)}
+          className="fixed bottom-4 right-4 w-12 h-12 rounded-2xl bg-ebc-straw text-cave-950 text-2xl leading-none shadow-lg">+</button>
+      </div>
+    </div>
+  );
+};
+
+export const StockPreview: React.FC = () =>
+  new URLSearchParams(window.location.search).get('vue') === 'futs' ? <FutsBench /> : <StockBench />;

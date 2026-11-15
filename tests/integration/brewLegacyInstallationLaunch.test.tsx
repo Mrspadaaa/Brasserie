@@ -61,15 +61,30 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     const volume = screen.getByLabelText('Volume du brassin');
     fireEvent.change(volume, { target: { value: String(targetL) } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
-    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    // Passe 3 : la question se dit AVANT le geste (ton attention, pas d'alerte rouge) et Lancer reste désactivé, au lieu d'un refus après le clic.
+    expect(screen.getByText(/Recette à adapter à Installation actuelle avant de lancer/)).toBeVisible();
+    expect(screen.getByRole('button', { name: /Modifier la recette/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /^Lancer à / })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
     expect(created).toEqual([]);
     expect(recipe).toEqual(original);
     expect(history).toEqual(oldBatch);
     expect(close).not.toHaveBeenCalled();
+  });
+
+  it('« Modifier la recette › » envoie l’événement annulable avec la recette, et ferme la modale quand App le prend', () => {
+    const prend = vi.fn((e: Event) => e.preventDefault());
+    window.addEventListener('affinee:modifier-recette', prend);
+    const close = vi.fn();
+    render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[legacyRecipe(true)]} onClose={close} />);
+    fireEvent.click(screen.getByRole('button', { name: /Modifier la recette/ }));
+    window.removeEventListener('affinee:modifier-recette', prend);
+    expect(prend).toHaveBeenCalledOnce();
+    expect((prend.mock.calls[0][0] as CustomEvent).detail).toEqual({ recipeId: 'legacy' });
+    expect(close).toHaveBeenCalledOnce();
   });
 
   it.each([{ withProfile: false, volumeL: 19 }, { withProfile: true, volumeL: 26 }])('adopte le matériel en conservant les $volumeL L choisis (ancien profil : $withProfile)', async ({ withProfile, volumeL }) => {
@@ -100,13 +115,12 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     editor.unmount();
     const close = vi.fn();
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[adapted]} onClose={close} />);
-    fireEvent.click(screen.getByRole('radio', { name: 'Autre date' }));
-    fireEvent.change(screen.getByLabelText('Jour prévu'), { target: { value: '2026-10-24' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Volume de la recette/ })); // « ↻ N L » : le volume au repos est celui de la brasserie (24 L)
+    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
     await waitFor(() => expect(close).toHaveBeenCalledOnce());
     expect(created).toHaveLength(1);
     expect(created[0].volumeL).toBe(volumeL);
-    expect(created[0]).toMatchObject({ plannedBrewDate: '24.10.2026', brewDate: '', status: 'planifie' });
+    expect(created[0]).toMatchObject({ plannedBrewDate: '', brewDate: '', status: 'planifie' }); // uv4 : plus de champ date au lancement
     expect(created[0].brewDay).toBeUndefined();
     expect(created[0].recipeSnapshot?.brewhouse?.equipment).toEqual(activeProfile.equipment);
     expect(history).toEqual(oldBatch);

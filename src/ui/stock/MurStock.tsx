@@ -3,7 +3,7 @@
 // Le DOM, les classes et les data-* sont ceux de la maquette ; sa mise en page mesurée (murMiseEnPage.ts) est son propre script, repris.
 import React, { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
-import { construireMur, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
+import { construireMur, cartesAutres, legendeAutres, BASE_TEINTE, TEINTES_LEGENDE, type GroupeMur, type MarqueMur, type MurDonnees, type RayonMur } from '../../domain/stock/murDonnees';
 import { sourcesDeLApp } from '../../domain/stock/murSources';
 import { couleurALaClarte, labDeHex } from '../../domain/stock/mur';
 import { installerMiseEnPage } from './murMiseEnPage';
@@ -19,8 +19,12 @@ interface Props {
   /** Le bouton du nom d'un rayon filtre la liste : le parent reçoit « Malts », « Houblons » ou « Levures » (ou null pour tout). */
   onFiltre?: (rayon: 'Malts' | 'Houblons' | 'Levures' | null) => void;
   filtre?: 'Malts' | 'Houblons' | 'Levures' | null;
+  /** Les références que le filtre et la recherche de la liste retiennent (null : aucun filtre). Les autres marques pâlissent (fA : « l1-pale »), le compte du rayon dit « 1 sur 2 ». */
+  retenus?: ReadonlySet<string> | null;
   onglet: OngletMur;
   onOnglet: (o: OngletMur) => void;
+  /** Les états de chaque article (`infoLigne`) : les cartes d'Autres stocks disent les mots des pastilles (« manque », « bas »). */
+  infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>;
 }
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
@@ -79,6 +83,13 @@ function TotalLevure({ g }: { g: GroupeMur }) {
   );
 }
 
+/** Les marques du rayon que le filtre retient, sur le total du rayon (le total seul quand tout est retenu). Aux lecteurs d'écran : « 1 sur 2 » ; sous le nom du rayon : « 1/2 »,
+ *  car la colonne du nom fait 60 px et « 3 sur 12 » passait sur le repère d'échelle (« 5 kg », « 250 g » ; verdict 5cdcd12e n° 1). */
+const compteRayon = (r: RayonMur, retenus: ReadonlySet<string>): { court: string; long: string } => {
+  const v = r.groupes.reduce((n, g) => n + g.marques.filter((a) => retenus.has(a.ref)).length, 0);
+  return v === r.total ? { court: String(r.total), long: String(r.total) } : { court: `${v}/${r.total}`, long: `${v} sur ${r.total}` };
+};
+
 function Groupe({ g, r }: { g: GroupeMur; r: RayonMur }) {
   const style = { ['--ink' as string]: g.ink, ['--fill' as string]: g.fill } as React.CSSProperties;
   return (
@@ -133,14 +144,14 @@ function LegendeHoublons() {
     </div>
   );
 }
-function LegendeLevures() {
+function LegendeLevures({ r }: { r: RayonMur }) {
   return (
     <div className="sv-leg" id="sv-leg-f2" role="note" aria-label="Légende de la rangée Levures" hidden>
       <Li t="sachet : sèche, un par sachet"><i className="sv-sk" /></Li>
       <Li t="fiole : liquide, une par fiole"><svg viewBox="0 0 8 13" width="8" height="13" aria-hidden="true"><path d="M1.6 2.6V10.4A2.4 2.4 0 0 0 6.4 10.4V2.6Z" fill="#fff" stroke="#6B5426" /><path d="M2.1 6.6Q4 7.6 5.9 6.6V10.4A1.9 1.9 0 0 1 2.1 10.4Z" fill="#B79A63" /><rect x="1.1" y="0" width="5.8" height="2.6" rx=".5" fill="#6B5426" /></svg></Li>
       <Li t="lettre : la souche (U pour US-05)"><b className="sx-g0">U</b></Li>
       <Li t="bord : un par souche"><i className="sv-sk" /><i className="sv-sk" style={{ boxShadow: 'none', borderRadius: 3 }} /><i className="sv-sk" style={{ boxShadow: 'inset 0 0 0 2.5px #6B5426' }} /></Li>
-      <Li t="gris : colonne Autres (type non connu)"><i className="sv-sk" style={{ background: '#BDBDBD' }} /></Li>
+      <Li t={legendeAutres(r)}><i className="sv-sk" style={{ background: '#BDBDBD' }} /></Li>
       <Li t="rangées par atténuation : la plus forte à gauche ; le socle aussi"><i className="sy-so0" style={{ background: 'linear-gradient(90deg,#5C4515,#E3D6BC)' }} /></Li>
       <Li t="barré : DDM dépassée"><i className="sv-sk sv-dx" /></Li>
       <Li t="cadre rouge : épuisé"><i className="sv-ep" /></Li>
@@ -150,13 +161,15 @@ function LegendeLevures() {
 }
 
 /* ---------- le mur, avec son comportement mesuré ---------- */
-function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, visible }: { m: MurDonnees; parRef: Map<string, StockItem>; onOpen: (i: StockItem) => void; onFiltre?: Props['onFiltre']; filtre?: Props['filtre']; ouvertLegende: boolean; onLegende: () => void; visible: boolean }) {
+function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLegende, visible }: { m: MurDonnees; parRef: Map<string, StockItem>; onOpen: (i: StockItem) => void; onFiltre?: Props['onFiltre']; filtre?: Props['filtre']; retenus?: Props['retenus']; ouvertLegende: boolean; onLegende: () => void; visible: boolean }) {
   const racine = useRef<HTMLDivElement>(null);
   const bulle = useRef<HTMLDivElement>(null);
   const mep = useRef<ReturnType<typeof installerMiseEnPage> | null>(null);
   const ouvrirRef = useRef(onOpen); ouvrirRef.current = onOpen;
   const refs = useRef(parRef); refs.current = parRef;
 
+  // Comme la maquette fA : sous un filtre ou une recherche, les marques qui n'y répondent pas pâlissent (la mise en page ne bouge pas).
+  useLayoutEffect(() => { racine.current?.querySelectorAll<HTMLElement>('[data-ref]').forEach((e) => e.classList.toggle('l1-pale', !!retenus && !retenus.has(e.dataset.ref ?? ''))); }, [retenus]);
   useLayoutEffect(() => { racine.current?.querySelectorAll<HTMLElement>('.sv-leg').forEach((l) => { l.hidden = !ouvertLegende; }); }, [ouvertLegende]);
   useLayoutEffect(() => {
     if (!racine.current) return;
@@ -226,7 +239,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
           <Fragment key={r.id}>
             <div className={`l1-mu l1e-r${r.hc ? '' : ' l1e-sansc'}`} data-f={r.id} data-systeme={r.systeme} style={{ ['--hc' as string]: `${r.hc}px`, ['--hm' as string]: `${r.hm}px` } as React.CSSProperties}>
               <div className="l1e-c1">
-                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span>{r.total}</span></button>
+                <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteRayon(r, retenus).long : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span data-compte={retenus ? compteRayon(r, retenus).long : undefined}>{retenus ? compteRayon(r, retenus).court : r.total}</span></button>
                 {r.echelle && <span className="l1e-cl" aria-hidden="true">{r.echelle}</span>}
                 {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>?</button>}
               </div>
@@ -236,7 +249,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
                 {r.id === 'f0' && <i className="sw-rln" aria-hidden="true" />}
               </div>
             </div>
-            {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures />}
+            {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures r={r} />}
           </Fragment>
         ))}
       </div>
@@ -245,8 +258,9 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, ouvertLegende, onLegende, vi
   );
 }
 
-export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, onglet, onOnglet }: Props) {
+export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet, infos }: Props) {
   const m = useMemo(() => construireMur(items, sourcesDeLApp, equipements, futs), [items, equipements, futs]);
+  const autres = useMemo(() => cartesAutres(items, equipements, futs, infos), [items, equipements, futs, infos]);
   const sig = signature(m);
   const parRef = useMemo(() => new Map(items.map((i) => [i.ref, i])), [items]);
   const [legende, setLegende] = useState(false);
@@ -256,12 +270,12 @@ export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre,
         {([['ing', 'Ingrédients'], ['autres', 'Autres stocks']] as const).map(([id, nom]) => <button key={id} type="button" role="tab" className="sv-tab" data-tab={id} aria-selected={onglet === id} onClick={() => onOnglet(id)}>{nom}</button>)}
       </div></div>
       <div style={{ display: onglet === 'ing' ? '' : 'none' }}>
-        <Mur key={sig} m={m} parRef={parRef} onOpen={onOpen} onFiltre={onFiltre} filtre={filtre} ouvertLegende={legende} onLegende={() => setLegende((v) => !v)} visible={onglet === 'ing'} />
+        <Mur key={sig} m={m} parRef={parRef} onOpen={onOpen} onFiltre={onFiltre} filtre={filtre} retenus={retenus} ouvertLegende={legende} onLegende={() => setLegende((v) => !v)} visible={onglet === 'ing'} />
       </div>
       {onglet === 'autres' && (
         <div className="sv-autres">
-          {m.autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
-          {m.autres.map((c) => (
+          {autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
+          {autres.map((c) => (
             <div key={c.id} className="sv-ot" data-autre={c.id}>
               <span><em>{c.nom}</em> {c.total}</span>
               <span>{c.lignes.length ? c.lignes.map((l, k) => <Fragment key={k}>{k ? ' · ' : ''}<b className={l.alerte ? 'sv-al' : undefined}>{l.n}</b> {l.texte}</Fragment>) : 'rien à signaler'}</span>

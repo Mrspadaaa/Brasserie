@@ -716,11 +716,11 @@ export const BrewingMath = {
       };
     });
 
-    // Scale yeast — la levure ne suit pas le volume linéairement : on
-    // ensemence par palier (environ un sachet pour 20 L de moût).
-    const sachetCount = Math.max(1, Math.ceil(targetVolumeL / 20));
+    // Scale yeast — la quantité suit la proportion de la recette, comme le flacon : 2 sachets
+    // pour 20 L en font 5 pour 50 L (6 décimales). Un compte non entier se dit « à arrondir »
+    // à l'écran ; le moteur ne choisit pas l'arrondi à la place du brasseur.
     // Une recette d'avant la refonte peut n'avoir aucune levure déclarée : on
-    // ne fabrique pas de souche, on met simplement le nombre de sachets.
+    // ne fabrique pas de souche.
     const baseYeast = recipe.yeast;
     const scaledYeast: Recipe['yeast'] = baseYeast
       ? {
@@ -728,9 +728,7 @@ export const BrewingMath = {
           qty:
             baseYeast.qty == null || volumeRatio === 1
               ? baseYeast.qty
-              : baseYeast.unit === 'sachet'
-                ? sachetCount
-                : Number((baseYeast.qty * volumeRatio).toFixed(6))
+              : Number((baseYeast.qty * volumeRatio).toFixed(6))
         }
       : undefined;
 

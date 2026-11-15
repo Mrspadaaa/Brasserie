@@ -55,10 +55,11 @@ export function ControlesCroisesBloc(p: PropsControles & { children?: React.Reac
 }
 
 /** Le verdict de la lecture : le bandeau (inchangé) puis le bloc refait avec ses comptes. */
-export function VerificationCroisee(p: { bandeau: React.ComponentProps<typeof Bandeau>; preuve: PropsControles; comptes: React.ReactNode; bandeauRef?: React.Ref<HTMLDivElement> }) {
+export function VerificationCroisee(p: { bandeau: React.ComponentProps<typeof Bandeau>; preuve: PropsControles; comptes: React.ReactNode; bandeauRef?: React.Ref<HTMLDivElement>; /** « Un doute ? Relire plus finement » (RelireFin), sous le bloc. */ relire?: React.ReactNode }) {
   return <section aria-label="Vérification du justificatif" className="space-y-1.5">
     <div ref={p.bandeauRef}><Bandeau {...p.bandeau}/></div>
     <ControlesCroisesBloc {...p.preuve}>{p.comptes}</ControlesCroisesBloc>
+    {p.relire}
   </section>;
 }
 

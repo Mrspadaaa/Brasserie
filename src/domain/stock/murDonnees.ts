@@ -3,6 +3,7 @@
 // EBC absent = marque grise, atténuation absente = colonne « Autres » en gris. Jamais 0.
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
 import { estSucre } from './murRayon';
+import { formeLevureLue } from './formeLevure';
 import {
   ALPHA_MIN, ALPHA_MAX, COLONNES_STYLE, SOMMET, bornesAttenuation, classerHoublons, couleurALaClarte, couleurHoublon, couleurLevure, couleurMalt, couleurSocle,
   formeCereale, ordreColonne, pastillesVides, traceCereale, traceHoublon, type FamilleBrasseur, type FormeCereale, type SommetHoublon,
@@ -43,7 +44,7 @@ export interface MarqueMur {
   hauteur: number; trace: string; fill: string; hachure: string | null;
   cereale?: string; forme?: FormeCereale; sommet?: SommetHoublon; teinte?: string; alpha?: number | null; parDefaut?: boolean;
   /** Levures : n briques (sachets) ou fioles, initiale de la souche, atténuation, forme, rang de bord. */
-  n?: number; liquide?: boolean; ini?: string; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean;
+  n?: number; liquide?: boolean; ini?: string; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean; /** Style lu dans le nom d'une levure en Autres (Saison…) ; absent = type non connu. */ style?: string;
 }
 export interface GroupeMur {
   id: string; mot: string; court?: string; titre: string; ink: string; fill: string; total: string; marques: MarqueMur[]; socle: Record<string, string> | null;
@@ -72,7 +73,9 @@ export function familleBrasseur(info: InfosHoublon | null, alpha: number | null,
   if (!info) return 'autre';
   const o = codePays(info.origine) ?? '';
   if (info.role === 'bittering' && (frais == null || frais < 0.25)) return 'amerisants';
-  if (EUROPE.has(o) && (alpha == null || alpha <= 6)) return 'nobles';
+  // ST-T25 : un α inconnu ne fait pas un noble d'un houblon européen au profil fruité (Hallertau Blanc : vin blanc, fruit de la passion ; Hüll, 1990). Saaz, Tettnang : profil épicé, restent nobles.
+  const fruite = alpha == null && !!info.arome && Math.max(info.arome[1] ?? 0, info.arome[2] ?? 0, info.arome[3] ?? 0) >= 3; // axes Beer Maverick : fruit tropical, fruit à noyau, fruits rouges
+  if (EUROPE.has(o) && (alpha == null || alpha <= 6) && !fruite) return 'nobles';
   if (frais == null) return 'autre';
   if (frais >= FR_MODERNE) return 'modernes';
   if (AMERIQUES.has(o)) return 'classiques';
@@ -115,7 +118,8 @@ const sansAccent = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-
 export function typeMaltParNom(nom: string, ebc: number | null | undefined): TypeMalt | null {
   const n = sansAccent(nom);
   if (/flocon|flak|flocke|\bcru\b|\braw\b|unmalted|non malte|torrefied|rauch|fume|smoke|tourbe|peat|sauer|acidul|\bacid/.test(n)) return 'speciaux';
-  if (/choco|carafa|black|noir|roast|torrefie|patent/.test(n)) return 'torrefies';
+  // ST-T47 : le malt brown (EBC 130 à 200, séché au four chaud, porter) est un malt torréfié, pas un spécial.
+  if (/choco|carafa|black|noir|roast|torrefie|patent|\bbrown\b|\bbrun\b/.test(n)) return 'torrefies';
   if (/\bcara\w*|caramel|crystal|cristal|special b\b/.test(n)) return 'caramel';
   if (/\bpils\w*|\bpale\b|munich|munchner|muenchner|vienna|viennois|wiener|weizen\w*|\bble\b|wheat|\blager\b|maris otter|golden promise|\bbase\b/.test(n)) return 'base';
   if (typeof ebc === 'number' && Number.isFinite(ebc) && ebc >= 0) return ebc <= 30 ? 'base' : ebc >= 500 ? 'torrefies' : null;
@@ -133,8 +137,12 @@ const GROUPES_LEVURE: Array<{ id: ColonneLevure; mot: string; ink: string; fill:
 const STYLE_SAISON = /saison|farmhouse|\bm29\b|\b3724\b|\b3711\b|wlp56[5-9]/;
 const STYLE_SOUR = /\bsour|\bacid|brett|lacto|pedio|philly|\bgose\b|berliner/;
 /** Le style d'une levure rangée en Autres, quand son nom le dit (n° 2 du verdict 2b6a4970) : sa bulle le nomme au lieu de « type non connu ». Rien de reconnu : null. */
-const STYLE_KOLSCH = /kolsch|koelsch|wlp029|2565|k-?97/;
-const STYLE_BELGE = /belgian|belge|abbaye|abbey|trappist|tripel|dubbel|t-?58|be-?256|wlp(?:500|530|550)|(?:1214|3787|1762|3522)/;
+// ST-T6 : un code de souche se lit en MOT entier (ni lettre ni chiffre avant ou après) et sans « lot », « batch », « N° », « # » devant : « F12141 », « lot 1214 », « SK-974 » ne donnent aucun style.
+const DEVANT = String.raw`(?<![a-z0-9])(?<!(?:\blot|\bbatch|\bcharge|\bnr|\bno|\bn°|#)\s?)`;
+const DERRIERE = String.raw`(?![a-z0-9])`;
+// ST-T47 : Wyeast 1007 German Ale (propre, froide, Alt et Kölsch) se lit à « german ale » ou à son code.
+const STYLE_KOLSCH = new RegExp(`kolsch|koelsch|german ale|${DEVANT}(?:wlp029|2565|k-?97|1007)${DERRIERE}`);
+const STYLE_BELGE = new RegExp(`belgian|belge|abbaye|abbey|trappist|tripel|dubbel|${DEVANT}(?:t-?58|be-?256|wlp(?:500|530|550)|1214|3787|1762|3522)${DERRIERE}`);
 export function styleLevureConnu(i: Pick<StockItem, 'name' | 'yeastStrain'>): string | null {
   const n = sansAccent(`${i.name} ${i.yeastStrain ?? ''}`);
   if (STYLE_SAISON.test(n)) return 'Saison';
@@ -155,6 +163,9 @@ export function initialeSouche(nom: string): string {
 }
 
 // ---------- la construction ----------
+/** ST-T33 : la forme écrite de l'article ; à défaut, lue de son nom (un Wyeast ancien, sans forme, n'est pas « sèche »). Rien lu : inconnue, jamais sèche par défaut. */
+const formeDe = (i: StockItem): 'sèche' | 'liquide' | 'levain' | undefined => i.yeastForm ?? formeLevureLue(`${i.name} ${i.yeastStrain ?? ''} ${i.yeastLab ?? ''}`);
+
 export function construireMur(items: StockItem[], src: SourcesMur, equipements: EquipmentItem[] = [], futs: KegItem[] = [], aujourdhui = new Date()): MurDonnees {
   const cat = (i: StockItem) => i.category.toLowerCase();
   const malts = items.filter((i) => /^malt/.test(cat(i)) || estSucre(i));
@@ -246,7 +257,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
       const li = par.get(g.id); if (!li?.length) continue; remplies.push(g.mot);
       const tri = ordreColonne(li, (i) => src.attenuation(i), (i) => i.currentStock);
       const marques = tri.map((i): MarqueMur => {
-        const att = src.attenuation(i); const liquide = i.yeastForm === 'liquide';
+        const att = src.attenuation(i); const forme = formeDe(i); const liquide = forme === 'liquide';
         const n = Number.isFinite(i.currentStock) ? Math.max(0, Math.round(i.currentStock)) : 0;
         const inconnu = !Number.isFinite(i.currentStock);
         const fill = g.id === 'autres' ? couleurLevure(g.fill, att, bornes) : couleurLevure(g.fill, att, bornes);
@@ -254,12 +265,12 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const depassee = !!ddm && !Number.isNaN(Date.parse(ddm)) && Date.parse(ddm) < aujourdhui.getTime();
         const unite = liquide ? (n > 1 ? 'fioles' : 'fiole') : n > 1 ? 'sachets' : 'sachet';
         return {
-          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres',
-          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : 'sèche', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
+          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres', style: g.id === 'autres' ? styleLevureConnu(i) ?? undefined : undefined,
+          titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : forme === 'sèche' ? 'sèche' : 'forme non connue', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
         };
       });
-      const sech = tri.filter((i) => i.yeastForm !== 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
-      const liq = tri.filter((i) => i.yeastForm === 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
+      const sech = tri.filter((i) => formeDe(i) !== 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
+      const liq = tri.filter((i) => formeDe(i) === 'liquide').reduce((s, i) => s + (Number.isFinite(i.currentStock) ? i.currentStock : 0), 0);
       const socle: Record<string, string> = {};
       const atts = tri.map((i) => src.attenuation(i)).filter((x): x is number => x != null);
       for (const i of tri) { const a = src.attenuation(i); if (a != null && atts.length) { const c = couleurSocle(g.ink, a, Math.min(...atts), Math.max(...atts)); if (c) socle[i.name] = c; } }
@@ -274,18 +285,40 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
   return { rayons, autres: cartesAutres(items, equipements, futs) };
 }
 
+/** ST-T4 : le gris dit ce que la bulle dit. Une levure en Autres au style connu (Saison, Sour…) : « style Saison » ; sans style lu : « type non connu » ; les deux cas à la fois : les deux. */
+export function legendeAutres(r: Pick<RayonMur, 'groupes'>): string {
+  const marques = r.groupes.find((g) => g.id === 'autres')?.marques ?? [];
+  const styles = [...new Set(marques.map((a) => a.style).filter((s): s is string => !!s))];
+  const sansStyle = marques.some((a) => !a.style);
+  if (!styles.length) return 'gris : colonne Autres (type non connu)';
+  return `gris : colonne Autres (style ${styles.join(', ')}, sans colonne${sansStyle ? ' ; ou type non connu' : ''})`;
+}
 // ---------- Autres stocks ----------
 const bas = (i: StockItem) => (i.minStock != null && Number.isFinite(i.currentStock) && i.currentStock <= i.minStock) || i.reorder === true;
-export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[]): CarteAutre[] {
+/**
+ * Les cartes d'Autres stocks. Avec `infos` (les états de la liste, `infoLigne`), la carte dit les mêmes mots que les pastilles et les lignes (vd, ST-V6) : « 1 manque » (à commander),
+ * « 1 bas » (pile au seuil), « 1 épuisé », « 1 à compter ». Sans `infos` : l'ancien compte « bas » (au seuil ou en dessous), gardé pour les aperçus.
+ */
+export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[], infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>): CarteAutre[] {
   const autres = items.filter((i) => !/^(malt|houblon|levure)/i.test(i.category) && !estSucre(i)); // le sucre est au rayon Malts
   const groupe = (i: StockItem): 'Additifs' | 'Emballage' | 'Nettoyage' => /emballage/i.test(i.category) ? 'Emballage' : /cip|d[ée]sinfect|d[ée]tergent|sols|epi|nettoy/i.test(i.category) ? 'Nettoyage' : 'Additifs';
   const cartes: CarteAutre[] = [];
   for (const nom of ['Additifs', 'Emballage', 'Nettoyage'] as const) {
     const li = autres.filter((i) => groupe(i) === nom); if (!li.length) continue;
-    const nBas = li.filter(bas).length; const nCompter = li.filter((i) => !Number.isFinite(i.currentStock)).length;
     const lignes: CarteAutre['lignes'] = [];
-    if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
-    if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    if (infos) {
+      const a = (i: StockItem, e: string) => !!infos.get(i.ref)?.etats.includes(e);
+      const nManque = li.filter((i) => a(i, 'manque')).length; const nBas = li.filter((i) => a(i, 'bas')).length;
+      const nEpuise = li.filter((i) => a(i, 'epuise') && !a(i, 'manque')).length; const nCompter = li.filter((i) => a(i, 'compter')).length;
+      if (nManque) lignes.push({ n: nManque, texte: 'manque', alerte: true });
+      if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
+      if (nEpuise) lignes.push({ n: nEpuise, texte: nEpuise > 1 ? 'épuisés' : 'épuisé', alerte: true });
+      if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    } else {
+      const nBas = li.filter(bas).length; const nCompter = li.filter((i) => !Number.isFinite(i.currentStock)).length;
+      if (nBas) lignes.push({ n: nBas, texte: 'bas', alerte: false });
+      if (nCompter) lignes.push({ n: nCompter, texte: 'à compter' });
+    }
     cartes.push({ id: nom, nom, total: li.length, lignes });
   }
   if (futs.length) { const p = futs.filter((f) => f.state === 'plein').length; cartes.push({ id: 'Fûts', nom: 'Fûts', total: futs.length, lignes: p ? [{ n: p, texte: p > 1 ? 'pleins' : 'plein' }] : [] }); }

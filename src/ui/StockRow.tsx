@@ -1,7 +1,9 @@
 import React, { useId } from 'react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
-import { computeStockLevel, pendingStockSummary, type RecipeStockComparison } from '../domain/stockLevel';
+import { computeStockLevel, pendingStockSummary, type ArticleACommander, type RecipeStockComparison } from '../domain/stockLevel';
+import { infoLigne, type InfoLigne } from '../domain/stock/liste';
+import { LigneStock } from './stock/LigneStock';
 import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
 import { libelleSource } from '../domain/stock/disponibilite';
 import { todayISO } from '../domain/finance/ledger';
@@ -18,6 +20,12 @@ interface StockRowProps {
   /** Ancien appel conservé pour les aperçus ; toute correction passe par la fiche. */
   onQuickAdjust?: (item: StockItem, delta: number) => void;
   onToggleFavorite: (item: StockItem) => void;
+  /** États de la ligne (manque, bas, épuisé, à compter, DDM) calculés une fois par la liste ; absent = calculé ici sans les besoins. */
+  info?: InfoLigne;
+  /** L'article tel que « À commander » le compte (manque connu ou plancher). */
+  cmd?: ArticleACommander;
+  /** Le dernier mouvement de l'article, dit (colonne du tableau à partir de 900 px). */
+  mouvementDit?: string;
 }
 
 const quantity = (value: number | null, unit: string | null) =>
@@ -62,7 +70,7 @@ function RecipeComparison({ comparison }: { comparison: RecipeStockComparison })
 }
 
 /** Nom et quantité, puis niveau : même lecture compacte au téléphone et au bureau. */
-export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, onOpen, onToggleFavorite, comparison }) => {
+export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, onOpen, onToggleFavorite, comparison, info, cmd, mouvementDit }) => {
   const descriptionId = useId();
   const durabilite = libelleDurabilite(item.yeastLot?.expiresOn, todayISO());
   const level = computeStockLevel(item, batches, stockItems);
@@ -73,6 +81,15 @@ export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, o
   const comparisonDescription = comparison
     ? `Besoin prévu ${quantity(comparison.quantity, comparison.unit)} · prévu ailleurs ${quantity(comparison.elsewhere, comparison.unit)} · manque ${quantity(comparison.shortage, comparison.unit)}`
     : '';
+  const aujourdhui = todayISO();
+  // Hors « Comparer une recette » : la ligne de la maquette choisie sy/fA (barres g6, teintes c3b) ; la comparaison garde sa carte.
+  if (!comparison) {
+    const ligne = info ?? infoLigne(item, cmd ? new Map([[item.ref, cmd]]) : new Map(), aujourdhui);
+    return <LigneStock item={item} info={ligne} cmd={cmd} level={level} niveauDit={stockLevelLabel(level)} aujourdhui={aujourdhui}
+      description={`${Units.format(item.currentStock, item.unit)} · ${stockLevelLabel(level)}${pendingDescription ? ` · ${pendingDescription}` : ''}`}
+      reserve={pendingDescription ? { texte: pendingDescription, connue: pending.known } : undefined}
+      durabilite={durabilite} mouvementDit={mouvementDit} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />;
+  }
   return (
     <article className="flex items-start rounded-control border border-cave-800 bg-cave-900">
       <div className="min-w-0 flex-1">

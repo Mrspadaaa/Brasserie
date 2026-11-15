@@ -286,11 +286,51 @@ export const App: React.FC = () => {
   const currentRoute = useRef(route.route);
   currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Onglet de Réglages demandé par l'événement (« brasserie » : Nouveau brassin › contenance) ; absent : l'onglet courant.
+  const [settingsOuvertSur, setSettingsOuvertSur] = useState<'brewhouse' | undefined>();
   // « Régler dans Réglages › » de la feuille Impôt bière (p2b) : l'événement annulable ouvre Réglages ; la feuille se ferme dès qu'il est pris.
   useEffect(() => {
-    const ouvrir = (event: Event) => { setIsSettingsOpen(true); event.preventDefault(); };
+    const ouvrir = (event: Event) => {
+      setSettingsOuvertSur((event as CustomEvent<{ section?: string } | undefined>).detail?.section === 'brasserie' ? 'brewhouse' : undefined);
+      setIsSettingsOpen(true);
+      event.preventDefault();
+    };
     window.addEventListener('affinee:ouvrir-reglages', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
+  }, []);
+  // « Ce qui manque pour N L » (Nouveau brassin) : l'événement annulable ouvre Stocks sur le sous-onglet Courses.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      StorageService.setUiState('stocks_subtab', 'courses');
+      setActiveTab('stocks');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-stocks', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-stocks', ouvrir);
+  }, []);
+  // « Mes clients › » (Atelier, Contacts) et « Agenda du Bord › » (Atelier, À faire) : l'événement annulable ouvre l'onglet visé.
+  useEffect(() => {
+    const versClients = (event: Event) => { setActiveTab('clients'); event.preventDefault(); };
+    const versBord = (event: Event) => { setActiveTab('dashboard'); event.preventDefault(); };
+    window.addEventListener('affinee:ouvrir-clients', versClients);
+    window.addEventListener('affinee:ouvrir-bord', versBord);
+    return () => {
+      window.removeEventListener('affinee:ouvrir-clients', versClients);
+      window.removeEventListener('affinee:ouvrir-bord', versBord);
+    };
+  }, []);
+  // « Modifier la recette › » (Nouveau brassin, recette à adapter au matériel) : l'événement annulable ouvre l'assistant sur cette recette.
+  const recipesRef = useRef<Recipe[]>([]);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const id = (event as CustomEvent<{ recipeId?: string } | undefined>).detail?.recipeId;
+      const recipe = recipesRef.current.find((r) => r.id === id);
+      if (!recipe) return;
+      openWizardRef.current?.({ recipe });
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:modifier-recette', ouvrir);
+    return () => window.removeEventListener('affinee:modifier-recette', ouvrir);
   }, []);
   // CP-13 : « Datés et budgétés, ils entrent dans Finances › Prévisions » (Brassins › Atelier › Matériel) : l'événement annulable ouvre l'onglet Finances sur le sous-onglet demandé.
   const [financeTabRequest, setFinanceTabRequest] = useState<{ onglet: string; at: number } | null>(null);
@@ -324,6 +364,7 @@ export const App: React.FC = () => {
   });
   const [batches, setBatches] = useState<Batch[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const openWizardRef = useRef<((seed?: WizardSeed, duplicateOf?: string) => void) | undefined>(undefined);
   const [clients, setClients] = useState<Client[]>([]);
   const [planning, setPlanning] = useState<GanttTask[]>([]);
   const [budgetLines, setBudgetLines] = useState<BudgetLine[]>([]);
@@ -489,6 +530,8 @@ export const App: React.FC = () => {
     route.open({ view: 'wizard', recipeId: duplicateOf ?? seed?.recipe?.id,
       duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
   };
+  openWizardRef.current = openWizard;
+  recipesRef.current = recipes;
 
   /*
    * Banc local de l'étape Houblons (T12b, #170 ; contrôles de ses choix sur l'app, T14) : `?dev-local&etape=houblons`
@@ -960,6 +1003,7 @@ export const App: React.FC = () => {
       <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
       <Header
         compactLayout
+        large={activeTab === 'stocks'}
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -976,7 +1020,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap="nav" className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px]' : ''} w-full mx-auto px-2 xs:px-3`}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -1052,6 +1096,7 @@ export const App: React.FC = () => {
           <StocksTab
             stocks={stocks}
             batches={batches}
+            clients={clients}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
             onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}
@@ -1131,7 +1176,8 @@ export const App: React.FC = () => {
       {/* Settings Modal */}
       <DeferredSurface active={isSettingsOpen} fallback={<Sheet open={isSettingsOpen} title="Chargement…" onClose={() => setIsSettingsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><SettingsModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={() => { setIsSettingsOpen(false); setSettingsOuvertSur(undefined); }}
+        ouvertSur={settingsOuvertSur}
         config={config}
         onConfigUpdated={(newCfg) => setConfig(newCfg)}
         onOpenAuditLogs={() => setIsAuditLogsOpen(true)}

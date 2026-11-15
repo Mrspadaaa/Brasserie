@@ -16,6 +16,7 @@ import { articleDeMemeNom, libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
 import { groupeDe } from './groupes';
 import { tvaImprimee } from './tva';
+import { auPoidsLu } from './poidsPiece';
 import { categorieDeLaPiece, depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
 import type { StockItem } from '../../types';
 
@@ -120,8 +121,12 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
   /* D277 : l'unité absente se déduit avant le rapprochement ; l'imprimé reste vide (D213). */
   const deduites = avecUnitesDeduites({ lines: lues, vendor: result.vendor ?? '', amount: total.amount, category: categorie }, stockItems as StockItem[]).lines;
   const horsBrassage = depenseHorsBrassage(categorie);
-  const lines = deduites.map(line => {
+  const lines = deduites.map(ligneLue => {
+    /* ST-T1 : un paquet pesé vendu à la pièce se compte en g d'office (le poids lu dans son nom) : il se rattache à l'article en kg au lieu d'un doublon. */
+    const line = horsBrassage ? ligneLue : auPoidsLu(ligneLue, uniteEffective(ligneLue), existantsLus, result.vendor ?? undefined);
     const unit = uniteEffective(line);
+    /* ST-T34 : une ligne « Matériel de brassage » (cuve, siphon, tuyaux) propose sa fiche dans Stocks › Matériel : « Créer la fiche de ce matériel » est présélectionné, le brasseur le change d'un geste (jamais un ingrédient). La rénovation (peinture, chevilles) n'en reçoit pas. */
+    if (line.kind === 'equipment' && line.equipmentAction === 'none' && familleDeLigne({ ...line, unit }) === 'materiel') return { ...line, stockAction: 'none' as const, equipmentAction: 'new' as const };
     /* s1 (VERDICT-EN-LIGNE-2) : une dépense hors brassage ne crée ni ne relie aucun article, quelle que soit la famille lue pour la ligne ; le brasseur peut toujours « Suivre au stock » à la main. */
     if (horsBrassage) return { ...line, stockAction: 'none' as const };
     /* D306 : une ligne de Rénovation (lue emballage, nettoyage…) ne se relie à rien ; D328c : un ingrédient qui est resté tel (article déjà au stock) suit le rapprochement. */

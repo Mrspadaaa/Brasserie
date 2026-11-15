@@ -66,6 +66,8 @@ export interface AiRequest {
   morceau?: { k: number; n: number };
   /** D381 : ce `file` est la bande de contrôle de la coupe entre les morceaux k et k + 1 d'une pièce en n morceaux (lue à part, seulement comparée). */
   jonction?: { k: number; n: number };
+  /** « Un doute ? Relire plus finement » : la seule valeur admise est `'argon'`. C'est un mot, jamais un nom de modèle : le serveur choisit le modèle et ignore toute autre valeur. */
+  relecture?: 'argon';
 }
 
 export interface AiResponse<T = any> {
@@ -149,6 +151,7 @@ async function chargeDe(req: AiRequest): Promise<Record<string, unknown>> {
   }
   if (req.morceau) payload.morceau = req.morceau;
   if (req.jonction) payload.jonction = req.jonction;
+  if (req.relecture === 'argon') payload.relecture = 'argon';
   return payload;
 }
 

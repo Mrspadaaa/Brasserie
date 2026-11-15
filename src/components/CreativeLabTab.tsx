@@ -20,7 +20,6 @@ import {
   Layers, 
   UserCheck 
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { CreativeItem, Recipe, Client } from '../types';
 import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
@@ -32,6 +31,8 @@ import { inputClass } from '../ui/FormNav';
 import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
 import { ViewNavigation } from '../ui/ViewNavigation';
 import { useMobileLayout } from '../ui/useViewport';
+import { ContactsView, type NouveauContact } from '../ui/atelier/ContactsView';
+import { TodoTimeline } from '../ui/atelier/TodoTimeline';
 
 export interface CreativeLabSectionRequest {
   section: CreativeItem['type'];
@@ -118,6 +119,21 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     setIsAdding(false);
   };
 
+  /** Contacts (kc1) : lieu = titre, personne, numéro, note ; un numéro absent reste absent. */
+  const createContact = (c: NouveauContact) => {
+    StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'prospect', title: c.lieu.trim(), status: 'idea', contactName: c.personne.trim() || undefined, contactPhone: c.numero.trim() || undefined, notes: c.note.trim() || undefined });
+    setIsAdding(false);
+  };
+  /** Contacts (kc1) : « Ajouter le numéro » et « Modifier » passent par la feuille de la maquette, mêmes champs que l'ajout. */
+  const updateContact = (item: CreativeItem, c: NouveauContact) => {
+    StorageService.updateCreativeItem({ ...item, title: c.lieu.trim(), contactName: c.personne.trim() || undefined, contactPhone: c.numero.trim() || undefined, notes: c.note.trim() || undefined });
+  };
+  /** À faire (kd4) : une tâche posée sur le fil ; date `JJ.MM.AAAA`, ou aucune (« sans date »). */
+  const createTask = (titre: string, date: string) => {
+    StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'event', title: titre, status: 'todo', date: date || undefined });
+    setIsAdding(false);
+  };
+
   const handleToggleStatus = (item: CreativeItem) => {
     let nextStatus: CreativeItem['status'] = 'idea';
     if (item.type === 'event') {
@@ -166,11 +182,12 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
   const convertingIds = React.useRef(new Set<string>());
-  const handleConvertToClient = (item: CreativeItem) => {
+  /** `true` : une fiche Clients vient d'être créée (le message, sans confettis, est dit par la vue Contacts). */
+  const handleConvertToClient = (item: CreativeItem): boolean => {
     /* BE-22 : un double toucher créait deux fiches. Le verrou est synchrone (le rendu n'a pas le temps de masquer le bouton) ; un contact déjà converti ne se convertit pas deux fois. */
-    if (convertingIds.current.has(item.id)) return;
+    if (convertingIds.current.has(item.id)) return false;
     const dejaConverti = StorageService.getCreativeItems().find(i => i.id === item.id)?.status === 'validated';
-    if (dejaConverti) { onSuccessMessage?.(`« ${item.title} » est déjà un client : rien n’a été recréé.`); return; }
+    if (dejaConverti) return false;
     convertingIds.current.add(item.id);
     const newClientId = nextClientId(StorageService.getClients().map(c => c.id));
     const newClient: Client = {
@@ -184,7 +201,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       phone: item.contactPhone || '',
       email: '',
       // Statut et CA sont dérivés des ventes réelles : rien à initialiser ici.
-      notes: item.description
+      notes: item.notes || item.description
     };
 
     const currentClients = StorageService.getClients();
@@ -193,13 +210,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     // Update creative item status to validated
     StorageService.updateCreativeItem({ ...item, status: 'validated' });
 
-    try {
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#3B82F6', '#10B981'] });
-    } catch {}
-
-    if (onSuccessMessage) {
-      onSuccessMessage(`Prospect "${item.title}" converti en client (${newClientId}) ! 👥`);
-    }
+    // Pas de confettis ni de toast global : la vue Contacts dit « … est dans Clients » au bas de l'écran (maquette kc1).
+    return true;
   };
 
   return (
@@ -273,129 +285,13 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
       {activeSection==='pricing-test'&&<><p className="finance-muted">Pour fixer un prix : Clients › Prix (le coût y vient du brassin). Ici, tes idées de tarif.</p><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
 
-      {/* 6. SECTION 4: PROSPECTS & PASSERELLE CRM EN 1 CLIC */}
-      {activeSection === 'prospect' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Noter un contact / bistrot intéressé</span>
-          </button>
-
-          <div className="space-y-2.5">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 shadow-sm hover:border-cave-700 transition"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-50 flex items-center">
-                      <span className="text-base mr-1.5">🍽️</span>
-                      {item.title}
-                    </h4>
-                    {item.contactName && (
-                      <div className="text-sm text-cave-200 font-semibold mt-0.5">
-                        Contact : {item.contactName} · {item.contactPhone || 'Sans tél'}
-                      </div>
-                    )}
-                    {item.notes && (
-                      <p className="text-sm text-cave-400 mt-1 leading-relaxed bg-cave-950/60 p-2 rounded-xl border border-cave-800">
-                        {item.notes}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-400 hover:text-alert p-1"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* PASSERELLE MAGIQUE CRM EN 1 CLIC */}
-                <div className="pt-2 border-t border-cave-800/80 flex items-center justify-between">
-                  {item.contactPhone && (
-                    <a
-                      href={`tel:${item.contactPhone}`}
-                      className="text-sm text-cave-200 hover:text-hop font-bold flex items-center"
-                    >
-                      <Phone className="w-3 h-3 mr-1 text-hop" /> Appeler
-                    </a>
-                  )}
-                  <button
-                    onClick={() => handleConvertToClient(item)}
-                    className="px-3.5 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 ml-auto"
-                  >
-                    <UserCheck className="w-3.5 h-3.5 mr-1" />
-                    <span>Convertir en client</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 7. SECTION 5: EVENTS & TO-DO */}
-      {activeSection === 'event' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Ajouter un événement / marché artisanal</span>
-          </button>
-
-          <div className="space-y-2">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-3.5 bg-cave-900 border border-cave-800 rounded-2xl flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => handleToggleStatus(item)}
-                    className="text-cave-400 hover:text-hop"
-                  >
-                    {item.status === 'done' ? (
-                      <CheckCircle2 className="w-5 h-5 text-hop" />
-                    ) : (
-                      <Circle className="w-5 h-5" />
-                    )}
-                  </button>
-                  <div>
-                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-400' : 'text-cave-50'}`}>
-                      {item.title}
-                    </h4>
-                    {item.date && (
-                      <span className="text-footnote text-cave-400 flex items-center mt-0.5">
-                        <Calendar className="w-3 h-3 mr-1 text-ebc-straw" /> {item.date}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                  className="text-cave-400 hover:text-alert p-1"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {activeSection === 'prospect' && <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />}
+      {activeSection === 'event' && <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} />}
 
       {/* Form modal when adding an item */}
       <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>
       {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
-      {isAdding && (
+      {isAdding && activeSection !== 'prospect' && activeSection !== 'event' && (
         <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
           <div className="flex justify-between items-center px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
             <h4 className="font-bold text-base text-cave-50">Nouvelle note / piste</h4>
@@ -467,47 +363,6 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                     placeholder="ex: 1200"
                     value={newCost}
                     onChange={(e) => setNewCost(e.target.value)}
-                    className={`${inputClass} font-mono`}
-                  />
-                </div>
-              )}
-              {activeSection === 'event' && (
-                <div>
-                  <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Date (JJ.MM.AAAA)</label>
-                  <Input
-                    type="text"
-                    name="creative_item_date"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    placeholder="ex: 15.06.2026"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className={`${inputClass} font-mono`}
-                  />
-                </div>
-              )}
-              {activeSection === 'prospect' && (
-                <div>
-                  <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Téléphone du contact</label>
-                  <Input
-                    type="text"
-                    name="creative_contact_tel"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    inputMode="tel"
-                    placeholder="026 408 33 33"
-                    value={newContact}
-                    onChange={(e) => setNewContact(e.target.value)}
                     className={`${inputClass} font-mono`}
                   />
                 </div>
