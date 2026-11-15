@@ -24,8 +24,8 @@ export interface AcideProfilInput {
 }
 
 export function noteAcideProfil(input: AcideProfilInput): string | null {
-  const { ra, raBand, placeAcide, acidAmount, manual, phSansAcide, profil } = input;
-  if (manual || !(acidAmount > 0) || placeAcide === "juste") return null;
+  const { ra, raBand, acidAmount, manual, phSansAcide, profil } = input;
+  if (manual || !(acidAmount > 0)) return null;
   if (!profil.name || profil.code === "—") return null;
   if (!Number.isFinite(ra) || ra < raBand.min || ra > raBand.max) return null;
   if (phSansAcide?.known && phSansAcide.position === 0) {

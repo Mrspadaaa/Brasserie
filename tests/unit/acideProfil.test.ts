@@ -26,7 +26,7 @@ describe('RL-5 : note du dosage d’acide imposé par le profil de style', () =>
     expect(noteAcideProfil({ ...base, acidAmount: 0 })).toBeNull();
     expect(noteAcideProfil({ ...base, ra: 30 })).toBeNull();
     expect(noteAcideProfil({ ...base, ra: -60 })).toBeNull();
-    expect(noteAcideProfil({ ...base, placeAcide: 'juste' })).toBeNull();
+    expect(noteAcideProfil({ ...base, placeAcide: 'juste' })).toMatch(/acide dosé pour le profil/);
     expect(noteAcideProfil({ ...base, profil: { code: '—', name: '—' } })).toBeNull();
   });
 });
