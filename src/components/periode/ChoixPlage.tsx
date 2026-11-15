@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import type { Transaction } from '../../types';
 import { Frise } from '../../ui/finance/operations/Frise';
@@ -48,16 +48,23 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
 
   /* Deux jours « jj.mm » (l'année est celle de la frise), appliqués dès que les deux se lisent. */
   const [du, setDu] = useState(''), [au, setAu] = useState('');
+  /* Pendant la frappe, le champ n'est pas réécrit par la période qu'il vient de poser (« 12.1 » lu « 12.01 » effaçait le « 0 » qui suit). */
+  const enSaisie = useRef(false);
   useEffect(() => {
+    if (enSaisie.current) return;
     if (p.genre === 'dates' || p.genre === 'trimestre' || p.genre === 'annee') { setDu(jj(debut as string)); setAu(jj(fin as string)); } else { setDu(''); setAu(''); }
   }, [debut, fin, p.genre]);
   const jourDu = du ? jourSaisi(du, annee) : null, jourAu = au ? jourSaisi(au, annee) : null;
   const inverse = !!jourDu && !!jourAu && jourDu > jourAu;
   const invalide = (du !== '' && !jourDu) || (au !== '' && !jourAu) || inverse;
-  const appliquer = (a: string, b: string) => {
+  /* Un jour se pose dès que son mois a deux chiffres (« 12.10 ») ; « 12.1 » attend de quitter le champ. */
+  const complet = (t: string) => /^\s*\d{1,2}[./\-\s]\d{2}([./\-\s]\d{4})?\s*$/.test(t);
+  const appliquer = (a: string, b: string, force = false) => {
+    if (!force && !(complet(a) && complet(b))) return;
     const x = jourSaisi(a, annee), y = jourSaisi(b, annee);
     if (x && y && x <= y) onChoisir(depuisJours(x, y));
   };
+  const evSaisie = { onFocus: (e: React.FocusEvent<HTMLInputElement>) => { enSaisie.current = true; e.target.select(); }, onBlur: () => { enSaisie.current = false; appliquer(du, au, true); } };
 
   return (
     <div className="ops pr pr-g pr-plage">
@@ -70,10 +77,10 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
         onPlage={(a, b) => onChoisir(depuisJours(a, b))} onMois={() => onChoisir({ genre: 'mois', annee, mois: Number(mois.slice(5, 7)) })} />
       <div className="pr-lib">
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Du … au</span>
-        <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined}
+        <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}
           onChange={e => { setDu(e.target.value); appliquer(e.target.value, au); }} />
         <ArrowRight size={16} aria-hidden="true" />
-        <input aria-label="Au (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={au} aria-invalid={invalide && !jourAu && au !== '' ? true : undefined}
+        <input aria-label="Au (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={au} aria-invalid={invalide && !jourAu && au !== '' ? true : undefined} {...evSaisie}
           onChange={e => { setAu(e.target.value); appliquer(du, e.target.value); }} />
       </div>
       {inverse && <p className="pr-err" role="alert">La fin vient avant le début.</p>}

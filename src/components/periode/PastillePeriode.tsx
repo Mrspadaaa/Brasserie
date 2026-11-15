@@ -3,8 +3,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Sheet } from '../../ui/Sheet';
 import type { Transaction } from '../../types';
 import { ChoixPlage } from './ChoixPlage';
-import { avance, enPeriode, etiquetteCourte, pas, titre, type Periode, type PeriodeEntree } from './periode';
+import { avance, bornes, enPeriode, etiquetteCourte, pas, titre, type Periode, type PeriodeEntree } from './periode';
 import './periode.css';
+
+/** « 12.10 » : le jour et le mois, comme dans les champs de la plage. */
+const jj = (iso: string | null) => (iso ? `${iso.slice(8)}.${iso.slice(5, 7)}` : '');
 
 interface Props {
   periode: PeriodeEntree;
@@ -30,7 +33,7 @@ export const PastillePeriode: React.FC<Props> = ({ periode, onChoisir, transacti
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
         <button type="button" className="pr-ce" aria-haspopup="dialog" aria-label={`Période : ${titre(p)}. Choisir la plage`} onClick={() => setOuverte(true)}>
-          {etiquetteCourte(p)}
+          {p.genre === 'dates' ? <><span className="pr-long">{etiquetteCourte(p)}</span><span className="pr-court">{jj(bornes(p).du)}–{jj(bornes(p).au)}</span></> : etiquetteCourte(p)}
         </button>
         <button type="button" className="pr-fl" disabled={!ok} aria-label="Période suivante" onClick={() => choisir(pas(p, 1))}>
           <ChevronRight size={18} aria-hidden="true" />

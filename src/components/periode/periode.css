@@ -10,11 +10,17 @@
 .pr-pill>button:disabled{opacity:.35}
 .pr-pill>button.pr-fl{width:44px}
 .pr-pill>button.pr-ce{min-width:52px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-ce .pr-court{display:none}
+/* Sous 430 px, une plage se dit en « 12.10–03.11 » : la pastille longue chassait le duo d'avatars sur une seconde ligne. */
+@media (max-width:429px){.pr-ce .pr-long{display:none}.pr-ce .pr-court{display:inline}.pr-pill>button.pr-ce:has(.pr-court){padding:0 4px;font-size:13px}}
 .pr-pill>button:active{background:var(--s)}
 .pr-pill:focus-within{outline:2px solid var(--act);outline-offset:1px}
 
 /* Grille */
 .pr-g{display:grid;gap:8px}
+/* `.ops` devient, dès 900 px, la grille à deux colonnes de l'écran Opérations (liste | frise) : ici une seule colonne, la frise d'Opérations à sa hauteur de téléphone. */
+.ops.pr-plage{grid-template-columns:minmax(0,1fr);gap:8px;--ops-haut:96px}
+.ops.pr-plage>*{grid-column:1}
 .pr-gt{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .pr-gt>span{font-size:12px;font-weight:600;color:var(--t2)}
 .pr-gt>b{font-size:15px;color:var(--t0);font-weight:700}

@@ -113,8 +113,8 @@ export const Header: React.FC<HeaderProps> = ({
           data-plus-duo
           className={`relative shrink-0 h-9 w-[52px] rounded-[14px] ${plusOpen ? 'ring-2 ring-ebc-straw' : ''}`}
         >
-          <span aria-hidden="true" className="absolute right-2 top-[6px] h-6 w-6 rounded-full bg-cave-800 text-cave-50 grid place-items-center text-xs font-bold ring-2 ring-cave-950">{autre === 'Gaëtan' ? 'G' : 'A'}</span>
-          <span aria-hidden="true" className="absolute left-1.5 top-[6px] h-6 w-6 rounded-full bg-cave-50 text-cave-950 grid place-items-center text-xs font-bold ring-2 ring-cave-950">{courant === 'Gaëtan' ? 'G' : 'A'}</span>
+          <span aria-hidden="true" className="absolute right-1 top-[6px] h-6 w-6 rounded-full bg-cave-800 text-cave-50 grid place-items-center text-xs font-bold ring-2 ring-cave-950">{autre === 'Gaëtan' ? 'G' : 'A'}</span>
+          <span aria-hidden="true" className="absolute left-1 top-[6px] h-6 w-6 rounded-full bg-cave-50 text-cave-950 grid place-items-center text-xs font-bold ring-2 ring-cave-950">{courant === 'Gaëtan' ? 'G' : 'A'}</span>
           {pendingTodosCount > 0 && <span aria-hidden="true" className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-ebc-straw" />}
         </button>
       </div>
