@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Sparkles, UserPlus, Users, Utensils } from 'lucide-react';
+import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Sparkles, UserCheck, UserPlus, Users, Utensils } from 'lucide-react';
 import type { CreativeItem, PricingItem } from '../../types';
 import {
   chf, dateDeNote, jourComplet, jourMois, JOURS, lireSuisse, nbCochees, prixDevine, type ItemCarnet, type Proposition
@@ -133,17 +133,22 @@ interface FicheProps {
   items: readonly ItemCarnet[];
   contact?: CreativeItem;
   reste: Array<'Bière' | 'Date' | 'Prix'>;
+  /** Le nombre de cases cochées au toucher « Ranger » (Convertir en client compris). */
+  nb: number;
+  /** `true` : une fiche Clients vient d'être créée par ce geste. */
+  converti: boolean;
   onAnnuler: () => void;
   onOuvrir: (vue: 'afaire' | 'contacts' | 'bieres') => void;
   onPoser: (item: CreativeItem) => void;
 }
 
 /** Fiche : « Rangée · n choses · Annuler », la note datée, ses fenêtres À faire (perle neuve, puis la suivante) et Contacts, « Reste à poser ». */
-export const FicheRangee: React.FC<FicheProps> = ({ note, creees, items, contact, reste, onAnnuler, onOuvrir, onPoser }) => {
+export const FicheRangee: React.FC<FicheProps> = ({ note, creees, items, contact, reste, nb, converti, onAnnuler, onOuvrir, onPoser }) => {
   const taches = creees.filter((c) => c.type === 'event');
   const idees = creees.filter((c) => c.type === 'recipe-idea');
   const saisie = dateDeNote(note.id);
-  const nbChoses = creees.length + (contact && !creees.some((c) => c.id === contact.id) ? 1 : 0);
+  const client = contact && (converti || contact.status === 'validated') ? contact : undefined;
+  const versClients = () => { window.dispatchEvent(new CustomEvent('affinee:ouvrir-clients', { cancelable: true })); };
   const premiere = taches[0] ? lireSuisse(taches[0].date) : null;
   const suivante = premiere ? items
     .filter((i) => i.type === 'event' && i.status !== 'done' && !creees.some((c) => c.id === i.id))
@@ -155,7 +160,7 @@ export const FicheRangee: React.FC<FicheProps> = ({ note, creees, items, contact
   const ligneDate = (d: Date | null) => <span className="nc-dd">{d ? <>{jourMois(d)}<small>{JOURS[d.getDay()]}</small></> : <small>sans date</small>}</span>;
 
   return <>
-    <div className="nc-ok" role="status"><Check size={18} aria-hidden="true" />Rangée · {choses(nbChoses)}<button type="button" onClick={onAnnuler}>Annuler</button></div>
+    <div className="nc-ok" role="status"><Check size={18} aria-hidden="true" />Rangée · {choses(nb)}<button type="button" onClick={onAnnuler}>Annuler</button></div>
     <div className="nc-note">
       <div className="nc-ph nc-src"><small>ta note{saisie ? ` du ${jourComplet(saisie)}` : ''}</small></div>
       <div className="nc-sw">
@@ -171,9 +176,13 @@ export const FicheRangee: React.FC<FicheProps> = ({ note, creees, items, contact
         {contact && <div className="nc-br" style={{ ['--c' as string]: 'var(--a-hop)' }}><div className="nc-win" style={{ ['--c' as string]: 'var(--a-hop)' }}>
           <div className="nc-wh"><Users size={16} aria-hidden="true" />Contacts<button type="button" onClick={() => onOuvrir('contacts')}>Ouvrir<ChevronRight size={14} aria-hidden="true" /></button></div>
           <div className="nc-wb"><span className="nc-av"><Utensils size={18} aria-hidden="true" /></span><div style={{ flex: 1 }}>
-            <b style={{ fontSize: 16 }}>{contact.title}</b>
+            <b style={{ fontSize: 16 }}>{contact.title}{contact.status === 'validated' && <span className="ct-pill ct-ink nc-cl">client</span>}</b>
             {aFaire.length > 0 && <><br /><span className="nc-tc nc-num">{aFaire.length} à faire{avant ? ` · avant ${jourMois(avant)}` : ''}</span></>}
           </div>{contact.contactPhone?.trim() && <a className="nc-call" href={telHref(contact.contactPhone)} aria-label={`Appeler ${contact.contactName || contact.title}`}><Phone size={18} aria-hidden="true" /></a>}</div>
+        </div></div>}
+        {client && converti && <div className="nc-br" style={{ ['--c' as string]: 'var(--a-hop)' }}><div className="nc-win" style={{ ['--c' as string]: 'var(--a-hop)' }}>
+          <div className="nc-wh"><UserCheck size={16} aria-hidden="true" />Clients<button type="button" onClick={versClients}>Ouvrir<ChevronRight size={14} aria-hidden="true" /></button></div>
+          <div className="nc-wb"><span className="nc-av"><UserCheck size={18} aria-hidden="true" /></span><div style={{ flex: 1 }}><b style={{ fontSize: 16 }}>{client.title}</b><br /><span className="nc-tc nc-num">Fiche créée dans Clients</span></div></div>
         </div></div>}
         {idees.length > 0 && <div className="nc-br" style={{ ['--c' as string]: 'var(--a-prod)' }}><div className="nc-win" style={{ ['--c' as string]: 'var(--a-prod)' }}>
           <div className="nc-wh"><Beer size={16} aria-hidden="true" />Bières<button type="button" onClick={() => onOuvrir('bieres')}>Ouvrir<ChevronRight size={14} aria-hidden="true" /></button></div>

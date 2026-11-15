@@ -257,4 +257,13 @@
 .nc-send { width: 44px; height: 44px; border-radius: 999px !important; background: var(--a-act) !important; color: var(--a-onact) !important; display: grid !important; place-items: center; flex: none; }
 .nc-send:disabled { opacity: .5; }
 .nc-x { width: 44px; height: 44px; display: grid !important; place-items: center; color: var(--a-mut); flex: none; }
-@media (min-width: 1024px) { .nc { max-width: 720px; } }
+/* « Réfléchir à mes projets » : la carte arrondie de ks4 (44 px, 16 px de rayon), pas la ligne nue de l'app */
+.nc .finance-assistant { min-height: 44px; margin: 0 0 8px; padding: 0 12px; gap: 10px; border: 1px solid var(--a-line); border-radius: 16px; background: var(--a-s1); color: var(--a-ink); }
+.nc .finance-assistant > span { align-items: center; flex-wrap: nowrap; }
+.nc .finance-assistant strong { font-size: 14px; }
+.nc-pied { padding: 12px 0 8px; }
+/* message de la note : dans sa carte (brute) ou au-dessus de la proposition, jamais sous le compositeur */
+.nc-msg { display: block; margin-top: 4px; font-size: 13px; font-weight: 600; color: var(--a-mut); scroll-margin-bottom: calc(var(--nc-dock, 0px) + 88px); }
+p.nc-msg { margin: 0 0 2px 4px; }
+.nc-ancre { scroll-margin-bottom: calc(var(--nc-dock, 0px) + 88px); }
+.nc-cl { margin-left: 8px; vertical-align: middle; }

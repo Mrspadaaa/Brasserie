@@ -178,7 +178,16 @@ export function proposer(effets: readonly Effet[], ctx: Contexte): Proposition[]
   return out;
 }
 
+/** Le nombre de choses rangées : chaque case cochée compte, Convertir en client comprise. */
 export const nbCochees = (props: readonly Proposition[]) => props.filter((p) => p.coche).length;
+
+/**
+ * Annuler défait les écritures ; la proposition revient telle que le brasseur l'avait laissée (date corrigée, bière, cases).
+ * Une fiche Clients ne se retire pas d'ici : si elle a été créée, la case « Convertir en client » ne revient pas (elle ne
+ * créerait rien de plus : jamais deux fiches).
+ */
+export const apresAnnuler = (props: readonly Proposition[], converti: boolean): Proposition[] =>
+  props.filter((p) => !(converti && p.sorte === 'client')).map((p) => ({ ...p }));
 
 /** Le contact visé par les cases cochées (lié ou noté), ou rien. */
 export function contactVise(props: readonly Proposition[]): { lieu: string; contactId?: string } | undefined {

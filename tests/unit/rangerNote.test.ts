@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CreativeItem, PricingItem } from '../../src/types';
-import { contexteModele, ecrire, envoi, lireReponse, nbCochees, prixDevine, proposer, statutEnvoi, type ItemCarnet } from '../../src/domain/rangerNote';
+import { apresAnnuler, contexteModele, ecrire, envoi, lireReponse, nbCochees, prixDevine, proposer, statutEnvoi, type ItemCarnet } from '../../src/domain/rangerNote';
 import { modeDe } from '../../src/config/rangerNoteIA';
 import { reponseSimulee } from '../../src/ui/atelier/rangerNoteSimule';
 import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from '../../functions/src/rangerNote';
@@ -89,6 +89,22 @@ describe('rangerNote : écritures', () => {
     expect(ecrire(NOTE_ITEM, props, CTX, 1)!.convertir).toBe('DEMO-CT-1');
   });
 
+  it('Convertir coché compte dans les choses rangées : trois cases cochées, « 3 choses »', () => {
+    const props = proposer(lireReponse(reponse(), NOTE, SAISIE)!, CTX).map((p) => (p.sorte === 'client' ? { ...p, coche: true } : p));
+    expect(nbCochees(props)).toBe(3);
+    const e = ecrire(NOTE_ITEM, props, CTX, 1)!;
+    expect(e.convertir).toBe('DEMO-CT-1');
+    expect(e.creer).toHaveLength(1);
+  });
+  it('Annuler rend la proposition corrigée (date, bière) ; une conversion faite ne revient pas', () => {
+    const corrigees = proposer(lireReponse(reponse(), NOTE, SAISIE)!, CTX).map((p) => (p.sorte === 'tache' ? { ...p, date: '11.12.2026', biere: 'NEIPA' } : p.sorte === 'client' ? { ...p, coche: true } : p));
+    const sans = apresAnnuler(corrigees, false);
+    expect(sans).toEqual(corrigees);
+    expect(sans[0]).not.toBe(corrigees[0]);
+    const avecClient = apresAnnuler(corrigees, true);
+    expect(avecClient.map((p) => p.sorte)).toEqual(['tache', 'lier']);
+    expect(avecClient[0]).toMatchObject({ date: '11.12.2026', biere: 'NEIPA' });
+  });
   it('un contact déjà client ne propose pas la conversion', () => {
     const props = proposer(lireReponse(reponse(), NOTE, SAISIE)!, { ...CTX, contacts: [{ ...CARNOTZET, status: 'validated' }] });
     expect(props.some((p) => p.sorte === 'client')).toBe(false);
@@ -117,6 +133,9 @@ describe('rangerNote : envoi et drapeau', () => {
     expect(modeDe(undefined, true, false)).toBe('eteint');
     expect(modeDe(undefined, true, true)).toBe('simule');
     expect(modeDe('production', false, false)).toBe('production');
+    expect(modeDe(undefined, true, true, 'eteint')).toBe('eteint');
+    expect(modeDe(undefined, false, true, 'eteint')).toBe('eteint');
+    expect(modeDe('production', false, false, 'eteint')).toBe('production');
   });
   it('le modèle reçoit la date de saisie et son jour', () => {
     expect(contexteModele(NOTE, CTX)).toMatchObject({ saisie: '2026-11-14', jourSaisie: 'sam.', contacts: ['Le Carnotzet Gourmand'] });

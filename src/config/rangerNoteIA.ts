@@ -7,13 +7,16 @@ import type { ModeIA } from '../domain/rangerNote';
  *  - `simule` : serveur de développement (`import.meta.env.DEV`, éliminé au build) ET banc `?dev-local` : réponse simulée, marquée « exemple » ;
  *  - sinon `eteint`.
  */
-export function modeDe(valeur: unknown, dev: unknown, devLocal: boolean): ModeIA {
+export function modeDe(valeur: unknown, dev: unknown, devLocal: boolean, force?: unknown): ModeIA {
   if (valeur === 'production') return 'production';
-  if (dev === true && devLocal) return 'simule';
+  if (dev === true && devLocal) return force === 'eteint' ? 'eteint' : 'simule';
   return 'eteint';
 }
 
-const devLocal = (): boolean => typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local');
+const param = (nom: string): string | null => (typeof location === 'undefined' ? null : new URLSearchParams(location.search).get(nom));
 
-/** Lu à l'appel, jamais au chargement du module. */
-export const modeRangerNote = (): ModeIA => modeDe(import.meta.env.VITE_RANGER_NOTE_IA, import.meta.env.DEV, devLocal());
+/**
+ * Lu à l'appel, jamais au chargement du module. Au banc seulement : `?dev-local&ia=eteint` rejoue ce que la production montre
+ * (la note brute, sans IA). Hors serveur de développement, le paramètre ne fait rien.
+ */
+export const modeRangerNote = (): ModeIA => modeDe(import.meta.env.VITE_RANGER_NOTE_IA, import.meta.env.DEV, param('dev-local') !== null, param('ia'));
