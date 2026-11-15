@@ -35,26 +35,27 @@ describe('stocks compacts', () => {
     render(<Catalogue/>);
     const opener = await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' });
     opener.focus(); fireEvent.click(opener);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Fermer', exact: true })).toHaveFocus());
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Fermer', exact: true }), { key: 'Escape' });
+    await waitFor(() => expect(screen.getByRole('dialog')).toHaveFocus());
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
     await waitFor(() => expect(opener).toHaveFocus());
     expect(screen.queryByRole('dialog')).toBeNull();
   });
-  it('combine commande, recherche et favoris avec un vrai groupe radio au clavier', async () => {
+  it('combine pastille d\'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)', async () => {
     render(<Catalogue/>);
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeVisible();
-    const order = screen.getByRole('radio', { name: 'À commander · 1' });
-    fireEvent.click(order);
+    const pastille = (mot: string) => screen.getAllByRole('button').find(b => b.hasAttribute('data-f') && (b.textContent ?? '').startsWith(mot))!;
+    fireEvent.click(pastille('manque'));
+    expect(pastille('manque')).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pilsner' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeNull();
-    fireEvent.keyDown(order, { key: 'ArrowRight' });
-    expect(screen.getByRole('radio', { name: 'Épinglés · 1' })).toHaveFocus();
-    expect(screen.getByRole('radio', { name: 'Épinglés · 1' })).toBeChecked();
+    fireEvent.click(pastille('★ épinglés'));
+    expect(pastille('manque')).toHaveAttribute('aria-pressed', 'false');
+    expect(pastille('★ épinglés')).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Retirer Malt Pale Ale des favoris' }));
-    expect(await screen.findByText('Aucun article épinglé')).toBeVisible();
+    expect(await screen.findByText('Aucun article ne correspond')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Voir tous les articles' }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher un article…' }), { target: { value: 'caramunch' } });
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Rechercher dans le stock' }), { target: { value: 'caramunch' } });
     expect(await screen.findByRole('button', { name: 'Ouvrir Caramünch II' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Ouvrir Malt Pilsner' })).toBeNull();
   });
@@ -72,22 +73,20 @@ describe('stocks compacts', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'pils')).toMatchObject({ minStock: 3.5, colorEbc: 4.2, currentStock: 2 });
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir Malt Pilsner' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Corriger l’inventaire', exact: true }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Stock réellement compté (kg)' }), { target: { value: '1,5' } });
-    fireEvent.change(screen.getByLabelText('Précision (facultatif)'), { target: { value: 'Sac pesé' } });
-    expect(screen.getByRole('status')).toHaveTextContent('-500 g');
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer l’écart' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Il en reste' }), { target: { value: '1,5' } });
+    expect(document.querySelector('[data-delta]')).toHaveTextContent('−0,5');
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     expect(StorageService.getStocks().rawMaterials.find(row => row.ref === 'pils')?.currentStock).toBe(1.5);
-    expect(StorageService.getAuditLogs()[0].details).toContain('Sac pesé');
+    expect(StorageService.getAuditLogs()[0].details).toContain('Inventaire physique');
   });
 
   it('ne transforme ni un seuil en brassins ni un niveau inconnu en jauge pleine', () => {
     const view = render(<StockRow item={item('x', 'Article', 2)} batches={[]} onOpen={() => {}} onToggleFavorite={() => {}}/>);
-    expect(screen.getByText('Sous le seuil')).toBeVisible();
+    expect(screen.getByText(/^(bas|au seuil) · seuil/)).toBeVisible();
     expect(screen.getByRole('meter')).toHaveAttribute('aria-valuetext', 'Sous le seuil');
     expect(screen.getByRole('button', { name: 'Ouvrir Article' })).toHaveAccessibleDescription('2 kg · Sous le seuil');
     view.rerender(<StockRow item={item('x', 'Article', 2, 0)} batches={[]} onOpen={() => {}} onToggleFavorite={() => {}}/>);
-    expect(screen.getByText('Niveau inconnu')).toBeVisible();
+    expect(screen.getByText('sans seuil')).toBeVisible(); // la maquette dit « sans seuil » ; la description lue garde « Niveau inconnu »
     expect(screen.queryByRole('meter')).toBeNull();
     expect(screen.getByRole('button', { name: 'Ouvrir Article' })).toHaveAccessibleDescription('2 kg · Niveau inconnu');
   });

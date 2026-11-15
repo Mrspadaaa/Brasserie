@@ -1,6 +1,7 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within, act } from '@testing-library/react';
+import { terminerLaJournee } from '../fixtures/brewTerminer';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { AiClient } from '../../src/services/aiClient';
@@ -75,7 +76,7 @@ const enter = (v: string) =>
 const notePh = (v = '5,7') => {
   enter(v);
   fireEvent.click(screen.getByLabelText(/Échantillon refroidi/));
-  fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+  fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
 };
 
 describe('Assistant pendant le brassage', () => {
@@ -90,7 +91,7 @@ describe('Assistant pendant le brassage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
     await waitFor(() =>
-      expect(screen.getByText('Vérifie le débit de recirculation.')).toBeInTheDocument()
+      expect(within(screen.getByRole('region', { name: 'Notes et conseil' })).getByText('Vérifie le débit de recirculation.')).toBeInTheDocument()
     );
     expect(v.latest().notes![0].text).toBe('Le débit ralentit');
     expect(AiClient.run).toHaveBeenCalledTimes(1);
@@ -102,7 +103,7 @@ describe('Assistant pendant le brassage', () => {
     expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText(/Échantillon refroidi/));
     expect(screen.getByText(/Au-dessus de la fenêtre/)).toBeInTheDocument();
-    fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+    fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
     expect(v.latest().readings![0]).toMatchObject({
       value: 5.7,
       stepId: 'mash-0',
@@ -144,7 +145,7 @@ describe('Assistant pendant le brassage', () => {
     mount({ readings: [{ at: 10, kind: 'ph', unit: '', value: 5.7 }] });
     expect(screen.queryByText(/Moitié de l’estimation/)).not.toBeInTheDocument();
     enter('5,7');
-    fireEvent.click(form().getByRole('button', { name: 'Noter' }));
+    fireEvent.click(form().getByRole('button', { name: 'Enregistrer' }));
     expect(screen.getByText(/Refroidis l’échantillon/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
   });
@@ -184,11 +185,11 @@ describe('Assistant pendant le brassage', () => {
       '<svg>'
     ]) {
       enter(s);
-      expect(form().getByRole('button', { name: 'Noter' })).toBeDisabled();
+      expect(form().getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
       expect(screen.queryByRole('button', { name: /J’ai ajouté/ })).not.toBeInTheDocument();
     }
     enter('5,3');
-    expect(form().getByRole('button', { name: 'Noter' })).toBeEnabled();
+    expect(form().getByRole('button', { name: 'Enregistrer' })).toBeEnabled();
   });
   it('pause et reprise gardent le temps restant, le palier suivant ne démarre pas seul', () => {
     const date = vi.spyOn(Date, 'now').mockReturnValue(1000);
@@ -245,7 +246,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
     await waitFor(() => expect(screen.getByText('Hors ligne')).toBeInTheDocument());
     fireEvent.click(screen.getByRole('button', { name: 'Conseil IA' }));
-    await waitFor(() => expect(screen.getByText('Maintiens ce palier.')).toBeInTheDocument());
+    await waitFor(() => expect(within(screen.getByRole('region', { name: 'Notes et conseil' })).getByText('Maintiens ce palier.')).toBeInTheDocument());
     expect(screen.getByLabelText(/pH de maische/)).toBeEnabled();
   });
   it('clôture explicite : un relevé pré-ébullition ne remplace pas l’OG', async () => {
@@ -269,6 +270,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(v.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée', exact: true }));
+    await terminerLaJournee();
     await waitFor(() => expect(v.finish).toHaveBeenCalledWith(
       expect.objectContaining({
         og: undefined,
@@ -289,8 +291,9 @@ describe('Assistant pendant le brassage', () => {
     if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
     fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
-    expect(screen.getByText('OG inconnue · volume en fermenteur inconnu.')).toBeInTheDocument();
+    expect(screen.getByText('Densité initiale pas relevée · volume au fermenteur pas relevé.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(v.finish).toHaveBeenCalledTimes(1));
     expect(v.finish.mock.calls[0][0]).toMatchObject({ og: undefined, volumeBrewedL: undefined });
     expect(v.finish.mock.calls[0][0].brewDay.readings).toEqual(readings);
@@ -319,6 +322,7 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(morning.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await terminerLaJournee();
     await waitFor(() => expect(morning.finish).toHaveBeenCalledTimes(1));
     expect(morning.finish.mock.calls[0][0]).toMatchObject({ status: 'fermentation', brewDate: '20.09.2026', plannedBrewDate: '25.09.2026' });
     const completed = morning.finish.mock.calls[0][0].brewDay;

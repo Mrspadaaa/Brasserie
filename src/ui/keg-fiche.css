@@ -1,0 +1,37 @@
+/* Fiche d'un fût (F2 « la carte d'identité »), remplir depuis un lot (R1), ajouter des fûts : maquettes choisies le 15.11. Jetons de l'app, chrome compact. */
+.keg-card { display: grid; gap: .375rem; min-width: 0; padding: .5rem .625rem; border: 1px solid rgb(var(--cave-800)); border-radius: .625rem; background: rgb(var(--cave-900)); }
+.keg-card-beer { display: flex; align-items: center; gap: .375rem; min-width: 0; margin: 0; color: rgb(var(--cave-texte-50)); font-size: .9375rem; line-height: 1.25rem; font-weight: 600; overflow-wrap: anywhere; }
+.keg-dot { flex: none; width: .5rem; height: .5rem; border-radius: 999px; background: var(--keg-dot, rgb(var(--cave-400))); }
+.keg-agebar { height: .375rem; border-radius: 999px; background: rgb(var(--cave-800)); overflow: hidden; }
+.keg-agebar > i { display: block; height: 100%; border-radius: inherit; background: var(--keg-dot, rgb(var(--cave-400))); }
+.keg-agebar[data-depasse="true"] > i { background: rgb(var(--attention)); }
+.keg-sec { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-top: .125rem; color: rgb(var(--cave-texte-400)); font-size: .75rem; line-height: 1rem; font-weight: 600; }
+.keg-sec > button { min-height: 1.75rem; padding: 0 .125rem; color: rgb(var(--cave-texte-50)); font-weight: 600; text-decoration: underline; }
+.keg-sec > button:focus-visible, .keg-chip:focus-visible, .keg-step button:focus-visible { outline: 2px solid rgb(var(--ebc-straw)); outline-offset: 2px; }
+.keg-tl { display: grid; gap: .25rem; margin: 0 0 0 .1875rem; padding: 0 0 0 .6875rem; list-style: none; border-left: 2px solid rgb(var(--cave-800)); color: rgb(var(--cave-texte-200)); font-size: .8125rem; line-height: 1.125rem; }
+.keg-tl > li { position: relative; min-width: 0; overflow-wrap: anywhere; }
+.keg-tl > li::before { content: ""; position: absolute; left: -.9375rem; top: .3125rem; width: .4375rem; height: .4375rem; border-radius: 999px; background: rgb(var(--cave-400)); }
+.keg-tl > li:first-child::before { background: rgb(var(--cave-texte-50)); }
+.keg-tl time { margin-right: .375rem; color: rgb(var(--cave-texte-400)); font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+.keg-tl-empty { margin: 0; color: rgb(var(--cave-texte-400)); font-size: .8125rem; line-height: 1.125rem; }
+.keg-chips { display: flex; flex-wrap: wrap; gap: .25rem; }
+.keg-chip { display: inline-flex; align-items: center; gap: .3125rem; min-height: 1.75rem; padding: 0 .5rem; border: 1px solid rgb(var(--cave-700)); border-radius: .5rem; background: transparent; color: rgb(var(--cave-texte-200)); font-size: .8125rem; line-height: 1rem; white-space: nowrap; }
+.keg-chip[aria-checked="true"] { border-color: rgb(var(--cave-texte-50)); background: rgb(var(--cave-800)); color: rgb(var(--cave-texte-50)); font-weight: 600; }
+.keg-cbox { display: inline-grid; place-items: center; width: .8125rem; height: .8125rem; border: 1.5px solid rgb(var(--cave-400)); border-radius: .1875rem; }
+.keg-chip[aria-checked="true"] .keg-cbox { border-color: rgb(var(--cave-texte-50)); background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); }
+.keg-cbox svg { display: block; }
+.keg-lbar { display: flex; height: .5625rem; border: 1px solid rgb(var(--cave-800)); border-radius: .25rem; background: rgb(var(--cave-850)); overflow: hidden; }
+.keg-lbar > i { display: block; background: var(--keg-dot, rgb(var(--cave-400))); }
+.keg-lot { position: relative; }
+.keg-lot[data-dot="true"] [role="combobox"] { padding-left: 1.625rem !important; }
+/* Choix segmentés de R1 : le segment actif est plein, comme la maquette (noir en clair, clair en cave). */
+.keg-choice.equipment-choice > [role="radio"][aria-checked="true"] { color: rgb(var(--cave-950)); background: rgb(var(--cave-texte-50)); }
+.keg-lot > .keg-dot { position: absolute; left: .5rem; top: 1rem; transform: translateY(-50%); pointer-events: none; z-index: 1; }
+.keg-step { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem; align-items: center; min-height: 2.25rem; border: 1px solid rgb(var(--cave-700)); border-radius: .5rem; }
+.keg-step > button { min-height: 2.25rem; color: rgb(var(--cave-texte-50)); font-size: 1.125rem; line-height: 1; }
+.keg-step > button:disabled { color: rgb(var(--cave-600)); }
+.keg-step > output { text-align: center; color: rgb(var(--cave-texte-50)); font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 1rem; font-weight: 600; }
+.keg-preview { margin: 0; color: rgb(var(--cave-texte-50)); font-size: .8125rem; line-height: 1.125rem; }
+/* Maquettes F2 et R1 : le geste principal prend la largeur restante. */
+.keg-footer { justify-content: stretch; flex-wrap: nowrap; }
+.keg-footer > :last-child { flex: 1; }

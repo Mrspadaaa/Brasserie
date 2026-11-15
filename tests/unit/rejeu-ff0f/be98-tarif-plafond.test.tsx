@@ -21,7 +21,7 @@ describe('BE-98 — un prix hors plafond dit le plafond et la valeur gardée', (
     fireEvent.focus(champ);
     fireEvent.change(champ, { target: { value: '99999' } });
     fireEvent.blur(champ);
-    expect(champ.value).toBe('6');
+    expect(champ.value).toBe('6,00'); // le champ prix écrit deux décimales (B12, constat Prix 3 du test d'écran)
     expect(champ.getAttribute('aria-invalid')).toBe('true');
     const alerte = screen.getByRole('alert');
     expect(alerte.textContent).toContain('au-delà de 10 000 CHF');

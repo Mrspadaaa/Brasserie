@@ -14,24 +14,43 @@ import { BrewTag } from './BrewTag';
 export function BrewAide({
   title,
   summary,
-  children
+  children,
+  icon,
+  className = '',
+  quiet = false,
+  defaultOpen = false
 }: {
   title: string;
   summary?: React.ReactNode;
   children: React.ReactNode;
+  /** Le picto de la ligne repliée (« Aides et repères » de z1). */
+  icon?: React.ReactNode;
+  className?: string;
+  /** Le repli reste fermé : l'avertissement se signale (« À vérifier ») sans l'ouvrir (« Aides et repères » de z1). */
+  quiet?: boolean;
+  /** Ouvert au montage (p3 / 2C : les Aides de l'ensemencement montrent la ligne « À cru »). Le brasseur peut le refermer. */
+  defaultOpen?: boolean;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const wasNotified = useRef(false);
-  const [notice, setNotice] = useState(false);
+  // Le texte de l'étiquette : « À vérifier », ou la cause en peu de mots quand l'alerte la donne (`data-notice="À cru · phase à préciser"`).
+  const [notice, setNotice] = useState<string | false>(false);
+  const [open, setOpen] = useState(defaultOpen);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+    if (defaultOpen) node.open = true;
+    // Un repli posé dans un repli « quiet » (Aides et repères) reste fermé : l'étiquette « À vérifier » du repli extérieur le signale.
+    const calme = quiet || !!node.parentElement?.closest('[data-aide-calme]');
     const read = () => {
-      const found = node.querySelector('[data-notice]') != null;
-      setNotice(found);
+      const alerts = [...node.querySelectorAll('[data-notice]')];
+      const found = alerts.length > 0;
+      const causes = alerts.map((a) => a.getAttribute('data-notice') ?? '').filter((c) => c && c !== 'true');
+      // Une seule cause nommée : on la dit ; plusieurs, ou une alerte sans nom : « À vérifier ».
+      setNotice(found ? (causes.length === alerts.length && new Set(causes).size === 1 ? causes[0] : 'À vérifier') : false);
       // N'ouvrir qu'au passage à l'avertissement : le brasseur garde le droit
       // de refermer la section après l'avoir lue.
-      if (found && !wasNotified.current) node.open = true;
+      if (found && !wasNotified.current && !calme) { node.open = true; setOpen(true); }
       wasNotified.current = found;
     };
     read();
@@ -45,11 +64,13 @@ export function BrewAide({
     return () => observer.disconnect();
   }, []);
   return (
-    <details ref={ref} className="brew-aide">
+    <details ref={ref} data-aide-calme={quiet ? '' : undefined} className={`brew-aide ${className}`} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
       <summary>
+        {icon}
         <span className="brew-aide-title">{title}</span>
         {summary != null && <span className="brew-aide-summary">{summary}</span>}
-        {notice && <BrewTag tone="due">À vérifier</BrewTag>}
+        {/* Une seule alerte à l'écran (VB-4) : ouvert, le repli montre sa cause (le texte rouge) ; l'étiquette ne sert que replié. */}
+        {notice && !open && <BrewTag tone="due">{notice}</BrewTag>}
         <ChevronDown size={16} aria-hidden="true" />
       </summary>
       <div className="brew-aide-body">{children}</div>

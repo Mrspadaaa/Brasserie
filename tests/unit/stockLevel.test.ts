@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { computeStockLevel, shortfall, allocatedBatches } from '../../src/domain/stockLevel';
+import { computeStockLevel, allocatedBatches } from '../../src/domain/stockLevel';
+import { disponibilites } from '../../src/domain/stock/disponibilite';
 import { Batch, StockItem } from '../../src/types';
+
+/** Le manque d'un article pour des brassins : l'unique disponibilité (R1), sans recette écrite. */
+const shortfall = (article: StockItem, batches: Batch[]): number =>
+  disponibilites([article], batches, []).parArticle.get(article.ref)!.manque ?? Number.NaN;
 
 /**
  * La couverture de stock, exprimée en brassins.

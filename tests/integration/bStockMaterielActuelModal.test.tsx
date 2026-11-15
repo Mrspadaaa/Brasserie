@@ -1,4 +1,6 @@
 // Mission levure-port, voie b-stock (09.11) : AM-47 sur l'écran « Préparer un brassin ».
+// 14.11, port uv4 (mission atelier) : le brasseur a choisi uv4, qui retire l'avertissement de matériel au lancement ; le moteur n'a pas de contenance de cuve
+// (`kettleCapacityL`) à comparer. Le volume de la recette reste repris tel quel, sur la règle, sans alerte ni blocage. `domain/materielActuel.ts` et son test unitaire restent.
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';

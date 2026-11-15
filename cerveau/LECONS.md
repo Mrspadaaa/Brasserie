@@ -25,9 +25,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346).
+- Erreur : 19.10 l5b, barres sans pistes ; 26.10 u4 masqué (D155) ; 02.11 F (D295), p3c-3 : « Mais l'app » (D346) ; 10.11 ports loin de ses maquettes (CP-11).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf. Port : jugé sur `?finance-demo=reel`.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -41,7 +41,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Préparer : briefs, données, architecture
 
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
-- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
+- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? » 10.11 : renvois corrigés plainte par plainte : « il en manque plein ».
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
 - Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté en voie : revoir ses plafonds (mots).
 - Rôles : pilote

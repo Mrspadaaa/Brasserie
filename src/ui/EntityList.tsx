@@ -37,12 +37,20 @@ export interface EntityListProps<T> {
   isFavorite?: (item: T) => boolean;
   /** Quand cette valeur change (filtre choisi, onglet), la liste repart du haut (BR-70). */
   resetKey?: unknown;
+  /** Faux : la liste ne déplace jamais le défilement de son parent quand le filtre change (le Stock garde son champ de recherche à l'écran et se replace lui-même). */
+  repartDuHaut?: boolean;
   searchPlaceholder?: string;
   /** Message quand la liste est vide au départ (pas après filtrage). */
   emptyState?: React.ReactNode;
+  /** En-tête d'un groupe, à la place du titre simple (nom, nombre) : l'en-tête de rayon du Stock, avec sa règle. */
+  renderGroupHeader?: (nom: string, compte: number) => React.ReactNode;
+  /** Les groupes pliés : leur en-tête reste (avec son vrai compte), leurs lignes ne sont pas rendues (le chevron ⌃ du rayon, maquette g6). */
+  groupesPlies?: ReadonlySet<string>;
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
   toolbarAction?: React.ReactNode;
+  /** Un conteneur extérieur qui défile : la liste s'y appuie au lieu d'avoir sa propre zone défilante (l'Étagère du Stock : outils, mur et liste défilent ensemble). */
+  scrollParent?: HTMLElement | null;
   /** Hauteur de la zone défilante. Par défaut, tout l'espace disponible. */
   className?: string;
 }
@@ -53,13 +61,17 @@ export function EntityList<T>({
   renderItem,
   groupOf,
   groupOrder,
+  renderGroupHeader,
+  groupesPlies,
   searchKeys,
   isFavorite,
   resetKey,
+  repartDuHaut = true,
   searchPlaceholder = 'Rechercher…',
   emptyState,
   header,
   toolbarAction,
+  scrollParent,
   className = ''
 }: EntityListProps<T>) {
   const [query, setQuery] = useState('');
@@ -105,7 +117,7 @@ export function EntityList<T>({
 
   // BR-70 : un nouveau filtre ou une nouvelle recherche repart du haut ; sinon la liste garde son défilement et cache ses premières lignes sous l'en-tête.
   const defilement = React.useRef<{ scrollToIndex: (arg: { index: number }) => void } | null>(null);
-  React.useEffect(() => { defilement.current?.scrollToIndex({ index: 0 }); }, [query, resetKey]);
+  React.useEffect(() => { if (repartDuHaut) defilement.current?.scrollToIndex({ index: 0 }); }, [query, resetKey]);
 
   /** Découpage en groupes contigus, dans l'ordre demandé. */
   const grouped = useMemo(() => {
@@ -125,12 +137,15 @@ export function EntityList<T>({
         )
       : Array.from(buckets.keys());
 
+    const reels = names.map((n) => buckets.get(n)!.length);
+    const plie = (n: string) => !!groupesPlies?.has(n);
     return {
       names,
-      counts: names.map((n) => buckets.get(n)!.length),
-      flat: names.flatMap((n) => buckets.get(n)!)
+      reels,
+      counts: names.map((n, k) => (plie(n) ? 0 : reels[k])),
+      flat: names.filter((n) => !plie(n)).flatMap((n) => buckets.get(n)!)
     };
-  }, [filtered, groupOf, groupOrder]);
+  }, [filtered, groupOf, groupOrder, groupesPlies]);
 
   const showSearch = Boolean(searchKeys && searchKeys.length > 0);
   const isEmpty = items.length === 0;
@@ -194,9 +209,10 @@ export function EntityList<T>({
       {!isEmpty && !noResults && grouped && (
         <GroupedVirtuoso
           ref={defilement as never}
-          className="flex-1 min-h-0"
+          className={scrollParent ? undefined : "flex-1 min-h-0"}
+          customScrollParent={scrollParent ?? undefined}
           groupCounts={grouped.counts}
-          groupContent={(index) => (
+          groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.reels[index]) : (
             <div
               className="px-1 py-1 bg-cave-950/95 backdrop-blur-sm
                          flex items-baseline justify-between gap-2 border-b border-cave-800"
@@ -205,7 +221,7 @@ export function EntityList<T>({
                 {grouped.names[index]}
               </span>
               <span className="text-xs text-cave-400 font-mono shrink-0">
-                {grouped.counts[index]}
+                {grouped.reels[index]}
               </span>
             </div>
           )}
@@ -220,7 +236,8 @@ export function EntityList<T>({
       {!isEmpty && !noResults && !grouped && (
         <Virtuoso
           ref={defilement as never}
-          className="flex-1 min-h-0"
+          className={scrollParent ? undefined : "flex-1 min-h-0"}
+          customScrollParent={scrollParent ?? undefined}
           data={filtered}
           itemContent={(index, item) => (
             <div key={keyOf(item)} className="py-0.5">

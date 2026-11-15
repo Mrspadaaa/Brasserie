@@ -1,0 +1,122 @@
+<title>Compta et prix · v0 · 09.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : l'actuel, puis trois concepts ; vignettes agrandies au toucher. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+section{display:flex;flex-direction:column;gap:12px}
+ol{margin:0;padding-left:22px;max-width:80ch;display:flex;flex-direction:column;gap:4px}
+.row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Compta et prix · mini maquettes v0</h1>
+<p class="mut">09.11 · 8 écrans, 24 concepts statiques, triés par le critique. Chiffres de la démonstration ; ce qui n'y est pas est marqué « exemple ». Touche une vignette pour l'agrandir.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>Pour chaque écran : ta maquette, un mélange, ou « aucune », et ce qui te gêne. Le cadre bleu est la candidate du critique. La première vignette de chaque rangée est l'écran d'aujourd'hui.</p></section>
+
+<section><h2>Les problèmes trouvés (12 sur 30)</h2>
+<ol>
+<li>Rien ne dit si tu gagnes de l'argent : ni ventes ni résultat dans Finances.</li>
+<li>Deux « résultats » qui se contredisent (Bord et Annuel).</li>
+<li>Trois coûts du litre jamais reliés : 7,51 CHF/L au brassin, 1,20 CHF la 33 cl au tarif (devrait faire 2,48).</li>
+<li>Le coût d'une bouteille ou d'un fût oublie emballage et impôt bière.</li>
+<li>Aucun coût réel d'un brassin fini, seulement des estimations.</li>
+<li>Prévisions : aucune vente prévue, donc pas de réponse à « puis-je acheter ce fermenteur ? ».</li>
+<li>Quatre noms pour la même sortie d'argent dans Prévisions.</li>
+<li>Annuel : tout l'écran est l'impôt cantonal ; le résultat de l'année est caché.</li>
+<li>Impôt bière : branché à rien (ni échéance, ni à payer), et deux barèmes différents dans le code.</li>
+<li>La facture « QR » n'a pas de QR, ni l'adresse du client, et son numéro est tiré au hasard.</li>
+<li>Deux chemins pour vendre (Facturer et Encaisser une vente).</li>
+<li>Opérations : 15 filtres avant la première ligne ; le solde mélange ventes, achats et apports.</li>
+</ol>
+<p class="mut">Liste complète, avec les fichiers : INVENTAIRE-CODE.md de la mission. Ces corrections du calcul se font au port, quel que soit ton choix de forme.</p>
+</section>
+
+<section data-choix="synthese"><h2>1 · Synthèse : est-ce que je gagne ?</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/synthese-situation.png"><img src="img/synthese-situation-haut.png" alt="Synthèse aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Trésorerie et règlements, sans ventes ni résultat.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/g1b-page.png"><img src="img/g1b-haut.png" alt="g1b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Entré contre dépensé</b> <span class="id">g1b · tiède</span>Deux colonnes à la même échelle : l'écart est le gain.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g1a-page.png"><img src="img/g1a-haut.png" alt="g1a"></button><figcaption><span class="pill p-ok">Bien</span><b>« Gagné » en tête</b> <span class="id">g1a · froide</span>L'écran d'aujourd'hui, le gain du mois en premier.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g1c-page.png"><img src="img/g1c-haut.png" alt="g1c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Le verre du mois</b> <span class="id">g1c · chaude</span>Les charges en couches, le gain en mousse.</figcaption></figure>
+</div></section>
+
+<section data-choix="annuel"><h2>2 · Annuel : l'année en un coup d'œil</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/annuel.png"><img src="img/annuel-haut.png" alt="Annuel aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Une liste de clôture fiscale ; le résultat est caché.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/g2b-page.png"><img src="img/g2b-haut.png" alt="g2b"></button><figcaption><span class="pill p-cand">Candidate</span><b>La cascade de l'année</b> <span class="id">g2b · tiède</span>Ventes, charges, usure du matériel, stock : le résultat se construit.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g2a-page.png"><img src="img/g2a-haut.png" alt="g2a"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Résultat d'abord</b> <span class="id">g2a · froide</span>Le résultat, 12 mois en barres, la clôture en piste.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g2c-page.png"><img src="img/g2c-haut.png" alt="g2c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>12 cases, la 13e fait le compte</b> <span class="id">g2c · chaude</span>Chaque mois teinté par son résultat.</figcaption></figure>
+</div></section>
+
+<section data-choix="cout-litre"><h2>3 · Coût d'un brassin et d'un litre</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/budget-brassin.png"><img src="img/budget-brassin-haut.png" alt="Budget aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>64,26 à payer et 7,51 CHF/L, sans lien entre les deux.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/c1b-page.png"><img src="img/c1b-haut.png" alt="c1b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Le verre doseur en francs</b> <span class="id">c1b · tiède</span>Une couche par poste ; le niveau est le coût du litre.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c1a-page.png"><img src="img/c1a-haut.png" alt="c1a"></button><figcaption><span class="pill p-ok">Bien</span><b>À payer / le litre</b> <span class="id">c1a · froide</span>Deux cartes séparent l'argent qui sort et le coût.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c1c-page.png"><img src="img/c1c-haut.png" alt="c1c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Quand tu paies, pour quoi</b> <span class="id">c1c · chaude</span>Un flux qui finit en « ÷ 27 L = 7,51 ».</figcaption></figure>
+</div></section>
+
+<section data-choix="prix"><h2>4 · Prix et marges</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/prix-marges.png"><img src="img/prix-marges-haut.png" alt="Prix aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Tableau ; coûts saisis à la main, sans le brassin.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/c2b-page.png"><img src="img/c2b-haut.png" alt="c2b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Du litre au prix</b> <span class="id">c2b · tiède</span>Litre, bouteille, impôt, puis un curseur de prix : « il te reste ».</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c2a-page.png"><img src="img/c2a-haut.png" alt="c2a"></button><figcaption><span class="pill p-ok">Bien</span><b>Tableau relié au litre</b> <span class="id">c2a · froide</span>Une barre coût / reste par format, Privé et Pro.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c2c-page.png"><img src="img/c2c-haut.png" alt="c2c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Trois formats au litre</b> <span class="id">c2c · chaude</span>Côte à côte ; prix proposé par l'IA en pointillé.</figcaption></figure>
+</div></section>
+
+<section data-choix="previsions"><h2>5 · Prévisions : coûts et achats à venir</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/previsions-echeances.png"><img src="img/previsions-echeances-haut.png" alt="Prévisions aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Cinq totaux et une alerte « incomplète ».</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/p1b-page.png"><img src="img/p1b-haut.png" alt="p1b"></button><figcaption><span class="pill p-cand">Candidate</span><b>Avec ou sans le fermenteur</b> <span class="id">p1b · tiède</span>Deux soldes et l'escalier de l'argent, son point le plus bas.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p1a-page.png"><img src="img/p1a-haut.png" alt="p1a"></button><figcaption><span class="pill p-ok">Bien</span><b>« Fin janvier, il restera… »</b> <span class="id">p1a · froide</span>La réponse en tête, la liste par mois.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p1c-page.png"><img src="img/p1c-haut.png" alt="p1c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Un mois, une colonne</b> <span class="id">p1c · chaude</span>Le fermenteur se pose dans le mois choisi.</figcaption></figure>
+</div></section>
+
+<section data-choix="impot"><h2>6 · Impôt sur la bière</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/impot-biere.png"><img src="img/impot-biere-haut.png" alt="Impôt aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Un paragraphe, puis un montant ou un tiret.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/p2b-page.png"><img src="img/p2b-haut.png" alt="p2b"></button><figcaption><span class="pill p-cand">Candidate</span><b>La règle des degrés</b> <span class="id">p2b · tiède</span>Trois bandes du barème ; chaque bière posée dessus.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p2a-page.png"><img src="img/p2a-haut.png" alt="p2a"></button><figcaption><span class="pill p-ok">Bien</span><b>Ma part à la Confédération</b> <span class="id">p2a · froide</span>Combien, quand, à qui.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p2c-page.png"><img src="img/p2c-haut.png" alt="p2c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>En cave ou sorti</b> <span class="id">p2c · chaude</span>Dû seulement quand la bière sort ; la frise à payer.</figcaption></figure>
+</div></section>
+
+<section data-choix="facture"><h2>7 · Facture de vente</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/facturer-rempli.png"><img src="img/facturer-rempli-haut.png" alt="Facturer aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Un formulaire de cinq champs par article.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/v1c-page.png"><img src="img/v1c-haut.png" alt="v1c"></button><figcaption><span class="pill p-cand">Candidate</span><b>Comme une caisse</b> <span class="id">v1c · chaude</span>À qui, quoi en tuiles, payé ici ou facture QR.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v1b-page.png"><img src="img/v1b-haut.png" alt="v1b"></button><figcaption><span class="pill p-ok">Bien</span><b>La facture elle-même</b> <span class="id">v1b · tiède</span>Tu touches la page telle qu'imprimée.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v1a-page.png"><img src="img/v1a-haut.png" alt="v1a"></button><figcaption><span class="pill p-ok">Bien</span><b>Total et échéance en tête</b> <span class="id">v1a · froide</span>Le formulaire d'aujourd'hui, retourné.</figcaption></figure>
+</div></section>
+
+<section data-choix="operations"><h2>8 · Opérations</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/operations.png"><img src="img/operations-haut.png" alt="Opérations aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span>Quinze filtres avant la première ligne.</figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/v2c-page.png"><img src="img/v2c-haut.png" alt="v2c"></button><figcaption><span class="pill p-cand">Candidate</span><b>Je dois, on me doit</b> <span class="id">v2c · chaude</span>Trois tas ; la liste à un toucher.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v2a-page.png"><img src="img/v2a-haut.png" alt="v2a"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Le journal allégé</b> <span class="id">v2a · froide</span>Un mois, entré et sorti, trois puces.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v2b-page.png"><img src="img/v2b-haut.png" alt="v2b"></button><figcaption><span class="pill p-res">Avec réserve</span><b>La rivière</b> <span class="id">v2b · tiède</span>Les sorties à gauche, les entrées à droite.</figcaption></figure>
+</div></section>
+
+<section><h2>Encore ouvert</h2>
+<p>Où vivent Prix et marges et l'Impôt bière (dans Clients, Finances ou le brassin) : à dessiner en passe 2, après ton choix des formes.</p></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { searchCommandGroups } from '../../src/services/search';
+import { motsCleEcriture, searchCommandGroups } from '../../src/services/search';
 
 describe('recherche universelle complète, archives sur demande', () => {
   it('trouve une écriture au-delà des 200 premières avant de limiter le rendu', () => {
@@ -49,5 +49,17 @@ describe('recherche universelle complète, archives sur demande', () => {
     ] }];
     expect(searchCommandGroups(groups, 'stout').groups[0].items.map(item => item.id)).toEqual(['name', 'keyword']);
     expect(searchCommandGroups(groups, '').total).toBe(2);
+  });
+});
+
+describe('une dépense se retrouve par ses articles (mission 2026-11-10-lecture-robuste)', () => {
+  it('cherche le libellé et la référence de chaque ligne de la facture, sans accents', () => {
+    const t = { id: 'tx-9', category: 'brassage', subcategory: 'Houblons', finance: { vendor: 'Fournisseur Fictif', invoiceNumber: 'F-1', lines: [
+      { description: 'Houblon Nelson Sauvin pellets', sourceReference: 'NS-100' }, { description: 'Levure saison belge' }] } };
+    const groups = [{ heading: 'Écritures', items: [{ id: 'tx-9', label: 'Facture du mois', keywords: motsCleEcriture(t) }] }];
+    expect(searchCommandGroups(groups, 'nelson sauvin').total).toBe(1);
+    expect(searchCommandGroups(groups, 'ns-100').total).toBe(1);
+    expect(searchCommandGroups(groups, 'levure belge').total).toBe(1);
+    expect(searchCommandGroups(groups, 'cascade').total).toBe(0);
   });
 });

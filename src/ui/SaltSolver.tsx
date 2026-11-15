@@ -38,7 +38,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
         }
       />
 
-      <div data-water-navigation className="water-mobile-nav sm:hidden sticky top-0 z-20 bg-cave-950/95 backdrop-blur-md pt-0 pb-0.5 border-b border-cave-800">
+      <div data-water-navigation className="water-mobile-nav sticky top-0 z-20 bg-cave-950/95 backdrop-blur-md pt-0 pb-0.5 border-b border-cave-800">
         <div className="grid grid-cols-2 gap-1 p-0.5 bg-cave-900/90 rounded-control border border-cave-800">
           <button
             type="button"
@@ -76,11 +76,11 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
         </div>
       </div>
 
-      <WaterPreparation {...model} />
+      <WaterPreparation {...model} sousVolumes={props.sousVolumes} />
       <div
-        className={`space-y-2 sm:space-y-4 ${activeStep === "sels" ? "block" : "hidden sm:block"}`}
+        className={`space-y-2 sm:space-y-4 ${activeStep === "sels" ? "block" : "hidden"}`}
       >
-        <div className="hidden sm:flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-cave-400 border-b border-cave-800 pb-1.5">
+        <div className="hidden items-center gap-2 text-sm font-semibold uppercase tracking-wider text-cave-400 border-b border-cave-800 pb-1.5">
           <Scale className="w-4 h-4 text-hop" />
           <span>2 · Les sels — profil, balance SO₄ ⇄ Cl et pesée</span>
         </div>

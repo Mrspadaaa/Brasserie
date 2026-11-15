@@ -1,0 +1,16 @@
+/* La piste de l'horloge (port de p2c, `.p2c-clk .pi / .pt / .pl`). Jetons de la conduite `--bz-*`. Classes préfixées `bz-pi` (L26). 14 px. */
+.brew-page.bz .bz-pi { margin: 10px 0 0; }
+.brew-page.bz .bz-pi-pistes { position: relative; height: 16px; margin: 0 7px; }
+.brew-page.bz .bz-pi-tr { position: absolute; left: 0; right: 0; top: 6px; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-pi-tr u { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bz-hop); border-radius: 2px; }
+.brew-page.bz .bz-pi-pt { position: absolute; top: 1px; width: 14px; height: 14px; margin-left: -7px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--bz-t0); background: var(--bz-page); }
+.brew-page.bz .bz-pi-pt.ok { background: var(--bz-hop); border-color: var(--bz-hop); }
+.brew-page.bz .bz-pi-pt.red { background: var(--bz-alert); border-color: var(--bz-alert); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bz-alert) 18%, var(--bz-page)); }
+.brew-page.bz .bz-pi-pt.du { background: var(--bz-warn); border-color: var(--bz-warn); }
+.brew-page.bz .bz-pi-pt.fin { border-radius: 3px; }
+.brew-page.bz .bz-pi-pl { position: relative; height: calc(var(--bz-pi-l, 1) * 20px); margin: 4px 7px 0; font-size: 14px; line-height: 20px; color: var(--bz-t2); }
+.brew-page.bz .bz-pi-mot { position: absolute; white-space: nowrap; }
+.brew-page.bz .bz-pi-mot.r0 { top: 0; } .brew-page.bz .bz-pi-mot.r1 { top: 20px; } .brew-page.bz .bz-pi-mot.r2 { top: 40px; } .brew-page.bz .bz-pi-mot.r3 { top: 60px; }
+.brew-page.bz .bz-pi-mot.dr { transform: translateX(-100%); }
+.brew-page.bz .bz-pi-mot.ocre { color: var(--bz-warn); font-weight: 600; }
+.brew-page.bz .bz-pi-mot.red { color: var(--bz-alert); font-weight: 600; }

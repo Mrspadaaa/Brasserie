@@ -17,7 +17,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
 
 describe('Convertir un contact en client', () => {
-  it('deux touchers rapides ne créent qu’une fiche', () => {
+  it('deux touchers rapides ne créent qu’une fiche', async () => {
     act(() => StorageService.addCreativeItem({ id: 'CR-contact', type: 'prospect', status: 'idea', title: 'ZZ Bar du Test', contactName: 'Marie', contactPhone: '026 408 33 33' } as any));
     const avant = StorageService.getClients().length;
     const message = vi.fn();

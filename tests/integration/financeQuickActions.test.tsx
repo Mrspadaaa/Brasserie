@@ -26,11 +26,15 @@ describe('Entrées financières directes', () => {
   it('ouvre la vente sans menu, reprend le choix à chaque ouverture et conserve la saisie pendant un rendu', () => {
     const props = { recipes: [], onClose: vi.fn() };
     const view = render(<QuickActionModal {...props} isOpen initialScreen="quick-sale"/>);
-    expect(screen.getByRole('dialog', { name: 'Enregistrer une vente' })).toHaveFocus();
+    expect(screen.getByRole('dialog', { name: 'Vendre' })).toHaveFocus();
     expect(screen.queryByRole('button', { name: 'Saisir une dépense' })).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Montant TTC encaissé'), { target: { value: '24,50' } });
+    /* La caisse (v3a) : une ligne libre « Autre » à 24,50 ; le panier survit à un rendu. */
+    fireEvent.click(screen.getByRole('button', { name: /^Autre/ }));
+    fireEvent.change(screen.getByLabelText('Prix unitaire'), { target: { value: '24,50' } });
+    fireEvent.change(screen.getByPlaceholderText('Consigne, verres…'), { target: { value: 'Consigne' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter la ligne' }));
     view.rerender(<QuickActionModal {...props} isOpen initialScreen="scan"/>);
-    expect(screen.getByLabelText('Montant TTC encaissé')).toHaveValue('24,50');
+    expect(screen.getByLabelText('Total')).toHaveTextContent('24,50');
     view.rerender(<QuickActionModal {...props} isOpen={false} initialScreen="scan"/>);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     view.rerender(<QuickActionModal {...props} isOpen initialScreen="scan"/>);
@@ -70,9 +74,9 @@ describe('Entrées financières directes', () => {
     await user.tab();
     expect(within(dialog).getByRole('button', { name: 'Fermer' })).toHaveFocus();
     await user.tab(); await user.tab(); await user.tab();
-    expect(screen.getByRole('button', { name: 'Encaisser une vente' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Vendre' })).toHaveFocus();
     await user.keyboard('{Enter}');
-    expect(screen.getByLabelText('Montant TTC encaissé')).toBeVisible();
+    expect(screen.getByRole('group', { name: 'À qui' })).toBeVisible();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();

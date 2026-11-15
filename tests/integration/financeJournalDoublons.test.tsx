@@ -28,11 +28,13 @@ afterEach(cleanup);
 describe('Journal : les doublons déjà inscrits sont signalés', () => {
   it('bandeau et puce avec le compte ; le filtre garde les 27 écritures et dit pourquoi', () => {
     rendre([facture(), ...Array.from({ length: 26 }, (_, i) => ancien(i + 1))]);
+    // v6b : la puce « Doublons » du pied porte le compte ; l'avertissement et le filtre se montrent au toucher.
+    const puce = screen.getByRole('button', { name: /^Doublons/ });
+    expect(puce.textContent).toMatch(/27/);
+    expect(screen.queryByTestId('journal-duplicates')).toBeNull();
+    fireEvent.click(puce);
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/27 écritures possiblement en double/);
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Rien n’est supprimé/);
-    const puce = screen.getByRole('button', { name: /Doublons possibles/ });
-    expect(puce.textContent).toMatch(/27/);
-    fireEvent.click(puce);
     expect(screen.getAllByTestId('ligne')).toHaveLength(27);
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Même commande 686863/);
   });
@@ -40,10 +42,11 @@ describe('Journal : les doublons déjà inscrits sont signalés', () => {
     window.localStorage.removeItem('laffinee.doublons-ecartes');
     const livre = [facture(), ...Array.from({ length: 26 }, (_, i) => ancien(i + 1))];
     const { unmount } = rendre(livre);
+    fireEvent.click(screen.getByRole('button', { name: /^Doublons/ }));
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/26 petites lignes anciennes \(libellé « Cmd 686863 »\) et la facture saisie qui la reprend/);
     fireEvent.click(screen.getByRole('button', { name: 'Ce n’est pas un doublon' }));
     expect(screen.queryByTestId('journal-duplicates')).toBeNull();
-    expect(screen.queryByRole('button', { name: /Doublons possibles/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /^Doublons/ })).toBeDisabled();
     expect(JSON.parse(window.localStorage.getItem('laffinee.doublons-ecartes') ?? '[]')).toEqual(['commande|686863']);
     unmount();
     rendre(livre);

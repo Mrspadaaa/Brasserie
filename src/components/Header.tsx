@@ -23,6 +23,8 @@ import { ConfirmModal } from './ConfirmModal';
 interface HeaderProps {
   /** Barre compacte de l'application, extensible avec le texte. */
   compactLayout?: boolean;
+  /** Stocks, à partir de 900 px : la barre prend la largeur de l'écran (1264 px au lieu de 896), comme le contenu de l'onglet (verdict 5cdcd12e n° 3). */
+  large?: boolean;
   hidePeriod?: boolean;
   config: AppConfig;
   globalTimeFilter: TimeFilterPeriod;
@@ -82,6 +84,7 @@ function useDismiss(onDismiss: () => void) {
  */
 export const Header: React.FC<HeaderProps> = ({
   compactLayout = false,
+  large = false,
   hidePeriod = false,
   config,
   globalTimeFilter,
@@ -120,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 bg-cave-950 border-b border-cave-800 pt-safe">
       {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
-        className={`app-titlebar max-w-4xl mx-auto px-2 flex items-center ${
+        className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${
           compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
         }`}
       >

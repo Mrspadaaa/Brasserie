@@ -26,7 +26,10 @@ vi.mock('../../../src/services/firestoreRepo', () => ({ FirestoreRepo: fakeRepo,
 
 const { StorageService } = await import('../../../src/services/storage');
 const regles = await import('../../../src/domain/stock/regles');
-const { pendingStockSummary, allocatedBatches, computeStockLevel, shortfall } = await import('../../../src/domain/stockLevel');
+const { pendingStockSummary, allocatedBatches, computeStockLevel } = await import('../../../src/domain/stockLevel');
+const { disponibilites } = await import('../../../src/domain/stock/disponibilite');
+/** Le manque d'un article pour des brassins : l'unique disponibilité (R1), sans recette écrite. */
+const shortfall = (a: StockItem, batches: Batch[]): number => disponibilites([a], batches, []).parArticle.get(a.ref)!.manque ?? Number.NaN;
 
 const article = (over: Partial<StockItem> = {}): StockItem => ({
   id: 'RM-1', ref: 'MP-001', name: 'Pilsner Malz', category: 'Malt', unit: 'kg', currentStock: 25, minStock: 5, reorder: false, ...over
@@ -54,6 +57,18 @@ describe('AM-54 — correction d’inventaire : le motif suit le signe de l’é
     expect(StorageService.getStocks().rawMaterials[0].currentStock).toBe(25);
     expect(StorageService.adjustInventory('rawMaterials', 'MP-001', 30, 'saisie')).toEqual({ delta: 5 });
     expect(StorageService.getStocks().rawMaterials[0].currentStock).toBe(30);
+  });
+  it('R4 (k2) : l’inventaire écrit un mouvement (avant, écart, après, motif, date), un gain sans motif de perte aussi', () => {
+    StorageService.addStockItem('rawMaterials', article({ currentStock: 25 }));
+    expect(StorageService.adjustInventory('rawMaterials', 'MP-001', 30, 'comptage', 'rayon du fond')).toEqual({ delta: 5 });
+    expect(StorageService.adjustInventory('rawMaterials', 'MP-001', 20, 'casse')).toEqual({ delta: -10 });
+    expect(StorageService.adjustInventory('rawMaterials', 'MP-001', 30, 'perte')).toBeNull(); // un gain n'est pas une perte (AM-54)
+    const mouvements = [...(store.get('movements')?.values() ?? [])].filter(m => m.type === 'inventory-adjustment');
+    expect(mouvements).toHaveLength(2); // le refus n'écrit rien
+    expect(mouvements[0]).toMatchObject({ stockItemRef: 'MP-001', previousStock: 25, delta: 5, newStock: 30, reasonCode: 'comptage', note: 'rayon du fond' });
+    expect(mouvements[1]).toMatchObject({ previousStock: 30, delta: -10, newStock: 20, reasonCode: 'casse' });
+    expect(String(mouvements[0].date)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(mouvements[0].reason).toBeTruthy();
   });
   it('la correction remet à jour le drapeau « à commander »', () => {
     StorageService.addStockItem('rawMaterials', article({ currentStock: 25, minStock: 5 }));

@@ -153,8 +153,7 @@ try {
 
       // Le branchement préexistant de la légende de catégorie reste un parcours séparé.
       await clickText(page, 'button[role="tab"]', 'Synthèse');
-      await clickText(page, '.finance-subnav button', 'Coûts');
-      await clickText(page, '.finance-legend button', 'Brassage', true);
+      await clickText(page, '.syn-pile button', 'Brassage', true);
       await page.waitForFunction(() => document.querySelector('select')?.value === 'brassage');
       assert.equal(await page.$eval('select', select => select.value), 'brassage');
       await page.screenshot({ path: resolve(evidence, `finances-${width}-categorie-existante.png`) });

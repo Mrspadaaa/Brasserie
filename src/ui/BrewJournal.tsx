@@ -19,6 +19,20 @@ import { brewIngredients, isBoilStep } from '../domain/brewCompanion';
 import { ACIDS } from '../domain/water';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
 
+type Correction = NonNullable<BrewDayState['boilCorrection']>;
+/**
+ * p2c B11 : « accepté : OG ≈ 1,057 », « bouilli +20 min : ≈ 22 L à 1,061 », « extrait sec ≈ 250 g : ≈ 23,4 L à 1,061 ».
+ * Le texte vient des options telles qu'elles étaient proposées (leur détail porte l'OG et le volume) ; aucun chiffre n'est refait ici.
+ */
+export function phraseCorrection(c: Pick<Correction, 'choix' | 'options'>): string {
+  const o = c.options.find((x) => x.id === c.choix);
+  const detail = (o?.detail ?? '').split(' · fin ~')[0].replace(/ · au premier bouillon$/, '');
+  if (c.choix === 'accepter') return `accepté : ${(o?.detail ?? '').split(' · ')[0] || 'sans correction'}`;
+  if (c.choix === 'bouillir') return `${(o?.titre ?? 'Bouillir plus').replace(/^Bouillir/, 'bouilli')}${detail ? ` : ${detail}` : ''}`;
+  return `${(o?.titre ?? 'Extrait sec').replace(/^Extrait sec/, 'extrait sec')}${detail ? ` : ${detail}` : ''}`;
+}
+
+
 export function BrewJournal({
   state,
   recipe,
@@ -152,6 +166,16 @@ export function BrewJournal({
       value: 'Fin d’ébullition',
       unit: '',
       category: 'steps'
+    });
+  if (state.boilCorrection)
+    events.push({
+      key: 'boil-correction',
+      at: state.boilCorrection.at,
+      step: 'preboil',
+      label: 'Avant ébullition hors cible',
+      value: phraseCorrection(state.boilCorrection),
+      unit: '',
+      category: 'measurements'
     });
   if (state.finishedAt != null)
     events.push({

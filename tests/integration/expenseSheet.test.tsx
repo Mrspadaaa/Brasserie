@@ -44,7 +44,7 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     const datePanel=within(dateSummary.parentElement!);
     // D262b : « Aujourd'hui · Mois passé · Mois suivant », dans cet ordre ; ni « Hier » ni « Demain ».
     expect(datePanel.getAllByRole('button').filter(b=>['Aujourd’hui','Mois passé','Mois suivant','Hier','Demain'].includes(b.textContent??'')).map(b=>b.textContent)).toEqual(['Aujourd’hui','Mois passé','Mois suivant']);
-    fireEvent.change(screen.getByLabelText('Mois — Date de l’achat'),{target:{value:'2020-07'}});
+    fireEvent.change(screen.getByLabelText('Mois — Date de l’achat'),{target:{value:'07'}});
     expect(screen.getByLabelText('Date de l’achat')).toHaveValue('2020-07-31');
     expect(screen.getByText('Payé le 31.07.2020')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));

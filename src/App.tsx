@@ -6,6 +6,7 @@ import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
 import { startProofQueue } from './services/proofQueue';
 import { startEnrichissement } from './services/enrichissement';
+import { motsCleEcriture } from './services/search';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
@@ -65,6 +66,8 @@ import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
 import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
+import { prechargerVuesAuRepos } from './services/prechargeVues';
+import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 import { montantChf } from './domain/finance/ledger';
 
@@ -80,7 +83,9 @@ const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
 const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
 const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
-const HopV55Host = lazy(() => import('./ui/hopV55/Host').then(module => ({ default: module.HopV55Host })));
+// Voie l3 : le chunk du Host et la bibliothèque de levures (1,4 Mo) partent EN PARALLÈLE ; le Host ne se monte qu'une fois les deux là,
+// donc tout calcul synchrone du moteur (prepareBrewingScenarioContext…) trouve la bibliothèque. Elle n'est plus une dépendance statique du Host.
+const HopV55Host = lazy(() => Promise.all([import('./ui/hopV55/Host'), chargerBibliothequeLevures()]).then(([module]) => ({ default: module.HopV55Host })));
 // Écran provisoire des outils houblons v4 (#162) : atteint seulement par le crochet de développement tant que le
 // drapeau `hopV4` (src/ui/hopIndex/flags.ts) est éteint.
 // Une couche préchargée (precharge.ts) se rend d'un coup : la fabrique rend alors un thenable synchrone, car React garde sinon
@@ -274,7 +279,6 @@ export const App: React.FC = () => {
     void import('./ui/hopIndex/precharge').then(m => { if (!demonte) annuler = m.prechargerOutilsAuRepos(c => { coucheOutils = c; }); });
     return () => { demonte = true; annuler(); };
   }, []);
-  const [hopV55Journal, setHopV55Journal] = useState<{ batchId: string; journal: import('./types').BrewDayState }>();
   // A resolved background import should not still mount a Suspense fallback.
   // Lock the surface for this route so later data updates preserve local UI state.
   const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
@@ -282,6 +286,67 @@ export const App: React.FC = () => {
   const currentRoute = useRef(route.route);
   currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Onglet de Réglages demandé par l'événement (« brasserie » : Nouveau brassin › contenance) ; absent : l'onglet courant.
+  const [settingsOuvertSur, setSettingsOuvertSur] = useState<'brewhouse' | undefined>();
+  // « Régler dans Réglages › » de la feuille Impôt bière (p2b) : l'événement annulable ouvre Réglages ; la feuille se ferme dès qu'il est pris.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      setSettingsOuvertSur((event as CustomEvent<{ section?: string } | undefined>).detail?.section === 'brasserie' ? 'brewhouse' : undefined);
+      setIsSettingsOpen(true);
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-reglages', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
+  }, []);
+  // « Ce qui manque pour N L » (Nouveau brassin) : l'événement annulable ouvre Stocks sur le sous-onglet Courses.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      StorageService.setUiState('stocks_subtab', 'courses');
+      setActiveTab('stocks');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-stocks', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-stocks', ouvrir);
+  }, []);
+  // « Mes clients › » (Atelier, Contacts) et « Agenda du Bord › » (Atelier, À faire) : l'événement annulable ouvre l'onglet visé.
+  useEffect(() => {
+    const versClients = (event: Event) => { setActiveTab('clients'); event.preventDefault(); };
+    const versBord = (event: Event) => { setActiveTab('dashboard'); event.preventDefault(); };
+    window.addEventListener('affinee:ouvrir-clients', versClients);
+    window.addEventListener('affinee:ouvrir-bord', versBord);
+    return () => {
+      window.removeEventListener('affinee:ouvrir-clients', versClients);
+      window.removeEventListener('affinee:ouvrir-bord', versBord);
+    };
+  }, []);
+  // « Modifier la recette › » (Nouveau brassin, recette à adapter au matériel) : l'événement annulable ouvre l'assistant sur cette recette.
+  const recipesRef = useRef<Recipe[]>([]);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const id = (event as CustomEvent<{ recipeId?: string } | undefined>).detail?.recipeId;
+      const recipe = recipesRef.current.find((r) => r.id === id);
+      if (!recipe) return;
+      openWizardRef.current?.({ recipe });
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:modifier-recette', ouvrir);
+    return () => window.removeEventListener('affinee:modifier-recette', ouvrir);
+  }, []);
+  // CP-13 : « Datés et budgétés, ils entrent dans Finances › Prévisions » (Brassins › Atelier › Matériel) : l'événement annulable ouvre l'onglet Finances sur le sous-onglet demandé.
+  const [financeTabRequest, setFinanceTabRequest] = useState<{ onglet: string; at: number } | null>(null);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const onglet = (event as CustomEvent<{ onglet?: string }>).detail?.onglet;
+      if (typeof onglet !== 'string') return;
+      setFinanceOpenRequest(null);
+      if (onglet === 'previsions') StorageService.setUiState('finances_workspace', 'forecast');
+      setFinanceTabRequest({ onglet, at: Date.now() });
+      setActiveTab('finances');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-finances', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-finances', ouvrir);
+  }, []);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -299,6 +364,7 @@ export const App: React.FC = () => {
   });
   const [batches, setBatches] = useState<Batch[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const openWizardRef = useRef<((seed?: WizardSeed, duplicateOf?: string) => void) | undefined>(undefined);
   const [clients, setClients] = useState<Client[]>([]);
   const [planning, setPlanning] = useState<GanttTask[]>([]);
   const [budgetLines, setBudgetLines] = useState<BudgetLine[]>([]);
@@ -436,7 +502,8 @@ export const App: React.FC = () => {
 
   // Critical stock count
   // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
-  const criticalStockCount = articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches).length;
+  // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
+  const criticalStockCount = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes).length, [stocks, batches, recipes]);
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(
@@ -463,6 +530,8 @@ export const App: React.FC = () => {
     route.open({ view: 'wizard', recipeId: duplicateOf ?? seed?.recipe?.id,
       duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
   };
+  openWizardRef.current = openWizard;
+  recipesRef.current = recipes;
 
   /*
    * Banc local de l'étape Houblons (T12b, #170 ; contrôles de ses choix sur l'app, T14) : `?dev-local&etape=houblons`
@@ -528,6 +597,18 @@ export const App: React.FC = () => {
     else if (!stored.recipeId) setWizardSeed({ title: stored.title, description: stored.description });
     route.replaceTop(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, isDataReady]);
+
+  // l2 (10.11) : une fois connecté, l'accueil affiché et le navigateur au repos, les vues les plus ouvertes (brassins, stocks, finances,
+  // clients) se chargent une à une ; leur première ouverture n'attend plus le réseau. Voir services/prechargeVues.ts.
+  useEffect(() => {
+    if (!currentUser || !isDataReady) return;
+    let annuler = () => {};
+    let demonte = false;
+    const lancer = () => { if (!demonte) annuler = prechargerVuesAuRepos(); };
+    if (document.readyState === 'complete') lancer();
+    else window.addEventListener('load', lancer, { once: true });
+    return () => { demonte = true; window.removeEventListener('load', lancer); annuler(); };
   }, [currentUser, isDataReady]);
 
   /**
@@ -690,7 +771,7 @@ export const App: React.FC = () => {
   /** Clôture du jour de brassage : sauvegarde des relevés, puis fermentation. */
   const finishBrewDay = (updated: Batch) => {
     const result = StorageService.completeBrewStock(updated);
-    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.` : `${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
+    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.${result.issues.length ? ' Levure à régulariser dans le dossier du brassin.' : ''}` :`${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
     route.close();
   };
 
@@ -750,7 +831,7 @@ export const App: React.FC = () => {
         label: t.description,
         detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
-        keywords: [t.id, t.category, t.subcategory, t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? ''],
+        keywords: motsCleEcriture(t),
         archived: isTransactionArchived(t, financialArchiveIndex),
         onSelect: () => {
           setActiveTab('finances');
@@ -846,7 +927,6 @@ export const App: React.FC = () => {
         }}
         onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
         onOpenBatch={openBrewDay}
-        onOpenHopV55={() => route.open({ view: 'hopV55', recipeId: routedRecipe.id })}
       />
     )}
   
@@ -859,7 +939,6 @@ export const App: React.FC = () => {
         onClose={route.close}
         onSave={(b) => StorageService.updateBatch(b)}
         onFinish={finishBrewDay}
-        onOpenHopV55={journal => { setHopV55Journal({ batchId: routedBatch.id, journal }); route.open({ view: 'hopV55', batchId: routedBatch.id }); }}
       />
     )}
   
@@ -922,6 +1001,7 @@ export const App: React.FC = () => {
       <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
       <Header
         compactLayout
+        large={activeTab === 'stocks'}
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -938,7 +1018,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap="nav" className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px]' : ''} w-full mx-auto px-2 xs:px-3`}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -965,6 +1045,7 @@ export const App: React.FC = () => {
           <FinancesTab
             transactions={transactions}
             openTransactionRequest={financeOpenRequest}
+            ongletRequest={financeTabRequest}
             recipes={recipes}
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
@@ -979,6 +1060,7 @@ export const App: React.FC = () => {
               const recipe = recipes.find((r) => r.id === recipeId);
               if (recipe) openRecipe(recipe);
             }}
+            onOpenSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
           />
         )}
 
@@ -993,7 +1075,6 @@ export const App: React.FC = () => {
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}
-            onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onEditRecipe={(recipe) => openWizard({ recipe })}
             onRebrewRecipe={(recipeId) => { setBrewRecipeId(recipeId); setQuickAction('brew-batch'); }}
             onOpenBrewDay={openBrewDay}
@@ -1015,7 +1096,9 @@ export const App: React.FC = () => {
           <StocksTab
             stocks={stocks}
             batches={batches}
-            onOpenHopV55={() => route.open({ view: 'hopV55' })}
+            clients={clients}
+            onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
+            onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
             onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
             openItemRequest={stockOpenRequest}
@@ -1099,7 +1182,8 @@ export const App: React.FC = () => {
       {/* Settings Modal */}
       <DeferredSurface active={isSettingsOpen} fallback={<Sheet open={isSettingsOpen} title="Chargement…" onClose={() => setIsSettingsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><SettingsModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={() => { setIsSettingsOpen(false); setSettingsOuvertSur(undefined); }}
+        ouvertSur={settingsOuvertSur}
         config={config}
         onConfigUpdated={(newCfg) => setConfig(newCfg)}
         onOpenAuditLogs={() => setIsAuditLogsOpen(true)}
@@ -1149,7 +1233,6 @@ export const App: React.FC = () => {
                 ? <HopV55Host key={`${currentUser.uid}:${layer.recipeId ?? layer.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
                     recipe={layer.recipeId ? recipes.find(recipe => recipe.id === layer.recipeId) : undefined}
                     batch={layer.batchId ? batches.find(batch => batch.id === layer.batchId) : undefined}
-                    journal={layer.batchId === hopV55Journal?.batchId ? hopV55Journal?.journal : undefined}
                     onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />
                 : <HopToolLayer route={layer} level={i + 1} onClose={route.close} />}
             </LazySurface>

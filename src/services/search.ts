@@ -58,6 +58,16 @@ export function runSearch<T>(fuse: Fuse<T>, query: string): T[] {
   return fuse.search(q).map((r) => r.item);
 }
 
+/**
+ * Les mots-clés d'une écriture dans la recherche universelle (⌘K). Mission 2026-11-10-lecture-robuste (sa question du 10.11 : « la recherche
+ * une fois une facture entré fonctionne ? ») : une dépense se retrouve aussi par ses ARTICLES (libellé et référence de chaque ligne), pas
+ * seulement par sa description, son fournisseur ou son numéro de facture.
+ */
+export function motsCleEcriture(t: { id: string; category?: string; subcategory?: string; finance?: { vendor?: string; invoiceNumber?: string; lines?: ReadonlyArray<{ description?: string; sourceReference?: string }> } }): string[] {
+  const lignes = (t.finance?.lines ?? []).flatMap(l => [l.description ?? '', l.sourceReference ?? '']);
+  return [t.id, t.category ?? '', t.subcategory ?? '', t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? '', ...lignes].filter(Boolean);
+}
+
 export interface SearchableCommand {
   label: string;
   detail?: string;

@@ -7,6 +7,8 @@ import type { ChampFiche } from '../domain/stock/ficheValeurs';
  * Le magasin local de la procédure d'enrichissement (voie f4-enrichir, PLAN § 4.1) : les travaux (un par article neuf), les réponses des
  * recherches (une par clé de fiche : un produit n'est cherché qu'une fois) et le compteur du jour. IndexedDB, pas Firestore.
  */
+/** Les champs qu'un travail écrit ou constate vides : la liste blanche de `patchDeTrous`, plus l'α d'un houblon (n1, EN-1 : lu au catalogue, écrit par `enrichissementTravail`). */
+export type ChampEcrit = ChampFiche | 'alphaPct';
 export type EtatTravail = 'attend' | 'fait' | 'aControler' | 'introuvable' | 'aSaisir' | 'iaEteinte' | 'plafond' | 'echec' | 'abandonne';
 export type Raison = 'rejet' | 'supprime' | 'ambigu' | 'proche' | 'propose' | 'horsCatalogue' | 'nonIdentifiable' | 'refus' | 'troisJours';
 export interface TravailFiche {
@@ -16,7 +18,10 @@ export interface TravailFiche {
   s6: { cas: 'neuf' | 'incertain' | 'inconnu' | 'ambigu' | 'meme'; voisinRef?: string; motif?: 'bis' | 'origine' };
   cle: string; etat: EtatTravail; raison?: Raison; candidats?: string[];
   essais: { joursEchec: string[]; dernier?: number; vie?: string };
-  remplis?: ChampFiche[]; creeLe: string; finiLe?: string; annonce: boolean;
+  remplis?: ChampEcrit[];
+  /** n1 (EN-2, EN-3) : les champs utiles de la famille encore vides à la fin du travail (aucun chiffre inventé) : la fiche les dit « à saisir ». */
+  manque?: ChampEcrit[];
+  creeLe: string; finiLe?: string; annonce: boolean;
   /** Jour de Zurich où l'état `plafond` a été posé : il reprend le jour suivant. */
   plafondLe?: string;
   /** M3 : les faits qu'il a acceptés dans une recette pour un produit `proche` d'une fiche (ref `RECETTE-…`) : gardés à contrôler, jamais écrits seuls. */

@@ -41,7 +41,7 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
     const final: taxArchive.TaxArchiveResult = { ...first, blob: new Blob(['volume2']), fileName: 'volume2.zip', nextIndex: null, missingCount: 0 };
     const create = vi.spyOn(taxArchive, 'createTaxArchive').mockResolvedValueOnce(first).mockRejectedValueOnce(Object.assign(Error('Reconnecte Google Drive.'), { code: 'drive/auth-required' })).mockResolvedValueOnce(final);
     const download = vi.spyOn(taxArchive, 'downloadTaxArchive').mockImplementation(() => {});
-    render(<Workspace/>); fireEvent.click(screen.getByRole('tab', { name: 'Dossier' }));
+    render(<Workspace/>); fireEvent.click(screen.getByRole('button', { name: /^9\. Dossier/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Télécharger le dossier avec justificatifs' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Télécharger la suite · volume 2' }));
     const connect = await screen.findByRole('button', { name: 'Connecter Drive' });
@@ -62,7 +62,8 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
   it('enregistre l’activité accessoire, les contrôles et le report confirmé puis copie le bon montant', async () => {
     const clipboard = vi.fn(async () => {}); Object.defineProperty(navigator, 'clipboard', { value: { writeText: clipboard }, configurable: true });
     render(<Workspace/>);
-    fireEvent.click(screen.getByRole('button', { name: /^Vérifications de l’année/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^7\. Vérifications/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cocher ce que j’ai vu' }));
     fireEvent.change(screen.getByLabelText('La brasserie est mon activité'), { target: { value: 'secondary' } });
     for (const r of TAX_REVIEWS) fireEvent.click(screen.getByRole('checkbox', { name: r.label }));
     fireEvent.change(screen.getByLabelText('Étape à compléter'), { target: { value: 'wealth' } });
@@ -74,8 +75,8 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(FinanceService.getClosings()[0].tax?.activity).toBe('secondary');
-    fireEvent.click(screen.getByRole('tab', { name: 'Reporter' }));
-    expect(screen.getByText('Code 1.220')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: /^8\. Montants à reporter/ }));
+    expect(screen.getByText(/code 2025 : 1\.220/)).toBeVisible();
     const copy = screen.getByRole('button', { name: 'Copier Revenu de la brasserie · activité accessoire' });
     expect(copy).toBeEnabled(); fireEvent.click(copy); await waitFor(() => expect(clipboard).toHaveBeenCalledWith('0.00'));
     expect(screen.getByRole('button', { name: 'Copier Fortune mobilière de l’exploitation' })).toBeEnabled();
@@ -83,7 +84,7 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
   it('stocke un justificatif complémentaire original sans IA et le conserve dans la version figée', async () => {
     const pdf = new jsPDF(); pdf.text('Relevé bancaire fictif', 20, 20);
     const original = pdf.output('arraybuffer');
-    render(<Workspace/>); fireEvent.click(screen.getByRole('tab', { name: 'Dossier' }));
+    render(<Workspace/>); fireEvent.click(screen.getByRole('button', { name: /^9\. Dossier/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Pièces complémentaires/ }));
     const file = new File([original], 'releve-test.pdf', { type: 'application/pdf' });
     fireEvent.change(document.querySelector('input[type=file]')!, { target: { files: [file] } });
@@ -115,7 +116,7 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
   it('conserve le fichier et ne publie pas de référence lors d’un échec puis reprend le même original', async () => {
     const upload = vi.spyOn(financeDocuments, 'saveFinanceDocumentConfirmed').mockRejectedValueOnce(Error('Connexion interrompue pendant le justificatif.'));
     const pdf = new jsPDF(); pdf.text('Document à conserver après échec', 20, 20);
-    render(<Workspace/>); fireEvent.click(screen.getByRole('tab', { name: 'Dossier' }));
+    render(<Workspace/>); fireEvent.click(screen.getByRole('button', { name: /^9\. Dossier/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Pièces complémentaires/ }));
     fireEvent.change(document.querySelector('input[type=file]')!, { target: { files: [new File([pdf.output('arraybuffer')], 'a-reessayer.pdf', { type: 'application/pdf' })] } });
     await waitFor(() => expect(screen.getByText('a-reessayer.pdf')).toBeInTheDocument());
@@ -148,12 +149,16 @@ describe('Parcours fiscal enregistré dans les clôtures', () => {
   });
   it('protège les reports et garde les étapes utilisables au clavier lorsque les données manquent', () => {
     render(<Workspace/>);
-    fireEvent.keyDown(screen.getByRole('tab', { name: 'Préparer' }), { key: 'ArrowRight' });
-    expect(screen.getByRole('tab', { name: 'Reporter' })).toHaveFocus();
+    const piste = (n: number) => screen.getByRole('button', { name: new RegExp(`^${n}\\. `) });
+    fireEvent.click(piste(1)); piste(1).focus();
+    fireEvent.keyDown(piste(1), { key: 'ArrowRight' });
+    expect(piste(2)).toHaveFocus();
+    fireEvent.click(piste(8));
     expect(screen.getByRole('button', { name: 'Copier Revenu de la brasserie' })).toBeDisabled();
-    expect(screen.queryByText('Code 1.210')).not.toBeInTheDocument();
-    fireEvent.keyDown(screen.getByRole('tab', { name: 'Reporter' }), { key: 'End' });
-    expect(screen.getByRole('tab', { name: 'Dossier' })).toHaveFocus();
+    expect(screen.queryByText(/1\.210/)).not.toBeInTheDocument();
+    piste(8).focus(); fireEvent.keyDown(piste(8), { key: 'End' });
+    expect(piste(9)).toHaveFocus();
+    fireEvent.click(piste(9));
     expect(screen.getByRole('button', { name: 'Télécharger le dossier avec justificatifs' })).toBeVisible();
   });
 });

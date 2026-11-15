@@ -1,0 +1,126 @@
+/* Récapitulatif 7/7 : la maquette m2 (15.11) : la liste de contrôle, chaque étape sur la piste de son style. Classes `rc2-`.
+   Les couleurs suivent les deux thèmes de l'app (clair, cave) par des variables locales. Rangée ≥ 52 px, texte ≥ 12 px. */
+.rc2 {
+  --rc2-page: rgb(var(--cave-950)); --rc2-panel: rgb(var(--cave-900)); --rc2-haut: rgb(var(--cave-850, var(--cave-800)));
+  --rc2-bord: rgb(var(--cave-800)); --rc2-bordm: rgb(var(--cave-700)); --rc2-trait: rgb(var(--cave-600));
+  --rc2-t2: rgb(var(--cave-texte-400)); --rc2-t1: rgb(var(--cave-texte-200)); --rc2-t0: rgb(var(--cave-texte-50)); --rc2-inv: rgb(var(--cave-950));
+  --rc2-att: rgb(var(--attention)); --rc2-attt: rgb(var(--attention-texte)); --rc2-attf: rgb(var(--attention) / .12); --rc2-attb: rgb(var(--attention) / .35);
+  --rc2-hop: rgb(var(--hop)); --rc2-hopt: rgb(var(--hop-texte)); --rc2-hopf: rgb(var(--hop) / .18);
+  --rc2-eau: rgb(var(--water)); --rc2-eaut: rgb(var(--water-texte));
+  display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; max-width: 560px; margin-inline: auto; color: var(--rc2-t1);
+}
+.rc2 button { font: inherit; color: inherit; cursor: pointer; }
+.rc2 button:focus-visible, .rc2 summary:focus-visible, .rc2 input:focus-visible { outline: 2px solid rgb(var(--attention)); outline-offset: 2px; }
+.rc2-m { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.rc2-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.rc2.rc2 .rc2-cache { display: none; }
+
+/* Le verdict : une ligne, deux mots forts */
+.rc2-ver { display: flex; align-items: center; gap: 8px; }
+.rc2-ok { display: inline-flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 700; color: var(--rc2-t0); }
+.rc2-ok i { width: 24px; height: 24px; border-radius: 50%; background: var(--rc2-t0); color: var(--rc2-inv); display: flex; align-items: center; justify-content: center; }
+.rc2-ok.rc2-non { color: rgb(var(--alert-texte, var(--alert))); }
+.rc2-ok.rc2-non i { background: rgb(var(--alert)); color: #fff; }
+.rc2-man { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 10px; background: var(--rc2-attf); border: 1px solid var(--rc2-attb); color: var(--rc2-attt); font-size: 14px; font-weight: 600; }
+.rc2-man b { font-family: 'IBM Plex Mono', monospace; }
+.rc2-corr { font-size: 13px; color: rgb(var(--alert-texte, var(--alert))); }
+.rc2-corr ul { margin-top: 4px; display: flex; flex-direction: column; gap: 4px; }
+.rc2-corr button { min-height: 28px; text-decoration: underline; text-underline-offset: 2px; }
+
+/* La liste de contrôle : une rangée par étape (un <details> : le dépli est sa fiche d'aujourd'hui) */
+.rc2-liste { list-style: none; margin: 0; padding: 0; border: 1px solid var(--rc2-bord); border-radius: 16px; overflow: hidden; background: var(--rc2-page); }
+.rc2-li { border-top: 1px solid var(--rc2-bord); min-width: 0; }
+.rc2-li:first-child { border-top: 0; }
+/* Le titre historique de la section (Identité, Fermentescibles…) est le texte propre du résumé : lecteurs d’écran et recherche d’une section le trouvent ; à 0 px il ne prend aucune place. */
+/* ⚠️ `recipe-wizard.css` règle `.recipe-wizard [data-recipe-section] > summary` (min-height 28, gap 8) et `… > summary > span` (flex, align-items: baseline, `> span:first-child` en 8rem) :
+   sans le doublement `.rc2.rc2`, ces règles gagnaient (mesuré le 15.11 : rangées 47 px, pistes à 0 px de large). Les règles de la rangée portent donc `.rc2.rc2 details.rc2-det`. */
+.rc2.rc2 details.rc2-det > summary { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 0; font-size: 0; min-height: 52px; padding: 6px 10px; cursor: pointer; background-image: none; }
+.rc2-det > summary::-webkit-details-marker { display: none; }
+.rc2.rc2 details.rc2-det > summary > span { gap: 0; }
+.rc2.rc2 details.rc2-det > summary > .rc2-n { flex: 1 1 0; display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; min-width: 0; font-size: 14px; }
+.rc2.rc2 details.rc2-det > summary > .rc2-x { flex: 0 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: flex-end; margin-left: 8px; font-size: 14px; }
+.rc2.rc2 details.rc2-det > summary > .rc2-x > :first-child { flex: none; font-size: inherit; }
+.rc2.rc2 details.rc2-det > summary > .rc2-n > .rc2-pis { display: flex; flex-direction: column; align-items: stretch; margin-top: 4px; font-size: 13px; }
+.rc2.rc2 details.rc2-det > summary > .rc2-st { flex: none; display: flex; align-items: center; justify-content: center; }
+.rc2.rc2 [hidden] { display: none; }
+.rc2-st { flex: none; margin-right: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--rc2-t0); color: var(--rc2-inv); display: flex; align-items: center; justify-content: center; }
+.rc2-st.rc2-a { background: var(--rc2-page); border: 2px solid var(--rc2-att); color: var(--rc2-attt); font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+.rc2-st.rc2-vide { border-style: dashed; }
+.rc2-n { flex: 1 1 0; font-size: 14px; display: flex; flex-direction: column; min-width: 0; }
+.rc2-n strong { font-size: 14px; font-weight: 600; color: var(--rc2-t0); }
+.rc2-n > span { font-size: 13px; color: var(--rc2-t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc2-n .rc2-m { font-size: 13px; color: var(--rc2-t1); }
+.rc2-n > .rc2-pis { overflow: visible; white-space: normal; }
+.rc2-n > .rc2-pis > * { white-space: nowrap; }
+.rc2-sp { margin-left: 6px; }
+.rc2-at { color: var(--rc2-attt); font-weight: 600; background: var(--rc2-attf); border: 1px dashed var(--rc2-att); border-radius: 10px; padding: 0 6px; }
+.rc2-x { margin-left: 8px; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; min-width: 0; color: var(--rc2-t0); }
+.rc2-chev { flex: none; margin-left: 8px; color: var(--rc2-t2); transition: transform .15s; }
+.rc2-det[open] > summary .rc2-chev { transform: rotate(180deg); }
+.rc2-det[open].rc2-rlev > summary { box-shadow: inset 3px 0 0 var(--rc2-att); }
+.rc2-det[open] > summary { background: var(--rc2-panel); }
+.rc2-corps { padding: 2px 10px 10px 10px; min-width: 0; background: var(--rc2-page); }
+.rc2-dep { background: var(--rc2-attf); padding: 6px 10px 8px 38px; display: flex; flex-direction: column; gap: 6px; }
+.rc2-sty { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 6px 0 3px; border-radius: 10px; background: #D5F2EC; border: 1px solid #8ED5C7; color: #0E5A50; font-size: 12px; font-weight: 600; }
+.rc2-sty i { width: 14px; height: 14px; border-radius: 50%; background: #2BB59F; }
+:root[data-theme='cave'] .rc2-sty { background: #163C36; border-color: #2A6E62; color: #9BE3D5; }
+
+/* Mini formes */
+.rc2-pis { display: flex; flex-direction: column; margin-top: 4px; }
+.rc2-pi { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px; align-items: center; gap: 6px; height: 22px; }
+.rc2-pi > em { font-style: normal; font-size: 12px; color: var(--rc2-t2); }
+.rc2-tr { position: relative; display: block; height: 6px; border-radius: 10px; background: var(--rc2-haut); }
+.rc2-tr u { position: absolute; top: -4px; bottom: -4px; border-radius: 10px; background: var(--rc2-hopf); border: 1.5px solid var(--rc2-hop); text-decoration: none; }
+.rc2-tr s { position: absolute; top: -2px; bottom: -2px; border-radius: 10px; background: var(--rc2-t0); text-decoration: none; }
+.rc2-tr b { position: absolute; top: -4px; width: 14px; height: 14px; border-radius: 50%; background: var(--rc2-t0); border: 2px solid var(--rc2-page); transform: translateX(-50%); }
+.rc2-tr b.rc2-hors { background: var(--rc2-att); }
+.rc2-tr.rc2-ebc { background: linear-gradient(90deg, #F6E7A8, #F2C14E 20%, #D98B2B 45%, #9B4A1E 75%, #4A2010); }
+.rc2-tr.rc2-ebc u { background: transparent; border-color: #3F8A2E; }
+.rc2-tr b.rc2-verre { border: 2px solid var(--rc2-att); width: 16px; height: 16px; top: -5px; }
+.rc2-pd { position: absolute; top: -7px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: var(--rc2-attt); line-height: 20px; }
+.rc2-pv { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: var(--rc2-t0); text-align: right; white-space: nowrap; }
+.rc2-pg { justify-self: end; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--rc2-hopt); border: 1.5px solid var(--rc2-hop); background: var(--rc2-hopf); border-radius: 10px; padding: 0 6px; line-height: 16px; }
+.rc2-aro { display: flex; gap: 2px; }
+.rc2-aro i { width: 6px; height: 18px; border-radius: 10px; }
+.rc2-grain { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgb(0 0 0 / .18); }
+.rc2-det > summary .rc2-courbe { color: var(--rc2-t0); }
+.rc2-rhop > summary { position: relative; }
+.rc2-rhop > summary .rc2-x { position: absolute; right: 38px; top: 12px; }
+
+/* La toile de l'eau, dans la rangée : pleine largeur de la liste, étiquettes d'ions ≥ 12 px à l'écran */
+.rc2.rc2 details.rc2-det > summary > .rc2-toile { flex: 0 0 100%; display: block; width: 100%; margin: 4px 0 0; min-width: 0; font-size: 12px; }
+.rc2-toile .water-radar { width: 100%; max-width: 440px; margin: 0 auto; }
+.rc2-toile svg { width: 100%; height: auto; display: block; }
+
+/* À peser, les sorties et les achats en pastille */
+.rc2-pes { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--rc2-panel); border-radius: 16px; width: 100%; text-align: left; }
+.rc2-pes svg { color: var(--rc2-t1); flex-shrink: 0; }
+.rc2-pes p { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13px; color: var(--rc2-t2); }
+.rc2-pes p b { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--rc2-t0); }
+.rc2-out { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-right: 58px; }
+.rc2.rc2 .rc2-o, .rc2.rc2 .rc2-plus > summary { height: 28px; min-height: 28px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--rc2-bordm); background: var(--rc2-page); background-image: none !important; /* themes.css pose un chevron de fond sur tout summary sans chevron (spécificité 0,4,3) */ font-size: 13px; line-height: 1; color: var(--rc2-t1); display: inline-flex; align-items: center; gap: 6px; list-style: none; cursor: pointer; }
+.rc2-plus > summary::-webkit-details-marker { display: none; }
+/* « Plus » reste sur la ligne de Texte et Relire (m2) ; son menu s'ouvre en dessous, par-dessus la suite. */
+.rc2.rc2 .rc2-out { position: relative; gap: 4px; }
+.rc2.rc2 .rc2-ach { padding: 0 6px; }
+.rc2-plus { flex: none; }
+.rc2-plus > div { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; align-items: flex-start; background: var(--rc2-page); border: 1px solid var(--rc2-bordm); border-radius: 14px; box-shadow: 0 8px 24px rgb(0 0 0 / .18); }
+.rc2-plus > div > button, .rc2-plus > div .rc2-bt { min-height: 32px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--rc2-bordm); font-size: 14px; color: var(--rc2-t1); }
+.rc2-plus-ex { flex-basis: 100%; }
+.rc2-ach { margin-left: auto; height: 28px; display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--rc2-bord); font-size: 12px; color: var(--rc2-t2); background: var(--rc2-page); }
+.rc2-ach b { font-family: 'IBM Plex Mono', monospace; color: var(--rc2-attt); }
+.rc2-relec { flex-basis: 100%; }
+.rc2-aux:not(:has(details[open])) { display: none; }
+
+/* Le geste de la Levure : unité, quantité (curseur et champ), aller à l'étape */
+.rc2-p2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rc2-lb { width: 72px; white-space: nowrap; font-size: 12px; color: var(--rc2-t2); }
+.rc2-lb b { font-family: 'IBM Plex Mono', monospace; color: var(--rc2-attt); }
+.rc2-seg { display: inline-flex; border: 1px solid var(--rc2-bordm); border-radius: 10px; overflow: hidden; background: var(--rc2-page); }
+.rc2-seg button { height: 28px; padding: 0 14px; font-size: 14px; color: var(--rc2-t1); border-left: 1px solid var(--rc2-bordm); }
+.rc2-seg button:first-child { border-left: 0; }
+.rc2-seg button[aria-checked='true'] { background: var(--rc2-t0); color: var(--rc2-inv); font-weight: 600; }
+.rc2-sl { flex: 1; min-width: 120px; height: 40px; display: flex; align-items: center; }
+.rc2-sl input[type='range'] { width: 100%; accent-color: var(--rc2-att); }
+.rc2-aller { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--rc2-t0); font-size: 14px; font-weight: 600; color: var(--rc2-t0); background: var(--rc2-page); }
+.rc2-titre { flex: none; width: 0; overflow: hidden; font-size: 0; }

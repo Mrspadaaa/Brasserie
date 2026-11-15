@@ -78,16 +78,20 @@ describe('VI-9 (rejeu b47cd90b n° 9) : « 99999 » tapé chiffre par chiffre ga
 });
 
 describe('VI-8 (rejeu b47cd90b n° 8) : le panneau d’ajustement se lit', () => {
-  it('« Consigner à cette heure » éteint dit ce qui manque, et porte la classe d’action ; la date valide l’allume', () => {
-    mount();
+  it('« Consigner à cette heure » éteint porte la classe d’action ; la date valide l’allume ; « Maintenant » consigne en un geste, sans phrase d’aide (p3, n° 6)', () => {
+    const v = mount();
     fireEvent.click(screen.getByRole('button', { name: /Modifier la quantité de Sel d’Epsom/ }));
     const bouton = screen.getByRole('button', { name: 'Consigner à cette heure' });
     expect(bouton).toBeDisabled();
     expect(bouton).toHaveClass('brew-consign');
-    expect(screen.getByText(/Choisis d’abord la date et l’heure réelles/)).toBeInTheDocument();
+    expect(screen.queryByText(/Choisis d’abord la date/)).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText(/Date et heure réelles d’ajout de Sel d’Epsom/), { target: { value: '2020-01-02T10:30' } });
     expect(bouton).toBeEnabled();
     expect(screen.queryByText(/Choisis d’abord la date/)).not.toBeInTheDocument();
+    expect(v.latest()?.additions?.['salt-mash-epsom']?.doneAt).toBeUndefined();
+    fireEvent.click(screen.getByRole('button', { name: 'Maintenant' }));
+    expect(v.latest()!.additions!['salt-mash-epsom'].doneAt).toBeGreaterThan(0);
+    expect(screen.getByRole('checkbox', { name: /Ajouté : Sel d’Epsom/ })).toBeChecked();
   });
   it('la valeur tapée est centrée sur l’axe du « g » : hauteur de ligne = hauteur du champ (le champ tactile est un textarea)', async () => {
     const { readFileSync } = await import('node:fs');
@@ -101,14 +105,13 @@ describe('VI-8 (rejeu b47cd90b n° 8) : le panneau d’ajustement se lit', () =>
 });
 
 describe('BR-52 / BE-33 : pas de sélecteur vide', () => {
-  it('sans plan d’eau, « Autre sel ou acide » n’ouvre pas une liste vide : une phrase le dit', () => {
+  it('sans plan d’eau, le « + » de l’eau n’ouvre pas une liste vide : il n’est pas proposé', () => {
     mount({ waterPlan: undefined });
-    expect(screen.queryByRole('button', { name: 'Autre sel ou acide à consigner' })).not.toBeInTheDocument();
-    expect(screen.getByText(/Aucun autre sel ni acide à ajouter/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Ajouter un produit/ })).not.toBeInTheDocument();
   });
   it('avec un plan d’eau, le sélecteur reste', () => {
     mount();
-    expect(screen.getByRole('button', { name: 'Autre sel ou acide à consigner' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Ajouter un produit/ }).length).toBeGreaterThan(0);
   });
 });
 

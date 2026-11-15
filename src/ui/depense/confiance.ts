@@ -337,6 +337,8 @@ const baisser = <T>(v: Valeur<T>, cibles: ReadonlyArray<Cible>): Valeur<T> => {
 };
 
 // ——— La ligne ———
+/** La raison d'une ligne « Autres » d'une dépense « divers » (dp, 10.11) : le renvoi vers l'apport ou prélèvement privé s'allume sur elle (`ExpenseSheet`). */
+export const PAS_BRASSERIE = 'pas un achat de brasserie ?';
 export interface ConfianceLigne {
   unite: ValeurUnite; quantite: Valeur<number>; prix: Valeur<number>; montant: Valeur<number>; famille: Valeur<FamilleCle>; article: Valeur<string>;
   /** Le pire des six : le niveau de la rangée. */
@@ -394,8 +396,12 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   quantite = baisser(quantite, de('quantite')); prix = baisser(prix, de('prix')); montant = baisser(montant, de('montant'));
 
   const famille = familleDeLigne(l, c);
+  /* dp (10.11, « Pas flaggé ??? » : un médicament de pharmacie) : une ligne « Autres » lue « divers » (kind other/unknown) dans une dépense « divers » : rien ne dit que c'est un achat de brasserie.
+     La règle existante (catégorie de la pièce `divers`, famille `autres`) : aucune liste de mots. Une ligne de service, de port ou de remise garde son niveau sûr. */
+  const pasBrasserie = famille === 'autres' && ['other', 'unknown'].includes(kind) && c.categorie === 'divers';
   let fam: Valeur<FamilleCle> = famille === 'autres' && !HORS_STOCK.has(kind) && kind !== 'discount'
-    ? { niveau: 'repris', valeur: famille, raison: 'classée dans « Autres » : rien ne dit mieux' } : { niveau: 'sur', valeur: famille, raison: 'famille lue dans la ligne et ses mots' };
+    ? { niveau: 'repris', valeur: famille, raison: 'classée dans « Autres » : rien ne dit mieux' }
+    : pasBrasserie ? { niveau: 'repris', valeur: famille, raison: PAS_BRASSERIE } : { niveau: 'sur', valeur: famille, raison: 'famille lue dans la ligne et ses mots' };
   fam = baisser(fam, de('famille'));
 
   const article = articleDe(l, c);

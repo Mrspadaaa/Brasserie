@@ -2,7 +2,6 @@ import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
-import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
@@ -15,8 +14,11 @@ import { SegmentsCoque } from '../../ui/production/volumes/Coque';
 import { AdapterVolumes } from '../../ui/production/volumes/AdapterVolumes';
 import { batchesVisiblesSousPeriode } from '../../ui/production/volumes/periode';
 import { loadRecipePage } from '../../pages/recipePageLoader';
-import { OUTILS_HOUBLONS_EVENT } from '../../domain/fabActions';
+import { ViewNavigation } from '../../ui/ViewNavigation';
 
+// l2 (10.11) : la fiche d'un brassin (graphiques, chat, procédé…) ne se télécharge plus avec l'accueil : elle part à la première ouverture,
+// et se précharge à l'inactivité (voir precharge dans App). Même motif que Previsions, PrixEcran et ImpotAnnee.
+const BatchDetailSheet = lazy(() => import('../../ui/BatchDetailSheet').then(m => ({ default: m.BatchDetailSheet })));
 const CreativeLabTab = lazy(() =>
   import('../CreativeLabTab').then(({ CreativeLabTab: CreativeLab }) => ({
     default: CreativeLab,
@@ -54,7 +56,6 @@ interface ProductionTabProps {
   /** Ouvre l'assistant de recette, prérempli depuis une idée du labo. */
   onDraftRecipe: (seed: { title: string; description?: string }) => void;
   onSuccessMessage?: (msg: string) => void;
-  onOpenHopV55?: () => void;
   /** e2a : « Rebrasser cette <style> » ouvre le brassin de la recette d'origine. */
   onRebrewRecipe?: (recipeId: string) => void;
 }
@@ -84,8 +85,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onRebrewRecipe,
   onOpenBrewDay,
   onDraftRecipe,
-  onSuccessMessage,
-  onOpenHopV55
+  onSuccessMessage
 }) => {
   // Persistent sub-navigation
   const [subTab, setSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() =>
@@ -124,13 +124,6 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     };
   }, [visible, subTab, recipes.length]);
 
-  // e11a : « Outils houblons » vit dans le menu du + (FloatingActions), qui l'annonce par cet événement ; l'écran l'ouvre.
-  useEffect(() => {
-    if (!visible || !onOpenHopV55) return;
-    const ouvrir = () => onOpenHopV55();
-    window.addEventListener(OUTILS_HOUBLONS_EVENT, ouvrir);
-    return () => window.removeEventListener(OUTILS_HOUBLONS_EVENT, ouvrir);
-  }, [visible, onOpenHopV55]);
   // e7a : le bilan des brassins remplace la phrase-réponse et la barre de la liste ; « ‹ Le bilan » vient juste sous les onglets.
   const [bilanOuvert, setBilanOuvert] = useState(false);
 
@@ -143,6 +136,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     const nom = (detailBatch.recipeSnapshot?.name ?? detailBatch.name ?? '').trim().toLowerCase();
     return (recipes.find(r => r.id === detailBatch.recipeRef) ?? recipes.find(r => nom && r.name.trim().toLowerCase() === nom))?.id;
   }, [detailBatch, recipes]);
+  const feuilleOuverte = React.useRef(false);
+  if (detailBatch) feuilleOuverte.current = true;
   const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
 
   useEffect(() => {
@@ -207,6 +202,58 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         {value:'recipes',label:`Recettes (${currentRecipes.length})`,court:'Recettes',compteur:currentRecipes.length},
         {value:'lab',label:'Atelier R&D',court:'Atelier'}, {value:'scaler',label:'Adapter les volumes',court:'Volumes'}
       ]}/>
+      <ViewNavigation<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
+        {value:'batches',label:`Brassins (${batches.filter(isCurrent).length})`,shortLabel:'Brassins'},
+        {value:'recipes',label:`Recettes (${currentRecipes.length})`,shortLabel:'Recettes'},
+        {value:'lab',label:'Atelier R&D',shortLabel:'Atelier'}, {value:'scaler',label:'Adapter les volumes',shortLabel:'Volumes'}
+      ]}>
+      <div role="group" aria-label="Atelier de brassage" className="grid grid-cols-4 gap-1 bg-cave-900 p-1 rounded-2xl border border-cave-800">
+        <button
+          type="button"
+          aria-pressed={subTab === 'batches'}
+          aria-label={`Brassins (${batches.filter(isCurrent).length})`}
+          onClick={() => setSubTab('batches')}
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
+            subTab === 'batches' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
+          }`}
+        >
+          Brassins<span className="hidden sm:inline"> ({batches.filter(isCurrent).length})</span>
+        </button>
+        <button
+          type="button"
+          aria-pressed={subTab === 'recipes'}
+          aria-label={`Recettes (${currentRecipes.length})`}
+          onClick={() => setSubTab('recipes')}
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
+            subTab === 'recipes' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
+          }`}
+        >
+          Recettes<span className="hidden sm:inline"> ({currentRecipes.length})</span>
+        </button>
+        <button
+          type="button"
+          aria-pressed={subTab === 'lab'}
+          onClick={() => setSubTab('lab')}
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
+            subTab === 'lab' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
+          }`}
+        >
+          Atelier R&D
+        </button>
+        <button
+          type="button"
+          aria-pressed={subTab === 'scaler'}
+          onClick={() => setSubTab('scaler')}
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
+            subTab === 'scaler' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
+          }`}
+        >
+          Volumes
+        </button>
+      </div>
+
+      </ViewNavigation>
+
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
         {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : <h2 className="sr-only">Le carnet de recettes</h2>}
@@ -241,8 +288,13 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
       {subTab === 'scaler' && <AdapterVolumes recettes={recipes} brewhouses={brewhouses} activeBrewhouseId={activeBrewhouseId} onNouvelleRecette={onOpenCreateBatch} />}
 
-      <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={onOpenBrewDay} onClose={() => setDetailBatch(null)}
-        onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
+      {/* l2 : monté à la première ouverture, puis gardé monté (la feuille se ferme d'elle-même quand batch est nul). */}
+      {(detailBatch || feuilleOuverte.current) && (
+        <Suspense fallback={null}>
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={onOpenBrewDay} onClose={() => setDetailBatch(null)}
+            onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
+        </Suspense>
+      )}
     </div>
   );
 };

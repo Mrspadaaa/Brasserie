@@ -1,0 +1,8 @@
+# c5b — Prix et marges · la règle est le sol de la pente (tiède)
+**Idée** : un seul graphe. La règle de c4a (à perte / mince / il te reste) devient le sol du graphe de c4e, et ses bandes montent en colonnes pâles. L'aiguille 5,00 monte jusqu'à la pente ; le point se lit à gauche (2,52 par bouteille) et à droite (9 162,72 par an) sur la même ligne pointillée. Les deux titres d'axe sont la bascule : « CHF par bouteille » ou « CHF par an » allume son axe et change le chiffre en tête (état 2).
+**Comment on passe de l'un à l'autre** : rien ne bouge, seule la lecture change ; l'axe de droite vaut l'axe de gauche × 3 636 bouteilles (1 200 L ÷ 0,33 L). « + 0,10 → + 363,60 /an » en bulle.
+**Corrigé** : « ⅓ ex. » sur mince ; « 41 paient le brassin · 40 pour toi » (27 L nets) ; hypothèse « si 1 200 L en 33 cl · estimé » sous l'année ; 75 cl et fût en tuiles, par bouteille ou par an selon l'axe (≤ 8 048,00 ; ≤ 1 652,40).
+**Baseline** : produit, formats, prix, coût (2,48, lien 7,51 CHF/L), reste et %, autres formats, Proposer (IA), Changer le prix. Mêmes réserves que c4a pour l'emballage inconnu (« ≤ »).
+**Risque** : deux axes sur un graphe ; le brasseur peut les lire comme deux courbes. Le point unique et la ligne commune sont faits pour l'éviter.
+B1 OK (bandes et aiguille de c4a, pente de c4e). B2 OK (2,52 en 42 px). B3 60 mots. B4 cibles ≥ 30 px (bascules d'axe 22 px de haut, à agrandir au port). B5 une primaire. B6 gardés. B7 COMMUN OK. B8 hachures et ≤. B9 s.o. B10 0 type number. B11 « Un point : 2,52 la bouteille, 9 162,72 l'année. » B12 format suisse. B13 IA au toucher.
+Captures : c5b-haut.png, c5b-etat2.png (lu par an), c5b-page.png, c5b-1280.png.

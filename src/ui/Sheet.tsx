@@ -34,6 +34,16 @@ interface SheetProps {
   /** Empêche la fermeture accidentelle quand une saisie est en cours. */
   dismissible?: boolean;
   className?: string;
+  /**
+   * Sans en-tête : le titre reste pour les lecteurs d'écran, et le contenu dessine le sien (retour, ⋯, ×), comme la maquette za3.
+   * Réservé au matériel ; les autres feuilles gardent leur en-tête.
+   */
+  bare?: boolean;
+  /**
+   * Page pleine à la place de la feuille montante (poignée, flou et coins arrondis en moins) : la fiche d'un appareil, comme la maquette za3.
+   * Réservé au matériel, avec `bare`.
+   */
+  plein?: boolean;
 }
 
 export const Sheet: React.FC<SheetProps> = ({
@@ -45,7 +55,9 @@ export const Sheet: React.FC<SheetProps> = ({
   footer,
   snapPoints,
   dismissible = true,
-  className = ''
+  className = '',
+  bare = false,
+  plein = false
 }) => {
   /*
    * ⚠️ Le clavier virtuel ne réduit NI `dvh`, NI `window.innerHeight` : une
@@ -67,6 +79,7 @@ export const Sheet: React.FC<SheetProps> = ({
   const tight = useDensity() === 'tight';
   const inheritedOpener = React.useContext(ModalOpenerContext);
   const returnFocus = React.useRef<HTMLElement | null>(null);
+  const contenu = React.useRef<HTMLDivElement | null>(null);
 
   return (
   <Drawer.Root
@@ -78,10 +91,15 @@ export const Sheet: React.FC<SheetProps> = ({
     autoFocus
   >
     <Drawer.Portal>
-      <Drawer.Overlay className="fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm" />
+      <Drawer.Overlay className={plein ? 'fixed inset-0 z-50 bg-cave-950' : 'fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm'} />
 
       <Drawer.Content
-        onOpenAutoFocus={() => { returnFocus.current = inheritedOpener?.isConnected ? inheritedOpener : document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+        ref={contenu}
+        onOpenAutoFocus={(event) => {
+          // N4 : sans en-tête, aucun bouton ne prend le focus à l'ouverture (un anneau noir entourait « ← Stocks · Matériel » et le ×) ; la feuille le garde.
+          if (bare) { event.preventDefault(); contenu.current?.focus({ preventScroll: true }); }
+          returnFocus.current = inheritedOpener?.isConnected ? inheritedOpener : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           // Une autre fiche peut venir de s'ouvrir : ne pas lui voler le focus.
@@ -110,17 +128,24 @@ export const Sheet: React.FC<SheetProps> = ({
           maxHeight: keyboardInset ? `calc(94dvh - ${keyboardInset}px)` : undefined
         }}
         className={`fixed inset-x-0 bottom-0 z-50 flex flex-col
-                   max-h-[94dvh] rounded-t-sheet
-                   bg-cave-900 border-t border-cave-700 shadow-sheet
+                   ${plein ? 'top-0 h-[100dvh] max-h-[100dvh] bg-cave-950' : 'max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet'}
                    focus:outline-none ${className}`}
       >
         {/* Poignée : indique qu'on peut glisser, et sert de zone de préhension. */}
+        {!plein && (
         <div
           className="shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"
         >
           <div className="w-8 h-1 rounded-full bg-cave-700" aria-hidden="true" />
         </div>
+        )}
 
+        {bare ? (
+          <>
+            <Drawer.Title className="sr-only">{title}</Drawer.Title>
+            <Drawer.Description className="sr-only">{subtitle || title}</Drawer.Description>
+          </>
+        ) : (
         <header
           className="shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"
         >
@@ -145,6 +170,7 @@ export const Sheet: React.FC<SheetProps> = ({
             <X className="w-4 h-4" />
           </button>
         </header>
+        )}
 
         {/*
           `scroll-pb-20` réserve la place du pied.
@@ -184,7 +210,9 @@ export const ConfirmSheet: React.FC<{
   consequence?: string;
   confirmLabel?: string;
   className?: string;
-}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className }) => (
+  /** Contenu propre à la confirmation (p3, 3C : les relevés de clôture). Il remplace l'affichage de `what`, qui reste dit aux lecteurs d'écran. */
+  children?: React.ReactNode;
+}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className, children }) => (
   <Sheet
     open={open}
     onClose={onClose}
@@ -215,7 +243,8 @@ export const ConfirmSheet: React.FC<{
     }
   >
     <div className="space-y-3">
-      <p className="text-base text-cave-50">{what}</p>
+      <p className={children ? 'sr-only' : 'text-base text-cave-50'}>{what}</p>
+      {children}
       {consequence && <p className="text-sm text-cave-400 leading-relaxed">{consequence}</p>}
     </div>
   </Sheet>

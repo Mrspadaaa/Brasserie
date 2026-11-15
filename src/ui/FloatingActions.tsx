@@ -1,6 +1,6 @@
 import React from 'react';
-import { Beer, ClipboardList, FileText, Hop, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
-import { OUTILS_HOUBLONS_EVENT, type FabAction } from '../domain/fabActions';
+import { Beer, ClipboardList, FileText, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
+import { type FabAction } from '../domain/fabActions';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
 import './floating-actions.css';
@@ -185,7 +185,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
   const facture: Item[] = [
     { key: 'invoice', label: 'Entrer une facture', hint: menuBrassins ? undefined : 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
-    { key: 'sale', label: 'Encaisser une vente', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
+    { key: 'sale', label: 'Vendre', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
   ];
   const production: Item[] = [
     { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },
@@ -193,8 +193,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   ];
   if (menuBrassins) {
     /* La maquette ne garde que « Créer une recette » : « Lancer un brassin » double l'action de l'écran sur Brassins, et « Brasser » est sur chaque recette. */
-    const outils: Item = { key: 'hops', label: 'Outils houblons', Icon: Hop, tone: 'text-hop', run: () => window.dispatchEvent(new Event(OUTILS_HOUBLONS_EVENT)) };
-    groups[0].push(production[0], outils);
+    /* d4523967 : les entrées Atelier Houblons V5.5 sont retirées partout, le menu aussi ; le module et la route restent. */
+    groups[0].push(production[0]);
     groups.push(facture, compagnon);
   } else {
     groups.push(facture, production);

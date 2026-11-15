@@ -134,7 +134,7 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       const labels = items.map(item => item.textContent ?? '');
       // BX-4 (09.11) : « Nouvelle écriture » ouvre l'entrée de la facture ; « Entrer une facture » ne se répète pas dessous.
       expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
-      for (const other of ['Encaisser une vente', 'Créer une recette', 'Lancer un brassin']) {
+      for (const other of ['Vendre', 'Créer une recette', 'Lancer un brassin']) {
         expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
       }
       await user.click(items[0]);

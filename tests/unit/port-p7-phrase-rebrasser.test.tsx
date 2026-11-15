@@ -54,20 +54,20 @@ describe('e11a : la phrase-réponse de la liste', () => {
 describe('e2a : « Rebrasser cette <style> » du Terminé', () => {
   const ouvrirSaison = () => fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin S' }));
 
-  it('le pied rebrasse la recette d\'origine (par sa référence) et ferme la fiche', () => {
+  it('le pied rebrasse la recette d\'origine (par sa référence) et ferme la fiche', async () => {
     const onRebrewRecipe = vi.fn();
     monter({ onRebrewRecipe });
     ouvrirSaison();
-    const dialogue = screen.getByRole('dialog');
+    const dialogue = await screen.findByRole('dialog', {}, { timeout: 10000 }); // l2 : la fiche se charge à la demande
     fireEvent.click(within(dialogue).getByRole('button', { name: 'Rebrasser cette Saison' }));
     expect(onRebrewRecipe).toHaveBeenCalledWith('REC-SAISON');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('sans recette retrouvée, jamais une autre recette : le pied reste « Fermer »', () => {
+  it('sans recette retrouvée, jamais une autre recette : le pied reste « Fermer »', async () => {
     monter({ onRebrewRecipe: vi.fn() }, [{ ...recette, id: 'AUTRE', name: 'Autre' } as Recipe]);
     ouvrirSaison();
-    const dialogue = screen.getByRole('dialog');
+    const dialogue = await screen.findByRole('dialog', {}, { timeout: 10000 }); // l2 : la fiche se charge à la demande
     expect(within(dialogue).queryByRole('button', { name: /Rebrasser/ })).not.toBeInTheDocument();
     expect(within(dialogue).getAllByRole('button', { name: 'Fermer' }).length).toBeGreaterThan(0);
   });

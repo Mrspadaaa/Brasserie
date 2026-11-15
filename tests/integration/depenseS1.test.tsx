@@ -69,10 +69,10 @@ describe('s1-1 : le stock ne garde que le brassage',()=>{
     const view=await ouvrir(lectureSans([item('line-1','Objet sans mot connu XQ7',{kind:'other',amountTTC:5,price:5})],{category:'brassage'}));
     expect(iconeStock(view,'line-1')).not.toBeNull();
   });
-  it('une ligne de rénovation ouverte ne propose ni « Suivre au stock » ni article',async()=>{
+  it('une ligne de rénovation ouverte ne propose aucun article d’office ; « Ajouter au stock » reste offert à la demande (BR-124)',async()=>{
     const view=await ouvrir(lectureTicket({countedEans:undefined}));
     await ouvrirLigne(view,'line-24');
-    expect(ligne(view,'line-24').querySelector('[data-dp-suivre]')).toBeNull();
+    expect(ligne(view,'line-24').querySelector('[data-dp-suivre]')).not.toBeNull();
     expect(ligne(view,'line-24').textContent).not.toMatch(/nouvel article|relié/);
   });
 });

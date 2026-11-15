@@ -19,10 +19,10 @@ describe('MV-31 : le moût collecté suit l’eau préparée', () => {
   it('rinçage 0 L : l’écran dit ce qui manque et n’affiche plus la cible comme un résultat', () => {
     monte(28.7, 0);
     expect(screen.getByRole('alert')).toHaveTextContent(/Il manque 13,4 L d’eau/);
-    expect(screen.getByText('Moût collecté avec cette eau · à froid')).toBeInTheDocument();
-    expect(screen.queryByText('Moût avant ébullition · à froid')).not.toBeInTheDocument();
+    expect(screen.getByText(/^Moût collecté/)).toBeInTheDocument();
+    expect(screen.queryByText(/^Avant ébullition/)).not.toBeInTheDocument();
     // 28,7 L − 7,7 L retenus = 21 L, pas 34,4
-    expect(screen.getByText('21 L')).toBeInTheDocument();
+    expect(screen.getByText('21')).toBeInTheDocument();
     // « Rinçage à chaud : 0 L dans le récipient principal » n'a pas de sens
     expect(screen.queryByText(/Rinçage à chaud/)).not.toBeInTheDocument();
   });
@@ -30,7 +30,7 @@ describe('MV-31 : le moût collecté suit l’eau préparée', () => {
     monte(28.7, 13.7);
     expect(screen.queryByTestId('x')).toBeNull();
     expect(document.querySelector('[data-role="eau-insuffisante"]')).toBeNull();
-    expect(screen.getByText('Moût avant ébullition · à froid')).toBeInTheDocument();
+    expect(screen.getByText(/^Avant ébullition/)).toBeInTheDocument();
   });
 });
 

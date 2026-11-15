@@ -60,6 +60,8 @@ export interface ScanFluxOptions {
   onProvisoire?:(provisoire:ScanOutcome)=>void;
   /** Levé quand la feuille se ferme : coupe l'attente, le serveur finit et met en cache. */
   signal?:AbortSignal;
+  /** « Un doute ? Relire plus finement » : la pièce est relue en entier (jamais en morceaux) avec cette option, un mot que le serveur interprète ; jamais un nom de modèle. */
+  relecture?:'argon';
 }
 /** n2-pages : ce qu'un serveur qui ne lit pas encore plusieurs pages (avant le redéploiement d'`aiTask`) fait dire à l'écran. */
 export const PLUSIEURS_PAGES_INDISPONIBLE='La lecture de plusieurs pages n’est pas encore disponible sur le serveur. Lis-les avec « Un document », ou saisis à la main.';
@@ -160,12 +162,12 @@ export const GeminiScannerService = {
     const proofDataUrl=await this.fileToDataUrl(file);
     // D381, déclencheur « avant » : une pièce très haute ou un PDF de plus de 4 pages se lit en morceaux (un PDF de 1 à 4 pages, jamais : lu entier, couche de
     // texte comprise ; 08.11). Les autres gardent la lecture d'aujourd'hui, au même appel.
-    const avant=await this.decouper(file,false);
+    const avant=options?.relecture?null:await this.decouper(file,false);
     if (avant) return this.lireMorceaux(avant,file,base,proofDataUrl,options?.signal);
-    const response=await this.appeler({ task:'scanInvoice',tier:'fast',file },options,etape=>({ ...base,proofDataUrl,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs }));
+    const response=await this.appeler({ task:'scanInvoice',tier:'fast',file,...(options?.relecture?{ relecture:options.relecture }:{}) },options,etape=>({ ...base,proofDataUrl,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs }));
     if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
     // D381, déclencheur « après » : la lecture a été coupée ou a laissé des lignes imprimées → relue en morceaux, sans geste. Si cette relecture échoue, la première lecture (ses points disent ce qui manque) reste.
-    if (lectureIncomplete(response.data)) {
+    if (!options?.relecture && lectureIncomplete(response.data)) {
       const apres=await this.decouper(file,true);
       if (apres) { const relue=await this.lireMorceaux(apres,file,base,proofDataUrl,options?.signal); if (relue.ok) return relue; }
     }
@@ -201,7 +203,7 @@ export const GeminiScannerService = {
     if (files.length<2||files.length>4||files.some(file=>!types.includes(this.normalizeMimeType(file))||file.size>4*1024*1024)||!totalAdmis(files.map(file=>file.size)))
       return { ...base,ok:false,error:'Choisis de 2 à 4 images JPG, PNG ou WebP (4 Mo chacune, 12 Mo en tout).' };
     // La règle `pages === N` ne vaut que pour le final : un morceau qui dit un autre nombre de pages ne pose simplement pas `pagesLues`.
-    const response=await this.appeler({ task:'scanInvoice',tier:'fast',files },options,etape=>({ ...base,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs,...(etape.pages===files.length?{pagesLues:etape.pages}:{}) }));
+    const response=await this.appeler({ task:'scanInvoice',tier:'fast',files,...(options?.relecture?{ relecture:options.relecture }:{}) },options,etape=>({ ...base,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs,...(etape.pages===files.length?{pagesLues:etape.pages}:{}) }));
     if (!response.ok) return { ...base,ok:false,error:response.error===REFUS_VIEUX_SERVEUR?PLUSIEURS_PAGES_INDISPONIBLE:response.error||'Lecture indisponible. Complète les champs manuellement.' };
     if (!response.data||response.pages!==files.length) return { ...base,ok:false,error:PLUSIEURS_PAGES_INDISPONIBLE };
     return { ...base,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached,pagesLues:response.pages };

@@ -1,0 +1,161 @@
+{
+ "mesures": {
+  "clair-390": {
+   "piles": [
+    {
+     "pile": "recettes",
+     "couleur": "rgb(86, 210, 123)"
+    },
+    {
+     "pile": "chargesFixes",
+     "couleur": "rgb(152, 86, 210)"
+    },
+    {
+     "pile": "brassage",
+     "couleur": "rgb(210, 179, 86)"
+    },
+    {
+     "pile": "nettoyage",
+     "couleur": "rgb(86, 193, 210)"
+    },
+    {
+     "pile": "materiel",
+     "couleur": "rgb(86, 123, 210)"
+    }
+   ],
+   "cercles": [
+    {
+     "fond": "rgb(63, 37, 86)",
+     "trait": "rgb(216, 185, 244)"
+    },
+    {
+     "fond": "rgb(37, 86, 51)",
+     "trait": "rgb(185, 244, 202)"
+    },
+    {
+     "fond": "rgb(86, 73, 37)",
+     "trait": "rgb(244, 229, 185)"
+    },
+    {
+     "fond": "rgb(37, 79, 86)",
+     "trait": "rgb(185, 236, 244)"
+    },
+    {
+     "fond": "rgb(37, 51, 86)",
+     "trait": "rgb(185, 202, 244)"
+    },
+    {
+     "fond": "rgb(248, 231, 230)",
+     "trait": "rgb(168, 41, 31)"
+    }
+   ],
+   "puce": "Pourquoi les charges fixes pèsent autant ?",
+   "plage": {
+    "champTrouve": true,
+    "titreAvant": "Août – nov. 2026",
+    "titreApres": "Août – nov. 2026",
+    "survit": true
+   },
+   "sources": [
+    "1er oct.",
+    "Ventes",
+    "Charges fixes",
+    "Brassage",
+    "Nettoyage",
+    "Autres",
+    "Reste à payer",
+    "Matériel",
+    "10 nov."
+   ],
+   "budget": {
+    "regles": [
+     "Charges fixes",
+     "Brassage",
+     "Nettoyage",
+     "Autres"
+    ],
+    "entrees": "Entrées 720,00 · rien de prévu",
+    "gros": "724,80 CHF dépensé sur 30 jours sur 464,26 prévus · 1 mois sur 1 au-delà"
+   }
+  },
+  "cave-390": {
+   "piles": [
+    {
+     "pile": "recettes",
+     "couleur": "rgb(86, 210, 123)"
+    },
+    {
+     "pile": "chargesFixes",
+     "couleur": "rgb(152, 86, 210)"
+    },
+    {
+     "pile": "brassage",
+     "couleur": "rgb(210, 179, 86)"
+    },
+    {
+     "pile": "nettoyage",
+     "couleur": "rgb(86, 193, 210)"
+    },
+    {
+     "pile": "materiel",
+     "couleur": "rgb(86, 123, 210)"
+    }
+   ],
+   "cercles": [
+    {
+     "fond": "rgb(63, 37, 86)",
+     "trait": "rgb(216, 185, 244)"
+    },
+    {
+     "fond": "rgb(37, 86, 51)",
+     "trait": "rgb(185, 244, 202)"
+    },
+    {
+     "fond": "rgb(86, 73, 37)",
+     "trait": "rgb(244, 229, 185)"
+    },
+    {
+     "fond": "rgb(37, 79, 86)",
+     "trait": "rgb(185, 236, 244)"
+    },
+    {
+     "fond": "rgb(37, 51, 86)",
+     "trait": "rgb(185, 202, 244)"
+    },
+    {
+     "fond": "rgb(64, 35, 32)",
+     "trait": "rgb(242, 146, 137)"
+    }
+   ],
+   "puce": "Pourquoi les charges fixes pèsent autant ?",
+   "plage": {
+    "champTrouve": true,
+    "titreAvant": "Août – nov. 2026",
+    "titreApres": "Août – nov. 2026",
+    "survit": true
+   },
+   "sources": [
+    "1er oct.",
+    "Ventes",
+    "Charges fixes",
+    "Brassage",
+    "Nettoyage",
+    "Autres",
+    "Reste à payer",
+    "Matériel",
+    "10 nov."
+   ],
+   "budget": {
+    "regles": [
+     "Charges fixes",
+     "Brassage",
+     "Nettoyage",
+     "Autres"
+    ],
+    "entrees": "Entrées 720,00 · rien de prévu",
+    "gros": "724,80 CHF dépensé sur 30 jours sur 464,26 prévus · 1 mois sur 1 au-delà"
+   }
+  }
+ },
+ "erreurs": []
+}

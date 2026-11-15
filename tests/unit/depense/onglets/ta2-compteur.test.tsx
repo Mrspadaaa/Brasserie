@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // TA2 : dans « Tout », le compteur ne compte que les opérations actives, comme le total ; les annulées restent listées et se disent à part.
 import React from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../../../src/services/firebase', () => ({ db: {}, functions: {} }));
 import { TransactionJournal } from '../../../../src/ui/finance/TransactionJournal';
@@ -19,15 +19,17 @@ const defaults = {
   renderRow: (t: Transaction) => <button>{t.description}</button>,
   onManageArchives: () => {}, onSale: () => {}, onPrivateMovement: () => {},
 };
-/** Le compteur de l'en-tête (les pastilles de filtre ont leurs propres comptes, lus par lecteur d'écran). */
-const text = () => document.querySelector('.finance-period-count')?.textContent ?? '';
+/** v6b : le compteur est celui de chaque groupe (nom accessible de sa section) ; les pastilles de filtre ont leurs propres comptes. */
+const text = () => [...document.querySelectorAll('section[aria-label]')].map(el => el.getAttribute('aria-label')).join(' | ');
 const show = (transactions: Transaction[], request: Record<string, unknown> = {}) =>
   render(<TransactionJournal {...defaults} transactions={transactions} request={{ key: `k-${Math.random()}`, scope: 'all', allDates: true, ...request }}/>);
 afterEach(cleanup);
 
 describe('TA2 : compteur du journal', () => {
-  it('Tout, 2 actives et 1 annulée : « 2 opérations + 1 annulée », les trois lignes restent listées', () => {
+  it('Tout, 2 actives et 1 annulée : par catégorie, un groupe « Annulées » à part (CP-12) ; par date « 2 opérations + 1 annulée » ; les trois lignes restent listées', () => {
     show([purchase('A'), purchase('B'), purchase('C', true)]);
+    expect(text()).toMatch(/Brassage · 2 opérations · 200,00 \| Annulées · 1 annulée/);
+    fireEvent.click(screen.getByRole('button', { name: 'Par date' }));
     expect(text()).toMatch(/2 opérations \+ 1 annulée/);
     expect(text()).not.toMatch(/3 opérations/);
     for (const id of ['A', 'B', 'C']) expect(screen.getByRole('button', { name: `Opération ${id}` })).toBeInTheDocument();
@@ -35,6 +37,7 @@ describe('TA2 : compteur du journal', () => {
 
   it('Tout, 1 active et 2 annulées : accord au pluriel', () => {
     show([purchase('A'), purchase('B', true), purchase('C', true)]);
+    fireEvent.click(screen.getByRole('button', { name: 'Par date' }));
     expect(text()).toMatch(/1 opération \+ 2 annulées/);
   });
 
@@ -59,6 +62,7 @@ describe('TA2 : compteur du journal', () => {
 
   it('liste vide : « 0 opération »', () => {
     show([]);
-    expect(text()).toMatch(/0 opération/);
+    expect(text()).toBe('');
+    expect(screen.getByText('Aucune opération enregistrée')).toBeInTheDocument();
   });
 });

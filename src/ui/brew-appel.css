@@ -1,0 +1,254 @@
+/* Carte d'appel (port-D, p2c : p2c-e2-390 et p2c-e2-appel-390, greffes G1 de s2b).
+   Rouge plein dans les deux thèmes (p2c garde #C8382F en cave) : blanc dessus à 5,2:1 (DESIGN.md, BR-47) ;
+   le bouton blanc porte #A8291F (7:1). Tout texte à 14 px au moins ; cibles tactiles à 44 px au moins. */
+.bap,
+.bap-plein {
+  --bap-rouge: #c8382f;
+  --bap-rouge-t: #a8291f;
+  --bap-blanc: #fff;
+  --bap-trait: rgb(255 255 255 / 0.75);
+  color: var(--bap-blanc);
+  font-size: 14px;
+  line-height: 1.3;
+}
+.bap :where(button),
+.bap-plein :where(button) {
+  font-family: inherit;
+  cursor: pointer;
+}
+.bap button:focus-visible,
+.bap-plein button:focus-visible {
+  outline: 3px solid var(--bap-blanc);
+  outline-offset: 2px;
+}
+.bap-m {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- La carte dans la conduite ---- */
+.bap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 8px 0;
+  padding: 8px 10px 10px;
+  border: 1.5px solid var(--bap-rouge);
+  border-radius: 16px;
+  background: var(--bap-rouge);
+}
+.bap-k {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.bap-k svg,
+.bap-alt svg,
+.bap-son svg,
+.bap-ok svg,
+.bap-fait svg {
+  flex-shrink: 0;
+}
+.bap-son {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bap-son button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid var(--bap-trait);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bap-blanc);
+  font-size: 14px;
+  font-weight: 600;
+}
+.bap-tete {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bap-nomdose {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.bap-nom {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.bap-dose {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.05;
+}
+.bap-sub {
+  font-size: 14px;
+}
+
+/* Le geste évident : 96 px de haut, plein blanc (carte) */
+.bap-ok {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 96px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--bap-blanc);
+  color: var(--bap-rouge-t);
+  font-size: 20px;
+  font-weight: 700;
+}
+.bap-aide {
+  font-size: 14px;
+  text-align: center;
+}
+.bap-fait-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bap-fait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 96px;
+  border: 2px solid var(--bap-blanc);
+  border-radius: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.bap-annule {
+  position: relative;
+  overflow: hidden;
+  min-height: 44px;
+  border: 1.5px solid var(--bap-trait);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bap-blanc);
+  font-size: 16px;
+  font-weight: 700;
+}
+/* La fenêtre de 10 s se vide : un filet, pas un décompte qui bouge sous le doigt. */
+.bap-fenetre {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background: var(--bap-blanc);
+  transform-origin: left;
+  animation: bap-vide 10s linear forwards;
+}
+@keyframes bap-vide {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bap-fenetre { animation: none; transform: scaleX(0.5); }
+}
+
+/* Les issues : Remplacer (avec « Pas de Citra ? »), puis Autre dose · Sauter · Dans 1 min */
+.bap-alt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bap-alt button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 6px;
+  border: 1.5px solid var(--bap-trait);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bap-blanc);
+  font-size: 14px;
+  font-weight: 600;
+}
+.bap-rempl .bap-pas {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.bap-rempl button {
+  flex: 0 1 auto;
+  padding: 0 14px;
+}
+.bap-suiv {
+  padding-top: 6px;
+  border-top: 1px solid rgb(255 255 255 / 0.45);
+  font-size: 14px;
+}
+
+/* ---- Plein écran pendant la sonnerie ---- */
+.bap-plein {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  overflow-y: auto;
+  background: var(--bap-rouge);
+}
+.bap-plein .bap-in {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+.bap-plein .bap-nom {
+  font-size: 64px;
+  line-height: 1;
+}
+.bap-plein .bap-dose {
+  font-size: 64px;
+  line-height: 1;
+}
+.bap-plein .bap-sub,
+.bap-plein .bap-suiv {
+  font-size: 16px;
+}
+.bap-plein .bap-suiv {
+  border-top: 0;
+  padding-top: 0;
+}
+.bap-plein .bap-ok {
+  min-height: 72px;
+  margin-top: 12px;
+}
+.bap-plein .bap-fait {
+  min-height: 72px;
+  margin-top: 12px;
+}
+.bap-plein .bap-alt {
+  gap: 8px;
+}
+.bap-plein .bap-alt button {
+  min-height: 52px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+.bap-plein .bap-rempl .bap-pas {
+  font-size: 16px;
+}

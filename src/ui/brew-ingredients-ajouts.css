@@ -1,0 +1,39 @@
+/*
+ * Port-H (12.11) : les ajouts de p2c (E2). Ligne en retard rose, case « Fait » rouge ; ajout sauté.
+ * Les jetons (--bz-*) viennent de brew-day.css ; ce fichier n'y touche pas (voie I1).
+ */
+
+/* Ligne en retard : fond rose, minute et « en retard de N min » en rouge */
+.brew-page.bz .bz-row[data-du] {
+  background: color-mix(in srgb, var(--bz-alert) 12%, var(--bz-page));
+}
+.brew-page.bz .bz-row[data-du] .bz-min { color: var(--bz-alert); font-weight: 600; }
+.brew-page.bz .bz-row.is-ajout:has(.bz-case.is-retard) { grid-template-columns: 40px minmax(0, 1fr) auto 56px; }
+
+/* Case « Fait » : rouge, mot lisible (jamais couleur seule) */
+.brew-page.bz .bz-case.is-retard { width: 56px; }
+.brew-page.bz .bz-case.is-retard .bz-case-boite {
+  width: 56px;
+  background: var(--bz-page);
+  border: 2px solid var(--bz-alert);
+  color: var(--bz-alert);
+}
+.brew-page.bz .bz-case-fait { font: 600 14px/1 'Source Sans 3', system-ui, sans-serif; color: var(--bz-alert); }
+
+/* Ajout sauté : nom barré, « non versé », case en tiret */
+.brew-page.bz .bz-row[data-saute] .bz-nom > strong,
+.brew-page.bz .bz-row[data-saute] .bz-dose-texte { text-decoration: line-through; color: var(--bz-t2); font-weight: 400; }
+.brew-page.bz .bz-row[data-saute] .bz-quand { color: var(--bz-t2); font-weight: 600; font-size: 14px; }
+.brew-page.bz .bz-non-verse { font-weight: 600; }
+.brew-page.bz .bz-row[data-saute] .bz-case-boite { border-style: dashed; background: none; }
+.brew-page.bz .bz-case-tiret { color: var(--bz-t2); font: 600 18px/1 'Source Sans 3', system-ui, sans-serif; }
+
+/* Remplacer un houblon : « Pas de Citra ? » */
+.brew-page.bz .bz-pas-de { font-weight: 600; }
+
+/* K4 n° 19 : l'heure d'un ajout ne se coupe pas, et « 54,3 g » reste d'un bloc (le nombre et l'unité ne se séparent pas à 390). */
+.brew-page.bz .bz-quand { white-space: nowrap; }
+.brew-page.bz .bz-quand .bz-m { font-variant-numeric: tabular-nums; }
+
+/* K6 n° 29 : « · coupure du feu » peut passer à la ligne dans sa colonne (le nombre et son unité, eux, restent entiers) au lieu de déborder sous « en retard de N min ». */
+.brew-page.bz .bz-dose-texte .bz-coupure { white-space: normal; }

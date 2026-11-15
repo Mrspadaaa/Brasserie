@@ -1,0 +1,6 @@
+# e3a — Rangement · e1b, chaque marche avec l'image de l'écran choisi (froide)
+**Idée** : e1b tel quel (Brassins › fiche › onglet Argent, six marches numérotées), chaque marche enrichie de l'image de l'écran qu'il a choisi : ① le litre en trois notions de c3a (payé 0,83 · à payer 2,38 · année 4,30), ② la règle de p2b (16,88 | 25,32 | 33,76 ; le brassin 6,84), ③ la bouteille en tranches (bière 2,10 · verre 0,30 · impôt 0,08), ④ la règle du prix et son aiguille (c4a, c6), ⑤ le reste avec la bascule bouteille / an (c5b), ⑥ le brassin en 81 bouteilles (c5a). Toucher une marche ouvre son écran entier.
+**État 2** : le brassin planifié (Pale Ale · 20 nov.) : même chaîne ; « houblon, levure ? », litre ≥ 7,51, coût ≥ 2,48, reste ≤ 2,52, brassin ≤ 202,23 ; en tête « Dans Prévisions : 57,42 avant le 20 nov. · 6,84 en déc. » (corrige e2a-etat2, où 64,26 avant le 20 nov. était faux).
+**Corrigé** : plus de « achats à payer 64,26 » seul ; « 27 L prévus » au lieu de « 30 L » à côté de « 27 L nets ».
+B1 e1b repris · B3 60 mots · B5 une primaire (Proposer, IA) · B7 COMMUN OK · B8 ? et ≥/≤ · B12 format suisse.
+Captures : e3a-haut.png, e3a-etat2.png (planifié), e3a-page.png, e3a-1280.png (chaîne en deux colonnes).

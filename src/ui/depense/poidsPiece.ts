@@ -1,5 +1,7 @@
 import { isReadableUnit } from '../../services/ingredientIdentity';
-import { donneesDeLigne, linkUnit } from '../../services/stockLineMatching';
+import { donneesDeLigne, linkUnit, matchStockLine, regleProduit } from '../../services/stockLineMatching';
+import { articleDeMemeNom } from './etat';
+import type { StockItem } from '../../types';
 import { Units } from '../../services/units';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import { prixCalcule } from './calculPlateau';
@@ -26,6 +28,34 @@ export function poidsDePiece(ligne: LigneDePoids): { grammes: number; texte: str
   const valeur = Number(mesures[0][1].replace(',', '.')), unite = mesures[0][2].toLowerCase();
   const grammes = valeur * FACTEUR_G[unite];
   return Number.isFinite(grammes) && grammes > 0 ? { grammes, texte: `${mesures[0][1]} ${unite === 'kg' ? 'Kg' : unite}` } : undefined;
+}
+
+/**
+ * ST-T1 (14.11, décision N5 de la voie ta) : un paquet PESÉ vendu à la pièce (« Lactose, Milchzucker 1 Kg » en Stk, « Malzextraktpulver hell 0,5 Kg » × 2) se compte en g d'office, du poids lu
+ * dans son nom : il se rattache à l'article en kg au lieu de créer un doublon (même geste que « Compter en g », sans le clic). Une levure garde sa pièce (le poids lu est celui d'un
+ * sachet) ; une ligne qui vise déjà un article compté en pièce (Pck, Stk) la garde aussi ; un nom sans poids lu, ou avec deux mesures, ne change pas (jamais deviné).
+ */
+export function auPoidsLu<L extends LigneDePoids & { evidence?: string; sourceReference?: string; stockCategory?: string }>(ligne: L, unit: string, existants: readonly StockItem[], vendor?: string): L {
+  if (ligne.kind !== 'ingredient' || !ligne.description.trim() || ligne.quantity === undefined || !(ligne.quantity > 0)) return ligne;
+  const poids = poidsDePiece({ ...ligne, unit });
+  if (!poids) return ligne;
+  const base = ligneDeBrouillon({ description: ligne.description, unit, quantity: ligne.quantity, kind: ligne.kind, stockCategory: ligne.stockCategory, sourceReference: ligne.sourceReference, nameFr: ligne.nameFr, nomLu: ligne.nomLu }, vendor);
+  if (donneesDeLigne(base).contexte === 'Levure') return ligne;
+  const cible = articleDeMemeNom(ligne, existants) ?? matchStockLine({ description: ligne.description, unit, quantity: ligne.quantity, vendor, stockCategory: ligne.stockCategory, reference: ligne.sourceReference, kind: ligne.kind, ...(ligne.nomLu ? { nomLu: ligne.nomLu } : {}) }, existants as StockItem[])?.item;
+  if (cible && estUnitePiece(cible.unit)) return ligne;
+  const { quantity, unitPrice, unit: g } = compterEnGrammes(ligne, poids.grammes);
+  const comptee: L = { ...ligne, unit: g, quantity, ...(unitPrice !== undefined ? { unitPrice } : {}), evidence: [ligne.evidence, `Poids lu : ${poids.texte} par pièce, compté en g`].filter(Boolean).join(' · ') };
+  /* Le poids est maintenant la quantité : il sort du nom (« Lactose, Milchzucker 1 Kg » → « Lactose, Milchzucker »), sinon le « 1 » reste une identité et la ligne ne relie rien. Le nom imprimé reste gardé
+     (`nomLu`, nom de facture de l'article). Sauf si le nom entier relie déjà un article : rien n'est retiré à ce qui marche. */
+  const memeAvant = (l: L) => regleProduit(ligneDeBrouillon({ description: l.description, unit: g, quantity, kind: l.kind, stockCategory: l.stockCategory, sourceReference: l.sourceReference, nameFr: l.nameFr, nomLu: l.nomLu }, vendor), existants).cas === 'meme';
+  if (memeAvant(comptee)) return comptee;
+  const nom = sansLePoids(ligne.description);
+  return nom && nom !== ligne.description.trim() ? { ...comptee, description: nom, nomLu: ligne.nomLu ?? ligne.description.trim().slice(0, 80) } : comptee;
+}
+
+/** Le nom sans sa mesure de poids (« Malzextraktpulver hell 0,5 Kg » → « Malzextraktpulver hell ») ; virgule ou tiret laissés en bout, parenthèses vides retirés. */
+export function sansLePoids(description: string): string {
+  return description.normalize('NFC').replace(MESURE_MASSE, ' ').replace(/\(\s*\)/g, ' ').replace(/\s{2,}/g, ' ').replace(/[\s,;·\-–/]+$/u, '').replace(/^[\s,;·\-–/]+/u, '').trim();
 }
 
 /** Une ligne de houblon ou de malt, en pièce (ou sachet, Stk) et sans poids lu : l'unité du stock (g, Kg) est la seule qui compte. */

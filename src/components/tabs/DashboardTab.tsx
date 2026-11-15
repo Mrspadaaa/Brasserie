@@ -29,6 +29,7 @@ interface DashboardTabProps {
   onNavigateToCreativeLab: () => void;
 }
 
+const readRecipes = () => StorageService.getRecipes();
 const quantity = new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 });
 const gravity = new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 const rowAction = 'flex w-full min-h-7 items-center gap-2 px-2 py-1 text-left hover:bg-cave-850';
@@ -142,8 +143,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     isCurrent(batch) && batch.status === 'planifie' && hasBrewStarted(batch)
   ), [batches]);
   // Le même comptage que Stocks et que le badge de la barre du bas (test en ligne n° 49) : `articlesACommander`.
-  const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches)
-    .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches]);
+  const recettes = useStorageValue(readRecipes);
+  const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recettes)
+    .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches, recettes]);
   const itemsToOrder = useMemo(() => aCommander.map(({ item, missing }) => ({ ...item, missing })), [aCommander]);
   const ruptures = aCommander.filter(a => a.rupture).length;
   const events = useMemo(() => creativeItems.filter(item => item.type === 'event')
@@ -246,7 +248,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             ? <p className="flex items-center gap-2 px-2 py-2 text-2xs text-cave-200"><Check size={14} className="text-area-stocks" aria-hidden="true" />Stocks suffisants</p>
             : <>
               <div className="flex flex-wrap items-center gap-x-2 px-2 py-1 text-xs">
-                <span className="text-attention">{compte(itemsToOrder.length, 'article')} au seuil ou en dessous</span>
+                <span className="text-attention">{compte(itemsToOrder.length, 'article')} à commander</span>
                 {ruptures > 0 && <span className="inline-flex items-center gap-1 font-semibold text-alert-strong"><AlertTriangle size={12} aria-hidden="true" />{compte(ruptures, 'rupture')}</span>}
               </div>
               <div className="divide-y divide-cave-800">

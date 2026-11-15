@@ -71,6 +71,19 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     expect(close).not.toHaveBeenCalled();
   });
 
+  it('« Modifier la recette › » envoie l’événement annulable avec la recette, et ferme la modale quand App le prend', () => {
+    const prend = vi.fn((e: Event) => e.preventDefault());
+    window.addEventListener('affinee:modifier-recette', prend);
+    const close = vi.fn();
+    render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[legacyRecipe(true)]} onClose={close} />);
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ })); // d1b : la feuille « Brasser » pose la recette
+    fireEvent.click(screen.getByRole('button', { name: /Modifier la recette/ }));
+    window.removeEventListener('affinee:modifier-recette', prend);
+    expect(prend).toHaveBeenCalledOnce();
+    expect((prend.mock.calls[0][0] as CustomEvent).detail).toEqual({ recipeId: 'legacy' });
+    expect(close).toHaveBeenCalledOnce();
+  });
+
   it.each([{ withProfile: false, volumeL: 19 }, { withProfile: true, volumeL: 26 }])('adopte le matériel en conservant les $volumeL L choisis (ancien profil : $withProfile)', async ({ withProfile, volumeL }) => {
     const original = legacyRecipe(withProfile, volumeL), before = structuredClone(original), oldBatch = structuredClone(history);
     const save = vi.fn();

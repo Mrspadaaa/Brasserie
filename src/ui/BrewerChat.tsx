@@ -1,5 +1,5 @@
 import { Textarea } from './Input';
-import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import {
   MessageCircle,
   ChevronRight,
@@ -9,25 +9,33 @@ import {
   CheckCheck,
   Calculator,
   ArrowUpRight,
-  LoaderCircle,
   RotateCcw
 } from 'lucide-react';
 import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
 import type { BrewerChatInput, BrewerHistory, BrewerScope, BrewerTurn } from '../services/brewerChat';
 import type { HopAdviceV1ClientEntryV3, HopAdviceV1WizardClientEntryV1 } from '../../functions/src/brewerHopAdviceTransportV1';
-import type { BrewerMode, BrewerProduct } from '../../functions/src/companionTypes';
+import type { BrewerMode } from '../../functions/src/companionTypes';
 import { stableBrewerHopAdviceJson } from '../../functions/src/brewerHopAdviceProposal';
 import {
   brewerJobs,
   sameBrewerScope,
   isBrewerWorking,
-  brewerJobStatus,
   type ClientBrewerJob
 } from '../services/brewerJobs';
-import { BrewerNotificationOption } from './BrewerNotifications';
-import { BrewerBudget } from './BrewerBudget';
+import { useBrewerNotifications } from './BrewerNotifications';
+import { BandeauPlafond, BrewerLimitsView, PLACEHOLDER_PLAFOND, budgetResume, useBrewerBudget } from './BrewerBudget';
 import './brewer-chat.css';
+import './companion/companion.css';
+import './companion/plus.css';
+import { Accueil, Amorces, Modes, PiedSaisie, Zero, type PorteeZero } from './companion/accueil';
+import { Attente, BandeauHorsLigne, Calcule, Echec, HorsLigne, Marge, Plafond } from './companion/attente';
+import { doseTotale, gParLitre, prochainJalon, quand, questionsFermentation, useContexteBrassin, type ContexteBrassin } from './companion/contexte';
+import { estPlafondAtteint, etapeIndex, nombreTexte, partDe, sansNomDeModele, sourcesLues, suiteEnTete, statutJob, statutsConversations } from './companion/derive';
+import { Fournisseurs } from './companion/fournisseurs';
+import { Icone, N } from './companion/parts';
+import type { NomIcone } from './companion/icones';
+import { Controle, Pourquoi, Question, Verdict } from './companion/reponse';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import { brewerLauncher } from '../services/brewerLauncher';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
@@ -150,6 +158,8 @@ interface CommonProps {
   initialOpen?: boolean;
   initialQuestion?: string;
   suggestedPrompts?: Array<{ label: string; question: string }>;
+  /** Finances : l'élément d'où vient la question (bandeau « Depuis Finances · … »). */
+  origine?: string;
   hideLauncher?: boolean;
   onClose?: () => void;
 }
@@ -225,8 +235,8 @@ const prompts = (kind: string, phase = '') =>
           'Je n’atteins pas la consigne'
         ];
 const responseModes: Array<{ value: BrewerMode; label: string; description: string }> = [
-  { value: 'fast', label: 'Rapide', description: 'Conseil concis, vérifié avec Flash' },
-  { value: 'auto', label: 'Auto', description: 'Flash adapte ses recherches et vérifie le conseil' },
+  { value: 'fast', label: 'Rapide', description: 'Conseil concis, calculs et relecture conservés' },
+  { value: 'auto', label: 'Auto', description: 'Recherches adaptées à la question, conseil relu' },
   { value: 'deep', label: 'Approfondi', description: 'Réflexion plus poussée · budget plus élevé' }
 ];
 const modePreference = (): BrewerMode => {
@@ -269,6 +279,7 @@ function ScopedChat({
   initialOpen = false,
   initialQuestion = '',
   suggestedPrompts,
+  origine,
   assistedAdvice,
   assistedRuntime,
   hideLauncher = false,
@@ -282,12 +293,18 @@ function ScopedChat({
   const assistedRequestKey = assistedSessionKey(assistedAdvice);
   const hasAssistedSession = !!assistedAdvice;
   const finance = scope.kind === 'app' && scope.id === 'finances';
-  const questions = suggestedPrompts ?? (finance ? [
-    'Explique mes principaux postes de dépenses et les variations.',
-    'Quels paiements dois-je anticiper pour mes prochains brassins ?',
-    'Aide-moi à préparer un investissement de matériel.',
-    'Quelles opérations ou valeurs d’amortissement faut-il vérifier ?'
-  ] : prompts(scope.kind, phase)).map((text) => ({ label: text, question: text }));
+  const ctx = useContexteBrassin(scope, draft, localJournal);
+  // Brassin en fermentation : les quatre questions de la maquette, dérivées du brassin (pression, densité, prochain dry hop et sa dose, garde).
+  const enFermentation = scope.kind === 'batch' && (/ferment|garde|condition|termin/.test(phase ?? '') || (ctx.jour ?? 0) >= 1);
+  const tuilesFermentation = !suggestedPrompts && enFermentation ? questionsFermentation(ctx) : undefined;
+  const questions: Array<{ label: string; question: string; icone?: NomIcone }> = tuilesFermentation
+    ? tuilesFermentation.map((q) => ({ label: q.question, question: q.question, icone: q.icone }))
+    : (suggestedPrompts ?? (finance ? [
+        'Explique mes principaux postes de dépenses et les variations.',
+        'Quels paiements dois-je anticiper pour mes prochains brassins ?',
+        'Aide-moi à préparer un investissement de matériel.',
+        'Quelles opérations ou valeurs d’amortissement faut-il vérifier ?'
+      ] : prompts(scope.kind, phase)) as Array<string | { label: string; question: string }>).map((p) => (typeof p === 'string' ? { label: p, question: p } : p));
   const [loading, setLoading] = useState(false),
     [error, setError] = useState(''),
     [more, setMore] = useState(false),
@@ -781,6 +798,85 @@ function ScopedChat({
   const assistedAlreadySubmitted = !!assistedAdvice && completedAssistedKeys.has(assistedRequestKey);
   const activeAssistedTicket = assistedAdvice ? assistedTicketsByKey.current.get(assistedRequestKey) : undefined;
   const assistedTicketLocked = !!activeAssistedTicket && !activeAssistedTicket.submitted;
+  const [vue, setVue] = useState<'chat' | 'limites'>('chat');
+  const [conseille, setConseille] = useState<BrewerMode>();
+  const enLigne = useEnLigne();
+  const depuisFinances = finance && origine === 'Vérifier mes opérations';
+  useEffect(() => {
+    // Depuis « Vérifier mes opérations » : Approfondi présélectionné et conseillé, sans écrire la préférence enregistrée.
+    if (depuisFinances) { setMode('deep'); setConseille('deep'); }
+  }, [depuisFinances]);
+  const envoiInterdit =
+    applying ||
+    loading ||
+    assistedSubmitting ||
+    resetting ||
+    (!!assistedAdvice && !assistedRuntimeReady) ||
+    (assistedAdvice
+      ? !assistedScopeMatches || !assistedQuestionMatches || assistedAlreadySubmitted || question.length < 2
+      : question.trim().length < 2) ||
+    (!assistedAdvice && scope.kind === 'draft' && !draft);
+  const travaux = timeline
+    .filter((x) => !x.turn && x.job && isBrewerWorking(x.job) && !x.job.unsupportedReadOnly)
+    .map((x) => x.job!);
+  const suite = [...timeline].reverse().find((x) => x.turn)?.turn?.advice.question ?? '';
+  const portee: PorteeZero = finance ? 'finances' : scope.kind === 'app' ? 'ecran' : scope.kind;
+  const fermer = () => {
+    setOpen(false);
+    setVue('chat');
+    onClose?.();
+  };
+  const choisirMode = (m: BrewerMode) => {
+    setMode(m);
+    setConseille(undefined);
+    try {
+      localStorage.setItem('brewer-chat-mode', m);
+    } catch {
+      /* Optional preference. */
+    }
+  };
+  // Budget du mois atteint (cadre « plafond ») : bandeau au-dessus de la saisie ; la question tapée reste gardée.
+  const plafondAtteint = budgetResume(useBrewerBudget().status).atteint && !finance;
+  const ouvrirConversations = () => {
+    fermer();
+    window.dispatchEvent(new CustomEvent('brewer-inbox-open', { detail: { scope } }));
+  };
+  // « Brassin 31 · J+8 » : le jour vient du levurage du journal local ; à défaut (feuille ouverte hors page Brassage), du jour de brassage du brassin enregistré.
+  const enTeteBase = suiteEnTete(scope, label, localJournal);
+  const enTete = scope.kind === 'batch' && ctx.jour !== undefined && !/J\+\d/.test(enTeteBase) ? `${enTeteBase} · J+${ctx.jour}` : enTeteBase;
+  const accueilProps = {
+    titre: hasAssistedSession ? 'Lecture assistée' : finance ? undefined : 'Agir, mesurer ou attendre ?',
+    sousTitre: hasAssistedSession
+      ? 'Cette question reste liée à la lecture enregistrée et à son contexte exact. Pour changer sa formulation, relis une nouvelle demande dans l’atelier.'
+      : finance
+        ? undefined
+        : ligneContexte(ctx),
+    frise: !hasAssistedSession && ctx.jour !== undefined && ctx.jalons.length ? { jour: ctx.jour, jalons: ctx.jalons } : undefined,
+    portee: depuisFinances ? { titre: 'Je vérifie', cases: [...CASES_VERIFIEES] } : undefined,
+    titreSources: finance ? 'Je lis' : undefined,
+    origine,
+    finances: finance,
+    intro: assistedAdvice ? (
+      <>
+        <p className="cmp-note">Lecture assistée liée à sa question et à sa source</p>
+        <p className="cmp-note">
+          Le conseil reste une proposition. Rien n’est confirmé tant que tu n’as pas choisi une suggestion dans l’atelier.
+        </p>
+      </>
+    ) : undefined,
+    tuiles: hasAssistedSession ? [] : depuisFinances ? questions.filter((q) => q.label !== origine) : questions,
+    onChoisir: (q: string, m: BrewerMode) => {
+      setQuestion(q);
+      setMode(m);
+      setConseille(m);
+    },
+    conversations: assistedAdvice ? undefined : statutsConversations(activity.jobs),
+    onConversations: ouvrirConversations,
+    onLimites: () => setVue('limites'),
+    sources: finance
+      ? [...sourcesLues(scope.kind, finance), 'Relu deux fois']
+      : sourcesLues(scope.kind, finance).map((x) => (x === 'Brassin' && ctx.numero ? `Brassin ${ctx.numero}` : x))
+  };
   return (
     <>
       {!hideLauncher && (
@@ -798,8 +894,7 @@ function ScopedChat({
           </span>
           {/*
             La pastille dit l'ÉTAT du compagnon, et rien d'autre.
-            Au repos elle affichait « Gemini » : le nom du fournisseur du
-            modèle, qui n'apprend rien au brasseur et que le système de design
+            Au repos elle affichait le nom du fournisseur de l'IA, qui n'apprend rien au brasseur et que le système de design
             interdit d'afficher (`DESIGN.md`, « Rédaction »). Au repos il n'y a
             pas d'état à annoncer — le bouton dit déjà « Compagnon brasseur » —
             donc la pastille disparaît.
@@ -818,399 +913,290 @@ function ScopedChat({
       <Sheet
         open={open}
         onClose={() => {
-          if (!applying) {
-            setOpen(false);
-            onClose?.();
-          }
+          if (!applying) fermer();
         }}
         dismissible={!applying}
-        title="Compagnon brasseur"
-        subtitle={label}
-        className="brewer-chat-sheet"
+        // Nom accessible : « Compagnon brasseur » (comme le bouton qui l'ouvre) ; la ligne visible « Compagnon · Brassin 31 · J+8 »
+        // est la description (CSS `cmp-une`, plus.css), « Compagnon » en gras venant de la feuille de style.
+        title={vue === 'limites' ? 'Limites IA' : 'Compagnon brasseur'}
+        subtitle={vue === 'limites' ? undefined : `· ${enTete}`}
+        className={`brewer-chat-sheet cmp-root${vue === 'limites' ? '' : ' cmp-une'}${finance ? ' cmp-fin' : ''}`}
         footer={
-          <form autoComplete="off"
-            className="brewer-chat-compose"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void ask();
-            }}
-          >
-            <div className="brewer-chat-mode">
-              <fieldset
-                disabled={applying || resetting || assistedSubmitting || assistedTicketLocked}
-                aria-describedby={`brewer-mode-${scope.id}`}
-              >
-                <legend className="sr-only">Mode de réponse</legend>
-                {responseModes.map((option) => (
-                  <label key={option.value} data-mode={option.value}>
-                    <input
-                      type="radio"
-                      name={`brewer-mode-${scope.id}`}
-                      value={option.value}
-                      checked={mode === option.value}
-                      onChange={() => {
-                        setMode(option.value);
-                        try {
-                          localStorage.setItem('brewer-chat-mode', option.value);
-                        } catch {
-                          /* Optional preference. */
-                        }
-                      }}
-                    />
-                    <span>
-                      {option.value === 'fast' ? (
-                        <Zap size={14} />
-                      ) : option.value === 'deep' ? (
-                        <Sparkles size={14} />
-                      ) : null}
-                      {option.label}
-                    </span>
-                  </label>
-                ))}
-              </fieldset>
-              <small id={`brewer-mode-${scope.id}`}>
-                {responseModes.find((option) => option.value === mode)!.description}
-              </small>
-            </div>
-            <label className="sr-only" htmlFor={`brewer-question-${scope.id}`}>
-              Question au compagnon brasseur
-            </label>
-            <Textarea
-              id={`brewer-question-${scope.id}`}
-              value={question}
-              maxLength={assistedAdvice ? 4000 : 3000}
-              rows={2}
-              placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : 'Décris ce que tu observes…'}
-              readOnly={applying || resetting || assistedSubmitting}
-              onChange={(e) => {
-                setQuestion(e.target.value);
-                if (assistedAdvice) setError('');
+          vue === 'limites' ? undefined : (
+            <form
+              autoComplete="off"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void ask();
               }}
-            />
-            {assistedAdvice && !assistedRuntimeReady && (
-              <p className="brewer-chat-status" role="status">
-                Le transport dédié de cette lecture n’est pas disponible. Aucune question ne partira par le compagnon standard.
-              </p>
-            )}
-            {assistedAdvice && !assistedScopeMatches && (
-              <p className="brewer-chat-status" role="status">
-                Cette lecture est liée à une autre portée. Reprends-la depuis sa source dans l’atelier.
-              </p>
-            )}
-            {assistedAdvice && assistedScopeMatches && !assistedQuestionMatches && (
-              <p className="brewer-chat-status" role="status">
-                La question a changé. Reprends une nouvelle lecture dans l’atelier avant de l’envoyer.
-              </p>
-            )}
-            {assistedAlreadySubmitted && (
-              <p className="brewer-chat-status" role="status">
-                Cette lecture a déjà été envoyée. Reprends une lecture dans l’atelier pour poser une autre question.
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={
-                applying ||
-                loading ||
-                assistedSubmitting ||
-                resetting ||
-                (!!assistedAdvice && !assistedRuntimeReady) ||
-                (assistedAdvice
-                  ? !assistedScopeMatches || !assistedQuestionMatches || assistedAlreadySubmitted || question.length < 2
-                  : question.trim().length < 2) ||
-                (!assistedAdvice && scope.kind === 'draft' && !draft)
-              }
-              aria-label="Envoyer la question"
             >
-              <Send size={20} />
-              <span>Envoyer</span>
-            </button>
-          </form>
+              <>
+                <PiedSaisie
+                  id={`brewer-question-${scope.id}`}
+                  valeur={question}
+                  onValeur={(v) => {
+                    setQuestion(v);
+                    if (assistedAdvice) setError('');
+                    if (!v) setConseille(undefined);
+                  }}
+                  maxLength={assistedAdvice ? 4000 : 3000}
+                  placeholder={plafondAtteint ? PLACEHOLDER_PLAFOND : finance ? 'Une dépense à comprendre, un achat à préparer…' : travaux.length ? 'Ajouter une question…' : 'Décris ce que tu observes…'}
+                  readOnly={applying || resetting || assistedSubmitting}
+                  peutEnvoyer={!envoiInterdit}
+                  haute={finance}
+                  avant={
+                    <>
+                      {!enLigne && <BandeauHorsLigne />}
+                      {enLigne && plafondAtteint && <BandeauPlafond />}
+                      <Amorces
+                        amorces={scope.kind === 'batch' && !finance && !assistedAdvice ? (timeline.length ? AMORCES_SUITE : AMORCES_BRASSIN) : []}
+                        suite={suite}
+                        disabled={resetting}
+                        onChoisir={(q) => setQuestion(q.endsWith('…') ? `${q.slice(0, -1)} ` : q)}
+                      />
+                    </>
+                  }
+                  modes={
+                    !timeline.length || question.length > 0 ? (
+                      <fieldset
+                        disabled={applying || resetting || assistedSubmitting || assistedTicketLocked}
+                        style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
+                      >
+                        <Modes mode={mode} onMode={choisirMode} conseille={conseille} motif={depuisFinances ? 'pour cette vérification' : undefined} />
+                      </fieldset>
+                    ) : undefined
+                  }
+                >
+                  {assistedAdvice && !assistedRuntimeReady && (
+                    <p className="cmp-note" role="status">
+                      Le transport dédié de cette lecture n’est pas disponible. Aucune question ne partira par le compagnon standard.
+                    </p>
+                  )}
+                  {assistedAdvice && !assistedScopeMatches && (
+                    <p className="cmp-note" role="status">
+                      Cette lecture est liée à une autre portée. Reprends-la depuis sa source dans l’atelier.
+                    </p>
+                  )}
+                  {assistedAdvice && assistedScopeMatches && !assistedQuestionMatches && (
+                    <p className="cmp-note" role="status">
+                      La question a changé. Reprends une nouvelle lecture dans l’atelier avant de l’envoyer.
+                    </p>
+                  )}
+                  {assistedAlreadySubmitted && (
+                    <p className="cmp-note" role="status">
+                      Cette lecture a déjà été envoyée. Reprends une lecture dans l’atelier pour poser une autre question.
+                    </p>
+                  )}
+                </PiedSaisie>
+              </>
+            </form>
+          )
         }
       >
-        <div className="brewer-chat-context">
-          <span className="brewer-chat-dot" />
-          <span>
-            {assistedAdvice
-              ? 'Lecture assistée liée à sa question et à sa source'
-              : `${scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte actualisé à chaque question`}
-          </span>
-          <button
-            type="button"
-            className="brewer-chat-reset"
-            aria-label="Mes conversations"
-            title="Mes conversations"
-            disabled={resetting || applying}
-            onClick={() => { setOpen(false); onClose?.(); window.dispatchEvent(new Event('brewer-inbox-open')); }}
-          >
-            <MessageCircle size={17} />
-          </button>
-          <button
-            type="button"
-            className="brewer-chat-reset"
-            aria-label="Réinitialiser la conversation"
-            title="Réinitialiser la conversation"
-            disabled={resetting || applying || loading}
-            onClick={() => setConfirmReset(true)}
-          >
-            <RotateCcw size={17} />
-          </button>
-        </div>
-        {!assistedAdvice && <BrewerNotificationOption />}
-        {!assistedAdvice && <BrewerBudget />}
-        {finance && <p className="brewer-chat-status">Gemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.</p>}
-        {scope.kind === 'draft' && !currentDraft && (
-          <p className="brewer-chat-status">
-            Cette vue reprend le dernier brouillon analysé. Rouvre l’assistant recette pour valider
-            des champs ou envoyer tes dernières modifications.
-          </p>
-        )}
-        {confirmReset && (
-          <div
-            className="brewer-reset-confirm"
-            role="group"
-            aria-label="Confirmer la remise à zéro"
-          >
-            <strong>Repartir à zéro ?</strong>
-            <p>
-              {finance ? 'Les échanges et la réponse en cours seront effacés. Tes opérations, paiements et budgets restent conservés.' : 'Les échanges et la réponse en cours seront effacés. Ta recette et les notes déjà conservées restent intactes.'}
-            </p>
-            <div>
-              <button type="button" disabled={resetting} onClick={() => setConfirmReset(false)}>
-                Annuler
-              </button>
-              <button type="button" disabled={resetting} onClick={() => void reset()}>
-                {resetting ? 'Remise à zéro…' : 'Effacer les échanges'}
-              </button>
-            </div>
-          </div>
-        )}
-        {notice && (
-          <p className="brewer-chat-notice" role="status">
-            {notice}
-          </p>
-        )}
-        {more && (
-          <button
-            type="button"
-            className="brewer-chat-older"
-            disabled={loading}
-            onClick={() => void older()}
-          >
-            Échanges précédents
-          </button>
-        )}
-        {finance && timeline.length > 0 && <details className="brewer-chat-proof">
-          <summary>Autres questions utiles</summary>
-          <div className="brewer-chat-prompts">{questions.map((p) => <button type="button" key={p.label} disabled={resetting} onClick={() => setQuestion(p.question)}>{p.label}<ArrowUpRight size={15}/></button>)}</div>
-        </details>}
-        {!timeline.length && !loading && (
-          <div className="brewer-chat-welcome">
-            <Sparkles size={25} />
-            <h3>{hasAssistedSession ? 'Lecture assistée' : 'On regarde ça ensemble.'}</h3>
-            <p>
-              {hasAssistedSession ? 'Cette question reste liée à la lecture enregistrée et à son contexte exact. Pour changer sa formulation, relis une nouvelle demande dans l’atelier.'
-                : finance ? 'Comprendre où va ton argent, anticiper un brassin ou décider d’un achat utile à ta brasserie.'
-                  : 'Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du prochain geste.'}
-            </p>
-            {!hasAssistedSession && <div className="brewer-chat-prompts">
-              {questions.map((p) => (
-                <button type="button" key={p.label} disabled={resetting} onClick={() => setQuestion(p.question)}>
-                  {p.label}
-                  <ArrowUpRight size={15} />
+        <div className="cmp-corps">
+          {vue === 'limites' ? (
+            <BrewerLimitsView onBack={() => setVue('chat')} mode={mode} onMode={choisirMode} />
+          ) : (
+            <>
+              <div className="cmp-actions-tete">
+                <button
+                  type="button"
+                  className="cmp-ic"
+                  aria-label="Mes conversations"
+                  title="Mes conversations"
+                  disabled={resetting || applying}
+                  onClick={ouvrirConversations}
+                >
+                  <Icone nom="fil" />
+                  {jobs.some((j) => statutJob(j) !== 'pret') && <span className="cmp-badge" aria-hidden="true" />}
                 </button>
-              ))}
-            </div>}
-            <small>
-              {hasAssistedSession ? 'Le conseil reste une proposition. Rien n’est confirmé tant que tu n’as pas choisi une suggestion dans l’atelier.'
-                : finance ? 'Choisis une question, adapte-la puis envoie-la. Ouvrir cette aide ne lance aucune analyse.'
-                  : 'Les simulations restent des propositions. Les relevés et les gestes se consignent dans le journal.'}
-            </small>
-          </div>
-        )}
-        <div className="brewer-chat-history" aria-label="Conversation avec le compagnon">
-          {timeline.map(({ turn: t, job }) =>
-            !t && job ? (
-              <BrewerWorkCard
-                key={job.operationId}
-                job={job}
-                localFixture={localAssistedFixture}
-                onRecover={assistedReceiptsRetained
-                  && isRecoverableAssistedReceipt(job, scope, assistedAdvice?.request)
-                  && !attachedAssistedReceipts.current.has(`operation:${job.operationId}`)
-                  ? () => void attachAssistedReceipt(job) : undefined}
-                recoverDisabled={assistedSubmitting || resetting || applying}
-                onRetry={job.unsupportedReadOnly ? undefined : () => {
-                  const ticket = assistedTicketsByOperation.current.get(job.operationId);
-                  if (hasAssistedSession) { void retryAssistedJob(job); return; }
-                  if (ticket || job.input?.hopAdvice || job.turn?.hopAdviceProposal) return;
-                  if (job.sendError) activeJobsStore?.retry(job);
-                  else if (scope.kind === 'draft' && !draft) {
-                    activeJobsStore?.markRead(job);
-                    brewerJobs.retrySaved(job);
-                  } else {
-                    activeJobsStore?.markRead(job);
-                    activeJobsStore?.submit(
-                      {
-                        ...(job.input ?? {}),
-                        scope,
-                        operationId: crypto.randomUUID(),
-                        question: job.question,
-                        ...(draft ? { draft } : {}),
-                        ...(localJournal ? { localJournal } : {}),
-                        phase,
-                        mode,
-                        generation: generation.current,
-                        editableTargets: [...targets]
-                      },
-                      label
-                    );
-                  }
-                }}
-                onEdit={job.unsupportedReadOnly ? undefined : () => {
-                  setQuestion(job!.question);
-                  document.getElementById('brewer-question-' + scope.id)?.focus();
-                }}
-              />
-            ) : t ? (
-              <article key={t.id} className="brewer-chat-turn">
-                <p className="brewer-chat-question">{t.question}</p>
-                <div className={`brewer-chat-answer is-${t.advice.level}`}>
-                  <div className="brewer-chat-answer-meta">
-                    <span>
-                      <Sparkles size={14} /> Compagnon
-                    </span>
-                    <time dateTime={new Date(t.createdAt).toISOString()}>
-                      {new Date(t.createdAt).toLocaleString('fr-CH', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </time>
-                  </div>
-                  <h3>{t.advice.summary}</h3>
-                  <p className="brewer-chat-action">{t.advice.action}</p>
-                  {t.advice.why && <p>{t.advice.why}</p>}
-                  {t.advice.watch && (
-                    <p className="brewer-chat-watch">
-                      <strong>Prochain contrôle</strong>
-                      {t.advice.watch}
-                    </p>
-                  )}
-                  {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
-                  <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} selectedUrls={t.advice.productUrls} />
-                  {t.proposal && !hasAssistedSession && (
-                    <BrewerProposalCard
-                      proposal={t.proposal}
-                      draft={scope.kind === 'draft'}
-                      disabled={applying || resetting || (scope.kind === 'draft' && !onDraftApply)}
-                      onDecide={(ids, decision) => decide(t, ids, decision)}
-                    />
-                  )}
-                  <details className="brewer-chat-proof">
-                    <summary>
-                      <CheckCheck size={15} />
-                      {t.reviewed ? 'Conseil relu' : 'Conseil'}
-                      {t.evidence.length > 0 ? ' · calculs et sources' : ''}
-                    </summary>
-                    <p>
-                      {t.contextLabel} · {t.model}
-                    </p>
-                    {t.mode === 'fast' && <p>Mode rapide · calculs et relecture conservés.</p>}
-                    {t.reviewModel && (
-                      <p>
-                        Relecture : {t.reviewModel}
-                        {t.reviewReason === 'requested'
-                          ? ' · analyse approfondie demandée'
-                          : t.reviewReason === 'sensitive'
-                            ? ' · situation sensible'
-                            : t.reviewReason === 'research'
-                              ? ' · contrôle des sources web'
-                              : t.reviewReason === 'complexity'
-                                ? ' · analyse détaillée'
-                                : t.reviewReason === 'repair'
-                                  ? ' · vérification renforcée'
-                                  : ' · rapide'}
-                        .
-                      </p>
-                    )}
-                    <p>{finance ? 'Seconde relecture IA. Vérifie les hypothèses et les montants avant toute décision.' : 'Seconde relecture IA. Les estimations restent à confirmer à la cuve.'}</p>
-                    {t.evidence.map((e) => (
-                      <div key={e.id}>
-                        <strong>
-                          <Calculator size={14} />
-                          {e.label}
-                        </strong>
-                        {e.model && <small>Recherche : {e.model}</small>}
-                        {e.facts.map((f, i) => (
-                          <p key={i}>{f}</p>
-                        ))}
-                        {e.limits.map((l, i) => (
-                          <small key={i}>{l}</small>
-                        ))}
-                        {e.sources
-                          ?.filter((s) => /^https:\/\//.test(s.url))
-                          .map((s, i) => (
-                            <a key={i} href={s.url} target="_blank" rel="noopener noreferrer">
-                              {s.title}
-                              <ArrowUpRight size={12} />
-                            </a>
-                          ))}
-                      </div>
+                <button
+                  type="button"
+                  className="cmp-ic"
+                  aria-label="Réinitialiser la conversation"
+                  title="Réinitialiser la conversation"
+                  disabled={resetting || applying || loading}
+                  onClick={() => setConfirmReset(true)}
+                >
+                  <Icone nom="zero" />
+                </button>
+              </div>
+              {finance && (
+                <p className="cmp-note">
+                  L’IA reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.
+                </p>
+              )}
+              {scope.kind === 'draft' && !currentDraft && (
+                <p className="cmp-note">
+                  Cette vue reprend le dernier brouillon analysé. Rouvre l’assistant recette pour valider
+                  des champs ou envoyer tes dernières modifications.
+                </p>
+              )}
+              {confirmReset && (
+                <Zero
+                  portee={portee}
+                  nom={ctx.nomRecette ?? (scope.kind === 'app' ? undefined : label)}
+                  numero={ctx.numero}
+                  busy={resetting}
+                  reponseEnCours={travaux.length > 0}
+                  enFile={Math.max(0, travaux.length - 1)}
+                  onAnnuler={() => setConfirmReset(false)}
+                  onConfirmer={() => void reset()}
+                />
+              )}
+              {notice && (
+                <p className="cmp-note" role="status">
+                  {notice}
+                </p>
+              )}
+              {more && (
+                <button type="button" className="cmp-btn cmp-g" disabled={loading} onClick={() => void older()}>
+                  Échanges précédents
+                </button>
+              )}
+              {finance && timeline.length > 0 && questions.length > 0 && (
+                <details className="cmp-pourquoi-d">
+                  <summary className="cmp-plis">
+                    <Icone nom="bas" />
+                    <b>Autres questions</b>
+                  </summary>
+                  <div className="cmp-amorces">
+                    {questions.map((p) => (
+                      <button
+                        type="button"
+                        className="cmp-chip"
+                        key={p.label}
+                        disabled={resetting}
+                        onClick={() => setQuestion(p.question)}
+                      >
+                        {p.label}
+                      </button>
                     ))}
-                  </details>
-                  {onKeep && (
-                    <button
-                      className="brewer-chat-keep"
-                      type="button"
-                      disabled={kept.includes(t.id)}
-                      onClick={() => {
-                        onKeep(`Conseil IA — ${t.question}\n${t.advice.action}\n${t.advice.watch}`);
-                        setKept((k) => [...k, t.id]);
-                      }}
-                    >
-                      {kept.includes(t.id)
-                        ? 'Ajouté aux notes du journal'
-                        : 'Garder dans les notes du journal'}
-                    </button>
-                  )}
-                </div>
-              </article>
-            ) : null
+                  </div>
+                </details>
+              )}
+              {!timeline.length && !loading && (
+                assistedAdvice ? <Accueil {...accueilProps} /> : <AccueilBudget {...accueilProps} />
+              )}
+              <div className="cmp-histo" aria-label="Conversation avec le compagnon">
+                {timeline.map(({ turn: t, job }) =>
+                  !t && job ? (
+                    travaux.includes(job) && travaux[0] !== job ? null : (
+                      <BrewerWorkCard
+                        key={job.operationId}
+                        job={job}
+                        mode={mode}
+                        file={travaux[0] === job ? travaux.slice(1).map((j) => ({ id: j.operationId, question: j.question })) : []}
+                        localFixture={localAssistedFixture}
+                        contexte={ctx}
+                        notifier={!assistedAdvice}
+                        enLigne={enLigne}
+                        onFermer={fermer}
+                        onLimits={() => setVue('limites')}
+                        onRecover={assistedReceiptsRetained
+                          && isRecoverableAssistedReceipt(job, scope, assistedAdvice?.request)
+                          && !attachedAssistedReceipts.current.has(`operation:${job.operationId}`)
+                          ? () => void attachAssistedReceipt(job) : undefined}
+                        recoverDisabled={assistedSubmitting || resetting || applying}
+                        onRetry={job.unsupportedReadOnly ? undefined : () => {
+                          const ticket = assistedTicketsByOperation.current.get(job.operationId);
+                          if (hasAssistedSession) { void retryAssistedJob(job); return; }
+                          if (ticket || job.input?.hopAdvice || job.turn?.hopAdviceProposal) return;
+                          if (job.sendError) activeJobsStore?.retry(job);
+                          else if (scope.kind === 'draft' && !draft) {
+                            activeJobsStore?.markRead(job);
+                            brewerJobs.retrySaved(job);
+                          } else {
+                            activeJobsStore?.markRead(job);
+                            activeJobsStore?.submit(
+                              {
+                                ...(job.input ?? {}),
+                                scope,
+                                operationId: crypto.randomUUID(),
+                                question: job.question,
+                                ...(draft ? { draft } : {}),
+                                ...(localJournal ? { localJournal } : {}),
+                                phase,
+                                mode,
+                                generation: generation.current,
+                                editableTargets: [...targets]
+                              },
+                              label
+                            );
+                          }
+                        }}
+                        onEdit={job.unsupportedReadOnly ? undefined : () => {
+                          setQuestion(job!.question);
+                          document.getElementById('brewer-question-' + scope.id)?.focus();
+                        }}
+                      />
+                    )
+                  ) : t ? (
+                    <article key={t.id} className="cmp-tour">
+                      <Question>{t.question}</Question>
+                      <Verdict advice={t.advice} viseeC={ctx.viseeC} changes={t.proposal?.changes} />
+                      <Fournisseurs products={t.evidence.flatMap((e) => e.products ?? [])} selectedUrls={t.advice.productUrls} />
+                      {t.proposal && !hasAssistedSession && (
+                        <BrewerProposalCard
+                          proposal={t.proposal}
+                          draft={scope.kind === 'draft'}
+                          dosesTotalesG={ctx.jalons.length ? doseTotale(ctx.jalons) : undefined}
+                          volumeL={ctx.volumeL}
+                          disabled={applying || resetting || (scope.kind === 'draft' && !onDraftApply)}
+                          onDecide={(ids, decision) => decide(t, ids, decision)}
+                        />
+                      )}
+                      <Controle
+                        watch={t.advice.watch}
+                        gardee={kept.includes(t.id)}
+                        onKeep={
+                          onKeep
+                            ? () => {
+                                onKeep(`Conseil IA — ${t.question}\n${t.advice.action}\n${t.advice.watch}`);
+                                setKept((k) => [...k, t.id]);
+                              }
+                            : undefined
+                        }
+                      />
+                      <Pourquoi turn={t} finance={finance} />
+                    </article>
+                  ) : null
+                )}
+              </div>
+              {loading && (
+                <p className="cmp-note" role="status">
+                  Chargement des échanges…
+                </p>
+              )}
+              {activity.connectionError && (
+                <p className="cmp-note cmp-erreur" role="status">
+                  {activity.connectionError}{' '}
+                  <button type="button" className="cmp-btn cmp-g" onClick={() => void activeJobsStore?.refresh()}>
+                    Actualiser
+                  </button>
+                </p>
+              )}
+              {!hideLauncher &&
+                jobs.some(
+                  (j) =>
+                    j.status === 'done' &&
+                    j.contextSignature &&
+                    j.contextSignature !== JSON.stringify([draft, localJournal, phase])
+                ) && (
+                  <p className="cmp-note">
+                    Le contexte a changé pendant ou depuis l’analyse. Pose une nouvelle question pour
+                    tenir compte de tes derniers changements.
+                  </p>
+                )}
+              {error && (
+                <p role="alert" className="cmp-note cmp-erreur">
+                  {error}
+                </p>
+              )}
+            </>
           )}
+          <div ref={end} />
         </div>
-        {loading && (
-          <p className="brewer-chat-status" role="status">
-            Chargement des échanges…
-          </p>
-        )}
-        {activity.connectionError && (
-          <p className="brewer-chat-error" role="status">
-            {activity.connectionError}{' '}
-            <button type="button" onClick={() => void activeJobsStore?.refresh()}>
-              Actualiser
-            </button>
-          </p>
-        )}
-        {!hideLauncher &&
-          jobs.some(
-            (j) =>
-              j.status === 'done' &&
-              j.contextSignature &&
-              j.contextSignature !== JSON.stringify([draft, localJournal, phase])
-          ) && (
-            <p className="brewer-chat-status">
-              Le contexte a changé pendant ou depuis l’analyse. Pose une nouvelle question pour
-              tenir compte de tes derniers changements.
-            </p>
-          )}
-        {error && (
-          <p role="alert" className="brewer-chat-error">
-            {error}
-          </p>
-        )}
-        <div ref={end} />
       </Sheet>
     </>
   );
@@ -1398,7 +1384,7 @@ export function HopV55SemanticArchivedAnswerV1({ record }: { record: SemanticRec
       {record.turn.advice.why ? <p>{record.turn.advice.why}</p> : null}
       {record.turn.advice.watch ? <p className="brewer-chat-watch"><strong>À surveiller</strong>{record.turn.advice.watch}</p> : null}
       <details className="brewer-chat-proof"><summary><CheckCheck size={15} /> Réponse et preuves conservées</summary>
-        <p>{record.turn.contextLabel} · {record.turn.model}</p>
+        <p>{record.turn.contextLabel}</p>
         <p>Format de la réponse vérifié : <code>V6</code>.</p>
         {record.fullEvidence.map(evidence => <div key={evidence.id}><strong><Calculator size={14} /> {evidence.label}</strong>
           {evidence.facts.map((fact, index) => <p key={index}>{fact}</p>)}
@@ -1728,7 +1714,7 @@ function SemanticCompanionChat({ scope, label, phase, draft, localJournal, initi
         {record.turn.advice.watch ? <p className="brewer-chat-watch"><strong>À surveiller</strong>{record.turn.advice.watch}</p> : null}
         {record.turn.advice.question ? <p className="brewer-chat-followup">{record.turn.advice.question}</p> : null}
         <details className="brewer-chat-proof"><summary><CheckCheck size={15} /> Réponse et preuves reçues</summary>
-          <p>{record.turn.contextLabel} · {record.turn.model}</p>
+          <p>{record.turn.contextLabel}</p>
           <p>Format de la réponse vérifié : <code>V6</code>.</p>
           {record.fullEvidence.map(evidence => <div key={evidence.id}><strong><Calculator size={14} /> {evidence.label}</strong>
             {evidence.facts.map((fact, index) => <p key={index}>{fact}</p>)}
@@ -1813,20 +1799,122 @@ function SemanticCompanionChat({ scope, label, phase, draft, localJournal, initi
   </Sheet>;
 }
 
+/** Vrai tant que le navigateur se dit en ligne ; suit les événements `online` / `offline`. */
+function useEnLigne(): boolean {
+  return useSyncExternalStore(
+    (notify) => {
+      window.addEventListener('online', notify);
+      window.addEventListener('offline', notify);
+      return () => {
+        window.removeEventListener('online', notify);
+        window.removeEventListener('offline', notify);
+      };
+    },
+    () => typeof navigator === 'undefined' || navigator.onLine !== false,
+    () => true
+  );
+}
+
+const CASES_VERIFIEES = [
+  { label: 'Doublons possibles', icone: 'doublon' },
+  { label: 'Paiements', icone: 'portefeuille' },
+  { label: 'Classement du matériel', icone: 'outil' },
+  { label: 'Pièces à compléter', icone: 'trombone' }
+] as const;
+/** Débuts de phrase de la saisie, portée brassin à l'accueil. */
+const AMORCES_BRASSIN = ['La pression monte…', 'Ça sent…', 'La densité…'];
+/** Après une réponse : l'amorce fixe de la maquette, à côté de la suite proposée par la réponse. */
+const AMORCES_SUITE = ['Ça sent encore…'];
+
+/** « 19 °C depuis 36 h · 19 L · Citra demain » : ce que le brassin et son journal disent déjà ; une part absente se tait. */
+function ligneContexte(c: ContexteBrassin): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  if (c.temperature)
+    parts.push(<><N>{nombreTexte(c.temperature.c)}</N> °C{c.temperature.depuisH !== undefined ? <> depuis <N>{c.temperature.depuisH}</N> h</> : null}</>);
+  if (c.volumeL) parts.push(<><N>{nombreTexte(c.volumeL)}</N> L</>);
+  const p = prochainJalon(c);
+  if (p) parts.push(<>{p.nom} {quand(p.dans)}</>);
+  // La ligne a ses trois parts (température, volume, prochain geste) ou se tait : « 19 L » seul ne dit rien.
+  if (parts.length < 3) return undefined;
+  return parts.map((x, i) => <React.Fragment key={i}>{i ? ' · ' : ''}{x}</React.Fragment>);
+}
+
+/** Ligne du budget du mois sous « Rien n'est perdu » : « Ce mois · 2,10/15 CHF ». L'inconnu se tait ; « rien compté » n'est pas dit par le serveur. */
+function BudgetMois() {
+  const { status } = useBrewerBudget();
+  const mois = budgetResume(status).mois.replace(/^mois\s+/, '').replace(/\s+sur\s+/, '/');
+  if (!status || !/[0-9]/.test(mois)) return null;
+  return <>Ce mois · <N>{mois}</N></>;
+}
+
+/** Accueil avec la carte des limites : le budget n'est lu qu'à l'ouverture de la feuille, jamais ligne à ligne. */
+function AccueilBudget(props: Omit<ComponentProps<typeof Accueil>, 'limites'>) {
+  const { status } = useBrewerBudget();
+  const resume = budgetResume(status);
+  // « Aujourd’hui 4 sur 120 » et « mois 2,10 sur 15 CHF » → « 4/120 » et « 2,10/15 CHF » ; l'inconnu reste vide, jamais 0.
+  const court = (texte: string) =>
+    texte.replace(/^Aujourd’hui\s+/, '').replace(/^mois\s+/, '').replace(/\s+sur\s+/, '/');
+  const mensuel = status?.monthly;
+  const limites =
+    status && (resume.appelsJour || resume.mois)
+      ? {
+          appels: court(resume.appelsJour),
+          mois: court(resume.mois),
+          partAppels: partDe(status.usage?.calls, status.limits?.dailyCalls),
+          partMois: mensuel ? partDe(mensuel.usedMicroChf + mensuel.reservedMicroChf, mensuel.limitMicroChf) : null
+        }
+      : undefined;
+  return <Accueil {...props} limites={limites} />;
+}
+
+/** Carte d'attente avec le geste « Fermer · me notifier » : active les notifications de l'appareil si elles ne le sont pas. */
+function AttenteNotifiante(props: ComponentProps<typeof Attente>) {
+  const notification = useBrewerNotifications();
+  const { onFermer, ...reste } = props;
+  return (
+    <Attente
+      {...reste}
+      notifier={notification.state !== 'unsupported'}
+      onFermer={
+        onFermer
+          ? () => {
+              if (notification.state === 'off') void notification.enable();
+              onFermer();
+            }
+          : undefined
+      }
+    />
+  );
+}
+
 function BrewerWorkCard({
   job,
+  mode,
+  file = [],
   onRetry,
   onRecover,
   recoverDisabled = false,
   localFixture = false,
-  onEdit
+  notifier = false,
+  enLigne = true,
+  contexte,
+  onEdit,
+  onFermer,
+  onLimits
 }: {
+  contexte?: ContexteBrassin;
   job: ClientBrewerJob;
+  mode: BrewerMode;
+  file?: Array<{ id: string; question: string }>;
   onRetry?: () => void;
   onRecover?: () => void;
   recoverDisabled?: boolean;
   localFixture?: boolean;
+  notifier?: boolean;
+  enLigne?: boolean;
   onEdit?: () => void;
+  onFermer?: () => void;
+  onLimits?: () => void;
 }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -1834,168 +1922,152 @@ function BrewerWorkCard({
     return () => clearInterval(timer);
   }, []);
   const failed = job.status === 'error' || !!job.sendError;
-  const seconds = Math.max(0, Math.floor(((job.finishedAt ?? now) - job.createdAt) / 1000));
-  return (
-    <article className="brewer-chat-turn">
-      <p className="brewer-chat-question">{job.question}</p>
-      <div className={`brewer-work-card${failed ? ' is-error' : ''}`}>
-        <div role="status" className="brewer-work-heading">
-          {!failed && isBrewerWorking(job) && (
-            <LoaderCircle size={17} className="brewer-chat-spin" />
-          )}
-          <strong>{job.unsupportedReadOnly ? 'Format futur conservé · lecture seule'
-            : localFixture ? localAssistedFixtureStatus(job) : brewerJobStatus(job)}</strong>
-          <time aria-hidden="true">
-            {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
-          </time>
+  // Dernière étape atteinte : elle ne recule pas, et reste inconnue si la carte est née déjà en échec.
+  const atteinte = useRef(-1);
+  const lue = etapeIndex(job.stage);
+  if (!failed && lue > atteinte.current) atteinte.current = lue;
+  const modeDuJob: BrewerMode = job.input?.mode ?? (job.model?.includes('pro') ? 'deep' : mode);
+  const message = sansNomDeModele(job.sendError || job.error?.message || '');
+  const prochain = contexte ? prochainJalon(contexte) : undefined;
+  const relancer = (job.sendError || job.error?.retryable) && onRetry ? onRetry : undefined;
+  const libelleRelance = localFixture ? 'Relancer la simulation locale' : 'Réessayer l’envoi';
+
+  let corps: React.ReactNode;
+  if (job.unsupportedReadOnly) {
+    corps = (
+      <>
+        <Question>{job.question}</Question>
+        <div className="cmp-carte cmp-detail">
+          <p role="status">
+            <strong>Format futur conservé · lecture seule</strong>
+          </p>
+          <p role="status">Source conservée sans conversion · {job.unsupportedReadOnly.source}</p>
+          <p>{job.unsupportedReadOnly.reason}</p>
+          <details>
+            <summary>Données brutes conservées (lecture seule)</summary>
+            <pre>{jsonText(job.unsupportedReadOnly.snapshot)}</pre>
+          </details>
         </div>
-        {job.unsupportedReadOnly ? (
+      </>
+    );
+  } else if (failed && !job.sendError && estPlafondAtteint(job.error?.code)) {
+    // Maquette « plafond » : rien entre la carte des réponses lisibles et le pied. Le cadre porte déjà « Relever à 20 CHF » (qui relance la
+    // question gardée par `onRaised`) et « Plus tard » ; ni message rouge, ni Relancer, ni Reformuler (la question reste gardée dans la saisie).
+    // Seul le budget du mois (qu'on relève ici) prend ce cadre nu ; le plafond de dépenses du projet côté fournisseur ne se relève pas
+    // ici : son message et ses gestes restent, sans quoi le brasseur ne saurait pas pourquoi rien ne part.
+    const duMois = job.error?.code !== 'gemini-spend-cap';
+    corps = (
+      <>
+        <Plafond question={job.question} onLimits={() => onLimits?.()} onLater={() => onFermer?.()} onRaised={relancer} />
+        {duMois ? null : (
           <>
-            <p role="status">Source conservée sans conversion · {job.unsupportedReadOnly.source}</p>
-            <p>{job.unsupportedReadOnly.reason}</p>
-            <details><summary>Données brutes conservées (lecture seule)</summary>
-              <pre>{jsonText(job.unsupportedReadOnly.snapshot)}</pre>
-            </details>
-          </>
-        ) : failed ? (
-          <>
-            <p role="alert">{job.sendError || job.error?.message}</p>
-            {job.error?.code === 'gemini-spend-cap' && (
-              <a href="https://ai.studio/spend" target="_blank" rel="noopener noreferrer"
-                className="inline-flex min-h-touch items-center text-ebc-straw underline underline-offset-2">
-                Ouvrir les dépenses Google
-              </a>
-            )}
-            <div className="brewer-work-actions">
-              {(job.sendError || job.error?.retryable) && onRetry && (
-                <button type="button" onClick={onRetry}>
-                  {localFixture ? 'Relancer la simulation locale'
-                    : job.sendError ? 'Réessayer l’envoi' : 'Relancer l’analyse'}
+            <p role="alert" className="cmp-note cmp-erreur">
+              {message}
+            </p>
+            <div className="cmp-act">
+              {relancer && (
+                <button type="button" className="cmp-btn cmp-s" onClick={relancer}>
+                  Relancer l’analyse
                 </button>
               )}
-              {onEdit ? <button type="button" onClick={onEdit}>
-                Reformuler
-              </button> : null}
+              {onEdit ? (
+                <button type="button" className="cmp-btn cmp-g" onClick={onEdit}>
+                  Reformuler
+                </button>
+              ) : null}
             </div>
           </>
-        ) : (
-          <>
-            {job.detail && <p>{job.detail}</p>}
-            <small>
-              {localFixture
-                ? job.status === 'done' && !job.sending ? 'Réponse simulée · fixture locale' : 'Traitement local · réponse simulée'
-                : job.model?.includes('pro')
-                ? 'Gemini 3.1 Pro'
-                : job.model
-                  ? 'Gemini Flash'
-                  : job.sending
-                    ? 'En attente de l’accusé de réception'
-                    : 'Enregistrée sur le serveur'}
-              {job.attempt > 1 ? ' · reprise' : ''}
-            </small>
-            {!job.sending && (
-              <p className="brewer-work-away">
-                {localFixture ? 'Tu peux continuer; cette fixture garde le parcours local dans ce navigateur.'
-                  : 'Tu peux continuer ailleurs. La réponse restera dans ce fil.'}
-              </p>
-            )}
-            {job.status === 'running' && now - job.updatedAt > 90000 && (
-              <p>
-                {localFixture ? 'La simulation locale reste en attente; aucun modèle distant n’est appelé.'
-                  : 'Cette étape prend du temps. Le serveur poursuit l’analyse et signalera tout échec ici.'}
-              </p>
-            )}
-            {onRecover && (
-              <div className="brewer-work-actions">
-                <p>La réponse reçue reste liée à sa question d’origine. Vérifie son ticket avant de la rattacher.</p>
-                <button type="button" disabled={recoverDisabled} onClick={onRecover}>Rattacher la réponse assistée</button>
-              </div>
-            )}
-          </>
         )}
-      </div>
-    </article>
-  );
-}
-
-function SupplierCards({ products, selectedUrls }: { products: BrewerProduct[]; selectedUrls?: string[] }) {
-  // Prefer useful small packs and an available variant, with one card per product URL.
-  const packGrams = (product: BrewerProduct) => {
-    const label = product.packageLabel || product.name;
-    const weight = label.match(/(\d+(?:[.,]\d+)?)\s*(kg|kilogramm(?:e)?s?|gramm(?:e)?s?|g)\b/i);
-    if (weight) return Number(weight[1].replace(',', '.')) * (/^(kg|kilo)/i.test(weight[2]) ? 1000 : 1);
-    if (/\b(?:gramm(?:e)?s?|g)\b/i.test(label)) return 1;
-    if (/\b(?:kg|kilogramm(?:e)?s?)\b/i.test(label)) return 1000;
-    return Number.MAX_SAFE_INTEGER;
-  };
-  const sorted = [...products]
-    .filter((p) => {
-      if (selectedUrls && !selectedUrls.includes(p.url)) return false;
-      try { const url = new URL(p.url); return url.protocol === 'https:' && !url.username && !url.password; }
-      catch { return false; }
-    })
-    .sort(
-      (a, b) =>
-        (selectedUrls ? selectedUrls.indexOf(a.url) - selectedUrls.indexOf(b.url) : 0) ||
-        Number(b.verifiedBy === 'product-page') - Number(a.verifiedBy === 'product-page') ||
-        Number(b.availability === 'in_stock') - Number(a.availability === 'in_stock') ||
-        packGrams(a) - packGrams(b)
+      </>
     );
-  const unique = [...new Map(sorted.reverse().map((p) => [p.url, p])).values()].reverse();
-  const suppliers = new Set<string>();
-  const firstPerSupplier = unique.filter(p => {
-    if (suppliers.has(p.supplier)) return false;
-    suppliers.add(p.supplier); return true;
-  });
-  const cards = [...firstPerSupplier, ...unique.filter(p => !firstPerSupplier.includes(p))].slice(0, 6);
-  if (!cards.length) return null;
-  return (
-    <div className="brewer-chat-suppliers" aria-label="Produits chez les fournisseurs suisses">
-      <strong>Où acheter</strong>
-      {cards.map((p) => {
-        const dated = Number.isFinite(p.checkedAt) && p.checkedAt > 0 && p.checkedAt <= Date.now() + 300000;
-        const stale = !dated || Date.now() - p.checkedAt > 86400000;
-        const status = stale || (p.verifiedBy === 'product-page' && p.stockEvidence === 'none') ? 'unknown' : p.availability;
-        return (
-          <a
-            key={p.url}
-            href={p.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="brewer-chat-product"
-          >
-            <span className="brewer-chat-product-name">
-              <strong style={{ overflowWrap: 'anywhere' }}>{p.name}</strong>
-              <ArrowUpRight size={17} />
-            </span>
-            <span className="brewer-chat-product-supplier">{p.supplier}</span>
-            <span className={`brewer-chat-stock is-${status}`}>
-              {status === 'in_stock'
-                ? 'Annoncé en stock'
-                : status === 'out_of_stock'
-                  ? 'Indisponible'
-                  : stale
-                    ? 'Stock à revérifier'
-                    : 'Stock non confirmé'}
-            </span>
-            {(p.packageLabel || p.priceText) && <small>
-              {[p.packageLabel, p.priceText ? `${p.priceText} · prix annoncé` : ''].filter(Boolean).join(' · ')}
-            </small>}
-            <small>
-              {p.verifiedBy === 'product-page' ? 'Lien produit vérifié' : 'Page consultée'}
-              {dated ? ` · ${new Date(p.checkedAt).toLocaleString('fr-CH', {
-                day: '2-digit',
-                month: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}` : ' · date de contrôle inconnue'}
-            </small>
-          </a>
-        );
-      })}
-      <small>
-        Stock annoncé par le vendeur pour ce conditionnement, à confirmer à la commande.
-      </small>
-    </div>
-  );
+  } else if (onRetry && (job.sendError || (job.sending && !enLigne))) {
+    corps = (
+      <HorsLigne
+        question={job.question}
+        // Réseau coupé : le texte et le bouton de la maquette. Réseau là mais accusé manquant : le message exact du serveur.
+        message={job.sendError && enLigne ? message : undefined}
+        libelleEnvoi={localFixture ? libelleRelance : enLigne ? libelleRelance : undefined}
+        libelleAccessible={localFixture ? undefined : libelleRelance}
+        resume={<BudgetMois />}
+        onEnvoyer={onRetry}
+        onReformuler={onEdit}
+      />
+    );
+  } else if (failed) {
+    corps = (
+      <>
+        <Question>{job.question}</Question>
+        <Echec
+          message={message}
+          etape={atteinte.current >= 0 ? atteinte.current : undefined}
+          libelleRelancer={localFixture ? 'Relancer la simulation locale' : 'Relancer l’analyse'}
+          onRelancer={job.error?.retryable && onRetry ? onRetry : undefined}
+          onReformuler={onEdit}
+        />
+      </>
+    );
+  } else if (isBrewerWorking(job)) {
+    const Carte = notifier && !localFixture ? AttenteNotifiante : Attente;
+    corps = (
+      <Carte
+        question={job.question}
+        mode={modeDuJob}
+        debut={job.createdAt}
+        fin={job.finishedAt}
+        stage={job.stage}
+        file={file}
+        onFermer={onFermer}
+        notifier={false}
+        marge={prochain ? <Marge jour={prochain.jour} nom={prochain.nom} dans={prochain.dans} /> : undefined}
+        calcule={contexte && !localFixture ? <Calcule jalons={contexte.jalons} jour={contexte.jour} gParL={gParLitre(contexte.jalons, contexte.volumeL)} temperature={contexte.temperature} /> : undefined}
+      >
+        {localFixture && (
+          <p className="cmp-note" role="status">
+            {localAssistedFixtureStatus(job)}
+          </p>
+        )}
+        {/* Les cinq textes d'aide de l'attente (étape, détail, « Enregistrée sur le serveur », « Tu peux continuer ailleurs », « Cette étape prend du temps ») ne sont pas dans la maquette : retirés. */}
+        {localFixture ? (
+          <p className="cmp-note">
+            Traitement local · réponse simulée{job.attempt > 1 ? ' · reprise' : ''}
+          </p>
+        ) : job.sending ? (
+          <p className="cmp-note">En attente de l’accusé de réception{job.attempt > 1 ? ' · reprise' : ''}</p>
+        ) : null}
+        {localFixture && !job.sending && (
+          <p className="cmp-note">Tu peux continuer; cette fixture garde le parcours local dans ce navigateur.</p>
+        )}
+        {localFixture && job.status === 'running' && now - job.updatedAt > 90000 && (
+          <p className="cmp-note">La simulation locale reste en attente; aucun modèle distant n’est appelé.</p>
+        )}
+        {onRecover && (
+          <div className="cmp-act">
+            <p className="cmp-note">La réponse reçue reste liée à sa question d’origine. Vérifie son ticket avant de la rattacher.</p>
+            <button type="button" className="cmp-btn cmp-s" disabled={recoverDisabled} onClick={onRecover}>Rattacher la réponse assistée</button>
+          </div>
+        )}
+      </Carte>
+    );
+  } else {
+    corps = (
+      <>
+        <Question>{job.question}</Question>
+        <div className="cmp-carte cmp-detail">
+          <p role="status">
+            <strong>
+              {localFixture ? localAssistedFixtureStatus(job) : job.status === 'done' ? 'Réponse prête' : 'Question annulée'}
+            </strong>
+          </p>
+          {localFixture && job.status === 'done' && !job.sending && <small>Réponse simulée · fixture locale</small>}
+          {onRecover && (
+            <>
+              <p>La réponse reçue reste liée à sa question d’origine. Vérifie son ticket avant de la rattacher.</p>
+              <button type="button" className="cmp-btn cmp-s" disabled={recoverDisabled} onClick={onRecover}>Rattacher la réponse assistée</button>
+            </>
+          )}
+        </div>
+      </>
+    );
+  }
+  return <article className="cmp-tour">{corps}</article>;
 }

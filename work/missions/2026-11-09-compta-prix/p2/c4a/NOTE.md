@@ -1,0 +1,6 @@
+# c4a — Prix et marges · tiède (la règle à bandes, langue de p2b)
+**Idée** : le prix est posé sur une règle à trois bandes nommées : à perte (sous le coût 2,48), mince (moins d'un tiers du prix te reste), il te reste ; réponse « Il te reste 2,52 CHF · 50 % du prix ».
+**Autre genre que c2a/b/c** : ni tableau, ni cascade, ni comparaison au litre : une zone sur une échelle, comme le barème de l'impôt qu'il a choisi (p2b). Petites règles pour 75 cl et fût ; bloc « Brassin en 33 cl · 81 bouteilles · il te reste 204,12 » (greffe c2a). État 2 : fût, limite hachurée (≥ 132,46), le fût tombe dans « mince ».
+**Baseline** : produit (Pale Ale ▾ = liste des tarifs), formats, prix, coût, marge ; TVA (« sans TVA · prix TTC ») ; modifier et supprimer dans « Changer le prix ». Reste dans Clients › Prix (placement : voie p, e1a–e1c).
+B1 OK. B2 OK (2,52 en 44 px). B3 alerte 98 mots chiffres compris (≈ 60 hors chiffres, graduations comprises). B4 OK (cibles ≥ 40 px). B5 OK (une action primaire). B6 OK (en-tête, barre du bas, + gardés). B7 OK (COMMUN OK). B8 OK (inconnu = « ? » hachuré, jamais 0). B9 s.o. (statique). B10 s.o. (aucune saisie, 0 type number). B12 OK (format suisse, décimales constantes).  B13 OK (IA au toucher, « exemple »). B11 « Ta 33 cl à 5,00 est bien dans le vert ; ton fût est mince. »
+Captures : c4a-haut.png, c4a-page.png, c4a-1280.png.

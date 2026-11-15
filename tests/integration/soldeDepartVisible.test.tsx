@@ -7,7 +7,8 @@ import { FinanceOverview } from '../../src/ui/finance/FinanceOverview';
 const ledger: any = { cashComplete: false, cashCents: null, payablesCents: 0, receivablesCents: 0, unknownPaymentCount: 0, outstanding: [], warnings: [] };
 afterEach(() => cleanup());
 const monter = (openingCash?: { amountCents: number; date: string; confirmed: boolean }) => render(
-  <FinanceOverview ledger={ledger} openingCashReady={false} openingCash={openingCash} undatedCount={0} onProfile={() => {}} onJournal={() => {}} onTransaction={() => {}} onPayment={() => {}} />,
+  <FinanceOverview transactions={[]} payments={[]} plans={[]} assets={[]} batches={[]} recipes={[]} ledger={ledger} openingCashReady={false} openingCash={openingCash} month="2026-11" allDates={false} onMonth={() => {}} onAllDates={() => {}}
+    onProfile={() => {}} onJournal={() => {}} onTransaction={() => {}} onPayment={() => {}} onOpenBudget={() => {}} onBudgetPicker={() => {}} onUpgrade={() => {}} onBrowseProjects={() => {}} onNotice={() => {}} />,
 );
 
 describe('Solde de départ saisi', () => {

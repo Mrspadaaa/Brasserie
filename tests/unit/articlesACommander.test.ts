@@ -18,24 +18,24 @@ describe('articlesACommander (n° 49)', () => {
   ];
 
   it('compte les articles sous un seuil renseigné, pas ceux sans seuil', () => {
-    const liste = articlesACommander(items, []);
+    const liste = articlesACommander(items, [], []);
     expect(liste.map((a) => a.item.ref)).toEqual(['A-suivi-bas', 'B-suivi-seuil', 'C-rupture-suivie']);
   });
 
   it('donne la quantité à commander et la rupture', () => {
-    const [bas, seuil, vide] = articlesACommander(items, []);
+    const [bas, seuil, vide] = articlesACommander(items, [], []);
     expect(bas).toMatchObject({ missing: 3, rupture: false });
     expect(seuil).toMatchObject({ missing: 0, rupture: false });
     expect(vide).toMatchObject({ missing: 10, rupture: true });
   });
 
   it('un même comptage pour le Bord, Stocks et le badge : sa longueur', () => {
-    const liste = articlesACommander(items, []);
+    const liste = articlesACommander(items, [], []);
     expect(liste.length).toBe(3);
     expect(liste.filter((a) => a.rupture).length).toBe(1);
   });
 
   it('une liste vide ne manque de rien', () => {
-    expect(articlesACommander([], [])).toEqual([]);
+    expect(articlesACommander([], [], [])).toEqual([]);
   });
 });

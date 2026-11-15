@@ -1,87 +1,128 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { formatCHF, todayISO, type LedgerSummary } from '../../domain/finance/ledger';
-import type { JournalRequest } from './TransactionJournal';
+import type { Batch, Recipe, StockItem, Transaction } from '../../types';
+import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../domain/finance/types';
+import { isoDate, todayISO, transactionAmount, type LedgerSummary } from '../../domain/finance/ledger';
+import { periodeSynthese } from '../../domain/finance/periodeSynthese';
 import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
-import { compte } from '../../services/plural';
+import type { JournalRequest } from './TransactionJournal';
+import { Periode, Scene, titrePeriode } from './synthese/Scene';
+import { Caisse } from './synthese/Caisse';
+import { AlerteTva, LigneLitre, Replie, Verifier } from './synthese/Lignes';
+import { Pourquoi } from './synthese/Pourquoi';
+import { Analyse } from './analyse/Analyse';
+import './synthese.css';
 
 interface Props {
+  transactions: Transaction[];
+  payments: FinancialPayment[];
+  plans: FinancialPlan[];
+  assets: FinancialAsset[];
+  batches: Batch[];
+  recipes: Recipe[];
   ledger: LedgerSummary;
   /** AM n° 10 : chiffre d'affaires sur 12 mois contre le seuil d'assujettissement à la TVA ; `null` si déjà assujettie ou seuil inconnu. */
   tvaThreshold?: TvaThresholdStatus | null;
   openingCashReady: boolean;
   /** BE-72 : le solde saisi mais pas encore confirmé se montre (avec son statut) au lieu de disparaître de l'écran. */
   openingCash?: { amountCents: number; date: string; confirmed: boolean };
-  undatedCount: number;
+  /** Période : le mois (`AAAA-MM`) ou toutes les dates. */
+  month: string;
+  allDates: boolean;
+  onMonth: (month: string) => void;
+  onAllDates: () => void;
+  /** La plage du … au … (CP-9), gardée par FinancesTab pour survivre au changement d'onglet (fx1) ; sans elle, l'écran la garde en local. */
+  plage?: { du: string; au: string } | null;
+  onPlage?: (plage: { du: string; au: string } | null) => void;
+  /** Ligne « Compagnon brasseur » (le composant de l'assistant, question préparée). */
+  assistant?: React.ReactNode;
   onProfile: () => void;
   onJournal: (request: Omit<JournalRequest, 'key'>) => void;
   onTransaction: (id: string) => void;
   onPayment: (id: string) => void;
+  onOpenBudget: (cible: { batch?: Batch; recipe?: Recipe }) => void;
+  onBudgetPicker: () => void;
+  onUpgrade: (plan: FinancialPlan) => void;
+  onBrowseProjects: () => void;
+  onNotice: (message: string) => void;
+  /** L'outil d'analyse (a2a) : le profil (solde de départ) et le stock servent ses calculs ; sans profil, l'entrée « Revoir le mois » n'est pas offerte. */
+  profile?: FinancialProfile;
+  stockItems?: StockItem[];
+  onPrevisions?: () => void;
 }
 
-export function FinanceOverview({ ledger, tvaThreshold, openingCashReady, openingCash, undatedCount, onProfile, onJournal, onTransaction, onPayment }: Props) {
-  const reviewPayments = () => onJournal({ scope: 'all', allDates: true, filter: 'unknown' });
-  const mixedDirections = ledger.payablesCents > 0 && ledger.receivablesCents > 0;
-  const dueLabel = (date: string | null) => !date ? 'Échéance à préciser'
-    : `${date < todayISO() ? 'En retard · ' : ''}${new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })}`;
+/**
+ * « Matériel à part » : la Synthèse y range `materiel` ET `renovation` (périodeSynthese), alors que le filtre « Catégorie » du journal ne prend qu'une valeur.
+ * Le lien passe la catégorie qui porte le plus de montant dans la période (un local et travaux de 5 500,00 ouvre « Rénovation », jamais « Aucune opération »).
+ * Si les deux coexistent, l'autre n'apparaît pas : à lever par un filtre « à part » du journal (voir RESULTAT, « POUR f1 »).
+ */
+function categorieMateriel(transactions: Transaction[], bornes: { du: string; au: string } | null): string {
+  const cents = { materiel: 0, renovation: 0 };
+  for (const t of transactions) {
+    if ((t.category !== 'materiel' && t.category !== 'renovation') || t.finance?.voidedAt) continue;
+    const d = isoDate(t.date)?.slice(0, 7);
+    if (bornes && (!d || d < bornes.du || d > bornes.au)) continue;
+    cents[t.category] += transactionAmount(t);
+  }
+  return cents.renovation > cents.materiel ? 'renovation' : 'materiel';
+}
 
-  return <>
-    {/* ⚠️ Une seule valeur en tête d'écran, et c'est la trésorerie.
-        « À payer » et « À encaisser » occupaient les deux tiers de la bande en
-        permanence. Dans l'usage réel tout est réglé la plupart du temps : deux
-        chiffres à 0,00 CHF annonçaient qu'il n'y a rien à faire, en plus grand
-        que le seul montant toujours utile. Et quand ils portaient un montant,
-        ils répétaient ce que la liste juste en dessous détaille ligne à ligne.
-        Ces deux totaux vivent donc maintenant SUR cette liste, qu'ils résument,
-        et seulement quand il reste quelque chose à régler. */}
-    <dl className="finance-position" aria-label="Situation financière actuelle">
-      <div>
-        <dt>Trésorerie</dt>
-        <dd className="finance-money">{ledger.cashComplete && ledger.cashCents != null ? formatCHF(ledger.cashCents) : 'À compléter'}</dd>
-        <dd className="finance-position-note">{ledger.cashComplete ? 'Paiements enregistrés inclus' : openingCashReady ? 'Des données restent à vérifier' : openingCash ? `Solde de départ saisi : ${formatCHF(openingCash.amountCents)}, à confirmer` : 'Solde de départ à renseigner'}</dd>
-        <button type="button" className="finance-position-open" aria-label="Renseigner le solde de trésorerie" onClick={onProfile}><ChevronRight size={15}/></button>
-      </div>
-    </dl>
+/**
+ * Synthèse (g3a, choisie le 09.11) : entré contre dépensé, l'à-payer hachuré, le gain, la caisse, le litre.
+ * Remplace entièrement « Situation » et « Coûts ». Tous les nombres viennent de `periodeSynthese` (domaine) et du grand livre ; l'écran ne calcule rien.
+ */
+export function FinanceOverview(props: Props) {
+  const { transactions, payments, plans, assets, batches, recipes, ledger, month, allDates } = props;
+  const aujourdhui = todayISO();
+  // CP-9 : la plage choisie avec « … » remplace le mois ou « tout » tant qu'on ne touche pas l'un d'eux. FinancesTab la garde (fx1) : elle survit à un changement d'onglet.
+  const [plageLocale, setPlageLocale] = useState<{ du: string; au: string } | null>(null);
+  const plage = props.plage !== undefined ? props.plage : plageLocale;
+  const setPlage = props.onPlage ?? setPlageLocale;
+  const periode = useMemo(() => periodeSynthese({ transactions, payments, mois: plage ? plage.du : allDates ? null : month, jusqua: plage?.au, aujourdhui, assets }), [transactions, payments, plage, allDates, month, aujourdhui, assets]);
+  const [pourquoi, setPourquoi] = useState(false);
+  const [analyse, setAnalyse] = useState(false);
+  const choix = { mois: month, tout: allDates && !plage, plage };
+  const nomPeriode = titrePeriode(choix, aujourdhui.slice(0, 4)).toLowerCase();
+  const mois = plage ? plage.du : allDates ? null : month;
+  // Le journal ne filtre pas encore une plage : il s'ouvre sur toutes les dates, la catégorie reste filtrée.
+  const jusqua = plage?.au;
+  const portee = plage ? { allDates: true } : { month: mois ?? undefined, allDates };
+  const ouvrir = (extra: Omit<JournalRequest, 'key' | 'scope'>) => props.onJournal({ scope: 'all', ...extra });
+  const choisirPlage = (du: string, au: string) => {
+    if (du === au) { setPlage(null); props.onMonth(du); } else setPlage({ du, au });
+  };
 
-    {tvaThreshold && tvaThreshold.level !== 'ok' && <section className="finance-section finance-tva-threshold" aria-label="Seuil de TVA" data-level={tvaThreshold.level}
-      role={tvaThreshold.level === 'over' ? 'alert' : 'status'}>
-      <h3>{tvaThreshold.level === 'over' ? 'Seuil de TVA franchi' : 'Seuil de TVA bientôt atteint'}</h3>
-      <p>{tvaThreshold.message}</p>
-      <div className="finance-tva-bar" aria-hidden="true"><span style={{ width: `${Math.min(100, Math.round(tvaThreshold.ratio * 100))}%` }}/></div>
-      <button type="button" className="finance-link" onClick={() => onJournal({ scope: 'all', allDates: true, category: 'recettes' })}>Voir les ventes<ChevronRight size={14}/></button>
-    </section>}
+  if (analyse && props.profile) {
+    return <Analyse entree={{ transactions, payments, plans, profile: props.profile, assets, batches, stockItems: props.stockItems, aujourdhui }}
+      onBack={() => setAnalyse(false)} onJournal={props.onJournal} onTransaction={props.onTransaction} onProfile={props.onProfile}
+      onPrevisions={props.onPrevisions ?? (() => setAnalyse(false))} onBrowseProjects={props.onBrowseProjects}/>;
+  }
 
-    {(!openingCashReady || ledger.unknownPaymentCount > 0 || undatedCount > 0) && <section className="finance-section finance-completion" aria-label="Données à compléter">
-      <h3>Pour une situation fiable</h3>
-      {!openingCashReady && <button type="button" className="finance-task" onClick={onProfile}>
-        <span><strong>Vérifier le solde de départ</strong><small>{openingCash && Number.isSafeInteger(openingCash.amountCents) ? `Solde saisi : ${formatCHF(openingCash.amountCents)} au ${openingCash.date.split('-').reverse().join('.')}, pas encore confirmé. Coche « J’ai vérifié ce solde ».` : 'La trésorerie ne peut pas encore être confirmée.'}</small></span><ChevronRight size={16}/>
-      </button>}
-      {ledger.unknownPaymentCount > 0 && <button type="button" className="finance-task" onClick={reviewPayments}>
-        <span><strong>Confirmer les paiements</strong><small>{compte(ledger.unknownPaymentCount, 'pièce')} exclue{ledger.unknownPaymentCount > 1 ? 's' : ''} des montants à payer et à encaisser.</small></span><span className="finance-count">{ledger.unknownPaymentCount}</span><ChevronRight size={16}/>
-      </button>}
-      {undatedCount > 0 && <button type="button" className="finance-task" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'review' })}>
-        <span><strong>Vérifier les pièces sans date</strong><small>{compte(undatedCount, 'pièce')} à replacer dans la bonne période.</small></span><ChevronRight size={16}/>
-      </button>}
-    </section>}
-
-    <section className="finance-section" aria-label="Paiements à suivre">
-      <div className="finance-heading"><h3>Règlements à suivre</h3><button type="button" className="finance-link" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'due' })}>Tout voir<ChevronRight size={14}/></button></div>
-      {(ledger.payablesCents > 0 || ledger.receivablesCents > 0) && <p className="finance-settlement-totals">
-        {ledger.payablesCents > 0 && <button type="button" aria-label="Voir les factures à payer" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'payable' })}>
-          <strong className="finance-money finance-due">{formatCHF(ledger.payablesCents)}</strong> à payer</button>}
-        {ledger.receivablesCents > 0 && <button type="button" aria-label="Voir les montants à encaisser" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'receivable' })}>
-          <strong className="finance-money">{formatCHF(ledger.receivablesCents)}</strong> à encaisser</button>}
-      </p>}
-      {ledger.outstanding.length ? <div className="finance-list">{ledger.outstanding.slice(0, 4).map(entry => <div key={entry.id} className="finance-settlement-row">
-        <button type="button" className="finance-settlement-open" onClick={() => onTransaction(entry.id)}>
-          {/* Le sens n'est rappelé que si la liste en mêle deux : sinon le total
-              au-dessus, la ligne et son bouton disaient trois fois « à payer ». */}
-          <span className="finance-row-main"><strong>{entry.description}</strong><span className="finance-muted">{dueLabel(entry.dueDate)}{mixedDirections ? ` · ${entry.direction === 'in' ? 'À encaisser' : 'À payer'}` : ''}</span></span>
-          <span className="finance-money">{formatCHF(entry.remainingCents)}</span>
-        </button>
-        <button type="button" className="finance-link" aria-label={`Noter ${entry.direction === 'in' ? 'l’encaissement' : 'le paiement'} de ${entry.description}`} onClick={() => onPayment(entry.id)}>{entry.direction === 'in' ? 'Encaisser' : 'Payer'}</button>
-      </div>)}</div> : <p className="finance-empty-inline">{ledger.unknownPaymentCount ? 'Aucune facture ouverte confirmée. Vérifie les paiements historiques ci-dessus.' : 'Aucune facture suivie ne reste à régler.'}</p>}
-    </section>
-    {ledger.warnings.length > 0 && <details className="finance-disclosure"><summary>Origine et limites des montants</summary><ul className="finance-issues">{ledger.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></details>}
-  </>;
+  return <div className="syn">
+    <div className="syn-wrap">
+      <section aria-label="Entré et dépensé">
+        <Periode courant={aujourdhui.slice(0, 7)} choix={choix}
+          onMois={m => { setPlage(null); props.onMonth(m); }} onTout={() => { setPlage(null); props.onAllDates(); }} onPlage={choisirPlage}/>
+        <Scene periode={periode} nomPeriode={nomPeriode}
+          onCategorie={categorie => ouvrir({ category: categorie, ...portee })}
+          onPiece={props.onTransaction}
+          onVentes={() => ouvrir({ category: 'recettes', ...portee })}
+          onMateriel={() => ouvrir({ category: categorieMateriel(transactions, plage ? { du: plage.du, au: plage.au } : allDates ? null : { du: month, au: month }), ...portee })}
+          onPourquoi={() => setPourquoi(true)}/>
+        {props.profile && <button type="button" className="syn-row" data-ligne="analyse" onClick={() => setAnalyse(true)}>
+          <span className="syn-t">Revoir le mois<small>Caisse jour par jour, sources, budgets, 12 mois</small></span>
+          <ChevronRight size={16} aria-hidden="true"/>
+        </button>}
+      </section>
+      <section aria-label="Caisse et coût du litre">
+        <Caisse ledger={ledger} openingCashReady={props.openingCashReady} openingCash={props.openingCash} onProfile={props.onProfile} onJournal={props.onJournal} onTransaction={props.onTransaction} onPayment={props.onPayment}/>
+        <AlerteTva tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
+        <Verifier periode={periode} ledger={ledger} tvaThreshold={props.tvaThreshold} onJournal={props.onJournal}/>
+        <LigneLitre plans={plans} batches={batches} recipes={recipes} onOpenBudget={props.onOpenBudget} onAbsent={props.onNotice} onPicker={props.onBudgetPicker}/>
+        <Replie sansRegistre={periode.aVerifier.materielSansRegistre} transactions={transactions} payments={payments} plans={plans} mois={mois} jusqua={jusqua} onJournal={props.onJournal} onUpgrade={props.onUpgrade} onBrowseProjects={props.onBrowseProjects}/>
+        {props.assistant}
+      </section>
+    </div>
+    {pourquoi && <Pourquoi periode={periode} nomPeriode={nomPeriode} onClose={() => setPourquoi(false)}/>}
+  </div>;
 }

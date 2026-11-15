@@ -52,13 +52,15 @@ describe('AM-55, MV-43, BR-76 — la fiche d’un article', () => {
 
   it('un article cité par une recette ne se supprime pas, et la fiche dit laquelle', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[recette]} />);
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
+    expect(screen.getByRole('menuitem', { name: 'Supprimer' })).toBeDisabled();
     expect(screen.getByRole('status', { name: '' }) ?? null).toBeTruthy();
     expect(document.querySelector('[data-stock-suppression-bloquee]')).toHaveTextContent(/Pils maison/);
   });
   it('un article libre se supprime', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[]} />);
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
+    expect(screen.getByRole('menuitem', { name: 'Supprimer' })).toBeEnabled();
   });
   it('un seuil de 999 999 kg est refusé avec son motif, Enregistrer est éteint', () => {
     render(<StockDetailSheet {...props} item={item()} recipes={[]} />);
@@ -87,6 +89,9 @@ describe('TE-46, TE-47, TE-48, BR-94 — la fiche du matériel', () => {
   const achat: EquipmentItem = { id: 'EQ-6c0b6340-dcdb-4e5c-bb04-355931fc1d2e-0', ref: 'EQ-6c0b6340-dcdb-4e5c-bb04-355931fc1d2e-0', name: 'Cuve de fermentation', category: 'Fermentation', state: 'Bon', purchaseDate: '2025-02-01', purchasePrice: 1800 };
   it('la référence interne n’est pas montrée, la date d’achat ISO remplit son champ', () => {
     render(<EquipmentSheet item={achat} onClose={() => {}} onSave={() => {}} onDelete={() => {}} />);
+    // za3 : la fiche s'ouvre d'abord ; la date d'achat se corrige sous ⋯ › Modifier.
+    fireEvent.click(screen.getByRole('button', { name: /Gestion du matériel/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Modifier' }));
     expect(screen.queryByText(/EQ-6c0b6340/)).toBeNull();
     expect(screen.getByText(/01\.02\.2025/)).toBeInTheDocument();
     expect((document.querySelector('input[type="date"]') as HTMLInputElement).value).toBe('2025-02-01');
@@ -132,23 +137,22 @@ describe('BR-69, BR-70, BR-74 — la liste', () => {
   });
 });
 
-describe('TE-45 — créer un fût', () => {
-  it('le bouton fourni s’affiche dans la barre de la liste, même sans fût', () => {
+describe('TE-45 — créer des fûts', () => {
+  it('« Remplir depuis un lot » est dans la barre de la liste, même sans fût', () => {
     render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
-      <KegBoard kegs={[]} batches={[]} toolbarAction={<button type="button">Ajouter un fût</button>} />
+      <KegBoard kegs={[]} batches={[]} />
     </VirtuosoMockContext.Provider>);
-    expect(screen.getByRole('button', { name: 'Ajouter un fût' })).toBeInTheDocument();
-    expect(screen.getByText(/Ajoute un fût avec le bouton/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remplir depuis un lot' })).toBeInTheDocument();
+    expect(screen.getByText(/Ajoute des fûts avec le bouton/)).toBeInTheDocument();
   });
-  // VI-10 (rejeu b47cd90b n° 10) : à 390 le bouton n'est qu'un « + » sans libellé (« Ajouter un fût » n'apparaît qu'à partir de sm) : la phrase ne doit citer
-  // que ce qui est à l'écran aux deux largeurs, le « + ».
-  it('la phrase du vide cite le « + », présent à toutes les largeurs, pas le libellé caché au téléphone', () => {
+  // VI-10 : la phrase du vide ne cite que ce qui est à l'écran aux deux largeurs, le « + » rond.
+  it('la phrase du vide cite le « + » rond, pas un libellé qui n’existe plus', () => {
     render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
-      <KegBoard kegs={[]} batches={[]} toolbarAction={<button type="button" aria-label="Ajouter un fût"><span aria-hidden="true">+</span><span className="hidden sm:inline">Ajouter un fût</span></button>} />
+      <KegBoard kegs={[]} batches={[]} />
     </VirtuosoMockContext.Provider>);
-    const phrase = screen.getByText(/Ajoute un fût avec le bouton/).textContent ?? '';
+    const phrase = screen.getByText(/Ajoute des fûts avec le bouton/).textContent ?? '';
     expect(phrase).toContain('« + »');
-    expect(phrase).not.toContain('« Ajouter un fût »');
+    expect(phrase).not.toContain('Ajouter un fût');
   });
 });
 void within;

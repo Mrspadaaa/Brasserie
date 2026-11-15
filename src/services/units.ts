@@ -87,6 +87,11 @@ function normalizeKey(unit: string): string {
   return ALIASES[k] ?? k;
 }
 
+/** Les unités comptées de l'app qui prennent un pluriel (clé normalisée → terminaison). Stk, Pck, g, kg… sont des symboles : ils ne changent pas. « rouleau » prend un x. */
+const PLURIEL_UNITE: Record<string, string> = {
+  sachet: 's', fiole: 's', paquet: 's', boite: 's', flacon: 's', bouteille: 's', capsule: 's', etiquette: 's', pastille: 's', canette: 's', carton: 's', sac: 's', piece: 's', fut: 's', rouleau: 'x',
+};
+
 export const Units = {
   familyOf(unit: string): UnitFamily {
     return TO_BASE[normalizeKey(unit)]?.family ?? 'piece';
@@ -197,7 +202,10 @@ export const Units = {
     if (key === 'kg' && Math.abs(qty) > 0 && Math.abs(qty) < 1) {
       return `${number(this.round(qty * 1000, 'g'))} g`;
     }
-    return `${number(this.round(qty, unit))} ${unit}`;
+    // « 1 sachet », « 2 sachets », « 3 fioles » : l'unité comptée s'accorde dès 2 (le pluriel français commence à 2 : « 1,5 fiole »). La casse écrite est gardée.
+    const terminaison = Math.abs(qty) >= 2 ? PLURIEL_UNITE[key] : undefined;
+    const mot = terminaison ? (terminaison === 'x' && /x$/i.test(unit) ? unit : unit.replace(/s$/i, '') + (/^[A-ZÀ-Ý]+$/.test(unit) ? terminaison.toUpperCase() : terminaison)) : unit;
+    return `${number(this.round(qty, unit))} ${mot}`;
   },
 
   /*

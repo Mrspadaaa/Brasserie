@@ -96,10 +96,10 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.queryByText(/Brassin du samedi/)).not.toBeInTheDocument();
     expect(screen.getByRole('meter')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Ouvrir Pilsner'}));expect(open).toHaveBeenCalledWith(item);
-    view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrectInventory={()=>{}} onToggleFavorite={()=>{}}/>);
-    fireEvent.click(screen.getByText('Besoins de 1 brassin'));
-    expect(screen.getByText('Brassin du samedi')).toBeVisible();
-    expect(screen.getByRole('button',{name:'Corriger l’inventaire'})).toBeVisible();
+    view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrect={()=>{}} onToggleFavorite={()=>{}}/>);
+    expect(screen.getByText(/1 source/)).toBeVisible();
+    expect(screen.getByText(/^Brassin du samedi/)).toBeVisible(); // la source est nommée, avec sa date quand elle est connue (R1)
+    expect(screen.getByText(/Corriger le stock/)).toBeVisible();
   });
 
   it('ouvre les finances sur la synthèse et conserve la recherche visible entre les quatre vues',()=>{
@@ -108,17 +108,21 @@ describe('Vues quotidiennes sur téléphone',()=>{
     const navigation=within(screen.getByRole('tablist',{name:'Finances'}));
     expect(navigation.getAllByRole('tab').map(tab=>tab.textContent)).toEqual(['Synthèse','Opérations','Prévisions','Annuel']);
     expect(navigation.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
-    expect(screen.getByLabelText('Situation financière actuelle')).toBeVisible(); // la bande de position est une liste de définitions nommée, plus un titre (test périmé, 48987dab)
+    expect(screen.getByRole('button',{name:'Solde et paramètres financiers'})).toBeVisible(); // Synthèse g3a : la caisse remplace la bande « Situation financière actuelle »
     fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
-    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
+    // v6b : la recherche vit derrière la loupe, toujours visible dans la bande du mois.
+    expect(screen.getByRole('button',{name:'Rechercher'})).toBeVisible();
     expect(screen.getByLabelText('Période du journal')).toBeVisible();
     expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();
     expect(screen.getByRole('button',{name:'Archives',exact:true})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Rechercher'}));
+    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
     fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'Cascade'}});
     fireEvent.click(navigation.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.getByRole('heading',{name:'Échéances et estimations à venir'})).toBeVisible();
-    expect(screen.getByRole('button',{name:'Budget d’un brassin'})).toBeVisible();
-    fireEvent.click(screen.getByRole('button',{name:'Ajouter une prévision'}));
+    expect(screen.getByRole('group',{name:'Horizon de prévision'})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:/\d+\s+sortie/}));
+    expect(screen.getByRole('button',{name:/Budget d’un brassin/})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:/Ajouter une prévision/}));
     const plan=within(screen.getByRole('dialog',{name:'Prévoir une dépense'}));
     fireEvent.click(plan.getByRole('button',{name:'Fermer'}));
     fireEvent.click(navigation.getByRole('tab',{name:'Annuel'}));

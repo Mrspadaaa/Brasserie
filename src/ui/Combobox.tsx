@@ -25,6 +25,9 @@ import { useCoarsePointer, useKeyboardInset } from './useViewport';
  * différence entre trouver et renoncer.
  */
 
+/** PC-3 : au téléphone, une liste longue montre au moins ce nombre de lignes avant de défiler. */
+const LIGNES_VISIBLES = 5;
+
 export interface ComboOption {
   /** Valeur retournée à la sélection. */
   value: string;
@@ -105,6 +108,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
   const [active, setActive] = useState(0);
   /** La liste se déplie vers le haut quand le clavier occupe le bas. */
   const [flipUp, setFlipUp] = useState(false);
+  const [inFlow, setInFlow] = useState(false);
   const [geo, setGeo] = useState<{ w: number; dx: number } | null>(null);
   /** Hauteur réellement disponible du côté choisi (px) : la liste ne passe ni sous l'en-tête d'une feuille ni sous le clavier. */
   const [placeMax, setPlaceMax] = useState<number | null>(null);
@@ -182,7 +186,8 @@ export const Combobox: React.FC<ComboboxProps> = ({
    */
   useEffect(() => {
     if (!open || !wrapRef.current) return;
-    const rect = wrapRef.current.getBoundingClientRect();
+    // Le champ seul : liste dans le flux (PC-3), le conteneur grandit avec elle et fausserait la place restante.
+    const rect = (wrapRef.current.firstElementChild ?? wrapRef.current).getBoundingClientRect();
     const visibleBottom = window.innerHeight - keyboardInset;
     const below = visibleBottom - rect.bottom;
     // BR-92, BR-73 : vers le haut, la place s'arrête au bord du conteneur défilant (le corps d'une feuille), pas au haut de l'écran :
@@ -200,8 +205,20 @@ export const Combobox: React.FC<ComboboxProps> = ({
     const voulue = Math.min(416, window.innerWidth - 24);
     const largeur = Math.max(rect.width, voulue);
     setGeo({ w: largeur, dx: Math.min(0, window.innerWidth - 12 - (rect.left + largeur)) });
-    setPlaceMax(Math.max(96, Math.min(288, (up ? above : below) - 8)));
-  }, [open, keyboardInset, rowCount]);
+    const place = (up ? above : below) - 8;
+    // PC-3 : au téléphone, dans une feuille courte, ni au-dessus ni au-dessous du champ il n'y a la place de 5 lignes (2 lignes visibles
+    // sous le plancher de 96 px). La liste passe alors dans le flux, sous le champ : la feuille grandit et défile au lieu de rogner la liste.
+    const besoin = Math.min(rowCount, LIGNES_VISIBLES) * (compact ? 34 : 40) + 8;
+    const serre = window.innerWidth <= 640 && besoin > 96 && place < besoin;
+    setInFlow(serre);
+    setPlaceMax(serre ? besoin : Math.max(96, Math.min(288, place)));
+  }, [open, keyboardInset, rowCount, compact]);
+
+  // Dans le flux, la liste se fait voir en entier : le corps de la feuille défile jusqu'à elle.
+  useEffect(() => {
+    if (!open || !inFlow) return;
+    listRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [open, inFlow, rowCount]);
 
   // Garde l'option active dans le champ de vision pendant la navigation clavier.
   useEffect(() => {
@@ -457,14 +474,14 @@ export const Combobox: React.FC<ComboboxProps> = ({
           id={listId}
           role="listbox"
           style={{
-            ...(geo ? { width: geo.w, left: geo.dx } : {}),
+            ...(geo && !inFlow ? { width: geo.w, left: geo.dx } : {}),
             // La liste ne descend jamais sous le clavier : sa hauteur se cale
             // sur l'espace réellement visible.
             maxHeight: placeMax !== null ? `min(${placeMax}px, ${keyboardInset > 0 ? '40vh' : '18rem'})` : keyboardInset > 0 ? 'min(18rem, 40vh)' : '18rem'
           }}
-          className={`absolute z-50 left-0 ${geo ? '' : 'right-0'} overflow-y-auto overscroll-contain
+          className={`${inFlow ? 'relative mt-1' : `absolute z-50 left-0 ${geo ? '' : 'right-0'}`} overflow-y-auto overscroll-contain
                       panel shadow-lift py-1
-                      ${flipUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+                      ${inFlow ? '' : flipUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
         >
           {rowCount === 0 && (
             <li className="px-4 py-3 text-sm text-cave-400">

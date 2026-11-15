@@ -74,7 +74,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         {TABS.map(({ id, label, Icon, accent, selected, badge }) => {
           const active = activeTab === id;
           const stockLabel = badge && criticalStockCount > 0
-            ? `${label}, ${criticalStockCount} ${criticalStockCount === 1 ? 'article' : 'articles'} au seuil ou en dessous`
+            ? `${label}, ${criticalStockCount} ${criticalStockCount === 1 ? 'article' : 'articles'} à commander`
             : undefined;
           return (
             <button

@@ -75,14 +75,14 @@ function estJuge(c: RecipeStockComparison, adjuvants: Set<string>, coeur: Set<st
 }
 
 /** Les lignes de besoin d'une recette face au stock : chaque ingrédient est « en stock », « manque » ou « à vérifier ». */
-export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[]): LigneBesoin[] {
+export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], recipes: Recipe[] = []): LigneBesoin[] {
   const adjuvants = new Set((recipe.adjuncts ?? []).map((l) => norm(l.name)));
   const coeur = new Set([
     ...(recipe.fermentables ?? recipe.malts ?? []).map((l) => norm(l.name)),
     ...(recipe.hops ?? []).map((l) => norm(l.name)),
     ...(recipe.yeast?.name ? [norm(recipe.yeast.name)] : [])
   ]);
-  return compareRecipeWithStock(recipe, batches, stock).filter((c) => estJuge(c, adjuvants, coeur)).map((c): LigneBesoin => {
+  return compareRecipeWithStock(recipe, batches, stock, recipes).filter((c) => estJuge(c, adjuvants, coeur)).map((c): LigneBesoin => {
     const dit = lier(c.label, quantite(c), c.unit);
     if (c.match !== 'linked' || c.shortage === null || !c.stockItem) {
       return { cle: c.key, article: c.label, texte: dit, etat: 'inconnu', droite: c.match === 'linked' ? 'stock à vérifier' : c.match === 'ambiguous' ? 'plusieurs articles' : 'pas au stock' };

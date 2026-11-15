@@ -5,6 +5,17 @@ import { fileURLToPath } from 'node:url';
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
   plugins: [react(), {
+    // l2 (10.11) : `functions/src/brewerHopAdviceContextBinding.ts` n'importe de `brewerTools` que `normalizeRecipe` (ré-export de
+    // `recipeSnapshot`), mais l'alias ci-dessous lui donnait tout `brewerTools.ts` : le chat Brasseur, donc Finances, tirait ainsi la
+    // bibliothèque de levures (347 Ko). Côté navigateur seulement ; le serveur garde son `brewerTools.js` empaqueté, sans changement.
+    name: 'binding-sans-brewertools',
+    enforce: 'pre',
+    resolveId(source, importer) {
+      if (!importer || !/[\\/]functions[\\/]src[\\/]brewerHopAdviceContextBinding\.ts(?:\?|$)/.test(importer)) return null;
+      if (source !== './brewerTools.js' && !/[\\/]src[\\/]domain[\\/]brewerTools\.ts$/.test(source)) return null;
+      return fileURLToPath(new URL('./src/domain/recipeSnapshot.ts', import.meta.url));
+    }
+  }, {
     name: 'exclude-private-initial-data',
     apply: 'build',
     generateBundle(_options, bundle) {
@@ -55,6 +66,9 @@ export default defineConfig(({ command }) => ({
     // D378 (08.11, « Baisse à 20 et go ») : l'enrichissement des fiches par l'IA est allumé en production, 20 recherches par jour au plus
     // (enrichissementReglages.ts). VITE_ENRICHISSEMENT_IA=eteinte au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
     'import.meta.env.VITE_ENRICHISSEMENT_IA': JSON.stringify(process.env.VITE_ENRICHISSEMENT_IA || 'production'),
+    // ks4 passe 3 (15.11, « Oui la moins chère, et bouton + ») : la note du Carnet rangée par l'IA, allumée en production
+    // (src/config/rangerNoteIA.ts). VITE_RANGER_NOTE_IA=eteint au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
+    'import.meta.env.VITE_RANGER_NOTE_IA': JSON.stringify(process.env.VITE_RANGER_NOTE_IA || 'production'),
   } } : {}),
   server: {
     // 3000 par défaut ; `PORT` permet de lancer un second serveur en parallèle

@@ -39,7 +39,9 @@ export type AiTaskId =
   /** D280 : la désignation en français des noms de base d'une facture, texte seul (`src/services/nomsFr.ts`). */
   | 'traduireNoms'
   /** D380 : recolle les lectures des morceaux d'une longue pièce (aucune IA, aucun coût). */
-  | 'assemblerLecture';
+  | 'assemblerLecture'
+  /** ks4 : une note du Carnet → choses proposées (`functions/src/rangerNote.ts`, écrite, pas déployée : drapeau `src/config/rangerNoteIA.ts`). */
+  | 'rangerNote';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',
@@ -66,6 +68,8 @@ export interface AiRequest {
   morceau?: { k: number; n: number };
   /** D381 : ce `file` est la bande de contrôle de la coupe entre les morceaux k et k + 1 d'une pièce en n morceaux (lue à part, seulement comparée). */
   jonction?: { k: number; n: number };
+  /** « Un doute ? Relire plus finement » : la seule valeur admise est `'argon'`. C'est un mot, jamais un nom de modèle : le serveur choisit le modèle et ignore toute autre valeur. */
+  relecture?: 'argon';
 }
 
 export interface AiResponse<T = any> {
@@ -149,6 +153,7 @@ async function chargeDe(req: AiRequest): Promise<Record<string, unknown>> {
   }
   if (req.morceau) payload.morceau = req.morceau;
   if (req.jonction) payload.jonction = req.jonction;
+  if (req.relecture === 'argon') payload.relecture = 'argon';
   return payload;
 }
 

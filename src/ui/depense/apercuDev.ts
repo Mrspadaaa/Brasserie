@@ -284,14 +284,40 @@ function apercuLenteur(etat: string): ApercuDepense {
   };
 }
 
+/** `vaccins` (BR-124, 10.11) : deux lignes Matériel d'une même facture, dont l'une (« H21 A vaccination ») voit son prix corrigé à la 3e lecture (25 → 30). SIMULÉ, noms et montants inventés
+ *  sur la forme de sa facture, aucune donnée réelle. Sert à montrer que les deux lignes se déplient pareil et que « Ajouter au stock » est offert sur chacune. */
+function apercuVaccins(etat: string): ApercuDepense {
+  const { provisoire, final } = lecturesLenteur('perdue');
+  const modele = provisoire!.items[0];
+  const ligne = (i: number, nom: string, prix: number, rang?: number) => ({ ...modele, id: `line-${i}`, name: nom, kind: 'other', quantity: 1, unit: '', price: prix, amountTTC: prix, stockCategory: undefined, variant: '', reference: '', evidence: `${nom} ${prix.toFixed(2)}`, ...(rang === undefined ? {} : { rangProvisoire: rang }) }) as unknown as ScannedInvoiceResult['items'][number];
+  const commun = { documentType: 'receipt', paymentMethod: 'twint', vendor: 'Pharmacie Exemple', category: 'divers', date: '10.11.2026', invoiceNumber: '', tvaAmount: null, amountPaid: undefined, points: [], issues: [], fieldWarnings: [], description: 'Vaccins (SIMULÉ)' };
+  const controls = { lines: { checked: 0, failed: 0, skipped: 2, skippedIds: ['line-1', 'line-2'] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } };
+  Object.assign(provisoire!, commun, { items: [ligne(1, 'Vaxigrip Tetra', 26.68), ligne(2, 'H21 A vaccination', 25)], printedLineCount: 2, amountTTC: 51.68, controls });
+  Object.assign(final, commun, { items: [ligne(1, 'Vaxigrip Tetra', 26.68, 0), ligne(2, 'H21 A vaccination', 30, 1)], printedLineCount: 2, amountTTC: 56.68, controls });
+  const fichier = { name: 'capture-vaccins.jpg', size: 312345, type: 'application/pdf' };
+  const sortie = (result: ScannedInvoiceResult, extra: Partial<ScanOutcome> = {}): ScanOutcome => ({ ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false, ...extra });
+  return {
+    outcome: sortie(provisoire!), fichier, stocks: { rawMaterials: [], cleaning: [], equipment: [], kegs: [] }, transactions: [], etat, drive: 'ok', reseau: true,
+    provisoire: sortie(provisoire!, { jeton: JETON_LENTEUR }), final: sortie(final), delaiMs: 450,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: 'vaccins.pdf', bytes: 312345, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
   if (etat.startsWith('lenteur-')) return apercuLenteur(etat);
+  if (etat === 'vaccins') return apercuVaccins(etat);
   if (etat === 'commande') return apercuCommande();
   if (etat === 'familles') return apercuFamilles();
   if (etat === 'renovation') return apercuRenovation();
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  if (etat === 'medicament') {
+    // SIMULÉ (dp, 10.11) : son ticket de pharmacie BENU Matran, une ligne MEFENACIDE 13,40, dépense « divers » (tests/integration/depenseMedicament.test.tsx).
+    Object.assign(result as unknown as Record<string, unknown>, { vendor: 'BENU Matran', date: '10.11.2026', invoiceNumber: '', description: 'Pharmacie', category: 'divers', subcategory: '', amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 13.4, issues: [], points: [], fieldWarnings: [],
+      paymentEvidence: 'paid', paymentMethod: 'twint', amountPaid: 13.4, printedLineCount: 1, review: { status: 'checked', findings: [], readers: 3 },
+      items: [{ id: 'line-1', name: 'MEFENACIDE cpr pell 500 mg sécables 30 pce', kind: 'other', quantity: null, unit: '', price: null, amountTTC: 13.4, reference: '', variant: '', stockCategory: '', evidence: 'MEFENACIDE cpr pell 500 mg sécables 30 pce 13.40' }] });
+  }
   if (etat === '2' || etat === 'date') {
     // « lue, sans point » : la facture sans ses points (SIMULÉ).
     result.points = []; result.fieldWarnings = []; result.issues = []; result.review = { status: 'checked', findings: [], readers: 2 };

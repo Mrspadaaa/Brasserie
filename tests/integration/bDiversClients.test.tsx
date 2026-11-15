@@ -39,11 +39,10 @@ describe('TE-5 : la référence d’un nouveau client ne se consomme pas à l’
   });
 });
 
-describe('Nouveau tarif : « À renseigner » en même taille sur les trois lignes', () => {
-  it('la marge brute vide n’a pas la grande taille réservée à un nombre', () => {
+describe('Nouveau tarif : « À renseigner » tant que le prix manque', () => {
+  it('le prix TTC vide dit « À renseigner » et le reste n’est pas affiché', () => {
     render(<TarifSheet item={{ product: '', costIngredients: undefined, costFixed: undefined, costLabor: undefined, costTotal: undefined, priceHT: undefined, marginCHF: undefined, marginPercent: undefined } as any} config={defaultConfig} onClose={() => {}} onSave={() => {}} onDelete={() => {}} />);
-    const marge = screen.getByLabelText('Marge brute');
-    expect(marge).toHaveTextContent('À renseigner');
-    expect(marge.className).not.toMatch(/tarif-result-margin/);
+    expect(screen.getByLabelText('Prix TTC')).toHaveTextContent('À renseigner');
+    expect(screen.queryByLabelText('Il te reste')).toBeNull();
   });
 });

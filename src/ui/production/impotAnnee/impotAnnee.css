@@ -1,0 +1,76 @@
+/* Clients › Impôt bière, l'année (i1a, choisie 10.11). Classes préfixées `iaa-` (L26). Jetons de l'app : clair et cave suivent le thème.
+   Les trois bandes du barème gardent les aplats de la maquette (paille, or, cuivre), comme la feuille p2b ; l'inconnu est hachuré. */
+.iaa { --iaa-c1: #E8D9A8; --iaa-c2: #D9A441; --iaa-c3: #C8864F; --iaa-hach: #D2B356;
+  display: flex; flex-direction: column; gap: 8px; max-width: 640px; margin-inline: auto; min-width: 0; padding-bottom: 4px;
+  color: rgb(var(--cave-200)); font-size: 14px; line-height: 1.3; }
+.iaa .iaa-m { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric: tabular-nums; }
+.iaa-att { color: rgb(var(--attention-texte)); font-weight: 600; }
+
+.iaa-tete { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+.iaa-tete h3 { flex: 1; font-size: 18px; font-weight: 600; color: rgb(var(--cave-50)); }
+.iaa-an { position: relative; display: inline-flex; align-items: center; height: 28px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px; color: rgb(var(--cave-50)); }
+.iaa-an svg { position: absolute; right: 8px; pointer-events: none; }
+.iaa .iaa-an-select { appearance: none; -webkit-appearance: none; height: 26px; min-height: 0; width: auto; min-width: 0; padding: 0 26px 0 10px; border: 0; background: transparent; color: inherit; font-weight: 600; font-size: 14px; cursor: pointer; }
+.iaa-an:focus-within { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+
+/* la réponse */
+.iaa-rep { background: rgb(var(--cave-850)); border-radius: 16px; padding: 12px 12px 10px; display: flex; flex-direction: column; gap: 6px; }
+.iaa-q { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; color: rgb(var(--cave-400)); }
+.iaa-q em { font-style: normal; font-weight: 600; font-size: 12px; padding: 1px 7px; border-radius: 10px; white-space: nowrap; color: rgb(var(--attention-texte)); background: rgb(var(--attention) / .16); }
+.iaa-q em[data-ton="neutre"] { color: rgb(var(--cave-200)); background: rgb(var(--cave-800)); }
+.iaa-v { font-size: 30px; font-weight: 600; color: rgb(var(--cave-50)); line-height: 1.1; overflow-wrap: anywhere; }
+.iaa-v small { font-size: 14px; font-weight: 400; color: rgb(var(--cave-400)); font-family: "Source Sans 3", system-ui, sans-serif; }
+.iaa-s { font-size: 13px; }
+.iaa-barre { display: flex; height: 22px; border-radius: 10px; overflow: hidden; margin-top: 4px; }
+.iaa-barre i { display: block; height: 100%; }
+.iaa-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: rgb(var(--cave-400)); }
+.iaa-leg span { display: inline-flex; align-items: center; gap: 5px; }
+.iaa-leg i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.iaa-leg b { color: rgb(var(--cave-50)); font-weight: 600; }
+.iaa-c1 { background: var(--iaa-c1); }
+.iaa-c2 { background: var(--iaa-c2); }
+.iaa-c3 { background: var(--iaa-c3); }
+.iaa-hach { background: repeating-linear-gradient(135deg, rgb(var(--cave-950)) 0 3px, var(--iaa-hach) 3px 5px); }
+.iaa-exo { background: rgb(var(--cave-700)); }
+.iaa-leg i, .iaa-dot { box-shadow: inset 0 0 0 1px rgb(var(--cave-50) / .2); }
+
+/* inconnu : la place du chiffre, en hachures (jamais 0) */
+.iaa .iaa-blanc { display: inline-block; min-width: 64px; height: 28px; border-radius: 8px; color: transparent; border: 1px dashed rgb(var(--cave-400)); background: repeating-linear-gradient(135deg, transparent 0 4px, rgb(var(--cave-400) / .55) 4px 6px); text-align: center; vertical-align: middle; }
+.iaa .iaa-mt.iaa-blanc { min-width: 56px; height: 22px; }
+
+/* la liste */
+.iaa-h2 { font-size: 14px; font-weight: 600; color: rgb(var(--cave-50)); margin-top: 2px; }
+.iaa-liste { display: flex; flex-direction: column; }
+.iaa-l { display: flex; align-items: center; gap: 10px; min-height: 44px; width: 100%; padding: 4px 0; border: 0; border-bottom: 1px solid rgb(var(--cave-800)); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.iaa-l:last-child { border-bottom: 0; }
+.iaa-l:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; border-radius: 6px; }
+.iaa-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.iaa-x { flex: 1; display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.iaa-x > b { font-weight: 600; color: rgb(var(--cave-50)); }
+.iaa-x > span { font-size: 12px; color: rgb(var(--cave-400)); }
+.iaa-mt { font-weight: 500; color: rgb(var(--cave-50)); white-space: nowrap; }
+.iaa-mt.iaa-est { color: rgb(var(--cave-400)); }
+.iaa-ch { color: rgb(var(--cave-600)); flex-shrink: 0; }
+
+/* quand, à qui */
+.iaa-qa { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.iaa-qa > div { background: rgb(var(--cave-850)); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: flex-start; font-size: 12px; color: rgb(var(--cave-400)); gap: 1px; min-width: 0; }
+.iaa-qa b { font-size: 14px; color: rgb(var(--cave-50)); font-weight: 600; }
+.iaa-red { min-height: 32px; padding: 0; border: 0; background: none; font: inherit; font-size: 12px; text-align: left; color: rgb(var(--cave-400)); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.iaa-red:focus-visible, .iaa-prim:focus-visible, .iaa-liens a:focus-visible, .iaa-pli > summary:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; border-radius: 6px; }
+
+/* Comprendre le barème */
+.iaa-pli > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; cursor: pointer; font-weight: 600; color: rgb(var(--cave-50)); }
+.iaa-pli > summary::-webkit-details-marker { display: none; }
+.iaa-pli > summary svg { color: rgb(var(--cave-400)); }
+.iaa-pli[open] > summary svg { transform: rotate(180deg); }
+.iaa-corps { display: grid; gap: 6px; padding: 2px 0 8px; font-size: 13px; line-height: 1.45; color: rgb(var(--cave-200)); }
+
+/* pied : liens, et l'action principale en bleu des finances */
+.iaa-pied { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.iaa-liens { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: rgb(var(--cave-50)); }
+.iaa-liens a { color: inherit; text-decoration: underline; min-height: 32px; display: inline-flex; align-items: center; }
+.iaa-prim { height: 32px; padding: 0 12px; border-radius: 10px; background: rgb(var(--area-finances)); color: rgb(var(--cave-950)); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; border: 0; cursor: pointer; white-space: nowrap; }
+.iaa-note { font-size: 12px; color: rgb(var(--cave-400)); }
+/* les dates de « Quand » tiennent sur une ligne dans la demi-largeur de 390 px */
+.iaa-qa b .iaa-m { font-size: 13px; white-space: nowrap; }

@@ -1,0 +1,69 @@
+/* La carte « Maintenant » (port de p2c, mission brassage-zero) : jetons --bz-* de la conduite z1, clair et cave.
+   Ocre = --bz-warn ; vert = --bz-hop ; action = --bz-action (noir en clair, ocre plein en cave, comme p2c-e2-390-cave). */
+.brew-page.bz .bm-now {
+  margin: 8px 8px 0;
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 16px;
+  border: 1.5px solid var(--bz-warn);
+  background: color-mix(in srgb, var(--bz-warn) 10%, var(--bz-page));
+  color: var(--bz-t1);
+}
+.brew-page.bz .bm-now[data-fait] { border-color: var(--bz-hop); background: color-mix(in srgb, var(--bz-hop) 8%, var(--bz-page)); }
+.brew-page.bz .bm-k { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--bz-warn); }
+.brew-page.bz .bm-now[data-fait] .bm-k { color: var(--bz-ph4); }
+.brew-page.bz .bm-hd { display: flex; align-items: center; gap: 10px; }
+.brew-page.bz .bm-hd > div { flex: 1; min-width: 0; }
+.brew-page.bz .bm-nm { font-weight: 700; color: var(--bz-t0); }
+.brew-page.bz .bm-sub { font-size: 14px; color: var(--bz-t1); }
+
+/* La grande valeur : 32 px, chiffres tabulaires, « ? » tant que rien n'est posé. */
+.brew-page.bz .bm-big {
+  font-size: 32px; line-height: 1; font-weight: 600; white-space: nowrap;
+  font-variant-numeric: tabular-nums; letter-spacing: 0; color: var(--bz-t0);
+}
+.brew-page.bz .bm-big small { font-size: 16px; font-weight: 400; color: var(--bz-t2); margin-left: 3px; }
+.brew-page.bz .bm-hd .bm-big { min-width: 96px; text-align: right; color: var(--bz-warn); }
+.brew-page.bz .bm-pair .bm-big[data-hors] { color: var(--bz-warn); }
+.brew-page.bz .bm-pair .bm-big[data-vide] { color: var(--bz-t2); }
+
+.brew-page.bz .bm-verd { margin: 0; font-size: 14px; white-space: normal; color: var(--bz-t2); }
+.brew-page.bz .bm-verd[data-ton='ok'], .brew-page.bz .bm-verd[data-ton='fait'] { color: var(--bz-ph4); font-weight: 600; }
+.brew-page.bz .bm-verd[data-ton='hors'] { color: var(--bz-warn); font-weight: 600; }
+
+/* « Et donc » : les bandes, la bande lue s'allume. */
+.brew-page.bz .bm-donc { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--bz-border); padding-top: 6px; }
+.brew-page.bz .bm-t { font-size: 14px; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bm-b {
+  display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: center;
+  min-height: 36px; padding: 4px 8px; border-radius: 10px; text-align: left;
+  background: var(--bz-page); border: 1px solid var(--bz-border); font-size: 14px; line-height: 1.25; color: var(--bz-t1);
+}
+.brew-page.bz .bm-s { font-weight: 600; color: var(--bz-t0); font-size: 14px; }
+.brew-page.bz .bm-b[aria-current='true'], .brew-page.bz .bm-b[aria-pressed='true'] {
+  border: 2px solid var(--bz-warn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bz-warn) 14%, var(--bz-page));
+}
+.brew-page.bz .bm-b[aria-current='true'] .bm-s, .brew-page.bz .bm-b[aria-pressed='true'] .bm-s { color: var(--bz-warn); }
+.brew-page.bz .bm-ch { grid-template-columns: 150px 1fr; min-height: 48px; cursor: pointer; width: 100%; font-family: inherit; }
+.brew-page.bz .bm-nb { font-size: 14px; color: var(--bz-t2); }
+
+/* La paire volume et densité (E3). */
+.brew-page.bz .bm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.brew-page.bz .bm-pair > div { display: flex; flex-direction: column; gap: 4px; padding: 6px 10px; border-radius: 12px; background: var(--bz-page); }
+.brew-page.bz .bm-pnm, .brew-page.bz .bm-c { font-size: 14px; color: var(--bz-t2); }
+
+/* ±pas et Enregistrer : 44 px au moins, au pouce. */
+.brew-page.bz .bm-sv { display: flex; align-items: center; gap: 8px; }
+.brew-page.bz .bm-pm { display: flex; gap: 6px; }
+.brew-page.bz .bm-pm button {
+  min-width: 58px; height: 44px; min-height: 44px; padding: 0 6px; border-radius: 10px;
+  border: 1px solid var(--bz-border2); background: var(--bz-page); color: var(--bz-t0); font-size: 16px; font-weight: 500;
+}
+.brew-page.bz .bm-act {
+  margin-left: auto; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--bz-action);
+  background: var(--bz-action); color: var(--bz-action-text); font-size: 16px; font-weight: 600;
+}
+.brew-page.bz .bm-act:disabled { background: var(--bz-raised); border-color: var(--bz-border2); color: var(--bz-t2); }
+.brew-page.bz .bm-now button:focus-visible { outline: 2px solid var(--bz-t0); outline-offset: 2px; }

@@ -69,13 +69,14 @@ describe('Live records and unsaved forms', () => {
     expect(result.current).toBe('après');
   });
 
-  it('updates an open batch sheet after a server edit, preserving an in-progress density reading', () => {
+  it('updates an open batch sheet after a server edit, preserving an in-progress density reading', async () => {
     const batch: any = { id: 'B-live', name: 'Avant', style: 'Stout', volumeL: 30, status: 'fermentation', brewDate: '07.09.2026' }; // e1a : un planifié n'a plus de saisie de densité ; la lecture se fait en fermentation
     const view = (b: any) => <ProductionTab batches={[b]} recipes={[]} brewhouses={defaultConfig.brewhouses}
       activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab="batches"
       onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenBrewDay={vi.fn()} onOpenRecipe={vi.fn()} />;
     const { rerender } = render(view(batch));
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin B-live' }));
+    await screen.findByRole('dialog', { name: /^Avant/ }, { timeout: 10000 }); // l2 : la fiche se charge à la demande
     // gfc (15.11) : la lecture en cours est le geste « Mesurer » (« Taper » : saisie décimale) ; elle doit survivre à une mise à jour serveur.
     if (!screen.queryByRole('button', { name: /Mesurer/ })) fireEvent.click(screen.getByRole('button', { name: 'Mesures' }));
     fireEvent.click(screen.getByRole('button', { name: /Mesurer/ }));
@@ -132,13 +133,15 @@ describe('Live records and unsaved forms', () => {
   it('updates a transaction amount while preserving its typed description and recalculates the saved total', () => {
     const tx = { id: 'T-live', date: '07.09.2026', description: 'Malt', category: 'brassage' as const,
       subcategory: 'Malt', amountHT: 100, tvaRate: 0.081, tvaAmount: 8.1, amountTTC: 108.1 };
+    // m5mo-c : la TVA et le total TTC ne se montrent que pour une brasserie assujettie ; sans cela, la fenêtre ne montre que « Montant ». Ce test garde l'assujettie (le recalcul du total).
+    vi.spyOn(StorageService, 'getConfig').mockReturnValue({ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: true } });
     const view = (value: typeof tx | null) => <EditTransactionModal isOpen={!!value} transaction={value} onClose={vi.fn()} onSave={vi.fn()} />;
     const { rerender } = render(view(null));
     rerender(view(tx));
     fireEvent.change(document.querySelector('[name="tx_edit_label"]')!, { target: { value: 'Malt et livraison' } });
     rerender(view({ ...tx, amountHT: 200, tvaAmount: 16.2, amountTTC: 216.2 }));
     expect(document.querySelector('[name="tx_edit_label"]')).toHaveValue('Malt et livraison');
-    expect(screen.getByText('216,20 CHF')).toBeInTheDocument();
+    expect(screen.getByText('216,20')).toBeInTheDocument();
     const save = vi.spyOn(StorageService, 'updateTransaction').mockImplementation(() => {});
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(save).toHaveBeenCalledWith(expect.objectContaining({ description: 'Malt et livraison', amountHT: 200, amountTTC: 216.2 }));

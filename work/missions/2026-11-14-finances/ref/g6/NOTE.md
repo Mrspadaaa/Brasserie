@@ -1,0 +1,20 @@
+# g6 — Annuel : g4a en tête, puis les neuf écrans de la clôture 2026
+**Idée** : g4a (« La meilleure ») reste la tête, inchangée sauf la piste : 9 stations au lieu de 7 (les 7 lignes de la baseline + « montants à reporter » + « dossier »), chacune touchable. Chaque écran de clôture pose **une question de brasseur**, dessine sa réponse, met le terme exact au second plan (« terme : … ») et finit sur une action noire qui mène à l'étape suivante. Même tête partout : « ‹ Annuel · Clôture 2026 · n / 9 » et la piste, l'étape cerclée.
+**Ouverture** : `etat.html` (tête) ; chaque étape s'ouvre par son ancre (`#operations` … `#dossier`, CSS `:target`, sans script).
+| Image | Question | Représentation |
+|---|---|---|
+| g6-haut | (g4a) l'année à la même échelle | −477,80 perdus, stock « ? », piste 2 / 9 |
+| g6-1-operations | Tout est noté ? | 12 tuiles de mois (janv.–avr. « ? » hachurés, 1 par mois mai–oct., 6 en nov.) ; 3 pastilles : rien noté, loyer noté en nov. seulement, justificatifs 0 / 12 ; ✦ Chercher les oublis |
+| g6-2-ouverture | Avec combien as-tu commencé ? | 4 000,00 confirmé ; pont 4 000,00 + 720,00 − 538,40 = 4 181,60 (axe coupé, dit) ; « Ta banque dit la même chose ? » Oui / Non |
+| g6-3-inventaires | Qu'avais-tu en stock, au début et à la fin ? | deux colonnes 1er janv. / 31 déc. (langue s5a) ; malt ≈ 22,42 estimé (3 kg × dernière facture), le reste « ? » ; ✦ Proposer depuis le stock |
+| g6-4-materiel | Ce que ta cuve a perdu en 2026 | escalier 1 800,00 → 1 440,00 → 1 152,00 (−288,00 hachuré) → 921,60 prévu ; joints 28,60 : Matériel / Petit achat ; fermenteur 750,00 : 2027 |
+| g6-5-dettes | Au 31 déc., qui doit quoi ? | deux plateaux : tu dois 460,00 (atelier 60,00, loyer nov. 400,00, loyer déc. 400,00 ?) / on te doit 0,00 ; prêt ou avance à ajouter |
+| g6-6-parts-privees | Qu'as-tu pris pour toi ? | tuiles (bière, électricité, local, téléphone, véhicule, autre) « ? » hachurées ; curseur électricité 68,00 à confirmer ; Rien pris / J'ai pris |
+| g6-7-verifications | Six questions avant d'envoyer | anneau 0 / 6 ; 6 tuiles (TAX_REVIEWS de `fribourgTax.ts`) reliées à leur étape ; activité principale / accessoire |
+| g6-8-reporter | Ce que tu recopies | deux tickets à copier : revenu −477,80 (ventes 720,00 − 909,80 − usure 288,00 ± stock ?) ; fortune 4 873,60 + stock ? (caisse + cuve − dettes) ; codes 2025, 2026 à confirmer |
+| g6-9-dossier | Ton dossier 2026 | classeur : comptes PDF, opérations Excel, justificatifs 0 / 12 et inventaires « ? » hachurés, matériel prêt, montants provisoires ; Figer la version, Archives ; Télécharger |
+**Honnêteté** : tous les chiffres viennent de la fixture (`financeDemo.ts` : solde d'ouverture 4 000,00 confirmé, cuve 1 440,00 à 20 % dégressif, solde atelier 2025, loyer prévu) ; inconnu = « ? » hachuré ; provisoire dit ; codes 2026 non vérifiés (problème 8). Jargon (amortissement, inventaire, créances, FriTax) au second plan seulement.
+**Baseline** : les 7 lignes « Préparer », « Reporter » et « Dossier » de `TaxWorkspace` deviennent les 9 stations ; trois niveaux d'onglets supprimés (problème 29) ; TVA, Impôts Fribourg, Dossier et archives gardés en tête ; Mois par mois (outil d'analyse de g4a) gardé.
+**Boosters** : balance-annee, piste-cloture, mois-notes, pont-caisse, etageres, usure-escalier, deux-plateaux, tuiles-prive, curseur-part, anneau-verifs, ticket-report, classeur, ia-oublis, ia-stock. B1 OK · B2 OK (une question, une image par écran) · B3 OK (tête 56 mots) · B4–B7 OK (COMMUN OK sur la tête ; les étapes, ouvertes par ancre, ne passent pas par controle-commun) · B8 « ? » partout où rien n'est noté · B9–B10 s.o. · B11 tête : « j'ai perdu 478 sur l'année, il me reste 7 étapes » · B12 OK · B13 OK.
+**Casse** : la loupe « Mois par mois » de g4a n'est pas redessinée ici (déjà dans `p2/g4a/g4a-etat.png`) ; les étapes laissent le bas de l'écran vide à 390 (une question par écran).
+**Contrôles** : PAGE OK · MOTS 56 · PANEL OK · COMMUN OK. Captures : g6-haut, -page, -1280, et g6-1 à g6-9 (toutes ouvertes).

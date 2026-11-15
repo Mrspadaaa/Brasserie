@@ -143,7 +143,8 @@ export function patchPurchaseDraft(previous: PurchaseDraft, value: Partial<Purch
   if (value.paymentDate !== undefined && !('paymentDateBasis' in value))
     next.paymentDateBasis = 'paymentStatus' in value ? undefined : 'typed';
   if (value.description !== undefined && !('descriptionSource' in value)) next.descriptionSource = 'typed';
-  if (value.date !== undefined && value.paymentDate === undefined && previous.paymentDateBasis !== 'typed' && (!previous.paymentDate || previous.paymentDate === previous.date)) {
+  if (value.date !== undefined && value.paymentDate === undefined && previous.paymentDateBasis !== 'typed' && (!previous.paymentDate || previous.paymentDate === previous.date || previous.paymentDateBasis === 'document_date')) {
+    /* dp (10.11, « 2 endroits qui ne font pas le lien ») : une date de paiement SUPPOSÉE (`document_date`) est la date de l'achat : elle la suit, même si elle en différait (date du jour par défaut, puis lecture). Seule une date choisie (`typed`) rompt le lien. */
     next.paymentDate = value.date;
     next.paymentDateBasis = value.date ? 'document_date' : undefined;
   }

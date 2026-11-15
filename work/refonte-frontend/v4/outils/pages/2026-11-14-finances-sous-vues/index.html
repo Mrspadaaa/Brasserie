@@ -1,0 +1,178 @@
+<title>Finances, vues des boutons · 14.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une section par vue sans maquette : ce que l'app montre aujourd'hui, puis quatre mini maquettes dans l'ordre du critique. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ref:#6b6f75;--fav:#7a3fb0;--ok:#3d7a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ref:#9aa0a6;--fav:#c9a2ee;--ok:#8fc48a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ref:#9aa0a6;--fav:#c9a2ee;--ok:#8fc48a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure > button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line);max-height:460px}
+figure > button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-fav{color:var(--fav)}.p-ok{color:var(--ok)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+.table{overflow-x:auto}
+table{border-collapse:collapse;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600}
+a{color:var(--acc)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:14px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--card);min-height:24px}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Finances : les vues sous les boutons</h1>
+<p class="mut">14.11 · tes mots : « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? ». Juste pour 13 vues : aucune maquette.</p>
+<p class="mut">Pour chacune : l'app aujourd'hui, puis 4 mini maquettes (non jouables), défauts du critique corrigés. Cadre bleu : sa première.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>Pour chaque vue : une maquette, un mélange, ou « aucune ». Les écrans derrière les feuilles restent tes choix (v6a, p5b, g6, g3a).</p>
+<nav class="toc" aria-label="Vues">
+<a href="#fi">Filtres</a><a href="#do">Doublons</a><a href="#ar">Archives</a><a href="#ap">Apport ou prélèvement</a><a href="#fo">Fiche</a><a href="#pa">Payer</a><a href="#mo">Modifier, + pièce</a><a href="#pr">Ajouter une prévision</a><a href="#pm">Projet matériel</a><a href="#im">Bien amorti</a><a href="#bb">Coût d'un brassin</a><a href="#pf">Profil</a><a href="#ia">Compagnon</a>
+</nav></section>
+
+<section id="couverture"><h2>Déjà choisi (rien de neuf ici)</h2>
+<div class="table"><table>
+<thead><tr><th>Vue</th><th>Ton choix</th><th>Page</th></tr></thead>
+<tbody>
+<tr><td>Synthèse</td><td>g3a</td><td><a href="https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su">compta et prix</a></td></tr>
+<tr><td>Analyse</td><td>a2a</td><td><a href="https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY">analyse</a></td></tr>
+<tr><td>Opérations, frise du … au …</td><td>v6a et s2ap2</td><td><a href="https://claude.ai/artifact/2xGEV9qoGgzadUBHVm2dsU">plage</a></td></tr>
+<tr><td>Prévisions</td><td>p5b</td><td><a href="https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm">passe 4</a></td></tr>
+<tr><td>Annuel et clôture</td><td>g6 (9 écrans de g4a)</td><td><a href="https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe">annuel</a></td></tr>
+<tr><td>Coût d'un brassin et du litre</td><td>c3a</td><td><a href="https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su">compta et prix</a></td></tr>
+<tr><td>Impôt bière, de l'année</td><td>p2b, i1a</td><td><a href="https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE">impôt de l'année</a></td></tr>
+<tr><td>Prix et marges ; prix depuis le brassin</td><td>c7c, e3a</td><td><a href="https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm">passe 4</a></td></tr>
+<tr><td>Facture de vente, caisse</td><td>v3a</td><td><a href="https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su">compta et prix</a></td></tr>
+<tr><td>Ajout d'une dépense</td><td>f2d</td><td><a href="https://claude.ai/artifact/KrAgKX1bDreQQUxZaNZEsK">onglet finances</a></td></tr>
+</tbody></table></div></section>
+
+<section id="fi" data-choix="fi"><h2>1 · Filtres (Opérations › Filtres)</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-fi.png"><img src="img/auj-fi.png" alt="Filtres aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m1fi-c.png"><img src="img/m1fi-c.png" alt="m1fi-c"></button><figcaption><span class="pill p-fav">1 · critique</span><b>La barre de ce qui attend</b> <span class="id">m1fi-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1fi-a.png"><img src="img/m1fi-a.png" alt="m1fi-a"></button><figcaption><span class="pill p-ok">2</span><b>Le panneau rangé</b> <span class="id">m1fi-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1fi-b.png"><img src="img/m1fi-b.png" alt="m1fi-b"></button><figcaption><span class="pill p-ok">3</span><b>Quatre lectures</b> <span class="id">m1fi-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1fi-d.png"><img src="img/m1fi-d.png" alt="m1fi-d"></button><figcaption><span class="pill p-ok">4</span><b>Les pastilles filtrent</b> <span class="id">m1fi-d · libre</span></figcaption></figure>
+</div></section>
+
+<section id="do" data-choix="do"><h2>2 · Doublons</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-do.png"><img src="img/auj-do.png" alt="Doublons aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>Aucun doublon au banc : bouton grisé, rien ne s'ouvre</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m1do-c.png"><img src="img/m1do-c.png" alt="m1do-c"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Champ par champ</b> <span class="id">m1do-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1do-a.png"><img src="img/m1do-a.png" alt="m1do-a"></button><figcaption><span class="pill p-ok">2</span><b>La paire dans la liste</b> <span class="id">m1do-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1do-b.png"><img src="img/m1do-b.png" alt="m1do-b"></button><figcaption><span class="pill p-ok">3</span><b>Une question à la fois</b> <span class="id">m1do-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1do-d.png"><img src="img/m1do-d.png" alt="m1do-d"></button><figcaption><span class="pill p-ok">4</span><b>Les tickets agrafés</b> <span class="id">m1do-d · libre</span></figcaption></figure>
+</div></section>
+
+<section id="ar" data-choix="ar"><h2>3 · Archives et « Gérer les archives »</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-ar.png"><img src="img/auj-ar.png" alt="Archives aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m1ar-b.png"><img src="img/m1ar-b.png" alt="m1ar-b"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Le journal rangé, ‹ 2024 ›</b> <span class="id">m1ar-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ar-a.png"><img src="img/m1ar-a.png" alt="m1ar-a"></button><figcaption><span class="pill p-ok">2</span><b>La feuille allégée</b> <span class="id">m1ar-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ar-d.png"><img src="img/m1ar-d.png" alt="m1ar-d"></button><figcaption><span class="pill p-ok">3</span><b>L'étagère des années</b> <span class="id">m1ar-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ar-c.png"><img src="img/m1ar-c.png" alt="m1ar-c"></button><figcaption><span class="pill p-ok">4</span><b>La frise des années</b> <span class="id">m1ar-c · chaude</span></figcaption></figure>
+</div></section>
+
+<section id="ap" data-choix="ap"><h2>4 · Apport ou prélèvement privé</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-ap.png"><img src="img/auj-ap.png" alt="Apport aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m1ap-d.png"><img src="img/m1ap-d.png" alt="m1ap-d"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Payé de ma poche</b> <span class="id">m1ap-d · libre · demande un « payé avec mon argent » dans les données</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ap-a.png"><img src="img/m1ap-a.png" alt="m1ap-a"></button><figcaption><span class="pill p-ok">2</span><b>La feuille rangée</b> <span class="id">m1ap-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ap-c.png"><img src="img/m1ap-c.png" alt="m1ap-c"></button><figcaption><span class="pill p-ok">3</span><b>Les deux poches</b> <span class="id">m1ap-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m1ap-b.png"><img src="img/m1ap-b.png" alt="m1ap-b"></button><figcaption><span class="pill p-ok">4</span><b>Un montant signé + ou −</b> <span class="id">m1ap-b · froide</span></figcaption></figure>
+</div></section>
+
+<section id="fo" data-choix="fo"><h2>5 · Fiche d'une opération (toucher une rangée)</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-fo.png"><img src="img/auj-fo.png" alt="Fiche aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m2fo-a.png"><img src="img/m2fo-a.png" alt="m2fo-a"></button><figcaption><span class="pill p-fav">1 · critique</span><b>La fiche rangée</b> <span class="id">m2fo-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2fo-c.png"><img src="img/m2fo-c.png" alt="m2fo-c"></button><figcaption><span class="pill p-ok">2</span><b>La facture en barre</b> <span class="id">m2fo-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2fo-d.png"><img src="img/m2fo-d.png" alt="m2fo-d"></button><figcaption><span class="pill p-ok">3</span><b>La facture elle-même</b> <span class="id">m2fo-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2fo-b.png"><img src="img/m2fo-b.png" alt="m2fo-b"></button><figcaption><span class="pill p-ok">4</span><b>Le montant et trois tuiles</b> <span class="id">m2fo-b · froide</span></figcaption></figure>
+</div></section>
+
+<section id="pa" data-choix="pa"><h2>6 · Payer</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-pa.png"><img src="img/auj-pa.png" alt="Payer aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m2pa-c.png"><img src="img/m2pa-c.png" alt="m2pa-c"></button><figcaption><span class="pill p-fav">1 · critique</span><b>La barre se tire</b> <span class="id">m2pa-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2pa-a.png"><img src="img/m2pa-a.png" alt="m2pa-a"></button><figcaption><span class="pill p-ok">2</span><b>La feuille rangée</b> <span class="id">m2pa-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2pa-d.png"><img src="img/m2pa-d.png" alt="m2pa-d"></button><figcaption><span class="pill p-ok">3</span><b>Un virement, plusieurs pièces</b> <span class="id">m2pa-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2pa-b.png"><img src="img/m2pa-b.png" alt="m2pa-b"></button><figcaption><span class="pill p-ok">4</span><b>Un geste « Tout payé »</b> <span class="id">m2pa-b · froide</span></figcaption></figure>
+</div></section>
+
+<section id="mo" data-choix="mo"><h2>7 · Modifier et « + pièce »</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-mo.png"><img src="img/auj-mo.png" alt="Modifier aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m2mo-d.png"><img src="img/m2mo-d.png" alt="m2mo-d"></button><figcaption><span class="pill p-fav">1 · critique</span><b>La tournée des pièces</b> <span class="id">m2mo-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2mo-c.png"><img src="img/m2mo-c.png" alt="m2mo-c"></button><figcaption><span class="pill p-ok">2</span><b>Les pièces de novembre</b> <span class="id">m2mo-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2mo-a.png"><img src="img/m2mo-a.png" alt="m2mo-a"></button><figcaption><span class="pill p-ok">3</span><b>La feuille rangée, pièce en tête</b> <span class="id">m2mo-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m2mo-b.png"><img src="img/m2mo-b.png" alt="m2mo-b"></button><figcaption><span class="pill p-ok">4</span><b>L'appareil photo d'abord</b> <span class="id">m2mo-b · froide</span></figcaption></figure>
+</div></section>
+
+<section id="pr" data-choix="pr"><h2>8 · Ajouter une prévision</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-pr.png"><img src="img/auj-pr.png" alt="Prévision aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m3pr-d.png"><img src="img/m3pr-d.png" alt="m3pr-d"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Recopier un paiement déjà fait</b> <span class="id">m3pr-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pr-c.png"><img src="img/m3pr-c.png" alt="m3pr-c"></button><figcaption><span class="pill p-ok">2</span><b>L'effet sur fin janvier</b> <span class="id">m3pr-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pr-a.png"><img src="img/m3pr-a.png" alt="m3pr-a"></button><figcaption><span class="pill p-ok">3</span><b>La feuille rangée</b> <span class="id">m3pr-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pr-b.png"><img src="img/m3pr-b.png" alt="m3pr-b"></button><figcaption><span class="pill p-ok">4</span><b>Trois champs sur le clavier</b> <span class="id">m3pr-b · froide</span></figcaption></figure>
+</div></section>
+
+<section id="pm" data-choix="pm"><h2>9 · Projet matériel</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-pm.png"><img src="img/auj-pm.png" alt="Projet aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>Synthèse › Fournisseurs, matériel : la feuille du projet ne s'ouvre qu'avec un projet prévu (aucun au banc)</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m3pm-a.png"><img src="img/m3pm-a.png" alt="m3pm-a"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Le projet rangé</b> <span class="id">m3pm-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pm-b.png"><img src="img/m3pm-b.png" alt="m3pm-b"></button><figcaption><span class="pill p-ok">2</span><b>Le minimum</b> <span class="id">m3pm-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pm-d.png"><img src="img/m3pm-d.png" alt="m3pm-d"></button><figcaption><span class="pill p-ok">3</span><b>La piste du projet</b> <span class="id">m3pm-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3pm-c.png"><img src="img/m3pm-c.png" alt="m3pm-c"></button><figcaption><span class="pill p-ok">4</span><b>Le budget en barre, le mois sur la frise</b> <span class="id">m3pm-c · chaude</span></figcaption></figure>
+</div></section>
+
+<section id="im" data-choix="im"><h2>10 · Bien amorti (Annuel)</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-im.png"><img src="img/auj-im.png" alt="Bien amorti aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m3im-b.png"><img src="img/m3im-b.png" alt="m3im-b"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Ce qu'elle perd cette année</b> <span class="id">m3im-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3im-d.png"><img src="img/m3im-d.png" alt="m3im-d"></button><figcaption><span class="pill p-ok">2</span><b>La plaque de la cuve</b> <span class="id">m3im-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3im-a.png"><img src="img/m3im-a.png" alt="m3im-a"></button><figcaption><span class="pill p-ok">3</span><b>La feuille rangée</b> <span class="id">m3im-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m3im-c.png"><img src="img/m3im-c.png" alt="m3im-c"></button><figcaption><span class="pill p-ok">4</span><b>La cuve année par année</b> <span class="id">m3im-c · chaude</span></figcaption></figure>
+</div></section>
+
+<section id="bb" data-choix="bb"><h2>11 · Coût d'un brassin : le choix du brassin et l'entrée</h2>
+<p class="mut">c3a reste ton choix pour le coût du brassin et du litre. Ces quatre ne sont que des pistes pour ce que c3a ne dessine pas.</p><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-bb.png"><img src="img/auj-bb.png" alt="Budget aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc (c3a)</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m4bb-a.png"><img src="img/m4bb-a.png" alt="m4bb-a"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Rangé en piles v6a</b> <span class="id">m4bb-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4bb-b.png"><img src="img/m4bb-b.png" alt="m4bb-b"></button><figcaption><span class="pill p-ok">2</span><b>Le litre et la seule chose à faire</b> <span class="id">m4bb-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4bb-d.png"><img src="img/m4bb-d.png" alt="m4bb-d"></button><figcaption><span class="pill p-ok">3</span><b>Le litre dans le verre</b> <span class="id">m4bb-d · libre</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4bb-c.png"><img src="img/m4bb-c.png" alt="m4bb-c"></button><figcaption><span class="pill p-ok">4</span><b>La frise des paiements</b> <span class="id">m4bb-c · chaude</span></figcaption></figure>
+</div></section>
+
+<section id="pf" data-choix="pf"><h2>12 · Profil et paramètres</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-pf.png"><img src="img/auj-pf.png" alt="Profil aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m4pf-b.png"><img src="img/m4pf-b.png" alt="m4pf-b"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Cinq lignes, une ouverte sur place</b> <span class="id">m4pf-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4pf-a.png"><img src="img/m4pf-a.png" alt="m4pf-a"></button><figcaption><span class="pill p-ok">2</span><b>Trois groupes rangés</b> <span class="id">m4pf-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4pf-c.png"><img src="img/m4pf-c.png" alt="m4pf-c"></button><figcaption><span class="pill p-ok">3</span><b>Chaque réglage montre son effet</b> <span class="id">m4pf-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4pf-d.png"><img src="img/m4pf-d.png" alt="m4pf-d"></button><figcaption><span class="pill p-ok">4</span><b>Ta brasserie en phrases à trous</b> <span class="id">m4pf-d · libre</span></figcaption></figure>
+</div></section>
+
+<section id="ia" data-choix="ia"><h2>13 · Le compagnon (assistant IA)</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/auj-ia.png"><img src="img/auj-ia.png" alt="Compagnon aujourd'hui"></button><figcaption><span class="pill p-ref">Aujourd'hui</span><b>L'app au banc</b></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/m4ia-b.png"><img src="img/m4ia-b.png" alt="m4ia-b"></button><figcaption><span class="pill p-fav">1 · critique</span><b>Une question, un bouton</b> <span class="id">m4ia-b · froide</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4ia-c.png"><img src="img/m4ia-c.png" alt="m4ia-c"></button><figcaption><span class="pill p-ok">2</span><b>Ce que le compagnon va lire</b> <span class="id">m4ia-c · chaude</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4ia-a.png"><img src="img/m4ia-a.png" alt="m4ia-a"></button><figcaption><span class="pill p-ok">3</span><b>Les questions rangées</b> <span class="id">m4ia-a · tiède</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/m4ia-d.png"><img src="img/m4ia-d.png" alt="m4ia-d"></button><figcaption><span class="pill p-ok">4</span><b>Sur la ligne touchée</b> <span class="id">m4ia-d · libre</span></figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){var s=b.getAttribute('data-agrandir');i.src=s;i.alt=s;d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>

@@ -52,7 +52,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     allerEtape('Eau et sels');
     expect(mashInput()).toHaveValue('10,5');
     expect(spargeInput()).toHaveValue('23,5');
-    const explanation = screen.getByText('Pourquoi plus d’eau au rinçage ?').closest('details')!;
+    const explanation = screen.getByText('Comprendre').closest('details')!;
     expect(explanation).not.toHaveAttribute('open');
     expect(explanation).toHaveTextContent('31,1 L de moût');
     expect(explanation).toHaveTextContent('34 L d’eau');
@@ -67,7 +67,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     expect(screen.getByText(/Rinçage à chaud :/).closest('[role="status"]')).toHaveTextContent('Rinçage à chaud : 16,5 L dans le récipient principal.');
     expect(screen.queryByText(/avec la bouilloire annexe/)).not.toBeInTheDocument();
     expect(screen.queryByText('Pourquoi plus d’eau au rinçage ?')).not.toBeInTheDocument();
-    expect(screen.getByText('Comprendre les volumes')).toBeInTheDocument();
+    expect(screen.getByText('Comprendre')).toBeInTheDocument();
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette', exact: true }));
     expect(save).toHaveBeenCalledOnce();
@@ -83,7 +83,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     fireEvent.click(screen.getByRole('button', { name: 'Lire la recette', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre', exact: true }));
     allerEtape('Eau et sels');
-    expect(screen.getByText('Pourquoi plus d’eau au rinçage ?').closest('details')).toHaveTextContent('115 min : 5,5 L évaporés');
+    expect(screen.getByText('Comprendre').closest('details')).toHaveTextContent('115 min : 5,5 L évaporés');
     allerEtape('Identité');
     fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
     expect(screen.getByText(/Ce volume ne tient pas dans le matériel/)).toBeInTheDocument();

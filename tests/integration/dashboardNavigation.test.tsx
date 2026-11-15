@@ -139,7 +139,7 @@ describe('Dashboard agenda navigation', () => {
 });
 
 describe('Direct batch navigation from the dashboard', () => {
-  it('opens a batch outside this month without widening the catalog, closes and reopens it only for a new request', () => {
+  it('opens a batch outside this month without widening the catalog, closes and reopens it only for a new request', async () => {
     const handled = vi.fn();
     const props = { ...productionProps(), onOpenBatchRequestHandled: handled };
     const request = { id: oldBatch.id, at: 1 };
@@ -150,7 +150,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(within(catalog).queryByRole('button', { name: `Ouvrir le brassin ${finiBatch.id}` })).not.toBeInTheDocument(); // fini hors du mois : la période le juge encore
 
     view.rerender(<ProductionTab {...props} openBatchRequest={request} />);
-    let dialog = screen.getByRole('dialog', { name: oldBatch.name });
+    let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
     expect(handled).toHaveBeenCalledTimes(1);
     fireEvent.click(within(dialog).getByRole('button', { name: 'Carnet', exact: true }));
@@ -165,14 +165,14 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(finiBatch.name); // fini hors période : jamais élargi
 
     view.rerender(<ProductionTab {...props} batches={[updated, finiBatch, currentBatch]} openBatchRequest={{ id: oldBatch.id, at: 2 }} />);
-    dialog = screen.getByRole('dialog', { name: updated.name });
+    dialog = await screen.findByRole('dialog', { name: updated.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.052');
     expect(within(dialog).getByRole('button', { name: 'Mesures', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(handled).toHaveBeenCalledTimes(2);
     expect(props.onOpenBrewDay).not.toHaveBeenCalled();
   });
 
-  it('waits for the requested live record, selects Brassins and consumes its request once under StrictMode', () => {
+  it('waits for the requested live record, selects Brassins and consumes its request once under StrictMode', async () => {
     const handled = vi.fn();
     const props = {
       ...productionProps(), targetSubTab: 'recipes' as const,
@@ -217,7 +217,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(screen.queryByRole('button', { name: 'Saisie rapide', exact: true })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
     // BX-4 (09.11) : au Bord, l'action de l'écran est « Nouvelle écriture » ; « Entrer une facture » n'est plus répétée dans le menu. La vente passe par la même saisie rapide.
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Encaisser une vente/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Vendre/ }));
     expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);

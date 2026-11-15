@@ -2,7 +2,7 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { fabActionFor, OUTILS_HOUBLONS_EVENT } from '../../src/domain/fabActions';
+import { fabActionFor } from '../../src/domain/fabActions';
 import { FloatingActions } from '../../src/ui/FloatingActions';
 import { CatalogAnalysis } from '../../src/ui/production/CatalogAnalysis';
 import { ProductionCatalog } from '../../src/ui/production/ProductionCatalog';
@@ -57,15 +57,14 @@ describe('e11a · le menu du +', () => {
     return { onRecipe };
   };
 
-  it('Brassins : l’ordre de la maquette, avec « Outils houblons »', () => {
+  it('Brassins : l’ordre de la maquette (sans « Outils houblons », retiré par d4523967)', () => {
     montrer('batches');
     const noms = screen.getAllByRole('menuitem').map((b) => b.textContent);
     expect(noms).toEqual([
       'Nouveau brassinSur Brassins',
       'Créer une recette',
-      'Outils houblons',
       'Entrer une facture',
-      'Encaisser une vente',
+      'Vendre',
       expect.stringContaining('Compagnon brasseur')
     ]);
   });
@@ -75,16 +74,12 @@ describe('e11a · le menu du +', () => {
     const noms = screen.getAllByRole('menuitem').map((b) => b.textContent);
     expect(noms[0]).toBe('Nouvelle recetteSur Recettes');
     expect(noms.filter((n) => n === 'Créer une recette')).toHaveLength(0);
-    expect(noms).toContain('Outils houblons');
+    expect(noms).not.toContain('Outils houblons');
   });
 
-  it('« Outils houblons » annonce l’événement que l’onglet écoute', () => {
+  it('« Outils houblons » n’est plus au menu du +', () => {
     montrer('batches');
-    const ecoute = vi.fn();
-    window.addEventListener(OUTILS_HOUBLONS_EVENT, ecoute);
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Outils houblons' }));
-    window.removeEventListener(OUTILS_HOUBLONS_EVENT, ecoute);
-    expect(ecoute).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menuitem', { name: 'Outils houblons' })).toBeNull();
   });
 
   it('le bouton porte le nom court à côté du +', () => {

@@ -1,0 +1,103 @@
+.stock-liste{--l1-page:#FFFFFF;--l1-panel:#F5F5F5;--l1-raised:#EBEBEB;--l1-border:#DDDDDD;--l1-strong:#BFBFBF;--l1-t2:#666666;--l1-t1:#333333;--l1-t0:#111111;--l1-alert:#C8382F;--l1-alertt:#A8291F;--l1-stocks:#4C6B2A;--l1-stocks-bg:#EEF2E8;--l1-lisere:transparent;--l1-ebc-straw:#F2C14E;--l1-ebc-gold:#E0A02E;--l1-ebc-amber:#C87A2C;--l1-ebc-copper:#A0522D;--l1-ebc-brown:#6B3A1E;--l1-ebc-stout:#3B1F14;--l1-sans:"Source Sans 3",system-ui,sans-serif;--l1-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;--l1-i0:#A9741E;--l1-w0:#F7EAD0;--l1-d0:#7A520F;--l1-i1:#6E9112;--l1-w1:#E9F2CF;--l1-d1:#4B6409;--l1-i2:#9C7F45;--l1-w2:#F4ECDA;--l1-d2:#6B5426;--l1-i3:#667E8F;--l1-w3:#E6ECF0;--l1-d3:#4A5D6B;--l1-i4:#8C6A4A;--l1-w4:#F0E6DB;--l1-d4:#6B4E33;--l1-i5:#2F7FAE;--l1-w5:#DDEDF7;--l1-d5:#1F5E85}
+html[data-theme="cave"] .stock-liste{--l1-page:#12100E;--l1-panel:#1A1613;--l1-raised:#2A241F;--l1-border:#2C2521;--l1-strong:#574A42;--l1-t2:#A39385;--l1-t1:#D8CEC5;--l1-t0:#F5F0EA;--l1-alert:#D6453D;--l1-alertt:#DC5F58;--l1-stocks:#A3C97A;--l1-stocks-bg:#1B2116;--l1-lisere:#B5A79A;--l1-i0:#D9A64E;--l1-w0:#2E2416;--l1-d0:#E3B76A;--l1-i1:#B9D24A;--l1-w1:#232A13;--l1-d1:#C6DC68;--l1-i2:#E0CDA0;--l1-w2:#2B271D;--l1-d2:#E6D6AE;--l1-i3:#A9BBC8;--l1-w3:#1F2428;--l1-d3:#BBC9D4;--l1-i4:#C9A27C;--l1-w4:#2B231C;--l1-d4:#D5B392;--l1-i5:#6FB4DD;--l1-w5:#14242E;--l1-d5:#8CC4E6}
+
+/* Liste du Stock sous le mur : port de la maquette choisie sy/fA (lignes, barres g6 à deux régimes, teintes c3b). Classes de la maquette (l1-…), jetons posés sur .stock-liste. */
+.stock-liste{--fi:var(--l1-i0);--fw:var(--l1-w0);color:var(--l1-t0);font-family:var(--l1-sans)}
+.stock-liste[data-fam="0"],.stock-liste[data-sec="0"]{--fi:var(--l1-i0);--fw:var(--l1-w0)}
+.stock-liste[data-fam="1"],.stock-liste[data-sec="1"]{--fi:var(--l1-i1);--fw:var(--l1-w1)}
+.stock-liste[data-fam="2"],.stock-liste[data-sec="2"]{--fi:var(--l1-i2);--fw:var(--l1-w2)}
+.stock-liste[data-fam="3"],.stock-liste[data-sec="3"]{--fi:var(--l1-i3);--fw:var(--l1-w3)}
+.stock-liste[data-fam="4"],.stock-liste[data-sec="4"]{--fi:var(--l1-i4);--fw:var(--l1-w4)}
+.stock-liste[data-fam="5"],.stock-liste[data-sec="5"]{--fi:var(--l1-i5);--fw:var(--l1-w5)}
+
+/* la ligne */
+.stock-liste.l1-li{position:relative;isolation:isolate;background:var(--l1-page);border-bottom:1px solid var(--l1-border)}
+.stock-liste .l1-row{position:relative;isolation:isolate;display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;align-items:center;column-gap:10px;width:100%;min-height:44px;padding:3px 40px 3px 10px;text-align:left;background:transparent;color:var(--l1-t0);box-shadow:inset 3px 0 0 var(--fi);--l1-x0:28px;--l1-tw:calc(100% - 38px)}
+.stock-liste .l1-row:active{background:var(--l1-panel)}
+.stock-liste .l1-row>*:not(.l1-kg){position:relative;z-index:1}
+.stock-liste .l1-fav{position:absolute;right:0;top:0;bottom:0;z-index:2;display:flex;align-items:center}
+
+/* la barre g6 : à l'échelle jusqu'au coude, resserrée au-delà (coupure « ⫽ »), trait pointillé du coude */
+.stock-liste .l1-kg{position:absolute;left:var(--l1-x0);top:4px;bottom:4px;width:calc(var(--l1-tw) * var(--x));border-radius:0 3px 3px 0;background:color-mix(in srgb,var(--fi) 20%,transparent);box-shadow:inset 0 -3px 0 var(--fi);z-index:0}
+.stock-liste .l1-cut{position:absolute;top:-2px;bottom:-2px;width:7px;margin-left:-3.5px;background:var(--l1-page);transform:skewX(-22deg);box-shadow:inset 1.5px 0 0 var(--fi),inset -1.5px 0 0 var(--fi)}
+.stock-liste[data-rayon] .l1-row::after{content:"";position:absolute;left:calc(var(--l1-x0) + var(--l1-tw) * 0.45);top:0;bottom:0;border-left:1.5px dashed var(--l1-t2);z-index:0;opacity:.6;pointer-events:none}
+.stock-liste[data-rayon] .l1-n1,.stock-liste[data-rayon] .l1-n2{text-shadow:0 0 3px var(--l1-page),0 0 3px var(--l1-page),0 0 2px var(--l1-page)}
+.stock-liste[data-rayon] .l1-rp{background:var(--l1-page);box-shadow:0 0 0 1px var(--l1-border)}
+.stock-liste[data-rayon] .l1-rp-q{box-shadow:inset 0 0 0 1px var(--l1-strong),0 0 0 1px var(--l1-page)}
+.stock-liste[data-rayon] .l1-n2:not(.l1-s-compter){color:var(--l1-t1)}
+
+/* le pot et son seuil */
+.stock-liste .l1-mk{position:relative;display:block;width:12px;height:28px;margin-left:1px;border:1.5px solid var(--l1-strong);border-radius:0;background:var(--l1-page)}
+.stock-liste .l1-mk i{position:absolute;left:0;right:0;bottom:0;background:var(--fi)}
+.stock-liste .l1-mk b{position:absolute;left:-4px;right:-4px;height:1.5px;margin-bottom:-1px;background:var(--l1-t1)}
+.stock-liste .l1-mk-ep{border-color:var(--l1-alert)}
+.stock-liste .l1-mk-ep b{background:var(--l1-alert)}
+.stock-liste .l1-mk-ss{border-color:var(--l1-border);background:none}
+.stock-liste .l1-mk-q{border-style:dashed;display:grid;place-items:center;font:600 12px/1 var(--l1-mono);color:var(--l1-t2)}
+.stock-liste .l1-mk-q b,.stock-liste .l1-mk-q i{display:none}
+
+/* nom, état, repère, quantité */
+.stock-liste .l1-nm{display:flex;flex-direction:column;min-width:0}
+.stock-liste .l1-n1{font-size:14px;color:var(--l1-t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-liste .l1-n2{font-size:12px;color:var(--l1-t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-liste .l1-s-epuise{color:var(--l1-alertt) !important;font-weight:600}
+.stock-liste .l1-s-manque,.stock-liste .l1-s-bas,.stock-liste .l1-s-seuil,.stock-liste .l1-s-ddm{color:var(--l1-t0) !important;font-weight:600}
+.stock-liste .l1-s-compter{color:var(--l1-t1);font-weight:600}
+.stock-liste .l1-rp{display:inline-flex;align-items:center;gap:5px;font:12px/20px var(--l1-mono);color:var(--l1-t1);background:var(--l1-panel);border-radius:999px;padding:0 7px;white-space:nowrap}
+.stock-liste .l1-sw{display:inline-block;width:10px;height:10px;border-radius:999px;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+html[data-theme="cave"] .stock-liste .l1-sw{box-shadow:0 0 0 1.5px var(--l1-lisere)}
+.stock-liste .l1-rp-q{background:none;box-shadow:inset 0 0 0 1px var(--l1-strong);color:var(--l1-t2)}
+.stock-liste .l1-rp-w{box-shadow:inset 0 0 0 1.5px var(--l1-t0);font-weight:600;color:var(--l1-t0)}
+.stock-liste .l1-qt{display:flex;flex-direction:column;align-items:flex-end;text-align:right;min-width:48px}
+.stock-liste .l1-q{font:600 14px/1.2 var(--l1-mono);color:var(--l1-t0);white-space:nowrap}
+.stock-liste .l1-q-0{color:var(--l1-alertt)}
+.stock-liste .l1-q-c{font:600 13px/1.2 var(--l1-sans);color:var(--l1-t1);border-bottom:1.5px dashed var(--l1-t2)}
+.stock-liste .l1-plus{padding:0 10px 4px 34px;font-size:12px;color:var(--l1-t2)}
+.stock-liste .l1-plus p{margin:0}
+.stock-liste .l1-plus-a{color:var(--l1-alertt);font-weight:600}
+.stock-liste .l1-plus-w{color:var(--l1-t0)}
+.stock-liste .l1-plus-r{color:var(--l1-t1)}
+
+/* l'en-tête d'un rayon, la règle dite sur elle-même */
+.stock-liste.l1-eh-bloc{background:var(--l1-page);border-top:3px solid var(--l1-panel);border-bottom:1px solid var(--l1-border)}
+.stock-liste .l1-eh{display:flex;flex-wrap:nowrap;align-items:center;column-gap:8px;min-height:36px;padding:2px 10px 2px 10px}
+.stock-liste .l1-ei{width:26px;height:26px;flex:none;border-radius:10px;display:grid;place-items:center;color:var(--fi);background:var(--fw)}
+.stock-liste .l1-eh h2{font-size:16px;font-weight:600;color:var(--l1-t0);white-space:nowrap;margin:0}
+.stock-liste .l1-en{font-weight:400;color:var(--l1-t2);font-size:14px}
+.stock-liste .l1-ec{flex:1;min-width:0;font-size:12px;color:var(--l1-t2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* vd2 n° 5 : le rayon se plie (maquette g6 : toute la ligne, chevron ⌃ à droite de ⓘ ; plié : ⌄ et le résumé du rayon sous le titre) */
+.stock-liste .l1-eh{cursor:pointer}
+.stock-liste .l1-chev{flex:none;width:32px;height:32px;display:grid;place-items:center;color:var(--l1-t2);margin-right:-4px;background:none}
+.stock-liste .l1-chev svg{transition:transform .2s}
+.stock-liste .l1-chev[data-plie] svg{transform:rotate(180deg)}
+.stock-liste .l1-res{margin:0;padding:0 14px 6px 44px;font-size:13px;line-height:1.3;color:var(--l1-t2)}
+.stock-liste .l1-ib{flex:none;width:32px;height:32px;display:grid;place-items:center;color:var(--l1-t1);margin-right:-4px}
+.stock-liste .l1-ech{position:relative;height:32px;margin:0 10px;font:12px var(--l1-mono);color:var(--l1-t2);--l1-x0:18px;--l1-tw:calc(100% - 28px)}
+.stock-liste .l1-ech i{position:absolute;bottom:3px;font-style:normal;transform:translateX(-50%);white-space:nowrap}
+.stock-liste .l1-ech i.l1-c{color:var(--l1-t0);font-weight:600}
+.stock-liste .l1-ech em{position:absolute;top:0;left:calc(var(--l1-x0) + var(--l1-tw) * 0.45 + 8px);font:12px var(--l1-sans,inherit);font-style:normal;color:var(--l1-t1);white-space:nowrap}
+.stock-liste .l1-ech em.l1-g{left:var(--l1-x0)}
+.stock-liste .l1-ech::before{content:"";position:absolute;left:var(--l1-x0);width:var(--l1-tw);bottom:0;height:2px;background:linear-gradient(90deg,var(--fi) 0 45%,transparent 45% calc(45% + 6px),color-mix(in srgb,var(--fi) 45%,transparent) calc(45% + 6px))}
+.stock-liste .l1-dit{margin:0 10px 6px;padding:8px 10px;border-radius:10px;background:var(--fw);font-size:13px;color:var(--l1-t1)}
+
+/* choix 14 : à partir de 900 px, la liste prend les colonnes de la maquette g6 (pot | Article | repère | En stock | échelle | Dernier mouvement | Fournisseur).
+   En dessous, la ligne reste celle du mobile : l'enveloppe de la barre n'a pas de boîte et ces deux colonnes, comme l'en-tête de tableau, sont cachées. */
+.stock-liste .l1-ec-c{display:contents}
+.stock-liste .l1-c-mv,.stock-liste .l1-c-fo,.stock-liste .l1-th{display:none}
+@media(min-width:900px){
+  /* le tableau a besoin de la largeur de la maquette (1280 px) : tout l'onglet Stocks (barre du haut, Étagère, Recompter, les autres vues) prend 1240 px d'écran
+     (App.tsx et Header.tsx : 1264 px avec les marges) ; une seule largeur d'une vue à l'autre (verdict 5cdcd12e n° 3) */
+  body:not([data-has-fiche-page]) .stock-liste .l1-row{grid-template-columns:14px minmax(130px,1.1fr) 104px 84px minmax(190px,1.6fr) minmax(120px,1.1fr) minmax(80px,.8fr);column-gap:16px}
+  body:not([data-has-fiche-page]) .stock-liste .l1-ec-c{display:block;position:relative;align-self:stretch;margin:-3px 0;--l1-x0:0px;--l1-tw:100%}
+  body:not([data-has-fiche-page]) .stock-liste[data-rayon] .l1-row::after{display:none}
+  body:not([data-has-fiche-page]) .stock-liste[data-rayon] .l1-ec-c::after{content:"";position:absolute;left:45%;top:0;bottom:0;border-left:1.5px dashed var(--l1-t2);opacity:.6;pointer-events:none}
+  body:not([data-has-fiche-page]) .stock-liste[data-rayon] .l1-n1,body:not([data-has-fiche-page]) .stock-liste[data-rayon] .l1-n2{text-shadow:none}
+  body:not([data-has-fiche-page]) .stock-liste .l1-c-mv,body:not([data-has-fiche-page]) .stock-liste .l1-c-fo{display:block;min-width:0;font-size:13px;line-height:1.25;color:var(--l1-t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body:not([data-has-fiche-page]) .stock-liste .l1-c-mv{font-variant-numeric:tabular-nums}
+  body:not([data-has-fiche-page]) .stock-liste .l1-ech-bas{display:none}
+  body:not([data-has-fiche-page]) .stock-liste .l1-th{display:grid;grid-template-columns:14px minmax(130px,1.1fr) 104px 84px minmax(190px,1.6fr) minmax(120px,1.1fr) minmax(80px,.8fr);column-gap:16px;align-items:end;min-height:32px;padding:0 40px 0 10px;box-shadow:inset 3px 0 0 var(--fi);border-top:1px solid var(--l1-border)}
+  body:not([data-has-fiche-page]) .stock-liste .l1-thb,body:not([data-has-fiche-page]) .stock-liste .l1-thl{justify-self:start;min-height:28px;padding:0;font:12px/28px var(--l1-sans);color:var(--l1-t2);white-space:nowrap;background:none;text-align:left}
+  body:not([data-has-fiche-page]) .stock-liste .l1-thb[aria-pressed="true"]{color:var(--l1-t0);font-weight:600}
+  body:not([data-has-fiche-page]) .stock-liste .l1-th > :nth-child(4){justify-self:end;text-align:right}
+  body:not([data-has-fiche-page]) .stock-liste .l1-ech-th{align-self:end;margin:0;--l1-x0:0px;--l1-tw:100%}
+}

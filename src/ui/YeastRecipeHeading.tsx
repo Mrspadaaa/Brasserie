@@ -28,10 +28,11 @@ export function doseConseillee(recipe: TrialRecipe): string | null {
 
 /** Closed overview keeps the adopted intent separate from today's actual setpoint.
  * This summary has no workshop, catalogue picker or chart dependency. */
-export function YeastRecipeHeading({ recipe }: { recipe: TrialRecipe }) {
+export function YeastRecipeHeading({ recipe, seulementObjectif }: { recipe: TrialRecipe; /** Récap m2 (RL-1) : la rangée dit déjà le nom et la quantité ; ici, seulement l'objectif. */ seulementObjectif?: boolean }) {
   const intent = readYeastRecipeDesign(recipe);
   const primary = recipe.fermentation?.find(s => s.kind === 'primaire');
   const change = intent ? classifyYeastRecipeDesignChange(recipe, intent) : 'unchanged';
   const changeLabel = change === 'settings' ? 'réglages modifiés' : change === 'documentary' ? 'fiche actualisée' : '';
+  if (seulementObjectif) return intent ? <span>Objectif : {intent.goalExplicit === false ? 'non exprimé' : YEAST_RECIPE_GOAL_LABELS[intent.goal]} · primaire {number(primary?.tempC)} °C{changeLabel ? ` · ${changeLabel}` : ''}</span> : null;
   return <span>{recipe.yeast.name || 'Souche à préciser'} · {recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${uniteAccordee(recipe.yeast.unit, recipe.yeast.qty)}` : (doseConseillee(recipe) ?? 'quantité à préciser')}{intent && <span className="block">Objectif : {intent.goalExplicit === false ? 'non exprimé' : YEAST_RECIPE_GOAL_LABELS[intent.goal]} · primaire {number(primary?.tempC)} °C{changeLabel ? ` · ${changeLabel}` : ''}</span>}</span>;
 }

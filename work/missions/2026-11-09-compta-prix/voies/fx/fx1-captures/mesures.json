@@ -1,0 +1,133 @@
+{
+ "mesures": {
+  "clair-390": {
+   "piles": [
+    {
+     "pile": "recettes",
+     "couleur": "rgb(86, 210, 123)"
+    },
+    {
+     "pile": "brassage",
+     "couleur": "rgb(210, 179, 86)"
+    },
+    {
+     "pile": "divers",
+     "couleur": "rgb(102, 102, 102)"
+    },
+    {
+     "pile": "materiel",
+     "couleur": "rgb(86, 123, 210)"
+    }
+   ],
+   "cercles": [
+    {
+     "fond": "rgb(37, 86, 51)",
+     "trait": "rgb(185, 244, 202)"
+    },
+    {
+     "fond": "rgb(86, 73, 37)",
+     "trait": "rgb(244, 229, 185)"
+    },
+    {
+     "fond": "rgb(221, 221, 221)",
+     "trait": "rgb(51, 51, 51)"
+    },
+    {
+     "fond": "rgb(37, 51, 86)",
+     "trait": "rgb(185, 202, 244)"
+    },
+    {
+     "fond": "rgb(248, 231, 230)",
+     "trait": "rgb(168, 41, 31)"
+    }
+   ],
+   "puce": "Pourquoi les autres frais pèsent autant ?",
+   "plage": {
+    "champTrouve": true,
+    "titreAvant": "Août – nov. 2026",
+    "titreApres": "Août – nov. 2026",
+    "survit": true
+   },
+   "sources": [
+    "Ventes",
+    "Brassage",
+    "Autres",
+    "Gagné",
+    "Matériel"
+   ],
+   "budget": {
+    "regles": [
+     "Brassage",
+     "Autres"
+    ],
+    "entrees": "Entrées 5 695,00 · rien de prévu",
+    "gros": "265,40 CHF dépensé sur 30 jours sur 66,40 prévus · dans le prévu"
+   }
+  },
+  "cave-390": {
+   "piles": [
+    {
+     "pile": "recettes",
+     "couleur": "rgb(86, 210, 123)"
+    },
+    {
+     "pile": "brassage",
+     "couleur": "rgb(210, 179, 86)"
+    },
+    {
+     "pile": "divers",
+     "couleur": "rgb(154, 138, 126)"
+    },
+    {
+     "pile": "materiel",
+     "couleur": "rgb(86, 123, 210)"
+    }
+   ],
+   "cercles": [
+    {
+     "fond": "rgb(37, 86, 51)",
+     "trait": "rgb(185, 244, 202)"
+    },
+    {
+     "fond": "rgb(86, 73, 37)",
+     "trait": "rgb(244, 229, 185)"
+    },
+    {
+     "fond": "rgb(44, 37, 33)",
+     "trait": "rgb(216, 206, 197)"
+    },
+    {
+     "fond": "rgb(37, 51, 86)",
+     "trait": "rgb(185, 202, 244)"
+    },
+    {
+     "fond": "rgb(64, 35, 32)",
+     "trait": "rgb(242, 146, 137)"
+    }
+   ],
+   "puce": "Pourquoi les autres frais pèsent autant ?",
+   "plage": {
+    "champTrouve": true,
+    "titreAvant": "Août – nov. 2026",
+    "titreApres": "Août – nov. 2026",
+    "survit": true
+   },
+   "sources": [
+    "Ventes",
+    "Brassage",
+    "Autres",
+    "Gagné",
+    "Matériel"
+   ],
+   "budget": {
+    "regles": [
+     "Brassage",
+     "Autres"
+    ],
+    "entrees": "Entrées 5 695,00 · rien de prévu",
+    "gros": "265,40 CHF dépensé sur 30 jours sur 66,40 prévus · dans le prévu"
+   }
+  }
+ },
+ "erreurs": []
+}

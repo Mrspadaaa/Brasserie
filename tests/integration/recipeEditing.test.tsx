@@ -166,7 +166,7 @@ describe('Recipe data entry regressions', () => {
     original.waterPlan!.spargeDiRatioPct = null as any;
     wizard(original);
     step(/^Eau/);
-    expect(screen.getByText(/Rinçage identique/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rinçage identique/, pressed: true })).toBeInTheDocument();
     expect(screen.queryByLabelText('Litres d’osmosée (Osmosée — rinçage)')).toBeNull();
   });
   it('keeps the companion water proposal identical after import, manual changes, save and reopen', () => {
@@ -212,7 +212,7 @@ describe('Recipe data entry regressions', () => {
     wizard(original, save);
     step(/^Eau/);
     change(screen.getByLabelText(/Dose de Gypse en grammes/), '1.2');
-    fireEvent.click(screen.getByText('Disponibilité & recalcul automatique'));
+    fireEvent.click(screen.getByText('Osmosée disponible · sans limite'));
     change(screen.getByLabelText('Osmosée disponible au total (L)'), '5');
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));

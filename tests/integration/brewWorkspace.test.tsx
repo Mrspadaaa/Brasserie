@@ -87,7 +87,7 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
           : []
       });
       phase('Empâter');
-      const summary = screen.getByRole('region', { name: 'Relevés de cette étape' });
+      const summary = screen.getByRole('region', { name: 'Avis du relevé' });
       expect(summary).toHaveTextContent(feedback);
       expect(summary).not.toHaveTextContent('rien à ajouter');
       expect(
@@ -104,7 +104,7 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     });
     expect(
       within(screen.getByRole('region', { name: 'Mesures de cette étape' })).getByRole('button', {
-        name: 'Noter'
+        name: 'Enregistrer'
       })
     ).toBeDisabled();
     expect(screen.queryByText(/Maische déjà acide/)).not.toBeInTheDocument();
@@ -242,15 +242,18 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     chooseStep(fwhStep.label);
     expect(ingredients().getByLabelText('Ajouté : FWH')).toBeInTheDocument();
     phase('Ébullition');
+    // z1 : une seule liste « Ajouts », une ligne par ajout avec sa minute (10′), le prochain en avant.
     const group = screen
-      .getByRole('heading', { name: '10 min avant la fin' })
+      .getByRole('heading', { name: 'Ajouts' })
       .closest('.brew-ingredient-group')!;
     expect(within(group).getAllByRole('checkbox')).toHaveLength(2);
-    expect(group).toHaveTextContent('Maintenant');
+    expect(group.textContent).toMatch(/10′[\s\S]*10′/);
+    // Ébullition à 51 min : l'ajout de 10′ était dû à 50 min, il dit son retard (v1, n° 7) au lieu de « maintenant ».
+    expect(group).toHaveTextContent('en retard de 1 min');
     fireEvent.click(screen.getByLabelText('Ajouté : Citra'));
-    expect(group).toHaveTextContent('Maintenant');
+    expect(group).toHaveTextContent('en retard de 1 min');
     fireEvent.click(screen.getByLabelText('Ajouté : Galaxy'));
-    expect(group).not.toHaveTextContent('Maintenant');
+    expect(group).not.toHaveTextContent('en retard');
     expect(ingredients().queryByLabelText('Ajouté : Mosaic')).not.toBeInTheDocument();
     const whirlpool = brewState(r).steps.find((s) => s.id === 'whirlpool')!;
     chooseStep(whirlpool.label);
@@ -264,12 +267,12 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     expect(ingredients().queryByLabelText('Ajouté : US-05')).not.toBeInTheDocument();
     chooseStep('Ensemencement');
     expect(ingredients().getByLabelText('Ajouté : US-05')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
-      'Densité initiale inconnue : relève le moût refroidi à température de référence.'
-    );
-    expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
-      'Volume en fermenteur inconnu : relève le volume et sa référence de température.'
-    );
+    // c3 n° 12 : les deux mesures attendues sont des cases de « Relevés du jour » ; le bilan de clôture ne les répète plus.
+    expect(screen.queryByRole('region', { name: 'Bilan du brassage' })).not.toBeInTheDocument();
+    // p2c (I1b) : la mesure due est la carte « Maintenant » (une à la fois : la densité initiale d'abord).
+    const carte = document.querySelector('.bm-now') as HTMLElement;
+    expect(within(carte).getByText('Densité initiale')).toBeInTheDocument();
+    expect(within(carte).getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
   });
 
   it('le journal réunit ajouts réels, mesures, notes et étapes, avec des filtres sans mutation', () => {

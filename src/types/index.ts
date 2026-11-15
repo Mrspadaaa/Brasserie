@@ -49,7 +49,8 @@ export interface StockItem {
   category: string; // 'Malt', 'Houblon', 'Levure', 'Sucre', 'Emballage', 'CIP alcalin', 'CIP acide', 'Désinfectant', 'Détergent', 'Sols', 'EPI', 'Consommable'
   unit: string; // 'kg', 'g', 'sachet', 'L', 'boîte', 'rouleau'
   currentStock: number;
-  minStock: number;
+  /** Seuil minimum ; absent = inconnu (jamais 0 : 0 est un seuil renseigné). */
+  minStock?: number;
   maxStock?: number; // Maximum storage capacity (e.g. 50kg bag/silo)
   reorder: boolean;
   supplier?: string;
@@ -117,8 +118,34 @@ export interface EquipmentItem {
   state: string; // 'Neuf', 'Bon', 'À entretenir', 'À réparer'
   purchaseDate?: string;
   purchasePrice?: number;
+  /** Ancien texte libre d'entretien : lu comme sous-ligne quand `task` manque ; sans rythme → « sans échéance ». */
   maintenance?: string;
   notes?: string;
+  /** Verbe du geste périodique : « Étalonner », « Détartrer »… */
+  task?: string;
+  /** Rythme ; `brassin` compte les brassins depuis `lastDone`, sans date. « an » = 12 mois. */
+  rhythm?: EquipmentRhythm;
+  /** Dernier entretien fait (ISO AAAA-MM-JJ). */
+  lastDone?: string;
+  /** Panne en cours : date ISO du début ; absent = en état de marche. */
+  brokenSince?: string;
+  brokenNote?: string;
+  history?: EquipmentEvent[];
+  /** Étalonnage de l'instrument ; à défaut, préréglage par nom (domain/equipment). */
+  calibration?: EquipmentCalibration;
+  /** Sorti du parc (vendu ou réformé) : hors du fil et du compte. */
+  retired?: { date: string; reason: 'vendu' | 'réformé' };
+}
+
+export interface EquipmentRhythm { every: number; unit: 'jour' | 'semaine' | 'mois' | 'brassin' }
+export type EquipmentEventKind = 'entretien' | 'etalonnage' | 'panne' | 'reparation' | 'sortie';
+export interface EquipmentReading { label: string; expected: number; read: number }
+export interface EquipmentEvent { date: string; kind: EquipmentEventKind; readings?: EquipmentReading[]; note?: string }
+export interface EquipmentCalibration {
+  points: { label: string; expected: number }[];
+  tolerance: number;
+  /** Unité d'affichage des valeurs (« pH », « °Bx »), vide pour une densité. */
+  unit?: string;
 }
 
 export type KegState = 'lavage' | 'propre' | 'plein' | 'livre';
@@ -132,7 +159,22 @@ export interface KegItem {
   style?: string;
   fillDate?: string;
   clientName?: string;
+  /** Lien vers l'onglet Clients (`Client.id`). `clientName` reste le libellé lu par la liste et les anciens lecteurs. */
+  clientId?: string;
+  /** Jour de la livraison en cours, `JJ.MM.AAAA`. Absent chez un fût livré avant l'historique : on ne devine pas. */
+  deliveryDate?: string;
+  /** Étapes du fût, de la plus ancienne à la plus récente, plafonnées à 30 (domain/stock/futs). Absent sur un ancien fût. */
+  historique?: KegHistoryEntry[];
   notes?: string;
+}
+
+export type KegHistoryKind = 'ajoute' | 'lave' | 'rempli' | 'livre' | 'retour-vide' | 'retour-plein';
+export interface KegHistoryEntry {
+  /** `JJ.MM.AAAA` */
+  date: string;
+  quoi: KegHistoryKind;
+  /** Bière, lot ou client, déjà mis en forme pour l'affichage. */
+  detail?: string;
 }
 
 /**
@@ -617,6 +659,18 @@ export interface BrewDayState {
   /** Ajustement du jour, sans réécrire la recette. */
   boilDurationMin?: number;
   boilFinishedAt?: number;
+  /**
+   * p2c E3 : le choix du brasseur devant un moût d'avant ébullition hors cible. Écrit dans l'état (donc au journal, hors ligne, au
+   * rechargement), jamais déduit. `readingAt` : l'heure de la paire volume + densité qu'il corrige ; une paire plus récente l'annule.
+   * `options` : les trois choix tels qu'ils étaient proposés, car « bouillir plus » change la durée et donc le calcul qui suit.
+   */
+  boilCorrection?: {
+    choix: 'bouillir' | 'extrait' | 'accepter';
+    at: number;
+    readingAt: number;
+    options: Array<{ id: 'bouillir' | 'extrait' | 'accepter'; titre: string; detail: string; minutesEbullition?: number }>;
+    note?: string;
+  };
   additions?: Record<string, { amount: number; unit?: string; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
   /** Measured free wort left after lautering; zero must also be explicitly confirmed. */
   lauterRetainedL?: number;
@@ -718,6 +772,9 @@ export interface Batch {
 
 export type ClientStatus = 'Fidèle' | 'Actif' | 'Prospect';
 
+/** Adresse structurée saisie (norme QR-facture) ; le nom vient de la fiche ou de la brasserie. */
+export interface AdresseSaisie { rue: string; numero: string; npa: string; localite: string; pays: string }
+
 export interface Client {
   id: string; // CL-001
   name: string;
@@ -725,7 +782,10 @@ export interface Client {
   contact: string;
   phone: string;
   email: string;
+  /** Adresse en une chaîne (anciennes fiches, autres lecteurs). Dérivée de `adresse` à chaque écriture complète ; jamais effacée sinon. */
   address?: string;
+  /** Adresse structurée (QR-facture) : prime pour la caisse. */
+  adresse?: AdresseSaisie;
   notes?: string;
   /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
   favorite?: boolean;
@@ -753,15 +813,23 @@ export interface GanttTask {
   completed?: boolean;
 }
 
+/** Format d'un tarif (ids de la caisse : formatsVente.ts). Le tarif porte son format : plus de regex sur le libellé quand il est renseigné (ue, 09.11). */
+export interface FormatTarif { id: '33cl' | '75cl' | 'fut'; volumeL: number }
 export interface PricingItem {
   product: string;
-  costIngredients: number;
-  costLabor: number;
-  costFixed: number;
-  costTotal: number;
+  /** Bière du tarif : le nom de la recette, pas celui d'un lot. Absent sur un ancien tarif (à compléter). */
+  biere?: string;
+  format?: FormatTarif;
+  /** Emballage d'UNE unité (CHF, base HT si assujetti), saisi dans la fiche du tarif. Absent = à compléter, jamais 0. */
+  emballageUnite?: number;
+  /** Hérités de l'ancien formulaire (coût saisi à la main) : plus écrits, jamais effacés d'une ligne existante. */
+  costIngredients?: number;
+  costLabor?: number;
+  costFixed?: number;
+  costTotal?: number;
   priceHT: number;
-  marginCHF: number;
-  marginPercent: number;
+  marginCHF?: number;
+  marginPercent?: number;
 }
 
 export interface BudgetLine {
@@ -820,6 +888,8 @@ export interface AppConfig {
     communeContact: string;
     iban?: string;
     bankName?: string;
+    /** Adresse structurée de la brasserie (QR-facture, P7). Absente sur les anciennes configurations. */
+    adresse?: AdresseSaisie;
   };
   fiscal: {
     /**

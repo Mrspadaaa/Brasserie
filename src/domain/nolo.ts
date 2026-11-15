@@ -6,7 +6,7 @@ import { BrewingMath } from '../services/brewingMath';
 import { resolveFermentationYeast } from './fermentationScenario';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
-import { yeastReferences } from './yeastReferences';
+import { yeastReferencesChargees } from './yeastReferencesCore'; // voie l3 : la bibliothèque arrive par chargerBibliothequeLevures() (porte de yeastReferencesCore)
 import type { TrialRecipe } from './hopIndex/trials';
 import { normalizeHop } from './hopStage';
 import type { Batch, RecipeSnapshot } from '../types';
@@ -52,7 +52,7 @@ export function noloScenarioInput(recipe:TrialRecipe,saved:HopKnowledge[]=[]):No
   // Cold extraction has its own yield; a hot-mash grist calculation cannot
   // stand in for an observation of this wort.
   const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:recipe.nolo?.process==='coldExtraction'?undefined:points?1+points.total/1000:undefined);
-  const yeast=resolveFermentationYeast(recipe,yeastReferences(saved));
+  const yeast=resolveFermentationYeast(recipe,yeastReferencesChargees(saved));
   const frozen=input.config.scienceSnapshot?.strains.find(s=>s.yeastId===input.yeastId);
   const attenuation=agreedFermentationFact(yeast,'attenuation','%')??(frozen?.attenuationPct?{range:frozen.attenuationPct,source:frozen.source}:undefined);
   const temperature=agreedFermentationFact(yeast,'temperature','°C')??(frozen?.temperatureC?{range:frozen.temperatureC,source:frozen.source}:undefined);

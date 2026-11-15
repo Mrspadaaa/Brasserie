@@ -47,9 +47,9 @@ describe('volume plus grand que le récipient (AM-42)', () => {
 });
 
 describe('densité écrite avec la virgule (BR-29)', () => {
-  it('« points / OG 1,069 » et « Densité 1,056 », jamais de point', () => {
+  it('« −0,009 sous la cible 1,067–1,071 SG » et « Densité 1,056 », jamais de point', () => {
     const f = readingFeedback('densite', 1.058, etape('ensemencement'), { ogTarget: 1.069 } as RecipeSnapshot);
-    expect(f.title).toBe('-11 points / OG 1,069');
+    expect(f.title).toBe('−0,009 sous la cible 1,067–1,071 SG');
     expect(readingFeedback('densite', 1.056, etape('preboil')).title).toBe('Densité 1,056');
   });
 });

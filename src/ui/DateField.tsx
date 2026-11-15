@@ -16,6 +16,9 @@ import { Field, inputClass } from './FormNav';
  * que réinventée dans chaque écran.
  */
 
+/** Les mois en français (fr-CH) : le sélecteur natif `type="month"` suit la langue du navigateur (« November 2026 »), jamais celle de l'app. */
+export const MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] as const;
+
 /** `JJ.MM.AAAA` ➔ `AAAA-MM-JJ`. Chaîne vide si la date est illisible. */
 export function toIsoDate(swiss: string): string {
   const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec((swiss || '').trim());
@@ -113,7 +116,15 @@ export const DateField: React.FC<DateFieldProps> = ({
           <span className="text-xs text-cave-400">Changer le mois, garder le jour</span>
           <div className="grid grid-cols-[auto_1fr_auto] gap-1.5 min-w-0">
             <button type="button" disabled={disabled || !iso} aria-label={`Mois précédent — ${label}`} onClick={() => onChange(shiftSwissMonth(value, -1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">←</button>
-            <input aria-label={`Mois — ${label}`} type="month" min="1900-01" max="2200-12" value={iso.slice(0, 7)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, e.target.value))} className={`${inputClass} min-w-0 [color-scheme:dark]`}/>
+            <span className="grid min-w-0 grid-cols-[1fr_auto] gap-1.5">
+              <select aria-label={`Mois — ${label}`} lang="fr-CH" value={iso.slice(5, 7)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, `${iso.slice(0, 4)}-${e.target.value}`))} className={`${inputClass} min-w-0 [color-scheme:dark]`}>
+                {iso ? null : <option value="">—</option>}
+                {MOIS_FR.map((nom, i) => <option key={nom} value={String(i + 1).padStart(2, '0')}>{nom}</option>)}
+              </select>
+              <select aria-label={`Année — ${label}`} lang="fr-CH" value={iso.slice(0, 4)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, `${e.target.value}-${iso.slice(5, 7)}`))} className={`${inputClass} min-w-0 [color-scheme:dark]`}>
+                {iso ? Array.from({ length: 7 }, (_, k) => +iso.slice(0, 4) - 4 + k).map(a => <option key={a} value={a}>{a}</option>) : <option value="">—</option>}
+              </select>
+            </span>
             <button type="button" disabled={disabled || !iso} aria-label={`Mois suivant — ${label}`} onClick={() => onChange(shiftSwissMonth(value, 1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">→</button>
           </div>
         </div> : null}

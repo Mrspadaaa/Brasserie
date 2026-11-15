@@ -37,6 +37,7 @@ import { readIngredientFermentationFacts } from '../../functions/src/ingredientF
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { readYeastProductDocument, type YeastProductDocument } from '../../functions/src/yeastSupplySchema';
 import { nombreFr } from '../domain/nombreAffiche';
+import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
 
 /**
  * Façade de données de l'application.
@@ -578,6 +579,16 @@ export const StorageService = {
     if (receipts.length) for (const m of receipts) impact.set(m.stockItemRef, (impact.get(m.stockItemRef) ?? 0) + m.quantity);
     else for (const item of target.stockImpact ?? []) impact.set(item.itemRef, (impact.get(item.itemRef) ?? 0) + item.addedQty);
     const stocks = this.getStocks(), all = [...stocks.rawMaterials, ...stocks.cleaning];
+    // PC-2 (c) : un article supprimé depuis n'a plus de stock à rendre ; l'achat s'annule quand même et l'écart est dit.
+    const nomDe = (ref: string) => (target.stockImpact ?? []).find(i => i.itemRef === ref)?.itemName ?? ref;
+    const supprimes: string[] = [];
+    for (const [ref, qty] of [...impact]) {
+      if (Number.isFinite(qty) && qty >= 0 && !all.some(s => s.ref === ref)) {
+        const ligne = (target.stockImpact ?? []).find(i => i.itemRef === ref);
+        supprimes.push(`${nomDe(ref)} (${ligne ? Units.format(qty, ligne.unit) : String(qty)} reçus, article supprimé : aucun stock à retirer)`);
+        impact.delete(ref);
+      }
+    }
     for (const [ref, qty] of impact) {
       const item = all.find(s => s.ref === ref);
       if (!Number.isFinite(qty) || qty < 0 || !item || item.currentStock + 1e-8 < qty) return { success: false, message: 'Le stock de cet achat a été consommé ou corrigé. Vérifie l’inventaire avant d’annuler ; aucune quantité ne sera effacée.' };
@@ -593,7 +604,7 @@ export const StorageService = {
     FirestoreRepo.put('transactions', id, { ...target, finance });
     FirestoreRepo.put('movements', 'VOID-' + id, { id: 'VOID-' + id, type: 'transaction-void', transactionId: id, createdAt: at });
     this.logAction('Annulation', 'Finances', id, 'Annulation conservée : ' + target.description, 'Le justificatif et les mouvements antérieurs sont conservés.');
-    return { success: true, message: 'Écriture annulée. Son justificatif et son historique sont conservés.' };
+    return { success: true, message: 'Écriture annulée. Son justificatif et son historique sont conservés.' + (supprimes.length ? ` Écart de stock : ${supprimes.join(' ; ')}.` : '') };
   },
 
   // Documentary hop index. Upserts never replace a filtered collection or copy inherited facts.
@@ -864,6 +875,17 @@ export const StorageService = {
       kind: type
     });
 
+    // R4 (k2) : l'inventaire écrit un mouvement, comme l'achat et le brassage (avant, écart, après, motif, date). Nouveau type de
+    // document dans la collection existante `movements` (immuable) : aucun champ de collection neuf, aucune règle à changer.
+    const createdAt = new Date().toISOString();
+    const movementId = `inventory-${ref}-${createdAt.replace(/[^0-9]/g, '')}-${Math.random().toString(36).slice(2, 6)}`;
+    FirestoreRepo.put('movements', movementId, {
+      id: movementId, type: 'inventory-adjustment', stockItemRef: ref, stockKind: type, unit: item.unit,
+      previousStock: item.currentStock, delta, newStock: compte,
+      reasonCode: reason, reason: INVENTORY_REASONS[reason], ...(note ? { note } : {}),
+      date: createdAt.slice(0, 10), createdAt
+    });
+
     this.logAction(
       'Modification',
       'Stocks',
@@ -1033,8 +1055,12 @@ export const StorageService = {
         FirestoreRepo.put('movements', movement.id, movement);
       }
     }
-    this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: [] }, { previous: live?.stockConsumption });
-    return { success: true, issues: [] };
+    // Un second geste (déjà appliqué) garde le constat du premier ; un déstockage fait avec une levure à régulariser le dit.
+    // Les ajouts restants s'ajoutent à ce que le jour de brassage avait déjà laissé « à régulariser » : une alerte déjà écrite ne disparaît pas (R2).
+    const reviewIssues = proposal.status === 'already-applied' ? (live?.stockReviewIssues ?? [])
+      : stage === 'remaining' ? [...new Set([...(live?.stockReviewIssues ?? []), ...proposal.reviewIssues])] : proposal.reviewIssues;
+    this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: reviewIssues }, { previous: live?.stockConsumption });
+    return { success: true, issues: reviewIssues };
   },
 
   /**
@@ -1057,6 +1083,11 @@ export const StorageService = {
         `Statut au moment de la suppression : ${target.status}`
       );
     }
+  },
+
+  /** Les mouvements de stock écrits (achat, inventaire, brassage) : la fiche d'article en lit l'historique (voie p1). Lecture seule. */
+  getStockMovements(): MouvementBrut[] {
+    return FirestoreRepo.all<MouvementBrut>('movements');
   },
 
   // 4. RECETTES

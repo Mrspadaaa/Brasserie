@@ -236,7 +236,7 @@ export function notesQuiCitent(idee: CreativeItem, items: CreativeItem[]): Creat
 
 /** Le prospect devient une fiche client : un contact et un numéro absents restent vides (jamais « Responsable », jamais un faux numéro). */
 export function enClient(item: CreativeItem, id: string): Client {
-  return { id, name: item.title, type: 'Pro', contact: item.contactName || '', phone: item.contactPhone || '', email: '', notes: item.description };
+  return { id, name: item.title, type: 'Pro', contact: item.contactName || '', phone: item.contactPhone || '', email: '', notes: item.notes || item.description };
 }
 
 /** La ligne rangée devient une entrée du carnet : mêmes champs que partout, aucun champ neuf. */

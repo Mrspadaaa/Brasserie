@@ -6,7 +6,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import { KegSheet } from '../../src/ui/KegSheet';
 import { KegBoard } from '../../src/ui/KegBoard';
 import { brassinsAFuter, litresDansLesAutresFuts, problemeLivraison, problemeRemplissage, volumeProduit } from '../../src/domain/stock/futs';
-import type { Batch, KegItem } from '../../src/types';
+import type { Batch, Client, KegItem } from '../../src/types';
 
 afterEach(cleanup);
 const brassin = (id: string, status: Batch['status'], extra: Partial<Batch> = {}) => ({ id, name: `Bière ${id}`, style: 'IPA', status, volumeL: 20, brewDate: '2026-10-01', ...extra }) as Batch;
@@ -87,17 +87,20 @@ describe('AM-70 — le tableau des fûts (remplir, livrer) suit les mêmes règl
   it('remplir : un brassin déjà couvert par les autres fûts est refusé avec son motif', () => {
     monterTableau();
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le fût F-9' }));
-    fireEvent.click(screen.getByRole('combobox', { name: 'Brassin à enfûter' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remplir depuis un lot' }));
+    fireEvent.click(screen.getByRole('combobox', { name: 'Lot' }));
     expect(screen.queryByRole('option', { name: /B-PLAN/ })).toBeNull();
     fireEvent.click(screen.getByRole('option', { name: /B-COND/ }));
-    expect(screen.getByText(/contiennent déjà 20 L pour 20 L/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Remplir le fût' })).toBeDisabled();
+    expect(screen.getByText(/Ce lot est déjà tout en fût/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remplir 1 fût' })).toBeDisabled();
   });
   it('livrer : sans client, le bouton est éteint', () => {
-    render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}><KegBoard kegs={[kegsParc[0]]} batches={batches} /></VirtuosoMockContext.Provider>);
+    const clients = [{ id: 'CL-1', name: 'Café de la Rive', type: 'Pro', contact: '', phone: '', email: '' }] as Client[];
+    render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}><KegBoard kegs={[kegsParc[0]]} batches={batches} clients={clients} /></VirtuosoMockContext.Provider>);
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le fût F-1' }));
-    expect(screen.getByRole('button', { name: 'Livrer le fût' })).toBeDisabled();
-    fireEvent.change(screen.getByLabelText('Client de livraison'), { target: { value: 'Café de la Rive' } });
-    expect(screen.getByRole('button', { name: 'Livrer le fût' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Livrer' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('combobox', { name: 'Client' }));
+    fireEvent.click(screen.getByRole('option', { name: /Café de la Rive/ }));
+    expect(screen.getByRole('button', { name: 'Livrer' })).toBeEnabled();
   });
 });

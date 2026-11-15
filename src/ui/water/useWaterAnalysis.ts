@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { computeWaterAnalysis } from './computeWaterAnalysis';
+import { recallPreloadedWaterAnalysis } from './waterAnalysisCache';
 import { waterAnalysisKey, waterAnalysisSnapshot } from './waterAnalysisProtocol';
 import type { WaterAnalysisInput, WaterAnalysisResult } from './waterAnalysisProtocol';
 import { WaterAnalysisTransport } from './waterAnalysisTransport';
@@ -13,7 +14,9 @@ export function useWaterAnalysis(input: WaterAnalysisInput): { result: WaterAnal
   const key = waterAnalysisKey(input);
   const snapshot = useMemo(() => waterAnalysisSnapshot(input), [key]);
   const hasWorker = typeof Worker !== 'undefined';
-  const synchronous = useMemo(() => hasWorker ? undefined : computeWaterAnalysis(snapshot), [hasWorker, snapshot]);
+  // Préchargement : l'assistant a pu poser cette même question à l'étape d'avant ; la réponse est alors là dès le premier rendu.
+  const preloaded = recallPreloadedWaterAnalysis(key);
+  const synchronous = useMemo(() => hasWorker ? undefined : preloaded ?? computeWaterAnalysis(snapshot), [hasWorker, snapshot, preloaded]);
   const transport = useRef<WaterAnalysisTransport | undefined>(undefined);
   const [outcome, setOutcome] = useState<WaterAnalysisOutcome | undefined>(undefined);
 
@@ -27,10 +30,11 @@ export function useWaterAnalysis(input: WaterAnalysisInput): { result: WaterAnal
     return () => { active.dispose(); transport.current = undefined; };
   }, [hasWorker]);
 
-  useEffect(() => { transport.current?.request(key, snapshot); }, [hasWorker, key, snapshot]);
+  // Réponse préchargée : rien à demander au worker (ni calcul sur place qui bloquerait le rendu qui suit).
+  useEffect(() => { if (!preloaded) transport.current?.request(key, snapshot); }, [hasWorker, key, snapshot, preloaded]);
 
   if (!hasWorker) return { result: synchronous, pending: false };
   const current = outcome?.key === key ? outcome : undefined;
   if (current?.error) throw current.error;
-  return { result: current?.result, pending: !current };
+  return { result: current?.result ?? preloaded, pending: !current && !preloaded };
 }

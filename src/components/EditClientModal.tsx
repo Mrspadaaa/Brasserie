@@ -2,8 +2,11 @@ import { Input, Textarea, type InputElement } from '../ui/Input';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { X, Save, ChevronDown } from 'lucide-react';
-import { Client } from '../types';
+import { Client, type AdresseSaisie } from '../types';
+import { AdresseChamps, ADRESSE_VIDE, adresseComplete, adresseEnTexte } from '../ui/vente/AdresseChamps';
+import { adresseDepuisTexte } from '../services/swissQrBill';
 import { StorageService } from '../services/storage';
+import { refusSuppressionClient } from '../domain/clientSuppression';
 import { ModalShell } from '../ui/ModalShell';
 import { TextInput, inputClass, noAutofillProps } from '../ui/FormNav';
 import type { TextInputHandle } from '../ui/TextInput';
@@ -25,8 +28,19 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
   const nameInput = useRef<TextInputHandle>(null);
   const emailInput = useRef<InputElement>(null);
   const phoneInput = useRef<InputElement>(null);
-  useEffect(() => { setErrors({}); }, [isOpen, client?.id]);
+  /* L'adresse structurée : la saisie, sinon la chaîne existante découpée (rien d'inventé). Écrite seulement si le brasseur la touche et qu'elle est complète. */
+  const adresseDepart = (c: Client | null): AdresseSaisie => c?.adresse ?? adresseDepuisTexte(c?.address ?? '') ?? ADRESSE_VIDE;
+  const [adr, setAdr] = useState<AdresseSaisie>(() => adresseDepart(client));
+  const adrDepart = useRef<AdresseSaisie>(adr);
+  useEffect(() => { setErrors({}); const a = adresseDepart(client); setAdr(a); adrDepart.current = a; }, [isOpen, client?.id]);
+  const [suppression, setSuppression] = useState<{ etat: 'repos' | 'confirmer' | 'refus'; message?: string }>({ etat: 'repos' });
+  useEffect(() => setSuppression({ etat: 'repos' }), [isOpen, client?.id]);
   if (!isOpen || !client || !draft) return null;
+  const existant = StorageService.getClients().some(c => c.id === client.id);
+  const demanderSuppression = () => {
+    const refus = refusSuppressionClient(client, StorageService.getTransactions(), StorageService.getClients());
+    setSuppression(refus ? { etat: 'refus', message: refus } : { etat: 'confirmer' });
+  };
 
   const { name, type, contact, phone, email, notes = '' } = draft;
   const field = <K extends keyof Client>(key: K, value: Client[K]) => {
@@ -54,6 +68,9 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
       email: email.trim(),
       notes: notes.trim()
     };
+    /* REVUE-B 3 : `address` n'est réécrite que par une adresse touchée ET complète ; sinon la chaîne d'origine (« Case postale 123 ») reste intacte. */
+    const touchee = JSON.stringify(adr) !== JSON.stringify(adrDepart.current);
+    if (touchee && adresseComplete(adr)) { updated.adresse = { ...adr, pays: adr.pays || 'CH' }; updated.address = adresseEnTexte(adr); }
     StorageService.updateClient(updated);
     onSave(updated);
     onClose();
@@ -100,6 +117,10 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
               aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? `${id}-email-error` : undefined} />
             {errors.email && <p id={`${id}-email-error`} role="alert" className="mt-1 text-xs text-alert-strong">{errors.email}</p>}
           </div>
+          <div className="client-form-field">
+            {client.address?.trim() && !adresseComplete(client.adresse) && !adresseDepuisTexte(client.address) && <p className="text-xs text-cave-400">Adresse enregistrée : {client.address.trim()}</p>}
+            <AdresseChamps legende="Adresse de facturation" value={adr} onChange={setAdr} />
+          </div>
           <details key={client.id} className="clients-help">
             <summary>Notes et accès logistiques{notes.trim() ? ' · renseignés' : ''}<ChevronDown size={14} aria-hidden="true" /></summary>
             <div className="client-form-field">
@@ -110,6 +131,25 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
           </details>
           <p className="text-xs leading-tight text-cave-400">Réf. {client.id} · statut calculé depuis les ventes.</p>
         </div>
+        {/* PC-2 (d) : un client enregistré se supprime (jamais un client neuf, jamais un client qui a des ventes non annulées). */}
+        {existant && (
+          <div className="client-form-body" aria-label="Supprimer ce client">
+            {suppression.etat === 'refus' && <p role="alert" className="text-xs text-alert-strong">{suppression.message}</p>}
+            {suppression.etat === 'confirmer' && (
+              <p role="alert" className="text-xs text-cave-200">Supprimer « {client.name.trim()} » ? Son carnet d’adresses disparaît ; aucune vente n’y est rattachée.</p>
+            )}
+            <div className="flex gap-2">
+              {suppression.etat === 'confirmer' ? (
+                <>
+                  <button type="button" className="clients-action" onClick={() => setSuppression({ etat: 'repos' })}>Garder</button>
+                  <button type="button" className="clients-action clients-action-danger" onClick={() => { StorageService.deleteClient(client.id); onClose(); }}>Supprimer le client</button>
+                </>
+              ) : (
+                <button type="button" className="clients-action clients-action-danger" onClick={demanderSuppression}>Supprimer ce client</button>
+              )}
+            </div>
+          </div>
+        )}
         <footer className="client-form-actions">
           <button type="button" onClick={onClose} className="clients-action">Annuler</button>
           <button type="submit" className="clients-action clients-action-primary"><Save size={14} aria-hidden="true" />Enregistrer</button>

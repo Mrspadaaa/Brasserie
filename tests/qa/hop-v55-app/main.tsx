@@ -5,6 +5,7 @@ import type { HopSource, HopVariety } from '../../../functions/src/hopIndexSchem
 import type { HopKnowledge } from '../../../functions/src/hopPredictionSchema';
 import type { Recipe, Batch } from '../../../src/types';
 import { FirebaseAuthService } from '../../../src/services/firebaseAuth';
+import '../../../src/domain/yeastReferences'; // voie l3 : enregistre la bibliothèque de levures pour les calculs synchrones
 import { StorageService } from '../../../src/services/storage';
 import { FirestoreRepo, qaMetrics, seedQa } from '../hop-recipe/repo';
 import { qaCalls, qaInputs } from '../hop-recipe/functions';

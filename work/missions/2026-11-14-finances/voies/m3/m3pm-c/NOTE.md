@@ -1,0 +1,6 @@
+# m3pm-c — Projet matériel : le budget en barre, le mois sur la frise (chaude)
+- Genre c, chaude : trois boosters portent la décision « je l'inclus, et quand ? » : le budget en barre (frigo 2 800,00 + livraison 200,00 + pose « ? », jamais 0) ; le mois posé sur une frise (‹ −3 000 › en nov., glisse) ; ce qu'il reste à chaque fin de mois, avec le frigo (teinte de p5b) et sans lui (cadre clair).
+- Chiffres (sorties de p5b, frigo le 15.11) : avec nov. 664,18, déc. 257,34, janv. −892,66 ; sans 3 664,18, 3 257,34, 2 107,34 ; févr. et mars « ? », hors des 90 jours. La bascule Avec / Sans reprend celle de p5b (mêmes −892,66 / 2 107,34) et vaut « Inclure dans mes prévisions ».
+- Gardé : nom, avancement, échéance (3), prix, livraison, pose, source du prix ; besoin, devis, fournisseur, usure (5 ans, 600,00 par an), notes, achats liés, Réalisé / Archiver en rangées.
+- Au port : la fin de mois vient de `previsions/escalier.ts` ; un mois hors horizon reste « ? ».
+- passe 2 : défauts corrigés — projet = frigo de p5b, soldes avec / sans recalculés (plus −892,66 attribué au fermenteur ni « Sans −142,66 ») ; ni rouge (solde sous zéro en noir) ni pointillé (pose, « sans », mois hors horizon : traits pleins).

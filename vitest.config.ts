@@ -56,7 +56,7 @@ export default defineConfig({
     // The full 300-file suite can block Vitest's worker RPC on this Windows host
     // at default parallelism. Four workers ran every test without skipping any.
     maxWorkers: 4,
-    setupFiles: ['tests/setup.ts', 'tests/setup.gemini-guard.ts'],
+    setupFiles: ['tests/setup.ts', 'tests/setup.gemini-guard.ts', 'tests/setup.yeast-library.ts'],
     environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
     include: [
       'tests/unit/**/*.test.{ts,tsx}',

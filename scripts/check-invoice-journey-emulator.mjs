@@ -377,6 +377,17 @@ function callableAnswer(c, request) {
     call.nomsRendus = noms.length;
     return json({ ok: true, data: { noms }, model: 'rejeu-noms', elapsedMs: 900 });
   }
+  /* ST-T3 : l'app lit une longue pièce (doc5, 3 pages) EN MORCEAUX (`lectureMorceaux.ts`, D380 : `scanInvoice` + `morceau: {k, n}`, puis `assemblerLecture`). Le banc ne rejoue pas la découpe : chaque morceau
+     reçoit une lecture vide, SIMULÉE et marquée `rejeu-morceau`, et l'assemblage rend la lecture réelle déjà obtenue de la pièce entière (`rejeu-assemblage`) : l'écran est jugé sur cette lecture finale. */
+  if (data.task === 'scanInvoice' && data.morceau) {
+    call.morceau = data.morceau;
+    return json({ ok: true, data: { items: [], morceau: data.morceau }, model: 'rejeu-morceau', elapsedMs: 300 });
+  }
+  if (data.task === 'assemblerLecture') {
+    call.assemblage = true;
+    if (!doc) return fail(400, 'FAILED_PRECONDITION', 'Banc : assemblage sans pièce rejouée.');
+    return json({ ok: true, data: { ...doc.result, morceaux: Array.isArray(data.context?.parties) ? data.context.parties.length : undefined }, model: 'rejeu-assemblage', elapsedMs: 1200, documentHash: doc.sha256 });
+  }
   if (data.task !== 'scanInvoice') return fail(400, 'FAILED_PRECONDITION', 'Banc : seule la lecture de justificatif est rejouée.');
   if (ai.lenteur) return reponseFlux(c, call, data, request, fail);
   // n2-pages : une lecture à plusieurs pages doit porter EXACTEMENT les pages fictives du cas (nombre, ordre, empreinte de chacune) et aucun `file` ; sinon le cas échoue (une seule image envoyée ne passe pas).
@@ -647,7 +658,9 @@ async function shoot(c, label, selector, block = 'start') {
 async function openInvoiceEntry(c) {
   const chooser = c.page.waitForFileChooser({ timeout: 20000 }).catch(() => null);
   await click(c.page, '.floating-actions button[aria-haspopup="menu"]');
-  await click(c.page, '[role="menu"] [role="menuitem"]', 'Entrer une facture');
+  /* BX-4 (09.11) : sur l'écran Finances, l'action de l'écran (« Nouvelle écriture », même entrée : document, photo ou saisie sans justificatif) tient la place d'« Entrer une facture », qui n'est pas répété
+     dans le menu (ST-T3 : le banc cherchait un libellé absent). Les deux ouvrent la même feuille. */
+  await click(c.page, '[role="menu"] [role="menuitem"]', 'Entrer une facture', 2500).catch(() => click(c.page, '[role="menu"] [role="menuitem"]', 'Nouvelle écriture'));
   await c.page.waitForSelector('section[aria-label="Justificatif de la dépense"]', { visible: true, timeout: 60000 });
   return chooser;
 }
@@ -661,7 +674,7 @@ async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingSh
     // find the visible one by its accessible name, then arm the chooser.
     const pickable = () => c.page.$$eval(`${sheet} button`, buttons => {
       const shown = buttons.filter(b => b.getClientRects().length && !b.disabled).map(b => (b.getAttribute('aria-label') || b.innerText).trim());
-      return shown.find(text => text.startsWith('Un document')) ?? shown.find(text => text === 'Changer') ?? false;
+      return shown.find(text => text.startsWith('Un document') || text === 'Documents') ?? shown.find(text => text === 'Changer') ?? false; /* ST-T3 : le bouton du justificatif vide s'appelle « Documents » (feuille « Nouvelle dépense ») */
     });
     // p3c-3 : « Changer » vit dans le petit panneau du picto du justificatif (en-tête), fermé au repos : le geste du brasseur est de toucher le picto d'abord.
     if (!(await waitFor(pickable, 'bouton pour choisir un justificatif', 3000).catch(() => false)))
@@ -963,7 +976,11 @@ async function caseDoc5(c) {
   c.check(view.lignes === scannedItems.length && view.lignesSansMontant === 0, 'doc5 : toutes les lignes lues sont enregistrées, chacune avec son montant', { lignes: view.lignes, lues: scannedItems.length, sansMontant: view.lignesSansMontant });
   c.check(stockRows.length > 0 && stockRows.every(row => (row.lectureKind === 'stock') === row.stocke && (row.stocke ? row.mouvements === 1 : row.mouvements === 0)),
     'doc5 : une réception par ligne de stock lue, aucun mouvement pour les services et le port', { ecarts: stockRows.filter(row => !((row.lectureKind === 'stock') === row.stocke && (row.stocke ? row.mouvements === 1 : row.mouvements === 0))).map(row => row.index) });
-  c.check(stockRows.filter(row => row.stocke).every(row => row.quantiteMouvement === row.quantiteLue), 'doc5 : la quantité reçue de chaque ligne = la quantité lue', {});
+  // ST-T1 : un paquet pesé vendu à la pièce (« Pck », « Stk » lu, article en g ou kg) se compte en poids lu dans le nom : sa quantité reçue est un poids > 0, pas la quantité lue.
+  const estPieceLue = row => /^(pck|stk|st|pce|pi[eè]ce|paquet|sachet)$/i.test(String(row.uniteLue ?? '').trim()), estPoidsArticle = row => /^(g|kg|mg)$/i.test(String(row.uniteArticle ?? '').trim());
+  const pesee = row => estPieceLue(row) && estPoidsArticle(row);
+  c.check(stockRows.filter(row => row.stocke).every(row => pesee(row) ? Number.isFinite(row.quantiteMouvement) && row.quantiteMouvement > 0 : row.quantiteMouvement === row.quantiteLue),
+    'doc5 : la quantité reçue de chaque ligne = la quantité lue (un paquet pesé vendu à la pièce : son poids lu, ST-T1)', { pesees: stockRows.filter(pesee).map(row => ({ index: row.index, lu: row.quantiteLue, recu: row.quantiteMouvement })) });
   c.check((view.stock?.semis ?? []).length === c.plan.seeds.length && (view.stock?.semis ?? []).every(row => row.identiqueAuSemis && row.apres === row.avant + row.recuParMouvements && row.recuParMouvements > 0),
     'doc5 : chaque article existant garde nom, catégorie et unité et reçoit exactement ses mouvements (rien d’autre modifié)', { semis: view.stock?.semis });
   c.check(view.stock?.servicesStockes === 0 && view.stock?.doublonsDArticle === 0, 'doc5 : aucun service en stock, aucun doublon d’article', { servicesStockes: view.stock?.servicesStockes, doublons: view.stock?.doublonsDArticle });
@@ -1103,14 +1120,14 @@ async function financeViews(c, docId, { exports = true } = {}) {
   await click(c.page, 'nav button', 'Finances');
   await click(c.page, '#finance-tab-annual');
   await sleep(800);
-  await click(c.page, '#tax-tab-documents');
+  await click(c.page, 'button', '9. Dossier'); // Annuel g6 : le dossier est l'étape 9 de la piste (plus d'onglet #tax-tab-documents)
   await sleep(600);
   await shoot(c, `${docId}-dossier-annuel`);
   const XLSX = (await import(pathToFileURL(join(ROOT, 'node_modules/xlsx/xlsx.mjs')).href));
   const { unzipSync, strFromU8 } = await import(pathToFileURL(join(ROOT, 'node_modules/fflate/esm/index.mjs')).href).catch(() => import('fflate'));
   const exportsView = {};
   let before = readdirSync(c.downloads);
-  await click(c.page, 'button', 'Excel');
+  await click(c.page, 'button', 'Opérations Excel'); // Annuel g6 : tuile « Opérations · Excel » du dossier
   const xlsx = await downloaded(c, before, 'Excel').catch(error => { exportsView.excel = String(error).slice(0, 120); return null; });
   if (xlsx) {
     const book = XLSX.read(readFileSync(xlsx));
@@ -1122,10 +1139,10 @@ async function financeViews(c, docId, { exports = true } = {}) {
   }
   before = readdirSync(c.downloads);
   // Après le téléchargement Excel, l'écran Annuel peut revenir à « Préparer » : on le constate (exportsView) et on rouvre « Dossier ».
-  if (!(await c.page.$$eval('button', nodes => nodes.some(b => b.getClientRects().length && b.innerText.trim().startsWith('Télécharger le dossier avec justificatifs'))))) {
+  if (!(await c.page.$$eval('button', nodes => nodes.some(b => b.getClientRects().length && (b.getAttribute('aria-label') || b.innerText).trim().startsWith('Télécharger le dossier avec justificatifs'))))) {
     exportsView.ongletDossierReinitialiseApresExcel = true;
     await shoot(c, `${docId}-annuel-reinitialise`);
-    await click(c.page, '#tax-tab-documents');
+    await click(c.page, 'button', '9. Dossier'); // Annuel g6 : le dossier est l'étape 9 de la piste (plus d'onglet #tax-tab-documents)
     await sleep(600);
   }
   await click(c.page, 'button', 'Télécharger le dossier avec justificatifs');

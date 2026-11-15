@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { auth, functions } from '../services/firebase';
 import { Batch, BrewDayState } from '../types';
-import { restoreBrewDay } from '../domain/brewDay';
+import { ajoutsEnvoyables, restoreBrewDay } from '../domain/brewDay';
 import { brewNow, setBrewClock } from '../services/brewClock';
 import { mergeBrewTimestamps } from '../domain/brewSessionMerge';
 import { FirestoreRepo } from '../services/firestoreRepo';
@@ -71,7 +71,7 @@ export function useBrewSession(
           const res = await httpsCallable<Record<string, unknown>, Response>(
             functions,
             'saveBrewSession'
-          )({ batchId: batch.id, ...op, clientNow: brewNow() });
+          )({ batchId: batch.id, ...op, state: ajoutsEnvoyables(op.state), clientNow: brewNow() });
           if (!res.data.state) throw new Error('Le serveur n’a pas confirmé le journal.');
           setBrewClock(res.data.serverNow, performance.now() - before);
           revision.current = res.data.state.revision ?? revision.current;

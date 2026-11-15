@@ -16,6 +16,7 @@ import './page-shell.css';
 const BODY_FLAGS: ReadonlyArray<readonly [string, string]> = [
   ['data-has-modal', '[role="dialog"][aria-modal="true"]'],
   ['data-has-drawer-open', "[data-vaul-drawer][data-state='open']"],
+  ['data-has-fiche-page', '[data-fiche-page]'],
   ['data-has-fab', '.floating-actions'],
   ['data-has-fab-floating', '.floating-actions[data-floating-actions-docked="false"]'],
   ['data-has-water-sels', '[data-water-step="sels"]'],

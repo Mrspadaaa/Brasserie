@@ -333,11 +333,11 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
         'Nouveau matérielSur cet écran',
         'Compagnon brasseurMatériel',
         'Entrer une factureDocument, puis vérification',
-        'Encaisser une vente',
+        'Vendre',
         'Créer une recette',
         'Lancer un brassinÀ partir d’une recette existante'
       ]);
-      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
+      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Vendre/, /Créer une recette/, /Lancer un brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());
         fireEvent.click(screen.getByRole('menuitem', { name }));
         expect(screen.queryByRole('menu')).toBeNull();

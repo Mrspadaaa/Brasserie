@@ -10,45 +10,30 @@ import {
   ION_LABEL,
   CAUTION_APPROACH,
   saltCautions,
-  dilute,
   alkalinityAsCaCO3,
   residualAlkalinity,
-  targetRaForGrist,
-  raSaltCeilingForGrist,
-  raForGrist,
   alkalineSaltGoal,
   estimateMashPh,
-  hopBalanceHint,
   lactateInBeer,
   sulfateChlorideRatio,
   solveSalts,
   splitDoses,
 } from "../../domain/water";
-import {
-  styleByCode,
-  styleWaterForReference,
-  styleFromTargetIons,
-} from "../../domain/waterStyles";
+import { styleWaterForReference } from "../../domain/waterStyles";
 
 import { SaltSolverProps, WaterChangeIntent, WaterState } from "./types";
 import { RADAR_IONS } from "./constants";
-import { waterProfileTarget, waterTreatmentTarget } from "../../domain/water/profileTarget";
-import { calculateSpargeTreatment } from "../../domain/water/acid";
+import { waterTreatmentTarget } from "../../domain/water/profileTarget";
 import { manualWaterImpact, type ManualWaterEdit } from "../../domain/water/manualImpact";
 import { diagnoseWaterProfile } from "../../domain/water/profileDiagnosis";
 import { useWaterAnalysis } from "./useWaterAnalysis";
+import { useWaterAnalysisInputs, waterStateWithRetainedAcid } from "./useWaterAnalysisInputs";
 import { completeWaterProposal } from "../../domain/water/proposal";
-import { noloWaterModelIssue } from "../../domain/noloWaterModelIssue";
+import { noteAcideProfil } from "./acideProfil";
 type Tab = "empatage" | "rincage";
 type MobileStep = "eau" | "sels";
 
-/** Zero is only a calculation input for an unknown acid dose, never a saved choice. */
-export function waterStateWithRetainedAcid(state: WaterState, waterModelIssue?: string): WaterState {
-  return waterModelIssue ? { ...state, acidOverride: {
-    mash: state.acidOverride?.mash ?? 0,
-    sparge: state.acidOverride?.sparge ?? 0
-  } } : state;
-}
+export { waterStateWithRetainedAcid };
 
 /** Keep an explicit mash/sparge allocation while rebasing the edited mass. */
 function rebalanceCustomSaltSplit(state: WaterState, id: SaltId, grams: number) {
@@ -155,55 +140,21 @@ export function useWaterWorkshop({
     }
   };
 
-  const totalWaterL =
-    Math.round((state.mashWaterL + state.spargeWaterL) * 10) / 10;
-
-  const style = useMemo(
-    () =>
-      state.customTarget
-        ? styleFromTargetIons(state.customTarget.ions, state.customTarget.name)
-        : styleByCode(state.styleCode),
-    [state.customTarget, state.styleCode],
-  );
+  // L'entrée de l'analyse (sels + minimum d'osmosée) se bâtit dans `useWaterAnalysisInputs`, la même que celle du préchargement de l'assistant.
+  const {
+    totalWaterL, style, start, spargeDi, startSparge, mashRatioLPerKg, waterModelIssue, retainedAcidState,
+    raBand, raCeiling, raPreference, allSaltsInMash, hopHint, wantedRatio, planInputFor, solveInput, dilutionInput,
+  } = useWaterAnalysisInputs({ source, beerEbc, beerVolumeL, brew, state });
   const recipeStyle = styleWaterForReference(brew?.style ?? "",brew?.styleRef);
   const differentProfile =
     !state.customTarget &&
     recipeStyle.code !== "—" &&
     recipeStyle.code !== style.code;
-  const start = useMemo(
-    () => dilute(source, state.diRatioPct),
-    [source, state.diRatioPct],
-  );
-
-  const spargeDi = state.spargeDiRatioPct ?? state.diRatioPct;
   const spargeLinked = state.spargeDiRatioPct == null;
-  const startSparge = useMemo(
-    () => dilute(source, spargeDi),
-    [source, spargeDi],
-  );
-
-  const mashRatioLPerKg =
-    brew?.totalGristKg && brew.totalGristKg > 0
-      ? state.mashWaterL / brew.totalGristKg
-      : 0;
-  const waterModelIssue = noloWaterModelIssue(brew?.nolo, mashRatioLPerKg);
-  const retainedAcidState = useMemo(() => waterStateWithRetainedAcid(state, waterModelIssue), [state, waterModelIssue]);
 
   const vol = brew?.volumes;
 
-  const raBand = useMemo(
-    () => targetRaForGrist(beerEbc, brew?.grist, mashRatioLPerKg),
-    [beerEbc, brew?.grist, mashRatioLPerKg],
-  );
-
-  const raCeiling = useMemo(
-    () => raSaltCeilingForGrist(brew?.grist, mashRatioLPerKg),
-    [brew?.grist, mashRatioLPerKg],
-  );
-  const raPreference = useMemo(() => raForGrist(brew?.grist, mashRatioLPerKg), [brew?.grist, mashRatioLPerKg]);
   const alkaliGoal = alkalineSaltGoal(raBand, raCeiling);
-
-  const allSaltsInMash = state.allSaltsInMash !== false;
 
   const treatment = useMemo(
     () =>
@@ -261,81 +212,6 @@ export function useWaterWorkshop({
     if (hasKnownAcidDose(side) && value !== before) rememberEdit({ kind: 'acid', side, from: before, to: value });
   };
 
-  const hopHint = useMemo(
-    () =>
-      hopBalanceHint(
-        brew?.hops,
-        brew?.ibu ?? null,
-        brew?.og ?? null,
-        style.ratio,
-      ),
-    [brew?.hops, brew?.ibu, brew?.og, style.ratio],
-  );
-
-  const customSo4 = state.customTarget?.ions.so4 ?? start.so4;
-  const customCl = state.customTarget?.ions.cl ?? start.cl;
-  const wantedRatio =
-    state.ratioOverride ??
-    (state.customTarget
-      ? customCl > 0
-        ? customSo4 / customCl
-        : customSo4 > 0
-          ? Infinity
-          : 0
-      : (hopHint?.ratio ?? (style.ratio.min + style.ratio.max) / 2));
-
-  const planInputFor = useCallback(
-    (ratio: number, forceRatio = false): Parameters<typeof solveSalts>[0] => {
-      return {
-        ...waterProfileTarget(
-          style,
-          start,
-          state.customTarget?.ions,
-          ratio,
-          !state.customTarget || state.ratioOverride != null || forceRatio,
-        ),
-        start,
-        startSparge,
-        totalWaterL,
-        mashWaterL: state.mashWaterL,
-        disabled: state.disabled,
-        targetRa: raBand,
-        raCeiling,
-        raPreference,
-        ratio,
-        allSaltsInMash,
-        spargeHco3AfterAcid: calculateSpargeTreatment(
-              startSparge,
-              state.spargeWaterL,
-              state.acidId,
-              {
-                sourcePh: source.ph,
-                override: retainedAcidState.acidOverride?.sparge,
-              },
-            ).ions.hco3,
-        mashAcidHco3Mg: (retainedAcidState.acidOverride?.mash ?? 0) * ACIDS[state.acidId].hco3NeutralizedPerUnit,
-      };
-    },
-    [
-      style,
-      start,
-      startSparge,
-      source.ph,
-      totalWaterL,
-      state.ratioOverride,
-      state.mashWaterL,
-      state.spargeWaterL,
-      state.acidId,
-      retainedAcidState.acidOverride?.sparge,
-      retainedAcidState.acidOverride?.mash,
-      state.disabled,
-      state.customTarget,
-      raBand,
-      raCeiling,
-      raPreference,
-      allSaltsInMash,
-    ],
-  );
   const planFor = useCallback((ratio: number, forceRatio = false) =>
     solveSalts(planInputFor(ratio, forceRatio)), [planInputFor]);
 
@@ -353,60 +229,8 @@ export function useWaterWorkshop({
     [treatment.startTotal, style],
   );
 
-  // The minimum required dilution is independent of the currently selected
-  // dilution for a style. Editing that percentage must not rerun its search.
-  const dilutionStart = state.customTarget ? start : source;
-  const dilutionTarget = useMemo(() => waterProfileTarget(
-        style,
-        dilutionStart,
-        state.customTarget?.ions,
-        wantedRatio,
-        !state.customTarget || state.ratioOverride != null,
-      ), [style, dilutionStart, state.customTarget, wantedRatio, state.ratioOverride]);
-  const dilutionInput = useMemo(() => {
-    return {
-      ...dilutionTarget,
-      source,
-      totalWaterL,
-      mashWaterL: state.mashWaterL,
-      spargeWaterL: state.spargeWaterL,
-      targetRa: raBand,
-      raCeiling,
-      raPreference,
-      ratio: wantedRatio,
-      disabled: state.disabled,
-      allSaltsInMash,
-      acid: state.acidId,
-      ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }),
-      acidOverride: retainedAcidState.acidOverride,
-      saltOverrides: state.saltOverrides,
-      beerVolumeL,
-      sourcePh: source.ph ?? 7.4,
-    };
-  }, [
-    style,
-    dilutionTarget,
-    wantedRatio,
-    source,
-    totalWaterL,
-    state.mashWaterL,
-    state.spargeWaterL,
-    raBand,
-    raCeiling,
-    raPreference,
-    state.disabled,
-    state.customTarget,
-    allSaltsInMash,
-    state.acidId,
-    retainedAcidState.acidOverride?.mash,
-    retainedAcidState.acidOverride?.sparge,
-    state.saltOverrides,
-    beerVolumeL,
-  ]);
-
   // Actual weighed water above stays synchronous. Searching alternative salt
   // plans and up to 21 RO dilutions must not block a manual acid keystroke.
-  const solveInput = useMemo(() => planInputFor(wantedRatio), [planInputFor, wantedRatio]);
   const analysis = useWaterAnalysis({ solve: solveInput, dilution: dilutionInput });
   const proposalFor=(doses:WaterState['doses'])=>completeWaterProposal(source,
     {...retainedAcidState,doses,...waterTreatmentTarget(style,state.customTarget?.ions,{ceiling:raCeiling,target:raPreference})},
@@ -475,6 +299,16 @@ export function useWaterWorkshop({
         : "juste";
 
   const acideSuffit = placeAcide !== "haut";
+
+  // RL-5 : acide dosé par le profil du style alors que l'alcalinité est déjà dans le repère. Le calcul ne change pas ; l'écran le dit.
+  const acideProfil = useMemo(
+    () => noteAcideProfil({
+      ra, raBand, placeAcide, acidAmount: mashAcid.amount, manual: state.acidOverride?.mash != null,
+      phSansAcide: waterModelIssue ? null : estimateMashPh(brew?.grist, ra, mashRatioLPerKg),
+      profil: { code: style.code, name: style.name },
+    }),
+    [ra, raBand, placeAcide, mashAcid.amount, state.acidOverride?.mash, waterModelIssue, brew?.grist, mashRatioLPerKg, style.code, style.name],
+  );
 
   const messagesSolveur = useMemo(
     () =>
@@ -647,6 +481,7 @@ export function useWaterWorkshop({
     mashAcidDiffers,
     raApresAcide,
     placeAcide,
+    acideProfil,
     acideSuffit,
     messagesSolveur,
     spargeAlkalinity,

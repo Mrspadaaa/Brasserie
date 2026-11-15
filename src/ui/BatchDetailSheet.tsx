@@ -1,6 +1,6 @@
 import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
-import { Trash2, ArrowRight, AlertTriangle, PackageCheck, X } from 'lucide-react';
+import { Trash2, ArrowRight, AlertTriangle, PackageCheck, X, Sparkles } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
@@ -19,7 +19,8 @@ import { BatchGravityEntry } from './production/BatchGravityEntry';
 import { formatDecimal, parseDecimal } from './numericInput';
 import { NoloPanel } from './NoloPanel';
 import { noloRecipeForBatch } from '../domain/nolo';
-import { BrewBudgetDialog } from './finance/BrewBudgetDialog';
+import { ChaineArgent } from './prix/ChaineArgent';
+import { ModalShell, StickyActions } from './ModalShell';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
@@ -47,12 +48,25 @@ import { avecTacheFaite, mesureInitiale, modeleFiche, releveDepuisEtat, sansTach
 import { planDestockageHoublon } from './production/fermentation/destockage';
 import { FirestoreRepo } from '../services/firestoreRepo';
 
-/** « Budget » : un bouton de la grille de la fiche (même gabarit que Compagnon et Étape) qui ouvre le budget du brassin. */
-const BudgetLien: React.FC<{ batch: Batch; className?: string; children?: React.ReactNode }> = ({ batch, className, children }) => {
+/** « Budget » : un bouton de la grille de la fiche (même gabarit que Compagnon et Étape). Il ouvre la chaîne de l'argent du brassin (coût, impôt, prix ; le budget en est la première étape) : la fiche garde ses trois rubriques. */
+const BudgetLien: React.FC<{ batch: Batch; className?: string; children?: React.ReactNode; onCible?: (cible: 'densite' | 'volume') => void }> = ({ batch, className, children, onCible }) => {
   const [open, setOpen] = useState(false);
+  const [proposer, setProposer] = useState(0);
+  const vers = (cible: 'densite' | 'volume') => { setOpen(false); onCible?.(cible); };
   return <>
     <Cible onClick={() => setOpen(true)} className={className}>{children ?? 'Budget'}</Cible>
-    {open && <BrewBudgetDialog batch={batch} onClose={() => setOpen(false)} />}
+    {open && (
+      <ModalShell open onClose={() => setOpen(false)} size="md">
+        <div className="flex shrink-0 items-center justify-between border-b border-cave-800 bg-cave-900/90 px-4 py-3">
+          <h4 className="text-base font-bold text-cave-50">Argent · {batch.name}</h4>
+          <button type="button" aria-label="Fermer" onClick={() => setOpen(false)} className="rounded-full bg-cave-850 p-2 text-cave-400 hover:text-cave-200"><X className="h-4 w-4" aria-hidden="true" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <ChaineArgent batch={batch} config={StorageService.getConfig()} proposer={proposer} onNoteDensity={() => vers('densite')} onNoteLitres={() => vers('volume')} />
+        </div>
+        <StickyActions><Button intent="primary" full onClick={() => setProposer(n => n + 1)} icon={<Sparkles className="h-5 w-5" aria-hidden="true" />}>Proposer</Button></StickyActions>
+      </ModalShell>
+    )}
   </>;
 };
 
@@ -78,6 +92,8 @@ interface BatchDetailSheetProps {
   onOpenBrewDay?: (batch: Batch) => void;
   /** e2a « Rebrasser cette <style> » (pied d'un brassin terminé) : ouvre la création d'un brassin de la même recette (App). Sans lui, « Fermer ». */
   onRebrew?: (batch: Batch) => void;
+  /** Où poser le focus à l'ouverture (sur Mesures) : la densité initiale, ou « Saisir le volume conditionné » (un renvoi « litres »). */
+  focus?: 'densite' | 'volume';
 }
 
 export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
@@ -85,7 +101,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   onClose,
   initialSection = 'measurements',
   onOpenBrewDay,
-  onRebrew
+  onRebrew,
+  focus
 }) => {
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -93,6 +110,21 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [brewDayError, setBrewDayError] = useState('');
   const [section, setSection] = useState<BatchDetailSection>(initialSection);
   const [noloNotice,setNoloNotice]=useState('');
+  /** `cibleFocus` : « Noter la densité » ou « Noter les litres » (feuille Impôt bière, coût, Prix, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale ou sur « Saisir le volume conditionné ». La prop `focus` fait de même à l'ouverture. */
+  const [cibleFocus, setCibleFocus] = useState<'densite' | 'volume' | null>(focus ?? null);
+  useEffect(() => { if (focus) setCibleFocus(focus); }, [focus, batch?.id]);
+  useEffect(() => {
+    if (!cibleFocus || section !== 'measurements') return;
+    const timer = window.setTimeout(() => {
+      const champ = document.querySelector<HTMLElement>(cibleFocus === 'volume' ? '[data-batch-packaging-open]' : 'input[name="batch_sheet_og"]');
+      champ?.focus();
+      champ?.scrollIntoView?.({ block: 'center' });
+      setCibleFocus(null);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [cibleFocus, section]);
+  /** Depuis la chaîne de l'argent (Budget) : « Noter la densité » / « Noter les litres » ramènent aux Mesures, focus posé. */
+  const allerMesures = (cible: 'densite' | 'volume') => { setSection('measurements'); setCibleFocus(cible); };
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
@@ -458,12 +490,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           {section === 'overview' && fermentation && (
             <DossierFil batch={draft} now={nowMs} suivant={suivant} options={options} blocage={blockedReason}
               onStatut={changeStatus} onSupprimer={() => setConfirmDelete(true)}
-              budget={cls => <BudgetLien batch={draft} className={cls}>Budget</BudgetLien>}
+              budget={cls => <BudgetLien batch={draft} onCible={allerMesures} className={cls}>Budget</BudgetLien>}
               compagnon={<BrewerChat scope={{ kind: 'batch', id: batch.id }} label={draft.name} phase={draft.status} />} />
           )}
           {section === 'overview' && !fermentation && (
             <>
-              {draft.status !== 'annule' && <BudgetLien batch={draft}>Estimer le budget de ce brassin</BudgetLien>}
+              {draft.status !== 'annule' && <BudgetLien batch={draft} onCible={allerMesures}>Estimer le budget de ce brassin</BudgetLien>}
               <section className="space-y-2">
                 {draft.status !== 'annule' && <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>
@@ -487,7 +519,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.status === 'annule' && (() => { const retour = options.find(o => o.kind === 'back'); return <>
                 <Panneau className="space-y-2 p-2.5"><div className="text-sm font-semibold text-cave-50">Étape</div><EtapesPills courante={-1} annulee />{retour && <Cible ton="prim" plein onClick={() => changeStatus(retour.status)}>Revenir à « {BATCH_STATUS[retour.status].label} »</Cible>}</Panneau>
                 <Panneau label="Dossier du brassin annulé" className="divide-y divide-cave-800 px-2.5" >
-                  <BudgetLien batch={draft} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-cave-50">Budget du brassin <ChevronRight size={16} className="text-cave-400" aria-hidden="true" /></BudgetLien>
+                  <BudgetLien batch={draft} onCible={allerMesures} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-cave-50">Budget du brassin <ChevronRight size={16} className="text-cave-400" aria-hidden="true" /></BudgetLien>
                   <Cible onClick={() => setSection('measurements')} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-cave-50">Historique conservé <ChevronRight size={16} className="text-cave-400" aria-hidden="true" /></Cible>
                   <Cible ton="danger" onClick={() => setConfirmDelete(true)} className="!min-h-12 w-full justify-between rounded-none border-0 bg-transparent px-0 !font-normal text-alert">Supprimer ce brassin <X size={16} aria-hidden="true" /></Cible>
                 </Panneau>
@@ -510,7 +542,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">Stock</small><span className="mt-0.5 flex items-center gap-1 text-sm font-semibold text-hop"><Package size={16} aria-hidden="true" />{pending.length > 0 ? 'réservé' : needsBrewStock || stockIssues.length > 0 ? 'à vérifier' : 'à brasser'}</span></Panneau>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
-                <BudgetLien batch={draft} />
+                <BudgetLien batch={draft} onCible={allerMesures} />
                 <Cible onClick={() => setSection('overview')}>Compagnon</Cible>
                 <Cible onClick={openLadder}>Étape <ChevronRight size={14} aria-hidden="true" /></Cible>
               </div>

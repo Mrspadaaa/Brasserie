@@ -195,7 +195,7 @@ describe('App réelle · retour du lanceur après les saisies rapides', () => {
     render(<div data-testid="app-root"><App /></div>);
     const launcher = await screen.findByRole('button', { name: 'Actions rapides' });
     await user.click(launcher);
-    const saleAction = await screen.findByRole('menuitem', { name: 'Encaisser une vente' });
+    const saleAction = await screen.findByRole('menuitem', { name: 'Vendre' });
 
     let lostFocusToBody = false;
     const loseFocusWhenLauncherReturns = (event: FocusEvent) => {

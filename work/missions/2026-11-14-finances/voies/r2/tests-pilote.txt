@@ -1,0 +1,38 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+············································stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > guide la préparation annuelle du solde vers les opérations de l’exercice
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+······stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > ouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée
+Not implemented: Window's scrollTo() method
+
+··················stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > fige une version annuelle et garde ses chiffres après une nouvelle dépense
+Not implemented: Window's scrollTo() method
+
+··········stderr | tests/integration/liveDataViews.test.tsx > Live records and unsaved forms > updates an open batch sheet after a server edit, preserving an in-progress density reading
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+····················stderr | tests/integration/f2ReelAnnuel.test.tsx > Annuel g6, état « réel » : vente unique, travaux à classer (résultat en attente) > le « ? » et « À classer › » sont des renvois vers l’étape 4 (le matériel à classer)
+Not implemented: Window's scrollTo() method
+
+········································································
+
+ Test Files  14 passed (14)
+      Tests  170 passed (170)
+   Start at  11:09:34
+   Duration  11.09s (transform 5.55s, setup 3.88s, collect 15.33s, tests 8.75s, environment 10.87s, prepare 1.03s)
+

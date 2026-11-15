@@ -91,6 +91,8 @@ export interface EnqueueInput {
   submissionId: string; dataUrl: string; mimeType: string; driveName: string; originalName?: string; year: number; uid: string;
   /** Un autre fichier que le premier envoyé pour cette dépense : `n` de `proof-<saisie>-<n>`. */
   fileNo?: number;
+  /** L'écriture que le fichier justifie, quand elle n'est pas `TX-<saisie>` (la vente : `REC-…` ou le numéro de facture). */
+  transactionId?: string;
 }
 /**
  * Écrit le fichier dans le magasin et ne rend la main que quand l'écriture est durable. Échec ou plafond (20 envois ou 60 Mo) : lève, l'appelant
@@ -107,7 +109,7 @@ export async function enqueueProof(input: EnqueueInput): Promise<ProofJob> {
   const fileNo = input.fileNo && input.fileNo > 1 ? input.fileNo : undefined;
   const job: ProofJob = {
     state: 'queued', uid: input.uid, at: iso(), ...(fileNo ? { fileNo } : {}),
-    submissionId: input.submissionId, transactionId: `TX-${input.submissionId}`, documentId: proofDocumentIdFor(input.submissionId, fileNo),
+    submissionId: input.submissionId, transactionId: input.transactionId ?? `TX-${input.submissionId}`, documentId: proofDocumentIdFor(input.submissionId, fileNo),
     dataUrl: input.dataUrl, mimeType: input.mimeType, driveName: input.driveName, ...(input.originalName ? { originalName: input.originalName } : {}),
     year: input.year, sha256, bytes, createdAt: iso(),
   };
@@ -127,8 +129,19 @@ export async function listProofJobs(): Promise<ProofJob[]> {
   if (!store) return [];
   try { return await store.all(); } catch { return []; }
 }
+/** La ligne d'une écriture : par sa saisie (`TX-<saisie>` sans le préfixe), sinon par l'identifiant de l'écriture (une vente a son propre numéro). */
+async function jobOfTransaction(store: ProofFileStore, transactionId: string): Promise<ProofJob | undefined> {
+  const direct = await store.get(transactionId.replace(/^TX-/, ''));
+  if (direct && direct.transactionId === transactionId) return direct;
+  return (await store.all()).find(row => row.transactionId === transactionId) ?? direct;
+}
+/** Par saisie ou, à défaut, par identifiant d'écriture : la fiche d'une vente retrouve ainsi son envoi. */
 export async function getProofJob(submissionId: string): Promise<ProofJob | undefined> {
-  try { return await currentStore()?.get(submissionId); } catch { return undefined; }
+  try {
+    const store = currentStore();
+    if (!store) return undefined;
+    return (await store.get(submissionId)) ?? (await store.all()).find(row => row.transactionId === submissionId);
+  } catch { return undefined; }
 }
 
 // ─── Classement des échecs (T6) ───────────────────────────────────────────────────────────────
@@ -262,7 +275,8 @@ async function linkJob(store: ProofFileStore, job: ProofJob, receipt: DriveProof
     }
     if (current.finance.proofDocumentId !== job.documentId) {
       try {
-        StorageService.updateTransaction({ ...current, proofFileName: receipt?.fileName ?? job.driveName,
+        // `syncedToDrive` (une vente) ne dit vrai qu'ici, l'envoi fait ; une dépense ne le porte pas et reste telle quelle.
+        StorageService.updateTransaction({ ...current, proofFileName: receipt?.fileName ?? job.driveName, ...(current.syncedToDrive === false ? { syncedToDrive: true } : {}),
           finance: { ...current.finance, proofDocumentId: job.documentId, proofUpload: undefined } } as FinanceTransaction);
       } catch (error) {
         if (isVoidedError(error)) { await voidJob(store, job, 'cancelled'); return 'next'; }
@@ -392,8 +406,7 @@ export async function markQueuedOnTransaction(job: ProofJob): Promise<WriteOutco
 export async function requeueProof(transactionId: string, reason: 'resend' | 'reconnect' = 'resend'): Promise<boolean> {
   const store = currentStore();
   if (!store) return false;
-  const submissionId = transactionId.replace(/^TX-/, '');
-  const job = await store.get(submissionId);
+  const job = await jobOfTransaction(store, transactionId);
   if (!job || job.state === 'voided' || !job.dataUrl) return false;
   const queued: ProofJob = { ...job, state: 'queued', reason: undefined, failures: 0, firstFailureAt: undefined, countedWakeId: undefined, lastWakeAt: undefined, settledAt: undefined };
   delete queued.reason; delete queued.firstFailureAt; delete queued.countedWakeId; delete queued.lastWakeAt; delete queued.settledAt;
@@ -414,8 +427,7 @@ export async function requeueAfterReconnect(): Promise<number> {
 /** « Abandonner » : le job devient `voided` (fichier gardé 30 jours), `proofUpload` est retiré de la dépense, qui reste « sans justificatif ». */
 export async function abandonProof(transactionId: string): Promise<void> {
   const store = currentStore();
-  const submissionId = transactionId.replace(/^TX-/, '');
-  const job = await store?.get(submissionId);
+  const job = store ? await jobOfTransaction(store, transactionId) : undefined;
   const current = findTransaction(transactionId);
   if (current?.finance && !current.finance.voidedAt && !current.finance.proofDocumentId && current.finance.proofUpload) {
     try { StorageService.updateTransaction({ ...current, finance: { ...current.finance, proofUpload: undefined } } as FinanceTransaction); } catch { /* annulée entre-temps : rien à retirer */ }

@@ -113,7 +113,7 @@ describe('Gestes à la cuve', () => {
     editDose(/Modifier la quantité de Acide lactique.*au mash/);
     fireEvent.click(screen.getAllByRole('button', { name: /Augmenter Acide lactique/ })[0]);
     expect(v.latest().additions!['acid-mash'].amount).toBe(1.1);
-    fireEvent.click(screen.getByRole('button', { name: 'Autre sel ou acide à consigner' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un produit à l’eau d’empâtage' }));
     fireEvent.click(
       within(screen.getByRole('dialog', { name: 'Ajouter un sel ou un acide' })).getAllByRole(
         'button',
@@ -127,6 +127,7 @@ describe('Gestes à la cuve', () => {
   it('substitution en stock sans écraser la recette ni hériter d’un potentiel inconnu', () => {
     const v = mount({}, [malt('Pale', 1), malt('Pils', 10, 4)]);
     chooseStep('Concassage');
+    editDose(/Modifier la quantité de Pale/);
     fireEvent.click(screen.getByRole('button', { name: 'Remplacer ce malt' }));
     fireEvent.click(screen.getByRole('button', { name: /Pils · 5 kg/ }));
     expect(v.latest().additions!['grain-0'].replacement).toEqual({ name: 'Pils', colorEbc: 4 });
@@ -147,7 +148,7 @@ describe('Gestes à la cuve', () => {
     let row = screen.getByText('Température', { exact: true }).closest('article')!;
     fireEvent.click(within(row).getByRole('button', { name: 'Modifier' }));
     fireEvent.change(screen.getByLabelText('Corriger Température'), { target: { value: '-5' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    fireEvent.click(within(row).getByRole('button', { name: 'Enregistrer' }));
     expect(v.latest().readings![0]).toMatchObject({ at: 1000, value: -5 });
     row = screen.getByText('Température', { exact: true }).closest('article')!;
     fireEvent.click(within(row).getByRole('button', { name: 'Supprimer' }));
@@ -160,7 +161,7 @@ describe('Gestes à la cuve', () => {
     fireEvent.change(screen.getByLabelText('Corriger Note'), {
       target: { value: 'Pompe rétablie\nFiltre rincé' }
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    fireEvent.click(within(note).getByRole('button', { name: 'Enregistrer' }));
     expect(v.latest().notes![0].text).toContain('\n');
   });
   it('volume et densité à froid produisent un rendement, persisté après navigation', () => {
@@ -176,22 +177,23 @@ describe('Gestes à la cuve', () => {
     const region = within(screen.getByRole('region', { name: 'Mesures de cette étape' }));
     fireEvent.change(screen.getByLabelText('Densité (SG)'), { target: { value: '1040' } });
     fireEvent.click(screen.getByLabelText('Densité refroidie ou corrigée à l’étalonnage'));
-    fireEvent.click(region.getByRole('button', { name: 'Noter' }));
+    fireEvent.click(region.getByRole('button', { name: 'Enregistrer' }));
+    // p2c (I1a) : le rendement se lit dans la tuile « Rendement d’empâtage » du bilan visé (l'ancien tableau est parti).
     const observedYield = () => within(
-      screen.getByRole('row', { name: /Rendement avant ébullition/ })
-    ).getAllByRole('cell')[1];
-    expect(within(observedYield()).getByLabelText('Pas encore mesuré')).toBeInTheDocument();
+      screen.getByRole('region', { name: 'Relevés du jour · bilan visé' })
+    ).getByText('Rendement d’empâtage').closest('li') as HTMLElement;
+    expect(observedYield()).toHaveTextContent('?');
     fireEvent.click(region.getByRole('button', { name: 'Volume', exact: true }));
     expect(screen.getByLabelText('Volume ramené à 20 °C')).not.toBeChecked();
     fireEvent.change(screen.getByLabelText('Volume (L)'), { target: { value: '25' } });
     fireEvent.click(screen.getByLabelText('Volume ramené à 20 °C'));
-    fireEvent.click(region.getByRole('button', { name: 'Noter' }));
-    expect(observedYield()).toHaveTextContent('66,6');
+    fireEvent.click(region.getByRole('button', { name: 'Enregistrer' }));
+    expect(observedYield()).toHaveTextContent('≈ 67 %');
     expect(v.latest().readings!.every((r) => r.roomTemp)).toBe(true);
     const readings = v.latest().readings;
     phase('Recette');
     phase('Conduite');
-    expect(observedYield()).toHaveTextContent('66,6');
+    expect(observedYield()).toHaveTextContent('≈ 67 %');
     expect(v.latest().readings).toEqual(readings);
   });
   it('fuzz de quantité : les saisies hostiles ne cassent ni l’écran ni les doses des autres lignes', () => {
