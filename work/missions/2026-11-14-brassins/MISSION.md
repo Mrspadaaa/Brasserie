@@ -71,6 +71,7 @@ Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids �
 | Brassins · fiche et fermentation (s1e2, s1g, s2a2, s3b2 ; panel v0 de 15 ; critique : s1e, s2a, s3b) | 14.11 passe 2 | https://claude.ai/artifact/Jis8k1YGo26euJoLVKiMDv | `work/missions/2026-11-14-brassins/page/index.html` |
 | Brassins · nouvelles versions (12 : s4 à s7, quatre genres, après « Pas super fan de aucun ») | 14.11 v0 corrigée | https://claude.ai/artifact/SqU1y2jQgMAX8tX6MKn9qL | `work/missions/2026-11-14-brassins/page2/index.html` |
 | Brassins · tous les écrans (couverture ; 11 vues sans maquette, 4 versions chacune, e1 à e11) | 14.11 v0 corrigée | https://claude.ai/artifact/PVfjKmT4U9rvXxsKQTPPDp | `work/missions/2026-11-14-brassins/page3/index.html` |
+| Brassins · tes choix et la suite (retenues e1a, e4c, e7a ; greffes gfa à gfd s4a × s6c, g6a à g6c e6a × e6c ; Créer un brassin refait e5na à e5nd ; e2, e3, e8 à e11 remontrées) | 15.11 v0 corrigée | https://claude.ai/artifact/PUbMUHbiuv8Z3eucLQTffU | `work/missions/2026-11-14-brassins/page5/index.html` |
 
 ## Boucle de retour
 Voie en échec : relance ciblée chez un agent neuf (D207), 2 fois au plus. Plainte du brasseur : SPEC, DEFAUTS-RECURRENTS, contrôle.
@@ -90,3 +91,18 @@ Plafond visé : 2 analyses, 3 concepteurs v0, 1 critique, 3 passes 2 légères.
 - Ouvert : son choix sur la page 2 et, vue par vue, sur la page 3 ; puis port 1:1 (voie à écrire), correctif du filtre de période (App.tsx:171), champs °C de cuve et dry hop daté (accord avant écriture), déploiement (accord).
 - systeme.mjs mission : seul refus restant « aucune série en Fable », assumé (Fable interdit).
 - Leçons proposées, à traiter : concepteurs v0 arrêtés à 200 k (s1, s3, p2a) : brief v0 plus serré, contrôles COMMUN/PANEL laissés au tri ; fichiers de travail dans os.tmpdir() préfixés par l'id de voie (collision p2a/p2b) ; avant « ses mots sont rares », chercher l'objet sous d'autres noms (cuve, rail, J+n) ; une convention (origine de J+n, deux températures) se lit dans le code avant d'être recommandée.
+
+## Contrat réécrit — 15.11 (pilote), choix du brasseur sur e1–e11
+Mot pour mot : « e7a — e6a — e6c Des filtres qui comptent — Créer un brassin ?? Pas convaincu — e4c ».
+Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (greffe) ; e4 = e4c ; « Créer un brassin » : aucune ne convainc → 3 ou 4 nouvelles maquettes de ce groupe, d'un autre genre. Autres groupes e1, e2, e3, e5, e8 à e11 : sa règle du 15.11 sur Finances (« SI non candidat 1 ») ne vaut que pour Finances ; les montrer à nouveau dans la page avec les greffes s4a × s6c.
+À faire : verser dans SPEC ; page neuve (greffes s4a × s6c, e6a+e6c, Créer un brassin refait, groupes restants) ; puis port des choisis.
+- Ajout 15.11, mot pour mot : « e1a ». e1 = e1a ; ne plus le remontrer.
+- Ajout 15.11, mot pour mot : « e2a ». e2 = e2a ; ne plus le remontrer.
+- Ajout 15.11, mot pour mot : « e3b Le fil — e3a Carnet — Je plaise bien... À faire d'autres versions de ceux là. Aussi utiliser l'ia pas chère pour remettre en place des note en vrac ». Lecture : e3 = 3 ou 4 greffes e3a × e3b ; les notes en vrac rangées par l'IA la moins chère (Flash-Lite, proposée, validée par lui, jamais réelle dans npm test), comme ri4 de l'Atelier ; sur la même page neuve.
+- Ajout 15.11, mot pour mot : « Le carnet de recettes, pas très compact, pas super convaincu quand il y aura des dizaines de recette — e4c L'échelle ok ». Lecture : e4 = e4c confirmé ; le groupe « carnet de recettes » est refusé tel quel : 3 ou 4 versions compactes qui tiennent des dizaines de recettes (recherche, tri, lignes denses), sur la même page neuve.
+- Ajout 15.11, mot pour mot : « e11a — e10c ». e11 = e11a ; e10 = e10c.
+- 15.11 : « e8 · Le carnet de recettes j'ai déjà donné mon avis la dessus » : e8 est le carnet déjà refusé (versions compactes demandées). Restent e5 et e9.
+- 15.11 : « e5 · Créer un brassin j'aussi donner mon avis... » : e5 = « Créer un brassin », déjà refusé (« Pas convaincu ») → à refaire. Reste e9 seulement.
+- 15.11, mot pour mot : « · L'Atelier R&D toujours pas super convaincu ». e9 (Atelier R&D) refusé à nouveau → 3 ou 4 versions d'un autre genre, en partant de ses mots dans SPEC sur l'Atelier R&D. Tous les groupes e1–e11 ont maintenant leur réponse.
+
+- 15.11, fait : greffes gf (s4a × s6c, critique kg, 8 bloquants corrigés par gk), g6 (e6a × e6c) et e5n (Créer un brassin, 4 genres neufs), critique k6 (9 bloquants, corrigés par g6f), IDENTITE OK 11/11, page pg5 (PAGE OK) publiée : https://claude.ai/artifact/PUbMUHbiuv8Z3eucLQTffU. Ouvert : son choix sur cette page, puis port de e1a, e4c, e7a et des choisis.
