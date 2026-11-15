@@ -1721,3 +1721,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : kh1r choisie, à porter 1:1 dans Atelier › Matériel › À venir, crayon et pictos d'état compris.)
 - **15.11**, mot pour mot, précision sur la mission simplicité : « C'est plutôt, simplifier ou utiliser des petites "hack" pour faciliter certains workflow. Moins de touche. Moi d'info en une fois. Un peu dans l'idée de en un clic on a tout l'essentiel, ça s'autocomplete autocasse, autogéré et on a les infos essentielles avec le moins d'action possible »
   (lu : pas un audit chronométré mais des astuces : un geste = l'essentiel ; autocomplétion, auto-rangement, valeurs déduites ; moins d'infos à la fois.)
+- **15.11**, mot pour mot, sur le bouton « Atelier Houblons V5.5 » (Brassins › Atelier) : « Atelier Houblons V5.5 je pense que tout ça peut être retiré, jsp à quelle point l'ai en a besoin mais moi plus du tout »
+  (lu : retirer les entrées visibles (bouton, menus) ; le code V5.5 reste, car il sert au transfert de recette, au conseil houblon et aux fonctions ; rien de supprimé en données.)
