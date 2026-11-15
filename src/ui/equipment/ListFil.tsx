@@ -77,7 +77,7 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
           {coupure && <><svg className="mt-coupe" style={{ top: coupure.fromY + 5 }} viewBox="0 0 24 20" aria-hidden="true"><path d="M3 9 21 3M3 17 21 11" /></svg>
             <div className="mt-av-rail" style={{ top: coupure.fromY + 25, height: dernier + 12 - (coupure.fromY + 25) }} /></>}
           {avenirRecent && <div className="mt-glisse" style={{ height: posY(avenirRecent) - 13 }} />}
-          {fil.reperes.filter(rp => mode === 'tout' || rp.y < carteY - 10).map(rp => (
+          {fil.reperes.filter(rp => (mode === 'tout' || rp.y < carteY - 10) && rp.y <= hauteurAv - 14).map(rp => (
             <React.Fragment key={rp.date}>{rp.tick && <span className="mt-tick" style={{ top: rp.y }} />}<span className="mt-mo" style={{ top: rp.y }}>{moisCourt(rp.date)}</span></React.Fragment>
           ))}
           {lignes.map(a => {
