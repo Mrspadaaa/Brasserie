@@ -37,3 +37,7 @@ G4 + « un titre voir tout » + « combinaison des titre genre propre et à lave
 
 ## En ligne (15.11)
 Déployé 2c78e80d, tag en-ligne/2026-11-15-futs (base en-ligne/2026-11-15-atelier-kckd). Bundle servi vérifié (StocksTab : Remplir depuis un lot, Voir tout, Tout marquer propre, Ajouter des fûts ; pas de dev-local). Banc : 109 tests fûts verts ; suite complète : échecs seulement hors fûts (functions/ non installé, recipeEditing, recipeAiWorkflow, yeastPitching, expenseSheet, comme la base). Reste : jeu en ligne sur « ZZ TEST » (connexion Google requise).
+
+## Joué en ligne (15.11, Chrome du brasseur)
+F-005 « ZZ TEST — essai fûts » : ajouté (bouton rond › Nouveau fût › Ajouter des fûts), filtre combiné À laver + Propres, Remplir depuis un lot (LOT-002 refusé : déjà couvert ; LOT-001 Milk Stout accepté), Livrer (client de la liste), Retour vide, Marquer propre, Retirer du parc. Parc revenu à 4 fûts (F-001 à F-004 intacts), 0 erreur de console. Communs C1–C5 : « Fut ok » (brasseur, relayé).
+Défauts vus : message de refus du remplissage ambigu (« couvrent 30 L pour 30 L produits ») ; fiche Propre affirme « Nettoyé et désinfecté » sans saisie.
