@@ -96,7 +96,16 @@ Fichiers : `src/ui/EquipmentList.tsx`, `src/ui/EquipmentSheet.tsx`, `src/ui/equi
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Stocks · Matériel | passe 2 · 14.11 | https://claude.ai/artifact/Hj7pe5XK8nQYcj34VN5fZU | `work/missions/2026-11-14-materiel/choix/index.html` |
+| Matériel apaisé (zq1) | variantes za1–za4 · 15.11 | https://claude.ai/artifact/GtTjLszM1jRHpnoZHYVpAn | `work/missions/2026-11-14-materiel/choix-apaise/index.html` |
 
 ## Reprise
 - 14.11 : page de choix publiée (12 variantes, 7 états). Attend son choix ; puis port 1:1 dans un worktree propre (hors dossier partagé), tests, déploiement depuis le dernier tag en-ligne/*, jeu en ligne sur « ZZ TEST ».
 - Banc : copie détachée C:/Users/mrspa/AppData/Local/Temp/materiel-banc (tag en-ligne/2026-11-14-atelier-uv4).
+
+## Contrat réécrit — 15.11 (pilote), retour du brasseur
+Mot pour mot : « zq1 Le fil du temps — J'aime bien mais un peu "stressant" c'est le plus pratique mais le plus anxiogène ».
+Lecture du pilote : zq1 est retenue pour sa pratique ; il faut en garder la structure et en retirer l'anxiété (moins de rouge et d'alertes en avant, échéances calmes, ton rassurant, le « tout va bien » visible d'abord).
+À faire : verser ses mots dans SPEC ; 3 ou 4 variantes de zq1 apaisées (mini maquettes, critique Opus), page neuve, lui montrer ; port 1:1 après son choix, dans un worktree propre ; tests, build, captures regardées ; mise en ligne selon la méthode.
+
+### Avancement 15.11
+- SPEC versée (ses mots sur zq1). BRIEF-APAISE.md ; za1 couleur, za2 ordre, za3 mots, za4 une chose à la fois (concepteurs Opus, une variante par agent). Verdict Opus (critique/VERDICT-V2.md) : za4 1re, za1 et za4 à reprendre → corrigées (rouge seul à la panne ; gestes 44 px). Page neuve publiée. Worktree de port prêt : C:/Users/mrspa/AppData/Local/Temp/materiel-port, branche claude/materiel-port, base en-ligne/2026-11-15-atelier-kckd (01d3de75). Attend son choix.

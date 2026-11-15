@@ -1703,3 +1703,11 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : choisis d3p2 (ce qu'ouvrent le menu et le +), m3 (menu de l'en-tête), b1 (barre et +) ; la recherche reste ouverte (aucun mot). m3 : la période (« l'interval de temps ») est à mieux dessiner, et elle se règle à plusieurs endroits (en-tête, Finances, Brassins…) : ces endroits doivent rester cohérents — lecture ambiguë (une seule période partout, ou des périodes locales marquées), montrée en variantes. b1 : le menu du + change selon l'écran où l'on est, pas seulement sa première ligne.)
 - **15.11**, mot pour mot, sur la page « Compagnon brasseur : choisir sa forme » (https://claude.ai/artifact/V4JfNqJvtKUWRFLMoxYLam) : « Tout se lit sans lire / p2a · de s3b / Parfait »
   (lu : p2a choisie telle quelle, ses 12 vues ; à porter 1:1 dans le compagnon, puis déployer.)
+- (15.11, Fûts, choix sur la planche des 12 mini maquettes) « Entre l1 et l2 » ; « R1 Le lot d'abord » ; « F2 La carte d'identité »
+- (15.11, Fûts, greffes de liste) « G4 L2 avec les lignes de L1 … » ; « Yes et un titre voir tout, et combinaison des titre genre propre et à laver »
+- **15.11**, mot pour mot, sur les pages des écrans transversaux : « Page « Plus » m3 — Mhmm utiliser une plage comme pour les finances.mais ai non tout bien — r3p2 top »
+  (lu : la période de m3 devient la plage « du … au » de Finances (s2ap2 : frise, bande), la même partout où elle se règle ; « mais ai non tout bien » lu « mais à part ça tout bien » ; r3p2 choisie pour la recherche.)
+- **15.11**, mot pour mot, sur la page « Stocks · Matériel · 14.11 » (https://claude.ai/artifact/Hj7pe5XK8nQYcj34VN5fZU) : « zq1 Le fil du temps — J'aime bien mais un peu "stressant" c'est le plus pratique mais le plus anxiogène »
+  (lu : zq1 retenue pour sa pratique ; « anxiogène » ambigu (couleur, ordre, mots, nombre d'alertes) : chaque lecture devient une variante apaisée de zq1, montrée avant le port, L13.)
+- **15.11**, mot pour mot, sur « Le + selon l'écran » (page Période et +) : « b1r — Non mais certaines actions doivent toujours être possible, juste celle de l'écran actuel sont plus mis en avant. Et le bouton doit toujours être flottant.... »
+  (lu : b1r refusée telle quelle ; le + reste toujours flottant, son menu garde les actions communes et met en tête celles de l'écran courant ; trois variantes, ET-PLUS révisé.)
