@@ -45,7 +45,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
   const options = useMemo(() => optionsClients(clients), [clients]);
   const client = clients.find((c) => c.id === clientId);
   const jauge = jaugeFut(keg, today);
-  const etapes = etapesRecentes(keg, toutVoir ? undefined : 3);
+  const etapes = etapesRecentes(keg, toutVoir ? undefined : 4);
   const plusDEtapes = (keg.historique?.length ?? 0) > 3;
   const avecBiere = keg.state === 'plein' || keg.state === 'livre';
   const batch = batches.find((b) => b.id === keg.batchRef);
