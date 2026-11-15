@@ -1729,3 +1729,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : garder la frise ; éprouver à grande échelle (beaucoup de clients et de lieux) ; revue critique, UX/UI et brasseur, puis variantes qui tiennent la charge.)
 - **15.11**, mot pour mot, sur la même page (kg1-3, À venir) : « Kg1-3 pareil.. pas super pratique en terme de workflow uxui »
   (lu : même revue que kt2 pour À venir, centrée sur le parcours besoin → prix ou devis → scan relié → sortie de la liste ; kh1r reste la base visuelle choisie, sa mise en ligne attend la revue.)
+- **15.11**, mot pour mot, pour la mission simplicité : « Dans le workflow simplicité, notamment quand je lave un fût ou fait une action ça a des conséquences sur tout. Par exemple lavé un fût fait baisser les consommables de nettoyage. Faire une bière pareil, baisse le starsan ect... Ce genre d'action qui est dynamique sur toute l'app »
+  (lu : une action en déclenche les effets ailleurs sans saisie en plus : laver un fût décompte le nettoyant, brasser décompte le Star San, etc. Les règles de consommation sont réglables et chaque effet se voit et s'annule.)
