@@ -148,3 +148,113 @@
 .tl-sec { min-height: 48px; padding: 0 14px; border: 1px solid var(--a-line2); border-radius: 10px; font-size: 15px; display: inline-flex; align-items: center; }
 .tl-cta { flex: 1; height: 48px; border-radius: 10px; background: var(--a-act); color: var(--a-onact); font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
 .tl-sec:disabled, .tl-cta:disabled { opacity: .45; cursor: default; }
+
+/* Carnet (ks4, « Top » le 15.11) : la rangée Matériel · Carnet · Tarifs, le fil des notes, l'aiguillage (une case par chose), la fiche rangée.
+   Classes `nc-` (L26), jetons de l'app ; rayons 10 / 16 / 24 ; cibles 44 px, la carte entière cible de chaque case. */
+.nc, .nc-seg {
+  --a-bg: rgb(var(--cave-950)); --a-s1: rgb(var(--cave-900)); --a-s2: rgb(var(--cave-850));
+  --a-line: rgb(var(--cave-800)); --a-line2: rgb(var(--cave-700));
+  --a-mut: rgb(var(--cave-texte-400)); --a-ink: rgb(var(--cave-texte-50));
+  --a-act: rgb(var(--ebc-straw)); --a-onact: rgb(var(--sur-paille));
+  --a-prod: rgb(var(--area-production-texte)); --a-fin: rgb(var(--area-finances-texte));
+  --a-hop: rgb(var(--hop-texte)); --a-hopbg: rgb(var(--hop) / .16); --a-att: rgb(var(--attention-texte)); --a-attbg: rgb(var(--attention) / .16);
+  --a-evt: rgb(var(--water) / .22); --a-ia: rgb(var(--area-agenda-texte)); --a-rail: rgb(var(--cave-600));
+  --a-bul: color-mix(in srgb, rgb(var(--attention)) 7%, rgb(var(--cave-950)));
+  color: var(--a-ink); font-size: 14px; line-height: 1.25;
+}
+:where(.nc, .nc-seg) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+:where(.nc) a { color: inherit; text-decoration: none; }
+.nc-num { font-variant-numeric: tabular-nums lining-nums; }
+.nc-seg { display: flex; padding: 3px; border: 1px solid var(--a-line); border-radius: 10px; background: var(--a-s1); }
+.nc-seg button { flex: 1 1 0; min-height: 44px; border-radius: 10px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; padding: 0 4px; text-align: center; }
+.nc-seg button[aria-pressed=true] { background: var(--a-act); color: var(--a-onact); font-weight: 600; }
+.nc-off { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 12px; min-height: 36px; border-radius: 10px; background: var(--a-attbg); color: var(--a-att); font-size: 13px; font-weight: 600; }
+.nc-flt { display: flex; gap: 6px; padding: 6px 0; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--a-line); }
+.nc-f { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px !important; border: 1px solid var(--a-line) !important; background: var(--a-bg) !important; display: inline-flex !important; align-items: center; gap: 6px; white-space: nowrap; font-size: 14px; }
+.nc-f i { width: 8px; height: 8px; border-radius: 999px; display: block; }
+.nc-f[aria-pressed=true] { background: var(--a-act) !important; color: var(--a-onact) !important; border-color: var(--a-act) !important; font-weight: 600; }
+.nc-fil { display: flex; flex-direction: column; gap: 8px; padding: 8px 0 12px; }
+.nc-vide { color: var(--a-mut); font-size: 14px; padding: 16px 4px; }
+/* une chose rangée : carte à bande de couleur */
+.nc-car { width: 100%; background: var(--a-bg); border: 1px solid var(--a-line2); border-left: 5px solid var(--c); border-radius: 10px; padding: 8px 10px 8px 12px; display: flex; align-items: center; gap: 10px; min-height: 56px; }
+.nc-car > .nc-tx { flex: 1; min-width: 0; min-height: 44px; display: flex; flex-direction: column; justify-content: center; }
+.nc-car b { display: block; font-size: 16px; font-weight: 600; line-height: 1.2; }
+.nc-st { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--c); min-height: 18px; }
+.nc-st em { font-style: normal; font-weight: 600; color: var(--a-mut); }
+.nc-ti { display: flex !important; align-items: center; gap: 8px; }
+.nc-ti svg { color: var(--c); flex: none; }
+.nc-call { width: 44px; height: 44px; border-radius: 999px; border: 1.5px solid var(--a-hop); color: var(--a-hop); display: grid; place-items: center; flex: none; }
+.nc-add { min-height: 44px; display: inline-flex !important; align-items: center; gap: 4px; padding: 0 12px !important; border-radius: 999px !important; border: 1px solid var(--a-line2) !important; background: var(--a-bg) !important; font-size: 13px; font-weight: 600; flex: none; }
+/* l'aiguillage : ta phrase en tête, ses branches vers ce qu'elle a créé */
+.nc-note { display: flex; flex-direction: column; }
+.nc-ph { position: relative; background: var(--a-bul); border: 1.5px solid var(--a-ink); border-radius: 16px 16px 16px 10px; padding: 7px 12px; font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; }
+.nc-ph small { display: block; font-size: 12px; color: var(--a-mut); font-weight: 600; }
+.nc-ph.nc-brute { display: flex; align-items: center; gap: 8px; border-style: dashed; border-color: var(--a-line2); }
+.nc-ph.nc-brute > span { flex: 1; min-width: 0; }
+.nc-sw { position: relative; display: flex; flex-direction: column; padding-top: 6px; background: linear-gradient(var(--a-rail), var(--a-rail)) 12px 0 / 3px 6px no-repeat; }
+.nc-br { position: relative; padding: 0 0 6px 28px; background: linear-gradient(var(--a-rail), var(--a-rail)) 12px 0 / 3px 100% no-repeat; }
+.nc-br:last-child { padding-bottom: 0; background-size: 3px 30px; }
+.nc-br::before { content: ""; position: absolute; left: 12px; top: 27px; width: 16px; height: 3px; border-radius: 999px; background: var(--a-rail); }
+.nc-br::after { content: ""; position: absolute; left: 7px; top: 22px; width: 13px; height: 13px; border-radius: 999px; background: var(--c); box-shadow: 0 0 0 3px var(--a-s1); }
+.nc-br.off::after { background: var(--a-s1); border: 2px solid var(--a-rail); box-sizing: border-box; }
+.nc-br.off::before { background: var(--a-line2); }
+/* geste : une seule carte, une case par chose */
+.nc-big { background: var(--a-bg); border: 1.5px solid var(--a-ia); border-radius: 16px; padding: 10px 12px 12px; }
+.nc-aih { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--a-ia); margin-bottom: 6px; }
+.nc-aih em { font-style: normal; font-weight: 400; color: var(--a-mut); margin-left: auto; border: 1px solid var(--a-line2); border-radius: 999px; padding: 0 7px; }
+.nc-big .nc-ph { border-width: 1px; border-color: var(--a-line2); }
+.nc-big .nc-sw { padding-top: 8px; background-size: 3px 8px; }
+.nc-big .nc-br::after { box-shadow: 0 0 0 3px var(--a-bg); }
+.nc-big .nc-br.off::after { background: var(--a-bg); }
+.nc-ch { width: 100%; display: flex !important; align-items: center; gap: 8px; min-height: 56px; padding: 6px 4px 6px 10px !important; border: 1px solid var(--a-line2) !important; border-radius: 10px !important; background: var(--a-bg) !important; }
+.nc-ch > .nc-tx { flex: 1; min-width: 0; }
+.nc-ch b { display: block; font-size: 16px; font-weight: 600; line-height: 1.2; }
+.nc-br.off .nc-ch { background: var(--a-s1) !important; border-color: var(--a-line) !important; }
+.nc-br.off .nc-ch b { font-weight: 400; }
+.nc-cb { width: 44px; height: 44px; display: grid; place-items: center; flex: none; }
+.nc-cb i { width: 26px; height: 26px; border-radius: 10px; border: 2px solid var(--a-mut); display: grid; place-items: center; }
+.nc-cb.on i { background: var(--a-act); border-color: var(--a-act); color: var(--a-onact); }
+.nc-px { display: block; font-size: 13px; font-weight: 600; color: var(--a-mut); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.nc-px em { font-style: normal; font-weight: 600; color: var(--a-hop); margin-left: 4px; }
+.nc-fl { display: flex; gap: 6px; margin-top: 6px; }
+.nc-fl label { flex: 1; position: relative; min-height: 44px; border-radius: 10px; border: 1px solid var(--a-line2); background: var(--a-s1); display: flex; align-items: center; gap: 6px; padding: 0 10px; font-size: 14px; font-weight: 600; }
+.nc-fl label > span { font-weight: 400; color: var(--a-mut); font-size: 13px; margin-left: auto; }
+.nc-fl select { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; font-size: 16px; }
+.nc-fl svg { color: var(--a-mut); }
+.nc-in { width: 100%; min-height: 40px; margin-top: 2px; border: 1.5px solid var(--a-ink); border-radius: 10px; padding: 0 10px; background: var(--a-bg); color: var(--a-ink); font: inherit; font-size: 16px; }
+.nc-two { display: flex; gap: 8px; margin-top: 10px; }
+.nc-two button { min-height: 48px; border-radius: 10px; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+.nc-two .a { flex: 1; border: 1px solid var(--a-line2); background: var(--a-bg); }
+.nc-two .b { flex: 2; background: var(--a-act); color: var(--a-onact); }
+.nc-two .a[aria-pressed=true] { border: 2px solid var(--a-ink); }
+.nc-wait-ia { display: flex; align-items: center; gap: 8px; color: var(--a-ia); font-size: 14px; font-weight: 600; min-height: 44px; }
+/* fiche : rangée ; À faire (kd4) et Contacts (kc1) en fenêtres au bout des branches */
+.nc-ok { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; font-weight: 600; padding-left: 4px; }
+.nc-ok svg { color: var(--a-hop); }
+.nc-ok button { margin-left: auto; min-height: 44px; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--a-line2); border-radius: 10px; background: var(--a-bg); font-size: 14px; }
+.nc-ph.nc-src { padding-top: 6px; padding-bottom: 6px; }
+.nc-win { background: var(--a-bg); border: 1px solid var(--a-line2); border-top: 4px solid var(--c); border-radius: 16px; overflow: hidden; }
+.nc-wh { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 4px 0 12px; font-size: 13px; font-weight: 700; color: var(--c); border-bottom: 1px solid var(--a-line); }
+.nc-wh button { margin-left: auto; min-height: 44px; display: flex; align-items: center; gap: 2px; padding: 0 8px; color: var(--a-ink); font-weight: 600; }
+.nc-wb { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+.nc-dd { width: 44px; text-align: right; font-weight: 700; color: var(--a-fin); font-size: 13px; line-height: 1.1; flex: none; }
+.nc-dd small { display: block; font-weight: 400; font-size: 12px; color: var(--a-mut); }
+.nc-bd { width: 22px; height: 22px; border-radius: 999px; border: 3px solid var(--a-fin); background: var(--a-evt); flex: none; }
+.nc-bd.n { box-shadow: 0 0 0 3px var(--a-bg), 0 0 0 5px var(--a-fin); }
+.nc-lk { display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--a-hopbg); color: var(--a-hop); font-size: 13px; font-weight: 600; }
+.nc-av { width: 40px; height: 40px; border-radius: 10px; background: var(--a-s2); display: grid; place-items: center; color: var(--a-prod); flex: none; }
+.nc-tc { font-size: 13px; font-weight: 600; color: var(--a-prod); }
+.nc-rest { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; font-weight: 600; }
+.nc-rest .nc-add { border-color: var(--a-ink) !important; }
+/* compositeur au pouce, collé au-dessus de la barre du bas */
+.nc-comp { position: sticky; bottom: var(--nc-dock, 0px); z-index: 30; background: var(--a-bg); border-top: 1px solid var(--a-line); padding: 8px 0; margin-top: 4px; }
+.nc-comp .finance-assistant { margin-bottom: 8px; }
+.nc-att { margin: 0 0 8px auto; max-width: 90%; border-color: var(--a-line2); display: flex; flex-direction: column; }
+.nc-wait { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--a-mut); margin-top: 4px; }
+.nc-line { display: flex; align-items: center; gap: 8px; }
+.nc-field { flex: 1; min-height: 44px; padding: 10px 16px; border: 1px solid var(--a-line); border-radius: 24px; background: var(--a-s1); color: var(--a-ink); font: inherit; font-size: 16px; resize: none; line-height: 1.3; max-height: 120px; }
+.nc-field::placeholder { color: var(--a-mut); }
+.nc-send { width: 44px; height: 44px; border-radius: 999px !important; background: var(--a-act) !important; color: var(--a-onact) !important; display: grid !important; place-items: center; flex: none; }
+.nc-send:disabled { opacity: .5; }
+.nc-x { width: 44px; height: 44px; display: grid !important; place-items: center; color: var(--a-mut); flex: none; }
+@media (min-width: 1024px) { .nc { max-width: 720px; } }
