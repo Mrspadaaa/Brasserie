@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Check, ClipboardCheck, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
 import { sameField } from '../../functions/src/brewerFields';
 import { SALTS, ACIDS } from '../domain/water';
+import { barreAvantApres } from './companion/derive';
+import { Icone } from './companion/parts';
+import { LigneChangement } from './companion/proposition';
 
 const names: Record<string, string> = {
   name: 'Nom',
@@ -102,6 +105,10 @@ function differences(
   }
   return [{ label: prefix, before, after }];
 }
+/**
+ * Proposition à valider (forme p2a) : une ligne par changement — case, libellé, barre, avant barré → après.
+ * Contrat inchangé : { proposal, disabled, draft, onDecide(ids, decision) }. La sélection suit les groupes liés (eau).
+ */
 export function BrewerProposalCard({
   proposal,
   disabled,
@@ -127,95 +134,87 @@ export function BrewerProposalCard({
       setBusy(false);
     }
   };
+  const toggle = (ch: BrewerProposal['changes'][number]) =>
+    setSelected((ids) => {
+      const linked = proposal.changes
+        .filter((other) => (ch.group ? other.group === ch.group : other.id === ch.id))
+        .map((other) => other.id);
+      return ids.includes(ch.id) ? ids.filter((id) => !linked.includes(id)) : [...new Set([...ids, ...linked])];
+    });
   const done = !!proposal.status;
+  const valeur = (v: any, label: string, unit?: string) => valueText(v, label, unit);
   return (
-    <section
-      className={`brewer-proposal ${done ? 'is-decided' : ''}`}
-      aria-label="Modifications proposées"
-    >
-      <header>
-        <ClipboardCheck size={18} />
-        <div>
-          <strong>{proposal.title}</strong>
-          <small>
-            {done
-              ? proposal.status === 'applied'
-                ? draft
-                  ? 'Champs appliqués au brouillon'
-                  : 'Modifications enregistrées'
-                : 'Proposition écartée'
-              : 'À valider avant toute modification'}
-          </small>
-        </div>
-      </header>
+    <section className={`cmp-carte cmp-prop ${done ? 'is-decided' : ''}`} aria-label="Modifications proposées">
+      <div className="cmp-lbl">
+        <span>
+          {done
+            ? proposal.status === 'applied'
+              ? draft
+                ? 'Champs appliqués au brouillon'
+                : 'Modifications enregistrées'
+              : 'Proposition écartée'
+            : 'Proposition · rien n’est appliqué sans toi'}
+        </span>
+        {!done && <span className="cmp-n">{selected.length} cochée{selected.length > 1 ? 's' : ''}</span>}
+      </div>
+      <strong className="cmp-prop-titre">{proposal.title}</strong>
       {!done && (
         <>
-          {proposal.changes.some(ch => ch.group === 'water') && <p className="brewer-proposal-note">Eau et traitement liés : une seule sélection pour garder les litres, les sels et l’acide cohérents.</p>}
-          <div className="brewer-proposal-changes">
-            {proposal.changes.map((ch) => (
-              <div key={ch.id} className="brewer-proposal-change">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(ch.id)}
-                    disabled={busy || disabled}
-                    onChange={(e) =>
-                      setSelected((ids) => {
-                        const linked = proposal.changes.filter(other => ch.group ? other.group === ch.group : other.id === ch.id).map(other => other.id);
-                        return e.target.checked ? [...new Set([...ids, ...linked])] : ids.filter(id => !linked.includes(id));
-                      })
-                    }
-                  />
-                  <strong>{ch.label}</strong>
-                </label>
-                <dl>
-                  {differences(ch.before, ch.value).map((diff, i) => (
-                    <div key={i}>
-                      {diff.label && <dt>{diff.label}</dt>}
-                      <dd>
-                        <span>
-                          <small>Actuel</small>
-                          {valueText(diff.before, diff.label, ch.unit)}
-                          {ch.unit && typeof diff.before === 'number' ? ` ${ch.unit}` : ''}
-                        </span>
-                        <span>
-                          <small>Proposé</small>
-                          {valueText(diff.after, diff.label, ch.unit)}
-                          {ch.unit && typeof diff.after === 'number' ? ` ${ch.unit}` : ''}
-                        </span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                {ch.reason && <p>{ch.reason}</p>}
-              </div>
-            ))}
-          </div>
+          {proposal.changes.some((ch) => ch.group === 'water') && (
+            <p className="cmp-note">
+              Eau et traitement liés : une seule sélection pour garder les litres, les sels et l’acide cohérents.
+            </p>
+          )}
+          {proposal.changes.map((ch) => {
+            const diffs = differences(ch.before, ch.value);
+            const scalaire = diffs.length === 1 && !diffs[0].label;
+            const d = scalaire ? diffs[0] : undefined;
+            const unite = ch.unit && d && typeof d.after === 'number' ? ch.unit : undefined;
+            return (
+              <LigneChangement
+                key={ch.id}
+                label={ch.label}
+                coche={selected.includes(ch.id)}
+                disabled={busy || disabled}
+                onToggle={() => toggle(ch)}
+                barre={d ? barreAvantApres(d.before, d.after, ch.unit) : { genre: 'texte' }}
+                avant={d ? valeur(d.before, '', ch.unit) : undefined}
+                apres={d ? valeur(d.after, '', ch.unit) : undefined}
+                unite={unite}
+                sousLignes={
+                  scalaire
+                    ? []
+                    : diffs.map((diff) => ({
+                        label: diff.label || ch.label,
+                        avant: `${valeur(diff.before, diff.label, ch.unit)}${ch.unit && typeof diff.before === 'number' ? ` ${ch.unit}` : ''}`,
+                        apres: `${valeur(diff.after, diff.label, ch.unit)}${ch.unit && typeof diff.after === 'number' ? ` ${ch.unit}` : ''}`
+                      }))
+                }
+                raison={ch.reason}
+              />
+            );
+          })}
           {draft && (
-            <p className="brewer-proposal-note">
-              Ces champs seront remplis dans le brouillon. Tu gardes le bouton habituel pour
-              enregistrer la recette.
+            <p className="cmp-note">
+              Ces champs seront remplis dans le brouillon. Tu gardes le bouton habituel pour enregistrer la recette.
             </p>
           )}
           {error && (
-            <p role="alert" className="brewer-proposal-error">
+            <p role="alert" className="cmp-note cmp-erreur">
               {error}
             </p>
           )}
-          <div className="brewer-proposal-actions">
-            <button
-              type="button"
-              disabled={busy || disabled}
-              onClick={() => void decide('dismiss')}
-            >
+          <div className="cmp-act">
+            <button type="button" className="cmp-btn cmp-g" disabled={busy || disabled} onClick={() => void decide('dismiss')}>
               Écarter
             </button>
             <button
               type="button"
+              className="cmp-btn cmp-p"
               disabled={busy || disabled || !selected.length}
               onClick={() => void decide('apply')}
             >
-              {busy ? <LoaderCircle size={16} className="brewer-chat-spin" /> : <Check size={16} />}
+              {busy ? <LoaderCircle size={16} className="brewer-chat-spin" aria-hidden /> : <Icone nom="ok" />}
               Valider {selected.length} modification{selected.length > 1 ? 's' : ''}
             </button>
           </div>
