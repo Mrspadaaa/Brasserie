@@ -19,10 +19,14 @@
 .tf-bieres button { flex: 1 1 auto; min-height: 44px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--tf-t1); border-left: 1px solid var(--tf-bord); white-space: nowrap; }
 .tf-bieres button:first-child { border-left: 0; }
 .tf-bieres button[aria-pressed='true'] { background: var(--tf-acc); color: var(--tf-onacc); font-weight: 700; }
-.tf-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.tf-dot-vide { border: 1.5px solid var(--tf-t2); }
+/* Pastilles de bière : les teintes de l'échelle EBC de l'app (tailwind.config.js). La paille de l'échelle est l'aplat d'action (noir en clair) : ici une vraie paille. */
+.tf-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 0 1.5px var(--tf-t2); margin: 0 1px; }
+.tf-dot-straw { background: #F1E1A0; } .tf-dot-gold { background: #E0A02E; } .tf-dot-amber { background: #C87A2C; }
+.tf-dot-copper { background: #A0522D; } .tf-dot-brown { background: #6B3A1E; } .tf-dot-stout { background: #3B1F14; }
+.tf-dot-vide { border: 1.5px solid var(--tf-t2); box-shadow: none; }
+.tf-bieres button[aria-pressed='true'] .tf-dot { box-shadow: 0 0 0 1.5px var(--tf-onacc); }
 .tf-cols { display: grid; gap: 12px; margin-top: 10px; }
-@media (min-width: 900px) { .tf-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; } }
+@media (min-width: 900px) { .tf-cols { grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr); align-items: start; } }
 .tf-fig { border-radius: 16px; background: var(--tf-pan); border: 1px solid var(--tf-bord); padding: 10px 12px 2px; }
 .tf-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--tf-t1); }
 .tf-leg span { display: inline-flex; align-items: center; gap: 5px; }
@@ -76,9 +80,21 @@
 .tf-gd { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--tf-prod); color: var(--tf-page); flex: none; font-size: 13px; }
 .tf-x, .tf-stp { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--tf-bordm); display: grid; place-items: center; color: var(--tf-t1); flex: none; font-size: 20px; }
 .tf-bigp { display: flex; align-items: center; gap: 8px; }
-.tf-bigp .tf-pv, .tf-bigp input { flex: 1; min-width: 0; font-size: 20px; min-height: 44px; }
+.tf-bigp .tf-pv { flex: 1; min-width: 0; font-size: 22px; height: 44px; min-height: 44px; }
 .tf-kv { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.tf-kv > div { border-bottom: 1px solid var(--tf-bordm); padding-bottom: 4px; }
+.tf-kv > div { border-bottom: 1px solid var(--tf-bordm); padding-bottom: 4px; display: flex; flex-direction: column; justify-content: space-between; }
+.tf-kv .tf-leger { display: block; }
 .tf-kv small { display: block; font-size: 13px; color: var(--tf-t2); }
 .tf-fix { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 12px; border-radius: 12px; background: color-mix(in srgb, var(--tf-fin) 12%, transparent); color: var(--tf-fin); font-weight: 600; text-align: left; }
 .tf-fix span { flex: 1; }
+/* « Réfléchir à mes projets » : cible de 44 px (le bouton de l'Atelier vit dans la colonne de droite de la frise). */
+.tf .finance-assistant { min-height: 44px; }
+/* La feuille : un voile léger, sans flou, comme la maquette (on voit où tombe la vente sur la règle) ; 480 à 520 px au bureau, pas toute la largeur. */
+body:has(.tf-sheet) [data-vaul-overlay] { background: rgb(0 0 0 / .03); backdrop-filter: none; -webkit-backdrop-filter: none; }
+[role='dialog']:has(.tf-sheet) { max-width: 520px; margin-inline: auto; }
+/* Le champ du prix : le trait souligné de la maquette (kxc-pv), sans le bloc blanc du champ de l'app. */
+.tf-bigp :is(input, textarea) { background: transparent; border: 0; border-bottom: 2px solid var(--tf-bordm); border-radius: 0; box-shadow: none; padding: 0 4px; line-height: 42px; resize: none; overflow: hidden; font-weight: 600; color: var(--tf-t1); }
+.tf-bigp :is(input, textarea):focus { outline: none; border-bottom-color: var(--tf-t1); }
+/* Liste repliée : les prix des sous-lignes s'alignent sur celui de l'en-tête (le chevron est de 18 px + 10 px d'écart). */
+.tf-liste .tf-gl { padding-right: 28px; }
+.tf-rn { white-space: nowrap; }

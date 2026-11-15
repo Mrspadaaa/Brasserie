@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronRight, CircleHelp, Plus, Store, Tag, X } from 'lucide-react';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
@@ -12,7 +12,7 @@ import { biereDuBrassin, brassinDuCout, lireDonneesPrix } from '../prix/donneesP
 import { estDemo } from './demo';
 import { domaineKxc, echelleLog } from '../../domain/tarifs/echellePrix';
 import { bieresDesVentes, groupesParFormat, nomFormat, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
-import { COULOIR, disposerFrise, marqueProche, type Marque } from '../../domain/tarifs/friseDisposition';
+import { disposerFrise, marqueProche, type Marque } from '../../domain/tarifs/friseDisposition';
 import './tarifs-frise.css';
 
 /**
@@ -27,18 +27,20 @@ const chf = (n: number) => montantChf(n);
 const fr2 = (n: number) => n.toFixed(2).replace('.', ',');
 const plage = (a: number, b: number) => (a === b ? chf(a) : `${chf(a)} – ${chf(b)}`);
 
-/** Silhouettes des formats, reprises de la maquette (SIL, PLUS). */
-const SIL: Record<string, string> = {
-  fut: 'M7 3h10c1.6 3 1.6 15 0 18H7C5.4 18 5.4 6 7 3z', growler: 'M8 3h5v3.5l2 3V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9.5l2-3z',
-  carton: 'M4.5 9h15a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9A1.5 1.5 0 0 1 4.5 9z',
-  '33cl': 'M10 2h4v4l1.6 3.2V21a1 1 0 0 1-1 1H9.4a1 1 0 0 1-1-1V9.2L10 6z', '75cl': 'M10 2h4v5l2 3V21a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3z',
-  verre: 'M6 3h12l-1.6 17.1a1 1 0 0 1-1 .9H8.6a1 1 0 0 1-1-.9z'
+/** Silhouettes des formats, reprises de la maquette kxc (symboles kxc-s-fut, growler, carton, bout, verre) : le fût a ses cerclages, le growler son anse. */
+const SIL: Record<string, string[]> = {
+  fut: ['M7 3h10c1.6 3 1.6 15 0 18H7C5.4 18 5.4 6 7 3z', 'M5.9 8h12.2M5.9 16h12.2'],
+  growler: ['M8 3h5v3.5l2 3V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9.5l2-3z', 'M15 11h1.5a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H15'],
+  carton: ['M4.5 9h15a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9A1.5 1.5 0 0 1 4.5 9z', 'M3 13h18'],
+  '33cl': ['M10 2h4v4l1.6 3.2V21a1 1 0 0 1-1 1H9.4a1 1 0 0 1-1-1V9.2L10 6z', 'M8.4 13h7.2'],
+  '75cl': ['M10 2h4v5l2 3V21a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3z', 'M8 14h8'],
+  verre: ['M6 3h12l-1.6 17.1a1 1 0 0 1-1 .9H8.6a1 1 0 0 1-1-.9z', 'M6.5 8h11']
 };
 function Picto({ formatId, taille = 20 }: { formatId: string; taille?: number }) {
-  const d = SIL[formatId];
-  if (!d) return <CircleHelp size={taille} aria-hidden="true" />;
-  return <svg width={taille} height={taille} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" aria-hidden="true">
-    <path d={d} />{formatId === 'carton' && <><circle cx="7" cy="5.5" r="1.8" /><circle cx="12" cy="5.5" r="1.8" /><circle cx="17" cy="5.5" r="1.8" /></>}
+  const traits = SIL[formatId];
+  if (!traits) return <CircleHelp size={taille} aria-hidden="true" />;
+  return <svg width={taille} height={taille} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
+    {traits.map((d) => <path key={d} d={d} />)}{formatId === 'carton' && <><circle cx="7" cy="5.5" r="1.8" /><circle cx="12" cy="5.5" r="1.8" /><circle cx="17" cy="5.5" r="1.8" /></>}
   </svg>;
 }
 const GENRE_NOM: Record<GenreClient, string> = { pro: 'Pro', prive: 'Privé', inconnu: 'Inconnu' };
@@ -102,6 +104,17 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
     const m = dispo.marques.find((q) => q.ventes.includes(v));
     setSel({ marque: m ?? { cle: v.cle, ventes: [v], cx: 0, py: 0, largeur: 24, couloir: -1 }, vente: v });
   };
+  /** La feuille monte du bas : la marque touchée doit rester au-dessus, pour voir où tombe la vente sur la règle (maquette kxc-geste). */
+  useEffect(() => {
+    if (!sel) return;
+    const t = window.setTimeout(() => {
+      const m = scene.current?.querySelector<HTMLElement>('.tf-m.on'), f = document.querySelector<HTMLElement>('[role="dialog"]:has(.tf-sheet)');
+      if (!m || !f) return;
+      const r = m.getBoundingClientRect(), haut = f.getBoundingClientRect().top;
+      if (r.bottom > haut - 16 || r.top < 80) window.scrollBy({ top: r.top + r.height / 2 - Math.max(130, haut * 0.4), behavior: 'smooth' });
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [sel?.marque.cle]);
   const touche = (i: number) => (e: React.MouseEvent<HTMLDivElement>) => {
     const r = scene.current?.getBoundingClientRect(); if (!r) return;
     const m = marqueProche(dispo.marques, i, e.clientX - r.left, e.clientY - r.top);
@@ -124,7 +137,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
           {[null, ...bieres].map((b) => {
             const ebc = b ? recettes.find((r) => r.name === b)?.colorEbc : undefined;
             return <button key={b ?? 'toutes'} type="button" aria-pressed={biere === b} onClick={() => { setChoix(b); setSel(null); }}>
-              {b && <i className={`tf-dot ${typeof ebc === 'number' ? bandForEbc(ebc).swatch : 'tf-dot-vide'}`} aria-hidden="true" />}{b ?? 'Toutes'}
+              {b && <i className={`tf-dot ${typeof ebc === 'number' ? `tf-dot-${bandForEbc(ebc).band}` : 'tf-dot-vide'}`} aria-hidden="true" />}{b ?? 'Toutes'}
             </button>;
           })}
         </div>
@@ -148,7 +161,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
                     <path d={`M${bx} ${AX + 8}V${AX + 26}`} className="tf-ref-tir tf-ref-plein" />
                   </>}
                   {dispo.couloirs.map((c) => <g key={c.cle}>
-                    <path d={`M0 ${c.y0 + COULOIR}H${W}`} className="tf-sep" />
+                    <path d={`M0 ${c.y0 + c.h}H${W}`} className="tf-sep" />
                     <foreignObject x={5} y={c.cy - 11} width={22} height={22}><div className="tf-fmt"><Picto formatId={c.formatId} taille={22} /></div></foreignObject>
                     <path d={`M${c.xmin} ${c.cy}H${c.xmax}`} className="tf-piste" />
                   </g>)}
@@ -158,7 +171,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
                   {bx !== null && <text x={refX} y={AX + 40} className="tf-ref-t">{refTexte}</text>}
                   {rx !== null && <text x={Math.max(2, rx - 4)} y={AX + 60} className="tf-rev-t">Revient {biere}<tspan className="tf-leger"> · hors contenant</tspan></text>}
                 </svg>
-                {dispo.couloirs.map((c, i) => <div key={c.cle} className="tf-couloir" style={{ top: c.y0, height: COULOIR }} onClick={touche(i)} aria-hidden="true" />)}
+                {dispo.couloirs.map((c, i) => <div key={c.cle} className="tf-couloir" style={{ top: c.y0, height: c.h }} onClick={touche(i)} aria-hidden="true" />)}
                 {dispo.marques.map((m) => {
                   const on = sel?.marque.cle === m.cle, flou = sel !== null && !on;
                   const gs = [...new Set(m.ventes.map((v) => v.genre))].slice(0, 2);
@@ -225,7 +238,7 @@ function VenteFeuille({ sel, onClose, onVente, revient }: { sel: { marque: Marqu
           </div>
           <div className="tf-kv">
             <div><small>Au litre</small><b className="tf-n">{prix ? fr2(prix / v.litresUnite) : '?'}</b></div>
-            <div><small>Coût · revient {v.biere ?? ''}</small><b className="tf-n">{revient !== null && v.biere ? fr2(revient * v.litresUnite) : '?'}</b></div>
+            <div><small>Coût · revient {v.biere ?? ''}<span className="tf-leger">hors contenant</span></small><b className="tf-n">{revient !== null && v.biere ? fr2(revient * v.litresUnite) : '?'}</b></div>
           </div>
           <button type="button" className="tf-fix" onClick={versPrix}><Tag size={20} aria-hidden="true" /><span>Fixer dans Clients › Prix</span><ChevronRight size={18} aria-hidden="true" /></button>
         </>}
