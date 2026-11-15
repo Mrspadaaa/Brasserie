@@ -1699,3 +1699,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : dans m2mo-a le montant est verrouillé (cadenas, « Déjà payé : avoir ou annuler l'opération », règle actuelle `moneyLocked` d'EditTransactionModal) ; 4 mini maquettes de m2mo-a où tout se modifie, montant payé compris.)
 - **15.11**, mot pour mot : « 6 · Payer pas de justificatif ? Un peu étrange, pareil pour l'apport personnel SI non candidat 1 »
   (lu : Payer et l'apport choisi m1ap-c doivent recevoir un justificatif (photo ou fichier) ; « candidat 1 » = m1ap-d, qui relie l'apport aux achats déjà justifiés ; m1ap-c étant choisie, elle reçoit un justificatif. Payer : 4 mini maquettes avec justificatif.)
+- **15.11**, mot pour mot, sur la page « Finances : tes retours du 15.11 » (https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP), vignette m5pa-d : « m5pa-d Un virement, plusieurs pièces top »
+  (lu, contrat réécrit du pilote, 15.11 : Payer = m5pa-d, porté 1:1 avec les autres choix de la page ; Modifier et Fiche sans choix explicite : sa règle du 15.11 « SI non candidat 1 » s'applique, donc m5mo-c et m5fo-a (première du critique, cadre bleu), réversibles ; Apport = m5ap-a (m1ap-c choisie + justificatif demandé).)
+- **15.11**, mot pour mot, sur la page « Finances : tes retours du 15.11 », vignette m5mo-c : « Tu choisis, avant / après ok »
+  (lu : Modifier = m5mo-c, choisi explicitement ; déjà en port, voie q4.)

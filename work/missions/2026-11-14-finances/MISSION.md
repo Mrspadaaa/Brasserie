@@ -68,3 +68,14 @@ D207 : v0 au repos plus un état ; un critique Opus ; agents neufs pour toute re
 - Voies : s1, s2, s3 (12 v0, SERIE OK, PAGE OK) ; c1 tri ; p2a, p2b (5 candidates, montrables) ; o1 V6A OK ; y1 SYNTHESE OK ; a1 ANNUEL OK ; r1 R1 OK ; f1 FRISE OK ; f2 suite complète sans rouge neuf (ROUGES.md : 58 rouges déjà sur la base, dépendances de functions/ absentes du worktree) ; f3 bloquants finaux. Verdict avant déploiement c193cf8c : 0 bloquant, pilote vu.
 - Décisions : Opérations = v6a + s2ap2 (brasseur) ; pièce de matériel non classée = « à classer », résultat en attente (pilote, diagnostic y1) ; à payer placé à l'échéance dans la frise et la plage (règle de s2ap2), la vue du mois garde la date de pièce (écart dit).
 - Ouvert : jeu en ligne sur « ZZ TEST » non fait (connexion Google du brasseur requise ; aucun chemin d'écriture changé, mais ✓ Payé déplacé par o1) ; mineurs du verdict c193cf8c 1 à 9 (plage vide en grand cadre, Archives sans année, lien Matériel « Archives comprises », boutons de l'étape 4, « ? » dans l'Entré, « + pièce » ouvre toute l'écriture, vente à 569,50 la bouteille sans alerte, Mois par mois, frise à cheval sans le 14) ; registre `controle-choix --registre` en échec antérieur (captures non versionnées) ; contrôle M13 « série Fable » écarté par « SANS FABLE ».
+
+## Contrat réécrit — 15.11 (pilote), choix du brasseur
+Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. Modifier : encore sans choix (m5mo-a à d) ; sinon, sa règle du 15.11 « SI non candidat 1 ».
+À faire : verser dans SPEC, porter m5pa-d 1:1 avec les autres choix de la page, tests, build, captures regardées, mise en ligne selon la méthode (check-firebase-config obligatoire), jeu en ligne sur « ZZ TEST ».
+
+### Exécution du contrat réécrit (pilote, 15.11)
+- Lecture : Payer = m5pa-d ; Apport = m5ap-a ; Modifier = m5mo-c et Fiche = m5fo-a par sa règle « SI non candidat 1 » (réversibles, registre).
+- État de l'art (L29) : Payer = imputation d'un paiement sur factures ouvertes, FIFO par échéance (fonction pure, centimes) ; Modifier = correction d'une écriture payée par contre-écriture (paiement immuable, `CONTRE-<id>`, règles Firestore lues), aucune bibliothèque utile (domaine maison, quelques lignes).
+- Décision (pilote) : le montant d'une pièce payée se modifie tant que son année n'est pas close ni archivée ; ensuite verrou expliqué.
+- Voies : q1 Payer, q2 Apport, q3 Fiche, q4 Modifier (auteurs Sonnet, Possède disjoints), puis relecture indépendante q1/q4 (paiements), test d'écran du critique (Opus), build, garde avant déploiement, mise en ligne (check-firebase-config), jeu en ligne « ZZ TEST ».
+- Modifier, mot pour mot : « m5mo-c Tu choisis, avant / après ok ». Modifier = m5mo-c. Toutes les vues de la page ont maintenant leur choix : porter le tout 1:1 et mettre en ligne.

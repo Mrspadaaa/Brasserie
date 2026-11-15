@@ -1,0 +1,74 @@
+/* Apport ou prélèvement privé = m5ap-a (15.11). Classes préfixées `mvt-` (L26), racine `.mvt`.
+   Mesures de la maquette (etat.html) : flèche 56 px, montant 20 px mono dans un cadre de 2 px, effet sur carte, pastilles de 32 px, champs de 44 px,
+   justificatif en cadre pointillé (pointillé = sans pièce). Clair comme cave : texte, fonds et liserés prennent les jetons du thème ;
+   seuls la flèche verte, la tuile de la brasserie et les pointillés gardent la couleur de la maquette. */
+.mvt { --mvt-t1: rgb(var(--cave-texte-50)); --mvt-t2: rgb(var(--cave-texte-200)); --mvt-t3: rgb(var(--cave-texte-400));
+  --mvt-bord: rgb(var(--cave-700)); --mvt-champ: rgb(var(--cave-950)); --mvt-carte: rgb(var(--cave-850));
+  --mvt-vert: 86 210 123; --mvt-in: rgb(var(--hop-texte)); --mvt-out: rgb(var(--alert-texte));
+  color:var(--mvt-t1); font-size:14px; line-height:18px; min-width:0; padding:2px 4px 0; }
+.mvt * { box-sizing:border-box; }
+.mvt[data-sens='out'] { --mvt-vert: var(--alert); }
+.mvt button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:left; }
+.mvt .mvt-m { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; font-weight:600; }
+
+/* Sheet partagée : le titre reprend les 18 px de la maquette (`.finance-sheet h2` les porte déjà) ; la feuille s'ouvre assez haute pour tout montrer. */
+.finance-sheet.mvt-feuille h2 { font-size:18px; line-height:22px; font-weight:700; }
+
+/* Ta poche → La brasserie */
+.mvt-flow { display:grid; grid-template-columns:72px 1fr 72px; align-items:center; gap:6px; margin:6px 0 2px; }
+.mvt-who { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:var(--mvt-t2); text-align:center; }
+.mvt-who span { width:56px; height:56px; border-radius:18px; display:grid; place-items:center; }
+.mvt-me { background:rgb(var(--cave-850)); color:rgb(var(--area-finances-texte)); box-shadow:inset 0 0 0 1px var(--mvt-bord); }
+.mvt-br { background:#111; }
+.mvt-arrow { position:relative; height:56px; display:flex; align-items:center; justify-content:center; }
+.mvt-arrow::before { content:""; position:absolute; left:0; right:10px; top:50%; height:6px; margin-top:-3px; border-radius:3px; background:rgb(var(--mvt-vert)); }
+.mvt-arrow::after { content:""; position:absolute; right:0; top:50%; margin-top:-11px; border:11px solid transparent; border-left:14px solid rgb(var(--mvt-vert)); border-right:0; }
+.mvt-arrow input, .mvt-arrow textarea { position:relative; z-index:1; width:124px; min-height:44px; padding:0 6px; text-align:center; border:2px solid var(--mvt-t1); border-radius:14px; background:var(--mvt-champ); color:var(--mvt-t1);
+  font-family:'IBM Plex Mono',ui-monospace,monospace; font-weight:600; font-size:20px; line-height:40px; resize:none; overflow:hidden; }
+.mvt-arrow input::placeholder, .mvt-arrow textarea::placeholder { color:var(--mvt-t3); font-weight:400; }
+.mvt-arrow [role='alert'] { position:absolute; top:100%; left:0; right:0; z-index:2; }
+.mvt-flip { display:flex; justify-content:center; margin-bottom:6px; }
+.mvt-lien { color:rgb(var(--area-finances-texte)); font-weight:600; font-size:13px; display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 8px; }
+
+/* Effet : la caisse change, ventes − dépenses non */
+.mvt-eff { border-radius:14px; background:var(--mvt-carte); padding:8px; margin-top:0; }
+.mvt-ln { display:grid; grid-template-columns:118px 1fr auto; gap:8px; align-items:center; min-height:28px; font-size:13px; }
+.mvt-ln > span:first-child { white-space:nowrap; }
+.mvt-tr { height:14px; border-radius:4px; background:rgb(var(--cave-800)); position:relative; overflow:hidden; }
+.mvt-tr i { position:absolute; top:0; bottom:0; border-radius:4px; }
+.mvt-base { background:rgb(var(--cave-600)); }
+.mvt-seg { background:rgb(var(--mvt-vert)); }
+.mvt-res { background:var(--mvt-t1); }
+.mvt-m[data-sens='in'] { color:var(--mvt-in); }
+.mvt-m[data-sens='out'] { color:var(--mvt-out); }
+.mvt-res-t { font-size:12px; color:var(--mvt-t2); margin:2px 0 0; }
+
+/* Champs */
+.mvt-f { display:flex; flex-direction:column; gap:3px; margin-top:10px; }
+.mvt-f > span:first-child { font-size:12px; color:var(--mvt-t2); }
+.mvt-in { display:flex; align-items:center; gap:6px; min-height:44px; border:1px solid var(--mvt-bord); border-radius:12px; padding:0 12px; background:var(--mvt-champ); }
+.mvt-in input, .mvt-in textarea { border:0; outline:0; flex:1; min-width:0; font-size:16px; background:none; color:var(--mvt-t1); min-height:42px; padding:0; resize:none; }
+.mvt-in input[type='date'] { color-scheme:light; }
+:root[data-theme='cave'] .mvt-in input[type='date'] { color-scheme:dark; }
+.mvt-date { margin-top:4px; }
+.mvt-chips { display:flex; gap:5px; flex-wrap:wrap; }
+.mvt-c { min-height:32px; padding:0 11px; border-radius:16px; border:1px solid var(--mvt-bord); font-size:13px; background:var(--mvt-champ); color:var(--mvt-t1); }
+.mvt-c[aria-checked='true'] { background:rgb(var(--ebc-straw)); color:rgb(var(--sur-paille)); border-color:rgb(var(--ebc-straw)); font-weight:600; }
+.mvt-c:focus-visible, .mvt-lien:focus-visible, .mvt-js button:focus-visible, .mvt-mini:focus-visible { outline:2px solid var(--mvt-t1); outline-offset:2px; }
+
+/* Justificatif : pointillé tant qu'il manque, vignette « ✓ joint » une fois posé */
+.mvt-js { display:flex; gap:6px; }
+.mvt-js button { flex:1; min-height:44px; border-radius:12px; border:2px dashed rgb(var(--attention) / .75); background:rgb(var(--attention) / .08); color:rgb(var(--attention-texte));
+  font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; text-align:center; }
+.mvt-jf { display:flex; align-items:center; gap:8px; min-height:52px; padding:4px 8px; border-radius:12px; border:1px solid rgb(var(--hop) / .6); background:rgb(var(--hop) / .1); }
+.mvt-th { flex:0 0 auto; width:40px; height:40px; border-radius:8px; overflow:hidden; display:grid; place-items:center; background:var(--mvt-champ); border:1px solid var(--mvt-bord); color:var(--mvt-t2); }
+.mvt-th img { width:100%; height:100%; object-fit:cover; display:block; }
+.mvt-jt { flex:1; min-width:0; display:flex; flex-direction:column; font-size:13px; line-height:16px; }
+.mvt-jt b { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mvt-jt small { font-size:12px; color:var(--mvt-in); }
+.mvt-mini { flex:0 0 auto; min-height:44px; min-width:44px; padding:0 8px; border-radius:10px; font-size:13px; color:rgb(var(--area-finances-texte)); font-weight:600; text-align:center; }
+.mvt-err { margin:2px 0 0; font-size:12px; color:rgb(var(--alert-texte)); }
+
+/* Pied : « Enregistrer l'apport » = bouton plein de 44 px (maquette), à la place du bouton compact des autres feuilles */
+.mvt-cta.finance-action { width:100%; min-height:44px; border-radius:14px; font-size:15px; font-weight:700; }
+@media (prefers-reduced-motion:reduce) { .mvt * { animation:none!important; transition:none!important; } }

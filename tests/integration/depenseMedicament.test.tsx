@@ -6,7 +6,9 @@ import {webcrypto} from 'node:crypto';
    « Et ça m'avait ouvert la liaison stock ?? ». Lecture SIMULÉE à la forme du serveur (`quantity` null, `unit` vide, `price` = montant) : Gemini n'est jamais appelé, aucune écriture, aucune donnée réelle d'autre. */
 const state=vi.hoisted(()=>({saved:vi.fn(),scanned:vi.fn(),confirmed:vi.fn().mockResolvedValue(undefined),transactions:[] as any[],traduire:vi.fn()}));
 vi.mock('../../src/services/storage',()=>({StorageService:{getStocks:()=>({rawMaterials:[],cleaning:[],equipment:[]}),getTransactions:()=>state.transactions,confirmPendingWrites:()=>state.confirmed()}}));
-vi.mock('../../src/services/financeService',()=>({FinanceService:{getPlans:()=>[]}}));
+vi.mock('../../src/services/financeService',()=>({FinanceService:{getPlans:()=>[],
+  /* m5ap-a : la feuille d'un prélèvement lit le registre pour montrer son effet sur la caisse (aucun paiement, aucun solde de départ : « — », jamais 0). */
+  getPayments:()=>[],getProfile:()=>({id:'current',canton:'FR',legalForm:'sole-proprietor',vatRegistered:false,accounting:'simplified'})}}));
 vi.mock('../../src/services/firestoreRepo',()=>({isConfirmedWriteRejection:(error:any)=>error?.status==='rejected'}));
 vi.mock('../../src/services/geminiScanner',()=>({GeminiScannerService:{scanDocument:(...args:any[])=>state.scanned(...args),fileToDataUrl:async()=>'data:application/pdf;base64,JVBERi0xLjQK',normalizeMimeType:()=>'application/pdf'}}));
 vi.mock('../../src/services/nomsFr',async importOriginal=>({...await importOriginal<any>(),traduireLignes:(lignes:any[])=>state.traduire(lignes)}));
@@ -50,14 +52,16 @@ describe('dp-1 : un médicament de pharmacie n’est pas un achat de brasserie :
     expect(l.textContent).toMatch(/pas un achat de brasserie/i);
     expect(l.querySelector('[data-dp-niveau="repris"],[data-dp-niveau="inconnu"]')).not.toBeNull();
   });
-  it('le renvoi mène au geste existant : « Apport ou prélèvement privé » (feuille préremplie : motif, montant, retrait)',async()=>{
+  it('le renvoi mène au geste existant : « Apport ou prélèvement privé » (feuille préremplie : motif, montant, retrait ; m5ap-a : « De la brasserie à ta poche »)',async()=>{
     const view=await ouvrir(lecturePharmacie());
     const l=await ouvrirLigne(view);
     const renvoi=l.querySelector<HTMLElement>('[data-dp-renvoi-prive]');
     expect(renvoi).not.toBeNull();
     expect(renvoi!.textContent).toMatch(/privé/i);
     fireEvent.click(renvoi!);
-    await screen.findByRole('heading',{name:'Apport ou prélèvement privé'});
+    // Le brasseur a remplacé la feuille « Apport ou prélèvement privé » par m5ap-a : un prélèvement s'ouvre sur « De la brasserie à ta poche », bouton « Enregistrer le prélèvement ».
+    await screen.findByRole('heading',{name:'De la brasserie à ta poche'});
+    expect(screen.getByRole('button',{name:'Enregistrer le prélèvement'})).toBeVisible();
     expect((screen.getByLabelText('Montant (CHF)') as HTMLInputElement).value).toMatch(/13[,.]40?/);
     expect((screen.getByLabelText('Motif') as HTMLInputElement).value).toMatch(/BENU Matran/);
   });

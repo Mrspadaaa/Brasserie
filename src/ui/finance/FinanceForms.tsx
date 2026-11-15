@@ -11,6 +11,7 @@ import { formatCHF, todayISO, isoDate, transactionAmount, transactionDirection, 
 import { parseFiscalYear } from '../../domain/finance/annual';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
+import { PayerVirement } from './payer/PayerVirement';
 
 export const CATEGORY_LABELS: Record<FinanceCategory,string> = { brassage:'Brassage', materiel:'Matériel', nettoyage:'Nettoyage', chargesFixes:'Charges fixes', renovation:'Local et travaux', divers:'Autres frais', recettes:'Ventes', apports:'Apports privés' };
 export const idFor = (prefix:string) => `${prefix}-${crypto.randomUUID()}`;
@@ -148,14 +149,5 @@ export function ClosingSheet({closing,year,onClose,stockItems,cote,proposer,prop
     <Field label="Notes de clôture"><Textarea rows={2} value={draft.notes??''} onChange={e=>setDraft({...draft,notes:e.target.value})}/></Field>
   </FormSheet>;
 }
-export function PaymentSheet({transaction,payments,transactions,onClose}:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void}) {
-  const state=paymentState(transaction,payments,transactions), [amount,setAmount]=useState<number|undefined>(state.remainingCents), [date,setDate]=useState(()=>state.state==='unknown'?'':todayISO()), [method,setMethod]=useState<FinancialPayment['method']>('bank');
-  const [paymentId]=useState(()=>idFor('PAI'));
-  return <FormSheet title={transactionDirection(transaction,transactions)==='in'?'Enregistrer un encaissement':'Enregistrer un paiement'} onClose={onClose} onSave={()=>{if(!amount||amount>state.remainingCents)throw Error('Le paiement doit être positif et ne pas dépasser le restant dû.');FinanceService.recordPayment({id:paymentId,transactionId:transaction.id,date,amountCents:amount,direction:transactionDirection(transaction,transactions),method,recordedAt:new Date().toISOString()});}}>
-    <p>{transaction.description}</p><p className="finance-muted">Montant de la pièce : {formatCHF(transactionAmount(transaction))}. Restant : {formatCHF(state.remainingCents)}.</p>
-    {state.state==='unknown'&&<p className="finance-notice">Le paiement historique est inconnu. Indique la date et le montant réellement réglés.</p>}
-    <MoneyInput label="Montant réglé (CHF)" value={amount} onChange={setAmount} required/>
-    <Field label="Date réelle du paiement"><input type="date" value={date} max={todayISO()} onChange={e=>setDate(e.target.value)} required/></Field>
-    <Field label="Moyen de paiement"><select value={method} onChange={e=>setMethod(e.target.value as FinancialPayment['method'])}><option value="bank">Virement bancaire</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field>
-  </FormSheet>;
-}
+/** Payer = m5pa-d (voie q1) : un virement, plusieurs pièces du même tiers, un justificatif. La feuille vit dans `payer/`. */
+export function PaymentSheet(props:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void}) { return <PayerVirement {...props}/>; }
