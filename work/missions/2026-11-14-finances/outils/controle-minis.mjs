@@ -4,7 +4,11 @@
 // aucun type="number" ; classes préfixées par l'id ; aucun appel réseau. Chaque vue (ids <voie><vue>-x) a au moins 4 variantes.
 import { existsSync, readFileSync, statSync, openSync, readSync, closeSync } from 'node:fs';
 import { join } from 'node:path';
-const [dir, idsArg] = process.argv.slice(2);
+const [dir, idsArg, motifsArg = '', minArg = ''] = process.argv.slice(2);
+// motifs : 'pa=justificatif|pièce;mo=(<input[\s\S]*){3}' (regex par vue, sur etat.html) ; min : 'ap:1,fo:1' (4 par défaut).
+const motifs = Object.fromEntries(motifsArg.split(';').filter(Boolean).map(x => [x.slice(0, x.indexOf('=')), new RegExp(x.slice(x.indexOf('=') + 1), 'i')]));
+const mins = Object.fromEntries(minArg.split(',').filter(Boolean).map(x => x.split(':')).map(([k, n]) => [k, Number(n)]));
+const cle = id => id.replace(/^m\d/, '').replace(/-[a-z0-9]+$/, '');
 if (!dir || !idsArg) { console.log('MINIS ECHEC usage'); process.exit(1); }
 const ech = [];
 const ids = idsArg.split(',');
@@ -22,6 +26,7 @@ for (const id of ids) {
   const p = join(d, 'etat.html');
   if (!existsSync(p)) continue;
   const h = readFileSync(p, 'utf8');
+  if (motifs[cle(id)] && !motifs[cle(id)].test(h)) ech.push(`${id}: motif « ${motifs[cle(id)].source} » absent`);
   if (/type=["']number["']/.test(h)) ech.push(`${id}: type="number"`);
   if (!new RegExp(`class=["'][^"']*\\b${id}-`).test(h)) ech.push(`${id}: aucune classe préfixée ${id}-`);
   if (/https?:\/\/(?!localhost)/.test(h.replace(/xmlns(:\w+)?="[^"]*"/g, ''))) ech.push(`${id}: appel réseau`);
@@ -30,6 +35,6 @@ for (const id of ids) {
 }
 const vues = {};
 for (const id of ids) { const v = id.replace(/-[a-z0-9]+$/, ''); vues[v] = (vues[v] || 0) + 1; }
-for (const [v, n] of Object.entries(vues)) if (n < 4) ech.push(`${v}: ${n} variantes (4 au moins)`);
+for (const [v, n] of Object.entries(vues)) { const m = mins[cle(v + '-x')] ?? 4; if (n < m) ech.push(`${v}: ${n} variantes (${m} au moins)`); }
 console.log(ech.length ? `MINIS ECHEC\n${ech.join('\n')}` : `MINIS OK (${ids.length} maquettes, ${Object.keys(vues).length} vues)`);
 process.exit(ech.length ? 1 : 0);

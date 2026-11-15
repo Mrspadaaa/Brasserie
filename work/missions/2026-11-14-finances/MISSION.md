@@ -44,6 +44,7 @@ Fini : Opérations porté en v6a ; un filtre du jour au jour choisi par lui en m
 |---|---|---|---|
 | Opérations du … au … | v0 + passe 2 ; 14.11 | https://claude.ai/artifact/2xGEV9qoGgzadUBHVm2dsU | `work/refonte-frontend/v4/outils/pages/2026-11-14-finances-plage/index.html` |
 | Finances, vues sous les boutons (13 vues sans maquette, 52 mini maquettes) | 14.11 v1 | https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX | `work/refonte-frontend/v4/outils/pages/2026-11-14-finances-sous-vues/index.html` |
+| Finances, tes retours du 15.11 (Modifier, Payer avec justificatif, apport, fiche, filtres) | 15.11 v1 | https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP | `work/refonte-frontend/v4/outils/pages/2026-11-15-finances-retours/index.html` |
 
 ## Boucle de retour
 Rejet du critique → agent neuf sur brief serré, 2 fois au plus, ou variante écartée. Plainte du brasseur → SPEC mot pour mot → DEFAUTS-RECURRENTS et contrôle rouge sur la version rejetée.

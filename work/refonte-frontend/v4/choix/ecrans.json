@@ -254,6 +254,36 @@
    "capture": "",
    "page": "https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY",
    "note": ""
+  },
+  {
+   "ecran": "finances-modifier",
+   "route": "finances/operations/modifier",
+   "statut": "choisi",
+   "choix": "m2mo-a (2026-11-14-finances, sous-vues)",
+   "mots": "La feuille rangée, pièce en tête m2mo-a · tiède ; « Pour Modifier et « + pièce » il y a pas vraiment moyen de modifier ?? »",
+   "capture": "work/missions/2026-11-14-finances/voies/m2/m2mo-a/m2mo-a.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": "Montant à rendre modifiable, payé compris : 4 mini maquettes m5mo (15.11)."
+  },
+  {
+   "ecran": "finances-apport",
+   "route": "finances/operations/apport",
+   "statut": "choisi",
+   "choix": "m1ap-c (2026-11-14-finances, sous-vues) + justificatif",
+   "mots": "Les deux poches m1ap-c · chaude ; « pareil pour l'apport personnel SI non candidat 1 »",
+   "capture": "work/missions/2026-11-14-finances/voies/m1/m1ap-c/m1ap-c.png",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": "Justificatif à ajouter (m5ap-a, 15.11)."
+  },
+  {
+   "ecran": "finances-fiche",
+   "route": "finances/operations/fiche",
+   "statut": "ouvert",
+   "choix": "",
+   "mots": "La fiche rangée m2fo-a · tiède · La facture en barre m2fo-c · chaude",
+   "capture": "",
+   "page": "https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX",
+   "note": "Deux citées : m2fo-a avec la barre de m2fo-c montrée (m5fo-a), à confirmer."
   }
  ]
 }
