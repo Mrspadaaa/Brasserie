@@ -169,6 +169,9 @@ describe('parc de fûts et matériel compacts', () => {
   it('valide le nom au clavier et conserve achats et notes pendant une correction d’entretien', () => {
     const save = vi.fn();
     render(<EquipmentSheet item={equipment[1]} onClose={() => {}} onSave={save} onDelete={() => {}}/>);
+    // za3 : la fiche s'ouvre d'abord ; la correction est sous ⋯ › Modifier (l'état se règle sur la fiche, pas dans le formulaire).
+    fireEvent.click(screen.getByRole('button', { name: /Gestion du matériel/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Modifier' }));
     const name = screen.getByLabelText('Nom');
     fireEvent.change(name, { target: { value: '' } });
     expect(screen.getByRole('button', { name: 'Enregistrer', exact: true })).toBeDisabled();
@@ -177,13 +180,11 @@ describe('parc de fûts et matériel compacts', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('au moins 2 caractères');
     fireEvent.change(name, { target: { value: 'Pompe de transfert' } });
     fireEvent.change(screen.getByLabelText('Catégorie'), { target: { value: 'Atelier' } });
-    fireEvent.click(screen.getByRole('radio', { name: 'Bon', exact: true }));
-    fireEvent.change(screen.getByLabelText('Entretien'), { target: { value: 'Joint remplacé le 12.09.2026' } });
     fireEvent.click(screen.getByText('Achat', { exact: false, selector: 'summary' }));
     expect(screen.getByLabelText('Prix payé (CHF)')).toHaveValue('128,5');
     fireEvent.change(screen.getByLabelText('Prix payé (CHF)'), { target: { value: '129,50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
-    expect(save).toHaveBeenLastCalledWith({ ...equipment[1], category: 'Atelier', state: 'Bon', maintenance: 'Joint remplacé le 12.09.2026', purchasePrice: 129.5 });
+    expect(save).toHaveBeenLastCalledWith({ ...equipment[1], category: 'Atelier', purchasePrice: 129.5 });
   });
 
   it('nettoie aussi le client au retour dans la fiche et préserve une capacité non standard', () => {

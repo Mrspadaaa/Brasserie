@@ -1,0 +1,131 @@
+/* Fiche d'un appareil (za3, maquette choisie le 15.11) : reprise avec les jetons de l'app (clair et cave). Classes préfixées `eqd-` (L26).
+   Rayons 8 / 12 / 15 de la maquette ; chiffres à chasse fixe pour les dates et les lectures ; cibles tactiles de 44 px (zones élargies
+   sans changer le dessin des pastilles). */
+.eqd {
+  --d-bg: rgb(var(--cave-950)); --d-s1: rgb(var(--cave-900));
+  --d-line: rgb(var(--cave-800)); --d-line2: rgb(var(--cave-700));
+  --d-mut: rgb(var(--cave-texte-400)); --d-ink: rgb(var(--cave-texte-50));
+  --d-act: rgb(var(--ebc-straw)); --d-onact: rgb(var(--sur-paille));
+  --d-ok: rgb(var(--hop-texte)); --d-okbg: rgb(var(--hop) / .16);
+  --d-att: rgb(var(--attention)); --d-atttxt: rgb(var(--attention-texte));
+  --d-late: rgb(var(--alert)); --d-latetxt: rgb(var(--alert-texte));
+  --d-fin: rgb(var(--area-finances-texte));
+  color: var(--d-ink); font-size: 14px; line-height: 1.3; min-width: 0;
+}
+:where(.eqd) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+:where(.eqd) h1 { margin: 0; }
+.eqd-m, .eqd-d, .eqd-v { font-family: "IBM Plex Mono", Consolas, monospace; font-variant-numeric: tabular-nums lining-nums; }
+.eqd-sp { flex: 1; }
+.eqd-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.equipment-detail-sheet.equipment-detail-sheet { background: rgb(var(--cave-950)); height: 94dvh; }
+
+/* Titre et Gestion */
+.eqd-titre { display: flex; align-items: center; gap: 10px; }
+.eqd-gpic { width: 52px; height: 52px; border-radius: 12px; background: var(--d-s1); border: 1px solid var(--d-line); display: grid; place-items: center; flex: none; }
+.eqd .mt-sil { width: 36px; height: 36px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.eqd .mt-ombre { stroke: rgb(var(--cave-800)); stroke-width: 5; }
+.eqd .mt-outil { stroke: var(--d-ink); stroke-width: 1.7; }
+.eqd-nom { min-width: 0; }
+.eqd-nom h1 { font-size: 24px; line-height: 28px; font-weight: 700; overflow-wrap: anywhere; }
+.eqd-sous { margin-top: 2px; font-size: 14px; color: var(--d-mut); }
+.eqd-gestion { position: relative; flex: none; }
+.eqd-rd { width: 44px; height: 44px; border: 1px solid var(--d-line2) !important; border-radius: 22px; display: grid; place-items: center; }
+.eqd-rd:focus-visible, .eqd-menu button:focus-visible, .eqd-btn:focus-visible, .eqd-et:focus-visible, .eqd-seg button:focus-visible { outline: 2px solid var(--d-ink); outline-offset: 2px; }
+.eqd-menu { position: absolute; right: 0; top: 48px; z-index: 5; min-width: 168px; padding: 4px; border-radius: 12px; background: var(--d-bg); border: 1px solid var(--d-line2); box-shadow: 0 8px 24px rgb(0 0 0 / .18); display: flex; flex-direction: column; }
+.eqd-menu button { min-height: 44px; padding: 0 12px; border-radius: 8px; font-size: 15px; display: flex; align-items: center; }
+.eqd-menu button:hover { background: var(--d-s1); }
+.eqd-menu .eqd-danger { color: var(--d-latetxt); font-weight: 600; }
+
+/* Où en est l'appareil */
+.eqd-etat { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+.eqd-etat b { font-size: 20px; font-weight: 700; white-space: nowrap; }
+.eqd-etat > span { font-size: 14px; color: var(--d-mut); }
+
+/* Le fil de l'appareil (390) */
+.eqd-ffil { position: relative; margin-top: 8px; }
+.eqd-ffil::before { content: ''; position: absolute; left: 15px; top: 12px; bottom: 10px; width: 2px; background: var(--d-line); }
+.eqd-ev { position: relative; padding-left: 40px; min-height: 30px; }
+.eqd-pt { position: absolute; left: 9px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--d-bg); border: 2px solid var(--d-mut); box-sizing: border-box; }
+.eqd-pt.eqd-ok { border-color: var(--d-ok); background: var(--d-ok); }
+.eqd-pt.eqd-panne { border-color: var(--d-late); background: var(--d-late); }
+.eqd-pt.eqd-prochain { border: 2px dashed var(--d-ok); }
+.eqd-pt.eqd-mnt { left: 5px; top: 0; width: 22px; height: 22px; border: 0; background: var(--d-ink); box-shadow: 0 0 0 4px var(--d-bg); }
+.eqd-evl { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 20px; }
+.eqd-d { font-size: 13px; font-weight: 500; color: var(--d-mut); width: 44px; flex: none; }
+.eqd-v { margin-left: auto; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.eqd-tol { font-size: 13px; color: var(--d-mut); }
+.eqd-doux { color: var(--d-mut); }
+
+/* Étapes et valeurs lues */
+.eqd-etapes { display: flex; align-items: center; margin: 6px 0; flex-wrap: wrap; row-gap: 12px; }
+.eqd-et { position: relative; height: 30px; padding: 0 9px 0 6px; border-radius: 15px; display: flex; align-items: center; gap: 3px; font-size: 13px; border: 1px solid transparent; white-space: nowrap; background: var(--d-okbg); color: var(--d-ok); font-weight: 600; }
+.eqd-et::after { content: ''; position: absolute; inset: -7px 0; }
+.eqd-et.eqd-afaire { background: none; border: 1px dashed var(--d-line2); color: var(--d-mut); font-weight: 400; padding: 0 10px; }
+.eqd-lien { width: 7px; height: 2px; background: rgb(var(--hop) / .5); flex: none; }
+.eqd-form { margin: 0 0 8px; border: 1px solid var(--d-line2); border-radius: 12px; padding: 2px 10px; background: var(--d-s1); }
+.eqd-fl { display: grid; grid-template-columns: minmax(100px, auto) 1fr minmax(72px, auto); align-items: center; gap: 8px; min-height: 54px; }
+.eqd-fl + .eqd-fl { border-top: 1px solid var(--d-line); }
+.eqd-tamp { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.eqd-tamp svg { flex: none; }
+.eqd-flacon-verre { fill: var(--d-bg); stroke: var(--d-mut); }
+.eqd-champ { position: relative; height: 44px; border: 1px solid var(--d-line2); border-radius: 8px; background: var(--d-bg); display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 10px; min-width: 0; cursor: text; }
+.eqd-champ:focus-within { border-color: var(--d-ink); box-shadow: 0 0 0 1px var(--d-ink); }
+.eqd-champ input { flex: 1; min-width: 0; width: 100%; height: 100%; border: 0; outline: 0; background: transparent; color: inherit; padding: 0; font: 500 16px "IBM Plex Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+.eqd-champ input::placeholder { color: var(--d-mut); }
+.eqd-champ small { font-size: 13px; color: var(--d-mut); flex: none; }
+.eqd-ecart { display: flex; align-items: center; justify-content: flex-end; gap: 3px; min-height: 20px; font: 600 14px "IBM Plex Mono", Consolas, monospace; color: var(--d-ok); white-space: nowrap; }
+.eqd-ecart.eqd-hors { color: var(--d-latetxt); }
+
+/* Rythme et état */
+.eqd-regl { border: 1px solid var(--d-line); border-radius: 12px; margin-top: 4px; }
+.eqd-rg { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 8px 0 10px; font-size: 14px; }
+.eqd-rg + .eqd-rg { border-top: 1px solid var(--d-line); }
+.eqd-lab2 { color: var(--d-mut); width: 52px; flex: none; }
+.eqd-seg { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; min-width: 0; }
+.eqd-seg button { position: relative; height: 30px; padding: 0 9px; border: 1px solid var(--d-line2); border-radius: 15px; display: flex; align-items: center; font-size: 13px; white-space: nowrap; }
+.eqd-seg button::after { content: ''; position: absolute; inset: -7px 0; }
+.eqd-seg button[aria-checked='true'] { background: var(--d-act); color: var(--d-onact); border-color: var(--d-act); font-weight: 600; }
+
+/* Dépenses reliées */
+.eqd-deps { margin-top: 10px; }
+.eqd-dt { display: flex; align-items: baseline; gap: 8px; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.eqd-dt small { margin-left: auto; font: 500 13px "IBM Plex Mono", Consolas, monospace; color: var(--d-mut); white-space: nowrap; }
+.eqd-dep { display: flex; align-items: center; gap: 8px; min-height: 36px; border-bottom: 1px solid var(--d-line); font-size: 14px; }
+.eqd-dlib { min-width: 0; overflow-wrap: anywhere; }
+.eqd-montant { color: var(--d-fin); font-weight: 600; }
+.eqd-inconnu { font-family: inherit; color: var(--d-mut); font-weight: 400; white-space: normal; text-align: right; }
+
+/* Pied */
+.eqd-pied { display: flex; gap: 8px; padding: 8px 10px; border-top: 1px solid var(--d-line); background: var(--d-bg); flex: none; }
+.eqd-btn { flex: 1; min-height: 46px; border-radius: 12px; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center !important; }
+.eqd-sec { border: 1px solid var(--d-line2) !important; }
+.eqd-pri { background: var(--d-act) !important; color: var(--d-onact) !important; }
+
+/* Feuille (390) : la fiche tient la hauteur, le pied reste au bas */
+.eqd-sheet { display: flex; flex-direction: column; min-height: 100%; padding: 2px 4px 0; }
+.eqd-sheet .eqd-pied { position: sticky; bottom: -8px; margin: auto -12px -8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 2; }
+.eqd-sheet .eqd-deps { margin-bottom: 16px; }
+
+/* Panneau (1280) : le fil de l'appareil à gauche (même échelle que la liste : 3,5 px par jour), la fiche à droite */
+.eqd-pane { display: flex; align-items: stretch; min-height: 100%; position: relative; }
+.eqd-dfil { position: relative; width: 250px; flex: none; min-height: 560px; }
+.eqd-col { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 10px 0 0 4px; }
+.eqd-pane .eqd-pied { border: 0; padding: 8px 0 10px; margin-top: auto; }
+.eqd-pane .eqd-deps { margin-top: 8px; }
+.eqd-bloc { margin-top: 18px; }
+.eqd-bande { position: absolute; left: 0; right: 0; background: rgb(var(--attention) / .08); border-bottom: 1.5px dashed rgb(var(--attention) / .6); }
+.eqd-bande span { position: absolute; left: 4px; bottom: 3px; font: 600 12px/14px "IBM Plex Mono", Consolas, monospace; color: var(--d-atttxt); }
+.eqd-daxe { position: absolute; left: 47px; top: 0; width: 3px; background: var(--d-line2); }
+.eqd-tick { position: absolute; left: 34px; width: 14px; border-top: 1.5px solid var(--d-line2); }
+.eqd-mo { position: absolute; left: 0; width: 31px; text-align: right; font-size: 12px; line-height: 14px; color: var(--d-mut); transform: translateY(-50%); }
+.eqd-de { position: absolute; left: 34px; right: 8px; height: 30px; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; }
+.eqd-pt2 { width: 29px; display: grid; place-items: center; flex: none; }
+.eqd-pn { width: 14px; height: 14px; border-radius: 50%; display: block; box-sizing: border-box; background: var(--d-ok); }
+.eqd-pn.eqd-prochain { background: var(--d-bg); border: 2px dashed var(--d-ok); }
+.eqd-pn.eqd-prevu { background: var(--d-bg); border: 2px solid var(--d-att); width: 12px; height: 12px; }
+.eqd-pn.eqd-panne { background: var(--d-late); }
+.eqd-t b { display: block; font: 600 13px/15px "IBM Plex Mono", Consolas, monospace; }
+.eqd-t span { display: block; font-size: 12px; line-height: 14px; color: var(--d-mut); }
+.eqd-daujl { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--d-line2); }
+.eqd-dnoeud { position: absolute; left: 39px; width: 19px; height: 19px; border-radius: 50%; background: var(--d-ink); box-shadow: 0 0 0 4px var(--d-bg); }
+.eqd-coupure { position: absolute; left: 41px; width: 15px; height: 9px; border-top: 1.5px solid var(--d-mut); border-bottom: 1.5px solid var(--d-mut); transform: skewY(-20deg); }
