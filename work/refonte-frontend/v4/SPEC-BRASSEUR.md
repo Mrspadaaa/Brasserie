@@ -1727,3 +1727,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : Flash-Lite relie devis et besoin ; RL-5 : on garde le dosage du profil de style, mais l'écran dit explicitement pourquoi il dose alors que le pH est déjà dans la cible ; déploiement accordé après tests verts.)
 - **15.11**, mot pour mot, sur kt2 retouchée (ku1-3, https://claude.ai/artifact/TKVHEg635CYBVJauMC9Jyv) : « Pour kt2, Je pense que c'est une bonne idée mais quand j'aurai beaucoup de client et endroit, ça va être illisible ? Revoit tout ça, critique, feedback, UX UI expert, brasseur J'aime beaucoup la frise... Mais à voir à quel point c'est adaptable... »
   (lu : garder la frise ; éprouver à grande échelle (beaucoup de clients et de lieux) ; revue critique, UX/UI et brasseur, puis variantes qui tiennent la charge.)
+- **15.11**, mot pour mot, sur la même page (kg1-3, À venir) : « Kg1-3 pareil.. pas super pratique en terme de workflow uxui »
+  (lu : même revue que kt2 pour À venir, centrée sur le parcours besoin → prix ou devis → scan relié → sortie de la liste ; kh1r reste la base visuelle choisie, sa mise en ligne attend la revue.)
