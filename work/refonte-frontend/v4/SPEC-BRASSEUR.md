@@ -1719,3 +1719,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : exigence transversale ; mission « simplicité » : mesurer les gestes de mise à jour courants, proposer des raccourcis sans retirer de fonction ni de donnée.)
 - **15.11**, mot pour mot, sur la page « Atelier · kh1 retouchée » (https://claude.ai/artifact/AAgrfRXppZwzEWnSRKh7rh) : « retouchée Avril tombe ; son titre reste au-dessus de la courbe kh1 Très bien à implémenter ainsi »
   (lu : kh1r choisie, à porter 1:1 dans Atelier › Matériel › À venir, crayon et pictos d'état compris.)
+- **15.11**, mot pour mot, précision sur la mission simplicité : « C'est plutôt, simplifier ou utiliser des petites "hack" pour faciliter certains workflow. Moins de touche. Moi d'info en une fois. Un peu dans l'idée de en un clic on a tout l'essentiel, ça s'autocomplete autocasse, autogéré et on a les infos essentielles avec le moins d'action possible »
+  (lu : pas un audit chronométré mais des astuces : un geste = l'essentiel ; autocomplétion, auto-rangement, valeurs déduites ; moins d'infos à la fois.)
