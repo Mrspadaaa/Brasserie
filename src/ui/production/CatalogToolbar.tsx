@@ -421,10 +421,9 @@ export function CatalogToolbar({
               </select>
             </label>
           )}
+          {kind === 'recipes' && (
           <label className="block space-y-1.5">
-            <span className="text-sm text-cave-200">
-              {kind === 'recipes' ? 'Date conservée dans la recette' : 'Date prévue ou brassée'}
-            </span>
+            <span className="text-sm text-cave-200">Date conservée dans la recette</span>
             <select
               aria-label="Filtrer par période"
               value={filters.period}
@@ -433,12 +432,9 @@ export function CatalogToolbar({
             >
               <option value="all">Toutes les dates</option>
               <option value="global">Période de l’application</option>
-              <option value="30">30 derniers jours</option>
-              <option value="90">90 derniers jours</option>
-              <option value="year">Cette année</option>
-              <option value="custom">Choisir les dates</option>
             </select>
           </label>
+          )}
           {filters.period === 'custom' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1.5 text-sm text-cave-200 block">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContext, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
+import { PagePlus } from './components/plus/PagePlus';
+import { lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
@@ -44,8 +46,7 @@ import type { QuickActionScreen } from './components/QuickActionModal';
 
 import { 
   AppConfig, 
-  TimeFilterPeriod, 
-  Transaction, 
+  Transaction,
   StockItem,
   EquipmentItem,
   KegItem,
@@ -175,9 +176,32 @@ export const App: React.FC = () => {
   );
 
   // Persistent Global Time Filter (Single Source of Truth across the ENTIRE APP)
-  const [globalTimeFilter, setGlobalTimeFilter] = useState<TimeFilterPeriod>(() =>
-    StorageService.getUiState('app_global_time_filter', 'this-month')
+  // m3r-a : UNE période pour toute l'app (pastille d'en-tête, page Plus, Finances, Brassins, Bord lisent celle-ci). Gardée en texte, anciennes valeurs relues.
+  const [globalTimeFilter, setGlobalTimeFilter] = useState<Periode>(() =>
+    lirePeriode(StorageService.getUiState('app_global_time_filter', 'this-month'))
   );
+  /** La page « Plus » (m3) : posée à la place de l'écran, qui reste monté dessous ; le geste retour la ferme. */
+  const [plusOuvert, setPlusOuvert] = useState(false);
+  const plusPousse = useRef(false);
+  /** Changer de signataire redessine l'en-tête et la page Plus (le nom se lit dans le stockage). */
+  const [signataireNonce, setSignataireNonce] = useState(0);  const fermerPlus = React.useCallback(() => {
+    setPlusOuvert(false);
+    if (plusPousse.current) { plusPousse.current = false; window.history.back(); }
+  }, []);
+  const ouvrirPlus = React.useCallback(() => {
+    if (plusPousse.current) { fermerPlus(); return; }
+    // Même profondeur d'historique que l'entrée courante : le retour du téléphone ferme Plus sans toucher à la pile des pages.
+    window.history.pushState({ ...(window.history.state ?? {}), 'laffinee-plus': true }, '');
+    plusPousse.current = true;
+    setPlusOuvert(true);
+  }, [fermerPlus]);
+  // Changer d'écran (barre, retour, lien) referme Plus.
+  useEffect(() => { if (plusPousse.current) fermerPlus(); }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); } };
+    window.addEventListener('popstate', retour);
+    return () => window.removeEventListener('popstate', retour);
+  }, []);
 
   // SubTab targeting for Production (e.g. from 💡 or 🧰 in Header)
   const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() => StorageService.getUiState('production_subtab', 'batches'));
@@ -358,6 +382,8 @@ export const App: React.FC = () => {
 
   // Reactive state from StorageService (STRICTLY ISOLATED: Empty by default until Google auth validates!)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  /** Les dates des écritures : les comptes de la grille de période. */
+  const datesEcritures = useMemo(() => transactions.map(t => t.date), [transactions]);
   const [stocks, setStocks] = useState<{ rawMaterials: StockItem[]; cleaning: StockItem[]; equipment: EquipmentItem[]; kegs: KegItem[] }>({
     rawMaterials: [],
     cleaning: [],
@@ -450,7 +476,7 @@ export const App: React.FC = () => {
   // Save global time filter
   useEffect(() => {
     if (currentUser) {
-      StorageService.setUiState('app_global_time_filter', globalTimeFilter);
+      StorageService.setUiState('app_global_time_filter', serialiserPeriode(globalTimeFilter));
     }
   }, [globalTimeFilter, currentUser]);
 
@@ -1046,23 +1072,43 @@ export const App: React.FC = () => {
       <Header
         compactLayout
         large={activeTab === 'stocks'}
-        hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
-        config={config}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenCloudConfig={() => setIsCloudConfigOpen(true)}
-        onOpenAuditLogs={() => setIsAuditLogsOpen(true)}
-        onNavigateToBrewAssistant={navigateToBrewAssistant}
-        onNavigateToCreativeLab={navigateToCreativeLab}
+        datesEcritures={datesEcritures}
+        onAnnoncePeriode={showToast}
+        onOpenPlus={ouvrirPlus}
+        plusOpen={plusOuvert}
         onOpenSearch={() => setIsPaletteOpen(true)}
-        onGoHome={() => setActiveTab('dashboard')}
-        onLogout={handleLogout}
+        onGoHome={() => { fermerPlus(); setActiveTab('dashboard'); }}
         pendingTodosCount={pendingTodosCount}
       />
 
       {/* Main Content Area */}
       <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]' : 'min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]'} w-full mx-auto px-2 xs:px-3`}>
+        {plusOuvert && (
+          <PagePlus
+            key={signataireNonce}
+            courant={StorageService.getCurrentUser()}
+            onSigner={(cible) => { StorageService.setCurrentUser(cible); setSignataireNonce(n => n + 1); }}
+            periode={globalTimeFilter}
+            onChoisirPeriode={(p) => setGlobalTimeFilter(p)}
+            dates={datesEcritures}
+            logs={auditLogs}
+            batches={batches}
+            pendingTodosCount={pendingTodosCount}
+            horsConnexion={horsConnexion}
+            entreprise={config.company?.name}
+            onBack={fermerPlus}
+            onAssistant={() => { fermerPlus(); navigateToBrewAssistant(); }}
+            onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
+            onConversations={() => window.dispatchEvent(new Event('brewer-inbox-open'))}
+            onJournal={() => setIsAuditLogsOpen(true)}
+            onCloud={() => setIsCloudConfigOpen(true)}
+            onReglages={() => setIsSettingsOpen(true)}
+            onLogout={handleLogout}
+          />
+        )}
+        <div style={{ display: plusOuvert ? 'none' : 'contents' }}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -1096,6 +1142,7 @@ export const App: React.FC = () => {
             budgetLines={budgetLines}
             config={config}
             globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
             onOpenStockItem={(ref) => {
               setStockOpenRequest({ ref, at: Date.now() });
               setActiveTab('stocks');
@@ -1165,6 +1212,7 @@ export const App: React.FC = () => {
           />
         )}
         </LazySurface>
+        </div>
       </main>
 
       {/* Bottom Navigation Bar, et la case réservée au bouton d'action à sa droite :

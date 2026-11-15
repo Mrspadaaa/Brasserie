@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SearchX, X } from 'lucide-react';
-import type { Batch, Recipe, TimeFilterPeriod } from '../../types';
+import type { Batch, Recipe } from '../../types';
+import { dansPeriode, enPeriode, type PeriodeEntree } from '../../components/periode/periode';
 import { StorageService } from '../../services/storage';
 import {
   CatalogFilters,
@@ -38,7 +39,7 @@ export function ProductionCatalog({
   kind: CatalogKind;
   recipes: Recipe[];
   batches: Batch[];
-  globalTimeFilter: TimeFilterPeriod;
+  globalTimeFilter: PeriodeEntree;
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
@@ -78,13 +79,23 @@ export function ProductionCatalog({
     undo?: () => void;
     error?: boolean;
   } | null>(null);
+  /* m3r-a : une seule période. Brassins suit toujours celle de l'app ; Recettes garde « toutes les dates » ou la suit. Les anciens
+     réglages locaux (30 j, 90 j, cette année, dates choisies) ne filtrent plus rien : ils étaient une seconde période. */
   const effectiveFilters = useMemo(
     () => ({
       ...filters,
+      period: (kind === 'batches' || filters.period !== 'all' ? 'global' : 'all') as CatalogFilters['period'],
+      from: '',
+      to: '',
       folder: view === 'analysis' ? analysisFolder : filters.folder
     }),
-    [filters, view, analysisFolder]
+    [filters, view, analysisFolder, kind]
   );
+  const periodeApp = enPeriode(globalTimeFilter);
+  const suitLaPeriode = effectiveFilters.period === 'global' && periodeApp.genre !== 'tout';
+  /* Un brassin planifié sans date reste dans la liste sous toute période : sa date est inconnue (PD-3, PD-7). */
+  const dansLaPeriode = (e: { batch?: { status?: string }; timestamp?: number; date?: string }) =>
+    !suitLaPeriode || (e.batch?.status === 'planifie' && e.timestamp === undefined) || (e.timestamp !== undefined && dansPeriode(e.date ?? '', periodeApp));
   const changeFilters = (next: CatalogFilters) => {
     if (view === 'analysis') {
       setAnalysisFolder(next.folder);
@@ -113,13 +124,13 @@ export function ProductionCatalog({
     [kind, recipes, batches]
   );
   const filtered = useMemo(() => {
-    return filterCatalog(entries, effectiveFilters, globalTimeFilter).filter((e) =>
-      matchesWorkFilter(e, work)
+    return filterCatalog(entries, effectiveFilters, 'all').filter((e) =>
+      dansLaPeriode(e) && matchesWorkFilter(e, work)
     );
-  }, [entries, effectiveFilters, globalTimeFilter, work]);
+  }, [entries, effectiveFilters, periodeApp, work]); // eslint-disable-line react-hooks/exhaustive-deps
   const facetEntries = useMemo(
-    () => filterCatalog(entries, { ...effectiveFilters, status: '', use: 'all' }, globalTimeFilter),
-    [entries, effectiveFilters, globalTimeFilter]
+    () => filterCatalog(entries, { ...effectiveFilters, status: '', use: 'all' }, 'all').filter(dansLaPeriode),
+    [entries, effectiveFilters, periodeApp] // eslint-disable-line react-hooks/exhaustive-deps
   );
   const selected = selectedIds.flatMap((id) => {
     const e = entries.find((e) => e.id === id);
@@ -167,7 +178,7 @@ export function ProductionCatalog({
       });
     }
   };
-  const hasCriteria = catalogCriteria(effectiveFilters, work, globalTimeFilter).length > 0;
+  const hasCriteria = catalogCriteria(effectiveFilters, work, 'all').length > 0;
   const scopeCount = entries.filter((e) => inCatalogFolder(e, effectiveFilters.folder)).length;
   const archiveCount = entries.filter(isArchived).length;
   return (
@@ -181,7 +192,7 @@ export function ProductionCatalog({
         onChange={changeFilters}
         view={view}
         onViewChange={setView}
-        globalPeriod={globalTimeFilter}
+        globalPeriod="all"
         work={work}
         onWorkChange={setWork}
         comparing={comparing}

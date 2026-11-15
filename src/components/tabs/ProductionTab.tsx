@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
-import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
+import { Batch, Recipe, BrewhouseProfile } from '../../types';
+import type { PeriodeEntree } from '../periode/periode';
 import { StorageService } from '../../services/storage';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
@@ -32,7 +33,7 @@ interface ProductionTabProps {
   recipes: Recipe[];
   brewhouses: BrewhouseProfile[];
   activeBrewhouseId: string;
-  globalTimeFilter: TimeFilterPeriod;
+  globalTimeFilter: PeriodeEntree;
   targetSubTab?: 'batches' | 'recipes' | 'lab' | 'scaler';
   onOpenCreateBatch: () => void;
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */

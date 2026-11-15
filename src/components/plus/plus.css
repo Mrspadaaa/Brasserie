@@ -1,0 +1,54 @@
+/* Page « Plus » (m3). Jetons de l'app ; classes préfixées `pl-` (L26). */
+.pl{--pg:rgb(var(--cave-950));--s:rgb(var(--cave-850));--b:rgb(var(--cave-800));--bm:rgb(var(--cave-700));--tf:rgb(var(--cave-600));
+  --t2:rgb(var(--cave-texte-400));--t1:rgb(var(--cave-texte-200));--t0:rgb(var(--cave-texte-50));
+  --act:rgb(var(--ebc-straw));--actt:rgb(var(--sur-paille,var(--cave-950)));--wat:rgb(var(--water));--hopc:rgb(var(--hop));--alt:rgb(var(--alert-texte));
+  color:var(--t1);font-family:"Source Sans 3",system-ui,sans-serif;padding:0 0 16px}
+.pl *{box-sizing:border-box}
+.pl-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.pl-tt{display:flex;align-items:center;gap:4px;min-height:48px}
+.pl-tt h1{font-size:20px;font-weight:700;color:var(--t0);margin:0}
+.pl-tt small{margin-left:auto;font-size:12px;color:var(--t2)}
+.pl-back{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:var(--t0);margin-left:-8px}
+.pl-back:active{background:var(--s)}
+.pl-cols{display:grid;gap:12px}
+.pl-col{display:grid;gap:12px;align-content:start}
+.pl-card{border-radius:16px;background:var(--s);box-shadow:inset 0 0 0 1px var(--b);padding:8px 10px 10px}
+.pl-card>h2{margin:0;height:28px;display:flex;align-items:center;font-size:12px;font-weight:600;color:var(--t2)}
+.pl-pp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pl-pe{display:flex;align-items:center;gap:10px;min-height:56px;border-radius:14px;padding:0 10px;background:var(--pg);box-shadow:inset 0 0 0 1px var(--b);text-align:left;min-width:0}
+.pl-pe[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--t0)}
+.pl-pe>i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;background:var(--s);color:var(--t0);flex:none}
+.pl-pe[aria-pressed=true]>i{background:var(--t0);color:var(--pg)}
+.pl-pe>span{font-weight:600;color:var(--t0);line-height:1.15;min-width:0}
+.pl-pe>span>small{display:block;font-weight:400;font-size:13px;color:var(--t2)}
+.pl-th{display:grid;gap:10px;align-content:space-between;min-height:56px;border-radius:14px;padding:8px 10px;text-align:left;box-shadow:inset 0 0 0 1px var(--b)}
+.pl-th[data-t=clair]{background:#fff;color:#333}
+.pl-th[data-t=cave]{background:#12100E;color:#F5F0EA}
+.pl-th[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--t0),0 0 0 2px var(--pg),0 0 0 4px var(--t0)}
+.pl-th .pl-ln{display:grid;gap:3px}
+.pl-th .pl-ln s{display:block;height:5px;border-radius:3px;background:rgba(127,127,127,.35)}
+.pl-th .pl-ln s+s{width:40%}
+.pl-tn{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px}
+.pl-ou{display:flex;align-items:center;gap:10px;min-height:56px;border-radius:16px;padding:6px 10px;background:var(--s);box-shadow:inset 0 0 0 1px var(--b);text-align:left;min-width:0}
+.pl-ou>i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-style:normal;color:#fff;flex:none}
+.pl-ou[data-t=prod]>i{background:#9A4F1E}
+.pl-ou[data-t=atelier]>i{background:#4C6B2A}
+.pl-ou>span{font-weight:700;color:var(--t0);line-height:1.15;min-width:0}
+.pl-ou>span>small{display:block;font-weight:400;font-size:13px;color:var(--t2)}
+.pl-liste{list-style:none;margin:0;padding:0;border-radius:16px;box-shadow:inset 0 0 0 1px var(--b);overflow:hidden}
+.pl-liste li+li{border-top:1px solid var(--b)}
+.pl-liste button{width:100%;min-height:48px;display:flex;align-items:center;gap:12px;padding:0 12px;text-align:left;font-size:16px;color:var(--t1)}
+.pl-liste button:active{background:var(--s)}
+.pl-liste button>svg{color:var(--t2);flex:none}
+.pl-liste button>span{flex:1;min-width:0}
+.pl-liste button>small{font-size:13px;color:var(--t2);white-space:nowrap}
+.pl-sortie{color:var(--t1)}
+/* Au 1280 : Période entre les deux colonnes de m3 quand la place le permet (la page garde la largeur de l'écran de l'app). */
+@media (min-width:900px){
+  .pl-cols{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);align-items:start}
+  .pl-per{grid-column:2;grid-row:1}
+  .pl-cols>.pl-col:first-child{grid-column:1;grid-row:1}
+  .pl-cols>.pl-col:last-child{grid-column:1/3;grid-row:2;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);column-gap:12px}
+  .pl-cols>.pl-col:last-child>.pl-outils{grid-column:1}
+  .pl-cols>.pl-col:last-child>.pl-liste{grid-column:2;grid-row:1/3}
+}
