@@ -184,3 +184,41 @@ describe('Fiche d’un appareil — panneau 1280', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 });
+
+describe('P4 — décimales : un pH-mètre se juge au centième, même avec une tolérance posée à ±0,1', () => {
+  const phLarge: EquipmentItem = { ...ph, calibration: { unit: 'pH', tolerance: 0.1, points: [{ label: 'pH 7,00', expected: 7 }, { label: 'pH 4,00', expected: 4 }] } };
+
+  it('lu 7,01 avec tolérance 0,1 → « +0,01 » (pas « +0,0 ») et « tolérance ±0,10 »', () => {
+    rendre(phLarge);
+    fireEvent.change(screen.getByLabelText('Valeur lue pour pH 7,00'), { target: { value: '7,01' } });
+    expect(screen.getByLabelText('écart +0,01, dans la tolérance')).toHaveTextContent('+0,01');
+  });
+
+  it('l’historique garde les centièmes lus : « 4,03 · 7,02 », jamais « 4,0 · 7,0 »', () => {
+    rendre(phLarge);
+    expect(screen.getByText('4,03 · 7,02')).toBeInTheDocument();
+    expect(screen.queryByText('4,0 · 7,0')).toBeNull();
+  });
+
+  it('le fil du panneau à 1280 dit « étalonné 4,03 · 7,02 »', () => {
+    rendre(phLarge, { layout: 'pane' });
+    const fil = screen.getByLabelText('Le fil de l\'appareil');
+    expect(within(fil).getByText('étalonné 4,03 · 7,02')).toBeInTheDocument();
+  });
+
+  it('tolérance au centième et deux lectures ; densité au millième (valeurs lues gardées)', async () => {
+    const { decimalesLecture } = await import('../../src/ui/equipment/DetailModel');
+    expect(decimalesLecture({ unit: 'pH', tolerance: 0.1 }, [])).toBe(2);
+    expect(decimalesLecture({ unit: 'pH', tolerance: 0.05 }, [7.01])).toBe(2);
+    expect(decimalesLecture({ tolerance: 0.002 }, [1.0005])).toBe(3);
+    expect(decimalesLecture({ unit: '°Bx', tolerance: 0.2 }, [0.1])).toBe(1);
+  });
+
+  it('les lignes de dépenses reliées ne retirent pas « Achat · date et prix inconnus » (P9) en panneau comme en feuille', () => {
+    const tx = { id: 'T1', date: '2026-10-08', description: 'T1', category: 'materiel', amountHT: 0, tvaRate: 0, tvaAmount: 0, amountTTC: 0, proofFileName: '', proofType: '',
+      finance: { version: 1, kind: 'expense', amountCents: 0, lines: [{ id: 'l1', description: 'Tampons', kind: 'service', amountCents: 2490, equipmentRef: 'EQ-ph' }] } };
+    rendre({ ...ph, purchaseDate: undefined }, { layout: 'pane', transactions: [tx] as never });
+    expect(screen.getByText('Achat')).toBeInTheDocument();
+    expect(screen.getByText('date et prix inconnus')).toBeInTheDocument();
+  });
+});

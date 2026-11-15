@@ -10,7 +10,7 @@ import { ConfirmSheet } from '../Sheet';
 import { EquipmentPicto } from './ListPictos';
 import { EquipmentEditSheet } from './DetailEdit';
 import {
-  ETATS, RYTHMES, chf, decimalesDe, etapesDe, filPanneau, filtrerSaisie, fmt, fmtEcart, historique, lireNombre,
+  ETATS, RYTHMES, chf, decimalesLecture, etapesDe, filPanneau, filtrerSaisie, fmt, fmtEcart, historique, lireNombre,
   prochain, rythmeActif, sousTitre, titreEtat,
 } from './DetailModel';
 import './detail.css';
@@ -67,10 +67,12 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   const enPanne = status.kind === 'panne';
   const calibre = !!preset && !enPanne && !item.retired;
   const etalonnable = !!preset;
-  const decimales = preset ? decimalesDe(preset.tolerance) : 2;
+  // Décimales : celles de la tolérance, des lectures gardées et du pH (centième) ; les écarts y ajoutent celles de la saisie en cours.
+  const lusGardes = useMemo(() => (item.history ?? []).flatMap(e => (e.readings ?? []).map(r => r.read)), [item.history]);
+  const decBase = decimalesLecture(preset ?? { tolerance: 0.01 }, lusGardes);
   const titre = titreEtat(status, item.retired);
   const brassins = sousTitre(item, batches);
-  const histo = useMemo(() => historique(item, decimales), [item, decimales]);
+  const histo = useMemo(() => historique(item, decBase), [item, decBase]);
   const suite = prochain(item, today, etalonnable);
   const depenses = useMemo(() => relatedExpenses(item, transactions), [item, transactions]);
 
@@ -96,6 +98,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   }, [menu]);
 
   const valeur = (i: number): number | null => lireNombre(lectures[i] ?? '');
+  const decimales = decimalesLecture(preset ?? { tolerance: 0.01 }, [...lusGardes, ...lectures.map(t => lireNombre(t ?? '')).filter((n): n is number => n !== null)]);
   const lisibles: EquipmentReading[] = calibre && preset
     ? preset.points.flatMap((p, i) => { const read = valeur(i); return read === null ? [] : [{ label: p.label, expected: p.expected, read }]; })
     : [];
@@ -287,7 +290,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   );
 
   if (layout === 'pane') {
-    const fil = filPanneau(item, status, today, decimales, etalonnable);
+    const fil = filPanneau(item, status, today, decBase, etalonnable);
     return (
       <div className="eqd eqd-pane" data-layout="pane">
         <section className="eqd-dfil" aria-label="Le fil de l'appareil">
@@ -310,7 +313,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
           {deps}
           {calibre && (
             <div className="eqd-bloc">
-              <div className="eqd-evl"><b>{verbeAujourdhui}</b><span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decimales)}</span></div>
+              <div className="eqd-evl"><b>{verbeAujourdhui}</b><span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span></div>
               {etapesEtSaisie}
             </div>
           )}
@@ -336,7 +339,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
         <div className="eqd-ev">
           <span className="eqd-pt eqd-mnt" />
           <div className="eqd-evl"><span className="eqd-d">{dateCourte(today)}</span><b>{verbeAujourdhui}</b>
-            {calibre && <span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decimales)}</span>}
+            {calibre && <span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span>}
             {enPanne && item.brokenNote && <span className="eqd-v eqd-tol">{item.brokenNote}</span>}
           </div>
           {etapesEtSaisie}

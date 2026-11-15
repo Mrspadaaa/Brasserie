@@ -29,6 +29,21 @@ export function decimalesDe(tolerance: number): number {
   return Math.max(1, s.split('.')[1]?.length ?? 1);
 }
 
+const decimalesDuNombre = (n: number): number => {
+  const s = String(n);
+  if (s.includes('e-')) return Math.min(3, Number(s.split('e-')[1]));
+  return Math.min(3, s.split('.')[1]?.length ?? 0);
+};
+
+/**
+ * Décimales des lectures et des écarts : le maximum de celles de la tolérance, de celles des valeurs lues (saisies ou gardées dans l'historique)
+ * et du plancher de l'unité (un pH se juge au centième, quelle que soit la tolérance posée). Jamais plus de 3.
+ */
+export function decimalesLecture(preset: { unit?: string; tolerance: number }, valeurs: number[]): number {
+  const plancher = preset.unit === 'pH' ? 2 : 0;
+  return Math.min(3, Math.max(decimalesDe(preset.tolerance), plancher, ...valeurs.map(decimalesDuNombre)));
+}
+
 export const fmt = (n: number, decimales: number): string => n.toFixed(decimales).replace('.', ',');
 
 /** « +0,01 », « −0,12 », « 0,00 ». */

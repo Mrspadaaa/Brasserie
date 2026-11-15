@@ -689,7 +689,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {/* Le matériel se modifie et se supprime : il n'était que consultable. */}
       <EquipmentSheet
         item={equipmentSheet}
+        batches={batches}
+        transactions={transactions as unknown as FinanceTransaction[]}
+        today={aujourdhuiIso()}
         onClose={() => setEquipmentSheet(null)}
+        onChange={(item, toast) => ecrireMateriel(item, undefined, toast)}
+        onPayMaintenance={(item) => { setEquipmentSheet(null); setPayingMaintenance(item.ref); }}
         onSave={(item) => {
           const exists = stocks.equipment.some((e) => e.ref === item.ref);
           if (exists) StorageService.updateEquipment(item);
