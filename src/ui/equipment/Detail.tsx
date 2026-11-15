@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
+import { ArrowLeft, Check, Hop, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
 import type { EquipmentItem, EquipmentReading } from '../../types';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import {
@@ -172,7 +172,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
     <>
     {layout === 'sheet' && (
       <div className="eqd-barre">
-        <button type="button" className="eqd-retour" aria-label="Retour à Stocks · Matériel" onClick={onClose}><ArrowLeft size={20} aria-hidden="true" />Stocks · Matériel</button>
+        <button type="button" className="eqd-retour" aria-label="Retour à Stocks · Matériel" onClick={onClose}><ArrowLeft size={20} aria-hidden="true" /><Hop size={20} className="eqd-houblon" aria-hidden="true" />Stocks · Matériel</button>
         <span className="eqd-sp" />
         {gestion}
       </div>

@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, ShoppingCart, X } from 'lucide-react';
 import type { EquipmentItem } from '../types';
 import { aTraiter, dateCourte, filDuTemps, markRepaired, nextDueAfter, parcValue, recordDone } from '../domain/equipment';
 import { createSearch, runSearch } from '../services/search';
 import { FilHaut, FilPied, FilSans, FilVide, type GesteKind, type Recent } from './equipment/ListFil';
 import { NewEquipment } from './equipment/NewEquipment';
+import { lecturesDerniere } from './equipment/DetailModel';
 import './equipment/list.css';
 import './equipment-compact.css';
 
@@ -25,6 +26,11 @@ export interface EquipmentListProps {
   selectedRef?: string | null;
   onOpen: (item: EquipmentItem) => void;
   onWrite: (next: EquipmentItem, previous: EquipmentItem, toast: string) => void;
+  /**
+   * Un geste fait dans la fiche (Étalonné, Fait) : l'appareil d'avant et d'après. La liste montre alors, comme après un geste de la ligne,
+   * la note « à jour jusqu'au » à l'ancienne place et la ligne surlignée à sa nouvelle date (N1). `id` change à chaque geste.
+   */
+  traite?: { avant: EquipmentItem; apres: EquipmentItem; id: number } | null;
   onAdd: (item: EquipmentItem) => void;
   onBuy: () => void;
   onProjects?: () => void;
@@ -34,7 +40,7 @@ export interface EquipmentListProps {
 const SEARCH_KEYS = ['name', 'category', 'task', 'maintenance', 'notes'];
 export const aujourdhuiIso = (): string => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
-export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches, today: todayProp, wide = false, selectedRef, onOpen, onWrite, onAdd, onBuy, onProjects, className = '' }) => {
+export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches, today: todayProp, wide = false, selectedRef, onOpen, onWrite, traite, onAdd, onBuy, onProjects, className = '' }) => {
   const today = todayProp ?? aujourdhuiIso();
   const [mode, setMode] = useState<'tout' | 'work'>('tout');
   const [recherche, setRecherche] = useState<string | null>(null);
@@ -43,6 +49,20 @@ export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches
   useEffect(() => { if (!recent) return; const t = setTimeout(() => setRecent(null), 8000); return () => clearTimeout(t); }, [recent]);
 
   const ctx = useMemo(() => ({ today, batches }), [today, batches]);
+  // N1 : le geste fait dans la fiche. L'index de l'ancienne place se lit sur le fil d'avant le geste (l'appareil d'avant remis en place).
+  const dernierTraite = useRef<number | null>(null);
+  useEffect(() => {
+    if (!traite || traite.id === dernierTraite.current) return;
+    dernierTraite.current = traite.id;
+    const { avant, apres } = traite;
+    const evenement = (apres.history ?? []).length > (avant.history ?? []).length ? apres.history?.[(apres.history ?? []).length - 1] : undefined;
+    if (apres.retired || apres.brokenSince || !evenement || (evenement.kind !== 'etalonnage' && evenement.kind !== 'entretien')) return;
+    const fil0 = filDuTemps(equipment.filter(e => !e.retired).map(e => e.ref === avant.ref ? avant : e), ctx);
+    const index = fil0.haut.findIndex(h => h.item.ref === avant.ref);
+    const du = nextDueAfter(apres, today);
+    const brassins = !du && apres.rhythm?.unit === 'brassin' ? apres.rhythm.every : null;
+    setRecent({ ref: apres.ref, nom: apres.name, jusquau: du, brassins, index: index < 0 ? fil0.haut.length : index, lectures: lecturesDerniere(apres) });
+  }, [traite, equipment, ctx, today]);
   const vivants = useMemo(() => equipment.filter(e => !e.retired), [equipment]);
   const nbTraiter = useMemo(() => aTraiter(vivants, ctx).length, [vivants, ctx]);
   const visibles = useMemo(() => recherche?.trim() ? runSearch(createSearch(vivants, SEARCH_KEYS), recherche) : vivants, [vivants, recherche]);

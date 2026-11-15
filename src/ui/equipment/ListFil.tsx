@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, ChevronRight, ExternalLink, Package, ShoppingCart, Wrench } from 'lucide-react';
 import type { EquipmentItem } from '../../types';
-import { addMonthsClamped, calibrationPreset, dateCourte, daysBetween, moisCourt, premierDuMois, type FilDuTemps, type StatusRow } from '../../domain/equipment';
+import { addMonthsClamped, calibrationPreset, dateCourte, daysBetween, moisCourt, premierDuMois, type AvenirRow, type FilDuTemps, type StatusRow } from '../../domain/equipment';
 import { EquipmentPicto } from './ListPictos';
 
 /** Le fil de la liste (za3) : à traiter en haut, « aujourd'hui », l'avenir à sa vraie distance, puis le sans-échéance et le pied. */
@@ -36,11 +36,16 @@ export interface FilProps {
 export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selectedRef, onOpen, onGeste, onToutVoir }) => {
   const avenirRecent = recent ? fil.avenir.find(a => a.item.ref === recent.ref) : undefined;
   const lignes = mode === 'work' ? (avenirRecent ? [avenirRecent] : []) : fil.avenir;
-  const dernier = lignes.length ? Math.max(...lignes.map(l => l.yLigne)) : 0;
-  const carteY = mode === 'work' ? (avenirRecent ? avenirRecent.yLigne + 59 : 14) : 0;
+  // Au filtre À traiter, une ligne au brassin (sans date) se pose juste sous « aujourd'hui » : sa vraie place est loin sous la coupure.
+  const posY = (a: AvenirRow): number => mode === 'work' && a.sansDate ? 45 : a.yLigne;
+  const dernier = lignes.length ? Math.max(...lignes.map(posY)) : 0;
+  const carteY = mode === 'work' ? (avenirRecent ? posY(avenirRecent) + 59 : 14) : 0;
   const hauteurAv = mode === 'work' ? carteY + 64 : lignes.length ? dernier + 18 : 14;
   const coupure = mode === 'tout' ? fil.coupure : null;
   const premierEnPanne = fil.haut[0]?.status.kind === 'panne';
+  // Le geste fait sur le dernier appareil du haut : sa note reste à l'ancienne place, après la dernière ligne.
+  const noteEnFin = recent && recent.index >= fil.haut.length && !fil.haut.some(h => h.item.ref === recent.ref)
+    ? <div key={`note-${recent.ref}`} className="mt-fantome" role="status"><Check size={14} aria-hidden="true" />{recent.nom} à jour{recent.jusquau ? <> jusqu'au <span className="mt-m">{dateCourte(recent.jusquau)}</span></> : recent.brassins ? <> pour <span className="mt-m">{recent.brassins}</span> brassins</> : null}</div> : null;
   return (
     <>
       <div className="mt-haut">
@@ -62,7 +67,7 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
             </div>
           );
           return recent && recent.index === i && note ? [note, ligne] : [ligne];
-        })}
+        }).concat(noteEnFin ? [noteEnFin] : [])}
       </div>
       <div className="mt-auj"><b>aujourd'hui</b><span className="mt-m">{dateCourte(fil.aujourdhui)}</span><i /></div>
       {(lignes.length > 0 || mode === 'work') && (
@@ -71,20 +76,20 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
           <div className="mt-av-rail" style={{ height: coupure ? coupure.fromY + 5 + 14 : dernier + 12 + 14, opacity: mode === 'work' ? .5 : 1 }} />
           {coupure && <><svg className="mt-coupe" style={{ top: coupure.fromY + 5 }} viewBox="0 0 24 20" aria-hidden="true"><path d="M3 9 21 3M3 17 21 11" /></svg>
             <div className="mt-av-rail" style={{ top: coupure.fromY + 25, height: dernier + 12 - (coupure.fromY + 25) }} /></>}
-          {avenirRecent && <div className="mt-glisse" style={{ height: avenirRecent.yLigne - 13 }} />}
+          {avenirRecent && <div className="mt-glisse" style={{ height: posY(avenirRecent) - 13 }} />}
           {fil.reperes.filter(rp => mode === 'tout' || rp.y < carteY - 10).map(rp => (
             <React.Fragment key={rp.date}>{rp.tick && <span className="mt-tick" style={{ top: rp.y }} />}<span className="mt-mo" style={{ top: rp.y }}>{moisCourt(rp.date)}</span></React.Fragment>
           ))}
           {lignes.map(a => {
             const flash = recent?.ref === a.item.ref;
             // Une ligne descendue pour ne pas toucher la précédente garde son nœud de rappel à sa vraie date.
-            const decalage = a.yLigne - a.y;
+            const decalage = posY(a) - a.y;
             return (
               <React.Fragment key={a.item.ref}>
               {decalage > 2 && <span className="mt-rappel" style={{ top: a.y, height: decalage }} aria-hidden="true" />}
-              <button type="button" className={`mt-ar${flash ? ' mt-flash' : ''}${selectedRef === a.item.ref ? ' mt-choisi' : ''}`} style={{ top: a.yLigne }} aria-label={`Ouvrir ${a.item.name}`} onClick={() => onOpen(a.item)}>
+              <button type="button" className={`mt-ar${flash ? ' mt-flash' : ''}${selectedRef === a.item.ref ? ' mt-choisi' : ''}`} style={{ top: posY(a) }} aria-label={`Ouvrir ${a.item.name}`} onClick={() => onOpen(a.item)}>
                 <span className={`mt-pn${flash ? ' mt-okn' : ''}`}><EquipmentPicto name={a.item.name} /></span>
-                <span className="mt-t"><b>{a.item.name}</b><span className={flash && recent?.lectures ? 'mt-m' : undefined}>{flash && recent?.lectures ? recent.lectures : a.status.verb}</span></span>
+                <span className="mt-t"><b>{a.item.name}</b><span className={flash && recent?.lectures ? 'mt-m' : undefined}>{flash && recent?.lectures ? recent.lectures : a.sansDate ? a.status.line : a.status.verb}</span></span>
                 <span className="mt-j">{a.status.dueDate ? dateCourte(a.status.dueDate) : ''}</span>
               </button>
               </React.Fragment>

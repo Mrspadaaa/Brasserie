@@ -39,6 +39,11 @@ interface SheetProps {
    * Réservé au matériel ; les autres feuilles gardent leur en-tête.
    */
   bare?: boolean;
+  /**
+   * Page pleine à la place de la feuille montante (poignée, flou et coins arrondis en moins) : la fiche d'un appareil, comme la maquette za3.
+   * Réservé au matériel, avec `bare`.
+   */
+  plein?: boolean;
 }
 
 export const Sheet: React.FC<SheetProps> = ({
@@ -51,7 +56,8 @@ export const Sheet: React.FC<SheetProps> = ({
   snapPoints,
   dismissible = true,
   className = '',
-  bare = false
+  bare = false,
+  plein = false
 }) => {
   /*
    * ⚠️ Le clavier virtuel ne réduit NI `dvh`, NI `window.innerHeight` : une
@@ -73,6 +79,7 @@ export const Sheet: React.FC<SheetProps> = ({
   const tight = useDensity() === 'tight';
   const inheritedOpener = React.useContext(ModalOpenerContext);
   const returnFocus = React.useRef<HTMLElement | null>(null);
+  const contenu = React.useRef<HTMLDivElement | null>(null);
 
   return (
   <Drawer.Root
@@ -84,10 +91,15 @@ export const Sheet: React.FC<SheetProps> = ({
     autoFocus
   >
     <Drawer.Portal>
-      <Drawer.Overlay className="fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm" />
+      <Drawer.Overlay className={plein ? 'fixed inset-0 z-50 bg-cave-950' : 'fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm'} />
 
       <Drawer.Content
-        onOpenAutoFocus={() => { returnFocus.current = inheritedOpener?.isConnected ? inheritedOpener : document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+        ref={contenu}
+        onOpenAutoFocus={(event) => {
+          // N4 : sans en-tête, aucun bouton ne prend le focus à l'ouverture (un anneau noir entourait « ← Stocks · Matériel » et le ×) ; la feuille le garde.
+          if (bare) { event.preventDefault(); contenu.current?.focus({ preventScroll: true }); }
+          returnFocus.current = inheritedOpener?.isConnected ? inheritedOpener : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           // Une autre fiche peut venir de s'ouvrir : ne pas lui voler le focus.
@@ -116,16 +128,17 @@ export const Sheet: React.FC<SheetProps> = ({
           maxHeight: keyboardInset ? `calc(94dvh - ${keyboardInset}px)` : undefined
         }}
         className={`fixed inset-x-0 bottom-0 z-50 flex flex-col
-                   max-h-[94dvh] rounded-t-sheet
-                   bg-cave-900 border-t border-cave-700 shadow-sheet
+                   ${plein ? 'top-0 h-[100dvh] max-h-[100dvh] bg-cave-950' : 'max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet'}
                    focus:outline-none ${className}`}
       >
         {/* Poignée : indique qu'on peut glisser, et sert de zone de préhension. */}
+        {!plein && (
         <div
           className="shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"
         >
           <div className="w-8 h-1 rounded-full bg-cave-700" aria-hidden="true" />
         </div>
+        )}
 
         {bare ? (
           <>

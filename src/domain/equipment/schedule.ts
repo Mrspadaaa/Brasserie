@@ -91,7 +91,7 @@ export function equipmentStatus(item: EquipmentItem, ctx: EquipmentContext): Equ
   if (unit === 'brassin') {
     const used = brewsUsedIn(item, ctx.batches);
     if (used >= every) return { kind: 'du', verb, brewsSince: used, brewsTarget: every, line: `${verb} · après ${plur(every, 'brassin')}` };
-    return { kind: 'avenir', verb, brewsSince: used, brewsTarget: every, line: `${verb} · encore ${plur(every - used, 'brassin')}` };
+    return { kind: 'avenir', verb, brewsSince: used, brewsTarget: every, line: `${verb} · dans ${plur(every - used, 'brassin')}` };
   }
   const dueDate = nextDueAfter(item, depart)!;
   if (dueDate <= ctx.today) return { kind: 'du', verb, dueDate, line: `${verb} · prévu le ${dateCourte(dueDate)}` };
@@ -120,6 +120,8 @@ export interface AvenirRow extends StatusRow {
   /** `y` écarté de la ligne précédente d'au moins 28 px, pour que les lignes ne se chevauchent pas. */
   yLigne: number;
   apresCoupure: boolean;
+  /** Au brassin et à jour : pas de date, la ligne vient après les lignes datées (« détartrer · dans 5 brassins »). */
+  sansDate?: boolean;
 }
 export interface Repere { label: string; date: string; y: number; tick: boolean }
 export interface FilDuTemps {
@@ -139,7 +141,10 @@ export function filDuTemps(items: EquipmentItem[], ctx: EquipmentContext): FilDu
   const reste = items.filter(i => !dansHaut.has(i)).map(item => ({ item, status: equipmentStatus(item, ctx) })).filter(r => !r.status.retired);
   const dates = reste.filter(r => r.status.kind === 'avenir' && r.status.dueDate)
     .sort((a, b) => a.status.dueDate!.localeCompare(b.status.dueDate!) || a.item.name.localeCompare(b.item.name, 'fr'));
-  const sansEcheance = reste.filter(r => !(r.status.kind === 'avenir' && r.status.dueDate));
+  // Au brassin et à jour (c2, N3) : une ligne sans date après les lignes datées, comme « après 5 brassins » pour le dû ; hors de la grille sans échéance.
+  const auBrassin = reste.filter(r => r.status.kind === 'avenir' && !r.status.dueDate && r.status.brewsTarget !== undefined)
+    .sort((a, b) => ((a.status.brewsTarget ?? 0) - (a.status.brewsSince ?? 0)) - ((b.status.brewsTarget ?? 0) - (b.status.brewsSince ?? 0)) || a.item.name.localeCompare(b.item.name, 'fr'));
+  const sansEcheance = reste.filter(r => !(r.status.kind === 'avenir' && (r.status.dueDate || r.status.brewsTarget !== undefined)));
 
   const coupeY = yDe(COUPURE_APRES_JOURS);
   let rangApres = 0;
@@ -152,6 +157,12 @@ export function filDuTemps(items: EquipmentItem[], ctx: EquipmentContext): FilDu
     precedent = yLigne;
     return { ...r, offsetDays, y, yLigne, apresCoupure };
   });
+  for (const r of auBrassin) {
+    const apresCoupure = avenir.some(a => a.apresCoupure);
+    const y = precedent > -Infinity ? precedent + ESPACEMENT_MIN_PX : 30;
+    precedent = y;
+    avenir.push({ ...r, offsetDays: Number.NaN, y, yLigne: y, apresCoupure, sansDate: true });
+  }
 
   const reperes: Repere[] = [];
   const vus = new Set<string>();
@@ -161,7 +172,7 @@ export function filDuTemps(items: EquipmentItem[], ctx: EquipmentContext): FilDu
     vus.add(mois.slice(0, 7));
   }
   // Après la coupure : le mois seul, à la hauteur de sa première ligne, sans trait d'échelle.
-  for (const r of avenir.filter(a => a.apresCoupure)) {
+  for (const r of avenir.filter(a => a.apresCoupure && !a.sansDate)) {
     const mois = r.status.dueDate!.slice(0, 7);
     if (vus.has(mois)) continue;
     vus.add(mois);
@@ -173,7 +184,7 @@ export function filDuTemps(items: EquipmentItem[], ctx: EquipmentContext): FilDu
     avenir,
     reperes,
     bande: { days: BANDE_JOURS, y: yDe(BANDE_JOURS) },
-    coupure: avenir.some(a => a.apresCoupure) ? { afterDays: COUPURE_APRES_JOURS, fromY: coupeY, toY: coupeY + SAUT_COUPURE_PX } : null,
+    coupure: avenir.some(a => a.apresCoupure && !a.sansDate) ? { afterDays: COUPURE_APRES_JOURS, fromY: coupeY, toY: coupeY + SAUT_COUPURE_PX } : null,
     sansEcheance,
   };
 }

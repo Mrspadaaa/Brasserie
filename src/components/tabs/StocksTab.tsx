@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
+import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop, Undo2 } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
@@ -183,6 +183,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [paneRef, setPaneRef] = useState<string | null>(null);
   const [payingMaintenance, setPayingMaintenance] = useState<string | null>(null);
   const [annulerMateriel, setAnnulerMateriel] = useState<{ message: string; previous: EquipmentItem } | null>(null);
+  /** Un geste fait dans la fiche (Étalonné, Fait) : la liste en tire la note « à jour jusqu'au » et la ligne surlignée à sa nouvelle date (N1). */
+  const [traiteMateriel, setTraiteMateriel] = useState<{ avant: EquipmentItem; apres: EquipmentItem; id: number } | null>(null);
+  const changerDepuisFiche = (item: EquipmentItem, toast?: string) => {
+    const avant = stocks.equipment.find((e) => e.ref === item.ref);
+    ecrireMateriel(item, undefined, toast);
+    if (toast && avant) setTraiteMateriel({ avant, apres: item, id: Date.now() });
+  };
+  const nomPaiement = payingMaintenance ? stocks.equipment.find((e) => e.ref === payingMaintenance)?.name : undefined;
   useEffect(() => { if (!annulerMateriel) return; const t = setTimeout(() => setAnnulerMateriel(null), 8000); return () => clearTimeout(t); }, [annulerMateriel]);
   const vivantsMateriel = useMemo(() => stocks.equipment.filter((e) => !e.retired), [stocks.equipment]);
   const volet = useMemo(() => vivantsMateriel.find((e) => e.ref === paneRef)
@@ -655,6 +663,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
               selectedRef={grandEcran ? volet?.ref ?? null : null}
               onOpen={(item) => (grandEcran ? setPaneRef(item.ref) : setEquipmentSheet(item))}
               onWrite={ecrireMateriel}
+              traite={traiteMateriel}
               onAdd={(item) => { StorageService.addEquipment(item); onSuccessMessage?.(`${item.name} ajouté.`); }}
               onBuy={() => setPurchasingEquipment(true)}
               onProjects={onOpenEquipmentProjects}
@@ -665,7 +674,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             <section className="mt-droite" aria-label={`Fiche : ${volet.name}`}>
               <EquipmentDetail
                 key={volet.ref} item={volet} batches={batches} transactions={transactions as unknown as FinanceTransaction[]} today={aujourdhuiIso()} layout="pane"
-                onChange={(item, toast) => ecrireMateriel(item, undefined, toast)}
+                onChange={changerDepuisFiche}
                 onClose={() => setPaneRef(null)}
                 onPayMaintenance={(item) => setPayingMaintenance(item.ref)}
                 onDelete={(item) => { StorageService.deleteEquipment(item.ref); setPaneRef(null); onSuccessMessage?.(`${item.name} supprimé.`); }}
@@ -676,12 +685,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       )}
 
       {annulerMateriel && (
-        <div className="mt mt-toast" role="status"><Check size={18} aria-hidden="true" /><span>{annulerMateriel.message}</span><span className="flex-1" />
-          <button type="button" onClick={() => { StorageService.updateEquipment(annulerMateriel.previous); setAnnulerMateriel(null); }}>Annuler</button></div>
+        <div className="mt mt-toast" role="status"><Check size={18} aria-hidden="true" /><span>{(() => { const [verbe, ...suite] = annulerMateriel.message.split(' · '); return suite.length ? <><b>{verbe}</b> · {suite.join(' · ')}</> : <b>{verbe}</b>; })()}</span><span className="flex-1" />
+          <button type="button" onClick={() => { StorageService.updateEquipment(annulerMateriel.previous); setAnnulerMateriel(null); }}><Undo2 size={18} aria-hidden="true" />Annuler</button></div>
       )}
 
       {purchasingEquipment && <ExpenseSheet initialIntent="equipment" onClose={()=>setPurchasingEquipment(false)} onSaved={()=>onSuccessMessage?.("Achat et matériel enregistrés.")}/>}
-      {payingMaintenance && <ExpenseSheet initialIntent="expense" existingEquipmentId={payingMaintenance} onClose={()=>setPayingMaintenance(null)} onSaved={()=>onSuccessMessage?.("Dépense enregistrée.")}/>}
+      {payingMaintenance && <ExpenseSheet initialIntent="expense" existingEquipmentId={payingMaintenance} existingEquipmentName={nomPaiement} onClose={()=>setPayingMaintenance(null)} onSaved={()=>onSuccessMessage?.("Dépense enregistrée.")}/>}
       {/* Le matériel se modifie et se supprime : il n'était que consultable. */}
       <EquipmentSheet
         item={equipmentSheet}
@@ -689,7 +698,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         transactions={transactions as unknown as FinanceTransaction[]}
         today={aujourdhuiIso()}
         onClose={() => setEquipmentSheet(null)}
-        onChange={(item, toast) => ecrireMateriel(item, undefined, toast)}
+        onChange={changerDepuisFiche}
         onPayMaintenance={(item) => { setEquipmentSheet(null); setPayingMaintenance(item.ref); }}
         onSave={(item) => {
           const exists = stocks.equipment.some((e) => e.ref === item.ref);

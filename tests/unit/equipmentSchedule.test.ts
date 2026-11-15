@@ -191,11 +191,16 @@ describe('filDuTemps : à sa vraie distance, 3,5 px par jour', () => {
   it('la bande « 30 j »', () => {
     expect(fil.bande).toEqual({ days: 30, y: 3.5 * 30 - 14 });
   });
-  it('un dû qui a un brassin à venir va avec les sans date, jamais dans l’avenir daté', () => {
-    const f = filDuTemps([{ ...refroid, lastDone: '2026-08-01' }], ctx);
-    expect(f.avenir).toEqual([]);
-    expect(f.sansEcheance.map(r => r.item.ref)).toEqual(['REFR']);
-    expect(f.sansEcheance[0].status.line).toBe('détartrer · encore 2 brassins');
+  it('N3 : un appareil au brassin à jour reste dans le fil, sans date, après les lignes datées ; il n’entre pas dans « sans échéance »', () => {
+    const f = filDuTemps([{ ...refroid, lastDone: '2026-08-01' }, desh, cuve, balance], ctx);
+    const r = f.avenir.find(a => a.item.ref === 'REFR')!;
+    expect(r).toMatchObject({ sansDate: true });
+    expect(r.status.line).toBe('détartrer · dans 2 brassins');
+    expect(f.sansEcheance.map(x => x.item.ref)).toEqual(['BAL']);
+    expect(f.avenir[f.avenir.length - 1].item.ref).toBe('REFR');
+    expect(r.yLigne).toBeGreaterThanOrEqual(Math.max(...f.avenir.filter(a => !a.sansDate).map(a => a.yLigne)) + 34);
+    // la coupure n'est pas posée pour cette seule ligne sans date
+    expect(filDuTemps([{ ...refroid, lastDone: '2026-08-01' }], ctx).coupure).toBeNull();
   });
   it('retiré : absent partout', () => {
     const f = filDuTemps([{ ...pompe, retired: { date: '2026-11-10', reason: 'vendu' } }], ctx);

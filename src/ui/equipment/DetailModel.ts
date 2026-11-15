@@ -5,7 +5,7 @@
 import type { EquipmentEvent, EquipmentItem, EquipmentReading } from '../../types';
 import {
   brewsUsedIn, calibrationPreset, dateCourte, daysBetween, lireDate, moisCourt, nextDueAfter, premierDuMois,
-  addMonthsClamped, PX_PAR_JOUR, type EquipmentStatus,
+  addMonthsClamped, PX_PAR_JOUR, readingOk, type EquipmentStatus,
 } from '../../domain/equipment';
 
 const SANS_ACCENT_ESPACE = / | /g;
@@ -117,6 +117,16 @@ export interface LigneHisto { date: string; label: string; valeur: string; kind:
 export function lecturesTexte(readings: EquipmentReading[] | undefined, decimales: number): string {
   if (!readings?.length) return '';
   return [...readings].sort((a, b) => a.expected - b.expected).map(r => fmt(r.read, decimales)).join(' · ');
+}
+
+/** « 4,02 · 7,01 ✓ » : les lectures du dernier étalonnage de l'appareil, rangées par valeur attendue, puis ✓ (toutes dans la tolérance) ou ✗. Rien sans lectures. */
+export function lecturesDerniere(item: EquipmentItem): string | null {
+  const dernier = [...(item.history ?? [])].reverse().find(e => e.kind === 'etalonnage' && e.readings?.length);
+  if (!dernier?.readings) return null;
+  const preset = calibrationPreset(item);
+  const dec = decimalesLecture(preset ?? { tolerance: 0.01 }, dernier.readings.map(r => r.read));
+  const bon = preset ? dernier.readings.every(r => readingOk(r, r.read, preset.tolerance)) : true;
+  return `${lecturesTexte(dernier.readings, dec)} ${bon ? '✓' : '✗'}`;
 }
 
 const LIBELLE_EVT: Record<EquipmentEvent['kind'], string> = {

@@ -17,7 +17,7 @@
 .eqd-m, .eqd-d, .eqd-v { font-family: "IBM Plex Mono", Consolas, monospace; font-variant-numeric: tabular-nums lining-nums; }
 .eqd-sp { flex: 1; }
 .eqd-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.equipment-detail-sheet.equipment-detail-sheet { background: rgb(var(--cave-950)); height: 94dvh; }
+.equipment-detail-sheet.equipment-detail-sheet { background: rgb(var(--cave-950)); height: 100dvh; }
 
 /* Titre et Gestion */
 .eqd-titre { display: flex; align-items: center; gap: 10px; }
@@ -131,7 +131,9 @@
 .eqd-coupure { position: absolute; left: 41px; width: 15px; height: 9px; border-top: 1.5px solid var(--d-mut); border-bottom: 1.5px solid var(--d-mut); transform: skewY(-20deg); }
 
 /* c1 (P7, P13) : en feuille, la barre de za3 — « ← Stocks · Matériel » à gauche, ⋯ rond à droite ; le nom prend toute la largeur. */
-.eqd-barre { display: flex; align-items: center; gap: 8px; margin: 0 0 8px -4px; }
-.eqd-retour { min-height: 44px; padding: 0 10px 0 4px; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; border-radius: 12px; }
+/* c2 (P7) : page pleine, la barre prend toute la largeur et un filet la sépare du titre, comme za3-geste-390. */
+.eqd-barre { display: flex; align-items: center; gap: 8px; margin: -2px -12px 12px -12px; padding: env(safe-area-inset-top, 0px) 12px 8px 12px; border-bottom: 1px solid var(--d-line); }
+.eqd-retour { min-height: 44px; padding: 0 10px 0 4px; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 400; border-radius: 12px; }
+.eqd-houblon { color: var(--d-ok); flex: none; }
 .eqd-retour:focus-visible { outline: 2px solid var(--d-ink); outline-offset: -2px; }
 .eqd-doux { color: var(--d-mut); font-size: 14px; }
