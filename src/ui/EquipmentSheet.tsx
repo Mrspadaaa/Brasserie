@@ -41,7 +41,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
   if (!item) return null;
   if (!item.name) return <EquipmentEditSheet item={item} onClose={onClose} onSave={onSave} />;
   return (
-    <Sheet open onClose={onClose} title="Stocks · Matériel" className="equipment-sheet equipment-detail-sheet">
+    <Sheet open onClose={onClose} title="Stocks · Matériel" bare className="equipment-sheet equipment-detail-sheet">
       <EquipmentDetail
         item={item}
         batches={batches}

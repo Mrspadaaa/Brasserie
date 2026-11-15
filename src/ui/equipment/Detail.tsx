@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Check, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
+import { ArrowLeft, Check, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
 import type { EquipmentItem, EquipmentReading } from '../../types';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import {
@@ -145,17 +145,8 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   const principal = enPanne ? 'Réparée' : calibre ? 'Étalonné' : 'Fait';
   const PrincipalIcone = enPanne ? Wrench : Check;
 
-  const entete = (
-    <div className="eqd-titre">
-      <span className="eqd-gpic"><EquipmentPicto name={item.name} /></span>
-      <div className="eqd-nom">
-        <h1>{item.name}</h1>
-        <div className="eqd-sous">
-          {brassins.categorie}{brassins.brassins > 0 && <> · utilisé dans <span className="eqd-m">{brassins.brassins}</span> {brassins.brassins > 1 ? 'brassins' : 'brassin'}</>}
-        </div>
-      </div>
-      <span className="eqd-sp" />
-      <div className="eqd-gestion">
+  const gestion = (
+    <div className="eqd-gestion">
         <button type="button" className="eqd-rd" data-eqd-menu-bouton aria-label="Gestion du matériel : modifier, vendu, réformé, supprimer"
           aria-haspopup="menu" aria-expanded={menu} aria-controls={menu ? menuId : undefined} onClick={() => setMenu(o => !o)}>
           <MoreHorizontal size={20} aria-hidden="true" />
@@ -175,8 +166,28 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
             <button type="button" role="menuitem" className="eqd-danger" onClick={() => { setMenu(false); setSuppression(true); }}>Supprimer</button>
           </div>
         )}
-      </div>
     </div>
+  );
+  const entete = (
+    <>
+    {layout === 'sheet' && (
+      <div className="eqd-barre">
+        <button type="button" className="eqd-retour" aria-label="Retour à Stocks · Matériel" onClick={onClose}><ArrowLeft size={20} aria-hidden="true" />Stocks · Matériel</button>
+        <span className="eqd-sp" />
+        {gestion}
+      </div>
+    )}
+    <div className="eqd-titre">
+      <span className="eqd-gpic"><EquipmentPicto name={item.name} /></span>
+      <div className="eqd-nom">
+        <h1>{item.name}</h1>
+        <div className="eqd-sous">
+          {brassins.categorie}{brassins.brassins > 0 && <> · utilisé dans <span className="eqd-m">{brassins.brassins}</span> {brassins.brassins > 1 ? 'brassins' : 'brassin'}</>}
+        </div>
+      </div>
+      {layout === 'pane' && <><span className="eqd-sp" />{gestion}</>}
+    </div>
+    </>
   );
 
   const etat = (
@@ -338,7 +349,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
         )}
         <div className="eqd-ev">
           <span className="eqd-pt eqd-mnt" />
-          <div className="eqd-evl"><span className="eqd-d">{dateCourte(today)}</span><b>{verbeAujourdhui}</b>
+          <div className="eqd-evl"><span className="eqd-d">{dateCourte(today)}</span>{status.kind === 'avenir' ? <span className="eqd-doux">à jour</span> : <b>{verbeAujourdhui}</b>}
             {calibre && <span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span>}
             {enPanne && item.brokenNote && <span className="eqd-v eqd-tol">{item.brokenNote}</span>}
           </div>

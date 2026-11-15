@@ -114,11 +114,13 @@ export const FilSans: React.FC<{ rows: StatusRow[]; onOpen: (item: EquipmentItem
 );
 
 /** Le total se lit « 1 739 CHF » : l'apostrophe (U+0027) ou le guillemet (U+2019) du séparateur suisse devient une espace insécable (U+00A0, dans le code). */
+const totalParc = (cents: number): string =>
+  (cents / 100).toLocaleString('fr-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).replace(/[  ’']/g, ' ');
 export const FilPied: React.FC<{ wide: boolean; parc: { totalCents: number; known: number }; onAddOwned: () => void; onProjects?: () => void }> = ({ wide, parc, onAddOwned, onProjects }) => (
   <div className="mt-pied">
     <button type="button" className="mt-tuile" onClick={onAddOwned}><Package size={18} aria-hidden="true" />{wide ? 'Matériel déjà possédé' : 'Déjà possédé'}</button>
     {onProjects && <button type="button" className="mt-tuile" onClick={onProjects}><Wrench size={18} aria-hidden="true" />{wide ? "Projets d'équipement" : 'Projets'}<ExternalLink size={14} aria-hidden="true" /></button>}
-    {parc.known > 0 && <span className="mt-parc"><b>{(parc.totalCents / 100).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).replace(/[’']/g, ' ')} CHF</b>{parc.known} prix connu{parc.known > 1 ? 's' : ''}</span>}
+    {parc.known > 0 && <span className="mt-parc"><b>{totalParc(parc.totalCents)} CHF</b>{parc.known} prix connu{parc.known > 1 ? 's' : ''}</span>}
   </div>
 );
 

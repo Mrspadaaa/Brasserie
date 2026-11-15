@@ -129,3 +129,9 @@
 .eqd-daujl { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--d-line2); }
 .eqd-dnoeud { position: absolute; left: 39px; width: 19px; height: 19px; border-radius: 50%; background: var(--d-ink); box-shadow: 0 0 0 4px var(--d-bg); }
 .eqd-coupure { position: absolute; left: 41px; width: 15px; height: 9px; border-top: 1.5px solid var(--d-mut); border-bottom: 1.5px solid var(--d-mut); transform: skewY(-20deg); }
+
+/* c1 (P7, P13) : en feuille, la barre de za3 — « ← Stocks · Matériel » à gauche, ⋯ rond à droite ; le nom prend toute la largeur. */
+.eqd-barre { display: flex; align-items: center; gap: 8px; margin: 0 0 8px -4px; }
+.eqd-retour { min-height: 44px; padding: 0 10px 0 4px; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; border-radius: 12px; }
+.eqd-retour:focus-visible { outline: 2px solid var(--d-ink); outline-offset: -2px; }
+.eqd-doux { color: var(--d-mut); font-size: 14px; }
