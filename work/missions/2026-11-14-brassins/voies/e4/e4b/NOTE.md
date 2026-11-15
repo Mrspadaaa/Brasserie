@@ -25,3 +25,15 @@ Boosters : cuve-niveau, bascule-fut, caisse-bouteilles, curseur-bouteilles, past
 - OG de la Pils absente du brief : OG et alcool restent « — », avec « poser » (aucun chiffre inventé).
 ## Corrections f3a4 (14.11)
 - Bloquants c5a 1 et 2 ; aussi n° 4 (J+18), 5, 6 (cuve rose retirée), 7. Volumes : DONNEES-COMMUNES. « Garder » devient « Laisser conditionnée ».
+
+## Rhabillage re4 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : en-tête, sous-onglets et barre du bas de l'app ; la fiche du lot est une feuille de l'app (poignée, rayon 24, ×) posée sur la liste des brassins.
+- Retirés : palette en dur, graisses 800 et 900, titres de 30 à 44 px, rayons 12 à 22 ; remplacés par jetons (clair et cave), Source Sans 3 / IBM Plex Mono, échelle 28 / 18 / 16 / 14 / 12, rayons 10 / 16 / 24.
+- Curseur m2 de la trousse (bande verte = bouteilles qui tiennent, graduations 0 / 40 / 80) ; puces de date id-puce ; boutons id-btn (une primaire par écran).
+- Aucun texte ni chiffre changé ; contrôle : IDENTITE OK.
+- Propre à e4b : pastille d'étape dans l'en-tête de la feuille ; cuve en capsule (rayon rond), bière ebc-gold vers ebc-amber, lie ebc-brown ; barre d'action fixe devenue le pied de la feuille ; à 1280, la feuille de 42 rem garde une colonne (la mise en page à deux colonnes de la v0 ne tient pas dans une feuille de l'app) ; retour en seconde feuille.
+
+
+## Corrections g1 (15.11)
+- k1 n° 1 (bloquant) : au geste, la cuve F3 est vide (fond de lie plein, sans chiffre, mot « vide ») ; les pertes passent au résumé : « pertes 2 L depuis les 24 L brassés · F3 vide ». N° 2 : piste neutre, repère « max 66 ». N° 3 : pointillés et hachures remplacés par des cadres pleins pâles. N° 4 : « Tirée : 22 L ».
+- IDENTITE OK (controle-identite.mjs e2 e4 : 8/8).

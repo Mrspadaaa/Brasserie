@@ -28,3 +28,9 @@ Boosters : onglets-au-pouce, frise-cuve, semaine, plus-de-l-onglet.
 Ses 5 brassins et chiffres de BRIEF-AUTEUR.md. Fictifs : les 5 recettes (une par brassin, noms et styles tirés des brassins),
 le compteur Recettes (5) et le statut du compagnon. Aucun α, IBU ni arôme inventé ; OG « — » hors NEIPA (1,062).
 Compteur Brassins : 4 en cours (Saison écoulée hors compte, comme `isCurrent`).
+
+## Corrections g3 (15.11, verdict k3)
+- n° 1 (bloquant) : à 1280, le dock des sous-onglets se range en tête de la colonne gauche (là où l'app pose ses sous-onglets), la tête
+  « 2 gestes aujourd'hui » glisse dessous ; la liste des recettes n'est plus couverte. À 390, le dock reste sous le pouce.
+- n° 2 : « F1 DH » et « F1 21 °C » (espace insécable) dans les cases de la semaine.
+- n° 3 : « 1,010 stable » au lieu de « 1,010 = ».

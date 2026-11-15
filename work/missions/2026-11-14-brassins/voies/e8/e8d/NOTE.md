@@ -9,3 +9,11 @@ Causes c3 évitées : 1 (genre neuf), 3 (aplats pleins saturés), 4 (« 3 lots. 
 Baseline : jamais type=number (aucune saisie ici) ; chiffres à la virgule ; inconnu = « — » ; cibles ≥ 44 px ; FG en bande ; 5,8 % dit provisoire ; J+5 depuis le levurage ; pas de code interne, pas de bandeau d'alerte, pas de paragraphe ; classes et globales préfixées ; HTML autonome.
 Données fictives (plausibles, sobres) : versions V1 à V3 ; lots passés 006, 009, 011, 014, 016 (dates et densités) ; recettes de Pale Ale (OG 1,050, FG 1,010–1,012, 5,1 %, Cascade 60 g soit 2,5 g/L), Pils (5,0 %, Saaz), Stout (Fuggle), grains en %. Réelles (BRIEF-AUTEUR) : 5 brassins, NEIPA OG 1,062, FG 1,010–1,014, 1,018 au 13.11, 5,8 % provisoire, Verdant IPA, 19/21/2 °C, Citra 100 g + Mosaic 80 g (7,5 g/L dérivé), Pils garde J+18, Stout 5,9 %, Saison 6,1 % écoulée, Pale Ale à brasser le 08.11. α : src/data/hopDatabaseBootstrap.json (Citra 10–16, Mosaic 10–15, Cascade 4–9, Saaz 2,5–6). Bandes IBU du style : src/data/brewingStylesBootstrap.json (BJCP 2021). IBU des recettes : « — » partout (aucun inventé). Couleurs de verre : SRM des styles BJCP, approchées.
 - Retouches f3b2 (verdict c5b) : titre de la comparaison « La NEIPA tire sur 4 mesures · FG visées voisines » (densité, alcool, à cru, lots) ; le nœud est retiré de la FG visée (une FG haute n'est pas un gain : pas de « tirer » sur cette ligne, corde estompée comme l'IBU).
+
+## Rhabillage à l'identité (re8, 15.11)
+- Trousse chargée : en-tête, sous-onglets (Recettes active), barre du bas et + de l'app ; thèmes clair et cave par jetons.
+- Le comptoir de bois devient un `id-panneau` ; verres tracés à l'encre du thème, bière en EBC, mousse blanche ; planche en filet `cave-700`.
+- Recette servie : panneau EBC gold (rayon 16) au lieu de l'aplat plein écran ; nom en `id-display` 28/600 (au lieu de 76/900) ; chiffres mono 24/600 ; tickets de lots sur la surface du thème, lot en cuve marqué d'un filet hop et « provisoire » en attention.
+- Rebrasser : bouton primaire fixé encre sur la bière (la paille de l'action se perdait sur l'or en cave) ; Recette en secondaire.
+- Trinquer et la corde : `id-display`, `id-btn-primaire` / `-secondaire` ; la corde est posée dans une feuille de l'app (« Comparer deux recettes »), sa croix remplace le × maison.
+- Aucun texte ni chiffre changé.

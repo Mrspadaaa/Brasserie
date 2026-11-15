@@ -31,3 +31,8 @@ Boosters : date-brassage, jours-rapides, curseur-jours, starter (cases), stock-i
 ## Corrections f3a1 (14.11, verdict c5a)
 - 45 L → 24 L dans l'en-tête. Au repos, titre « Lundi 16.11 » (le jour proposé), le retard passe dans la ligne « Prévue le 08.11 · 6 j de retard ».
 - « FG visée » → « FG cible » (un point, pas une bande). Tuile Stock : « déstocké au brassage » retiré. Curseur de jours : libellés descendus sous le pouce.
+
+## Rhabillage re1 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, tailles ≤ 28 px, graisses ≤ 600, rayons 4 / 10 / 16 / 24.
+- Feuille de l'app (poignée, rayon 24, × et pied) posée sur la liste des brassins ; bloc de date au ton attention ; segment et jours rapides = id-segments et id-puce ; curseur de jours = curseur m2 de la trousse sur une bande alerte / attention / houblon ; onglets de fiche ; starter en id-panneau à cases de 24 px (cible 44) ; cibles en id-sureleve et id-reading ; pied : ⋯ + « Commencer le brassage » (repos), Annuler + « Enregistrer lu 16.11 » (geste, boutons sortis du bloc pour une seule primaire).
+- Idée, composition, textes et chiffres inchangés. Contrôle : IDENTITE OK.

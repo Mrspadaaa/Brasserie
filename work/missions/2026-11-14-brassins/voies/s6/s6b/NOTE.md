@@ -36,3 +36,7 @@ Geste montré : sur place : la rangée du jour devient le curseur m2 (−/+ 0,00
 
 ## Boosters (data-booster)
 cuves, compteur-jours, colonne-densite, releve-cuve, releve-densite, curseur-densite, case-dryhop, lampe-stable. Mesures B2 à B13 non jouées en v0 (permis par boosters-ux).
+
+
+## g4a (15.11) : corrections de k4
+- En-tête de la fiche : « carnet · stock · ⋯ dossier » à côté du × (k4 B0). Geste : « taper la valeur » sous 1,016 (m2, k4 n° 1). Mosaic : « J+6 demain » comme Citra.

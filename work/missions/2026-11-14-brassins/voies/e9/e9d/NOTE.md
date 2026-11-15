@@ -32,3 +32,7 @@
 
 ## Captures
 - `e9d-repos-390-clair.png`, `e9d-geste-390-clair.png`, `e9d-tarifs-390-clair.png`.
+
+## Rhabillage à l’identité de l’app (re9, 15.11)
+- Trousse chargée (`identite.css`, `chrome.js`) : en-tête, sous-onglets (Atelier actif), barre du bas et + de l’app ; jetons des deux thèmes, Source Sans 3 / IBM Plex Mono, échelle ≤ 28 px, graisse ≤ 700, rayons 10 / 16 / 24.
+- Idée, composition, textes et chiffres inchangés. Couleurs de données : sémantique (hop, attention, alert, water), rubriques `--area-*`, bière EBC (pastilles et bouteille, indicatives selon le style), pastilles de style `id-style`.

@@ -7,3 +7,5 @@ Idée : La liste actuelle, remise d'aplomb.
 - Période corrigée : bouton « Nov. + en cours » : les brassins en cours ne sont jamais cachés.
 - Causes c3 évitées : 1 (composition propre, liste et non fiche), 3 (aplats pleins), 4 (phrase-réponse), 7 (aucune phrase grise au repos). Écart : pas de curseur (aucune valeur à saisir sur cette vue).
 - Fictif : étoile sur NEIPA, « 2 brassins rangés » dans Archives. Retiré : codes ZZ, « Atelier Houblons V5.5 ».
+
+- re6 (15.11) : rhabillée à l'identité de l'app (trousse identite.css + chrome.js : en-tête, sous-onglets, barre du bas ; jetons des deux thèmes, Source Sans 3 / IBM Plex Mono, ≤ 28 px, graisse ≤ 600, rayons 10 / 16 / 24) ; idée, composition, textes et chiffres inchangés.

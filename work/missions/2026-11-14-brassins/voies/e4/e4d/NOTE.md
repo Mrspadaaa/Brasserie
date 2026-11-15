@@ -25,3 +25,15 @@ Boosters : compteur-bouteilles, curseur-bouteilles, futs-dessus, bon-tirage.
 - OG de la Pils absente du brief : OG et alcool restent « — », avec « poser » (aucun chiffre inventé).
 ## Corrections f3a4 (14.11)
 - Bloquants c5a 1 et 2 ; aussi n° 3 (date soulignée, touchable ; liste non dessinée), 4, 5, 7 ; cave capturée. Volumes : DONNEES-COMMUNES. « Garder » devient « Laisser conditionnée ».
+
+## Rhabillage re4 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : en-tête, sous-onglets et barre du bas de l'app ; la fiche du lot est une feuille de l'app (poignée, rayon 24, ×) posée sur la liste des brassins.
+- Retirés : palette en dur, graisses 800 et 900, titres de 30 à 44 px, rayons 12 à 22 ; remplacés par jetons (clair et cave), Source Sans 3 / IBM Plex Mono, échelle 28 / 18 / 16 / 14 / 12, rayons 10 / 16 / 24.
+- Curseur m2 de la trousse (bande verte = bouteilles qui tiennent, graduations 0 / 40 / 80) ; puces de date id-puce ; boutons id-btn (une primaire par écran).
+- Aucun texte ni chiffre changé ; contrôle : IDENTITE OK.
+- Propre à e4d : la couleur de la bière passe par une teinte du jeton EBC sur le corps de la feuille (ebc-gold pour la Pils, ebc-stout / ebc-brown pour la Stout) au lieu d'un fond plein ; titres en casse normale (plus d'affiche en capitales) ; rouleaux en mono 28 ; tampon en alert ; menu ⋯ dans l'en-tête de la feuille ; Tamponner et suites au pied.
+
+
+## Corrections g1 (15.11)
+- k1 n° 1 (bloquant) : fond de feuille de l’app (plus d’aplat beige, taupe ni brun) ; le bon de tirage reste une carte blanche bordée, le tampon reste. N° 2 : casse de phrase (« Bon de tirage », « Tamponner », « Conditionné »). N° 3 : piste neutre, repère « 66 max ». N° 4 : traits pleins (F-01, date, OG). N° 5 : « 6 × 33 cl », « 2 L », « 20 L », « 22 L » ; retour « 30 × 33 cl », « 9,9 L », « 12 L », « 2,1 L ». N° 6 : titre « Revenir en garde ? ». N° 7 : 1280 et geste cave rendus (capture.mjs).
+- IDENTITE OK (controle-identite.mjs e2 e4 : 8/8).

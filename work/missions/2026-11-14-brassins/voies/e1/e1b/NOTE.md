@@ -31,3 +31,8 @@ Ma meilleure : cave et 1280 (poste : jours et compte à rebours côte à côte, 
 ## Corrections f3a1 (14.11, verdict c5a)
 - 45 L → 24 L dans le rail. À 1280, cuverie et recette dans la colonne gauche (grille à zones). La pastille « DH » est posée dans la case di 15, à côté de « di », hors du cadre de lu 16. « FG cible ».
 - Non fait : « À définir » sous « … » (pas de menu « … » dans cette variante : à dessiner en passe 2).
+
+## Rhabillage re1 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, tailles ≤ 28 px, graisses ≤ 600, rayons 4 / 10 / 16 / 24.
+- Feuille de l'app sur la liste ; « Brasser lundi 16.11 » en id-display ; stock, carnet, dossier en id-btn-icone à côté de la ligne de retard ; bande des jours teintée alerte / attention / houblon, choix plein (sur-paille), DH en marque or (--ebc-gold) ; compte à rebours en id-panneau, fil et puces aux jetons ; recette en id-sureleve ; à 1280, deux colonnes dans la feuille de 42 rem et la cuverie de la semaine visible (comble la colonne gauche vide signalée en v0).
+- Idée, composition, textes et chiffres inchangés. Contrôle : IDENTITE OK.

@@ -13,3 +13,5 @@ Idée : quatre cuves, un trait de cible.
 - Retouches f3b2 (verdict c5b) : recalcul sur NEIPA et Saison 24 L : la réponse change (NEIPA et Saison pile, Stout −0,5 dans la tolérance, seule la Pils −2 L) ; titre « Seule la Pils est courte. », compte Volume 3/4 ; puces Styles, Houblons, « Alcool, IBU » et Archives ajoutées (à un toucher) ; bulle derrière « 24 » retirée ; FG « les 3 stables ».
 
 - Retouches f4 (DONNEES-COMMUNES.md) : volumes alignés, 24 L brassés partout, Stout 24 → 21,9 L, Saison 24 → 21 L ; Volume 4/4 dans la cible (plus de Pils −2 L) ; totaux 96 L brassés (4 brassins, la Pale Ale prévue reste hors bilan), 42,9 L conditionnés (89,4 %), 48 L en cuve, octobre 48 L ; « en bouteille » devient « conditionné » (le fût F-01 en fait partie).
+
+- Retouches re7 (15.11, « identité global de l'app ») : trousse id- chargée (jetons clair et cave, Source Sans 3 et IBM Plex Mono, échelle ≤ 28 px et graisse ≤ 600, rayons 10/16/24), chrome de l'onglet Brassins (en-tête, sous-onglets, barre du bas) ; verdicts en hop / water / attention, teintes de bière en EBC ; idée, composition, textes et chiffres inchangés.

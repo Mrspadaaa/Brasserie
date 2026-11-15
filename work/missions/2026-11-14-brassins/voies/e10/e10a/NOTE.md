@@ -20,3 +20,13 @@ Pas de squelette commun aux 4 ; phrase-réponse en gros en tête ; couleur plein
 
 ## Données
 Vraies : NEIPA, recette 24 L, F1 30 L, Verdant IPA, dry hop Citra 100 g et Mosaic 80 g (BRIEF-AUTEUR). **Fictives** : les grains (Pale Ale 5,00 kg, avoine 0,80, froment 0,60), Citra 10 g à 60′, Citra 60 g et Mosaic 50 g au whirlpool, l'installation « Système 30 L » (seedData.ts). Calcul réel : eaux, grains, houblons et sachets sortent de scaleBrewRecipeScenario (calc.ts, rejoué avec vite-node). Constat : à 40 L, le code garde la cuve de 30 L sans le signaler (47,4 L avant ébullition).
+
+## Rhabillage re10 (15.11)
+Trousse d’identité chargée (`../../../outils/identite/identite.css`, `chrome.js`) : en-tête, sous-onglets (Volumes) et barre du bas de l’app ; jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, 28 px et graisse 600 au plus, rayons 10, 16, 24. Idée, composition, textes et chiffres inchangés. Familles d’arômes : base de `jetons-familles.json`, dessinées en SVG.
+
+## Corrections g3 (15.11, verdict k3)
+- n° 1 (bloquant) : à 1280, les eaux passent sous le curseur, en trois lignes (empâtage, rinçage, avant ébullition 29,1 L, chiffre déjà
+  calculé) ; grain et houblons à droite. Les deux colonnes finissent à la même hauteur. À 390, la tuile « avant ébullition » reste cachée.
+- n° 2 : un seul sélecteur de recette (les pastilles) ; le bouton « Changer » est retiré.
+- n° 3 : eaux, grains et houblons resserrés (marges 10 px, lignes 4 px).
+- n° 4 : repères du curseur en Source Sans 13 px ; « F1 30 L » en puce verte ; « recette 24 L ».

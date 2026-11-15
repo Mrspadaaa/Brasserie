@@ -3,7 +3,8 @@ Chaleur : **chaude** (G1 mêlé à G4, « Le dry hop en question, à la Dryhoppe
 Idée : le tableau de cuverie où chaque houblon a son couloir sur les jours, sous le couloir de densité qui dit « levure active » jusqu'à la bande ; dessous, les deux houblons en colonnes comme cmc2k, chacun avec « Ajouté aujourd'hui ».
 Composition : titre-réponse + raison chiffrée (1,018, bande à 1,014), segment de moments p4b2f (actif), couloirs Citra jaune / Mosaic baies pleins, °C cuve en pied de tableau, colonnes houblons (α, rôle, familles nommées), « Quand ajouter ? » vers Dryhopper.
 Geste : « Ajouté aujourd'hui » sur Citra : bloc vert coché déplacé au J+5, stock −100 g confirmé dans la même bande, titre devenu « Mosaic demain ».
-Images : s4c-repos-390-clair, s4c-geste-390-clair.
+Images : s4c-repos-390-clair, s4c-geste-390-clair, s4c-repos-390-cave, s4c-repos-1280-clair.
+Identité (rs4, 15.11) : feuille de l'app posée sur l'onglet Brassins (poignée, titre F1 · NEIPA · LOT-019, ×), trousse id- (display 28/600, id-segments, id-puce, id-btn), jetons des deux thèmes ; fenêtre « actif » en attention pâle, bande FG en hop pâle, aujourd'hui en repère ; couloirs et filets des cartes aux couleurs de familyTokens, dessinés en SVG.
 ## Baseline (plancher à enrichir)
 - [x] geste m2 : toucher, piste avec cible verte, −/+ (±0,001 ; ±0,1), « Taper » à un toucher, jamais type="number", virgule
 - [x] grammaire z1 : en-tête de lot, cases à cocher pleines, rangée du prochain événement, jetons DESIGN.md (clair + cave)

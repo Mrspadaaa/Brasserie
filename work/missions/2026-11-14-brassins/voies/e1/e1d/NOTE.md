@@ -30,3 +30,8 @@ Geste : « aujourd'hui · levure directe » → 4/4 vert, « On brasse aujourd'h
 ## Corrections f3a1 (14.11, verdict c5a)
 - 45 L → 24 L dans la tuile Cuve. Second chemin : pastille ocre et « aujourd'hui · sans starter » au lieu du rouge et de « levure directe ».
 - Non faits : tuile Ingrédients en icône (change la grille 2×2, passe 2) ; plan du starter au premier plan ; vide du geste ; « À définir ».
+
+## Rhabillage re1 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, tailles ≤ 28 px, graisses ≤ 600, rayons 4 / 10 / 16 / 24.
+- Feuille de l'app sur la liste ; score 2/4 en id-reading 28 et phrase en id-display ; quatre tuiles teintées attention / alerte / houblon (bord, fond à 10 %, filigrane à 22 %) au lieu des aplats saturés ; boutons Choisir et Décider en id-btn-secondaire ; chemins en lignes de 44 px ; z1 en id-panneau à étapes ; « Glisser pour brasser » au pied de la feuille, pouce rond, rempli houblon une fois fait.
+- Idée, composition, textes et chiffres inchangés. Contrôle : IDENTITE OK.

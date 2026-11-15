@@ -21,3 +21,7 @@ Images : s5a-repos-390-clair, s5a-geste-390-clair (densité 1,016 au curseur, en
 1 pas d en-tête + puces + courbe + cases °C + carte + pied ; 2 le héros n est pas le relevé de °C (la tuile °C est un des trois, le titre est la décision) ; 3 aplats pleins (noir, bleu, vert, familles), aucun pointillé ; 4 phrase-réponse en tête et « stable ? = ? » dessiné ; 5 houblons en brasseur (nom, α, rôle, pastilles) ; 6 axe cadré sur 1,024–1,008 (ou 1,040–1,006), OG hors cadre ; 7 aucune phrase grise d aide, écran rempli.
 ## Boosters (boosters-ux)
 - Mesures B2 à B13 non jouées en v0 (permis par le skill : seules pèsent honnêteté et baseline). Skills impeccable et ui-design-system non chargés (contexte) : écart signalé.
+
+
+## g4a (15.11) : corrections de k4
+- Dossier (budget, installation, suppression, correction de l'OG, du jour brassé et du volume) : « ⋯ dossier » à côté de carnet et stock, à un toucher (k4 B0). Espace fine entre nombre et unité en chasse fixe.

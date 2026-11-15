@@ -8,3 +8,8 @@
 ## Causes c3 évitées
 1 affiche en tuiles, rien du squelette ; 2 héros = dry hop ; 3 couleur pleine partout ; 4 « Dry hop demain » en 40 px ; stable en 3 cases ; 5 α, rôle, pictos en pastilles blanches ; 6 axe cadré 1,006–1,040, fenêtre actif ; 7 aucune aide grise.
 ## Sources : comme s7a. Écarts : le tableau à 1280 n'est pas dessiné ; la tuile Mosaic montre 6 familles sur 8 (place).
+
+## Corrections g4b (k4, 15.11)
+- B0 : l'en-tête de la feuille porte « Stock · Dossier » à côté du × (le carnet reste au pied, « Courbe et carnet »). Le Dossier (⋯) garde budget, installation, correction de l'OG, du jour brassé et du volume conditionné, suppression.
+- Atténuation : « alcool 5,8 % · att. 71 %, provisoires jusque-là » dans la tuile Garde (sous la courbe, elle chevauchait J+5).
+- Geste : la feuille m2 « °C de la cuve » est ouverte (19,2 °C, −/+ 0,1, « taper la valeur », consigne 19 en repère, hier 19,1, Annuler / Enregistrer). L'ancien résultat (19,2 dans la tuile et toast) reste en `?etat=fait`.

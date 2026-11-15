@@ -17,3 +17,7 @@
 ## Écarts assumés
 - La fenêtre « actif » à droite d'aujourd'hui est la plage 1,018–1,014 (reste à descendre), pas une prévision ; aucun point futur.
 - `controle-panel` / `controle-commun` non lancés (contexte de l'agent au plafond) : voir DEMANDE EXECUTANT dans RESULTAT.md.
+
+## Corrections g4b (k4, 15.11)
+- B0 : l'en-tête de la feuille porte « Carnet · Stock · Dossier » à côté du × (un toucher chacun). Le Dossier (⋯) garde ce que l'onglet Dossier de l'app tenait : budget, installation, correction de l'OG, du jour brassé et du volume conditionné, suppression. Rien de l'écran actuel ne disparaît.
+- 1280 : la feuille monte (94 dvh), texte des annotations et du rail passé de 11-13 à 14-16 px ; la Stout a son fût « F-01 · 20 L ».

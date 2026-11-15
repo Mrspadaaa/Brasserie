@@ -36,3 +36,12 @@
 
 ## Corrections f3a2 (14.11, verdict c5a)
 - Volumes selon DONNEES-COMMUNES.md (pilote) : Pils 24 L brassés en F3, ≈ 22 L attendus après lies (≈ 2 L), volume en cuve « — » à saisir au curseur ; fût libre F-02 (20 L) ; Stout 21,9 L conditionnés, F-01 rempli à 12 L sur 20 ; Saison 24 L brassés, 21 L conditionnés.
+
+## Rhabillage re2 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : fiche en feuille de l'app (poignée, rayon 24, ×) posée sur la liste des brassins, voile ; jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, ≤ 28 px, graisse ≤ 600, rayons 10 / 16 / 24 ; boutons, pastilles, puces et curseur m2 de la trousse. Idée, composition, textes et chiffres inchangés.
+- Captures : 390 clair (5 états), 390 cave, 1280 clair (capture.mjs).
+
+
+## Corrections g1 (15.11)
+- k1 n° 1 (bloquant) : la feuille garde le fond de l’app ; la couleur de la bière ne vit plus que dans le verre (zone des bulles) et les contenants ; boutons, puces et pastilles de la trousse ; le glisser prend les couleurs du bouton principal. N° 2 (bloquant) : annulée en verre plein gris (220 px), plus de pointillés. N° 3 : boutons de la trousse, texte centré. N° 4 : OG Stout 1,059 (5,9 % juste), au lieu de 1,058. N° 5 : hauteur forcée retirée, plus de vides. N° 6 : « cuve — · consigne 2 °C ». L’écart « hors jetons » de la NOTE ci-dessus est caduc.
+- IDENTITE OK (controle-identite.mjs e2 e4 : 8/8).

@@ -10,3 +10,9 @@
 ## Causes c3 évitées
 1 composition en questions, aucune courbe ; 2 la °C de cuve est la dernière question ; 3 blocs pleins noir/violet/bleu/vert, barres noires ; 4 chaque réponse en 27 px ; stable dessiné en 3 cases ; 5 α, rôle, pictos ; 6 pas de graphe vide : barres de chaque relevé ; 7 une seule étiquette de colonne (« ajouté aujourd'hui »).
 ## Sources : comme s7a (NOTE de s7a). Écarts : le bloc « Cuve ? » garde du blanc (à resserrer en passe 2).
+
+## Corrections g4b (k4, 15.11)
+- B0 : l'en-tête de la feuille porte « Carnet · Stock · Dossier » à côté du ×. Le Dossier (⋯) garde budget, installation, correction de l'OG, du jour brassé et du volume conditionné, suppression.
+- Liste : recherche, filtre et statistiques sous le titre, ★ et ⋯ sur chaque brassin, comme l'app ; la Stout a son fût « F-01 · 20 L ».
+- 1280 : poste de cave, feuille élargie ; les quatre questions sur deux colonnes, « Mes cuves · 3 décisions » à droite ; texte à 14-16 px.
+- « Elle finit ? » : barres depuis 1,008 (2,07 px par point), trou du 11.11 marqué en pointillé « — », bande FG 1,010–1,014 posée à son échelle.

@@ -22,3 +22,9 @@ Images : s4b-repos-390-clair, s4b-geste-390-clair, s4b-liste-390-clair.
 - tableau-debout (suivre), releve-cuve (édition sur place), releve-densite, dry-hop (case dans la pastille), mesure-m2.
 ## Écarts assumés
 - Colonnes F2/Pils étroites (54 px) en fiche : nom en vertical, statut par la couleur.
+
+## Corrections g3 (15.11, verdict k3)
+- n° 1 (bloquant) : étiquettes de la courbe de densité hors du trait. « 1,058 » sous la flèche de départ, assez bas pour que le trait
+  passe à sa droite ; « 1,018 » sous son point, à gauche ; les trois étiquettes sur un halo de la couleur de la page. Vérifié à 390 et
+  à 1280.
+- Non faits : n° 2 (refaire le 1280 en poste de cave change la composition, passe 2), n° 3 (écart assumé), n° 4 à n° 6 (à reprendre en passe 2).

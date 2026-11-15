@@ -25,3 +25,10 @@ Boosters : echelle-etapes, palet-etape, curseur-bouteilles, bascule-futs, jauge-
 - OG de la Pils absente du brief : OG et alcool restent « — », avec « poser » (aucun chiffre inventé).
 ## Corrections f3a4 (14.11)
 - Bloquants c5a 1 et 2 ; aussi n° 3, 4, 5 (mots), 6 ; cave capturée. Volumes : DONNEES-COMMUNES. « Garder » devient « Laisser conditionnée ».
+
+## Rhabillage re4 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : en-tête, sous-onglets et barre du bas de l'app ; la fiche du lot est une feuille de l'app (poignée, rayon 24, ×) posée sur la liste des brassins.
+- Retirés : palette en dur, graisses 800 et 900, titres de 30 à 44 px, rayons 12 à 22 ; remplacés par jetons (clair et cave), Source Sans 3 / IBM Plex Mono, échelle 28 / 18 / 16 / 14 / 12, rayons 10 / 16 / 24.
+- Curseur m2 de la trousse (bande verte = bouteilles qui tiennent, graduations 0 / 40 / 80) ; puces de date id-puce ; boutons id-btn (une primaire par écran).
+- Aucun texte ni chiffre changé ; contrôle : IDENTITE OK.
+- Propre à e4c : rail découpé par marche (reste aligné quelle que soit la hauteur) ; palet à la couleur de l'action (noir en clair, paille en cave) ; marches en teintes water / ebc-gold, Stout en ebc-stout ; la confirmation reste dans la marche visée.

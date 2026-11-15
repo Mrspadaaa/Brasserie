@@ -1690,3 +1690,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : aucune variante retenue, ni passe 2 ni v0 ; critique en Opus de la raison commune, puis nouvelles versions d'un autre genre (L13 : changer de genre, partir d'une référence qu'il connaît), sur une page neuve ; rien porté.)
 
 - **14.11**, mot pour mot, relayé par la session pilote : « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? » (lu : sous l'onglet Brassins, chaque sous-onglet, fiche, état et ajout doit avoir sa page de mini maquettes ; tableau `work/missions/2026-11-14-brassins/voies/cv/COUVERTURE.md` : 52 vues, 38 sans maquette, 11 groupes e1 à e11.)
+
+- **15.11**, mot pour mot, devant la page « Brassins · tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Ça semble pas du tout respecter l'identité global de l'app ?? » (lu : les 44 maquettes e1 à e11 ont chacune leur palette, leurs graisses et leur mise en page ; elles doivent porter les jetons, les polices, les rayons et le chrome de l'app, DESIGN.md et src/theme/themes.css, en gardant leur idée.)

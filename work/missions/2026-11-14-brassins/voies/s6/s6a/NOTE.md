@@ -36,3 +36,7 @@ Geste montré : feuille Mesurer, Densité au curseur (1,016, bande verte, repèr
 
 ## Boosters (data-booster)
 frise-phases, compteur-jours, case-dryhop, lampe-stable, releve-cuve, courbe-densite, gantt-semaine, curseur-densite. Mesures B2 à B13 non jouées en v0 (permis par boosters-ux).
+
+
+## g4a (15.11) : corrections de k4
+- En-tête de la fiche : « stock · ⋯ dossier » à côté du × ; Journal reste l'onglet carnet (k4 B0). Liste : ★ et ⋯ par cuve, icône stats (k4 n° 2). 1280 : poste de cave, gestes à gauche, relevés et courbe à droite, autres cuves dessous (k4 n° 1). Stepper de phases retiré ; bouton principal « Préparer le dry hop ».

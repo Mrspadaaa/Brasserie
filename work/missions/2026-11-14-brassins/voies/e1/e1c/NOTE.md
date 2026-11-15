@@ -30,3 +30,8 @@ Geste : bloc PA glissé au lu 16 (+2 j), 08 barré, cartes du jour choisi (F2 br
 ## Corrections f3a1 (14.11, verdict c5a)
 - 45 L → 24 L. Le cadre du jour passe derrière les barres (fond de colonne), plus aucun texte chevauché. Geste : l'étiquette « lu 16 · +2 j » est dans la rangée F2, à gauche du bloc PA. « FG cible ».
 - Non faits : « À définir » ; étapes du starter au toucher (un état neuf à dessiner, passe 2).
+
+## Rhabillage re1 (15.11, « Ça semble pas du tout respecter l'identité global de l'app ?? »)
+- Trousse chargée (identite.css, chrome.js) : jetons des deux thèmes, Source Sans 3 et IBM Plex Mono, tailles ≤ 28 px, graisses ≤ 600, rayons 4 / 10 / 16 / 24.
+- Feuille de l'app sur la liste ; pastille de cuve F2 au ton action ; planning en id-panneau, barres teintées (houblon = fermentation, or = DH, attention = repos 21°, eau = garde), retard en tirets alerte, bloc PA au ton action (noir en clair, paille en cave) avec cible de 48 px, aujourd'hui en cadre ; jours en cartes teintées ; avant-brassage en lignes à icône ; pied secondaire + primaire.
+- Idée, composition, textes et chiffres inchangés. Contrôle : IDENTITE OK.

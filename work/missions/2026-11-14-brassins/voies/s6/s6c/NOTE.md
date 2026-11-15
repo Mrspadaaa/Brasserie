@@ -35,3 +35,7 @@ Geste montré : « Ajouté aujourd'hui » sur Citra : la colonne passe au vert p
 
 ## Boosters (data-booster)
 compteur-jours, compte-a-rebours, moment, case-dryhop, fenetre-actif, releve-cuve, lampe-stable, dryhopper. Mesures B2 à B13 non jouées en v0 (permis par boosters-ux).
+
+
+## g4a (15.11) : corrections de k4
+- En-tête de la fiche : « stock · ⋯ dossier » à côté du × (k4 B0). 1280 : houblons et courbe côte à côte, gestes et autres cuves à droite (k4 n° 1). Sous-titre « 24 L », J+7 au pas de l'axe, OG à l'échelle.

@@ -10,3 +10,6 @@ Idée : La période devient une frise.
 - Fictif : dates de brassage de la Saison (20.07, écoulée fin août) et du Stout (12.10) ; Archives · 2. Le reste vient de BRIEF-AUTEUR (Pils levurée 27.10 = J+18).
 
 - f3b1 (14.11) : bulle de période au-dessus de l'axe (plus aucune date masquée) ; « restée(s) visible(s) » au lieu de « gardée(s) » ; épingle « en retard » rouge pour la Pale Ale ; colonne de droite étiquetée (densité / alcool).
+
+- re6 (15.11) : rhabillée à l'identité de l'app (trousse identite.css + chrome.js : en-tête, sous-onglets, barre du bas ; jetons des deux thèmes, Source Sans 3 / IBM Plex Mono, ≤ 28 px, graisse ≤ 600, rayons 10 / 16 / 24) ; idée, composition, textes et chiffres inchangés.
+- g2a (15.11, critique k2) : étoile (pleine ou creuse) ET « … » (Ranger) sur chaque ligne ; geste « Pils en cours, Pale Ale en retard » ; étiquette 15.11 retirée de l’axe (le trait du 14.11 ne la touche plus) ; Stout « fût F-01 · 12 L ». « Tout l’historique » (1280) vient de l’en-tête de l’app (chrome), laissé tel quel.
