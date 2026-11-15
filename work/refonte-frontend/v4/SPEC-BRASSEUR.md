@@ -1763,3 +1763,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la frise détaillée de t1b2 est un écran à part entière, un nouvel endroit de l'app atteint depuis À venir et la caisse, et non une feuille ou un repli dans À venir.)
 - **15.11**, mot pour mot, sur les pages de choix : « Dans les artefacts fait le bouton copier et choisir. Et met cote à cote les propal »
   (lu : règle pour toutes les pages de choix. Chaque proposition a un bouton « Choisir » ; une barre fixe assemble la réponse (ids et mots) avec un bouton « Copier » ; les propositions d'un même choix sont côte à côte, en défilement horizontal à 390.)
+- **15.11**, mot pour mot, sur la page des choix (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c Pour le workflow, relancer avec plusieurs agent , , c'est mal target »
+  (lu : Finances, 8 vues choisies. Simplicité (les parcours) : mal ciblé, à relancer avec plusieurs agents en parallèle, à partir de ses vrais parcours et de ses mots, pas de parcours supposés.)
