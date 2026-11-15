@@ -93,7 +93,7 @@ export function ArchiveManagerSheet({ transactions, payments, archives, closings
   };
   const passees = annees.filter(y => resume(y).total > 0 || archivees.has(y));
 
-  return <Sheet open title="Les archives" onClose={onClose} className="finance-sheet"
+  return <Sheet open title="Les archives" onClose={onClose} className="finance-sheet arc-feuille"
     footer={<div className="arc-pied">
       <button type="button" className="arc-b" disabled={occupe || (!gauche.ecrit && !archivees.size)} onClick={gauche.action}>{gauche.texte}</button>
       <button type="button" className="arc-b" data-fort="" disabled={occupe || (!droite.ecrit && !suivante)} onClick={droite.action}>{occupe ? 'Écriture en cours…' : droite.texte}</button>

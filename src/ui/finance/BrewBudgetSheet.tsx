@@ -233,7 +233,8 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         : <p className="cbf-statut cbf-raison" aria-live="polite" data-booster="prevoir-raison" style={{ maxWidth: 390, margin: '0 auto 6px', width: '100%' }}>Prévoir attend : {raisonPrevoir}</p>)}
       <div className="cbf-act">
       <button type="button" className="cbf-ia" data-booster="ia-expliquer" onClick={expliquer}><Sparkles size={17} aria-hidden="true" />Expliquer</button>
-      {futureBatch && !estimate.complete && <button type="button" className="cbf-sec" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
+      {/* m4bb-a : « Enregistrer » est au pied à côté de Prévoir, budget complet ou non (t1, problème 2). */}
+      {futureBatch && <button type="button" className="cbf-sec" data-booster="enregistrer" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
       {futureBatch
         ? <button type="button" className="cbf-pri" data-booster="prevoir" disabled={!canPlanNow} onClick={() => void save(true)}><CalendarPlus size={17} aria-hidden="true" />{busy ? 'Enregistrement…' : <>Prévoir <span className="cbf-m">{fr(estimate.cashRequiredTTC)}</span></>}</button>
         : <button type="button" className="cbf-pri" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}

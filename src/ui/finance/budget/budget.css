@@ -1,6 +1,11 @@
 /* m4bb-a (choix du 15.11) : le coût d'un brassin rangé en v6a. Classes préfixées `bbx-` (L26), sous la racine `.ops` (jetons clair/cave, `ops-sq`, `ops-tg-*`, `ops-hach` de operations.css).
    Mesures de la maquette : rangée 35 px, pile de 80 px au plus, boîte du litre 1,15 fr. */
 .bbx { gap:0; padding:0 0 6px; }
+/* operations.css range `.ops` en deux colonnes dès 900 px (bande à gauche, liste à droite) : la feuille du budget garde une seule colonne,
+   pleine largeur (t1, problème 1 : à 1280 tout tenait dans 140 px collés à droite). */
+.ops.bbx, .ops.bbx-pied { display:flex; flex-direction:column; align-items:stretch; }
+.ops.bbx > *, .ops.bbx-pied > * { grid-column:auto; grid-row:auto; }
+.ops.bbx > .bbx-vol { align-self:flex-start; }
 .bbx button { -webkit-tap-highlight-color:transparent; }
 .bbx-vol { display:inline-flex; align-items:center; gap:4px; align-self:flex-start; min-height:44px; padding:0 8px; margin:0 0 6px; border-radius:10px; border:1px solid var(--ops-bord); font-size:13px; color:var(--ops-t2); }
 .bbx-vol[data-inconnu='true'] { border-style:dashed; }

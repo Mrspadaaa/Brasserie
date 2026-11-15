@@ -252,6 +252,25 @@ describe('daily brew budget sheet', () => {
     fireEvent.click(prevoir());
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ cashRequiredTTC: 7.5, ingredientsCost: 12.5, complete: true }), true));
   });
+  it('t1, bloquant 2 : « Enregistrer » de m4bb-a est au pied à côté de Prévoir, budget complet comme incomplet, et enregistre sans prévoir', async () => {
+    const save = vi.fn();
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    aller.noeud('Malt');
+    fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '2,50' } });
+    aller.retour();
+    expect(prevoir()).toBeEnabled();                       // budget complet
+    const enregistrer = screen.getByRole('button', { name: 'Enregistrer' });
+    expect(enregistrer).toBeEnabled();
+    fireEvent.click(enregistrer);
+    await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ complete: true }), false));
+  });
+  it('t1, bloquant 1 : la feuille du budget garde une colonne dès 900 px (operations.css met `.ops` en deux colonnes)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const css = readFileSync('src/ui/finance/budget/budget.css', 'utf8');
+    expect(css).toMatch(/\.ops\.bbx,\s*\.ops\.bbx-pied\s*\{\s*display:flex;\s*flex-direction:column/);
+    const ops = readFileSync('src/ui/finance/operations.css', 'utf8');
+    expect(ops).toMatch(/@media \(min-width:900px\)\s*\{\s*\.ops \{[^}]*display:grid/);   // la règle que la feuille neutralise existe toujours
+  });
   it('un double clic sur Prévoir n’enregistre qu’une fois', async () => {
     const save = vi.fn(() => new Promise<void>(resolve => setTimeout(resolve, 30)));
     renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);

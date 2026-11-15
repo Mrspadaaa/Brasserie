@@ -3,6 +3,7 @@ import { Check, ChevronRight, Circle } from 'lucide-react';
 import { Input } from '../../Input';
 import { NumberInput } from '../../NumberInput';
 import { ChampNombre } from '../../depense/ChampNombre';
+import { ChampMontant } from '../ChampMontant';
 import { BORNES_FINANCE } from '../../../domain/finance/bornesFinance';
 import type { DepreciationCategory, FinancialAsset } from '../../../domain/finance/types';
 import { DEPRECIATION_CATEGORIES, depreciationForYear } from '../../../domain/finance/annual';
@@ -97,13 +98,13 @@ export function BienCuve({ asset, initial, onClose }: { asset?: FinancialAsset; 
         <input id={`${idPart}-pro`} type="range" className="bic-range" min={0} max={100} step={1} value={draft.businessUsePct} aria-label="Part professionnelle (%)" aria-valuetext={`${draft.businessUsePct} %`}
           style={{ ['--pos' as string]: `${draft.businessUsePct}%` }} onChange={e => field('businessUsePct', Number(e.target.value))} /><b className="bic-m">{draft.businessUsePct} %</b></div>
       <div className="bic-g3">
-        <label className="bic-cell"><span>Prix d’achat</span><ChampNombre aria-label="Valeur d’acquisition TTC (CHF)" className="bic-in bic-m" value={draft.acquisitionCents ? draft.acquisitionCents / 100 : undefined} onValue={v => field('acquisitionCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire placeholder="0,00" /></label>
+        <label className="bic-cell"><span>Prix d’achat</span><ChampMontant fractionDigits={2} aria-label="Valeur d’acquisition TTC (CHF)" className="bic-in bic-m" value={draft.acquisitionCents ? draft.acquisitionCents / 100 : undefined} onValue={v => field('acquisitionCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire placeholder="0,00" /></label>
         <label className="bic-cell bic-date"><span>Achetée</span><b className="bic-m">{court(draft.acquisitionDate)}</b><input type="date" aria-label="Date d’achat" value={draft.acquisitionDate} required onChange={e => field('acquisitionDate', e.target.value)} /></label>
         <label className="bic-cell bic-date"><span>En service</span><b className="bic-m">{court(draft.inServiceDate)}</b><input type="date" aria-label="Mise en service" value={draft.inServiceDate} required onChange={e => field('inServiceDate', e.target.value)} /></label>
       </div>
       <div className="bic-g3">
         <label className="bic-cell"><span>Départ</span><NumberInput aria-label="Première année retenue" className="bic-in bic-m" integer value={draft.openingYear} onValue={v => field('openingYear', v ?? new Date().getFullYear())} min={1900} max={2200} /></label>
-        <label className="bic-cell"><span>Valeur 1er janv.</span><ChampNombre aria-label="Valeur professionnelle restante à l’ouverture (CHF)" className="bic-in bic-m" value={draft.openingValueCents / 100} onValue={v => field('openingValueCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire /></label>
+        <label className="bic-cell"><span>Valeur 1er janv.</span><ChampMontant fractionDigits={2} aria-label="Valeur professionnelle restante à l’ouverture (CHF)" className="bic-in bic-m" value={draft.openingValueCents / 100} onValue={v => field('openingValueCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire /></label>
         <label className="bic-cell bic-date"><span>1re année</span><b>{libelleFraction(draft.firstYearFraction)}</b>
           <select aria-label="Fraction de la première année (1 = année entière)" value={draft.firstYearFraction} onChange={e => field('firstYearFraction', Number(e.target.value))}>
             {FRACTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}{!FRACTIONS.some(([v]) => v === draft.firstYearFraction) && <option value={draft.firstYearFraction}>{libelleFraction(draft.firstYearFraction)}</option>}</select></label>

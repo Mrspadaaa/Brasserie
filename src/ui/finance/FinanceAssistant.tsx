@@ -92,7 +92,8 @@ function Feuille({ view, month, allDates, includeEquipmentProjects, pose, choisi
 
   const envoyer = () => {
     const corps = court && pose && texte === court ? `${pose.question} ${chiffres}` : texte;
-    onEnvoyer(`${lu.consigne}\n\n${corps}`);
+    // La question d'abord, la consigne du contexte après : dans le champ du chat, la première ligne est celle du brasseur, pas une phrase technique (t1, problème 5).
+    onEnvoyer(`${corps}\n\n${lu.consigne}`);
   };
   return <CompagnonFeuille open onClose={onClose} periode={bande} nomPeriode={duree === 'tout' ? 'tout l’historique' : nomDuMois(month)} vise={vise}
     texte={texte} onTexte={setTexte} pastilles={pastilles} onBascule={cle => setR(x => ({ ...x, [cle]: !x[cle] }))}

@@ -38,6 +38,11 @@
 .arc-yi svg { display:inline; vertical-align:-2px; } /* le préflight met les svg en bloc : l'icône « rangée » reste dans la ligne, comme la maquette */
 .arc-lien { display:inline-flex; align-items:center; min-height:44px; padding:0 2px; font-size:13px; font-weight:600; color:var(--finance-accent,rgb(var(--area-finances-texte))); background:none; border:0; cursor:pointer; text-align:left; }
 .arc-lien:disabled { opacity:.5; cursor:default; }
+/* m1ar-c : la boîte d'archives (trait de 2, 22 px) devant le titre « Les archives » ; le titre de `Sheet` est une chaîne, l'icône est donc un masque posé sur son en-tête (t1, problème 8). */
+.arc-feuille header :is(h1,h2) { display:flex; align-items:center; gap:8px; }
+.arc-feuille header :is(h1,h2)::before { content:''; flex:none; width:22px; height:22px; background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M3 5h18v4H3zM5 9v10h14V9M10 13h4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M3 5h18v4H3zM5 9v10h14V9M10 13h4'/%3E%3C/svg%3E") center / contain no-repeat; }
 .arc-pied { display:grid; grid-template-columns:1fr 1.7fr; gap:8px; }
 .arc-b { min-height:44px; border-radius:14px; border:0; cursor:pointer; font-size:15px; font-weight:700; text-align:center; background:rgb(var(--cave-800)); color:rgb(var(--cave-texte-50)); }
 .arc-b[data-fort] { background:rgb(var(--cave-texte-50)); color:rgb(var(--cave-950)); }

@@ -87,7 +87,8 @@ function Marches({ effet, planId, asOf, signe }: { effet: EffetPrevision; planId
     <path className="pvc-aire" clipPath={`url(#${id}h)`} d={`${dApres} V${zero} H${X0} Z`} /><path className="pvc-sous" clipPath={`url(#${id}b)`} d={`${dApres} V${zero} H${X0} Z`} />
     <line className="pvc-zero" x1={X0} x2={X1} y1={zero} y2={zero} />
     <path className="pvc-avant" d={chemin(avant)} /><path className="pvc-apres" d={dApres} />
-    {etiquettes.map(l => <text key={l.id} className="pvc-pt" x={Math.min(l.x + 4, X1 - 30)} y={l.y - 5}>{montantCourt(l.v)}</text>)}
+    {/* t1, problème 7 : l'étiquette se pose SOUS la marche (dans l'aire), décalée de l'axe des francs : jamais sur la marche de départ collée à « 4 000 ». */}
+    {etiquettes.map(l => <text key={l.id} className="pvc-pt" x={Math.max(X0 + 8, Math.min(l.x + 6, X1 - 34))} y={Math.min(l.y + 15, Y1 - 3)}>{montantCourt(l.v)}</text>)}
     <text className="pvc-mo" x={X0} y={168}>aujourd’hui</text><text className="pvc-mo" x={X1} y={168} textAnchor="end">{jourLong(fin)}</text>
   </svg>;
 }

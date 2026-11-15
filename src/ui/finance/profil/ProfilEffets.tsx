@@ -1,10 +1,10 @@
 import React, { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { NumberInput } from '../../NumberInput';
+import { ChampMontant } from '../ChampMontant';
 import type { FinancialProfile } from '../../../domain/finance/types';
 import { isoDate, summarizeLedger, todayISO } from '../../../domain/finance/ledger';
 import { annualBrewFixedCosts } from '../../../domain/finance/brewBudget';
-import { estimerBrassinsPlanifies } from '../../../domain/finance/brewForecast';
+import { brassinDuProfil } from './brassinProfil';
 import { tvaThresholdStatus } from '../../../domain/finance/tvaThreshold';
 import { FinanceService } from '../../../services/financeService';
 import { StorageService } from '../../../services/storage';
@@ -98,12 +98,13 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
   const fixes = useMemo(() => annualBrewFixedCosts(donnees.plans), [donnees.plans]);
   const sortie = useMemo(() => {
     const finAn = `${Number(aujourdhui.slice(0, 4)) + 1}${aujourdhui.slice(4)}`;
-    try { return estimerBrassinsPlanifies({ batches: donnees.batches, stockItems: [...donnees.stocks.rawMaterials, ...donnees.stocks.cleaning], transactions: donnees.transactions, plans: donnees.plans, profile: { ...profile, annualProductionL: litresDiffere }, assets: donnees.assets, asOf: aujourdhui, fin: finAn }); } catch { return null; }
+    try { return brassinDuProfil({ batches: donnees.batches, stockItems: [...donnees.stocks.rawMaterials, ...donnees.stocks.cleaning], transactions: donnees.transactions, plans: donnees.plans, profile: { ...profile, annualProductionL: litresDiffere }, assets: donnees.assets, config: donnees.config, asOf: aujourdhui, fin: finAn }); } catch { return null; }
   }, [donnees, profile, litresDiffere, aujourdhui]);
-  const brassin = sortie?.brassins.find(b => b.litresNets) ?? null;
+  /* Un brassin planifié, sinon le prochain budget de brassin prévu : Prévisions le compte, le profil ne dit pas « aucun brassin » (t1, problème 3). */
+  const brassin = sortie;
   const coutFixes = litres != null && fixes.amountCHF != null ? fixes.amountCHF / litres : null;
-  const nbBrassins = litres != null && brassin?.litresNets ? litres / brassin.litresNets.litres : null;
-  const litreBrassin = brassin?.coutLitre?.affiche.complet ?? null;
+  const nbBrassins = litres != null && brassin?.litres ? litres / brassin.litres : null;
+  const litreBrassin = brassin?.litre ?? null;
   const seuil = donnees.config.fiscal.tvaThresholdTurnover, assujetti = !!donnees.config.fiscal.isTvaRegistered || !!draft.vatRegistered;
   const tva = useMemo(() => tvaThresholdStatus(donnees.transactions, aujourdhui, seuil, assujetti), [donnees.transactions, aujourdhui, seuil, assujetti]);
 
@@ -113,7 +114,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
   return <FormSheet className="fx4-sheet pfc-sheet" title="Solde et paramètres" onClose={onClose} onSave={save}>
     <div className="pfc">
       <section className="pfc-card" aria-label="Solde de départ">
-        <div className="pfc-top"><h3>Solde de départ</h3><span className="pfc-val"><NumberInput aria-label="Solde de départ (CHF)" className="pfc-nb pfc-m" value={cash == null ? undefined : cash / 100} onValue={v => { setCash(v == null ? undefined : Math.round(v * 100)); setConfirmed(false); }} emptyValue={undefined} fractionDigits={2} /> <small>CHF</small></span></div>
+        <div className="pfc-top"><h3>Solde de départ</h3><span className="pfc-val"><ChampMontant aria-label="Solde de départ (CHF)" className="pfc-nb pfc-m" value={cash == null ? undefined : cash / 100} onValue={v => { setCash(v == null ? undefined : Math.round(v * 100)); setConfirmed(false); }} fractionDigits={2} maxDecimales={2} max={99_999_999} negatif /> <small>CHF</small></span></div>
         <FriseSolde points={points} confirme={confirmed} />
         <div className="pfc-vr">
           <label className="pfc-pill"><span>{isoDate(date) ? jourLong(date) : 'Date'}</span><ChevronDown size={14} aria-hidden="true" />
@@ -137,15 +138,15 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
       </section>
 
       <section className="pfc-card" aria-label="Production prévue" data-booster="curseur-production">
-        <div className="pfc-top"><h3>Production prévue</h3><span className="pfc-val"><NumberInput aria-label="Production annuelle prévue (litres conditionnés)" className="pfc-nb pfc-m" value={draft.annualProductionL} onValue={v => setDraft(d => ({ ...d, annualProductionL: v ?? undefined }))} emptyValue={undefined} min={1} integer /> <small>L/an</small></span></div>
+        <div className="pfc-top"><h3>Production prévue</h3><span className="pfc-val"><ChampMontant aria-label="Production annuelle prévue (litres conditionnés)" className="pfc-nb pfc-m" value={draft.annualProductionL} onValue={v => setDraft(d => ({ ...d, annualProductionL: v ?? undefined }))} min={1} max={1_000_000} integer /> <small>L/an</small></span></div>
         <input type="range" className="pfc-range" min={0} max={PRODUCTION_MAX} step={50} aria-label="Production annuelle, curseur" aria-valuetext={litres == null ? 'non renseignée' : `${montantEntier(litres * 100)} litres par an`}
           value={Math.min(PRODUCTION_MAX, litres ?? 0)} style={{ ['--pos' as string]: `${(Math.min(PRODUCTION_MAX, litres ?? 0) / PRODUCTION_MAX) * 100}%` }}
           onChange={e => { const v = Number(e.target.value); setDraft(d => ({ ...d, annualProductionL: v > 0 ? v : undefined })); }} />
         <div className="pfc-ticks pfc-m" aria-hidden="true"><span>0</span><span>2 000</span><span>4 000 L</span></div>
         <div className="pfc-eff" aria-live="polite">
           <span>charges fixes<b className="pfc-m">{coutFixes != null ? `${litreFr(coutFixes)}/L` : '—'}</b>{coutFixes != null ? `${montantEntier(Math.round(fixes.amountCHF! * 100))} ÷ ${montantEntier(litres! * 100)}` : litres == null ? 'production à saisir' : fixes.amountCHF == null ? 'charges à classer' : ''}</span>
-          <span>soit<b className="pfc-m">{nbBrassins != null ? `≈ ${Math.round(nbBrassins)}` : '—'}</b>{brassin?.litresNets ? `brassins de ${montantEntier(Math.round(brassin.litresNets.litres) * 100)} L` : 'aucun brassin planifié'}</span>
-          <span><i className="pfc-nom">{brassin?.titre ?? 'Prochain brassin'}</i><b className="pfc-m">{litreBrassin != null ? `${litreFr(litreBrassin)}/L` : '—'}</b>{litreBrassin != null ? 'avec ce réglage' : brassin?.partiel?.length ? `manque : ${brassin.partiel[0]}` : 'coût à compléter'}</span>
+          <span>soit<b className="pfc-m">{nbBrassins != null ? `≈ ${Math.round(nbBrassins)}` : '—'}</b>{brassin?.litres ? `brassins de ${montantEntier(Math.round(brassin.litres) * 100)} L` : 'aucun brassin planifié'}</span>
+          <span><i className="pfc-nom">{brassin?.titre ?? 'Prochain brassin'}</i><b className="pfc-m">{litreBrassin != null ? `${litreFr(litreBrassin)}/L` : '—'}</b>{litreBrassin != null ? 'avec ce réglage' : brassin?.manque ? `manque : ${brassin.manque}` : 'coût à compléter'}</span>
         </div>
       </section>
 

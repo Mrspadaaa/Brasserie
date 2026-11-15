@@ -112,7 +112,8 @@ describe('feuille m4ia-c : jouée', () => {
     fireEvent.click(f.getByRole('button', { name: 'Envoyer' }));
     const envoye = MOCK.chat.mock.calls.at(-1)![0].initialQuestion as string;
     expect(envoye).toContain('tout l’historique');
-    expect(envoye.endsWith('Et le loyer ?')).toBe(true);
+    // t1, problème 5 : la question du brasseur est la première ligne du champ du chat, la consigne du contexte vient après.
+    expect(envoye.startsWith('Et le loyer ?')).toBe(true);
   });
 
   it('le mode de réponse choisi est celui que le chat relit', () => {

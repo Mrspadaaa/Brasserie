@@ -21,3 +21,7 @@
 .ops-avis > span { margin-right:auto; }
 .ops-avis-b { min-height:44px; padding:0 4px; font-size:13px; font-weight:600; color:var(--finance-accent,rgb(var(--area-finances-texte))); text-align:center; }
 .ops-avis-b:hover { text-decoration:underline; text-underline-offset:3px; }
+
+/* m1do-a : le statut s'affiche ENTIER (« ✓ payé 16 oct. · banque »). À 390 le bouton « Annuler celle-ci » prend la droite : « sans pièce » passe dessous plutôt que de couper le statut (t1, problème 9). */
+.ops-paire .ops-meta { flex-wrap:wrap; }
+.ops-paire .ops-meta .ops-tg { flex:0 0 auto; max-width:none; }

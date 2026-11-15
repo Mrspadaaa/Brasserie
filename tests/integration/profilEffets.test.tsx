@@ -13,7 +13,7 @@ vi.mock('../../src/services/storage', () => ({ StorageService: { getTransactions
 vi.mock('../../src/services/financeService', () => ({ FinanceService: { getPayments: () => etat.payments, getPlans: () => etat.plans, getAssets: () => [], saveProfile: (...a: unknown[]) => etat.saveProfile(...a) } }));
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: (read: () => unknown) => read() }));
 import { ProfileSheet } from '../../src/ui/finance/FinanceForms';
-import { annualBrewFixedCosts } from '../../src/domain/finance/brewBudget';
+import { annualBrewFixedCosts, estimateBrewBudget } from '../../src/domain/finance/brewBudget';
 import { summarizeLedger } from '../../src/domain/finance/ledger';
 import { tvaThresholdStatus } from '../../src/domain/finance/tvaThreshold';
 import { moisCompletsDepuis, courbeDeCaisse } from '../../src/ui/finance/profil/ProfilEffets';
@@ -120,7 +120,8 @@ describe('m4pf-c : la production et ses trois effets', () => {
   it('enregistre la production du curseur en litres entiers ; le champ texte suit', () => {
     ouvrir();
     fireEvent.change(dialogue().getByLabelText('Production annuelle, curseur'), { target: { value: '2500' } });
-    expect((dialogue().getByLabelText('Production annuelle prévue (litres conditionnés)') as HTMLInputElement).value).toBe('2500');
+    // t1, problème 4 : au repos le champ montre les milliers comme la maquette (« 2 500 »).
+    expect(nbsp((dialogue().getByLabelText('Production annuelle prévue (litres conditionnés)') as HTMLInputElement).value)).toBe('2 500');
     fireEvent.click(dialogue().getByRole('button', { name: 'Enregistrer' }));
     return vi.waitFor(() => expect(etat.saveProfile).toHaveBeenCalledWith(expect.objectContaining({ annualProductionL: 2500 })));
   });
@@ -145,6 +146,32 @@ describe('m4pf-c : la TVA', () => {
     etat.transactions = [vente('V1', '2026-10-01', 85_000)];
     ouvrir();
     expect(dialogue().getByLabelText('TVA')).toHaveTextContent('⚠ proche du seuil');
+  });
+});
+
+describe('t1, bloquant 3 : le prochain brassin du profil', () => {
+  const budgetBrassage = (jour: string): FinancialPlan => {
+    const recette = { id: 'R1', name: 'Pale Ale', style: 'Pale Ale', volumeL: 30, fermentables: [], hops: [], ogTarget: 1.05 } as never;
+    const snap = { ...estimateBrewBudget({ recipe: recette, stockItems: [], batches: [], brewDate: jour, netVolumeL: 27, now: `${jour}T10:00:00Z`,
+      settings: { costs: { energy: { enabled: true, amountTTC: 8 }, cleaning: { enabled: true, amountTTC: 3 }, packaging: { enabled: true, amountTTC: 24 }, beerTax: { enabled: true, amountTTC: 6.84 } }, annualVolumeL: 1200, annualFixedCHF: 4800, annualDepreciationCHF: 360 } }), netVolumeSource: 'saisi' as const };
+    return { id: 'BUDGET', title: 'Pale Ale', date: jour, amountCents: 6426, direction: 'out', category: 'brassage', source: 'brew', status: 'active', createdAt: '2026-11-01T00:00:00Z', brewEstimate: snap } as unknown as FinancialPlan;
+  };
+  it('sans brassin planifié mais avec un budget de brassin prévu (net saisi 27 L) : « ≈ 44 brassins de 27 L », pas « aucun brassin planifié »', () => {
+    etat.plans = [loyer, budgetBrassage('2026-11-20')];
+    ouvrir();
+    const zone = dialogue().getByLabelText('Production prévue');
+    expect(zone.textContent).not.toContain('aucun brassin planifié');
+    expect(nbsp(zone.textContent!)).toContain('≈ 44');
+    expect(nbsp(zone.textContent!)).toContain('brassins de 27 L');
+    expect(zone.textContent).toContain('Pale Ale');
+  });
+  it('sans aucun brassin ni budget : « aucun brassin planifié » reste dit (l’inconnu n’est jamais 0)', () => {
+    ouvrir();
+    expect(dialogue().getByLabelText('Production prévue').textContent).toContain('aucun brassin planifié');
+  });
+  it('le Solde de départ saisi « 3250,5 » se lit « 3 250,50 » au repos', () => {
+    ouvrir({ ...profil, openingCash: { date: '2026-01-01', amountCents: 325_050, confirmed: true } });
+    expect(nbsp((dialogue().getByLabelText('Solde de départ (CHF)') as HTMLInputElement).value)).toBe('3 250,50');
   });
 });
 
