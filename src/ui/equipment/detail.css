@@ -137,3 +137,12 @@
 .eqd-houblon { color: var(--d-ok); flex: none; }
 .eqd-retour:focus-visible { outline: 2px solid var(--d-ink); outline-offset: -2px; }
 .eqd-doux { color: var(--d-mut); font-size: 14px; }
+
+/* c3 : le point d'aujourd'hui d'une panne (« Réparer ») se lit à côté du nœud ; un appareil à jour replie son étalonnage. */
+.eqd-pn.eqd-jour { visibility: hidden; }
+.eqd-de:has(.eqd-jour) { z-index: 1; }
+.eqd-de:has(.eqd-jour) .eqd-t { background: var(--d-bg); padding: 0 6px 0 4px; margin-left: 4px; }
+.eqd-de:has(.eqd-jour) .eqd-t b { font-weight: 700; }
+.eqd-encore { margin-top: 10px; }
+.eqd-encore button { min-height: 44px; padding: 0 4px; font-size: 14px; color: var(--d-mut); text-decoration: underline; text-underline-offset: 3px; }
+.eqd-menu:focus { outline: none; }

@@ -187,7 +187,7 @@ export interface FilPoint {
   date: string;
   texte: string;
   /** fait : plein vert ; prevu : anneau ambre ; prochain : pointillé vert */
-  style: 'fait' | 'prevu' | 'prochain' | 'panne';
+  style: 'fait' | 'prevu' | 'prochain' | 'panne' | 'jour';
 }
 export interface FilPanneau {
   points: FilPoint[];
@@ -200,16 +200,27 @@ export interface FilPanneau {
 
 const yDe = (today: string, date: string): number => FIL_AUJOURDHUI_Y + PX_PAR_JOUR * daysBetween(today, date);
 
+/** « pH 7,00 » : l'étiquette d'un tampon se lit sur la valeur attendue (deux décimales pour un pH), quelle que soit la façon dont l'étalonnage a été enregistré (« pH 7 »). */
+export function etiquetteTampon(point: { label: string; expected: number }, unit?: string): string {
+  return unit === 'pH' ? `pH ${fmt(point.expected, 2)}` : point.label;
+}
+
 export function filPanneau(item: EquipmentItem, status: EquipmentStatus, today: string, decimales: number, etalonne: boolean): FilPanneau {
   const points: FilPoint[] = [];
   // Le passé : chaque entretien ou étalonnage fait, du plus récent au plus ancien, jamais à moins de 32 px du suivant.
-  let limite = status.kind === 'du' && status.dueDate ? FIL_PREVU_Y_MAX - FIL_ECART_MIN : FIL_AUJOURDHUI_Y - 28;
+  const panneY = status.kind === 'panne' && status.since ? Math.max(14, yDe(today, status.since)) : null;
+  let limite = panneY !== null ? panneY - FIL_ECART_MIN : status.kind === 'du' && status.dueDate ? FIL_PREVU_Y_MAX - FIL_ECART_MIN : FIL_AUJOURDHUI_Y - 28;
   historique(item, decimales).filter(h => h.kind === 'etalonnage' || h.kind === 'entretien').forEach((h, i) => {
     const y = Math.min(yDe(today, h.date), limite);
     if (y < 14) return;
     limite = y - FIL_ECART_MIN;
     points.push({ id: `h${i}`, y, date: h.date, style: 'fait', texte: `${h.label.toLocaleLowerCase('fr')}${h.valeur ? ` ${h.valeur}` : ''}` });
   });
+  // Panne en cours : le point de la panne (sa cause) et celui d'aujourd'hui (« Réparer »), comme la fiche en feuille.
+  if (panneY !== null && status.since) {
+    points.push({ id: 'panne', y: panneY, date: status.since, style: 'panne', texte: item.brokenNote?.trim() || 'en panne' });
+    points.push({ id: 'jour', y: FIL_AUJOURDHUI_Y, date: today, style: 'jour', texte: 'Réparer' });
+  }
   if (status.kind === 'du' && status.dueDate) {
     points.push({ id: 'prevu', y: Math.min(yDe(today, status.dueDate), FIL_PREVU_Y_MAX), date: status.dueDate, style: 'prevu', texte: 'prévu' });
   }

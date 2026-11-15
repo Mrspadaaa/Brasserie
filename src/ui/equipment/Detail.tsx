@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, Hop, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
+import { ArrowLeft, Boxes, Check, MoreHorizontal, ShoppingCart, Wrench, X } from 'lucide-react';
 import type { EquipmentItem, EquipmentReading } from '../../types';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import {
@@ -11,7 +11,7 @@ import { EquipmentPicto } from './ListPictos';
 import { EquipmentEditSheet } from './DetailEdit';
 import {
   ETATS, RYTHMES, chf, decimalesLecture, etapesDe, filPanneau, filtrerSaisie, fmt, fmtEcart, historique, lireNombre,
-  prochain, rythmeActif, sousTitre, titreEtat,
+  etiquetteTampon, prochain, rythmeActif, sousTitre, titreEtat,
 } from './DetailModel';
 import './detail.css';
 
@@ -80,15 +80,23 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   const [lectures, setLectures] = useState<string[]>([]);
   const [cochees, setCochees] = useState<string[]>([]);
   const [menu, setMenu] = useState(false);
+  const [encore, setEncore] = useState(false);
   const [edition, setEdition] = useState(false);
   const [suppression, setSuppression] = useState(false);
-  useEffect(() => { setLectures([]); setCochees([]); setMenu(false); }, [item.ref]);
+  useEffect(() => { setLectures([]); setCochees([]); setMenu(false); setEncore(false); }, [item.ref]);
+  // Un appareil à jour (juste étalonné, ou fait) ne redemande pas son geste : formulaire et action principale sont repliés sous « … quand même ».
+  const aJour = status.kind === 'avenir' && !item.retired;
+  const ouvert = !aJour || encore;
+  useEffect(() => { setEncore(false); }, [status.kind]);
 
   const menuId = useId();
   const menuRef = useRef<HTMLDivElement>(null);
+  const ouvertAuClavier = useRef(false);
   useEffect(() => {
     if (!menu) return;
-    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    // Le focus va au premier choix seulement si le menu s'est ouvert au clavier ; au toucher ou à la souris, au conteneur : pas d'anneau (N4).
+    if (ouvertAuClavier.current) menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    else menuRef.current?.focus({ preventScroll: true });
     const dehors = (e: PointerEvent) => {
       const cible = e.target as Node;
       if (!menuRef.current?.contains(cible) && !(cible as HTMLElement).closest?.('[data-eqd-menu-bouton]')) setMenu(false);
@@ -148,11 +156,11 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   const gestion = (
     <div className="eqd-gestion">
         <button type="button" className="eqd-rd" data-eqd-menu-bouton aria-label="Gestion du matériel : modifier, vendu, réformé, supprimer"
-          aria-haspopup="menu" aria-expanded={menu} aria-controls={menu ? menuId : undefined} onClick={() => setMenu(o => !o)}>
+          aria-haspopup="menu" aria-expanded={menu} aria-controls={menu ? menuId : undefined} onClick={(e) => { ouvertAuClavier.current = e.detail === 0; setMenu(o => !o); }}>
           <MoreHorizontal size={20} aria-hidden="true" />
         </button>
         {menu && (
-          <div id={menuId} ref={menuRef} role="menu" aria-label="Gestion du matériel" className="eqd-menu"
+          <div id={menuId} ref={menuRef} role="menu" aria-label="Gestion du matériel" className="eqd-menu" tabIndex={-1}
             onKeyDown={(e) => {
               if (e.key === 'Escape') { e.stopPropagation(); setMenu(false); return; }
               const items = [...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')];
@@ -172,7 +180,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
     <>
     {layout === 'sheet' && (
       <div className="eqd-barre">
-        <button type="button" className="eqd-retour" aria-label="Retour à Stocks · Matériel" onClick={onClose}><ArrowLeft size={20} aria-hidden="true" /><Hop size={20} className="eqd-houblon" aria-hidden="true" />Stocks · Matériel</button>
+        <button type="button" className="eqd-retour" aria-label="Retour à Stocks · Matériel" onClick={onClose}><ArrowLeft size={20} aria-hidden="true" /><Boxes size={20} className="eqd-houblon" aria-hidden="true" />Stocks · Matériel</button>
         <span className="eqd-sp" />
         {gestion}
       </div>
@@ -199,7 +207,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
     </div>
   );
 
-  const etapesEtSaisie = calibre && preset && (
+  const etapesEtSaisie = calibre && ouvert && preset && (
     <>
       <div className="eqd-etapes" role="group" aria-label="Étapes de l'étalonnage">
         {etapes.map((e, i) => {
@@ -221,10 +229,10 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
           const bon = readingOk(p, lu, tol);
           return (
             <div className="eqd-fl" key={p.label}>
-              <span className="eqd-tamp"><Flacon couleur={couleurFlacon(p.label)} /><span><EtiquetteMesure label={p.label} /></span></span>
+              <span className="eqd-tamp"><Flacon couleur={couleurFlacon(p.label)} /><span><EtiquetteMesure label={etiquetteTampon(p, preset.unit)} /></span></span>
               <label className="eqd-champ">
                 <input
-                  aria-label={`Valeur lue pour ${p.label}`}
+                  aria-label={`Valeur lue pour ${etiquetteTampon(p, preset.unit)}`}
                   type="text" inputMode="decimal" autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="next"
                   placeholder="—" value={lectures[i] ?? ''} aria-invalid={lu !== null && !bon}
                   onChange={(e) => { const v = filtrerSaisie(e.target.value); setLectures(l => { const n = [...l]; n[i] = v; return n; }); }}
@@ -279,7 +287,9 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
   const pied = (
     <div className="eqd-pied">
       <button type="button" className="eqd-btn eqd-sec" onClick={() => onPayMaintenance(item)}><ShoppingCart size={20} aria-hidden="true" />Payer un entretien</button>
-      <button type="button" className="eqd-btn eqd-pri" onClick={faire}><PrincipalIcone size={20} strokeWidth={2} aria-hidden="true" />{principal}</button>
+      {aJour && !encore
+        ? <button type="button" className="eqd-btn eqd-sec" onClick={() => setEncore(true)}>{calibre ? 'Étalonner quand même' : 'Faire quand même'}</button>
+        : <button type="button" className="eqd-btn eqd-pri" onClick={faire}><PrincipalIcone size={20} strokeWidth={2} aria-hidden="true" />{principal}</button>}
     </div>
   );
 
@@ -322,7 +332,7 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
           {entete}
           {etat}
           {deps}
-          {calibre && (
+          {calibre && ouvert && (
             <div className="eqd-bloc">
               <div className="eqd-evl"><b>{verbeAujourdhui}</b><span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span></div>
               {etapesEtSaisie}
@@ -350,15 +360,20 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
         <div className="eqd-ev">
           <span className="eqd-pt eqd-mnt" />
           <div className="eqd-evl"><span className="eqd-d">{dateCourte(today)}</span>{status.kind === 'avenir' ? <span className="eqd-doux">à jour</span> : <b>{verbeAujourdhui}</b>}
-            {calibre && <span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span>}
-            {enPanne && item.brokenNote && <span className="eqd-v eqd-tol">{item.brokenNote}</span>}
+            {calibre && ouvert && <span className="eqd-v eqd-tol">tolérance ±{fmt(tol, decBase)}</span>}
           </div>
           {etapesEtSaisie}
         </div>
+        {enPanne && item.brokenSince && !histo.some(h => h.kind === 'panne' && h.date === item.brokenSince) && (
+          <div className="eqd-ev">
+            <span className="eqd-pt eqd-panne" />
+            <div className="eqd-evl"><span className="eqd-d">{dateCourte(item.brokenSince)}</span>En panne</div>
+          </div>
+        )}
         {histo.map((h, i) => (
           <div className="eqd-ev" key={`${h.date}-${h.kind}-${i}`}>
             <span className={`eqd-pt ${h.kind === 'panne' ? 'eqd-panne' : h.kind === 'sortie' ? '' : 'eqd-ok'}`} />
-            <div className="eqd-evl"><span className="eqd-d">{dateCourte(h.date)}</span>{h.label}{h.valeur && <span className="eqd-v">{h.valeur}</span>}</div>
+            <div className="eqd-evl"><span className="eqd-d">{dateCourte(h.date)}</span>{h.label}{h.valeur && !(h.kind === 'panne' && h.valeur === item.brokenNote) && <span className="eqd-v">{h.valeur}</span>}</div>
           </div>
         ))}
       </div>

@@ -34,7 +34,10 @@
 .mt-rail-du { position: absolute; left: 47px; top: 6px; bottom: -14px; width: 3px; border-radius: 2px; background: var(--m-att); }
 .mt-rail-du.mt-rail-panne { background: linear-gradient(var(--m-al) 0 40px, var(--m-att) 58px); }
 .mt-r { position: relative; display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 10px 0 78px; }
-.mt-r.mt-choisi, .mt-ar.mt-choisi { background: var(--m-s2); box-shadow: inset -3px 0 0 var(--m-ink); }
+.mt-r.mt-choisi, .mt-ar.mt-choisi { background: var(--m-s2); }
+/* La barre de sélection est droite, au bord de la liste, même sous une ligne arrondie (c3). */
+.mt-choisi::after { content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 3px; background: var(--m-ink); pointer-events: none; }
+.mt-ar.mt-choisi::after { right: -10px; }
 .mt-noeud { position: absolute; left: 29px; top: 7px; width: 38px; height: 38px; border-radius: 50%; background: var(--m-bg); border: 2px solid var(--m-att); display: grid; place-items: center; }
 .mt-noeud .mt-sil { width: 26px; height: 26px; }
 .mt-noeud.mt-al { border-color: var(--m-al); box-shadow: inset 0 0 0 20px rgb(var(--alert) / .12); }
@@ -59,7 +62,7 @@
 .mt-bande span { position: absolute; left: 4px; bottom: 3px; font: 600 12px/14px "IBM Plex Mono", Consolas, monospace; color: var(--m-attt); }
 .mt-tick { position: absolute; left: 34px; width: 14px; border-top: 1.5px solid var(--m-line2); }
 .mt-mo { position: absolute; left: 0; width: 31px; text-align: right; font-size: 12px; line-height: 14px; color: var(--m-mut); transform: translateY(-50%); }
-.mt-ar { position: absolute; left: 34px; right: 10px; height: 28px; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; width: calc(100% - 44px); }
+.mt-ar { z-index: 1; position: absolute; left: 34px; right: 10px; height: 28px; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; width: calc(100% - 44px); }
 .mt-pn { width: 26px; height: 26px; margin: 0 1.5px; border-radius: 50%; background: var(--m-bg); border: 1.5px solid var(--m-line2); display: grid; place-items: center; flex: none; }
 .mt-pn .mt-sil { width: 17px; height: 17px; }
 .mt-pn.mt-okn { border: 2px solid var(--m-ok); }
@@ -68,6 +71,7 @@
 .mt-t span { display: block; font-size: 12px; color: var(--m-mut); line-height: 13px; }
 .mt-j { text-align: right; white-space: nowrap; font: 600 13px/15px "IBM Plex Mono", Consolas, monospace; }
 .mt-flash { z-index: 2; background: linear-gradient(rgb(var(--hop) / .14), rgb(var(--hop) / .14)), var(--m-bg); border-radius: 10px; box-shadow: inset 0 0 0 1.5px rgb(var(--hop) / .5); padding-right: 6px; height: 40px; }
+.mt-ar.mt-flash.mt-choisi { background: linear-gradient(rgb(var(--hop) / .14), rgb(var(--hop) / .14)), var(--m-bg); }
 .mt-glisse { position: absolute; left: 47px; top: -14px; width: 3px; background: repeating-linear-gradient(var(--m-ok) 0 5px, transparent 5px 9px); }
 .mt-fantome { height: 24px; margin: 0 10px 0 78px; border: 1.5px dashed rgb(var(--hop) / .7); border-radius: 8px; display: flex; align-items: center; gap: 6px; padding: 0 8px; font-size: 12px; color: var(--m-ok); position: relative; }
 .mt-autres { position: absolute; left: 78px; right: 10px; height: 44px; border: 1px solid var(--m-line2); border-radius: 12px; display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 14px; }
@@ -120,7 +124,7 @@
 .mt-droite { flex: 1; min-width: 0; position: relative; border-left: 1px solid var(--m-line); }
 .mt-large .mt-fil .mt-auj i { margin-right: 0; }
 /* c1 (test d'écran) : ligne descendue pour ne pas toucher la précédente → un petit trait de rappel garde son nœud à sa vraie date (P6). */
-.mt-rappel { position: absolute; left: 47.5px; width: 2px; background: var(--m-mut); z-index: 1; pointer-events: none; }
+.mt-rappel { position: absolute; left: 47.5px; width: 2px; background: var(--m-mut); z-index: 0; pointer-events: none; }
 .mt-rappel::before { content: ""; position: absolute; left: -2.5px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--m-mut); }
 /* Nouveau matériel (P11) : fond de surface, titre gras de 22 px, × dans un rond de 44 px. */
 .mt-feuille-coque.mt-feuille-coque { background: rgb(var(--cave-950)); }
@@ -134,3 +138,13 @@
 .mt-regle-ecoule { stroke: var(--m-att); stroke-width: 2.5; fill: none; opacity: .5; }
 .mt-regle-dernier { fill: var(--m-ink); }
 .mt-regle-prochain { fill: var(--m-bg); stroke: var(--m-ink); stroke-width: 2; }
+
+/* c3 : « Nouveau matériel » sans rythme n'a pas de « Dernier fait » ; à 1280 la feuille devient un dialogue d'environ 560 px, centré. */
+.mt-deux.mt-seul { grid-template-columns: 1fr; }
+@media (min-width: 1024px) {
+  .mt-feuille-coque.mt-feuille-coque { left: calc(50% - 280px); right: auto; width: 560px; bottom: auto; top: max(24px, calc(50dvh - 280px)); border-radius: 16px; border: 1px solid rgb(var(--cave-700)); }
+}
+@media (min-width: 1024px) {
+  /* Vaul prolonge une feuille basse d'un aplat sous son bord : sans objet pour un dialogue centré. */
+  .mt-feuille-coque.mt-feuille-coque::after { display: none; }
+}

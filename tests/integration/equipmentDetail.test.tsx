@@ -95,6 +95,7 @@ describe('Fiche d’un appareil — gestes', () => {
     const { onChange } = rendre(frigo);
     expect(screen.queryByText('rincer')).toBeNull();
     expect(screen.queryByLabelText(/Valeur lue/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Faire quand même' })); // à jour : l'action principale est repliée (c3)
     fireEvent.click(screen.getByRole('button', { name: 'Fait' }));
     expect(onChange.mock.calls[0][0].lastDone).toBe(TODAY);
     expect(onChange.mock.calls[0][1]).toBe("Fait · à jour jusqu'au 14.12");

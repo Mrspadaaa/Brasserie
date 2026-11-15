@@ -85,9 +85,9 @@ export const NewEquipment: React.FC<{
         <div className="mt-pills" role="radiogroup" aria-label="Catégorie">{CATEGORIES.map(c => puce(c, categorie === c, () => setCategorie(c), 'Catégorie'))}</div>
         <div className="mt-lab">État</div>
         <div className="mt-pills" role="radiogroup" aria-label="État">{ETATS.map(c => puce(c, etat === c, () => setEtat(c), 'État'))}</div>
-        <div className="mt-deux">
+        <div className={`mt-deux${rhythm ? '' : ' mt-seul'}`}>
           <div><div className="mt-lab">Entretien</div><div className="mt-pills" role="radiogroup" aria-label="Entretien">{ENTRETIENS.map((e, i) => puce(e.label, entretien === i, () => setEntretien(i), 'Entretien'))}</div></div>
-          <div><label className="mt-lab" htmlFor="mt-dernier">Dernier fait</label><input id="mt-dernier" className="mt-in mt-m" type="text" inputMode="numeric" autoComplete="off" value={dernier} onChange={e => setDernier(e.target.value)} aria-invalid={!!rhythm && !dernierIso} /></div>
+          {rhythm && <div><label className="mt-lab" htmlFor="mt-dernier">Dernier fait</label><input id="mt-dernier" className="mt-in mt-m" type="text" inputMode="numeric" autoComplete="off" value={dernier} onChange={e => setDernier(e.target.value)} aria-invalid={!dernierIso} /></div>}
         </div>
         {prochain && dernierIso && <div className="mt-apercu"><Reglette dernier={dernierIso} prochain={prochain} today={today} /><span>prochain le <b className="mt-m">{dateCourte(prochain)}</b></span></div>}
       </div>
