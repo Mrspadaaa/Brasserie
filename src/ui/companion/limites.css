@@ -85,7 +85,9 @@
 .cmp-lx .cmp-regl { padding: 8px 10px; }
 .cmp-lx .cmp-regl-l { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--t); }
 .cmp-lx .cmp-num { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
-.cmp-lx .cmp-in { width: 84px; min-height: 40px; height: 40px; border: 1px solid var(--bordm); border-radius: 10px; background: var(--pan); font-size: 16px; font-family: var(--mono); text-align: right; padding: 0 8px; color: var(--t0); }
+/* fx2c limites 3 : champ de 36 px (maquette), valeur centrée verticalement en mono 18 px 700, l'unité grise à droite. */
+.cmp-lx .cmp-in { width: 72px; min-height: 36px; height: 36px; border: 1px solid var(--bordm); border-radius: 10px; background: var(--pan); font-size: 18px; font-weight: 700; line-height: 34px; font-family: var(--mono); text-align: right; padding: 0 8px; color: var(--t0); box-sizing: border-box; }
+.cmp-lx .cmp-num { gap: 8px; }
 .cmp-lx .cmp-modes-l { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
 .cmp-lx .cmp-ml { border: 1px solid var(--bord); border-radius: 10px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; text-align: left; font-size: 12px; color: var(--t2); background: none; min-height: 44px; }
 .cmp-lx .cmp-ml b { font-size: 14px; color: var(--t0); }
@@ -109,6 +111,25 @@
 /* pied de la vue : reste visible en bas de la feuille qui défile */
 .cmp-lx .cmp-pied { position: sticky; bottom: -8px; margin: 4px -8px -8px; padding: 8px 10px 10px; background: var(--pan); border-top: 1px solid var(--bord); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .cmp-lx .cmp-pied .cmp-btn { min-width: 96px; }
+/* fx2c limites 6 : pied fixe en bas de la feuille pleine hauteur, un filet au-dessus, « Annuler » en texte à gauche, « ✓ Enregistrer » plein à droite.
+   `.cmp-pied` du compagnon est une colonne (companion.css) et `.cmp-root .cmp-pied` retire le filet (plus.css) : `.cmp-pied-l` reprend la ligne. */
+.cmp-lx .cmp-pied.cmp-pied-l { flex-direction: row; justify-content: space-between; align-items: center; margin: auto -8px -8px; padding: 10px 14px 12px; border-top: 1px solid var(--bord); background: var(--pan); bottom: -8px; }
+.cmp-lx .cmp-pied-l .cmp-btn.cmp-g { min-width: 0; padding: 0 4px; height: 44px; font-size: 16px; background: none; color: var(--t0); }
+.cmp-lx .cmp-pied-l .cmp-btn.cmp-p { min-width: 0; height: 48px; padding: 0 22px; border-radius: 12px; font-size: 16px; }
+
+/* fx2c : « ← Titre » en première ligne de la feuille (limites, conversations). Le Sheet n'y garde que le × (en haut à droite) ;
+   son titre ne reste que pour les lecteurs d'écran. Hauteur de la feuille = celle du fil (94 % de l'écran ; 100 % du panneau au bureau). */
+.cmp-root:not(.cmp-une), .cmp-conv-sheet { --h-feuille: 94dvh; height: var(--h-feuille); }
+@media (min-width: 1024px) { .cmp-root:not(.cmp-une) { --h-feuille: 100dvh; } }
+.cmp-root:not(.cmp-une) > header, .cmp-conv-sheet > header { position: absolute; top: 4px; right: 4px; z-index: 3; width: auto; min-height: 0; padding: 0; border: 0; background: none; }
+.cmp-root:not(.cmp-une) > header > div:first-child, .cmp-conv-sheet > header > div:first-child { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cmp-conv-sheet > div.cursor-grab { display: none; }
+.cmp-lx .cmp-tete-l { display: flex; align-items: center; gap: 8px; min-height: 44px; padding-right: 44px; }
+.cmp-lx .cmp-tete-l b { font-size: 16px; font-weight: 700; color: var(--t0); }
+.cmp-lx .cmp-retour { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; color: var(--t); background: none; border: 0; flex: none; margin-left: -4px; }
+.cmp-lx .cmp-retour svg.cmp-i { width: 20px; height: 20px; }
+.cmp-lx .cmp-note.cmp-pause { align-items: center; font-weight: 600; font-size: 13px; }
+.cmp-lx.cmp-lim { min-height: calc(var(--h-feuille, 94dvh) - 16px); }
 
 /* plafond */
 .cmp-lx .cmp-plafond { display: flex; flex-direction: column; gap: 8px; }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { ShieldCheck, Pause, Play, ChevronDown, ChevronRight, Check, Smartphone, Wallet, History } from 'lucide-react';
+import { ShieldCheck, Pause, Play, ChevronRight, Check, Smartphone, Wallet, History, ArrowLeft } from 'lucide-react';
 import { BrewerChat as api } from '../services/brewerChat';
 import { useBrewerJobs } from '../services/brewerJobs';
 import { NumberInput } from './NumberInput';
@@ -24,18 +24,18 @@ const MENSUEL_MAX_CHF = 100;
 const toMicro = (chf: number) => Math.round(Math.max(0, Math.min(MENSUEL_MAX_CHF, chf)) * 1_000_000);
 const MESSAGE_ECHEC = 'Le changement n’a pas pu être confirmé. Vérifie l’état avant de relancer une question.';
 
+/** Placeholder de la saisie quand le budget du mois est atteint (cadre `plafond` de la maquette p2a). */
+export const PLACEHOLDER_PLAFOND = 'En pause · budget du mois atteint';
+
 /**
- * Les plafonds hors du premier plan : approfondis du jour, jetons, et les deux limites par question.
- * Les appels du jour et le budget du mois ont leur propre carte.
+ * Le mois du budget (« 2026-11 ») : celui du serveur, sinon celui du jour de l'usage, sinon rien (jamais le mois d'ici
+ * deviné). La carte « Le budget repart… » ne dépend ainsi pas d'un champ que le serveur aurait omis.
  */
-const DAILY: Array<{ key: LimitKey; label: string; used: (u: BrewerAiBudget['usage']) => number }> = [
-  { key: 'dailyProCalls', label: 'Dont approfondis', used: (u) => u.proCalls },
-  { key: 'dailyTokens', label: 'Tokens comptabilisés', used: (u) => u.tokens }
-];
-const PER_QUESTION: Array<{ key: LimitKey; label: string }> = [
-  { key: 'questionCalls', label: 'Appels par question' },
-  { key: 'questionTokens', label: 'Tokens par question' }
-];
+const moisDuBudget = (status: BrewerBudgetStatus): string => {
+  const m = status.monthly?.month;
+  if (typeof m === 'string' && /^\d{4}-\d{2}$/.test(m)) return m;
+  return typeof status.day === 'string' && /^\d{4}-\d{2}-\d{2}/.test(status.day) ? status.day.slice(0, 7) : '';
+};
 
 /**
  * Ramène chaque plafond dans les bornes AVANT l'envoi.
@@ -138,6 +138,21 @@ export function useBrewerBudget(): {
   return { status, loading, error, refresh, saveMonthlyChf };
 }
 
+/**
+ * Ligne « ⏸ Une nouvelle question sera gardée ici » au-dessus de la saisie du cadre `plafond` (maquette p2a), avec
+ * `PLACEHOLDER_PLAFOND` pour le champ. À montrer quand `budgetResume(status).atteint` ; la saisie reste active, la question est gardée.
+ */
+export function BandeauPlafond() {
+  return (
+    <div className="cmp-lx">
+      <p className="cmp-note cmp-pause" role="status">
+        <Pause className="cmp-i" size={14} aria-hidden="true" />
+        Une nouvelle question sera gardée ici
+      </p>
+    </div>
+  );
+}
+
 const Pips = ({ n }: { n: number }) => (
   <i className="cmp-dur" aria-hidden="true">
     {[1, 2, 3].map((k) => (
@@ -147,11 +162,24 @@ const Pips = ({ n }: { n: number }) => (
 );
 
 /**
- * Cadre `limites` de la maquette p2a : appels du jour, budget du mois, mode par défaut, notification, suspension,
+ * Cadre `limites` de la maquette p2a : questions du jour, budget du mois, mode par défaut, notification, suspension,
  * renouvellement du mois. Les chiffres et les plafonds s'enregistrent par le pied (Annuler / Enregistrer) ;
- * le mode, la notification et la suspension agissent aussitôt.
+ * le mode, la notification et la suspension agissent aussitôt. L'en-tête « ← Limites IA » est la sienne (la flèche
+ * ramène au fil) ; le titre du Sheet ne reste que pour les lecteurs d'écran (`limites.css`).
+ * Les limites par question et en jetons ne se règlent plus ici (maquette : rien de tel) : elles gardent leur valeur.
  */
-export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mode: BrewerMode; onMode(m: BrewerMode): void }) {
+export function BrewerLimitsView({
+  onBack,
+  mode,
+  onMode,
+  entete = true
+}: {
+  onBack(): void;
+  mode: BrewerMode;
+  onMode(m: BrewerMode): void;
+  /** Montre « ← Limites IA » ; `false` dans l'ancien panneau repliable, qui a déjà son titre. */
+  entete?: boolean;
+}) {
   const { status, setStatus, loading, error: readError, refresh } = useBudgetState();
   const [limits, setLimits] = useState<BrewerAiLimits>(),
     [monthly, setMonthly] = useState<number>(),
@@ -229,37 +257,22 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
     }
   };
 
-  const cap = (key: LimitKey, label: string, hint: string) => {
-    const bound = BREWER_LIMIT_BOUNDS[key];
-    return (
-      <div className="cmp-regl-l" key={key}>
-        <div>
-          <label htmlFor={`${field}-${key}`}>{label}</label>
-          <small>{hint}</small>
-        </div>
-        <NumberInput
-          id={`${field}-${key}`}
-          className="cmp-in"
-          value={limits?.[key]}
-          onValue={(next: number) => setLimits((current) => current && { ...current, [key]: next })}
-          min={bound.min}
-          max={bound.max}
-          integer
-          required
-          disabled={busy}
-        />
-      </div>
-    );
-  };
-
   const m = status?.monthly;
   const pris = m ? m.usedMicroChf + m.reservedMicroChf : 0;
   const partAppels = status ? partDe(status.usage?.calls, status.limits?.dailyCalls) : null;
   const partMois = m ? partDe(pris, m.limitMicroChf) : null;
-  const renouv = m ? renouvellement(m.month, new Date()) : null;
+  const renouv = status ? renouvellement(moisDuBudget(status), new Date()) : null;
 
   return (
-    <div className="cmp-lx">
+    <div className="cmp-lx cmp-lim">
+      {entete && (
+        <div className="cmp-tete-l">
+          <button type="button" className="cmp-retour" aria-label="Retour au fil" disabled={busy} onClick={onBack}>
+            <ArrowLeft className="cmp-i" size={20} aria-hidden="true" />
+          </button>
+          <b aria-hidden="true">Limites IA</b>
+        </div>
+      )}
       {(error || readError) && (
         <p role="alert" className="cmp-note">
           {error || readError}
@@ -274,7 +287,7 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
         <>
           <div className="cmp-carte cmp-regl">
             <div className="cmp-lbl">
-              <span>Appels aujourd’hui</span>
+              <span>Questions aujourd’hui</span>
               <span>
                 <span className="cmp-n">{format(status.usage.calls)}</span> sur{' '}
                 <span className="cmp-n">{format(status.limits.dailyCalls)}</span>
@@ -283,7 +296,7 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
             <span
               className="cmp-piste"
               role="img"
-              aria-label={`${status.usage.calls} appels sur ${status.limits.dailyCalls}`}
+              aria-label={`${status.usage.calls} questions sur ${status.limits.dailyCalls}`}
             >
               <i style={{ width: `${partAppels ?? 0}%` }} />
             </span>
@@ -301,7 +314,7 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
                   required
                   disabled={busy}
                 />
-                <span>appels</span>
+                <span>questions</span>
               </span>
             </div>
           </div>
@@ -440,59 +453,19 @@ export function BrewerLimitsView({ onBack, mode, onMode }: { onBack(): void; mod
             </div>
           )}
 
-          <p className="cmp-note">
-            <Smartphone className="cmp-i" size={14} aria-hidden="true" />
-            Limite atteinte&nbsp;: la question reste gardée ici&nbsp;; tu relèves ou tu attends.
-          </p>
-
-          <details className="cmp-detail">
-            <summary>
-              Limites quotidiennes et par question <ChevronDown className="cmp-i" size={16} aria-hidden="true" />
-            </summary>
-            <div className="cmp-detail-corps">
-              <h4>Aujourd’hui · heure de Zurich</h4>
-              {DAILY.map((row) =>
-                cap(
-                  row.key,
-                  row.label,
-                  `${format(row.used(status.usage))} utilisés · ${format(BREWER_LIMIT_BOUNDS[row.key].min)} à ${format(
-                    BREWER_LIMIT_BOUNDS[row.key].max
-                  )}`
-                )
-              )}
-              <h4>Par question</h4>
-              {PER_QUESTION.map((row) =>
-                cap(
-                  row.key,
-                  row.label,
-                  `${format(BREWER_LIMIT_BOUNDS[row.key].min)} à ${format(BREWER_LIMIT_BOUNDS[row.key].max)}`
-                )
-              )}
-              <p className="cmp-note">
-                Plusieurs recherches et relectures peuvent travailler en parallèle : jusqu’à six recherches web et deux
-                corrections si nécessaire ; le mode Approfondi garde une seule correction. Les recherches sont incluses dans
-                le budget estimé.
-              </p>
-              <p className="cmp-note">
-                Ce budget est commun à toute l’application (factures, compagnon, autres analyses). Chaque appel réserve une
-                marge avant de démarrer ; à court de budget, l’IA s’arrête et la saisie manuelle reste disponible.
-              </p>
-              <p className="cmp-note">
-                Estimation prudente : tarifs vérifiés le {m?.pricingVerifiedAt ?? '—'}. Ce montant n’est pas la facture :
-                stockage, serveur, taxes et variation de change restent distincts. Un appel interrompu conserve sa
-                réservation si son coût est inconnu.
-              </p>
-            </div>
-          </details>
-
           {notice && (
             <p role="status" className="cmp-note">
               {notice}
             </p>
           )}
+
+          <p className="cmp-note">
+            <Smartphone className="cmp-i" size={14} aria-hidden="true" />
+            Limite atteinte&nbsp;: la question reste gardée ici&nbsp;; tu relèves ou tu attends.
+          </p>
         </>
       )}
-      <div className="cmp-pied">
+      <div className="cmp-pied cmp-pied-l">
         <button type="button" className="cmp-btn cmp-g" disabled={busy} onClick={onBack}>
           Annuler
         </button>
@@ -525,7 +498,7 @@ export function BrewerBudget() {
         <ShieldCheck size={15} />
         Limites IA
       </summary>
-      {open && <BrewerLimitsView onBack={() => setOpen(false)} mode={mode} onMode={setMode} />}
+      {open && <BrewerLimitsView entete={false} onBack={() => setOpen(false)} mode={mode} onMode={setMode} />}
     </details>
   );
 }
@@ -603,7 +576,7 @@ export function BrewerBudgetCapView({
               <span>Aujourd’hui</span>
               <span>
                 <span className="cmp-n">{format(status.usage.calls)}</span> sur{' '}
-                <span className="cmp-n">{format(status.limits.dailyCalls)}</span> appels
+                <span className="cmp-n">{format(status.limits.dailyCalls)}</span> questions
               </span>
             </div>
             <div className="cmp-lbl cmp-lbl-h">
@@ -681,7 +654,7 @@ export function BrewerBudgetCapView({
           </button>
 
           {(() => {
-            const renouv = renouvellement(m.month, new Date());
+            const renouv = renouvellement(moisDuBudget(status), new Date());
             return (
               renouv && (
                 <div className="cmp-carte cmp-mois">

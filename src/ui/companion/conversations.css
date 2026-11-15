@@ -35,5 +35,11 @@
 .cmp-lx .cmp-confirme p { margin: 0; }
 .cmp-lx .cmp-btn.cmp-d-plein { border: 1px solid var(--alr); background: var(--alrf); color: var(--alrt); }
 .cmp-lx .cmp-vide { color: var(--t2); padding: 20px 4px; line-height: 1.5; margin: 0; }
-.cmp-lx .cmp-pied.cmp-pied-fixe { position: static; margin: 0; padding: 6px 0; border-top: 0; background: none; }
-.cmp-lx .cmp-pied-t { font-size: 12px; color: var(--t2); max-width: 180px; }
+/* fx2c conversations 6 : le pied sur une ligne, le texte à gauche (13 px gris, 2 lignes), « + Nouvelle question » plein à droite.
+   `.cmp-pied` du compagnon est une colonne (companion.css). */
+.cmp-lx .cmp-pied.cmp-pied-fixe { position: static; flex-direction: row; justify-content: space-between; align-items: center; text-align: left; margin: 0; padding: 6px 4px; border-top: 0; background: none; }
+.cmp-lx .cmp-pied-t { font-size: 13px; line-height: 1.3; color: var(--t2); max-width: 190px; }
+.cmp-lx .cmp-pied-fixe .cmp-btn.cmp-p { height: 48px; padding: 0 18px; border-radius: 12px; font-size: 16px; }
+.cmp-conv-sheet > div.flex-1 { min-height: 0; }
+/* « Repartir à zéro ? » : la confirmation est la carte elle-même, sans filet de tête. */
+.cmp-lx .cmp-carte > .cmp-confirme { border-top: 0; padding-top: 0; }

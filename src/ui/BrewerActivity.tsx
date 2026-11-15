@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState, lazy } from 'react';
 import { useMobileLayout } from './useViewport';
-import { MessageCircle, LoaderCircle, Trash2, Check, X, RotateCw, MoreHorizontal, Plus } from 'lucide-react';
+import { MessageCircle, LoaderCircle, Trash2, Check, X, RotateCw, RotateCcw, MoreHorizontal, Plus, ArrowLeft, ChevronRight } from 'lucide-react';
 import { brewerJobs, useBrewerJobs, isBrewerWorking, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
 import { BrewerNotifySwitch } from './BrewerNotifications';
-import { BORNE_SERVEUR_S, NBSP, dureeTexte, etapeTexte, statutJob, statutsConversations, type StatutJob } from './companion/derive';
+import { BORNE_SERVEUR_S, NBSP, dureeTexte, estPlafondAtteint, etapeTexte, statutJob, statutsConversations, type StatutJob } from './companion/derive';
 import './companion/limites.css';
 import './companion/conversations.css';
 import { BrewerChat as api } from '../services/brewerChat';
@@ -43,9 +43,14 @@ function ligneStatut(jobs: ClientBrewerJob[], now: number): { statut: StatutJob;
       etape: latest.sending ? 'Envoi de ta question' : etapeTexte(latest.stage),
       texte: `${travail.length > 1 ? pluriel(travail.length, 'question', 'questions') + ' en cours' : latest.sending ? 'Envoi' : 'En cours'} · ${dureeTexte(secondes)}${echanges}`
     };
-  if (statut === 'echec')
-    return { statut, secondes, etape: '', texte: `${latest.sendError ? 'Envoi à confirmer' : 'Échec · à relancer'}${echanges}` };
-  return { statut, secondes, etape: '', texte: `Réponse prête${echanges}` };
+  if (statut === 'echec') {
+    // « rien compté » seulement quand le budget a refusé l'appel avant son départ ; les autres échecs : le serveur ne dit pas si un coût a été compté.
+    const refuse = !latest.sendError && estPlafondAtteint(latest.error?.code);
+    return { statut, secondes, etape: '', texte: `${latest.sendError ? 'Envoi à confirmer' : refuse ? 'Échec · rien compté' : 'Échec · à relancer'}${echanges}` };
+  }
+  // Le niveau du verdict vient du tour gardé sur l'appareil ; sans lui (réponse jamais ouverte ici), pas de niveau inventé.
+  const niveau = latest.turn?.advice?.level;
+  return { statut, secondes, etape: '', texte: `Réponse prête${niveau === 'attention' || niveau === 'urgent' ? ` · ${niveau}` : ''}${echanges}` };
 }
 
 /**
@@ -66,6 +71,9 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   const [inbox, setInbox] = useState(false);
   const [deleting, setDeleting] = useState(false), [notice, setNotice] = useState('');
   const [removal, setRemoval] = useState<{ job: ClientBrewerJob; operationId: string } | null>(null);
+  /* « Repartir à zéro » : la conversation de l'écran en cours, en attente de confirmation. */
+  const [zero, setZero] = useState<{ job: ClientBrewerJob; operationId: string } | null>(null);
+  const [origine, setOrigine] = useState<BrewerScope | null>(null);
   const [focus, setFocus] = useState<Focus | null>(() => {
     const value = new URLSearchParams(location.search).get('companion');
     const match = /^(recipe|draft|batch|app):([\w-]{1,100})$/.exec(value ?? '');
@@ -81,7 +89,12 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     }
     void brewerJobs.start();
     const refresh = () => { if (document.visibilityState !== 'hidden') void brewerJobs.refresh(); };
-    const showInbox = () => { setFocus(null); setInbox(true); void brewerJobs.refresh(); };
+    // Le compagnon peut dire de quelle conversation il vient (`detail.scope`) : c'est celle que « Repartir à zéro » efface.
+    const showInbox = (e?: Event) => {
+      const scope = (e as CustomEvent<{ scope?: BrewerScope } | undefined> | undefined)?.detail?.scope;
+      setOrigine(scope && typeof scope.id === 'string' ? scope : null);
+      setFocus(null); setInbox(true); void brewerJobs.refresh();
+    };
     // La fiche, l'assistant ou la feuille de brassin ouverts gardent la main sur
     // leur propre conversation : leurs brouillons et leurs retours y vivent.
     const showCompanion = () => { if (!brewerLauncher.open()) setFocus(contextRef.current); };
@@ -137,6 +150,25 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
       setNotice('Suppression non confirmée. Vérifie la connexion et réessaie ; la conversation reste affichée.');
     } finally { setDeleting(false); }
   };
+  const fermer = () => { if (!deleting) { setInbox(false); setRemoval(null); setZero(null); setMenu(null); } };
+  const repartir = async () => {
+    if (!zero || deleting) return;
+    setDeleting(true);
+    setNotice('');
+    try {
+      const { generation } = await api.reset(zero.job.scope, zero.job.generation, zero.operationId);
+      brewerJobs.forget(zero.job.scope, generation);
+      setZero(null); setInbox(false); setMenu(null);
+      if (!brewerLauncher.open()) setFocus(contextRef.current);
+    } catch {
+      setNotice('Remise à zéro non confirmée. Vérifie la connexion et réessaie ; la conversation reste affichée.');
+    } finally { setDeleting(false); }
+  };
+  /* La conversation que « Repartir à zéro » efface : celle d'où l'on vient (portée dite par le compagnon dans l'événement), sinon
+     celle de l'écran ; sans l'une ni l'autre, la ligne n'est pas montrée (jamais une conversation au hasard). La confirmation la nomme. */
+  const vivantes = brewerConversations(state.jobs).filter(({ jobs }) => jobs.some((j) => j.status !== 'cancelled'));
+  const courant = vivantes.find(({ latest }) => origine && sameBrewerScope(latest.scope, origine))
+    ?? vivantes.find(({ latest }) => sameBrewerScope(latest.scope, context.scope));
   return <>
     {!mobile && !hideActivityPill && !dialogOpen && !inbox && !focus &&
       (pending.length > 0 || unread.length > 0 || unconfirmed.length > 0) && <button type="button"
@@ -145,15 +177,27 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
         {pending.length && !unread.length ? <LoaderCircle size={17} className="brewer-chat-spin" /> : <MessageCircle size={18} />}
         <span role="status">{badge}</span>
       </button>}
-    <Sheet open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); setMenu(null); } }} dismissible={!deleting}
+    <Sheet open={inbox} onClose={fermer} dismissible={!deleting}
       title="Mes conversations" className="cmp-conv-sheet"
       footer={<div className="cmp-lx"><div className="cmp-pied cmp-pied-fixe">
         <span className="cmp-pied-t">Tes questions continuent pendant que tu brasses.</span>
         <button type="button" className="cmp-btn cmp-p" disabled={deleting}
-          onClick={() => { setInbox(false); setRemoval(null); setMenu(null); if (!brewerLauncher.open()) setFocus(contextRef.current); }}>
+          onClick={() => { setInbox(false); setRemoval(null); setZero(null); setMenu(null); if (!brewerLauncher.open()) setFocus(contextRef.current); }}>
           <Plus className="cmp-i" size={16} aria-hidden="true" />Nouvelle question</button>
       </div></div>}>
       <div className="cmp-lx">
+        <div className="cmp-tete-l">
+          <button type="button" className="cmp-retour" aria-label="Retour au fil" disabled={deleting} onClick={fermer}><ArrowLeft className="cmp-i" size={20} aria-hidden="true" /></button>
+          <b aria-hidden="true">Mes conversations</b>
+        </div>
+        {courant && !zero && <button type="button" className="cmp-ligne-btn" disabled={deleting}
+          onClick={() => { setNotice(''); setRemoval(null); setMenu(null); setZero({ job: courant.latest, operationId: crypto.randomUUID() }); }}>
+          <RotateCcw className="cmp-i" aria-hidden="true" /><span>Repartir à zéro · nouvelle conversation</span><ChevronRight className="cmp-i" aria-hidden="true" /></button>}
+        {zero && <div className="cmp-carte"><div className="cmp-confirme">
+          <p><b>Repartir à zéro ?</b> Les échanges de « {zero.job.label} » seront effacés et une nouvelle conversation s’ouvrira. Les analyses en cours seront arrêtées.</p>
+          <div className="cmp-act"><button type="button" className="cmp-btn cmp-g" disabled={deleting} onClick={() => setZero(null)}>Annuler</button>
+            <button type="button" className="cmp-btn cmp-d-plein" disabled={deleting} onClick={() => void repartir()}>{deleting ? 'Remise à zéro…' : 'Repartir à zéro'}</button></div>
+        </div></div>}
         {state.connectionError && <p role="status" className="cmp-note">{state.connectionError}</p>}
         {notice && <p role="status" className="cmp-note">{notice}</p>}
         {!state.jobs.length && <p className="cmp-vide">Aucune conversation. Le bouton + ouvre le compagnon sur l’écran en cours.</p>}

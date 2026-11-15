@@ -831,7 +831,7 @@ function ScopedChat({
   };
   const ouvrirConversations = () => {
     fermer();
-    window.dispatchEvent(new Event('brewer-inbox-open'));
+    window.dispatchEvent(new CustomEvent('brewer-inbox-open', { detail: { scope } }));
   };
   const accueilProps = {
     titre: hasAssistedSession ? 'Lecture assistée' : finance ? undefined : 'Agir, mesurer ou attendre ?',

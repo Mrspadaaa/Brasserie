@@ -24,7 +24,6 @@ beforeEach(() => {
 afterEach(cleanup);
 const vue = (props: Partial<React.ComponentProps<typeof BrewerLimitsView>> = {}) =>
   render(<BrewerLimitsView onBack={vi.fn()} mode="auto" onMode={vi.fn()} {...props} />);
-const expandAdvanced = () => { screen.getByText('Limites quotidiennes et par question').closest('details')!.open = true; };
 const enregistrer = () => fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
 
 describe('Vue Limites du compagnon', () => {
@@ -43,7 +42,7 @@ describe('Vue Limites du compagnon', () => {
   });
   it('montre l’usage du jour et du mois en chiffres, sans nom de modèle ni de fournisseur', async () => {
     const { container } = vue();
-    await screen.findByText('Appels aujourd’hui');
+    await screen.findByText('Questions aujourd’hui');
     expect(screen.getByText('Budget du mois')).toBeInTheDocument();
     expect(screen.getByText('0,18')).toBeInTheDocument();
     expect(screen.getByText(/Dont 0,05\sCHF réservés/)).toBeInTheDocument();
@@ -88,19 +87,20 @@ describe('Vue Limites du compagnon', () => {
       expect(api.setBudget).toHaveBeenCalledWith(undefined, { ...DEFAULT_BREWER_LIMITS, dailyCalls: 40 })
     );
   });
-  it('règle aussi les limites par question et ramène un plafond hors bornes', async () => {
-    vi.mocked(api.setBudget).mockResolvedValue(state());
+  it('ramène un plafond du jour hors bornes et garde les limites par question telles quelles', async () => {
+    const depart = { ...state(), limits: { ...DEFAULT_BREWER_LIMITS, dailyCalls: 500 } };
+    vi.mocked(api.budget).mockResolvedValue(depart);
+    vi.mocked(api.setBudget).mockResolvedValue(depart);
     vue();
-    await screen.findByLabelText('Appels par question');
-    expandAdvanced();
-    fireEvent.change(screen.getByLabelText('Appels par question'), { target: { value: '18' } });
-    fireEvent.change(screen.getByLabelText('Tokens par question'), { target: { value: '9999999' } });
+    await screen.findByLabelText('Plafond par jour');
+    expect(screen.queryByLabelText('Appels par question')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Plafond par jour'), { target: { value: '9999999' } });
+    fireEvent.blur(screen.getByLabelText('Plafond par jour'));
     enregistrer();
     await waitFor(() =>
       expect(api.setBudget).toHaveBeenCalledWith(undefined, {
-        ...DEFAULT_BREWER_LIMITS,
-        questionCalls: 18,
-        questionTokens: BREWER_LIMIT_BOUNDS.questionTokens.max
+        ...depart.limits,
+        dailyCalls: BREWER_LIMIT_BOUNDS.dailyCalls.max
       })
     );
   });
