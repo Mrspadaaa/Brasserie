@@ -1,8 +1,11 @@
 import React from 'react';
-import { Beer, ClipboardList, FileText, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { FabAction } from '../domain/fabActions';
+import { plusMenuPage, type PlusCle, type PlusMenu, LETTRES } from '../domain/plusEcran';
+import { PlusSheet } from '../components/navigation/PlusSheet';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
+import { useRail } from '../components/navigation/useRail';
 import './floating-actions.css';
 
 /**
@@ -42,29 +45,20 @@ export interface FloatingActionsProps {
   onAction: () => void;
   /** Ce dont parle le compagnon ici : écran ou page en cours. */
   companionLabel: string;
+  /** Le menu du + de cet écran (`plusMenuFor`). Absent : dérivé de `action` et des quatre gestes de partout. */
+  menu?: PlusMenu;
+  /** Le geste choisi dans le menu. Absent : `onAction`, `onInvoice`, `onSale`, `onRecipe`, `onBrew`. */
+  onPlus?: (cle: PlusCle | 'ecran') => void;
+  /** Le compagnon n'est pas joignable : la ligne Compagnon le dit (plus de pastille flottante). */
+  horsConnexion?: boolean;
   /** Facture d'achat : lecture du justificatif, puis vérification. */
-  onInvoice: () => void;
-  onSale: () => void;
-  onRecipe: () => void;
-  onBrew: () => void;
+  onInvoice?: () => void;
+  onSale?: () => void;
+  onRecipe?: () => void;
+  onBrew?: () => void;
   /** Ancrage de repli quand aucune case n'est réservée : barre d'onglets, ou pied de page plein écran. */
   anchor: 'nav' | 'page';
   launcherRef?: React.MutableRefObject<HTMLButtonElement | null>;
-}
-
-interface Item {
-  key: string;
-  label: string;
-  /** Seconde ligne : ce que l'action vise ici. */
-  hint?: string;
-  Icon: typeof Plus;
-  /** Couleur de rubrique, portée par l'icône seule. */
-  tone: string;
-  count?: number;
-  busy?: boolean;
-  /** L'action principale de l'écran, en tête et mise en avant. */
-  strong?: boolean;
-  run: () => void;
 }
 
 /** Position et taille de la case réservée, en px depuis le bas et la droite de la fenêtre. */
@@ -74,9 +68,6 @@ interface DockGeometry {
   width: number;
   height: number;
 }
-
-const ROW = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs text-cave-200 ' +
-  'hover:bg-cave-850 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
 
 /** Suit la case réservée : sa taille, et sa place quand la page se déplace (clavier, pied qui change). */
 function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null {
@@ -119,7 +110,7 @@ function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null 
 }
 
 export const FloatingActions: React.FC<FloatingActionsProps> = ({
-  action, onAction, companionLabel, onInvoice, onSale, onRecipe, onBrew, anchor, launcherRef
+  action, onAction, companionLabel, menu: menuProp, onPlus, horsConnexion = false, onInvoice, onSale, onRecipe, onBrew, anchor, launcherRef
 }) => {
   const [open, setOpen] = React.useState(false);
   /* Docké en haut d'écran — atelier de l'eau, en-tête clavier ouvert — le menu s'ouvre vers le bas. */
@@ -152,40 +143,26 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   // Le menu disparaît avant la nouvelle surface : son opener doit rester connecté.
   const choose = (run: () => void) => () => { close(); run(); };
 
-  const groups: Item[][] = [];
-  if (action) {
-    groups.push([{
-      key: 'screen', label: action.label, hint: action.hint ?? 'Sur cet écran', strong: true,
-      Icon: action.intent === 'copyShoppingList' ? ClipboardList : Plus,
-      tone: 'text-ebc-straw', run: onAction
-    }]);
-  }
-  groups.push([
-    {
-      key: 'companion', label: 'Compagnon brasseur', hint: companionLabel,
-      // `hop` dit « disponible, validé » : DESIGN.md le refuse pour un assistant.
-      Icon: busy ? LoaderCircle : MessageCircle, tone: 'text-cave-200',
-      count: waiting, busy,
-      run: () => window.dispatchEvent(new Event('brewer-companion-open'))
-    },
-    ...(jobs.length ? [{
-      key: 'inbox', label: `Mes conversations · ${jobs.length}`,
-      Icon: MessagesSquare, tone: 'text-cave-400',
-      run: () => window.dispatchEvent(new Event('brewer-inbox-open'))
-    }] : [])
-  ]);
-  /* BX-4 (09.11) : l'action de l'écran ne se répète pas plus bas (« Nouvelle recette » et « Créer une recette », « Nouvelle écriture » et « Entrer une facture »). */
-  const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
-  groups.push([
-    { key: 'invoice', label: 'Entrer une facture', hint: 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
-    { key: 'sale', label: 'Vendre', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
-  ]);
-  groups.push([
-    { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },
-    { key: 'brew', label: 'Lancer un brassin', hint: 'À partir d’une recette existante', Icon: Beer, tone: 'text-area-production', run: onBrew }
-  ]);
-
-  const groupes = groups.map(g => g.filter(item => item.key !== doublon)).filter(g => g.length);
+  /* Le menu : celui de l'écran quand l'App le donne ; sinon l'action reçue et les quatre gestes de partout. */
+  const menu: PlusMenu = menuProp ?? {
+    ...plusMenuPage(),
+    action: action ? { ...action, lettre: 'N', ton: 'clients' } : null
+  };
+  const lancer = (cle: PlusCle | 'ecran') => {
+    if (onPlus) return onPlus(cle);
+    ({ ecran: onAction, facture: onInvoice, vente: onSale, recette: onRecipe, brassin: onBrew } as Record<string, (() => void) | undefined>)[cle]?.();
+  };
+  const choisir = (cle: PlusCle | 'ecran') => choose(() => lancer(cle));
+  const compagnon = {
+    horsConnexion, attente: waiting, occupe: busy, contexte: companionLabel, conversations: jobs.length
+  };
+  const ouvrirCompagnon = () => choose(() => window.dispatchEvent(new Event('brewer-companion-open')))();
+  const ouvrirConversations = () => choose(() => window.dispatchEvent(new Event('brewer-inbox-open')))();
+  /* Au 1280 la feuille devient une liste à lettres sous le + du rail ; ailleurs, une feuille au-dessus de la barre. */
+  const rail = useRail() && anchor === 'nav';
+  const forme = rail ? 'liste' : 'feuille';
+  const lettres: Record<string, PlusCle | 'ecran' | 'compagnon'> = { C: 'compagnon', N: 'ecran' };
+  (Object.keys(LETTRES) as PlusCle[]).forEach((cle) => { lettres[LETTRES[cle]] = cle; });
 
   React.useEffect(() => {
     if (!open) return;
@@ -205,6 +182,15 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     // La tabulation referme le menu ; le focus revient alors sur le bouton,
     // qui suit les lignes dans l'ordre du document.
     if (event.key === 'Tab') { setOpen(false); return; }
+    // Une lettre lance son geste, même si l'écran ne le montre pas (b1r : « une lettre reste active »).
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const cle = lettres[event.key.toUpperCase()];
+      if (cle && (cle !== 'ecran' || menu.action)) {
+        event.preventDefault();
+        if (cle === 'compagnon') ouvrirCompagnon(); else choisir(cle)();
+        return;
+      }
+    }
     const items = [...(menuRef.current?.querySelectorAll<HTMLButtonElement>('button') ?? [])];
     const current = items.indexOf(event.target as HTMLButtonElement);
     const target: Record<string, number | undefined> = {
@@ -247,39 +233,24 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         '--floating-actions-icon': `${iconSize}px`
       } as React.CSSProperties}
     >
+      {open && anchor === 'nav' && <div aria-hidden="true" className="plus-voile z-[-1]" onPointerDown={() => close(false)} />}
       {open && (
         <div
           ref={menuRef}
           id={menuId}
           role="menu"
           aria-label="Actions rapides"
+          data-plus-forme={anchor === 'nav' ? forme : 'page'}
+          data-plus-ecran={menu.ecran}
           onKeyDown={onKeyDown}
-          className={`absolute right-0 w-[15rem] max-w-[calc(100vw-1.5rem)] overflow-hidden
-                      rounded-panel border border-cave-700 bg-cave-900 shadow-lift
-                      ${placement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}
+          className={`rounded-panel border border-cave-700 bg-cave-950 shadow-lift p-2.5 ${anchor === 'nav'
+            ? (rail ? 'plus-liste' : 'plus-feuille')
+            : `absolute right-0 w-[22rem] max-w-[calc(100vw-1.5rem)] ${placement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}`}
         >
-          {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux
-              flèches, et la tabulation le referme pour rendre la main au bouton. */}
-          {groupes.map((group, index) => (
-            <div key={group[0].key} className={index ? 'border-t border-cave-800' : undefined}>
-              {group.map(({ key, label, hint, Icon, tone, count, busy, strong, run }) => (
-                <button key={key} type="button" role="menuitem" tabIndex={-1} className={ROW} onClick={choose(run)}>
-                  <Icon size={16} aria-hidden="true"
-                    className={`shrink-0 ${tone} ${busy ? 'motion-safe:animate-spin' : ''}`} />
-                  <span className="min-w-0 flex-1">
-                    <span className={strong ? 'font-semibold text-cave-50' : undefined}>{label}</span>
-                    {hint && <span className="block text-footnote text-cave-400">{hint}</span>}
-                  </span>
-                  {!!count && (
-                    <span className="shrink-0 min-w-4 px-1 rounded-full bg-attention text-cave-950
-                                     font-mono text-footnote leading-4 font-semibold">
-                      {count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          ))}
+          {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
+              pour rendre la main au bouton. */}
+          <PlusSheet menu={menu} forme={anchor === 'nav' ? forme : 'feuille'} compagnon={compagnon}
+            onChoisir={choisir} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
         </div>
       )}
 

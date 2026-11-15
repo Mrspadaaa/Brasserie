@@ -25,6 +25,8 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
+import { plusMenuFor, type PlusCle } from './domain/plusEcran';
+import { nextBatchId, nextRef } from './services/refs';
 import { batchDisplayDate } from './domain/batchSchedule';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
 import { isCurrent } from './domain/catalogOrganization';
@@ -617,6 +619,46 @@ export const App: React.FC = () => {
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
+  /* Le menu du + de l'écran (b1r). Les précisions viennent de l'app : prochain numéro de brassin et de fût, articles à commander. */
+  const plusMenu = plusMenuFor(activeTab, subTab, {
+    prochainBrassin: nextBatchId(batches.map(b => b.id)),
+    prochainFut: nextRef('F', stocks.kegs.map(k => k.id)),
+    aCommander: criticalStockCount
+  });
+  const [navNonce, setNavNonce] = useState(0);
+  const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
+
+  /** Un geste « Depuis ici » : ouvre l'écran voulu (sous-onglet compris), puis sa création. Chaque geste garde sa fonction d'aujourd'hui. */
+  const runPlus = (cle: PlusCle | 'ecran') => {
+    if (cle === 'ecran') { runFabAction(); return; }
+    const vers = (tab: TabType, cle2: 'stocks_subtab' | 'clients_subtab' | null, sous: string | null, kind?: FabIntent) => {
+      if (cle2 && sous) StorageService.setUiState(cle2, sous);
+      setNavNonce(n => n + 1);
+      setActiveTab(tab);
+      if (kind) {
+        const at = Date.now();
+        setCreateRequest({ kind, at });
+        // La demande ne doit pas rouvrir la feuille au prochain retour sur l'écran.
+        window.setTimeout(() => setCreateRequest(c => (c && c.at === at ? null : c)), 3000);
+      }
+    };
+    switch (cle) {
+      case 'ecriture':
+      case 'facture': setQuickAction('scan', actionLauncherRef.current); break;
+      case 'vente': setQuickAction('quick-sale', actionLauncherRef.current); break;
+      case 'brassin': setQuickAction('brew-batch', actionLauncherRef.current); break;
+      case 'recette': openWizard(); break;
+      case 'idee': setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
+      case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
+      case 'houblon': vers('stocks', 'stocks_subtab', 'hops', 'newHopVariety'); break;
+      case 'article': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
+      case 'fut': vers('stocks', 'stocks_subtab', 'futs', 'newKeg'); break;
+      case 'materiel': vers('stocks', 'stocks_subtab', 'materiel', 'newEquipment'); break;
+      case 'client': vers('clients', 'clients_subtab', 'crm', 'newClient'); break;
+      case 'tarif': vers('clients', 'clients_subtab', 'tarifs', 'newTarif'); break;
+    }
+  };
+
   const runFabAction = () => {
     switch (fabAction.intent) {
       case 'newBatch':
@@ -991,7 +1033,7 @@ export const App: React.FC = () => {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div role="status" className="pointer-events-none fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-ebc-straw text-cave-950 px-4 py-2.5 rounded-2xl shadow-2xl font-bold text-sm flex items-center space-x-2 animate-in fade-in slide-in-from-top-4 border border-ebc-gold max-w-sm text-center">
+        <div role="status" data-toast className="pointer-events-none fixed z-50 inset-x-2 mx-auto max-w-md bottom-[calc(var(--main-navigation-height,2.5rem)+0.5rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -1020,7 +1062,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px]' : ''} w-full mx-auto px-2 xs:px-3`}>
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]' : 'min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]'} w-full mx-auto px-2 xs:px-3`}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -1094,6 +1136,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'stocks' && (
           <StocksTab
+            key={navNonce}
             stocks={stocks}
             batches={batches}
             clients={clients}
@@ -1111,6 +1154,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'clients' && (
           <ClientsTab
+            key={navNonce}
             clients={clients}
             batches={batches}
             tarifs={tarifs}
@@ -1133,10 +1177,11 @@ export const App: React.FC = () => {
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}
+          horsConnexion={horsConnexion}
         />
         <div aria-hidden="true" className="app-bottom-dock-cell fixed bottom-0 right-0 z-40 bg-cave-900 pb-safe">
           <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-cave-800" />
-          <ActionDock kind="nav" className="h-10 w-16 ml-1 mr-3" />
+          <ActionDock kind="nav" className="h-10 w-16 ml-1 mr-3 min-[1024px]:h-11 min-[1024px]:w-14 min-[1024px]:m-0" />
         </div>
       </div>
 
@@ -1151,6 +1196,9 @@ export const App: React.FC = () => {
         // sommaire des saisies que le menu liste déjà en clair.
         action={view.view === 'tabs' && fabAction.intent !== 'quickAction' ? fabAction : null}
         onAction={runFabAction}
+        menu={view.view === 'tabs' ? plusMenu : undefined}
+        onPlus={runPlus}
+        horsConnexion={horsConnexion}
         companionLabel={companionLabel}
         anchor={view.view === 'tabs' ? 'nav' : 'page'}
         onInvoice={() => setQuickAction('scan', actionLauncherRef.current)}

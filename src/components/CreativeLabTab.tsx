@@ -227,14 +227,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       {/* 4. SECTION 2: RECIPE STUDIO & PASSERELLE EN 1 CLIC */}
       {activeSection === 'recipe-idea' && (
         <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Noter une idée de bière / style décalé</span>
-          </button>
-
+          {/* Un seul + : celui de la barre (b1r) ouvre la même saisie. */}
           <div className="space-y-2.5">
             {currentItems.map((item) => (
               <div

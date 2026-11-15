@@ -76,12 +76,12 @@ const ACTIONS: {
   },
 
   stocks: {
-    stock: A('newStockItem', 'Nouvel article de stock'),
+    stock: A('newStockItem', 'Nouvel article'),
     // Sur la liste de courses, ce qu'on veut n'est pas créer mais emporter.
-    courses: A('copyShoppingList', 'Copier la liste de courses'),
+    courses: A('copyShoppingList', 'Copier la liste'),
     futs: A('newKeg', 'Nouveau fût'),
     materiel: A('newEquipment', 'Nouveau matériel'),
-    hops: A('newHopVariety', 'Nouvelle variété de houblon')
+    hops: A('newHopVariety', 'Nouvelle variété')
   },
 
   clients: {
