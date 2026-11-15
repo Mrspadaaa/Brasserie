@@ -46,9 +46,10 @@ describe('parc de fûts et matériel compacts', () => {
     const imported = { ...fullKeg, state: unknown } as unknown as KegItem;
     const view = render(board([imported, { id: 'F-002', capacityL: 20, state: 'propre' }]));
     expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' })).toHaveAccessibleDescription(/30 L.*IPA du lac.*Café de la Rive.*État inconnu/);
-    expect(screen.getByRole('radio', { name: 'À laver · 0' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Propres · 1' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('radio', { name: 'État inconnu · 1' }));
+    // La jauge : un état à 0 n'a pas de segment (G4).
+    expect(screen.queryByRole('button', { name: 'À laver 0' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Propre 1' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'État inconnu 1' }));
     expect(screen.queryByRole('button', { name: 'Ouvrir le fût F-002' })).not.toBeInTheDocument();
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' }));
     const dialog = screen.getByRole('dialog', { name: 'Fût F-001' });
@@ -70,9 +71,10 @@ describe('parc de fûts et matériel compacts', () => {
     expect(StorageService.updateKeg).toHaveBeenCalledWith({ ...fullKeg, state: chosen });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     view.rerender(board([{ ...fullKeg, state: chosen }]));
-    expect(screen.getByRole('radio', { name: 'État inconnu · 0' })).toBeChecked();
+    // Le filtre posé sur l'état réparé reste dit, au lieu de disparaître en silence.
+    expect(screen.getByText('Filtre : État inconnu')).toBeVisible();
     expect(screen.getByText('Aucun fût « État inconnu »')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Voir tous les fûts' }));
+    fireEvent.click(within(screen.getByText('Aucun fût « État inconnu »').parentElement!).getByRole('button', { name: 'Voir tout' }));
     expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' })).toBeVisible();
   });
 
@@ -133,11 +135,9 @@ describe('parc de fûts et matériel compacts', () => {
   it('combine filtre des fûts, recherche du client et récupération après résultat vide', async () => {
     render(board([fullKeg, { id: 'F-002', capacityL: 20, state: 'propre' }, { ...fullKeg, id: 'F-003', state: 'livre', clientName: 'Café des Marées' }]));
     expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' })).toBeVisible();
-    const delivered = screen.getByRole('radio', { name: 'Livrés · 1' });
-    const revealDelivered = vi.spyOn(delivered, 'scrollIntoView');
+    const delivered = screen.getByRole('button', { name: 'Livré 1' });
     fireEvent.click(delivered);
-    expect(revealDelivered).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
-    expect(screen.getByRole('radio', { name: 'Livrés · 1' })).toBeChecked();
+    expect(delivered).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-003' })).toHaveTextContent('Café des Marées');
     expect(screen.queryByRole('button', { name: 'Ouvrir le fût F-001' })).toBeNull();
     const search = screen.getByRole('textbox', { name: 'Chercher un fût, une bière, un client…' });
@@ -146,15 +146,16 @@ describe('parc de fûts et matériel compacts', () => {
     fireEvent.change(search, { target: { value: 'xyz987' } });
     expect(screen.getByText('Rien ne correspond à « xyz987 »')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Effacer la recherche' }));
-    fireEvent.keyDown(delivered, { key: 'ArrowRight' });
-    expect(screen.getByRole('radio', { name: 'Tous · 3' })).toHaveFocus();
+    // Retoucher le segment retire le filtre : tout le parc revient.
+    fireEvent.click(delivered);
+    expect(delivered).toHaveAttribute('aria-pressed', 'false');
     expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' })).toBeVisible();
-    fireEvent.click(screen.getByRole('radio', { name: 'À laver · 0' }));
-    expect(screen.getByText('Aucun fût « À laver »')).toBeVisible();
-    const revealAll = vi.spyOn(screen.getByRole('radio', { name: 'Tous · 3' }), 'scrollIntoView');
-    fireEvent.click(screen.getByRole('button', { name: 'Voir tous les fûts' }));
-    expect(screen.getByRole('radio', { name: 'Tous · 3' })).toBeChecked();
-    expect(revealAll).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
+    // « Voir tout » vide aussi le filtre.
+    fireEvent.click(delivered);
+    expect(screen.queryByRole('button', { name: 'Ouvrir le fût F-001' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Voir tout' }));
+    expect(screen.getByRole('button', { name: 'Voir tout' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('button', { name: 'Ouvrir le fût F-001' })).toBeVisible();
   });
 
   it('remplir depuis un lot : seuls les lots éligibles, le fût de la fiche arrive coché, puis une confirmation explicite', async () => {

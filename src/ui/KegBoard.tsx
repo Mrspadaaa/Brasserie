@@ -1,4 +1,4 @@
-import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Beer, ChevronRight, CircleHelp, Droplets, Sparkles, Truck, Trash2 } from 'lucide-react';
 import { KegItem, KegState, Batch, Client } from '../types';
 import { StorageService } from '../services/storage';
@@ -6,14 +6,19 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { useLiveSelection } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 import { EntityList } from './EntityList';
-import { SegmentedControl } from './SegmentedControl';
 import { Field, FormNav } from './FormNav';
 import { swissToday } from './DateField';
 import { KegFiche } from './KegFiche';
 import { KegFillSheet } from './KegFillSheet';
 import { KegAddSheet } from './KegAddSheet';
 import './equipment-compact.css';
+import './keg-fiche.css';
+import './keg-liste.css';
 import { nombreFr } from '../domain/nombreAffiche';
+import {
+  ORDRE_JAUGE, ORDRE_SECTIONS, aReprendre, basculerFiltre, comptesParEtat, couleurPastille, etatFut, futsARetablir, ligneDate, libelleSegment,
+  marquerTousPropres, phraseFiltre, phraseMarques, phrasesResume, rangerParSections, resumeParc, titreConfirmation, type EtatFut
+} from '../domain/stock/futsFiche';
 
 const KEG_STATE: Record<KegState, { label: string; filter: string; hint: string; Icon: typeof Beer }> = {
   lavage: { label: 'À laver', filter: 'À laver', hint: 'Revenu vide, à nettoyer avant remplissage.', Icon: Droplets },
@@ -25,6 +30,12 @@ const STATES = Object.keys(KEG_STATE) as KegState[];
 const isKnownState = (value: unknown): value is KegState => typeof value === 'string' && Object.prototype.hasOwnProperty.call(KEG_STATE, value);
 const UNKNOWN_STATE = { label: 'État inconnu', hint: 'Choisis l’état réel du fût. Son contenu enregistré est conservé.', Icon: CircleHelp };
 const SEARCH_KEYS = ['id', 'beerName', 'batchRef', 'clientName', 'notes'];
+/** Pluriel des sections et des filtres ; « À laver » ne change pas. */
+const LIBELLE_PLURIEL = (e: EtatFut) => (e === 'unknown' ? UNKNOWN_STATE.label : KEG_STATE[e].filter);
+/** Le bandeau « marqués propres » laisse ce temps pour annuler. */
+const BANDEAU_MS = 15_000;
+
+interface Marquage { avant: KegItem[]; apres: KegItem[] }
 
 interface KegBoardProps {
   kegs: KegItem[];
@@ -59,23 +70,45 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const [selected, setSelected] = useLiveSelection(kegs, 'id');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [fill, setFill] = useState<{ kegId?: string } | null>(null);
-  const [filter, setFilter] = useState<KegState | 'all' | 'unknown'>('all');
-  const filterRef = useRef<HTMLDivElement>(null);
+  /** Choix multiple : aucun état choisi = tout le parc. */
+  const [filtre, setFiltre] = useState<EtatFut[]>([]);
+  const [confirmeLavage, setConfirmeLavage] = useState(false);
+  const [marquage, setMarquage] = useState<Marquage | null>(null);
+  const confirmeRef = useRef<HTMLDivElement>(null);
   const [repairedState, setRepairedState] = useState<KegState | ''>('');
   const [repairAttempted, setRepairAttempted] = useState(false);
   const repairInput = useRef<HTMLSelectElement>(null);
-  const filtered = useMemo(() => filter === 'all' ? kegs : kegs.filter(k => filter === 'unknown' ? !isKnownState(k.state) : k.state === filter), [kegs, filter]);
-  const counts = kegs.reduce((result, keg) => {
-    result[isKnownState(keg.state) ? keg.state : 'unknown'] += 1;
-    return result;
-  }, { lavage: 0, propre: 0, plein: 0, livre: 0, unknown: 0 });
+  const counts = useMemo(() => comptesParEtat(kegs), [kegs]);
+  const resume = useMemo(() => phrasesResume(resumeParc(kegs)), [kegs]);
+  const range = useMemo(
+    () => rangerParSections(filtre.length ? kegs.filter(k => filtre.includes(etatFut(k))) : kegs, jour),
+    [kegs, filtre, jour]
+  );
   const selectedUnknown = Boolean(selected && !isKnownState(selected.state));
+  const filtreTexte = phraseFiltre(filtre, LIBELLE_PLURIEL);
 
-  useLayoutEffect(() => {
-    // Aussi après « Voir tous les fûts », qui change le filtre sans cibler sa puce.
-    filterRef.current?.querySelector<HTMLElement>('[role="radio"][aria-checked="true"]')
-      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  }, [filter]);
+  // La confirmation et le bandeau suivent le parc : plus rien à laver, plus de geste groupé.
+  useEffect(() => { if (confirmeLavage && counts.lavage === 0) setConfirmeLavage(false); }, [confirmeLavage, counts.lavage]);
+  useEffect(() => { if (confirmeLavage) confirmeRef.current?.focus(); }, [confirmeLavage]);
+  useEffect(() => {
+    if (!marquage) return;
+    const delai = setTimeout(() => setMarquage(null), BANDEAU_MS);
+    return () => clearTimeout(delai);
+  }, [marquage]);
+
+  /** « Tout marquer propre » : chaque fût à laver passe propre avec son étape « lavé » du jour ; le filtre est levé, comme sur la maquette. */
+  const marquerPropres = () => {
+    const geste = marquerTousPropres(kegs, jour);
+    geste.apres.forEach(k => save(k));
+    setConfirmeLavage(false);
+    setFiltre([]);
+    setMarquage(geste);
+  };
+  const annulerMarquage = () => {
+    if (!marquage) return;
+    futsARetablir(marquage.avant, marquage.apres, kegs).forEach(k => save(k));
+    setMarquage(null);
+  };
 
   const close = () => { setSelected(null); setConfirmDelete(false); setRepairedState(''); setRepairAttempted(false); };
   /** Seul l'état inconnu (donnée importée) se corrige ici ; les quatre états connus passent par la fiche d'identité. */
@@ -91,31 +124,61 @@ export const KegBoard: React.FC<KegBoardProps> = ({
     <>
       <EntityList
         className={`equipment-list ${className}`}
-        items={filtered}
+        items={range}
         keyOf={keg => keg.id}
         searchKeys={SEARCH_KEYS}
         searchPlaceholder="Chercher un fût, une bière, un client…"
         toolbarAction={<Button intent="secondary" onClick={() => setFill({})}>Remplir depuis un lot</Button>}
-        resetKey={filter}
-        header={
-          <div ref={filterRef} className="min-w-0">
-          <SegmentedControl
-            label="Filtrer les fûts par état"
-            className="equipment-filters keg-filters"
-            value={filter}
-            onChange={setFilter}
-            options={[
-              { value: 'all', label: `Tous · ${kegs.length}` },
-              ...STATES.map(state => ({ value: state, label: `${KEG_STATE[state].filter} · ${counts[state]}` })),
-              ...(counts.unknown || filter === 'unknown' ? [{ value: 'unknown' as const, label: `État inconnu · ${counts.unknown}` }] : [])
-            ]}
-          />
+        resetKey={filtre.join()}
+        groupOf={(keg: KegItem) => etatFut(keg)}
+        groupOrder={[...ORDRE_SECTIONS]}
+        renderGroupHeader={(etat, compte) => (
+          <h3 className="keg-sec keg-sec-titre">
+            <span>{LIBELLE_PLURIEL(etat as EtatFut)} · {compte}</span>
+            {etat === 'lavage' && compte === counts.lavage && compte > 0 && (
+              <button type="button" onClick={() => setConfirmeLavage(true)}>Tout marquer propre</button>
+            )}
+          </h3>
+        )}
+        header={kegs.length > 0 && (
+          <div className="keg-tete">
+            <div className="keg-jauge-ligne">
+              <button type="button" className="keg-voirtout" aria-pressed={filtre.length === 0} onClick={() => setFiltre([])}>Voir tout</button>
+              <div className="keg-jauge" role="group" aria-label="Filtrer les fûts par état (un ou plusieurs)">
+                {ORDRE_JAUGE.filter(e => counts[e] > 0).map(e => (
+                  <button key={e} type="button" data-etat={e} style={{ flexGrow: counts[e] }} aria-label={`${libelleSegment(e, counts[e])} ${counts[e]}`} aria-pressed={filtre.includes(e)} onClick={() => setFiltre(basculerFiltre(filtre, e))}>
+                    <span>{libelleSegment(e, counts[e])}</span><b>{counts[e]}</b>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="keg-legende">
+              {filtre.length === 0
+                ? <><span>{resume.gauche}</span><span>{resume.droite}</span></>
+                : <><span>Filtre : {filtreTexte}</span><button type="button" aria-label="Retirer le filtre" onClick={() => setFiltre([])}>Voir tout</button></>}
+            </p>
+            {confirmeLavage && counts.lavage > 0 && (
+              <div ref={confirmeRef} tabIndex={-1} role="group" aria-labelledby={`${listId}-conf`} className="keg-confirme">
+                <b id={`${listId}-conf`}>{titreConfirmation(counts.lavage)}</b>
+                <span className="equipment-help">{marquerTousPropres(kegs, jour).avant.map(k => k.id).join(', ')} · lavés aujourd’hui</span>
+                <div className="keg-confirme-pied">
+                  <Button intent="secondary" size="sm" onClick={() => setConfirmeLavage(false)}>Annuler</Button>
+                  <Button intent="primary" size="sm" onClick={marquerPropres}>Marquer propres</Button>
+                </div>
+              </div>
+            )}
+            {marquage && (
+              <div role="status" className="keg-bandeau">
+                <span>{phraseMarques(marquage.apres.length)}</span>
+                <button type="button" onClick={annulerMarquage}>Annuler</button>
+              </div>
+            )}
           </div>
-        }
+        )}
         emptyState={
           <div className="equipment-empty">
-            <p>{filter !== 'all' && kegs.length ? `Aucun fût « ${filter === 'unknown' ? UNKNOWN_STATE.label : KEG_STATE[filter].label} »` : 'Aucun fût enregistré'}</p>
-            {kegs.length ? <Button intent="secondary" size="sm" onClick={() => setFilter('all')}>Voir tous les fûts</Button>
+            <p>{filtre.length && kegs.length ? `Aucun fût « ${phraseFiltre(filtre, LIBELLE_PLURIEL)} »` : 'Aucun fût enregistré'}</p>
+            {kegs.length ? <Button intent="secondary" size="sm" onClick={() => setFiltre([])}>Voir tout</Button>
               : <p className="text-cave-400">Ajoute des fûts avec le bouton « + ».</p>}
           </div>
         }
@@ -123,17 +186,32 @@ export const KegBoard: React.FC<KegBoardProps> = ({
           const unknown = !isKnownState(keg.state);
           const state = unknown ? UNKNOWN_STATE : KEG_STATE[keg.state];
           const descriptionId = `${listId}-${encodeURIComponent(keg.id)}`;
+          const style = keg.style ?? batches.find(b => b.id === keg.batchRef)?.style;
+          const teinte = couleurPastille(style);
+          const reprendre = aReprendre(keg, jour);
+          const date = ligneDate(keg, jour);
+          const avecBiere = keg.state === 'plein' || keg.state === 'livre' || unknown && (keg.beerName || keg.batchRef);
+          // Plein : bière · lot. Livré : bière · client. État inconnu : ce que l'import a laissé, lot et client compris.
+          const suite = keg.state === 'livre' ? (keg.clientName || 'Client non renseigné') : keg.batchRef;
           return (
             <button type="button" className="equipment-row keg-row" aria-label={`Ouvrir le fût ${keg.id}`} aria-describedby={`${descriptionId}-content ${descriptionId}-state`} onClick={() => {
               setRepairedState(''); setRepairAttempted(false); setSelected(keg);
             }}>
               <span id={`${descriptionId}-content`} className="equipment-row-main">
                 <span className="keg-identity"><strong>{keg.id}</strong><span className="equipment-reading">{nombreFr(keg.capacityL, 1)} L</span></span>
-                {(keg.state === 'plein' || keg.state === 'livre' || unknown && (keg.beerName || keg.batchRef)) && <span className="equipment-row-context">{keg.beerName || 'Bière non renseignée'}{keg.batchRef && <span className="text-cave-400"> · {keg.batchRef}</span>}</span>}
-                {(keg.state === 'livre' || unknown && keg.clientName) && <span className="equipment-row-meta">{keg.clientName || 'Client non renseigné'}</span>}
+                {avecBiere && (
+                  <span className="equipment-row-context keg-row-biere">
+                    {teinte && <span className="keg-dot" style={{ '--keg-dot': teinte } as React.CSSProperties} aria-hidden="true"/>}
+                    <span>{keg.beerName || 'Bière non renseignée'}{suite && <span className="text-cave-400"> · {suite}</span>}</span>
+                  </span>
+                )}
+                {unknown && keg.clientName && <span className="equipment-row-meta">{keg.clientName}</span>}
+                {date && <span className="equipment-row-meta keg-row-date">{date.texte}{date.age && <> · <b className="keg-age" data-ancien={date.ancien}>{date.age}</b></>}</span>}
                 {keg.notes && <span className="equipment-row-meta">{keg.notes}</span>}
               </span>
-              <span id={`${descriptionId}-state`} className="equipment-state" data-keg-state={unknown ? 'unknown' : keg.state}><state.Icon size={13} aria-hidden="true"/>{state.label}</span>
+              <span id={`${descriptionId}-state`} className="equipment-state" data-keg-state={reprendre ? 'reprendre' : unknown ? 'unknown' : keg.state}>
+                {reprendre ? <><span className="sr-only">{state.label}, </span><Truck size={13} aria-hidden="true"/>À reprendre</> : <><state.Icon size={13} aria-hidden="true"/>{state.label}</>}
+              </span>
               <ChevronRight className="equipment-row-chevron" size={14} aria-hidden="true"/>
             </button>
           );
