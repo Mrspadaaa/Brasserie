@@ -35,6 +35,7 @@ import { ContactsView, type NouveauContact } from '../ui/atelier/ContactsView';
 import { TodoTimeline } from '../ui/atelier/TodoTimeline';
 import { NoteCarnet, type FiltreCarnet } from '../ui/atelier/NoteCarnet';
 import { modeRangerNote } from '../config/rangerNoteIA';
+import { TarifsFrise } from '../ui/atelier/TarifsFrise';
 import { FileText, Tag, Wrench } from 'lucide-react';
 
 /** ks4 : la rangée Matériel · Carnet · Tarifs ; Bières, Contacts et À faire sont les filtres du Carnet. */
@@ -302,7 +303,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       </div>
       {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
 
-      {activeSection==='pricing-test'&&<><p className="finance-muted">Pour fixer un prix : Clients › Prix (le coût y vient du brassin). Ici, tes idées de tarif.</p><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
+      {/* kxc (15.11) : la frise des prix pratiqués ; « + Noter » garde une idée de tarif, les idées gardées et l'assistant sous la liste. */}
+      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>setIsAdding(true)} apres={<>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}{assistantBouton}</>}/>}
 
       {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={setFiltre} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
         vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
@@ -310,7 +312,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
         onEdit={setEditing} onConvert={handleConvertToClient} focusDemande={focusCarnet} />}
 
       {/* Form modal when adding an item */}
-      {onglet !== 'carnet' && assistantBouton}
+      {onglet === 'materiel' && assistantBouton}
       {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={section===null?'Aide-moi à faire le point sur mes notes, mes idées de bières, mes contacts et mes tâches dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.':activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
       {isAdding && activeSection !== 'prospect' && activeSection !== 'event' && (
         <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
