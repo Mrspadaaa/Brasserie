@@ -1698,3 +1698,21 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp, version 2) : « e7a — e6a — e6c Des filtres qui comptent — Créer un brassin ?? Pas convaincu — e4c » (lu par le pilote : e7a et e4c retenues ; e6a greffée des filtres qui comptent de e6c ; « Créer un brassin » : aucune ne convainc, 3 ou 4 nouvelles d'un autre genre ; les groupes sans réponse sont remontrés sur la page neuve avec les greffes s4a × s6c.)
 
 - **15.11**, mot pour mot, relayé par la session pilote, même page : « e1a » (lu : la fiche d'un brassin planifié et son démarrage = e1a, retenue.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e2a » (lu : la fiche après la fermentation (garde, conditionné, terminé) = e2a, retenue.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e3b Le fil — e3a Carnet — Je plaise bien... À faire d'autres versions de ceux là. Aussi utiliser l'ia pas chère pour remettre en place des note en vrac » (lu : Carnet et Dossier = 3 ou 4 greffes e3a × e3b ; les notes en vrac rangées par l'IA la moins chère (proposée, validée par lui, simulée en test).)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Le carnet de recettes, pas très compact, pas super convaincu quand il y aura des dizaines de recette — e4c L'échelle ok » (lu : e4c confirmé ; carnet de recettes (e8) refusé tel quel, 3 ou 4 versions compactes pour des dizaines de recettes.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e11a — e10c » (lu : coque de l'onglet = e11a ; Adapter les volumes = e10c, retenues.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e8 · Le carnet de recettes j'ai déjà donné mon avis la dessus » (lu : e8 = le carnet déjà refusé ; ne pas le remontrer tel quel.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e5 · Créer un brassin j'aussi donner mon avis... » (lu : e5 déjà refusé (« Pas convaincu »), refait en e5n.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « · L'Atelier R&D toujours pas super convaincu » (lu : e9 refusé ; 3 ou 4 versions d'un autre genre.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e5na proposée Le brassin naît dans sa frise · 4 vues — e5nb La carte fantôme dans la liste · 3 vues — Les deux sont bien... Je sais pas trop... » (lu : Créer un brassin hésite entre e5na et e5nb : 2 greffes e5na × e5nb, le geste aboutissant sur e1a.)
+
+- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Toujours pas très clair. Faire passer critique, feedback, helper, analyse UX UI, et brasseur » (lu : la page de choix elle-même n'est pas claire ; revue à trois regards (revue-page5/SYNTHESE.md), contrôle BR-PAGE.)

@@ -72,6 +72,7 @@ Fable interdit (utilisateur, 10.11 et 14.11 « SANS FABLE ») : le contrepoids �
 | Brassins · nouvelles versions (12 : s4 à s7, quatre genres, après « Pas super fan de aucun ») | 14.11 v0 corrigée | https://claude.ai/artifact/SqU1y2jQgMAX8tX6MKn9qL | `work/missions/2026-11-14-brassins/page2/index.html` |
 | Brassins · tous les écrans (couverture ; 11 vues sans maquette, 4 versions chacune, e1 à e11) | 14.11 v0 corrigée | https://claude.ai/artifact/PVfjKmT4U9rvXxsKQTPPDp | `work/missions/2026-11-14-brassins/page3/index.html` |
 | Brassins · tes choix et la suite (retenues e1a, e4c, e7a ; greffes gfa à gfd s4a × s6c, g6a à g6c e6a × e6c ; Créer un brassin refait e5na à e5nd ; e2, e3, e8 à e11 remontrées) | 15.11 v0 corrigée | https://claude.ai/artifact/PUbMUHbiuv8Z3eucLQTffU | `work/missions/2026-11-14-brassins/page5/index.html` |
+- page6 « Brassins · six questions » (15.11) : https://claude.ai/artifact/3f8xRStDq4kDYofi6FihRm (`page6/`), une question par écran, PAGE OK, PAGE CLAIRE OK 6.
 
 ## Boucle de retour
 Voie en échec : relance ciblée chez un agent neuf (D207), 2 fois au plus. Plainte du brasseur : SPEC, DEFAUTS-RECURRENTS, contrôle.
@@ -113,3 +114,11 @@ Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (gr
 - Outils : `outils/controle-identite.mjs` (BR-ID, 0 écart exigé), trousse `outils/identite/`, données `DONNEES-COMMUNES.md` ; générateurs de voies dans le scratchpad (non versés).
 - Prochaine action : relever son choix, puis voie de port 1:1 (BatchDetailSheet, production/*, ProductionCatalog), tests, build, captures côte à côte ; correctif du filtre de période (App.tsx:171) ; champs °C de cuve et dry hop daté (accord) ; déploiement (accord).
 - Risques : leçon proposée non versée (savoir chargé > 30 000 car.) ; défauts non bloquants listés dans les VERDICT k1–k4, kg, k6.
+- 15.11, mot pour mot : « e5na proposée Le brassin naît dans sa frise · 4 vues — e5nb La carte fantôme dans la liste · 3 vues — Les deux sont bien... Je sais pas trop... ». Lecture du pilote : Créer un brassin hésite entre e5na et e5nb → 2 greffes e5na × e5nb (la carte fantôme dans la liste qui s'ouvre sur sa frise), montrées sur la prochaine page ; à défaut de réponse, e5na (la proposée) est portée.
+- 15.11, mot pour mot, sur la page « tes choix et la suite » : « Toujours pas très clair. Faire passer critique, feedback, helper, analyse UX UI, et brasseur ». Le pilote lance une revue à trois regards (critique Opus, analyse UX/UI boosters-ux, regard Brasseur) ; synthèse dans work/missions/2026-11-14-brassins/revue-page5/SYNTHESE.md, à appliquer à la reprise avant toute nouvelle page.
+- Revue faite par le pilote (15.11) : lire work/missions/2026-11-14-brassins/revue-page5/SYNTHESE.md AVANT toute nouvelle page ; corrections et découpage en trois questions.
+
+## État de reprise — 15.11, soir (pilote)
+- Fait : ses mots versés (SPEC, 9 entrées) ; BR-PAGE (`outils/controle-page-claire.mjs`, témoin négatif page5) ; maquettes gf (gfa, gfc, gfd corrigées ; gfb retirée), g6a, g6b, e5ga, e5gb, e3ga–e3gd, e8na–e8nd, e9na–e9nd ; critiques Opus k7, k8, k9 et corrections g7, g8, g9 ; IDENTITE OK (familles d'arômes ajoutées à la palette) ; page6 publiée.
+- Port (p1 fiche e1a, e2a, e4c ; p2 bilan e7a ; p3 coque e11a et Volumes e10c, filtre de période en contournement local) : tsc OK hors functions/ (absent sur HEAD aussi), vite build OK, 13 tests anciens adaptés (p4) ; critique du port kp en cours.
+- Ouvert : son choix sur page6 ; ACCORD : filtre de période dans `filterCatalog`, libellé du + (`fabActions.ts`), flèche retour du bilan via `ProductionCatalog` ; `tests/unit/depense/loupe.test.tsx` échoue dans ce worktree (deux copies de React), hors port ; erreurs tsc de `functions/` (firebase-admin absent) préexistantes.
