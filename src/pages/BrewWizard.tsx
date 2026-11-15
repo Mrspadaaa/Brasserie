@@ -130,6 +130,7 @@ import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesig
 import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState, type WaterChangeIntent } from '../ui/SaltSolver';
+import { useWaterPreload } from '../ui/water/useWaterPreload';
 import { BrewerChat } from '../ui/BrewerChat';
 import { RECIPE_FIELDS } from '../../functions/src/brewerContext';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
@@ -2309,6 +2310,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     </nav>
   ) : undefined;
 
+  // Ce que la recette sait déjà et que l'eau ignorait ; le même objet nourrit l'onglet Eau et son préchargement.
+  const waterBrew = {
+    style,
+    targetPh: details.waterPlan?.targetPh,
+    nolo: details.nolo, styleRef: details.styleRef,
+    grist: grains,
+    totalGristKg: totalGrist,
+    hops,
+    ibu,
+    og: ogPredicted,
+    volumes: suggestedVolumes,
+    equipment: brewhouse?.equipment,
+    preferences: brewhouse?.preferences,
+    boilMin
+  };
+  // Préchargement : l'analyse de l'eau part dès que la recette est connue, avant l'ouverture de l'onglet Eau (15.11, « moins de 2 secondes… assez lent »).
+  useWaterPreload({ source: waterSource, beerEbc: color?.ebc ?? null, beerVolumeL: volumeL, brew: waterBrew, state: water },
+    step !== 'eau' && !(details.nolo?.enabled && details.nolo.process === 'secondRunnings'));
+
   return (
     <PageShell
       // Un seul nom d'écran, celui de sa maquette, à toutes les largeurs (B1 n° 10) : « Fermentescibles 2/7 » (le même haut d'écran qu'au téléphone, `WizardStepName`),
@@ -3106,20 +3126,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
              * sortent les volumes. Chaque champ est vivant — changer un malt,
              * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
              */
-            brew={{
-              style,
-              targetPh: details.waterPlan?.targetPh,
-              nolo: details.nolo, styleRef: details.styleRef,
-              grist: grains,
-              totalGristKg: totalGrist,
-              hops,
-              ibu,
-              og: ogPredicted,
-              volumes: suggestedVolumes,
-              equipment: brewhouse?.equipment,
-              preferences: brewhouse?.preferences,
-              boilMin
-            }}
+            brew={waterBrew}
             onMashRatioChange={(lPerKg) => {
               setMashRatioOverride(lPerKg);
               // Le ratio REPREND la main sur les volumes : c'est une consigne,

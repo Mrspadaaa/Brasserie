@@ -21,7 +21,9 @@ export class WaterAnalysisTransport {
   private watchdog: ReturnType<typeof setTimeout> | undefined;
   private raceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  constructor(createWorker: () => AnalysisWorker, private readonly publish: (outcome: WaterAnalysisOutcome) => void) {
+  /** `race: false` : le préchargement n'attend personne, il ne bloque donc pas l'écran avec un calcul sur place pendant que le worker travaille. */
+  constructor(createWorker: () => AnalysisWorker, private readonly publish: (outcome: WaterAnalysisOutcome) => void,
+    private readonly options: { race?: boolean } = {}) {
     try {
       this.worker = createWorker();
       this.worker.onmessage = event => this.receive(event.data);
@@ -56,7 +58,7 @@ export class WaterAnalysisTransport {
    * réponse publiée gagne, l'autre est ignorée (`settledKey`). Une fois le worker éveillé, il reste seul maître : une frappe ne bloque plus l'écran.
    */
   private raceInPlace(): void {
-    if (this.disposed || !this.worker || this.answered) return;
+    if (this.disposed || !this.worker || this.answered || this.options.race === false) return;
     if (this.raceTimer !== undefined) clearTimeout(this.raceTimer);
     this.raceTimer = setTimeout(() => {
       this.raceTimer = undefined;
