@@ -508,18 +508,18 @@ describe('La part d’osmosée se saisit aussi en litres', () => {
     const coupe = screen.getByText('Coupe à l’osmosée').parentElement!;
     expect(litres()).toHaveValue('13,2');
     expect(within(coupe).getByText('8,8')).toBeVisible();
-    expect(coupe).toHaveTextContent(/Osmosée 20,1 L\s*·\s*Réseau 13,4 L\s*·\s*Total 33,5 L/);
-    expect(screen.getByRole('button', { name: /^Rinçage identique · 11,5 L\s*délier$/ })).toBeVisible();
+    expect(coupe).toHaveTextContent(/Osmosée 20,1 L\s*Réseau 13,4 L\s*Total 33,5 L/);
+    expect(screen.getByRole('button', { name: /^Rinçage identique · 11,5 L$/ })).toBeVisible();
 
     const pct = screen.getByLabelText(/Osmosée — empâtage$/i);
     fireEvent.change(pct, { target: { value: '60,25' } });
     fireEvent.blur(pct);
     expect(screen.getByText(/coupée à 60,25 % d’osmosée/)).toBeVisible();
     expect(litres()).toHaveValue('13,3');
-    expect(coupe).toHaveTextContent(/Osmosée 20,2 L\s*·\s*Réseau 13,3 L\s*·\s*Total 33,5 L/);
+    expect(coupe).toHaveTextContent(/Osmosée 20,2 L\s*Réseau 13,3 L\s*Total 33,5 L/);
 
-    fireEvent.click(screen.getByRole('button', { name: /Rinçage identique/ }));
-    expect(screen.getByRole('button', { name: /^Rinçage réglé à part\s*relier à 60,25 %$/ })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Rinçage réglé à part' }));
+    expect(screen.getByRole('button', { name: /^Rinçage identique — relier à 60,25 %$/ })).toBeVisible();
     expect(screen.getByLabelText(/Osmosée — rinçage$/i)).toHaveValue('60,25');
     expect(screen.getByLabelText(/Volume d’eau d’empâtage/i)).toHaveValue('22');
     expect(screen.getByLabelText(/Volume d’eau de rinçage/i)).toHaveValue('11,5');
@@ -567,7 +567,7 @@ describe('Les motifs numériques de la dilution restent lisibles sans modifier l
     expect(message).toHaveTextContent('(seuil 0,3)');
     expect(message).toHaveTextContent('49,999 ppm pour 50,5–100,25 visés');
     expect(message).not.toHaveTextContent(/\d\.\d/);
-    if (currentPct > 65) expect(message).toHaveTextContent('Coupe en place 70,13 %, minimum 65 %');
+    if (currentPct > 65) expect(message.closest('details')).toHaveTextContent('Coupe en place 70,13 %, minimum 65 %');
     expect(screen.getByRole('button', { name: /Minimum trouvé d’osmosée/ }).hasAttribute('disabled')).toBe(!feasible);
     expect(props.justEnough).toEqual(before);
     expect(props.onChange).not.toHaveBeenCalled();
@@ -939,7 +939,7 @@ describe('Rien de la PROPOSITION ne se lit comme un fait', () => {
      * Le texte est coupé par l'interpolation JSX du pourcentage : `getByText`
      * ne le voit pas d'un bloc. On lit donc le paragraphe entier.
      */
-    const phrase = [...container.querySelectorAll('p')]
+    const phrase = [...container.querySelectorAll('details')]
       .map((p) => p.textContent ?? '')
       .find((t) => /Coupe en place/.test(t));
     expect(phrase).toMatch(/Coupe en place 90 %/);

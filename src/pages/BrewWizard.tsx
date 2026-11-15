@@ -3131,51 +3131,39 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             profileMode={waterProfileMode.current}
             noSparge={spargeType === 'none'}
             onNoSpargeChange={setNoSparge}
+            sousVolumes={volumesStale && (
+              /* w1b : UNE ligne sous les deux cuves (le brasseur recale là où il lit les volumes). */
+              <button
+                type="button"
+                data-action="recaler-volumes"
+                onClick={() =>
+                  setWater((w) => ({
+                    ...w,
+                    mashWaterL: suggestedVolumes.mashWaterL,
+                    spargeWaterL: suggestedVolumes.spargeWaterL
+                  }))
+                }
+                className="ew-recal"
+              >
+                <AlertTriangle size={16} aria-hidden="true" />
+                <span>Le calcul donne <b>{formatDecimal(suggestedVolumes.mashWaterL)} / {formatDecimal(suggestedVolumes.spargeWaterL)} L</b></span>
+                <em>recaler</em>
+              </button>
+            )}
           />}
 
-          {(!details.nolo?.enabled||details.nolo.process!=='secondRunnings') && volumesStale && (
+          {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. w1b : un lien souligné, au pied. */}
+          <div className="ew">
             <button
               type="button"
-              onClick={() =>
-                setWater((w) => ({
-                  ...w,
-                  mashWaterL: suggestedVolumes.mashWaterL,
-                  spargeWaterL: suggestedVolumes.spargeWaterL
-                }))
-              }
-              className="w-full mb-2 px-2 py-1.5 rounded-control border border-ebc-amber/40
-                         bg-ebc-amber/10 text-left flex items-center gap-1.5"
+              data-action="retour-fiche"
+              onClick={() => setStep('recap')}
+              className="ew-fl"
             >
-              {/*
-                ⚠️ UNE ligne. Le bandeau en faisait cinq et disait trois fois la
-                même chose : le titre annonçait l'écart, le corps répétait les
-                volumes saisis (qui sont dans les champs, deux centimètres plus
-                bas), puis rappelait pourquoi les sels se dosent au litre. Ne
-                reste que ce qu'on ne peut PAS lire ailleurs — les volumes que
-                le calcul propose — et le geste pour les prendre.
-              */}
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-ebc-amber" />
-              <span className="min-w-0 flex-1 text-sm text-cave-200 leading-snug">
-                Le calcul donne{' '}
-                <span className="reading text-ebc-amber">
-                  {formatDecimal(suggestedVolumes.mashWaterL)} / {formatDecimal(suggestedVolumes.spargeWaterL)} L
-                </span>
-              </span>
-              <span className="shrink-0 text-sm text-ebc-amber font-medium">recaler</span>
+              <ClipboardList size={16} aria-hidden="true" />
+              Retour à la fiche de brassage
             </button>
-          )}
-
-          {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. */}
-          <button
-            type="button"
-            onClick={() => setStep('recap')}
-            className="w-full mt-4 min-h-touch rounded-control border border-cave-700
-                       text-cave-200 text-sm flex items-center justify-center gap-2
-                       transition-colors hover:bg-cave-850"
-          >
-            <ClipboardList className="w-4 h-4" />
-            Retour à la fiche de brassage
-          </button>
+          </div>
         </div>
       )}
 

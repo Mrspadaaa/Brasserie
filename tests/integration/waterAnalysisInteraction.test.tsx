@@ -78,7 +78,7 @@ describe('Manual water input while background advice is still running', () => {
     fireEvent.change(sparge(), { target: { value: '5,2' } });
     checkSparge(5.2);
     expect(osmosis()).toBeDisabled();
-    expect(osmosis()).toHaveTextContent('Calcul…');
+    expect(osmosis()).toHaveTextContent('—');
     expect(solve).not.toHaveBeenCalled();
     expect(search).not.toHaveBeenCalled();
     expect(worker.requests).toHaveLength(1); // Coalesced behind the old running job.
@@ -93,7 +93,7 @@ describe('Manual water input while background advice is still running', () => {
 
     worker.answer(oldRequest);
     expect(osmosis()).toBeDisabled();
-    expect(osmosis()).toHaveTextContent('Calcul…');
+    expect(osmosis()).toHaveTextContent('—');
     expect(worker.requests).toHaveLength(2);
     expect(worker.requests[1].input.dilution.acidOverride?.sparge).toBe(5.2);
     checkSparge(5.2);
@@ -101,7 +101,7 @@ describe('Manual water input while background advice is still running', () => {
     expect(profile()).toHaveTextContent('Profil atteint : 6/6');
 
     worker.answer(worker.requests[1]);
-    expect(osmosis()).not.toHaveTextContent('Calcul…');
+    expect(osmosis()).not.toHaveTextContent('—');
     expect(retained.doses).toEqual(weighed);
     checkSparge(5.2);
   });
@@ -111,12 +111,12 @@ describe('Manual water input while background advice is still running', () => {
     const worker = HeldWorker.instances[0];
     worker.answer(worker.requests[0]);
     expect(osmosis()).toBeEnabled();
-    expect(osmosis()).not.toHaveTextContent('Calcul…');
+    expect(osmosis()).not.toHaveTextContent('—');
 
     fireEvent.change(sparge(), { target: { value: '5,2' } });
     checkSparge(5.2);
     expect(osmosis()).toBeDisabled();
-    expect(osmosis()).toHaveTextContent('Calcul…');
+    expect(osmosis()).toHaveTextContent('—');
     fireEvent.click(osmosis());
     expect(retained.diRatioPct).toBe(20);
     expect(retained.spargeDiRatioPct).toBe(20);
@@ -127,7 +127,7 @@ describe('Manual water input while background advice is still running', () => {
     checkSparge(5.7);
     worker.answer(stale);
     expect(osmosis()).toBeDisabled();
-    expect(osmosis()).toHaveTextContent('Calcul…');
+    expect(osmosis()).toHaveTextContent('—');
     expect(retained.diRatioPct).toBe(20);
     expect(worker.requests.at(-1)!.input.dilution.acidOverride?.sparge).toBe(5.7);
   });
