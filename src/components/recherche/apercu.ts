@@ -1,6 +1,6 @@
 import type { StockItem, Recipe, Transaction } from '../../types';
 import { Units } from '../../services/units';
-import type { TypeResultat } from './modele';
+import { dateCourte, type TypeResultat } from './modele';
 
 /**
  * L'aperçu d'un article au 1280 : ce que l'app sait, rien d'autre. Un seuil non renseigné, une α inconnue, un achat jamais saisi
@@ -60,7 +60,7 @@ export function apercuArticle(item: StockItem, recettes: ReadonlyArray<Recipe>, 
   const achat = dernierAchat(item, ecritures);
   if (achat) {
     const qte = achat.quantite !== undefined && achat.unite ? `${Units.format(achat.quantite, achat.unite)} · ` : '';
-    emplois.push({ texte: `Dernier achat${achat.fournisseur ? ` · ${achat.fournisseur}` : ''}`, valeur: `${qte}${achat.date}`, type: 'ecriture' });
+    emplois.push({ texte: `Dernier achat${achat.fournisseur ? ` · ${achat.fournisseur}` : ''}`, valeur: `${qte}${dateCourte(achat.date)}`, type: 'ecriture' });
   }
   return { sousTitre: [item.category, item.supplier].filter(Boolean).join(' · ') || undefined, chiffres, emplois };
 }

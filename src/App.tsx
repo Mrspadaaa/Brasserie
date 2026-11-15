@@ -30,7 +30,7 @@ import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { plusMenuFor, type PlusCle } from './domain/plusEcran';
 import { joursDepuisBrassage } from './domain/productionInsights';
 import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
-import type { DestinationId } from './components/recherche/modele';
+import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
 import { INVENTORY_REASONS } from './services/storage';
 import { nextBatchId, nextRef } from './services/refs';
 import { batchDisplayDate } from './domain/batchSchedule';
@@ -945,7 +945,9 @@ export const App: React.FC = () => {
       items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
         id: `tx-${t.id}`,
         label: t.description,
-        detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
+        // r3p2 : la date et la première ligne en détail (« 09.11 · Citra T90 1 kg »), le montant à droite ; sans ligne reliée, la sous-catégorie.
+        detail: [dateCourte(t.date), resumeLigneEcriture(t) ?? t.subcategory].filter(Boolean).join(' · '),
+        valeur: `${montantChf(t.amountTTC)} CHF`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: motsCleEcriture(t),
         archived: isTransactionArchived(t, financialArchiveIndex),

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { plusMenuFor } from '../../src/domain/plusEcran';
 import {
-  classer, destinationsAllerA, gestesIci, lireRecents, noterRecent, rang, segmentsNombres, surligner, typeDeId, typePrioritaire
+  classer, dateCourte, destinationsAllerA, gestesIci, lireRecents, noterRecent, rang, resumeLigneEcriture, segmentsNombres, surligner, typeDeId, typePrioritaire
 } from '../../src/components/recherche/modele';
 import { apercuArticle, dernierAchat, formaterAlpha, recettesQuiEmploient } from '../../src/components/recherche/apercu';
 import type { Recipe, StockItem, Transaction } from '../../src/types';
@@ -108,5 +108,25 @@ describe('recherche — aperçu d’un article : seulement ce que l’app sait',
   });
   it('aucune recette, aucun achat : aucun emploi inventé', () => {
     expect(apercuArticle(item, [], []).emplois).toEqual([]);
+  });
+});
+
+describe('recherche — date courte d’une écriture', () => {
+  const maintenant = new Date('2026-11-15T10:00:00');
+  it('jour.mois dans l’année courante, jour.mois.aa sinon', () => {
+    expect(dateCourte('2026-11-09', maintenant)).toBe('09.11');
+    expect(dateCourte('2024-03-04', maintenant)).toBe('04.03.24');
+  });
+  it('une date illisible reste telle quelle', () => {
+    expect(dateCourte('hier soir', maintenant)).toBe('hier soir');
+  });
+});
+
+describe('recherche — première ligne d’une écriture', () => {
+  it('description et quantité quand elles existent, rien d’inventé sinon', () => {
+    expect(resumeLigneEcriture({ finance: { lines: [{ description: 'Citra T90', quantity: 1, unit: 'kg' }] } })).toBe('Citra T90 1 kg');
+    expect(resumeLigneEcriture({ finance: { lines: [{ description: 'Transport' }] } })).toBe('Transport');
+    expect(resumeLigneEcriture({})).toBeUndefined();
+    expect(resumeLigneEcriture({ finance: { lines: [] } })).toBeUndefined();
   });
 });

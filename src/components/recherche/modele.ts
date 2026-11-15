@@ -242,3 +242,25 @@ export function segmentsNombres(texte: string): SegmentNombre[] {
   if (fin < texte.length) segments.push({ t: texte.slice(fin), nombre: false });
   return segments;
 }
+
+/**
+ * Date d'une écriture dans une ligne de résultat (r3p2 : « 09.11 ») : jour.mois dans l'année courante, jour.mois.aa sinon.
+ * Une date que l'on ne sait pas lire reste telle quelle (jamais une date inventée).
+ */
+export function dateCourte(date: string, maintenant: Date = new Date()): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date);
+  if (!m) return date;
+  const jourMois = `${m[3]}.${m[2]}`;
+  return Number(m[1]) === maintenant.getFullYear() ? jourMois : `${jourMois}.${m[1].slice(2)}`;
+}
+
+/**
+ * La première ligne reliée d'une écriture, pour le détail d'un résultat (r3p2 : « Citra T90 1 kg »). Sans ligne : `undefined`,
+ * l'appelant garde la sous-catégorie ; une quantité ou une unité inconnue n'est pas écrite.
+ */
+export function resumeLigneEcriture(t: { finance?: { lines?: ReadonlyArray<{ description?: string; quantity?: number; unit?: string }> } }): string | undefined {
+  const ligne = t.finance?.lines?.[0];
+  if (!ligne?.description) return undefined;
+  const qte = ligne.quantity !== undefined && Number.isFinite(ligne.quantity) && ligne.unit ? `${ligne.quantity} ${ligne.unit}` : undefined;
+  return [ligne.description, qte].filter(Boolean).join(' ');
+}
