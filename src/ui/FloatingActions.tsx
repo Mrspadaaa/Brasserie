@@ -173,8 +173,11 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     return () => document.removeEventListener('pointerdown', outside);
   }, [open]);
 
+  /* Le focus va à la première ligne à l'ouverture ; l'anneau ne se voit que si le + a été activé au clavier
+     (un toucher ou un clic ne laisse pas d'anneau noir sur « Sur cet écran »). */
+  const ouvertAuClavier = React.useRef(false);
   React.useEffect(() => {
-    if (open) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    if (open) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus({ focusVisible: ouvertAuClavier.current } as FocusOptions);
   }, [open]);
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -271,8 +274,9 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           : 'Actions rapides'}
         title="Actions rapides"
         onKeyDown={(event) => { if (event.key === 'Escape' && open) { event.preventDefault(); close(); } }}
-        onClick={() => {
+        onClick={(event) => {
           if (open) { close(false); return; }
+          ouvertAuClavier.current = event.detail === 0;
           const rect = buttonRef.current?.getBoundingClientRect();
           setPlacement(rect && rect.top < window.innerHeight / 2 ? 'bottom' : 'top');
           setOpen(true);

@@ -167,7 +167,7 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
                 const I = ICONES[e.cle];
                 return (
                   <button key={e.cle} type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)}
-                    className={`${BOUTON} h-16 px-2 py-[7px] rounded-[10px] bg-cave-900 border border-cave-800 text-cave-50 flex flex-col gap-[3px] overflow-hidden whitespace-nowrap leading-[1.15]`}>
+                    className={`${BOUTON} min-h-16 px-2 py-[7px] rounded-[10px] bg-cave-900 border border-cave-800 text-cave-50 flex flex-col gap-[3px] overflow-hidden whitespace-nowrap leading-[1.15]`}>
                     <I size={20} aria-hidden="true" className={`shrink-0 ${TON[e.ton].texte}`} />
                     <span className="text-sm">{e.label}</span>
                     {e.hint && <span className="-mt-[3px] text-footnote leading-[14px] text-cave-400 truncate">{e.hint}</span>}
