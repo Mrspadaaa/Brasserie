@@ -1,20 +1,25 @@
-# Gates: voie s1 — Série A — La cuve d'abord
+# Gates: voie s1 — Port du carnet de recettes (r2a), et du geste « Brasser » de c2a
 
-OWNS: work/missions/2026-11-14-brassins/voies/s1/
+OWNS: src/ui/production/recettes/, src/ui/production/ProductionCatalog.tsx, src/components/tabs/ProductionTab.tsx, src/domain/fabActions.ts, tests/unit/port-s1-, work/missions/2026-11-14-brassins/voies/s1/
 
-Scope: 5 mini maquettes statiques, repos et après un geste.
+Scope: maquettes r2a, c2a portées telles quelles, typées, testées, capturées côte à côte.
 
-- [ ] G1: 5 variantes, chacune avec repos, geste et NOTE.md portant sa chaleur
-  CHECK: node -e "const fs=require('fs'),d='work/missions/2026-11-14-brassins/voies/s1';const v=fs.readdirSync(d).filter(x=>/^s1[a-e]$/.test(x));const ok=v.length===5&&v.every(x=>{const f=fs.readdirSync(d+'/'+x);return f.some(n=>n.includes('repos-390'))&&f.some(n=>n.includes('geste-390'))&&/froide|tiède|chaude/.test(fs.readFileSync(d+'/'+x+'/NOTE.md','utf8'))});console.log(ok?'SERIE OK':'SERIE KO '+v.join(','))"
-  EXPECT: SERIE OK
+- [ ] G1: types
+  CHECK: node -e "const r=require('child_process').spawnSync('npx tsc --noEmit',{shell:true}).stdout.toString().split(String.fromCharCode(10)).filter(l=>/error TS/.test(l)&&!l.startsWith('functions/'));console.log(r.length?'TSC KO '+r.length:'TSC OK')"
+  EXPECT: TSC OK
   EVIDENCE: pending
 
-- [ ] G2: deux listes, deux caves, deux 1280, au moins deux chaudes
-  CHECK: node -e "const fs=require('fs'),d='work/missions/2026-11-14-brassins/voies/s1';const all=fs.readdirSync(d).filter(x=>/^s1[a-e]$/.test(x)).flatMap(x=>fs.readdirSync(d+'/'+x));const n=k=>all.filter(f=>f.includes(k)&&f.endsWith('.png')).length;const ch=fs.readdirSync(d).filter(x=>/^s1[a-e]$/.test(x)).filter(x=>/chaude/.test(fs.readFileSync(d+'/'+x+'/NOTE.md','utf8'))).length;console.log(n('liste-390')>=2&&n('-cave')>=2&&n('-1280')>=2&&ch>=2?'ETATS OK':'ETATS KO')"
-  EXPECT: ETATS OK
+- [ ] G2: tests du port
+  CHECK: npx vitest run port-s1 --reporter=dot && echo TESTS OK
+  EXPECT: TESTS OK
   EVIDENCE: pending
 
-- [ ] G3: aucune écriture hors de la mission
-  CHECK: node -e "const o=require('child_process').execSync('git status --short').toString().split('\n').filter(Boolean).filter(l=>!l.includes('work/missions/2026-11-14-brassins/'));console.log(o.length?'HORS KO '+o.join(' | '):'HORS OK')"
+- [ ] G3: captures de l'app pour chaque maquette, inventaire écrit
+  CHECK: node -e "const fs=require('fs'),d='work/missions/2026-11-14-brassins/voies/s1';const c=fs.existsSync(d+'/captures')?fs.readdirSync(d+'/captures'):[];const miss=['r2a','c2a'].filter(v=>!c.some(f=>f.startsWith(v+'-')&&f.includes('-app-390-clair')));console.log(!miss.length&&fs.existsSync(d+'/INVENTAIRE.md')?'CAPTURES OK':'CAPTURES KO '+miss.join(','))"
+  EXPECT: CAPTURES OK
+  EVIDENCE: pending
+
+- [ ] G4: aucune écriture hors de la voie
+  CHECK: node -e "const ok=['src/ui/production/recettes/','src/ui/production/ProductionCatalog.tsx','src/components/tabs/ProductionTab.tsx','src/domain/fabActions.ts','tests/unit/port-s1-'].concat(['work/missions/2026-11-14-brassins/voies/s1/','work/missions/2026-11-14-brassins/']);const o=require('child_process').execSync('git status --short src').toString().split(String.fromCharCode(10)).filter(Boolean).map(l=>l.slice(3)).filter(f=>!ok.some(k=>f.startsWith(k)));console.log(o.length?'HORS ? '+o.join(' | '):'HORS OK')"
   EXPECT: HORS OK
   EVIDENCE: pending

@@ -1,45 +1,47 @@
-# Voie s1 — Série A — La cuve d'abord (mini maquettes v0)
+# Voie s1 — Port du carnet de recettes (r2a), et du geste « Brasser » de c2a
 
-- Mission : 2026-11-14-brassins
-- Agent : concepteur
-- Modèle : opus (Fable interdit)
-- Niveau : conception
-- Plafond : 60 tours ; 3 essais par critère
-- Dépend de : a1, a2, jury
-- Décideur en cas de doute : brasseur (il choisit sur la page)
+- Mission : 2026-11-14-brassins · Agent : auteur · Modèle : sonnet · Niveau : code · Plafond : 70 tours · Dépend de : son choix (fait) · Décideur : pilote
 
 ## Objectif
-5 mini maquettes statiques (non jouables) de la série A — La cuve d'abord : la courbe en jours EST l'écran : densité qui descend vers la bande de FG, °C de cuve face à la consigne, jalons (dry hop, repos, garde) posés sur l'axe des jours ; le relevé part de la courbe.
+Ses choix (15.11, mot pour mot dans `work/refonte-frontend/v4/SPEC-BRASSEUR.md`) : « Recettes : r2a » = r2a, le sous-onglet Recettes : prête ou il manque, Brasser ; « Créer : c2a » = c2a, créer un brassin d'un toucher, chaque effet annulable.
+Règle n° 1 (CLAUDE.md) : « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » Porter chaque maquette TELLE QUELLE
+dans l'app, chaque état et chaque geste, branchée sur les vraies données et le vrai code (L03, L11) : ce qu'elle n'a pas, le port le retire.
+
+## État de l'art
+Port d'interface sans algorithme neuf : composants, jetons (`src/theme/themes.css`) et fonctions du domaine existants (`src/domain/batch*.ts`,
+`src/services/batchSchedule.ts`) réutilisés ; aucun calcul réécrit (L29).
 
 ## Entrées
-- `work/missions/2026-11-14-brassins/BRIEF-AUTEUR.md` — tout ce qu'il faut ; le lire en entier d'abord.
-- `work/missions/2026-11-14-brassins/jury-brassins/fiche.md` — tranché, hypothèses du pilote, axes.
-- `work/missions/2026-11-14-brassins/voies/a2-ecran/VERDICT.md` — § « Pour les maquettes ».
-- Skills `boosters-ux`, `impeccable`, `ui-design-system` (Skill, une fois) ; `DESIGN.md` (Colors, Typography, Layout).
+- r2a : `work/missions/2026-11-14-brassins/voies/r2/r2a/etat.html` (la source), ses PNG (Read, chaque état), `NOTE.md` ; défauts non bloquants restants dans `work/missions/2026-11-14-brassins/voies/k1/VERDICT.md`, `k2`, `k3`, `k4` (§ r2a).
+- c2a : `work/missions/2026-11-14-brassins/voies/c2/c2a/etat.html` (la source), ses PNG (Read, chaque état), `NOTE.md` ; défauts non bloquants restants dans `work/missions/2026-11-14-brassins/voies/k1/VERDICT.md`, `k2`, `k3`, `k4` (§ c2a).
+- Identité : `work/missions/2026-11-14-brassins/outils/identite/LISEZMOI.md` (les classes de la maquette correspondent aux jetons de l'app) ; DESIGN.md ; `.claude/rules/affinee-frontend.md` (une fois).
+- Inventaire du code actuel : `work/missions/2026-11-14-brassins/voies/cv/COUVERTURE.md` (fichier:ligne par vue), `work/missions/2026-11-14-brassins/voies/a1-banc/TROUS.md`.
+- Banc local : `work/missions/2026-11-14-brassins/voies/a1-banc/banc.mjs` et `fixtures.json` (5 brassins « ZZ ») ; vérification locale : `cerveau/agents/verification-locale.md`.
 
 ## Possède (seuls chemins où écrire, avec RESULTAT.md)
-- `work/missions/2026-11-14-brassins/voies/s1/` : un dossier par variante `s1a` à `s1e` (`etat.html`, PNG, `NOTE.md`).
-Rien dans `src/`. Ni commit ni stash. Fichiers de travail : ton OWNS ou `os.tmpdir()`.
+- `src/ui/production/recettes/`, `src/ui/production/ProductionCatalog.tsx (branche recettes seulement)`, `src/components/tabs/ProductionTab.tsx`, `src/domain/fabActions.ts`, `tests/unit/port-s1-`, et `work/missions/2026-11-14-brassins/voies/s1/` (`RESULTAT.md`, `tests.txt`, `INVENTAIRE.md`, `captures/`, ta copie du banc).
+- Hors de ta voie, en lecture seule : La feuille « Brasser » et son choix de date : à revoir (« Mais bien revoir cette écran notamment pour la sélection de date », 15.11), des versions lui sont montrées : en attendant, « Brasser » ouvre la feuille de préparation actuelle de l'app, sans la changer. La liste des brassins (e6a, portée), la fiche, l'assistant de recette (autre session), le Stock (autre session : lecture seule pour « prête ou il manque »). Seule voie de code en cours.
+- Jamais : `firestore.rules`, `firebase.json`, `firestore.indexes.json`, `.firebaserc`, `functions/.env`, `.codex/hooks.json`, le manifeste source4 ; aucun champ Firestore neuf (une donnée que la maquette montre et que le modèle n'a pas : « non mesurée » ou absente, et une ligne « ACCORD : … » dans RESULTAT.md) ; ni commit, ni stash, ni déploiement.
 
 ## Consignes
-- 5 variantes, toutes différentes et pas déclinées l'une de l'autre : 1 froide, 2 tièdes, 2 chaudes (une chaude mêle ton axe à un
-  autre). Autres séries (ne pas les refaire) : s2 : B — Le prochain geste d'abord ; s3 : C — L'écart au prévu.
-- Images par variante : `<id>-repos-390-clair.png`, `<id>-geste-390-clair.png` ; deux variantes ajoutent `<id>-liste-390-clair.png` ;
-  tes deux meilleures ajoutent `<id>-repos-390-cave.png` et `<id>-repos-1280-clair.png`. Rendu : puppeteer-core
-  (`.claude/skills/webapp-testing/SKILL.md`), 390 × 844 avec `isMobile` et `hasTouch`.
-- Environ 10 tours par variante ; la fidélité fine vient en passe 2.
+- Les dépendances se résolvent depuis le node_modules du dossier parent du dépôt (le banc tourne). Les erreurs tsc de `functions/` existent sur HEAD : ignorées. Tests d'intégration des fichiers touchés rejoués et adaptés (maquette gagne, intention métier gardée). Économise le contexte : fichiers par sections, sorties filtrées, chaque PNG une fois.
+1. `INVENTAIRE.md` d'abord : pour chaque maquette, chaque élément visible et chaque geste (L03), avec où il vit dans le code (existe / à créer / à retirer).
+2. Porter ; Vitest pour les règles (`tests/unit/port-s1-*.test.tsx`), peu de fixtures ; tests existants des fichiers touchés rejoués.
+- Stock : « prête ou il manque » se calcule depuis le stock et les réservations existants, en lecture seule ; aucun champ neuf. Le chiffre faux corrigé de r2a : il manque 250 g de Citra pour la NEIPA (100 g réservés au LOT-019).
+3. Captures : copie `banc.mjs` dans `work/missions/2026-11-14-brassins/voies/s1/`, serveur sur le port 3121 (`node scripts/with_server.mjs --server "npm run dev -- --port 3121 --strictPort" --port 3121 -- node work/missions/2026-11-14-brassins/voies/s1/banc.mjs`),
+   seulement tes vues ; pour chaque état de chaque maquette : `captures/<id>-<état>-app-390-clair.png`, plus cave et 1280 au repos. Ouvre chaque capture (Read) à
+   côté de la PNG de la maquette ; liste numérotée des écarts restants dans RESULTAT.md (« combien et quels problèmes ? », D344), puis corrige.
+4. Pas de `npm run build` (les autres voies tournent) : `npx tsc --noEmit` et Vitest ; le pilote fait le build.
 
 ## Exigences transversales et acquis (recopiés, leçons L05 et L06)
-- Baseline du brief (geste m2, z1, J+n depuis le levurage, deux températures, FG en bande, dry hop nommé et fusionné au stock,
-  premier plan actionnable, pas de cockpit) ; inconnu = « — » ; chiffres à la virgule ; cibles ≥ 44 px ; deux thèmes.
-- Hypothèses du pilote : recopiées de `jury-brassins/fiche.md` § « Hypothèses du pilote » (les lire, elles lient).
+- Saisie au curseur (m2), jamais `type="number"` ; chiffres à la virgule ; inconnu dit en mots ; cibles ≥ 44 px ; deux thèmes ; 390 tactile et 1280 ;
+  hors ligne préservé ; pas de cockpit ; Gemini jamais réel dans un test.
 
 ## Critères
-Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depuis la racine du dépôt.
+`work/missions/2026-11-14-brassins/voies/s1/GATES.md`, depuis la racine du dépôt. Ne pas le modifier.
 
 ## Rendre
-- `RESULTAT.md` tenu au fil (tous les 5 éléments) : variantes, chaleur, idée, images ouvertes.
-- La ligne « Tests » écrite dans un fichier : aucune suite Vitest ici (rien dans `src/`) ; `tests.txt` porte la sortie des CHECK,
-  au même format que `--reporter=dot > …`.
-- Voie d'écran : captures 390 tactile et 1280, clair et cave (selon la liste ci-dessus), toutes ouvertes.
+- `RESULTAT.md` tenu au fil ; vers 150 k de contexte, rendre « REPRISE : work/missions/2026-11-14-brassins/voies/s1/RESULTAT.md » avec ce qui reste.
+- La ligne « Tests » écrite dans un fichier : `npx vitest run port-s1 --reporter=dot > work/missions/2026-11-14-brassins/voies/s1/tests.txt`.
+- Voie d'écran : captures 390 tactile et 1280, clair et cave, toutes ouvertes.
 Réponse finale au pilote : une ligne.

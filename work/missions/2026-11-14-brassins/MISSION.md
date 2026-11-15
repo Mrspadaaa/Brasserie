@@ -130,3 +130,9 @@ Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (gr
 - Créer et Recettes : ses problèmes sourcés (`voies/a2/PROBLEMES.md`, 9 + 9), 16 maquettes v0 (c1, c2, r1, r2), quatre revues (`revue-v0/`), 8 retenues corrigées (cx, rx), page7 https://claude.ai/artifact/2KzzuYs2orjYwtfkJAzM6R (PAGE CLAIRE OK 2).
 - ACCORD en attente : tâche serveur d'IA pour ranger les notes (e3gb, e9na ; drapeau éteint) ; date d'entrée en garde (e4c) ; filtre de période dans filterCatalog (contournement local).
 - Prochaine action : son choix sur page7, puis port.
+
+## État de reprise — 15.11, tard (pilote)
+- Ses mots (SPEC) : « Créer : c2a · Recettes : r2a — Mais bien revoir cette écran notamment pour la sélection de date » ; sa capture : la feuille « Brasser » de r2a (`voies/d1/ref/`).
+- En cours : voie d1 (4 versions de la feuille « Brasser », choix de la date ; concepteur) et voie s1 (port de r2a et du geste de c2a ; « Brasser » ouvre la feuille actuelle en attendant son choix).
+- À faire ensuite : rejouer GATES d1 et s1 (`scratchpad/gates.sh`), critique Opus de d1 (gabarit `scratchpad/gen-k2.mjs`, avec la ligne « Tests » ajoutée), corrections (`gen-g.mjs`), page8 « une question » (gabarit pg7, contrôle `outils/controle-page-claire.mjs`), publier ; critique du port s1 (gabarit kq), corrections, suite Vitest contre `scratchpad/fails-head.txt`, vite build, commit.
+- ACCORD en attente : tâche serveur d'IA (rangement des notes e3gb, e9na), date d'entrée en garde (e4c), filtre de période dans filterCatalog.

@@ -1778,3 +1778,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : deuxième refus, donc changer de genre de solution (L13). Un besoin est une envie ouverte (« je veux un système d'embouteillage ») qui rassemble plusieurs solutions possibles, chacune avec sa manière, son budget et ses liens, qu'on compare puis qu'on choisit. Ce n'est ni un formulaire ni un parcours à étapes. Une mission dédiée s'en charge.)
 - **15.11**, mot pour mot, sur la page Brassins « six questions » (https://claude.ai/artifact/3f8xRStDq4kDYofi6FihRm) : « Fermentation : gfc · Filtres : e6a + e6c · Créer : aucune · Carnet : e3gb · Recettes : aucune · Atelier : e9na Refait pour celle aucune... Ça resoud aucune de mes problématique »
   (lu : gfc, e6a + e6c, e3gb et e9na choisies ; « Créer un brassin » et « Recettes » refusées en bloc : les refaire en partant de ses problèmes à lui (ses mots dans SPEC), avec un autre genre de solution (L13).)
+
+- **15.11**, mot pour mot, sur la page Brassins « deux questions refaites » (https://claude.ai/artifact/2KzzuYs2orjYwtfkJAzM6R), avec sa capture de la feuille « Brasser Blonde de soif · v4 » (r2a, après « Brasser ») : « Créer : c2a · Recettes : r2a
+
+Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a et r2a retenues ; la feuille « Brasser » de r2a est à revoir, d abord le choix de la date (Demain / Sam. 21 / Plus tard) : variantes montrées, L24 ; capture : `work/missions/2026-11-14-brassins/voies/d1/ref/sa-capture-c2a-geste.jpg`.)
