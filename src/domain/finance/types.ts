@@ -88,6 +88,10 @@ export interface FinancialPayment {
   note?: string;
   reversalOfId?: string;
   recordedAt: string;
+  /** Justificatif du virement (m5pa-d) : un seul original, rangé une fois, lié à chaque paiement du virement ; absent = payé sans justificatif. */
+  proofDocumentId?: string;
+  /** Nom lisible de ce justificatif, tel que rangé. */
+  proofFileName?: string;
 }
 export interface FinancialPlan {
   id: string;

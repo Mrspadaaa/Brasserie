@@ -1,0 +1,340 @@
+[36mvite v6.4.3 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 4081 modules transformed.
+rendering chunks...
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/RecipeAutoComplete.tsx is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/etapeLevure/useRechercheDonnee.tsx but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/BrewWizard.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastRecipeChoice.tsx, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastRecipeChoice.tsx is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/BrewWizard.tsx but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/BrewWizard.tsx, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/firestoreRepo.ts is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/backupTransfer.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/backupTransfer.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/brewerChat.ts but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/AuditLogModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/QuickActionModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/catalogOrganization.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/dataBackup.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissement.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissementRecette.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissementTravail.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financeDocuments.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financeService.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financialArchiveService.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/incomeEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/migration.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofQueue.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofUploadStatus.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/purchaseEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/recipeSave.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/storage.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/yeastDbCorrections.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/FinancialLedgerLoading.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/PersistenceStatus.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/ExpenseSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/MovementSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/TaxClosingSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/useBrewSession.ts, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/storage.ts is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/brewerChat.ts but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/App.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/CloudConfigModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/CreativeLabTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/EditClientModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/EditTransactionModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/Header.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/QuickActionModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/SettingsModal.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/tabs/ClientsTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/tabs/DashboardTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/tabs/FinancesTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/tabs/ProductionTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/tabs/StocksTab.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/design/BrewPreview.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/design/DesignPreview.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/hooks/useLiveData.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/hooks/useYeastSupply.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/BrewDayPage.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/BrewWizard.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/pages/RecipePage.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/articlesDuBrouillon.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissement.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissementTravail.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financeService.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financialArchiveService.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/hopV55/recipeStepContext.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/incomeEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/migration.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofQueue.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofUploadStatus.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/purchaseEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/recipeSave.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/suggestions.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/yeastDbCorrections.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/BatchDetailSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/BrewingStyleDetails.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/FermentationSciencePanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/FermentationWorkshop.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/HopBitternessPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/InventoryCorrectionSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/KegBoard.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/NoloFermentationWorkshop.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/NoloPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/RecipeAutoComplete.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/RecipeImportSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastBrewDayGuide.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastCataloguePanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastDbCorrectionsPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastIngredientPicker.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastPitchingPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastRecipeChoice.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastRecipeDossier.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/YeastRecipeWorkbench.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/etapeLevure/EtapeLevure.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/BrewBudgetDialog.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/ExpenseSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/FinanceForms.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/MovementSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/TransactionDetails.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/UpgradeSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/UpgradeWorkspace.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/fiche/FactureLignes.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/modifier/executerCorrection.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/previsions/Previsions.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopExtrapolationPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopIndexPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopKnowledgePanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopRecipeGuide.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopRecipeSimulationPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopRecipeWorkbench.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopTastingsPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/HopTechnicalPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/dryhopper/outilApp.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/guideData.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/maBiere/Base.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/useHopCatalogue.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopIndex/useHopData.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopV55/Host.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/prix/ChaineArgent.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/prix/PrixEcran.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/prix/donneesPrix.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/production/ImpotBiereSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/production/ProductionCatalog.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/production/impotAnnee/ImpotAnnee.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/vente/Caisse.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/vente/IdentiteBrasserie.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/vente/envoiJustificatif.ts, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/firebaseAuth.ts is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/backupTransfer.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissement.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/incomeEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofQueue.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/proofUploadStatus.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/purchaseEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/purchaseEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/mouvement/justificatif.ts but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/App.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/components/LoginPage.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/driveFileStore.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/financeDocumentMigration.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/googleDriveService.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/BackupPanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/DriveStoragePanel.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/DriveConnection.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/ExpenseSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/ProofUploadNotice.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/hopV55/Host.tsx, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissement.ts is dynamically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/enrichissementRecette.ts but also statically imported by C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/App.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/services/purchaseEntry.ts, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/StockDetailSheet.tsx, C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a/src/ui/finance/ExpenseSheet.tsx, dynamic import will not move module into another chunk.
+[39m
+computing gzip size...
+[2mdist/[22m[32mindex.html                                              [39m[1m[2m    2.04 kB[22m[1m[22m[2m │ gzip:   1.04 kB[22m
+[2mdist/[22m[32massets/decoupe.worker-DVc2L0sj.js                       [39m[1m[2m   16.04 kB[22m[1m[22m
+[2mdist/[22m[32massets/waterAnalysis.worker-7hxpbJVA.js                 [39m[1m[2m   32.19 kB[22m[1m[22m
+[2mdist/[22m[32massets/qr.worker-BiYUqZgc.js                            [39m[1m[2m   35.80 kB[22m[1m[22m
+[2mdist/[22m[32massets/zxing_reader-_HcWiliU.wasm                       [39m[1m[2m  966.90 kB[22m[1m[22m[2m │ gzip: 418.47 kB[22m
+[2mdist/[22m[32massets/calcul.worker-CeYBbiXC.js                        [39m[1m[2m1,281.21 kB[22m[1m[22m
+[2mdist/[22m[32massets/pdf.worker.min-yatZIOMy.mjs                      [39m[1m[2m1,375.84 kB[22m[1m[22m
+[2mdist/[22m[35massets/segmented-control-BpuG15Fo.css                   [39m[1m[2m    0.13 kB[22m[1m[22m[2m │ gzip:   0.12 kB[22m
+[2mdist/[22m[35massets/InventoryCorrectionSheet-BJuLP3R1.css            [39m[1m[2m    0.84 kB[22m[1m[22m[2m │ gzip:   0.42 kB[22m
+[2mdist/[22m[35massets/ProductionTab-BzR_tdKv.css                       [39m[1m[2m    0.93 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[35massets/HopRecipePanel-Oyihw4SQ.css                      [39m[1m[2m    1.09 kB[22m[1m[22m[2m │ gzip:   0.48 kB[22m
+[2mdist/[22m[35massets/BatchDetailSheet-B5VT9UJj.css                    [39m[1m[2m    1.10 kB[22m[1m[22m[2m │ gzip:   0.47 kB[22m
+[2mdist/[22m[35massets/Legende-DwRVRSoO.css                             [39m[1m[2m    1.14 kB[22m[1m[22m[2m │ gzip:   0.54 kB[22m
+[2mdist/[22m[35massets/SettingsModal-CF3KxLG5.css                       [39m[1m[2m    1.28 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2mdist/[22m[35massets/EcranApp-CRI2Z-2N.css                            [39m[1m[2m    1.29 kB[22m[1m[22m[2m │ gzip:   0.42 kB[22m
+[2mdist/[22m[35massets/outilApp-CVMQhRQH.css                            [39m[1m[2m    1.43 kB[22m[1m[22m[2m │ gzip:   0.56 kB[22m
+[2mdist/[22m[35massets/RadarBase-BdST8IzZ.css                           [39m[1m[2m    1.47 kB[22m[1m[22m[2m │ gzip:   0.61 kB[22m
+[2mdist/[22m[35massets/EcranApp-C3ywu205.css                            [39m[1m[2m    2.00 kB[22m[1m[22m[2m │ gzip:   0.72 kB[22m
+[2mdist/[22m[35massets/UpgradeWorkspace-DC70Ym-F.css                    [39m[1m[2m    2.54 kB[22m[1m[22m[2m │ gzip:   0.91 kB[22m
+[2mdist/[22m[35massets/recipe-step-B5IBRmzn.css                         [39m[1m[2m    2.97 kB[22m[1m[22m[2m │ gzip:   0.89 kB[22m
+[2mdist/[22m[35massets/HypothesisEditor-BkeCqLjx.css                    [39m[1m[2m    3.32 kB[22m[1m[22m[2m │ gzip:   0.95 kB[22m
+[2mdist/[22m[35massets/App-C1So02kM.css                                 [39m[1m[2m    3.44 kB[22m[1m[22m[2m │ gzip:   1.04 kB[22m
+[2mdist/[22m[35massets/ObservationWorkbench-DoYf2VP7.css                [39m[1m[2m    4.44 kB[22m[1m[22m[2m │ gzip:   1.10 kB[22m
+[2mdist/[22m[35massets/brew-equipment-oJT8SbOq.css                      [39m[1m[2m    4.61 kB[22m[1m[22m[2m │ gzip:   1.25 kB[22m
+[2mdist/[22m[35massets/BiologicalInputsEditor-CCPfZC8i.css              [39m[1m[2m    4.88 kB[22m[1m[22m[2m │ gzip:   1.30 kB[22m
+[2mdist/[22m[35massets/PlanningEditor-CP-nfltV.css                      [39m[1m[2m    5.38 kB[22m[1m[22m[2m │ gzip:   1.49 kB[22m
+[2mdist/[22m[35massets/ClientsTab-BkwMm7Ok.css                          [39m[1m[2m    5.61 kB[22m[1m[22m[2m │ gzip:   1.61 kB[22m
+[2mdist/[22m[35massets/BrewSystemFeedback-CJCQkKjD.css                  [39m[1m[2m    5.66 kB[22m[1m[22m[2m │ gzip:   1.30 kB[22m
+[2mdist/[22m[35massets/FicheApp-D-rBvQRE.css                            [39m[1m[2m    6.00 kB[22m[1m[22m[2m │ gzip:   1.58 kB[22m
+[2mdist/[22m[35massets/pieceDeDepense-DFsZ7go0.css                      [39m[1m[2m    6.09 kB[22m[1m[22m[2m │ gzip:   1.94 kB[22m
+[2mdist/[22m[35massets/FinanceForms-CkUu32Bn.css                        [39m[1m[2m    6.67 kB[22m[1m[22m[2m │ gzip:   1.77 kB[22m
+[2mdist/[22m[35massets/FutureRecipeDraftPanel-Cd_dug7d.css              [39m[1m[2m    6.78 kB[22m[1m[22m[2m │ gzip:   1.56 kB[22m
+[2mdist/[22m[35massets/EtapeHoublons-DzXYzxR6.css                       [39m[1m[2m    7.34 kB[22m[1m[22m[2m │ gzip:   1.82 kB[22m
+[2mdist/[22m[35massets/QualifiedStudyPanel-BB7VKA7C.css                 [39m[1m[2m    7.57 kB[22m[1m[22m[2m │ gzip:   1.84 kB[22m
+[2mdist/[22m[35massets/RecipeCopyPanel-BDxgujmx.css                     [39m[1m[2m    7.61 kB[22m[1m[22m[2m │ gzip:   1.88 kB[22m
+[2mdist/[22m[35massets/ImpotBiereSheet-9DWEfYo0.css                     [39m[1m[2m    7.72 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
+[2mdist/[22m[35massets/QuestionScopePanel-C9hG6q85.css                  [39m[1m[2m    7.76 kB[22m[1m[22m[2m │ gzip:   1.90 kB[22m
+[2mdist/[22m[35massets/QualifiedAdvicePreparationControls-DWzl3bQK.css  [39m[1m[2m    9.03 kB[22m[1m[22m[2m │ gzip:   1.58 kB[22m
+[2mdist/[22m[35massets/Lentille-CA4ZL0KH.css                            [39m[1m[2m    9.36 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2mdist/[22m[35massets/PropertyAdviceReexaminationPanelV4-CGClK_lw.css  [39m[1m[2m   10.40 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
+[2mdist/[22m[35massets/PrixEcran-CkefSOzT.css                           [39m[1m[2m   10.48 kB[22m[1m[22m[2m │ gzip:   2.36 kB[22m
+[2mdist/[22m[35massets/Caisse-CVIfQlK5.css                              [39m[1m[2m   10.65 kB[22m[1m[22m[2m │ gzip:   2.67 kB[22m
+[2mdist/[22m[35massets/ExpenseSheet-BBOEdapM.css                        [39m[1m[2m   10.70 kB[22m[1m[22m[2m │ gzip:   2.80 kB[22m
+[2mdist/[22m[35massets/EditClientModal-lqUCMCo4.css                     [39m[1m[2m   10.76 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2mdist/[22m[35massets/Catalogue-glgeVCF6.css                           [39m[1m[2m   10.94 kB[22m[1m[22m[2m │ gzip:   2.51 kB[22m
+[2mdist/[22m[35massets/NoloFermentationWorkshop-CbBJZBC2.css            [39m[1m[2m   12.36 kB[22m[1m[22m[2m │ gzip:   2.51 kB[22m
+[2mdist/[22m[35massets/RechercheAvancee-Dn-lsZwB.css                    [39m[1m[2m   13.27 kB[22m[1m[22m[2m │ gzip:   3.06 kB[22m
+[2mdist/[22m[35massets/EcranApp-B7Q2tjOB.css                            [39m[1m[2m   13.40 kB[22m[1m[22m[2m │ gzip:   3.11 kB[22m
+[2mdist/[22m[35massets/RecipeThermalPlan-C3GOKJgH.css                   [39m[1m[2m   13.92 kB[22m[1m[22m[2m │ gzip:   2.80 kB[22m
+[2mdist/[22m[35massets/DocumentaryDecision-gwVn5p2S.css                 [39m[1m[2m   13.93 kB[22m[1m[22m[2m │ gzip:   2.95 kB[22m
+[2mdist/[22m[35massets/SensoryComparison-BEYiecfX.css                   [39m[1m[2m   14.18 kB[22m[1m[22m[2m │ gzip:   2.92 kB[22m
+[2mdist/[22m[35massets/NuanceExplorer-CKbuZujh.css                      [39m[1m[2m   14.41 kB[22m[1m[22m[2m │ gzip:   2.92 kB[22m
+[2mdist/[22m[35massets/EcranApp-CvRFP9oS.css                            [39m[1m[2m   14.52 kB[22m[1m[22m[2m │ gzip:   3.38 kB[22m
+[2mdist/[22m[35massets/AssistedAdvicePanel-DP932t9Q.css                 [39m[1m[2m   15.48 kB[22m[1m[22m[2m │ gzip:   2.83 kB[22m
+[2mdist/[22m[35massets/BrewerChat-Qu5TyfxD.css                          [39m[1m[2m   15.89 kB[22m[1m[22m[2m │ gzip:   3.56 kB[22m
+[2mdist/[22m[35massets/ObservationSupportPanel-b-4CCHpe.css             [39m[1m[2m   16.42 kB[22m[1m[22m[2m │ gzip:   3.40 kB[22m
+[2mdist/[22m[35massets/ObservationExplorer-CAOnDq0L.css                 [39m[1m[2m   16.81 kB[22m[1m[22m[2m │ gzip:   3.00 kB[22m
+[2mdist/[22m[35massets/ReferencePanel-BBriXLSe.css                      [39m[1m[2m   17.08 kB[22m[1m[22m[2m │ gzip:   3.23 kB[22m
+[2mdist/[22m[35massets/BrewEquipmentSummary-BfwwB3YH.css                [39m[1m[2m   17.62 kB[22m[1m[22m[2m │ gzip:   3.51 kB[22m
+[2mdist/[22m[35massets/BrewBudgetDialog-Bi4SR1zp.css                    [39m[1m[2m   18.98 kB[22m[1m[22m[2m │ gzip:   4.08 kB[22m
+[2mdist/[22m[35massets/StocksTab-CUdnrbmy.css                           [39m[1m[2m   19.73 kB[22m[1m[22m[2m │ gzip:   4.29 kB[22m
+[2mdist/[22m[35massets/finance-DVutnTq_.css                             [39m[1m[2m   19.90 kB[22m[1m[22m[2m │ gzip:   4.00 kB[22m
+[2mdist/[22m[35massets/PropertyAdviceDecisionV4-WZvJv5k0.css            [39m[1m[2m   20.11 kB[22m[1m[22m[2m │ gzip:   3.96 kB[22m
+[2mdist/[22m[35massets/EcranApp-UWK7uECZ.css                            [39m[1m[2m   20.17 kB[22m[1m[22m[2m │ gzip:   4.05 kB[22m
+[2mdist/[22m[35massets/MurStock-B4lRauQY.css                            [39m[1m[2m   21.33 kB[22m[1m[22m[2m │ gzip:   4.98 kB[22m
+[2mdist/[22m[35massets/propertyAdviceDecisionCore-Q03Pu1Z2.css          [39m[1m[2m   33.51 kB[22m[1m[22m[2m │ gzip:   5.65 kB[22m
+[2mdist/[22m[35massets/DecisionResponse-B3T_UkZX.css                    [39m[1m[2m   40.18 kB[22m[1m[22m[2m │ gzip:   5.48 kB[22m
+[2mdist/[22m[35massets/EcranApp-CaDgTDGA.css                            [39m[1m[2m   52.11 kB[22m[1m[22m[2m │ gzip:   8.62 kB[22m
+[2mdist/[22m[35massets/Host-C9WYQPsK.css                                [39m[1m[2m   80.48 kB[22m[1m[22m[2m │ gzip:  16.96 kB[22m
+[2mdist/[22m[35massets/FinancesTab-CC7gigS1.css                         [39m[1m[2m   96.21 kB[22m[1m[22m[2m │ gzip:  17.32 kB[22m
+[2mdist/[22m[35massets/index-DRnN0w18.css                               [39m[1m[2m  101.55 kB[22m[1m[22m[2m │ gzip:  19.44 kB[22m
+[2mdist/[22m[35massets/BrewDayPage-CxnVcirw.css                         [39m[1m[2m  109.19 kB[22m[1m[22m[2m │ gzip:  18.57 kB[22m
+[2mdist/[22m[35massets/BrewWizardEntry-3rYc3pWr.css                     [39m[1m[2m  137.42 kB[22m[1m[22m[2m │ gzip:  22.24 kB[22m
+[2mdist/[22m[36massets/zxing_reader-DfDY-HMj.js                         [39m[1m[2m    0.07 kB[22m[1m[22m[2m │ gzip:   0.09 kB[22m
+[2mdist/[22m[36massets/pdf.worker.min-ocdtAcA3.js                       [39m[1m[2m    0.07 kB[22m[1m[22m[2m │ gzip:   0.09 kB[22m
+[2mdist/[22m[36massets/flags-Dgn1-kAh.js                                [39m[1m[2m    0.08 kB[22m[1m[22m[2m │ gzip:   0.09 kB[22m
+[2mdist/[22m[36massets/pdfjs-XHqP4BjE.js                                [39m[1m[2m    0.25 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/minus-_xFQK8Nx.js                                [39m[1m[2m    0.29 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/chevron-right-DQg6e1el.js                        [39m[1m[2m    0.30 kB[22m[1m[22m[2m │ gzip:   0.25 kB[22m
+[2mdist/[22m[36massets/batchSchedule-Br8sCfU_.js                        [39m[1m[2m    0.30 kB[22m[1m[22m[2m │ gzip:   0.25 kB[22m
+[2mdist/[22m[36massets/intensite-Ckhb44Ze.js                            [39m[1m[2m    0.30 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/propertyAdviceViewModel-DbuB3jIB.js              [39m[1m[2m    0.31 kB[22m[1m[22m[2m │ gzip:   0.18 kB[22m
+[2mdist/[22m[36massets/arrow-left-DXUA-oGb.js                           [39m[1m[2m    0.33 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2mdist/[22m[36massets/arrow-right-D-VKwDxi.js                          [39m[1m[2m    0.34 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2mdist/[22m[36massets/clock-DR7kQx0M.js                                [39m[1m[2m    0.34 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2mdist/[22m[36massets/clock-3-zBn4gFwc.js                              [39m[1m[2m    0.34 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2mdist/[22m[36massets/circle-check-BgpCJOJ3.js                         [39m[1m[2m    0.35 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/cas-CgAya1tN.js                                  [39m[1m[2m    0.35 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/rotate-ccw-DehLvi4i.js                           [39m[1m[2m    0.37 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[36massets/BrewTag-B-nATmAy.js                              [39m[1m[2m    0.37 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/undo-2-B-uHRiOh.js                               [39m[1m[2m    0.38 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/hopReclassCore-4T-GwV17.js                       [39m[1m[2m    0.40 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2mdist/[22m[36massets/download-D4YhVddk.js                             [39m[1m[2m    0.40 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[36massets/copy-DuhnEYwS.js                                 [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.31 kB[22m
+[2mdist/[22m[36massets/recipeYeastReferences-Co6YqWhE.js                [39m[1m[2m    0.41 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[36massets/arrow-left-right-bZj4BGGo.js                     [39m[1m[2m    0.42 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[36massets/calendar-Tf7xvuaQ.js                             [39m[1m[2m    0.42 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[36massets/external-link-DyXvGBpt.js                        [39m[1m[2m    0.42 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[36massets/flag-CpQ_gGS5.js                                 [39m[1m[2m    0.42 kB[22m[1m[22m[2m │ gzip:   0.31 kB[22m
+[2mdist/[22m[36massets/pen-line-BHJlgidN.js                             [39m[1m[2m    0.44 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/zap-DP4TsY5j.js                                  [39m[1m[2m    0.44 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[2mdist/[22m[36massets/pencil-CBM1tfjd.js                               [39m[1m[2m    0.45 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/book-open-BfbMIL2x.js                            [39m[1m[2m    0.46 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/shield-check-C_xSH-Bf.js                         [39m[1m[2m    0.49 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2mdist/[22m[36massets/phone-CSnigr1b.js                                [39m[1m[2m    0.49 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/save-CAwEciUo.js                                 [39m[1m[2m    0.50 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/camera-Chh6yeJ3.js                               [39m[1m[2m    0.51 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2mdist/[22m[36massets/Marques-BcTwwtFY.js                              [39m[1m[2m    0.55 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2mdist/[22m[36massets/Lentille-9LEGJ3LF.js                             [39m[1m[2m    0.55 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/shopping-cart-VBGSQilM.js                        [39m[1m[2m    0.56 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/recipe-step-CpctA8nX.js                          [39m[1m[2m    0.57 kB[22m[1m[22m[2m │ gzip:   0.41 kB[22m
+[2mdist/[22m[36massets/package-check-bz043Y97.js                        [39m[1m[2m    0.59 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/repere-Ba29KKYB.js                               [39m[1m[2m    0.59 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2mdist/[22m[36massets/sliders-horizontal-D0Q46h1a.js                   [39m[1m[2m    0.59 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2mdist/[22m[36massets/container-D1Pp9RyX.js                            [39m[1m[2m    0.61 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/star-BvdiRH29.js                                 [39m[1m[2m    0.64 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/folder-tree-BBVC3Uar.js                          [39m[1m[2m    0.65 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[36massets/useHopCatalogue-BSmmezav.js                      [39m[1m[2m    0.65 kB[22m[1m[22m[2m │ gzip:   0.43 kB[22m
+[2mdist/[22m[36massets/calendar-days-QXN_NJxI.js                        [39m[1m[2m    0.66 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[36massets/thermometer-8yURJmcC.js                          [39m[1m[2m    0.66 kB[22m[1m[22m[2m │ gzip:   0.36 kB[22m
+[2mdist/[22m[36massets/guideVarieties-CkmMa4sV.js                       [39m[1m[2m    0.66 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2mdist/[22m[36massets/sparkles-6ABURAq-.js                             [39m[1m[2m    0.66 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/yeastFlocculation-BOOZIof0.js                    [39m[1m[2m    0.75 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2mdist/[22m[36massets/brewBudgetScaling-Bt0b7YZR.js                    [39m[1m[2m    0.77 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2mdist/[22m[36massets/enrichissementLevures-DAWqwcBI.js                [39m[1m[2m    0.82 kB[22m[1m[22m[2m │ gzip:   0.49 kB[22m
+[2mdist/[22m[36massets/Legende-DkLl9fH_.js                              [39m[1m[2m    0.86 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2mdist/[22m[36massets/archive-BvfpnTfi.js                              [39m[1m[2m    0.88 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/composes-DoS5e3XG.js                             [39m[1m[2m    0.89 kB[22m[1m[22m[2m │ gzip:   0.55 kB[22m
+[2mdist/[22m[36massets/pause-CBB4kJ2j.js                                [39m[1m[2m    0.90 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2mdist/[22m[36massets/chargement-Crhfq5Ic.js                           [39m[1m[2m    1.02 kB[22m[1m[22m[2m │ gzip:   0.58 kB[22m
+[2mdist/[22m[36massets/prechauffe-Cei719Sx.js                           [39m[1m[2m    1.04 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
+[2mdist/[22m[36massets/companyDefaults-BgTRlzHL.js                      [39m[1m[2m    1.10 kB[22m[1m[22m[2m │ gzip:   0.67 kB[22m
+[2mdist/[22m[36massets/BrewScheduleField-kDfmT9S1.js                    [39m[1m[2m    1.13 kB[22m[1m[22m[2m │ gzip:   0.64 kB[22m
+[2mdist/[22m[36massets/presentation-B9Zd7Z_A.js                         [39m[1m[2m    1.17 kB[22m[1m[22m[2m │ gzip:   0.67 kB[22m
+[2mdist/[22m[36massets/MesuresWizard-DH-A41vZ.js                        [39m[1m[2m    1.31 kB[22m[1m[22m[2m │ gzip:   0.73 kB[22m
+[2mdist/[22m[36massets/NumberInput-Dmpoy168.js                          [39m[1m[2m    1.34 kB[22m[1m[22m[2m │ gzip:   0.74 kB[22m
+[2mdist/[22m[36massets/solver-BO2zDQae.js                               [39m[1m[2m    1.50 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
+[2mdist/[22m[36massets/dateUtils-CKFbHzCe.js                            [39m[1m[2m    1.51 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2mdist/[22m[36massets/labels-Buf_a1SF.js                               [39m[1m[2m    1.65 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
+[2mdist/[22m[36massets/ligneVente-BrZAC97T.js                           [39m[1m[2m    1.68 kB[22m[1m[22m[2m │ gzip:   0.89 kB[22m
+[2mdist/[22m[36massets/HopRangePlot-tHOqHq9q.js                         [39m[1m[2m    1.81 kB[22m[1m[22m[2m │ gzip:   0.86 kB[22m
+[2mdist/[22m[36massets/driveService-CCDxsoVn.js                         [39m[1m[2m    1.85 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/PropertyAdviceDecisionV3-C86E7EWF.js             [39m[1m[2m    1.86 kB[22m[1m[22m[2m │ gzip:   0.93 kB[22m
+[2mdist/[22m[36massets/SegmentedControl-B_f6AU9u.js                     [39m[1m[2m    1.87 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/AdresseChamps-DSewwS3A.js                        [39m[1m[2m    1.90 kB[22m[1m[22m[2m │ gzip:   0.72 kB[22m
+[2mdist/[22m[36massets/DriveConnection-D4Fxu5sL.js                      [39m[1m[2m    1.90 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/PropertyAdviceDecision-CmiYXgFO.js               [39m[1m[2m    1.92 kB[22m[1m[22m[2m │ gzip:   0.97 kB[22m
+[2mdist/[22m[36massets/ChampNombre-B-9nVV-s.js                          [39m[1m[2m    1.94 kB[22m[1m[22m[2m │ gzip:   1.07 kB[22m
+[2mdist/[22m[36massets/BeerStyleTag-DaRWR1d7.js                         [39m[1m[2m    2.00 kB[22m[1m[22m[2m │ gzip:   0.97 kB[22m
+[2mdist/[22m[36massets/client-31ZUHkmt.js                               [39m[1m[2m    2.04 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/MarquesVue-CrhQBJ09.js                           [39m[1m[2m    2.12 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/precharge-Ba08azOj.js                            [39m[1m[2m    2.25 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
+[2mdist/[22m[36massets/fermentationScenario-B-leNkRp.js                 [39m[1m[2m    2.26 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/utils-jRpVVBvY.js                                [39m[1m[2m    2.27 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
+[2mdist/[22m[36massets/BrewSystemFeedback-BfePySxK.js                   [39m[1m[2m    2.31 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/numericInput-BBZN6qLp.js                         [39m[1m[2m    2.38 kB[22m[1m[22m[2m │ gzip:   1.16 kB[22m
+[2mdist/[22m[36massets/hopBitternessCore-CTgsD-Fk.js                    [39m[1m[2m    2.40 kB[22m[1m[22m[2m │ gzip:   1.21 kB[22m
+[2mdist/[22m[36massets/ViewNavigation-DGrpK1mA.js                       [39m[1m[2m    2.45 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/InventoryCorrectionSheet-BlVy5szw.js             [39m[1m[2m    2.62 kB[22m[1m[22m[2m │ gzip:   1.28 kB[22m
+[2mdist/[22m[36massets/demande-DFS5t-7J.js                              [39m[1m[2m    2.62 kB[22m[1m[22m[2m │ gzip:   1.24 kB[22m
+[2mdist/[22m[36massets/enrichissementCatalogues-C-nnY7zR.js             [39m[1m[2m    2.82 kB[22m[1m[22m[2m │ gzip:   1.23 kB[22m
+[2mdist/[22m[36massets/localIngredientFacts-CoZzhY7T.js                 [39m[1m[2m    2.91 kB[22m[1m[22m[2m │ gzip:   1.33 kB[22m
+[2mdist/[22m[36massets/hopGuideVarietyBootstrap-C3UsqMOb.js             [39m[1m[2m    3.20 kB[22m[1m[22m[2m │ gzip:   1.11 kB[22m
+[2mdist/[22m[36massets/typicite-BFwoXsT4.js                             [39m[1m[2m    3.26 kB[22m[1m[22m[2m │ gzip:   1.54 kB[22m
+[2mdist/[22m[36massets/batchSchedule-CVH7sA7h.js                        [39m[1m[2m    3.34 kB[22m[1m[22m[2m │ gzip:   1.59 kB[22m
+[2mdist/[22m[36massets/IdentiteBrasserie-B68urnrq.js                    [39m[1m[2m    3.37 kB[22m[1m[22m[2m │ gzip:   1.37 kB[22m
+[2mdist/[22m[36massets/FormNav-DyzyLxn1.js                              [39m[1m[2m    3.47 kB[22m[1m[22m[2m │ gzip:   1.70 kB[22m
+[2mdist/[22m[36massets/HopIndexWorkspace-Dny8Wf4t.js                    [39m[1m[2m    3.60 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2mdist/[22m[36massets/DateField-DM4wBBZg.js                            [39m[1m[2m    3.67 kB[22m[1m[22m[2m │ gzip:   1.46 kB[22m
+[2mdist/[22m[36massets/nuancePlanParameters-hTjXqkig.js                 [39m[1m[2m    3.72 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/complements-ui-Ev0C6gAh.js                       [39m[1m[2m    4.09 kB[22m[1m[22m[2m │ gzip:   1.92 kB[22m
+[2mdist/[22m[36massets/suggestions-BHi_3sBe.js                          [39m[1m[2m    4.16 kB[22m[1m[22m[2m │ gzip:   1.89 kB[22m
+[2mdist/[22m[36massets/outils-aLu7jUQQ.js                               [39m[1m[2m    4.39 kB[22m[1m[22m[2m │ gzip:   2.35 kB[22m
+[2mdist/[22m[36massets/productionInsights-BfEDrWEc.js                   [39m[1m[2m    4.39 kB[22m[1m[22m[2m │ gzip:   1.83 kB[22m
+[2mdist/[22m[36massets/QuantityStepper-DGw3tul7.js                      [39m[1m[2m    4.53 kB[22m[1m[22m[2m │ gzip:   1.98 kB[22m
+[2mdist/[22m[36massets/receiptService-2_w8Znld.js                       [39m[1m[2m    4.55 kB[22m[1m[22m[2m │ gzip:   1.91 kB[22m
+[2mdist/[22m[36massets/aiClient-BRjmPVKI.js                             [39m[1m[2m    5.05 kB[22m[1m[22m[2m │ gzip:   2.38 kB[22m
+[2mdist/[22m[36massets/fermentationGuide-C4ODGfoG.js                    [39m[1m[2m    5.08 kB[22m[1m[22m[2m │ gzip:   2.31 kB[22m
+[2mdist/[22m[36massets/CloudConfigModal--Tg8rbkE.js                     [39m[1m[2m    5.47 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
+[2mdist/[22m[36massets/placement-BekFqvyj.js                            [39m[1m[2m    5.65 kB[22m[1m[22m[2m │ gzip:   2.67 kB[22m
+[2mdist/[22m[36massets/HopFactsEditor-B1TciQt8.js                       [39m[1m[2m    6.16 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2mdist/[22m[36massets/FermentationResearchSheet-BAHWHKEE.js            [39m[1m[2m    6.39 kB[22m[1m[22m[2m │ gzip:   2.83 kB[22m
+[2mdist/[22m[36massets/outilApp-CC_pg3ox.js                             [39m[1m[2m    6.57 kB[22m[1m[22m[2m │ gzip:   2.86 kB[22m
+[2mdist/[22m[36massets/groupes-Dz6YGDj_.js                              [39m[1m[2m    6.66 kB[22m[1m[22m[2m │ gzip:   2.81 kB[22m
+[2mdist/[22m[36massets/HopToolLayer-kraSSlD9.js                         [39m[1m[2m    6.85 kB[22m[1m[22m[2m │ gzip:   2.45 kB[22m
+[2mdist/[22m[36massets/AuditLogModal-CvAPo1Mb.js                        [39m[1m[2m    7.47 kB[22m[1m[22m[2m │ gzip:   2.58 kB[22m
+[2mdist/[22m[36massets/taxArchive-CslBs5uY.js                           [39m[1m[2m    7.51 kB[22m[1m[22m[2m │ gzip:   3.72 kB[22m
+[2mdist/[22m[36massets/Combobox-GIyUEF9t.js                             [39m[1m[2m    7.60 kB[22m[1m[22m[2m │ gzip:   3.19 kB[22m
+[2mdist/[22m[36massets/Base-Dw-IyQRM.js                                 [39m[1m[2m    8.07 kB[22m[1m[22m[2m │ gzip:   3.07 kB[22m
+[2mdist/[22m[36massets/YeastIngredientPicker-DU8fVIng.js                [39m[1m[2m    8.30 kB[22m[1m[22m[2m │ gzip:   3.65 kB[22m
+[2mdist/[22m[36massets/voies-CR6fpcIS.js                                [39m[1m[2m    8.81 kB[22m[1m[22m[2m │ gzip:   3.55 kB[22m
+[2mdist/[22m[36massets/EditClientModal-Bm2L1Q1J.js                      [39m[1m[2m    8.95 kB[22m[1m[22m[2m │ gzip:   3.50 kB[22m
+[2mdist/[22m[36massets/swissQrBill-BhkA7sds.js                          [39m[1m[2m    9.19 kB[22m[1m[22m[2m │ gzip:   4.18 kB[22m
+[2mdist/[22m[36massets/hopRecipeGuideBootstrap-DcOUm4Z2.js              [39m[1m[2m    9.73 kB[22m[1m[22m[2m │ gzip:   2.13 kB[22m
+[2mdist/[22m[36massets/fermentationReadings-ChRPFcdN.js                 [39m[1m[2m    9.84 kB[22m[1m[22m[2m │ gzip:   3.88 kB[22m
+[2mdist/[22m[36massets/HopTastingsPanel-C12kuAot.js                     [39m[1m[2m   10.20 kB[22m[1m[22m[2m │ gzip:   3.64 kB[22m
+[2mdist/[22m[36massets/RecipeProgramApplicationPanel-CzBCKzl_.js        [39m[1m[2m   10.61 kB[22m[1m[22m[2m │ gzip:   4.04 kB[22m
+[2mdist/[22m[36massets/confetti.module-oQXWb4Lk.js                      [39m[1m[2m   10.67 kB[22m[1m[22m[2m │ gzip:   4.28 kB[22m
+[2mdist/[22m[36massets/noloYeastSelection-D5tPlvxA.js                   [39m[1m[2m   10.98 kB[22m[1m[22m[2m │ gzip:   4.45 kB[22m
+[2mdist/[22m[36massets/EcranApp-DgGQRj6d.js                             [39m[1m[2m   11.62 kB[22m[1m[22m[2m │ gzip:   5.01 kB[22m
+[2mdist/[22m[36massets/ImpotBiereSheet-CN3Gmsts.js                      [39m[1m[2m   12.55 kB[22m[1m[22m[2m │ gzip:   4.95 kB[22m
+[2mdist/[22m[36massets/QuestionScopePanel-BfNESx-T.js                   [39m[1m[2m   12.69 kB[22m[1m[22m[2m │ gzip:   4.13 kB[22m
+[2mdist/[22m[36massets/enrichissementTravail-BMAw86Q5.js                [39m[1m[2m   13.07 kB[22m[1m[22m[2m │ gzip:   4.84 kB[22m
+[2mdist/[22m[36massets/FermentationSciencePanel-BEMl7A7_.js             [39m[1m[2m   13.09 kB[22m[1m[22m[2m │ gzip:   4.55 kB[22m
+[2mdist/[22m[36massets/bornesV4-6TtNVO4J.js                             [39m[1m[2m   13.12 kB[22m[1m[22m[2m │ gzip:   5.58 kB[22m
+[2mdist/[22m[36massets/YeastCataloguePanel-Dqp1gkP8.js                  [39m[1m[2m   13.24 kB[22m[1m[22m[2m │ gzip:   4.87 kB[22m
+[2mdist/[22m[36massets/driveFileStore-D_3BeW9G.js                       [39m[1m[2m   13.55 kB[22m[1m[22m[2m │ gzip:   5.17 kB[22m
+[2mdist/[22m[36massets/brewQuantityBounds-B0to19oE.js                   [39m[1m[2m   14.66 kB[22m[1m[22m[2m │ gzip:   6.07 kB[22m
+[2mdist/[22m[36massets/browser-Coynq0_s.js                              [39m[1m[2m   15.16 kB[22m[1m[22m[2m │ gzip:   7.02 kB[22m
+[2mdist/[22m[36massets/recipeDraftApplication-CCzCqmv2.js               [39m[1m[2m   15.94 kB[22m[1m[22m[2m │ gzip:   5.06 kB[22m
+[2mdist/[22m[36massets/HopRecipeGuide-BpykG8Gb.js                       [39m[1m[2m   16.30 kB[22m[1m[22m[2m │ gzip:   5.59 kB[22m
+[2mdist/[22m[36massets/DashboardTab-CggdKsJm.js                         [39m[1m[2m   17.10 kB[22m[1m[22m[2m │ gzip:   5.23 kB[22m
+[2mdist/[22m[36massets/UpgradeWorkspace-Du7uqRx4.js                     [39m[1m[2m   17.73 kB[22m[1m[22m[2m │ gzip:   5.84 kB[22m
+[2mdist/[22m[36massets/pieceDeDepense-BDtHYgaT.js                       [39m[1m[2m   17.98 kB[22m[1m[22m[2m │ gzip:   6.75 kB[22m
+[2mdist/[22m[36massets/hopStyleVarietyBootstrap-BlGEBsuI.js             [39m[1m[2m   18.45 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
+[2mdist/[22m[36massets/geminiScanner-BQUa3U-d.js                        [39m[1m[2m   19.21 kB[22m[1m[22m[2m │ gzip:   7.09 kB[22m
+[2mdist/[22m[36massets/decoupeHorsFil-OyybJkcB.js                       [39m[1m[2m   19.38 kB[22m[1m[22m[2m │ gzip:   8.39 kB[22m
+[2mdist/[22m[36massets/brewSystemInsights-1ublrls0.js                   [39m[1m[2m   19.44 kB[22m[1m[22m[2m │ gzip:   7.16 kB[22m
+[2mdist/[22m[36massets/CreativeLabTab-B751jjHw.js                       [39m[1m[2m   19.70 kB[22m[1m[22m[2m │ gzip:   5.97 kB[22m
+[2mdist/[22m[36massets/HopIndexPanel-CbZ4Beq9.js                        [39m[1m[2m   20.07 kB[22m[1m[22m[2m │ gzip:   6.83 kB[22m
+[2mdist/[22m[36massets/RechercheAvancee-D6eMabWc.js                     [39m[1m[2m   20.13 kB[22m[1m[22m[2m │ gzip:   7.02 kB[22m
+[2mdist/[22m[36massets/EcranApp-DVUtWuTk.js                             [39m[1m[2m   20.21 kB[22m[1m[22m[2m │ gzip:   7.23 kB[22m
+[2mdist/[22m[36massets/HypothesisEditor-CkEfoRnJ.js                     [39m[1m[2m   21.48 kB[22m[1m[22m[2m │ gzip:   6.67 kB[22m
+[2mdist/[22m[36massets/FermentationWorkshop-D6WrNlLE.js                 [39m[1m[2m   21.54 kB[22m[1m[22m[2m │ gzip:   7.04 kB[22m
+[2mdist/[22m[36massets/QualifiedAdvicePreparationControls-DoN3yE96.js   [39m[1m[2m   23.78 kB[22m[1m[22m[2m │ gzip:   7.38 kB[22m
+[2mdist/[22m[36massets/ClientsTab-Cn_T2HxW.js                           [39m[1m[2m   23.92 kB[22m[1m[22m[2m │ gzip:   8.92 kB[22m
+[2mdist/[22m[36massets/ObservationWorkbench-BgW5mN2j.js                 [39m[1m[2m   25.97 kB[22m[1m[22m[2m │ gzip:   7.77 kB[22m
+[2mdist/[22m[36massets/HopKnowledgePanel-CxoiQSU-.js                    [39m[1m[2m   26.00 kB[22m[1m[22m[2m │ gzip:   9.77 kB[22m
+[2mdist/[22m[36massets/RadarBase-DPWyHP-n.js                            [39m[1m[2m   27.09 kB[22m[1m[22m[2m │ gzip:   9.52 kB[22m
+[2mdist/[22m[36massets/nolo-0oiohuC6.js                                 [39m[1m[2m   28.01 kB[22m[1m[22m[2m │ gzip:  10.01 kB[22m
+[2mdist/[22m[36massets/useHopData-JstP96OV.js                           [39m[1m[2m   28.15 kB[22m[1m[22m[2m │ gzip:  11.11 kB[22m
+[2mdist/[22m[36massets/purify.es-CYR4BTuT.js                            [39m[1m[2m   28.93 kB[22m[1m[22m[2m │ gzip:  11.14 kB[22m
+[2mdist/[22m[36massets/FutureRecipeDraftPanel-sYNIuf9d.js               [39m[1m[2m   29.21 kB[22m[1m[22m[2m │ gzip:   8.66 kB[22m
+[2mdist/[22m[36massets/AssistedAdvicePanel-D-ltPcD-.js                  [39m[1m[2m   30.97 kB[22m[1m[22m[2m │ gzip:   8.12 kB[22m
+[2mdist/[22m[36massets/SensoryComparison-B86Nl6hs.js                    [39m[1m[2m   31.40 kB[22m[1m[22m[2m │ gzip:   9.68 kB[22m
+[2mdist/[22m[36massets/BiologicalInputsEditor-C4LGmjd6.js               [39m[1m[2m   32.16 kB[22m[1m[22m[2m │ gzip:   8.47 kB[22m
+[2mdist/[22m[36massets/QuickActionModal-68XAg6sG.js                     [39m[1m[2m   32.25 kB[22m[1m[22m[2m │ gzip:  10.81 kB[22m
+[2mdist/[22m[36massets/YeastDbCorrectionsPanel-DminxoFh.js              [39m[1m[2m   33.55 kB[22m[1m[22m[2m │ gzip:  10.67 kB[22m
+[2mdist/[22m[36massets/FinanceForms-B2dskvv9.js                         [39m[1m[2m   34.18 kB[22m[1m[22m[2m │ gzip:  11.26 kB[22m
+[2mdist/[22m[36massets/EtapeLevure-BMnuUn7Y.js                          [39m[1m[2m   35.21 kB[22m[1m[22m[2m │ gzip:  12.40 kB[22m
+[2mdist/[22m[36massets/Caisse-Ccdl2va7.js                               [39m[1m[2m   35.72 kB[22m[1m[22m[2m │ gzip:  12.89 kB[22m
+[2mdist/[22m[36massets/index-aKGgE7sY.js                                [39m[1m[2m   36.10 kB[22m[1m[22m[2m │ gzip:  13.03 kB[22m
+[2mdist/[22m[36massets/QualifiedStudyPanel-Csh3GLT1.js                  [39m[1m[2m   36.36 kB[22m[1m[22m[2m │ gzip:   9.65 kB[22m
+[2mdist/[22m[36massets/typicite-styles-BfQsA5lT.js                      [39m[1m[2m   37.47 kB[22m[1m[22m[2m │ gzip:  11.97 kB[22m
+[2mdist/[22m[36massets/PrixEcran-Daj_B737.js                            [39m[1m[2m   39.23 kB[22m[1m[22m[2m │ gzip:  14.01 kB[22m
+[2mdist/[22m[36massets/PlanningEditor-DXsSTagU.js                       [39m[1m[2m   39.54 kB[22m[1m[22m[2m │ gzip:  12.20 kB[22m
+[2mdist/[22m[36massets/RecipePage-J-TRC8fX.js                           [39m[1m[2m   41.25 kB[22m[1m[22m[2m │ gzip:  12.61 kB[22m
+[2mdist/[22m[36massets/DocumentaryDecision-ChBDjHHP.js                  [39m[1m[2m   41.51 kB[22m[1m[22m[2m │ gzip:  11.74 kB[22m
+[2mdist/[22m[36massets/calcul-CNGOhrVE.js                               [39m[1m[2m   42.81 kB[22m[1m[22m[2m │ gzip:  12.82 kB[22m
+[2mdist/[22m[36massets/HopTechnicalPanel-BWshUcty.js                    [39m[1m[2m   43.00 kB[22m[1m[22m[2m │ gzip:  15.52 kB[22m
+[2mdist/[22m[36massets/styleSelection-D1QY3TKp.js                       [39m[1m[2m   45.71 kB[22m[1m[22m[2m │ gzip:   6.56 kB[22m
+[2mdist/[22m[36massets/moteur-DnFmM3FY.js                               [39m[1m[2m   46.10 kB[22m[1m[22m[2m │ gzip:  18.84 kB[22m
+[2mdist/[22m[36massets/PropertyAdviceReexaminationPanelV4-DUX95iTd.js   [39m[1m[2m   46.59 kB[22m[1m[22m[2m │ gzip:  13.18 kB[22m
+[2mdist/[22m[36massets/RecipeCopyPanel-Skd9oFwu.js                      [39m[1m[2m   46.83 kB[22m[1m[22m[2m │ gzip:  12.89 kB[22m
+[2mdist/[22m[36massets/BrewBudgetDialog-CBXk_C9e.js                     [39m[1m[2m   51.44 kB[22m[1m[22m[2m │ gzip:  16.47 kB[22m
+[2mdist/[22m[36massets/EcranApp-W99fpwCe.js                             [39m[1m[2m   51.58 kB[22m[1m[22m[2m │ gzip:  15.47 kB[22m
+[2mdist/[22m[36massets/typicite-styles-pMzWRsTP.js                      [39m[1m[2m   54.11 kB[22m[1m[22m[2m │ gzip:  14.12 kB[22m
+[2mdist/[22m[36massets/RecipeStep-CfDbQ-sw.js                           [39m[1m[2m   56.00 kB[22m[1m[22m[2m │ gzip:  17.88 kB[22m
+[2mdist/[22m[36massets/NuanceExplorer-XA5w4OYA.js                       [39m[1m[2m   56.68 kB[22m[1m[22m[2m │ gzip:  16.28 kB[22m
+[2mdist/[22m[36massets/index-BvIwKJyo.js                                [39m[1m[2m   56.80 kB[22m[1m[22m[2m │ gzip:  14.62 kB[22m
+[2mdist/[22m[36massets/EcranApp-Dxbj0yWz.js                             [39m[1m[2m   58.39 kB[22m[1m[22m[2m │ gzip:  21.37 kB[22m
+[2mdist/[22m[36massets/EcranApp-BspJEbo5.js                             [39m[1m[2m   59.39 kB[22m[1m[22m[2m │ gzip:  20.38 kB[22m
+[2mdist/[22m[36massets/EntityList-DvsHLo3A.js                           [39m[1m[2m   60.01 kB[22m[1m[22m[2m │ gzip:  21.01 kB[22m
+[2mdist/[22m[36massets/MurStock-oUCgkSDD.js                             [39m[1m[2m   62.41 kB[22m[1m[22m[2m │ gzip:  20.09 kB[22m
+[2mdist/[22m[36massets/Catalogue-CV3Yw-FJ.js                            [39m[1m[2m   63.53 kB[22m[1m[22m[2m │ gzip:  16.30 kB[22m
+[2mdist/[22m[36massets/FicheApp-C7q4bvK0.js                             [39m[1m[2m   64.32 kB[22m[1m[22m[2m │ gzip:  22.06 kB[22m
+[2mdist/[22m[36massets/SettingsModal-DemhhBQY.js                        [39m[1m[2m   69.30 kB[22m[1m[22m[2m │ gzip:  21.77 kB[22m
+[2mdist/[22m[36massets/composes-houblon-DKfIDd1-.js                     [39m[1m[2m   69.40 kB[22m[1m[22m[2m │ gzip:  19.33 kB[22m
+[2mdist/[22m[36massets/EtapeHoublons-9i3m1YWb.js                        [39m[1m[2m   70.33 kB[22m[1m[22m[2m │ gzip:  24.54 kB[22m
+[2mdist/[22m[36massets/hopPublicLotBootstrap-BJ2PTg2c.js                [39m[1m[2m   72.36 kB[22m[1m[22m[2m │ gzip:   4.59 kB[22m
+[2mdist/[22m[36massets/ObservationSupportPanel-B_jlvPnp.js              [39m[1m[2m   74.20 kB[22m[1m[22m[2m │ gzip:  18.71 kB[22m
+[2mdist/[22m[36massets/hopExtrapolationBootstrap-DwwEfl2H.js            [39m[1m[2m   78.88 kB[22m[1m[22m[2m │ gzip:   8.21 kB[22m
+[2mdist/[22m[36massets/ObservationExplorer-ydEhVVcy.js                  [39m[1m[2m   79.81 kB[22m[1m[22m[2m │ gzip:  19.69 kB[22m
+[2mdist/[22m[36massets/HopRecipePanel-CYtKjV5s.js                       [39m[1m[2m   80.19 kB[22m[1m[22m[2m │ gzip:  25.01 kB[22m
+[2mdist/[22m[36massets/StocksTab-DB7GiWav.js                            [39m[1m[2m   84.64 kB[22m[1m[22m[2m │ gzip:  27.38 kB[22m
+[2mdist/[22m[36massets/BatchDetailSheet-BIhf7ZLe.js                     [39m[1m[2m   86.40 kB[22m[1m[22m[2m │ gzip:  26.26 kB[22m
+[2mdist/[22m[36massets/PropertyAdviceDecisionV4-DPNlH5gs.js             [39m[1m[2m   92.49 kB[22m[1m[22m[2m │ gzip:  26.25 kB[22m
+[2mdist/[22m[36massets/EcranApp-Cg0xIUko.js                             [39m[1m[2m   99.50 kB[22m[1m[22m[2m │ gzip:  30.52 kB[22m
+[2mdist/[22m[36massets/propertyAdviceDecisionCore-BwGbtwgq.js           [39m[1m[2m  109.82 kB[22m[1m[22m[2m │ gzip:  27.45 kB[22m
+[2mdist/[22m[36massets/ReferencePanel-D1OGqWV6.js                       [39m[1m[2m  115.72 kB[22m[1m[22m[2m │ gzip:  29.99 kB[22m
+[2mdist/[22m[36massets/DecisionResponse-ClMP7msD.js                     [39m[1m[2m  126.49 kB[22m[1m[22m[2m │ gzip:  33.76 kB[22m
+[2mdist/[22m[36massets/ProductionTab-I9TcVQzQ.js                        [39m[1m[2m  129.38 kB[22m[1m[22m[2m │ gzip:  36.63 kB[22m
+[2mdist/[22m[36massets/NoloFermentationWorkshop-CEXN8sdZ.js             [39m[1m[2m  132.95 kB[22m[1m[22m[2m │ gzip:  38.88 kB[22m
+[2mdist/[22m[36massets/predictionReferences-RA7xMuFL.js                 [39m[1m[2m  143.11 kB[22m[1m[22m[2m │ gzip:  16.33 kB[22m
+[2mdist/[22m[36massets/catalogue-ajouts-BpA7DUAj.js                     [39m[1m[2m  147.45 kB[22m[1m[22m[2m │ gzip:  16.57 kB[22m
+[2mdist/[22m[36massets/BrewerChat-Be4F5Rt7.js                           [39m[1m[2m  154.36 kB[22m[1m[22m[2m │ gzip:  45.61 kB[22m
+[2mdist/[22m[36massets/index.es-DnVvUGg2.js                             [39m[1m[2m  159.79 kB[22m[1m[22m[2m │ gzip:  53.58 kB[22m
+[2mdist/[22m[36massets/profil-simule-C80iEVJ6.js                        [39m[1m[2m  184.24 kB[22m[1m[22m[2m │ gzip:  56.97 kB[22m
+[2mdist/[22m[36massets/BrewEquipmentSummary-CeWiGY35.js                 [39m[1m[2m  189.84 kB[22m[1m[22m[2m │ gzip:  59.64 kB[22m
+[2mdist/[22m[36massets/index-BYNJzOTR.js                                [39m[1m[2m  198.98 kB[22m[1m[22m[2m │ gzip:  62.76 kB[22m
+[2mdist/[22m[36massets/html2canvas.esm-QH1iLAAe.js                      [39m[1m[2m  202.38 kB[22m[1m[22m[2m │ gzip:  48.04 kB[22m
+[2mdist/[22m[36massets/RecipeThermalPlan-GvFdoj5C.js                    [39m[1m[2m  209.71 kB[22m[1m[22m[2m │ gzip:  60.11 kB[22m
+[2mdist/[22m[36massets/BrewDayPage-B0CwegoF.js                          [39m[1m[2m  281.17 kB[22m[1m[22m[2m │ gzip:  91.49 kB[22m
+[2mdist/[22m[36massets/FinancesTab-CC7ZxBnA.js                          [39m[1m[2m  295.62 kB[22m[1m[22m[2m │ gzip:  91.14 kB[22m
+[2mdist/[22m[36massets/financeExport-DKyYgl4t.js                        [39m[1m[2m  297.88 kB[22m[1m[22m[2m │ gzip: 100.75 kB[22m
+[2mdist/[22m[36massets/CartesianChart-B4kXQl2i.js                       [39m[1m[2m  343.00 kB[22m[1m[22m[2m │ gzip: 102.01 kB[22m
+[2mdist/[22m[36massets/pdf-CcZYcL52.js                                  [39m[1m[2m  365.12 kB[22m[1m[22m[2m │ gzip: 107.61 kB[22m
+[2mdist/[22m[36massets/hopManufacturerBootstrap-CFUzw9B2.js             [39m[1m[2m  366.28 kB[22m[1m[22m[2m │ gzip:  10.79 kB[22m
+[2mdist/[22m[36massets/jspdf.es.min-DQ_BXHX7.js                         [39m[1m[2m  381.93 kB[22m[1m[22m[2m │ gzip: 124.18 kB[22m
+[2mdist/[22m[36massets/hopLegacyBootstrap-DTKtqcM1.js                   [39m[1m[2m  390.44 kB[22m[1m[22m[2m │ gzip:  12.71 kB[22m
+[2mdist/[22m[36massets/ExpenseSheet-CjvjTQnt.js                         [39m[1m[2m  394.13 kB[22m[1m[22m[2m │ gzip: 123.55 kB[22m
+[2mdist/[22m[36massets/complements-B0GlBxhh.js                          [39m[1m[2m  437.62 kB[22m[1m[22m[2m │ gzip:  75.30 kB[22m
+[2mdist/[22m[36massets/data-rzbrJc-x.js                                 [39m[1m[33m  560.90 kB[39m[22m[2m │ gzip:  78.28 kB[22m
+[2mdist/[22m[36massets/firebase-BpvggEnB.js                             [39m[1m[33m  637.19 kB[39m[22m[2m │ gzip: 152.09 kB[22m
+[2mdist/[22m[36massets/recipeStepContext-CU-HZujN.js                    [39m[1m[33m  638.42 kB[39m[22m[2m │ gzip: 186.78 kB[22m
+[2mdist/[22m[36massets/BrewWizardEntry-CsLxLPcw.js                      [39m[1m[33m  720.96 kB[39m[22m[2m │ gzip: 220.09 kB[22m
+[2mdist/[22m[36massets/hopDatabaseBootstrap-BDISY6dl.js                 [39m[1m[33m  894.13 kB[39m[22m[2m │ gzip:  29.00 kB[22m
+[2mdist/[22m[36massets/yeastReferences-D9gD6ahm.js                      [39m[1m[33m1,390.60 kB[39m[22m[2m │ gzip: 396.04 kB[22m
+[2mdist/[22m[36massets/hopBeerMaverickBootstrap-Bsxkgp9Z.js             [39m[1m[33m1,441.37 kB[39m[22m[2m │ gzip:  44.74 kB[22m
+[2mdist/[22m[36massets/Host-S0QVaMxc.js                                 [39m[1m[33m1,791.19 kB[39m[22m[2m │ gzip: 447.00 kB[22m
+[2mdist/[22m[36massets/App-BJGpzBxN.js                                  [39m[1m[33m1,873.69 kB[39m[22m[2m │ gzip: 450.46 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 29.34s[39m

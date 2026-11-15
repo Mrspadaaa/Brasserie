@@ -1,0 +1,35 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+·························stderr | tests/integration/liveDataViews.test.tsx > Live records and unsaved forms > updates an open batch sheet after a server edit, preserving an in-progress density reading
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+···············stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > guide la préparation annuelle du solde vers les opérations de l’exercice
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+····stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > ouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée
+Not implemented: Window's scrollTo() method
+
+······stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > fige une version annuelle et garde ses chiffres après une nouvelle dépense
+Not implemented: Window's scrollTo() method
+
+·····
+
+ Test Files  5 passed (5)
+      Tests  55 passed (55)
+   Start at  10:43:27
+   Duration  7.84s (transform 5.42s, setup 2.30s, collect 12.86s, tests 5.55s, environment 6.63s, prepare 442ms)
+

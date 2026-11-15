@@ -1,0 +1,80 @@
+/* Payer (m5pa-d : « un virement, plusieurs pièces », avec justificatif). Classes préfixées `pay-` (L26), racine `.pay` (la feuille).
+   Clair comme cave : texte et fonds prennent les jetons du thème ; hachure = à payer, rouge = en retard, pointillé = sans justificatif.
+   Les couleurs de catégorie (liserés, tronçons) sont celles des piles d'Opérations : en clair, le vif de la maquette (comme `.ops`, fx1). */
+.pay { --pay-t1: rgb(var(--cave-texte-50)); --pay-t2: rgb(var(--cave-texte-200)); --pay-t3: rgb(var(--cave-texte-400));
+  --pay-bord: rgb(var(--cave-700)); --pay-fond: rgb(var(--cave-950)); --pay-hach-a: rgb(var(--attention)); --pay-hach-b: rgb(var(--c-302719));
+  --pay-late: rgb(var(--alert-strong-texte)); --pay-ok: rgb(var(--area-stocks-texte)); }
+:root:not([data-theme='cave']) .pay { --pay-fond: rgb(var(--cave-950));
+  --c-56d27b: 86 210 123; --c-9856d2: 152 86 210; --c-d2b356: 210 179 86; --c-56c1d2: 86 193 210; --c-567bd2: 86 123 210; --c-d256a4: 210 86 164; }
+.pay * { box-sizing: border-box; }
+.pay .pay-m { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+.pay-corps { display: flex; flex-direction: column; font-size: 14px; line-height: 18px; color: var(--pay-t1); padding-bottom: 4px; }
+.pay-corps button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.pay-note { margin: 8px 0 0; padding: 6px 10px; border-radius: 10px; font-size: 13px; line-height: 17px; color: rgb(var(--attention-texte)); background: rgb(var(--c-302719)); box-shadow: inset 0 0 0 1px var(--pay-hach-a); }
+
+/* Ton virement : un seul montant, grand */
+.pay-who { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; }
+.pay-who > span { flex: 1; font-size: 15px; font-weight: 600; color: var(--pay-t1); }
+.pay-who :is(input, textarea) { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 24px; line-height: 50px; width: 150px; height: 52px; min-height: 52px; padding: 0 12px; text-align: right;
+  background: var(--pay-fond); color: var(--pay-t1); border: 1px solid var(--pay-bord); border-radius: 12px; resize: none; overflow: hidden; }
+.pay-who :is(input, textarea):focus { outline: 2px solid rgb(var(--area-finances)); outline-offset: -1px; }
+.pay-who :is(input, textarea)[aria-invalid='true'] { border-color: var(--pay-late); }
+.pay-err { margin: 0 0 6px; font-size: 13px; line-height: 17px; color: var(--pay-late); }
+
+/* La répartition : un tronçon par pièce touchée, puis le reste (hachuré) */
+.pay-flow { display: flex; height: 14px; border-radius: 7px; overflow: hidden; margin: 10px 0 4px; background: rgb(var(--cave-800)); }
+.pay-flow i { display: block; min-width: 3px; }
+.pay-hach { background: repeating-linear-gradient(135deg, var(--pay-hach-a) 0 1.5px, var(--pay-hach-b) 1.5px 8px); box-shadow: inset 0 0 0 1px var(--pay-hach-a); }
+:root:not([data-theme='cave']) .pay .pay-hach { background: repeating-linear-gradient(135deg, rgb(227 181 93) 0 4px, rgb(252 239 210) 4px 8px); box-shadow: inset 0 0 0 1px rgb(201 154 58); }
+.pay-fk { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; line-height: 16px; color: var(--pay-t2); }
+.pay-fk span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pay-cap { font-size: 12px; line-height: 16px; color: var(--pay-t2); margin: 10px 2px 4px; }
+
+/* Une pièce : case, liseré (hachuré si à payer, rouge si en retard), nom, état, montant imputé */
+.pay-it { display: grid; grid-template-columns: 28px 5px minmax(0, 1fr) auto; gap: 0 9px; align-items: center; min-height: 62px; border-bottom: 1px solid var(--pay-bord); }
+.pay-it[data-exclue] { opacity: .6; }
+.pay-ck { width: 44px; height: 44px; margin: -9px -8px -9px -9px; display: grid; place-items: center; }
+.pay-ck i { width: 26px; height: 26px; border-radius: 8px; border: 2px solid var(--pay-t1); background: var(--pay-t1); color: var(--pay-fond); display: grid; place-items: center; font-size: 15px; font-weight: 700; font-style: normal; }
+.pay-ck[aria-checked='false'] i { background: transparent; color: transparent; }
+.pay-br { align-self: stretch; margin: 10px 0; border-radius: 2px; background: var(--pay-couleur, var(--pay-t3)); }
+.pay-qui { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pay-qui b { font-size: 15px; line-height: 18px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pay-tg { align-self: flex-start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 6px; border-radius: 999px; line-height: 16px; font-size: 12px; }
+.pay-tg-pay { background: repeating-linear-gradient(135deg, rgb(var(--c-302719)) 0 4px, transparent 4px 8px), rgb(var(--c-302719)); color: rgb(var(--attention-texte)); box-shadow: inset 0 0 0 1px var(--pay-hach-a); }
+.pay-tg-late { background: rgb(var(--c-402320)); color: var(--pay-late); box-shadow: inset 0 0 0 1px var(--pay-late); }
+.pay-fill { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 2px; }
+.pay-fill .pay-m { font-size: 15px; line-height: 18px; }
+.pay-fill small { font-size: 12px; line-height: 16px; color: var(--pay-t2); }
+.pay-fill small[data-ok] { color: var(--pay-ok); }
+
+/* Le justificatif du virement : pointillé tant qu'il manque, plein une fois joint */
+.pay-jv { display: flex; align-items: center; gap: 8px; min-height: 52px; margin-top: 10px; padding: 4px 6px 4px 10px; border: 2px dashed rgb(var(--attention)); border-radius: 12px; background: rgb(var(--c-302719)); font-size: 14px; color: rgb(var(--attention-texte)); }
+.pay-jv[data-joint] { border-style: solid; }
+.pay-jv > svg { flex: none; }
+.pay-jx { flex: 1; min-width: 0; line-height: 17px; }
+.pay-jx b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pay-jx small { display: block; font-size: 12px; line-height: 15px; color: var(--pay-t2); }
+.pay-jv button { min-height: 44px; padding: 0 10px; border-radius: 10px; background: var(--pay-fond); border: 1px solid var(--pay-bord); display: inline-flex; align-items: center; gap: 4px; color: var(--pay-t1); font-size: 13px; white-space: nowrap; }
+.pay-jerr { margin: 4px 2px 0; font-size: 12px; line-height: 16px; color: var(--pay-late); }
+
+/* Le … avec … : deux gestes de pastille */
+.pay-row2 { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 14px; align-items: center; }
+.pay-row2 > span { color: var(--pay-t2); }
+.pay-row2 button, .pay-moyens button { min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--pay-bord); background: transparent; color: var(--pay-t1); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+.pay-row2 button[aria-pressed='true'], .pay-moyens button[aria-pressed='true'] { background: var(--pay-t1); color: var(--pay-fond); border-color: var(--pay-t1); font-weight: 600; }
+.pay-moyens { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.pay-date { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: 14px; color: var(--pay-t2); }
+.pay-date input { min-height: 44px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--pay-bord); background: var(--pay-fond); color: var(--pay-t1); font: inherit; font-size: 16px; color-scheme: light; }
+:root[data-theme='cave'] .pay-date input { color-scheme: dark; }
+.pay-date input:focus { outline: 2px solid rgb(var(--area-finances)); outline-offset: -1px; }
+
+/* Pied : Annuler | ✓ Payer … (1 pour 1,7, comme la maquette) */
+.pay-ft { display: grid; grid-template-columns: 1fr 1.7fr; gap: 8px; }
+.pay-b1, .pay-b2 { min-height: 48px; border-radius: 16px; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+.pay-b1 { background: var(--pay-t1); color: var(--pay-fond); border: 0; font-weight: 600; }
+.pay-b2 { background: rgb(var(--cave-850)); color: var(--pay-t1); border: 1px solid var(--pay-bord); }
+.pay-b1:disabled { opacity: .45; cursor: not-allowed; }
+/* Date « autre » vide : le bouton dit pourquoi (« Choisis la date ») et mène au champ au lieu d'être gris muet (q6, point 7). */
+.pay-b1[data-attend] { opacity: .75; }
+.pay-corps button:focus-visible, .pay-ft button:focus-visible { outline: 2px solid rgb(var(--area-finances)); outline-offset: 2px; }
+/* À 1280 le corps prend toute la largeur de la feuille, comme la fiche (q6, point 5) : plus de plafond à 560 px. */

@@ -254,6 +254,46 @@
    "capture": "",
    "page": "https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY",
    "note": ""
+  },
+  {
+   "ecran": "finances-modifier",
+   "route": "finances/operations/modifier",
+   "statut": "choisi",
+   "choix": "m5mo-c (2026-11-14-finances, retours du 15.11)",
+   "mots": "Tu choisis, avant / après ok",
+   "capture": "work/missions/2026-11-14-finances/voies/m5/m5mo-c/m5mo-c.png",
+   "page": "https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP",
+   "note": ""
+  },
+  {
+   "ecran": "finances-apport",
+   "route": "finances/operations/apport",
+   "statut": "choisi",
+   "choix": "m5ap-a (m1ap-c + justificatif)",
+   "mots": "Les deux poches m1ap-c · chaude ; « pareil pour l'apport personnel SI non candidat 1 »",
+   "capture": "work/missions/2026-11-14-finances/voies/m5/m5ap-a/m5ap-a.png",
+   "page": "https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP",
+   "note": ""
+  },
+  {
+   "ecran": "finances-fiche",
+   "route": "finances/operations/fiche",
+   "statut": "choisi",
+   "choix": "m5fo-a (m2fo-a + barre de m2fo-c ; candidat 1, sa règle « SI non candidat 1 »)",
+   "mots": "La fiche rangée m2fo-a · tiède · La facture en barre m2fo-c · chaude",
+   "capture": "work/missions/2026-11-14-finances/voies/m5/m5fo-a/m5fo-a.png",
+   "page": "https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP",
+   "note": "Réversible : m2fo-a ou m2fo-c seule."
+  },
+  {
+   "ecran": "finances-payer",
+   "route": "finances/operations/payer",
+   "statut": "choisi",
+   "choix": "m5pa-d (2026-11-14-finances, retours du 15.11)",
+   "mots": "m5pa-d Un virement, plusieurs pièces top",
+   "capture": "work/missions/2026-11-14-finances/voies/m5/m5pa-d/m5pa-d.png",
+   "page": "https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP",
+   "note": ""
   }
  ]
 }
