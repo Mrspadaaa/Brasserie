@@ -1723,3 +1723,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : pas un audit chronométré mais des astuces : un geste = l'essentiel ; autocomplétion, auto-rangement, valeurs déduites ; moins d'infos à la fois.)
 - **15.11**, mot pour mot, sur le bouton « Atelier Houblons V5.5 » (Brassins › Atelier) : « Atelier Houblons V5.5 je pense que tout ça peut être retiré, jsp à quelle point l'ai en a besoin mais moi plus du tout »
   (lu : retirer les entrées visibles (bouton, menus) ; le code V5.5 reste, car il sert au transfert de recette, au conseil houblon et aux fonctions ; rien de supprimé en données.)
+- **15.11**, mot pour mot, réponses aux cinq points : « Devis ↔ besoin … Ok » ; eau (acide quand le pH estimé est déjà dans la cible) : « Mhmm Ça dépend du style et ça doit être dit spécifiquement sur un de ces cas est produit » ; mise en ligne des corrections de la recette : « ok » ; kt2 retouchée : « montre »
+  (lu : Flash-Lite relie devis et besoin ; RL-5 : on garde le dosage du profil de style, mais l'écran dit explicitement pourquoi il dose alors que le pH est déjà dans la cible ; déploiement accordé après tests verts.)
