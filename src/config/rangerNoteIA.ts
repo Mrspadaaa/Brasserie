@@ -19,4 +19,4 @@ const param = (nom: string): string | null => (typeof location === 'undefined' ?
  * Lu à l'appel, jamais au chargement du module. Au banc seulement : `?dev-local&ia=eteint` rejoue ce que la production montre
  * (la note brute, sans IA). Hors serveur de développement, le paramètre ne fait rien.
  */
-export const modeRangerNote = (): ModeIA => modeDe(import.meta.env.VITE_RANGER_NOTE_IA, import.meta.env.DEV, param('dev-local') !== null, param('ia'));
+export const modeRangerNote = (): ModeIA => modeDe(import.meta.env.VITE_RANGER_NOTE_IA, import.meta.env.DEV, import.meta.env.DEV && param('dev-local') !== null, param('ia'));
