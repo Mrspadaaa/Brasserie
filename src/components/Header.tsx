@@ -18,7 +18,7 @@ import { StorageService } from '../services/storage';
 import { IconButton } from './ui/Button';
 import { ThemeToggle } from '../theme/ThemeToggle';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
-import { ConfirmModal } from './ConfirmModal';
+import { SaisirAuNom } from './feuilles/SaisirAuNom';
 
 interface HeaderProps {
   /** Barre compacte de l'application, extensible avec le texte. */
@@ -320,14 +320,9 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
       </div>
-      <ConfirmModal
-        isOpen={confirmUser}
-        title={`Saisir au nom de ${otherUser} ?`}
-        message={`Les prochaines écritures seront signées ${otherUser}, plus ${currentUser}. Tu peux revenir en arrière depuis ce menu.`}
-        confirmLabel={`Saisir au nom de ${otherUser}`}
-        onConfirm={() => { StorageService.setCurrentUser(otherUser); setConfirmUser(false); }}
-        onCancel={() => setConfirmUser(false)}
-      />
+      <SaisirAuNom open={confirmUser} courant={currentUser}
+        onConfirmer={cible => { StorageService.setCurrentUser(cible); setConfirmUser(false); }}
+        onAnnuler={() => setConfirmUser(false)} />
     </header>
   );
 };

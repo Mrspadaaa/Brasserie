@@ -1,17 +1,28 @@
 import React, { useEffect, useRef, useState, lazy } from 'react';
 import { useMobileLayout } from './useViewport';
-import { MessageCircle, LoaderCircle, Trash2 } from 'lucide-react';
+import { MessageCircle, LoaderCircle } from 'lucide-react';
 import { brewerJobs, useBrewerJobs, isBrewerWorking, brewerJobStatus, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
 import { BrewerChat as api } from '../services/brewerChat';
 import { brewerLauncher, useBrewerDialogOpen } from '../services/brewerLauncher';
 import { LazySurface } from './LazySurface';
 const BrewerChat = lazy(() => import('./BrewerChat').then(module => ({ default: module.BrewerChat })));
 import { Sheet } from './Sheet';
+import { ConversationsBoite } from '../components/feuilles/ConversationsBoite';
 import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
 import type { BrewerScope } from '../../functions/src/companionTypes';
 import './brewer-navigation.css';
 
 type Focus = { scope: BrewerScope; label: string; phase?: string };
+const cleConversation = (j: ClientBrewerJob) => `${j.scope.kind === 'draft' ? 'recipe' : j.scope.kind}:${j.scope.id}`;
+const useEnLigne = () => {
+  const [en, setEn] = useState(() => typeof navigator === 'undefined' || navigator.onLine !== false);
+  useEffect(() => {
+    const maj = () => setEn(navigator.onLine !== false);
+    window.addEventListener('online', maj); window.addEventListener('offline', maj);
+    return () => { window.removeEventListener('online', maj); window.removeEventListener('offline', maj); };
+  }, []);
+  return en;
+};
 export function brewerConversations(jobs: ClientBrewerJob[]) {
   const groups: Array<{ latest: ClientBrewerJob; jobs: ClientBrewerJob[] }> = [];
   for (const job of [...jobs].sort((a, b) => b.createdAt - a.createdAt)) {
@@ -38,6 +49,7 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   const state = useBrewerJobs(), dialogOpen = useBrewerDialogOpen();
   const mobile = useMobileLayout();
   const [inbox, setInbox] = useState(false);
+  const enLigne = useEnLigne();
   const [deleting, setDeleting] = useState(false), [notice, setNotice] = useState('');
   const [removal, setRemoval] = useState<{ job: ClientBrewerJob; operationId: string } | null>(null);
   const [focus, setFocus] = useState<Focus | null>(() => {
@@ -89,6 +101,7 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     : 'Mes conversations';
   if (localOnly)
     return <p role="status" className="pointer-events-none fixed bottom-[4.25rem] left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-control bg-cave-850 px-2 py-0.5 text-2xs text-cave-400">Compagnon hors connexion · mode local</p>;
+  const conversations = brewerConversations(state.jobs);
   const remove = async () => {
     if (!removal || deleting) return;
     setDeleting(true);
@@ -110,34 +123,20 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
         {pending.length && !unread.length ? <LoaderCircle size={17} className="brewer-chat-spin" /> : <MessageCircle size={18} />}
         <span role="status">{badge}</span>
       </button>}
-    <Sheet open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); } }} dismissible={!deleting}
-      title="Mes conversations" subtitle="Tes questions continuent pendant que tu brasses">
-      <div className="brewer-activity-list">
-        {state.connectionError && <p role="status">{state.connectionError}</p>}
-        {notice && <p role="status">{notice}</p>}
-        {!state.jobs.length && <p className="brewer-inbox-empty">Aucune conversation. Le bouton + ouvre le compagnon sur l’écran en cours.</p>}
-        {brewerConversations(state.jobs).map(({ latest: j, jobs }) => {
-          const selected = removal && sameBrewerScope(removal.job.scope, j.scope);
-          const working = jobs.filter(isBrewerWorking).length;
-          return <div className="brewer-conversation" key={`${j.scope.kind === 'draft' ? 'recipe' : j.scope.kind}:${j.scope.id}`}>
-            <div className="brewer-conversation-row">
-              <button type="button" className="brewer-conversation-open" disabled={deleting}
-                onClick={() => { setInbox(false); setRemoval(null); if (!brewerLauncher.open(j.scope)) setFocus({ scope: j.scope, label: j.label, phase: j.scope.kind === 'app' ? j.label : undefined }); }}>
-                <strong>{j.label}</strong><span>{j.question}</span>
-                <small>{working ? `${working} ${working > 1 ? 'questions en cours' : 'question en cours'}` : brewerJobStatus(j)}{jobs.length > 1 ? ` · ${jobs.length} échanges` : ''}</small>
-              </button>
-              <button type="button" className="brewer-conversation-delete" aria-label={`Supprimer la conversation ${j.label}`} disabled={deleting}
-                onClick={() => { setNotice(''); setRemoval({ job: j, operationId: crypto.randomUUID() }); }}><Trash2 size={19} /></button>
-            </div>
-            {selected && <div className="brewer-conversation-confirm">
-              <p>Supprimer les échanges de « {j.label} » ? Les analyses en cours seront arrêtées.</p>
-              <div><button type="button" disabled={deleting} onClick={() => setRemoval(null)}>Annuler</button>
-                <button type="button" className="is-destructive" disabled={deleting} onClick={() => void remove()}>{deleting ? 'Suppression…' : 'Supprimer les échanges'}</button></div>
-            </div>}
-          </div>;
-        })}
-      </div>
-    </Sheet>
+    <ConversationsBoite open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); } }}
+      lignes={conversations.map(({ latest: j, jobs }) => {
+        const enCours = jobs.filter(isBrewerWorking).length;
+        return {
+          cle: cleConversation(j), label: j.label, question: j.question, createdAt: j.createdAt, kind: j.scope.kind, echanges: jobs.length,
+          statut: enCours ? `${enCours} ${enCours > 1 ? 'questions en cours' : 'question en cours'}` : brewerJobStatus(j),
+          enAttente: Boolean(j.sendError), selected: Boolean(removal && sameBrewerScope(removal.job.scope, j.scope))
+        };
+      })}
+      enLigne={enLigne} erreurLien={state.connectionError} notice={notice} suppressionEnCours={deleting}
+      onOuvrir={(cle) => { const j = conversations.find(g => cleConversation(g.latest) === cle)?.latest; if (!j) return; setInbox(false); setRemoval(null); if (!brewerLauncher.open(j.scope)) setFocus({ scope: j.scope, label: j.label, phase: j.scope.kind === 'app' ? j.label : undefined }); }}
+      onChoisir={(cle) => { setNotice(''); const j = cle ? conversations.find(g => cleConversation(g.latest) === cle)?.latest : null; setRemoval(j ? { job: j, operationId: crypto.randomUUID() } : null); }}
+      onConfirmer={() => void remove()}
+      onIndice={() => setNotice('Glisse une conversation vers la gauche (au pointeur : survole-la), puis confirme ici.')} />
     {focus && <LazySurface fallback={<Sheet open title="Compagnon brasseur" onClose={() => setFocus(null)}><p role="status">Ouverture de la conversation…</p></Sheet>}><BrewerChat key={`${focus.scope.kind}:${focus.scope.id}`} {...focus} initialOpen hideLauncher onClose={() => {
       setFocus(null);
       const url = new URL(location.href);

@@ -34,7 +34,7 @@ describe('Header : changer de signataire', () => {
     await user.click(screen.getByRole('button', { name: 'Menu' }));
     await user.click(screen.getByRole('button', { name: /Saisie au nom de/ }));
     expect(StorageService.getCurrentUser()).toBe('Gaëtan');
-    expect(screen.getByText(/Saisir au nom de Aricia \?/)).toBeTruthy();
+    expect(screen.getByText('Qui signe les écritures ?')).toBeTruthy();
   });
 
   // VI-12 (rejeu b47cd90b n° 12) : l'en-tête porte `backdrop-blur-md`, ce qui en fait le bloc conteneur de tout `position: fixed` qu'il
@@ -50,7 +50,7 @@ describe('Header : changer de signataire', () => {
     expect(boite.closest('header')).toBeNull();
     expect(boite.parentElement?.parentElement).toBe(document.body);
     // Le fond fixe couvre la fenêtre ; la question et les deux boutons sont dans la boîte.
-    expect(boite).toHaveTextContent('Saisir au nom de Aricia ?');
+    expect(boite).toHaveTextContent('Qui signe les écritures ?');
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('Header : changer de signataire', () => {
     rendre();
     await user.click(screen.getByRole('button', { name: 'Menu' }));
     await user.click(screen.getByRole('button', { name: /Saisie au nom de/ }));
-    await user.click(screen.getByRole('button', { name: 'Saisir au nom de Aricia' }));
+    await user.click(screen.getByRole('button', { name: 'Saisir au nom d’Aricia' }));
     expect(StorageService.getCurrentUser()).toBe('Aricia');
   });
 });
