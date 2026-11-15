@@ -62,8 +62,11 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   contextRef.current = context;
   useEffect(() => {
     if (localOnly) {
+      /* Hors connexion (?dev-local) : pas de relevé, mais « Mes conversations » s'ouvre quand même et dit l'état (d3p2, vue 8). */
       brewerJobs.stop();
-      return;
+      const showLocalInbox = () => { setFocus(null); setInbox(true); };
+      window.addEventListener('brewer-inbox-open', showLocalInbox);
+      return () => window.removeEventListener('brewer-inbox-open', showLocalInbox);
     }
     void brewerJobs.start();
     const refresh = () => { if (document.visibilityState !== 'hidden') void brewerJobs.refresh(); };
@@ -100,8 +103,10 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     : pending.length ? `${pending.length} ${pending.length > 1 ? 'questions en cours' : 'question en cours'}`
     : 'Mes conversations';
   if (localOnly)
-    /* b1r : « hors connexion » se lit dans l'entrée Compagnon du + et au pied du rail, plus dans une pastille flottante. */
-    return null;
+    /* b1r : « hors connexion » se lit dans l'entrée Compagnon du + et au pied du rail, plus dans une pastille flottante ;
+       la boîte des conversations, elle, s'ouvre et dit « Compagnon hors connexion · mode local » (d3p2, vue 8). */
+    return <ConversationsBoite open={inbox} onClose={() => setInbox(false)} lignes={[]} enLigne={false} erreurLien="" notice="" suppressionEnCours={false}
+      onOuvrir={() => undefined} onChoisir={() => undefined} onConfirmer={() => undefined} onIndice={() => undefined} />;
   const conversations = brewerConversations(state.jobs);
   const remove = async () => {
     if (!removal || deleting) return;

@@ -209,6 +209,18 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
 
   useEffect(() => { setCurseur(0); }, [actif?.id]);
 
+  /* r3p2 : le champ est actif, clavier levé, dès l'ouverture. `autoFocus` seul ne suffit pas au toucher : le toucher qui a ouvert
+     la recherche laisse le focus sur la loupe (le brasseur tapait « cit » dans le vide). On le reprend après le premier rendu. */
+  useEffect(() => {
+    if (!open) return;
+    const prendre = () => {
+      const champ = document.querySelector<HTMLInputElement>('[data-page-overlay] [cmdk-input]');
+      if (champ && document.activeElement !== champ) champ.focus();
+    };
+    const a = requestAnimationFrame(prendre), b = window.setTimeout(prendre, 120);
+    return () => { cancelAnimationFrame(a); window.clearTimeout(b); };
+  }, [open]);
+
   if (!open) return null;
 
   const nombre = resultats.visible < resultats.total
@@ -444,7 +456,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
     return (
       <div
         data-page-overlay
-        className="fixed inset-0 z-[100] flex items-start justify-center pt-[72px] bg-cave-950/60"
+        className="fixed inset-0 z-[100] flex items-start justify-center pt-[72px] palette-voile"
         onPointerDown={(e) => { if (e.target === e.currentTarget) fermer(); }}
       >
         <Command
@@ -593,7 +605,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
   return (
     <div
       data-page-overlay
-      className="fixed inset-0 z-[100] bg-cave-950/55"
+      className="fixed inset-0 z-[100] palette-voile"
       onPointerDown={(e) => { if (e.target === e.currentTarget) fermer(); }}
     >
       <Command
