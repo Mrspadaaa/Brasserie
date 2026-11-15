@@ -1041,6 +1041,28 @@ describe('Alcalinité, acide et bouton Doser', () => {
     expect(screen.getByText(/sous le repère des malts/)).toBeInTheDocument();
   });
 
+  /*
+   * RL-5 (15.11) : l'alcalinité de l'empâtage est déjà dans le repère des malts, mais le profil
+   * du style impose son HCO₃⁻ : l'acide est dosé. L'écran disait « sous le repère des malts »
+   * à côté d'un pH correct. Il dit maintenant pourquoi il dose : le profil du style.
+   * Le brasseur garde ce dosage (« ça dépend du style »), le calcul ne change pas.
+   */
+  it('RL-5 : dit que l’acide est dosé pour le profil du style quand l’alcalinité est déjà dans le repère', () => {
+    const source: WaterSource = { ...DEFAULT_WATER_SOURCE, hco3: 100 };
+    function Host() {
+      const [state, setState] = useState<WaterState>({ ...ETAT, styleCode: '01A', diRatioPct: 0 });
+      return <SaltSolver
+        brew={{ grist: [{ name: 'Pale Ale', weightKg: 5, colorEbc: 16 }], totalGristKg: 5 } as never}
+        source={source} onSourceChange={() => {}} beerEbc={16} beerVolumeL={25} state={state} onChange={setState} noSparge={false} />;
+    }
+    render(<Host />);
+    const mash = screen.getByRole('tabpanel', { name: 'Empâtage' });
+    expect(within(mash).getByText(/Alcalinité résiduelle — repère -17 à 35/)).toBeInTheDocument();
+    expect(mash).toHaveTextContent(/à l’empâtage\s*3,3\s*mL/);
+    expect(within(mash).getByText(/acide dosé pour le profil/)).toHaveTextContent(/profil .+\./);
+    expect(mash).not.toHaveTextContent(/sous le repère des malts/);
+  });
+
   it('ne crie pas au sur-acidifiage sur une dose calculée', () => {
     monter({ doses: {}, diRatioPct: 0 }, 6);
     expect(screen.queryByText(/sous le repère des malts/)).not.toBeInTheDocument();

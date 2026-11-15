@@ -178,9 +178,8 @@ describe('Corrections de la passe du 14.11 : la page ressemble à la maquette r1
   });
 
   it('n° 4 : pas de carte « Détail » ni « Potentiel » au repos ; leurs liens sont sur la ligne du total, et chaque action reste atteignable', async () => {
-    const onOpenHopV55 = vi.fn();
     const recipe = recette();
-    const { container } = render(<RecipePage recipe={recipe} batches={[]} config={defaultConfig} onClose={vi.fn()} onEdit={vi.fn()} onDuplicate={vi.fn()} onDelete={vi.fn()} onBrew={vi.fn()} onOpenBatch={vi.fn()} onOpenHopV55={onOpenHopV55} />);
+    const { container } = render(<RecipePage recipe={recipe} batches={[]} config={defaultConfig} onClose={vi.fn()} onEdit={vi.fn()} onDuplicate={vi.fn()} onDelete={vi.fn()} onBrew={vi.fn()} onOpenBatch={vi.fn()} />);
     expect(container.querySelector('[data-recipe-section="Détail des ajouts et IBU"]')).toBeNull();
     expect(container.querySelector('[data-recipe-section="Potentiel aromatique"]')).toBeNull();
     const liens = container.querySelector('[data-element="r1-houblons-liens"]') as HTMLElement;
@@ -196,11 +195,10 @@ describe('Corrections de la passe du 14.11 : la page ressemble à la maquette r1
     expect(detail.hidden).toBe(true);
     fireEvent.click(container.querySelector('[data-houblon="citra"]') as HTMLElement);
     expect(detail.hidden).toBe(false);
-    // Le potentiel aromatique : le rapport, et l'atelier Houblons V5.5.
+    // Le potentiel aromatique : le rapport. L'entrée « atelier Houblons V5.5 » est retirée (15.11).
     fireEvent.click(within(liens).getByRole('button', { name: 'Potentiel aromatique' }));
     expect(await screen.findByLabelText('Potentiel aromatique de la recette')).toBeInTheDocument();
-    fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir l’atelier Houblons V5.5' }));
-    expect(onOpenHopV55).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('button', { name: /V5.5/ })).toBeNull();
   });
 
   it('n° 7 : les noms de houblon sont des boutons soulignés en pointillé', () => {

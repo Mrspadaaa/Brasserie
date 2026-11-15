@@ -31,12 +31,11 @@ vi.mock('../../src/ui/CommandPalette', () => ({
 vi.mock('../../src/pages/RecipePage', async () => {
   const { PageShell } = await import('../../src/pages/PageShell');
   return {
-    RecipePage: ({ recipe, onClose, onEdit, onOpenHopV55 }: { recipe: Recipe; onClose: () => void; onEdit: () => void; onOpenHopV55: () => void }) => {
+    RecipePage: ({ recipe, onClose, onEdit }: { recipe: Recipe; onClose: () => void; onEdit: () => void }) => {
       const [taps, setTaps] = React.useState(0);
       return <PageShell title={`Recette ${recipe.name}`} onClose={onClose}>
         <button type="button" onClick={() => setTaps(n => n + 1)}>Compteur local {taps}</button>
         <button type="button" onClick={onEdit}>Modifier la recette</button>
-        <button type="button" onClick={onOpenHopV55}>Atelier V5.5</button>
       </PageShell>;
     }
   };

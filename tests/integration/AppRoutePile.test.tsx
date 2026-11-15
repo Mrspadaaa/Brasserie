@@ -29,12 +29,11 @@ vi.mock('../../src/ui/CommandPalette', () => ({
 vi.mock('../../src/pages/RecipePage', async () => {
   const { PageShell } = await import('../../src/pages/PageShell');
   return {
-    RecipePage: ({ recipe, onClose, onEdit, onOpenHopV55 }: { recipe: Recipe; onClose: () => void; onEdit: () => void; onOpenHopV55: () => void }) => {
+    RecipePage: ({ recipe, onClose, onEdit }: { recipe: Recipe; onClose: () => void; onEdit: () => void }) => {
       const [taps, setTaps] = React.useState(0);
       return <PageShell title={`Recette ${recipe.name}`} onClose={onClose}>
         <button type="button" onClick={() => setTaps(n => n + 1)}>Compteur local {taps}</button>
         <button type="button" onClick={onEdit}>Modifier la recette</button>
-        <button type="button" onClick={onOpenHopV55}>Atelier V5.5</button>
       </PageShell>;
     }
   };
@@ -145,7 +144,8 @@ describe('App · pile de routes (#162)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Compteur local 1' }));
     const shell = baseShell();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Atelier V5.5' }));
+    // 15.11 : plus de bouton « Atelier V5.5 » ; la couche reste ouvrable par la route (recette, conseil, fonctions).
+    openLayer({ view: 'hopV55', recipeId: SAVED.id });
     expect(await screen.findByText('Atelier ouvert')).toBeTruthy();
     expect(pile().pile().map(route => route.view)).toEqual(['tabs', 'recipe', 'hopV55']);
     await goBack('recipe');
