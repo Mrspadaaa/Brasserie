@@ -308,6 +308,17 @@ export const App: React.FC = () => {
     window.addEventListener('affinee:ouvrir-stocks', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-stocks', ouvrir);
   }, []);
+  // « Mes clients › » (Atelier, Contacts) et « Agenda du Bord › » (Atelier, À faire) : l'événement annulable ouvre l'onglet visé.
+  useEffect(() => {
+    const versClients = (event: Event) => { setActiveTab('clients'); event.preventDefault(); };
+    const versBord = (event: Event) => { setActiveTab('dashboard'); event.preventDefault(); };
+    window.addEventListener('affinee:ouvrir-clients', versClients);
+    window.addEventListener('affinee:ouvrir-bord', versBord);
+    return () => {
+      window.removeEventListener('affinee:ouvrir-clients', versClients);
+      window.removeEventListener('affinee:ouvrir-bord', versBord);
+    };
+  }, []);
   // « Modifier la recette › » (Nouveau brassin, recette à adapter au matériel) : l'événement annulable ouvre l'assistant sur cette recette.
   const recipesRef = useRef<Recipe[]>([]);
   useEffect(() => {
