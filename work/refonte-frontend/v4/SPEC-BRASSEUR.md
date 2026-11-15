@@ -1767,3 +1767,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : Finances, 8 vues choisies. Simplicité (les parcours) : mal ciblé, à relancer avec plusieurs agents en parallèle, à partir de ses vrais parcours et de ses mots, pas de parcours supposés.)
 - **15.11**, mot pour mot, sur la page des feuilles « Brasser » (https://claude.ai/artifact/W9Lm1mN8cafAYAu2n8dq4B) : « Feuille Brasser : d1b »
   (lu : d1b choisie, à porter 1:1.)
+- **15.11**, mot pour mot, sur « Caisse et semaines » (https://claude.ai/artifact/9FsyLTSLFpwsAvH3D64YVv) : « Caisse et semaines f1 top ! Une vue full screen sur téléphone qui fait une rotation horizontal, possible ? Et aussi penser aux projets sans budget ou autre activité. Type nettoyage fenêtre Pose du sol Prospection ECT... »
+  (lu : f1 choisie. Au téléphone : un plein écran en paysage. Sur Android (Chrome, app installée) on peut verrouiller l'orientation en plein écran ; sur iPhone, pas de verrouillage, mais la vue se met en page en paysage quand on tourne le téléphone. Règle générale : la frise porte aussi des activités sans budget (temps seul) ; les exemples ne bornent pas le cas, L01.)
