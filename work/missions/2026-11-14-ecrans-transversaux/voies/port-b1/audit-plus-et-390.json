@@ -1,0 +1,135 @@
+[
+ {
+  "id": "bord",
+  "menu": [
+   "Nouvelle écriture facture ou à la main",
+   "Facture photo",
+   "Vente",
+   "Brassin sera LOT-001",
+   "Courses",
+   "Recette",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "finances",
+  "menu": [
+   "Nouvelle écriture facture ou à la main",
+   "Facture photo ou PDF",
+   "Vente",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "brassins",
+  "menu": [
+   "Nouveau brassin sera LOT-001",
+   "Recette",
+   "Idée",
+   "Courses",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "recettes",
+  "menu": [
+   "Nouvelle recette",
+   "Brassin sera LOT-001",
+   "Idée",
+   "Houblon",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "atelier",
+  "menu": [
+   "Nouvelle idée",
+   "Recette",
+   "Brassin sera LOT-001",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "volumes",
+  "menu": [
+   "Brassin sera LOT-001",
+   "Recette",
+   "Courses",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "stock",
+  "menu": [
+   "Nouvel article",
+   "Facture achat reçu",
+   "Courses",
+   "Houblon",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "courses",
+  "menu": [
+   "Copier la liste",
+   "Article",
+   "Facture achat reçu",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "futs",
+  "menu": [
+   "Nouveau fût sera F-001",
+   "Vente fût vendu",
+   "Client",
+   "Matériel",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "materiel",
+  "menu": [
+   "Nouveau matériel",
+   "Fût",
+   "Écriture achat",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "houblons",
+  "menu": [
+   "Nouvelle variété",
+   "Article en stock",
+   "Recette",
+   "Courses",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "clients",
+  "menu": [
+   "Nouveau client",
+   "Vente",
+   "Tarif",
+   "Fût en prêt",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "impot",
+  "menu": [
+   "Vente",
+   "Compagnon hors connexion"
+  ]
+ },
+ {
+  "id": "tarifs",
+  "menu": [
+   "Nouveau tarif",
+   "Client",
+   "Vente",
+   "Compagnon hors connexion"
+  ]
+ }
+]

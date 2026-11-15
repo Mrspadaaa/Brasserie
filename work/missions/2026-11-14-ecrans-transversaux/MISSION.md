@@ -39,6 +39,21 @@ rail ») ; aucune bibliothèque nouvelle prévue.
 | voie-p2-m2 | m2 corrigée et enrichie de ses greffes | conception | concepteur | opus | 60 | `voies/voie-p2-m2/**` | voie-critique | controle-serie.mjs ; baseline : INVENTAIRE.md § Ce qui existe ; controle-choix.mjs | brasseur | passe 2 |
 | voie-p2-b3 | b3 corrigée et enrichie de ses greffes | conception | concepteur | opus | 60 | `voies/voie-p2-b3/**` | voie-critique | controle-serie.mjs ; baseline : INVENTAIRE.md § Ce qui existe ; controle-choix.mjs | brasseur | passe 2 |
 | voie-p2-d3 | d3 corrigée et enrichie de ses greffes | conception | concepteur | opus | 60 | `voies/voie-p2-d3/**` | voie-critique | controle-serie.mjs ; baseline : INVENTAIRE.md § Ce qui existe ; controle-choix.mjs | brasseur | passe 2 |
+| voie-r-m3 | m3 (son choix), période refaite en 3 lectures (ET-PER) | conception | concepteur | opus | 60 | `voies/voie-r-m3/**` | — | controle-serie.mjs --vues ; baseline : m3 telle quelle ; controle-choix.mjs | brasseur | reprise |
+| voie-r-b1 | b1 (son choix), + dynamique par écran (ET-PLUS) | conception | concepteur | opus | 60 | `voies/voie-r-b1/**` | — | controle-serie.mjs --vues ; baseline : b1 telle quelle ; controle-choix.mjs | brasseur | reprise |
+| port-reglages | port 1:1 de d3p2, Réglages 4 onglets | jugement | auteur | sonnet | 120 | worktree : SettingsModal, reglages/** ; `voies/port-reglages/**` | — | tsc, vitest, build, captures côte à côte ; controle-choix.mjs | pilote | reprise |
+| port-feuilles | port 1:1 de d3p2, Journal, Connexions, Saisir au nom, Conversations, Vente | jugement | auteur | sonnet | 120 | worktree : AuditLog, CloudConfig, feuilles/** ; `voies/port-feuilles/**` | — | tsc, vitest, build, captures côte à côte ; controle-choix.mjs | pilote | reprise |
+| port-b1 | port 1:1 de b1r, + selon l'écran | jugement | auteur | sonnet | 120 | worktree : BottomNav, fabActions, navigation/** ; `voies/port-b1/**` | — | tsc, vitest, build, audit-plus étendu (ET-PLUS), captures ; controle-choix.mjs | pilote | reprise |
+| port-m3 | port 1:1 de m3 + période m3r-a | jugement | auteur | sonnet | 120 | worktree : Header, plus/**, periode/** ; `voies/port-m3/**` | port-feuilles | tsc, vitest (ET-PER), build, captures ; controle-choix.mjs | pilote | reprise |
+| port-r3 | port 1:1 de r3p2, la recherche | jugement | auteur | sonnet | 120 | worktree : CommandPalette, recherche/** ; `voies/port-r3/**` | port-b1 | tsc, vitest, build, captures ; controle-choix.mjs | pilote | reprise |
+| voie-r2-b1 | seconde reprise du + : flottant, commun toujours là, écran en tête | conception | concepteur | opus | 60 | `voies/voie-r2-b1/**` | — | controle-serie.mjs --vues ; baseline : b1 telle quelle ; controle-choix.mjs | brasseur | reprise |
+
+r3p2 choisie : « r3p2 top ».
+
+m3 choisie : « m3 -> attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits, attention à ce détails très important !! ».
+b1 choisie : « b1 -> le + doit être dynamique en fonction de l'écran ou on est ».
+d3p2 choisie : « Dessiné / d3p2 / Le métier dessiné, bilan des réglages en tête. ».
+Recherche : choix ouvert (aucun mot le 15.11) ; l'app actuelle reste.
 
 Fable interdit jusqu'à nouvel ordre (l'utilisateur, 10.11) : aucune série en Fable ; critique et tri en Opus. Le contrôle M13
 « aucune série en Fable » reste donc en échec, sciemment.
@@ -52,6 +67,8 @@ v0 : un concepteur Opus par série (destinations reprise en trois agents, d2 à 
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Le + flottant | seconde reprise du + · 15.11 | https://claude.ai/artifact/E3MHXvErduH8FKH2NtzBpf | `work/refonte-frontend/v4/outils/pages/2026-11-15-plus-flottant/index.html` |
+| Période et + | reprises m3 et b1 · 15.11 | https://claude.ai/artifact/H9K7tsC6CKoQHQNZW9pL6P | `work/refonte-frontend/v4/outils/pages/2026-11-15-periode-et-plus/index.html` |
 | Recherche, menu, barre et + | v0 et passe 2 · 14.11 | https://claude.ai/artifact/64BnDUYmehXQUv2kTJRUAu | `work/refonte-frontend/v4/outils/pages/2026-11-14-ecrans-transversaux/index.html` |
 
 ## Boucle de retour
@@ -67,3 +84,11 @@ Concepteurs Opus ~250 k chacun en v0, critique ~150 k.
 
 ## Signature
 État au 14.11 : inventaire fait ; 16 v0 (d4 écartée) ; passe 2 r3p2, m2p2, b3p2, d3p2 (SERIE OK ×4 ; critique : ACCEPT r3p2, m2p2, d3p2 ; b3p2 corrigée après REJET) ; page publiée. PAGE OK, PAGE-CHOIX OK (--min=4). Ouvert : son choix par rangée, puis port 1:1 dans un worktree à soi, harmonisation (en-tête, + au 1280, données communes : PASSE2.md), tests, déploiement, jeu en ligne. systeme.mjs mission : ECHEC sur un seul point, la série Fable, interdite (10.11).
+
+## Contrat réécrit — 15.11 (pilote), choix du brasseur
+Paroles, mot pour mot : « Page « Plus » m3 — Mhmm utiliser une plage comme pour les finances.mais ai non tout bien — r3p2 top » ; et le 15.11 07:22 :
+d3p2 « Le métier dessiné » ; m3 « attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits » ; b1 « le + doit être dynamique en fonction de l'écran ou on est ».
+À faire : porter 1:1 m3 (la période en plage comme dans Finances « du … au », frise s2ap2, réglable partout où elle sert), b1 avec un + selon l'écran, d3p2, r3p2 (recherche) ;
+dans un worktree propre ; tests, build, captures 390/1280 deux thèmes regardées, critique Opus ; puis mise en ligne selon la méthode (check-firebase-config obligatoire) et jeu en ligne.
+- Le + selon l'écran (page Période et +), mot pour mot : « b1r — Non mais certaines actions doivent toujours être possible, juste celle de l'écran actuel sont plus mis en avant. Et le bouton doit toujours être flottant.... ».
+  Lecture du pilote : b1r refusée telle quelle. Le + reste toujours flottant ; son menu garde toujours les actions communes (Nouvelle écriture, Créer une recette, Lancer un brassin…) et met en tête, en avant, celles de l'écran courant. 2 ou 3 variantes de ce menu (mini maquettes, critique Opus), page neuve, puis port.

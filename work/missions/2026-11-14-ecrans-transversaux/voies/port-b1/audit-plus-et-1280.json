@@ -1,0 +1,135 @@
+[
+ {
+  "id": "bord",
+  "menu": [
+   "Nouvelle écriture facture ou à la main N",
+   "Facture photo F",
+   "Vente V",
+   "Brassin sera LOT-001 B",
+   "Courses L",
+   "Recette R",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "finances",
+  "menu": [
+   "Nouvelle écriture facture ou à la main N",
+   "Facture photo ou PDF F",
+   "Vente V",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "brassins",
+  "menu": [
+   "Nouveau brassin sera LOT-001 N",
+   "Recette R",
+   "Idée I",
+   "Courses L",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "recettes",
+  "menu": [
+   "Nouvelle recette N",
+   "Brassin sera LOT-001 B",
+   "Idée I",
+   "Houblon H",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "atelier",
+  "menu": [
+   "Nouvelle idée N",
+   "Recette R",
+   "Brassin sera LOT-001 B",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "volumes",
+  "menu": [
+   "Brassin sera LOT-001 B",
+   "Recette R",
+   "Courses L",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "stock",
+  "menu": [
+   "Nouvel article N",
+   "Facture achat reçu F",
+   "Courses L",
+   "Houblon H",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "courses",
+  "menu": [
+   "Copier la liste N",
+   "Article A",
+   "Facture achat reçu F",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "futs",
+  "menu": [
+   "Nouveau fût sera F-001 N",
+   "Vente fût vendu V",
+   "Client K",
+   "Matériel M",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "materiel",
+  "menu": [
+   "Nouveau matériel N",
+   "Fût U",
+   "Écriture achat E",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "houblons",
+  "menu": [
+   "Nouvelle variété N",
+   "Article en stock A",
+   "Recette R",
+   "Courses L",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "clients",
+  "menu": [
+   "Nouveau client N",
+   "Vente V",
+   "Tarif T",
+   "Fût en prêt U",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "impot",
+  "menu": [
+   "Vente V",
+   "Compagnon brasseur hors connexion C"
+  ]
+ },
+ {
+  "id": "tarifs",
+  "menu": [
+   "Nouveau tarif N",
+   "Client K",
+   "Vente V",
+   "Compagnon brasseur hors connexion C"
+  ]
+ }
+]
