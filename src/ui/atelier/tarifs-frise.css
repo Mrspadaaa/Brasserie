@@ -1,11 +1,14 @@
 /* Atelier › Tarifs : la frise kxc (maquette v1/couv/kxc). Classes préfixées tf- (L26). Tokens des deux thèmes (themes.css). */
-.tf {
+/* La feuille (Sheet) vit dans un portail, hors de .tf : elle reprend les mêmes variables. */
+.tf, .tf-sheet {
   --tf-page: rgb(var(--cave-950)); --tf-pan: rgb(var(--cave-900)); --tf-bord: rgb(var(--cave-800)); --tf-bordm: rgb(var(--cave-700));
   --tf-t1: rgb(var(--cave-texte-50)); --tf-t2: rgb(var(--cave-texte-400));
   --tf-fin: rgb(var(--area-finances-texte)); --tf-prod: rgb(var(--area-production-texte)); --tf-alr: rgb(var(--alert-texte)); --tf-sto: rgb(var(--area-stocks-texte));
   --tf-acc: rgb(var(--ebc-straw)); --tf-onacc: rgb(var(--sur-paille));
   color: var(--tf-t1); font-variant-numeric: tabular-nums;
 }
+.tf { scroll-margin-top: 76px; }
+.tf-sheet { color: var(--tf-t1); }
 .tf-tete { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; }
 .tf-tete h3 { font-size: 17px; font-weight: 700; margin: 0; }
 .tf-base { font-size: 13px; color: var(--tf-t2); }
@@ -13,7 +16,7 @@
 .tf-sp { flex: 1; }
 .tf-noter { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--tf-acc); color: var(--tf-onacc); font-weight: 700; font-size: 15px; }
 .tf-bieres { display: flex; border: 1px solid var(--tf-bordm); border-radius: 12px; overflow-x: auto; scrollbar-width: none; }
-.tf-bieres button { flex: 1 0 auto; min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--tf-t1); border-left: 1px solid var(--tf-bord); white-space: nowrap; }
+.tf-bieres button { flex: 1 1 auto; min-height: 44px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--tf-t1); border-left: 1px solid var(--tf-bord); white-space: nowrap; }
 .tf-bieres button:first-child { border-left: 0; }
 .tf-bieres button[aria-pressed='true'] { background: var(--tf-acc); color: var(--tf-onacc); font-weight: 700; }
 .tf-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -27,7 +30,7 @@
 .tf-ech { margin: 2px 0; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .tf-ech::before { content: ''; width: 14px; border-top: 2px solid var(--tf-t1); }
 .tf-scene { position: relative; width: 100%; }
-.tf-scene svg { position: absolute; inset: 0; overflow: visible; }
+.tf-scene > svg { position: absolute; inset: 0; overflow: visible; }
 .tf-scene text { font-family: inherit; }
 .tf-sep { stroke: var(--tf-bord); stroke-width: 1; }
 .tf-fmt { color: var(--tf-fin); display: flex; }

@@ -38,6 +38,15 @@ describe('ventesAuLitre', () => {
     ]);
     expect(v.map((x) => [x.qui, x.genre, x.biere])).toEqual([[SANS_CLIENT, 'inconnu', null], ['Bar inconnu', 'inconnu', 'Blonde']]);
   });
+  it('deux ventes sans client restent deux prix ; un client nommé n’en garde qu’un (le plus récent)', () => {
+    const v = lire([
+      vente('S1', '01.10.2026', undefined, [['B1', 'verre', 0.3, 1, 600]]),
+      vente('S2', '02.10.2026', undefined, [['B1', 'verre', 0.3, 1, 650]]),
+      vente('N1', '01.10.2026', 'Bar X', [['B1', 'verre', 0.3, 1, 500]]),
+      vente('N2', '02.10.2026', 'Bar X', [['B1', 'verre', 0.3, 1, 550]]),
+    ]);
+    expect(v.map((x) => [x.qui, x.prix]).sort()).toEqual([['Bar X', 5.5], [SANS_CLIENT, 6], [SANS_CLIENT, 6.5]]);
+  });
   it('nomme les formats et classe les bières', () => {
     expect([nomFormat('fut', 20), nomFormat('33cl', 0.33), nomFormat('carton', 3.96), nomFormat('verre', 0.3), nomFormat('xx', 1.5)])
       .toEqual(['Fût 20 L', 'Bouteille 33 cl', 'Carton 12 × 33 cl', 'Verre 3 dl', 'xx · 1,5 L']);

@@ -62,7 +62,8 @@ export function ventesAuLitre(input: {
       const prix = Math.round(l.amountCents / q) / 100;
       const biere = input.biereDuLot(lue.batchId ?? f.batchId);
       const qui = client?.name ?? (nom || SANS_CLIENT);
-      const cle = `${norm(qui)}|${biere ?? ''}|${lue.formatId}|${lue.litresUnite}`;
+      // Une vente sans client n'est pas « le même client » qu'une autre : chacune garde son prix (le plus récent ne remplace que le même client nommé).
+      const cle = `${norm(qui)}|${biere ?? ''}|${lue.formatId}|${lue.litresUnite}${nom ? '' : `|${t.id}|${l.id}`}`;
       if (vues.has(cle)) continue;
       vues.set(cle, { cle, qui, genre, biere, formatId: lue.formatId, litresUnite: lue.litresUnite, prix, litre: prix / lue.litresUnite,
         date: t.date, transactionId: t.id, demo: input.estDemo(t.id) });
