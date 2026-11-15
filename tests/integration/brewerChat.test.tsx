@@ -608,9 +608,9 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Stock à revérifier')).toBeVisible();
     const currentProduct = screen.getByRole('link', { name: /Maris Otter/ });
     expect(currentProduct).toHaveTextContent('1 kg');
-    expect(currentProduct).toHaveTextContent('CHF 4.50');
-    expect(currentProduct).toHaveTextContent('Lien produit vérifié');
-    expect(screen.getByRole('link', { name: /Röstgerste/ })).not.toHaveTextContent('Lien produit vérifié');
+    // fx2a : prix à la française (« 4,50 CHF »), plus de texte « Lien produit vérifié ».
+    expect(currentProduct).toHaveTextContent(/4,50\s*CHF/);
+    expect(currentProduct).not.toHaveTextContent('Lien produit vérifié');
   });
   it('garde les petits conditionnements et deux boutiques sans affirmer un stock sans preuve', async () => {
     const t = turn();

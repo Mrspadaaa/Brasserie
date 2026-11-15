@@ -75,6 +75,7 @@ export function LigneChangement({
   unite,
   sousLignes = [],
   raison,
+  facultatif = false,
   disabled = false
 }: {
   label: string;
@@ -86,12 +87,14 @@ export function LigneChangement({
   unite?: string;
   sousLignes?: SousLigne[];
   raison?: string;
+  /** Ligne facultative : le libellé le dit en petit, la barre est grise. */
+  facultatif?: boolean;
   disabled?: boolean;
 }) {
   const simple = sousLignes.length === 0;
   return (
-    <div className="cmp-ligne-prop">
-      <div className={`cmp-br${simple && barre.genre !== 'texte' ? '' : ' cmp-br-simple'}`}>
+    <div className="cmp-ligne-prop" title={raison || undefined}>
+      <div className={`cmp-br${simple && barre.genre !== 'texte' ? '' : ' cmp-br-simple'}${facultatif ? ' cmp-facult' : ''}`}>
         <button
           type="button"
           role="checkbox"
@@ -103,7 +106,10 @@ export function LigneChangement({
         >
           {coche ? <Icone nom="ok" /> : null}
         </button>
-        <span>{label}</span>
+        <span>
+          {label}
+          {facultatif ? <small>facultatif</small> : null}
+        </span>
         {simple && barre.genre !== 'texte' ? <BarreChangement barre={barre} unite={unite} /> : null}
         {simple ? (
           <span className="cmp-m">
@@ -122,7 +128,7 @@ export function LigneChangement({
           </span>
         </p>
       ))}
-      {raison ? <small className="cmp-raison">{raison}</small> : null}
+      {raison ? <small className="sr-only">{raison}</small> : null}
     </div>
   );
 }

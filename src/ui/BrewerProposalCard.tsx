@@ -3,8 +3,8 @@ import { LoaderCircle } from 'lucide-react';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
 import { sameField } from '../../functions/src/brewerFields';
 import { SALTS, ACIDS } from '../domain/water';
-import { barreAvantApres } from './companion/derive';
-import { Icone } from './companion/parts';
+import { barreAvantApres, nombreTexte } from './companion/derive';
+import { Icone, M } from './companion/parts';
 import { LigneChangement } from './companion/proposition';
 
 const names: Record<string, string> = {
@@ -105,22 +105,48 @@ function differences(
   }
   return [{ label: prefix, before, after }];
 }
+/** Une ligne est facultative quand la réponse le dit : champ `optional`, ou raison qui commence par « Facultatif ». */
+export const estFacultatif = (ch: BrewerProposal['changes'][number]): boolean =>
+  (ch as { optional?: unknown }).optional === true || /^\s*facultatif\b/i.test(ch.reason ?? '');
+
+/** Libellé court d'une ligne (la colonne est étroite) : « Mosaic · contact J+9 » → « Contact Mosaic J+9 », « Température du dry hop » → « Temp. dry hop ». */
+export function libelleCourt(label: string): string {
+  const contact = /^(.+?)\s·\scontact\s(J\+\d+)$/i.exec(label);
+  if (contact) return `Contact ${contact[1]} ${contact[2]}`;
+  return label.replace(/^Température\s+(?:du |de la |de l['’]|des |de |d['’])?/i, 'Temp. ').replace(/\s·\s/g, ' ');
+}
+
+/** Écart de dose en grammes des changements de poids cochés (`unit` g, valeurs numériques) ; `null` si aucune dose ne change. */
+export function ecartDoseG(changes: BrewerProposal['changes'], cochees: string[]): { ecartG: number; existe: boolean } {
+  const doses = changes.filter((ch) => ch.unit === 'g' && typeof ch.before === 'number' && typeof ch.value === 'number' && /weight|dose/i.test(ch.path ?? ''));
+  return {
+    existe: doses.length > 0,
+    ecartG: doses.filter((ch) => cochees.includes(ch.id)).reduce((s, ch) => s + (ch.value as number) - (ch.before as number), 0)
+  };
+}
+
 /**
  * Proposition à valider (forme p2a) : une ligne par changement — case, libellé, barre, avant barré → après.
- * Contrat inchangé : { proposal, disabled, draft, onDecide(ids, decision) }. La sélection suit les groupes liés (eau).
+ * Contrat : { proposal, disabled, draft, onDecide(ids, decision) }. La sélection suit les groupes liés (eau).
+ * Une ligne facultative démarre décochée. `dosesTotalesG` et `volumeL` (optionnels, du chat) donnent la dose totale en g/L ; sans eux,
+ * la ligne ne dit que l'écart de dose en grammes.
  */
 export function BrewerProposalCard({
   proposal,
   disabled,
   onDecide,
-  draft
+  draft,
+  dosesTotalesG,
+  volumeL
 }: {
   proposal: BrewerProposal;
   disabled: boolean;
   draft: boolean;
   onDecide: (ids: string[], decision: 'apply' | 'dismiss') => Promise<void>;
+  dosesTotalesG?: number;
+  volumeL?: number;
 }) {
-  const [selected, setSelected] = useState(proposal.changes.map((ch) => ch.id));
+  const [selected, setSelected] = useState(() => proposal.changes.filter((ch) => !estFacultatif(ch)).map((ch) => ch.id));
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const decide = async (decision: 'apply' | 'dismiss') => {
@@ -157,7 +183,7 @@ export function BrewerProposalCard({
         </span>
         {!done && <span className="cmp-n">{selected.length} cochée{selected.length > 1 ? 's' : ''}</span>}
       </div>
-      <strong className="cmp-prop-titre">{proposal.title}</strong>
+      <strong className="sr-only">{proposal.title}</strong>
       {!done && (
         <>
           {proposal.changes.some((ch) => ch.group === 'water') && (
@@ -173,7 +199,8 @@ export function BrewerProposalCard({
             return (
               <LigneChangement
                 key={ch.id}
-                label={ch.label}
+                label={libelleCourt(ch.label)}
+                facultatif={estFacultatif(ch)}
                 coche={selected.includes(ch.id)}
                 disabled={busy || disabled}
                 onToggle={() => toggle(ch)}
@@ -194,11 +221,29 @@ export function BrewerProposalCard({
               />
             );
           })}
-          {draft && (
-            <p className="cmp-note">
-              Ces champs seront remplis dans le brouillon. Tu gardes le bouton habituel pour enregistrer la recette.
-            </p>
-          )}
+          {(() => {
+            const { ecartG, existe } = ecartDoseG(proposal.changes, selected);
+            if (!existe) return null;
+            const connu = typeof dosesTotalesG === 'number' && typeof volumeL === 'number' && volumeL > 0;
+            const gl = (g: number) => nombreTexte(Math.round((g / (volumeL as number)) * 10) / 10);
+            const ecart = `${ecartG < 0 ? '−' : ecartG > 0 ? '+' : ''}${nombreTexte(Math.abs(ecartG))}`;
+            return (
+              <div className="cmp-total">
+                <span>{connu ? 'Dose totale' : 'Écart de dose'}</span>
+                <span>
+                  {connu ? (
+                    <>
+                      <M n={gl(dosesTotalesG as number)} u="g/L" /> inchangée · <M n={gl((dosesTotalesG as number) + ecartG)} u="g/L" /> si cochée
+                    </>
+                  ) : (
+                    <>
+                      inchangé · <M n={ecart} u="g" /> si coché
+                    </>
+                  )}
+                </span>
+              </div>
+            );
+          })()}
           {error && (
             <p role="alert" className="cmp-note cmp-erreur">
               {error}

@@ -1,0 +1,42 @@
+/* Réponse, urgent, fournisseurs, bureau (fx2a) : les pièces de la maquette p2a que companion.css n'avait pas reprises, préfixées cmp-.
+   Valeurs de `style.css` de la maquette, sans changement. Rien ici ne retire ni ne change une règle de companion.css / plus.css. */
+
+/* Proposition : ligne facultative (maquette .p2a-facult) et ligne « Dose totale » (.p2a-total). */
+.cmp-facult { color: var(--t); }
+.cmp-facult .cmp-ap { background: var(--trait); }
+.cmp-prop .cmp-br > span:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+.cmp-total { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--t2); padding: 6px 0 4px; border-top: 1px solid var(--bord); margin-top: 2px; }
+.cmp-total > span:last-child { color: var(--t0); text-align: right; }
+.cmp-total .cmp-n { font-weight: 600; }
+/* Le titre de la proposition et les raisons ne se montrent plus (lecteur d'écran seulement, pas de texte d'aide). */
+.cmp-prop .cmp-ligne-prop + .cmp-ligne-prop { border-top: 0; padding-top: 2px; }
+
+/* Prochain contrôle : la pastille (jalon ou rythme) et la phrase sur la même ligne ; les créneaux d'un suivi régulier dessous. */
+.cmp-jalon { height: 28px; padding: 0 8px; border-radius: 10px; background: var(--eauf); color: var(--eaut); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; }
+.cmp-ctl .cmp-jalon + .cmp-ctl-t { grid-column: auto; }
+.cmp-releves { grid-column: 1 / -1; display: flex; gap: 6px; }
+.cmp-releves i { font-style: normal; flex: 1; height: 26px; border-radius: 10px; border: 1px dashed var(--bordm); display: grid; place-items: center; font-size: 12px; color: var(--t); white-space: nowrap; }
+.cmp-releves i.cmp-rl-on { border: 0; background: var(--alr); color: #fff; font-weight: 700; }
+/* Sous une dalle rouge, le contrôle est celui des relevés : pastille rouge, pas de « Au journal » (cadre `urgent`). */
+.cmp-urg ~ .cmp-ctl .cmp-jalon { background: var(--alrf); color: var(--alrt); }
+.cmp-urg ~ .cmp-ctl .cmp-ctl-act { display: none; }
+
+/* Urgent : thermomètre dans la dalle, bouton de rappel pleine largeur. */
+.cmp-thermo { position: relative; height: 22px; margin-top: 4px; }
+.cmp-th-rail { position: absolute; left: 0; right: 0; top: 7px; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .35); }
+.cmp-th-rouge { position: absolute; right: 0; top: 7px; height: 8px; border-radius: 0 4px 4px 0; background: repeating-linear-gradient(135deg, #fff 0 3px, rgba(255, 255, 255, .4) 3px 6px); }
+.cmp-th-vise { position: absolute; top: 2px; width: 3px; height: 18px; background: #fff; border-radius: 2px; }
+.cmp-th-val { position: absolute; top: 0; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255, 255, 255, .35); }
+.cmp-th-grad { position: relative; height: 16px; font-size: 12px; color: #fff; font-weight: 600; }
+.cmp-th-grad > span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.cmp-gros { width: 100%; min-height: 52px; border-radius: 10px; background: var(--act); color: var(--sur-act); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; }
+.cmp-gros svg.cmp-i { width: 20px; height: 20px; }
+
+/* Fournisseurs : les pastilles de stock se lisent en minuscules (« annoncé en stock », « indisponible »). */
+.cmp-stock { text-transform: lowercase; }
+
+/* Bureau (≥ 1024) : la page reste nette derrière le panneau, ancré à droite, environ 32 % de la largeur (maquette : 420 px). */
+@media (min-width: 1024px) {
+  body:has(.cmp-root) [data-vaul-overlay] { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .cmp-root.cmp-root { width: 420px !important; max-width: 420px !important; }
+}
