@@ -38,6 +38,8 @@
 .rg-in.rg-wide{width:15.5rem}
 .rg-in[aria-invalid=true]{color:var(--rg-alt)}
 .rg-todo{font:600 13px var(--rg-sans);color:var(--rg-att);border:1.5px dashed var(--rg-at);background:color-mix(in srgb,var(--rg-at) 10%,transparent);border-radius:13px;box-sizing:border-box;height:30px;min-height:0;line-height:20px;padding:0 10px;display:inline-block;text-align:center;width:6.2rem}
+/* Au toucher, Input pose un <textarea> d'une ligne : le texte part du haut, il faut le descendre au centre de la pastille (27 px utiles, ligne de 20 px). */
+textarea.rg-todo{padding:3.5px 10px 0;overflow:hidden;resize:none}
 .rg-todo::placeholder{color:var(--rg-att);opacity:1}
 .rg-chips{display:inline-flex;gap:4px}
 .rg-chips>button{height:26px;padding:0 10px;border-radius:13px;font:600 13px var(--rg-sans);border:1.5px dashed var(--rg-at);color:var(--rg-att);background:color-mix(in srgb,var(--rg-at) 10%,transparent)}
