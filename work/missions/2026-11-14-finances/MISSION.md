@@ -79,3 +79,8 @@ Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. 
 - Décision (pilote) : le montant d'une pièce payée se modifie tant que son année n'est pas close ni archivée ; ensuite verrou expliqué.
 - Voies : q1 Payer, q2 Apport, q3 Fiche, q4 Modifier (auteurs Sonnet, Possède disjoints), puis relecture indépendante q1/q4 (paiements), test d'écran du critique (Opus), build, garde avant déploiement, mise en ligne (check-firebase-config), jeu en ligne « ZZ TEST ».
 - Modifier, mot pour mot : « m5mo-c Tu choisis, avant / après ok ». Modifier = m5mo-c. Toutes les vues de la page ont maintenant leur choix : porter le tout 1:1 et mettre en ligne.
+
+### Mise en ligne du 15.11 (pilote)
+- Port : Payer m5pa-d, Apport m5ap-a, Fiche m5fo-a, Modifier m5mo-c (q1 à q6, r2) ; relecture paiements (1 bloquant B1 corrigé, émulateur : 7 contrôles OK, 4 témoins refusés) ; test d'écran 8151bee7 (3 bloquants) puis 6a270137 (0 bloquant, 2 mineurs Modifier sous le payé).
+- Fusion de en-ligne/2026-11-15-futs (sans conflit), tests 185/185, build, check-firebase-config, check-no-dev-auth ; déployé 80249f3f, bundle servi = build ; tag local en-ligne/2026-11-15-finances (non poussé).
+- Ouvert : jeu en ligne « ZZ TEST » (connexion Google du brasseur) ; 2 mineurs de 6a270137.
