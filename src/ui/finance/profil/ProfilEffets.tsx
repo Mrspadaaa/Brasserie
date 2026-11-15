@@ -113,7 +113,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
   return <FormSheet className="fx4-sheet pfc-sheet" title="Solde et paramètres" onClose={onClose} onSave={save}>
     <div className="pfc">
       <section className="pfc-card" aria-label="Solde de départ">
-        <div className="pfc-top"><h3>Solde de départ</h3><span className="pfc-val"><NumberInput aria-label="Solde de départ (CHF)" className="pfc-nb pfc-m" value={cash == null ? undefined : cash / 100} onValue={v => { setCash(v == null ? undefined : Math.round(v * 100)); setConfirmed(false); }} emptyValue={undefined} /> <small>CHF</small></span></div>
+        <div className="pfc-top"><h3>Solde de départ</h3><span className="pfc-val"><NumberInput aria-label="Solde de départ (CHF)" className="pfc-nb pfc-m" value={cash == null ? undefined : cash / 100} onValue={v => { setCash(v == null ? undefined : Math.round(v * 100)); setConfirmed(false); }} emptyValue={undefined} fractionDigits={2} /> <small>CHF</small></span></div>
         <FriseSolde points={points} confirme={confirmed} />
         <div className="pfc-vr">
           <label className="pfc-pill"><span>{isoDate(date) ? jourLong(date) : 'Date'}</span><ChevronDown size={14} aria-hidden="true" />

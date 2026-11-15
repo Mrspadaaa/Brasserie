@@ -48,11 +48,18 @@ function Rangee({ r, groupe, onOuvrir }: { r: RangeeBudget; groupe: GroupeBudget
 export function BudgetRangees({ groupes, onOuvrir }: { groupes: GroupeBudget[]; onOuvrir: (n: NoeudId) => void }) {
   return <div className="bbx-liste">
     {groupes.map(g => <section key={g.id} className="bbx-groupe" data-groupe={g.id} aria-label={g.titre}>
-      <div className="bbx-g">
-        <span className="ops-sq" style={{ background: CARRE[g.id].fond }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={CARRE[g.id].trait} strokeWidth="2.6" aria-hidden="true"><path d={CARRE[g.id].d} /></svg></span>
-        <b>{g.titre}</b>
-        <span className="ops-m bbx-tot">{g.horsRecette ? '—' : g.total === null ? '?' : fr(g.total)}</span>
-      </div>
+      {(() => {
+        // CP-18 : un total de groupe inconnu (« ? ») renvoie au détail du groupe, jamais un « ? » nu.
+        const entete = <>
+          <span className="ops-sq" style={{ background: CARRE[g.id].fond }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={CARRE[g.id].trait} strokeWidth="2.6" aria-hidden="true"><path d={CARRE[g.id].d} /></svg></span>
+          <b>{g.titre}</b>
+          <span className="ops-m bbx-tot">{g.horsRecette ? '—' : g.total === null ? '?' : fr(g.total)}</span>
+        </>;
+        const noeud = g.id === 'malt' || g.id === 'q' || g.id === 'autres' ? g.id : g.rangees[0]?.noeud;
+        return !g.horsRecette && g.total === null && noeud
+          ? <button type="button" className="bbx-g bbx-g-renvoi" aria-label={`${g.titre} : à compléter`} onClick={() => onOuvrir(noeud)}>{entete}</button>
+          : <div className="bbx-g">{entete}</div>;
+      })()}
       {g.horsRecette
         ? <button type="button" className="bbx-hors" onClick={() => onOuvrir(g.id === 'q' ? 'q' : 'malt')}><span className="ops-tg bbx-unk">hors recette</span><span>aucun houblon ni levure : le litre ne les compte pas</span></button>
         : g.rangees.map(r => <Rangee key={r.cle} r={r} groupe={g.id} onOuvrir={onOuvrir} />)}

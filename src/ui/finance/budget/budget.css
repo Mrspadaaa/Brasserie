@@ -34,6 +34,8 @@
 /* liste : groupes et rangées */
 .bbx-g { display:grid; grid-template-columns:22px 1fr auto; gap:6px; align-items:center; padding:7px 0 1px; }
 .bbx-g b { font-size:13px; letter-spacing:.02em; }
+.bbx-g-renvoi { width:100%; background:none; border:0; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.bbx-renvoi { background:none; border:0; padding:0; margin:0; color:inherit; font:inherit; cursor:pointer; }
 .bbx-tot { font-size:13px; color:var(--ops-t2); }
 .bbx-op { display:grid; grid-template-columns:4px minmax(0,1fr) auto auto; column-gap:8px; align-items:center; width:100%; min-height:35px; padding:0; border-bottom:1px solid var(--ops-bord); text-align:left; }
 .bbx-bar { display:block; height:22px; border-radius:2px; align-self:center; background:transparent; }

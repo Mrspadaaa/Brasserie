@@ -129,6 +129,7 @@ describe('Synthèse g3a : la maquette remplace l’écran', () => {
   it('T18 le compagnon : la ligne de l’assistant, question préparée, jamais envoyée seule', () => {
     demo(); render(<Ecran/>);
     fireEvent.click(screen.getByText('Compagnon brasseur'));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
     expect(screen.getByRole('dialog', { name: 'Compagnon' })).toHaveTextContent(/dépenses/);
   });
   it('« À vérifier » : la démo n’y met que « Matériel sans registre » (US-2) ; un paiement inconnu ajoute sa rangée, visible sans geste', () => {

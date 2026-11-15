@@ -18,16 +18,18 @@ const reglages: BrewBudgetSettings = { costs: { energy: { enabled: true, amountT
 const p4 = { amount: 4, quantity: 1, unit: 'kg', basis: 'TTC', tvaRate: 0, source: 'manual', date: '09.09.2026' } as const;
 const prix = { [demandKey('Pilsner', 'kg')]: p4, [demandKey('Pale', 'kg')]: p4 };
 const enregistree = () => estimateBrewBudget({ recipe: recette, stockItems: [pilsner, pale], batches: [], brewDate: '15.09.2026', netVolumeL: 27, og: '1.048', settings: reglages, prices: prix, now: '2026-09-09T12:00:00Z' });
-const rendre = (props: Partial<React.ComponentProps<typeof BrewBudgetSheet>> = {}) => render(<BrewBudgetSheet open recipe={recette} stockItems={[pilsner, pale]} batches={[]} config={config} savedEstimate={enregistree()} onSave={vi.fn()} onClose={vi.fn()} {...props} />);
+// m4bb-a (15.11) : le budget s'ouvre sur « Quand tu paies » ; le flux c3a est à un toucher : « Détail du litre ».
+const versLitre = () => { const b = screen.queryByRole('button', { name: 'Détail du litre' }); if (b) fireEvent.click(b); };
+const rendre = (props: Partial<React.ComponentProps<typeof BrewBudgetSheet>> = {}, litre = true) => { const vue = render(<BrewBudgetSheet open recipe={recette} stockItems={[pilsner, pale]} batches={[]} config={config} savedEstimate={enregistree()} onSave={vi.fn()} onClose={vi.fn()} {...props} />); if (litre) versLitre(); return vue; };
 const texte = (sel: string) => document.querySelector(sel)?.textContent ?? '';
-const noeud = (nom: string) => fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${nom} :`) }));
+const noeud = (nom: string) => { const n = new RegExp(`^${nom} :`); if (!screen.queryByRole('button', { name: n })) versLitre(); fireEvent.click(screen.getByRole('button', { name: n })); };
 
 afterEach(cleanup);
 
 describe('c3a corrigé : le litre au premier regard (1, 5, 6, 4)', () => {
   it('le sous-titre dit « Coût du brassin » (6), pas « Budget du prochain brassin »', () => {
-    rendre();
-    expect(screen.getByText('Coût du brassin')).toBeInTheDocument();
+    rendre({}, false);
+    expect(screen.getByText(/^Coût du brassin/)).toBeInTheDocument(); // m4bb-a : « Coût du brassin · brassage 15 sept. »
     expect(screen.queryByText(/Budget du prochain brassin/)).toBeNull();
   });
   it('la pastille « 27 L nets » est dans la ligne des titres de colonnes, plus seule sur sa ligne (5)', () => {
@@ -148,7 +150,7 @@ describe('c3a corrigé : les feuilles de nœud (7, 8, 9, 11, 13, 14)', () => {
     rendre();
     noeud('Houblon, levure');
     expect(screen.queryByRole('button', { name: 'Enregistrer' })).toBeNull();
-    expect(screen.getAllByRole('button', { name: /Retour au flux/ }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: /Retour au détail du litre/ }).length).toBeGreaterThan(0);
   });
   it('Malt : pas de phrase sur le houblonnage à froid (13) ; le coût d’une ligne dit sa part en stock et sa part à acheter (14)', () => {
     rendre();

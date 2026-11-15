@@ -114,7 +114,7 @@ export function PlanSheetC({ plan, onClose }: { plan?: FinancialPlan; onClose: (
     <div className="pvc">
       <div className="pvc-r">
         <label><span className="pvc-lab">Libellé</span><input className="pvc-in" value={draft.title} onChange={e => field('title', e.target.value)} placeholder="Loyer, commande de malt, vente prévue…" required autoComplete="off" /></label>
-        <label><span className="pvc-lab">CHF</span><ChampNombre aria-label="Montant (CHF)" className="pvc-in pvc-m" value={draft.amountCents ? draft.amountCents / 100 : undefined} onValue={v => field('amountCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire /></label>
+        <label><span className="pvc-lab">CHF</span><ChampNombre aria-label="Montant (CHF)" className="pvc-in pvc-m" value={draft.amountCents ? draft.amountCents / 100 : undefined} onValue={v => field('amountCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} fractionDigits={2} dire /></label>
       </div>
       <div className="pvc-pills">
         <Pastille texte={draft.direction === 'out' ? 'À payer' : 'À recevoir'} className="pvc-pay"><select aria-label="Mouvement" value={draft.direction} onChange={e => field('direction', e.target.value as 'in' | 'out')}><option value="out">À payer</option><option value="in">À recevoir</option></select></Pastille>

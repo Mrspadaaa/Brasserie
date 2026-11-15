@@ -24,8 +24,8 @@ for (const largeur of largeurs) for (const theme of themes) {
   }, texte, mode, aria, nth);
   const etape = async (t, o) => { const r = await cliquer(t, o); if (r !== 'ok') throw new Error(`« ${t} » ${r}`); await L.calme(page, 900); };
   const shot = async (nom) => { await L.calme(page, 600); const f = `${nom}-${largeur}-${theme}.png`; await page.screenshot({ path: path.join(CAP, f) }); sortie.push(f); };
-  const aller = async (vue) => {
-    await page.goto(URL_BANC, { waitUntil: 'domcontentloaded' });
+  const aller = async (vue, url = URL_BANC) => {
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
     await page.evaluate((t) => localStorage.setItem('laffinee.theme', t), theme);
     await page.reload({ waitUntil: 'domcontentloaded' }); await L.calme(page, 1500);
     await etape('Finances'); if (vue) await etape(vue);
@@ -35,7 +35,7 @@ for (const largeur of largeurs) for (const theme of themes) {
 
   // m4pf-c : Solde et paramètres
   await essai('pf', async () => {
-    await aller('Synthèse'); await etape('Solde et paramètres financiers', { aria: true });
+    await aller('Synthèse', URL_BANC + '=reel'); await etape('Solde et paramètres financiers', { aria: true });
     await shot('pf-ouvert');
     await page.evaluate(() => { const r = document.querySelector('input.pfc-range'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(r, '2500'); r.dispatchEvent(new Event('input', { bubbles: true })); r.dispatchEvent(new Event('change', { bubbles: true })); });
     await cliquer('Tout est noté depuis août', { mode: 'contains', aria: true }); await L.calme(page, 500);

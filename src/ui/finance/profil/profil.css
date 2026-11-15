@@ -9,7 +9,7 @@
 .pfc-top h3 { font-size: 13px; font-weight: 600; flex: 1; margin: 0; }
 .pfc-val { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 10px; border: 1px solid var(--pf-bordm); border-radius: 10px; background: var(--pf-fond); }
 .pfc-val small { font-size: 14px; color: var(--pf-t2); }
-.pfc .pfc-nb, .pfc input.pfc-nb { border: 0; outline: 0; background: transparent; color: var(--pf-t1); font-size: 17px; width: 7.5ch; min-width: 0; text-align: right; padding: 0; height: 40px; }
+.pfc .pfc-nb, .pfc :is(input, textarea).pfc-nb { display: block; resize: none; overflow: hidden; line-height: 24px; border: 0; outline: 0; background: transparent; color: var(--pf-t1); font-size: 17px; width: 9.5ch; min-width: 0; text-align: right; padding: 8px 0; height: 40px; }
 .pfc-val:focus-within, .pfc-pill:focus-within, .pfc-tg:focus-within, .pfc-mois button:focus-visible { outline: 2px solid rgb(var(--area-finances)); outline-offset: 1px; }
 .pfc-cap { font-size: 12px; line-height: 15px; color: var(--pf-t2); margin: 4px 0 0; }
 .pfc-cap b { font-size: 13px; color: var(--pf-t1); }

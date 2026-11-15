@@ -264,7 +264,7 @@ describe('CP-14 : chaque manque de la feuille renvoie où le saisir', () => {
     profile = {};
     ouvrir(milkStout());
     fireEvent.click(screen.getByRole('button', { name: /production annuelle à indiquer/ }));
-    expect((await screen.findAllByText('Solde et paramètres financiers', {}, { timeout: 8000 })).length).toBeGreaterThan(0);
-    expect(screen.getByText('Paramètres des prévisions et des brassins').closest('details')).toHaveAttribute('open');
+    expect((await screen.findAllByText('Solde et paramètres', {}, { timeout: 8000 })).length).toBeGreaterThan(0);
+    expect(screen.getByLabelText('Tout est noté depuis')).toBeVisible(); // m4pf-c : réglages en cartes visibles, plus de pli
   });
 });

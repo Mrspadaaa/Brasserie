@@ -74,6 +74,7 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
     render(<FinanceAssistant view="costs" month="2026-08" allDates={false} year={2025} horizon={90} />);
     fireEvent.click(screen.getByRole('button', { name: /Comprendre mes dépenses/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
     await waitFor(() => expect(api.history).toHaveBeenCalledWith({ kind: 'app', id: 'finances' }));
     await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('2026-08');
@@ -95,6 +96,7 @@ describe('Conversation dans la recette / le brassin', () => {
   it('porte l’exercice choisi dans le brouillon annuel et exige un envoi explicite', async () => {
     render(<FinanceAssistant view="annual" month="2026-09" allDates={false} year={2024} horizon={30} />);
     fireEvent.click(screen.getByRole('button', { name: /Préparer l’année 2024/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
     await waitFor(() => expect(api.history).toHaveBeenCalled());
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('dossier annuel 2024');
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Si cette année n’est pas couverte');
@@ -105,6 +107,7 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.history).mockResolvedValue([turn('Analyse précédente')]);
     render(<FinanceAssistant view="forecast" month="2026-09" allDates={false} year={2026} horizon={30} />);
     fireEvent.click(screen.getByRole('button', { name: /Prévoir mes prochains paiements/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
     await screen.findByText('Analyse précédente');
     fireEvent.click(screen.getByText('Autres questions utiles'));
     fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));

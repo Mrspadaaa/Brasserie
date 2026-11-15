@@ -23,11 +23,13 @@ const c3aSettings: BrewBudgetSettings = { costs: { energy: { enabled: true, amou
 const p4 = { amount: 4, quantity: 1, unit: 'kg', basis: 'TTC', tvaRate: 0, source: 'manual', date: '09.09.2026' } as const;
 const c3aPrices = { [demandKey('Pilsner', 'kg')]: p4, [demandKey('Pale', 'kg')]: p4 };
 const c3aSaved = (patch = {}) => estimateBrewBudget({ recipe: c3aRecipe, stockItems: [pilsner, pale], batches: [], brewDate: '15.09.2026', netVolumeL: 27, og: '1.048', settings: c3aSettings, prices: c3aPrices, now: '2026-09-09T12:00:00Z', ...patch });
-const renderC3a = (props: Partial<React.ComponentProps<typeof BrewBudgetSheet>> = {}) => render(<BrewBudgetSheet open recipe={c3aRecipe} stockItems={[pilsner, pale]} batches={[]} config={config} savedEstimate={c3aSaved()} onSave={vi.fn()} onClose={vi.fn()} {...props} />);
+// m4bb-a (15.11) : le budget s'ouvre sur la bande « Quand tu paies » ; le flux c3a (sources, destinations, litre en trois temps) est à un toucher : « Détail du litre ».
+const versLitre = () => { const b = screen.queryByRole('button', { name: 'Détail du litre' }); if (b) fireEvent.click(b); };
+const renderC3a = (props: Partial<React.ComponentProps<typeof BrewBudgetSheet>> = {}) => { const vue = render(<BrewBudgetSheet open recipe={c3aRecipe} stockItems={[pilsner, pale]} batches={[]} config={config} savedEstimate={c3aSaved()} onSave={vi.fn()} onClose={vi.fn()} {...props} />); versLitre(); return vue; };
 
 const aller = {
   volumes: () => fireEvent.click(screen.getByRole('button', { name: /^Volumes :/ })),
-  noeud: (label: string) => fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${label} :`) })),
+  noeud: (label: string) => { const nom = new RegExp(`^${label} :`); if (!screen.queryByRole('button', { name: nom })) versLitre(); fireEvent.click(screen.getByRole('button', { name: nom })); },
   retour: () => fireEvent.click(screen.getByRole('button', { name: 'Retour' })),
 };
 const prevoir = () => screen.getByRole('button', { name: /^Prévoir/ });
@@ -57,7 +59,7 @@ describe('c3a : le flux, les trois notions et le litre', () => {
     const barre = texte('.cbf-litl');
     expect(barre).toContain('0,83'); expect(barre).toContain('2,38'); expect(barre).toContain('4,30');
     expect(screen.getByRole('button', { name: 'Expliquer' })).toBeInTheDocument();
-    expect(prevoir()).toHaveTextContent('Prévoir 64,26 CHF');
+    expect(prevoir()).toHaveTextContent('Prévoir 64,26');
     expect(prevoir()).toBeEnabled();
     expect(container.querySelectorAll('input[type=number]')).toHaveLength(0);
   });
@@ -87,6 +89,7 @@ describe('c3a : le flux, les trois notions et le litre', () => {
     const bloc = texte('[data-booster="deux-nombres"]');
     expect(bloc).toContain('—'); expect(bloc).not.toContain('0,00'); expect(bloc).toContain('prix à compléter');
     expect(prevoir()).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Retour au budget' })); // le constat « sans prix » est au budget (m4bb-a), pas dans le détail du litre
     expect(screen.getByRole('status')).toHaveTextContent('sans prix');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ complete: false }), false));
@@ -245,7 +248,7 @@ describe('daily brew budget sheet', () => {
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '2,50' } });
     aller.retour();
     expect(prevoir()).toBeEnabled();
-    expect(prevoir()).toHaveTextContent('Prévoir 7,50 CHF');
+    expect(prevoir()).toHaveTextContent('Prévoir 7,50');
     fireEvent.click(prevoir());
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ cashRequiredTTC: 7.5, ingredientsCost: 12.5, complete: true }), true));
   });

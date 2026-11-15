@@ -90,4 +90,4 @@ export function ClosingSheet({closing,year,onClose,stockItems,cote,proposer,prop
   </FormSheet>;
 }
 /** Payer = m5pa-d (voie q1) : un virement, plusieurs pièces du même tiers, un justificatif. La feuille vit dans `payer/`. */
-export function PaymentSheet(props:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void}) { return <PayerVirement {...props}/>; }
+export function PaymentSheet(props:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void;remplace?:FinancialPayment}) { return <PayerVirement {...props}/>; }

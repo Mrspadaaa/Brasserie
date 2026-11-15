@@ -12,6 +12,8 @@
 .pvc-lab { display: block; font-size: 12px; color: var(--pv-t2); margin-bottom: 3px; }
 .pvc .pvc-in, .pvc :is(input, textarea).pvc-in { width: 100%; min-height: 44px; padding: 0 10px; border: 1px solid var(--pv-bordm); border-radius: 10px; font-size: 16px; background: var(--pv-fond); color: var(--pv-t1); }
 .pvc textarea.pvc-in { padding: 8px 10px; min-height: 64px; }
+/* r3 : en tactile `ChampNombre` rend un textarea auto-dimensionné : le montant garde la hauteur d'un champ (44 px), comme le libellé. */
+.pvc textarea.pvc-in.pvc-m { display: block; resize: none; overflow: hidden; line-height: 24px; padding: 9px 10px; min-height: 44px; height: 44px; text-align: right; }
 .pvc select.pvc-in { padding: 0 6px; }
 .pvc-pills { display: flex; flex-wrap: wrap; gap: 4px; }
 .pvc-pill { position: relative; display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 5px 0 9px; border: 1px solid var(--pv-bordm); border-radius: 10px; background: var(--pv-fond); font-size: 13px; color: var(--pv-t1); }

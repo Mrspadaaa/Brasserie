@@ -78,7 +78,8 @@ describe('fx1-2 : « ✦ Pourquoi <le poste le plus lourd> pèse autant ? »', (
     rerender(<FinanceAssistant view="journal" month="2026-11" allDates={false} year={2026} horizon={90} pose={{ libelle: 'Pourquoi le brassage pèse autant ?', question: 'Q-calculée' }}/>);
     expect(screen.queryByText(/Vérifier mes opérations/)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Pourquoi le brassage pèse autant \?/ }));
-    expect(screen.getByRole('dialog', { name: 'Compagnon' }).textContent).toBe('Q-calculée');
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
+    expect(screen.getByRole('dialog', { name: 'Compagnon' }).textContent).toContain('Q-calculée');
   });
 });
 
@@ -162,6 +163,7 @@ describe('fx1-2 et fx1-5 dans FinancesTab', () => {
     expect(screen.queryByRole('button', { name: /Pourquoi le brassage pèse autant/ })).toBeNull();
     fireEvent.click(screen.getByRole('tab', { name: 'Opérations' }));
     fireEvent.click(screen.getByRole('button', { name: /Pourquoi le brassage pèse autant \?/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c : la puce ouvre la feuille, « Envoyer » ouvre le chat
     expect(screen.getByRole('dialog', { name: 'Compagnon' }).textContent).toMatch(/brassage/i);
     cleanup();
   });

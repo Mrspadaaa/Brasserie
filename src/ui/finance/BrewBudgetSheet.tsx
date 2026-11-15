@@ -249,11 +249,13 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
     </div>;
 
   const pied = <div className="ops bbx-pied">{pied0}</div>;
+  // « Expliquer » est au pied du budget comme du détail du litre : la question préparée s'ouvre dans les deux.
+  const chat = question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Coût d’un brassin" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>;
   return <><Sheet open onClose={() => { if (!saving.current) onClose(); }} title={recipe.name} subtitle={vue.id === 'flux' ? (futureBatch && dateKey ? `${sousTitre} · brassage ${dateCourte(dateKey)}` : sousTitre) : `${sousTitre} · ${vue.id === 'ingredients' ? GROUPE_TITRE[vue.groupe] : VUE_TITRE[vue.id]}`} dismissible={!busy} footer={pied} className="md:max-w-xl md:mx-auto">
     {vue.id === 'flux' && <div className="ops bbx" data-booster="budget-m4bb">
       <button type="button" className="bbx-vol" onClick={aLitres} aria-label={netConnu ? `Volumes : ${frL(netConnu)} L nets` : 'Volumes : litres nets à renseigner'} data-inconnu={netConnu ? undefined : 'true'} data-booster="volumes">
         <b className="ops-m">{Number.isFinite(volume) ? frL(volume) : '?'} L</b> brassés · <b className="ops-m">{netConnu ? `${frL(netConnu)} L` : '? L'}</b> nets ›</button>
-      <BudgetBande bande={bande} assujetti={config.fiscal.isTvaRegistered} onLitre={() => { setOrigine('flux'); setVue({ id: 'litre' }); }} />
+      <BudgetBande bande={bande} assujetti={config.fiscal.isTvaRegistered} onManque={manques[0]?.agir ?? aLitres} onVolumes={aLitres} onLitre={() => { setOrigine('flux'); setVue({ id: 'litre' }); }} />
       {manques.length > 0 && <section aria-label="Données à compléter" data-booster="tache-filtrante"><p className="sr-only" role="status">{requiredPrices.length ? `${requiredPrices.length} ingrédient${requiredPrices.length > 1 ? 's' : ''} sans prix. ` : ''}Pour compléter ce coût :</p>
         <ul className="bbx-taches">{manques.map(m => <li key={m.cle}><button type="button" className="bbx-tache" data-manque={m.cle} onClick={m.agir}><i aria-hidden="true">?</i><span><b>{m.titre}</b><small>{m.effet}</small></span><em aria-hidden="true">›</em></button></li>)}</ul>
       </section>}
@@ -262,7 +264,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       {futureBatch && renderPlanReconciliation?.(estimate)}
       {manques.length === 0 && !estimate.complete && <p className="cbf-statut" role="status">{estimate.issues.slice(0, 2).join(' · ') || 'Le coût du brassin n’est pas complet.'}</p>}
       {error && <p role="alert" className="brew-budget-warning">{error}</p>}
-      {question !== undefined && <React.Suspense fallback={null}><BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Coût d’un brassin" initialOpen hideLauncher initialQuestion={question} onClose={() => setQuestion(undefined)} /></React.Suspense>}
+      {chat}
     </div>}
     {vue.id === 'litre' && <div className="brew-budget cbf-noeud">
       <button type="button" className="cbf-retour" onClick={() => { setOrigine('flux'); setVue({ id: 'flux' }); }}><ChevronLeft size={16} aria-hidden="true" />Retour au budget</button>
@@ -270,6 +272,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         selection={selection} onSelect={setSelection} onNoeud={ouvrir} onVolumes={aLitres} assujetti={config.fiscal.isTvaRegistered}>
         <div className="cbf-extra">{error && <p role="alert" className="brew-budget-warning">{error}</p>}</div>
       </CoutBrassinFlux>
+      {chat}
     </div>}
     {vue.id !== 'flux' && vue.id !== 'litre' && <div className="brew-budget cbf-noeud">
       <button type="button" className="cbf-retour" onClick={retour}><ChevronLeft size={16} aria-hidden="true" />{libelleRetour}</button>

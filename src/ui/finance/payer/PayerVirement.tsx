@@ -11,7 +11,7 @@ import { prepareFinanceDocument, saveFinanceDocumentConfirmed } from '../../../s
 import { driveProofFileName } from '../../../services/purchaseEntry';
 import { GeminiScannerService } from '../../../services/geminiScanner';
 import { amountOnly, shortDate } from '../financeFormat';
-import { echeance } from '../operations/calculs';
+import { contrePaiement, echeance } from '../operations/calculs';
 import { GROUPES, type GroupeId } from '../operations/groupes';
 import './payer.css';
 
@@ -36,13 +36,16 @@ const couleurDe = (p: PieceOuverte, aujourdhui: string): string => {
 interface Joint { nom: string; dataUrl: string; mime: string }
 const IcoDoc = ({ plein }: { plein?: boolean }) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray={plein ? undefined : '3 2.4'} aria-hidden="true"><path d="M7 3h7l4 4v14H7z" />{plein && <path d="M9.5 14l2 2 3.5-4" />}</svg>;
 
-export function PayerVirement({ transaction, payments, transactions, onClose }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void }) {
+export function PayerVirement({ transaction, payments: paiementsBruts, transactions, onClose, remplace }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void; remplace?: FinancialPayment }) {
   const aujourdhui = todayISO();
+  /** « Autre montant » : le paiement rapide à remplacer ne compte pas (ni son inversion, une fois écrite) : la pièce se lit comme avant ce paiement, avec son montant comme reste. */
+  const payments = useMemo(() => remplace ? paiementsBruts.filter(p => p.id !== remplace.id && p.reversalOfId !== remplace.id) : paiementsBruts, [paiementsBruts, remplace]);
   const pieces = useMemo(() => piecesOuvertesDuTiers(transaction, transactions, payments), [transaction, transactions, payments]);
   const entrant = pieces[0]?.entrant ?? false;
   const inconnu = paymentState(transaction, payments, transactions).state === 'unknown';
   const tiers = transactionVendor(transaction);
-  const [exclues, setExclues] = useState<Set<string>>(() => new Set());
+  // Avec un paiement à remplacer, la feuille s'ouvre sur cette seule pièce : les autres du tiers restent à cocher.
+  const [exclues, setExclues] = useState<Set<string>>(() => new Set(remplace ? pieces.filter(p => p.id !== transaction.id).map(p => p.id) : []));
   /** `null` : le montant par défaut (tout ce qui reste sur les pièces cochées) ; sinon la saisie du brasseur (`undefined` : champ vidé). */
   const [saisi, setSaisi] = useState<number | undefined | null>(null);
   const [modeDate, setModeDate] = useState<'auj' | 'autre'>(inconnu ? 'autre' : 'auj');
@@ -55,7 +58,7 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
   const [occupe, setOccupe] = useState(false);
   const fichier = useRef<HTMLInputElement>(null), photo = useRef<HTMLInputElement>(null);
   // Un virement = une écriture reprise à l'identique si on réessaie : mêmes identifiants, même horodatage (un paiement est immuable).
-  const virement = useRef({ id: `VIR-${uuid()}`, recordedAt: new Date().toISOString(), paiements: new Map<string, string>(), preuve: undefined as { id: string; nom: string } | undefined });
+  const virement = useRef({ id: `VIR-${uuid()}`, recordedAt: new Date().toISOString(), paiements: new Map<string, string>(), inverse: false, preuve: undefined as { id: string; nom: string } | undefined });
 
   const choisies = pieces.filter(p => !exclues.has(p.id));
   const total = totalDu(choisies);
@@ -95,6 +98,8 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
         v.preuve = { id: prepare.id, nom: recu?.fileName ?? nom };
       }
       const preuve = joint ? v.preuve : undefined;
+      // Un lot par étape : d'abord l'inversion du paiement rapide ; si elle échoue, rien d'autre n'est écrit. Une reprise ne la rejoue pas.
+      if (remplace && !v.inverse) { FinanceService.recordPayment(contrePaiement(remplace, v.recordedAt)); v.inverse = true; await Promise.resolve(); }
       for (const part of touchees) {
         const piece = pieces.find(p => p.id === part.id)!;
         if (!v.paiements.has(part.id)) v.paiements.set(part.id, `PAI-${uuid()}`);
@@ -108,7 +113,9 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
       onClose();
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Enregistrement impossible.';
-      if (ecrites > 0) {
+      if (ecrites === 0 && virement.current.inverse) {
+        setErreur(`${message} Déjà enregistré : le paiement rapide est inversé. Le nouveau paiement n’est pas écrit.`);
+      } else if (ecrites > 0) {
         // Les pièces déjà payées quittent la liste ; le montant restant à virer est ce qui n'a pas pu être écrit.
         setSaisi(Math.max(0, valeur! - ecrites));
         setErreur(`${message} Déjà enregistré : ${formatCHF(ecrites)}. Le reste du virement n’est pas écrit.`);

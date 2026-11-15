@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
-import type { FinancialAsset, FinancialPlan } from '../../domain/finance/types';
+import type { FinancialAsset, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { FinancialArchiveService } from '../../services/financialArchiveService';
 import { StorageService } from '../../services/storage';
@@ -68,7 +68,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [movement,setMovement]=useState<Transaction|null|undefined>(undefined),[closingId,setClosingId]=useState('');
   const [profileOpen,setProfileOpen]=useState(false), [profileParams,setProfileParams]=useState(false);
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
-  const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
+  const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[remplace,setRemplace]=useState<FinancialPayment|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
   const [closingOpts,setClosingOpts]=useState<OuvertureInventaire>({}),[assetInitial,setAssetInitial]=useState<Partial<FinancialAsset>>();
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile,undefined,{includeScheduled:true}),[transactions,data.payments,data.profile]);
@@ -102,7 +102,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   },[ongletRequest]);
   const assistantView=view==='overview'?'costs':view;
   const financeAssistant=<FinanceAssistant view={assistantView} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
-  const row=(t:Transaction,state?:ReturnType<typeof paymentState>)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} state={state} onOpen={()=>setSelected(t)} onAddProof={()=>setEditing(t)} onPay={()=>setPaying(t)}/>;
+  const row=(t:Transaction,state?:ReturnType<typeof paymentState>)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} state={state} onOpen={()=>setSelected(t)} onAddProof={()=>setEditing(t)} onPay={r=>{setRemplace(r??null);setPaying(t);}}/>;
   return <div className="finance">
     <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
     {/* Titre, sous-vue et réglages sur une seule rangée : trois barres empilées
@@ -111,7 +111,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
       {view==='overview'&&<FinanceOverview transactions={transactions} payments={data.payments} plans={data.plans} assets={data.assets} batches={batches} recipes={recipes} ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} openingCash={data.profile.openingCash}
         month={month} allDates={allDates} onMonth={value=>{setMonth(value);setAllDates(false);}} onAllDates={()=>setAllDates(true)} plage={plage} onPlage={setPlage} assistant={financeAssistant}
-        onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}
+        onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>{setRemplace(null);setPaying(transactions.find(t=>t.id===id)??null);}}
         onOpenBudget={setBudget} onBudgetPicker={()=>setBudgetPicker(true)} onUpgrade={setUpgrade} onBrowseProjects={showProjects} onNotice={setNotice}
         profile={data.profile} stockItems={stockItems} onPrevisions={()=>selectView('forecast')}/>}
       {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)} assistant={financeAssistant}/></>}
@@ -129,10 +129,10 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {plan!==undefined&&<PlanSheet plan={plan??undefined} onClose={()=>setPlan(undefined)}/>}
     {asset!==undefined&&<AssetSheet asset={asset??undefined} initial={assetInitial} onClose={()=>{setAsset(undefined);setAssetInitial(undefined);}}/>}
     {closingOpen&&<ClosingSheet year={year} closing={latestClosing?.report?{...latestClosing,id:idFor(`CLOTURE-${year}`),createdAt:new Date().toISOString(),report:undefined}:latestClosing} stockItems={stockItems} cote={closingOpts.cote} proposer={closingOpts.proposer} propositions={closingOpts.propositions} nature={closingOpts.nature} onClose={()=>{setClosingOpen(false);setClosingOpts({});setClosingId('');}}/>}
-    {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} onClose={()=>setPaying(null)}/>}
+    {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} remplace={remplace??undefined} onClose={()=>{setPaying(null);setRemplace(null);}}/>}
     {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
     {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}
-    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{setSelected(null);onOpenRecipe(id);})}/>}
+    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setRemplace(null);setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{setSelected(null);onOpenRecipe(id);})}/>}
     {budgetPicker&&<Sheet open title="Quel brassin veux-tu estimer ?" onClose={()=>setBudgetPicker(false)} className="finance-sheet"><ChoixBrassin batches={batches} recipes={recipes} onBatch={b=>{setBudget({batch:b});setBudgetPicker(false);}} onRecipe={r=>{setBudget({recipe:r});setBudgetPicker(false);}}/></Sheet>}
     {budget&&<BrewBudgetDialog {...budget} onClose={()=>setBudget(null)} onOpenForecast={target=>{setBudget(null);selectView('forecast');setCible({...target,at:Date.now()});}}/>}
   </div>;

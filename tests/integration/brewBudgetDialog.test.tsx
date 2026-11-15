@@ -19,9 +19,11 @@ const batch = { id: 'B', name: 'Pale Ale', status: 'planifie', volumeL: 30, brew
 const intention: FinancialPlan = { id: 'recipe-plan', title: recipe.name, date: '2026-09-15', amountCents: 900, direction: 'out', category: 'brassage', source: 'brew', status: 'active', brewEstimate: original, createdAt: '2026-09-09' };
 const tank: FinancialAsset = { id: 'A', name: 'Cuve', acquisitionDate: '2026-01-01', inServiceDate: '2026-01-01', acquisitionCents: 100000, businessUsePct: 100, category: 'tanks', method: 'declining', ratePct: 20, openingYear: 2026, openingValueCents: 100000, openingConfirmed: true, firstYearFraction: 1 };
 const prevoir = () => screen.getByRole('button', { name: /^Prévoir/ });
+// m4bb-a (15.11) : le budget s'ouvre sur « Quand tu paies » ; le flux c3a est à un toucher : « Détail du litre ».
+const versLitre = () => { const b = screen.queryByRole('button', { name: 'Détail du litre' }); if (b) fireEvent.click(b); };
 const aller = {
   volumes: () => fireEvent.click(screen.getByRole('button', { name: /^Volumes :/ })),
-  noeud: (label: string) => fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${label} :`) })),
+  noeud: (label: string) => { const nom = new RegExp(`^${label} :`); if (!screen.queryByRole('button', { name: nom })) versLitre(); fireEvent.click(screen.getByRole('button', { name: nom })); },
   retour: () => fireEvent.click(screen.getByRole('button', { name: 'Retour' })),
 };
 
@@ -81,6 +83,7 @@ describe('budget intention becomes a concrete batch', () => {
     vi.mocked(StorageService.getConfig).mockReturnValue({ fiscal: { isTvaRegistered: false, beerTaxAnnualReductionPct: 40, beerTaxReductionYear: 2026 }, brewhouses: [] } as unknown as AppConfig);
     vi.mocked(FinanceService.snapshot).mockReturnValue({ ...FinanceService.snapshot(), plans: [{ ...intention, status: 'draft', brewEstimate: { ...original, batchId: 'B', settings: { ...settings, costs: { ...settings.costs, beerTax: { enabled: true } } } } }] });
     render(<BrewBudgetDialog batch={avecOg} onClose={vi.fn()} />);
+    versLitre();
     expect(screen.getByRole('button', { name: /^Impôt bière : \d+,\d\d CHF$/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Impôt bière : 4,56 CHF' })).toBeInTheDocument(); // 11,9 °P : 25,32 CHF/hl × 0,30 hl × 0,6
   });
