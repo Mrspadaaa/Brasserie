@@ -71,19 +71,19 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   it('TE-36 : la case des prévisions garde le même mot, cochée ou non', async () => {
     await FinanceService.saveUpgrade(hotte()); render(<UpgradeWorkspace/>);
-    const case_ = screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' });
-    expect(case_).toBeChecked();
-    expect(case_.closest('label')).toHaveTextContent('Inclure dans mes prévisions');
-    expect(screen.queryByText('Dans les prévisions')).not.toBeInTheDocument();
+    // kh1r : l'interrupteur vit dans la fiche du projet (touche le titre de la carte « Prochain achat »), même mot allumé ou éteint
+    fireEvent.click(screen.getByRole('button', { name: 'Hotte de brassage' }));
+    const case_ = screen.getByRole('switch', { name: 'Dans mes prévisions' });
+    expect(case_).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(case_);
-    await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' })).not.toBeChecked());
-    expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }).closest('label')).toHaveTextContent('Inclure dans mes prévisions');
+    await waitFor(() => expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveAttribute('aria-checked', 'false'));
+    expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveTextContent('Dans mes prévisions');
   });
   it('reprend les idées R&D, archive sans résurrection et restaure les notes', async () => {
     const legacy = { id: 'OLD-HOTTE', type: 'equipment' as const, title: 'Hotte historique', status: 'quote' as const, estimatedCost: 750, description: 'Évacuer la vapeur', notes: 'Devis fournisseur conservé' };
     StorageService.addCreativeItem(legacy); render(<UpgradeWorkspace/>);
     expect(FirestoreRepo.all('financialPlans')).toHaveLength(0);
-    fireEvent.click(screen.getByRole('button', { name: /Hotte historique.*750/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier Hotte historique' })); // kh1r : le crayon ouvre la feuille d'édition
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();

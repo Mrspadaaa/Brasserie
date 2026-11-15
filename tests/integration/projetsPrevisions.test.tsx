@@ -73,16 +73,15 @@ describe('Atelier › Matériel › À venir dit l’état de chaque projet et r
   const atelierSemé = () => semer([...SA_CAPTURE, frigo({ title: 'Frigo' })]);
   it('(c) « pas dans les prévisions » pour un projet à compléter, « dans les prévisions · nov. 2026 » pour une marche', () => {
     atelierSemé(); render(<UpgradeWorkspace />);
-    const b100 = screen.getByText('B100 aio brewtool').closest('article')!;
-    expect(b100).toHaveTextContent('pas dans les prévisions');
-    expect(b100).not.toHaveTextContent('dans les prévisions ·');
-    const f = screen.getByText('Frigo').closest('article')!;
-    expect(f).toHaveTextContent(/dans les prévisions · nov\. 2026/);
-    expect(f).not.toHaveTextContent('pas dans les prévisions');
+    // kh1r : l'état se lit sur la pastille du mois (« + mois » = pas posé, le mois = posé) ; le projet posé en premier est la carte « Prochain achat »
+    expect(screen.getByRole('button', { name: 'Poser B100 aio brewtool sur un mois' })).toHaveTextContent('+ mois');
+    expect(screen.getByRole('region', { name: 'Prochain achat' })).toHaveTextContent('Frigo');
+    expect(screen.getByRole('button', { name: /^Mois de Frigo : novembre/ })).toHaveTextContent('nov.');
+    expect(screen.queryByText('pas dans les prévisions')).not.toBeInTheDocument();
   });
   it('(c bis) la ligne-renvoi est UNE, en tête de la liste ; elle émet affinee:ouvrir-finances (previsions)', () => {
     atelierSemé(); render(<UpgradeWorkspace />);
-    const renvois = screen.getAllByRole('button', { name: /Datés et budgétés, ils entrent dans Finances › Prévisions/ });
+    const renvois = screen.getAllByRole('button', { name: 'Prévisions' }); // kh1r : le renvoi est le « Prévisions › » du bandeau « Caisse fin de mois »
     expect(renvois).toHaveLength(1);
     const ecoute = vi.fn((e: Event) => e.preventDefault()); window.addEventListener('affinee:ouvrir-finances', ecoute);
     fireEvent.click(renvois[0]);
@@ -92,7 +91,7 @@ describe('Atelier › Matériel › À venir dit l’état de chaque projet et r
   });
   it('(c ter) sans écouteur, la ligne dit où aller au lieu de se taire', () => {
     atelierSemé(); render(<UpgradeWorkspace />);
-    fireEvent.click(screen.getByRole('button', { name: /Datés et budgétés, ils entrent dans Finances › Prévisions/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Prévisions' }));
     expect(screen.getByRole('status')).toHaveTextContent('Finances › Prévisions');
   });
   it('(c quater) ouvert depuis Prévisions (prop), le renvoi ferme la feuille et n’émet rien', () => {
