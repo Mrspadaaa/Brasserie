@@ -141,6 +141,6 @@ Transversaux : L29 « lié à », L30 recherche, L31 À venir, L32 partage entra
 ## Ses choix (16.11)
 - Gardés : L5, L1, L11, L3+L4, L12, L7+L22, L6, L9, L29, L33, L16, L36, L25.
 - Retiré : L18, l'entretien du matériel daté au calendrier.
-- Sans réponse : L14.
+- L14 : gardé, compris dans « Tous » (seul L18 est retiré). Plus une question ouverte (16.11 soir : « tout les choix que tu m'a présenté je le ai fait ou refusé »).
 - **L1, à reprendre sans intrusion (LIENS-PLACE)** : pas de rangée « Idées » ni de case dédiée. L'idée datée se crée par le + volant (« Idée » dans le menu de la frise) ou par un appui long sur une semaine. Elle apparaît ensuite en point discret sur la frise.
 - **L9, prioritaire, à généraliser partout** : chaque geste qui consomme décompte ses consommables (laver un fût, brasser, embouteiller, nettoyer une cuve, conditionner…). Le décompte suit une table réglée une fois par geste, avec un bandeau d'effet et Annuler. C'est une règle de l'app, pas un écran.
