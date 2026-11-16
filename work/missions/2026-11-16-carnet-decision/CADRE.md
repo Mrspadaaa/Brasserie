@@ -147,3 +147,11 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
 ## Ses choix sur les liens (16.11)
 - L1 : une idée créée depuis le calendrier arrive au carnet, sans rien ajouter à l'écran du calendrier.
 - L9 : un achat choisi au carnet, une fois reçu, entre dans la table des consommables (geste → décompte).
+
+## p5 : « certaines écran sont inutilisable en l'état » (16.11)
+- Chaque écran doit être utilisable seul : on comprend de quoi il parle et on peut agir, sans aller voir ailleurs.
+- Suspects dans p5 :
+  - Comparer au téléphone : la 3ᵉ colonne est coupée et les colonnes inactives n'ont pas de chiffre ;
+  - le journal : les notes sont repliées en icônes muettes ;
+  - des écrans à moitié vides ;
+  - la liste des carnets.
