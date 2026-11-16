@@ -70,6 +70,8 @@ export interface EntreesPlusAssistant {
   enregistrable: boolean;
   enregistrer: (puisBrasser: boolean) => void;
   exporter: () => void;
+  /** Une recette enregistrée (pas une copie ni une nouvelle) : « Supprimer la recette », en dernier et en rouge (16.11, 36). */
+  supprimer?: () => void;
 }
 
 /** La déclaration du « + » pour l'étape courante, contre le pouce d'abord : ajouter, enregistrer, exporter. */
@@ -86,5 +88,6 @@ export function declarationPlusAssistant(e: EntreesPlusAssistant): PlusPageDecla
     if (e.step === 'recap') actions.push({ id: 'enregistrer-brasser', label: 'Enregistrer et préparer un brassin', genre: 'enregistrer', lancer: () => e.enregistrer(true) });
   }
   actions.push({ id: 'exporter', label: 'Exporter la recette', hint: 'copier le texte', genre: 'exporter', lancer: e.exporter });
+  if (e.supprimer) actions.push({ id: 'supprimer', label: 'Supprimer la recette', hint: 'après confirmation', genre: 'supprimer', lancer: e.supprimer });
   return { titre: `Assistant · ${courante?.shortLabel ?? courante?.label ?? ''}`.trim(), actions };
 }

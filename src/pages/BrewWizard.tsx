@@ -140,6 +140,7 @@ import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSh
 import { EtapeRecap as SyncBrewSheet } from '../ui/recap/EtapeRecap';
 import { usePlusPage } from '../ui/plusPage';
 import { declarationPlusAssistant } from './wizardPlus';
+import { ConfirmerSuppressionRecette } from '../ui/recette/ConfirmerSuppressionRecette';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
 import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
@@ -525,6 +526,8 @@ interface BrewWizardProps {
    */
   onLearnIngredient: (name: string, facts: Partial<StockItem>) => void;
   onSave: (recipe: Recipe, thenBrew: boolean) => void | Promise<void>;
+  /** Supprime la recette enregistrée qu'on modifie (36, 16.11), après la feuille de confirmation commune. */
+  onDelete?: (recipe: Recipe) => void;
   /** Other writes made from this screen remain visible without covering its navigation. */
   writeError?: string | null;
   onDismissWriteError?: () => void;
@@ -599,6 +602,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   onCreateStockItem,
   onLearnIngredient,
   onSave,
+  onDelete,
   writeError,
   onDismissWriteError,
   onSaveWaterSource,
@@ -607,6 +611,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   draftSetAside
 }) => {
   const restoredDraft = initialDraftState.status === 'available' ? initialDraftState.draft : undefined;
+  // 36 (16.11) : seule une recette déjà enregistrée se supprime d'ici ; une nouvelle ou une copie (id neuf) n'a rien à supprimer.
+  const [recetteSupprimable] = useState<Recipe | null>(() => {
+    const id = seed?.recipe?.id;
+    if (!id) return null;
+    try { return StorageService.getRecipes().find((r) => r.id === id) ?? null; } catch { return null; }
+  });
+  const [confirmerSuppression, setConfirmerSuppression] = useState(false);
   const draftReadOnly = initialDraftState.status === 'readOnly';
   // Accepted documentary sheets belong to the Wizard, not the mounted step.
   const [candidateSheets, setCandidateSheetsRaw] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
@@ -2398,7 +2409,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     levurePosee: !!yeast.name?.trim(),
     enregistrable: !saving && !draftReadOnly,
     enregistrer: submitRecipe,
-    exporter: () => { void exporterDepuisPlus(); }
+    exporter: () => { void exporterDepuisPlus(); },
+    supprimer: recetteSupprimable && onDelete && !draftReadOnly ? () => setConfirmerSuppression(true) : undefined
   }));
   useWaterPreload({ source: waterSource, beerEbc: color?.ebc ?? null, beerVolumeL: volumeL, brew: waterBrew, state: water },
     step !== 'eau' && !(details.nolo?.enabled && details.nolo.process === 'secondRunnings'));
@@ -3361,6 +3373,19 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         reviewImport={reviewImport}
       /></Suspense>}
       </fieldset>}
+      <ConfirmerSuppressionRecette
+        recipe={recetteSupprimable}
+        open={confirmerSuppression}
+        onClose={() => setConfirmerSuppression(false)}
+        onConfirm={() => {
+          setConfirmerSuppression(false);
+          if (!recetteSupprimable || !onDelete) return;
+          // Le brouillon de la recette part avec elle : rien ne la rouvrirait plus tard.
+          try { if (!draftReadOnly) clearRecipeDraft(draftKey); } catch { /* le brouillon orphelin est sans effet */ }
+          draftFinished.current = true;
+          onDelete(recetteSupprimable);
+        }}
+      />
     </PageShell>
   );
 };

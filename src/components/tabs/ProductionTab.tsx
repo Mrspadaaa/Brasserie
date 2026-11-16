@@ -53,6 +53,8 @@ interface ProductionTabProps {
   /** Ouvre la fiche recette en plein écran. */
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe?: (recipe: Recipe) => void;
+  /** Supprime une recette depuis la fiche du carnet (après confirmation). */
+  onDeleteRecipe?: (recipe: Recipe) => void;
   /** Ouvre le déroulé minuté du jour de brassage. */
   onOpenBrewDay: (batch: Batch) => void;
   /** Ouvre l'assistant de recette, prérempli depuis une idée du labo. */
@@ -85,6 +87,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onOpenLabSectionRequestHandled,
   onOpenRecipe,
   onEditRecipe,
+  onDeleteRecipe,
   onRebrewRecipe,
   onOpenBrewDay,
   onDraftRecipe,
@@ -219,7 +222,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         ) : (
           /* r2a (choix du 15.11) : le carnet dit ce qui est prêt à brasser et ce qui manque ; « Brasser » ouvre la feuille de préparation actuelle. */
           <CarnetRecettes recipes={recipes} batches={batches} onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe}
-            onOpenBatch={(batch) => { setDetailSection('measurements'); setDetailBatch(batch); }} onBrew={(id) => (onRebrewRecipe ? onRebrewRecipe(id) : onOpenCreateBatch())} onNewRecipe={onOpenCreateBatch} />
+            onOpenBatch={(batch) => { setDetailSection('measurements'); setDetailBatch(batch); }} onBrew={(id) => (onRebrewRecipe ? onRebrewRecipe(id) : onOpenCreateBatch())} onNewRecipe={onOpenCreateBatch} onDeleteRecipe={onDeleteRecipe} />
         )}
       </>}
 

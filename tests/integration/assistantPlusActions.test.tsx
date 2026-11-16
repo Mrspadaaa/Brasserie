@@ -158,10 +158,10 @@ describe('b1r : le « + » de l’assistant met les actions de la recette en tê
     expect(await screen.findByRole('alert')).toHaveTextContent(/Copie refusée/);
   });
 
-  it('un geste de « Partout » garde sa place : « Créer une recette » reste dans le menu de l’assistant', () => {
+  it('un geste de « Partout » garde sa place : « Recette » (libellé unique depuis le 16.11) reste dans le menu de l’assistant', () => {
     ouvrir();
     const menu = ouvrirMenu();
-    expect(within(menu.querySelector<HTMLElement>('[data-zone="partout"]')!).getByRole('menuitem', { name: /Créer une recette/ })).toBeInTheDocument();
+    expect(within(menu.querySelector<HTMLElement>('[data-zone="partout"]')!).getByRole('menuitem', { name: /^Recette/ })).toBeInTheDocument();
     fermerMenu();
   });
 
