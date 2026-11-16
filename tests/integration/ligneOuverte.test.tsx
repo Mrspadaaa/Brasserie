@@ -24,7 +24,8 @@ describe('kb3 · Bières : la ligne s’ouvre sur place', () => {
     expect(p.onPasser).toHaveBeenCalledWith(idees[0]);
     fireEvent.click(screen.getByRole('button', { name: /En recette 1/ }));
     fireEvent.click(screen.getByRole('button', { name: /Brune d’hiver/ }));
-    expect(screen.getByRole('status')).toHaveTextContent('En recette');
+    expect(screen.getAllByRole('status').map((e) => e.textContent).join(' ')).toContain('Brouillon créé dans Recettes');
+    expect(screen.getAllByRole('status').map((e) => e.textContent).join(' ')).toContain('En recette');
     expect(screen.queryByRole('button', { name: 'Ouvrir la recette' })).not.toBeInTheDocument();
   });
   it('vide : la première ligne s’écrit sur place ; « Garder l’idée » n’écrit qu’avec un titre', () => {
