@@ -1228,6 +1228,7 @@ export const App: React.FC = () => {
             brewhouses={config.brewhouses}
             activeBrewhouseId={config.activeBrewhouseId}
             globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}

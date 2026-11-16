@@ -55,7 +55,7 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     };
     expect(marques('bord')).toEqual(['ecriture']);
     expect(marques('finances')).toEqual(['ecriture', 'facture', 'vente']);
-    expect(marques('brassins')).toEqual(['brassin']);
+    expect(marques('brassins')).toEqual(['recette', 'brassin']);
     expect(marques('recettes')).toEqual(['recette', 'brassin']);
     expect(marques('volumes')).toEqual(['brassin']);
     expect(marques('futs')).toEqual(['vente']);
@@ -78,13 +78,13 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     expect(plusMenuFor('production', 'batches', contexte).etat).toBe('2 en cuve');
     expect(plusMenuFor('stocks', 'futs', contexte).action?.hint).toBe('sera F-007');
     expect(plusMenuFor('stocks', 'courses', contexte).action?.hint).toBe('2 articles');
-    expect(plusMenuFor('production', 'batches', contexte).autres.find((e) => e.cle === 'courses')?.hint).toBe('2 à commander');
+    expect(plusMenuFor('dashboard', null, contexte).autres.find((e) => e.cle === 'courses')?.hint).toBe('2 à commander');
     const inconnu = plusMenuFor('production', 'batches', {});
     expect(inconnu.action?.hint).toBeUndefined();
     expect(inconnu.etat).toBeUndefined();
-    expect(inconnu.autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
+    expect(plusMenuFor('dashboard', null, {}).autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
     expect(inconnu.partout.find((e) => e.cle === 'brassin')?.hint).toBeUndefined();
-    expect(plusMenuFor('production', 'batches', { aCommander: 0, enCuve: 0 }).autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
+    expect(plusMenuFor('dashboard', null, { aCommander: 0 }).autres.find((e) => e.cle === 'courses')?.hint).toBeUndefined();
     expect(plusMenuFor('production', 'batches', { enCuve: 0 }).etat).toBeUndefined();
   });
 
@@ -100,7 +100,7 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     const m = plusMenuFor('production', 'batches', contexte);
     expect(m.partout.map((e) => e.court)).toEqual(['Écriture', 'Facture', 'Vente', 'Recette', 'Brassin']);
     expect(m.partout.map((e) => e.label)).toEqual(['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin']);
-    expect(m.autres.find((e) => e.cle === 'courses')?.label).toBe('Courses');
+    expect(plusMenuFor('dashboard', null, contexte).autres.find((e) => e.cle === 'courses')?.label).toBe('Courses');
   });
 
   it('une page plein écran garde les gestes de partout, sans action d’écran', () => {

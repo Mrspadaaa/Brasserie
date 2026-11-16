@@ -31,7 +31,7 @@ const libellesDeLaGrille = (html: string) => {
 describe('La pile du + (b1s-b2 « La pile au pouce »)', () => {
   it('l’action de l’écran est la première entrée (elle s’affiche contre le +), puis ses autres actions, puis « Partout »', () => {
     const { html } = rendre('brassins', 'feuille');
-    const ordre = ['Nouveau brassin', 'Saisir une densité', 'Courses', 'data-zone="ecran"', 'data-zone="partout"', 'data-zone="partout-titre"']
+    const ordre = ['Nouveau brassin', 'Saisir une densité', 'Créer une recette', 'data-zone="ecran"', 'data-zone="partout"', 'data-zone="partout-titre"']
       .map((t) => html.indexOf(t));
     expect(ordre.every((i) => i >= 0)).toBe(true);
     expect([...ordre].sort((a, b) => a - b)).toEqual(ordre);
@@ -47,18 +47,20 @@ describe('La pile du + (b1s-b2 « La pile au pouce »)', () => {
 
   it('« Partout » : libellés courts au 390, pleins et lettrés au 1280, l’action montée n’est pas répétée, le Compagnon en dernier', () => {
     const court = libellesDeLaGrille(rendre('brassins', 'feuille').html);
-    expect(court).toEqual(['Écriture', 'Facture', 'Vente', 'Recette', 'Compagnon']);
+    // Brassins : « Nouveau brassin » (action) et « Créer une recette » sont montés ; ne reste à « Partout » que le commun d'ailleurs.
+    expect(court).toEqual(['Écriture', 'Facture', 'Vente', 'Compagnon']);
     const plein = rendre('brassins', 'liste').html;
-    expect(libellesDeLaGrille(plein)).toEqual(['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Compagnon']);
+    expect(libellesDeLaGrille(plein)).toEqual(['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Compagnon']);
     expect(plein).toContain('<kbd aria-hidden="true">E</kbd>');
     expect(plein).toContain('<kbd aria-hidden="true">N</kbd>');
     expect(rendre('brassins', 'feuille').html).not.toContain('<kbd');
   });
 
   it('une pilule de plus que paire laisse la première seule en haut à droite ; un nombre pair, aucune', () => {
-    // Brassins : 4 communs + Compagnon = 5 (impair) ; Matériel : 5 communs + Compagnon = 6 ; Bord : 4 + 1 = 5.
-    expect(rendre('brassins', 'feuille').html.match(/plus-pp--seule/g)).toHaveLength(1);
+    // Brassins : 3 communs + Compagnon = 4 (pair) ; Recettes : 3 + 1 = 4 ; Matériel : 5 + 1 = 6 ; Bord : 4 + 1 = 5 (impair) ; Finances : 2 + 1 = 3 (impair).
+    expect(rendre('bord', 'feuille').html.match(/plus-pp--seule/g)).toHaveLength(1);
     expect(rendre('finances', 'feuille').html.match(/plus-pp--seule/g)).toHaveLength(1);
+    expect(rendre('brassins', 'feuille').html).not.toContain('plus-pp--seule');
     expect(rendre('materiel', 'feuille').html).not.toContain('plus-pp--seule');
   });
 

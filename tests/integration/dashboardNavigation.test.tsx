@@ -1,6 +1,6 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { CreativeLabTab } from '../../src/components/CreativeLabTab';
 import { StorageService, defaultConfig } from '../../src/services/storage';
@@ -54,6 +54,9 @@ function productionProps(): React.ComponentProps<typeof ProductionTab> {
     onOpenRecipe: vi.fn(), onOpenBrewDay: vi.fn(), onDraftRecipe: vi.fn()
   };
 }
+
+/* La fiche d'un brassin est un module chargé à la demande ; le merge de 16.11 a alourdi son graphe (2,4 s à froid, au-delà du 1 s de findByRole). On la charge avant les tests : la durée du transform n'est pas ce qu'ils vérifient. */
+beforeAll(async () => { await import('../../src/ui/BatchDetailSheet'); }, 30000);
 
 beforeEach(() => {
   window.history.replaceState({}, '', '/?dev-local');

@@ -19,6 +19,7 @@ import {
   type Criteres
 } from '../../src/ui/production/liste/listeModel';
 import { ListeBrassins } from '../../src/ui/production/liste/ListeBrassins';
+import type { PeriodeEntree } from '../../src/components/periode/periode';
 import type { Batch } from '../../src/types';
 
 afterEach(cleanup);
@@ -46,14 +47,15 @@ const lots: Batch[] = [
   lot('Z5', { status: 'termine', style: 'Pilsner', bottlingDate: '2026-02-01', brewDate: '2026-01-10' })
 ];
 const entries = batchEntries(lots);
-const ctx = (criteres: Partial<Criteres> = {}, search = ''): Contexte => ({
+// m3r-a : la période est celle de l'application (l'en-tête), passée au contexte ; ces tests de q2 jugent la liste entière (« Toutes »).
+const TOUTES: PeriodeEntree = { genre: 'tout' };
+const ctx = (criteres: Partial<Criteres> = {}, search = '', periode: PeriodeEntree = TOUTES): Contexte => ({
   entries,
-  criteres: { ...CRITERES_VIDES, periode: TOUTES, ...criteres },
+  criteres: { ...CRITERES_VIDES, ...criteres },
   filtres: { ...DEFAULT_CATALOG_FILTERS, search },
+  periode,
   now: NOW
 });
-// q6 : la période de départ est « le mois + les en cours » ; ces tests de q2 jugent la liste entière (« Toutes »).
-const TOUTES = { mode: 'toutes' as const, de: '', a: '', enCours: true };
 const ids = (l: { id: string }[]) => l.map((e) => e.id).sort();
 
 describe('comptes à facettes (e6c)', () => {
@@ -84,9 +86,9 @@ describe('comptes à facettes (e6c)', () => {
 
 describe('période et alcool', () => {
   it('« Les en cuve, toujours » : un brassin en cours passe une période étroite', () => {
-    const p = { mode: 'dates' as const, de: '2026-01-01', a: '2026-02-28', enCours: true };
-    expect(ids(appliquer(ctx({ periode: p })))).toEqual(['Z1', 'Z2', 'Z4', 'Z5']);
-    expect(ids(appliquer(ctx({ periode: { ...p, enCours: false } })))).toEqual(['Z5']);
+    const etroite: PeriodeEntree = { genre: 'dates', du: '2026-01-01', au: '2026-02-28' };
+    expect(ids(appliquer(ctx({ periode: { enCours: true } }, '', etroite)))).toEqual(['Z1', 'Z2', 'Z4', 'Z5']);
+    expect(ids(appliquer(ctx({ periode: { enCours: false } }, '', etroite)))).toEqual(['Z5']);
   });
   it('la plage d’alcool écarte ce qui n’a pas de valeur (jamais 0)', () => {
     const b = bornesAlcool(ctx());
@@ -102,8 +104,9 @@ describe('période et alcool', () => {
     expect(c.avancement).toEqual(['cuve']);
     expect(c.styles).toEqual(['IPA']);
     expect(c.alcool).toBeUndefined();
-    expect(c.periode.mode).toBe('mois');
-    expect(c.periode.enCours).toBe(true);
+    // La période n'est plus dans les critères : un ancien état (mode, de, a) est ignoré, seul « les en cours, toujours » reste.
+    expect(c.periode).toEqual({ enCours: true });
+    expect(restaurerCriteres({ periode: { mode: 'dates', de: '2026-01-01', a: '2026-02-28', enCours: false } }).periode).toEqual({ enCours: false });
   });
 });
 
@@ -164,7 +167,7 @@ describe('carte (e6a)', () => {
 });
 
 function Banc({ search = '', toutes = true }: { search?: string; toutes?: boolean }) {
-  const [criteres, setCriteres] = useState<Criteres>(toutes ? { ...CRITERES_VIDES, periode: TOUTES } : CRITERES_VIDES);
+  const [criteres, setCriteres] = useState<Criteres>(CRITERES_VIDES);
   const [filtres, setFiltres] = useState<CatalogFilters>({ ...DEFAULT_CATALOG_FILTERS, search });
   return (
     <ListeBrassins
@@ -173,7 +176,7 @@ function Banc({ search = '', toutes = true }: { search?: string; toutes?: boolea
       onFiltres={setFiltres}
       criteres={criteres}
       onCriteres={setCriteres}
-      appPeriode="all"
+      appPeriode={toutes ? TOUTES : { genre: 'mois', annee: 2026, mois: 11 }}
       now={NOW}
       onOpenBatch={vi.fn()}
       onBrew={vi.fn()}

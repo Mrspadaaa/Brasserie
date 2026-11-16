@@ -4,8 +4,7 @@
  * Valeurs de la maquette reprises ; couleurs lues dans les jetons de l'app (themes.css) pour suivre le thème.
  * Échelle 12 / 14 / 16 / 18 / 28, graisse 600 au plus, rayons 10 / 16 / 24 (DESIGN.md). Classes préfixées lst- (L26).
  */
-/* e6a n° 1 : un seul réglage de période à l'écran. La liste porte le sien (« Nov. + en cours ») ; l'en-tête cache le sien tant que la liste est affichée. */
-body:has([data-liste-brassins]) [data-periode-entete] { display: none !important; }
+/* e6a n° 1, version du 16.11 : une seule période dans l'app (« on peut le réglés à plusieurs endroits, attention à ce détails très important »). La pastille de l'en-tête reste visible sur Brassins ; le bouton de la liste et sa feuille lisent et écrivent la même période. */
 .lst-m { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; }
 .lst-reading { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
 .lst-unite { font-size: 12px; color: rgb(var(--cave-texte-400)); }

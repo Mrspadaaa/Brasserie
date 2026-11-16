@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile } from '../../types';
-import type { PeriodeEntree } from '../periode/periode';
+import type { Periode, PeriodeEntree } from '../periode/periode';
 import { StorageService } from '../../services/storage';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
@@ -33,6 +33,8 @@ interface ProductionTabProps {
   brewhouses: BrewhouseProfile[];
   activeBrewhouseId: string;
   globalTimeFilter: PeriodeEntree;
+  /** Écrit la période de l'application (celle de l'en-tête) : la liste des brassins la règle d'ici, il n'y en a qu'une. */
+  onChangeGlobalTimeFilter?: (p: Periode) => void;
   targetSubTab?: 'batches' | 'recipes' | 'lab' | 'scaler';
   onOpenCreateBatch: () => void;
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */
@@ -69,6 +71,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   brewhouses,
   activeBrewhouseId,
   globalTimeFilter,
+  onChangeGlobalTimeFilter,
   targetSubTab,
   onOpenCreateBatch,
   onSubTabChange,
@@ -211,7 +214,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             onDefaire={() => { StorageService.deleteBatch(lotApres.id); setApres(null); onSuccessMessage?.(`${lotApres.id} défait : le brassin est supprimé.`); }} />
         )}
         {subTab === 'batches' ? (
-          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter="all"
+          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter} onChoisirPeriode={onChangeGlobalTimeFilter}
             onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
         ) : (
           /* r2a (choix du 15.11) : le carnet dit ce qui est prêt à brasser et ce qui manque ; « Brasser » ouvre la feuille de préparation actuelle. */

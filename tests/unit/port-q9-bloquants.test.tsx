@@ -82,14 +82,20 @@ describe('q9 e9na n° 2 : la teinte de la pastille de style', () => {
   });
 });
 
-describe('q9 e6a n° 1 : un seul réglage de période', () => {
-  it('l’en-tête se tait tant que la liste est affichée (CSS posée, drapeaux présents)', async () => {
+/* m3r-a (décision du pilote, 16.11) : UNE seule période dans l'app, celle de l'en-tête. La pastille de l'en-tête reste visible sur Brassins
+   (plus de masquage) ; la feuille de la liste lit et écrit la même période ; la liste ne garde plus de période propre. */
+describe('q9 e6a n° 1 : une seule source de période', () => {
+  it('l’en-tête ne se tait plus sur la liste ; la liste lit la période de l’app et la feuille l’écrit', async () => {
     const fs = await import('node:fs');
     const css = fs.readFileSync('src/ui/production/liste/liste.css', 'utf8');
-    expect(css).toMatch(/body:has\(\[data-liste-brassins\]\) \[data-periode-entete\]\s*\{\s*display:\s*none\s*!important/);
-    expect(fs.readFileSync('src/components/Header.tsx', 'utf8')).toContain('data-periode-entete');
+    expect(css).not.toMatch(/data-periode-entete/);
+    expect(fs.readFileSync('src/components/Header.tsx', 'utf8')).not.toContain('data-periode-entete');
     expect(fs.readFileSync('src/ui/production/liste/ListeBrassins.tsx', 'utf8')).toContain('data-liste-brassins');
-    // la liste reçoit tous les brassins : « Toutes » de sa feuille élargit vraiment
-    expect(fs.readFileSync('src/components/tabs/ProductionTab.tsx', 'utf8')).toMatch(/batches=\{batches\} globalTimeFilter/);
+    // la liste reçoit tous les brassins et la vraie période de l'app ; « Toutes » de sa feuille écrit la période commune
+    const prod = fs.readFileSync('src/components/tabs/ProductionTab.tsx', 'utf8');
+    expect(prod).toMatch(/batches=\{batches\} globalTimeFilter=\{globalTimeFilter\}/);
+    expect(prod).toContain('onChoisirPeriode={onChangeGlobalTimeFilter}');
+    expect(fs.readFileSync('src/ui/production/ProductionCatalog.tsx', 'utf8')).toContain('appPeriode={globalTimeFilter}');
+    expect(fs.readFileSync('src/ui/production/liste/FeuilleFiltres.tsx', 'utf8')).toContain('p.onPeriode?.');
   });
 });

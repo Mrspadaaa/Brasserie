@@ -2,14 +2,14 @@ import type { TabType } from '../components/BottomNav';
 import { fabActionFor, type AnySubTab, type FabAction } from './fabActions';
 
 /**
- * Le menu du + (b1s-a « Deux étages », choisi le 15.11).
+ * Le menu du + (b1s-b2 « La pile au pouce », choisi le 15.11 ; la feuille « Deux étages » b1s-a n'a pas été retenue).
  *
  * ⚠️ Ce que ça règle : le + ouvrait le même menu partout — facture, vente,
  * recette, brassin — alors que chaque écran a ses propres gestes (BX-4, 09.11 :
  * « sur plein d'écran il est pas au bon endroit. Différents, donne pas les
  * bonnes actions »). Puis b1r avait fait disparaître le commun : ses mots du
  * 15.11, « certaines actions doivent toujours être possible, juste celle de
- * l'écran actuel sont plus mis en avant ». Deux étages :
+ * l'écran actuel sont plus mis en avant ». Deux zones, empilées depuis le + :
  *  - « Sur cet écran » (en tête) : l'action de l'écran (`fabActionFor`, pleine,
  *    couleur de sa rubrique), puis ses autres actions ;
  *  - « Partout » : les cinq gestes communs (écriture, facture, vente, recette,
@@ -134,7 +134,8 @@ const enCuve = (c: PlusContexte) => (c.enCuve && c.enCuve > 0 ? `${c.enCuve} en 
 const MENUS: Record<EcranId, Fiche> = {
   bord: { chemin: 'Bord', ton: 'finances', autres: ['courses'] },
   finances: { chemin: 'Finances', ton: 'finances', autres: ['estimer', 'facture', 'vente'] },
-  brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'courses'], etat: enCuve },
+  /* Décision du pilote (16.11) : la partie écran de la pile de Brassins = « Nouveau brassin », « Saisir une densité » (seulement si un brassin est en fermentation), « Créer une recette » ; pas de Courses. Écriture, facture, vente et Compagnon restent sous « Partout ». */
+  brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'recette'], etat: enCuve },
   recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
   atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: ['brassin'] },
   volumes: { chemin: 'Brassins › Volumes', ton: 'production', autres: ['brassin', 'courses'] },

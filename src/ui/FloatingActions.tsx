@@ -218,14 +218,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : anchor === 'nav' ? 28 : 22;
   /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
   const quiet = !geometry && anchor === 'page' && pageFooter;
-  /* e11a : « + Brassin », « + Recette ». Docké, la case des onglets s'élargit (variable lue par `floating-actions.css`) et le bouton garde son bord droit. */
-  const court = action?.court;
-  React.useLayoutEffect(() => {
-    if (!court || !geometry) return;
-    const root = document.documentElement;
-    root.style.setProperty('--floating-actions-nav-dock', '7.75rem');
-    return () => { root.style.removeProperty('--floating-actions-nav-dock'); };
-  }, [court, geometry !== null]);
+  /* Le + reste le carré de b1s-b2 sur chaque écran, Brassins compris : « + Brassin » (e11a, `court` de `fabActions.ts`) n'est plus écrit sur le bouton ;
+     le nom de l'action est « Nouveau brassin », en tête de la pile. */
 
   return (
     <div
@@ -240,8 +234,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         '--floating-actions-bottom': geometry ? `${geometry.bottom}px` : fallbackBottom,
         ...(geometry ? {
           '--floating-actions-right': `${geometry.right}px`,
-          ...(court ? { '--floating-actions-right': '0.75rem' } : {}),
-          '--floating-actions-width': court ? 'auto' : `${geometry.width}px`,
+          '--floating-actions-width': `${geometry.width}px`,
           '--floating-actions-height': `${geometry.height}px`
         } : {}),
         '--floating-actions-icon': `${iconSize}px`
@@ -293,7 +286,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         }}
         // En ligne : aucune règle d'écran ne retire le bouton de sa case (voir en tête).
         style={{ display: 'flex' }}
-        className={`relative rounded-full items-center justify-center ${court ? 'gap-1 pl-3 pr-4' : ''} select-none touch-manipulation [-webkit-touch-callout:none]
+        className={`relative rounded-full items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
                    ${open
@@ -304,7 +297,6 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
           className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
-        {court && <span className="text-sm font-semibold">{court}</span>}
         {waiting > 0 && (
           <span aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-4 min-h-4 px-1 rounded-full

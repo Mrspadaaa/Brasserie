@@ -86,9 +86,11 @@ describe('e11a · le menu du +', () => {
     expect(screen.queryByRole('menuitem', { name: 'Outils houblons' })).toBeNull();
   });
 
-  it('le bouton porte le nom court à côté du +', () => {
+  /* Décision du pilote (16.11) : le + de Brassins garde le carré de b1s-b2, sans texte ; le nom de l'action vit en tête de la pile (« Nouveau brassin »). */
+  it('le + de Brassins est le carré de b1s-b2 : aucun texte à côté du +, le nom de l’action est en tête de la pile', () => {
     montrer('batches');
-    expect(screen.getByRole('button', { name: 'Actions rapides' }).textContent).toContain('Brassin');
+    expect(screen.getByRole('button', { name: 'Actions rapides' }).textContent).toBe('');
+    expect(screen.getAllByRole('menuitem')[0].textContent).toContain('Nouveau brassin');
   });
 
   it('un autre onglet garde son menu et son bouton nu', () => {

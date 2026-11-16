@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SearchX, X } from 'lucide-react';
 import type { Batch, Recipe } from '../../types';
-import { dansPeriode, enPeriode, type PeriodeEntree } from '../../components/periode/periode';
+import { dansPeriode, enPeriode, type Periode, type PeriodeEntree } from '../../components/periode/periode';
 import { StorageService } from '../../services/storage';
 import {
   CatalogFilters,
@@ -33,6 +33,7 @@ export function ProductionCatalog({
   recipes,
   batches,
   globalTimeFilter,
+  onChoisirPeriode,
   onOpenRecipe,
   onEditRecipe,
   onOpenBatch,
@@ -43,6 +44,8 @@ export function ProductionCatalog({
   recipes: Recipe[];
   batches: Batch[];
   globalTimeFilter: PeriodeEntree;
+  /** La feuille « Période » de la liste écrit la période de l'application. */
+  onChoisirPeriode?: (p: Periode) => void;
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
@@ -291,7 +294,8 @@ export function ProductionCatalog({
           criteres={criteres}
           onCriteres={setCriteres}
           kegs={kegs}
-          appPeriode={StorageService.getUiState<string>('app_global_time_filter', 'this-month') as PeriodeEntree}
+          appPeriode={globalTimeFilter}
+          onChoisirPeriode={onChoisirPeriode}
           onOpenBatch={onOpenBatch}
           onBrew={onOpenBrewDay}
           onFavorite={onFavorite}
