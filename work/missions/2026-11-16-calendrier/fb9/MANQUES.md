@@ -78,3 +78,7 @@ Règle : aucun geste n'ouvre le clavier par défaut.
   - la caisse qui se recalcule en direct ;
   - un « Annuler » de 5 s après le geste.
 - La mesure puppeteer joue ces trois gestes par des événements tactiles réels et vérifie la nouvelle date. Les juges y passent en premier.
+
+## K12 Lisibilité visuelle (16.11, à propos du carnet, valable ici aussi : « difficile à lire, voir... »)
+- Mesure par script, sur chaque écran au repos à 390 : au plus 40 mots visibles hors étiquettes de la frise, aucun texte sous 14 px, contraste d'au moins 4,5:1, un seul titre dominant.
+- Le juge lisibilité donne 9 au moins sur captures ouvertes.
