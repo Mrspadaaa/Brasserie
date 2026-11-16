@@ -45,4 +45,10 @@ describe('Feuille d’édition : pas de type « Tarif » pour une note', () => {
     expect(screen.queryByText('Tarif')).not.toBeInTheDocument();
     expect(screen.getAllByText('Note').length).toBeGreaterThan(0);
   });
+  it('la feuille d’une note ne demande ni coût ni prix (critique C2, n° 4)', () => {
+    const note = { id: 'CR-2', type: 'note', title: 'ZZ TEST', status: 'idea' } as unknown as CreativeItem;
+    render(<CreativeItemSheet item={note} onClose={() => {}} onSave={() => {}} onDelete={() => {}} />);
+    expect(screen.queryByText('Coût estimé (CHF)')).not.toBeInTheDocument();
+    expect(screen.queryByText('Prix visé (CHF)')).not.toBeInTheDocument();
+  });
 });

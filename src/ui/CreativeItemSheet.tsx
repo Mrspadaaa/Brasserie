@@ -146,7 +146,8 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          {/* Une note du Carnet n’a ni coût ni prix (critique C2, n° 4) : ils reviennent dès qu’elle change de type. */}
+          {String(draft.type) !== 'note' && <div className="grid grid-cols-2 gap-3">
             <Field label="Coût estimé (CHF)" htmlFor="cr-cost">
               <NumberInput
                 value={draft.estimatedCost}
@@ -167,7 +168,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
                 className={`${inputClass} font-mono`}
               />
             </Field>
-          </div>
+          </div>}
 
           {draft.type === 'event' && (
             <DateField
