@@ -30,3 +30,4 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Calendrier global | passe 2 · 16.11 | https://claude.ai/artifact/KkTtnqzuRef5pXotpfPjE4 | `work/missions/2026-11-16-calendrier/page/index.html` |
+| Calendrier global | passe 8 · 16.11 | https://claude.ai/artifact/KAZV8p46ETVRuTiuYGzjQK | `work/missions/2026-11-16-calendrier/page2/index.html` |
