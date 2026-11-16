@@ -45,12 +45,12 @@ describe('La pile du + (b1s-b2 « La pile au pouce »)', () => {
     expect(impot).not.toContain('plus-pp--ps');
   });
 
-  it('« Partout » : libellés courts au 390, pleins et lettrés au 1280, toujours les mêmes six (BUGS 34), le Compagnon en dernier', () => {
+  it('« Partout » : un seul libellé aux deux largeurs (lettré au 1280), toujours les mêmes six (BUGS 34), le Compagnon en dernier', () => {
     const court = libellesDeLaGrille(rendre('brassins', 'feuille').html);
     // Brassins : « Nouveau brassin » (action) et « Créer une recette » sont montés ; ils gardent leur case en « Partout », marquée ↑.
     expect(court).toEqual(['Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon']);
     const plein = rendre('brassins', 'liste').html;
-    expect(libellesDeLaGrille(plein)).toEqual(['Nouvelle écriture', 'Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin', 'Compagnon']);
+    expect(libellesDeLaGrille(plein)).toEqual(['Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon']);
     expect(plein).toContain('<kbd aria-hidden="true">E</kbd>');
     expect(plein).toContain('<kbd aria-hidden="true">N</kbd>');
     expect(rendre('brassins', 'feuille').html).not.toContain('<kbd');

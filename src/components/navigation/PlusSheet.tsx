@@ -16,8 +16,8 @@ import './navigation.css';
  *  - plus haut : « Partout », les gestes communs en deux colonnes de pilules de 44 px, ordre figé, le Compagnon en dernier.
  *    Un geste commun déjà monté en tête n'est pas répété ; sa lettre reste active (`lettresActives`). Un nombre impair de pilules
  *    laisse la première seule en haut à droite.
- * Au 1280 les mêmes pilules portent leur libellé plein et leur lettre de raccourci ; au 390 le libellé court de la maquette
- * (« Écriture », « Facture », « Vente », « Recette », « Brassin »).
+ * Un seul libellé par geste commun, aux deux largeurs (pilote, 16.11 : « Nouvelle écriture » au 1280 et « Écriture » au 390 se
+ * contredisaient) : « Écriture », « Facture », « Vente », « Recette », « Brassin » ; au 1280 les pilules gagnent leur lettre de raccourci.
  *
  * Ordre du DOM = ordre de la pile lue depuis le + (`column-reverse`) : l'action de l'écran est la première entrée du menu
  * (focus à l'ouverture, ↓ vers les autres puis « Partout »), alors qu'elle s'affiche en bas, contre le pouce.
@@ -134,13 +134,13 @@ function AllerA({ etapes, onPage }: { etapes: NonNullable<PlusPageDeclaration['e
   );
 }
 
-/** Une pilule de « Partout » : libellé court au téléphone, plein au 1280 (avec sa lettre). */
+/** Une pilule de « Partout » : un seul libellé par geste, le même aux deux largeurs (16.11) ; au 1280 il gagne sa lettre. */
 function Commun({ e, forme, seule, onChoisir }: { e: PlusEntree; forme: Props['forme']; seule: boolean; onChoisir: Props['onChoisir'] }) {
   return (
     <button type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)}
-      aria-label={`${e.hint ? `${e.label}, ${e.hint}` : e.label}${e.monte ? ', aussi en tête de la pile' : ''}`}
+      aria-label={`${e.hint ? `${e.court ?? e.label}, ${e.hint}` : (e.court ?? e.label)}${e.monte ? ', aussi en tête de la pile' : ''}`}
       className={`plus-pp ${TON[e.ton]} ${seule ? 'plus-pp--seule' : ''} ${e.monte ? 'plus-pp--renvoi' : ''}`}>
-      <span className="plus-pp-t">{forme === 'liste' ? e.label : (e.court ?? e.label)}</span>
+      <span className="plus-pp-t">{e.court ?? e.label}</span>
       {e.monte && <span className="plus-pp-r" aria-hidden="true">↑</span>}
       {forme === 'liste' && <Lettre lettre={e.lettre} />}
       <Pastille Icone={ICONES[e.cle]} />
