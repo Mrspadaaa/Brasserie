@@ -15,7 +15,7 @@ import {
   type BrewerCatalogueIdentityCandidate,
   type BrewerCatalogueKind,
 } from '../../../functions/src/brewerCatalogueSchema.js';
-import type { BrewerCatalogueLookupRecord, BrewerCatalogueReceipt, BrewerCatalogueWriteResult } from '../../../functions/src/brewerCatalogueStore.js';
+import type { BrewerCatalogueLookupRecord, BrewerCatalogueReceipt, BrewerCatalogueWriteResult } from '../../../functions/src/brewerCatalogueTypes';
 import type { BrewerContext } from '../../../functions/src/companionTypes';
 import type { HopVariety, HopSource } from '../../../functions/src/hopIndexSchema.js';
 import type { HopKnowledge, HopYeast } from '../../../functions/src/hopPredictionSchema.js';

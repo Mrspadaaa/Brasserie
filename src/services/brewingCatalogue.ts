@@ -1,5 +1,5 @@
 import type { BrewerCatalogueCommand, BrewerCatalogueKind } from '../../functions/src/brewerCatalogueSchema';
-import type { BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from '../../functions/src/brewerCatalogueStore';
+import type { BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from '../../functions/src/brewerCatalogueTypes';
 
 /** Server confirmation is explicit. Offline callers retain their draft instead
  * of reporting a queued Firebase write as a confirmed catalogue mutation. */

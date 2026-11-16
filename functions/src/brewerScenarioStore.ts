@@ -2,17 +2,9 @@ import { createHash } from 'node:crypto';
 import type { Firestore, Transaction } from 'firebase-admin/firestore';
 import { brewingScenarioDossierApi as domain, brewingScenarioArchiveApi as archive } from './brewerTools.js';
 
-export type BrewerScenarioCommand = {
-  operationId: string; scenarioId: string; expectedRevision: number;
-} & (
-  | { kind: 'saveResult'; result: unknown; previousSnapshotReference?: string; reason?: string }
-  | { kind: 'observe'; snapshotReference: string; branchId?: string; observationId: string; observedAt: string; observation: unknown }
-  | { kind: 'preferBranch'; snapshotReference: string; branchId: string; branchReference: string; preferenceId: string; reason: string; interpretation?: string }
-);
-export interface BrewerScenarioReceipt {
-  scope: 'serverConfirmed'; scenarioId: string; operationId: string;
-  revision: number; reference: string; committedAt: string;
-}
+import type { BrewerScenarioCommand, BrewerScenarioReceipt } from './brewerScenarioTypes.js';
+export type { BrewerScenarioCommand, BrewerScenarioReceipt } from './brewerScenarioTypes.js';
+
 export interface BrewerScenarioStoreOptions {
   database: Firestore; ownerKey: string; maxSnapshotBytes?: number;
   guard?: (transaction: Transaction) => Promise<void> | void;

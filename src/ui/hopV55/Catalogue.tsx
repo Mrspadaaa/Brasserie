@@ -6,7 +6,7 @@ import type {
   BrewerCatalogueKind, BrewerCatalogueNormalized,
   BrewerCatalogueProjectionChoice, BrewerCatalogueUnmappedValue
 } from '../../../functions/src/brewerCatalogueSchema';
-import type { BrewerCatalogueLookupRecord } from '../../../functions/src/brewerCatalogueStore';
+import type { BrewerCatalogueLookupRecord } from '../../../functions/src/brewerCatalogueTypes';
 import type { BrewingStyle, BrewingStyleGuide } from '../../../functions/src/brewingStyleSchema';
 import type { HopYeast } from '../../../functions/src/hopPredictionSchema';
 import type { HopVariety } from '../../../functions/src/hopIndexSchema';

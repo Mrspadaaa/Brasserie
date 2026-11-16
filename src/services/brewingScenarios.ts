@@ -1,4 +1,4 @@
-import type { BrewerScenarioCommand, BrewerScenarioReceipt } from '../../functions/src/brewerScenarioStore';
+import type { BrewerScenarioCommand, BrewerScenarioReceipt } from '../../functions/src/brewerScenarioTypes';
 import type { BrewingScenarioRecordResult } from '../domain/brewingScenarioDossier';
 
 /** Online transport of the same domain as brewingScenarioLocalRepository.

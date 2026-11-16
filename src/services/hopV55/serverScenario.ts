@@ -1,4 +1,4 @@
-import type { BrewerScenarioCommand, BrewerScenarioReceipt } from '../../../functions/src/brewerScenarioStore';
+import type { BrewerScenarioCommand, BrewerScenarioReceipt } from '../../../functions/src/brewerScenarioTypes';
 import { assertBrewingScenarioResult, type BrewingScenarioResult } from '../../domain/brewingScenario';
 import type { BrewingScenarioEventV1, BrewingScenarioRecordRead, BrewingScenarioRecordResult } from '../../domain/brewingScenarioDossier';
 import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';

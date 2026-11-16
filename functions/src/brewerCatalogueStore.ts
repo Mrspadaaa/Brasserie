@@ -9,6 +9,7 @@ import {
   type BrewerCatalogueCommand, type BrewerCatalogueEntity,
   type BrewerCatalogueIdentityCandidate, type BrewerCatalogueKind
 } from './brewerCatalogueSchema.js';
+import type { BrewerCatalogueReceipt, BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from './brewerCatalogueTypes.js';
 import type { HopVariety } from './hopIndexSchema.js';
 import type { HopKnowledge } from './hopPredictionSchema.js';
 
@@ -17,19 +18,7 @@ const DEFAULT_MAX_IDENTITY_SCAN = 10_000;
 const DEFAULT_LOOKUP_LIMIT = 100;
 const MAX_LOCK_KEYS = 350;
 
-export interface BrewerCatalogueReceipt {
-  schemaVersion: 1;
-  ownerKey: string;
-  namespace: string;
-  operationId: string;
-  commandFingerprint: string;
-  kind: BrewerCatalogueKind;
-  targetId: string;
-  status: 'committed';
-  revision: number;
-  fingerprint: string;
-  committedAt: string;
-}
+export type { BrewerCatalogueReceipt, BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from './brewerCatalogueTypes.js';
 
 export interface BrewerCatalogueStoreOptions {
   database: Firestore;
@@ -48,21 +37,6 @@ export interface BrewerCatalogueStoreOptions {
   lookupLimit?: number;
   now?: () => Date;
 }
-
-export interface BrewerCatalogueLookupRecord {
-  kind: BrewerCatalogueKind;
-  id: string;
-  record: BrewerCatalogueEntity;
-  revision: number;
-  fingerprint: string;
-  origin: 'persisted' | 'bundled';
-  /** Set only for a particular style nested in a shared guide. */
-  styleId?: string;
-}
-
-export type BrewerCatalogueWriteResult =
-  | { status: 'applied' | 'duplicate'; kind: BrewerCatalogueKind; id: string; record: BrewerCatalogueEntity; revision: number; fingerprint: string; receipt: BrewerCatalogueReceipt }
-  | { status: 'conflict' | 'invalid'; reason: string; identityCandidates?: BrewerCatalogueIdentityCandidate[] };
 
 export interface BrewerCatalogueStore {
   readReceipts(): Promise<Array<{ operationId: string; kind: BrewerCatalogueKind; targetId: string }>>;
