@@ -138,7 +138,9 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
   const legende: string[] = [];
   // FN-3, FN-4 : une couleur par pièce (celles de m5pa-d, variées si deux pièces ont la même) et un nom court qui les distingue.
   const teintes = couleursPieces(troncons.map(t => couleurDe(t.piece, aujourdhui)));
-  const noms = etiquettesPieces(troncons.map(t => t.piece.transaction.description));
+  // FN-32 : le nom court se calcule sur TOUTES les pièces de la feuille, pas sur les seules touchées : « pièce A » ne redevient pas « zz » quand B n'est plus touchée.
+  const nomsDesPieces = new Map(pieces.map((p, i) => [p.id, etiquettesPieces(pieces.map(x => x.transaction.description))[i]] as const));
+  const noms = troncons.map(t => nomsDesPieces.get(t.id) ?? t.piece.transaction.description);
   const enRetard = troncons.filter(t => t.piece.echeance && t.piece.echeance < aujourdhui).length;
   troncons.slice(0, troncons.length > 3 ? 2 : 3).forEach((t, i) => legende.push(`${t.piece.echeance && t.piece.echeance < aujourdhui ? (enRetard > 1 ? `retard · ${noms[i]}` : 'retard') : noms[i]} ${amountOnly(t.partCents)}`));
   if (troncons.length > 3) legende.push(`${troncons.length - 2} autres ${amountOnly(troncons.slice(2).reduce((s, t) => s + t.partCents, 0))}`);

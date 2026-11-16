@@ -20,9 +20,11 @@ function groupeDe(tx: Transaction): GroupeId {
   return GROUPES[tx.category as GroupeId] ? tx.category as GroupeId : 'divers';
 }
 
-export function RangeeApercu({ piece, paiements, transactions, mot, ancien = false, nom }: {
+export function RangeeApercu({ piece, paiements, transactions, mot, ancien = false, nom, aRecupererCents = 0, entrantRecup = false }: {
   piece: Transaction; paiements: FinancialPayment[]; transactions: Transaction[];
   mot: 'avant' | 'après'; ancien?: boolean; nom: string;
+  /** FN-36 : « J'ai bien payé » : le trop-payé que la correction écrira en créance ; l'aperçu le dit à côté du « payé » (la pièce elle-même est soldée au nouveau montant). */
+  aRecupererCents?: number; entrantRecup?: boolean;
 }) {
   const aujourdhui = todayISO();
   const etat = paymentState(piece, paiements, transactions, aujourdhui);
@@ -45,6 +47,7 @@ export function RangeeApercu({ piece, paiements, transactions, mot, ancien = fal
             <span className={`mod-tg ${ech.retard ? 'mod-tg-late' : 'mod-tg-pay'}`}>reste {amountOnly(etat.remainingCents)}</span>
           </>
         : <span className={`mod-tg mod-tg-${ligne.ton}`}>{ligne.texte}</span>}
+      {aRecupererCents > 0 && <span className="mod-tg mod-tg-pay">{amountOnly(aRecupererCents)} {entrantRecup ? 'à rembourser' : 'à récupérer'}</span>}
       {ligne.ton !== 'void' && <span className={`mod-pc${p.manque ? ' mod-no' : ''}`}>{p.manque ? ICONE_SANS_PIECE : ICONE_PIECE}{p.texte}</span>}
       <span className="mod-rw-mot">{mot}</span>
     </span>

@@ -337,7 +337,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             {apres && (
               <div className="mod-ap" aria-live="polite"><h4>Dans Opérations</h4>
                 <RangeeApercu piece={transaction} paiements={paiements} transactions={ecritures} mot="avant" ancien nom={transaction.description} />
-                <RangeeApercu piece={{ ...apres.piece, proofUrl: proofUrl ?? apres.piece.proofUrl }} paiements={apres.paiements} transactions={ecritures} mot="après" nom={description.trim() || transaction.description} />
+                <RangeeApercu piece={{ ...apres.piece, proofUrl: proofUrl ?? apres.piece.proofUrl }} paiements={apres.paiements} transactions={ecritures} mot="après" nom={description.trim() || transaction.description} aRecupererCents={sousLePaye && choix === 'avoir' ? tropPayeCents : 0} entrantRecup={!sortant} />
               </div>
             )}
           </>}

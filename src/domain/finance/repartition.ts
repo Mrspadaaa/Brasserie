@@ -17,6 +17,8 @@ export interface PieceAPayer {
   echeance: string | null;
   /** Date de la pièce ISO ; `null` quand elle manque. */
   date: string | null;
+  /** FN-31 : l'instant de saisie de la pièce (ISO, `finance.recordedAt`) ; départage deux pièces de même date. Absent : l'identifiant tranche. */
+  saisieLe?: string | null;
 }
 export interface PartDeVirement {
   id: string;
@@ -37,9 +39,11 @@ export interface Repartition {
 }
 
 const cle = (p: PieceAPayer) => p.echeance ?? p.date ?? '9999-12-31';
-/** La plus ancienne d'abord : échéance (ou date), puis date, puis identifiant. Ne modifie pas l'entrée. */
+/** La plus ancienne d'abord : échéance (ou date), puis date, puis instant de saisie (FN-31 : l'identifiant est aléatoire), puis identifiant. Ne modifie pas l'entrée. */
 export function ordreDImputation<T extends PieceAPayer>(pieces: readonly T[]): T[] {
-  return [...pieces].sort((a, b) => cle(a).localeCompare(cle(b)) || (a.date ?? '9999-12-31').localeCompare(b.date ?? '9999-12-31') || a.id.localeCompare(b.id));
+  const instant = (p: PieceAPayer) => Number.isFinite(Date.parse(p.saisieLe ?? '')) ? Date.parse(p.saisieLe!) : Infinity;
+  return [...pieces].sort((a, b) => cle(a).localeCompare(cle(b)) || (a.date ?? '9999-12-31').localeCompare(b.date ?? '9999-12-31')
+    || (instant(a) === instant(b) ? 0 : instant(a) < instant(b) ? -1 : 1) || a.id.localeCompare(b.id));
 }
 export const totalDu = (pieces: readonly PieceAPayer[]): number => pieces.reduce((s, p) => s + Math.max(0, p.resteCents), 0);
 
@@ -88,7 +92,7 @@ export function piecesOuvertesDuTiers(ouverte: Transaction, transactions: readon
   const enPiece = (tx: Transaction): PieceOuverte | null => {
     const etat = paymentState(tx, payments as FinancialPayment[], transactions as Transaction[]);
     if (etat.remainingCents <= 0 || !Number.isSafeInteger(etat.remainingCents)) return null;
-    return { id: tx.id, resteCents: etat.remainingCents, echeance: isoDate(tx.finance?.dueDate) ?? null, date: isoDate(tx.date) ?? null, transaction: tx, entrant: sens === 'in' };
+    return { id: tx.id, resteCents: etat.remainingCents, echeance: isoDate(tx.finance?.dueDate) ?? null, date: isoDate(tx.date) ?? null, saisieLe: tx.finance?.recordedAt ?? null, transaction: tx, entrant: sens === 'in' };
   };
   const premiere = enPiece(ouverte);
   const autres = tiers === '' ? [] : transactions.filter(tx => {

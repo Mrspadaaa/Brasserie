@@ -90,6 +90,9 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
   /* v2 (3) : l'avis d'une écriture (« Mouvement enregistré », « Opération mise à jour ») ne survit pas à l'annulation d'une écriture : il parlerait d'une opération retirée. */
   const nbAnnulees=transactions.filter(t=>!isActiveTransaction(t)).length,annuleesVues=useRef(nbAnnulees);
   useEffect(()=>{if(nbAnnulees>annuleesVues.current)setNotice(n=>n==='Mouvement enregistré.'||n==='Opération mise à jour.'?'':n);annuleesVues.current=nbAnnulees;},[nbAnnulees]);
+  /* FN-40 : l'avis (« Opération mise à jour. ») s'efface seul après quelques secondes et quand on change de vue (onglet, Archives) : il ne reste pas des minutes en tête d'Opérations. */
+  useEffect(()=>{if(!notice)return;const t=setTimeout(()=>setNotice(''),6000);return()=>clearTimeout(t);},[notice]);
+  useEffect(()=>{setNotice('');},[view,journalState.scope]);
   /* Le + flottant : « Estimer un brassin » ouvre le choix du brassin (l'ancien + de la ligne du coût du litre). */
   useEffect(()=>{const ouvrir=()=>setBudgetPicker(true);window.addEventListener('finances-estimer',ouvrir);return()=>window.removeEventListener('finances-estimer',ouvrir);},[]);
   const [closingOpts,setClosingOpts]=useState<OuvertureInventaire>({}),[assetInitial,setAssetInitial]=useState<Partial<FinancialAsset>>();

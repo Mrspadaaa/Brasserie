@@ -448,6 +448,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       <button type="button" className="ops-pu" aria-expanded={panneau} onClick={() => setPanneau(open => !open)}>
         Filtres{actifs.length > 0 && <span className="ops-n">{actifs.length}</span>}<ChevronDown size={13} aria-hidden="true"/></button>
       <button type="button" className="ops-pu" aria-pressed={filter === 'doublon'} disabled={duplicateGroups.length === 0 && filter !== 'doublon'}
+        {...(duplicateGroups.length === 0 && filter !== 'doublon' ? { 'aria-label': 'Doublons : aucun doublon', title: 'Aucun doublon à montrer' } : {})}
         data-urgent={duplicateGroups.length > 0 || undefined} onClick={() => change({ filter: filter === 'doublon' ? 'all' : 'doublon' })}>
         Doublons{duplicateGroups.length > 0 && nombreDoublons > 0 && <span className="ops-n">{nombreDoublons}</span>}</button>
       {scope !== 'archives' && <button type="button" className="ops-pu" onClick={onPrivateMovement}>Apport ou prélèvement privé</button>}

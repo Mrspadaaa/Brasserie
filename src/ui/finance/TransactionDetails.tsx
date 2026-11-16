@@ -15,6 +15,7 @@ import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transa
 import { planOccurrences } from '../../domain/finance/forecast';
 import { estMouvementPrive, paiementsVivants } from '../../domain/finance/correctionMontant';
 import { retirerEcriture } from './modifier/retirerEcriture';
+import { origineDeCreance } from './modifier/origineCreance';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
 import './fiche/fiche.css';
@@ -26,6 +27,8 @@ import './fiche/fiche.css';
  * Ce que la maquette n'a pas et que l'écran garde : « Noter un paiement » (quand il reste à payer), et sous « … » : confirmer qu'une pièce reste à régler, traitement annuel du matériel.
  * Toute écriture passe par `StorageService` et `FinanceService`, comme avant ; ce composant n'ouvre aucun chemin d'écriture neuf.
  */
+/** FN-41 : la note de la contre-écriture d'un paiement annulé d'un toucher (« Annuler » de la ligne) ou par « Corriger ce paiement saisi par erreur » : la paire se lit « annulé », pas « corrigé » (qui reste le mot d'un montant changé). */
+const NOTE_ANNULATION='Correction d’un paiement saisi par erreur';
 /** FN-7 : la note d'un paiement issu d'un virement sur plusieurs pièces (« Virement de 12.00 CHF réparti sur 2 pièces ») se lit « virement de 12,00 · 2 pièces ». Une autre note ne dit rien. */
 function lienVirement(p:FinancialPayment):string{
   const m=/Virement de\s+(.+?)\s+réparti sur\s+(\d+)\s+pièces?/i.exec(p.note??'');
@@ -51,7 +54,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const outgoing=transactionDirection(tx,transactions)==='out';
   const voided=!!tx.finance?.voidedAt;
   /* t3 (A2) : le franc de trop payé a une adresse. La créance écrite par la correction porte « « <pièce> » » dans son motif (`creanceDeTropPaye`) ; la pièce la montre et y renvoie. */
-  const creances=transactions.filter(c=>c.id!==tx.id&&isActiveTransaction(c)&&(c.subcategory==='À récupérer'||c.subcategory==='À rembourser')&&(c.description??'').includes(`« ${tx.description} »`));
+  const creances=transactions.filter(c=>c.id!==tx.id&&isActiveTransaction(c)&&(c.subcategory==='À récupérer'||c.subcategory==='À rembourser')&&origineDeCreance(c,transactions,payments)?.id===tx.id);
   const etat=etatDeLigne(tx,state,!outgoing,payments,todayISO());
   /* Payé : le texte de la maquette (✓ payé 9 nov. · banque). Ouvert : les mots que cette fiche a toujours dits (« Reste à payer : 100,00 CHF »), l'échéance en dessous ; la couleur (hachure, rouge) vient de l'état. */
   const ouvert=state.state==='unpaid'||state.state==='partial';
@@ -70,6 +73,8 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const aJustificatif=!!tx.proofUrl||!!tx.finance?.proofDocumentId;
   const paiements=payments.filter(p=>p.transactionId===tx.id);
   const enVigueur=paiementsVivants(tx,payments);
+  /* FN-41 : le compte et les lignes sont ceux qu'on voit : une contre-écriture se replie avec son paiement, elle ne compte pas à part. */
+  const lignesPaiements=paiements.filter(p=>!(p.reversalOfId&&paiements.some(o=>o.id===p.reversalOfId)));
   /* u1 (20) : une pièce payée se retire en un geste (contre-paiements, puis annulation) ; les règles interdisent de supprimer, la confirmation le dit. */
   const retirer=async()=>{setOccupe(true);try{await retirerEcriture(tx.id,payments,{aujourdhui:todayISO(),maintenant:new Date().toISOString()});setError('');setCorrection(null);}catch(e){setError((e as Error).message);setCorrection(null);}finally{setOccupe(false);}};
   const tiers=[CATEGORY_LABELS[tx.category]??tx.category,transactionVendor(tx),dateFiche(tx.date)].filter(Boolean).join(' · ');
@@ -113,13 +118,13 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         {plan&&<MoneyInput label="Montant de cette facture qui remplace la prévision (CHF)" value={tx.finance?.planAllocatedCents} onChange={v=>update({planAllocatedCents:v})}/>}
         {plan?.recurrence&&<Field label="Échéance prévue remplacée par cette facture"><select value={tx.finance?.occurrenceId??''} onChange={e=>update({occurrenceId:e.target.value||undefined})}><option value="">Choisir la période concernée</option>{occurrences.map(o=><option key={o.id} value={o.id}>{dateAffichee(o.date)}</option>)}</select></Field>}
       </div></details>}
-      <details className="fiche-dt fiche-dt-bas" open={paiements.length>0}><summary><span>Paiements</span><em>{paiements.length||''}</em><ChevronDown size={16} aria-hidden="true"/></summary>
-        {paiements.filter(p=>!(p.reversalOfId&&paiements.some(o=>o.id===p.reversalOfId))).map(p=>{
+      <details className="fiche-dt fiche-dt-bas" open={paiements.length>0}><summary><span>Paiements</span><em>{lignesPaiements.length||''}</em><ChevronDown size={16} aria-hidden="true"/></summary>
+        {lignesPaiements.map(p=>{
           const contre=paiements.find(r=>r.reversalOfId===p.id);
           const ligne=(q:FinancialPayment)=><div key={q.id}><span>{dateFiche(q.date)} · {MODE_COURT[q.method]??q.method}{q.reversalOfId?' · correction':''}{!q.reversalOfId&&lienVirement(q)?` · ${lienVirement(q)}`:''}</span><span className="fiche-m">{q.direction==='in'?'+':'−'}{amountOnly(q.amountCents)}</span></div>;
           const preuve=(q:FinancialPayment)=>q.proofDocumentId&&<div className="fiche-hist-pj"><FileCheck2 size={14} aria-hidden="true"/><span>{q.proofFileName||'justificatif du virement'}</span><DocumentProofLink transaction={tx} document={{id:q.proofDocumentId,fileName:q.proofFileName}}/></div>;
           /* FN-6 : une paire paiement / contre-paiement se replie en une ligne « corrigé » ; le détail (les deux écritures) s'ouvre d'un toucher. */
-          if(contre) return <details className="fiche-hist fiche-hist-corr" key={p.id}><summary><span>{dateFiche(p.date)} · {MODE_COURT[p.method]??p.method} · corrigé</span><span className="fiche-m fiche-m-barre">{amountOnly(p.amountCents)}</span><ChevronDown size={14} aria-hidden="true"/></summary>
+          if(contre) return <details className="fiche-hist fiche-hist-corr" key={p.id}><summary><span>{dateFiche(p.date)} · {MODE_COURT[p.method]??p.method} · {contre.note===NOTE_ANNULATION?'annulé':'corrigé'}</span><span className="fiche-m fiche-m-barre">{amountOnly(p.amountCents)}</span><ChevronDown size={14} aria-hidden="true"/></summary>
             {ligne(p)}{preuve(p)}{ligne(contre)}</details>;
           return <div className="fiche-hist" key={p.id}>{ligne(p)}
           {/* m5pa-d : un virement a un seul justificatif, lié à chaque paiement qu'il a réglé ; il se montre sur la ligne de ce paiement, distinct du justificatif de la pièce. */}

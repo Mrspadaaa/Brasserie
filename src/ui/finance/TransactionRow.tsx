@@ -5,7 +5,7 @@ import { formatCHF, isActiveTransaction, paymentState, todayISO, transactionAmou
 import { FinanceService } from '../../services/financeService';
 import { CATEGORY_LABELS, idFor } from './FinanceForms';
 import { amountOnly } from './financeFormat';
-import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, paiementRapide, pieceDe, tiersAAfficher } from './operations/calculs';
+import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, nomAffiche, paiementRapide, pieceDe, tiersAAfficher } from './operations/calculs';
 import { GROUPES, type GroupeId } from './operations/groupes';
 import { ContextePaire } from './operations/doublons';
 import './operations.css';
@@ -65,6 +65,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   const montant = transactionAmount(transaction);
   const categorie = CATEGORY_LABELS[transaction.category] ?? transaction.category;
   // Le client déjà écrit dans le titre (« Vente 10 × Bière — Restaurant du Lac ») ne se répète pas après lui (revue du 10.11).
+  const nom = nomAffiche(transaction); // FN-42 : la créance « À récupérer » se lit par le nom de la pièce d'abord
   const tiers = tiersAAfficher(transaction.description, transactionVendor(transaction));
   const etat = etatDeLigne(transaction, state, entrant, payments, aujourdhui);
   const piece = pieceDe(transaction);
@@ -147,8 +148,8 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   return <div className="ops-row" data-flash={flash || undefined} data-ton={ton} data-partiel={partiel ? '' : undefined}>
     <span className="ops-bar" data-hachure={liseré} style={{ '--ops-couleur': lisereCouleur } as React.CSSProperties} aria-hidden="true"/>
     <button type="button" className="ops-main finance-op" onClick={ouvrir}
-      aria-label={`${transaction.description} · ${categorie}${tiers ? ` · ${tiers}` : ''} · ${money} · ${lisible} · ${piece.texte}`}>
-      <span className="ops-q" title={`${transaction.description}${tiers ? ` · ${tiers}` : ''}`}><span className="ops-nom" id={nomId}>{transaction.description}</span>{tiers && <small> · {tiers}</small>}</span>
+      aria-label={`${nom} · ${categorie}${tiers ? ` · ${tiers}` : ''} · ${money} · ${lisible} · ${piece.texte}`}>
+      <span className="ops-q" title={`${nom}${tiers ? ` · ${tiers}` : ''}`}><span className="ops-nom" id={nomId}>{nom}</span>{tiers && <small> · {tiers}</small>}</span>
       <span className="ops-meta">
         <span className={`ops-tg ops-tg-${ton}`}>{texteTg}</span>
         {(ton !== 'void' || enAttente) && <span className={`ops-pc${piece.manque ? ' ops-no' : ''}`}>{piece.manque ? ICONE_SANS_PIECE : ICONE_PIECE}{piece.texte}</span>}
