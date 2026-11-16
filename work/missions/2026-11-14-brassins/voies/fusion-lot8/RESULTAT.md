@@ -68,3 +68,27 @@ LEÇON PROPOSÉE : aucune
 
 CONNAISSANCE : une fusion qui garde notre écran peut perdre la seule lecture d'un drapeau de build ; `check-build-flags.mjs` après `vite build` l'attrape (3 lignes `DRAPEAUX OK`).
 LEÇON PROPOSÉE : après une fusion, rejouer `check-build-flags.mjs dist` avec le build, pas seulement `vite build` ; pour tout écran gardé « de notre côté », lister les imports du fichier côté tag et vérifier un à un qu'ils sont encore atteints.
+
+## Option B (16.11, nuit) : l'Atelier reste celui en ligne
+
+Contrat : MISSION.md « Contrat réécrit — 16.11, nuit ». L'Atelier (CreativeLabTab) redevient celui du tag `en-ligne/2026-11-15-atelier-lot8` ; Brassins garde ses ports.
+
+Fichiers remis à la version du tag (nos versions copiées avant dans `os.tmpdir()/optionB-nos-versions/`) :
+- `src/components/CreativeLabTab.tsx` : seul fichier source de l'Atelier qui différait (`git diff` du tag à HEAD sur cet écran, vide après commit). `rangerNoteIA.ts`, `aiClient.ts`, `rangerNote.ts` étaient déjà identiques au tag.
+- Les autres fichiers de `src/ui/atelier/` du tag (ContactsView, NoteAiguillage, NoteCarnet, TarifsFrise, TodoTimeline, atelier.css, demo.ts, rangerNoteSimule.ts, tarifs-frise.css) étaient déjà au tag.
+- Tests de l'Atelier modifiés pour e9na, remis au tag : `tests/integration/contactConversionUnique.test.tsx`, `equipmentProjects.test.tsx`. Fichiers mixtes : `dashboardNavigation.test.tsx` (segment « Dashboard agenda navigation » au tag, volets Brassins gardés : `finiBatch`) et `liveDataViews.test.tsx` (seule la ligne e9na « Projets de matériel » retirée, le test du brassin en fermentation gardé).
+- App.tsx, ProductionTab, Header, FloatingActions, QuickActionModal : aucune partie Atelier à remettre (les écarts sont du Brassins e1a à e11a).
+
+Restent sur disque, ni rendus ni supprimés : `src/ui/atelier/{Ecrire,rangerIA,atelierModel,dictee,CurseurPrix,EssaiPrix,FicheContact,FicheIdee,NoteCarte,PastilleStyle}.{ts,tsx}`.
+
+Tests passés en `describe.skip` : aucun. Les tests unitaires e9na (`port-q4-*`, `port-q7-atelier`, `port-q9-bloquants`, `port-q10-ranger-ia`, `bDiversContraste`) rendent ces composants directement et restent verts (10 fichiers, 71 tests passés rejoués). Leur commentaire « greffe à venir » n'a donc pas été ajouté.
+
+Preuves :
+- `git diff en-ligne/2026-11-15-atelier-lot8 HEAD -- src/components/CreativeLabTab.tsx` vide (après le commit) ;
+- TSC OK hors functions/ ;
+- `npx vite build` OK ; `check-build-flags.mjs dist` : 3 lignes `DRAPEAUX OK` ; `check-no-dev-auth.mjs` passe ;
+- vitest complet : `FAILS 62 BASE 64 NEW 0` (avant les 4 tests remis au tag : NEW 4) ;
+- bancs `sb` (port 3122) `BANC OK 11 captures` ; `s1` (port 3121) `BANC OK 27 captures`.
+
+Essais : une remise du tag, un correctif des tests mixtes (4 tests d'intégration qui attendaient l'Atelier e9na).
+Suite : greffe e9na sur l'Atelier en ligne, commit séparé, sur la seule vue Atelier R&D.

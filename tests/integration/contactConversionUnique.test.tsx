@@ -22,12 +22,14 @@ describe('Convertir un contact en client', () => {
     const avant = StorageService.getClients().length;
     const message = vi.fn();
     render(<CreativeLabTab onSuccessMessage={message} openSectionRequest={{ section: 'prospect', at: 1 }} />);
-    // e9na (15.11) : « Convertir en client » est au pied de la fiche du contact ; on l'ouvre d'abord depuis la carte du carnet.
-    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir : ZZ Bar du Test' }));
+    // kc1 : « Convertir en client » vit dans la fiche du contact.
+    fireEvent.click(screen.getByRole('button', { name: /Ouvrir la fiche de ZZ Bar du Test/ }));
     const bouton = screen.getByRole('button', { name: /Convertir en client/ });
     act(() => { fireEvent.click(bouton); fireEvent.click(bouton); });
     expect(StorageService.getClients().length).toBe(avant + 1);
     expect(StorageService.getClients().filter(c => c.name === 'ZZ Bar du Test')).toHaveLength(1);
-    expect(message).toHaveBeenCalledTimes(1);
+    // Le message est dit par la vue Contacts (« … est dans Clients »), sans confettis ni toast global.
+    expect(await screen.findByRole('status')).toHaveTextContent('« ZZ Bar du Test » est dans Clients');
+    expect(message).not.toHaveBeenCalled();
   });
 });

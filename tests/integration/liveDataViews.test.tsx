@@ -103,8 +103,6 @@ describe('Live records and unsaved forms', () => {
 
   it('refreshes the creative lab after a delayed write notification and a later external edit', () => {
     render(<CreativeLabTab />);
-    // e9na (15.11) : une idée de matériel ne vit plus dans le carnet « Tout » mais dans le tiroir Matériel (Rénovation) ; carnet vide : le lien y mène.
-    fireEvent.click(screen.getByRole('button', { name: /Projets de matériel/ }));
     expect(screen.queryByText('Nouvelle idée')).not.toBeInTheDocument();
     act(() => StorageService.addCreativeItem({ id: 'CR-new', type: 'equipment', status: 'idea', title: 'Nouvelle idée' }));
     expect(screen.getByText('Nouvelle idée')).toBeInTheDocument();
