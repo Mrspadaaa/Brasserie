@@ -155,3 +155,11 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
   - le journal : les notes sont repliées en icônes muettes ;
   - des écrans à moitié vides ;
   - la liste des carnets.
+
+## Audit p5 (16.11)
+Trois regards, 390 tactile avec clavier et 844×390 ; détail : `r2/P5-AUDIT.md`. Inutilisables (au moins 2 regards sur 3) :
+- Évier : écran vide à 80 %, critère de l'IA en toast fugace. Correction : état idée de da (« Chercher / Plus tard », caractéristiques proposées, champ unique), critère en carte durable du journal.
+- Noter : 3 touchers, écran plein qui cache le carnet, Ajouter sous le clavier en paysage. Correction : champ unique de da dans le carnet, envoi en 1 toucher, visible au-dessus du clavier (fil, ou bas + visualViewport), puis « ✦ rangé » et la carte critère.
+- Comparer à 390 : 2 colonnes sur 7, la 3ᵉ coupée en demi-chiffres, vert sur un écarté. Correction : tableaux par caractéristique de da en portrait avec la typo de p5 ; tableau complet de p5 en paysage.
+- Carnet neuf : 70 % vide, propositions coupées, aucune suite. Correction : état neuf de da, puces sur plusieurs lignes, carte « Ensuite : Coller un lien · Chercher les façons ».
+- Faibles (1 regard sur 3) : Carnet ouvert (ni champ ni critère) et Frigo (alerte repliée ; 6 fûts contre 30, à clarifier).
