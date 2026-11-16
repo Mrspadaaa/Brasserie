@@ -15,20 +15,35 @@ synthétique du banc). Rien d'enregistré hors du navigateur de test.
 | fn7-payer12-390-sombre.png | sombre | 390 | Payer ZZ TEST — Fournisseur, virement 12,00 (A 10,00, B 2,00, reste 13,00) | 0 | 0 |
 | fn10-choix-390-sombre.png | sombre | 390 | Modifier A, 9,00 sous le payé, les deux réponses, avant/après | 0 | 0 |
 | fn10-creance-390-clair.png | clair | 390 | Opérations après « J’ai bien payé 10,00 », ligne du trop-payé | 1 | 0 |
-| fn10-ficheA-390-clair.png, fn10-ficheA-1280-clair.png | clair | 390, 1280 | fiche A, « 1,00 CHF à récupérer : voir la créance › » | 1 | 0 |
+| fn10-ficheA-390-clair.png | clair | 390 | fiche A, « 1,00 CHF à récupérer : voir la créance › » | 1 | 0 |
+| fn10-ficheA-1280-clair.png | clair | 1280 | fiche A, « 1,00 CHF à récupérer : voir la créance › » | 1 | 0 |
 | fn10-ficheC-390-sombre.png | sombre | 390 | fiche « À récupérer : trop payé sur … » (même problème 2) | 0 | 0 |
 | dbl-repos-390-sombre.png | sombre | 390 | Doublons, la paire au repos (m1do-a) | 0 | 0 |
-| dbl-annule-390-sombre.png, dbl-annule-1280-clair.png | sombre, clair | 390, 1280 | après « Annuler celle-ci » | 1 | 0 |
-| arc-range-390-sombre.png, arc-consulte-390-sombre.png | sombre | 390 | archives, poignée, « Ranger 2025 », « Consulter » 2024 (m1ar-c) | 0 | 0 |
-| arc-consulte-1280-clair.png, arc-consulte-1280-sombre.png | clair, sombre | 1280 | « Consulter » 2024 | 1 | 0 |
-| pr-ouvert-390-sombre.png, pr-rempli-390-sombre.png, pr-rempli-1280-clair.png | sombre, clair | 390, 1280 | Prévoir une dépense, vide puis Loyer 500,50 chaque mois (m3pr-c) | 0 | 0 |
-| prev-onglet-390-sombre.png, prev-onglet-1280-clair.png | sombre, clair | 390, 1280 | Prévisions, Avec / Sans fermenteur, 2 107,34 / 2 857,34 entiers | 0 | 0 |
-| pm-pret-390-sombre.png, pm-pret-1280-clair.png | sombre, clair | 390, 1280 | Fermenteur supplémentaire, « Prêt à acheter · tu en es là » (m3pm-d) | 0 | 0 |
-| im-ouvert-390-sombre.png, im-ouvert-1280-clair.png | sombre, clair | 390, 1280 | Cuve de fermentation, 20 % du reste, 288,00 (m3im-c) | 0 | 0 |
-| bb-repos-390-sombre.png, bb-c3a-bas-390-sombre.png, bb-repos-1280-clair.png | sombre, clair | 390, 1280 | Budget Pale Ale de septembre, « Prévoir 64,26 » entier, détail du litre (m4bb-a) | 0 | 0 |
-| pfd-ouvert-390-sombre.png, pfd-ouvert-1280-clair.png | sombre, clair | 390, 1280 | Solde et paramètres, 1 200 L/an, pleine largeur à 1280 (m4pf-c) | 0 | 0 |
-| ia-feuille-390-sombre.png, ia-feuille-1280-clair.png | sombre, clair | 390, 1280 | Compagnon, la question, sans la phrase du registre (m4ia-c) | 0 | 0 |
-| ia-chat-390-sombre.png, ia-chat-390-clair.png, ia-chat-1280-clair.png | sombre, clair | 390, 1280 | Compagnon après « Envoyer », « en novembre 2026 » | 0 | 0 |
+| dbl-annule-390-sombre.png | sombre | 390 | après « Annuler celle-ci » | 1 | 0 |
+| dbl-annule-1280-clair.png | clair | 1280 | après « Annuler celle-ci » | 1 | 0 |
+| arc-range-390-sombre.png | sombre | 390 | archives, poignée, « Ranger 2025 », « Consulter » 2024 (m1ar-c) | 0 | 0 |
+| arc-consulte-390-sombre.png | sombre | 390 | archives, poignée, « Ranger 2025 », « Consulter » 2024 (m1ar-c) | 0 | 0 |
+| arc-consulte-1280-clair.png | clair | 1280 | « Consulter » 2024 | 1 | 0 |
+| arc-consulte-1280-sombre.png | sombre | 1280 | « Consulter » 2024 | 1 | 0 |
+| pr-ouvert-390-sombre.png | sombre | 390 | Prévoir une dépense, vide puis Loyer 500,50 chaque mois (m3pr-c) | 0 | 0 |
+| pr-rempli-390-sombre.png | sombre | 390 | Prévoir une dépense, vide puis Loyer 500,50 chaque mois (m3pr-c) | 0 | 0 |
+| pr-rempli-1280-clair.png | clair | 1280 | Prévoir une dépense, vide puis Loyer 500,50 chaque mois (m3pr-c) | 0 | 0 |
+| prev-onglet-390-sombre.png | sombre | 390 | Prévisions, Avec / Sans fermenteur, 2 107,34 / 2 857,34 entiers | 0 | 0 |
+| prev-onglet-1280-clair.png | clair | 1280 | Prévisions, Avec / Sans fermenteur, 2 107,34 / 2 857,34 entiers | 0 | 0 |
+| pm-pret-390-sombre.png | sombre | 390 | Fermenteur supplémentaire, « Prêt à acheter · tu en es là » (m3pm-d) | 0 | 0 |
+| pm-pret-1280-clair.png | clair | 1280 | Fermenteur supplémentaire, « Prêt à acheter · tu en es là » (m3pm-d) | 0 | 0 |
+| im-ouvert-390-sombre.png | sombre | 390 | Cuve de fermentation, 20 % du reste, 288,00 (m3im-c) | 0 | 0 |
+| im-ouvert-1280-clair.png | clair | 1280 | Cuve de fermentation, 20 % du reste, 288,00 (m3im-c) | 0 | 0 |
+| bb-repos-390-sombre.png | sombre | 390 | Budget Pale Ale de septembre, « Prévoir 64,26 » entier, détail du litre (m4bb-a) | 0 | 0 |
+| bb-c3a-bas-390-sombre.png | sombre | 390 | Budget Pale Ale de septembre, « Prévoir 64,26 » entier, détail du litre (m4bb-a) | 0 | 0 |
+| bb-repos-1280-clair.png | clair | 1280 | Budget Pale Ale de septembre, « Prévoir 64,26 » entier, détail du litre (m4bb-a) | 0 | 0 |
+| pfd-ouvert-390-sombre.png | sombre | 390 | Solde et paramètres, 1 200 L/an, pleine largeur à 1280 (m4pf-c) | 0 | 0 |
+| pfd-ouvert-1280-clair.png | clair | 1280 | Solde et paramètres, 1 200 L/an, pleine largeur à 1280 (m4pf-c) | 0 | 0 |
+| ia-feuille-390-sombre.png | sombre | 390 | Compagnon, la question, sans la phrase du registre (m4ia-c) | 0 | 0 |
+| ia-feuille-1280-clair.png | clair | 1280 | Compagnon, la question, sans la phrase du registre (m4ia-c) | 0 | 0 |
+| ia-chat-390-sombre.png | sombre | 390 | Compagnon après « Envoyer », « en novembre 2026 » | 0 | 0 |
+| ia-chat-390-clair.png | clair | 390 | Compagnon après « Envoyer », « en novembre 2026 » | 0 | 0 |
+| ia-chat-1280-clair.png | clair | 1280 | Compagnon après « Envoyer », « en novembre 2026 » | 0 | 0 |
 
 Bloquants : 0
 
