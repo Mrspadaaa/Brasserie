@@ -27,6 +27,16 @@ const TYPES: Array<{ value: CreativeItem['type']; label: string }> = [
   { value: 'prospect', label: 'Prospect' }
 ];
 
+/**
+ * Les types offerts par la feuille (jeu en ligne 16.11 après-midi) : « Tarif » ne s’y choisit plus, une idée de tarif naît par « Noter »
+ * de Tarifs ; une idée de tarif existante garde son type affiché. Une note du Carnet montre « Note » en premier, et peut devenir une
+ * idée de bière, un événement, un prospect ou du matériel.
+ */
+export const typesFeuille = (type: string): Array<{ value: CreativeItem['type']; label: string }> => [
+  ...(type === 'note' ? [{ value: 'note' as unknown as CreativeItem['type'], label: 'Note' }] : []),
+  ...TYPES.filter((t) => t.value !== 'pricing-test' || type === 'pricing-test')
+];
+
 const STATUSES: Array<{ value: CreativeItem['status']; label: string }> = [
   { value: 'idea', label: 'Idée' },
   { value: 'research', label: 'Recherche' },
@@ -66,7 +76,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
         open={Boolean(item)}
         onClose={onClose}
         title={item.title}
-        subtitle={TYPES.find((t) => t.value === item.type)?.label}
+        subtitle={typesFeuille(item.type).find((t) => t.value === item.type)?.label}
         className="md:max-w-[560px] md:mx-auto"
         footer={
           <div className="flex gap-3">
@@ -105,7 +115,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
               layout="grid"
               value={draft.type}
               onChange={(type) => setDraft({ ...draft, type })}
-              options={TYPES}
+              options={typesFeuille(item.type)}
             />
           </Field>
 
@@ -136,7 +146,8 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          {/* Une note du Carnet n’a ni coût ni prix (critique C2, n° 4) : ils reviennent dès qu’elle change de type. */}
+          {String(draft.type) !== 'note' && <div className="grid grid-cols-2 gap-3">
             <Field label="Coût estimé (CHF)" htmlFor="cr-cost">
               <NumberInput
                 value={draft.estimatedCost}
@@ -157,7 +168,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
                 className={`${inputClass} font-mono`}
               />
             </Field>
-          </div>
+          </div>}
 
           {draft.type === 'event' && (
             <DateField

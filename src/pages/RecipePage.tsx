@@ -22,7 +22,8 @@ import { ActionDock, nextActionDockPriority, PageShell } from './PageShell';
 import { RecipeWaterVolumes } from '../ui/RecipeDisclosure';
 import { LazySurface } from '../ui/LazySurface';
 import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
-import { ConfirmSheet, Sheet } from '../ui/Sheet';
+import { Sheet } from '../ui/Sheet';
+import { ConfirmerSuppressionRecette } from '../ui/recette/ConfirmerSuppressionRecette';
 import { Pencil, Copy, Download, Dna, FlaskConical, AlertTriangle } from 'lucide-react';
 import { FicheSection } from '../ui/recette/FicheSection';
 import { TableauHoublons } from '../ui/recette/TableauHoublons';
@@ -949,19 +950,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       <Sheet open={exportOpen} onClose={() => setExportOpen(false)} title="Exporter la recette" className="lg:max-w-3xl lg:mx-auto">
         <RecipeTextExport buildText={buildText} />
       </Sheet>
-      <ConfirmSheet
+      <ConfirmerSuppressionRecette
+        recipe={recipe}
+        batches={batches}
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
-        title="Supprimer cette recette ?"
-        gros
-        // Le style n'est dit que s'il diffère du nom (« American IPA — American IPA, 30 L » répétait le nom).
-        what={`${recipe.name} — ${[recipe.style && recipe.style.trim() !== recipe.name.trim() ? recipe.style : '', formatLitres(recipe.volumeL)].filter(Boolean).join(', ')}`}
-        consequence={
-          relatedBatches.length > 0
-            ? `${relatedBatches.length} brassin${relatedBatches.length > 1 ? 's ont' : ' a'} été lancé${relatedBatches.length > 1 ? 's' : ''} depuis cette recette. Chacun garde sa propre copie figée : leur historique reste intact.`
-            : 'La recette quitte le catalogue. La suppression est journalisée.'
-        }
-        confirmLabel="Supprimer la recette"
         onConfirm={() => {
           setConfirmDelete(false);
           onDelete();

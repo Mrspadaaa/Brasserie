@@ -530,6 +530,11 @@ export const App: React.FC = () => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
+  /** Une seule suppression de recette pour la page, la fiche du carnet et l'éditeur (36, 16.11). */
+  const supprimerRecette = (recipe: Recipe) => {
+    StorageService.deleteRecipe(recipe.id);
+    showToast(`Recette « ${recipe.name} » supprimée.`);
+  };
 
   // Un message informatif ne doit pas recouvrir la commande qui suit une
   // navigation ; les erreurs de sauvegarde restent, elles, persistantes.
@@ -1051,8 +1056,7 @@ export const App: React.FC = () => {
           }, routedRecipe.id)
         }
         onDelete={() => {
-          StorageService.deleteRecipe(routedRecipe.id);
-          showToast(`Recette « ${routedRecipe.name} » supprimée.`);
+          supprimerRecette(routedRecipe);
           route.close();
         }}
         onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
@@ -1086,6 +1090,11 @@ export const App: React.FC = () => {
         onLearnIngredient={learnIngredient}
         onSaveWaterSource={saveWaterSource}
         onSave={saveFromWizard}
+        onDelete={(recipe) => {
+          supprimerRecette(recipe);
+          // Retour à l'onglet d'où l'on venait : la page de la recette supprimée n'existe plus.
+          route.closeTo((r) => r.view === 'tabs', { view: 'recipe', recipeId: recipe.id });
+        }}
         writeError={writeError}
         onDismissWriteError={() => setWriteError(null)}
       />
@@ -1233,6 +1242,7 @@ export const App: React.FC = () => {
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}
             onEditRecipe={(recipe) => openWizard({ recipe })}
+            onDeleteRecipe={supprimerRecette}
             onRebrewRecipe={(recipeId) => { setBrewRecipeId(recipeId); setQuickAction('brew-batch'); }}
             onOpenBrewDay={openBrewDay}
             onSubTabChange={handleProductionSubTabChange}

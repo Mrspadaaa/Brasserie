@@ -112,10 +112,14 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
   });
 }
 
+/**
+ * 37 (16.11, jeu en ligne) : un manque sûr passe avant un stock inconnu. Avant, une recette à 3 manques et 1 inconnu était rangée
+ * « 1 à vérifier » alors que sa fiche disait « il manque 3 ingrédients ». La liste et la fiche disent maintenant la même chose ;
+ * l'inconnu reste dit dans la fiche, sous les manques. Sans manque, l'inconnu garde « À vérifier » (jamais « Prête »).
+ */
 export function etatDe(manques: number, inconnus: number): EtatStock {
-  if (inconnus > 0) return 'inconnu';
-  if (manques === 0) return 'pret';
-  return manques === 1 ? 'presque' : 'loin';
+  if (manques > 0) return manques === 1 ? 'presque' : 'loin';
+  return inconnus > 0 ? 'inconnu' : 'pret';
 }
 
 const jour = (iso?: string | number): number | undefined => {

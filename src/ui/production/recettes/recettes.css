@@ -91,6 +91,10 @@
 .rcp-detail { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0 2px; margin-top: 4px; font-size: 14px; text-align: left; background: transparent; border: 0; border-top: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-texte-200)); }
 .rcp-detail b { font-family: theme('fontFamily.mono'); font-weight: 600; color: rgb(var(--cave-texte-50)); }
 .rcp-detail svg { width: 18px; height: 18px; }
+/* 36 (16.11) : la suppression, au bout de la fiche, loin des boutons du pied ; rouge comme « Supprimer la recette » de la page. */
+.rcp-suppr { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; min-height: 36px; margin-top: 8px; padding: 0 10px; font-size: 14px; border-radius: 10px; background: transparent; border: 1px solid rgb(var(--alert) / 0.55); color: rgb(var(--alert-texte)); cursor: pointer; }
+.rcp-suppr svg { width: 16px; height: 16px; }
+.rcp-suppr:focus-visible { outline: 2px solid rgb(var(--ebc-straw)); outline-offset: 2px; }
 .rcp-pied { display: flex; gap: 8px; }
 .rcp-pied .rcp-btn { flex: 1; }
 
