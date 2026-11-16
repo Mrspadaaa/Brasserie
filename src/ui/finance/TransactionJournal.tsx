@@ -5,7 +5,7 @@ import type { Transaction } from '../../types';
 import type { FinancialArchive, FinancialPayment } from '../../domain/finance/types';
 import { archiveIndex, isTransactionArchived } from '../../domain/finance/archive';
 import { ledgerDuplicates } from '../../domain/finance/duplicates';
-import { isoDate, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
+import { estCreanceTropPaye, isoDate, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { periodeSynthese, type PeriodeSynthese } from '../../domain/finance/periodeSynthese';
 import { CATEGORY_LABELS } from './FinanceForms';
 import { amountOnly, shortDate } from './financeFormat';
@@ -362,6 +362,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     let cents = 0;
     for (const { transaction, direction } of rows) {
       if (!isActiveTransaction(transaction)) continue;
+      // FN-37 : la créance « À récupérer » est listée dans son groupe, mais elle n'est pas une charge : le sous-total suit la pile.
+      if (id !== 'jour' && estCreanceTropPaye(transaction)) continue;
       const entrant = direction === 'in';
       cents += (id === 'jour' || id === 'recettes' || id === 'apports' ? (entrant ? 1 : -1) : (entrant ? -1 : 1)) * transactionAmount(transaction);
     }

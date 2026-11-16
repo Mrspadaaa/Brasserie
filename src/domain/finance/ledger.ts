@@ -221,3 +221,11 @@ export function validateFinanceTransaction(tx: FinanceTransaction): void {
   if (finance.planAllocatedCents != null && (!finance.planId || !Number.isSafeInteger(finance.planAllocatedCents) || finance.planAllocatedCents < 0 || finance.planAllocatedCents > finance.amountCents)) throw new Error('Le montant affecté à la prévision doit être compris entre zéro et le total de la pièce.');
   if (finance.businessUsePct != null && (!Number.isFinite(finance.businessUsePct) || finance.businessUsePct < 0 || finance.businessUsePct > 100)) throw new Error('Part professionnelle invalide.');
 }
+
+/**
+ * FN-37 : la créance née d'un trop-payé (« À récupérer », ou « À rembourser » pour une recette, voir `creanceDeTropPaye`) est de l'argent sorti à récupérer,
+ * pas une charge ; l'avoir qui la solde ne réduit donc aucun poste. Ni l'une ni l'autre n'entre dans « dépensé » ni dans l'Annuel ; la caisse, elle, les voit (ce sont des paiements).
+ */
+export function estCreanceTropPaye(tx: { subcategory?: string }): boolean {
+  return tx.subcategory === 'À récupérer' || tx.subcategory === 'À rembourser';
+}

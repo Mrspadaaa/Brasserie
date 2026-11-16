@@ -145,3 +145,15 @@ describe('Opérations v6b : une pièce annulée n\'alourdit pas le mois', () => 
     expect(container.querySelector('[data-groupe="annulees"]')?.textContent).toContain('Op ANN-3');
   });
 });
+
+describe('FN-37 (test d’écran dfe9189e, bloquant) : le groupe Autres frais ne compte pas la créance « À récupérer »', () => {
+  it('Autres frais 100,00 comme la pile, la ligne « À récupérer » reste listée', () => {
+    const frais = tx('FRAIS', `${moisCourant}-03`, 'divers');
+    const creance = tx('CREANCE', `${moisCourant}-03`, 'divers', { description: 'À récupérer : trop payé sur « Op FRAIS »', subcategory: 'À récupérer' });
+    render(<TransactionJournal {...defaults} transactions={[frais, creance]} payments={[pay(frais), pay(creance)]}
+      state={createJournalState({ scope: 'all', allDates: false })} onStateChange={() => {}}/>);
+    const groupe = document.querySelector('section[data-groupe="divers"]')!;
+    expect(groupe.querySelector('.ops-sub')?.textContent).toBe('100,00');
+    expect(screen.getByRole('button', { name: 'À récupérer : trop payé sur « Op FRAIS »' })).toBeInTheDocument();
+  });
+});

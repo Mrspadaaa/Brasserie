@@ -247,3 +247,25 @@ describe('contre l’Annuel : la divergence sur le matériel est écrite, pas ca
     expect(synthese.aVerifier.materielSansRegistre).toEqual(['Joints de la cuve']);
   });
 });
+
+describe('FN-37 : le trop-payé à récupérer n’est pas une dépense', () => {
+  it('la créance « À récupérer » (et l’avoir qui la solde) ne compte ni dans « dépensé » ni dans un poste', () => {
+    const piece = tx('A', 'ZZ pièce A', 800, 'divers');
+    const creance = tx('C', 'À récupérer : trop payé sur « ZZ pièce A »', 200, 'divers', {}, { subcategory: 'À récupérer' });
+    const avoir = tx('R', 'Avoir du fournisseur', 200, 'divers', { kind: 'refund', refundOfId: 'C', refundApplication: 'cash' } as never);
+    const base = calcul([piece], [payeEntier(piece)]);
+    const avec = calcul([piece, creance], [payeEntier(piece), paiement('C', 200)]);
+    expect(avec.depenseCents).toBe(base.depenseCents);
+    expect(sommePostes(avec)).toBe(sommePostes(base));
+    const solde = calcul([piece, creance, avoir], [payeEntier(piece), paiement('C', 200), paiement('R', 200, 'in')]);
+    expect(solde.depenseCents).toBe(base.depenseCents);
+    expect(solde.aVerifier.avoirsNonDessinesCents).toBe(0);
+  });
+  it('l’Annuel ne la compte pas non plus en charge', () => {
+    const profil = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' } as const;
+    const piece = tx('A', 'ZZ pièce A', 800, 'divers');
+    const creance = tx('C', 'À récupérer : trop payé sur « ZZ pièce A »', 200, 'divers', {}, { subcategory: 'À récupérer' });
+    const annuel = (t: FinanceTransaction[], p: FinancialPayment[]) => buildAnnualReport({ year: 2026, transactions: t, payments: p, assets: [], profile: profil, generatedAt: '2026-11-09T10:00:00Z' });
+    expect(annuel([piece, creance], [payeEntier(piece), paiement('C', 200)]).operatingExpensesCents).toBe(annuel([piece], [payeEntier(piece)]).operatingExpensesCents);
+  });
+});

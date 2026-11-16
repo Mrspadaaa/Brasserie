@@ -2,7 +2,8 @@
 // Aucune donnée inventée : « prête » vient du stock et des réservations (recettesModel). Un stock inconnu est « à vérifier ».
 // Ce que r2a n'a pas est retiré de l'écran (Comparer, bilan, favori, Ranger) ; leur code reste dans ProductionCatalog.
 import React, { useEffect, useMemo, useState } from 'react';
-import { Boxes, Check, ChevronRight, Plus, Search, SlidersHorizontal, TriangleAlert } from 'lucide-react';
+import { Boxes, Check, ChevronRight, Plus, Search, SlidersHorizontal, Trash2, TriangleAlert } from 'lucide-react';
+import { ConfirmerSuppressionRecette } from '../../recette/ConfirmerSuppressionRecette';
 import type { Batch, Recipe, StockItem } from '../../../types';
 import { StorageService } from '../../../services/storage';
 import { useStorageValue } from '../../../hooks/useLiveData';
@@ -32,6 +33,8 @@ interface Props {
   /** Ouvre la feuille « Préparer un brassin » de l'app, recette préchoisie. */
   onBrew: (recipeId: string) => void;
   onNewRecipe: () => void;
+  /** Supprime la recette (après la feuille de confirmation commune) ; absente, la fiche ne propose pas de supprimer. */
+  onDeleteRecipe?: (recipe: Recipe) => void;
 }
 
 /**
@@ -59,7 +62,9 @@ function Metro({ n, version }: { n: number; version: number }) {
   );
 }
 
-export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, onOpenBatch, onBrew, onNewRecipe }: Props) {
+export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, onOpenBatch, onBrew, onNewRecipe, onDeleteRecipe }: Props) {
+  // 36 (16.11) : la suppression ne se cache plus derrière « OG … › » puis la page ; la fiche la porte, avec la même confirmation.
+  const [aSupprimer, setASupprimer] = useState<Recipe | null>(null);
   const stock = useStorageValue(lireStock);
   const [recherche, setRecherche] = useState('');
   const [style, setStyle] = useState('');
@@ -243,6 +248,7 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
                 <div className="rcp-alerte">
                   <p>Pour la rebrasser, il manque {l.manques.map((m, i) => <React.Fragment key={m.cle}>{i > 0 && ', '}{manqueDit(m)}</React.Fragment>)}.</p>
                   {reserve?.reservePar && <small>Le stock a {reserve.reservePar.stock} de {reserve.article}, tous réservés au {reserve.reservePar.lots.join(', ')} : il n’en reste aucun de libre.</small>}
+                  {l.inconnus.length > 0 && <small>Le stock de <b>{nomsDe(l.inconnus)}</b> est aussi à vérifier.</small>}
                 </div>
               ) : l.inconnus.length > 0 ? (
                 <div className="rcp-alerte"><p>Le stock de <b>{nomsDe(l.inconnus)}</b> est à vérifier : il n’est pas relié à un article du stock.</p></div>
@@ -271,9 +277,26 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
                   <span>Couleur, alcool, détail</span><ChevronRight />
                 </button>
               )}
+              {onDeleteRecipe && (
+                <button type="button" className="rcp-suppr" onClick={() => setASupprimer(recette)}>
+                  <Trash2 aria-hidden="true" />Supprimer la recette
+                </button>
+              )}
             </div>
           )}
         </Sheet>
+        <ConfirmerSuppressionRecette
+          recipe={aSupprimer}
+          batches={batches}
+          open={!!aSupprimer}
+          onClose={() => setASupprimer(null)}
+          onConfirm={() => {
+            const r = aSupprimer;
+            setASupprimer(null);
+            setOuverte(null);
+            if (r) onDeleteRecipe?.(r);
+          }}
+        />
         <Sheet
           open={filtreOuvert}
           onClose={() => setFiltreOuvert(false)}
