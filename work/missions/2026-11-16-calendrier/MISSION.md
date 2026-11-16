@@ -62,3 +62,7 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 - Workflow `liens-app`, task w9zp0g7g1, run wf_d0b636f6-2aa. Sorties dans `work/missions/2026-11-16-liens-app/` : inventaires, ETAT-ART.md, LIENS-APP.md v2, `proto/`, `page/`.
 - Le carnet (CADRE.md) et le calendrier (MANQUES.md) lisent LIENS-APP.md à chaque passe.
 - Au retour : publier la page, ajouter sa ligne à Pages, commit, lien au brasseur.
+
+## Critères 9,5-10 (16.11)
+- Workflow `criteres-10`, task wbmq9a7qc, run wf_bc96b504-6b7. Sortie : `work/missions/2026-11-16-criteres-10/CRITERES-10.md`, ajoutée en fin de fb9/MANQUES.md et de carnet-decision/CADRE.md.
+- Les boucles calendrier-fb-9 et carnet-9 s'arrêtent à 9. Ensuite : une boucle à 9,5 (deux passes de suite), partant de leur dernière passe, avec CRITERES-10.md.
