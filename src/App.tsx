@@ -38,6 +38,8 @@ import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './dom
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 import { articlesACommander } from './domain/stockLevel';
+import { vueHorizon } from './domain/stock/horizon';
+import { useHorizonStock, aujourdhuiLocal } from './ui/stock/useHorizonStock';
 import { formatLitres } from './domain/recipeMetrics';
 
 import { Units } from './services/units';
@@ -545,7 +547,12 @@ export const App: React.FC = () => {
   // Critical stock count
   // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
   // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
-  const criticalStockCount = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes).length, [stocks, batches, recipes]);
+  // Pastille C (16.11) : le même horizon « S49 · 6 sem. · Tout » règle le chiffre clé du Stocks et cette pastille (domain/stock/horizon.ts).
+  const [horizonStock] = useHorizonStock();
+  const criticalStockCount = useMemo(() => {
+    const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, aujourdhuiLocal());
+    return vue.comptes[horizonStock];
+  }, [stocks, batches, recipes, horizonStock]);
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(

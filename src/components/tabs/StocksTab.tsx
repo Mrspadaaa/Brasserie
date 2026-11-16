@@ -9,6 +9,9 @@ import { EnteteRayon } from '../../ui/stock/EnteteRayon';
 import { dernierMouvementDit, mouvementsParRef } from '../../domain/stock/dernierMouvement';
 import type { MouvementBrut } from '../../domain/stock/mouvementsArticle';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
+import { lignesDeHorizon, phraseHorizon, vueHorizon } from '../../domain/stock/horizon';
+import { ChiffreACommander } from '../../ui/stock/ChiffreACommander';
+import { aujourdhuiLocal, useHorizonStock } from '../../ui/stock/useHorizonStock';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -214,7 +217,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   /** Toute la liste de courses, tous fournisseurs confondus. */
   const copyEverything = () => {
     if (shoppingBySupplier.length === 0) {
-      onSuccessMessage?.('Rien à commander : le stock couvre les brassins planifiés et les recettes écrites.');
+      onSuccessMessage?.(aCommander.length > 0
+        ? `Rien à commander ${phraseHorizon(vueH, horizon)} : ${aCommander.length} plus tard, touchez Tout.`
+        : 'Rien à commander : le stock couvre les brassins planifiés et les recettes écrites.');
       return;
     }
     const text = [
@@ -312,7 +317,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
   // Le même compte que le badge de la barre et « À commander » (test en ligne n° 49, 08.11 : « Stock (1) » au-dessus de « À commander · 0 »).
   const aCommander = useMemo(() => articlesACommander(allItems, batches, savedRecipes), [allItems, batches, savedRecipes]);
-  const criticalCount = aCommander.length;
+  // Pastille C (16.11) : un seul horizon (S49 · 6 sem. · Tout) règle le chiffre clé, la pastille de l'onglet et la liste de courses.
+  const [horizon, setHorizon] = useHorizonStock();
+  const vueH = useMemo(() => vueHorizon(aCommander, batches, aujourdhuiLocal()), [aCommander, batches]);
+  const refsHorizon = useMemo(() => new Set(lignesDeHorizon(vueH, horizon).map(l => l.item.ref)), [vue, horizon]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -321,7 +329,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const shoppingBySupplier = useMemo(() => {
     const map = new Map<string, Array<{ item: StockItem; missing: number; auMoins: boolean; sources: SourceBesoin[] }>>();
 
-    aCommander.forEach(({ item, missing: toOrder, auMoins, sources }) => {
+    aCommander.filter(a => refsHorizon.has(a.item.ref)).forEach(({ item, missing: toOrder, auMoins, sources }) => {
       const supplier = item.supplier?.trim() || 'Fournisseur à préciser';
       const arr = map.get(supplier) ?? [];
       arr.push({ item, missing: toOrder, auMoins, sources });
@@ -329,7 +337,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     });
 
     return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
-  }, [aCommander]);
+  }, [aCommander, refsHorizon]);
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
   const [ongletMur, setOngletMur] = useState<'ing' | 'autres'>('ing');
@@ -399,8 +407,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   const tabs: Array<{ id: SubTab; label: string; Icon: typeof Boxes; badge?: number }> = [
-    { id: 'stock', label: 'Articles', Icon: Boxes, badge: criticalCount },
-    { id: 'courses', label: 'Courses', Icon: ShoppingCart, badge: totalToOrder },
+    // Pas de chiffre sur les sous-onglets (maquette C) : le chiffre clé et la pastille de l'onglet le disent déjà, d'un seul horizon.
+    { id: 'stock', label: 'Articles', Icon: Boxes },
+    { id: 'courses', label: 'Courses', Icon: ShoppingCart },
     { id: 'futs', label: 'Fûts', Icon: Beer },
     { id: 'materiel', label: 'Matériel', Icon: Wrench },
     { id: 'hops', label: 'Houblons', Icon: Hop }
@@ -543,6 +552,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
         <div ref={refHaut}>
         {blocOutils}
+        {!filtre && !recherche && (
+          <ChiffreACommander vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} onCommander={() => setSubTab('courses')} />
+        )}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
           <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={setOngletMur} infos={infos} />
         </Suspense>
@@ -563,7 +575,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
               <p className="text-sm text-cave-200">Aucun article ne correspond</p>
-              <p className="text-xs text-cave-400">{filtre === 'epingles' ? 'Touchez l’étoile d’un article pour le retrouver ici.' : filtre === 'manque' && totalToOrder === 0 ? 'Les besoins planifiés et les seuils sont couverts.' : 'Changez de filtre ou de recherche.'}</p>
+              <p className="text-xs text-cave-400">{filtre === 'epingles' ? 'Touchez l’étoile d’un article pour le retrouver ici.' : filtre === 'manque' && aCommander.length === 0 ? 'Les besoins planifiés et les seuils sont couverts.' : 'Changez de filtre ou de recherche.'}</p>
               <Button size="sm" onClick={toutVoir}>Voir tous les articles</Button>
             </div> : <div className="py-6 text-center space-y-3">
               <p className="text-base text-cave-200">Aucun article en stock</p>
@@ -593,11 +605,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {subTab === 'courses' && (
         <div className="flex-1 overflow-y-auto space-y-2 pb-4">
+          {aCommander.length > totalToOrder && (
+            <p className="flex items-center gap-2 px-1 text-sm text-cave-200" role="status" data-testid="courses-horizon">
+              <span className="min-w-0 flex-1">{totalToOrder} sur {aCommander.length} : {phraseHorizon(vueH, horizon)}</span>
+              <button type="button" className="min-h-[44px] px-2 text-sm font-semibold underline underline-offset-4 text-cave-50" onClick={() => setHorizon('tout')}>Tout voir</button>
+            </p>
+          )}
           {totalToOrder === 0 ? (
             <div className="py-12 text-center space-y-2">
-              <p className="text-base text-cave-200">Rien à commander</p>
+              <p className="text-base text-cave-200">Rien à commander{aCommander.length > 0 ? ` ${phraseHorizon(vueH, horizon)}` : ''}</p>
               <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
-                Le stock couvre les brassins planifiés, les recettes écrites et les seuils minimums.
+                {aCommander.length > 0
+                  ? `${aCommander.length} ${aCommander.length > 1 ? 'articles viennent' : 'article vient'} plus tard.`
+                  : 'Le stock couvre les brassins planifiés, les recettes écrites et les seuils minimums.'}
               </p>
             </div>
           ) : (

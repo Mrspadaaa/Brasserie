@@ -126,8 +126,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 {badge && criticalStockCount > 0 && (
                   <span
                     className="min-w-4 min-h-4 max-w-full break-all px-1
-                               bg-attention text-cave-950 rounded-full
-                               text-xs leading-4 font-semibold font-mono
+                               pastille-stocks rounded-full
+                               text-sm leading-4 font-bold font-mono
                                flex items-center justify-center
                                min-[1024px]:absolute min-[1024px]:-top-1 min-[1024px]:left-[46px] min-[1024px]:min-w-[18px] min-[1024px]:min-h-[18px]"
                   >
