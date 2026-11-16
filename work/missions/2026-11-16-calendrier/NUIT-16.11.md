@@ -25,3 +25,4 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 ## Ports (lancés 16.11 soir)
 - Les cinq : onglet, fournisseur, suppression, lot, pastille. Worktree ../ports-nuit, branche claude/ports-nuit-1611 depuis en-ligne/2026-11-16-brassins-apresmidi. Workflow wi5w4ykc0 (wf_54c86dfd-f79) : ports en série, critique vision, correction + checklist DEPLOY.md.
 - Au retour PRET A DEPLOYER : déployer l'hébergement seul depuis ../ports-nuit (pas npm run deploy), tag en-ligne/2026-11-17-ports-nuit, jouer en ligne sur ZZ TEST puis retirer.
+- Pastille : la fenêtre de l'histogramme se règle au doigt (bords et déplacement, début libre : « juste 50 51 ») : jouable fait par un agent ; l'ajouter au port (claude/ports-nuit-1611) au retour de wi5w4ykc0.
