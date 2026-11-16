@@ -172,7 +172,7 @@ describe('Journal financier compact', () => {
     }
     render(<Workspace/>);
     expect(screen.getByRole('button', { name: 'Retirer le filtre : À payer et encaisser' })).toBeVisible();
-    fireEvent.click(filterButton('Toutes'));
+    fireEvent.click(filterButton('Sans filtre')); // w1 (FN-22) : « Toutes » ressemblait à « Tout » et « toutes les dates »
     fireEvent.change(categorie(), { target: { value: 'brassage' } });
     fireEvent.change(recherche(), { target: { value: 'Opération' } });
     fireEvent.click(screen.getByRole('button', { name: 'Page suivante' }));
@@ -182,7 +182,7 @@ describe('Journal financier compact', () => {
     expect(screen.getByText('Page 2 sur 2')).toBeInTheDocument();
     expect(categorie()).toHaveValue('brassage');
     expect(recherche()).toHaveValue('Opération');
-    expect(filterButton('Toutes')).toHaveAttribute('aria-pressed', 'true');
+    expect(filterButton('Sans filtre')).toHaveAttribute('aria-pressed', 'true');
     fireEvent.change(recherche(), { target: { value: 'Opération 000' } });
     expect(screen.getByRole('button', { name: 'Opération 000' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Pages du journal' })).not.toBeInTheDocument();

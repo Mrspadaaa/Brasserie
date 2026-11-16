@@ -73,7 +73,7 @@ const lireEcartes = (): Set<string> => {
 };
 const FOLLOW_UP_FILTERS = new Set(['due', 'late', 'payable', 'receivable', 'review', 'unknown', 'proof', 'undated', 'doublon']);
 const FILTER_LABELS: Record<string, string> = {
-  all: 'Toutes', due: 'À payer et encaisser', late: 'En retard', payable: 'À payer', receivable: 'À encaisser',
+  all: 'Sans filtre', due: 'À payer et encaisser', late: 'En retard', payable: 'À payer', receivable: 'À encaisser',
   review: 'À compléter', proof: 'Sans justificatif', undated: 'Sans date',
   unknown: 'Paiements à confirmer', void: 'Écritures annulées', doublon: 'Doublons possibles',
 };

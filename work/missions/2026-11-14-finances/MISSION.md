@@ -113,3 +113,5 @@ Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. 
 - Pour chaque constat : d'abord un test qui échoue, puis la correction. Ensuite tests, build et test d'écran ; mise en ligne si tout est vert, depuis le dernier tag. Aucune question au brasseur.
 
 - Exécuté (16.11 nuit) : constats 18 à 27 corrigés (u1, u2), 17 écarté, test d'écran fca6caf6 0 bloquant (5 mineurs FN-17 à FN-21), fusion de en-ligne/2026-11-16-brassins, 258 tests, build, gardes ; déployé 2746109c, bundle servi = build ; tag local en-ligne/2026-11-16-finances-nuit.
+
+- Rejeu (16.11) : 20, 21, 33 corrigés (v1, v2 ; tests rouges puis verts), test d'écran 8b9e1732 (1 bloquant corrigé) puis 865a154d 0 bloquant, FN-22 à FN-26 au registre ; fusion de en-ligne/2026-11-16-atelier-tarifs ; déployé b37600f5, bundle servi = build ; tag local en-ligne/2026-11-16-finances-rejeu.

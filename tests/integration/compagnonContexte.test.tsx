@@ -48,6 +48,18 @@ describe('compagnon m4ia-c : ce que le contexte contient', () => {
     expect(json({})).not.toContain('Projet cuve inox');
     expect(json({ projets: true })).toContain('Projet cuve inox');
   });
+  it('w2 : le contexte et la consigne n’ont ni « TX- » ni nom de champ interne (cashComplete…) ; les pièces y sont nommées par leurs mots', () => {
+    const d = donnees();
+    d.transactions = [tx('TX-8F3A21', '2026-11-03', 'Loyer atelier novembre', 40000), tx('TX-77B0C4', '2026-11-09', 'Malt Pilsner', 9000)] as never;
+    d.payments = [{ id: 'PAY-9', transactionId: 'TX-77B0C4', date: '2026-11-09', amountCents: 9000, direction: 'out', method: 'bank', recordedAt: '2026-11-09T10:00:00Z' }] as never;
+    d.aPayerIds = ['TX-8F3A21']; d.sansPieceIds = ['TX-77B0C4'];
+    const { contexte, consigne } = contexteCompagnon({ ...REGLAGES_DEFAUT, projets: true }, d);
+    const lu = JSON.stringify(contexte) + consigne;
+    expect(lu).not.toMatch(/TX-|PAY-9|PL-MAT/);
+    for (const champ of ['cashComplete', 'sourceIds', 'proofId', 'planId', 'refundOfId']) expect(lu).not.toContain(champ);
+    expect(lu).toContain('Loyer atelier novembre');
+    expect(lu).toContain('Projet cuve inox');
+  });
   it('la consigne écrite dans la question nomme ce qui est exclu', () => {
     const { consigne } = contexteCompagnon({ ...REGLAGES_DEFAUT, aPayer: false }, donnees());
     expect(consigne).toContain('le mois novembre 2026');

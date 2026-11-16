@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { manqueRecette, MOT_STOCK_NEGATIF } from '../domain/stock/manqueRecette';
 import { NumberInput } from './NumberInput';
 import { ArrowLeft, ChevronDown, ChevronRight, Package, MoreHorizontal, Star, Trash2, X, ArrowLeftRight, ShoppingCart, CalendarDays, PenLine, Pencil } from 'lucide-react';
 import { Batch, Recipe, StockItem } from '../types';
@@ -321,7 +322,10 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
             {manqueNet !== null && manqueNet > 0 && <p data-stock-manque className="sfp-raison sfp-rouge">Manque {quantiteArticle(manqueNet, unite)}</p>}
             {recipeCheck && recipeCheck.comparison.stockItem?.ref === item.ref && <div className="sfp-raison" style={{ color: 'var(--sfp-t1)' }}>
               <p>Recette ouverte · {recipeCheck.recipeName} : besoin {recipeCheck.comparison.quantity === null || !recipeCheck.comparison.unit ? 'inconnu' : quantiteLue(recipeCheck.comparison.quantity, recipeCheck.comparison.unit)}
-                {recipeCheck.comparison.shortage !== null && recipeCheck.comparison.unit ? ` · manque ${quantiteLue(recipeCheck.comparison.shortage, recipeCheck.comparison.unit)}` : ''}.</p>
+                {(() => { // Point 37 : même calcul que la recette (manque plafonné au besoin, stock négatif dit à part).
+                  const m = manqueRecette(recipeCheck.comparison); const u = recipeCheck.comparison.unit;
+                  return m.genre === 'stock-negatif' ? ` · ${MOT_STOCK_NEGATIF}` : m.genre === 'manque' && u ? ` · manque ${quantiteLue(m.quantite, u)}` : '';
+                })()}.</p>
               {recipeCheck.comparison.issue && <p>{recipeCheck.comparison.issue}</p>}
               <p className="sfp-t2">Cette prévision ne réserve pas le stock.</p>
             </div>}
