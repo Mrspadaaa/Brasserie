@@ -114,3 +114,9 @@ body:has(.tf-sheet) [data-vaul-overlay] { background: rgb(0 0 0 / .03); backdrop
 .tf-warn { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font-size: 14px; color: rgb(var(--attention-texte)); }
 .tf-warn svg { flex: none; margin-top: 2px; }
 .tf-verif-n { margin: 0 0 4px; font-size: 13px; color: var(--tf-t2); }
+
+/* Constat 12 (fix-tarifs, 16.11) : la raison en une ligne et « Ouvrir la vente » (44 px) sous chaque entrée « à vérifier ». */
+.tf-raison { color: var(--tf-t1) !important; font-weight: 600; overflow-wrap: anywhere; }
+.tf-vl { padding-bottom: 6px; }
+.tf-ouvrir { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin: 2px 0 0 26px; padding: 0 14px; border-radius: 10px; border: 1px solid rgb(var(--attention-texte)); color: rgb(var(--attention-texte)); font-size: 14px; font-weight: 600; background: transparent; }
+.tf-sheet > .tf-ouvrir { margin: 10px 0 0; width: 100%; }

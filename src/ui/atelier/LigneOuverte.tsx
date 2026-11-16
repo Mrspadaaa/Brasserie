@@ -67,18 +67,35 @@ function Toast({ message, onFermer }: { message: MessageLO; onFermer: () => void
 }
 
 /**
+ * La question d'une suppression, sur place (jamais `confirm()`), la même pour une idée de bière et une idée de tarif archivées et celle du matériel :
+ * « Garder » (geste sûr, il a le focus) et « Oui, supprimer » (rouge), côte à côte, 48 px.
+ */
+function QuestionSuppression({ titre, onOui, onGarder }: { titre: string; onOui: () => void; onGarder: () => void }) {
+  const garder = useRef<HTMLButtonElement>(null);
+  useEffect(() => { garder.current?.focus?.(); }, []);
+  return <div className="lo-act lo-conf" role="alertdialog" aria-label="Confirmer la suppression">
+    <p>Supprimer « {titre} » pour de bon&nbsp;?</p>
+    <div className="lo-conf-b">
+      <button type="button" ref={garder} className="lo-no" onClick={onGarder}>Garder</button>
+      <button type="button" className="lo-yes" onClick={onOui}><Trash2 size={18} aria-hidden="true" />Oui, supprimer</button>
+    </div>
+  </div>;
+}
+
+/** Une idée de tarif archivée, ligne fermée : « Supprimer » se voit sans l'ouvrir (constat 31), sous son titre, au-dessus de « Revenir à mes idées » ; la question vient sur la ligne. */
+function SupprimerRangee({ titre, onSupprimer }: { titre: string; onSupprimer: () => void }) {
+  const [sur, setSur] = useState(false);
+  if (sur) return <QuestionSuppression titre={titre} onOui={onSupprimer} onGarder={() => setSur(false)} />;
+  return <button type="button" className="lo-rdel" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" />Supprimer</button>;
+}
+
+/**
  * La rangée d'actions d'une idée archivée : « Supprimer » (corbeille) et « Remettre dans mes idées ». Le toucher sur la corbeille REMPLACE la rangée
  * par la question nommée, « Supprimer » (rouge) et « Garder » côte à côte en pleine largeur : jamais un autre bouton plus gros à côté (critique, passe 3).
  */
 function ActionsRangees({ titre, onSupprimer, onRemettre }: { titre: string; onSupprimer: () => void; onRemettre: () => void }) {
   const [sur, setSur] = useState(false);
-  if (sur) return <div className="lo-act lo-conf" role="alertdialog" aria-label="Confirmer la suppression">
-    <p>Supprimer « {titre} » pour de bon ?</p>
-    <div className="lo-conf-b">
-      <button type="button" className="lo-yes" onClick={onSupprimer}><Trash2 size={18} aria-hidden="true" />Supprimer</button>
-      <button type="button" className="lo-no" onClick={() => setSur(false)}>Garder</button>
-    </div>
-  </div>;
+  if (sur) return <QuestionSuppression titre={titre} onOui={onSupprimer} onGarder={() => setSur(false)} />;
   return <div className="lo-act">
     <button type="button" className="lo-sec lo-danger" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" /></button>
     <button type="button" className="lo-cta" onClick={onRemettre}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button>
@@ -277,6 +294,7 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
         return <div key={i.id} className={ouv ? 'lo-open' : 'lo-row'} style={ouv ? ({ ['--c' as string]: 'var(--a-prod)' }) : undefined}>
           <Entete ouvert={ouv} onBascule={() => setOuvert(ouv ? null : i.id)} gauche={<PictoFormat id={f?.id} />} titre={titreIdee(i)}
             droite={!ouv && (prix !== undefined ? <span className="lo-pr lo-num">{fr2(prix)}</span> : <span className="lo-est">à estimer</span>)} />
+          {voirRangees && !ouv && <SupprimerRangee titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); setMessage(null); }} />}
           {ouv && <>
             <div className="lo-bigp">
               <button type="button" className="lo-stp" aria-label={`Moins ${f ? fr2(f.pas) : '1'}`} onClick={(e) => pas(i, f, prix, -1, e.currentTarget)}>−</button>

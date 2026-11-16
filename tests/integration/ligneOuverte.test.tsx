@@ -92,13 +92,13 @@ describe('kb3 · passe 4 (critique de la passe 3)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Bière d’Hiver/ }));
     fireEvent.click(screen.getByRole('button', { name: /Supprimer « Bière d’Hiver »/ }));
     const q = screen.getByRole('alertdialog');
-    expect(within(q).getByRole('button', { name: 'Supprimer' })).toBeVisible();
+    expect(within(q).getByRole('button', { name: 'Oui, supprimer' })).toBeVisible();
     expect(within(q).getByRole('button', { name: 'Garder' })).toBeVisible();
     expect(screen.queryByRole('button', { name: /Remettre dans mes idées/ })).not.toBeInTheDocument();
     fireEvent.click(within(q).getByRole('button', { name: 'Garder' }));
     expect(screen.getByRole('button', { name: /Remettre dans mes idées/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Supprimer « Bière d’Hiver »/ }));
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Supprimer' }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, supprimer' }));
     expect(p.onSupprimer).toHaveBeenCalledWith(archivee);
   });
   it('N3 · Tarifs : la liste n’a pas son propre « Noter » (celui de la frise suffit)', () => {
@@ -153,7 +153,7 @@ describe('kb3 · retouches finales : toast périmé', () => {
     fireEvent.click(screen.getByRole('button', { name: /Archivées/ }));
     fireEvent.click(screen.getByRole('button', { name: /ZZ TEST Brune/ }));
     fireEvent.click(screen.getByRole('button', { name: /Supprimer « ZZ TEST Brune »/ }));
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Supprimer' }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, supprimer' }));
     expect(screen.queryByText('Idée archivée')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Annuler' })).not.toBeInTheDocument();
   });
@@ -163,9 +163,9 @@ describe('kb3 · retouches finales : toast périmé', () => {
     fireEvent.click(screen.getByRole('button', { name: /Archiver « Fût 20 L »/ }));
     expect(screen.getByText('Idée archivée')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Archivées/ }));
-    fireEvent.click(screen.getByRole('button', { name: /Fût 20 L/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Fût 20 L/ }));
     fireEvent.click(screen.getByRole('button', { name: /Supprimer « Fût 20 L »/ }));
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Supprimer' }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, supprimer' }));
     expect(screen.queryByText('Idée archivée')).not.toBeInTheDocument();
   });
 });
