@@ -44,6 +44,8 @@
 .pr-lib>.pr-lbl{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1)}
 .pr-lib input{width:72px;height:36px;border-radius:10px;border:1px dashed var(--tf);background:transparent;color:var(--t0);text-align:center;font-size:14px;font-family:"IBM Plex Mono",ui-monospace,monospace}
 .pr-lib input::placeholder{color:var(--t2)}
+/* v1 (33) : « Tout l'historique » écrit l'étendue réelle (jj.mm.aaaa) en grisé dans les champs : ils s'élargissent pour que l'année ne soit pas coupée. */
+.pr-lib.pr-tout input{width:104px}
 .pr-lib input[aria-invalid=true]{border-color:var(--al);border-style:solid}
 .pr-lib input:focus{outline:2px solid var(--act);outline-offset:1px;border-style:solid}
 .pr-lib>.pr-n{margin-left:auto;font-size:13px;color:var(--t2)}

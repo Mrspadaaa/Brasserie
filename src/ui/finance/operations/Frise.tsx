@@ -29,9 +29,11 @@ function Sup({ texte }: { texte: string }) {
   return apres === undefined ? <>{texte}</> : <>{avant}1<sup>er</sup>{apres}</>;
 }
 
-export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees, onPlage, onMois }: {
+export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees, onPlage, onMois, resume }: {
   mois: string; plage: Plage | null; aujourdhui: string; jourMax: string; nbOperations: number; donnees: DonneesFrise;
   onPlage: (du: string, au: string) => void; onMois: () => void;
+  /** v1 (33) : quand la période n'est pas la fenêtre dessinée (« Tout l'historique » : la frise montre le mois en cours), la ligne de compte dit la période, jamais « 30 jours » du mois montré. */
+  resume?: React.ReactNode;
 }) {
   const eff = plage ?? plageDuMois(mois);
   const [fen, setFen] = useState<Fenetre>(() => fenetreInitiale(plage, mois));
@@ -136,7 +138,7 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
   return <>
     <div className="ops-frise" data-testid="frise">
       <div className="ops-fr-rd">
-        <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>
+        {resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
         {plage && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
       </div>
       <div className="ops-tr" ref={piste} onClick={toucher}>

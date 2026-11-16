@@ -226,7 +226,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     const today = todayISO();
     return ({ transaction: t, payment, date, direction }: typeof classified[number], wanted: string) => {
       if (wanted === 'void') { if (isActiveTransaction(t)) return false; }
-      else if (!isActiveTransaction(t) && (scope === 'current' || wanted !== 'all')) return false;
+      // v1 (20) : une écriture annulée n'apparaît nulle part par défaut (liste du mois, « Tout », recherche) ; seule la puce « Écritures annulées uniquement » la montre.
+      else if (!isActiveTransaction(t)) return false;
       if (['due', 'late', 'payable', 'receivable'].includes(wanted) && !['unpaid', 'partial'].includes(payment.state)) return false;
       if (wanted === 'payable' && direction !== 'out' || wanted === 'receivable' && direction !== 'in') return false;
       if (wanted === 'late') { const due = isoDate(t.finance?.dueDate); if (!due || due >= today) return false; }

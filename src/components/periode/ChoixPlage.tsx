@@ -30,13 +30,16 @@ const VIDE: Transaction[] = [];
 export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions = VIDE, maintenant = new Date() }) => {
   const p = enPeriode(periode, maintenant);
   const aujourdhui = aujourdhuiISO();
-  const { donnees, nombre } = useDonneesFrise(transactions);
+  const { donnees, nombre, etendue } = useDonneesFrise(transactions);
   const { du: debut, au: fin } = bornes(p);
   /* « Tout » n'a pas de jours : la frise montre alors le mois en cours, et les poignées posent une plage. */
   const mois = (debut ?? aujourdhui).slice(0, 7);
   const plage = p.genre === 'mois' || p.genre === 'tout' ? null : { du: debut as string, au: fin as string };
   const montree = plage ?? { du: `${mois}-01`, au: `${mois}-${String(new Date(Number(mois.slice(0, 4)), Number(mois.slice(5, 7)), 0).getDate()).padStart(2, '0')}` };
   const annee = Number(mois.slice(0, 4));
+  /* v1 (33) : « Tout l'historique » se dit comme tel (toutes les opérations, d'où à où), jamais par les « 30 jours » du mois que la frise montre pour poser une plage. */
+  const nTout = p.genre === 'tout' ? nombre(null, null) : 0;
+  const jjAaaa = (iso: string) => `${iso.slice(8)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 
   const courant = moisDe(maintenant);
   const raccourcis: Array<{ cle: string; texte: string; valeur: Periode }> = [
@@ -74,13 +77,14 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
         ))}
       </div>
       <Frise mois={mois} plage={plage} aujourdhui={aujourdhui} jourMax={jourMaxi(aujourdhui)} nbOperations={nombre(montree.du, montree.au)} donnees={donnees}
+        resume={p.genre === 'tout' ? <span>Tout l’historique · {nTout === 0 ? 'aucune opération' : <><b className="ops-m">{nTout}</b> opération{nTout > 1 ? 's' : ''}</>}</span> : undefined}
         onPlage={(a, b) => onChoisir(depuisJours(a, b))} onMois={() => onChoisir({ genre: 'mois', annee, mois: Number(mois.slice(5, 7)) })} />
-      <div className="pr-lib">
+      <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}`}>
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Du … au</span>
-        <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}
+        <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.du) : 'jj.mm'} value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}
           onChange={e => { setDu(e.target.value); appliquer(e.target.value, au); }} />
         <ArrowRight size={16} aria-hidden="true" />
-        <input aria-label="Au (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={au} aria-invalid={invalide && !jourAu && au !== '' ? true : undefined} {...evSaisie}
+        <input aria-label="Au (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.au) : 'jj.mm'} value={au} aria-invalid={invalide && !jourAu && au !== '' ? true : undefined} {...evSaisie}
           onChange={e => { setAu(e.target.value); appliquer(du, e.target.value); }} />
       </div>
       {inverse && <p className="pr-err" role="alert">La fin vient avant le début.</p>}

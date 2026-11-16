@@ -1,0 +1,40 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+xx··
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/periodeToutCoherente.test.tsx > 33 : la Période et la plage disent la même chose > « Tout l’historique » : aucune durée en jours, un compte de toutes les opérations, « Du … au » porte l’étendue réelle
+AssertionError: expected 1 to be greater than 1
+ ❯ tests/integration/periodeToutCoherente.test.tsx:27:61
+     25|   it('« Tout l’historique » : aucune durée en jours, un compte de tout…
+     26|     const { container } = render(<Reglages periode={{ genre: 'tout' }}…
+     27|     expect(screen.getAllByText('Tout l’historique').length).toBeGreate…
+       |                                                             ^
+     28|     expect(container.textContent).not.toMatch(/\d\s*jours?\b/);
+     29|     expect(container.textContent).toMatch(/3\s*opérations/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/integration/periodeToutCoherente.test.tsx > 33 : la Période et la plage disent la même chose > un historique vide : ni « 0 jour », ni champ vide muet
+AssertionError: expected 'PériodeTout l’historiqueCe moisMois d…' not to match /\d\s*jours?\b/
+
+[32m- Expected:[39m 
+/\d\s*jours?\b/
+
+[31m+ Received:[39m 
+"PériodeTout l’historiqueCe moisMois dernierExercice 2026Tout30 jours · 0 opération1er30auj. 16du 1er au 30 nov. · aucune opération saisieDu … au"
+
+ ❯ tests/integration/periodeToutCoherente.test.tsx:36:39
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  08:33:08
+   Duration  3.63s (transform 1.26s, setup 373ms, collect 1.87s, tests 144ms, environment 1.01s, prepare 81ms)
+

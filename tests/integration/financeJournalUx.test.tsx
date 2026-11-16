@@ -199,10 +199,12 @@ describe('Journal financier compact', () => {
     const onSale = vi.fn(), onPrivateMovement = vi.fn(), onManageArchives = vi.fn(), onScopeChange = vi.fn();
     render(<TransactionJournal {...defaults} transactions={[voided]} archives={[archive]} request={{ key: 'annual', year: String(previousYear), allDates: true }}
       onPrivateMovement={onPrivateMovement} onManageArchives={onManageArchives} onScopeChange={onScopeChange}/>);
-    expect(screen.getByText(`Exercice ${previousYear}`)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
+    expect(screen.getAllByText(`Exercice ${previousYear}`)[0]).toBeVisible();
+    // v1 (20) : une annulée n'est plus listée par défaut ; seule la puce la montre.
+    expect(screen.queryByRole('button', { name: 'Opération ANNULÉE' })).not.toBeInTheDocument();
     ouvrirFiltres();
     fireEvent.click(screen.getByRole('button', { name: 'Écritures annulées uniquement' }));
+    expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Retirer le filtre : Écritures annulées' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives' }));
     // La vente s'encaisse depuis le bouton d'action, plus depuis le journal.

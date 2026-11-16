@@ -1,0 +1,1049 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+xxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/v1FicheProjetSupprimer.test.tsx > 21 : la fiche d’un projet (Prévisions) se supprime > « Supprimer » demande d’abord ; « Garder » ne retire rien
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Supprimer/`
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_0_"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"prv-fiche"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_0_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"prv-x"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "3 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "5 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "8 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retirer":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Déplacer":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ouvrir le projet":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-prim"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Durée d’usure":
+  [36m<span[39m
+    [33maria-label[39m=[32m"Durée d’usure"[39m
+    [33mclass[39m=[32m"prv-sel"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Prix d’une bouteille 33 cl (CHF)":
+  [36m<input[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"5,00"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"prv-voile"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_0_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"prv-fiche"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-fiche-tete"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-wrench"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mZZ TEST - Projet materiel[0m
+            [0m, [0m
+            [0m110,00[0m
+            [0m CHF[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"prv-aside"[39m
+          [36m>[39m
+            [0mestimé · 01.12[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"prv-x"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-row"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mUsure sur[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Durée d’usure"[39m
+            [33mclass[39m=[32m"prv-sel"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m3[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m5[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m8[0m
+              [0m ans[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-gr"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mUsure par an[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0m22,00[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mMon litre[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0maucun brassin planifié[0m
+            [36m</small>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mFin[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPlus bas[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k prv-l"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPour rester à zéro[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0men trésorerie, avant coût de production[0m
+            [36m</small>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"prv-prix"[39m
+            [36m>[39m
+              [0mPrix d’une bouteille 33 cl (CHF)[0m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mplaceholder[39m=[32m"5,00"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-acts"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-archive"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mx[39m=[32m"2"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 12h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Retirer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mDéplacer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-prim"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mOuvrir le projet[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/integration/v1FicheProjetSupprimer.test.tsx:27:28
+     25|     const fermer = vi.fn();
+     26|     rendre(fermer);
+     27|     fireEvent.click(screen.getByRole('button', { name: /Supprimer/ }));
+       |                            ^
+     28|     expect(screen.getByRole('alertdialog')).toHaveTextContent('ZZ TEST…
+     29|     expect(etat.supprimer).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/integration/v1FicheProjetSupprimer.test.tsx > 21 : la fiche d’un projet (Prévisions) se supprime > « Oui, supprimer » : le projet part et la fiche se ferme
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Supprimer/`
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_1_"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"prv-fiche"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_1_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"prv-x"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "3 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "5 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "8 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retirer":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Déplacer":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ouvrir le projet":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-prim"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Durée d’usure":
+  [36m<span[39m
+    [33maria-label[39m=[32m"Durée d’usure"[39m
+    [33mclass[39m=[32m"prv-sel"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Prix d’une bouteille 33 cl (CHF)":
+  [36m<input[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"5,00"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"prv-voile"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_1_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"prv-fiche"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-fiche-tete"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_1_"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-wrench"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mZZ TEST - Projet materiel[0m
+            [0m, [0m
+            [0m110,00[0m
+            [0m CHF[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"prv-aside"[39m
+          [36m>[39m
+            [0mestimé · 01.12[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"prv-x"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-row"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mUsure sur[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Durée d’usure"[39m
+            [33mclass[39m=[32m"prv-sel"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m3[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m5[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m8[0m
+              [0m ans[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-gr"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mUsure par an[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0m22,00[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mMon litre[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0maucun brassin planifié[0m
+            [36m</small>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mFin[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPlus bas[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k prv-l"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPour rester à zéro[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0men trésorerie, avant coût de production[0m
+            [36m</small>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"prv-prix"[39m
+            [36m>[39m
+              [0mPrix d’une bouteille 33 cl (CHF)[0m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mplaceholder[39m=[32m"5,00"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-acts"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-archive"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mx[39m=[32m"2"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 12h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Retirer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mDéplacer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-prim"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mOuvrir le projet[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/integration/v1FicheProjetSupprimer.test.tsx:38:28
+     36|     const fermer = vi.fn();
+     37|     rendre(fermer);
+     38|     fireEvent.click(screen.getByRole('button', { name: /Supprimer/ }));
+       |                            ^
+     39|     fireEvent.click(screen.getByRole('button', { name: 'Oui, supprimer…
+     40|     await waitFor(() => expect(etat.supprimer).toHaveBeenCalledWith('U…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/integration/v1FicheProjetSupprimer.test.tsx > 21 : la fiche d’un projet (Prévisions) se supprime > un refus du service se dit dans la question et la fiche reste ouverte
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Supprimer/`
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_2_"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"prv-fiche"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "ZZ TEST - Projet materiel, 110,00 CHF":
+  [36m<h3[39m
+    [33mid[39m=[32m"_r_2_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"prv-x"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "3 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "5 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "8 ans":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retirer":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Déplacer":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"prv-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ouvrir le projet":
+  [36m<button[39m
+    [33mclass[39m=[32m"prv-prim"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Durée d’usure":
+  [36m<span[39m
+    [33maria-label[39m=[32m"Durée d’usure"[39m
+    [33mclass[39m=[32m"prv-sel"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Prix d’une bouteille 33 cl (CHF)":
+  [36m<input[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"5,00"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"prv-voile"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_2_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"prv-fiche"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-fiche-tete"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mid[39m=[32m"_r_2_"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-wrench"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mZZ TEST - Projet materiel[0m
+            [0m, [0m
+            [0m110,00[0m
+            [0m CHF[0m
+          [36m</h3>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"prv-aside"[39m
+          [36m>[39m
+            [0mestimé · 01.12[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"prv-x"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-row"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mUsure sur[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Durée d’usure"[39m
+            [33mclass[39m=[32m"prv-sel"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m3[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m5[0m
+              [0m ans[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0m8[0m
+              [0m ans[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-gr"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mUsure par an[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0m22,00[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mMon litre[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0maucun brassin planifié[0m
+            [36m</small>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mFin[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPlus bas[0m
+            [36m</span>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"prv-k prv-l"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0mPour rester à zéro[0m
+            [36m</span>[39m
+            [36m<b>[39m
+              [0mà compléter[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0men trésorerie, avant coût de production[0m
+            [36m</small>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"prv-prix"[39m
+            [36m>[39m
+              [0mPrix d’une bouteille 33 cl (CHF)[0m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mplaceholder[39m=[32m"5,00"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prv-acts"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-archive"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"5"[39m
+                [33mrx[39m=[32m"1"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mx[39m=[32m"2"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 12h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Retirer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33mclass[39m=[32m"prv-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mDéplacer[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"prv-prim"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mOuvrir le projet[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/integration/v1FicheProjetSupprimer.test.tsx:47:28
+     45|     const fermer = vi.fn();
+     46|     rendre(fermer);
+     47|     fireEvent.click(screen.getByRole('button', { name: /Supprimer/ }));
+       |                            ^
+     48|     fireEvent.click(screen.getByRole('button', { name: 'Oui, supprimer…
+     49|     expect(await screen.findByRole('alert')).toHaveTextContent('Des pi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  08:31:25
+   Duration  1.91s (transform 207ms, setup 469ms, collect 160ms, tests 153ms, environment 655ms, prepare 66ms)
+

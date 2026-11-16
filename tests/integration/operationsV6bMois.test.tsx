@@ -110,17 +110,21 @@ describe('Opérations v6b : une pièce annulée n\'alourdit pas le mois', () => 
   const annulee = (id: string, category: Transaction['category']) => tx(id, `${moisCourant}-03`, category,
     { finance: { version: 1, kind: 'expense', amountCents: 10810, paymentStatus: 'unpaid', voidedAt: `${today}T12:00:00Z`, recordedAt: `${today}T12:00:00Z`, lines: [] } as any });
 
-  it('un groupe dont tout est annulé ne montre pas un en-tête « 0,00 » au-dessus : elles se rangent dans un seul groupe « Annulées », en fin de liste, sans total', () => {
+  it('un groupe dont tout est annulé ne montre pas un en-tête « 0,00 » au-dessus : non listées par défaut (v1, 20) ; par « Écritures annulées uniquement » dans un seul groupe « Annulées », sans total', () => {
     const a1 = annulee('ANN-1', 'materiel'), a2 = annulee('ANN-2', 'materiel');
-    const { container } = render(<TransactionJournal {...defaults} transactions={[ce, a1, a2]} payments={[pay(ce)]}
+    const { container, rerender } = render(<TransactionJournal {...defaults} transactions={[ce, a1, a2]} payments={[pay(ce)]}
       state={createJournalState({ scope: 'all' })} onStateChange={() => {}}/>);
     // Aucun groupe « Matériel · à part » : rien d'actif à y compter.
     expect(container.querySelector('[data-groupe="part"]')).toBeNull();
     expect(container.querySelector('.ops-liste')!.textContent).not.toMatch(/(^|\D)0,00/);
-    // Mais elles restent listées (rien n'est caché au brasseur).
+    // v1 (20) : par défaut elles n'apparaissent nulle part.
+    expect(montre('Op ANN-1')).toBe(false);
+    expect(montre('Op ANN-2')).toBe(false);
+    expect(container.querySelector('[data-groupe="annulees"]')).toBeNull();
+    // Le filtre les montre, rangées dans un groupe « annulées » dont le sous-total est vide, pas un montant.
+    rerender(<TransactionJournal {...defaults} transactions={[ce, a1, a2]} payments={[pay(ce)]} state={createJournalState({ scope: 'all', filter: 'void' })} onStateChange={() => {}}/>);
     expect(montre('Op ANN-1')).toBe(true);
     expect(montre('Op ANN-2')).toBe(true);
-    // Rangées dans un groupe « annulées » dont le sous-total est vide, pas un montant.
     const groupe = container.querySelector('[data-groupe="annulees"]');
     expect(groupe).not.toBeNull();
     expect(groupe!.querySelector('.ops-sub')?.textContent ?? '').toBe('');
@@ -129,12 +133,15 @@ describe('Opérations v6b : une pièce annulée n\'alourdit pas le mois', () => 
   it('une annulée quitte sa catégorie : le total de « Matériel · à part » ne compte que les écritures actives et elle paraît sous « Annulées »', () => {
     const actif = tx('MAT', `${moisCourant}-04`, 'materiel');
     const a1 = annulee('ANN-3', 'materiel');
-    const { container } = render(<TransactionJournal {...defaults} transactions={[actif, a1]} payments={[pay(actif)]}
+    const { container, rerender } = render(<TransactionJournal {...defaults} transactions={[actif, a1]} payments={[pay(actif)]}
       state={createJournalState({ scope: 'all' })} onStateChange={() => {}}/>);
     const groupe = container.querySelector('[data-groupe="part"]');
     expect(groupe).not.toBeNull();
     expect(groupe!.querySelector('.ops-sub')?.textContent).toBe('100,00');
     expect(groupe!.textContent).not.toContain('Op ANN-3');
+    // v1 (20) : l'annulée n'est pas listée par défaut ; « Écritures annulées uniquement » la range sous « Annulées ».
+    expect(container.querySelector('[data-groupe="annulees"]')).toBeNull();
+    rerender(<TransactionJournal {...defaults} transactions={[actif, a1]} payments={[pay(actif)]} state={createJournalState({ scope: 'all', filter: 'void' })} onStateChange={() => {}}/>);
     expect(container.querySelector('[data-groupe="annulees"]')?.textContent).toContain('Op ANN-3');
   });
 });
