@@ -99,7 +99,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21 : 130 à 350 k jetons par auteur. 09.11 : 10 relances : « pas pour du va et vient inutile !!! ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, retour sans format.
-- Faire : maxTurns par agent, Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Explorer en mini maquettes statiques nombreuses ; le jouable après son choix (16.11, [[fil-de-fer-d-abord]]).
+- Faire : maxTurns par agent, Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Statique ne veut pas dire sans critique ni pressé ; la base reste son choix inscrit, jamais la dernière itération (16.11 : « ce qui a été choisi … a été enlevé »). Explorer en mini maquettes statiques nombreuses ; le jouable après son choix (16.11, [[fil-de-fer-d-abord]]).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns ; `.claude/hooks/garde-jetons.mjs` (3e relance, brief incomplet)
 
