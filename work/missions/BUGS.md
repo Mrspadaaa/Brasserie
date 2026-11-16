@@ -919,6 +919,11 @@ Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPP
 | FN-14 | test d'écran a2c5db31 (16.11) | Finances › feuilles (projet, fiches) | La croix × garde son gros cadre sur le projet de matériel et les fiches A et C. | basse | ouvert | a2c5db31 | work/missions/2026-10-31-ecran-depense/avant-deploiement/a2c5db31/VERDICT.md |
 | FN-15 | test d'écran a2c5db31 (16.11) | Finances › Doublons | Après « Annuler celle-ci », le bloc garde « Ce n'est pas un doublon » et le filtre reste allumé ; totaux un instant avec la pièce annulée (doute). | basse | ouvert | a2c5db31 | work/missions/2026-10-31-ecran-depense/avant-deploiement/a2c5db31/VERDICT.md |
 | FN-16 | test d'écran a2c5db31 (16.11) | Finances › trop-payé, 390 | La ligne du trop-payé est coupée à 390. | basse | ouvert | a2c5db31 | work/missions/2026-10-31-ecran-depense/avant-deploiement/a2c5db31/VERDICT.md |
+| FN-17 | test d'écran fca6caf6 (16.11) | Finances › fiche annulée | Deux croix côte à côte : le carré d'état « annulé » ressemble à la croix de fermeture. | basse | ouvert | fca6caf6 | work/missions/2026-10-31-ecran-depense/avant-deploiement/fca6caf6/VERDICT.md |
+| FN-18 | test d'écran fca6caf6 (16.11) | Finances › feuilles (fiches, projet) | La croix × garde son gros cadre (FN-14 non corrigé). | basse | ouvert | fca6caf6 | work/missions/2026-10-31-ecran-depense/avant-deploiement/fca6caf6/VERDICT.md |
+| FN-19 | test d'écran fca6caf6 (16.11) | Finances › Prévisions, projet | Nom du projet coupé sur les cartes « Avec / Sans Fermenteur suppléme… ». | basse | ouvert | fca6caf6 | work/missions/2026-10-31-ecran-depense/avant-deploiement/fca6caf6/VERDICT.md |
+| FN-20 | test d'écran fca6caf6 (16.11) | Finances › prévision, graphique | Légende en minuscules : « avec zz test — prévue ». | basse | ouvert | fca6caf6 | work/missions/2026-10-31-ecran-depense/avant-deploiement/fca6caf6/VERDICT.md |
+| FN-21 | test d'écran fca6caf6 (16.11) | Finances › budget du brassin | « Prix de 1 ingrédient : munich » puis « : cascade » : deux lignes pour deux ingrédients, noms en minuscules. | basse | ouvert | fca6caf6 | work/missions/2026-10-31-ecran-depense/avant-deploiement/fca6caf6/VERDICT.md |
 ## Perdus (constats sans correctif, sans décision et sans suite écrite)
 
 Retrouvés dans les rapports le 08.11 ; chacun est maintenant une ligne ouverte ci-dessus.

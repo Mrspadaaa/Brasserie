@@ -97,3 +97,17 @@ Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. 
 - Reste, dans l'ordre : (1) voie d'intégration : « Autre montant » ouvre Payer sur la bonne pièce avec le paiement à remplacer (PayerVirement.tsx, FinancesTab.tsx ; voir s1b/RESULTAT.md « DÉCISION ») ; finitions CSS et captures de s2c (s2c/RESULTAT.md, sortie de capture tasks/beeia3x1p.output) ; tests hors voies à réaligner (s2b : 3, s3b : 39, s3c : 6, s2c : voir RESULTAT) ; suite complète comparée à f2/ROUGES.md et r2/ROUGES.md ; build. (2) BUGS.md : FN-1 écarté, FN-2 à FN-12 corrigé (commit). (3) test d'écran du critique (Opus) 390/1280 clair/cave sur les 8 vues + FN → VERDICT + « Pilote : vu » + controle-avant-deploiement. (4) fusion du dernier tag en-ligne/*, build, garde Firebase, check-no-dev-auth, deploy hosting, bundle servi = build, tag local. (5) jeu ZZ TEST dans Chrome (accord du brasseur, brief de z1), retrait, nombres réels intacts. (6) récap ≤ 400 car. à la session parente.
 
 - Reprise (16.11) : efff31bd commité (r3, t1, t2 verts : tests, build, tsc, V6A, FRISE, émulateur). Test d'écran efff31bd en deux parties : A → avant-deploiement/efff31bd/VERDICT.md, B → VERDICT-B.md (8 vues, 1280 sombre) ; fusionner B dans VERDICT.md, « Pilote : vu », controle-avant-deploiement, puis étapes (4) à (6).
+
+### Mise en ligne du 16.11 (pilote)
+- 8 vues (m1do-a, m1ar-c, m3pr-c, m3pm-d, m3im-c, m4bb-a avec c3a à un toucher, m4pf-c, m4ia-c) et FN-2 à FN-12 ; tests d'écran 28e87fb1 → 762f37df → efff31bd → a2c5db31 (0 bloquant, 4 mineurs FN-13 à FN-16) ; fusion de en-ligne/2026-11-15-atelier-lot8 (conflits BrewerChat et FinanceAssistant résolus) ; 243 tests Finances verts, build, garde Firebase, check-no-dev-auth ; déployé b8b3b678, bundle servi = build ; tag local en-ligne/2026-11-16-finances (non poussé).
+- Ouvert : jeu ZZ TEST non joué, Claude in Chrome non connecté (le brasseur doit ouvrir Chrome avec l'extension) ; relancer le brief de voies/z1 étendu aux 8 vues.
+
+## Contrat réécrit — 16.11, nuit (pilote, carte blanche du brasseur)
+- Le jeu en ligne de nuit sur `en-ligne/2026-11-16-finances` a relevé les constats Finances 17 à 28, dans `C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\BUGS.md`, section « Jeu en ligne nuit 16.11 ».
+- Le n° 19 est grave : il est impossible d'annuler un apport, parce que « Corriger ce paiement » manque.
+- Les autres :
+  - « de4 ingrédients » ;
+  - des mois répétés dans la frise m4pf-c ;
+  - « Rien de prévu » reste affiché après l'enregistrement ;
+  - une prévision et un projet ne peuvent pas être supprimés.
+- Pour chaque constat : d'abord un test qui échoue, puis la correction. Ensuite tests, build et test d'écran ; mise en ligne si tout est vert, depuis le dernier tag. Aucune question au brasseur.

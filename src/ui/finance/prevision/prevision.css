@@ -48,3 +48,11 @@
 .pvc-row > summary > span { flex: 1; } .pvc-row > summary em { font-style: normal; font-size: 13px; color: var(--pv-t2); }
 .pvc-row[open] > summary .pvc-chev { transform: rotate(90deg); }
 .pvc-ouvert { padding: 8px 0 4px; display: grid; gap: 8px; } .pvc-ouvert select { width: 100%; min-height: 44px; border: 1px solid var(--pv-bordm); border-radius: 10px; background: var(--pv-fond); color: var(--pv-t1); padding: 0 8px; }
+
+/* u2 (21, 27) : la question avant de supprimer ou d'archiver, dans le pied de la feuille ; « Supprimer » se range à droite, discret (contour d'alerte, jamais le bouton principal) */
+.fin-conf { display: grid; gap: 6px; padding: 2px 0; }
+.fin-conf-q { margin: 0; font-size: 14px; font-weight: 600; line-height: 18px; overflow-wrap: anywhere; }
+.fin-conf-d { margin: 0; font-size: 12px; line-height: 16px; color: var(--pv-t2, rgb(var(--cave-texte-300))); }
+.fin-conf .finance-actions { justify-content: flex-end; }
+.fin-conf .finance-action { min-height: 44px; padding: 0 16px; font-size: 14px; }
+.finance-actions .fin-suppr { margin-left: auto; gap: 4px; }

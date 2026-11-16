@@ -44,10 +44,10 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
     expect(horizon.getByRole('button', { name: '90 jours' })).toHaveAttribute('aria-pressed', 'true');
     expect(horizon.getAllByRole('button')).toHaveLength(3);
     const bascule = within(screen.getByRole('group', { name: /Avec ou sans/ }));
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).toHaveTextContent(/−892,66/);
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).toHaveTextContent('sous zéro 25.01');
-    expect(bascule.getByRole('button', { name: /Sans frigo/ })).toHaveTextContent(/2['’\s]?107,34/);
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).toHaveTextContent(/−892,66/);
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).toHaveTextContent('sous zéro 25.01');
+    expect(bascule.getByRole('button', { name: /Sans Frigo/ })).toHaveTextContent(/2['’\s]?107,34/);
     expect(screen.getByRole('button', { name: /Frigo −3['’\s]?000,00, 15\.11/ })).toBeVisible();
     expect(screen.getByText('À payer').parentElement).toHaveTextContent(/460,00/);
     expect(screen.getByText('Prévu').parentElement).toHaveTextContent(/1['’\s]?550,00/);
@@ -60,8 +60,8 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
 
   it('la bascule retire le frigo seul : sans = avec + 3 000, le fermenteur reste', () => {
     semer(); ouvrir();
-    fireEvent.click(screen.getByRole('button', { name: /Sans frigo/ }));
-    expect(screen.getByRole('button', { name: /Sans frigo/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: /Sans Frigo/ }));
+    expect(screen.getByRole('button', { name: /Sans Frigo/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: /Frigo −3/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /^\d+\s+sorties?$/ }));
     const liste = within(screen.getByRole('dialog', { name: 'Sorties et entrées prévues' }));
@@ -140,7 +140,7 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
   it('une entrée prévue : le pli « Entrées » la dit et le solde de fin la compte', () => {
     semer({ plans: [loyer, frigo(), fermenteur, planPrevoir(brassin()), { id: 'VENTE', title: 'Vente festival', date: '2026-11-25', amountCents: 50_000, direction: 'in', category: 'ventes', source: 'manual', status: 'active', createdAt: '2026-11-01T00:00:00Z' }] }); ouvrir();
     expect(screen.getByRole('button', { name: /Entrées : 500,00/ })).toBeVisible();
-    expect(within(screen.getByRole('group', { name: /Avec ou sans/ })).getByRole('button', { name: /Avec frigo/ })).toHaveTextContent(/−392,66/);
+    expect(within(screen.getByRole('group', { name: /Avec ou sans/ })).getByRole('button', { name: /Avec Frigo/ })).toHaveTextContent(/−392,66/);
   });
 
   it('une pièce sans échéance : marque au premier plan, qui ouvre les limites', () => {

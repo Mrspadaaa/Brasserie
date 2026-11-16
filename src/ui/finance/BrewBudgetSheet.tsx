@@ -19,6 +19,7 @@ import { ImpotBiereSheet } from '../production/ImpotBiereSheet';
 import { BudgetBande } from './budget/BudgetBande';
 import { BudgetRangees } from './budget/BudgetRangees';
 import { bandeDuBudget, groupesDuBudget } from './budget/piles';
+import { titrePrixManquant } from './budget/libelles';
 import './operations.css';
 
 const ProfileSheet = React.lazy(() => import('./FinanceForms').then(m => ({ default: m.ProfileSheet })));
@@ -176,7 +177,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       if (d.id === 'malt' || d.id === 'q' || d.id === 'autres') {
         const n = estimate.lines.filter(l => groupeIngredient(l, estimate.recipeSnapshot) === d.id && l.consumedCost === null).length;
         const noms = estimate.lines.filter(l => groupeIngredient(l, estimate.recipeSnapshot) === d.id && l.consumedCost === null).map(l => l.name.toLocaleLowerCase('fr-CH'));
-        m.push({ cle: d.id, titre: `Prix d${n > 1 ? 'e' : '’'}${n} ingrédient${n > 1 ? 's' : ''} : ${noms.slice(0, 2).join(', ')}${noms.length > 2 ? '…' : ''}`, effet: `Sans ${n > 1 ? 'eux' : 'lui'}, le coût reste un minimum.`, agir: () => { ouvrir(d.id); setLineFilter('missing'); } });
+        m.push({ cle: d.id, titre: titrePrixManquant(n, noms), effet: `Sans ${n > 1 ? 'eux' : 'lui'}, le coût reste un minimum.`, agir: () => { ouvrir(d.id); setLineFilter('missing'); } });
       } else if (d.id === 'imp') {
         if (netInconnu || netInvalide) continue;
         m.push(ogUtilisee === undefined ? { cle: 'imp', titre: `Densité de « ${recipe.name} »`, effet: 'Sans elle, l’impôt bière reste inconnu.', agir: aDensite } : { cle: 'imp', titre: 'Impôt bière du brassin', effet: 'Sans lui, le coût du brassin reste un minimum.', agir: () => ouvrir('imp') });

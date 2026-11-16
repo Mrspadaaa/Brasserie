@@ -34,7 +34,7 @@ describe('constat 1 : l’étiquette est courte (mot-clé, montant entier, jour)
     expect(texteEtiquette(item({ date: '2026-12-25' }))).toBe('loyer −400, 25.12');
     expect(texteEtiquette(item({ amountCents: 684, label: 'Pale Ale d’hiver · impôt sur la bière · date estimée', source: 'brew' }))).toBe('impôt sur la bière −6,84, ~25.11'.replace('impôt sur la bière', 'impôt'));
     expect(texteEtiquette(item({ amountCents: 2400, label: 'Pale Ale d’hiver · emballage', source: 'brew', partial: ['emballage'], date: '2026-12-03' }))).toBe('emballage ≥ 24, 03.12');
-    expect(texteEtiquette(item({ amountCents: 300_000, label: 'Frigo', source: 'equipment', date: '2026-11-15' }))).toBe('frigo −3 000, 15.11');
+    expect(texteEtiquette(item({ amountCents: 300_000, label: 'Frigo', source: 'equipment', date: '2026-11-15' }))).toBe('Frigo −3 000, 15.11');
     expect(texteEtiquette(item({ direction: 'in', amountCents: 50_000, label: 'Vente', source: 'plan' }))).toBe('vente +500, 25.11');
   });
   it('le texte lu (aria) garde le nom entier, le montant en centimes et le jour', () => {
@@ -152,7 +152,7 @@ describe('écran Prévisions après le test P5B', () => {
     const soldes = [...document.querySelectorAll('.prv-solde')].map(t => t.textContent);
     expect(soldes.length).toBeGreaterThan(0);
     for (const s of soldes) expect(s).toMatch(/^−?\d{1,3}( \d{3})*,\d{2}$/);
-    expect(document.querySelector('.prv-nom-ghost')).toHaveTextContent(/sans frigo/);
+    expect(document.querySelector('.prv-nom-ghost')).toHaveTextContent(/sans Frigo/);
     expect(document.querySelector('.prv-nom-ghost')).toHaveTextContent(/2\s107,34/);
     expect(screen.getByRole('button', { name: /Frigo −3\s000,00, 15\.11/ })).toBeVisible();
   });
@@ -185,9 +185,9 @@ describe('écran Prévisions après le test P5B', () => {
     semer({ sansSolde: true }); ouvrir();
     expect(screen.getByRole('button', { name: /Solde de départ à renseigner/ })).toBeVisible();
     const bascule = within(screen.getByRole('group', { name: /Avec ou sans/ }));
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).toHaveTextContent(/écart 90 j/);
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).toHaveTextContent(/−\d/);
-    expect(bascule.getByRole('button', { name: /Avec frigo/ })).not.toHaveTextContent('À compléter');
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).toHaveTextContent(/écart 90 j/);
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).toHaveTextContent(/−\d/);
+    expect(bascule.getByRole('button', { name: /Avec Frigo/ })).not.toHaveTextContent('À compléter');
   });
 
   it('constat 12 : « Mon litre » dit pourquoi il est vide', () => {

@@ -13,7 +13,8 @@ import { FactureLignes } from './fiche/FactureLignes';
 import { dateFiche, MODE_COURT } from './fiche/format';
 import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
-import { estMouvementPrive } from '../../domain/finance/correctionMontant';
+import { estMouvementPrive, paiementsVivants } from '../../domain/finance/correctionMontant';
+import { retirerEcriture } from './modifier/retirerEcriture';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
 import './fiche/fiche.css';
@@ -43,7 +44,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   /** t3 (A2) : renvoi vers une autre opération (la créance « À récupérer » née d'un trop-payé sur cette pièce). */
   onOpenTransaction?:(transaction:Transaction)=>void;
 }) {
-  const [error,setError]=useState(''), [correction,setCorrection]=useState<string|null>(null);
+  const [error,setError]=useState(''), [correction,setCorrection]=useState<string|null>(null), [occupe,setOccupe]=useState(false);
   const state=paymentState(tx,payments,transactions), plan=plans.find(p=>p.id===tx.finance?.planId);
   const estimate=plan?.brewEstimate as {recipeId?:string;title?:string}|undefined;
   const brewRecipeId=estimate?.recipeId, brewTitle=estimate?.title;
@@ -54,7 +55,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const etat=etatDeLigne(tx,state,!outgoing,payments,todayISO());
   /* Payé : le texte de la maquette (✓ payé 9 nov. · banque). Ouvert : les mots que cette fiche a toujours dits (« Reste à payer : 100,00 CHF »), l'échéance en dessous ; la couleur (hachure, rouge) vient de l'état. */
   const ouvert=state.state==='unpaid'||state.state==='partial';
-  /* FN-12 : un apport ou un prélèvement n'est jamais une créance : jamais « À encaisser », jamais « Noter un encaissement », pas d'échéance (FN-11) ; son paiement se corrige par Modifier ou par l'annulation de l'écriture. */
+  /* FN-12 : un apport ou un prélèvement n'est jamais une créance : jamais « À encaisser », jamais « Noter un encaissement », pas d'échéance (FN-11) ; son paiement se corrige par Modifier, par « Corriger ce paiement » (u1, constat 19 : sans lui l'apport ne se retirait pas) ou par « Retirer cette écriture ». */
   const prive=estMouvementPrive(tx);
   const pastille=ouvert&&prive?`${transactionKind(tx)==='contribution'?'Apport':'Prélèvement'} : aucun paiement noté`:ouvert?`${state.state==='partial'?'Reste à':'À'} ${outgoing?'payer':'encaisser'} : ${formatCHF(state.remainingCents)}`:etat.texte;
   const year=Number((isoDate(tx.date)??todayISO()).slice(0,4));
@@ -68,6 +69,9 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const plus=aConfirmer||equipement;
   const aJustificatif=!!tx.proofUrl||!!tx.finance?.proofDocumentId;
   const paiements=payments.filter(p=>p.transactionId===tx.id);
+  const enVigueur=paiementsVivants(tx,payments);
+  /* u1 (20) : une pièce payée se retire en un geste (contre-paiements, puis annulation) ; les règles interdisent de supprimer, la confirmation le dit. */
+  const retirer=async()=>{setOccupe(true);try{await retirerEcriture(tx.id,payments,{aujourdhui:todayISO(),maintenant:new Date().toISOString()});setError('');setCorrection(null);}catch(e){setError((e as Error).message);setCorrection(null);}finally{setOccupe(false);}};
   const tiers=[CATEGORY_LABELS[tx.category]??tx.category,transactionVendor(tx),dateFiche(tx.date)].filter(Boolean).join(' · ');
   const nomPiece=tx.proofFileName||tx.finance?.invoiceNumber;
   return <Sheet open title={tx.description} subtitle={tiers} onClose={onClose} className="finance-sheet fiche-sheet">
@@ -120,11 +124,14 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
           return <div className="fiche-hist" key={p.id}>{ligne(p)}
           {/* m5pa-d : un virement a un seul justificatif, lié à chaque paiement qu'il a réglé ; il se montre sur la ligne de ce paiement, distinct du justificatif de la pièce. */}
           {preuve(p)}
-          {!p.reversalOfId&&!prive&&<button type="button" onClick={()=>setCorrection(p.id)}>Corriger ce paiement saisi par erreur</button>}</div>;})}
+          {!p.reversalOfId&&<button type="button" onClick={()=>setCorrection(p.id)}>Corriger ce paiement saisi par erreur</button>}</div>;})}
         {!paiements.length&&<p className="fiche-note">Aucun paiement daté enregistré.</p>}
       </details>
-      {!voided&&<details className="fiche-dt"><summary><span>Corriger une erreur de saisie</span><ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps"><p className="fiche-note">Une annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.</p><button type="button" className="fiche-b2" onClick={()=>setCorrection('void')}>Annuler cette écriture</button></div></details>}
-      {correction&&<div className="fiche-corriger"><p>{correction==='void'?'Confirmer l’annulation de cette écriture erronée ?':'Ce paiement a été saisi par erreur. Sa contre-écriture reprendra la date d’origine ; pour un remboursement réel, utilise un avoir.'}</p><div className="finance-actions"><button type="button" className="finance-action secondary" onClick={()=>setCorrection(null)}>Garder</button><button type="button" className="finance-action danger" onClick={()=>apply(()=>{if(correction==='void'){const result=StorageService.revertTransaction(tx.id);if(!result.success)throw Error(result.message);}else{const p=payments.find(p=>p.id===correction)!;FinanceService.recordPayment({...p,id:`CONTRE-${p.id}`,direction:p.direction==='in'?'out':'in',reversalOfId:p.id,note:'Correction d’un paiement saisi par erreur',recordedAt:new Date().toISOString()});}})}>Confirmer la correction</button></div></div>}
+      {!voided&&<details className="fiche-dt"><summary><span>Corriger une erreur de saisie</span><ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps"><p className="fiche-note">Une annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.</p>{enVigueur.length>0
+          ?<button type="button" className="fiche-b2" onClick={()=>setCorrection('retrait')}>Retirer cette écriture</button>
+          :<button type="button" className="fiche-b2" onClick={()=>setCorrection('void')}>Annuler cette écriture</button>}</div></details>}
+      {correction==='retrait'&&<div className="fiche-corriger"><p>Retirer cette écriture ? Son paiement de {formatCHF(enVigueur.reduce((n,p)=>n+p.amountCents,0))} est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre.</p><div className="finance-actions"><button type="button" className="finance-action secondary" disabled={occupe} onClick={()=>setCorrection(null)}>Garder</button><button type="button" className="finance-action danger" disabled={occupe} onClick={retirer}>Confirmer le retrait</button></div></div>}
+      {correction&&correction!=='retrait'&&<div className="fiche-corriger"><p>{correction==='void'?'Confirmer l’annulation de cette écriture erronée ?':'Ce paiement a été saisi par erreur. Sa contre-écriture reprendra la date d’origine ; pour un remboursement réel, utilise un avoir.'}</p><div className="finance-actions"><button type="button" className="finance-action secondary" onClick={()=>setCorrection(null)}>Garder</button><button type="button" className="finance-action danger" onClick={()=>apply(()=>{if(correction==='void'){const result=StorageService.revertTransaction(tx.id);if(!result.success)throw Error(result.message);}else{const p=payments.find(p=>p.id===correction)!;FinanceService.recordPayment({...p,id:`CONTRE-${p.id}`,direction:p.direction==='in'?'out':'in',reversalOfId:p.id,note:'Correction d’un paiement saisi par erreur',recordedAt:new Date().toISOString()});}})}>Confirmer la correction</button></div></div>}
     </div>
   </Sheet>;
 }

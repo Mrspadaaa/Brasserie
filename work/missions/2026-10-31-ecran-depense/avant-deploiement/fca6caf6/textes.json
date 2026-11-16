@@ -1,0 +1,670 @@
+{
+ "journal": [
+  [
+   "1280-sombre",
+   "avant",
+   "Synthèse Opérations Prévisions Annuel ‹ novembre › en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 9 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé"
+  ],
+  [
+   "1280-sombre",
+   "ecrit",
+   1
+  ],
+  [
+   "1280-sombre",
+   "apres-ajout",
+   "Synthèse Opérations Prévisions Annuel ‹ novembre › en retard 60,00 du au +720,00 Ventes 468,00 Fixes 226,80 Brassage 42,00 Nettoyage 28,60 Matériel payé 336,80 à payer 400,00 dépensé 736,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 9 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé"
+  ],
+  [
+   "1280-sombre",
+   "fiche",
+   "ZZ TEST — pièce payée · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesans piè"
+  ],
+  [
+   "1280-sombre",
+   "corr",
+   "Corriger une erreur de saisie"
+  ],
+  [
+   "1280-sombre",
+   "retirer",
+   "Retirer cette écriture"
+  ],
+  [
+   "1280-sombre",
+   "confirmer",
+   "Confirmer le retrait"
+  ],
+  [
+   "1280-sombre",
+   "fermer",
+   "Fermer"
+  ],
+  [
+   "1280-sombre",
+   "apres-retrait",
+   "Synthèse Opérations Prévisions Annuel ‹ novembre › en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 9 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé"
+  ],
+  [
+   "1280-sombre",
+   "encore-liste",
+   false
+  ],
+  [
+   "1280-sombre",
+   "err",
+   [
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found."
+   ]
+  ],
+  [
+   "1280-sombre",
+   "apport",
+   "Apport ou prélèvement privé"
+  ],
+  [
+   "1280-sombre",
+   "enr",
+   "Enregistrer l’apport"
+  ],
+  [
+   "1280-sombre",
+   "apres-apport",
+   "Synthèse Opérations Prévisions Annuel Mouvement enregistré. Fermer ‹ novembre › en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel +5,00 Apports payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 9 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Ven"
+  ],
+  [
+   "1280-sombre",
+   "fiche",
+   "ZZ TEST — Apport✓ encaissé aujourd’hui · banquesans pièce"
+  ],
+  [
+   "1280-sombre",
+   "corr-pay",
+   "Corriger ce paiement saisi par erreur"
+  ],
+  [
+   "1280-sombre",
+   "conf",
+   "Confirmer la correction"
+  ],
+  [
+   "1280-sombre",
+   "corr",
+   "Corriger une erreur de saisie"
+  ],
+  [
+   "1280-sombre",
+   "annuler",
+   "Annuler cette écriture"
+  ],
+  [
+   "1280-sombre",
+   "conf2",
+   "Confirmer la correction"
+  ],
+  [
+   "1280-sombre",
+   "fermer",
+   "Fermer"
+  ],
+  [
+   "1280-sombre",
+   "apres-annul",
+   "Synthèse Opérations Prévisions Annuel Mouvement enregistré. Fermer ‹ novembre › en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 9 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché ·"
+  ],
+  [
+   "1280-sombre",
+   "encore-liste",
+   false
+  ],
+  [
+   "1280-sombre",
+   "err",
+   [
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found."
+   ]
+  ],
+  [
+   "1280-sombre",
+   "ne",
+   "Nouvelle écritureFacture ou saisie à la main"
+  ],
+  [
+   "1280-sombre",
+   "sj",
+   "Saisir sans justificatif"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "rien-avant",
+   false
+  ],
+  [
+   "1280-sombre",
+   "cartes",
+   [
+    "Avec Fermenteur suppléme…",
+    "Sans Fermenteur suppléme…"
+   ]
+  ],
+  [
+   "1280-sombre",
+   "sorties",
+   "6 sorties"
+  ],
+  [
+   "1280-sombre",
+   "ajouter",
+   "Ajouter une prévision"
+  ],
+  [
+   "1280-sombre",
+   "nom",
+   true
+  ],
+  [
+   "1280-sombre",
+   "mt",
+   true
+  ],
+  [
+   "1280-sombre",
+   "enr",
+   "Enregistrer"
+  ],
+  [
+   "1280-sombre",
+   "rien-apres",
+   false
+  ],
+  [
+   "1280-sombre",
+   "deplie",
+   "7 sorties"
+  ],
+  [
+   "1280-sombre",
+   "ouvre",
+   "ZZ TEST — prévueÀ venir7,00"
+  ],
+  [
+   "1280-sombre",
+   "btn1",
+   "🍺 L'Affinée | Thème clair | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | 30j | 90j | 12 mois | 2 achats de matériel pas compt | Avec Fermenteur suppléme… au-d | Sans Fermenteur suppléme… au-d | + 1 sortie | Entrées : aucune | 7 sorties | Limites (1) | Vente | Prévoir mes prochains paiement | Bord | Finances | Brassins | 1 Stocks | Clients | Fermer | Une fois | Chaque mois | Trimestre | Année | Annuler | Enregistrer | Supprimer"
+  ],
+  [
+   "1280-sombre",
+   "modif",
+   false
+  ],
+  [
+   "1280-sombre",
+   "suppr",
+   "Supprimer"
+  ],
+  [
+   "1280-sombre",
+   "oui",
+   "Oui, supprimer"
+  ],
+  [
+   "1280-sombre",
+   "encore",
+   false
+  ],
+  [
+   "1280-sombre",
+   "rien-fin",
+   false
+  ],
+  [
+   "1280-sombre",
+   "err",
+   [
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found."
+   ]
+  ],
+  [
+   "1280-sombre",
+   "rien-avant",
+   false
+  ],
+  [
+   "1280-sombre",
+   "cartes",
+   []
+  ],
+  [
+   "1280-sombre",
+   "sorties",
+   "2 sorties"
+  ],
+  [
+   "1280-sombre",
+   "ajouter",
+   "Ajouter une prévision"
+  ],
+  [
+   "1280-sombre",
+   "nom",
+   true
+  ],
+  [
+   "1280-sombre",
+   "mt",
+   true
+  ],
+  [
+   "1280-sombre",
+   "enr",
+   "Enregistrer"
+  ],
+  [
+   "1280-sombre",
+   "rien-apres",
+   false
+  ],
+  [
+   "1280-sombre",
+   "deplie",
+   "3 sorties"
+  ],
+  [
+   "1280-sombre",
+   "ouvre",
+   "ZZ TEST — prévueÀ venir7,00"
+  ],
+  [
+   "1280-sombre",
+   "btn1",
+   "🍺 L'Affinée | Thème clair | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | 30j | 90j | 12 mois | Solde de départ à renseigner s | Entrées : aucune | 3 sorties | Limites (6) | Vente | Prévoir mes prochains paiement | Bord | Finances | Brassins | 4 Stocks | Clients | Fermer | Une fois | Chaque mois | Trimestre | Année | Annuler | Enregistrer | Supprimer"
+  ],
+  [
+   "1280-sombre",
+   "modif",
+   false
+  ],
+  [
+   "1280-sombre",
+   "suppr",
+   "Supprimer"
+  ],
+  [
+   "1280-sombre",
+   "oui",
+   "Oui, supprimer"
+  ],
+  [
+   "1280-sombre",
+   "encore",
+   false
+  ],
+  [
+   "1280-sombre",
+   "rien-fin",
+   false
+  ],
+  [
+   "1280-sombre",
+   "err",
+   [
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found."
+   ]
+  ],
+  [
+   "1280-sombre",
+   "projets",
+   "2 achats de matériel pas comptésdate ou budget à compléter : Hotte de brassage 8"
+  ],
+  [
+   "1280-sombre",
+   "ferm",
+   "Fermenteur supplémentairejanvier 2027 · À étudier · dans les prévisions · janv. "
+  ],
+  [
+   "1280-sombre",
+   "btn",
+   "🍺 L'Affinée | Thème clair | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | 30j | 90j | 12 mois | 2 achats de matériel pas compt | Avec Fermenteur suppléme… au-d | Sans Fermenteur suppléme… au-d | + 1 sortie | Entrées : aucune | 6 sorties | Limites (1) | Vente | Prévoir mes prochains paiement | Fermer | Ajouter un projet | À venir | Réalisés | Archives | Datés et budgétés, ils entrent | Fermenteur supplémentaire janv | Noter l’achat | Hotte de brassage Date à chois | Budget ou date à compléter | Noter l’achat | Système de brassage plus perfo | Budget ou date à compléter | Noter l’achat | Bord | Finances | Brassins | 1 Stocks | Clients | Fermer | Placer le projet à l’étape Idé | Idée · Ensuite | Placer le projet à l’étape À é | À étudier · mon estimation | Placer le projet à l’étape Dev | Devis · aucun noté | Noter un devis | Placer le projet à l’étape Prê | Prêt à acheter | Acheté · achats liés : aucun | Noter l’achat | En service · son usure | Archiver | Supprimer | Enregistrer le projet"
+  ],
+  [
+   "1280-sombre",
+   "arch",
+   "Archiver"
+  ],
+  [
+   "1280-sombre",
+   "garder",
+   "Garder"
+  ],
+  [
+   "1280-sombre",
+   "suppr",
+   "Supprimer"
+  ],
+  [
+   "1280-sombre",
+   "oui",
+   "Oui, supprimer"
+  ],
+  [
+   "1280-sombre",
+   "encore",
+   false
+  ],
+  [
+   "1280-sombre",
+   "err",
+   [
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found.",
+    "NotFoundError: Failed to execute 'setPointerCapture' on 'Element': No active pointer with the given id is found."
+   ]
+  ],
+  [
+   "1280-sombre",
+   "plus",
+   true
+  ],
+  [
+   "1280-sombre",
+   "rows",
+   "SsrREEL-LOT-2 · brassage 21 nov.30 L | Pale testREEL-LOT-3 · brassage 19 nov.30"
+  ],
+  [
+   "1280-sombre",
+   "row0",
+   "SsrREEL-LOT-2 · brassage 21 nov.30 L",
+   "Prix de 1 ingrédient : munich"
+  ],
+  [
+   "1280-sombre",
+   "prix",
+   "Prix de 1 ingrédient : munich"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "plus",
+   true
+  ],
+  [
+   "1280-sombre",
+   "rows",
+   "Pale Ale de septembreRecette30 L"
+  ],
+  [
+   "1280-sombre",
+   "row0",
+   "Pale Ale de septembreRecette30 L",
+   ""
+  ],
+  [
+   "1280-sombre",
+   "prix",
+   ""
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "profil",
+   "En caisse4 181,60 CHF"
+  ],
+  [
+   "1280-sombre",
+   "axe",
+   "janv. | mars | mai | juil. | sept."
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ]
+ ],
+ "textes": {
+  "ret-liste-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n226,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n336,80\nà payer\n400,00\ndépensé\n736,80\nCharges fixes\n468,00\nLoyer de l’atelier\nà payer · 25 nov. · dans 9 j\nsans pièce\n✓ Payé\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n226,80\nZZ TEST — pièce payée · ZZ TEST — Fournisseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n40,00\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "ret-confirm-1280-sombre.png": {
+   "t": "ZZ TEST — pièce payée\nBrassage · ZZ TEST — Fournisseur · 16 nov. 2026\n40,00\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−40,00\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie\nUne annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.\nRetirer cette écriture\nRetirer cette écriture ? Son paiement de 40,00 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre.\nGarder\nConfirmer le retrait",
+   "champs": [
+    "=\"\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "ret-fiche-1280-sombre.png": {
+   "t": "ZZ TEST — pièce payée\nBrassage · ZZ TEST — Fournisseur · 16 nov. 2026\n40,00\nCHF\nÉcriture annulée. Justificatif et historique conservés.\nSans justificatif\nPaiements\n2\n16 nov. 2026 · banque · corrigé\n40,00",
+   "champs": [],
+   "deborde": 0
+  },
+  "ret-apres-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n296,80\nà payer\n400,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\nà payer · 25 nov. · dans 9 j\nsans pièce\n✓ Payé\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "ap-fiche-1280-sombre.png": {
+   "t": "ZZ TEST — Apport\nApports privés · 16 nov. 2026\n5,00\nCHF\n✓ encaissé aujourd’hui · banque\nSans justificatif\nModifier\nPaiements\n1\n16 nov. 2026 · banque\n+5,00\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [],
+   "deborde": 0
+  },
+  "ap-corriger-1280-sombre.png": {
+   "t": "ZZ TEST — Apport\nApports privés · 16 nov. 2026\n5,00\nCHF\n✓ encaissé aujourd’hui · banque\nSans justificatif\nModifier\nPaiements\n1\n16 nov. 2026 · banque\n+5,00\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie\nCe paiement a été saisi par erreur. Sa contre-écriture reprendra la date d’origine ; pour un remboursement réel, utilise un avoir.\nGarder\nConfirmer la correction",
+   "champs": [],
+   "deborde": 0
+  },
+  "ap-annule-1280-sombre.png": {
+   "t": "ZZ TEST — Apport\nApports privés · 16 nov. 2026\n5,00\nCHF\nÉcriture annulée. Justificatif et historique conservés.\nSans justificatif\nPaiements\n2\n16 nov. 2026 · banque · corrigé\n5,00",
+   "champs": [],
+   "deborde": 0
+  },
+  "dep-feuille-1280-sombre.png": {
+   "t": "Nouvelle dépense\nPlié\nDéplié\nJoindre des documents\nTotal TTC en CHF\nRèglement\npar défaut\nPayé le 16.11.2026\nArticles, stock et matériel\nIngrédients\nPour quoi ?\nDate de l’achat\n16.11.2026 · aujourd’hui, par défaut\nFournisseur et catégorie\nFournisseur facultatif · Brassage\nLier à une dépense prévue\nfacultatif\nRéférence et TVA du document\n—\nMon mois\nEnregistrer",
+   "champs": [
+    "0,00=\"\"",
+    "Nature ligne 1=\"ingredient\"",
+    "Stock ligne 1=\"none\"",
+    "Pour quoi ?=\"\"",
+    "=\"2026-11-16\"",
+    "Mois — Date de l’achat=\"11\"",
+    "Année — Date de l’achat=\"2026\"",
+    "=\"brassage\"",
+    "Nom du fournisseur=\"\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "pv-onglet-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\n2 achats de matériel pas comptés\ndate ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant\nAvec Fermenteur suppléme…\nau-dessus de zéro\n2 107,34\nSans Fermenteur suppléme…\nau-dessus de zéro\n2 857,34\n0\n1 000\n2 000\n3 000\n4 000\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui 4 181,60\n3 657,34\n2 507,34\nsans Fermenteur supplé… 2 857,34\nbrassin −64,26, 20.11\nloyer −400, 25.11\nloyer −400, 25.12\nFermenteur su… −750, 01.01\nusure ?\nloyer −400, 25.01\n2 107,34\nÀ payer 460,00\nPrévu ~ 800,00\n+ 1 sortie\nEntrées : aucune\n6\n sorties\nLimites (1)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pv-apres-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\n2 achats de matériel pas comptés\ndate ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant\nAvec Fermenteur suppléme…\nau-dessus de zéro\n2 100,34\nSans Fermenteur suppléme…\nau-dessus de zéro\n2 850,34\n0\n1 000\n2 000\n3 000\n4 000\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui 4 181,60\n3 650,34\n2 500,34\nsans Fermenteur supplé… 2 850,34\nbrassin −64,26, 20.11\nloyer −400, 25.11\nloyer −400, 25.12\nFermenteur su… −750, 01.01\nusure ?\nloyer −400, 25.01\n2 100,34\nÀ payer 460,00\nPrévu ~ 807,00\n+ 1 sortie\nEntrées : aucune\n7\n sorties\nLimites (1)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pv-modifier-1280-sombre.png": {
+   "t": "Modifier la prévision\nModifier la prévision\nLibellé\nCHF\nÀ payer\nÀ payer\nÀ recevoir\nCharges fixes\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\n16 nov.\nUne fois\nChaque mois\nTrimestre\nAnnée\naprès les 90 jours\nnov.\ndéc.\njanv.\nfévr.\nmars\n16.11\n0\n1 000\n2 000\n3 000\n4 000\n−7\naujourd’hui\n13 févr.\navec zz test — prévue\nsans\nJusqu’au 13 févr.\n1 × 7,00 dans les 90 jours\n2 107,34\n2 100,34\nFournisseur, note, état\nAnnuler\nEnregistrer\nSupprimer",
+   "champs": [
+    "Loyer, commande de malt, vente prévue…=\"ZZ TEST — prévue\"",
+    "Montant (CHF)=\"7,00\"",
+    "Mouvement=\"out\"",
+    "Catégorie=\"chargesFixes\"",
+    "Date de paiement prévue=\"2026-11-16\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"active\""
+   ],
+   "deborde": 0
+  },
+  "pv-confirm-1280-sombre.png": {
+   "t": "Modifier la prévision\nModifier la prévision\nLibellé\nCHF\nÀ payer\nÀ payer\nÀ recevoir\nCharges fixes\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\n16 nov.\nUne fois\nChaque mois\nTrimestre\nAnnée\naprès les 90 jours\nnov.\ndéc.\njanv.\nfévr.\nmars\n16.11\n0\n1 000\n2 000\n3 000\n4 000\n−7\naujourd’hui\n13 févr.\navec zz test — prévue\nsans\nJusqu’au 13 févr.\n1 × 7,00 dans les 90 jours\n2 107,34\n2 100,34\nFournisseur, note, état\nSupprimer « ZZ TEST — prévue » ?\nLes pièces déjà saisies ne bougent pas. Pour la garder sans la compter : état « Annulée ».\nGarder\nOui, supprimer",
+   "champs": [
+    "Loyer, commande de malt, vente prévue…=\"ZZ TEST — prévue\"",
+    "Montant (CHF)=\"7,00\"",
+    "Mouvement=\"out\"",
+    "Catégorie=\"chargesFixes\"",
+    "Date de paiement prévue=\"2026-11-16\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"active\""
+   ],
+   "deborde": 0
+  },
+  "pv-supprime-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\n2 achats de matériel pas comptés\ndate ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant\nAvec Fermenteur suppléme…\nau-dessus de zéro\n2 107,34\nSans Fermenteur suppléme…\nau-dessus de zéro\n2 857,34\n0\n1 000\n2 000\n3 000\n4 000\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui 4 181,60\n3 657,34\n2 507,34\nsans Fermenteur supplé… 2 857,34\nbrassin −64,26, 20.11\nloyer −400, 25.11\nloyer −400, 25.12\nFermenteur su… −750, 01.01\nusure ?\nloyer −400, 25.01\n2 107,34\nÀ payer 460,00\nPrévu ~ 800,00\n+ 1 sortie\nEntrées : aucune\n6\n sorties\nLimites (1)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pvr-onglet-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\nSolde de départ à renseigner\nsans lui, seul l’écart de la période est connu\nJusqu’au 13 févr.\nécart 90 j\n−66,40\n−80\n−60\n−40\n−20\n0\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui\nachats ≥ 66,40 ×2, 16.11\n−66,40 depuis aujourd’hui\nÀ payer 0,00\nPrévu ~ 0,00\nEntrées : aucune\n2\n sorties\nLimites (6)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pvr-apres-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\nSolde de départ à renseigner\nsans lui, seul l’écart de la période est connu\nJusqu’au 13 févr.\nécart 90 j\n−73,40\n−80\n−60\n−40\n−20\n0\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui\n3 sorties ≥ 73,40, 16.11\n−73,40 depuis aujourd’hui\nÀ payer 0,00\nPrévu ~ 7,00\nEntrées : aucune\n3\n sorties\nLimites (6)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pvr-modifier-1280-sombre.png": {
+   "t": "Modifier la prévision\nModifier la prévision\nLibellé\nCHF\nÀ payer\nÀ payer\nÀ recevoir\nCharges fixes\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\n16 nov.\nUne fois\nChaque mois\nTrimestre\nAnnée\naprès les 90 jours\nnov.\ndéc.\njanv.\nfévr.\nmars\n16.11\n−80\n−60\n−40\n−20\n0\n−7\naujourd’hui\n13 févr.\navec zz test — prévue\nsans\nJusqu’au 13 févr. · écart\n1 × 7,00 dans les 90 jours\n−66,40\n−73,40\nSolde de départ non confirmé : c’est l’écart depuis aujourd’hui, pas un solde.\nFournisseur, note, état\nAnnuler\nEnregistrer\nSupprimer",
+   "champs": [
+    "Loyer, commande de malt, vente prévue…=\"ZZ TEST — prévue\"",
+    "Montant (CHF)=\"7,00\"",
+    "Mouvement=\"out\"",
+    "Catégorie=\"chargesFixes\"",
+    "Date de paiement prévue=\"2026-11-16\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"active\""
+   ],
+   "deborde": 0
+  },
+  "pvr-confirm-1280-sombre.png": {
+   "t": "Modifier la prévision\nModifier la prévision\nLibellé\nCHF\nÀ payer\nÀ payer\nÀ recevoir\nCharges fixes\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\n16 nov.\nUne fois\nChaque mois\nTrimestre\nAnnée\naprès les 90 jours\nnov.\ndéc.\njanv.\nfévr.\nmars\n16.11\n−80\n−60\n−40\n−20\n0\n−7\naujourd’hui\n13 févr.\navec zz test — prévue\nsans\nJusqu’au 13 févr. · écart\n1 × 7,00 dans les 90 jours\n−66,40\n−73,40\nSolde de départ non confirmé : c’est l’écart depuis aujourd’hui, pas un solde.\nFournisseur, note, état\nSupprimer « ZZ TEST — prévue » ?\nLes pièces déjà saisies ne bougent pas. Pour la garder sans la compter : état « Annulée ».\nGarder\nOui, supprimer",
+   "champs": [
+    "Loyer, commande de malt, vente prévue…=\"ZZ TEST — prévue\"",
+    "Montant (CHF)=\"7,00\"",
+    "Mouvement=\"out\"",
+    "Catégorie=\"chargesFixes\"",
+    "Date de paiement prévue=\"2026-11-16\"",
+    "=\"\"",
+    "=\"\"",
+    "=\"active\""
+   ],
+   "deborde": 0
+  },
+  "pvr-supprime-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nJusqu’au 13 févr.\n30j\n90j\n12 mois\nSolde de départ à renseigner\nsans lui, seul l’écart de la période est connu\nJusqu’au 13 févr.\nécart 90 j\n−66,40\n−80\n−60\n−40\n−20\n0\nnov.\ndéc.\njanv.\nfévr.\naujourd’hui\nachats ≥ 66,40 ×2, 16.11\n−66,40 depuis aujourd’hui\nÀ payer 0,00\nPrévu ~ 0,00\nEntrées : aucune\n2\n sorties\nLimites (6)\nVente\nPrévoir mes prochains paiements\nCompagnon brasseur",
+   "champs": [],
+   "deborde": 0
+  },
+  "pj-liste-1280-sombre.png": {
+   "t": "Mes projets de matériel\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nDatés et budgétés, ils entrent dans Finances › Prévisions\nEnsuite\nFermenteur supplémentaire\njanvier 2027 · À étudier · dans les prévisions · janv. 2027\nEnchaîner les brassins sans attendre une cuve libre.\n750,00 CHF\nInclure dans mes prévisions\nNoter l’achat\nPlus tard\nHotte de brassage\nDate à choisir · Devis en cours · pas dans les prévisions\nÉvacuer la vapeur pendant l’ébullition.\n800,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème de brassage plus performant\nDate à choisir · Idée · pas dans les prévisions\nÀ étudier quand le volume vendu justifiera l’investissement.\nÀ estimer\nBudget ou date à compléter\nNoter l’achat",
+   "champs": [
+    "Inclure Fermenteur supplémentaire dans les prévisions=\"on\""
+   ],
+   "deborde": 0
+  },
+  "pj-pied-1280-sombre.png": {
+   "t": "750,00\nIdée\n· Ensuite\nEnchaîner les brassins sans attendre une cuve libre.\nÀ étudier\n· mon estimation\nPrix estimé TTC (CHF)\nLivraison TTC (CHF)\nInstallation TTC (CHF)\nD’où vient le prix ?\nMon estimation\nDevis fournisseur\nBudget total TTC\n750,00\nFrais laissés vides : non chiffrés. Pense à la pose et au raccordement.\nDevis\n· aucun noté\nNoter un devis\nPrêt à acheter\nPayé en janv. 2027 · dans mes prévisions\nAcheté\n· achats liés : aucun\nNoter l’achat\nEn service\n· son usure\ndurée ? · usure ? · mise en service ?\nAvancement et notes\nArchiver\nSupprimer\nEnregistrer le projet",
+   "champs": [
+    "Matériel ou aménagement=\"Fermenteur supplémentaire\"",
+    "Prix estimé TTC (CHF)=\"700\"",
+    "Livraison TTC (CHF)=\"50\"",
+    "Installation TTC (CHF)=\"\"",
+    "=\"estimate\"",
+    "=\"research\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "pj-archiver-1280-sombre.png": {
+   "t": "750,00\nIdée\n· Ensuite\nEnchaîner les brassins sans attendre une cuve libre.\nÀ étudier\n· mon estimation\nPrix estimé TTC (CHF)\nLivraison TTC (CHF)\nInstallation TTC (CHF)\nD’où vient le prix ?\nMon estimation\nDevis fournisseur\nBudget total TTC\n750,00\nFrais laissés vides : non chiffrés. Pense à la pose et au raccordement.\nDevis\n· aucun noté\nNoter un devis\nPrêt à acheter\nPayé en janv. 2027 · dans mes prévisions\nAcheté\n· achats liés : aucun\nNoter l’achat\nEn service\n· son usure\ndurée ? · usure ? · mise en service ?\nAvancement et notes\nArchiver « Fermenteur supplémentaire » ?\nIl sort de tes prévisions et reste dans Archives, où « Reprendre ce projet » le remet.\nGarder\nOui, archiver",
+   "champs": [
+    "Matériel ou aménagement=\"Fermenteur supplémentaire\"",
+    "Prix estimé TTC (CHF)=\"700\"",
+    "Livraison TTC (CHF)=\"50\"",
+    "Installation TTC (CHF)=\"\"",
+    "=\"estimate\"",
+    "=\"research\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "pj-supprimer-1280-sombre.png": {
+   "t": "750,00\nIdée\n· Ensuite\nEnchaîner les brassins sans attendre une cuve libre.\nÀ étudier\n· mon estimation\nPrix estimé TTC (CHF)\nLivraison TTC (CHF)\nInstallation TTC (CHF)\nD’où vient le prix ?\nMon estimation\nDevis fournisseur\nBudget total TTC\n750,00\nFrais laissés vides : non chiffrés. Pense à la pose et au raccordement.\nDevis\n· aucun noté\nNoter un devis\nPrêt à acheter\nPayé en janv. 2027 · dans mes prévisions\nAcheté\n· achats liés : aucun\nNoter l’achat\nEn service\n· son usure\ndurée ? · usure ? · mise en service ?\nAvancement et notes\nSupprimer « Fermenteur supplémentaire » ?\nLe projet disparaît pour de bon. Pour le garder sans le compter : Archiver.\nGarder\nOui, supprimer",
+   "champs": [
+    "Matériel ou aménagement=\"Fermenteur supplémentaire\"",
+    "Prix estimé TTC (CHF)=\"700\"",
+    "Livraison TTC (CHF)=\"50\"",
+    "Installation TTC (CHF)=\"\"",
+    "=\"estimate\"",
+    "=\"research\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "pj-apres-1280-sombre.png": {
+   "t": "Mes projets de matériel\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nDatés et budgétés, ils entrent dans Finances › Prévisions\nPlus tard\nHotte de brassage\nDate à choisir · Devis en cours · pas dans les prévisions\nÉvacuer la vapeur pendant l’ébullition.\n800,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème de brassage plus performant\nDate à choisir · Idée · pas dans les prévisions\nÀ étudier quand le volume vendu justifiera l’investissement.\nÀ estimer\nBudget ou date à compléter\nNoter l’achat",
+   "champs": [],
+   "deborde": 0
+  },
+  "bbr-prix-1280-sombre.png": {
+   "t": "Ssr\nCoût du brassin · brassage 21 nov.\n30 L\nbrassés ·\n? L\nnets ›\nQuand tu paies\nton litre ›\n?\n2,40\n?\n=\nlitres nets ?\n—\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n÷ ? L\n2 ingrédients sans prix. Pour compléter ce coût :\n?\nLitres nets du brassin\nSans eux, pas de coût du litre ni d’impôt bière.\n›\n?\nPrix de 1 ingrédient : munich\nSans lui, le coût reste un minimum.\n›\n?\nÉnergie du brassin\nSans ce montant, le coût du brassin reste un minimum.\n›\n?\nNettoyage du brassin\nSans ce montant, le coût du brassin reste un minimum.\n›\n?\nEmballage du brassin\nSans ce montant, le coût du brassin reste un minimum.\n›\n?\nPrix de 1 ingrédient : cascade\nSans lui, le coût reste un minimum.\n›\n?\nProduction annuelle prévue\nSans elle, ni charges fixes ni usure ne se répartissent sur le litre.\n›\nMalt\n?\nMunich · 5 kg\n? prix\n?\nHoublon, levure\n?\nCascade · 60 g\n? prix\n?\nUS05 · 1 sachet\nà acheter\n2,40\nFrais\n?\nÉnergie\n? prix\n?\nNettoyage\n? prix\n?\nEmballage\n? prix\n?\nImpôt bière · 1,050\n? prix\n?\nPart de l'année\n?\nCharges fixes\n? prix\n?\nUsure du matériel\n? prix\n?\nPrévoir attend : les litres nets du brassin. ›\nExpliquer\nEnregistrer\nPrévoir\n2,40",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-prix-1280-sombre.png": {
+   "t": "Quel brassin veux-tu estimer ?\nQuel brassin veux-tu estimer ?\nRecettes\nPale Ale de septembre\nRecette\n30 L",
+   "champs": [],
+   "deborde": 0
+  },
+  "pf-frise-1280-sombre.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  }
+ }
+}

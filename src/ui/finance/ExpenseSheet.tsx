@@ -1708,7 +1708,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
   </fieldset>:null;
   /* Sans lecture (R5) : la liste et les champs d'aujourd'hui, dans le cadre p3c-3 (en-tête, pied sans bascule). */
-  const sansLecture=<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 px-2 pt-1.5 pb-2 lg:mx-auto lg:max-w-[760px]">
+  const sansLecture=<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 px-2 pt-4 pb-2 lg:mx-auto lg:max-w-[760px]">
     {doublons}
     <div className={hints.amountTTC?uncertainClass:''}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>
     {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
@@ -1720,6 +1720,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </fieldset>;
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!saving)fermer();}} dismissible={!saving} labelledBy={titleId} size="xl" plein>
+    {/* u1 (18) : à 1280, la feuille est une colonne centrée comme les autres feuilles : en-tête, bande des documents, champs et pied dans la même largeur (le fond reste plein écran, D235). */}
+    <div data-dp="colonne" className="flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[760px] lg:border-x lg:border-cave-700">
     <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={saving} onFermer={fermer} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
       milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
     {abandon?<div data-dp="abandon" role="alertdialog" aria-labelledby="dp-abandon-titre" className="mx-2 mt-1.5 space-y-1.5 rounded-panel border border-attention/40 bg-attention/10 p-2.5 text-sm text-cave-50">
@@ -1743,6 +1745,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
     {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise&&desaccordsRestants.length>0} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
     {showForm?<Pied mois={!done&&!attached&&!dejaTx?<BoutonMois effet={effetMois} variante="depense" ouvert={moisOuvert&&!!effetMois} onBascule={()=>setMoisOuvert(o=>!o)}/>:null} carte={moisOuvert&&effetMois&&!done&&!attached&&!dejaTx?<CarteMois effet={effetMois} variante="depense" aujourdhui={todayIsoMois()} onFermer={()=>setMoisOuvert(false)} onChoisir={reglee=>{reviewed('paymentEvidence');patch({paymentStatus:reglee?'paid':'unpaid',...(reglee&&toIsoDate(draft.paymentDate)>toIsoDate(swissToday())?{paymentDate:swissToday()}:{})});}}/>:null} ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
+    </div>
   {prive?<MovementSheet prefill={{kind:'withdrawal',...prive}} onClose={()=>setPrive(null)} onSaved={()=>{onSaved();onClose();}}/>:null}</ModalShell>;
 }
 const todayIsoMois=()=>toIsoDate(swissToday());
