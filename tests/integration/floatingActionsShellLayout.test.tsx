@@ -213,7 +213,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     // b1s-a : sur une page, les gestes de partout d'abord (l'écriture, la facture…), le Compagnon en dernière case.
     expect(items[0]).toHaveTextContent('Écriture');
     expect(items.at(-1)).toHaveTextContent('Compagnon');
-    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
     expect(screen.queryByRole('menu')).toBeNull();
   });
@@ -242,7 +242,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
 
     fireEvent.click(launcherButton());
     expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
-    fireEvent.click(screen.getByRole('menuitem', { name: /Lancer un brassin/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Brassin/ }));
     expect(calls.brew).toHaveBeenCalledOnce();
   });
 
@@ -268,7 +268,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     button.focus();
     expect(button).toHaveFocus();
     fireEvent.click(button);
-    fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
 
     await act(async () => { brewerJobs.merge([doneJob()]); });
@@ -334,7 +334,7 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
       expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
         'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
       ]);
-      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
+      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /^Facture/, /^Vente/, /^Recette/, /^Brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());
         fireEvent.click(screen.getByRole('menuitem', { name }));
         expect(screen.queryByRole('menu')).toBeNull();
