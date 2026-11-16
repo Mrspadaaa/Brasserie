@@ -100,3 +100,11 @@ body:has(.tf-sheet) [data-vaul-overlay] { background: rgb(0 0 0 / .03); backdrop
 /* Liste repliée : les prix des sous-lignes s'alignent sur celui de l'en-tête (le chevron est de 18 px + 10 px d'écart). */
 .tf-liste .tf-gl { padding-right: 28px; }
 .tf-rn { white-space: nowrap; }
+
+/* Constat 12 (16.11) : les prix hors plage plausible, à part, jamais sur l'axe. */
+.tf-verif { margin-top: 10px; border-radius: 12px; border: 1px dashed rgb(var(--attention-texte)); padding: 8px 12px; }
+.tf-verif h4 { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 2px; font-size: 14px; font-weight: 700; color: rgb(var(--attention-texte)); }
+.tf-pill-verif { color: rgb(var(--attention-texte)); border-color: rgb(var(--attention-texte)); white-space: nowrap; flex: none; }
+.tf-warn { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font-size: 14px; color: rgb(var(--attention-texte)); }
+.tf-warn svg { flex: none; margin-top: 2px; }
+.tf-verif-n { margin: 0 0 4px; font-size: 13px; color: var(--tf-t2); }

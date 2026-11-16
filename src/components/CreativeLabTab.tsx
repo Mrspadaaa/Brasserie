@@ -269,7 +269,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={(f) => { setFiltre(f); setIsAdding(false); }} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
         vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
         assistant={assistantBouton} onAjouter={(i) => StorageService.addCreativeItem(i)} onMaj={(i) => StorageService.updateCreativeItem(i)} onRetirer={handleDelete}
-        onEdit={setEditing} onConvert={handleConvertToClient} focusDemande={focusCarnet} />}
+        onEdit={setEditing} onConvert={handleConvertToClient} onTarifs={() => { setOnglet('tarifs'); setIsAdding(false); }} focusDemande={focusCarnet} />}
 
       {/* Form modal when adding an item */}
       {onglet === 'materiel' && assistantBouton}
