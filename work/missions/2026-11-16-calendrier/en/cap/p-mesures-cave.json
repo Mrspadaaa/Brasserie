@@ -1,0 +1,31 @@
+{
+ "p-base": {
+  "tete": 146,
+  "tetePct": 17.3,
+  "teteFb": 202,
+  "graphe": 88,
+  "minF": 14,
+  "nTextes": 11,
+  "defauts": [],
+  "fab": [
+   295,
+   728
+  ],
+  "over": false
+ },
+ "p1": {
+  "tete": 130,
+  "tetePct": 15.4,
+  "teteFb": 186,
+  "graphe": 100,
+  "minF": 14,
+  "nTextes": 20,
+  "defauts": [],
+  "fab": [
+   295,
+   728
+  ],
+  "over": false,
+  "frise": "IDENTIQUE"
+ }
+}

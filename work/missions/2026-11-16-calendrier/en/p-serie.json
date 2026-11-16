@@ -1,0 +1,1267 @@
+{
+ "pb": {
+  "r": 31,
+  "s": "S24",
+  "v": 113
+ },
+ "nE": 40,
+ "w": [
+  {
+   "r": 1,
+   "s": "S47",
+   "d": "16 nov.",
+   "C": 4032,
+   "L": 4032,
+   "D": 0,
+   "v": -148,
+   "ev": [
+    {
+     "id": "b-01",
+     "n": "Blonde d’automne",
+     "c": "Blonde",
+     "m": -148,
+     "t": "brassage",
+     "a": 1,
+     "b": 4,
+     "p": "debut"
+    }
+   ]
+  },
+  {
+   "r": 2,
+   "s": "S48",
+   "d": "23 nov.",
+   "C": 4152,
+   "L": 4152,
+   "D": 0,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 3,
+   "s": "S49",
+   "d": "30 nov.",
+   "C": 4132,
+   "L": 4132,
+   "D": 0,
+   "v": -20,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 4,
+   "s": "S50",
+   "d": "7 déc.",
+   "C": 5120,
+   "L": 5120,
+   "D": 0,
+   "v": 988,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-01",
+     "n": "Marché de Noël",
+     "c": "Marché de Noël",
+     "m": 1180,
+     "t": "evenement",
+     "a": 4,
+     "b": 4,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 5,
+   "s": "S51",
+   "d": "14 déc.",
+   "C": 5064,
+   "L": 5064,
+   "D": 0,
+   "v": -56,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-02",
+     "n": "Porter d’hiver",
+     "c": "Porter",
+     "m": -176,
+     "t": "brassage",
+     "a": 5,
+     "b": 9,
+     "p": "debut"
+    }
+   ]
+  },
+  {
+   "r": 6,
+   "s": "S52",
+   "d": "21 déc.",
+   "C": 5730,
+   "L": 5550,
+   "D": 180,
+   "v": 666,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "v-03",
+     "n": "Bouteilles de Noël aux privés",
+     "c": "Noël privés",
+     "m": 640,
+     "t": "vente",
+     "a": 4,
+     "b": 6,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 7,
+   "s": "S53",
+   "d": "28 déc.",
+   "C": 5850,
+   "L": 5490,
+   "D": 360,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 8,
+   "s": "S1",
+   "d": "4 janv.",
+   "C": 5030,
+   "L": 5030,
+   "D": 0,
+   "v": -820,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "a-04",
+     "n": "Commande groupée de malt",
+     "c": "Malt groupé",
+     "m": -540,
+     "t": "achat",
+     "a": 6,
+     "b": 8,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 9,
+   "s": "S2",
+   "d": "11 janv.",
+   "C": 4770,
+   "L": 4770,
+   "D": 0,
+   "v": -260,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "c-02",
+     "n": "Assurance annuelle",
+     "c": "Assurance",
+     "m": -380,
+     "t": "charge",
+     "a": 9,
+     "b": 9,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 10,
+   "s": "S3",
+   "d": "18 janv.",
+   "C": 4890,
+   "L": 4890,
+   "D": 0,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 11,
+   "s": "S4",
+   "d": "25 janv.",
+   "C": 4778,
+   "L": 4778,
+   "D": 0,
+   "v": -112,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-03",
+     "n": "IPA houblon à cru",
+     "c": "IPA à cru",
+     "m": -232,
+     "t": "brassage",
+     "a": 11,
+     "b": 15,
+     "p": "debut"
+    }
+   ]
+  },
+  {
+   "r": 12,
+   "s": "S5",
+   "d": "1er févr.",
+   "C": 4498,
+   "L": 4498,
+   "D": 0,
+   "v": -280,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 13,
+   "s": "S6",
+   "d": "8 févr.",
+   "C": 5038,
+   "L": 4978,
+   "D": 60,
+   "v": 540,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-02",
+     "n": "Dégustation à la brasserie",
+     "c": "Dégustation",
+     "m": 420,
+     "t": "evenement",
+     "a": 13,
+     "b": 13,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 14,
+   "s": "S7",
+   "d": "15 févr.",
+   "C": 5158,
+   "L": 5038,
+   "D": 120,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 15,
+   "s": "S8",
+   "d": "22 févr.",
+   "C": 5278,
+   "L": 5098,
+   "D": 180,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 16,
+   "s": "S9",
+   "d": "1er mars",
+   "C": 5380,
+   "L": 4960,
+   "D": 420,
+   "v": 102,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-04",
+     "n": "Blanche de printemps",
+     "c": "Blanche",
+     "m": -138,
+     "t": "brassage",
+     "a": 16,
+     "b": 19,
+     "p": "debut"
+    },
+    {
+     "id": "v-01",
+     "n": "Fûts du Café du Pont",
+     "c": "Café du Pont",
+     "m": 520,
+     "t": "vente",
+     "a": 15,
+     "b": 16,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 17,
+   "s": "S10",
+   "d": "8 mars",
+   "C": 5500,
+   "L": 4625,
+   "D": 875,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 18,
+   "s": "S11",
+   "d": "15 mars",
+   "C": 5620,
+   "L": 4289,
+   "D": 1331,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 19,
+   "s": "S12",
+   "d": "22 mars",
+   "C": 5740,
+   "L": 3800,
+   "D": 1940,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 20,
+   "s": "S13",
+   "d": "29 mars",
+   "C": 4560,
+   "L": 2910,
+   "D": 1650,
+   "v": -1180,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "r-01",
+     "n": "Hotte",
+     "c": "Hotte",
+     "m": -900,
+     "t": "renovation",
+     "a": 16,
+     "b": 20,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 21,
+   "s": "S14",
+   "d": "5 avr.",
+   "C": 4304,
+   "L": 2224,
+   "D": 2080,
+   "v": -256,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-05",
+     "n": "Pale ale",
+     "c": "Pale ale",
+     "m": -166,
+     "t": "brassage",
+     "a": 21,
+     "b": 24,
+     "p": "debut"
+    },
+    {
+     "id": "c-03",
+     "n": "Impôt sur la bière",
+     "c": "Impôt bière",
+     "m": -210,
+     "t": "taxe",
+     "a": 21,
+     "b": 21,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 22,
+   "s": "S15",
+   "d": "12 avr.",
+   "C": 4424,
+   "L": 1915,
+   "D": 2509,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 23,
+   "s": "S16",
+   "d": "19 avr.",
+   "C": 5454,
+   "L": 2515,
+   "D": 2939,
+   "v": 1030,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-03",
+     "n": "Marché de printemps",
+     "c": "Marché printemps",
+     "m": 910,
+     "t": "evenement",
+     "a": 23,
+     "b": 23,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 24,
+   "s": "S17",
+   "d": "26 avr.",
+   "C": 5574,
+   "L": 2205,
+   "D": 3369,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 25,
+   "s": "S18",
+   "d": "3 mai",
+   "C": 4214,
+   "L": 1496,
+   "D": 2718,
+   "v": -1360,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "a-03",
+     "n": "Six fûts inox de 20 L",
+     "c": "6 fûts inox",
+     "m": -1080,
+     "t": "achat",
+     "a": 19,
+     "b": 25,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 26,
+   "s": "S19",
+   "d": "10 mai",
+   "C": 4144,
+   "L": 1150,
+   "D": 2994,
+   "v": -70,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-06",
+     "n": "Saison d’été",
+     "c": "Saison",
+     "m": -190,
+     "t": "brassage",
+     "a": 26,
+     "b": 30,
+     "p": "debut"
+    }
+   ]
+  },
+  {
+   "r": 27,
+   "s": "S20",
+   "d": "17 mai",
+   "C": 4644,
+   "L": 1270,
+   "D": 3374,
+   "v": 500,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "v-02",
+     "n": "Livraison restaurant La Cigogne",
+     "c": "La Cigogne",
+     "m": 380,
+     "t": "vente",
+     "a": 26,
+     "b": 27,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 28,
+   "s": "S21",
+   "d": "24 mai",
+   "C": 4764,
+   "L": 1010,
+   "D": 3754,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 29,
+   "s": "S22",
+   "d": "31 mai",
+   "C": 1684,
+   "L": 350,
+   "D": 1334,
+   "v": -3080,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "a-02",
+     "n": "Embouteilleuse",
+     "c": "Embouteilleuse",
+     "m": -2800,
+     "t": "achat",
+     "a": 17,
+     "b": 29,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 30,
+   "s": "S23",
+   "d": "7 juin",
+   "C": 1804,
+   "L": 306,
+   "D": 1498,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 31,
+   "s": "S24",
+   "d": "14 juin",
+   "C": 1396,
+   "L": 113,
+   "D": 1283,
+   "v": -408,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-07",
+     "n": "Blonde des moissons",
+     "c": "Moissons",
+     "m": -148,
+     "t": "brassage",
+     "a": 31,
+     "b": 34,
+     "p": "debut"
+    },
+    {
+     "id": "a-05",
+     "n": "Pompe de transfert",
+     "c": "Pompe",
+     "m": -380,
+     "t": "achat",
+     "a": 27,
+     "b": 31,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 32,
+   "s": "S25",
+   "d": "21 juin",
+   "C": 1516,
+   "L": 145,
+   "D": 1371,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 33,
+   "s": "S26",
+   "d": "28 juin",
+   "C": 3376,
+   "L": 1916,
+   "D": 1460,
+   "v": 1860,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-04",
+     "n": "Fête de village",
+     "c": "Fête de village",
+     "m": 2140,
+     "t": "evenement",
+     "a": 33,
+     "b": 33,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 34,
+   "s": "S27",
+   "d": "5 juil.",
+   "C": 3496,
+   "L": 1947,
+   "D": 1549,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 35,
+   "s": "S28",
+   "d": "12 juil.",
+   "C": 3616,
+   "L": 1979,
+   "D": 1637,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 36,
+   "s": "S29",
+   "d": "19 juil.",
+   "C": 3508,
+   "L": 1782,
+   "D": 1726,
+   "v": -108,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-08",
+     "n": "IPA d’été",
+     "c": "IPA d’été",
+     "m": -228,
+     "t": "brassage",
+     "a": 36,
+     "b": 40,
+     "p": "debut"
+    }
+   ]
+  },
+  {
+   "r": 37,
+   "s": "S30",
+   "d": "26 juil.",
+   "C": 3628,
+   "L": 1814,
+   "D": 1814,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 38,
+   "s": "S31",
+   "d": "2 août",
+   "C": 4448,
+   "L": 2545,
+   "D": 1903,
+   "v": 820,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "v-04",
+     "n": "Commande de mariage",
+     "c": "Mariage",
+     "m": 1100,
+     "t": "vente",
+     "a": 37,
+     "b": 38,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 39,
+   "s": "S32",
+   "d": "9 août",
+   "C": 4568,
+   "L": 2577,
+   "D": 1991,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 40,
+   "s": "S33",
+   "d": "16 août",
+   "C": 7138,
+   "L": 5058,
+   "D": 2080,
+   "v": 2570,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-05",
+     "n": "Festival de la bière",
+     "c": "Festival",
+     "m": 2450,
+     "t": "evenement",
+     "a": 39,
+     "b": 40,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 41,
+   "s": "S34",
+   "d": "23 août",
+   "C": 7258,
+   "L": 5089,
+   "D": 2169,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 42,
+   "s": "S35",
+   "d": "30 août",
+   "C": 5022,
+   "L": 4565,
+   "D": 457,
+   "v": -2236,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-09",
+     "n": "Ambrée de rentrée",
+     "c": "Ambrée",
+     "m": -156,
+     "t": "brassage",
+     "a": 42,
+     "b": 45,
+     "p": "debut"
+    },
+    {
+     "id": "a-01",
+     "n": "Frigo (chambre froide)",
+     "c": "Frigo",
+     "m": -1800,
+     "t": "achat",
+     "a": 13,
+     "b": 42,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 43,
+   "s": "S36",
+   "d": "6 sept.",
+   "C": 5142,
+   "L": 4656,
+   "D": 486,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 44,
+   "s": "S37",
+   "d": "13 sept.",
+   "C": 5262,
+   "L": 4508,
+   "D": 754,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 45,
+   "s": "S38",
+   "d": "20 sept.",
+   "C": 4902,
+   "L": 4359,
+   "D": 543,
+   "v": -360,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "a-06",
+     "n": "Houblons de la récolte",
+     "c": "Houblons",
+     "m": -480,
+     "t": "achat",
+     "a": 44,
+     "b": 45,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 46,
+   "s": "S39",
+   "d": "27 sept.",
+   "C": 5632,
+   "L": 5061,
+   "D": 571,
+   "v": 730,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "e-06",
+     "n": "Portes ouvertes",
+     "c": "Portes ouvertes",
+     "m": 610,
+     "t": "evenement",
+     "a": 46,
+     "b": 46,
+     "p": "fin"
+    }
+   ]
+  },
+  {
+   "r": 47,
+   "s": "S40",
+   "d": "4 oct.",
+   "C": 4581,
+   "L": 4581,
+   "D": 0,
+   "v": -1051,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "b-10",
+     "n": "Bière d’octobre",
+     "c": "Octobre",
+     "m": -171,
+     "t": "brassage",
+     "a": 47,
+     "b": 51,
+     "p": "debut"
+    },
+    {
+     "id": "r-02",
+     "n": "Sols",
+     "c": "Sols",
+     "m": -600,
+     "t": "renovation",
+     "a": 27,
+     "b": 47,
+     "p": "fin"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 48,
+   "s": "S41",
+   "d": "11 oct.",
+   "C": 4701,
+   "L": 4701,
+   "D": 0,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 49,
+   "s": "S42",
+   "d": "18 oct.",
+   "C": 4821,
+   "L": 4821,
+   "D": 0,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 50,
+   "s": "S43",
+   "d": "25 oct.",
+   "C": 4941,
+   "L": 4834,
+   "D": 107,
+   "v": 120,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    }
+   ]
+  },
+  {
+   "r": 51,
+   "s": "S44",
+   "d": "1er nov.",
+   "C": 4661,
+   "L": 4448,
+   "D": 213,
+   "v": -280,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "c-01",
+     "n": "Loyer du local (400 par mois)",
+     "c": "Loyer",
+     "m": -400,
+     "t": "charge",
+     "a": 0,
+     "b": 52,
+     "p": "mensuel"
+    }
+   ]
+  },
+  {
+   "r": 52,
+   "s": "S45",
+   "d": "8 nov.",
+   "C": 4461,
+   "L": 4461,
+   "D": 0,
+   "v": -200,
+   "ev": [
+    {
+     "n": "ventes courantes",
+     "m": 120,
+     "t": "hyp"
+    },
+    {
+     "id": "r-03",
+     "n": "Éclairage du local",
+     "c": "Éclairage",
+     "m": -320,
+     "t": "renovation",
+     "a": 50,
+     "b": 52,
+     "p": "fin"
+    }
+   ]
+  }
+ ]
+}
