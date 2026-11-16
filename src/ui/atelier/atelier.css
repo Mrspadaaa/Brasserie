@@ -192,6 +192,8 @@
 .nc-ph small { display: block; font-size: 12px; color: var(--a-mut); font-weight: 600; }
 .nc-ph.nc-brute { display: flex; align-items: center; gap: 8px; border-style: dashed; border-color: var(--a-line2); }
 .nc-ph.nc-brute > span { flex: 1; min-width: 0; }
+.nc-ouvrir { display: block; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.nc-ouvrir small { display: block; }
 .nc-sw { position: relative; display: flex; flex-direction: column; padding-top: 6px; background: linear-gradient(var(--a-rail), var(--a-rail)) 12px 0 / 3px 6px no-repeat; }
 .nc-br { position: relative; padding: 0 0 6px 28px; background: linear-gradient(var(--a-rail), var(--a-rail)) 12px 0 / 3px 100% no-repeat; }
 .nc-br:last-child { padding-bottom: 0; background-size: 3px 30px; }

@@ -196,7 +196,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
               if (!estNote(i)) return <React.Fragment key={i.id}>{carte(i as unknown as CreativeItem)}</React.Fragment>;
               const enf = fil.enfants.get(i.id) ?? [];
               if (enf.length > 0) return <NoteRangee key={i.id} note={i} enfants={enf} carte={carte} />;
-              return <div key={i.id} className="nc-ph nc-brute"><span><small>ta note</small>{i.title}{message?.noteId === i.id && <small className="nc-msg" role="status">{message.texte}</small>}
+              return <div key={i.id} className="nc-ph nc-brute"><span><button type="button" className="nc-ouvrir" aria-label={`Ouvrir la note « ${i.title} »`} onClick={() => onEdit(i as unknown as CreativeItem)}><small>ta note</small>{i.title}</button>{message?.noteId === i.id && <small className="nc-msg" role="status">{message.texte}</small>}
                 {message?.noteId === i.id && plusOffert(i) && <button type="button" className="nc-add nc-plus-l" aria-label="Relancer avec le modèle plus précis" onClick={() => void demander(i, true)}><Plus size={16} aria-hidden="true" />modèle plus précis</button>}</span>
                 {mode !== 'eteint' && enLigne && assezPourIA(i.title) && <button type="button" className="nc-add" onClick={() => void demander(i)}><Sparkles size={14} aria-hidden="true" />Ranger</button>}
                 <button type="button" className="nc-x" aria-label={`Retirer la note « ${i.title} »`} onClick={() => setRetirer(i)}><X size={18} aria-hidden="true" /></button></div>;
