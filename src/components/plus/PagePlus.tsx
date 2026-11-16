@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { AlertTriangle, Check, ChevronLeft, Cloud, History, Lightbulb, LogOut, MessageCircle, Moon, Settings, Sun, Wrench } from 'lucide-react';
+import { AlertTriangle, Check, ChevronLeft, Cloud, History, Lightbulb, LogOut, MessageCircle, Moon, Settings, Sun, Truck, Wrench } from 'lucide-react';
 import type { AuditLog, Batch, Transaction } from '../../types';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
 import { SaisirAuNom } from '../feuilles/SaisirAuNom';
@@ -34,6 +34,8 @@ interface Props {
   onAtelier: () => void;
   onConversations: () => void;
   onJournal: () => void;
+  /** La liste des fournisseurs (fiche : prix, factures, noms à réunir). */
+  onFournisseurs?: () => void;
   onCloud?: () => void;
   onReglages: () => void;
   onLogout?: () => void;
@@ -58,7 +60,7 @@ const Etat: React.FC<{ e?: EtatLigne | null }> = ({ e }) => e
  */
 export const PagePlus: React.FC<Props> = ({
   courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, horsConnexion, entreprise, etatCloud, etatReglages,
-  onBack, onAssistant, onAtelier, onConversations, onJournal, onCloud, onReglages, onLogout
+  onBack, onAssistant, onAtelier, onConversations, onJournal, onFournisseurs, onCloud, onReglages, onLogout
 }) => {
   const [theme, choisirTheme] = useTheme();
   const [confirmer, setConfirmer] = useState(false);
@@ -134,6 +136,7 @@ export const PagePlus: React.FC<Props> = ({
           <ul className="pl-liste">
             <li><button type="button" onClick={onConversations}><MessageCircle size={20} aria-hidden="true" /><span>Mes conversations</span>{horsConnexion && <small className="pl-et">hors ligne</small>}</button></li>
             <li><button type="button" onClick={onJournal}><History size={20} aria-hidden="true" /><span>Journal des modifications</span><small className="pl-et"><span className="pl-m pl-n">{dansLaPeriode}</span> {suffixeJournal(p)}</small></button></li>
+            {onFournisseurs && <li><button type="button" onClick={onFournisseurs}><Truck size={20} aria-hidden="true" /><span>Fournisseurs</span></button></li>}
             {onCloud && <li><button type="button" onClick={onCloud}><Cloud size={20} aria-hidden="true" /><span>Connexions cloud et IA</span><Etat e={etatCloud} /></button></li>}
             <li><button type="button" onClick={onReglages}><Settings size={20} aria-hidden="true" /><span>Réglages</span><Etat e={etatReglages} /></button></li>
             {onLogout && <li><button type="button" className="pl-sortie" onClick={onLogout}><LogOut size={20} aria-hidden="true" /><span>Se déconnecter</span></button></li>}

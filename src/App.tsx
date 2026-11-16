@@ -91,6 +91,7 @@ const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then
 const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
 const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
 const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
+const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
 const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
@@ -193,9 +194,12 @@ export const App: React.FC = () => {
   /** La page « Plus » (m3) : posée à la place de l'écran, qui reste monté dessous ; le geste retour la ferme. */
   const [plusOuvert, setPlusOuvert] = useState(false);
   const plusPousse = useRef(false);
+  /** La liste des fournisseurs et leur fiche (maquette fournisseur/v1) : posée à la place de l'écran, ouverte depuis Plus. */
+  const [fournisseursOuvert, setFournisseursOuvert] = useState(false);
   /** Changer de signataire redessine l'en-tête et la page Plus (le nom se lit dans le stockage). */
   const [signataireNonce, setSignataireNonce] = useState(0);  const fermerPlus = React.useCallback(() => {
     setPlusOuvert(false);
+    setFournisseursOuvert(false);
     if (plusPousse.current) { plusPousse.current = false; window.history.back(); }
   }, []);
   const ouvrirPlus = React.useCallback(() => {
@@ -207,8 +211,9 @@ export const App: React.FC = () => {
   }, [fermerPlus]);
   // Changer d'écran (barre, retour, lien) referme Plus.
   useEffect(() => { if (plusPousse.current) fermerPlus(); }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setFournisseursOuvert(false); }, [activeTab]);
   useEffect(() => {
-    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); } };
+    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); setFournisseursOuvert(false); } };
     window.addEventListener('popstate', retour);
     return () => window.removeEventListener('popstate', retour);
   }, []);
@@ -1184,12 +1189,23 @@ export const App: React.FC = () => {
             onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
             onConversations={() => window.dispatchEvent(new Event('brewer-inbox-open'))}
             onJournal={() => setIsAuditLogsOpen(true)}
+            onFournisseurs={() => { setPlusOuvert(false); setFournisseursOuvert(true); }}
             onCloud={() => setIsCloudConfigOpen(true)}
             onReglages={() => setIsSettingsOpen(true)}
             onLogout={handleLogout}
           />
         )}
-        <div style={{ display: plusOuvert ? 'none' : 'contents' }}>
+        {fournisseursOuvert && !plusOuvert && (
+          <LazySurface resetKey="fournisseurs">
+            <PageFournisseurs
+              transactions={transactions}
+              stocks={stocks}
+              onBack={() => { setFournisseursOuvert(false); setPlusOuvert(true); }}
+              onScanner={() => setQuickAction('scan', actionLauncherRef.current)}
+            />
+          </LazySurface>
+        )}
+        <div style={{ display: plusOuvert || fournisseursOuvert ? 'none' : 'contents' }}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
