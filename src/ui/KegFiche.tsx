@@ -28,7 +28,7 @@ interface KegFicheProps {
 
 /** Les clients de l'onglet Clients, favoris en tête (puis ordre alphabétique). */
 export function optionsClients(clients: Client[]) {
-  return [...clients]
+  return clients.filter((c) => !c.archivedAt)
     .sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr'))
     .map((c) => ({ value: c.id, label: c.name, detail: c.type, favorite: Boolean(c.favorite) }));
 }

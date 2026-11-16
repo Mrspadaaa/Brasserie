@@ -6,7 +6,8 @@ import { Client, type AdresseSaisie } from '../types';
 import { AdresseChamps, ADRESSE_VIDE, adresseComplete, adresseEnTexte } from '../ui/vente/AdresseChamps';
 import { adresseDepuisTexte } from '../services/swissQrBill';
 import { StorageService } from '../services/storage';
-import { refusSuppressionClient } from '../domain/clientSuppression';
+import { SuppressionLiee } from '../ui/suppression/SuppressionLiee';
+import { choseClient } from '../ui/suppression/choses';
 import { ModalShell } from '../ui/ModalShell';
 import { TextInput, inputClass, noAutofillProps } from '../ui/FormNav';
 import type { TextInputHandle } from '../ui/TextInput';
@@ -33,14 +34,16 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
   const [adr, setAdr] = useState<AdresseSaisie>(() => adresseDepart(client));
   const adrDepart = useRef<AdresseSaisie>(adr);
   useEffect(() => { setErrors({}); const a = adresseDepart(client); setAdr(a); adrDepart.current = a; }, [isOpen, client?.id]);
-  const [suppression, setSuppression] = useState<{ etat: 'repos' | 'confirmer' | 'refus'; message?: string }>({ etat: 'repos' });
-  useEffect(() => setSuppression({ etat: 'repos' }), [isOpen, client?.id]);
+  /** Maquette suppression/v2 : « Supprimer ce client » ouvre ses liens (fûts dehors, ventes), un par un. */
+  const [suppression, setSuppression] = useState(false);
+  useEffect(() => setSuppression(false), [isOpen, client?.id]);
   if (!isOpen || !client || !draft) return null;
   const existant = StorageService.getClients().some(c => c.id === client.id);
-  const demanderSuppression = () => {
-    const refus = refusSuppressionClient(client, StorageService.getTransactions(), StorageService.getClients());
-    setSuppression(refus ? { etat: 'refus', message: refus } : { etat: 'confirmer' });
-  };
+  const chose = suppression && existant ? (() => {
+    const base = choseClient(client);
+    // Supprimé ou archivé, le client n'a plus de fiche à modifier : elle se ferme.
+    return { ...base, supprimer: () => { base.supprimer(); onClose(); }, archiver: () => { base.archiver(); onClose(); } };
+  })() : null;
 
   const { name, type, contact, phone, email, notes = '' } = draft;
   const field = <K extends keyof Client>(key: K, value: Client[K]) => {
@@ -77,6 +80,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
   };
 
   return (
+    <>
     <ModalShell open={isOpen} onClose={onClose} size="lg" labelledBy={`${id}-title`}>
       <header className="client-form-header">
         <h3 id={`${id}-title`}>{client.name.trim() ? 'Modifier le client' : 'Nouveau client'}</h3>
@@ -131,22 +135,11 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
           </details>
           <p className="text-xs leading-tight text-cave-400">Réf. {client.id} · statut calculé depuis les ventes.</p>
         </div>
-        {/* PC-2 (d) : un client enregistré se supprime (jamais un client neuf, jamais un client qui a des ventes non annulées). */}
+        {/* Un client enregistré se supprime ou s'archive (jamais un client neuf) ; une vente non annulée le retient : il s'archive, ses ventes restent à son nom. */}
         {existant && (
           <div className="client-form-body" aria-label="Supprimer ce client">
-            {suppression.etat === 'refus' && <p role="alert" className="text-xs text-alert-strong">{suppression.message}</p>}
-            {suppression.etat === 'confirmer' && (
-              <p role="alert" className="text-xs text-cave-200">Supprimer « {client.name.trim()} » ? Son carnet d’adresses disparaît ; aucune vente n’y est rattachée.</p>
-            )}
             <div className="flex gap-2">
-              {suppression.etat === 'confirmer' ? (
-                <>
-                  <button type="button" className="clients-action" onClick={() => setSuppression({ etat: 'repos' })}>Garder</button>
-                  <button type="button" className="clients-action clients-action-danger" onClick={() => { StorageService.deleteClient(client.id); onClose(); }}>Supprimer le client</button>
-                </>
-              ) : (
-                <button type="button" className="clients-action clients-action-danger" onClick={demanderSuppression}>Supprimer ce client</button>
-              )}
+              <button type="button" className="clients-action clients-action-danger" onClick={() => setSuppression(true)}>Supprimer ce client</button>
             </div>
           </div>
         )}
@@ -156,5 +149,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
         </footer>
       </form>
     </ModalShell>
+    <SuppressionLiee chose={chose} onClose={() => setSuppression(false)} />
+    </>
   );
 };

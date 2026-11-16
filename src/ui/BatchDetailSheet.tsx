@@ -7,6 +7,8 @@ import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions,
 import { ABV_MAX, abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
 import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
+import { SuppressionLiee } from './suppression/SuppressionLiee';
+import { choseBrassin } from './suppression/choses';
 import { InventoryCorrectionSheet } from './InventoryCorrectionSheet';
 import { NumberInput } from './NumberInput';
 import { Button } from '../components/ui/Button';
@@ -35,9 +37,9 @@ import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
 import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/PlannedDate';
+import { QuiARecuLot, type GesteFutLot } from './lot/QuiARecuLot';
 import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, EtapesPills, VerdictPuces, LigneRepliee } from './production/fiche/PostFiche';
 import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
-import { QuiARecuLot, type GesteFutLot } from './lot/QuiARecuLot';
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
 import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
 import { Ellipsis, ChevronRight, Package } from 'lucide-react';
@@ -143,9 +145,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [mesure, setMesure] = useState<EtatMesure | null>(null);
   useEffect(() => { setMesure(null); }, [batch?.id]);
   const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
+  const [gesteFut, setGesteFut] = useState<{ quoi: GesteFutLot; n: number } | null>(null);
   const releveRef = React.useRef<HTMLDivElement>(null);
   useEffect(() => { if (!fgUndo) return; const t = window.setTimeout(() => setFgUndo(null), 8000); return () => window.clearTimeout(t); }, [fgUndo]);
-  const [gesteFut, setGesteFut] = useState<{ quoi: GesteFutLot; n: number } | null>(null);
   // p5 : à l'ouverture, le focus auto de la feuille tombe sur le × et l'entoure d'un anneau. On le pose sur la feuille elle-même ; le clavier reprend ensuite normalement.
   useEffect(() => {
     if (!batch?.id) return;
@@ -561,10 +563,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               <CarteDensite batch={draft} />
               {draft.status === 'garde' && <LignesCuve batch={draft} onReleve={ouvrirReleve} onVolume={() => setPackaging({ target: null })} />}
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
-            </>
-          )}
               {/* Maquette lot/v1 (16.11) : le lot se ramifie vers chaque client ; les gestes du menu « Plus » (Rentrer, Livrer) s'y jouent. */}
               {draft.status !== 'annule' && <QuiARecuLot batch={draft} geste={gesteFut} />}
+            </>
+          )}
           {((section === 'measurements' && !planned && !ficheM) || mesuresDansDossier) && (
             <Enveloppe {...(post || ficheM || mesuresDansDossier ? { className: 'rounded-xl border border-cave-800 bg-cave-900 px-2.5 py-1' } : {})}>
               {(post || ficheM || mesuresDansDossier) && <summary className="min-h-touch cursor-pointer text-sm text-cave-200">Corriger les mesures (OG, FG, volumes)</summary>}
@@ -751,21 +753,14 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       {ladder && <StageLadder batch={draft} now={nowMs} kegs={kegList} onClose={() => setLadder(false)}
         onAvancer={s => { setLadder(false); changeStatus(s); }} onConditionner={conditionner}
         onRetour={s => { setLadder(false); applyStatus(s); }} onAbandonner={() => { setLadder(false); applyStatus('annule'); }} />}
-      <ConfirmSheet
-        open={confirmDelete}
+      {/* Maquette suppression/v2 : ses fûts, ses bouteilles et ses écritures un par un ; sans lien (brassin planifié), suppression directe avec « Annuler ». */}
+      <SuppressionLiee
+        chose={confirmDelete ? (() => {
+          const base = choseBrassin(batch);
+          // Supprimé ou archivé, le brassin n'a plus de dossier à ouvrir : la fiche se ferme.
+          return { ...base, supprimer: () => { base.supprimer(); onClose(); }, archiver: () => { base.archiver(); onClose(); } };
+        })() : null}
         onClose={() => setConfirmDelete(false)}
-        onConfirm={() => {
-          StorageService.deleteBatch(batch.id);
-          onClose();
-        }}
-        title="Supprimer ce brassin ?"
-        what={`${batch.id} — ${batch.name}`}
-        consequence={
-          batch.status === 'planifie'
-            ? 'Rien n’a encore été déstocké : la suppression est sans conséquence sur le stock.'
-            : 'Les ingrédients déjà consommés restent déstockés. Les éventuels retours d’ingrédients se consignent par une correction d’inventaire.'
-        }
-        confirmLabel="Supprimer le brassin"
       />
       <ConfirmSheet open={pendingStatus !== null} onClose={() => setPendingStatus(null)}
         title={pendingStatus === 'annule' ? 'Abandonner ce brassin ?' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} » ?`}

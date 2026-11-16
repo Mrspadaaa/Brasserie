@@ -144,8 +144,8 @@ export function retourVide(keg: KegItem, date: string): KegItem {
 }
 
 /** Remettre à laver (Gestion du fût) : un fût propre, neuf ou sali, repasse à laver ; rien d'autre ne change. */
-export function remettreALaver(keg: KegItem, date: string): KegItem {
-  return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver' }) };
+export function remettreALaver(keg: KegItem, date: string, detail?: string): KegItem {
+  return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver', ...(detail ? { detail } : {}) }) };
 }
 
 /** La dernière étape qui a mis le fût à laver : retour vide, ou remis à laver depuis la fiche. */
