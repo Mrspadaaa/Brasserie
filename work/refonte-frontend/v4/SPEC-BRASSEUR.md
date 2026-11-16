@@ -1841,3 +1841,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : on ajoute une variante p5f, « p5 fini ». Elle garde les bonnes idées de p5 et rend tout ce que da montrait. La liste est refaite, aucun écran ne reste à moitié vide, et chaque critère de CADRE.md est coché avec sa preuve. Elle est montrée à côté de ra, da retouché, qui reste la base.)
 - **16.11**, mot pour mot, sur p5 : « Sur beaucoup d'endroits il est un peu mieux mais certaines écran sont inutilisable en l'état »
   (lu : p5 est un peu mieux par endroits, mais certains écrans sont inutilisables. Écrans suspects, d'après les critiques : Comparer au téléphone (3ᵉ colonne coupée, noms sur 2 lignes), le journal aux notes repliées en icônes muettes, les écrans à moitié vides et la liste. Je lui demande lesquels.)
+- **16.11**, mot pour mot : « Fait peut être passer un critique, revue, besoin brasseur ECT... Dessus ? »
+  (lu : il ne désigne pas lui-même les écrans de p5 inutilisables : un audit les trouve. Trois regards (critique, UX utilisabilité, besoin brasseur) jouent chaque écran face à da, puis la synthèse va dans CADRE.md. p5f sera corrigé selon cet audit.)

@@ -120,3 +120,4 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
   - rien n'est retiré.
 - Au retour : publier page3, sans note chiffrée annoncée.
 - Calendrier : calendrier-85 (task wv5b7urpi) continue.
+- Audit p5 : workflow `p5-audit`, task whw4b6oqr. Sortie : `r2/P5-AUDIT.md`, plus une section ajoutée à CADRE.md. Si p5f ne couvre pas tous les écrans inutilisables relevés, une passe de correction de p5f suit avant la page.
