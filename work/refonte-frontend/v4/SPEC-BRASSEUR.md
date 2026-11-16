@@ -1921,3 +1921,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : les gestes du calendrier lui-même (la frise : déplacer, étirer, poser, ouvrir, appui long) et de la courbe (fenêtre, toucher une semaine, « et si » qui recalcule) n'ont pas été explorés. Lot de mini maquettes d'interaction statiques, avant et après chaque geste, sur sa base g-d1.)
 - **16.11**, mot pour mot, sur la page13 (https://claude.ai/artifact/Joxat3gJk6CpdEhM1whFdK) : « Calendrier compact gi2 · choisi-a · r2-c »
   (lu : choisi-a (le + dans le carré de couleur plein, l'œil pour masquer, « n choses cachées ») et r2-c (résumé par rangée en étiquette remplie en proportion). Nouvelle base du corps du calendrier : gi2/r2-c.html (= choisi-a + r2-c), avec l'en-tête choisi q5 / l5 à poser dessus.)
+- **16.11**, mot pour mot : « Pas besoin des mini maquettes en cave »
+  (lu : les mini maquettes se font et se montrent en clair seul. Les deux thèmes restent pour l'app réelle et le jouable (CLAUDE.md, D343).)

@@ -75,7 +75,7 @@ phase('Critique')
 const critiques = await parallel(fichiers.map((f, i) => () => agent(
   `${CADRE}
 
-Tu es le critique calibré sur le brasseur : lis d'abord ${PORTRAIT}. Juge la version ${f} contre sa base ${base.proto} (captures 390 que tu prends et OUVRES, deux thèmes si la maquette les a).
+Tu es le critique calibré sur le brasseur : lis d'abord ${PORTRAIT}. Juge la version ${f} contre sa base ${base.proto} (captures 390 que tu prends et OUVRES, thème clair de l'app seul : pas de capture cave pour une mini maquette, sa demande du 16.11).
 Contrôle mécanique : ${c1[i] && c1[i].ok ? 'OK' : `KO — ${(c1[i] && c1[i].sortie) || 'sans sortie'}`}.
 Question ouverte : combien et quels problèmes ? Liste numérotée, du plus grave au moins grave, chaque point vu sur la capture. Puis une note sur 10 à sa façon.`,
   { agentType: 'critique', model: 'opus', label: `critique:v${i + 1}`, phase: 'Critique', schema: { type: 'object', properties: { problemes: { type: 'array', items: { type: 'string' } }, note: { type: 'number' } }, required: ['problemes'] } },

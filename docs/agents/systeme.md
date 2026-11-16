@@ -231,6 +231,8 @@ de revenir.
 
 ## Méthode maquettes (16.11)
 
+- Mini maquettes : thème clair de l'app seul, sans capture cave (« Pas besoin des mini maquettes en cave », 16.11). Les deux thèmes restent exigés pour l'app réelle et le jouable.
+
 « Met en place des choses pour plus perdre autant de temps ni pour plus perdre mes retours... » (16.11). Une seule méthode, nommée, sans changement en cours de route :
 1. Ses paroles : le hook `paroles.mjs` (UserPromptSubmit) journalise chaque message mot pour mot dans `~/.claude/paroles/AAAA-MM-JJ.md` ; `systeme.mjs paroles` liste ceux absents de SPEC-BRASSEUR, à verser au tour même.
 2. Ses choix : `work/refonte-frontend/v4/choix/maquettes.json`, par chantier, la base choisie, les gardés, les refusés et les idées, chacun avec sa parole, sa date et sa signature.
