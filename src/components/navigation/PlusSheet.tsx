@@ -102,9 +102,10 @@ function ActionDeLEcran({ e, avecLettre, onChoisir }: { e: PlusEntree; avecLettr
 function Commun({ e, forme, seule, onChoisir }: { e: PlusEntree; forme: Props['forme']; seule: boolean; onChoisir: Props['onChoisir'] }) {
   return (
     <button type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)}
-      aria-label={e.hint ? `${e.label}, ${e.hint}` : e.label}
-      className={`plus-pp ${TON[e.ton]} ${seule ? 'plus-pp--seule' : ''}`}>
+      aria-label={`${e.hint ? `${e.label}, ${e.hint}` : e.label}${e.monte ? ', aussi en tête de la pile' : ''}`}
+      className={`plus-pp ${TON[e.ton]} ${seule ? 'plus-pp--seule' : ''} ${e.monte ? 'plus-pp--renvoi' : ''}`}>
       <span className="plus-pp-t">{forme === 'liste' ? e.label : (e.court ?? e.label)}</span>
+      {e.monte && <span className="plus-pp-r" aria-hidden="true">↑</span>}
       {forme === 'liste' && <Lettre lettre={e.lettre} />}
       <Pastille Icone={ICONES[e.cle]} />
     </button>
@@ -129,8 +130,8 @@ function Compagnon({ forme, compagnon, onCompagnon, seule }: Pick<Props, 'forme'
 }
 
 export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, onCompagnon, onConversations }) => {
-  /* « Partout » = les communes moins celle déjà montée en tête (pas de doublon). Sa lettre reste active (`lettresActives`). */
-  const partout = menu.partout.filter((e) => !e.monte);
+  /* « Partout » : toujours les mêmes gestes, dans le même ordre, sur tous les écrans (BUGS 34, 16.11). Un geste déjà monté en tête garde sa case, marquée ↑. */
+  const partout = menu.partout;
   const avecLettre = forme === 'liste';
   /* b1s-b2 nomme « Sur Clients » le carnet (la rubrique) ; les autres sous-écrans portent leur nom (Recettes, Courses, Fûts…). */
   const nom = menu.ecran === 'clients' ? 'Clients' : nomEcran(menu.chemin);

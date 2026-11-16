@@ -153,6 +153,13 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Renvoi ↑ : ce geste est aussi monté « Sur cet écran » ; sa case reste (BUGS 34). */
+.plus-pp-r {
+  flex: none;
+  font-size: 13px;
+  line-height: 1;
+  color: rgb(var(--cave-400));
+}
 .plus-pp small {
   display: flex;
   align-items: center;
