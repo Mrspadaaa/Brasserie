@@ -64,9 +64,9 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     expect(marques('impot')).toEqual([]);
   });
 
-  it('rien de perdu : Facture et Vente sont en tête de Finances, Vente en tête de Fûts et Clients, Courses en tête de Bord', () => {
+  it('rien de perdu : Estimer un brassin, Facture et Vente sont en tête de Finances (un seul +, plus de « + » rond sur la synthèse), Vente en tête de Fûts et Clients, Courses en tête de Bord', () => {
     expect(plusMenuFor('dashboard', null, contexte).autres.map((e) => e.cle)).toEqual(['courses']);
-    expect(plusMenuFor('finances', null, contexte).autres.map((e) => e.cle)).toEqual(['facture', 'vente']);
+    expect(plusMenuFor('finances', null, contexte).autres.map((e) => e.cle)).toEqual(['estimer', 'facture', 'vente']);
     expect(plusMenuFor('stocks', 'futs', contexte).autres.map((e) => e.cle)).toContain('vente');
     expect(plusMenuFor('clients', 'crm', contexte).autres.map((e) => e.cle)).toContain('vente');
     expect(plusMenuFor('stocks', 'courses', contexte).autres.map((e) => e.cle)).toContain('article');
