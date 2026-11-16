@@ -40,3 +40,7 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 - En-tête sobre : portrait s1 (s4 second), paysage t1 (t3 second) — critique contre ses six phrases, contrôles ENTETE et COMPACT verts.
 - Mode graph : g4b premier (g2b, g3b) ; ses étiquettes gardent les montants (lot lancé avant « juste quel info avec date ») : à aligner sur s1 si choisi.
 - « + S47 » refusé (i7) retiré des maquettes du mode graph (build-b.mjs).
+
+## Ports (retour du 17.11, nuit)
+- 7 commits sur claude/ports-nuit-1611 (pastille, fournisseurs ×2, lot, onglet, suppression, calendrier « montant non renseigné »). La critique vision était VIDE : pas de déploiement. Relance w3imiwu22 (wf_6211585e-ec5) : fenêtre au doigt de la pastille, critique (relancée si vide), correction, checklist branche contre tag.
+- Échecs déjà présents sur le tag (inchangés) : check-units (22), check-brewing Stout, 7 fichiers de tests. Déployer seulement si aucun échec nouveau et critique sans bloquant ; sinon groupé pour lui au matin.
