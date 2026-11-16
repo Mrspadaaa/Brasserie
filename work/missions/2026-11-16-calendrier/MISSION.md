@@ -130,3 +130,8 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
   - jeu en ligne par le pilote : workflow `jeu-en-ligne-1611`, task wz45r4aw9 ;
   - accords groupés pour lui : déployer les fonctions (texte serveur du compagnon, Finances) ; pousser le tag recette-matin.
 - Mini maquettes des choix ouverts : workflow `mini-maquettes-ouvertes`, task w9pa3z85i. Sortie : `work/missions/2026-11-16-choix-ouverts/` (onglet, fournisseur, suppression, lot, seuil). Toucher réel et vente test : workflow `toucher-et-vente`, task w2g9147f0. Fonctions : la session Finances les déploie (accord du brasseur).
+
+## Calendrier compact (16.11, après ses zones entourées)
+- calendrier-85 est arrêté au jugement : la base sources2 est validée en direction (« Ça semble bon »), mais elle n'est pas compacte.
+- Workflow `calendrier-compact`, task wzhk5e0tc, run wf_25a87aa5-b10. Sortie dans `cc/` (v1 à v3 et corrections), puis page5.
+- Gardes : CAL-COMPACT, THEME-APP, scénario S1 à S12 joué de zéro, audit à trois regards. Le pilote ouvre les captures avant de publier.
