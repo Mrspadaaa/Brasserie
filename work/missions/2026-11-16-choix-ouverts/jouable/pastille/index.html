@@ -84,14 +84,19 @@ html[data-theme=cave] .v3lab .mp{color:#12100e}
 .v3his div i{width:100%;max-width:34px;border-radius:5px 5px 0 0;background:var(--c);transition:background .2s}
 .v3his div span{font-size:14px;font-weight:700;color:var(--c)}
 .v3wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:4px 12px 0;padding:0 2px;font-size:14px;color:var(--mut);text-align:center}
-.v3br{position:absolute;top:-4px;bottom:-4px;left:-2px;border:2.5px solid var(--fin);border-radius:10px;pointer-events:none;transition:width .25s}
+.v3br{position:absolute;top:-4px;bottom:-4px;left:-2px;border:2.5px solid var(--fin);border-radius:10px;pointer-events:none;transition:left .18s,width .18s}
+.v3zone{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.v3zone.drag{cursor:grabbing}.v3zone.drag .v3br{transition:left .1s,width .1s;border-width:3px}
+.v3hd{position:absolute;top:50%;width:12px;height:36px;margin:-18px 0 0 -6px;border-radius:6px;background:linear-gradient(var(--bg),var(--bg)) center/2px 14px no-repeat,var(--fin);box-shadow:0 0 0 2px var(--bg);pointer-events:none;transition:left .18s,transform .12s}
+.v3zone.drag .v3hd{transition:left .1s,transform .12s}.v3zone.drag .v3hd.on{transform:scale(1.25)}
+.v3rien{margin:8px 12px 0;padding:12px;border:1.5px dashed var(--line2);border-radius:12px;font-size:15px;color:var(--mut)}
 </style>
 <div class="head"><div class="v3h"><span class="big" id="big">5</span><span class="v3t" id="v3t"></span></div><button class="hbtn" aria-label="Plein écran"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
 <div class="v3hz" id="v3hz">
-<div class="v3lab"><span class="mp" id="v3mp">5</span>pastille et chiffre comptent jusqu’à</div>
+<div class="v3lab"><span class="mp" id="v3mp">5</span><span id="v3lb">pastille et chiffre comptent jusqu’à</span></div>
 <div class="seg" id="seg" data-booster="horizon"><button data-h="49" class="on"><b>S49</b>prochain brassin</button><button data-h="52"><b>6 sem.</b>jusqu’à S52</button><button data-h="99"><b>Tout</b>au seuil compris</button></div>
 </div>
-<div class="v3his" id="his" aria-hidden="true"></div><div class="v3wk"><span>S47</span><span>S48</span><span>S49</span><span>S50</span><span>S51</span><span>S52</span><span>seuil</span></div>
+<div class="v3zone" id="v3zone"><div class="v3his" id="his" aria-hidden="true"></div><div class="v3wk"><span>S47</span><span>S48</span><span>S49</span><span>S50</span><span>S51</span><span>S52</span><span>seuil</span></div></div>
 <div class="sec"><b id="v3lt"></b><span class="ex">exemple</span></div>
 <div class="rows" id="v3l"></div>
 <button class="cta" id="cta"></button>
@@ -124,21 +129,44 @@ const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelecto
 function row(a,c){const w=a.sem?'<em>S'+a.sem+'</em> · '+a.pour:'<em>au seuil</em> · aucun brassin prévu';
 return '<button class="row" style="--c:'+c+'" data-booster="article"><i class="dot"></i><span class="tx"><span class="nm">'+a.n+'</span><span class="sb">'+w+'</span></span><span class="q mono">'+a.q+'</span></button>'}
 function pastille(n,col){const p=$('#pas');p.hidden=!n;p.textContent=n;if(col)p.style.setProperty('--pc',col);p.classList.remove('pulse');void p.offsetWidth;p.classList.add('pulse')}
-let H=49;const W=[47,48,49,50,51,52,99];
-function rendre(){const L=items(),X=L.filter(a=>(a.sem||99)<=H).sort((a,b)=>(a.sem||99)-(b.sem||99));
+const W=[47,48,49,50,51,52,99],PRE={49:[0,2],52:[0,5],99:[0,6]};let fa=0,fb=2;
+const nom=i=>i===6?'seuil':'S'+W[i];
+function preset(){for(const h in PRE)if(PRE[h][0]===fa&&PRE[h][1]===fb)return +h;return 0}
+const his=$('#his'),Z=$('#v3zone');
+his.innerHTML=W.map(()=>'<div><span></span><i></i></div>').join('')+'<b class="v3br" id="br"></b><b class="v3hd" id="hg"></b><b class="v3hd" id="hd"></b>';
+const cols=()=>{const r0=his.getBoundingClientRect().left;return $$('#his > div').map(c=>{const r=c.getBoundingClientRect();return{l:r.left-r0,r:r.right-r0}})};
+function placer(){const c=cols();if(!c[0]||!c[0].r)return;const l=c[fa].l-4,r=c[fb].r+4,br=$('#br');br.style.left=l+'px';br.style.width=(r-l)+'px';$('#hg').style.left=(l+1)+'px';$('#hd').style.left=(r-1)+'px'}
+function rendre(){const L=items(),X=L.filter(a=>{const i=W.indexOf(a.sem||99);return i>=fa&&i<=fb}).sort((a,b)=>(a.sem||99)-(b.sem||99)),H=preset();
+const lib=fa===fb?nom(fa):fa===0?'jusqu’à '+nom(fb):fb===6?nom(fa)+' → seuil':nom(fa)+'–'+nom(fb);
 $('#big').textContent=X.length;$('#v3mp').textContent=X.length;
-$('#v3t').innerHTML=H===99?'à commander<b>tout ce qui est au seuil</b>':'à commander<b>'+(H===49?'avant S49 · Porter':'d’ici S52 · 6 sem.')+'</b>';
+$('#v3lb').textContent=fa===0?'pastille et chiffre comptent jusqu’à':'pastille et chiffre comptent '+(fa===fb?nom(fa)+' seule':fb===6?'de '+nom(fa)+' au seuil':'de '+nom(fa)+' à '+nom(fb));
+$('#v3t').innerHTML=H===99?'à commander<b>tout ce qui est au seuil</b>':'à commander<b>'+(H===49?'avant S49 · Porter':H===52?'d’ici S52 · 6 sem.':lib)+'</b>';
 for(const b of $$('#seg button'))b.classList.toggle('on',+b.dataset.h===H);
 const n=W.map(w=>L.filter(a=>(a.sem||99)===w).length),m=Math.max(1,...n);
-$('#his').innerHTML=W.map((w,i)=>{const on=w<=H;return '<div style="--c:'+(on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)')+'"><span>'+(n[i]||'')+'</span><i style="height:'+(n[i]?Math.max(6,n[i]/m*70):0)+'px"></i></div>'}).join('')+'<b class="v3br" id="br"></b>';
-const k=W.filter(w=>w<=H).length;$('#br').style.width='calc('+(k/7*100)+'% + 4px)';
-$('#v3lt').textContent=H===99?'Tout, par urgence':'Avant '+(H===49?'S49':'S52')+', par semaine';
-$('#v3l').innerHTML=X.map(a=>row(a,a.sem&&a.sem<=49?'var(--fin)':a.sem?'var(--fin)':'var(--att)')).join('');
+$$('#his > div').forEach((d,i)=>{const on=i>=fa&&i<=fb;d.style.setProperty('--c',on?(W[i]===99?'var(--att)':'var(--fin)'):'var(--line2)');d.firstChild.textContent=n[i]||'';d.lastChild.style.height=(n[i]?Math.max(6,n[i]/m*70):0)+'px'});
+$('#v3lt').textContent=H===99?'Tout, par urgence':H?'Avant '+(H===49?'S49':'S52')+', par semaine':lib.charAt(0).toUpperCase()+lib.slice(1)+(fb===6?', par urgence':', par semaine');
+$('#v3l').innerHTML=X.length?X.map(a=>row(a,a.sem?'var(--fin)':'var(--att)')).join(''):'<p class="v3rien">Rien à commander sur '+lib+' · tire le cadre</p>';
 $('#cta').innerHTML="<svg class=\"ico\" viewBox=\"0 0 24 24\"><path d=\"M3 4h2l2.4 11h10.2L20 7H6.2\"/><circle cx=\"9\" cy=\"19.5\" r=\"1.5\"/><circle cx=\"17\" cy=\"19.5\" r=\"1.5\"/></svg>"+'Commander ces '+X.length;
-for(const id of ['v3hz','his','v3l','cta'])$('#'+id).hidden=!L.length;$('.v3wk').hidden=!L.length;$('.sec').hidden=!L.length;$('#vide').hidden=!!L.length;
-$('#v3t').innerHTML=L.length?$('#v3t').innerHTML:'rien<b>à commander</b>';pastille(X.length,'var(--fin)')}
-function geste(){H=99;rendre()}
-for(const b of $$('#seg button'))b.onclick=()=>{jxEfface();H=+b.dataset.h;rendre()};
+for(const id of ['v3hz','v3zone','v3l'])$('#'+id).hidden=!L.length;$('#cta').hidden=!X.length;$('.sec').hidden=!L.length;$('#vide').hidden=!!L.length;
+$('#v3t').innerHTML=L.length?$('#v3t').innerHTML:'rien<b>à commander</b>';pastille(X.length,'var(--fin)');placer()}
+function poser(a,b){a=Math.max(0,Math.min(6,a));b=Math.max(a,Math.min(6,b));if(a===fa&&b===fb)return;fa=a;fb=b;rendre()}
+function geste(){poser(0,6)}
+for(const b of $$('#seg button'))b.onclick=()=>{jxEfface();const p=PRE[b.dataset.h];poser(p[0],p[1])};
+// au doigt : bords = poignées (cible 36 px), dedans = glisser la fenêtre, toucher = la colonne seule, dehors + glisser = nouvelle plage
+let D=null;const px=e=>e.clientX-his.getBoundingClientRect().left;
+const proche=(c,x,k)=>c.reduce((m,o,i)=>Math.abs(x-o[k])<Math.abs(x-c[m][k])?i:m,0);
+const sous=(c,x)=>c.reduce((m,o,i)=>Math.abs(x-(o.l+o.r)/2)<Math.abs(x-(c[m].l+c[m].r)/2)?i:m,0);
+Z.addEventListener('pointerdown',e=>{if(!items().length||e.button>0)return;jxEfface();const x=px(e),c=cols(),l=c[fa].l-4,r=c[fb].r+4;
+const dg=Math.abs(x-l),dd=Math.abs(x-r),mode=dg<=18||dd<=18?(dg<dd?'g':'d'):x>l&&x<r?'in':'out';
+D={mode,x0:x,a0:fa,b0:fb,c0:sous(c,x),moved:false,p:c[1].l-c[0].l};try{Z.setPointerCapture(e.pointerId)}catch(_){}Z.classList.add('drag');
+$('#hg').classList.toggle('on',mode==='g');$('#hd').classList.toggle('on',mode==='d');e.preventDefault()});
+Z.addEventListener('pointermove',e=>{if(!D)return;const x=px(e),c=cols();if(Math.abs(x-D.x0)>6)D.moved=true;if(!D.moved)return;
+if(D.mode==='g')poser(Math.min(proche(c,x,'l'),fb),fb);
+else if(D.mode==='d')poser(fa,Math.max(proche(c,x,'r'),fa));
+else if(D.mode==='in'){const w=D.b0-D.a0,k=Math.max(-D.a0,Math.min(6-D.b0,Math.round((x-D.x0)/D.p)));poser(D.a0+k,D.a0+k+w)}
+else{const i=sous(c,x);poser(Math.min(D.c0,i),Math.max(D.c0,i))}});
+const fin=()=>{if(!D)return;if(!D.moved&&(D.mode==='in'||D.mode==='out'))poser(D.c0,D.c0);D=null;Z.classList.remove('drag');$('#hg').classList.remove('on');$('#hd').classList.remove('on')};
+Z.addEventListener('pointerup',fin);Z.addEventListener('pointercancel',fin);addEventListener('resize',placer);
 $('#demo').onclick=()=>{VIDE=!VIDE;$('#demo').textContent=VIDE?'Revenir à l’exemple':'Voir l’état vide';rendre()};
 if(VIDE)$('#demo').textContent='Revenir à l’exemple';
 const fab=$('.fab'),dv=$('[data-jxd]'),vv=$('[data-jxv]');function menu(o){fab.setAttribute('aria-expanded',o);dv.hidden=!o;vv.hidden=!o}
@@ -149,4 +177,4 @@ $('#v3l').addEventListener('click',e=>{const r=e.target.closest('.row');if(!r)re
 $('#cta').onclick=()=>jxDit('exemple : ouvrirait la commande de '+$('#big').textContent+' articles');
 $('.hbtn').onclick=()=>jxDit('exemple : la liste en plein écran');
 for(const a of $$('.nav a'))a.onclick=e=>{e.preventDefault();if(!a.classList.contains('on'))jxDit('exemple : l’onglet '+a.textContent.replace(/\d+/g,'').trim()+' s’ouvrirait ici')};
-rendre();if(Q.get('etat')==='geste')geste();if(Q.get('etat')==='six'){H=52;rendre()}if(Q.get('etat')==='plus')menu(true);})()</script></body></html>
+rendre();requestAnimationFrame(placer);if(Q.get('etat')==='geste')geste();if(Q.get('etat')==='six')poser(0,5);if(Q.get('etat')==='plus')menu(true);})()</script></body></html>
