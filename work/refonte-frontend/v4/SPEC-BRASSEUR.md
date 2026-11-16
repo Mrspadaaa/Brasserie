@@ -1785,3 +1785,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : un carnet de recherche et de décision pour toute idée ou tout besoin, pas seulement l'embouteillage. Il note les façons de faire (gravité, isobarique…), les choix et leurs raisons (« minimiser l'oxygène »), les produits trouvés (5 ou 6, avec fournisseurs et lieux), les comparaisons, puis le choix final et son pourquoi, gardé pour ne pas y revenir. L'IA vérifie la disponibilité et le prix.)
 - **16.11**, mot pour mot : « Comparé les caractéristiques des systèmes »
   (lu : le carnet compare les caractéristiques techniques des systèmes, et pas seulement les prix : oxygène capté, cadence, becs, matière, CO2, nettoyage, encombrement, formats.)
+- **16.11**, mot pour mot : « Mais ça doit pas être uniquement pour ce système, ça doit être générique, un frigo, une ventil, un évier, ECT... Ça doit être dynamique et générique »
+  (lu : les caractéristiques à comparer changent selon le besoin. L'IA propose celles de la catégorie, le brasseur en ajoute ou en retire ; aucun modèle propre à l'embouteillage.)
