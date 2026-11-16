@@ -1049,3 +1049,22 @@ Rejeu après corrections de la nuit (tags en-ligne/2026-11-16-*-nuit et -transve
 34. info | Transversaux › + flottant (b1s-b) | Les actions de l’écran (« Sur Atelier R&D », « Sur Finances ») sont groupées sous « Partout » près du bouton, action principale en couleur ; les actions communes sont toujours présentes mais le jeu varie : en Atelier « Partout » contient Nouvelle écriture, Entrer une facture, Encaisser, Créer une recette, Compagnon ; en Finances seulement Créer une recette, Lancer un brassin, Compagnon (les trois premières passent dans « Sur Finances ») | + sur Atelier R&D puis sur Finances
 35. info | Transversaux › Recherche | « ZZ » : 13 sur 14 résultats limités à Finances (portée affichée, « Archives Tab », retour arrière sur vide pour sortir de Finances) ; fonctionne. Menu Plus : thème Clair/Cave, Je saisis, Période, Journal des modifications, Connexions (Drive à connecter), Réglages (« 2 erreurs », IBAN) : joués en lecture, rien modifié
 NON JOUÉ : m3im-c (Bien amorti) : l'écran n'est atteint que par l'étape « En service » d'un projet acheté, qui exige une écriture d'achat réelle ; non créé pour ne pas laisser de donnée non retirable (cf. 19, 20).
+
+Rejeu en ligne 16.11 (agent Sonnet, onglet 1005988298, desktop 1538x784, tag en ligne le plus récent). Arrêt au tour ~90 : le contrôle automatique a cessé de valider les actions du navigateur (JS et clics), la suite n'est pas jouée.
+- 1 : NON REPRODUIT (rejeu) | brassin ZZ TEST Recette planifié « lundi 30 novembre » (calendrier c2a, 30), Ouvrir LOT-020, Commencer le brassage : Conduite affiche « Prévu le 30.11.2026 »
+- 2 : CORRIGÉ | Commencer le brassage : la fiche se ferme, la Conduite s'affiche seule
+- 3 : CORRIGÉ | onglets Préparer, Carnet, Dossier de la fiche cliqués à la souris : hauteur de feuille constante (1148 px), clics suivants atteignent leur cible
+- 4 : CORRIGÉ (déjà noté) | « Ranger » (…) : colonne centrée ; la feuille ne propose que « Classer dans les archives », aucune suppression
+- 5 : CORRIGÉ EN PARTIE | calendrier c2a : tous les jours (16.11 au 6.12) restent marqués « fin non datée », mais la légende les distingue de « cuve pleine » et le texte du jour dit pourquoi (« Milk Stout n'a pas de mise en bouteille datée »)
+- 6 : CORRIGÉ | Brassins › À brasser puis Filtrer › Tout effacer : plus de filtre actif, bouton « Voir les 17 » (au lieu de « Voir les 15 »)
+- 13 : NON JOUÉ | Carnet › Noter… › Entrée : appel IA possible, coût Gemini
+- 14 : CORRIGÉ | Carnet › « Bière d'Hiver Pain d'Épices & Miel de Fribourg » (note réelle, rien modifié) : feuille d'édition de 560 px, centrée ; boutons Supprimer, Annuler, Enregistrer présents
+- 16 : NON REPRODUIT (indicatif) | Fermer une feuille de note puis, 150 ms après, onglet Matériel : l'onglet est actif ; geste par script, pas au pointeur
+- 17, 18, 21, 22, 25, 26, 28, 29, 30 : NON JOUÉS (arrêt, voir ci-dessus)
+- 24 : NON JOUÉ en entier | Finances › Prévisions › « 6 sorties » › Budget d'un brassin : feuille « Quel brassin veux-tu estimer ? » ouverte (30 prévus et recettes listés) ; libellé « Prix de N ingrédients » non atteint
+- Brassin ZZ créé puis supprimé : bandeau « Brassin créé » › Défaire (« LOT-020 défait : le brassin est supprimé »), 16 brassins à nouveau. Aucune autre suppression de brassin n'est offerte (Ranger = archives seulement).
+- Recette (RC-9, profil 21A American IPA, 5 kg Pilsner, 24 L) : onglet Eau : alcalinité résiduelle 68 ppm (repère -48 à 2 ppm), « Après l'acide : -33 », acide lactique 80 % 4,3 mL, pH estimé 5,69 ±0,15 (« au-dessus de la fenêtre ») : CORRIGÉ (AR en ppm et acide présents). « + » flottant de l'assistant : menu seulement « Partout » (Écriture, Facture, Vente, Recette, Brassin, Compagnon, Mes conversations · 3), pas de groupe propre à l'assistant. « 19 L » : PAS VU (volume 24 L par défaut ; critère exact inconnu, à reprendre).
+
+Constats ajoutés :
+36. moyen | Recettes | Une recette ne se supprime pas : ni dans l'éditeur (Récap : seulement « Retirer » d'ingrédients), ni dans la fiche (Modifier, Brasser quand même). « ZZ TEST Recette » (v1, 24 L, American IPA) reste en base avec l'ancienne « ZZ TEST — Recette » | Recettes › carte › Modifier › Récap
+37. mineur | Recettes › fiche | « Pour la rebrasser, il manque Pilsner Malz 49 kg » pour une recette de 5 kg : le stock réel de ce malt semble négatif (à vérifier) ; le calendrier de planification affiche en plus « il part aux achats » | Recettes › ZZ TEST Recette
