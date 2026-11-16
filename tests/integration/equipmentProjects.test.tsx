@@ -87,13 +87,17 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(screen.getByRole('button', { name: 'Modifier Hotte historique' })).toBeInTheDocument();
     fireEvent.click(screen.getByText('Hotte historique')); fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
-    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); await saved();
+    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); // fix-materiel : une confirmation légère sur place d'abord
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Archiver' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Archives', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte historique.*750/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre ce projet' })); await saved();
     fireEvent.click(screen.getByRole('button', { name: 'À venir', exact: true }));
-    expect(screen.getAllByRole('button', { name: /Hotte historique.*750/ })).toHaveLength(1);
+    // fix-materiel (constat 7) : seul projet à venir, il est le « prochain achat » même non posé ; une seule fois à l'écran
+    const hero = screen.getByRole('region', { name: 'Prochain achat' });
+    expect(within(hero).getByText('Hotte historique')).toBeVisible(); expect(hero).toHaveTextContent('750');
+    expect(screen.getAllByText('Hotte historique')).toHaveLength(1);
     expect(FinanceService.getPlans()[0]).toMatchObject({ status: 'draft', notes: legacy.notes });
     expect(StorageService.getCreativeItems()).toEqual([legacy]);
   });

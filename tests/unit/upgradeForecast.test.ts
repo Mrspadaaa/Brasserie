@@ -27,10 +27,16 @@ describe('upgradeForecast : le prochain achat', () => {
     const b = projet('Y', 'Cuve', 10_000, { date: '2027-03-01', status: 'active', timing: 'soon' });
     expect(prochainAchat([a, b])?.id).toBe('Y');
   });
-  it('sans prévisions (rien de posé : idées, brouillon daté, projet sans prix), il n’y en a pas', () => {
+  it('rien de posé (idées, brouillon daté, projet sans prix) : un prochain achat reste en avant, jamais posé à tort (constat 7)', () => {
     const brouillonDate = projet('D', 'Brouillon daté', 20_000, { date: '2027-02-01', status: 'draft' });
     const actifSansPrix = projet('N', 'Sans prix', null, { date: '2027-02-01', status: 'active' });
-    expect(prochainAchat([EVIER, ARMOIRE, SOLS, brouillonDate, actifSansPrix])).toBeNull();
+    // un mois et un prix d'abord (même non posé), puis un mois sans prix, puis un prix sans mois
+    expect(prochainAchat([EVIER, ARMOIRE, SOLS, brouillonDate, actifSansPrix])?.id).toBe('D');
+    expect(prochainAchat([EVIER, ARMOIRE, SOLS, actifSansPrix])?.id).toBe('N');
+    // sans mois : un prix connu passe avant un prix à estimer
+    expect(prochainAchat([EVIER, ARMOIRE])?.id).toBe('A');
+    // ni mois ni prix : le premier de la liste (bientôt avant plus tard), prix à estimer
+    expect(prochainAchat([SOLS, EVIER])?.id).toBe('E');
     expect(prochainAchat([])).toBeNull();
     expect(estPose(brouillonDate)).toBe(false);
     expect(estPose(actifSansPrix)).toBe(false);

@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 const state = vi.hoisted(() => ({ saveUpgrade: vi.fn(), transactions: [] as any[] }));
 vi.mock('../../src/services/storage', () => ({ StorageService: { getTransactions: () => state.transactions, getStocks: () => ({ rawMaterials: [], cleaning: [], equipment: [] }), getConfig: () => ({ fiscal: { isTvaRegistered: false } }) } }));
 vi.mock('../../src/services/financeService', () => ({ FinanceService: { getPayments: () => [], getPlans: () => [], saveUpgrade: (...a: any[]) => state.saveUpgrade(...a) } }));
@@ -131,6 +131,8 @@ describe('Projet matériel m3pm-d : la piste', () => {
   it('Archiver enregistre « cancelled » ; sur un projet archivé, « Reprendre ce projet » le remet en idée', async () => {
     const { unmount } = render(<UpgradeSheet plan={frigo()} onClose={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' }));
+    expect(state.saveUpgrade).not.toHaveBeenCalled(); // fix-materiel : confirmation légère sur place d'abord
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Archiver' }));
     await waitFor(() => expect(state.saveUpgrade).toHaveBeenCalled());
     expect(enregistre()).toMatchObject({ id: 'FRIGO', status: 'cancelled', amountCents: 300000 });
     unmount(); state.saveUpgrade.mockClear();

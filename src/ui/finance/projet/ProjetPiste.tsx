@@ -51,7 +51,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
       case 'quote': return { em: devisNote ? `· ${draft.vendor?.trim() ? draft.vendor.trim() : 'devis noté'}` : '· aucun noté',
         action: <button type="button" className="pjd-a" aria-expanded={ouvert === 'quote'} onClick={() => bascule('quote')}>{devisNote ? 'Modifier le devis' : <><Plus aria-hidden="true" />Noter un devis</>}</button> };
       case 'ready': return { em: piste.actuelle === 'ready' ? '· tu en es là' : undefined,
-        resume: <p>{quandTexte ? `Payé en ${quandTexte}` : 'mois du paiement à choisir'}{' · '}{draft.status === 'active' ? 'dans mes prévisions' : 'pas dans mes prévisions'}</p> };
+        resume: <p>{quandTexte ? `Prévu en ${quandTexte}` : 'mois du paiement à choisir'}{' · '}{draft.status === 'active' ? 'dans mes prévisions' : 'pas dans mes prévisions'}</p> };
       case 'bought': return { em: n ? `· ${n} achat${n > 1 ? 's' : ''} lié${n > 1 ? 's' : ''} : ${progress.invoicedComplete ? montant(progress.invoicedCents) : 'à répartir'}` : '· achats liés : aucun',
         action: props.onNoterAchat ? <button type="button" className="pjd-a" onClick={props.onNoterAchat}>Noter l’achat<ArrowRight aria-hidden="true" /></button> : undefined };
       case 'service': return { em: '· son usure', resume: <p>{usure.ans == null ? 'durée ?' : texteAns(usure.ans)}{' · '}{usure.parAnCents == null ? 'usure ?' : <><span className="pjd-m">{montant(usure.parAnCents)}</span> par an</>}{' · mise en service '}{usure.mise ? moisDe(usure.mise) : '?'}</p> };
@@ -80,7 +80,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
       case 'ready': return ferme
         ? <p className="pjd-muet" role="status">{draft.status === 'completed' ? 'Projet réalisé. Les achats liés restent dans les analyses.' : 'Projet archivé. Tu peux le reprendre quand il redevient utile.'}</p>
         : <>
-          <div className="pjd-l"><span>Payé en</span>
+          <div className="pjd-l"><span>Prévu en</span>
             <label className="pjd-mois"><Calendar aria-hidden="true" /><span>{quandTexte ?? 'Mois'}</span>
               <input type="month" aria-label="Paiement prévu en" value={draft.date.slice(0, 7)} onInput={e => setMonth(e.currentTarget.value)} onChange={e => setMonth(e.target.value)} onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* saisie au clavier */ } }} />
             </label></div>

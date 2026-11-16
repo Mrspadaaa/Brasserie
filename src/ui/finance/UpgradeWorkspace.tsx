@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Archive, Calendar, Check, ChevronDown, ChevronRight, Mail, PenLine, Phone, Plus, Receipt, Search, Tag, Users, Wrench, X } from 'lucide-react';
+import { ArrowRight, Archive, Calendar, Check, ChevronDown, ChevronRight, Mail, PenLine, Phone, Plus, Receipt, Search, Tag, Trash2, Users, Wrench, X } from 'lucide-react';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { isUpgradePlan, UPGRADE_STAGES, UPGRADE_TIMINGS, upgradeDetails, upgradeProgress, upgradeReadiness } from '../../domain/finance/upgrades';
 import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
@@ -11,7 +11,7 @@ import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
-import { UpgradeSheet } from './UpgradeSheet';
+import { ConfirmerSurPlace, SUPPRIMER_PRECISION, UpgradeSheet } from './UpgradeSheet';
 import { ArchivesCarte, CarteVide } from './ArchivesCarte';
 import { ExpenseSheet } from './ExpenseSheet';
 import { useMobileLayout } from '../useViewport';
@@ -184,8 +184,9 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
       </svg>}
   </section>;
 }
-function FicheProjet({ plan, plans, prevision, transactions, payments, mois, busy, onClose, onEdit, onPoser, onInclusion, onStatut, onPrevisions }: { plan: FinancialPlan; plans: FinancialPlan[]; prevision: FinanceForecast; transactions: FinanceTransaction[]; payments: FinancialPayment[]; mois: string[]; busy?: string;
-  onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; onPrevisions: () => void }) {
+function FicheProjet({ plan, plans, prevision, transactions, payments, mois, busy, onClose, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions }: { plan: FinancialPlan; plans: FinancialPlan[]; prevision: FinanceForecast; transactions: FinanceTransaction[]; payments: FinancialPayment[]; mois: string[]; busy?: string;
+  onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; onSupprimer: () => void; onPrevisions: () => void }) {
+  const [confirmer, setConfirmer] = useState<'archiver' | 'supprimer' | null>(null);
   const d = upgradeDetails(plan), pose = estPose(plan), effet = pose ? effetProjet(plan, plans, prevision.months, prevision.items) : null, progress = upgradeProgress(plan, transactions, payments);
   const lignes: Array<[string, number | undefined]> = [['Achat', d.purchaseCents], ['Livraison', d.deliveryCents], ['Installation', d.installationCents]], connus = lignes.filter(([, v]) => v != null);
   const etape = REPERES[repereDe(plan)];
@@ -212,25 +213,30 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
       <button type="button" className="kh-cta kh-cta-fiche" onClick={onEdit}><PenLine size={18}/>Modifier</button>
       <details className="kh-fold"><summary>Après l’achat<ChevronDown size={18}/></summary><p>Ta facture se range dans Dépenses › Matériel, liée à ce projet ; la fiche d’usure se lit dans Annuel.</p></details>
       <details className="kh-fold"><summary>Usure et mise en service<ChevronDown size={18}/></summary><p>Durée d’usage : {d.usefulLifeYears != null ? `${String(d.usefulLifeYears).replace('.', ',')} ans` : 'à renseigner'} · Mise en service : {d.inServiceMonth ?? 'à renseigner'}</p></details>
-      <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => onStatut('completed')}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => onStatut('cancelled')}><Archive size={18}/>Archiver</button></div>
+      {confirmer === 'supprimer' ? <ConfirmerSurPlace question="Supprimer ce projet ?" precision={SUPPRIMER_PRECISION} verbe="Supprimer" danger busy={!!busy} onAnnuler={() => setConfirmer(null)} onConfirmer={onSupprimer}/>
+        : confirmer === 'archiver' ? <ConfirmerSurPlace question="Archiver ce projet ?" precision="Il reste dans Archives, tu pourras le reprendre." verbe="Archiver" busy={!!busy} onAnnuler={() => setConfirmer(null)} onConfirmer={() => onStatut('cancelled')}/>
+        : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => onStatut('completed')}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setConfirmer('archiver')}><Archive size={18}/>Archiver</button>
+          <button type="button" className="fm-sup-f" disabled={!!busy} onClick={() => setConfirmer('supprimer')}><Trash2 size={18}/>Supprimer</button></div>}
     </div>
   </Sheet>;
 }
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
-  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onPrevisions: () => void;
+  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onSupprimer: (p: FinancialPlan) => void; onPrevisions: () => void;
   contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
   fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void }
-function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
+function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
   const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null), [etape, setEtape] = useState<string | null>(null);
   const hero = prochainAchat(plans), { lignes, connuCents, inconnus } = suivants(plans, hero), mois = prevision.months.slice(1, MOIS_BANDEAU).map(m => m.month);
-  const effetHero = hero ? effetProjet(hero, plans, prevision.months, prevision.items) : null;
+  /* Le prochain achat peut n'être pas posé (repli, constat 7) : sans les prévisions, pas d'effet sur la caisse à dessiner. */
+  const effetHero = hero && estPose(hero) ? effetProjet(hero, plans, prevision.months, prevision.items) : null;
   const focus = plans.find(p => p.id === marque) ?? null, effetFocus = focus && estPose(focus) ? effetProjet(focus, plans, prevision.months, prevision.items) : null;
   const poser = async (plan: FinancialPlan, m: string | null) => { setPicker(null); if (await onPoser(plan, m)) setMarque(m ? plan.id : null); };
   const dansFiche = plans.find(p => p.id === fiche);
   return <div className="kh">
     {hero && <section className="kh-hero" aria-label="Prochain achat">
-      <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {upgradeDetails(hero).estimateSource === 'quote' ? 'devis reçu' : 'estimation'}</span></div>
-      <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></div>
+      <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {!estPose(hero) ? 'à poser' : upgradeDetails(hero).estimateSource === 'quote' ? 'devis reçu' : 'estimation'}</span></div>
+      <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
+        {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
       {effetHero && <EffetCaisse plan={hero} effet={effetHero}/>}
       <div className="kh-acts"><button type="button" className="kh-mon" aria-expanded={picker === hero.id} aria-label={`Mois de ${hero.title} : ${moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'long') : 'à poser'}`} onClick={() => setPicker(picker === hero.id ? null : hero.id)}><Calendar size={18}/>{moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'short') : '+ mois'}<ChevronDown size={14}/></button>
         <button type="button" className="kh-cta" aria-label={`Modifier ${hero.title}`} onClick={() => onEdit(hero)}><PenLine size={18}/>Modifier</button></div>
@@ -246,12 +252,12 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
           const pose = estPose(plan);
           const anneau = anneauDe(plan), ouvert = etape === plan.id;
           return <React.Fragment key={plan.id}><div className={`kh-r${(marque === plan.id && pose) || ouvert ? ' kh-on' : ''}`}>
-            {d.budgetKnown ? <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : '+ mois'}</button>
-              : <span className="kh-chip no" aria-label="Sans prix, rien à poser">–</span>}
+            {/* Constat 7 (16.11) : la ligne sans prix a, comme les autres, son « + mois » et son crayon ; sans prix, le mois se pose mais rien n'entre dans les prévisions. */}
+            <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : '+ mois'}</button>
             <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
             <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><span className="kh-nm"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
-            {d.budgetKnown ? <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
-              : <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
+            {!d.budgetKnown && <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
+            <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
           </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
           {ouvert && <PanneauEtape plan={plan} contacts={contacts} fournisseurs={fournisseurs} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
@@ -259,7 +265,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
     {avis && <Avis avis={avis} onVoir={onVoirRealises} onFermer={onFermerAvis}/>}
     <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
-      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
+      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { setFiche(null); onSupprimer(dansFiche); }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
   </div>;
 }
 
@@ -363,7 +369,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     {error && <p className="finance-error" role="alert">{error}</p>}
     {compact && scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
-    {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onPrevisions={voirPrevisions}
+    {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onSupprimer={p => StorageService.deleteUpgradePlan(p)} onPrevisions={voirPrevisions}
       contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
       avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
     : vueAVenir ? null : !compact && scope === 'archived' && visible.length > 0 ? <ArchivesCarte plans={visible} transactions={data.transactions} payments={data.payments} busy={busy} onOuvrir={open} onReprendre={p => void reprendre(p)}/>

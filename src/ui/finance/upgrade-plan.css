@@ -105,7 +105,7 @@
 .kh-fold summary svg { margin-left:auto; transition:transform .15s; }
 .kh-fold[open] summary svg { transform:rotate(180deg); }
 .kh-fold p { font-size:13px; line-height:1.4; margin:0 0 8px; }
-.kh-ends { display:flex; justify-content:space-between; }
+.kh-ends { display:flex; justify-content:space-between; flex-wrap:wrap; gap:0 8px; }
 .kh-ends button { height:44px; display:inline-flex; align-items:center; gap:6px; font-size:14px; padding:0 4px; }
 .kh-hbtn { font:inherit; font-weight:inherit; min-height:44px; display:inline-flex; align-items:center; text-align:left; }
 .upgrade-workspace .kh-tabs [aria-label="Afficher les projets"] > button[aria-pressed="true"] { background:transparent; box-shadow:none; color:rgb(var(--cave-texte-50)); }
@@ -120,6 +120,28 @@
 .kh-rmain { gap:8px; }
 .kh-u { min-height:44px; display:inline-flex; align-items:center; border-bottom:0; }
 .kh-u span { border-bottom:1.5px dashed var(--kh-att); }
+.kh-bigu { font-size:20px; font-weight:600; color:var(--kh-att); }
+/* fix-materiel (constats 7, 8, 27) : la ligne sans prix porte « à estimer » puis le crayon ; sur 390 elle reste à une ligne de titre. */
+.kh-r .kh-u { font-size:13px; }
+/* Confirmation sur place (feuille du projet et fiche d'À venir) : hors de `.kh`, donc des jetons du thème et non ceux de `kh`. */
+.fm { display:flex; flex-direction:column; gap:8px; width:100%; padding:2px 4px 4px; }
+.fm-q { margin:0; font-size:14px; line-height:20px; color:rgb(var(--cave-texte-200)); }
+.fm-q b { color:rgb(var(--cave-texte-50)); font-weight:600; }
+.fm-b { display:flex; gap:8px; }
+.fm-b button { flex:1; min-height:44px; padding:0 14px; border-radius:10px; font-size:15px; font-weight:600; border:1px solid var(--pj-bordm, rgb(var(--cave-600))); background:transparent; color:rgb(var(--cave-texte-200)); }
+.fm-b .fm-oui { background:rgb(var(--cave-texte-50)); border-color:rgb(var(--cave-texte-50)); color:rgb(var(--cave-950)); }
+.fm-b .fm-danger { background:rgb(var(--alert-strong-texte)); border-color:rgb(var(--alert-strong-texte)); color:rgb(var(--cave-950)); }
+.fm-b button:disabled { opacity:.55; }
+.fm-b button:focus-visible, .fm-sup:focus-visible { outline:2px solid rgb(var(--cave-texte-50)); outline-offset:2px; }
+.fm-pied { flex-wrap:wrap; }
+.fm-sup { order:-1; flex:1 0 100%; display:inline-flex; align-items:center; justify-content:flex-start; gap:6px; min-height:44px; padding:0 2px; border:0; background:none; font-size:14px; font-weight:600; color:rgb(var(--alert-strong-texte)); }
+.fm-sup svg { width:16px; height:16px; }
+.fm-sup:disabled { opacity:.55; }
+.kh .fm { padding:8px 0 0; }
+.kh .fm-q { color:var(--kh-ink); }
+.kh .fm-q b { color:var(--kh-ink); }
+.kh-ends .fm-sup-f { color:rgb(var(--alert-strong-texte)); }
+@media (prefers-reduced-motion: reduce) { .fm * { transition:none; } }
 .kh-pan { background:var(--kh-finbg); box-shadow:inset 3px 0 0 var(--kh-fin); padding:6px 10px 10px 12px; border-bottom:1px solid var(--kh-line); display:flex; flex-direction:column; gap:8px; }
 .kh-f { display:flex; gap:8px; align-items:center; }
 .kh-in { flex:1; min-width:0; height:44px; border-radius:10px; border:2px solid var(--kh-fin); background:var(--kh-bg); display:flex; align-items:center; padding:0 10px; gap:6px; font-size:16px; }

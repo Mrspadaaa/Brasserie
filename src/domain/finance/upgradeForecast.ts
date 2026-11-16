@@ -43,9 +43,14 @@ const parHorizon = (a: FinancialPlan, b: FinancialPlan) => ORDRE_HORIZON.indexOf
 /** Les projets à venir (idées et inclus), dans l'ordre de la liste : horizon, date, ordre de saisie, nom. */
 export const avenir = (plans: FinancialPlan[]): FinancialPlan[] => plans.filter(p => isUpgradePlan(p) && ['draft', 'active'].includes(p.status)).sort(parHorizon);
 
-/** Le prochain achat : le projet posé dont le mois vient en premier (à mois égal, l'horizon puis le nom). Aucun posé, aucun prochain achat. */
+/** Le prochain achat : le projet posé dont le mois vient en premier (à mois égal, l'horizon puis le nom). Aucun posé : repli ci-dessous ; aucun projet à venir, aucun prochain achat. */
 export function prochainAchat(plans: FinancialPlan[]): FinancialPlan | null {
-  return avenir(plans).filter(estPose).sort((a, b) => (a.date).localeCompare(b.date) || parHorizon(a, b))[0] ?? null;
+  const poses = avenir(plans).filter(estPose).sort((a, b) => (a.date).localeCompare(b.date) || parHorizon(a, b));
+  if (poses[0]) return poses[0];
+  /* Constat 7 (jeu en ligne 16.11) : tant qu'un projet existe, un prochain achat est mis en avant. Aucun n'est posé : celui qui a un mois et un prix (le plus proche),
+   * puis un mois sans prix, puis un prix sans mois, enfin le premier dans l'ordre de la liste (horizon, date, saisie, nom). Sans prix, la carte dit « à estimer » : aucun chiffre n'est inventé. */
+  const reste = avenir(plans), rang = (p: FinancialPlan) => (moisDePlan(p) ? 0 : 2) + (upgradeDetails(p).budgetKnown ? 0 : 1);
+  return reste.map((p, i) => ({ p, i })).sort((a, b) => rang(a.p) - rang(b.p) || (rang(a.p) < 2 ? a.p.date.localeCompare(b.p.date) : 0) || a.i - b.i)[0]?.p ?? null;
 }
 
 export interface Suivants { lignes: FinancialPlan[]; connuCents: number; inconnus: number }
