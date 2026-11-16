@@ -66,6 +66,18 @@ export function motCle(titre: string, brassin = false): string {
 }
 
 /**
+ * u2, constat 26 : le nom d'un projet de matériel se lit tel que le brasseur l'a écrit (casse et « ZZ » compris), jamais réduit à un mot-clé en minuscules ;
+ * trop long, il est raccourci par la fin avec « … ». Même règle pour « Avec … » / « Sans … » des cartes de Prévisions.
+ */
+export function nomProjet(titre: string, max = 14): string {
+  const nom = titre.trim().replace(/\s+/g, ' '), signes = [...nom];
+  return signes.length <= max ? nom : `${signes.slice(0, Math.max(1, max - 1)).join('').trimEnd()}…`;
+}
+/** Le mot posé sur une étiquette : « dépenses » pour la tendance, le nom du projet tel quel, sinon le mot-clé de p5b. */
+export const motEtiquette = (item: { source: string; label: string }): string =>
+  item.source === 'trend' ? 'dépenses' : item.source === 'equipment' ? nomProjet(item.label) : motCle(item.label, item.source === 'brew');
+
+/**
  * Au-delà de 10 sorties, une récurrence (même plan, même montant, au moins 3 fois) se regroupe en une seule étiquette (« loyer −400 ×9, le 25 »),
  * posée sur sa première marche ; les autres marches restent dessinées, sans étiquette (la NOTE de p5b : « il faudrait les regrouper »).
  */

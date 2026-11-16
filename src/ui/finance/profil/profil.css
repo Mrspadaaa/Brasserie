@@ -23,7 +23,10 @@
 .pfc-courbe.pfc-essai { stroke-dasharray: 5 4; opacity: .75; }
 .pfc-pt { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; }
 .pfc-pt0 { background: rgb(var(--hop)); } .pfc-pt1 { background: rgb(var(--area-finances)); }
-.pfc-ax { display: flex; justify-content: space-between; font-size: 12px; line-height: 14px; color: var(--pf-t2); margin-top: 4px; }
+.pfc-ax { position: relative; height: 14px; font-size: 12px; line-height: 14px; color: var(--pf-t2); margin-top: 4px; }
+/* u2 (25) : une étiquette par mois, posée à sa date (le 1er du mois) ; la première au bord gauche */
+.pfc-ax span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.pfc-ax .pfc-ax0 { transform: none; }
 .pfc-vr { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 /* pastille : le champ natif, invisible, couvre la pastille (zone tactile 44 px) */
 .pfc-pill { position: relative; display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 10px; border: 1px solid var(--pf-bordm); border-radius: 10px; background: var(--pf-fond); font-size: 14px; color: var(--pf-t1); }

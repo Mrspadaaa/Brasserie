@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Sheet } from '../../Sheet';
 import { NumberInput } from '../../NumberInput';
 import { ChampNombre } from '../../depense/ChampNombre';
@@ -19,8 +20,28 @@ export function MoneyInput({ label, value, onChange, required = false, signed = 
   return <label className="finance-field">{label}<NumberInput aria-label={label} value={value == null ? undefined : value / 100} onValue={v => onChange(v == null ? undefined : Math.round(v * 100))} emptyValue={undefined} required={required} /></label>;
 }
 export function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="finance-field">{label}{children}</label>; }
-export function FormSheet({ title, subtitle, onClose, onSave, children, saveLabel = 'Enregistrer', className = '' }: { title: string; subtitle?: string; onClose: () => void; onSave: () => void | Promise<void>; children: React.ReactNode; saveLabel?: string; className?: string }) {
-  const [error, setError] = useState(''), [busy, setBusy] = useState(false);
+/**
+ * u2 (21, 27) : une question avant un geste qui retire ou range (supprimer, archiver). « Garder » referme sans rien faire ; le refus du service s'écrit ici, à portée du pouce.
+ * Même brique pour la feuille de la prévision et celle du projet de matériel.
+ */
+export function Confirmation({ question, detail, oui, onOui, onGarder, busy = false, erreur = '', danger = true }: { question: string; detail?: string; oui: string; onOui: () => void; onGarder: () => void; busy?: boolean; erreur?: string; danger?: boolean }) {
+  const id = useId();
+  return <div className="fin-conf" role="alertdialog" aria-labelledby={id} aria-describedby={detail ? `${id}d` : undefined}>
+    <p id={id} className="fin-conf-q">{question}</p>{detail && <p id={`${id}d`} className="fin-conf-d">{detail}</p>}
+    {erreur && <p role="alert" className="finance-error">{erreur}</p>}
+    <div className="finance-actions"><button type="button" className="finance-action secondary" onClick={onGarder} disabled={busy}>Garder</button>
+      <button type="button" className={`finance-action${danger ? ' danger' : ''}`} onClick={onOui} disabled={busy}>{oui}</button></div>
+  </div>;
+}
+/** `suppression` : le geste « Supprimer » du pied (prévision déjà enregistrée seulement) ; `etiquette` est son nom lu, `question` ce qu'on demande, `faire` l'écriture (un refus du service s'écrit dans la question). */
+export interface SuppressionFeuille { etiquette: string; question: string; detail?: string; faire: () => void | Promise<void> }
+export function FormSheet({ title, subtitle, onClose, onSave, children, saveLabel = 'Enregistrer', className = '', suppression }: { title: string; subtitle?: string; onClose: () => void; onSave: () => void | Promise<void>; children: React.ReactNode; saveLabel?: string; className?: string; suppression?: SuppressionFeuille }) {
+  const [error, setError] = useState(''), [busy, setBusy] = useState(false), [demande, setDemande] = useState(false), [refus, setRefus] = useState('');
   const submit = async (e?: React.FormEvent) => { e?.preventDefault(); if (busy) return; setBusy(true); setError(''); try { await onSave(); onClose(); } catch (err) { setError(err instanceof Error ? err.message : 'Enregistrement impossible.'); } finally { setBusy(false); } };
-  return <Sheet open title={title} subtitle={subtitle} onClose={onClose} dismissible={!busy} className={`finance-sheet ${className}`.trim()} footer={<div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose} disabled={busy}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy ? 'Enregistrement…' : saveLabel}</button></div>}><form autoComplete="off" id="finance-form" onSubmit={submit} className="finance-form">{error && <p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
+  const supprimer = async () => { if (busy || !suppression) return; setBusy(true); setRefus(''); try { await suppression.faire(); onClose(); } catch (err) { setRefus(err instanceof Error ? err.message : 'Suppression impossible.'); } finally { setBusy(false); } };
+  const pied = demande && suppression
+    ? <Confirmation question={suppression.question} detail={suppression.detail} oui="Oui, supprimer" onOui={() => void supprimer()} onGarder={() => { setDemande(false); setRefus(''); }} busy={busy} erreur={refus} />
+    : <div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose} disabled={busy}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy ? 'Enregistrement…' : saveLabel}</button>
+      {suppression && <button type="button" className="finance-action danger fin-suppr" aria-label={suppression.etiquette} disabled={busy} onClick={() => setDemande(true)}><Trash2 size={14} aria-hidden="true" />Supprimer</button>}</div>;
+  return <Sheet open title={title} subtitle={subtitle} onClose={onClose} dismissible={!busy} className={`finance-sheet ${className}`.trim()} footer={pied}><form autoComplete="off" id="finance-form" onSubmit={submit} className="finance-form">{error && <p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
 }

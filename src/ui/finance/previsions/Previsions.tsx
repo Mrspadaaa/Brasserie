@@ -10,7 +10,7 @@ import type { LedgerSummary } from '../../../domain/finance/ledger';
 import { StorageService } from '../../../services/storage';
 import { UpgradeWorkspace, projetsPasComptes } from '../UpgradeWorkspace';
 import { FinanceForecastSummary } from '../FinanceForecastSummary';
-import { construireEscalier, dernierJourInclus, notions, regrouperTendance, titreHorizon } from './escalier';
+import { construireEscalier, dernierJourInclus, nomProjet, notions, regrouperTendance, titreHorizon } from './escalier';
 import { EscalierSvg, nomLong, styleDe as styleDeBase } from './EscalierSvg';
 import { FicheBrassin, FicheProjet } from './FicheEtiquette';
 import { Feuille } from './Feuille';
@@ -163,7 +163,8 @@ export function Previsions(p: PrevisionsProps) {
   const detailPasComptes = pasComptes.length ? `${aCompleterProjets ? 'date ou budget à compléter' : 'à inclure'} : ${pasComptes.slice(0, 2).map(pl => `${pl.title}${upgradeDetails(pl).budgetKnown && Number.isSafeInteger(pl.amountCents) ? ` ${montant(pl.amountCents)}` : ''}`).join(', ')}${pasComptes.length > 2 ? ` +${pasComptes.length - 2}` : ''}` : '';
   // CP-7 : un escalier sans marche est plat sans dire pourquoi ; le domaine le sait (tendance non calculée sans trois mois d'historique complet, aucun plan ni brassin à venir).
   // Plate = rien APRÈS aujourd’hui : les achats du jour (sa capture du 10.11) ne sont pas une prévision.
-  const plate = affiche.marches.every(m => m.date <= debut);
+  // u2, constat 22 : une prévision enregistrée (plan, récurrence, brassin, projet), même datée d'aujourd'hui, n'est plus « rien » ; seules les factures et la tendance du jour restent « rien après aujourd'hui ».
+  const plate = affiche.marches.every(m => m.date <= debut && m.items.every(i => i.source === 'invoice' || i.source === 'trend'));
   const tendanceACalculer = avec.warnings.some(w => w.startsWith('Tendance non calculée'));
   // CP-4 : la ligne en pointillé dit la cause exacte de la caisse inconnue et renvoie là où elle se règle (solde, paiements à confirmer, registre).
   const renvoi = renvoiCaisse(ledger, p.profile.openingCash, asOf) ?? { cause: 'absent' as const, geste: 'profil' as const, titre: 'Solde de départ à renseigner', aide: 'sans lui, seul l’écart de la période est connu' };
@@ -190,12 +191,12 @@ export function Previsions(p: PrevisionsProps) {
         {tachesOuvertes && <div id="prv-taches-liste" className="prv-taches-liste" style={COLONNE}>{taches.map(ligneTache)}</div>}</div>
       : taches.map(ligneTache)}
     {eSans && planTeste ? <div className="prv-sw" role="group" aria-label="Avec ou sans le projet de matériel">
-      {carte(eAvec, `Avec ${planTeste.title.toLowerCase()}`, !modeSans, () => p.onAvecProjets(true))}
-      {carte(eSans, `Sans ${planTeste.title.toLowerCase()}`, modeSans, () => p.onAvecProjets(false))}</div>
+      {carte(eAvec, `Avec ${nomProjet(planTeste.title, 20)}`, !modeSans, () => p.onAvecProjets(true))}
+      {carte(eSans, `Sans ${nomProjet(planTeste.title, 20)}`, modeSans, () => p.onAvecProjets(false))}</div>
       : carte(eAvec, titre, null)}
     <div className="prv-g" ref={zone}>
       {affiche.marches.length === 0 && <p className="prv-vide">Aucune sortie prévue sur {horizon === 365 ? '12 mois' : `${horizon} jours`}.</p>}
-      <EscalierSvg e={affiche} fantome={fantome} nomFantome={planTeste ? `${modeSans ? 'avec' : 'sans'} ${planTeste.title.toLowerCase()}` : undefined} largeur={largeur} testeId={modeSans ? null : testeId} sousLignes={sousLignes} asOf={asOf} onEtiquette={ouvrirItem} onLot={() => setAnnexe(true)} onRestes={setRestes} />
+      <EscalierSvg e={affiche} fantome={fantome} nomFantome={planTeste ? `${modeSans ? 'avec' : 'sans'} ${nomProjet(planTeste.title, 18)}` : undefined} largeur={largeur} testeId={modeSans ? null : testeId} sousLignes={sousLignes} asOf={asOf} onEtiquette={ouvrirItem} onLot={() => setAnnexe(true)} onRestes={setRestes} />
     </div>
     <div className="prv-leg"><span><i className="prv-dp" />À payer <b className="prv-m">{montant(n.aPayer)}</b></span><span><i className="prv-dv" />Prévu <b className="prv-m">~ {montant(n.prevu)}</b></span></div>
     {restes.length > 0 && <button type="button" className="prv-restes" aria-label={`Voir ${restes.length} ${restes.length > 1 ? 'sorties' : 'sortie'} de plus dans la liste`} onClick={() => setAnnexe(true)}>+ {restes.length} {restes.length > 1 ? 'sorties' : 'sortie'}<ChevronRight size={14} aria-hidden="true" /></button>}
