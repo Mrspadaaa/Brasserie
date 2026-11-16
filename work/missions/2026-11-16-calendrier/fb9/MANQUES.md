@@ -147,3 +147,11 @@ Règle : aucun geste n'ouvre le clavier par défaut.
   - la bande des semaines tient sur 2 lignes au plus (la ligne des mois et les semaines se fondent) ;
   - au moins 6 rangées de frise sont visibles.
 - Se fait sans rien retirer. Suivre docs/ui-compacte.md : chrome compact, petites tailles communes.
+
+## Ses zones entourées (16.11 : « Beaucoup de choses peu utilie pour le brasseur prend beaucoup de place... »)
+- Peu utiles, à réduire ou à replier à un toucher, sans supprimer :
+  - l'en-tête « 113 CHF à dépenser… », avec plein écran et « 2 en retard » ;
+  - les segments de période (remplacés par le pincement) ;
+  - le bloc « libre en fin de semaine » : la ligne des mois, les semaines et leurs montants ;
+  - les lignes de titre de rangée, sans ligne dédiée : titre dans la marge gauche ou sur la ligne de la première barre.
+- À garder en avant : la courbe de caisse et les barres de la frise.
