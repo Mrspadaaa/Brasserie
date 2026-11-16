@@ -82,8 +82,8 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
 
   const contexte = (): Contexte => ({ saisie: new Date(), contacts: bruts.filter((i) => i.type === 'prospect'), tarifs, bieres });
 
-  /** Le « + » est-il offert pour cette note ? (une fois par note, en ligne, IA allumée) */
-  const plusOffert = (note: ItemCarnet) => niveauAppel(true, mode, enLigne, plusFait.has(note.id)) !== null;
+  /** Le « + » est-il offert pour cette note ? (une fois par note, en ligne, IA allumée, et la note assez longue pour avoir été envoyée : sous 3 mots on a dit « sans IA ») */
+  const plusOffert = (note: ItemCarnet) => assezPourIA(note.title) && niveauAppel(true, mode, enLigne, plusFait.has(note.id)) !== null;
 
   /**
    * La note part à l'IA : simulée au banc, réelle seulement si le drapeau le permet. `null` : rien d'utilisable, la note reste brute.

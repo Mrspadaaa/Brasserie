@@ -131,3 +131,41 @@ describe('kb3 · passe 4 (critique de la passe 3)', () => {
     expect(screen.getByRole('button', { name: /En recette/ })).toHaveAttribute('aria-pressed', 'true');
   });
 });
+
+// Retouches finales (critique de kb3, n° 2) : le toast « Idée archivée · Annuler » ne survit pas à la suppression de l'idée.
+function BieresVivantes() {
+  const [l, setL] = React.useState<CreativeItem[]>([biere('a', 'ZZ TEST Brune')]);
+  return <IdeesBieres idees={l} recettes={[]} ajout={false} onAjout={vi.fn()} onCreer={vi.fn()} onPasser={vi.fn(() => 'R')} onSupprimer={(i) => setL((x) => x.filter((y) => y.id !== i.id))}
+    onMaj={(i) => setL((x) => x.map((y) => (y.id === i.id ? i : y)))} />;
+}
+function PrixVivants() {
+  const [l, setL] = React.useState<CreativeItem[]>([{ id: 'p', type: 'pricing-test', title: 'Fût 20 L', status: 'idea', targetPrice: 140, format: 'fut' } as CreativeItem]);
+  return <IdeesPrix idees={l} ajout={false} onAjout={vi.fn()} onCreer={vi.fn()} onSupprimer={(i) => setL((x) => x.filter((y) => y.id !== i.id))}
+    onMaj={(i) => setL((x) => x.map((y) => (y.id === i.id ? i : y)))} />;
+}
+describe('kb3 · retouches finales : toast périmé', () => {
+  afterEach(() => cleanup());
+  it('R2 · bière : après « Supprimer » confirmé, le toast « Idée archivée · Annuler » a disparu', () => {
+    render(<BieresVivantes />);
+    fireEvent.click(screen.getByRole('button', { name: /ZZ TEST Brune/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Archiver « ZZ TEST Brune »/ }));
+    expect(screen.getByText('Idée archivée')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Archivées/ }));
+    fireEvent.click(screen.getByRole('button', { name: /ZZ TEST Brune/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer « ZZ TEST Brune »/ }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Supprimer' }));
+    expect(screen.queryByText('Idée archivée')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Annuler' })).not.toBeInTheDocument();
+  });
+  it('R2 · prix : idem pour une idée de prix', () => {
+    render(<PrixVivants />);
+    fireEvent.click(screen.getByRole('button', { name: /Fût 20 L/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Archiver « Fût 20 L »/ }));
+    expect(screen.getByText('Idée archivée')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Archivées/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Fût 20 L/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Supprimer « Fût 20 L »/ }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Supprimer' }));
+    expect(screen.queryByText('Idée archivée')).not.toBeInTheDocument();
+  });
+});

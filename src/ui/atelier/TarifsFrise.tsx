@@ -192,8 +192,8 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
             <ul className="tf-gl">{aVoir.map((v) => <li key={v.cle}>
               <button type="button" className="tf-gr" onClick={() => ouvrirVente(v)}>
                 <span className="tf-gi"><Genre genre={v.genre} /></span>
-                <span className="tf-gn">{v.qui}<small>{nomFormat(v.formatId, v.litresUnite)} · {chf(v.prix)} l’unité · {fr2(v.litre)} CHF le litre</small></span>
-                <span className="tf-pill tf-pill-verif">à vérifier</span>
+                <span className="tf-gn"><span className="tf-gq">{v.qui}<span className="tf-pill tf-pill-verif">à vérifier</span></span>
+                  <small><span className="tf-nw">{nomFormat(v.formatId, v.litresUnite)}</span> · <span className="tf-nw">{chf(v.prix)} l’unité</span> · <span className="tf-nw">{fr2(v.litre)} CHF le litre</span></small></span>
               </button>
             </li>)}</ul>
           </div>}

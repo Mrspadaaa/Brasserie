@@ -162,7 +162,7 @@ export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, o
               <span className="lo-k">Notes</span><ChampTexte valeur={i.notes ?? ''} etiquette="Notes" placeholder="à noter" onValider={(v) => maj({ ...i, notes: v || undefined })} />
             </div>
             {rangee
-              ? <ActionsRangees titre={i.title} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} onRemettre={() => { maj(restaurerIdee(i)); setFiltre('essayer'); }} />
+              ? <ActionsRangees titre={i.title} onSupprimer={() => { onSupprimer(i); setOuvert(null); setMessage(null); }} onRemettre={() => { maj(restaurerIdee(i)); setFiltre('essayer'); }} />
               : recette
                 ? <div className="lo-linked" role="status"><Check size={18} aria-hidden="true" />En recette{onOuvrirRecette && <button type="button" onClick={() => onOuvrirRecette(recette.id)}><BookOpen size={16} aria-hidden="true" />Ouvrir la recette</button>}</div>
                 : <div className="lo-act">
@@ -295,7 +295,7 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
                 <small>{i.estimatedCost === undefined ? '· marge sans chiffre' : 'CHF'}</small></div>
             </div>
             {voirRangees
-                ? <ActionsRangees titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} onRemettre={() => { onMaj(restaurerPrix(i)); setRangees(false); }} />
+                ? <ActionsRangees titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); setMessage(null); }} onRemettre={() => { onMaj(restaurerPrix(i)); setRangees(false); }} />
                 : <div className="lo-act"><button type="button" className="lo-sec" aria-label={`Archiver « ${titreIdee(i)} »`} onClick={() => archiver(i)}><Archive size={18} aria-hidden="true" /></button>
                     <button type="button" className="lo-fix" onClick={versPrix}><Tag size={18} aria-hidden="true" /><b>Fixer dans Clients › Prix</b><ChevronRight size={18} aria-hidden="true" /></button></div>}
           </>}

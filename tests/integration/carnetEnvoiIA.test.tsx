@@ -90,11 +90,32 @@ describe('Carnet : l’envoi d’une note et l’appel IA', () => {
     expect(document.body.textContent).not.toMatch(/Flash|Gemini|Hydrogen/i);
   });
 
+  it('retouche finale n° 1 : sous 3 mots, ni « Ranger » ni « modèle plus précis » (on ne propose pas l’IA après avoir dit « sans IA »)', async () => {
+    render(<Carnet />);
+    ecrire('2 fûts'); envoyer();
+    expect(await screen.findByText(/Gardée telle quelle : moins de 3 mots/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /modèle plus précis/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Ranger' })).not.toBeInTheDocument();
+    expect(run).not.toHaveBeenCalled();
+  });
+
   it('IA éteinte : aucun indice, aucun appel', () => {
     render(<Carnet mode="eteint" />);
     ecrire('Appeler Marc demain pour les fûts');
     expect(screen.queryByText(/l’IA lit/)).not.toBeInTheDocument();
     envoyer();
     expect(run).not.toHaveBeenCalled();
+  });
+});
+
+// Retouche finale n° 6 : la carte « Tarif » du Carnet prend la teinte de Tarifs (production), pas le bleu d'« À faire » (finances).
+import { CarteChose } from '../../src/ui/atelier/NoteAiguillage';
+describe('Carnet : teinte de la carte Tarif', () => {
+  it('la carte d’une idée de prix n’a pas la teinte des événements', () => {
+    const { container } = render(<CarteChose item={{ id: 'p', type: 'pricing-test', title: 'Fût 20 L', status: 'idea', targetPrice: 145, format: 'fut' } as CreativeItem} onOuvrir={() => {}} onDate={() => {}} />);
+    const style = (container.querySelector('.nc-car') as HTMLElement).style.getPropertyValue('--c');
+    expect(style).toBe('var(--a-prod)');
+    const ev = render(<CarteChose item={{ id: 'e', type: 'event', title: 'Marché', status: 'todo' } as CreativeItem} onOuvrir={() => {}} onDate={() => {}} />);
+    expect((ev.container.querySelector('.nc-car') as HTMLElement).style.getPropertyValue('--c')).toBe('var(--a-fin)');
   });
 });

@@ -123,7 +123,8 @@ export const CarteChose: React.FC<{ item: CreativeItem; onOuvrir: (item: Creativ
   if (item.type === 'pricing-test') {
     // Constat 11 : une idée de prix se lit aussi dans le Carnet « Tout », avec son type ; la toucher ouvre Tarifs, où elle se règle.
     const prix = item.targetPrice !== undefined && item.targetPrice > 0 ? item.targetPrice : undefined;
-    return <div className="nc-car" style={{ ['--c' as string]: 'var(--a-fin)' }}>
+    // Retouche finale n° 6 : la teinte de Tarifs (celle des idées de prix de l'onglet : --a-prod), pas le bleu d'« À faire » (--a-fin).
+    return <div className="nc-car nc-car-tarif" style={{ ['--c' as string]: 'var(--a-prod)' }}>
       <button type="button" className="nc-tx" onClick={() => onOuvrir(item)} aria-label={`Idée de prix ${titreIdee(item)}, ouvrir Tarifs`}>
         <span className="nc-st"><Tag size={13} aria-hidden="true" />Tarif</span><b>{titreIdee(item)}</b>
         <span className="nc-px">{prix !== undefined ? `${chf(prix)} CHF HT` : 'prix à estimer'}</span>
