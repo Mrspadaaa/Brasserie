@@ -34,7 +34,8 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
   const { du: debut, au: fin } = bornes(p);
   /* « Tout » n'a pas de jours : la frise montre alors le mois en cours, et les poignées posent une plage. */
   const mois = (debut ?? aujourdhui).slice(0, 7);
-  const plage = p.genre === 'mois' || p.genre === 'tout' ? null : { du: debut as string, au: fin as string };
+  /* v2 (1) : « Tout l'historique » : la frise couvre l'étendue réelle (de la première à la dernière opération), poignées aux deux bouts, jamais un seul mois. */
+  const plage = p.genre === 'tout' ? (etendue ?? null) : p.genre === 'mois' ? null : { du: debut as string, au: fin as string };
   const montree = plage ?? { du: `${mois}-01`, au: `${mois}-${String(new Date(Number(mois.slice(0, 4)), Number(mois.slice(5, 7)), 0).getDate()).padStart(2, '0')}` };
   const annee = Number(mois.slice(0, 4));
   /* v1 (33) : « Tout l'historique » se dit comme tel (toutes les opérations, d'où à où), jamais par les « 30 jours » du mois que la frise montre pour poser une plage. */
@@ -76,7 +77,7 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
           <button key={r.cle} type="button" aria-pressed={memePeriode(p, r.valeur)} onClick={() => onChoisir(r.valeur)}>{r.texte}</button>
         ))}
       </div>
-      <Frise mois={mois} plage={plage} aujourdhui={aujourdhui} jourMax={jourMaxi(aujourdhui)} nbOperations={nombre(montree.du, montree.au)} donnees={donnees}
+      <Frise key={p.genre === 'tout' ? 'tout' : 'jours'} mois={mois} plage={plage} aujourdhui={aujourdhui} jourMax={jourMaxi(aujourdhui)} nbOperations={nombre(montree.du, montree.au)} donnees={donnees}
         resume={p.genre === 'tout' ? <span>Tout l’historique · {nTout === 0 ? 'aucune opération' : <><b className="ops-m">{nTout}</b> opération{nTout > 1 ? 's' : ''}</>}</span> : undefined}
         onPlage={(a, b) => onChoisir(depuisJours(a, b))} onMois={() => onChoisir({ genre: 'mois', annee, mois: Number(mois.slice(5, 7)) })} />
       <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}`}>

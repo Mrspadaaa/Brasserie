@@ -147,8 +147,10 @@ export function etiquettesAxe(f: Fenetre, p: Plage, aujourdhui: string): Etiquet
   const cheval = p.du.slice(0, 7) !== p.au.slice(0, 7);
   const duX = xDebut(f, p.du), auX = xFin(f, p.au);
   const proches = auX - duX < ECART_MINI;
-  const res: Etiquette[] = [{ x: duX, texte: jourCourt(p.du, cheval), genre: 'poignee', ancre: proches ? 'droite' : 'milieu' }];
-  if (p.au !== p.du) res.push({ x: auX, texte: jourCourt(p.au), genre: 'poignee', ancre: proches ? 'gauche' : 'milieu' });
+  /* v2 (1) : sur plus d'un an (« Tout l'historique »), les bornes se disent en mois et année (le jour exact est dans « Du … au ») et l'axe marque chaque 1er janvier (« 2025 ») : sans année, « 1er févr. » ne dit pas lequel. */
+  const longue = f.nb > 366;
+  const res: Etiquette[] = [{ x: duX, texte: longue ? `${moisAbrege(p.du)} ${p.du.slice(0, 4)}` : jourCourt(p.du, cheval), genre: 'poignee', ancre: proches ? 'droite' : 'milieu' }];
+  if (p.au !== p.du) res.push({ x: auX, texte: longue ? `${moisAbrege(p.au)} ${p.au.slice(0, 4)}` : jourCourt(p.au), genre: 'poignee', ancre: proches ? 'gauche' : 'milieu' });
   // Une étiquette n'entre que si son texte, une fois posé (centré, ou collé au bord), ne chevauche aucune autre : « 29 oct. » collé à gauche
   // couvre le « 1er nov. » centré à 17 % (relevé en capture, 14.11). Largeur d'un signe : ~6 px sur une piste de ~320 px.
   const SIGNE = 6 / 320, MARGE = 0.012;
@@ -160,8 +162,12 @@ export function etiquettesAxe(f: Fenetre, p: Plage, aujourdhui: string): Etiquet
   const libre = (x: number, texte: string) => { const [g, d] = etendue(x, texte, 'milieu'); return res.every(e => { const [eg, ed] = etendue(e.x, e.texte, e.ancre); return d + MARGE <= eg || g - MARGE >= ed; }); };
   const ajout = (x: number, texte: string, genre: Etiquette['genre']) => { if (libre(x, texte)) res.push({ x, texte, genre, ancre: 'milieu' }); };
   if (aujourdhui >= f.debut && aujourdhui <= finFenetre(f)) ajout((indiceDe(f, aujourdhui) + 0.5) / f.nb, `auj. ${Number(aujourdhui.slice(8, 10))}`, 'auj');
-  for (const jour of joursDeFenetre(f)) if (jour.endsWith('-01') && jour !== f.debut) ajout(xDebut(f, jour), jourCourt(jour, true), 'mois');
-  ajout((f.nb - 0.5) / f.nb, String(Number(finFenetre(f).slice(8, 10))), 'fin');
+  for (const jour of joursDeFenetre(f)) {
+    if (!jour.endsWith('-01') || jour === f.debut) continue;
+    if (!longue) ajout(xDebut(f, jour), jourCourt(jour, true), 'mois');
+    else if (jour.endsWith('-01-01')) ajout(xDebut(f, jour), jour.slice(0, 4), 'mois');
+  }
+  if (!longue) ajout((f.nb - 0.5) / f.nb, String(Number(finFenetre(f).slice(8, 10))), 'fin');
   return res.map(e => ({ ...e, ancre: ancreDe(e.x, e.ancre) }));
 }
 

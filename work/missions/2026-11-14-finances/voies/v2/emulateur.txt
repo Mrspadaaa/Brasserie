@@ -1,0 +1,17 @@
+ok  hausse + le paiement suit : 2 étapes, 2 lots : montant 4550, réglé 4550, 2 paiements (attendu 4550 / 4550)
+ok  hausse + reste à payer : 1 étapes, 1 lots : montant 4550, réglé 4200, 1 paiements (attendu 4550 / 4200)
+ok  baisse sous le payé + le paiement suit : 3 étapes, 3 lots : montant 4000, réglé 4000, 3 paiements (attendu 4000 / 4000)
+ok  baisse sous le payé, « reste à payer » demandé : le paiement suit quand même (q6) : 3 étapes, 3 lots : montant 4000, réglé 4000, 3 paiements (attendu 4000 / 4000)
+ok  baisse sous le payé + « j’ai bien payé » : la créance « À récupérer » de 2,00 et sa sortie sont acceptées, les 52,00 du virement restent sortis : 4 étapes : montant 4000, réglé 4000, sorties du jour 5200 puis 5200, créance 200 réglée 200, 0 avoir(s)
+ok  baisse avec deux paiements inversés + le paiement suit : 4 étapes, 4 lots : montant 2500, réglé 2500, 5 paiements (attendu 2500 / 2500)
+ok  baisse avec un seul paiement inversé (le reste tient) : 3 étapes, 3 lots : montant 4000, réglé 4000, 4 paiements (attendu 4000 / 4000)
+ok  virement de 300,00 sur deux pièces du même fournisseur (un lot) : pièce 1 réglée 6000/6000, pièce 2 réglée 24000/40000
+ok  retrait d’une dépense payée en deux fois : 2 contre-paiement(s) puis l'annulation : réglé 0, annulée oui, 4 paiements conservés
+ok  retrait d’un apport (19 : +5,00 impossible à retirer) : 1 contre-paiement(s) puis l'annulation : réglé 0, annulée oui, 2 paiements conservés
+ok  retrait d’un prélèvement privé : 1 contre-paiement(s) puis l'annulation : réglé 0, annulée oui, 2 paiements conservés
+ok  témoin : annuler une pièce encore payée est refusé : refusé comme attendu (permission-denied)
+ok  témoin baisse sous le payé + suit (un seul lot) : refusé comme attendu (permission-denied : 7 PERMISSION_DENIED: 
+ok  témoin baisse avec deux paiements (un seul lot) : refusé comme attendu (permission-denied : 7 PERMISSION_DENIED: 
+ok  témoin hausse + suit (un seul lot) : refusé comme attendu (permission-denied : 7 PERMISSION_DENIED: 
+ok  témoin baisse + reste (un seul lot) : refusé comme attendu (permission-denied : 7 PERMISSION_DENIED: 
+EMULATEUR OK : 12 contrôles joués contre les règles du dépôt, un lot par étape ; témoins refusés
