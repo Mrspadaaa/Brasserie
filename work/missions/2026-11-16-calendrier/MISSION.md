@@ -73,3 +73,9 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
   2. puis une boucle à 9,5 avec CRITERES-10.md ;
   3. puis les liens de l'app.
 - Seuls les gestes irréversibles ou externes attendent son accord : déploiement, données réelles, Gemini facturé.
+
+## Suite autonome (16.11)
+- Workflow `suite-autonome`, task w6pd4nugf, run wf_67a37ba3-499. Sorties dans `suite/` : SESSIONS.md, CHOIX-OUVERTS.md, DECISIONS.md. Le PORTRAIT est recalé par l'étalonnage.
+- Au retour, relancer les sessions qui ont des constats ouverts (message de 700 caractères au plus).
+- Rejouer en ligne, sur ZZ TEST, les corrections taguées.
+- Appliquer DECISIONS.md.
