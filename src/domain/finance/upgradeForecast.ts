@@ -131,3 +131,10 @@ export function titreCourt(titre: string): string {
   const court = apres ? apres[1] : t.split(/\s+/)[0] ?? t;
   return court.length > 12 ? `${court.slice(0, 11)}…` : court;
 }
+
+/** L'étape que dit la pastille du prochain achat (« D’abord · devis reçu », maquette kyh1) : celle du projet, pas un mot de code. */
+export function etapeHero(plan: FinancialPlan): string {
+  const repere = repereDe(plan);
+  if (repere === 'prix') return upgradeDetails(plan).estimateSource === 'quote' ? 'devis reçu' : 'prix trouvé';
+  return REPERES[repere].toLowerCase();
+}

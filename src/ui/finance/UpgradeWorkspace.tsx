@@ -6,7 +6,7 @@ import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
 import { buildForecast, type FinanceForecast } from '../../domain/finance/forecast';
 import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre, type Anneau, type Fournisseur, type TonAnneau } from '../../domain/finance/upgradeRing';
 import type { CreativeItem } from '../../types';
-import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
+import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, etapeHero, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
@@ -201,7 +201,8 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
           : connus.length === 3 ? <><span className="t">Total</span><span className="v t kh-m">{chf2(plan.amountCents)}</span></>
           : <><span className="t">Au moins <small>· {connus.length} prix sur 3</small></span><span className="v t">{connus.length === 1 && d.purchaseCents != null ? 'l’achat seul' : 'les prix connus'}</span></>}</div>
       <div className="kh-lbl">Posé sur</div>
-      {d.budgetKnown ? <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/> : <p className="finance-muted">Sans prix, rien à poser : chiffre le projet avec Modifier.</p>}
+      <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>
+      {!d.budgetKnown && <p className="finance-muted">Sans prix, le mois se pose mais rien n’entre dans tes prévisions : chiffre le projet avec Modifier.</p>}
       <button type="button" role="switch" aria-checked={plan.status === 'active'} className="kh-sw" disabled={!!busy} onClick={() => onInclusion(plan.status !== 'active')}><i/>Dans mes prévisions</button>
       {effet && effet.avecCents != null && effet.sansCents != null
         ? <><div className="kh-lbl">Fin {mTxt}</div><div className="kh-vs"><button type="button" className="w" onClick={onPrevisions}><small>Avec {titreCourt(plan.title)}{effet.auPlus ? ', au plus' : ''}</small><b className="kh-m">{chf0(effet.avecCents)}</b></button><div className="wo"><small>Sans</small><b className="kh-m">{chf0(effet.sansCents)}</b></div></div></>
@@ -234,7 +235,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
   const dansFiche = plans.find(p => p.id === fiche);
   return <div className="kh">
     {hero && <section className="kh-hero" aria-label="Prochain achat">
-      <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {!estPose(hero) ? 'à poser' : upgradeDetails(hero).estimateSource === 'quote' ? 'devis reçu' : 'estimation'}</span></div>
+      <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {etapeHero(hero)}</span></div>
       <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
         {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
       {effetHero && <EffetCaisse plan={hero} effet={effetHero}/>}

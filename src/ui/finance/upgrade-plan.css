@@ -15,6 +15,7 @@
 .kh-pill { margin-left:auto; font-size:13px; padding:1px 8px; border-radius:999px; background:var(--kh-bg); border:1px solid var(--kh-line2); color:var(--kh-ink); }
 .kh-hm { display:flex; align-items:baseline; gap:6px; margin-top:3px; }
 .kh-hm h2 { flex:1; min-width:0; margin:0; font-size:20px; line-height:1.15; font-weight:700; }
+.kh-hm h2 .kh-hbtn { font-size:20px; font-weight:700; line-height:1.15; }
 .kh-big { font-size:28px; font-weight:700; line-height:1; }
 .kh-hm small { font-size:12px; color:var(--kh-mut); }
 .kh-eff { display:flex; height:24px; margin-top:6px; border-radius:6px; overflow:hidden; font-size:14px; }
@@ -123,6 +124,8 @@
 .kh-bigu { font-size:20px; font-weight:600; color:var(--kh-att); }
 /* fix-materiel (constats 7, 8, 27) : la ligne sans prix porte « à estimer » puis le crayon ; sur 390 elle reste à une ligne de titre. */
 .kh-r .kh-u { font-size:13px; }
+/* la fiche : « à estimer » d'une ligne de coût n'est pas une cible (pas de 44 px) : il se cale sur sa ligne, comme le montant */
+.kh-cost .kh-u { min-height:0; display:inline; align-self:center; }
 /* Confirmation sur place (feuille du projet et fiche d'À venir) : hors de `.kh`, donc des jetons du thème et non ceux de `kh`. */
 .fm { display:flex; flex-direction:column; gap:8px; width:100%; padding:2px 4px 4px; }
 .fm-q { margin:0; font-size:14px; line-height:20px; color:rgb(var(--cave-texte-200)); }
@@ -132,6 +135,7 @@
 .fm-b .fm-oui { background:rgb(var(--cave-texte-50)); border-color:rgb(var(--cave-texte-50)); color:rgb(var(--cave-950)); }
 .fm-b .fm-danger { background:rgb(var(--alert-strong-texte)); border-color:rgb(var(--alert-strong-texte)); color:rgb(var(--cave-950)); }
 .fm-b button:disabled { opacity:.55; }
+.fm .fm-b button { display:inline-flex; align-items:center; justify-content:center; text-align:center; }
 .fm-b button:focus-visible, .fm-sup:focus-visible { outline:2px solid rgb(var(--cave-texte-50)); outline-offset:2px; }
 .fm-pied { flex-wrap:wrap; }
 .fm-sup { order:-1; flex:1 0 100%; display:inline-flex; align-items:center; justify-content:flex-start; gap:6px; min-height:44px; padding:0 2px; border:0; background:none; font-size:14px; font-weight:600; color:rgb(var(--alert-strong-texte)); }
