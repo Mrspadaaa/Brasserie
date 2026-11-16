@@ -30,7 +30,7 @@ export type PlusCle =
 export type PlusTon = 'finances' | 'production' | 'stocks' | 'clients';
 
 export type EcranId =
-  | 'bord' | 'finances' | 'brassins' | 'recettes' | 'atelier' | 'volumes'
+  | 'bord' | 'finances' | 'calendrier' | 'brassins' | 'recettes' | 'atelier' | 'volumes'
   | 'stock' | 'courses' | 'futs' | 'materiel' | 'houblons' | 'clients' | 'impot' | 'tarifs';
 
 /** Ce que l'app sait au moment d'ouvrir la feuille. Un champ absent = inconnu. */
@@ -134,6 +134,7 @@ const enCuve = (c: PlusContexte) => (c.enCuve && c.enCuve > 0 ? `${c.enCuve} en 
 const MENUS: Record<EcranId, Fiche> = {
   bord: { chemin: 'Bord', ton: 'finances', autres: ['courses'] },
   finances: { chemin: 'Finances', ton: 'finances', autres: ['estimer', 'facture', 'vente'] },
+  calendrier: { chemin: 'Calendrier', ton: 'production', autres: [], etat: enCuve },
   /* Décision du pilote (16.11) : la partie écran de la pile de Brassins = « Nouveau brassin », « Saisir une densité » (seulement si un brassin est en fermentation), « Créer une recette » ; pas de Courses. Écriture, facture, vente et Compagnon restent sous « Partout ». */
   brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'recette'], etat: enCuve },
   recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
@@ -154,6 +155,7 @@ export function ecranId(tab: TabType, subTab?: AnySubTab | null): EcranId {
   switch (tab) {
     case 'dashboard': return 'bord';
     case 'finances': return 'finances';
+    case 'calendrier': return 'calendrier';
     case 'production':
       return ({ recipes: 'recettes', lab: 'atelier', scaler: 'volumes' } as Record<string, EcranId>)[subTab ?? ''] ?? 'brassins';
     case 'stocks':

@@ -92,6 +92,7 @@ const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module
 const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
 const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
 const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
+const CalendrierTab = lazy(() => import('./components/tabs/CalendrierTab').then(module => ({ default: module.CalendrierTab })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
 const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
@@ -888,6 +889,7 @@ export const App: React.FC = () => {
     switch (id) {
       case 'bord': setActiveTab('dashboard'); break;
       case 'finances': setActiveTab('finances'); break;
+      case 'calendrier': setActiveTab('calendrier'); break;
       case 'brassins': production('batches'); break;
       case 'recettes': production('recipes'); break;
       case 'atelier': production('lab'); break;
@@ -1249,6 +1251,24 @@ export const App: React.FC = () => {
               if (recipe) openRecipe(recipe);
             }}
             onOpenSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
+          />
+        )}
+
+        {activeTab === 'calendrier' && (
+          <CalendrierTab
+            transactions={transactions}
+            batches={batches}
+            stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
+            onOpenBatch={(batchId) => {
+              setProductionSubTab('batches');
+              setBatchOpenRequest({ id: batchId, at: Date.now() });
+              setActiveTab('production');
+            }}
+            onOpenFinances={() => setActiveTab('finances')}
+            onOpenAgenda={() => {
+              setLabSectionRequest({ section: 'event', at: Date.now() });
+              navigateToCreativeLab();
+            }}
           />
         )}
 

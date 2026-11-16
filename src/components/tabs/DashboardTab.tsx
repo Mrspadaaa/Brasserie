@@ -11,7 +11,8 @@ import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { FinanceService } from '../../services/financeService';
-import { formatCHF, summarizeLedger } from '../../domain/finance/ledger';
+import { formatCHF, summarizeLedger, todayISO } from '../../domain/finance/ledger';
+import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '../../domain/calendrier';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { articlesACommander } from '../../domain/stockLevel';
@@ -25,7 +26,7 @@ interface DashboardTabProps {
   planning: GanttTask[];
   config: AppConfig;
   globalTimeFilter: PeriodeEntree;
-  onNavigateTab: (tab: 'finances' | 'production' | 'stocks' | 'clients') => void;
+  onNavigateTab: (tab: 'finances' | 'calendrier' | 'production' | 'stocks' | 'clients') => void;
   onOpenBatch: (batchId: string) => void;
   onNavigateToCreativeLab: () => void;
 }
@@ -153,6 +154,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
       dateOrder(a.date) - dateOrder(b.date)), [creativeItems]);
   const pendingEvents = events.filter(item => item.status !== 'done');
+  /* « Cette semaine au calendrier » (onglet/v1) : ce que le calendrier pose cette semaine, lu des mêmes brassins et événements que lui (les échéances de Finances ne s'y comptent pas : sans ligne, le Bord n'affirme pas « rien »). */
+  const cetteSemaine = useMemo(() => {
+    const aujourdhui = todayISO(), semaines = semainesDe(aujourdhui);
+    return duneSemaine([...evenementsBrassins(batches, semaines, aujourdhui, batch => joursDepuisBrassage(batch)), ...evenementsAgenda(creativeItems, semaines)], 0);
+  }, [batches, creativeItems]);
 
   const periodTxs = useMemo(() => transactions.filter(tx =>
     dansPeriode(tx.date, globalTimeFilter)), [transactions, globalTimeFilter]);
@@ -203,6 +209,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       vivent dans le bouton d'action flottant, présent sur tous les écrans.
     */}
     <h1 className="sr-only">À la brasserie</h1>
+
+    <button type="button" onClick={() => onNavigateTab('calendrier')} aria-label="Cette semaine au calendrier" aria-describedby="bord-cal-resume" className="flex min-h-[52px] w-full items-center gap-2 rounded-panel border border-area-production/30 bg-cave-900 px-3 py-2 text-left hover:bg-cave-850">
+      <Calendar size={18} className="shrink-0 text-area-production" aria-hidden="true" />
+      <span className="min-w-0 flex-1">
+        <span className="block text-base font-semibold text-cave-50">Cette semaine au calendrier</span>
+        <span id="bord-cal-resume" className="block truncate text-sm text-cave-200">{cetteSemaine.length ? `${cetteSemaine[0].titre} · ${cetteSemaine[0].detail}${cetteSemaine.length > 1 ? ` · +${cetteSemaine.length - 1}` : ''}` : 'Brassins, événements et échéances des six semaines'}</span>
+      </span>
+      <ChevronRight size={18} className="shrink-0 text-cave-400" aria-hidden="true" />
+    </button>
 
     <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="dashboard-production" className="order-1 min-w-0 rounded-panel border border-area-production/30 bg-cave-900">

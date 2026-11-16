@@ -1,8 +1,8 @@
 import React from 'react';
-import { LayoutDashboard, Wallet, Beer, Boxes, Users, MessageCircle, CloudOff } from 'lucide-react';
+import { LayoutDashboard, Wallet, CalendarDays, Beer, Boxes, Users, MessageCircle, CloudOff } from 'lucide-react';
 import './navigation/navigation.css';
 
-export type TabType = 'dashboard' | 'finances' | 'production' | 'stocks' | 'clients';
+export type TabType = 'dashboard' | 'finances' | 'calendrier' | 'production' | 'stocks' | 'clients';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -20,8 +20,9 @@ interface BottomNavProps {
  * la destination active. Les cibles restent dans leur propre colonne.
  *
  * À partir de 1024 px (b1, choisi) la même navigation devient un rail de 88 px
- * à gauche : le + en tête (case réservée par `App`), les cinq rubriques dessous,
- * le Compagnon en pied. Même composant, mêmes boutons, mêmes noms : seule la
+ * à gauche : le + en tête (case réservée par `App`), les six rubriques dessous,
+ * le Compagnon en pied. Six rubriques depuis le 16.11 (onglet/v1, choisi : « avoir un onglet calendrier en bas pour le global ») :
+ * Bord, Finances, Calendrier, Brassins, Stocks, Clients. Même composant, mêmes boutons, mêmes noms : seule la
  * mise en page change, donc aucune action n'est perdue d'une largeur à l'autre.
  *
  * ⚠️ La barre ne porte plus le bouton d'action : il vit dans
@@ -42,6 +43,7 @@ const TABS: Array<{
 }> = [
   { id: 'dashboard', label: 'Bord', Icon: LayoutDashboard, accent: 'text-cave-200', selected: 'bg-cave-850', pastille: 'min-[1024px]:bg-cave-850' },
   { id: 'finances', label: 'Finances', Icon: Wallet, accent: 'text-area-finances', selected: 'bg-area-finances/10', pastille: 'min-[1024px]:bg-area-finances/15' },
+  { id: 'calendrier', label: 'Calendrier', Icon: CalendarDays, accent: 'text-area-production', selected: 'bg-area-production/10', pastille: 'min-[1024px]:bg-area-production/15' },
   { id: 'production', label: 'Brassins', Icon: Beer, accent: 'text-area-production', selected: 'bg-area-production/10', pastille: 'min-[1024px]:bg-area-production/15' },
   { id: 'stocks', label: 'Stocks', Icon: Boxes, accent: 'text-area-stocks', selected: 'bg-area-stocks/10', pastille: 'min-[1024px]:bg-area-stocks/15', badge: true },
   { id: 'clients', label: 'Clients', Icon: Users, accent: 'text-cave-200', selected: 'bg-cave-850', pastille: 'min-[1024px]:bg-cave-850' }
@@ -136,7 +138,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 )}
               </span>
 
-              <span className={`w-full whitespace-nowrap text-xs leading-4 ${active ? 'font-semibold text-cave-50' : 'font-medium text-cave-200'}`}>{label}</span>
+              <span className={`w-full whitespace-nowrap text-sm leading-4 tracking-tight ${active ? 'font-semibold text-cave-50' : 'font-medium text-cave-200'}`}>{label}</span>
             </button>
           );
         })}
