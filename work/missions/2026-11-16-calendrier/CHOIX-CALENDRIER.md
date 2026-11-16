@@ -75,3 +75,7 @@ Captures : fb = `fl/fb/cap/fb-repos-390.png`, `fb-repos-cave-390.png`, `fb-repos
 19. **Non montrés en statique** : le menu du + « Partout / Sur Calendrier / Poser en S47 · 16 nov. » (fb-plus-390) et les gestes K11. g-d1 ne prouve ni leur présence ni leur absence.
 
 Bilan : 16 pertes ou dégradations sûres (1 à 16), 1 à confirmer (17), 1 à préciser (18) et 2 éléments non montrés (19). Dans g-d1, on retrouve la direction de sources2 : courbe, barres et rangées Travaux, Activités, Papiers, 7 rangées entières. Le + est à droite, au-dessus des onglets. L'onglet Calendrier est actif.
+
+## Base au 16.11 au soir
+- La base du calendrier est **g-d1** (`paliers/g-d1.html`) : « g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil ».
+- cd1 sert de réserve d'idées, une à la fois. Son en-tête est refusé (« trop le fouillis. Surtout l'entête.. »).
