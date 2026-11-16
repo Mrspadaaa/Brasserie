@@ -1,0 +1,5 @@
+ok s1.html : courbe 90 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 168 px (max 180), 9 textes (max 12), mois → bande sans mois au-dessus
+ok s2.html : courbe 84 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 160 px (max 180), 9 textes (max 12), mois → bande sans mois au-dessus
+ok s3.html : courbe 90 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 168 px (max 180), 12 textes (max 12), mois → bande sans mois au-dessus
+ok s4.html : courbe 90 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 168 px (max 180), 8 textes (max 12), mois → bande sans mois au-dessus
+ENTETE OK

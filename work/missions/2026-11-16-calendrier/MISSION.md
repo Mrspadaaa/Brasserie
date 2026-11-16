@@ -50,6 +50,8 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | En-têtes plus loin (r6, r2, r5 ; s1, s3) | 16.11 soir | https://claude.ai/artifact/N7bMbjKfX2uzXyNLbbkxwG | `work/missions/2026-11-16-calendrier/page12/index.html` |
 | Gestes de la frise et de la courbe | 16.11 nuit | https://claude.ai/artifact/C6DF63RCtgTF5zp87rFVrf | `work/missions/2026-11-16-calendrier/page14/index.html` |
 | r6b sur sa base, zone simplifiée, paysage (z1 z2 ; w3 w2) | 16.11 nuit | https://claude.ai/artifact/KfY4ajgbeC3QDD3uaWVjRT | `work/missions/2026-11-16-calendrier/page15/index.html` |
+| Mode graph (g4b g2b g3b) | 17.11 nuit | https://claude.ai/artifact/EdifyzyYTXsS6aGoPRgwuP | `work/missions/2026-11-16-calendrier/page16/index.html` |
+| En-tête sobre (s1 s4 ; t1 t3) | 17.11 nuit | https://claude.ai/artifact/8RuCpADH7fFuYgNyPf53tz | `work/missions/2026-11-16-calendrier/page18/index.html` |
 | Gestes des liens (L9 L1 L4 L29 L14) | 16.11 nuit | https://claude.ai/artifact/GWus9iVdYSBKtM2mBt1kb6 | `work/missions/2026-11-16-liens-app/page-inter/index.html` |
 | Calendrier cd1 (g-d1 complété) | 16.11 | https://claude.ai/artifact/4Asn377oaJjCegYuo16uP6 | `work/missions/2026-11-16-calendrier/page7/index.html` |
 | Carnet ra ou p5f, finis | 16.11 | https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL | `work/missions/2026-11-16-carnet-decision/page5/index.html` |
