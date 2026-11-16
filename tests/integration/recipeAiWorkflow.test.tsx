@@ -773,7 +773,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     expect(within(reopenedSheet).getByRole('group', { name: 'Température de fermentation' }).querySelector('[data-fact-reading]')).toHaveTextContent('18–28 °C');
     expect(screen.getByLabelText('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
     expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('12');
-  });
+    // 16.11 : ce parcours dure 14 à 15,3 s (14,5 s déjà avant la période unique) ; le plafond de 15 s le coupait au hasard de la charge.
+  }, 30000);
 
   it('ajoute une source concordante sans remplacer la sélection personnelle ni l’hypothèse de recette', () => {
     const retained: YeastTechnicalFact = { key: 'attenuation', reported: '70–75 %', range: { min: 70, max: 75 }, unit: '%',
