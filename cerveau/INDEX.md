@@ -68,10 +68,10 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[pieges-controles-maquette]] — pièges des contrôles Chrome de la maquette
 - [[gemini-tests-reels]] — Gemini réel en test seulement, journalisé, jamais dans npm test
 - [[poste-windows-msix]] — pièges Windows : MSIX, tâches planifiées, Bash et barres inverses
+- [[maquettes-16-11]] — ajouts du 16.11 aux leçons : maquettes, notes de juges, tactile
 
 ### sources/ — références externes
-- [[moneaudebrassage]] — la référence visuelle de l'atelier de l'eau
-- [[beermaverick-radar]] — le radar de référence : anneaux chiffrés, zéro hors du centre
+- [[moneaudebrassage]] (atelier de l'eau), [[beermaverick-radar]] (radar : anneaux chiffrés, zéro hors du centre) — références visuelles
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran
