@@ -210,9 +210,11 @@ export const ConfirmSheet: React.FC<{
   consequence?: string;
   confirmLabel?: string;
   className?: string;
+  /** Geste destructif au pouce : boutons de 44 px de haut et marge sous eux, au-dessus de la zone sûre (suppression d'une recette, 16.11). */
+  gros?: boolean;
   /** Contenu propre à la confirmation (p3, 3C : les relevés de clôture). Il remplace l'affichage de `what`, qui reste dit aux lecteurs d'écran. */
   children?: React.ReactNode;
-}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className, children }) => (
+}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className, gros, children }) => (
   <Sheet
     open={open}
     onClose={onClose}
@@ -221,11 +223,11 @@ export const ConfirmSheet: React.FC<{
     // Un panneau fixe à bords 0 et largeur bornée se centre par ses marges automatiques.
     className={`lg:max-w-xl lg:mx-auto ${className ?? ''}`}
     footer={
-      <div className="flex gap-3">
+      <div className={gros ? 'flex gap-3 pb-3 pt-1' : 'flex gap-3'}>
         <button
           onClick={onClose}
-          className="flex-1 min-h-touch rounded-control bg-cave-850 border border-cave-700
-                     text-cave-50 text-base transition-colors hover:border-cave-600"
+          className={`flex-1 ${gros ? 'min-h-[44px]' : 'min-h-touch'} rounded-control bg-cave-850 border border-cave-700
+                     text-cave-50 text-base transition-colors hover:border-cave-600`}
         >
           Annuler
         </button>
@@ -234,8 +236,8 @@ export const ConfirmSheet: React.FC<{
             onConfirm();
             onClose();
           }}
-          className="flex-1 min-h-touch rounded-control bg-alert text-cave-50
-                     font-semibold text-base transition-colors hover:brightness-110"
+          className={`flex-1 ${gros ? 'min-h-[44px]' : 'min-h-touch'} rounded-control bg-alert text-cave-50
+                     font-semibold text-base transition-colors hover:brightness-110`}
         >
           {confirmLabel}
         </button>

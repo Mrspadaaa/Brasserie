@@ -85,9 +85,15 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
   return compareRecipeWithStock(recipe, batches, stock, recipes).filter((c) => estJuge(c, adjuvants, coeur)).map((c): LigneBesoin => {
     const dit = lier(c.label, quantite(c), c.unit);
     if (c.match !== 'linked' || c.shortage === null || !c.stockItem) {
-      return { cle: c.key, article: c.label, texte: dit, etat: 'inconnu', droite: c.match === 'linked' ? 'stock à vérifier' : c.match === 'ambiguous' ? 'plusieurs articles' : 'pas au stock' };
+      // Un stock négatif est une donnée fausse : jamais un manque gonflé, signalé à part (point 37).
+      const negatif = c.match === 'linked' && !!c.stockItem && Number.isFinite(c.stockItem.currentStock) && c.stockItem.currentStock < 0;
+      return { cle: c.key, article: c.label, texte: dit, etat: 'inconnu', droite: negatif ? 'stock négatif : à corriger' : c.match === 'linked' ? 'stock à vérifier' : c.match === 'ambiguous' ? 'plusieurs articles' : 'pas au stock' };
     }
-    if (c.shortage > 0) {
+    // Point 37 : `shortage` est le chiffre de « À commander » (besoin de cette recette + prévu ailleurs − stock) et peut dépasser ce que
+    // CETTE recette demande (« 49 kg » pour 5 kg). Sur la recette : manque = max(0, besoin − disponible), jamais au-delà du besoin.
+    // Même unité : `quantity` et `shortage` sont tous deux dans l'unité de l'article.
+    const manque = c.quantity !== null ? Math.min(c.shortage, c.quantity) : c.shortage;
+    if (manque > 0) {
       const unite = c.stockItem.unit;
       const physique = c.physical ?? 0;
       const lots = batches.filter((b) => pendingStockQuantity(c.stockItem!, b) > 0).map((b) => b.id);
@@ -96,9 +102,9 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
         article: c.label,
         texte: dit,
         etat: 'manque',
-        droite: `manque ${dire(c.shortage, unite)}`,
-        manque: lier(c.label, dire(c.shortage, unite), unite),
-        manqueGras: estMesure(unite) ? lier(c.label, dire(c.shortage, unite), unite) : c.label,
+        droite: `manque ${dire(manque, unite)}`,
+        manque: lier(c.label, dire(manque, unite), unite),
+        manqueGras: estMesure(unite) ? lier(c.label, dire(manque, unite), unite) : c.label,
         ...(physique > 0 && (c.available ?? 0) === 0 && lots.length ? { reservePar: { lots, stock: dire(physique, unite) } } : {})
       };
     }

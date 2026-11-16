@@ -1,0 +1,65 @@
+{
+ "erreurs": [],
+ "mesures": {
+  "clair-390-titre": "American IPA 30 L",
+  "clair-390-lignes": [
+   "Supprimer la recetteaprès confirmation",
+   "Écriture",
+   "Facture",
+   "Vente",
+   "Recette",
+   "Brassin",
+   "Compagnonhors connexion"
+  ],
+  "clair-390-ligne-supprimer": [
+   82,
+   742,
+   300,
+   48
+  ],
+  "clair-390-clic": true,
+  "clair-390-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprim"
+  ],
+  "cave-390-titre": "American IPA 30 L",
+  "cave-390-lignes": [
+   "Supprimer la recetteaprès confirmation",
+   "Écriture",
+   "Facture",
+   "Vente",
+   "Recette",
+   "Brassin",
+   "Compagnonhors connexion"
+  ],
+  "cave-390-ligne-supprimer": [
+   82,
+   742,
+   300,
+   48
+  ],
+  "cave-390-clic": true,
+  "cave-390-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprim"
+  ],
+  "clair-1280-titre": "American IPA 30 L",
+  "clair-1280-lignes": [
+   "Supprimer la recetteaprès confirmation",
+   "Écriture",
+   "Facture",
+   "Vente",
+   "Recette",
+   "Brassin",
+   "Compagnonhors connexion"
+  ],
+  "clair-1280-ligne-supprimer": [
+   716,
+   698,
+   300,
+   48
+  ],
+  "clair-1280-clic": true,
+  "clair-1280-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprim"
+  ]
+ }
+}
