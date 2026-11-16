@@ -25,6 +25,6 @@ Scope: huit constats moyens et bas du jeu ZZ TEST du 16.11, chacun avec un test 
   EVIDENCE: pending
 
 - [ ] G5: chaque constat a sa ligne au résultat
-  CHECK: node -e "const t=require('fs').readFileSync('work/missions/2026-11-14-finances/voies/x2/RESULTAT.md','utf8');const m=['FN-30','FN-31','FN-32','FN-34','FN-36','FN-38','FN-39','FN-40'].filter(k=>!t.includes(k));console.log(m.length?'RESULTAT ECHEC '+m:'RESULTAT OK')"
+  CHECK: node -e "const t=require('fs').readFileSync('work/missions/2026-11-14-finances/voies/x2/RESULTAT.md','utf8');const m=['FN-30','FN-31','FN-32','FN-34','FN-36','FN-38','FN-39','FN-40','FN-41','FN-42'].filter(k=>!t.includes(k));console.log(m.length?'RESULTAT ECHEC '+m:'RESULTAT OK')"
   EXPECT: RESULTAT OK
   EVIDENCE: pending

@@ -1,11 +1,11 @@
-# Voie x2 — Constats FN-30, 31, 32, 34, 36, 38, 39, 40 du jeu ZZ TEST du 16.11
+# Voie x2 — Constats FN-30, 31, 32, 34, 36, 38 à 42 du jeu ZZ TEST du 16.11 et du test d'écran dfe9189e
 
 - Mission : 2026-11-14-finances
 - Agent : auteur
 - Modèle : sonnet
 - Niveau : jugement
 - Plafond : 120 tours ; 3 essais par critère
-- Dépend de : dfe9189e (FN-33, FN-35, FN-37 corrigés par le pilote)
+- Dépend de : 18abc69f (FN-33, FN-35, FN-37 corrigés par le pilote, test d'écran 18abc69f)
 - Décideur en cas de doute : pilote
 
 ## Objectif
@@ -21,6 +21,8 @@ Corriger les huit constats moyens et bas restants du jeu en ligne ZZ TEST du 16.
   - FN-36 aperçu « après » de « J'ai bien payé » : `src/components/EditTransactionModal.tsx` (`apres`, `simulerPlan`) : montrer le trop-payé « 2,00 à récupérer » dans l'aperçu.
   - FN-38 créance montrée sur le doublon : `src/ui/finance/TransactionDetails.tsx:54` relie la créance par la description ; la relier à la pièce d'origine sans ambiguïté (ex. champ existant de `TransactionFinance`, sinon la plus ancienne pièce payée de ce nom ayant un trop-payé) ; aucun identifiant brut montré au brasseur.
   - FN-39 « Doublons » désactivé sans raison : dire pourquoi (nom accessible et texte court, ex. « aucun doublon ») ; ne pas changer la garde de saisie.
+  - FN-41 (test d'écran dfe9189e, n° 3) : fiche de A après Payé, Annuler, Payé : « Paiements 3 », un « 10,00 corrigé » barré et un « −10,00 » qui propose « Corriger ce paiement saisi par erreur ». Attendu : un paiement annulé et sa contre-écriture repliés en une ligne « annulé », sans lien de correction sur la contre-écriture (`src/ui/finance/TransactionDetails.tsx`, maquette m5fo-a).
+  - FN-42 (n° 5) : à 390, la ligne de la créance « À récupérer : trop payé sur « ZZ TEST — piè… » perd le nom de la pièce : à l'affichage, le nom de la pièce d'abord (« ZZ TEST — pièce B · trop payé »), « à récupérer 2,00 » en étiquette (`src/ui/finance/operations/calculs.ts`, `src/ui/finance/TransactionRow.tsx`) ; la donnée écrite ne change pas.
   - FN-40 bandeau « Opération mise à jour. Fermer » qui reste : il s'efface seul après quelques secondes et au changement de vue (Archives).
 
 ## Possède (seuls chemins où écrire, avec RESULTAT.md)
@@ -32,7 +34,7 @@ Corriger les huit constats moyens et bas restants du jeu en ligne ZZ TEST du 16.
 - `work/missions/2026-11-14-finances/voies/x2`
 
 ## Consignes
-Pour chaque constat : d'abord le test qui échoue sur dfe9189e (le dire dans RESULTAT.md, avec la ligne d'échec), puis la correction, puis le test vert. Jouer d'abord le chemin du testeur au banc `http://localhost:3000/?dev-local&finance-demo` (déjà lancé, ne pas relancer ; données « ZZ TEST — … » seulement dans le navigateur de test). Un constat qui se révèle voulu par une maquette choisie : ne pas le changer, l'écrire dans RESULTAT.md (« voulu : … »).
+Pour chaque constat : d'abord le test qui échoue sur 18abc69f (le dire dans RESULTAT.md, avec la ligne d'échec), puis la correction, puis le test vert. Jouer d'abord le chemin du testeur au banc `http://localhost:3000/?dev-local&finance-demo` (déjà lancé, ne pas relancer ; données « ZZ TEST — … » seulement dans le navigateur de test). Un constat qui se révèle voulu par une maquette choisie : ne pas le changer, l'écrire dans RESULTAT.md (« voulu : … »).
 Captures 390 et 1280, clair et cave, de chaque point visible, dans `work/missions/2026-11-14-finances/voies/x2/cap/`, ouvertes avant de rendre.
 
 ## Exigences transversales et acquis (recopiés, L05, L06)
