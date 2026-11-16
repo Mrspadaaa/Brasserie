@@ -163,3 +163,8 @@ Trois regards, 390 tactile avec clavier et 844×390 ; détail : `r2/P5-AUDIT.md`
 - Comparer à 390 : 2 colonnes sur 7, la 3ᵉ coupée en demi-chiffres, vert sur un écarté. Correction : tableaux par caractéristique de da en portrait avec la typo de p5 ; tableau complet de p5 en paysage.
 - Carnet neuf : 70 % vide, propositions coupées, aucune suite. Correction : état neuf de da, puces sur plusieurs lignes, carte « Ensuite : Coller un lien · Chercher les façons ».
 - Faibles (1 regard sur 3) : Carnet ouvert (ni champ ni critère) et Frigo (alerte repliée ; 6 fûts contre 30, à clarifier).
+
+## Critère d'acceptation : SON SCÉNARIO DE ZÉRO (16.11, CARNET-COEUR)
+- Jouer son scénario au doigt, d'un carnet VIDE, sans fixture. Les étapes sont détaillées à la ligne CARNET-COEUR de DEFAUTS-RECURRENTS.md.
+- Refaire ensuite tout de zéro pour un frigo, une ventilation et un évier.
+- La fixture ne sert qu'à montrer un carnet déjà mûr. Elle ne remplace jamais un geste.
