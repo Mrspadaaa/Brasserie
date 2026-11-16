@@ -114,8 +114,9 @@ export function etatCuve(occ: Occupation[], jour: number, capaciteL: number | un
   const prisPar = (liste: Occupation[]) => liste.reduce((s, o) => s + (o.litres ?? capaciteL), 0);
   const pleinePar = (liste: Occupation[]) => prisPar(liste) + volumeL > capaciteL + 1e-9;
   const pleine = pleinePar(par);
-  // Sans les brassins à fin inconnue, le jour serait-il libre ? Alors il n'est plein que sur leur parole.
-  const finNonDatee = pleine && !pleinePar(par.filter(o => o.fin !== undefined));
+  // Les brassins à fin inconnue suffisent-ils seuls à la remplir ? Alors aucune date ne la libère. Sinon, la cuve se
+  // libère au départ d'un brassin daté (la Pils en bouteille le 17) : sa fin est datée, même si d'autres ne le sont pas.
+  const finNonDatee = pleine && pleinePar(par.filter(o => o.fin === undefined));
   return { etat: pleine ? 'pleine' : 'libre', par, finNonDatee };
 }
 

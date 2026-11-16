@@ -40,9 +40,9 @@ describe('constat 5 : « fin non datée » se dit', () => {
     expect(etatCuve(date.occ, J(17), 30, 24)).toMatchObject({ etat: 'pleine', finNonDatee: false });
     expect(etatCuve(date.occ, J(18), 30, 24)).toMatchObject({ etat: 'libre', finNonDatee: false });
   });
-  it('un jour plein par la Pils datée reste « daté » même si la Stout sans fin est aussi en cuve', () => {
-    // Pils (24 L) + Stout (24 L) + 24 L > 30 L : pleine ; sans la Stout (24 + 24 > 30), elle serait encore pleine : le jour n'attend pas la Stout.
-    expect(etatCuve(ctx([PILS, STOUT]).occ, J(17), 30, 24).finNonDatee).toBe(false);
+  it('la Stout sans fin remplit seule la cuve de 30 L : aucune date ne la libère, même le jour de la Pils datée', () => {
+    // Pils (24 L) + Stout (24 L) + 24 L > 30 L : pleine. Après la Pils, Stout (24) + 24 > 30 : encore pleine, sans date de fin.
+    expect(etatCuve(ctx([PILS, STOUT]).occ, J(17), 30, 24).finNonDatee).toBe(true);
     expect(etatCuve(ctx([PILS, STOUT]).occ, J(20), 30, 24).finNonDatee).toBe(true);
   });
   it('la phrase du jour dit que la fin n\'est pas datée, et garde « pas de mise en bouteille datée »', () => {
@@ -66,5 +66,21 @@ describe('constat 5 : « fin non datée » se dit', () => {
     feuille([PILS]);
     expect(screen.getByRole('button', { name: /^mardi 17 novembre, cuve pleine(?!, fin non datée)/ })).toBeTruthy();
     expect(document.querySelector('.d1b-cles')!.textContent).not.toContain('fin non datée');
+  });
+});
+
+describe('constat 5 bis : une fin datée libère la cuve, même avec des brassins non datés', () => {
+  it('Pils datée + deux brassins sans fin : pleine, mais pas « fin non datée »', async () => {
+    const { etatCuve } = await import('../../src/ui/production/brasser/cuveModel');
+    const occ = [{ debut: 0, fin: 17, litres: 24 }, { debut: 0, litres: 24 }, { debut: 0, litres: 24 }] as never;
+    const e = etatCuve(occ, 16, 72, 24);
+    expect(e.etat).toBe('pleine');
+    expect(e.finNonDatee).toBe(false);
+    expect(etatCuve(occ, 18, 72, 24).etat).toBe('libre');
+  });
+  it('trois brassins sans fin qui remplissent seuls : « fin non datée »', async () => {
+    const { etatCuve } = await import('../../src/ui/production/brasser/cuveModel');
+    const occ = [{ debut: 0, litres: 24 }, { debut: 0, litres: 24 }, { debut: 0, litres: 24 }] as never;
+    expect(etatCuve(occ, 16, 72, 24).finNonDatee).toBe(true);
   });
 });
