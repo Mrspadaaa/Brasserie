@@ -136,3 +136,7 @@ Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (gr
 - En cours : voie d1 (4 versions de la feuille « Brasser », choix de la date ; concepteur) et voie s1 (port de r2a et du geste de c2a ; « Brasser » ouvre la feuille actuelle en attendant son choix).
 - À faire ensuite : rejouer GATES d1 et s1 (`scratchpad/gates.sh`), critique Opus de d1 (gabarit `scratchpad/gen-k2.mjs`, avec la ligne « Tests » ajoutée), corrections (`gen-g.mjs`), page8 « une question » (gabarit pg7, contrôle `outils/controle-page-claire.mjs`), publier ; critique du port s1 (gabarit kq), corrections, suite Vitest contre `scratchpad/fails-head.txt`, vite build, commit.
 - ACCORD en attente : tâche serveur d'IA (rangement des notes e3gb, e9na), date d'entrée en garde (e4c), filtre de période dans filterCatalog.
+
+## Contrat réécrit — 16.11, nuit (pilote) : conflit Atelier
+- Option B. On ne met en ligne que Brassins (r2a, c2a, d1b, ports e1a à e9), sans l'Atelier. L'Atelier en ligne (ks4, kh1r/kyh1, kxc, Tarifs passe 3) reprend aussi des choix du brasseur ; on n'en retire rien.
+- Ensuite, dans un commit séparé, on greffe e9na sur l'Atelier en ligne, sur sa seule vue (Atelier R&D), sans toucher TarifsFrise, TodoTimeline, ContactsView ni NoteCarnet. Mise en ligne seulement si tout coexiste (tests, build, test d'écran). Sinon, on le note ici et on attend le matin.
