@@ -1856,3 +1856,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   3. Supprimer la vente de 5 695,00 du constat 12 : c'était un test. Par le bouton de suppression de l'app, sur ce seul enregistrement.)
 - **16.11**, mot pour mot, sur « À tester dans l'app en ligne, au doigt sur ton téléphone » : « Non ça c'est les sessions ou toi... »
   (lu : tester au toucher réel, c'est notre travail, jamais le sien. Moyens : l'émulation tactile de Chrome (CDP) à 390 sur la version exacte du tag en ligne, jouée en local ; ou le panneau intégré en mode mobile, qui émule le toucher.)
+- **16.11**, mot pour mot : « Moi je parle de mini maquettes à voir et choisir ect.. »
+  (lu : « j'ai quoi à voir, tester ? » visait les mini maquettes à choisir. Aucune n'était prête : calendrier et carnet sont en cours. Un lot est lancé sur les choix ouverts qui ne dépendent pas du calendrier fini : place de l'onglet Calendrier, fiche fournisseur (L16), refus de suppression (L33), qui a reçu ce lot (L36), et l'écart entre la pastille 24 et « 5 à commander » (ST7).)
