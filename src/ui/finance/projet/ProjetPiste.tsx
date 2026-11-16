@@ -104,7 +104,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
         <div className="pjd-g2">
           <Field label="Durée d’usage (années)"><input inputMode="decimal" value={detail.usefulLifeYears == null ? '' : String(detail.usefulLifeYears).replace('.', ',')} placeholder="5" autoComplete="off"
             onChange={e => { const v = Number(e.target.value.trim().replace(',', '.')); patch({ usefulLifeYears: e.target.value.trim() && Number.isFinite(v) && v > 0 ? v : undefined }); }} /></Field>
-          <Field label="Mise en service prévue"><input type="month" value={detail.inServiceMonth ?? ''} onChange={e => patch({ inServiceMonth: e.target.value || undefined })} /></Field>
+          <Field label="Mise en service prévue"><span className={detail.inServiceMonth ? 'pjd-mw' : 'pjd-mw pjd-vide'} data-vide="À poser"><input type="month" value={detail.inServiceMonth ?? ''} onChange={e => patch({ inServiceMonth: e.target.value || undefined })} /></span></Field>
         </div>
         <small className="pjd-muet">L’usure (linéaire) entre dans le coût du litre dès la mise en service. Sans durée, la catégorie donne la durée (100 ÷ taux linéaire AFC) ; sans les deux, elle reste « à renseigner », jamais 0.</small></>;
     }

@@ -131,3 +131,56 @@ describe('héros et confirmations (upgrade-plan.css)', () => {
     expect(css('prevision/prevision.css')).not.toMatch(/\.fin-conf[^{]*:focus\s*[,{]/);
   });
 });
+
+/**
+ * Critique finale (16.11) : « Garder » mesurait 77×28 px, bien que la règle `.fin-conf .finance-action` dise 44 px, parce que `.finance-action.secondary` (28 px) la battait en spécificité.
+ * Ce test compare la règle EFFECTIVE : parmi toutes les règles de min-height qui visent un bouton `.secondary` ou `.danger` dans `.fin-conf`, celle de plus forte spécificité (puis la dernière) doit dire 44 px.
+ * Le calque réel (getBoundingClientRect) est joué au banc Chrome : voir CRITIQUE-FINAL.md.
+ */
+describe('cibles effectives de 44 px : Garder, Annuler, nom des cartes d’Archives (16.11)', () => {
+  /** Spécificité simple : classes et attributs, pseudo-classes, puis éléments. */
+  const spec = (sel: string): [number, number] => { const c = (sel.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g) ?? []).length; const e = (sel.replace(/\.[\w-]+|\[[^\]]+\]|::?[\w-]+(\([^)]*\))?|[>+~*]/g, ' ').match(/[a-z][\w-]*/gi) ?? []).length; return [c, e]; };
+  /** Hauteur minimale effective d'un bouton de classes données dans `.fin-conf`, toutes feuilles chargées dans l'ordre de l'app. */
+  const effective = (classes: string[]): number | null => {
+    /* Ordre mesuré au banc Chrome : finance.css se charge APRÈS prevision.css (c'est pourquoi l'égalité de spécificité donnait 28 px). */
+    const feuilles = ['prevision/prevision.css', 'finance.css'].map(css);
+    let meilleur: { s: [number, number]; ordre: number; h: number } | null = null; let ordre = 0;
+    for (const f of feuilles) for (const m of f.matchAll(/(?:^|\n)([^{}\n@/][^{}]*)\{([^}]*)\}/g)) {
+      ordre++; const h = px(m[2], 'min-height'); if (h == null) continue;
+      for (const sel of m[1].split(',').map(s => s.trim())) {
+        const parts = sel.split(/\s+/);
+        const cible = parts[parts.length - 1], ancetres = parts.slice(0, -1).join(' ');
+        const classesCible = cible.match(/\.[\w-]+/g)?.map(s => s.slice(1)) ?? [];
+        if (!classesCible.every(c => classes.includes(c)) || classesCible.length === 0 || /[:[]/.test(sel)) continue;
+        if (ancetres && ancetres !== '.fin-conf') continue;
+        const s = spec(sel); const mieux = !meilleur || s[0] > meilleur.s[0] || (s[0] === meilleur.s[0] && (s[1] > meilleur.s[1] || ordre > meilleur.ordre));
+        if (mieux) meilleur = { s, ordre, h };
+      }
+    }
+    return meilleur?.h ?? null;
+  };
+  it('Garder (.finance-action.secondary), Oui, supprimer (.danger) et le bouton plein de la question font 44 px, toutes règles confondues', () => {
+    expect(effective(['finance-action', 'secondary'])).toBeGreaterThanOrEqual(44);
+    expect(effective(['finance-action', 'danger'])).toBeGreaterThanOrEqual(44);
+    expect(effective(['finance-action'])).toBeGreaterThanOrEqual(44);
+  });
+  it('le calcul voit bien l’ancien défaut : hors .fin-conf, un bouton secondaire reste à 28 px', () => {
+    expect(px(regle(css('finance.css'), '.finance-action.secondary'), 'min-height')).toBe(28);
+  });
+  const source = css('upgrade-plan.css');
+  it('le lien « Annuler » de l’avis « est archivé » est une cible de 44 px', () => {
+    expect(px(regle(source, '.upgrade-archive .finance-link'), 'min-height')).toBeGreaterThanOrEqual(44);
+  });
+  it('Archives en carte : le nom de la grande case réserve la largeur du bouton Reprendre (jamais caché dessous) et passe sur deux lignes', () => {
+    const nom = regle(source, '.ak-gr .ak-n'), bouton = regle(source, '.ak-rep');
+    const reserve = Number(/padding-right:\s*(\d+)px/.exec(nom)?.[1]);
+    const droite = Number(/right:\s*(\d+)px/.exec(bouton)?.[1]);
+    const largeurBouton = 12 * 2 + 20 + 6 + 66; /* padding, icône, écart, mot « Reprendre » à 15 px */
+    expect(reserve).toBeGreaterThanOrEqual(droite + largeurBouton * 0.9);
+    expect(nom).toMatch(/-webkit-line-clamp:\s*2/);
+  });
+  it('mois vide de la feuille : « À poser », pas les tirets natifs du champ', () => {
+    expect(readFileSync('src/ui/finance/projet/ProjetPiste.tsx', 'utf8')).toContain('data-vide="À poser"');
+    expect(regle(source, '.pjd-vide::after')).toMatch(/content:\s*attr\(data-vide\)/);
+  });
+});

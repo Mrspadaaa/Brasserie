@@ -260,3 +260,17 @@
 .ak-pm { border:1px solid var(--kh-line2); background:var(--kh-bg); }
 .ak-pmsw { width:30px; height:30px; flex:none; }
 .ak-pm .ak-nopm small { color:var(--kh-mut); }
+
+/* Constats finaux 16.11 : (2) « Annuler » de l'avis « est archivé » : cible de 44 px (le lien global fait 28 px) ; (3) « Reprendre » ne cache plus le nom ; (8) mois vide lisible. */
+.upgrade-archive { display:flex; flex-wrap:wrap; align-items:center; column-gap:4px; }
+.upgrade-archive .finance-link { min-height:44px; min-width:44px; padding:0 10px; justify-content:center; }
+.ak-gr .ak-n { box-sizing:border-box; padding-right:132px; white-space:normal; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow-wrap:anywhere; }
+.pjd-mw { position:relative; display:block; min-width:0; }
+.pjd-vide::after { content:attr(data-vide); position:absolute; left:1px; top:1px; bottom:1px; right:36px; padding-left:10px; display:flex; align-items:center; font-size:16px; color:var(--pj-t2); background:var(--pj-fond); pointer-events:none; border-radius:9px 0 0 9px; }
+.pjd-vide:focus-within::after { display:none; }
+/* Grande case étroite (390 : ~235 px) : « Reprendre » devient l'icône de 44 px (comme la case voisine) et le nom retrouve sa largeur ; le libellé reste dans l'aria-label. */
+.ak-gr { container-type:inline-size; }
+@container (max-width:320px) {
+  .ak-gr .ak-rep { width:44px; padding:0; gap:0; font-size:0; justify-content:center; }
+  .ak-gr .ak-n { padding-right:56px; -webkit-line-clamp:3; }
+}
