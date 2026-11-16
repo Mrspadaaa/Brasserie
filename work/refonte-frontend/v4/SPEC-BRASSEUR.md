@@ -1775,3 +1775,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la frise de f1 devient le calendrier global : prévisions, temps et finances. Elle porte tout ce qui se planifie (brassages, événements, achats, rénovations, activités, etc.), avec des filtres par type. Mesurer ce qui est déjà dans l'app (brassins planifiés, prévisions Finances) avant d'ajouter.)
 - **15.11**, mot pour mot, sur la boucle de nuit : « 90 % du quota non non99% »
   (lu : cette nuit, le seuil d'arrêt passe à 99 % du quota hebdomadaire au lieu de 90 % ; [[fermeture-et-quota]] reste la règle par défaut.)
+- **16.11**, mot pour mot, avec une capture de la barre du bas (Bord, Finances, Brassins, Stocks, Clients, +) : « Je pense que même avoir un onglet calendrier en bas pour le global ferait vraiment sens »
+  (lu : le calendrier global (f1r) devient un onglet de la barre du bas. À 390, six onglets plus le + sont serrés : montrer les placements possibles (6e onglet, ou fusion avec Bord, ou à la place d'un autre), le brasseur choisit.)
