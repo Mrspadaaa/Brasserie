@@ -56,9 +56,13 @@ describe('FloatingActions · contrat DOM et clavier', () => {
     const opened = openMenu();
     expect(opened.trigger.getAttribute('aria-expanded')).toBe('true');
     expect(opened.trigger.getAttribute('aria-controls')).toBe(opened.menu.id);
-    expect(opened.items).toHaveLength(6);
+    expect(opened.items).toHaveLength(7);
     expect(opened.items[0].textContent).toContain('Nouveau matériel');
-    expect(opened.items[1].textContent).toContain('Compagnon brasseur');
+    // b1s-a : l'action de l'écran d'abord, les cinq gestes de partout à cases fixes, le Compagnon en sixième case.
+    expect(opened.items.map((item) => item.textContent)).toEqual([
+      'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
+    ]);
+    expect(opened.items.at(-1)!.getAttribute('aria-label')).toBe('Compagnon brasseur · Matériel');
     expect(document.activeElement).toBe(opened.items[0]);
 
     fireEvent.click(opened.items[0]);
@@ -71,7 +75,7 @@ describe('FloatingActions · contrat DOM et clavier', () => {
     const callbacks = renderActions(null);
     const destinations = [
       { label: /Entrer une facture/, run: callbacks.invoice },
-      { label: /Vendre/, run: callbacks.sale },
+      { label: /Encaisser une vente/, run: callbacks.sale },
       { label: /Créer une recette/, run: callbacks.recipe },
       { label: /Lancer un brassin/, run: callbacks.brew }
     ];

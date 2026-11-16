@@ -210,7 +210,9 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     fireEvent.click(button);
     const items = screen.getAllByRole('menuitem');
     expect(document.activeElement).toBe(items[0]);
-    expect(items[0]).toHaveTextContent('Compagnon brasseur');
+    // b1s-a : sur une page, les gestes de partout d'abord (l'écriture, la facture…), le Compagnon en dernière case.
+    expect(items[0]).toHaveTextContent('Écriture');
+    expect(items.at(-1)).toHaveTextContent('Compagnon');
     fireEvent.click(screen.getByRole('menuitem', { name: /Créer une recette/ }));
     expect(calls.recipe).toHaveBeenCalledOnce();
     expect(screen.queryByRole('menu')).toBeNull();
@@ -330,14 +332,9 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
       render(<Shell page={false} calls={calls} />);
       fireEvent.click(launcherButton());
       expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-        'Nouveau matérielSur cet écran',
-        'Compagnon brasseurMatériel',
-        'Entrer une factureDocument, puis vérification',
-        'Vendre',
-        'Créer une recette',
-        'Lancer un brassinÀ partir d’une recette existante'
+        'Nouveau matériel', 'Écriture', 'Facture', 'Vente', 'Recette', 'Brassin', 'Compagnon'
       ]);
-      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Vendre/, /Créer une recette/, /Lancer un brassin/]) {
+      for (const name of [/Nouveau matériel/, /Compagnon brasseur/, /Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
         if (!screen.queryByRole('menu')) fireEvent.click(launcherButton());
         fireEvent.click(screen.getByRole('menuitem', { name }));
         expect(screen.queryByRole('menu')).toBeNull();

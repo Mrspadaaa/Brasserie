@@ -21,6 +21,7 @@ import {
 } from '../../../domain/productionInsights';
 import { dryHopDans, fgAConfirmer, retardDe } from '../volumes/phrase';
 import { estEnCours } from '../volumes/periode';
+import { dansPeriode as dansLaPeriodeCommune, enPeriode, type PeriodeEntree } from '../../../components/periode/periode';
 import { modeleFiche } from '../fermentation/modele';
 
 export type Avancement = 'cuve' | 'brasser' | 'conditionnes' | 'termines' | 'mesures' | 'favoris' | 'notes';
@@ -35,7 +36,6 @@ export const AVANCEMENTS: { id: Avancement; label: string; court: string }[] = [
 ];
 export const libelleAvancement = (id: Avancement) => AVANCEMENTS.find((a) => a.id === id)!.label;
 
-export type ModePeriode = 'toutes' | 'mois' | 'annee' | 'dates';
 export interface Criteres {
   avancement: Avancement[];
   styles: string[];
@@ -44,7 +44,8 @@ export interface Criteres {
   levures: string[];
   /** Plage d'alcool posée (% vol.) ; absente = pas de borne (les brassins sans valeur restent). */
   alcool?: [number, number];
-  periode: { mode: ModePeriode; de: string; a: string; enCours: boolean };
+  /** Une seule période dans l'app (m3r-a) : celle de l'en-tête, passée au `Contexte`. Ici seul reste le réglage « les en cours, toujours ». */
+  periode: { enCours: boolean };
 }
 export const CRITERES_VIDES: Criteres = {
   avancement: [],
@@ -52,14 +53,14 @@ export const CRITERES_VIDES: Criteres = {
   houblons: [],
   malts: [],
   levures: [],
-  periode: { mode: 'mois', de: '', a: '', enCours: true }
+  periode: { enCours: true }
 };
 export const restaurerCriteres = (v: unknown): Criteres => {
   const o = (v && typeof v === 'object' ? v : {}) as Partial<Criteres>;
   const tab = (x: unknown) => (Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : []);
   const ids = AVANCEMENTS.map((a) => a.id);
   const alc = Array.isArray(o.alcool) && o.alcool.length === 2 && o.alcool.every((n) => Number.isFinite(n)) ? ([o.alcool[0], o.alcool[1]] as [number, number]) : undefined;
-  const p = (o.periode ?? {}) as Partial<Criteres['periode']>;
+  const p = (o.periode ?? {}) as Partial<Criteres['periode']>; // un ancien état (mode, de, a) est ignoré : la période est celle de l'en-tête
   return {
     avancement: tab(o.avancement).filter((a): a is Avancement => (ids as string[]).includes(a)),
     styles: tab(o.styles),
@@ -67,12 +68,7 @@ export const restaurerCriteres = (v: unknown): Criteres => {
     malts: tab(o.malts),
     levures: tab(o.levures),
     ...(alc ? { alcool: alc } : {}),
-    periode: {
-      mode: ['toutes', 'mois', 'annee', 'dates'].includes(p.mode as string) ? (p.mode as ModePeriode) : 'mois',
-      de: typeof p.de === 'string' ? p.de : '',
-      a: typeof p.a === 'string' ? p.a : '',
-      enCours: p.enCours !== false
-    }
+    periode: { enCours: p.enCours !== false }
   };
 };
 
@@ -116,30 +112,22 @@ export function correspondAvancement(e: CatalogEntry, a: Avancement): boolean {
 }
 
 const memeTexte = (a: string, b: string) => catalogText(a) === catalogText(b);
-const JOUR = 86400000;
-const stampDe = (iso: string): number | undefined => {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  return m ? Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : undefined;
-};
 
-function dansPeriode(e: CatalogEntry, p: Criteres['periode'], now: number): boolean {
-  if (p.mode === 'toutes') return true;
-  if (p.enCours && e.batch && estEnCours(e.batch)) return true;
+/** La période de l'en-tête juge la date d'un brassin (même règle que partout : `dansPeriode` de `periode.ts`) ; « les en cours, toujours » les garde hors période. */
+function dansPeriode(e: CatalogEntry, enCours: boolean, periode: PeriodeEntree | undefined, now: number): boolean {
+  const maintenant = new Date(now);
+  if (!periode || enPeriode(periode, maintenant).genre === 'tout') return true;
+  if (enCours && e.batch && estEnCours(e.batch)) return true;
   if (e.timestamp === undefined) return false;
-  const d = new Date(now);
-  if (p.mode === 'mois') {
-    const t = new Date(e.timestamp);
-    return t.getUTCFullYear() === d.getFullYear() && t.getUTCMonth() === d.getMonth();
-  }
-  if (p.mode === 'annee') return new Date(e.timestamp).getUTCFullYear() === d.getFullYear();
-  const de = stampDe(p.de), a = stampDe(p.a);
-  return (de === undefined || e.timestamp >= de) && (a === undefined || e.timestamp <= a + JOUR - 1);
+  return dansLaPeriodeCommune(e.date ?? '', periode, maintenant);
 }
 
 export interface Contexte {
   entries: CatalogEntry[];
   criteres: Criteres;
   filtres: CatalogFilters;
+  /** La période de l'application (l'en-tête) ; absente = toutes. */
+  periode?: PeriodeEntree;
   now?: number;
 }
 
@@ -168,7 +156,7 @@ export function appliquer(ctx: Contexte, ignorer: Groupe[] = []): CatalogEntry[]
       const a = abvDe(e, now)?.v;
       if (a === undefined || a < c.alcool[0] - 1e-9 || a > c.alcool[1] + 1e-9) return false;
     }
-    if (!sans('periode') && !dansPeriode(e, c.periode, now)) return false;
+    if (!sans('periode') && !dansPeriode(e, c.periode.enCours, ctx.periode, now)) return false;
     return true;
   });
   // « À suivre d'abord » : le retard passe avant la garde (maquette e6a : la Pale Ale en retard est 2e). Tri stable : le reste garde l'ordre du catalogue.
@@ -227,8 +215,7 @@ export function criteresPoses(c: Criteres, recherche: string): CriterePose[] {
   c.malts.forEach((s) => sortie.push({ id: `ml:${s}`, label: s, groupe: 'malt' }));
   c.levures.forEach((s) => sortie.push({ id: `lv:${s}`, label: s, groupe: 'levure' }));
   if (c.alcool) sortie.push({ id: 'alcool', label: `${fr(c.alcool[0])} – ${fr(c.alcool[1])} %`, groupe: 'alcool' });
-  // Le mois et les en cours sont le réglage de départ (« Nov. + en cours ») ; « Toutes » l'élargit : ni l'un ni l'autre ne compte comme critère posé.
-  if (c.periode.mode === 'annee' || c.periode.mode === 'dates') sortie.push({ id: 'periode', label: c.periode.mode === 'annee' ? 'Cette année' : 'Dates', groupe: 'periode' });
+  // La période est celle de l'en-tête, réglée là (ou dans la feuille, qui l'écrit là) : elle ne compte pas comme critère posé de la liste.
   return sortie;
 }
 const fr = (n: number, d = 1) => n.toFixed(d).replace('.', ',');
@@ -244,7 +231,6 @@ export function retirerCritere(c: Criteres, recherche: string, id: string): { cr
     case 'ml': return { criteres: { ...c, malts: c.malts.filter((a) => a !== val) }, recherche };
     case 'lv': return { criteres: { ...c, levures: c.levures.filter((a) => a !== val) }, recherche };
     case 'alcool': return { criteres: { ...c, alcool: undefined }, recherche };
-    case 'periode': return { criteres: { ...c, periode: { ...c.periode, mode: 'mois' } }, recherche };
     default: return { criteres: c, recherche };
   }
 }

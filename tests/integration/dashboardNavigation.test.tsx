@@ -136,7 +136,8 @@ describe('Dashboard agenda navigation', () => {
     expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Menu', exact: true }));
+    /* m3 : le menu ⋮ n'existe plus ; l'Atelier R&D est un outil de la page Plus, ouverte par le duo d'avatars. */
+    fireEvent.click(screen.getByRole('button', { name: /^Plus : saisie au nom de/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
     expect(screen.getByRole('button', { name: 'Matériel', exact: true })).toHaveAttribute('aria-pressed', 'true');
     // ks4 (15.11) : À faire est un filtre du Carnet, absent quand Matériel est ouvert.
@@ -225,8 +226,8 @@ describe('Direct batch navigation from the dashboard', () => {
     // Le tableau de bord n'a plus ses propres raccourcis : tout passe par le bouton flottant.
     expect(screen.queryByRole('button', { name: 'Saisie rapide', exact: true })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    // BX-4 (09.11) : au Bord, l'action de l'écran est « Nouvelle écriture » ; « Entrer une facture » n'est plus répétée dans le menu. La vente passe par la même saisie rapide.
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Vendre/ }));
+    // BX-4 (09.11) : au Bord, l'action de l'écran est « Nouvelle écriture » ; b1s-a : « Encaisser une vente » est dans « Partout », la même saisie rapide.
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Encaisser une vente/ }));
     expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);
@@ -247,6 +248,7 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: new RegExp(oldBatch.name) }));
     dialog = screen.getByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
-    expect(StorageService.getUiState('app_global_time_filter', '')).toBe('this-month');
+    /* La période de l'app se garde en texte daté (ET-PER) : « this-month » relu au 12.09.2026 devient « month-2026-09 » ; elle n'a pas été élargie. */
+    expect(StorageService.getUiState('app_global_time_filter', '')).toBe('month-2026-09');
   });
 });

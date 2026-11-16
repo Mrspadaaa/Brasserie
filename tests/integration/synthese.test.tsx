@@ -31,7 +31,7 @@ function demo({ soldeConfirme = false }: { soldeConfirme?: boolean } = {}) {
   if (soldeConfirme) FinanceService.saveProfile({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-11-01', amountCents: 100000, confirmed: true } });
 }
 const read = () => StorageService.getTransactions();
-function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" />; }
+function Ecran() { const transactions = useStorageValue(read); return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="this-month" />; }
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-11-09T10:00:00Z'));
@@ -171,14 +171,12 @@ describe('T15 le litre : les trois appels de domaine, jamais de 0 inventé', () 
     expect(litreDuBrassin(ancien).chfParL).toBeNull();
     expect(litreDuBrassin({ ...snapshot, netVolumeSource: 'volume-a-brasser' }).chfParL).toBeNull();
   });
-  it('la ligne : « Pale Ale · 27 L nets · tout compris · estimé » et « 7,51 CHF/L » ; « + » ouvre le choix', () => {
-    const picker = vi.fn();
-    render(<LigneLitre plans={plan(snapshot)} batches={[]} recipes={[]} onOpenBudget={() => {}} onAbsent={() => {}} onPicker={picker}/>);
+  it('la ligne : « Pale Ale · 27 L nets · tout compris · estimé » et « 7,51 CHF/L » ; plus de « + » rond : un seul + à Finances, « Estimer un brassin » y est en tête', () => {
+    render(<LigneLitre plans={plan(snapshot)} batches={[]} recipes={[]} onOpenBudget={() => {}} onAbsent={() => {}} onPicker={() => {}}/>);
     const ligne = screen.getByText('Pale Ale').closest('[data-ligne="litre"]') as HTMLElement;
     expect(ligne).toHaveTextContent(/27 L nets.*tout compris.*estimé/);
     expect(ligne).toHaveTextContent(/7,51.*\/L/);
-    fireEvent.click(screen.getByRole('button', { name: 'Coût d’un autre brassin' }));
-    expect(picker).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Coût d’un autre brassin' })).toBeNull();
   });
   it('estimation ancienne : « À compléter », aucun « 0,00 »', () => {
     render(<LigneLitre plans={plan({ ...snapshot, dejaPaye: undefined })} batches={[]} recipes={[]} onOpenBudget={() => {}} onAbsent={() => {}} onPicker={() => {}}/>);
@@ -187,6 +185,8 @@ describe('T15 le litre : les trois appels de domaine, jamais de 0 inventé', () 
   });
   it('aucune estimation : « Estimer un brassin »', () => {
     render(<LigneLitre plans={[]} batches={[]} recipes={[]} onOpenBudget={() => {}} onAbsent={() => {}} onPicker={() => {}}/>);
-    expect(screen.getByRole('button', { name: 'Estimer un brassin' })).toBeVisible();
+    // Le geste est dans le + de Finances (action « estimer ») ; la ligne ne garde que la phrase, sans « + » rond.
+    expect(screen.getByText('Estimer un brassin')).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Estimer un brassin' })).toBeNull();
   });
 });

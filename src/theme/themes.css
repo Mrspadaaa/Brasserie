@@ -141,6 +141,10 @@
 
 /* ---- Règles propres au clair (reprises de theme-maquettes.css) ---- */
 
+/* Le voile de la recherche (r3p2) : gris sombre sous la feuille, clair comme cave. `bg-cave-950/…` blanchissait l'écran en clair (cave-950 = la page). */
+.palette-voile { background: rgba(17, 17, 17, 0.42); }
+:root[data-theme='cave'] .palette-voile { background: rgba(0, 0, 0, 0.6); }
+
 /* Un aplat d'action noir porte un texte blanc (l'app y pose text-cave-950, une encre sombre). */
 :root:not([data-theme='cave']) .bg-ebc-straw,
 :root:not([data-theme='cave']) .bg-ebc-straw * {

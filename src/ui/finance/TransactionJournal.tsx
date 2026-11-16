@@ -11,6 +11,7 @@ import { CATEGORY_LABELS } from './FinanceForms';
 import { amountOnly, shortDate } from './financeFormat';
 import { compte } from '../../services/plural';
 import { Bande, type Actif } from './operations/Bande';
+import { donneesFriseDe } from './operations/donneesFrise';
 import { dansJours, finDuMois, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, redater, titreJours } from './operations/plage';
 import { enRetard, retardTotal } from './operations/calculs';
 import { questionPoste } from './operations/assistant';
@@ -307,16 +308,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `en ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
   /** La frise (s2ap2) : un jour à la fois, par `periodeSynthese` (une seule règle de « dépensé ») ; un mois sans aucune opération saisie est inconnu, pas vide. */
   const sourcesFrise = useMemo(() => (scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified), [classified, scope]);
-  const donneesFrise = useMemo(() => {
-    const cache = new Map<string, PeriodeSynthese>(), saisis = new Set<string>();
-    const tx = redater(sourcesFrise.map(e => e.transaction), joursCompte);
-    // Un mois est « saisi » par la date d'une pièce ou par le jour où elle compte (l'échéance d'une facture d'octobre à payer en novembre).
-    for (const e of sourcesFrise) if (e.date && isActiveTransaction(e.transaction)) { saisis.add(e.date.slice(0, 7)); const j = joursCompte.get(e.transaction.id); if (j) saisis.add(j.slice(0, 7)); }
-    return {
-      periodeJour: (jour: string) => { let p = cache.get(jour); if (!p) { p = periodeSynthese({ transactions: tx, payments, mois: jour, aujourdhui }); cache.set(jour, p); } return p; },
-      moisSaisi: (m: string) => saisis.has(m),
-    };
-  }, [sourcesFrise, payments, aujourdhui, joursCompte]);
+  const donneesFrise = useMemo(() => donneesFriseDe(sourcesFrise, payments, aujourdhui, joursCompte), [sourcesFrise, payments, aujourdhui, joursCompte]);
   /* t3 (problème 5) : une année d'archive consultée remplit les champs « du … au … » à cette année ; « toutes les années » les laisse vides (aucune plage unique). */
   const jours = plage ?? (modeMois ? plageDuMois(month) : scope === 'archives' && /^d{4}$/.test(String(selectedYear)) ? { du: `${selectedYear}-01-01`, au: `${selectedYear}-12-31` } : null);
   const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [sourcesFrise, jours?.du, jours?.au, plage, joursCompte]);

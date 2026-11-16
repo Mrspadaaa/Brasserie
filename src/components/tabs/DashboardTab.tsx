@@ -4,7 +4,8 @@ import {
   AlertTriangle, Beer, Boxes, Calendar, Check, ChevronDown, ChevronRight,
   Copy, ShieldCheck, Wallet
 } from 'lucide-react';
-import type { AppConfig, Batch, CreativeItem, GanttTask, StockItem, TimeFilterPeriod, Transaction } from '../../types';
+import type { AppConfig, Batch, CreativeItem, GanttTask, StockItem, Transaction } from '../../types';
+import { dansPeriode, enPeriode, titre as titrePeriode, type PeriodeEntree } from '../periode/periode';
 import { compte } from '../../services/plural';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -23,7 +24,7 @@ interface DashboardTabProps {
   stocks: { rawMaterials: StockItem[]; cleaning: StockItem[] };
   planning: GanttTask[];
   config: AppConfig;
-  globalTimeFilter: TimeFilterPeriod;
+  globalTimeFilter: PeriodeEntree;
   onNavigateTab: (tab: 'finances' | 'production' | 'stocks' | 'clients') => void;
   onOpenBatch: (batchId: string) => void;
   onNavigateToCreativeLab: () => void;
@@ -154,13 +155,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const pendingEvents = events.filter(item => item.status !== 'done');
 
   const periodTxs = useMemo(() => transactions.filter(tx =>
-    DateUtils.isDateInPeriod(tx.date, globalTimeFilter)), [transactions, globalTimeFilter]);
+    dansPeriode(tx.date, globalTimeFilter)), [transactions, globalTimeFilter]);
   const ledger = useMemo(() => summarizeLedger(transactions, financePayments, financeProfile),
     [transactions, financePayments, financeProfile]);
   const periodLedger = useMemo(() => summarizeLedger(periodTxs, financePayments, financeProfile),
     [periodTxs, financePayments, financeProfile]);
   const periodNet = periodLedger.incomeCents - periodLedger.expenseCents;
-  const periodLabel = DateUtils.getPeriodLabel(globalTimeFilter);
+  const periodLabel = titrePeriode(enPeriode(globalTimeFilter));
   const reminders = administrativeReminders(config);
   const remainingReminders = reminders.filter(item => !completedDeadlines[item.id]).length;
 

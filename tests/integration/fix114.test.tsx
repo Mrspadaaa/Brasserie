@@ -123,20 +123,32 @@ afterEach(() => { cleanup(); });
 
 describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écriture', () => {
   for (const tab of ['dashboard', 'finances']) {
-    it(`${tab} : « Nouvelle écriture » en tête du menu, les autres saisies dessous`, async () => {
+    it(`${tab} : « Nouvelle écriture » en tête du menu, les autres saisies dessous (b1r)`, async () => {
       ui.activeTab = tab;
       const user = userEvent.setup();
       render(<App />);
       await user.click(await screen.findByRole('button', { name: 'Actions rapides' }));
       const items = within(await screen.findByRole('menu', { name: 'Actions rapides' })).getAllByRole('menuitem');
       expect(items[0]).toHaveTextContent(/^Nouvelle écriture/);
-      expect(items[0]).toHaveTextContent('Facture ou saisie à la main');
+      expect(items[0]).toHaveTextContent('facture ou à la main');
       const labels = items.map(item => item.textContent ?? '');
-      // BX-4 (09.11) : « Nouvelle écriture » ouvre l'entrée de la facture ; « Entrer une facture » ne se répète pas dessous.
-      expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
-      for (const other of ['Vendre', 'Créer une recette', 'Lancer un brassin']) {
-        expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
+      // b1s-a : « Sur cet écran » = Nouvelle écriture (+ Facture et Vente sur Finances, Courses au Bord) ; « Partout » garde les
+      // gestes communs à cases fixes. Une action en tête n'est pas répétée dans « Partout » : chaque geste apparaît une seule fois,
+      // sous son libellé plein s'il est en tête (Finances : « Entrer une facture »), sous son libellé court sinon.
+      const attendues: Array<[string, string]> = tab === 'dashboard'
+        ? [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin'], ['Courses', 'Courses']]
+        : [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin']];
+      for (const [court, plein] of attendues) {
+        const trouves = labels.filter(label => label.startsWith(court) || label.startsWith(plein));
+        expect(trouves, `${court} : une seule fois dans le menu`).toHaveLength(1);
       }
+      expect(labels.filter(label => label.startsWith('Nouvelle écriture'))).toHaveLength(1);
+      if (tab === 'finances') {
+        // Facture et Vente montent en tête : sous leur libellé plein, avant Recette (« Partout »).
+        expect(labels.findIndex(label => label.startsWith('Entrer une facture'))).toBeLessThan(labels.findIndex(label => label.startsWith('Recette')));
+        expect(labels.findIndex(label => label.startsWith('Encaisser une vente'))).toBeLessThan(labels.findIndex(label => label.startsWith('Recette')));
+      }
+      expect(items.at(-1)).toHaveAttribute('aria-label', expect.stringContaining('Compagnon brasseur'));
       await user.click(items[0]);
       expect(await screen.findByRole('dialog', { name: 'Saisie scan' })).toBeInTheDocument();
       expect(screen.queryByRole('dialog', { name: 'Saisie menu' })).not.toBeInTheDocument();

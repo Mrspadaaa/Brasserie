@@ -19,6 +19,7 @@ import {
   type Criteres
 } from '../../src/ui/production/liste/listeModel';
 import { FeuilleFiltres } from '../../src/ui/production/liste/FeuilleFiltres';
+import type { PeriodeEntree } from '../../src/components/periode/periode';
 import type { Batch, KegItem } from '../../src/types';
 
 afterEach(cleanup);
@@ -37,8 +38,11 @@ const lots: Batch[] = [
   lot('N5', { status: 'termine', style: 'Saison', bottlingDate: '2026-02-01', brewDate: '2026-01-10' })
 ];
 const entries = batchEntries(lots);
-const ctx = (criteres: Partial<Criteres> = {}, sort: Contexte['filtres']['sort'] = 'work'): Contexte => ({
-  entries, criteres: { ...CRITERES_VIDES, ...criteres }, filtres: { ...DEFAULT_CATALOG_FILTERS, sort }, now: NOW
+// m3r-a : la période est celle de l'application (l'en-tête), au départ « le mois » (novembre 2026 ici) ; `TOUTES` = « Toutes ».
+const MOIS: PeriodeEntree = { genre: 'mois', annee: 2026, mois: 11 };
+const TOUTES: PeriodeEntree = { genre: 'tout' };
+const ctx = (criteres: Partial<Criteres> = {}, sort: Contexte['filtres']['sort'] = 'work', periode: PeriodeEntree = MOIS): Contexte => ({
+  entries, criteres: { ...CRITERES_VIDES, ...criteres }, filtres: { ...DEFAULT_CATALOG_FILTERS, sort }, periode, now: NOW
 });
 const ids = (l: { id: string }[]) => l.map((e) => e.id);
 
@@ -49,16 +53,23 @@ describe('e6a : période de départ « le mois + les en cours »', () => {
     expect(r).toEqual(expect.arrayContaining(['N1', 'N2', 'N4']));
   });
   it('« Toutes » les rend tous ; ni l’un ni l’autre ne compte comme critère posé', () => {
-    expect(ids(appliquer(ctx({ periode: { mode: 'toutes', de: '', a: '', enCours: true } })))).toContain('N5');
+    expect(ids(appliquer(ctx({}, 'work', TOUTES)))).toContain('N5');
+    // La période se règle dans l'en-tête (ou la feuille, qui l'écrit là) : jamais un critère posé de la liste.
     expect(criteresPoses(CRITERES_VIDES, '')).toHaveLength(0);
-    expect(criteresPoses({ ...CRITERES_VIDES, periode: { ...CRITERES_VIDES.periode, mode: 'toutes' } }, '')).toHaveLength(0);
-    expect(criteresPoses({ ...CRITERES_VIDES, periode: { ...CRITERES_VIDES.periode, mode: 'annee' } }, '')).toHaveLength(1);
+    expect(criteresPoses({ ...CRITERES_VIDES, periode: { enCours: false } }, '')).toHaveLength(0);
+  });
+  it('la période de l’app juge la date : cette année garde février, « les en cours, toujours » reste réglable', () => {
+    const annee: PeriodeEntree = { genre: 'annee', annee: 2026 };
+    expect(ids(appliquer(ctx({}, 'work', annee)))).toContain('N5');
+    const hiver: PeriodeEntree = { genre: 'dates', du: '2026-01-01', au: '2026-02-28' };
+    expect(ids(appliquer(ctx({}, 'work', hiver)))).toEqual(expect.arrayContaining(['N1', 'N2', 'N4', 'N5']));
+    expect(ids(appliquer(ctx({ periode: { enCours: false } }, 'work', hiver)))).toEqual(['N5']);
   });
 });
 
 describe('e6a : tri « À suivre d’abord »', () => {
   it('le planifié en retard passe avant la garde', () => {
-    const r = ids(appliquer(ctx({ periode: { mode: 'toutes', de: '', a: '', enCours: true } })));
+    const r = ids(appliquer(ctx({}, 'work', TOUTES)));
     expect(r.indexOf('N4')).toBeLessThan(r.indexOf('N2'));
   });
 });
@@ -94,7 +105,7 @@ describe('e6c : alcool provisoire d’un brassin en cuve', () => {
     expect(abvDe(entries.find((e) => e.id === 'N2')!, NOW)).toBeUndefined();
   });
   it('sortie du décompte « sans valeur » ; étendue et bornes élargies d’un cran', () => {
-    const b = bornesAlcool(ctx({ periode: { mode: 'toutes', de: '', a: '', enCours: true } }))!;
+    const b = bornesAlcool(ctx({}, 'work', TOUTES))!;
     const prov = b.points.find((p) => p.id === 'N1');
     expect(prov?.provisoire).toBe(true);
     expect(b.sansValeur).toBe(3);
@@ -112,7 +123,7 @@ describe('e6c : le panneau « Ces critères s’excluent »', () => {
     expect(titreExclusion(ctx({ avancement: ['cuve', 'termines'] }))).toBe('Ces critères s’excluent : retire-en un');
   });
   it('le critère qui rend le plus passe d’abord', () => {
-    const r = comptesSiRetire(ctx({ styles: ['Stout'], avancement: ['cuve'], periode: { mode: 'toutes', de: '', a: '', enCours: true } }));
+    const r = comptesSiRetire(ctx({ styles: ['Stout'], avancement: ['cuve'] }, 'work', TOUTES));
     expect(r[0].critere.label).toBe('Stout');
     expect(r.map((x) => x.n)).toEqual([...r.map((x) => x.n)].sort((a, b) => b - a));
   });
@@ -124,8 +135,8 @@ describe('e6c : la feuille', () => {
       <FeuilleFiltres
         open
         onClose={vi.fn()}
-        ctx={ctx({ periode: { mode: 'toutes', de: '', a: '', enCours: true }, ...criteres })}
-        resultats={appliquer(ctx({ periode: { mode: 'toutes', de: '', a: '', enCours: true }, ...criteres }))}
+        ctx={ctx(criteres, 'work', TOUTES)}
+        resultats={appliquer(ctx(criteres, 'work', TOUTES))}
         onCriteres={vi.fn()}
         onFiltres={vi.fn()}
         onToutEffacer={vi.fn()}

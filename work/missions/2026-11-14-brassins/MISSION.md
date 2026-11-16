@@ -140,3 +140,12 @@ Lecture du pilote : e7 = e7a ; e6 = e6a avec les filtres qui comptent de e6c (gr
 ## Contrat réécrit — 16.11, nuit (pilote) : conflit Atelier
 - Option B. On ne met en ligne que Brassins (r2a, c2a, d1b, ports e1a à e9), sans l'Atelier. L'Atelier en ligne (ks4, kh1r/kyh1, kxc, Tarifs passe 3) reprend aussi des choix du brasseur ; on n'en retire rien.
 - Ensuite, dans un commit séparé, on greffe e9na sur l'Atelier en ligne, sur sa seule vue (Atelier R&D), sans toucher TarifsFrise, TodoTimeline, ContactsView ni NoteCarnet. Mise en ligne seulement si tout coexiste (tests, build, test d'écran). Sinon, on le note ici et on attend le matin.
+
+## État de reprise — 16.11, nuit (pilote)
+- Fait :
+  - En ligne, tag `en-ligne/2026-11-16-brassins` (341f5bf3, fusion de atelier-lot8 et de finances) : Brassins r2a, c2a, d1b et les ports e1a à e11a. L'Atelier est inchangé (option B).
+  - Le paquet servi est index-Biel8NBa.js, identique à dist.
+  - Preuves : TSC OK, vitest NEW 0 (62 échecs, tous dans la base), vite build, 3 DRAPEAUX OK, bancs sb (11) et s1 (27) OK.
+- e9na : non greffée. `voies/greffe-e9na/ANALYSE.md` montre qu'elle ne se pose qu'en remplaçant des vues en ligne (Carnet ks4, Tarifs kxc, Contacts, À faire, Matériel). Deux options sont à montrer au brasseur ; on attend le matin.
+- Jeu en ligne sur ZZ TEST : non fait. Le navigateur intégré arrive sur la page de connexion Google, et la connexion revient au brasseur. Le jeu suivra quand il sera connecté.
+- Accords en attente : la tâche serveur rangerNote (« écrite, pas déployée » selon aiClient.ts), la date d'entrée en garde (e4c), le filtre de période, et les ACCORD 1 à 10 de `voies/sb/RESULTAT.md` (cuves nommées, ↶ par effet, Conditionner ›).
