@@ -44,3 +44,6 @@ Défauts vus : message de refus du remplissage ambigu (« couvrent 30 L pour 30 
 
 ## Redéployé (15.11)
 c18530a8 : refus « Ce lot est déjà tout en fût (N L) : plus rien à remplir. » ou « Trop de fûts choisis : il reste N L à mettre en fût, un fût resterait vide. Retires-en un. » ; Propre : « Marqué propre, prêt à remplir. ». Fusion de en-ligne/2026-11-15-recette, 107 tests fûts verts, build et drapeaux OK, déployé 24386cd5, tag en-ligne/2026-11-15-futs2 ; StocksTab servi vérifié (nouveaux textes, anciens absents).
+
+## Nuit 16.11 : constats 28 à 30
+1ea65ff1 : feuilles des fûts centrées à l’ordinateur (28), « Remettre à laver » dans Gestion du fût (29, étape « Remis à laver »). 112 tests fûts verts, build et contrôles OK, déployé, tag en-ligne/2026-11-16-futs3 (base finances-rejeu). Joué en ligne sur F-005 ZZ TEST, retiré ensuite.

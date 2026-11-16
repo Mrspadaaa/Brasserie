@@ -1068,3 +1068,8 @@ Rejeu en ligne 16.11 (agent Sonnet, onglet 1005988298, desktop 1538x784, tag en 
 Constats ajoutés :
 36. moyen | Recettes | Une recette ne se supprime pas : ni dans l'éditeur (Récap : seulement « Retirer » d'ingrédients), ni dans la fiche (Modifier, Brasser quand même). « ZZ TEST Recette » (v1, 24 L, American IPA) reste en base avec l'ancienne « ZZ TEST — Recette » | Recettes › carte › Modifier › Récap
 37. mineur | Recettes › fiche | « Pour la rebrasser, il manque Pilsner Malz 49 kg » pour une recette de 5 kg : le stock réel de ce malt semble négatif (à vérifier) ; le calendrier de planification affiche en plus « il part aux achats » | Recettes › ZZ TEST Recette
+
+Rejeu fûts 16.11 (pilote fûts, Chrome du brasseur, en-ligne/2026-11-16-futs3 = finances-rejeu + 1ea65ff1) :
+- 28 : CORRIGÉ | « Ajouter des fûts », fiche et « Remplir depuis un lot » en colonne centrée de 576 px à l’ordinateur (lg:max-w-xl) ; 390 non rejoué en Chrome (fenêtre non redimensionnable), règle inchangée sous 1024 px. Premier clic avalé (cf. 16) : non reproduit (+ › Nouveau fût du premier coup)
+- 29 : CORRIGÉ | Gestion du fût › « Remettre à laver » sur un fût propre ; F-005 ZZ TEST ajouté, remis à laver (ligne « Remis à laver le 16.11 », jauge À laver 4), Marquer propre (« Lavé le 16.11 », « Marqué propre, prêt à remplir. »), Remplir depuis un lot › LOT-002 refusé « Ce lot est déjà tout en fût (30 L) : plus rien à remplir. », pied éteint
+- 30 : REJOUÉ | Retirer du parc : confirmation claire, F-005 retiré ; parc F-001 à F-004 intact, 0 erreur de console
