@@ -344,7 +344,7 @@ describe('Fuzz — l’assistant de recette', () => {
     });
 
     expect(fautes.slice(0, 5)).toEqual([]);
-  }, 30000);
+  }, 120_000); // 28 s au repos : 30 s de délai échouait dès que la machine chargeait (même budget que le fuzz des champs)
 
   /*
    * ⚠️ Une masse ou un poids NÉGATIF passe sans bruit jusqu'à la facture de
