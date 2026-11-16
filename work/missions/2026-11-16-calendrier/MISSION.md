@@ -79,3 +79,7 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 - Au retour, relancer les sessions qui ont des constats ouverts (message de 700 caractères au plus).
 - Rejouer en ligne, sur ZZ TEST, les corrections taguées.
 - Appliquer DECISIONS.md.
+
+## Vues adaptées au calendrier global (16.11)
+- Workflow `vues-calendrier`, task wdgi3y97z, run wf_fd0cc2ba-cf2. Sorties dans `work/missions/2026-11-16-vues-calendrier/` : INVENTAIRE.md, finance/m1 à m3, PLAN.md, page/.
+- Au retour : publier la page et ajouter sa ligne à Pages. Faire choisir le mode finance par les personas, et le brasseur le verra.
