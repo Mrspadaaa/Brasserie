@@ -140,3 +140,10 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - Pas de crème neutre sans couleur. L'onglet actif de la barre correspond à l'écran.
 - Contrôle : ligne THEME-APP de DEFAUTS-RECURRENTS.md, deux thèmes capturés.
 - Bloc « Façons possibles » proposé par l'IA : barré d'un X rouge par le brasseur, à retirer ou à revoir (en attente de sa précision).
+
+## CAL-COMPACT, bloquant (16.11 : « Ça semble bon mais pas très compact... »)
+- À 390 au repos :
+  - l'en-tête collé fait au plus 30 % de la hauteur ;
+  - la bande des semaines tient sur 2 lignes au plus (la ligne des mois et les semaines se fondent) ;
+  - au moins 6 rangées de frise sont visibles.
+- Se fait sans rien retirer. Suivre docs/ui-compacte.md : chrome compact, petites tailles communes.
