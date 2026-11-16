@@ -688,6 +688,7 @@ export const App: React.FC = () => {
       case 'recette': openWizard(); break;
       case 'idee': setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
       case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
+      case 'estimer': window.dispatchEvent(new CustomEvent('finances-estimer')); break;
       // Le geste « Mesure » de la recherche : la fiche du brassin s'ouvre à la section Mesures.
       case 'densite':
         if (brassinEnFermentation) { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: brassinEnFermentation.id, at: Date.now() }); }

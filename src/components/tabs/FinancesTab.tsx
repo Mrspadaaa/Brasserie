@@ -87,6 +87,8 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[remplace,setRemplace]=useState<FinancialPayment|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
+  /* Le + flottant : « Estimer un brassin » ouvre le choix du brassin (l'ancien + de la ligne du coût du litre). */
+  useEffect(()=>{const ouvrir=()=>setBudgetPicker(true);window.addEventListener('finances-estimer',ouvrir);return()=>window.removeEventListener('finances-estimer',ouvrir);},[]);
   const [closingOpts,setClosingOpts]=useState<OuvertureInventaire>({}),[assetInitial,setAssetInitial]=useState<Partial<FinancialAsset>>();
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile,undefined,{includeScheduled:true}),[transactions,data.payments,data.profile]);
   /* AM n° 10 : le seuil d'assujettissement à la TVA (100 000 CHF sur 12 mois glissants) est surveillé tant que l'app est non assujettie. */

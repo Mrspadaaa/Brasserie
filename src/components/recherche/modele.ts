@@ -54,6 +54,7 @@ export interface LigneIci {
 
 /** Ce qu'un geste « depuis ici » dit en verbe (le + dit un nom, la recherche dit ce qu'on fait). */
 export const VERBE: Record<PlusCle, string> = {
+  estimer: 'Estimer un brassin',
   ecriture: 'Nouvelle écriture',
   facture: 'Entrer une facture',
   vente: 'Saisir une vente',

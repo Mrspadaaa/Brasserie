@@ -164,8 +164,9 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     vi.mocked(api.reset).mockImplementation(() => new Promise((done) => { resolve = done; }));
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 3 questions/ }));
-    // d3p2 : une ligne par conversation (les deux échanges de REC-A sont groupés), le « Supprimer » de chaque ligne se révèle au glissé.
-    expect(screen.getAllByRole('button', { name: /Supprimer la conversation/ })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: /Plus d’actions/ })).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: /Supprimer la conversation/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     expect(api.reset).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
@@ -173,8 +174,8 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await act(async () => resolve({ generation: 1 }));
     expect(brewerJobs.snapshot().jobs).toEqual([expect.objectContaining({ scope: other.scope })]);
     await act(async () => { brewerJobs.merge([a, b]); });
-    expect(screen.queryByRole('button', { name: 'Supprimer la conversation REC-A' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Supprimer la conversation REC-B' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Plus d’actions : REC-A' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Plus d’actions : REC-B' })).toBeVisible();
   });
   it('résume les conversations par statut, sans nom de modèle, et relance un échec en un geste', async () => {
     const prete = { ...job('1', 'REC-A'), status: 'done' as const, readAt: 1 };
@@ -198,6 +199,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     vi.mocked(api.reset).mockRejectedValueOnce(Error('offline')).mockResolvedValueOnce({ generation: 1 });
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 1 question/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
     await screen.findByText(/Suppression non confirmée/);
@@ -219,13 +221,8 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
   });
   it('n’interroge pas le compagnon en mode dev-local et affiche son état hors connexion', async () => {
     window.history.replaceState({}, '', '/?dev-local');
-    render(<><BrewerActivity localOnly />{actions({ horsConnexion: true })}</>);
-    // b1r : plus de pastille flottante ; l'état se lit dans l'entrée Compagnon du +.
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    const compagnon = screen.getByRole('menuitem', { name: /Compagnon brasseur/ });
-    expect(compagnon).toHaveTextContent('hors connexion');
-    expect(compagnon).toHaveAttribute('aria-label', expect.stringContaining('hors connexion'));
+    render(<BrewerActivity localOnly />);
+    expect(screen.getByRole('status')).toHaveTextContent('Compagnon hors connexion · mode local');
     await act(async () => {});
     expect(api.activity).not.toHaveBeenCalled();
     expect(api.userKey).not.toHaveBeenCalled();

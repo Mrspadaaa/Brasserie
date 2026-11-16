@@ -24,7 +24,7 @@ import { fabActionFor, type AnySubTab, type FabAction } from './fabActions';
 
 export type PlusCle =
   | 'ecriture' | 'facture' | 'vente' | 'brassin' | 'recette' | 'idee' | 'courses'
-  | 'houblon' | 'article' | 'fut' | 'client' | 'tarif' | 'materiel' | 'densite';
+  | 'estimer' | 'houblon' | 'article' | 'fut' | 'client' | 'tarif' | 'materiel' | 'densite';
 
 /** Couleur de rubrique : finances, brassins, stocks ; clients reste neutre. */
 export type PlusTon = 'finances' | 'production' | 'stocks' | 'clients';
@@ -87,7 +87,7 @@ export const COMMUNS: PlusCle[] = ['ecriture', 'facture', 'vente', 'recette', 'b
 
 /** Lettre de chaque geste ; N est l'action de l'écran, C le compagnon. */
 export const LETTRES: Record<PlusCle, string> = {
-  ecriture: 'E', facture: 'F', vente: 'V', brassin: 'B', recette: 'R', idee: 'I', courses: 'L',
+  ecriture: 'E', facture: 'F', vente: 'V', brassin: 'B', recette: 'R', idee: 'I', courses: 'L', estimer: 'S',
   houblon: 'H', article: 'A', fut: 'U', client: 'K', tarif: 'T', materiel: 'M', densite: 'D'
 };
 
@@ -108,6 +108,8 @@ const FICHE: Record<PlusCle, { label: string; court?: string; ton: PlusTon; hint
   recette: { label: 'Créer une recette', court: 'Recette', ton: 'production' },
   idee: { label: 'Nouvelle idée', ton: 'production' },
   courses: { label: 'Courses', ton: 'stocks', hint: aCommander },
+  /* Finances : l'ancien « + » de la ligne du coût du litre (action de l'écran, une seule fois à l'écran : le + flottant). */
+  estimer: { label: 'Estimer un brassin', ton: 'finances', hint: 'coût du litre' },
   houblon: { label: 'Nouvelle variété', ton: 'stocks' },
   article: { label: 'Nouvel article', ton: 'stocks' },
   fut: { label: 'Nouveau fût', ton: 'stocks' },
@@ -131,7 +133,7 @@ const enCuve = (c: PlusContexte) => (c.enCuve && c.enCuve > 0 ? `${c.enCuve} en 
 /** Une table par écran : ce que la feuille met en tête là (l'action de l'écran vient de `fabActions`). */
 const MENUS: Record<EcranId, Fiche> = {
   bord: { chemin: 'Bord', ton: 'finances', autres: ['courses'] },
-  finances: { chemin: 'Finances', ton: 'finances', autres: ['facture', 'vente'] },
+  finances: { chemin: 'Finances', ton: 'finances', autres: ['estimer', 'facture', 'vente'] },
   brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'courses'], etat: enCuve },
   recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
   atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: ['brassin'] },

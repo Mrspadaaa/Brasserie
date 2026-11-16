@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Beer, ClipboardCopy, CloudOff, Database, Droplet, FileText, Hop, Lightbulb, MessageCircle, MessagesSquare, LoaderCircle,
+  Beer, Calculator, ClipboardCopy, CloudOff, Database, Droplet, FileText, Hop, Lightbulb, MessageCircle, MessagesSquare, LoaderCircle,
   Package, Plus, Receipt, Tag, TrendingUp, UserPlus, Wheat, Wrench
 } from 'lucide-react';
 import type { FabIntent } from '../../domain/fabActions';
@@ -24,7 +24,7 @@ import './navigation.css';
 
 const ICONES: Record<PlusCle, typeof Plus> = {
   ecriture: Receipt, facture: FileText, vente: TrendingUp, brassin: Beer, recette: Wheat, idee: Lightbulb,
-  courses: ClipboardCopy, houblon: Hop, article: Package, fut: Database, client: UserPlus, tarif: Tag, materiel: Wrench, densite: Droplet
+  courses: ClipboardCopy, estimer: Calculator, houblon: Hop, article: Package, fut: Database, client: UserPlus, tarif: Tag, materiel: Wrench, densite: Droplet
 };
 
 const ICONES_ECRAN: Record<FabIntent, typeof Plus> = {
