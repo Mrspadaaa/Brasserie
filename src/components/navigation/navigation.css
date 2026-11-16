@@ -207,6 +207,18 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   border-color: color-mix(in srgb, var(--tc) 45%, rgb(var(--cave-700)));
   background: color-mix(in srgb, var(--tc) 8%, rgb(var(--cave-950)));
 }
+/* Une action qui détruit (« Supprimer la recette ») : bord et icône rouges, comme le bouton du bas de la page. */
+.plus-pp--danger {
+  border-color: rgb(var(--alert) / 0.7);
+  background: color-mix(in srgb, rgb(var(--alert)) 8%, rgb(var(--cave-950)));
+}
+.plus-pp--danger .plus-pp-i {
+  background: color-mix(in srgb, rgb(var(--alert)) 16%, rgb(var(--cave-950)));
+  color: rgb(var(--alert-texte));
+}
+.plus-pp--danger .plus-pp-t {
+  color: rgb(var(--alert-texte));
+}
 /* L'action de l'écran : pleine, couleur de la rubrique, contre le +. */
 .plus-pp--pi {
   width: 100%;
@@ -257,6 +269,44 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   height: 36px;
   padding: 0 12px;
   color: rgb(var(--cave-200));
+}
+
+/* « Aller à » (page plein écran, b1r) : une pastille par étape, qui passent à la ligne, l'étape courante pleine. */
+.plus-pile-etapes {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.plus-pile-etapes-t {
+  margin-right: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(var(--cave-400));
+}
+.plus-chip {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--tc) 45%, rgb(var(--cave-700)));
+  background: color-mix(in srgb, var(--tc) 8%, rgb(var(--cave-950)));
+  color: rgb(var(--cave-50));
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+.plus-chip[aria-current='step'] {
+  border-color: transparent;
+  background: var(--tc);
+  color: rgb(var(--cave-950));
+  font-weight: 600;
+}
+.plus-chip:focus-visible {
+  outline: 2px solid rgb(var(--cave-50));
+  outline-offset: -2px;
 }
 
 @media (min-width: 1024px) {

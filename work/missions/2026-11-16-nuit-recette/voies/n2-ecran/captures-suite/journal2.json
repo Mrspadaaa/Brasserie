@@ -1,0 +1,311 @@
+{
+ "erreurs": [],
+ "mesures": {
+  "clair-390-paliers-bas": {
+   "plus": [
+    334,
+    661,
+    382,
+    709
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    661,
+    382,
+    709
+   ],
+   "casePied": null
+  },
+  "clair-390-houblons-0": {
+   "plus": [
+    334,
+    776,
+    382,
+    824
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    776,
+    382,
+    824
+   ],
+   "casePied": null
+  },
+  "clair-390-eau-bas": {
+   "plus": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "casePied": null
+  },
+  "clair-390-sels-0": {
+   "plus": [
+    336,
+    80,
+    376,
+    120
+   ],
+   "cache": false,
+   "docke": "false",
+   "caseRangee": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "casePied": null
+  },
+  "clair-390-recap-bas": {
+   "plus": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": null,
+   "casePied": [
+    334,
+    784,
+    382,
+    832
+   ]
+  },
+  "clair-1280-paliers-bas": {
+   "plus": [
+    964,
+    740,
+    1012,
+    788
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    964,
+    740,
+    1012,
+    788
+   ],
+   "casePied": null
+  },
+  "clair-1280-houblons-0": {
+   "plus": [
+    1156,
+    752,
+    1204,
+    800
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    1156,
+    752,
+    1204,
+    800
+   ],
+   "casePied": null
+  },
+  "clair-1280-eau-bas": {
+   "plus": [
+    964,
+    739,
+    1012,
+    787
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    964,
+    739,
+    1012,
+    787
+   ],
+   "casePied": null
+  },
+  "clair-1280-recap-bas": {
+   "plus": [
+    964,
+    748,
+    1012,
+    796
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": null,
+   "casePied": [
+    964,
+    748,
+    1012,
+    796
+   ]
+  },
+  "cave-390-paliers-bas": {
+   "plus": [
+    334,
+    661,
+    382,
+    709
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    661,
+    382,
+    709
+   ],
+   "casePied": null
+  },
+  "cave-390-houblons-0": {
+   "plus": [
+    334,
+    776,
+    382,
+    824
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    776,
+    382,
+    824
+   ],
+   "casePied": null
+  },
+  "cave-390-eau-bas": {
+   "plus": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "casePied": null
+  },
+  "cave-390-sels-0": {
+   "plus": [
+    336,
+    80,
+    376,
+    120
+   ],
+   "cache": false,
+   "docke": "false",
+   "caseRangee": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "casePied": null
+  },
+  "cave-390-recap-bas": {
+   "plus": [
+    334,
+    784,
+    382,
+    832
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": null,
+   "casePied": [
+    334,
+    784,
+    382,
+    832
+   ]
+  },
+  "cave-1280-paliers-bas": {
+   "plus": [
+    964,
+    740,
+    1012,
+    788
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    964,
+    740,
+    1012,
+    788
+   ],
+   "casePied": null
+  },
+  "cave-1280-houblons-0": {
+   "plus": [
+    1156,
+    752,
+    1204,
+    800
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    1156,
+    752,
+    1204,
+    800
+   ],
+   "casePied": null
+  },
+  "cave-1280-eau-bas": {
+   "plus": [
+    964,
+    739,
+    1012,
+    787
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": [
+    964,
+    739,
+    1012,
+    787
+   ],
+   "casePied": null
+  },
+  "cave-1280-recap-bas": {
+   "plus": [
+    964,
+    748,
+    1012,
+    796
+   ],
+   "cache": false,
+   "docke": "true",
+   "caseRangee": null,
+   "casePied": [
+    964,
+    748,
+    1012,
+    796
+   ]
+  }
+ }
+}

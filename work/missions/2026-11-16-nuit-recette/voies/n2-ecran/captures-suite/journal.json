@@ -1,0 +1,645 @@
+{
+ "erreurs": [],
+ "mesures": {
+  "clair-390-levure-mi": {
+   "plus": [
+    334,
+    796,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    0,
+    2271,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Levure 4/7",
+   "couverts": []
+  },
+  "clair-390-levure-45": {
+   "plus": [
+    334,
+    796,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    672,
+    2271,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Levure 4/7",
+   "couverts": [
+    "SPAN:12 j indicatifs",
+    "BUTTON:",
+    "SPAN:"
+   ]
+  },
+  "clair-390-eau-0": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    0,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "clair-390-eau-30": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    98,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "clair-390-eau-65": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    213,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "clair-390-eau-90": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    294,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "clair-sels-trouve": true,
+  "clair-390-sels-0": {
+   "plus": [
+    336,
+    80,
+    40,
+    40
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    0,
+    2971,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "clair-390-sels-bas": {
+   "plus": [
+    336,
+    72,
+    40,
+    40
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    2193,
+    2971,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": [
+    "P:Le rapport obtenu est 1,27:1 p"
+   ]
+  },
+  "clair-390-paliers-menu": {
+   "plus": [
+    334,
+    661,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    0,
+    778,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Paliers 5/7",
+   "couverts": []
+  },
+  "clair-390-recap-0": {
+   "plus": [
+    334,
+    784,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    971,
+    705
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Récapitulatif 7/7",
+   "couverts": []
+  },
+  "clair-390-recap-bas": {
+   "plus": [
+    334,
+    784,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    266,
+    971,
+    705
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Récapitulatif 7/7",
+   "couverts": []
+  },
+  "clair-enreg": true,
+  "clair-390-apres-enreg": {
+   "plus": [
+    338,
+    798,
+    44,
+    44
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    1933,
+    762
+   ],
+   "winY": 0,
+   "h1": [
+    42,
+    7,
+    306,
+    18
+   ],
+   "h1txt": "American IPA 30 L",
+   "couverts": []
+  },
+  "cave-390-levure-mi": {
+   "plus": [
+    334,
+    796,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    0,
+    2271,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Levure 4/7",
+   "couverts": []
+  },
+  "cave-390-levure-45": {
+   "plus": [
+    334,
+    796,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    672,
+    2271,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Levure 4/7",
+   "couverts": [
+    "SPAN:12 j indicatifs",
+    "BUTTON:",
+    "SPAN:"
+   ]
+  },
+  "cave-390-eau-0": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    0,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "cave-390-eau-30": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    98,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "cave-390-eau-65": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    213,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "cave-390-eau-90": {
+   "plus": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    294,
+    1105,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "cave-sels-trouve": true,
+  "cave-390-sels-0": {
+   "plus": [
+    336,
+    80,
+    40,
+    40
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    0,
+    2971,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": []
+  },
+  "cave-390-sels-bas": {
+   "plus": [
+    336,
+    72,
+    40,
+    40
+   ],
+   "docke": "false",
+   "dock": "page-row",
+   "main": [
+    2193,
+    2971,
+    778
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Eau et sels 6/7",
+   "couverts": [
+    "P:Le rapport obtenu est 1,27:1 p"
+   ]
+  },
+  "cave-390-recap-0": {
+   "plus": [
+    334,
+    784,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    971,
+    705
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Récapitulatif 7/7",
+   "couverts": []
+  },
+  "cave-390-recap-bas": {
+   "plus": [
+    334,
+    784,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    266,
+    971,
+    705
+   ],
+   "winY": 0,
+   "h1": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "h1txt": "Récapitulatif 7/7",
+   "couverts": []
+  },
+  "cave-enreg": true,
+  "cave-390-apres-enreg": {
+   "plus": [
+    338,
+    798,
+    44,
+    44
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    1933,
+    762
+   ],
+   "winY": 0,
+   "h1": [
+    42,
+    7,
+    306,
+    18
+   ],
+   "h1txt": "American IPA 30 L",
+   "couverts": []
+  },
+  "clair-1280-apres-enreg": {
+   "plus": [
+    972,
+    754,
+    44,
+    44
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    2059,
+    718
+   ],
+   "winY": 0,
+   "h1": [
+    298,
+    7,
+    684,
+    18
+   ],
+   "h1txt": "American IPA 30 L",
+   "couverts": []
+  },
+  "cave-1280-paliers-menu": {
+   "plus": [
+    964,
+    752,
+    48,
+    48
+   ],
+   "docke": "true",
+   "dock": "page-row",
+   "main": [
+    0,
+    802,
+    734
+   ],
+   "winY": 0,
+   "h1": [
+    298,
+    7,
+    80,
+    23
+   ],
+   "h1txt": "Paliers 5/7",
+   "couverts": []
+  },
+  "cave-1280-apres-enreg": {
+   "plus": [
+    972,
+    754,
+    44,
+    44
+   ],
+   "docke": "true",
+   "dock": "page-compact",
+   "main": [
+    0,
+    2059,
+    718
+   ],
+   "winY": 0,
+   "h1": [
+    298,
+    7,
+    684,
+    18
+   ],
+   "h1txt": "American IPA 30 L",
+   "couverts": []
+  }
+ }
+}
