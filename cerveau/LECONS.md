@@ -139,7 +139,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
 - Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
-- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. Qui a lu le jeu ne refait pas l'épreuve.
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. Qui a lu le jeu ne refait pas l'épreuve. Une note de juges ne s'annonce pas comme acquise : montrer les captures avant (16.11, p5 noté 8,2 par les juges, refusé par lui : « je comprends pas trop P5 »). Un plafond de mots tenu en retirant du contenu fait un écran « pas fini ».
 - Rôles : pilote, critique, conseil
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
