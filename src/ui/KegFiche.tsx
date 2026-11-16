@@ -8,7 +8,7 @@ import { Field, FormNav } from './FormNav';
 import { nombreFr } from '../domain/nombreAffiche';
 import {
   couleurPastille, dateCourte, derniereDate, etapesRecentes, jaugeFut, libelleEtape, livrer, marquerPropre,
-  retourVide, revenuPlein, reperePourStyle
+  remettreALaver, etapeALaver, retourVide, revenuPlein, reperePourStyle
 } from '../domain/stock/futsFiche';
 import './equipment-compact.css';
 import './keg-fiche.css';
@@ -79,9 +79,10 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
     titre = lave ? `Lavé le ${dateCourte(lave)}` : 'Propre';
     aide = 'Marqué propre, prêt à remplir.';
   } else {
-    const revenu = derniereDate(keg, 'retour-vide');
-    titre = revenu ? `Revenu le ${dateCourte(revenu)}` : 'À laver';
-    aide = revenu ? 'Revenu vide, à nettoyer avant remplissage.' : 'Date de retour non enregistrée.';
+    const e = etapeALaver(keg);
+    const remis = e?.quoi === 'a-laver';
+    titre = e ? `${remis ? 'Remis à laver' : 'Revenu'} le ${dateCourte(e.date)}` : 'À laver';
+    aide = e ? (remis ? 'À nettoyer avant remplissage.' : 'Revenu vide, à nettoyer avant remplissage.') : 'Date de retour non enregistrée.';
   }
 
   const pied = keg.state === 'livre'
@@ -94,7 +95,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
       </div>;
 
   return (
-    <Sheet open onClose={onClose} title={`Fût ${keg.id}`} subtitle={subtitle} className="equipment-sheet" footer={pied}>
+    <Sheet open onClose={onClose} title={`Fût ${keg.id}`} subtitle={subtitle} className="equipment-sheet lg:max-w-xl lg:mx-auto" footer={pied}>
       <FormNav className="equipment-form" onSubmit={() => { if (!(keg.state === 'plein' && !client)) act(); }}>
         <div className="keg-card">
           <p className="keg-card-beer">{titre}</p>
@@ -127,6 +128,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
       </FormNav>
       <details className="equipment-disclosure equipment-management">
         <summary>Gestion du fût</summary>
+        {keg.state === 'propre' && <Button intent="secondary" size="sm" onClick={() => done(remettreALaver(keg, today))}>Remettre à laver</Button>}
         <Button intent="danger" size="sm" className="equipment-danger" onClick={onRemove} icon={<Trash2 size={14}/>}>Retirer du parc</Button>
       </details>
     </Sheet>

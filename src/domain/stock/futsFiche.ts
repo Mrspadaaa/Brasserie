@@ -107,7 +107,7 @@ export function etapesRecentes(keg: Pick<KegItem, 'historique'>, n?: number): Ke
 }
 
 const LIBELLE_ETAPE: Record<KegHistoryKind, string> = {
-  ajoute: 'Ajouté au parc', lave: 'Lavé', rempli: 'Rempli', livre: 'Livré', 'retour-vide': 'Revenu vide', 'retour-plein': 'Revenu plein'
+  ajoute: 'Ajouté au parc', lave: 'Lavé', rempli: 'Rempli', livre: 'Livré', 'retour-vide': 'Revenu vide', 'retour-plein': 'Revenu plein', 'a-laver': 'Remis à laver'
 };
 
 export function libelleEtape(e: KegHistoryEntry): string {
@@ -141,6 +141,16 @@ export function revenuPlein(keg: KegItem, date: string): KegItem {
 /** Retour vide : le fût passe à laver, vidé de sa bière et de son client. */
 export function retourVide(keg: KegItem, date: string): KegItem {
   return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'retour-vide', detail: keg.clientName }) };
+}
+
+/** Remettre à laver (Gestion du fût) : un fût propre, neuf ou sali, repasse à laver ; rien d'autre ne change. */
+export function remettreALaver(keg: KegItem, date: string): KegItem {
+  return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver' }) };
+}
+
+/** La dernière étape qui a mis le fût à laver : retour vide, ou remis à laver depuis la fiche. */
+export function etapeALaver(keg: KegItem): KegHistoryEntry | undefined {
+  return etapesRecentes(keg).find((x) => x.quoi === 'retour-vide' || x.quoi === 'a-laver');
 }
 
 export function marquerPropre(keg: KegItem, date: string): KegItem {
@@ -279,7 +289,7 @@ export function basculerFiltre(filtre: readonly EtatFut[], etat: EtatFut): EtatF
 export function dateDeRang(keg: KegItem): string | undefined {
   if (keg.state === 'livre') return keg.deliveryDate;
   if (keg.state === 'plein') return keg.fillDate;
-  if (keg.state === 'lavage') return derniereDate(keg, 'retour-vide');
+  if (keg.state === 'lavage') return etapeALaver(keg)?.date;
   if (keg.state === 'propre') return derniereDate(keg, 'lave');
   return undefined;
 }
@@ -324,9 +334,10 @@ export function ligneDate(keg: KegItem, aujourdhui: string): LigneDate | undefin
     return d ? { texte: `Lavé le ${d}`, ancien: false } : undefined;
   }
   if (keg.state === 'lavage') {
-    const e = etapesRecentes(keg).find((x) => x.quoi === 'retour-vide');
+    const e = etapeALaver(keg);
     const d = lisible(e?.date);
-    return e && d ? { texte: `Revenu le ${d}${e.detail ? ` · ${e.detail}` : ''}`, ancien: false } : undefined;
+    if (!e || !d) return undefined;
+    return { texte: e.quoi === 'a-laver' ? `Remis à laver le ${d}` : `Revenu le ${d}${e.detail ? ` · ${e.detail}` : ''}`, ancien: false };
   }
   return undefined;
 }
