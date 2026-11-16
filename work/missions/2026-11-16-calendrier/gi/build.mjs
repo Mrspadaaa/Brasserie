@@ -53,7 +53,10 @@ function appliquer(ids, X) {
 #fb .lane[data-voie=evenement] .lt.gi1-t{height:26px;margin-top:-26px;position:relative;z-index:2;width:max-content;padding-bottom:3px;align-items:flex-end}
 #fb .lane[data-voie=evenement] .lt.gi1-t .k14-pl{align-self:flex-end;margin-bottom:-3px}
 #fb .lane[data-voie=brassage] .k18-ln{top:116px!important}
-#fb .lane:is([data-voie=achat],[data-voie=renovation],[data-voie=activite],[data-voie=charge])>.lt{height:23px}`);
+#fb .lane:is([data-voie=achat],[data-voie=renovation],[data-voie=activite],[data-voie=charge])>.lt{height:23px}
+/* 16.11 « + pas aligné ni sur la même ligne » : tous les + dans une colonne, au bout d’un titre de largeur fixe */
+#fb .lane>.lt{width:118px!important;box-sizing:border-box}
+#fb .lane>.lt .k14-pl{margin-left:auto!important}`);
     }
     if (id === 'i2') {
       // Une seule place : sur la ligne du titre, à droite du titre et de son +. Seulement les rangées de plusieurs choses.

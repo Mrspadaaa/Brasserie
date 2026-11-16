@@ -1897,3 +1897,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 
 - **16.11**, mot pour mot, sur la page du carnet ra ou p5f (https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL) : « Carnet · Il y a des choses bien des deux côtés. Je peux pas les départager... Entre ta et p5f »
   (lu : « ta » = ra. Aucun des deux ne gagne en bloc. On ne refait pas une fusion devinée (la fusion p5 a été refusée) : il choisit étape par étape, ra ou p5f, sur les mêmes captures ; la base du carnet devient l'assemblage de ses choix d'étape, puis on le joue de zéro.)
+- **16.11**, mot pour mot, sur une capture entourée de « tout » (page9, https://claude.ai/artifact/VE966bkeVCnCsBPUX2KREC) : « + pas aligné ni sur la même ligne ??? »
+  (lu : les + des rangées suivaient la longueur de chaque titre. Ils vont dans une seule colonne, au bout d'un titre de largeur fixe, sur la ligne du titre. Contrôle CAL-PLUS-ALIGNE.)
