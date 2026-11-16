@@ -35,6 +35,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Carnet de recherche et de décision | prototypes dc/da/db · 16.11 | https://claude.ai/artifact/793n3GJYxJHc52JH5ynw1h | `work/missions/2026-11-16-carnet-decision/page/index.html` |
 | Liens de l'app | top 15 · 16.11 | https://claude.ai/artifact/BHEHrUTuHiJkGnE1MjUGe6 | `work/missions/2026-11-16-liens-app/page/index.html` |
 | Calendrier par section, vues | exploration · 16.11 | https://claude.ai/artifact/TUrDFEM6Z5jywbS8yJsr3f | `work/missions/2026-11-16-vues-calendrier/page/index.html` |
+| Carnet de décision | fusion p5 · 16.11 | https://claude.ai/artifact/L8kQ1LbsTefsYgbM3RJCzh | `work/missions/2026-11-16-carnet-decision/page2/index.html` |
 
 ## REPRISE pilote — 16.11, ~10 h
 - **Workflows en cours** (pilote) :
