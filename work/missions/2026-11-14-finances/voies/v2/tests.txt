@@ -9,32 +9,22 @@ Not implemented: Window's scrollTo() method
 ······stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > ouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée
 Not implemented: Window's scrollTo() method
 
-··········stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > fige une version annuelle et garde ses chiffres après une nouvelle dépense
+·········stderr | tests/integration/financeWorkspace.test.tsx > Comptabilité quotidienne intégrée > fige une version annuelle et garde ses chiffres après une nouvelle dépense
 Not implemented: Window's scrollTo() method
 
-··························stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > opens a batch outside this month without widening the catalog, closes and reopens it only for a new request
+·······························stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > opens a batch outside this month without widening the catalog, closes and reopens it only for a new request
 The width(0) and height(0) of chart should be greater than 0,
        please check the style of container, or the props width(100%) and height(100%),
        or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
        height and width.
 
-···stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > opens a batch outside this month without widening the catalog, closes and reopens it only for a new request
+·······stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > opens a batch outside this month without widening the catalog, closes and reopens it only for a new request
 The width(0) and height(0) of chart should be greater than 0,
        please check the style of container, or the props width(100%) and height(100%),
        or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
        height and width.
 
-····stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > waits for the requested live record, selects Brassins and consumes its request once under StrictMode
-The width(0) and height(0) of chart should be greater than 0,
-       please check the style of container, or the props width(100%) and height(100%),
-       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
-       height and width.
-The width(0) and height(0) of chart should be greater than 0,
-       please check the style of container, or the props width(100%) and height(100%),
-       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
-       height and width.
-
-····stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > waits for the requested live record, selects Brassins and consumes its request once under StrictMode
+stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > waits for the requested live record, selects Brassins and consumes its request once under StrictMode
 The width(0) and height(0) of chart should be greater than 0,
        please check the style of container, or the props width(100%) and height(100%),
        or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
@@ -44,13 +34,101 @@ The width(0) and height(0) of chart should be greater than 0,
        or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
        height and width.
 
-··stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
+·stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > waits for the requested live record, selects Brassins and consumes its request once under StrictMode
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
 The width(0) and height(0) of chart should be greater than 0,
        please check the style of container, or the props width(100%) and height(100%),
        or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
        height and width.
 
-·stderr | tests/integration/mobileDailyViews.test.tsx > Vues quotidiennes sur téléphone > affiche quantité et couverture du stock et garde les besoins dans la fiche
+········stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+··············································stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+··stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
+Not implemented: Window's scrollTo() method
+
+······················stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Solde d’ouverture »
+Not implemented: Window's scrollTo() method
+
+···stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Inventaires »
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Comptes et dettes »
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Parts privées »
+Not implemented: Window's scrollTo() method
+
+···stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Vérifications de l’année »
+Not implemented: Window's scrollTo() method
+
+··stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille d’un matériel à amortir
+Not implemented: Window's scrollTo() method
+
+··································stderr | tests/integration/mobileDailyViews.test.tsx > Vues quotidiennes sur téléphone > affiche quantité et couverture du stock et garde les besoins dans la fiche
 An update to FichePage inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -62,95 +140,17 @@ act(() => {
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
 
-······················stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Solde d’ouverture »
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Inventaires »
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Comptes et dettes »
-Not implemented: Window's scrollTo() method
-
-··stderr | tests/integration/dashboardNavigation.test.tsx > Direct batch navigation from the dashboard > wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
-The width(0) and height(0) of chart should be greater than 0,
-       please check the style of container, or the props width(100%) and height(100%),
-       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
-       height and width.
-
-·stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Parts privées »
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille « Vérifications de l’année »
-Not implemented: Window's scrollTo() method
-
-··stderr | tests/integration/financeAnnuelSaisie.test.tsx > Finances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber > la feuille d’un matériel à amortir
-Not implemented: Window's scrollTo() method
-
-···················stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde absent
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-·stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-stderr | tests/integration/renvoisPartout.test.tsx > CP-18 · chaque manque visible est un renvoi (jeu clairsemé) > Finances › Annuel › Clôture, étapes 1 à 9 > étapes 1 à 9, solde nonConfirme
-Not implemented: Window's scrollTo() method
-
-·····························································································································································stderr | tests/integration/u2Pures.test.ts > 21 et 27 : supprimerPlan > un projet de matériel se supprime de même
+···························································································stderr | tests/integration/u2Pures.test.ts > 21 et 27 : supprimerPlan > un projet de matériel se supprime de même
 [Firestore] atomic write [FirebaseError: Expected type 'Firestore', but it was: a custom Object object] {
   code: [32m'invalid-argument'[39m,
   customData: [90mundefined[39m,
   toString: [36m[Function (anonymous)][39m
 }
 
-·····································
+·······································
 
  Test Files  31 passed (31)
-      Tests  315 passed (315)
-   Start at  09:02:57
-   Duration  33.96s (transform 12.84s, setup 9.11s, collect 55.55s, tests 36.64s, environment 25.49s, prepare 2.48s)
+      Tests  316 passed (316)
+   Start at  09:10:15
+   Duration  27.70s (transform 10.02s, setup 7.30s, collect 44.47s, tests 27.32s, environment 23.55s, prepare 2.14s)
 

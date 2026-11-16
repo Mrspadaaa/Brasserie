@@ -4,6 +4,7 @@
  * dessinait novembre seul (1er → 30, poignées aux bouts). La frise couvre alors de la première à la dernière opération, et la ligne de compte dit la période.
  */
 import React from 'react';
+import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
@@ -33,6 +34,12 @@ describe('1 : en « Tout », la frise couvre tout l’historique', () => {
     expect(container.textContent).toMatch(/Tout l’historique · 3\s*opérations/);
     expect(container.textContent).not.toMatch(/\d\s*jours?\b/);
     expect(screen.queryByRole('button', { name: 'Revenir au mois entier' })).toBeNull();
+  });
+
+  it('rien ne déborde de la piste : colonnes sans plancher de largeur, et la piste coupe ce qui dépasse', () => {
+    const { container } = render(<ChoixPlage periode={{ genre: 'tout' } as Periode} onChoisir={() => {}} transactions={transactions} maintenant={maintenant}/>);
+    expect((container.querySelector('.ops-fjours') as HTMLElement).style.gridTemplateColumns).toMatch(/^repeat\(\d+, minmax\(0(px)?, 1fr\)\)$/);
+    expect(readFileSync('src/ui/finance/operations.css', 'utf8')).toMatch(/\.ops-fjours\s*\{[^}]*overflow-x:\s*clip/);
   });
 
   it('sur plus d’un an, l’axe dit l’année des bornes et marque chaque 1er janvier ; sur un mois il reste inchangé', () => {

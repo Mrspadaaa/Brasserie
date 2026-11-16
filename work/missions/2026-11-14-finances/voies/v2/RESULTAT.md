@@ -26,6 +26,12 @@ OK — Frise « Tout » couvre l'historique, pastille de plage entière, avis ef
 - 2 : mesure `scrollWidth = clientWidth = 120` à 1280 (« 18 oct. → 16 nov. » entier, clair et cave) ; 390 : « 18.10–16.11 » 69/69.
 - 3 : `j-20.log` : « avis encore là false » aux 4 configurations ; liste sans bandeau après l'annulation, totaux inchangés.
 
+## Correction du pilote : graduations hors de la carte (« Tout », 1280)
+- Cause : la capture `33-1280-clair-tout.png` du pilote datait d'avant `minmax(0, 1fr)` (grille de 908 colonnes à plancher de 2 px, qui débordait). Déjà corrigé ; ajouté en garde : `.ops-fjours{overflow-x:clip}` dans `src/ui/finance/operations.css`.
+- Mesure (`capturer.mjs`, 4 configurations) : débordement hors de la carte Période 0 px, hors de la zone de la plage 0 px (poignées exceptées, elles mordent de 10 px sur la marge de la carte, comme avant).
+- Test : `friseToutHistorique` (+1 : colonnes `minmax(0, 1fr)` et règle `overflow-x:clip`) ; 31 fichiers, 316 tests, `VITEST OK`. TSC, BUILD, V6A, FRISE, EMULATEUR OK.
+- Captures rejouées et ouvertes : 33 en 1280 clair et 390 cave : rien ne dépasse la carte.
+
 ## Doutes et limites
 - La ligne grise sous la frise de « Tout » dit « du 1er juil. au 31 août ; du 1er oct. au 30 nov. … » sans année : ambigüe sur 2,5 ans. `texteInconnu` n'a pas été touché (hors de ce qui était demandé) ; à dire au pilote.
 - `ROUTE_MAX` 1500 : au-delà (~4 ans) la frise redevient sans barres. Mesure : ouverture de « Tout » 115 ms sur le jeu démo (peu d'opérations) ; sur un grand livre réel non mesuré (périodeJour par jour, mis en cache).

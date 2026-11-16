@@ -90,6 +90,9 @@ for (const [largeur, mobile, hauteur] of combos) for (const theme of ['clair', '
     await clic(page, 'Tout'); await calme(page, 1000);
     log('Tout : durée en jours affichée', await texte(page, '\\d\\s*jours?\\b'), '| Tout l’historique', await texte(page, 'Tout l’historique'));
     log('frise Tout : jours dessinés', await page.evaluate(() => document.querySelectorAll('.ops-fjours > .ops-fj').length), '| poignées', await page.evaluate(() => [...document.querySelectorAll('.ops-h')].map((h) => h.getAttribute('aria-valuetext')).join(' → ')), '| axe', await page.evaluate(() => [...document.querySelectorAll('.ops-ax span')].map((s) => s.textContent).join(' ')));
+    // débordement : aucun élément de la frise ni de ses graduations ne dépasse la carte Période (bord droit)
+    log('débordement (px, doit être 0) : hors carte Période', await page.evaluate(() => { const fr = document.querySelector('[data-testid=frise]'); const pl = fr.closest('.pr-plage'); let carte = pl.parentElement; while (carte && !(parseFloat(getComputedStyle(carte).paddingRight) > 0)) carte = carte.parentElement; const lim = carte.getBoundingClientRect().right; return Math.max(0, ...[...fr.querySelectorAll('*')].map((e) => Math.round(e.getBoundingClientRect().right - lim))); }),
+      '| hors zone de la plage, poignées exceptées', await page.evaluate(() => { const fr = document.querySelector('[data-testid=frise]'); const lim = fr.closest('.pr-plage').getBoundingClientRect().right; return Math.max(0, ...[...fr.querySelectorAll('*')].filter((e) => !e.closest('.ops-h')).map((e) => Math.round(e.getBoundingClientRect().right - lim))); }));
     await photo('tout');
     await page.evaluate(() => {
       const f = (d) => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`;
