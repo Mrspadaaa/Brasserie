@@ -37,6 +37,7 @@ import { nombreFr } from '../domain/nombreAffiche';
 import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/PlannedDate';
 import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, EtapesPills, VerdictPuces, LigneRepliee } from './production/fiche/PostFiche';
 import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
+import { QuiARecuLot, type GesteFutLot } from './lot/QuiARecuLot';
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
 import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
 import { Ellipsis, ChevronRight, Package } from 'lucide-react';
@@ -144,6 +145,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
   const releveRef = React.useRef<HTMLDivElement>(null);
   useEffect(() => { if (!fgUndo) return; const t = window.setTimeout(() => setFgUndo(null), 8000); return () => window.clearTimeout(t); }, [fgUndo]);
+  const [gesteFut, setGesteFut] = useState<{ quoi: GesteFutLot; n: number } | null>(null);
   // p5 : à l'ouverture, le focus auto de la feuille tombe sur le × et l'entoure d'un anneau. On le pose sur la feuille elle-même ; le clavier reprend ensuite normalement.
   useEffect(() => {
     if (!batch?.id) return;
@@ -434,7 +436,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   setDraft(saved);
                 }} />}
           {!planned && !post && !ficheM && <YeastPreparationPanel batch={draft} onSave={save} />}
-          {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
+          {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{(draft.status === 'conditionne' || draft.status === 'termine') && <>
+            <Cible onClick={() => { setSection('measurements'); setPlusOpen(false); setGesteFut(g => ({ quoi: 'rentrer', n: (g?.n ?? 0) + 1 })); }}>Rentrer un fût</Cible>
+            <Cible ton="prim" onClick={() => { setSection('measurements'); setPlusOpen(false); setGesteFut(g => ({ quoi: 'livrer', n: (g?.n ?? 0) + 1 })); }}>Livrer un fût</Cible></>}{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
           {noloRecipeForBatch(draft)&&(plusOpen || (!planned && !post))&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className={`grid grid-cols-3 border-b border-cave-700 ${ficheM ? 'hidden' : ''}`}
@@ -559,6 +563,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
             </>
           )}
+              {/* Maquette lot/v1 (16.11) : le lot se ramifie vers chaque client ; les gestes du menu « Plus » (Rentrer, Livrer) s'y jouent. */}
+              {draft.status !== 'annule' && <QuiARecuLot batch={draft} geste={gesteFut} />}
           {((section === 'measurements' && !planned && !ficheM) || mesuresDansDossier) && (
             <Enveloppe {...(post || ficheM || mesuresDansDossier ? { className: 'rounded-xl border border-cave-800 bg-cave-900 px-2.5 py-1' } : {})}>
               {(post || ficheM || mesuresDansDossier) && <summary className="min-h-touch cursor-pointer text-sm text-cave-200">Corriger les mesures (OG, FG, volumes)</summary>}
