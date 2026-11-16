@@ -114,3 +114,8 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - Q22 Propositions justes (tous) : leave-one-out, réglé 2021-2023, jugé 2024-2025 ; 1re puce ≥ 60 %, 3 premières ≥ 90 %, semaine ±1 ≥ 80 %, montant ±10 % ≥ 70 %, carnet ≥ 80 % gardées.
 - Q23 Son essai réel (tous) : page L7 chronométrée, journal des touchers ; médiane ≤ 6 s, 0 clavier, ≤ 1 hésitation, sa phrase classée « aime ». Juge final, non bloquant.
 - Fonctions à verser (hors critères) : suites automatiques d'un brassin en lecture seule (W4), actions sur un lot (W7), rappel actionnable (W9), lier d'un geste avec lien stocké une fois (D-N9).
+
+## L8 Thèmes comme le + (16.11, « une vue de ce calendrier un peu "comme le bouton+" mais par thème »)
+- Un geste flottant change le calendrier de thème : tout, finance, brassage, achats, atelier, ventes. Le + porte alors les actions du thème, et la frise montre les choses du thème au premier plan.
+- Le changement de thème se fait en 1 toucher ou 1 balayage, sans clavier.
+- Variantes en cours dans `work/missions/2026-11-16-vues-calendrier/themes/`.
