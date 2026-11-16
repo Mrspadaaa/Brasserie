@@ -1,0 +1,49 @@
+g-d1      tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i1        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · vides 9
+          défauts 0
+i2        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i3        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i4        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i5        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i6        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i7        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 « S47 » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i8        tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+tout      tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 « S47 » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · vides 9
+          défauts 0
+tout-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 « S47 » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · vides 9
+          défauts 0
+i3-toucher tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i5-toucher tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i6-toucher tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+i8-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · vides 12
+          défauts 0
+tout-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 « S47 » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · vides 9
+          défauts 0
+CONTROLE OK
