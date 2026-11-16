@@ -1,0 +1,22 @@
+{
+ "s1": {
+  "titre": "Rives",
+  "h": 165,
+  "idee": "Rives : courbe deux fois plus haute ; chaque entrée nommée en entier dans le ciel de la courbe, au-dessus de sa marche ; chaque sortie nommée en entier sur une rangée dessous, reliée à sa marche ; mois en haut ; la bande des semaines tient en une ligne de mouvements."
+ },
+ "s2": {
+  "titre": "Relevé",
+  "h": 165,
+  "idee": "Relevé : courbe haute (124 px de svg) sans rien d'écrit dessus, seulement les marches ▲▼ ; à droite, le relevé des 8 gros mouvements après la fenêtre, dans l'ordre (semaine, nom entier, montant) ; la bande : mouvement de chaque semaine et sa barrette."
+ },
+ "s3": {
+  "titre": "Le creux raconté",
+  "h": 165,
+  "idee": "Le creux raconté : la zone S13 → S24 teintée en rouge sur la courbe, et sous elle sa phrase, noms entiers (Hotte −900 · Six fûts inox −1 080 · Embouteilleuse −2 800 · Frigo 1 140 mis de côté) ; entrées nommées dans le ciel ; la bande dit aussi le genre du mouvement (étoile, bouteille, chariot)."
+ },
+ "s4": {
+  "titre": "Curseur",
+  "h": 165,
+  "idee": "Curseur : la courbe la plus haute, rien d'écrit dessus, seulement les marches ▲▼ ; un curseur posé sur S24 (la semaine au plus serré) lit en clair, au-dessus, ce qui la creuse, noms entiers ; au doigt, il glisse et lit toute autre semaine."
+ }
+}

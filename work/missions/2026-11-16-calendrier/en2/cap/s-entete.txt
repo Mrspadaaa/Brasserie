@@ -1,0 +1,5 @@
+ok s1.html : courbe 100 px (min 70), bande des semaines 17 px (max 40, présente), en-tête 195 px
+ok s2.html : courbe 111 px (min 70), bande des semaines 19 px (max 40, présente), en-tête 195 px
+ok s3.html : courbe 95 px (min 70), bande des semaines 18 px (max 40, présente), en-tête 195 px
+ok s4.html : courbe 92 px (min 70), bande des semaines 19 px (max 40, présente), en-tête 195 px
+ENTETE OK

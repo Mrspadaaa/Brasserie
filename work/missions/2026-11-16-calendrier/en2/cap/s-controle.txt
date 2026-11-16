@@ -1,0 +1,14 @@
+## l5 : en-tête 165 px ; mots 37
+  aucun défaut
+## s1 : en-tête 165 px ; mots 35 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## s2 : en-tête 165 px ; mots 42 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## s3 : en-tête 165 px ; mots 33 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## s4 : en-tête 165 px ; mots 30 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## s-temoin : en-tête 165 px ; mots 38 ; frise identique ; + identique ; code frise identique
+  TEXTE×TRAIT sur la courbe / hz
+  TEMOIN ECHOUE comme attendu
+CONTROLE OK
