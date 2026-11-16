@@ -1892,3 +1892,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : pour le paysage, la base est cd1-paysage (`cd/cd1-paysage.html`), bien meilleure, mais son en-tête est trop lourd et doit s'alléger, comme en portrait. Prochaine étape paysage : cd1-paysage avec un en-tête allégé, montré avant/après.)
 - **16.11**, mot pour mot : « Je pense que l'entête peut encore être amélioré !!! »
   (lu : l'en-tête est le prochain sujet, en portrait comme en paysage. Lot d'en-têtes seuls, avec le reste figé : la frise de g-d1 en portrait, le reste de cd1-paysage en paysage. Il doit tenir le même contenu (montant à dépenser, au plus serré, en retard, période, courbe et sa fenêtre) en plus léger et plus clair.)
+- **16.11**, mot pour mot, sur l'en-tête : « Plus de place au graph et plus d'info sur ces mouvements, moins d'info sur le reste »
+  (lu : l'en-tête se resserre autour de la courbe de caisse, qui y prend plus de place. La courbe porte ses mouvements : entrées, sorties et ce qui fait monter ou descendre la caisse, nommés sur la courbe ou à un toucher. Le reste (textes, pastilles, segments) diminue. Le lot d'en-têtes est relancé avec ce cap.)
