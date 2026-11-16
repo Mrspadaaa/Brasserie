@@ -121,3 +121,4 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 - Au retour : publier page3, sans note chiffrée annoncée.
 - Calendrier : calendrier-85 (task wv5b7urpi) continue.
 - Audit p5 : workflow `p5-audit`, task whw4b6oqr. Sortie : `r2/P5-AUDIT.md`, plus une section ajoutée à CADRE.md. Si p5f ne couvre pas tous les écrans inutilisables relevés, une passe de correction de p5f suit avant la page.
+- **Règle (16.11)** : aucune page ne part sans l'audit écran par écran : trois regards, la question « utilisable ? », le clavier ouvert, le paysage, les états vides et neufs, face à sa base. Le script de p5-audit sert de modèle. Il se rejoue sur ra et p5f avant page3.

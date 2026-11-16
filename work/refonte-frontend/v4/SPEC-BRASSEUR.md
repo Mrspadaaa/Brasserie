@@ -1843,3 +1843,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : p5 est un peu mieux par endroits, mais certains écrans sont inutilisables. Écrans suspects, d'après les critiques : Comparer au téléphone (3ᵉ colonne coupée, noms sur 2 lignes), le journal aux notes repliées en icônes muettes, les écrans à moitié vides et la liste. Je lui demande lesquels.)
 - **16.11**, mot pour mot : « Fait peut être passer un critique, revue, besoin brasseur ECT... Dessus ? »
   (lu : il ne désigne pas lui-même les écrans de p5 inutilisables : un audit les trouve. Trois regards (critique, UX utilisabilité, besoin brasseur) jouent chaque écran face à da, puis la synthèse va dans CADRE.md. p5f sera corrigé selon cet audit.)
+- **16.11**, mot pour mot : « Comment autant d'erreur cruciale ont pu passer ??? »
+  (lu : il demande pourquoi l'audit trouve 4 écrans inutilisables que les 5 passes avaient laissés passer. Réponse et leçon : les portes notaient des critères au lieu de demander si chaque écran est utilisable. Un parcours scripté réussi ne voit ni le clavier ni l'écran vide. L'audit écran par écran devient obligatoire avant toute page.)
