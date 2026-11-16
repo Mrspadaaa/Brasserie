@@ -168,7 +168,7 @@ export interface KegItem {
   notes?: string;
 }
 
-export type KegHistoryKind = 'ajoute' | 'lave' | 'rempli' | 'livre' | 'retour-vide' | 'retour-plein';
+export type KegHistoryKind = 'ajoute' | 'lave' | 'rempli' | 'livre' | 'retour-vide' | 'retour-plein' | 'a-laver';
 export interface KegHistoryEntry {
   /** `JJ.MM.AAAA` */
   date: string;

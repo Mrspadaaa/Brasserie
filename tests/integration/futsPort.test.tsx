@@ -116,6 +116,31 @@ describe('F2 — propre et à laver (même gabarit)', () => {
 });
 
 describe('Gestion du fût', () => {
+  it('propre (neuf) : « Remettre à laver » le passe à laver avec son étape, la ligne dit « Remis à laver le »', async () => {
+    const onSaveKeg = vi.fn();
+    monter([f005], { onSaveKeg }); await ouvrir('F-005');
+    fireEvent.click(screen.getByText('Gestion du fût'));
+    fireEvent.click(screen.getByRole('button', { name: 'Remettre à laver' }));
+    const attendu = { id: 'F-005', state: 'lavage', historique: [H('12.11.2026', 'lave'), H('15.11.2026', 'a-laver')] };
+    expect(onSaveKeg).toHaveBeenCalledWith(expect.objectContaining(attendu));
+    cleanup();
+    monter([{ ...f005, ...attendu } as KegItem]);
+    expect(await screen.findByText(/Remis à laver le 15\.11/)).toBeInTheDocument();
+    await ouvrir('F-005');
+    expect(screen.getByRole('dialog', { name: 'Fût F-005' })).toHaveTextContent('Remis à laver le 15.11');
+    expect(screen.getByRole('button', { name: 'Marquer propre' })).toBeEnabled();
+  });
+  it('à laver, plein, livré : pas de « Remettre à laver »', async () => {
+    monter([f002]); await ouvrir('F-002');
+    fireEvent.click(screen.getByText('Gestion du fût'));
+    expect(screen.queryByRole('button', { name: 'Remettre à laver' })).toBeNull();
+  });
+  it('les feuilles des fûts sont en colonne centrée à l’ordinateur (constat 28)', async () => {
+    monter([f005]); await ouvrir('F-005');
+    expect(screen.getByRole('dialog', { name: 'Fût F-005' }).className).toMatch(/lg:max-w-xl/);
+    fireEvent.click(screen.getByRole('button', { name: 'Remplir depuis un lot' }));
+    expect(screen.getByRole('dialog', { name: 'Remplir depuis un lot' }).className).toMatch(/lg:max-w-xl/);
+  });
   it('Retirer du parc : la confirmation dit que l’historique reste au journal', async () => {
     const onRemoveKeg = vi.fn();
     monter([f001], { onRemoveKeg }); await ouvrir('F-001');
