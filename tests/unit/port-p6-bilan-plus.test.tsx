@@ -68,6 +68,7 @@ describe('e11a · le menu du +', () => {
       'Facture',
       'Vente',
       'Recette',
+      'Brassin↑',
       'Compagnon'
     ]);
     expect(noms).not.toContain('Outils houblons');
