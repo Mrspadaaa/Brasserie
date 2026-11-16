@@ -12,6 +12,7 @@ import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { UpgradeSheet } from './UpgradeSheet';
+import { ArchivesCarte, CarteVide } from './ArchivesCarte';
 import { ExpenseSheet } from './ExpenseSheet';
 import { useMobileLayout } from '../useViewport';
 import { ViewNavigation } from '../ViewNavigation';
@@ -283,7 +284,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
   const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
   const aVenir = useMemo(() => projects.filter(p => !realises.has(p.id)), [data, realises]);
-  const [avis, setAvis] = useState<SortieMarque | null>(null);
+  const [avis, setAvis] = useState<SortieMarque | null>(null), [repris, setRepris] = useState<string | null>(null);
   const dejaRealises = useRef<Set<string> | null>(null);
   useEffect(() => {
     const avant = dejaRealises.current; dejaRealises.current = realises;
@@ -313,6 +314,9 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être mis à jour.'); return false; }
     finally { setBusy(undefined); }
   };
+  /** Archives › « Reprendre » : le projet retourne dans À venir (brouillon, hors prévisions, comme « Reprendre ce projet » de la feuille) ; un avis passager le dit. */
+  const reprendre = async (plan: FinancialPlan) => { if (await enregistrer(plan, { ...plan, status: 'draft' })) setRepris(plan.title); };
+  useEffect(() => { if (!repris) return; const t = setTimeout(() => setRepris(null), 8000); return () => clearTimeout(t); }, [repris]);
   const changerStatut = async (plan: FinancialPlan, status: 'completed' | 'cancelled'): Promise<boolean> => {
     if (busy) return false;
     setBusy(plan.id); setError('');
@@ -362,11 +366,15 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onPrevisions={voirPrevisions}
       contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
       avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
-    : vueAVenir ? null : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
+    : vueAVenir ? null : !compact && scope === 'archived' && visible.length > 0 ? <ArchivesCarte plans={visible} transactions={data.transactions} payments={data.payments} busy={busy} onOuvrir={open} onReprendre={p => void reprendre(p)}/>
+    : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));
       return rows.length ? <section className="upgrade-stage" key={timing}><h3>{label}</h3>{rows.map(renderProject)}</section> : null;
     }) : visible.map(renderProject)}
-    {!visible.length && <div className="finance-empty"><Wrench className="mx-auto"/><h3>{scope === 'future' ? 'Quel matériel te manque ?' : scope === 'completed' ? 'Tes projets réalisés' : 'Tes projets mis de côté'}</h3><p>{scope === 'future' ? 'Commence par le besoin. Le prix et la date pourront venir ensuite.' : scope === 'completed' ? 'Marque un projet comme réalisé pour le retrouver ici avec ses achats.' : 'Un projet archivé se retrouve ici et peut être repris.'}</p></div>}
+    {!visible.length && !compact && scope === 'future' && <CarteVide onAjouter={() => open(null)}/>}
+    {!visible.length && !(!compact && scope === 'future') && <div className="finance-empty"><Wrench className="mx-auto"/><h3>{scope === 'future' ? 'Quel matériel te manque ?' : scope === 'completed' ? 'Tes projets réalisés' : 'Tes projets mis de côté'}</h3><p>{scope === 'future' ? 'Commence par le besoin. Le prix et la date pourront venir ensuite.' : scope === 'completed' ? 'Marque un projet comme réalisé pour le retrouver ici avec ses achats.' : 'Un projet archivé se retrouve ici et peut être repris.'}</p></div>}
+    {repris && <div className="kh"><div className="kh-toast ak-avis" role="status"><span className="kh-tt"><b>{repris} · de retour dans À venir</b><small>repris, pas encore dans tes prévisions</small></span>
+      <button type="button" className="kh-voir" onClick={() => { setRepris(null); setScope('future'); }}>Voir</button></div></div>}
     {editing !== undefined && <UpgradeSheet plan={editing ?? undefined} onClose={() => setEditing(undefined)}/>}
     {purchase && <ExpenseSheet initialIntent="equipment" initialPlanId={purchase.id} onSaved={() => {}} onClose={() => setPurchase(undefined)}/>}
   </div>;

@@ -174,3 +174,63 @@
 .kh-new:focus-visible { outline:2px solid rgb(var(--area-finances)); outline-offset:2px; }
 /* grand écran : les vues et « + Besoin » ont la largeur de la colonne d'À venir, alignées à gauche comme elle */
 @media (min-width:1024px) { .kh-views { max-width:680px; } }
+
+/* ───── ka4 : Archives (la carte de l'argent mis de côté, hachures) et l'état vide (la carte en pointillés). Classes `ak-`, jetons du thème (clair et cave) ───── */
+.ak { --ak-h1:rgb(var(--cave-800)); --ak-h2:rgb(var(--cave-900)); margin-top:6px; }
+.ak-tot { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 8px; margin:8px 0; }
+.ak-tot b { font-size:28px; font-weight:700; letter-spacing:-.4px; line-height:1.1; }
+.ak-tot small { font-size:13px; color:var(--kh-mut); }
+.ak-demo { margin-left:auto; font-size:12px; border:1px solid var(--kh-line2); border-radius:999px; padding:1px 8px; color:var(--kh-mut); }
+.ak-map { position:relative; margin:0 -2px; width:calc(100% + 4px); }
+.ak-c { position:absolute; overflow:hidden; border-radius:10px; border:1px solid var(--kh-line2); color:var(--kh-ink); background:repeating-linear-gradient(135deg,var(--ak-h1) 0 6px,var(--ak-h2) 6px 12px); }
+.ak-main { position:absolute; inset:0; padding:8px 10px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border-radius:inherit; }
+.ak-n { font-size:16px; font-weight:600; line-height:1.15; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ak-a { font-size:34px; font-weight:700; letter-spacing:-.5px; line-height:1.1; }
+.ak-a small { font-size:15px; font-weight:600; margin-left:4px; letter-spacing:0; }
+.ak-tag { display:inline-flex; align-items:center; height:24px; padding:0 8px; margin-top:4px; border-radius:999px; background:var(--kh-bg); border:1px solid var(--kh-line2); font-size:13px; max-width:100%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.ak-s { font-size:13px; color:var(--kh-mut); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* petite case : nom et sous-titre à gauche, montant à droite du bouton Reprendre (44 px) */
+.ak-pt .ak-main { padding-right:116px; justify-content:center; }
+.ak-pt .ak-a { position:absolute; right:58px; top:50%; transform:translateY(-50%); font-size:20px; letter-spacing:0; }
+.ak-paye { position:absolute; left:0; right:0; bottom:0; background:var(--kh-fin); pointer-events:none; }
+.ak-payel { position:absolute; left:10px; bottom:22px; font-size:13px; font-weight:600; color:var(--kh-fin-t); background:var(--kh-bg); border-radius:999px; padding:1px 8px; pointer-events:none; }
+.ak-payel i { font-style:normal; }
+.ak-rep { position:absolute; top:8px; right:8px; height:44px; padding:0 12px; border-radius:10px; background:var(--kh-act); color:var(--kh-onact); font-weight:600; font-size:15px; display:inline-flex; align-items:center; gap:6px; }
+.ak-repi { width:44px; height:44px; flex:none; border-radius:10px; border:1px solid var(--kh-line2); background:var(--kh-bg); color:var(--kh-ink); display:grid; place-items:center; }
+.ak-c .ak-repi { position:absolute; right:6px; top:50%; transform:translateY(-50%); }
+.ak-rep:disabled, .ak-repi:disabled { opacity:.45; }
+.ak-nop { margin-top:6px; display:flex; align-items:center; gap:8px; min-height:52px; border:1.5px dashed var(--kh-att); border-radius:10px; padding:0 6px 0 10px; background:rgb(var(--attention) / .15); }
+.ak-q { width:30px; height:30px; flex:none; border-radius:999px; border:1.5px dashed var(--kh-att); display:grid; place-items:center; color:var(--kh-att); font-weight:700; }
+.ak-nopm { flex:1; min-width:0; min-height:44px; display:flex; flex-direction:column; justify-content:center; }
+.ak-nopm b { font-size:16px; font-weight:600; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ak-nopm small { font-size:13px; color:var(--kh-att); }
+.ak-leg { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.ak-chip { height:28px; padding:0 9px; border-radius:999px; border:1px solid var(--kh-line2); font-size:13px; display:inline-flex; align-items:center; gap:5px; }
+.ak-chip-d { border-style:dashed; }
+.ak-sw { width:12px; height:12px; border-radius:999px; border:1px solid var(--kh-line2); display:inline-block; }
+.ak-sw-h { background:repeating-linear-gradient(135deg,var(--ak-h1) 0 3px,var(--ak-h2) 3px 6px); }
+.ak-sw-p { background:var(--kh-fin); border-color:var(--kh-fin); }
+/* légende « à venir » : les trois couleurs de la carte de l'argent d'À venir (maquette ka4) */
+.ak-sw-pret { background:var(--kh-hop); border-color:var(--kh-hop); }
+.ak-sw-devis { background:rgb(var(--area-finances) / .35); }
+.ak-sw-idee { background:var(--kh-line); }
+/* l'état vide : la carte attend sa première case */
+.ak-frame { position:relative; height:330px; margin-top:10px; border:1.5px dashed var(--kh-line2); border-radius:16px; overflow:hidden; }
+.ak-gh { position:absolute; border:1.5px dashed var(--kh-line); border-radius:10px; }
+.ak-mid { position:absolute; left:24px; right:24px; top:96px; text-align:center; background:var(--kh-bg); border-radius:16px; padding:14px 10px; }
+.ak-mid h3 { font-size:20px; font-weight:700; margin:0; }
+.ak-mid p { font-size:15px; color:var(--kh-mut); margin:4px 0 0; }
+.ak-mid button { margin-top:12px; height:48px; padding:0 18px; border-radius:10px; background:var(--kh-act); color:var(--kh-onact); font-weight:600; font-size:16px; display:inline-flex; align-items:center; gap:6px; }
+/* « Reprendre » vient d'aboutir : l'avis passager, posé au-dessus de la barre du bas (pas de bandeau dans Archives) */
+.ak-avis { bottom:calc(var(--kh-bas) + 12px); }
+@media (min-width:1024px) { .ak-frame { height:360px; } }
+.kh-toast.ak-avis { position:fixed; left:12px; right:12px; bottom:136px; max-width:656px; margin-inline:auto; min-height:60px; padding-block:6px; z-index:30; }
+
+/* case étroite et haute (grand écran) : le nom passe à la ligne, le bouton Reprendre en haut à droite, le montant au pied */
+.ak-et .ak-main { padding:8px 56px 8px 10px; justify-content:flex-start; }
+.ak-et .ak-n { white-space:normal; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow-wrap:anywhere; }
+.ak-et .ak-s { white-space:normal; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+.ak-et .ak-a { margin-top:auto; font-size:22px; letter-spacing:0; }
+.ak-et .ak-repi { top:6px; transform:none; }
+.ak-pt .ak-main { padding-top:4px; padding-bottom:4px; gap:0; }
+.ak-pt .ak-s, .ak-pt .ak-n { line-height:1.2; }
