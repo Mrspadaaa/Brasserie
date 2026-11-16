@@ -1,6 +1,6 @@
 import type { AnnualReport, DepreciationCategory, DepreciationRow, FinanceTransaction, FinancialAsset, FinancialClosing, FinancialPayment, FinancialProfile } from './types';
 import { compte } from '../../services/plural';
-import { isoDate, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, transactionAmount, transactionDirection, transactionKind, transactionVendor, validPayment } from './ledger';
+import { estCreanceTropPaye, isoDate, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, transactionAmount, transactionDirection, transactionKind, transactionVendor, validPayment } from './ledger';
 import { buildFribourgTaxReport } from './fribourgTax';
 
 export const DEPRECIATION_SOURCE = 'https://www.estv.admin.ch/dam/fr/sd-web/Qyxr5xBfdWDp/dbst-mb-a-1995-geschbetriebe-fr.pdf';
@@ -89,6 +89,9 @@ export function buildAnnualReport(input: { year: number; transactions: FinanceTr
   let invalidRefund = false;
   for (const tx of txs) {
     const amount = transactionAmount(tx), kind = transactionKind(tx), business = tx.finance?.businessUsePct ?? 100;
+    // FN-37 : un trop-payé « À récupérer » n'est pas une charge, et l'avoir qui le solde ne réduit aucun poste (même règle que `periodeSynthese`).
+    if (estCreanceTropPaye(tx)) continue;
+    if (kind === 'refund') { const origine = transactions.find(t => t.id === tx.finance?.refundOfId); if (origine && estCreanceTropPaye(origine)) continue; }
     if (kind === 'contribution') report.contributionsCents += amount;
     if (kind === 'withdrawal') report.withdrawalsCents += amount;
     if (kind === 'income') {

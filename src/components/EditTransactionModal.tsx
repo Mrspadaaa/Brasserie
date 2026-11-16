@@ -107,7 +107,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const prive = estMouvementPrive(transaction);
   const pertinent = change && !montantInvalide && !prive && choixPertinent(transaction, paiements, ecritures);
   // FN-10 : sous ce qui est déjà payé, « Reste à payer » n'existe pas (le payé ne disparaît jamais). Deux choix, à faire explicitement : une erreur de saisie (le paiement suit) ou un trop-payé réel (avoir à recevoir).
-  const sousLePaye = pertinent && baisseSousLePaye(transaction, paiements, nouveauCents, ecritures);
+  // FN-35 : une pièce payée EN PARTIE peut aussi descendre sous son payé (12,00 payés sur 15,00, baissée à 10,00) : la question vaut aussi pour elle.
+  const sousLePaye = change && !montantInvalide && !prive && baisseSousLePaye(transaction, paiements, nouveauCents, ecritures);
   const tropPayeCents = sousLePaye ? payeNet(transaction, paiements, ecritures) - nouveauCents : 0;
   const choixSous: ChoixPaiement | null = choixManuel === 'suit' || choixManuel === 'avoir' ? choixManuel : null;
   const choix: ChoixPaiement = prive ? 'suit' : sousLePaye ? choixSous ?? 'suit' : choixManuel === 'reste' || choixManuel === 'suit' ? choixManuel : (nouveauCents > ancienCents ? 'reste' : 'suit');

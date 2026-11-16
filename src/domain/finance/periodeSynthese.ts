@@ -1,6 +1,6 @@
 import type { FinanceCategory } from '../../types';
 import type { FinanceLine, FinanceTransaction, FinancialAsset, FinancialPayment } from './types';
-import { isActiveTransaction, isoDate, paymentState, refundLinkIssue, transactionAmount, transactionDirection, transactionKind } from './ledger';
+import { estCreanceTropPaye, isActiveTransaction, isoDate, paymentState, refundLinkIssue, transactionAmount, transactionDirection, transactionKind } from './ledger';
 
 /**
  * UNE seule définition de « entré », « dépensé », « payé », « à payer » et « matériel à part » pour une période (voie us, 09.11).
@@ -153,6 +153,9 @@ export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
     if (!dansPeriode(date, mois, jusqua)) continue;
     const kind = transactionKind(tx);
     if (kind === 'contribution' || kind === 'withdrawal') continue;
+    // FN-37 : un trop-payé « À récupérer » n'est pas une dépense, et l'avoir qui le solde ne réduit aucun poste (voir `estCreanceTropPaye`).
+    if (estCreanceTropPaye(tx)) continue;
+    if (kind === 'refund') { const origine = transactions.find(t => t.id === tx.finance?.refundOfId); if (origine && estCreanceTropPaye(origine)) continue; }
     const montant = transactionAmount(tx);
     if (!Number.isSafeInteger(montant) || montant < 0) continue;
 

@@ -1,0 +1,15 @@
+# Gates: voie x1 — test d'écran FN-33, FN-35, FN-37
+
+OWNS: work/missions/2026-11-14-finances/voies/x1
+
+Scope: test d'écran de la version qui corrige les trois constats graves sur l'argent, avant sa mise en ligne.
+
+- [ ] G1: le verdict existe et compte ses bloquants
+  CHECK: node -e "const t=require('fs').readFileSync(process.argv[1],'utf8');process.stdout.write(/^OK — \d+ problèmes?, \d+ bloquants?/.test(t)&&/Bloquants : \d+/.test(t)?'VERDICT OK':'VERDICT ECHEC')" work/missions/2026-11-14-finances/voies/x1/VERDICT-chemin.txt
+  EXPECT: VERDICT OK
+  EVIDENCE: pending
+
+- [ ] G2: le banc répond
+  CHECK: node -e "fetch('http://localhost:3000/').then(r=>console.log(r.status===200?'BANC OK':'BANC ECHEC')).catch(()=>console.log('BANC ECHEC'))"
+  EXPECT: BANC OK
+  EVIDENCE: pending

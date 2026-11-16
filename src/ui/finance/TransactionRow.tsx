@@ -35,6 +35,8 @@ const ICONE_SANS_PIECE = <svg width="16" height="16" viewBox="0 0 24 24" fill="n
 const payesParLeGeste = new Map<string, number>();
 /** FN-2 : l'avis reste ce temps sous la ligne ; ensuite, la ligne garde son « Annuler » (v6a, état « Après »). */
 const DUREE_AVIS_MS = 10000;
+/** FN-33 : l'avis naît là où l'on vient de toucher « ✓ Payé » ; le second toucher d'un double (ou un toucher sur une ligne qui vient de bouger) ne doit ni annuler ni ouvrir Payer. */
+const GARDE_AVIS_MS = 800;
 
 export function TransactionRow({ transaction, transactions, payments, state: given, onOpen, onAddProof, onPay }: {
   transaction: Transaction;
@@ -100,9 +102,10 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
     setPaiementId(() => ({ id: idFor('PAI'), at: new Date().toISOString() })); // le prochain paiement de cette ligne (après « Annuler ») est un autre paiement
     setFlash(true); clearTimeout(minuteur.current); minuteur.current = setTimeout(() => setFlash(false), 3000);
   });
-  const annuler = () => ecrire(() => { if (annulable) FinanceService.recordPayment(contrePaiement(annulable, new Date().toISOString())); });
+  const tropTot = () => avis && Date.now() - poseLe < GARDE_AVIS_MS;
+  const annuler = () => { if (tropTot()) return; ecrire(() => { if (annulable) FinanceService.recordPayment(contrePaiement(annulable, new Date().toISOString())); }); };
   /** « Autre montant » : la feuille Payer (m5pa-d) s'ouvre SANS rien écrire ; le paiement rapide lui est passé pour que son enregistrement l'inverse puis écrive le nouveau. */
-  const autreMontant = () => { if (!annulable) return; if (onPay) onPay(annulable); else onOpen(); };
+  const autreMontant = () => { if (!annulable || tropTot()) return; if (onPay) onPay(annulable); else onOpen(); };
   const confirmer = () => { if (onPay) onPay(); else onOpen(); };
 
   type Geste = { texte: string; aria: string; fort: boolean; action: () => void };

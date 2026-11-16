@@ -165,10 +165,11 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
     expect(creance?.description).toContain('Nettoyant alcalin');
     expect(creance?.settlementBalanceCents).toBe(1200);
     expect(FinanceService.getPayments().filter(p => p.transactionId === creance!.id)).toMatchObject([{ amountCents: 1200, direction: 'out', method: 'bank', date: '2026-11-09' }]);
-    // Opérations : « payé » reste celui du virement (44,00 en tout), la pièce compte 30,00 et n'est pas retirée une seconde fois.
+    // FN-37 : la créance de 12,00 est à récupérer, pas une dépense : « dépensé » (et son « payé ») perd les 12,00, la pièce compte 30,00 et n'est pas retirée une seconde fois.
     const apres = synthese();
-    expect(apres.payeCents).toBe(avant.payeCents);
-    expect(apres.depenseCents).toBe(avant.depenseCents);
+    expect(apres.depenseCents).toBe(avant.depenseCents - 1200);
+    expect(apres.payeCents).toBe(avant.payeCents - 1200);
+    expect(apres.postes.reduce((n, p) => n + p.cents, 0)).toBe(apres.depenseCents);
     expect(apres.aVerifier.avoirsInvalides).toEqual([]);
   });
   it('une baisse au-dessus du payé et une hausse gardent les deux choix', () => {
@@ -296,5 +297,26 @@ describe('M5 : Payer hors ligne avec un justificatif', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retirer' }));
     fireEvent.click(screen.getByRole('button', { name: /^✓ Payer/ }));
     await waitFor(() => expect(FinanceService.getPayments().filter(x => x.transactionId === 'T-LOYER')).toHaveLength(1));
+  });
+});
+
+describe('FN-35 : une pièce payée en partie, baissée sous le payé', () => {
+  it('la question apparaît (B 12,00 payés sur 15,00, baissée à 10,00) et « J’ai bien payé 12,00 » garde les 2,00 sortis en créance', async () => {
+    StorageService.addTransaction({ ...piece(), id: 'T-PART', description: 'ZZ pièce B', amountHT: 15, amountTTC: 15, finance: { version: 1, kind: 'expense', amountCents: 1500, lines: [], paymentStatus: 'partial' } });
+    FinanceService.recordPayment({ id: 'PAI-P', transactionId: 'T-PART', date: '2026-11-14', amountCents: 1200, direction: 'out', method: 'bank', recordedAt: '2026-11-14T08:00:00.000Z' });
+    const part = () => StorageService.getTransactions().find(t => t.id === 'T-PART')!;
+    const sorties = () => FinanceService.getPayments().filter(p => p.date === '2026-11-14').reduce((n, p) => n + (p.direction === 'out' ? p.amountCents : -p.amountCents), 0);
+    const onSave = vi.fn();
+    render(<EditTransactionModal isOpen transaction={part()} onClose={() => undefined} onSave={onSave} />);
+    taper('10');
+    const groupe = screen.getByRole('radiogroup', { name: 'Le paiement déjà noté' });
+    expect(within(groupe).getByRole('radio', { name: /Erreur de saisie : j’ai payé 10,00/ })).toBeInTheDocument();
+    fireEvent.click(within(groupe).getByRole('radio', { name: /J’ai bien payé 12,00 : 2,00 trop payé/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(part().finance?.amountCents).toBe(1000);
+    expect(sorties()).toBe(1200);
+    const creance = StorageService.getTransactions().find(t => /À récupérer/.test(t.description) && t.description.includes('ZZ pièce B'));
+    expect(creance?.finance).toMatchObject({ kind: 'expense', amountCents: 200 });
   });
 });
