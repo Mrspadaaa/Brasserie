@@ -45,24 +45,22 @@ describe('brew budget to doubled-volume batch creation', () => {
   it('creates the full scaled snapshot with its source identity and production metadata, while reserving stock', async () => {
     const original = structuredClone(recipe);
     const close = vi.fn();
-    render(<QuickActionModal isOpen recipes={[recipe]} onClose={close} />);
-    fireEvent.click(screen.getByText('Préparer un brassin'));
-    const volume = screen.getByLabelText('Volume du brassin');
-    fireEvent.change(volume, { target: { value: '50' } });
-    fireEvent.blur(volume);
+    // d1b : la feuille « Brasser » brasse le volume de la recette (le curseur est retiré) ; le doublement se prouve plus bas, au calculateur.
+    render(<QuickActionModal isOpen recipes={[recipe]} onClose={close} initialScreen="brew-batch" />);
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    expect(screen.getByText(/le stock se réserve à la planification/)).toBeInTheDocument();
     expect(screen.queryByText('Déduction automatique des stocks')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
+    fireEvent.click(screen.getByRole('button', { name: /^Planifier/ }));
     expect(created).toHaveLength(1);
     const batch = created[0];
-    expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 50, brewDate: '', plannedBrewDate: '', status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
-    expect(batch.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: 'R', parentRecipeId: 'R-base', version: 2, volumeL: 50, ogTarget: 1.05, fgTarget: 1.01, abvTarget: 5.2, preBoilL: 50, /* volume avant ébullition à froid (CF-9) : 52 L chaud auparavant */ brewhouse: rig, notes: recipe.notes }));
-    expect(batch.recipeSnapshot.waterPlan).toEqual(expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 29.6, /* CF-9 : 31,6 L à chaud auparavant */
-      // Concentrations gardées : le rinçage suit son volume (×29,6/31,6), les sels de l'empâtage (tous en cuve, défaut) le volume total (×59,6/61,6).
-      mash: { gypse: 1.94 }, sparge: { gypse: 3.75 }, acid: { id: 'lactique', mash: 4, sparge: 5.62 } }));
-    expect(batch.recipeSnapshot.fermentables.map(item => item.weightKg)).toEqual([10, 1]);
-    expect(batch.recipeSnapshot.hops[0]).toEqual(expect.objectContaining({ weightG: 40, stage: 'dryHop', dayOffset: 4 }));
-    expect(batch.recipeSnapshot.adjuncts[0]).toEqual(expect.objectContaining({ amount: 4, notes: recipe.adjuncts[0].notes }));
-    expect(brewBudgetDemands(batch.recipeSnapshot)).toEqual(brewBudgetDemands(scaleBrewBudgetRecipe(recipe, 50, rig)));
+    expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 25, brewDate: '', plannedBrewDate: expect.stringMatching(/^\d{2}\.\d{2}\.\d{4}$/), status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
+    expect(batch.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: 'R', parentRecipeId: 'R-base', version: 2, volumeL: 25, ogTarget: 1.05, fgTarget: 1.01, abvTarget: 5.2, brewhouse: rig, notes: recipe.notes }));
+    // Au volume de la recette, le plan d’eau reste celui de la recette (mesuré : empâtage 15 L, rinçage 15,8 L, sels et acide inchangés).
+    expect(batch.recipeSnapshot.waterPlan).toEqual(expect.objectContaining({ sourceId: 'tap', mashWaterL: 15, spargeWaterL: 15.8, mash: { gypse: 1 }, sparge: { gypse: 2 }, acid: { id: 'lactique', mash: 2, sparge: 3 } }));
+    expect(batch.recipeSnapshot.fermentables.map(item => item.weightKg)).toEqual([5, 0.5]);
+    expect(batch.recipeSnapshot.hops[0]).toEqual(expect.objectContaining({ weightG: 20, stage: 'dryHop', dayOffset: 4 }));
+    expect(batch.recipeSnapshot.adjuncts[0]).toEqual(expect.objectContaining({ amount: 2, notes: recipe.adjuncts[0].notes }));
+    expect(brewBudgetDemands(batch.recipeSnapshot)).toEqual(brewBudgetDemands(scaleBrewBudgetRecipe(recipe, 25, rig)));
     expect(StorageService.getStocks().rawMaterials[0].currentStock).toBe(30);
     expect(batch.stockConsumption).toBeUndefined();
     expect(recipe).toEqual(original);
@@ -72,18 +70,10 @@ describe('brew budget to doubled-volume batch creation', () => {
   it('requires explicit installation adoption for an old recipe, including the unchanged volume', () => {
     vi.mocked(StorageService.getConfig).mockReturnValue({ ...config, brewhouses: [] });
     const close = vi.fn();
-    render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} />);
-    fireEvent.click(screen.getByText('Préparer un brassin'));
-    const volume = screen.getByLabelText('Volume du brassin');
-    fireEvent.change(volume, { target: { value: '50' } });
-    fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Réglages → Brasserie');
-    expect(created).toEqual([]);
-    expect(close).not.toHaveBeenCalled();
-    fireEvent.change(volume, { target: { value: '30' } });
-    fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: /^Lancer à / }));
+    render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} initialScreen="brew-batch" />);
+    fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    // d1b : le volume n’est plus saisi ; il reste celui de la recette, donc le refus d’adoption vaut pour le volume inchangé.
+    fireEvent.click(screen.getByRole('button', { name: /^Planifier/ }));
     expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
@@ -92,13 +82,22 @@ describe('brew budget to doubled-volume batch creation', () => {
   it('shows doubled adjuncts in the calculator and preserves the scientific results for a different target cuverie', () => {
     const target = { ...rig, id: 'large', name: 'Grande cuverie', volumeL: 300, efficiencyPct: 85, deadSpaceL: 5 };
     render(<ProductionTab batches={[]} recipes={[recipe]} brewhouses={[rig, target]} activeBrewhouseId={rig.id} globalTimeFilter="all" targetSubTab="scaler" onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} />);
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '50' } });
-    expect(screen.getByRole('row', { name: /^Vanille\s*Fermenteur 4 gousse$/ })).toBeInTheDocument();
-    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent('29,6 L') /* CF-9 : avant ébullition à froid */;
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '300' } });
+    // Maquette e10c : le volume se tape après « Taper le volume », validé au blur ; les étapes sont dans [data-role="etapes"].
+    const taperVolume = (valeur: string) => {
+      fireEvent.click(screen.getByRole('button', { name: 'Taper le volume' }));
+      const champ = screen.getByRole('textbox', { name: 'Volume cible' });
+      fireEvent.change(champ, { target: { value: valeur } });
+      fireEvent.blur(champ);
+    };
+    const etape = (id: string) => document.querySelector(`[data-role="etapes"] [data-etape="${id}"]`) as HTMLElement;
+    taperVolume('50');
+    const vanille = within(etape('levurage')).getByText('Vanille').closest('.pv-row') as HTMLElement;
+    expect(vanille).toHaveTextContent(/Vanille\s*4,00\s*gousse/);
+    expect(etape('rincage')).toHaveTextContent('29,6') /* CF-9 : avant ébullition à froid */;
+    taperVolume('300');
     const scientific = BrewingMath.scaleRecipe(recipe, 300, rig, target);
     const scenario = scaleBrewRecipeScenario(recipe, 300, rig, target);
-    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent(`${scientific.spargeWaterL.toLocaleString('fr-CH', { maximumFractionDigits: 3 })} L`);
+    expect(etape('rincage').textContent).toContain(scientific.spargeWaterL.toLocaleString('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace('.', ','));
     expect(scenario).toEqual(expect.objectContaining({ mashWaterL: scientific.mashWaterL, spargeWaterL: scientific.spargeWaterL, preBoilVolumeL: scientific.preBoilVolumeL, grainAbsorptionL: scientific.grainAbsorptionL }));
     expect(scenario.scaledRecipe.id).toBe('R');
     expect(scenario.scaledRecipe.brewhouse).toEqual(target);

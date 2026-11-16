@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex-1" />
 
         {/* Période : dans le menu sur téléphone, visible sur grand écran. */}
-        <div className="relative" ref={periodRef} style={hidePeriod || mobile ? { display: 'none' } : undefined}>
+        <div className="relative" ref={periodRef} data-periode-entete style={hidePeriod || mobile ? { display: 'none' } : undefined}>
           <button
             onClick={() => setPeriodOpen((o) => !o)}
             aria-expanded={periodOpen}

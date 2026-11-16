@@ -59,6 +59,23 @@ const batches: Batch[] = [
     recipeSnapshot: captureSnapshot(recipes[0])
   }
 ];
+// e6a/e6c (15.11) : la liste des brassins n'a plus de sélecteur « Dossier » ni de bouton « Afficher les analyses » ; le dossier se choisit dans la feuille Filtrer (groupe « Dossier »), et les analyses s'y ouvrent par « Voir les analyses des brassins ». Les recettes gardent leur barre.
+const ouvrirFiltres = () => fireEvent.click(screen.getByRole('button', { name: /^Filtrer/ }));
+const choisirDossierBrassins = (nom: string) => {
+  ouvrirFiltres();
+  fireEvent.click(within(screen.getByRole('group', { name: 'Dossier' })).getByRole('button', { name: new RegExp('^' + nom) }));
+  fireEvent.click(screen.getByRole('button', { name: /^Voir les [0-9]/ }));
+};
+// e6a : la liste part sur « ce mois + les brassins en cours » ; un lot conditionné de septembre n'y paraît qu'une fois la période élargie à « Toutes » (feuille Filtrer).
+const elargirPeriode = () => {
+  ouvrirFiltres();
+  fireEvent.click(within(screen.getByRole('group', { name: 'Période' })).getByRole('button', { name: 'Toutes' }));
+  fireEvent.click(screen.getByRole('button', { name: /^Voir les [0-9]/ }));
+};
+const ouvrirAnalysesBrassins = () => {
+  ouvrirFiltres();
+  fireEvent.click(screen.getByRole('button', { name: /Voir les analyses des brassins/ }));
+};
 const callbacks = () => ({
   onOpenRecipe: vi.fn(),
   onEditRecipe: vi.fn(),
@@ -212,9 +229,8 @@ describe('Recipe and batch catalog interactions', () => {
         })
       );
       expect(screen.queryByRole('article', { name: rowLabel })).not.toBeInTheDocument();
-      fireEvent.change(screen.getByLabelText(folderLabel), {
-        target: { value: 'archived' }
-      });
+      if (recipeKind) fireEvent.change(screen.getByLabelText(folderLabel), { target: { value: 'archived' } });
+      else choisirDossierBrassins('Archives');
       expect(screen.getByRole('article', { name: rowLabel })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: `Retirer ${label} des favoris` })).toHaveAttribute(
         'aria-pressed',
@@ -227,9 +243,8 @@ describe('Recipe and batch catalog interactions', () => {
         })
       );
       expect(screen.queryByRole('article', { name: rowLabel })).not.toBeInTheDocument();
-      fireEvent.change(screen.getByLabelText(folderLabel), {
-        target: { value: 'current' }
-      });
+      if (recipeKind) fireEvent.change(screen.getByLabelText(folderLabel), { target: { value: 'current' } });
+      else choisirDossierBrassins('Courant');
       expect(screen.getByRole('article', { name: rowLabel })).toBeInTheDocument();
       fireEvent.click(screen.getByRole('button', { name: `Retirer ${label} des favoris` }));
       expect(screen.getByRole('button', { name: `Épingler ${label}` })).toHaveAttribute(
@@ -317,11 +332,14 @@ describe('Recipe and batch catalog interactions', () => {
         onOpenRecipe={onOpenRecipe}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier la recette Écume' }));
-    expect(onEditRecipe).toHaveBeenCalledWith(recipes[0]);
+    // r2a (15.11) : une ligne par lignée (la dernière version, ici « Écume v2 ») ; le nom ouvre la feuille de la recette, « Modifier » y édite, la ligne détail ouvre la fiche : lecture et édition restent séparées.
+    fireEvent.click(screen.getByRole('button', { name: /Écume v2/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
+    expect(onEditRecipe).toHaveBeenCalledWith(recipes[1]);
     expect(onOpenRecipe).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir la recette Écume' }));
-    expect(onOpenRecipe).toHaveBeenCalledWith(recipes[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Écume v2/ }));
+    fireEvent.click(screen.getByRole('button', { name: /couleur, alcool|Couleur, alcool/ }));
+    expect(onOpenRecipe).toHaveBeenCalledWith(recipes[1]);
     expect(screen.queryByRole('button', { name: /Adapter le volume/ })).not.toBeInTheDocument();
   });
   it('combines a hop filter with numeric criteria and exposes removable active filters', () => {
@@ -384,12 +402,10 @@ describe('Recipe and batch catalog interactions', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
     expect(screen.getByLabelText('Analyses des recettes')).toHaveTextContent('3 recettes');
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Explorer les profils et ingrédients'
-      })
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 3' }));
+    // p2 (bilan) : les puces de houblons sont toujours visibles, sans bouton « Explorer » ; elles disent le nombre de fiches.
+    const citra = screen.getByRole('button', { name: 'Filtrer : Citra' });
+    expect(citra).toHaveTextContent('2 fiches');
+    fireEvent.click(citra);
     expect(screen.getByRole('button', { name: 'Afficher la liste' })).toHaveAttribute(
       'aria-pressed',
       'true'
@@ -398,12 +414,7 @@ describe('Recipe and batch catalog interactions', () => {
       within(screen.getByLabelText('Liste des recettes')).getAllByRole('article')
     ).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Explorer les profils et ingrédients'
-      })
-    );
-    expect(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 2' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filtrer : Citra' })).toHaveTextContent('2 fiches');
     expect(screen.queryByRole('button', { name: /Filtrer : Fuggle/ })).not.toBeInTheDocument();
   });
   it('filters usage and preserves access to every version by default', () => {
@@ -427,9 +438,9 @@ describe('Recipe and batch catalog interactions', () => {
     const list = screen.getByLabelText('Liste des brassins');
     expect(list).not.toHaveTextContent('Ingrédients déduits');
     expect(list).not.toHaveTextContent('50/50 DI');
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
-    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('23');
-    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('1 lot');
+    ouvrirAnalysesBrassins();
+    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('23 L brassés');
+    expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent(/IPA\s*1/); // un lot IPA, compté dans Styles et avancement
   });
   it('compares exactly two recipes with normalized doses, without editing them', () => {
     const { actions } = mount();
@@ -494,13 +505,15 @@ describe('Recipe and batch catalog interactions', () => {
         {...actions}
       />
     );
+    elargirPeriode();
     fireEvent.click(screen.getByRole('button', { name: 'Mesures manquantes' }));
     expect(
       within(screen.getByLabelText('Liste des brassins')).getAllByRole('article')
     ).toHaveLength(1);
     expect(screen.getByLabelText('Liste des brassins')).toHaveTextContent('MISSING');
     fireEvent.click(screen.getByRole('button', { name: 'Notes à compléter' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Noter la dégustation · DONE' }));
+    // e6a (15.11) : le bouton de la carte d'un lot sans note s'appelle « Déguster » ; il ouvre toujours la dégustation.
+    fireEvent.click(screen.getByRole('button', { name: 'Déguster · DONE' }));
     expect(actions.onOpenBatch).toHaveBeenCalledWith(list[2], 'tasting');
     expect(actions.onOpenBrewDay).not.toHaveBeenCalled();
   });
@@ -516,11 +529,12 @@ describe('Recipe and batch catalog interactions', () => {
         {...actions}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
+    ouvrirAnalysesBrassins();
     const outcomes = screen.getByLabelText('Écarts entre cible et résultat');
-    expect(outcomes).toHaveTextContent('-4,7 pts');
+    expect(outcomes).toHaveTextContent('−0,005'); // OG mesurée 1,060 contre la cible : écart signé, sur les mêmes lots filtrés
+    expect(outcomes).toHaveTextContent(/Alcool—/); // sans FG mesurée, l'alcool n'est plus inventé : « — », jamais un écart
     fireEvent.click(within(outcomes).getByRole('button', { name: 'Comparer volume en cuve' }));
-    expect(outcomes).toHaveTextContent('-4 L');
+    expect(outcomes).toHaveTextContent('−4 L');
     fireEvent.click(within(outcomes).getByRole('button', { name: 'Mesures du brassin LOT1' }));
     expect(actions.onOpenBatch).toHaveBeenCalledWith(lot, 'measurements');
   });

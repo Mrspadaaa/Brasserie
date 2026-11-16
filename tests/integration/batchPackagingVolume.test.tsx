@@ -19,45 +19,50 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
+// p4 : e4c remplace le formulaire de volume par l'échelle des étapes : bouteilles au curseur, fûts, volume = ce qui est réparti, plafonné au volume en fermenteur (22 L mesurés).
 const ouvrir = (batch: Batch) => {
-  render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Passer en « Conditionné »' }));
-  return within(screen.getByLabelText('Conditionnement du brassin'));
+  render(<BatchDetailSheet batch={{ og: '1.050', fg: '1.010', ...batch } as Batch} initialSection="measurements" onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole('button', { name: /Conditionner · bouteilles et fût/ }));
+  return within(document.querySelector('[data-echelle]') as HTMLElement);
 };
+const plus = (echelle: ReturnType<typeof ouvrir>, n: number) => { for (let i = 0; i < n; i++) fireEvent.click(echelle.getByRole('button', { name: 'Une bouteille de plus' })); };
 
 describe('Fiche brassin : passage en Conditionné', () => {
-  it('demande le volume ; 0, vide et plus que le fermenteur (22 L mesurés) sont refusés, dits à l’écran, et l’étape ne change pas', () => {
-    const form = ouvrir(base());
-    for (const valeur of ['', '0', '22,5']) {
-      fireEvent.change(screen.getByLabelText('Volume conditionné (L)'), { target: { value: valeur } });
-      fireEvent.click(form.getByRole('button', { name: 'Passer en « Conditionné »' }));
-      expect(screen.getByLabelText('Conditionnement du brassin')).toBeInTheDocument();
-    }
-    expect(screen.getByLabelText('Conditionnement du brassin').textContent).toMatch(/Plus que le volume en fermenteur \(22 L\)/);
+  it('demande le volume ; 0 est refusé et dit à l’écran, plus que le fermenteur (22 L mesurés) est impossible à régler, et l’étape ne change pas', () => {
+    const echelle = ouvrir(base());
+    fireEvent.click(echelle.getByRole('button', { name: /^Conditionner/ }));
+    expect(echelle.getByRole('alert').textContent).toMatch(/plus grand que 0 L/);
+    plus(echelle, 90); // 66 bouteilles de 33 cl = 21,78 L : le curseur s'arrête au volume en fermenteur
+    expect(echelle.getAllByText('66').length).toBeGreaterThan(0);
+    expect(echelle.getByRole('button', { name: /^Conditionner 21,78 L/ })).toBeInTheDocument();
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
   });
   it('un volume valide et la date : l’étape passe, volume et date partent avec elle', () => {
-    const form = ouvrir(base());
-    fireEvent.change(screen.getByLabelText('Volume conditionné (L)'), { target: { value: '20,4' } });
-    fireEvent.click(form.getByRole('button', { name: 'Passer en « Conditionné »' }));
-    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 20.4, bottlingDate: expect.stringMatching(/^\d{2}\.\d{2}\.\d{4}$/) }), 'remaining', false);
+    const echelle = ouvrir(base());
+    plus(echelle, 62); // 62 × 33 cl = 20,46 L
+    fireEvent.click(echelle.getByRole('button', { name: /^Conditionner 20,46 L/ }));
+    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 20.46, bottlingDate: expect.stringMatching(/^\d{2}\.\d{2}\.\d{4}$/) }), 'remaining', false);
   });
   it('RF-8 : un retour en arrière (Terminé vers Conditionné) sur un lot sans volume ne rouvre pas le formulaire', () => {
     render(<BatchDetailSheet batch={base({ status: 'termine' })} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: 'conditionne' } });
-    // Le retour en arrière demande d'abord sa confirmation (HEAD) ; le volume n'est jamais demandé, ni avant ni après.
-    expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Plus' }));
     fireEvent.click(screen.getByRole('button', { name: 'Revenir à « Conditionné »' }));
+    // Le retour en arrière demande d'abord sa confirmation ; le volume n'est jamais demandé, ni avant ni après.
+    expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Revenir à « Conditionné »' }).at(-1)!);
     expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
     expect(StorageService.updateBatch).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne' }));
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
   });
-  it('Annuler : rien ne change', () => {
-    const form = ouvrir(base());
-    fireEvent.click(form.getByRole('button', { name: 'Annuler' }));
-    expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
+  it('Fermer l’échelle : rien ne change', () => {
+    const echelle = ouvrir(base());
+    plus(echelle, 5);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Fermer' }).at(-1)!);
+    expect(document.querySelector('[data-echelle]')).toBeNull();
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
   });
   it('un lot déjà conditionné sans volume : l’alerte et la saisie sont dans les mesures ; l’enregistrement ne change pas l’étape', () => {
     render(<BatchDetailSheet batch={base({ status: 'conditionne' })} onClose={vi.fn()} />);

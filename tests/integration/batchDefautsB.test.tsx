@@ -21,7 +21,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 describe('BR-122 / BE-48 : « Jour réellement brassé » refuse le futur', () => {
   it('une date après aujourd’hui n’est pas écrite et dit pourquoi ; une date passée s’écrit', () => {
-    render(<BatchDetailSheet batch={base()} initialSection="measurements" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base()} initialSection="overview" onClose={vi.fn()} />);
     const champ = screen.getByLabelText('Jour réellement brassé');
     fireEvent.change(champ, { target: { value: '2026-11-25' } });
     expect(screen.getByText(/dans le futur/)).toBeInTheDocument();

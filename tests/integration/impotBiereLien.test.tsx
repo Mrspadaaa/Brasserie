@@ -20,8 +20,9 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('Fiche du brassin › Impôt bière', () => {
   it('17. le bouton « Impôt bière » ouvre la feuille ; « Noter la densité » la ferme, ouvre Mesures et pose le focus sur la densité initiale', async () => {
-    render(<BatchDetailSheet batch={batch()} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Argent' }));
+    render(<BatchDetailSheet batch={batch({ status: 'garde' })} initialSection="overview" onClose={vi.fn()} />);
+    // Fiche à trois rubriques (e1a) : la chaîne de l'argent s'ouvre par le bouton « Budget », dans une feuille.
+    fireEvent.click(screen.getAllByRole('button', { name: /budget/i })[0]);
     fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
     const feuille = await screen.findByRole('dialog', { name: /Impôt bière/ });
     expect(within(feuille).getByText('Pale Ale de septembre')).toBeVisible();
@@ -31,7 +32,7 @@ describe('Fiche du brassin › Impôt bière', () => {
   });
 
   it('17b. la densité se saisit par le chemin existant : enregistrée, alcool inchangé sans FG', async () => {
-    render(<BatchDetailSheet batch={batch({ fg: '1.010' })} initialSection="measurements" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={batch({ status: 'garde', fg: '1.010' })} initialSection="measurements" onClose={vi.fn()} />);
     const champ = document.querySelector('input[name="batch_sheet_og"]') as HTMLInputElement;
     fireEvent.change(champ, { target: { value: '1.048' } });
     fireEvent.blur(champ);

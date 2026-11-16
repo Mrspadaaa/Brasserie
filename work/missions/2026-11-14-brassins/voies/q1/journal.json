@@ -1,0 +1,28 @@
+{
+  "gestesSansEffet": [],
+  "console": [],
+  "erreursPage": [],
+  "captures": [
+    "gfc-repos-app-390-clair.png",
+    "gfc-repos-bas-app-390-clair.png",
+    "gfc-geste-confirmation-app-390-clair.png",
+    "gfc-geste-app-390-clair.png",
+    "gfc-fait-app-390-clair.png",
+    "gfc-mesurer-app-390-clair.png",
+    "gfc-mesurer-taper-app-390-clair.png",
+    "gfc-mesurer-erreur-app-390-clair.png",
+    "gfc-apres-releve-app-390-clair.png",
+    "gfc-acces-stock-app-390-clair.png",
+    "gfc-acces-carnet-app-390-clair.png",
+    "gfc-repos-app-390-cave.png",
+    "gfc-repos-bas-app-390-cave.png",
+    "gfc-repos-app-1280-clair.png",
+    "gfc-repos-bas-app-1280-clair.png",
+    "gfc-geste-confirmation-app-1280-clair.png",
+    "gfc-geste-app-1280-clair.png",
+    "gfc-mesurer-app-1280-clair.png",
+    "gfc-mesurer-taper-app-1280-clair.png",
+    "gfc-mesurer-erreur-app-1280-clair.png",
+    "gfc-apres-releve-app-1280-clair.png"
+  ]
+}

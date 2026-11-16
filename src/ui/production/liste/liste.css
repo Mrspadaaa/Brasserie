@@ -1,0 +1,220 @@
+:root { --lst-cuivre: 160 82 45; --lst-or: 224 160 46; } /* #A0522D et #E0A02E : les teintes bière de tailwind.config, sans variable dans themes.css */
+/*
+ * La liste des brassins (e6a) et sa feuille « Filtrer les brassins » (e6c) : choix du brasseur du 15.11, portés tels quels.
+ * Valeurs de la maquette reprises ; couleurs lues dans les jetons de l'app (themes.css) pour suivre le thème.
+ * Échelle 12 / 14 / 16 / 18 / 28, graisse 600 au plus, rayons 10 / 16 / 24 (DESIGN.md). Classes préfixées lst- (L26).
+ */
+/* e6a n° 1 : un seul réglage de période à l'écran. La liste porte le sien (« Nov. + en cours ») ; l'en-tête cache le sien tant que la liste est affichée. */
+body:has([data-liste-brassins]) [data-periode-entete] { display: none !important; }
+.lst-m { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; }
+.lst-reading { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.lst-unite { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-section { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.lst-title { font-size: 18px; font-weight: 600; line-height: 1.2; color: rgb(var(--cave-texte-50)); }
+.lst-panneau { border-radius: 16px; border: 1px solid rgb(var(--cave-800)); background: rgb(var(--cave-900)); }
+.lst-lien { font-size: 14px; font-weight: 600; color: rgb(var(--cave-texte-50)); min-height: 44px; padding: 0 4px; }
+.lst-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-50)); }
+.lst-btn svg { width: 16px; height: 16px; }
+.lst-btn-primaire { background: rgb(var(--ebc-straw)); border-color: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.lst-btn:focus-visible, .lst-puce:focus-visible, .lst-sel:focus-visible, .lst-fbtn:focus-visible, .lst-lien:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+
+/* ---- Phrase de tête ---- */
+.lst-rep { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin: 4px 0 10px; }
+.lst-h1 { font-size: 28px; line-height: 1.15; font-weight: 600; color: rgb(var(--cave-texte-50)); min-width: 0; }
+.lst-h1 span { display: block; }
+.lst-h1 .lst-hop { color: rgb(var(--hop-texte)); }
+.lst-h1 .lst-att { color: rgb(var(--attention-texte)); }
+.lst-cnt { font-size: 12px; color: rgb(var(--cave-texte-400)); text-align: right; line-height: 1.2; flex: none; }
+.lst-cnt b { display: block; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+
+/* ---- Recherche ---- */
+.lst-search { display: flex; gap: 8px; }
+.lst-field { position: relative; flex: 1; min-width: 0; height: 44px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-400)); }
+.lst-field svg { width: 18px; height: 18px; flex: none; }
+.lst-field input { flex: 1; min-width: 0; height: 100%; background: transparent; border: 0; outline: 0; font-size: 16px; color: rgb(var(--cave-texte-50)); }
+.lst-field input::placeholder { color: rgb(var(--cave-texte-400)); }
+.lst-field:focus-within { border-color: rgb(var(--water)); }
+.lst-field.lst-plein { border-color: rgb(var(--ebc-straw-bord)); }
+.lst-field.lst-plein input { font-weight: 600; }
+.lst-x { position: relative; flex: none; width: 28px; height: 28px; border-radius: 50%; background: rgb(var(--cave-850)); display: grid; place-items: center; color: rgb(var(--cave-texte-200)); }
+.lst-x::after { content: ''; position: absolute; inset: -8px; }
+.lst-x svg { width: 14px; height: 14px; }
+.lst-fbtn { position: relative; flex: none; width: 44px; height: 44px; border-radius: 10px; background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-700)); display: grid; place-items: center; color: rgb(var(--cave-texte-50)); }
+.lst-fbtn svg { width: 20px; height: 20px; }
+.lst-fbtn > span { position: absolute; top: -6px; right: -6px; background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; border-radius: 10px; display: grid; place-items: center; }
+
+/* ---- Puces d'avancement ---- */
+.lst-puces { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 12px -12px 0; padding: 0 12px; }
+.lst-puces::-webkit-scrollbar { display: none; }
+.lst-puce { position: relative; flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; font-size: 14px; white-space: nowrap;
+  border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-200)); }
+.lst-puce::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.lst-puce i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.lst-puce b { font-family: theme('fontFamily.mono'); font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); }
+.lst-puce svg { width: 14px; height: 14px; }
+.lst-puce[aria-pressed='true'] { background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); border-color: rgb(var(--ebc-straw)); }
+.lst-puce[aria-pressed='true'] b { color: rgb(var(--sur-paille)); }
+.lst-puce.lst-zero { opacity: .45; }
+.lst-puce small { font-family: theme('fontFamily.mono'); font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-puce .lst-fam { display: flex; gap: 2px; }
+.lst-puce .lst-fam i { width: 4px; height: 16px; border-radius: 2px; }
+.lst-puce.lst-bad { border-color: rgb(var(--alert)); color: rgb(var(--alert-texte)); background: rgb(var(--alert) / .1); }
+.lst-puce.lst-bad small { color: rgb(var(--alert-texte)); }
+.lst-puce.lst-plus { background: transparent; border-style: dashed; }
+
+/* ---- Tri et période ---- */
+.lst-row { display: flex; gap: 6px; margin: 12px 0; }
+.lst-sel { position: relative; height: 36px; border-radius: 10px; padding: 0 10px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; white-space: nowrap;
+  color: rgb(var(--cave-texte-50)); border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); }
+.lst-sel::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); pointer-events: none; }
+.lst-sel svg { width: 16px; height: 16px; flex: none; }
+.lst-sel small { font-size: 12px; font-weight: 400; color: rgb(var(--cave-texte-400)); }
+.lst-sel.lst-per { background: rgb(var(--hop) / .12); border-color: rgb(var(--hop) / .6); color: rgb(var(--hop-texte)); }
+.lst-sel.lst-per small { color: rgb(var(--hop-texte)); }
+.lst-sel.lst-grow { flex: 1; min-width: 0; }
+.lst-sel select { position: absolute; inset: 0; width: 100%; height: 44px; top: -4px; opacity: 0; font-size: 16px; }
+.lst-sel.lst-icone { width: 36px; padding: 0; justify-content: center; }
+
+/* ---- Carte ---- */
+.lst-liste { display: flex; flex-direction: column; }
+.lst-card { position: relative; display: flex; border-radius: 24px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); margin-bottom: 8px; overflow: hidden; }
+.lst-bar { width: 4px; flex: none; }
+.lst-body { flex: 1; padding: 8px 2px 10px 10px; min-width: 0; }
+.lst-ouvrir { display: block; width: 100%; text-align: left; }
+.lst-l1 { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-l2 { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.lst-nom { font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.lst-l3 { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.lst-key { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
+.lst-key .lst-reading { font-size: 18px; }
+.lst-go { margin-left: auto; flex: none; min-height: 44px; padding: 0 10px 0 12px; white-space: nowrap; }
+.lst-side { display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 44px; padding: 0 0 2px; flex: none; }
+.lst-side button { width: 44px; height: 44px; display: grid; place-items: center; color: rgb(var(--cave-texte-400)); }
+.lst-side .lst-fav svg { fill: rgb(var(--lst-or)); color: rgb(var(--lst-or)); }
+.lst-side svg { width: 20px; height: 20px; }
+.lst-pastille { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid; }
+.lst-pastille[data-ton='cuve'] { border-color: rgb(var(--hop) / .6); background: rgb(var(--hop) / .15); color: rgb(var(--hop-texte)); }
+.lst-pastille[data-ton='garde'] { border-color: rgb(var(--water) / .6); background: rgb(var(--water) / .15); color: rgb(var(--cave-texte-50)); }
+.lst-pastille[data-ton='brasser'] { border-color: rgb(var(--attention) / .5); background: rgb(var(--attention) / .2); color: rgb(var(--attention-texte)); }
+.lst-pastille[data-ton='retard'] { border-color: rgb(var(--alert) / .6); background: rgb(var(--alert) / .15); color: rgb(var(--alert-texte)); }
+.lst-pastille[data-ton='cond'] { border-color: rgb(var(--lst-cuivre) / .6); background: rgb(var(--lst-cuivre) / .2); color: rgb(var(--ebc-copper-texte)); }
+.lst-pastille[data-ton='fin'], .lst-pastille[data-ton='annule'] { border-color: rgb(var(--cave-700)); background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-200)); }
+.lst-bar[data-ton='cuve'] { background: rgb(var(--hop)); }
+.lst-bar[data-ton='garde'] { background: rgb(var(--water)); }
+.lst-bar[data-ton='brasser'] { background: rgb(var(--attention)); }
+.lst-bar[data-ton='retard'] { background: rgb(var(--alert)); }
+.lst-bar[data-ton='cond'] { background: rgb(var(--lst-cuivre)); }
+.lst-bar[data-ton='fin'], .lst-bar[data-ton='annule'] { background: rgb(var(--cave-700)); }
+
+/* ---- Pli et rangées mini ---- */
+.lst-fold { width: 100%; height: 44px; border-radius: 16px; border: 1px dashed rgb(var(--cave-700)); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 14px; font-weight: 600;
+  color: rgb(var(--cave-texte-200)); margin-bottom: 4px; text-align: left; }
+.lst-fold .lst-dots { display: flex; gap: 4px; margin-left: auto; }
+.lst-fold .lst-dots i { width: 10px; height: 10px; border-radius: 50%; }
+.lst-mini { display: flex; align-items: center; gap: 10px; width: 100%; height: 44px; padding: 0 12px; border-bottom: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-texte-400)); font-size: 14px; text-align: left; }
+.lst-mini i { width: 4px; height: 24px; border-radius: 2px; flex: none; }
+.lst-mini b { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.lst-mini span:last-child { margin-left: auto; }
+
+/* ---- État vide ---- */
+.lst-empty { padding: 16px 12px; margin-top: 12px; }
+.lst-btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.lst-btns .lst-btn { flex: 1 1 auto; min-width: 0; padding: 0 10px; white-space: nowrap; }
+.lst-near { margin-top: 16px; }
+.lst-near h3 { margin-bottom: 8px; }
+.lst-chip { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; border-radius: 10px; background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-800)); padding: 0 12px; margin-bottom: 6px;
+  font-weight: 600; font-size: 16px; color: rgb(var(--cave-texte-50)); text-align: left; }
+.lst-chip .lst-fam { display: flex; gap: 2px; }
+.lst-chip .lst-fam i { width: 6px; height: 18px; border-radius: 2px; }
+.lst-chip small { margin-left: auto; font-weight: 400; font-size: 14px; color: rgb(var(--cave-texte-400)); }
+.lst-arch { margin-top: 12px; display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border-radius: 16px; border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-50)); text-align: left; }
+.lst-arch span { color: rgb(var(--cave-texte-400)); font-size: 14px; }
+.lst-arch svg { flex: none; }
+
+/* ---- Feuille « Filtrer les brassins » ---- */
+.lst-feuille { display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
+.lst-hd { display: flex; align-items: center; justify-content: space-between; }
+.lst-big { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.lst-big .lst-reading { font-size: 28px; line-height: 1.1; }
+.lst-strip { display: flex; gap: 4px; align-items: stretch; }
+.lst-tok { flex: 1; border-radius: 10px; padding: 6px; min-width: 0; border: 1px solid; }
+.lst-tok b { display: block; font-size: 14px; font-weight: 600; line-height: 1.15; overflow-wrap: break-word; color: rgb(var(--cave-texte-50)); }
+.lst-tok span { font-size: 12px; white-space: nowrap; color: rgb(var(--cave-texte-200)); }
+.lst-tok.lst-off { background: rgb(var(--cave-850)) !important; border-color: rgb(var(--cave-800)) !important; }
+.lst-tok.lst-off b, .lst-tok.lst-off span { color: rgb(var(--cave-texte-400)); }
+.lst-res { overflow: hidden; }
+.lst-res button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 12px; border-bottom: 1px solid rgb(var(--cave-800)); text-align: left; }
+.lst-res button:last-child { border-bottom: 0; }
+.lst-res i { width: 4px; height: 28px; border-radius: 2px; flex: none; }
+.lst-res b { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.lst-res .lst-ref { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-res .lst-reading { margin-left: auto; }
+.lst-f h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.lst-f h3 small, .lst-f h3 button { font-weight: 400; color: rgb(var(--cave-texte-400)); margin-left: auto; font-size: 14px; }
+.lst-f h3 button { min-height: 44px; margin-top: -12px; margin-bottom: -12px; }
+.lst-tiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.lst-tile { position: relative; min-height: 60px; border-radius: 10px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); padding: 6px 8px; display: flex; flex-direction: column;
+  justify-content: space-between; align-items: flex-start; text-align: left; color: rgb(var(--cave-texte-50)); }
+.lst-tile b { font-size: 14px; font-weight: 600; line-height: 1.1; }
+.lst-tile span { font-family: theme('fontFamily.mono'); font-size: 16px; font-weight: 600; }
+.lst-tile i { position: absolute; right: 8px; bottom: 9px; width: 10px; height: 10px; border-radius: 50%; }
+.lst-tile[aria-pressed='true'] { background: rgb(var(--ebc-straw)); border-color: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.lst-tile.lst-zero { opacity: .4; }
+.lst-tile:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+.lst-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lst-range { position: relative; height: 72px; padding: 0 22px; }
+.lst-track { position: absolute; left: 22px; right: 22px; top: 30px; height: 4px; border-radius: 2px; background: rgb(var(--cave-700)); }
+.lst-selzone { position: absolute; top: 0; bottom: 0; background: rgb(var(--ebc-straw)); border-radius: 2px; }
+.lst-dot { position: absolute; top: -8px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; border: 3px solid rgb(var(--cave-900)); }
+.lst-dot.lst-prov { background: rgb(var(--cave-900)) !important; border: 2px dashed rgb(var(--hop)); }
+.lst-lab { position: absolute; top: 50px; font-size: 12px; font-family: theme('fontFamily.mono'); color: rgb(var(--cave-texte-200)); }
+.lst-rin { position: absolute; left: 22px; right: 22px; top: 14px; height: 36px; pointer-events: none; }
+.lst-rin input[type='range'] { position: absolute; left: -10px; width: calc(100% + 20px); top: 0; height: 36px; margin: 0; background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.lst-rin input[type='range']::-webkit-slider-runnable-track { background: transparent; height: 36px; }
+.lst-rin input[type='range']::-moz-range-track { background: transparent; height: 36px; }
+.lst-rin input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 20px; height: 36px; border-radius: 10px; background: rgb(var(--cave-950)); border: 2px solid rgb(var(--ebc-straw)); cursor: pointer; }
+.lst-rin input[type='range']::-moz-range-thumb { pointer-events: auto; width: 16px; height: 32px; border-radius: 10px; background: rgb(var(--cave-950)); border: 2px solid rgb(var(--ebc-straw)); cursor: pointer; }
+.lst-rin input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+.lst-segments { display: flex; gap: 2px; padding: 4px; border-radius: 16px; border: 1px solid rgb(var(--cave-800)); background: rgb(var(--cave-900)); }
+.lst-segments button { position: relative; flex: 1 1 0; min-height: 36px; padding: 0 6px; border-radius: 12px; font-size: 14px; font-weight: 600; white-space: nowrap; color: rgb(var(--cave-texte-200)); }
+.lst-segments button::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.lst-segments button[aria-pressed='true'] { background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.lst-segments button:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: -2px; }
+.lst-dates { display: flex; gap: 8px; margin-top: 6px; }
+.lst-dates label { flex: 1; font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-dates input { display: block; width: 100%; height: 44px; margin-top: 2px; border-radius: 10px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); padding: 0 8px; font-size: 16px; }
+.lst-tg { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 12px; margin-top: 6px; font-weight: 600; font-size: 14px; color: rgb(var(--cave-texte-50)); text-align: left; }
+.lst-tg .lst-pt { width: 8px; height: 8px; border-radius: 50%; background: rgb(var(--hop)); flex: none; }
+.lst-tg .lst-sw { margin-left: auto; width: 44px; height: 26px; border-radius: 13px; background: rgb(var(--cave-700)); position: relative; flex: none; }
+.lst-tg .lst-sw::after { content: ''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 10px; background: rgb(255 255 255); }
+.lst-tg[aria-checked='true'] .lst-sw { background: rgb(var(--hop)); }
+.lst-tg[aria-checked='true'] .lst-sw::after { left: auto; right: 3px; }
+.lst-why { padding: 12px; }
+.lst-why button { width: 100%; min-height: 44px; border-radius: 10px; background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-700)); display: flex; align-items: center; gap: 10px; padding: 0 12px; margin-top: 6px;
+  font-size: 14px; font-weight: 600; color: rgb(var(--cave-texte-50)); text-align: left; }
+.lst-why button .lst-reading { margin-left: auto; }
+.lst-note { font-size: 12px; color: rgb(var(--cave-texte-400)); margin-top: 6px; }
+.lst-pied { display: flex; gap: 8px; }
+.lst-pied .lst-btn-primaire { flex: 1; }
+.lst-pied .lst-sel { height: 44px; }
+.lst-pied .lst-sel select { top: 0; }
+.lst-bornes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.lst-bornes label { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.lst-bornes input { display: block; width: 100%; height: 44px; margin-top: 2px; border-radius: 10px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); padding: 0 8px; font-size: 16px; }
+
+/* e6c : la feuille occupe environ 80 % de la hauteur (la maquette), non les 94 % de la feuille de l'app. */
+.lst-sheet.lst-sheet { max-height: 80dvh; }
+
+/* e6a : le style abrégé (pastille) tient sur la ligne du nom. */
+.lst-style { display: inline-flex; min-width: 0; max-width: 100%; }
+/* e6a, 1280 : les puces passent à la ligne au lieu d'être coupées. */
+@media (min-width: 1024px) { .lst-puces { flex-wrap: wrap; overflow: visible; margin-left: 0; margin-right: 0; padding: 0; } }
+/* e6c : le × du Sheet est focalisé à l'ouverture ; l'anneau n'apparaît qu'au clavier. */
+.lst-sheet.lst-ptr :focus-visible { outline: none; }
+.lst-analyses { display: block; width: 100%; text-align: left; color: rgb(var(--cave-texte-200)); }
+/* Terminés : un gris qui se voit sur le fond de chaque thème. */
+:root { --lst-fin: var(--cave-700); }
+[data-theme='cave'] { --lst-fin: var(--cave-400); }
+.lst-bar[data-ton='fin'], .lst-bar[data-ton='annule'] { background: rgb(var(--lst-fin)); }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { StorageService } from '../../src/services/storage';
@@ -11,29 +11,42 @@ const mount = () => render(<ProductionTab recipes={[recipe]} batches={[]} brewho
 beforeEach(() => { localStorage.clear(); vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {}); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
+// Maquette e10c : le volume cible se tape après « Taper le volume » et se valide au blur ou à Entrée.
+const taper = (valeur: string) => {
+  fireEvent.click(screen.getByRole('button', { name: 'Taper le volume' }));
+  const champ = screen.getByRole('textbox', { name: 'Volume cible' });
+  fireEvent.change(champ, { target: { value: valeur } });
+  fireEvent.blur(champ);
+  return champ;
+};
+const totaux = () => screen.getByLabelText('Totaux');
+
 describe('Brassins › Volumes : BR-111, BE-100, BE-101, BR-113', () => {
   it('99 999 L : refusé avec la borne, aucun calcul de 18 000 kg', () => {
     mount();
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible' }), { target: { value: '99999' } });
-    expect(screen.getByRole('alert')).toHaveTextContent(/au plus 2\s?000 L/);
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    taper('99999');
+    expect(screen.getByRole('alert')).toHaveTextContent(/au plus 2\s?000 L/i);
+    expect(totaux().textContent).not.toMatch(/18\s?000/);
+    expect(within(totaux()).getAllByText('—').length).toBeGreaterThan(0);
   });
-  it('0 L : la borne est dite, 0,5 L est retenu au minimum', () => {
+  it('0 L : la borne est dite (0,5 L ou plus), aucun total calculé', () => {
     mount();
-    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible' }), { target: { value: '0' } });
+    taper('0');
+    expect(screen.getByRole('alert')).toHaveTextContent('0,5 L ou plus');
+    expect(within(totaux()).getAllByText('—').length).toBeGreaterThan(0);
+  });
+  it('« 0 » tapé puis quitté dit la borne au lieu de changer en silence (Entrée comme blur)', () => {
+    mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Taper le volume' }));
+    const champ = screen.getByRole('textbox', { name: 'Volume cible' });
+    fireEvent.change(champ, { target: { value: '0' } });
+    fireEvent.keyDown(champ, { key: 'Enter' });
     expect(screen.getByRole('alert')).toHaveTextContent('0,5 L ou plus');
   });
-  it('QuantityStepper : « 0 » tapé puis quitté dit la borne et la valeur retenue au lieu de changer en silence', () => {
+  it('la recette source s’écrit à la virgule : « recette 19,75 L », jamais « 19.75 L »', () => {
     mount();
-    const champ = screen.getByRole('textbox', { name: 'Volume cible' });
-    fireEvent.focus(champ);
-    fireEvent.change(champ, { target: { value: '0' } });
-    fireEvent.blur(champ);
-    expect(champ).toHaveValue('0,5');
-    expect(document.querySelector('[data-role="borne-refusee"]')).toHaveTextContent('0 L est hors bornes : au moins 0,5 L. 0,5 L retenu.');
-  });
-  it('la recette source s’écrit à la virgule : « 19,75 L », jamais « 19.75 L »', () => {
-    mount();
-    expect(screen.getByRole('option', { name: 'Hazy · 19,75 L' })).toBeInTheDocument();
+    expect(screen.getByText(/recette 19,75 L/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/19\.75 L/);
   });
 });
+

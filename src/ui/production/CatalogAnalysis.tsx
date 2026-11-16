@@ -1,132 +1,79 @@
-import React, { useState } from 'react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Scatter,
-  ScatterChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-  ZAxis
-} from 'recharts';
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import {
   CatalogEntry,
   CatalogKind,
-  countGroups,
-  measuredProduction
+  batchEntries,
+  countGroups
 } from '../../domain/productionCatalog';
-import { BATCH_STATUSES, statusOf } from '../../domain/batchStatus';
 import type { Batch } from '../../types';
-import { batchEntries } from '../../domain/productionCatalog';
 import { type BatchDetailSection, isPackaged, isProduced } from '../../domain/productionInsights';
 import { BatchOutcomeAnalysis } from './BatchOutcomeAnalysis';
 import { isArchived } from '../../domain/catalogOrganization';
+import { horsBilan, houblonsBilan, moisBilan, nombre, resumeNote } from './bilan/bilanModel';
+import './bilan/bilan.css';
 
 const number = (value: number) => value.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
-const chartTooltip = {
-  backgroundColor: 'rgb(var(--cave-850))',
-  border: '1px solid rgb(var(--cave-600))',
-  borderRadius: 10,
-  color: 'rgb(var(--cave-texte-50))'
-};
-function Distribution({
-  title,
-  data,
-  total,
-  onSelect,
-  color
-}: {
-  title: string;
-  data: { name: string; count: number }[];
-  total: number;
-  onSelect?: (name: string) => void;
-  color: string;
-}) {
-  const max = Math.max(1, ...data.map((d) => d.count));
+const CHIPS_VISIBLES = 10;
+
+function Titre({ children, note }: { children: React.ReactNode; note?: React.ReactNode }) {
   return (
-    <section className="panel p-4 space-y-3" aria-label={title}>
-      <h4 className="font-semibold text-cave-50">{title}</h4>
-      {data.length ? (
-        <ul className="space-y-1">
-          {data.slice(0, 8).map(({ name, count }) => (
-            <li key={name}>
-              <button
-                type="button"
-                disabled={!onSelect}
-                onClick={() => onSelect?.(name)}
-                className="relative w-full min-h-touch text-left px-2.5 rounded-control overflow-hidden group"
-                aria-label={
-                  onSelect
-                    ? `Filtrer : ${name}, ${count} sur ${total}`
-                    : `${name} : ${count} sur ${total}`
-                }
-              >
-                <span
-                  className="absolute inset-y-1 left-0 rounded-control opacity-15"
-                  style={{
-                    width: `${(count / max) * 100}%`,
-                    background: color
-                  }}
-                  aria-hidden
-                />
-                <span className="relative flex justify-between items-center gap-3 text-sm">
-                  <span className="min-w-0 break-words text-cave-200">{name}</span>
-                  <span className="shrink-0 reading" style={{ color }}>
-                    {count}
-                  </span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-sm text-cave-400">Aucune donnée renseignée dans cette sélection.</p>
-      )}
-      {data.length > 8 && (
-        <details className="text-sm text-cave-400">
-          <summary className="min-h-touch flex items-center cursor-pointer">
-            Voir les {data.length} valeurs
-          </summary>
-          <ul className="space-y-2">
-            {data.map((row) => (
-              <li key={row.name} className="flex justify-between gap-4">
-                <span>{row.name}</span>
-                <span>{row.count}</span>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </section>
+    <h4 className="bil-h3">
+      {children}
+      {note !== undefined && <span>{note}</span>}
+    </h4>
   );
 }
+
+/** Une puce : au toucher elle filtre la liste (comme avant), sinon elle se lit seulement. */
+function Puce({
+  children,
+  onClick,
+  label,
+  vide
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  label?: string;
+  vide?: boolean;
+}) {
+  const cls = `bil-chip${vide ? ' vide' : ''}`;
+  return onClick ? (
+    <button type="button" className={cls} onClick={onClick} aria-label={label}>
+      {children}
+    </button>
+  ) : (
+    <span className={cls}>{children}</span>
+  );
+}
+
 export function CatalogAnalysis({
   kind,
   entries,
   onFilter,
   onOpenBatch,
-  includeArchivedBatches = true
+  includeArchivedBatches = true,
+  onBack,
+  onFolder
 }: {
   kind: CatalogKind;
   entries: CatalogEntry[];
   onFilter: (field: 'style' | 'hop' | 'status', value: string) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
   includeArchivedBatches?: boolean;
+  /** « ‹ Le bilan » : retour à la liste des brassins (e7a). */
+  onBack?: () => void;
+  /** L'interrupteur « Archives » pilote le dossier de l'app (un seul réglage) ; sans lui, il reste local. */
+  onFolder?: (folder: 'current' | 'all') => void;
 }) {
-  const [exploring, setExploring] = useState(false);
-  const production = measuredProduction(entries);
-  const points = entries
-    .filter((e) => e.abv !== undefined && e.ibu !== undefined)
-    .map((e) => ({
-      name: e.name,
-      id: e.id,
-      abv: e.abv,
-      ibu: e.ibu,
-      volume: e.volumeL
-    }));
+  const [localArchives, setLocalArchives] = useState(includeArchivedBatches);
+  useEffect(() => setLocalArchives(includeArchivedBatches), [includeArchivedBatches]);
+  const withArchives = onFolder ? includeArchivedBatches : localArchives;
+  const basculerArchives = () => {
+    if (onFolder) onFolder(withArchives ? 'current' : 'all');
+    else setLocalArchives((v) => !v);
+  };
+  const [tousHoublons, setTousHoublons] = useState(false);
   const noun = kind === 'recipes' ? 'recette' : 'brassin';
   const associatedEntries =
     kind === 'batches'
@@ -134,34 +81,40 @@ export function CatalogAnalysis({
       : batchEntries([
           ...new Map(entries.flatMap((e) => e.linkedBatches).map((b) => [b.id, b])).values()
         ]);
-  const resultEntries = includeArchivedBatches
+  const archivedCount = associatedEntries.filter(isArchived).length;
+  const resultEntries = (kind === 'batches' ? withArchives : includeArchivedBatches)
     ? associatedEntries
     : associatedEntries.filter((e) => !isArchived(e));
   const tastingEntries = resultEntries.filter(
     (e) => e.batch && isPackaged(e.batch) && e.batch.notesTasting?.trim()
   );
+  // Un lot planifié ou annulé n'entre pas dans le bilan ; pour les recettes, la sélection entière.
+  const bilanEntries = kind === 'batches' ? resultEntries.filter((e) => e.batch && isProduced(e.batch)) : entries;
+  const styles = countGroups(bilanEntries, 'style');
+  const houblons = houblonsBilan(bilanEntries);
+  const horsLots = kind === 'batches' ? horsBilan(resultEntries) : [];
+  const alcool = bilanEntries.filter((e) => e.abv !== undefined || e.ibu !== undefined);
+  const production = moisBilan(resultEntries);
+
   return (
     <div className="space-y-4" aria-label={`Analyses des ${noun}s`}>
-      <div className="border-y border-cave-800 py-4">
-        {kind === 'recipes' && associatedEntries.some(isArchived) && (
-          <p className="text-sm text-cave-400 mb-3">
-            Historique des brassins associés · {associatedEntries.filter(isArchived).length}{' '}
-            archive(s)
-            {includeArchivedBatches ? ' incluse(s)' : ' exclue(s)'} dans les résultats.
-          </p>
-        )}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="text-lg font-semibold text-cave-50">
-            {kind === 'recipes' ? 'Les résultats de mes recettes' : 'Le bilan des brassins'}
-          </h3>
-          <span className="text-sm text-cave-400 text-right">
-            {entries.length} {noun}
-            {entries.length > 1 ? 's' : ''}
-            <br />
-            dans la sélection
-          </span>
-        </div>
-        {kind === 'recipes' ? (
+      {kind === 'recipes' ? (
+        <div className="border-y border-cave-800 py-4">
+          {associatedEntries.some(isArchived) && (
+            <p className="text-sm text-cave-400 mb-3">
+              Historique des brassins associés · {associatedEntries.filter(isArchived).length} archive(s)
+              {includeArchivedBatches ? ' incluse(s)' : ' exclue(s)'} dans les résultats.
+            </p>
+          )}
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-lg font-semibold text-cave-50">Les résultats de mes recettes</h3>
+            <span className="text-sm text-cave-400 text-right">
+              {entries.length} {noun}
+              {entries.length > 1 ? 's' : ''}
+              <br />
+              dans la sélection
+            </span>
+          </div>
           <dl className="grid grid-cols-3 gap-3">
             <div>
               <dt className="text-sm text-cave-400">Brassées</dt>
@@ -180,286 +133,186 @@ export function CatalogAnalysis({
               <dd className="reading text-xl text-hop">{tastingEntries.length}</dd>
             </div>
           </dl>
-        ) : (
-          <>
-            <dl className="grid grid-cols-3 gap-3">
-              <div>
-                <dt className="text-sm text-cave-400">En cuve</dt>
-                <dd className="reading text-xl text-hop">
-                  {
-                    entries.filter((e) => ['fermentation', 'garde'].includes(e.batch?.status ?? ''))
-                      .length
-                  }
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-cave-400">Brassés</dt>
-                <dd className="reading text-xl text-ebc-straw">
-                  {number(production.brewed)} <span className="text-sm">L</span>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-cave-400">Conditionnés</dt>
-                <dd className="reading text-xl text-water">
-                  {number(production.packaged)} <span className="text-sm">L</span>
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-3 text-sm text-cave-400">
-              Volumes mesurés sur {production.measured} lot
-              {production.measured > 1 ? 's' : ''}. Les volumes prévus et les lots annulés ne sont
-              pas comptés.
-            </p>
-          </>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="bil-outils">
+          {onBack && (
+            <button type="button" className="bil-back" onClick={onBack} aria-label="Retour aux brassins">
+              <ChevronLeft size={20} aria-hidden="true" />
+            </button>
+          )}
+          <h3 className="bil-h3" style={{ margin: 0, fontSize: 18 }}>
+            Le bilan
+          </h3>
+          <button
+            type="button"
+            className="bil-arch"
+            aria-pressed={withArchives && archivedCount > 0}
+            onClick={basculerArchives}
+            aria-label={
+              archivedCount === 0
+                ? `Archives : aucun brassin archivé pour l’instant, ${withArchives ? 'inclus' : 'exclus'}`
+                : `Archives : ${archivedCount} brassin${archivedCount > 1 ? 's' : ''} archivé${archivedCount > 1 ? 's' : ''}, ${withArchives ? 'inclus' : 'exclus'}`
+            }
+          >
+            <span className="bil-sw" aria-hidden />
+            Archives
+          </button>
+        </div>
+      )}
       {(kind === 'batches' || resultEntries.length > 0) && (
-        <BatchOutcomeAnalysis entries={resultEntries} onOpenBatch={onOpenBatch} />
+        <BatchOutcomeAnalysis entries={resultEntries} onOpenBatch={onOpenBatch}>
+          {kind === 'batches' && (
+            <>
+              <Titre
+                note={
+                  <>
+                    <span className="font-mono tabular-nums">{nombre(production.brewed)} L</span> brassés
+                  </>
+                }
+              >
+                Par mois de brassage
+              </Titre>
+              {production.mois.length ? (
+                <>
+                  <div className="bil-leg">
+                    <span>
+                      <i style={{ background: 'rgb(var(--cave-texte-200))' }} />
+                      brassé
+                    </span>
+                    <span>
+                      <i style={{ background: 'rgb(var(--hop))' }} />
+                      conditionné
+                    </span>
+                  </div>
+                  <div
+                    className="bil-panneau bil-month"
+                    role="img"
+                    aria-label={`Volumes brassés et conditionnés par mois : ${production.mois
+                      .map((m) => `${m.libelle} ${number(m.brewed)} L brassés, ${number(m.packaged)} L conditionnés`)
+                      .join(' ; ')}`}
+                  >
+                    {production.mois.map((m) => (
+                      <div className="bil-mo" key={m.mois}>
+                        <div className="bil-cols">
+                          <i
+                            className="bil-c"
+                            style={{ height: `${(m.brewed / production.max) * 64}px`, background: 'rgb(var(--cave-texte-200))' }}
+                          />
+                          <i
+                            className="bil-c"
+                            style={{
+                              height: `${Math.max((m.packaged / production.max) * 64, 3)}px`,
+                              background: m.packaged ? 'rgb(var(--hop))' : 'rgb(var(--cave-700))'
+                            }}
+                          />
+                        </div>
+                        <span>
+                          <b className="font-mono tabular-nums">{nombre(m.brewed)}</b> · {m.libelle}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="bil-vide">Renseigne le volume brassé ou conditionné d’un lot pour voir la production réelle.</p>
+              )}
+              {production.undated > 0 && (
+                <p className="bil-note">
+                  {production.undated} lot(s) sans date exploitable restent dans les totaux, hors des mois.
+                </p>
+              )}
+            </>
+          )}
+          <Titre>{kind === 'batches' ? 'Styles et avancement' : 'Styles'}</Titre>
+          {styles.length || horsLots.length ? (
+            <div className="bil-chips">
+              {styles.slice(0, 12).map(({ name, count }) => (
+                <Puce key={name} onClick={() => onFilter('style', name)} label={`Filtrer : ${name}, ${count} sur ${bilanEntries.length}`}>
+                  {name} <span className="font-mono tabular-nums">{count}</span>
+                </Puce>
+              ))}
+              {horsLots.map((h) => (
+                <Puce
+                  key={`${h.status}|${h.style}`}
+                  vide
+                  onClick={() => onFilter('status', h.status)}
+                  label={`Filtrer : ${h.style} ${h.status === 'planifie' ? 'prévu' : 'annulé'}`}
+                >
+                  {h.style}
+                  {h.n > 1 ? ` ×${h.n}` : ''} {h.status === 'planifie' ? 'prévu' : 'annulé'} · hors bilan
+                </Puce>
+              ))}
+            </div>
+          ) : (
+            <p className="bil-vide">Aucune donnée renseignée dans cette sélection.</p>
+          )}
+          <Titre>Houblons</Titre>
+          {houblons.length ? (
+            <div className="bil-chips">
+              {(tousHoublons ? houblons : houblons.slice(0, CHIPS_VISIBLES)).map((h) => (
+                <Puce key={h.nom} onClick={() => onFilter('hop', h.nom)} label={`Filtrer : ${h.nom}`}>
+                  {h.nom}{' '}
+                  <span className="font-mono tabular-nums">
+                    {kind === 'batches' && h.grammes > 0
+                      ? `${nombre(h.grammes, 0)} g`
+                      : `${h.fiches} fiche${h.fiches > 1 ? 's' : ''}`}
+                  </span>
+                </Puce>
+              ))}
+              {houblons.length > CHIPS_VISIBLES && (
+                <Puce onClick={() => setTousHoublons(!tousHoublons)} label={tousHoublons ? 'Réduire les houblons' : 'Voir tous les houblons'}>
+                  {tousHoublons ? 'Réduire' : `+ ${houblons.length - CHIPS_VISIBLES}`}
+                </Puce>
+              )}
+            </div>
+          ) : (
+            <p className="bil-vide">Aucun houblon renseigné dans cette sélection.</p>
+          )}
+          <Titre>Alcool et amertume</Titre>
+          {alcool.length ? (
+            <div className="bil-chips">
+              {alcool.slice(0, 12).map((e) => (
+                <Puce key={e.id}>
+                  {e.name}{' '}
+                  <span className="font-mono tabular-nums">
+                    {e.abv !== undefined ? `${nombre(e.abv)} %` : 'alcool —'}
+                    {e.batch?.status === 'fermentation' && e.abv !== undefined ? ' provisoire' : ''}
+                  </span>
+                  {' · '}IBU {e.ibu !== undefined ? <span className="font-mono tabular-nums">{nombre(e.ibu, 0)} cible</span> : '—'}
+                </Puce>
+              ))}
+            </div>
+          ) : (
+            <p className="bil-vide">Aucune fiche ne possède encore ces valeurs. Une donnée absente n’est jamais comptée comme zéro.</p>
+          )}
+          {tastingEntries.length > 0 && (
+            <>
+              <Titre note={<span className="font-mono tabular-nums">{tastingEntries.length}</span>}>
+                Retours de dégustation
+              </Titre>
+              <div className="bil-chips">
+                {tastingEntries.slice(0, 6).map((e) => (
+                  <Puce
+                    key={e.id}
+                    onClick={() => onOpenBatch(e.batch!, 'tasting')}
+                    label={`Dégustation de ${e.name} : ${e.batch!.notesTasting}`}
+                  >
+                    <span className="txt">
+                      {e.name} · {resumeNote(e.batch!.notesTasting!)}
+                    </span>
+                  </Puce>
+                ))}
+              </div>
+            </>
+          )}
+        </BatchOutcomeAnalysis>
       )}
       {kind === 'recipes' && resultEntries.length === 0 && (
         <p className="text-sm text-cave-200 border-l-2 border-water pl-3 py-1">
-          Les résultats apparaîtront après les premiers brassins. Pour choisir entre deux recettes,
-          utilise « Comparer » dans le carnet.
+          Les résultats apparaîtront après les premiers brassins. Pour choisir entre deux recettes, utilise
+          « Comparer » dans le carnet.
         </p>
-      )}
-      {tastingEntries.length > 0 && (
-        <section className="panel p-4" aria-label="Retours de dégustation">
-          <h4 className="font-semibold text-cave-50">Retours de dégustation</h4>
-          <p className="text-sm text-cave-400 mt-1">
-            Tes notes de dégustation, reliées au lot concerné.
-          </p>
-          <ul className="divide-y divide-cave-800 mt-2">
-            {tastingEntries.slice(0, 4).map((e) => (
-              <li key={e.id}>
-                <button
-                  type="button"
-                  onClick={() => onOpenBatch(e.batch!, 'tasting')}
-                  className="w-full min-h-touch text-left py-3"
-                >
-                  <span className="block text-base text-cave-50 font-semibold">{e.name}</span>
-                  <span className="text-sm text-cave-400">{e.id}</span>
-                  <span className="block text-sm text-cave-200 mt-1 line-clamp-3">
-                    {e.batch!.notesTasting}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-      {kind === 'batches' && (
-        <section className="panel p-4 space-y-3" aria-label="Volumes par mois de brassage">
-          <div>
-            <h4 className="font-semibold text-cave-50">Production mesurée</h4>
-            <p className="text-sm text-cave-400">Lots regroupés par mois de brassage</p>
-          </div>
-          {production.months.length ? (
-            <>
-              <div
-                className="h-56 w-full"
-                role="img"
-                aria-label={`Volumes brassés et conditionnés sur ${production.months.length} mois, valeurs détaillées ci-dessous`}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={production.months} margin={{ left: -22, right: 0, bottom: 4 }}>
-                    <CartesianGrid vertical={false} stroke="rgb(var(--cave-700))" />
-                    <XAxis
-                      dataKey="month"
-                      tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
-                      tickFormatter={(value) => `${value.slice(5)}/${value.slice(2, 4)}`}
-                    />
-                    <YAxis tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} unit=" L" />
-                    <Tooltip
-                      contentStyle={chartTooltip}
-                      formatter={(value: number) => `${number(value)} L`}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 13 }} />
-                    <Bar
-                      dataKey="brewed"
-                      name="Brassés"
-                      fill="rgb(var(--ebc-straw))"
-                      radius={[3, 3, 0, 0]}
-                      isAnimationActive={false}
-                    />
-                    <Bar
-                      dataKey="packaged"
-                      name="Conditionnés"
-                      fill="rgb(var(--water))"
-                      radius={[3, 3, 0, 0]}
-                      isAnimationActive={false}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <details className="text-sm text-cave-400">
-                <summary className="min-h-touch flex items-center cursor-pointer">
-                  Valeurs du graphique
-                </summary>
-                <table className="w-full text-left">
-                  <thead>
-                    <tr>
-                      <th>Mois</th>
-                      <th>Brassés</th>
-                      <th>Conditionnés</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {production.months.map((row) => (
-                      <tr key={row.month}>
-                        <td className="py-2">{row.month}</td>
-                        <td>{number(row.brewed)} L</td>
-                        <td>{number(row.packaged)} L</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </details>
-            </>
-          ) : (
-            <p className="py-4 text-sm text-cave-400">
-              Renseigne le volume brassé ou conditionné d’un lot pour voir la production réelle.
-            </p>
-          )}
-          {production.undated > 0 && (
-            <p className="text-sm text-cave-400">
-              {production.undated} lot(s) sans date exploitable restent dans les totaux, hors du
-              graphique mensuel.
-            </p>
-          )}
-        </section>
-      )}
-      <button
-        type="button"
-        className="min-h-touch w-full text-left px-3 border-y border-cave-700 text-base text-cave-200"
-        aria-expanded={exploring}
-        aria-controls="catalog-exploration"
-        onClick={() => setExploring(!exploring)}
-      >
-        <span className="float-right text-ebc-straw" aria-hidden>
-          {exploring ? '−' : '+'}
-        </span>
-        Explorer les profils et ingrédients
-      </button>
-      {exploring && (
-        <div id="catalog-exploration" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <Distribution
-              title="Styles de la sélection"
-              data={countGroups(entries, 'style')}
-              total={entries.length}
-              onSelect={(name) => onFilter('style', name)}
-              color="rgb(var(--ebc-straw))"
-            />
-            <Distribution
-              title="Houblons les plus utilisés"
-              data={countGroups(entries, 'hops')}
-              total={entries.length}
-              onSelect={(name) => onFilter('hop', name)}
-              color="#8DAE79"
-            />
-          </div>
-          <p className="text-sm text-cave-400 px-1">
-            Touche un style ou un houblon pour retrouver les fiches correspondantes. Chaque fiche
-            compte une fois par houblon.
-          </p>
-          {kind === 'batches' && (
-            <Distribution
-              title="Avancement des lots"
-              data={BATCH_STATUSES.map((status) => ({
-                name: statusOf(status).label,
-                count: entries.filter((e) => e.batch?.status === status).length
-              })).filter((row) => row.count)}
-              total={entries.length}
-              onSelect={(label) =>
-                onFilter(
-                  'status',
-                  BATCH_STATUSES.find((s) => statusOf(s).label === label)!
-                )
-              }
-              color="rgb(var(--water))"
-            />
-          )}
-          <section className="panel p-4 space-y-3" aria-label="Comparaison alcool et amertume">
-            <div>
-              <h4 className="font-semibold text-cave-50">Alcool et amertume</h4>
-              <p className="text-sm text-cave-400">
-                {kind === 'recipes' ? 'Cibles des recettes' : 'Alcool mesuré et IBU cible du lot'} ·{' '}
-                {points.length}/{entries.length} fiches renseignées
-              </p>
-            </div>
-            {points.length ? (
-              <>
-                <div
-                  className="h-56 w-full"
-                  role="img"
-                  aria-label="Nuage de points : alcool en pourcentage, amertume cible en IBU"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 5, left: -15, bottom: 14, right: 10 }}>
-                      <CartesianGrid stroke="rgb(var(--cave-700))" />
-                      <XAxis
-                        type="number"
-                        dataKey="abv"
-                        name="Alcool"
-                        unit=" %"
-                        tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
-                        label={{
-                          value: 'Alcool (%)',
-                          position: 'bottom',
-                          fill: 'rgb(var(--cave-texte-400))',
-                          fontSize: 12
-                        }}
-                      />
-                      <YAxis
-                        type="number"
-                        dataKey="ibu"
-                        name="Amertume cible"
-                        unit=" IBU"
-                        tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
-                      />
-                      <ZAxis range={[65, 65]} />
-                      <Tooltip
-                        cursor={{ strokeDasharray: '3 3' }}
-                        content={({ active, payload }) =>
-                          active && payload?.[0] ? (
-                            <div className="p-3 rounded-control text-sm" style={chartTooltip}>
-                              <strong>{payload[0].payload.name}</strong>
-                              <p>
-                                {number(payload[0].payload.abv)} % ·{' '}
-                                {number(payload[0].payload.ibu)} IBU
-                              </p>
-                            </div>
-                          ) : null
-                        }
-                      />
-                      <Scatter data={points} fill="rgb(var(--ebc-straw))" isAnimationActive={false} />
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </div>
-                <details className="text-sm text-cave-400">
-                  <summary className="min-h-touch flex items-center cursor-pointer">
-                    Détail des {points.length} points
-                  </summary>
-                  <ul className="space-y-2">
-                    {points.map((p) => (
-                      <li key={p.id} className="flex justify-between gap-4">
-                        <span>{p.name}</span>
-                        <span className="shrink-0">
-                          {number(p.abv!)} % · {number(p.ibu!)} IBU
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </>
-            ) : (
-              <p className="py-4 text-sm text-cave-400">
-                Aucune fiche ne possède encore les deux valeurs. Les données absentes ne sont pas
-                remplacées par zéro.
-              </p>
-            )}
-          </section>
-        </div>
       )}
     </div>
   );

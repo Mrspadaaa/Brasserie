@@ -39,7 +39,8 @@ describe('BatchDetailSheet › focus', () => {
   });
   it('Argent › Impôt sur la bière › « Noter les litres » : la fiche passe sur Mesures, focus sur le volume conditionné', async () => {
     render(<BatchDetailSheet batch={sansLitres()} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Argent' }));
+    // Fiche à trois rubriques (e1a) : la chaîne de l'argent s'ouvre par le bouton « Budget », dans une feuille.
+    fireEvent.click(screen.getAllByRole('button', { name: /budget/i })[0]);
     fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
     const feuille = await screen.findByRole('dialog', { name: /Impôt bière/ });
     fireEvent.click(within(feuille).getByRole('button', { name: 'Noter les litres' }));

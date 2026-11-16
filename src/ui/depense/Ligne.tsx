@@ -87,10 +87,10 @@ export function LigneP3c(p: LigneP3cProps) {
  * Lenteur D, son choix 2 D (`choix-lignes-38/q2-d-arrivee`, `choix-valider/b-arrivee`) : une ligne du provisoire que la 3.8 ne lit plus : barrée, grise, hors des sommes. Aucun geste sur la rangée : la question est au bandeau
  * au-dessus du pied. Rien n'est ouvert, rien ne s'édite (ce n'est plus une ligne de la dépense) ; « Garder » la remet en rangée ordinaire.
  */
-export function LignePerdue(p: { id: string; groupe: GroupeCle; nom: string; qte: string; prix: string; montant: string; masquee?: boolean }) {
+export function LignePerdue(p: { id: string; groupe: GroupeCle; nom: string; qte: string; prix: string; montant: string; masquee?: boolean; /** p2 : dépense hors brassage : aucune icône de stock, ligne barrée comprise. */ sansStock?: boolean }) {
   return <article data-dp-perdue={p.id} data-dp-groupe={p.groupe} hidden={p.masquee} aria-label={`${p.nom} : pas retrouvée, barrée`} className={`dp-p3c-li border-b border-cave-800 ${BARRE[p.groupe]}`}>
     <div className="dp-p3c-r relative flex min-h-7 items-center gap-1.5 px-2.5 text-cave-400">
-      <span className="inline-flex shrink-0 opacity-45"><PictoLien lien="relie" size={18}/></span>
+      {p.sansStock ? null : <span className="inline-flex shrink-0 opacity-45"><PictoLien lien="relie" size={18}/></span>}
       <span className="min-w-0 flex-1 py-0.5 text-sm leading-tight line-through">{p.nom}</span>
       <span className="dp-p3c-dq line-through"><span className="font-semibold">{p.qte}</span><i>{p.qte || p.prix !== '—' ? '×' : ''}</i><span>{p.qte || p.prix !== '—' ? p.prix : ''}</span></span>
       <span className="w-[54px] shrink-0 text-right font-mono text-sm line-through">{p.montant}</span>

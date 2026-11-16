@@ -37,7 +37,14 @@ export interface FabAction {
   label: string;
   /** Seconde ligne dans le menu ; « Sur cet écran » par défaut. */
   hint?: string;
+  /** e11a : le + dit ce qu'il crée (« + Brassin », « + Recette ») ; absent, il reste un « + » seul. */
+  court?: string;
+  /** e11a : menu de l'onglet Brassins : action de l'écran, Créer une recette, Outils houblons, puis facture, vente, Compagnon. */
+  menu?: 'brassins';
 }
+
+/** Événement que le menu du + émet pour « Outils houblons » ; l'onglet Brassins l'écoute et ouvre l'atelier. */
+export const OUTILS_HOUBLONS_EVENT = 'brassins-outils-houblons-open';
 
 /** Sous-onglets connus, par onglet. `null` = l'onglet n'en a pas. */
 export type SubTabOf = {
@@ -51,6 +58,9 @@ export type SubTabOf = {
 export type AnySubTab = SubTabOf[keyof SubTabOf];
 
 const A = (intent: FabIntent, label: string, hint?: string): FabAction => ({ intent, label, hint });
+/** Entrée de l'onglet Brassins : nom court sur le bouton, menu de la maquette e11a, ligne « Sur … ». */
+const B = (intent: FabIntent, label: string, court: string | undefined, sur?: string): FabAction =>
+  ({ intent, label, hint: sur, ...(court ? { court } : {}), menu: 'brassins' });
 
 /** Le formulaire ouvert est celui d'une dépense : la seconde ligne le dit avant l'appui. */
 const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Facture ou saisie à la main');
@@ -68,9 +78,9 @@ const ACTIONS: {
   finances: NEW_TRANSACTION,
 
   production: {
-    batches: A('newBatch', 'Nouveau brassin'),
-    recipes: A('newRecipe', 'Nouvelle recette'),
-    lab: A('newIdea', 'Nouvelle idée'),
+    batches: B('newBatch', 'Nouveau brassin', 'Brassin', 'Sur Brassins'),
+    recipes: B('newRecipe', 'Nouvelle recette', 'Recette', 'Sur Recettes'),
+    lab: B('newIdea', 'Nouvelle idée', undefined, undefined),
     // Le calculateur ne crée rien : il met une recette existante à l'échelle. BX-4 (09.11) : pas d'action d'écran (« Nouvelle recette » ici n'était pas la bonne).
     scaler: A('quickAction', 'Saisie rapide')
   },

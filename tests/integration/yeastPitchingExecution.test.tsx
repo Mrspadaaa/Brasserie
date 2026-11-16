@@ -66,14 +66,16 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+// e1a/e2a : sur un planifié, la préparation de levure vit dans la carte de l'onglet Mesures (plus dans le Compagnon).
 describe('Préparation de starter dans un brassin planifié', () => {
   it('démarre et reprend la copie figée, régularise par comptage explicite et la rouvre après un changement de date', async () => {
     let saved = batchWithPreparation();
     vi.mocked(StorageService.updateBatch).mockImplementation(batch => { saved = structuredClone(batch); });
-    const view = render(<BatchDetailSheet batch={saved} initialSection="overview" onClose={vi.fn()} />);
+    const view = render(<BatchDetailSheet batch={saved} initialSection="measurements" onClose={vi.fn()} />);
     const panel = screen.getByRole('region', { name: 'Préparation de levure' });
+    fireEvent.click(within(panel).getByText('Produit, inoculum, régularisation')); // carte e7a : le détail est replié sous le résumé
     expect(panel).toHaveTextContent('Cellules obtenues : inconnues');
-    expect(panel).toHaveTextContent('Starter · Culture liquide A');
+    expect(panel).toHaveTextContent('Starter Culture liquide A');
     expect(panel).toHaveTextContent('Produit · Culture liquide A · PRODUCT-A');
     expect(within(panel).getByRole('button', { name: 'Commencer la préparation du starter' })).toBeVisible();
     const notice = within(panel).getByText('Notice et étapes complètes · Notice produit').closest('details')!;
@@ -87,7 +89,8 @@ describe('Préparation de starter dans un brassin planifié', () => {
     expect(panel).toHaveTextContent('Repères indicatifs, pas une chronologie garantie');
     expect(panel).toHaveTextContent('activation de l’inoculum et le refroidissement');
     expect(within(panel).getAllByText(/Repère commun de départ ·/)).toHaveLength(2);
-    expect(within(panel).getByText('Vérifier les conditions avant le transfert').closest('li')).not.toHaveTextContent('Repère');
+    // e7a : la dernière étape est listée dans la carte et dans la notice repliée ; aucune des deux n'invente de repère.
+    for (const etape of within(panel).getAllByText('Vérifier les conditions avant le transfert')) expect(etape.closest('li')).not.toHaveTextContent('Repère');
     expect(panel).not.toHaveTextContent('Échéance ·');
     fireEvent.click(within(panel).getByRole('button', { name: 'Commencer la préparation du starter' }));
     expect(saved.yeastPreparation).toMatchObject({ plan: { id: 'PREP-A', revision: 3 }, status: 'started', steps: [] });
@@ -110,15 +113,16 @@ describe('Préparation de starter dans un brassin planifié', () => {
     expect(StorageService.adjustInventory).toHaveBeenCalledWith('rawMaterials', 'YEAST-A', 3, 'comptage', undefined);
     expect(saved.yeastPreparation?.stockRegularization).toEqual([{ kind: 'inoculum', stockItemRef: 'YEAST-A', at: Date.now() }]);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Changer la date' }));
-    fireEvent.click(screen.getByRole('radio', { name: 'Autre date' }));
-    fireEvent.change(screen.getByLabelText('Jour prévu'), { target: { value: '2026-09-29' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la date' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Dossier', exact: true })); // e1a : la date se change dans le Dossier ; la préparation vit sous « Préparer »
+    fireEvent.click(screen.getByRole('button', { name: 'Reporter' })); // « Reporter » ouvre le curseur de jours (0 = aujourd'hui, 27.09)
+    fireEvent.change(screen.getByRole('slider', { name: 'Jour de brassage' }), { target: { value: '2' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer/ }));
     await waitFor(() => expect(saved.plannedBrewDate).toBe('29.09.2026'));
     expect(saved.yeastPreparation).toMatchObject({ status: 'ready', plan: { id: 'PREP-A', revision: 3 }, steps: [{ id: 'step-0' }, { id: 'step-1' }, { id: 'step-2' }, { id: 'step-3' }] });
+    fireEvent.click(screen.getByRole('button', { name: 'Préparer', exact: true }));
     expect(screen.getByRole('alert')).toHaveTextContent('L’exécution conserve le plan PREP-A · révision 3');
     view.unmount();
-    render(<BatchDetailSheet batch={saved} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={saved} initialSection="measurements" onClose={vi.fn()} />);
     expect(screen.getByRole('region', { name: 'Préparation de levure' })).toHaveTextContent('Préparation prête');
     expect(screen.getByRole('alert')).toHaveTextContent('date ou le plan courant a changé');
   });
@@ -126,17 +130,18 @@ describe('Préparation de starter dans un brassin planifié', () => {
   it('affiche l’identifiant seul si le produit figé du snapshot ne correspond plus au plan', () => {
     const batch = batchWithPreparation();
     batch.recipeSnapshot!.yeast.pitching!.product!.id = 'ANOTHER-PRODUCT';
-    render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={batch} initialSection="measurements" onClose={vi.fn()} />);
     const panel = screen.getByRole('region', { name: 'Préparation de levure' });
-    expect(panel).toHaveTextContent('Starter · PRODUCT-A');
-    expect(panel).not.toHaveTextContent('Starter · Culture liquide A');
-    expect(panel).not.toHaveTextContent('Starter · Starter documenté');
+    fireEvent.click(within(panel).getByText('Produit, inoculum, régularisation')); // carte e7a : le détail est replié sous le résumé
+    expect(panel).toHaveTextContent('Starter PRODUCT-A');
+    expect(panel).not.toHaveTextContent('Starter Culture liquide A');
+    expect(panel).not.toHaveTextContent('Starter Starter documenté');
   });
 
   it('refuse un plan enregistré sous le minimum, mais garde une exécution commencée poursuivable', () => {
     const tooLate = batchWithPreparation();
     tooLate.recipeSnapshot!.yeast.pitching!.preparation!.targetPitchAt = '2026-09-28T11:00:00.000Z';
-    const lateView = render(<BatchDetailSheet batch={tooLate} initialSection="overview" onClose={vi.fn()} />);
+    const lateView = render(<BatchDetailSheet batch={tooLate} initialSection="measurements" onClose={vi.fn()} />);
     const latePanel = screen.getByRole('region', { name: 'Préparation de levure' });
     expect(latePanel).toHaveTextContent('Trop tard pour démarrer · replanifier');
     expect(latePanel).toHaveTextContent('Il reste 23 h avant l’ensemencement cible, sous le minimum publié de 24 h');
@@ -145,7 +150,7 @@ describe('Préparation de starter dans un brassin planifié', () => {
     expect(StorageService.getStocks().rawMaterials[0].currentStock).toBe(4);
     lateView.unmount();
 
-    const startedView = render(<BatchDetailSheet batch={batchWithPreparation()} initialSection="overview" onClose={vi.fn()} />);
+    const startedView = render(<BatchDetailSheet batch={batchWithPreparation()} initialSection="measurements" onClose={vi.fn()} />);
     const startedPanel = screen.getByRole('region', { name: 'Préparation de levure' });
     fireEvent.click(within(startedPanel).getByRole('button', { name: 'Commencer la préparation du starter' }));
     vi.setSystemTime(new Date('2026-09-27T13:00:00.000Z'));
@@ -162,8 +167,9 @@ describe('Préparation de starter dans un brassin planifié', () => {
   it('signale la marge manquante sous la borne haute sans transformer la fenêtre en garantie', () => {
     const batch = batchWithPreparation();
     batch.recipeSnapshot!.yeast.pitching!.preparation!.targetPitchAt = '2026-09-28T18:00:00.000Z';
-    render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={batch} initialSection="measurements" onClose={vi.fn()} />);
     const panel = screen.getByRole('region', { name: 'Préparation de levure' });
+    fireEvent.click(within(panel).getByText('Produit, inoculum, régularisation')); // carte e7a : le détail est replié sous le résumé
     expect(within(panel).getByRole('button', { name: 'Commencer la préparation du starter' })).toBeVisible();
     expect(panel).toHaveTextContent('Il reste 30 h, soit 6 h de moins que la borne haute publiée (36 h)');
     expect(panel).toHaveTextContent('Le minimum publié (24 h) est atteint, mais cette fenêtre ne garantit pas l’achèvement ni la viabilité');
@@ -176,8 +182,9 @@ describe('Préparation de starter dans un brassin planifié', () => {
     const execution = { plan: structuredClone(plan), status: 'transferred' as const, startedAt: 1,
       steps: plan.steps.map((step, index) => ({ id: step.id, at: index + 2 })),
       inoculumUsed: { amount: 1, unit: 'flacon', stockItemRef: 'YEAST-A' }, cultureVolumeL: 1.25 };
-    render(<BatchDetailSheet batch={{ ...batch, yeastPreparation: execution }} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={{ ...batch, yeastPreparation: execution }} initialSection="measurements" onClose={vi.fn()} />);
     const panel = screen.getByRole('region', { name: 'Préparation de levure' });
+    fireEvent.click(within(panel).getByText('Produit, inoculum, régularisation')); // carte e7a : le détail est replié sous le résumé
     expect(panel).toHaveTextContent('Culture transférée au brassin');
     expect(panel).toHaveTextContent('Volume réellement transféré : 1,25 L');
     expect(within(panel).getByRole('region', { name: 'Régularisation du stock du starter' })).toBeVisible();
