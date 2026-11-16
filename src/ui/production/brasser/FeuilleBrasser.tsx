@@ -77,6 +77,7 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
     return noms.length ? `${PICTO[g].mot} ${noms.join(', ')}` : PICTO[g].mot;
   };
   const raison = raisonDe(ctx, choisi);
+  const finNonDateeVisible = jours.some(j => j >= aujourdhui && etatCuve(ctx.occ, j, capaciteL, volumeL).finNonDatee);
   const premier = propose;
 
   return (
@@ -108,16 +109,16 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
         {SEMAINE.map(s => <span key={s} className="d1b-sem" aria-hidden="true">{s}</span>)}
         {jours.map(j => {
           const passe = j < aujourdhui;
-          const { etat } = etatCuve(ctx.occ, j, capaciteL, volumeL);
+          const { etat, finNonDatee } = etatCuve(ctx.occ, j, capaciteL, volumeL);
           const evts = evenementsDuJour(ctx, j);
           const genre = (['houblon', 'bouteille', 'garde'] as GenreEvenement[]).find(g => evts.some(e => e.genre === g));
           const num = new Date(j).getDate();
           if (passe) return <button key={j} type="button" className="d1b-j" data-passe disabled aria-label={`${jourLong(j)}, passé`}><b>{num}</b></button>;
           return (
             <button key={j} type="button" className="d1b-j" disabled={verrou}
-              data-cuve={etat} {...(j === aujourdhui ? { 'data-auj': '' } : {})} {...(j === premier && j !== choisi ? { 'data-propose': '' } : {})}
+              data-cuve={etat} {...(finNonDatee ? { 'data-fin': 'non-datee' } : {})} {...(j === aujourdhui ? { 'data-auj': '' } : {})} {...(j === premier && j !== choisi ? { 'data-propose': '' } : {})}
               aria-pressed={j === choisi}
-              aria-label={`${jourLong(j)}${j === aujourdhui ? ', aujourd\'hui' : ''}${etat === 'pleine' ? ', cuve pleine' : etat === 'libre' ? ', cuve libre' : ''}${evts.length ? ', ' + evts.map(e => `${PICTO[e.genre].mot} ${e.nom}`).join(', ') : ''}`}
+              aria-label={`${jourLong(j)}${j === aujourdhui ? ', aujourd\'hui' : ''}${etat === 'pleine' ? `, cuve pleine${finNonDatee ? ', fin non datée' : ''}` : etat === 'libre' ? ', cuve libre' : ''}${evts.length ? ', ' + evts.map(e => `${PICTO[e.genre].mot} ${e.nom}`).join(', ') : ''}`}
               onClick={() => setChoisi(j)}>
               <b>{num}</b>
               {genre && PICTO[genre].icone}
@@ -128,7 +129,7 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
       </div>
 
       <div className="d1b-cles" aria-hidden="true">
-        <span><i data-cuve="pleine" />cuve pleine</span><span><i />cuve libre</span>
+        <span><i data-cuve="pleine" />cuve pleine</span>{finNonDateeVisible && <span><i data-cuve="pleine" data-fin="non-datee" />fin non datée</span>}<span><i />cuve libre</span>
         {(['houblon', 'bouteille', 'garde'] as GenreEvenement[]).map(g => <span key={g}>{PICTO[g].icone}{nomsLegende(g)}</span>)}
       </div>
 

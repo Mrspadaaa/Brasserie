@@ -242,7 +242,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {/* l2 : monté à la première ouverture, puis gardé monté (la feuille se ferme d'elle-même quand batch est nul). */}
       {(detailBatch || feuilleOuverte.current) && (
         <Suspense fallback={null}>
-          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={onOpenBrewDay} onClose={() => setDetailBatch(null)}
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={(b) => { setDetailBatch(null); onOpenBrewDay(b); }} onClose={() => setDetailBatch(null)}
             onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
         </Suspense>
       )}
