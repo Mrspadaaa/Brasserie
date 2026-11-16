@@ -53,3 +53,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 
 ## Leviers (16.11, « Tous »)
 Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE.md. Au retour des workflows, le pilote vérifie que chaque levier est traité ; sinon, il relance une passe. L7 : publier le prototype final jouable, avec 5 tâches chronométrées sur son téléphone.
+
+## Carnet 9/10 (16.11)
+- Workflow `carnet-9`, task wqn8lksgz, run wf_547f5490-9ff. Sorties dans `carnet-decision/f9/` : LISIBILITE.md, REFERENCES.md, FUSION.md, puis p1 à p5. Livrables : `page2/` et `jouable/`.
+- Au retour : publier page2 et jouable, ajouter leurs lignes à Pages, commit, lien au brasseur.
