@@ -1829,3 +1829,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : il garde tous les liens sauf L18, l'entretien du matériel daté au calendrier ; L14 est resté sans réponse. L1 est gardé comme fonction, mais sa forme prend trop de place : ni rangée ni case dédiée, le geste passe par ce qui existe déjà. L9 est prioritaire : chaque geste de l'app décompte ce qu'il consomme, partout.)
 - **16.11**, mot pour mot : « On peut viser 8.5 plutôt que 9 alors... Mais oui changer de méthode si ça tourne en boucle. »
   (lu : la cible passe à 8,5. La boucle fb9 a tourné à vide : p2 à 7,3, p3 à 7,2, sous fb qu'il notait 8. Elle est arrêtée pour changer de méthode. On repart de fb : d'abord le repos rendu lisible seul, puis chaque fonction ajoutée par lot, sans que la lisibilité retombe.)
+- **16.11**, mot pour mot, sur le carnet fusionné (passe 5, environ 8,2) : « 8.2 ça me va »
+  (lu : le carnet fusion dc+da est accepté à 8,2. Pas de nouvelle boucle. Il reste à le publier, à le jouer sur son téléphone, puis à le porter dans l'app avec les liens choisis.)
