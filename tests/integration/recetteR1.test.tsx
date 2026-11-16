@@ -177,6 +177,28 @@ describe('Corrections de la passe du 14.11 : la page ressemble à la maquette r1
     expect(container.querySelector('[data-page-shell] header p')).toBeNull();
   });
 
+  it('matin 16.11 : le volume de l\'en-tête est celui de la RECETTE (jamais le défaut du matériel, 24 L), grisé comme sur r1 ; inconnu : « — L », jamais 0', () => {
+    const defautMateriel = defaultConfig.brewhouses.find((b) => b.id === defaultConfig.activeBrewhouseId) ?? defaultConfig.brewhouses[0];
+    const volumeRecette = defautMateriel.volumeL === 19 ? 30 : 19;
+    const { container, unmount } = monter({ ...recette(), volumeL: volumeRecette });
+    const titre = container.querySelector('[data-page-shell] header h1') as HTMLElement;
+    expect(titre).toHaveTextContent(new RegExp(`${volumeRecette} L$`));
+    expect(titre).not.toHaveTextContent(`${defautMateriel.volumeL} L`);
+    // Le nom garde le texte courant ; seul le volume est grisé (r1-repos-haut.png), et le nom accessible reste « nom volume ».
+    const gris = titre.querySelector('span') as HTMLElement;
+    expect(gris).toHaveTextContent(`${volumeRecette} L`);
+    expect(gris.className).toContain('text-cave-400');
+    expect(gris.className).toContain('font-normal');
+    expect(titre.getAttribute('aria-label')).toBe(`${recette().name} ${volumeRecette} L`);
+    expect(container.querySelector('[data-page-shell] main')?.getAttribute('aria-label')).toBe(`${recette().name} ${volumeRecette} L`);
+    unmount();
+    const inconnu = monter({ ...recette(), volumeL: undefined as unknown as number });
+    const titreInconnu = inconnu.container.querySelector('[data-page-shell] header h1') as HTMLElement;
+    expect(titreInconnu).toHaveTextContent(/— L$/);
+    expect(titreInconnu.querySelector('span')).toHaveTextContent('— L');
+    expect(titreInconnu).not.toHaveTextContent(/\b0 L/);
+  });
+
   it('n° 4 : pas de carte « Détail » ni « Potentiel » au repos ; leurs liens sont sur la ligne du total, et chaque action reste atteignable', async () => {
     const recipe = recette();
     const { container } = render(<RecipePage recipe={recipe} batches={[]} config={defaultConfig} onClose={vi.fn()} onEdit={vi.fn()} onDuplicate={vi.fn()} onDelete={vi.fn()} onBrew={vi.fn()} onOpenBatch={vi.fn()} />);
