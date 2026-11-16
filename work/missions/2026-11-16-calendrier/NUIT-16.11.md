@@ -15,3 +15,9 @@ Ses mots : « On passe bientôt en mode nuit. » Autonomie ; rien d'irréversibl
 
 ## Choix inscrits ce soir
 Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C tel quel ; i1 i3 i4 i6 i8 gardés, i5 i7 refusés ; mini maquettes en clair seul.
+
+## Ses réponses (16.11, avant la nuit)
+- Ports : il choisit sur https://claude.ai/artifact/T5xF2RhFpsoijv1KomxeLL ; sans réponse, ne porter que ce qui ne dépend pas du calendrier (fournisseur, suppression, lot, pastille C), l'onglet attend.
+- Calendrier : « Le critique tranche, j'ajuste » : enchaîner page15 → assemblage (corps gi2/r2-c + en-tête retenue + gestes retenus) → critique → correction → page du matin.
+- Déploiement : « Oui, si tout est vert » : seulement les parties portées, rejouées en ligne sur ZZ TEST puis retirées.
+- Carnet : « Assembler étape par étape » : le critique choisit ra ou p5f par étape, scénario rejoué de zéro.
