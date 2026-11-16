@@ -1933,3 +1933,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : les cinq à porter cette nuit, branche claude/ports-nuit-1611 depuis le tag déployé en-ligne/2026-11-16-brassins-apresmidi ; en ligne si tout est vert.)
 - **16.11**, mot pour mot, sur le jouable de la pastille C, capture de l'histogramme encadré S47–S49 : « Je veux pouvoir au doigt faire bouger cette encadrement... Sélectionnez jusqu'à s50 p.exemple ou juste 50 51 »
   (lu : l'encadrement de l'histogramme devient une fenêtre qu'on règle au doigt : tirer un bord (jusqu'à S50), ou poser la fenêtre sur S50–S51 seules (début et fin libres). Le gros chiffre et la pastille suivent la somme des semaines encadrées. À mettre dans le jouable et dans le port de la pastille.)
+- **16.11**, mot pour mot, en fin de soirée : « Le bouton+ est vraiment nickel sur les exemple, bon travail, merci bonne nuit »
+  (lu : le + volant tel qu'il est dans les maquettes du soir (en bas à droite, juste au-dessus des onglets, rien de couvert) est validé : acquis à garder partout, ports compris.)
