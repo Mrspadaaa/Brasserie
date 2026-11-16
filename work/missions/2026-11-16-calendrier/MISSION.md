@@ -43,6 +43,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | g-d1 et les idées de cd1, une à la fois | 16.11 soir | https://claude.ai/artifact/VE966bkeVCnCsBPUX2KREC | `work/missions/2026-11-16-calendrier/page9/index.html` |
 | Calendrier cd1 (g-d1 complété) | 16.11 | https://claude.ai/artifact/4Asn377oaJjCegYuo16uP6 | `work/missions/2026-11-16-calendrier/page7/index.html` |
 | Carnet ra ou p5f, finis | 16.11 | https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL | `work/missions/2026-11-16-carnet-decision/page5/index.html` |
+| Carnet ra ou p5f, étape par étape | 16.11 soir | https://claude.ai/artifact/XJoWq1jW88DGGT9EpxUbuD | `work/missions/2026-11-16-carnet-decision/page6/index.html` |
 
 ## REPRISE pilote — 16.11, ~10 h
 - **Workflows en cours** (pilote) :

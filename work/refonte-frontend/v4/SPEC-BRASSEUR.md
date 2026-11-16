@@ -1894,3 +1894,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : l'en-tête est le prochain sujet, en portrait comme en paysage. Lot d'en-têtes seuls, avec le reste figé : la frise de g-d1 en portrait, le reste de cd1-paysage en paysage. Il doit tenir le même contenu (montant à dépenser, au plus serré, en retard, période, courbe et sa fenêtre) en plus léger et plus clair.)
 - **16.11**, mot pour mot, sur l'en-tête : « Plus de place au graph et plus d'info sur ces mouvements, moins d'info sur le reste »
   (lu : l'en-tête se resserre autour de la courbe de caisse, qui y prend plus de place. La courbe porte ses mouvements : entrées, sorties et ce qui fait monter ou descendre la caisse, nommés sur la courbe ou à un toucher. Le reste (textes, pastilles, segments) diminue. Le lot d'en-têtes est relancé avec ce cap.)
+
+- **16.11**, mot pour mot, sur la page du carnet ra ou p5f (https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL) : « Carnet · Il y a des choses bien des deux côtés. Je peux pas les départager... Entre ta et p5f »
+  (lu : « ta » = ra. Aucun des deux ne gagne en bloc. On ne refait pas une fusion devinée (la fusion p5 a été refusée) : il choisit étape par étape, ra ou p5f, sur les mêmes captures ; la base du carnet devient l'assemblage de ses choix d'étape, puis on le joue de zéro.)
