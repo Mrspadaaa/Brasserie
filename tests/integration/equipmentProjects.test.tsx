@@ -2,7 +2,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
-vi.mock('../../src/ui/Sheet', () => ({ Sheet: ({ open, title, children, footer }: any) => open ? <div role="dialog" aria-label={title}>{children}{footer}</div> : null }));
+vi.mock('../../src/ui/Sheet', () => ({ Sheet: ({ open, title, children, footer }: any) => open ? <div role="dialog" aria-label={title}>{children}{footer}</div> : null, ConfirmSheet: ({ open, title }: any) => open ? <div role="dialog" aria-label={title} /> : null }));
 vi.mock('recharts', () => ({ ResponsiveContainer: () => null, AreaChart: () => null, Area: () => null, XAxis: () => null, YAxis: () => null, Tooltip: () => null, CartesianGrid: () => null }));
 import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { FinanceService } from '../../src/services/financeService';
@@ -33,6 +33,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     render(<Navigation/>);
     expect(screen.getByRole('dialog', { name: 'Prévoir du matériel' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler', exact: true }));
+    // ks4 (15.11) : Bières est un filtre du Carnet.
+    fireEvent.click(screen.getByRole('button', { name: 'Carnet', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Matériel', exact: true }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -69,19 +71,21 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   it('TE-36 : la case des prévisions garde le même mot, cochée ou non', async () => {
     await FinanceService.saveUpgrade(hotte()); render(<UpgradeWorkspace/>);
-    const case_ = screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' });
-    expect(case_).toBeChecked();
-    expect(case_.closest('label')).toHaveTextContent('Inclure dans mes prévisions');
-    expect(screen.queryByText('Dans les prévisions')).not.toBeInTheDocument();
+    // kh1r : l'interrupteur vit dans la fiche du projet (touche le titre de la carte « Prochain achat »), même mot allumé ou éteint
+    fireEvent.click(screen.getByRole('button', { name: 'Hotte de brassage' }));
+    const case_ = screen.getByRole('switch', { name: 'Dans mes prévisions' });
+    expect(case_).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(case_);
-    await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' })).not.toBeChecked());
-    expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }).closest('label')).toHaveTextContent('Inclure dans mes prévisions');
+    await waitFor(() => expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveAttribute('aria-checked', 'false'));
+    expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveTextContent('Dans mes prévisions');
   });
   it('reprend les idées R&D, archive sans résurrection et restaure les notes', async () => {
     const legacy = { id: 'OLD-HOTTE', type: 'equipment' as const, title: 'Hotte historique', status: 'quote' as const, estimatedCost: 750, description: 'Évacuer la vapeur', notes: 'Devis fournisseur conservé' };
     StorageService.addCreativeItem(legacy); render(<UpgradeWorkspace/>);
     expect(FirestoreRepo.all('financialPlans')).toHaveLength(0);
-    fireEvent.click(screen.getByRole('button', { name: /Hotte historique.*750/ }));
+    // kyh1 : toute ligne chiffrée porte son crayon (la ligne sans prix porte « à estimer ») ; le titre ouvre la fiche, dont « Modifier » ouvre la feuille d'édition
+    expect(screen.getByRole('button', { name: 'Modifier Hotte historique' })).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Hotte historique')); fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();
@@ -145,7 +149,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   it('garde le formulaire et son identifiant après une erreur d’enregistrement', async () => {
     const save = vi.spyOn(FinanceService, 'saveUpgrade').mockRejectedValueOnce(Error('Connexion interrompue'));
-    render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Ajouter un projet' }));
+    render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Ajouter un besoin' }));
     change('Matériel ou aménagement', 'Fermenteur pour la saison');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Connexion interrompue'));

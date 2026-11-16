@@ -118,7 +118,7 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     expect(atFifteen[1]).toBeLessThan(5.2);
     expect(state().acidOverride?.mash).toBe(15);
     expect(readPh()).toBeCloseTo(atFifteen[1], 2);
-    expect(screen.getByText(/^pH estimé — cible/).parentElement!.querySelector('.text-ebc-amber')).not.toBeNull();
+    expect(screen.getByText(/^pH estimé — cible/).parentElement!.querySelector('.ew-hors')).not.toBeNull();
     doser();
     expect(screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ })).toHaveValue('15');
     click('Revenir aux doses d’acide calculées');

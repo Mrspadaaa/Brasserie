@@ -1,8 +1,9 @@
 import { useId, useRef } from "react";
 import { formatDecimal } from "../numericInput";
 import { formatWaterMessage } from "../waterReadings";
+import { Neuf } from "./Neuf";
 
-import { ACIDS, MASH_PH_BAND } from "../../domain/water";
+import { ACIDS, MASH_PH_BAND, alkalinityAsCaCO3 } from "../../domain/water";
 import { noloWaterModelIssue } from "../../domain/noloWaterModelIssue";
 
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
@@ -25,10 +26,27 @@ type Props = Pick<
   | "spargeAcid"
   | "raApresAcide"
   | "placeAcide"
+  | "acideProfil"
   | "spargeAlkalinity"
   | "hasSparge"
   | "activeTab"
 >;
+const pct = (v: number, lo: number, hi: number) => Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100));
+
+/** Jauge w1b : piste, fenêtre du repère (vert), point « avant l’acide » et point « après ». Décor : la valeur est lue dans la ligne au-dessus. */
+function Jauge({ lo, hi, fenMin, fenMax, avant, apres, avantHors, apresHors, label }: {
+  lo: number; hi: number; fenMin: number; fenMax: number; avant: number; apres: number;
+  avantHors: boolean; apresHors: boolean; label: string;
+}) {
+  return (
+    <div className="ew-jg" role="img" aria-label={label}>
+      <b style={{ left: `${pct(fenMin, lo, hi)}%`, width: `${pct(fenMax, lo, hi) - pct(fenMin, lo, hi)}%` }} />
+      <s style={{ left: `${pct(avant, lo, hi)}%`, background: avantHors ? "var(--ew-att)" : "var(--ew-hop)" }} />
+      <s style={{ left: `${pct(apres, lo, hi)}%`, background: apresHors ? "var(--ew-att)" : "var(--ew-t0)" }} />
+    </div>
+  );
+}
+
 export function WaterAcidity({
   state,
   brew,
@@ -45,6 +63,7 @@ export function WaterAcidity({
   spargeAcid,
   raApresAcide,
   placeAcide,
+  acideProfil,
   spargeAlkalinity,
   hasSparge,
   activeTab,
@@ -71,7 +90,8 @@ export function WaterAcidity({
         <div
           role="tablist"
           aria-label="Eau traitée"
-          className="flex border-b border-cave-800"
+          className="ew-tabs"
+          style={{ gridTemplateColumns: hasSparge ? "1fr 1fr" : "1fr" }}
         >
           {tabs.map(
             (t, index) => (
@@ -112,10 +132,10 @@ export function WaterAcidity({
             aria-labelledby={`${id}-tab-empatage`}
             tabIndex={0}
             hidden={activeTab !== "empatage"}
-            className="panel p-2.5 sm:p-3 space-y-1"
+            className="ew-ar"
           >
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-xs sm:text-sm text-cave-400">
+            <div className="ew-arr">
+              <span>
                 {alkaliGoal.limitedByGrist
                   ? `Alcalinité résiduelle — repère pour les malts ≈ ${formatDecimal(alkaliGoal.target)} ppm (`
                   : `Alcalinité résiduelle — repère ${formatDecimal(raBand.min)} à ${formatDecimal(raBand.max)} ppm (`}
@@ -127,64 +147,77 @@ export function WaterAcidity({
                 )
               </span>
 
-              <span
-                className={`reading text-base sm:text-lg font-bold shrink-0 ${
+              <Neuf v={Math.round(ra)}
+                className={
                   alkaliGoal.limitedByGrist
-                    ? "text-cave-50"
+                    ? ""
                     : ra >= raBand.min && ra <= raBand.max
-                      ? "text-hop"
-                      : "text-ebc-amber"
-                }`}
+                      ? "ew-dans"
+                      : "ew-hors"
+                }
               >
                 {Math.round(ra)}
-              </span>
+              </Neuf>
             </div>
 
+            {!alkaliGoal.limitedByGrist && (
+              <Jauge
+                lo={-150}
+                hi={150}
+                fenMin={raBand.min}
+                fenMax={raBand.max}
+                avant={ra}
+                apres={raApresAcide}
+                avantHors={ra < raBand.min || ra > raBand.max}
+                apresHors={placeAcide !== "juste"}
+                label={`Alcalinité résiduelle ${Math.round(ra)}, après l’acide ${Math.round(raApresAcide)}, repère ${formatDecimal(raBand.min)} à ${formatDecimal(raBand.max)} sur −150 à 150`}
+              />
+            )}
+
             {Math.round(raApresAcide) !== Math.round(ra) && (
-              <p className="text-2xs sm:text-sm leading-snug">
-                <span className="text-cave-400">Après l’acide : </span>
-                <span
-                  className={`reading font-semibold ${
-                    alkaliGoal.limitedByGrist
-                      ? "text-cave-50"
-                      : placeAcide === "juste"
-                        ? "text-hop"
-                        : "text-ebc-amber"
-                  }`}
-                >
-                  {Math.round(raApresAcide)} ppm
-                </span>
-                <span className="text-cave-400">
+              <>
+                <div className="ew-arr">
+                  <span>Après l’acide : </span>
+                  <Neuf v={Math.round(raApresAcide)}
+                    className={
+                      alkaliGoal.limitedByGrist
+                        ? ""
+                        : placeAcide === "juste"
+                          ? "ew-dans"
+                          : "ew-hors"
+                    }
+                  >
+                    {Math.round(raApresAcide)}
+                  </Neuf>
+                </div>
+                <p className="ew-note">
                   {alkaliGoal.limitedByGrist
-                    ? " — effet inclus dans l’estimation du pH ci-dessous."
+                    ? "— effet inclus dans l’estimation du pH ci-dessous."
+                    : acideProfil
+                      ? `— ${acideProfil}`
                     : placeAcide === "juste"
-                      ? " — dans le repère des malts."
+                      ? "— dans le repère des malts."
                       : placeAcide === "haut"
-                        ? " — au-dessus du repère des malts ; vérifier le pH au brassage."
-                        : " — sous le repère des malts ; vérifier le pH au brassage."}
-                </span>
-              </p>
+                        ? "— au-dessus du repère des malts ; vérifier le pH au brassage."
+                        : "— sous le repère des malts ; vérifier le pH au brassage."}
+                </p>
+              </>
             )}
 
             {phEstimate.known ? (
               <>
-                <div className="flex items-baseline justify-between gap-3 pt-1 border-t border-cave-800">
-                  <span className="text-2xs sm:text-sm text-cave-400">
+                <div className="ew-arr">
+                  <span>
                     pH estimé — cible {formatDecimal(MASH_PH_BAND.min)}–{formatDecimal(MASH_PH_BAND.max)}
                   </span>
-                  <span
-                    className={`reading text-sm sm:text-base font-bold shrink-0 ${
-                      phEstimate.position === 0 ? "text-hop" : "text-ebc-amber"
-                    }`}
-                  >
-                    {phEstimate.phPredicted.toFixed(2).replace('.', ',')}
-                    <span className="reading-unit">
-                      {" "}
-                      ±{formatDecimal(phEstimate.uncertainty)}
-                    </span>
+                  <span className="ew-v">
+                    <Neuf v={phEstimate.phPredicted.toFixed(2)} className={phEstimate.position === 0 ? "ew-dans" : "ew-hors"}>
+                      {phEstimate.phPredicted.toFixed(2).replace('.', ',')}
+                    </Neuf>{" "}
+                    <small>±{formatDecimal(phEstimate.uncertainty)}</small>
                   </span>
                 </div>
-                <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
+                <p className="ew-note">
                   Facture de grain seule : {phEstimate.phDistilled.toFixed(2).replace('.', ',')}{" "}
                   en eau distillée
                   {phEstimate.acidulatedPct > 0 && (
@@ -198,37 +231,34 @@ export function WaterAcidity({
                 </p>
 
                 {raBand.from === "facture" && (
-                  <p className="text-2xs sm:text-sm text-hop leading-snug">
+                  <p className="ew-note ew-dans">
                     {formatWaterMessage(raBand.hint)}
                   </p>
                 )}
               </>
             ) : (
-              <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
+              <p className="ew-note">
                 Le pH d’empâtage ne se prédit pas d’ici : renseigne la couleur
                 EBC des malts. Sans elle, la couleur de la bière donne seulement
                 un repère d’alcalinité.
               </p>
             )}
 
-            <div className="flex items-baseline justify-between gap-3 pt-1 border-t border-cave-800">
-              <span className="text-2xs sm:text-sm text-cave-400 min-w-0">
+            <div className="ew-arr">
+              <span>
                 {ACIDS[state.acidId].name} — à l’empâtage
               </span>
               {mashAcid.amount > 0 ? (
-                <span className="reading text-sm sm:text-base font-bold text-ebc-straw shrink-0">
-                  {formatDecimal(mashAcid.amount)}
-                  <span className="reading-unit"> {mashAcid.unit}</span>
+                <span className="ew-v">
+                  <Neuf v={mashAcid.amount}>{formatDecimal(mashAcid.amount)}</Neuf> <small>{mashAcid.unit}</small>
                 </span>
               ) : (
-                <span className="text-2xs sm:text-sm text-hop shrink-0">
-                  rien à corriger
-                </span>
+                <span className="ew-dans">rien à corriger</span>
               )}
             </div>
 
             {!hasSparge && (
-              <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
+              <p className="ew-note">
                 Aucun rinçage : toute l’eau passe par la maische, et tous les
                 sels avec elle.
               </p>
@@ -241,31 +271,40 @@ export function WaterAcidity({
             aria-labelledby={`${id}-tab-rincage`}
             tabIndex={0}
             hidden={activeTab !== "rincage"}
-            className="panel p-2.5 sm:p-3 space-y-1.5"
+            className="ew-ar"
           >
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-xs sm:text-sm text-cave-400">
-                Alcalinité restante après acide
-              </span>
-              <span
-                className={`reading text-base sm:text-lg font-bold shrink-0 ${
-                  spargeAlkalinity <= 25 ? "text-hop" : "text-cave-50"
-                }`}
-              >
-                {formatDecimal(spargeAlkalinity)}{" "}
-                <span className="reading-unit text-2xs">ppm CaCO₃</span>
+            <div className="ew-arr">
+              <span>Alcalinité restante après acide</span>
+              <span className="ew-v">
+                <Neuf v={spargeAlkalinity} className={spargeAlkalinity <= 25 ? "ew-dans" : ""}>{formatDecimal(spargeAlkalinity)}</Neuf>{" "}
+                <small>ppm CaCO₃</small>
               </span>
             </div>
-            <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
-              HCO₃ : {formatDecimal(Math.round(achievedSparge.hco3 * 10) / 10)}{" "}
-              →{" "}
-              {formatDecimal(
-                Math.round(treatment.treated.sparge.hco3 * 10) / 10,
-              )}{" "}
-              ppm. Cible pH {formatDecimal(spargeAcid.targetPh)}, à vérifier au pH-mètre.
-            </p>
+            <Jauge
+              lo={0}
+              hi={200}
+              fenMin={0}
+              fenMax={25}
+              avant={alkalinityAsCaCO3(achievedSparge.hco3)}
+              apres={spargeAlkalinity}
+              avantHors={alkalinityAsCaCO3(achievedSparge.hco3) > 25}
+              apresHors={spargeAlkalinity > 25}
+              label={`Alcalinité du rinçage ${Math.round(alkalinityAsCaCO3(achievedSparge.hco3))} avant l’acide, ${formatDecimal(spargeAlkalinity)} après, repère 0 à 25 sur 0 à 200 ppm CaCO₃`}
+            />
+            <div className="ew-arr">
+              <span>HCO₃ · avant → après l’acide</span>
+              <span className="ew-v">
+                <b>{formatDecimal(Math.round(achievedSparge.hco3 * 10) / 10)}</b>
+                {" "}→{" "}
+                <b>{formatDecimal(Math.round(treatment.treated.sparge.hco3 * 10) / 10)}</b>{" "}
+                <small>ppm</small>
+              </span>
+            </div>
+            <div className="ew-arr">
+              <span>Cible pH {formatDecimal(spargeAcid.targetPh)}, à vérifier au pH-mètre.</span>
+            </div>
             {spargeAcid.amount > 0 ? (
-              <p className="text-2xs sm:text-sm text-cave-200 leading-snug">
+              <p className="ew-note ew-n1">
                 Avec{" "}
                 <span className="reading text-water font-semibold">
                   {formatDecimal(spargeAcid.amount)} {spargeAcid.unit}
@@ -275,18 +314,18 @@ export function WaterAcidity({
                 {formatDecimal(state.spargeWaterL)} L de rinçage.
               </p>
             ) : spargeAcidCalcule.amount > 0 ? (
-              <p className="text-2xs sm:text-sm text-ebc-straw leading-snug">
+              <p className="ew-note ew-nat">
                 Dose retenue : 0 {spargeAcid.unit}. L’alcalinité reste à traiter
                 ; le calcul propose {formatDecimal(spargeAcidCalcule.amount)}{" "}
                 {spargeAcid.unit}.
               </p>
             ) : achievedSparge.hco3 > 0 ? (
-              <p className="text-2xs sm:text-sm text-cave-200 leading-snug">
+              <p className="ew-note ew-n1">
                 {formatWaterMessage(spargeAcid.warning ??
                   "Dose calculée nulle : vérifier le pH de cette eau avant tout ajout.")}
               </p>
             ) : (
-              <p className="text-2xs sm:text-sm text-hop leading-snug">
+              <p className="ew-note ew-dans">
                 Rien à acidifier : cette eau n’a plus d’alcalinité à
                 neutraliser.
               </p>

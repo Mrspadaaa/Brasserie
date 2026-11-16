@@ -18,6 +18,7 @@ import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
 import { GeminiUnusableOutputError, geminiAnswerText, unusableGeminiOutput } from './geminiResponse.js';
 import { sanitizeRecipeImport } from './recipeImportResult.js';
+import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from './rangerNote.js';
 import {
   AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS
 } from './aiTaskDeadline.js';
@@ -344,7 +345,10 @@ export const aiTask = onCall(
       catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
     }
 
-    const def =task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : TASKS[task];
+    // ks4 : la note du Carnet (rangerNote.ts) ; écrite et testée, pas déployée (accord attendu).
+    const rangerNote = (task as string) === 'rangerNote';
+    if (rangerNote && !contexteRangerNote(context)) throw new HttpsError('invalid-argument', 'Note ou date de saisie invalide.');
+    const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : rangerNote ? RANGER_NOTE : TASKS[task];
     if (!def) {
       throw new HttpsError('invalid-argument', `Tâche inconnue : ${task}`);
     }
@@ -418,6 +422,7 @@ export const aiTask = onCall(
           if (error) return { ok: false, error, model, tier, elapsedMs };
         }
         if (task === 'importRecipe') data = sanitizeRecipeImport(data);
+        if (rangerNote) data = assainirRangerNote(data);
         logger.info('Tâche IA exécutée', { task, tier, model, thinkingLevel, elapsedMs, email });
         return { ok: true, data, model, tier, elapsedMs };
       } catch (err: any) {

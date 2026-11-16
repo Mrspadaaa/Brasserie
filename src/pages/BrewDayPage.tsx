@@ -140,7 +140,6 @@ interface Props {
   onClose: () => void;
   onSave: (batch: Batch) => void;
   onFinish: (batch: Batch) => void;
-  onOpenHopV55?: (journal: BrewDayState) => void;
 }
 /** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
 const fr = (n: number | string) => String(n).replace('.', ',');
@@ -339,7 +338,7 @@ const AREA: Record<BrewArea, string> = {
   finish: 'Refroidir'
 };
 
-export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish, onOpenHopV55 }: Props) {
+export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish }: Props) {
   const recipe = useMemo(
     () =>
       batch.recipeSnapshot ?? ({ ...batch, ...ingredientsOf(batch) } as unknown as RecipeSnapshot),
@@ -1761,7 +1760,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   recipe={recipeForHopAnalysis(actualRecipe, state)}
                   batchId={batch.id}
                 />
-                {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
               </BrewAide>}
     </>
   );

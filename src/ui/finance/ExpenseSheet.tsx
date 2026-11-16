@@ -80,7 +80,7 @@ const MONTANT_MAX = BORNES_FINANCE.operationCents.valeur / 100;
 import { EntreeDocuments,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
 import { allegerPhoto,assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,PAGE_OCTETS_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
-export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
+export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;/** Le nom de l'appareil entretenu : « Pour quoi ? » s'ouvre sur « Entretien · nom » (c2, N2). */existingEquipmentName?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
   /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
   onOpenExpense?:(id:string)=>void }
 const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingredient',label:'Ingrédients'},{value:'packaging',label:'Emballages'},{value:'cleaning',label:'Nettoyage'},{value:'equipment',label:'Matériel durable'},{value:'maintenance',label:'Entretien / réparation'},{value:'service',label:'Service'},{value:'shipping',label:'Livraison'},{value:'discount',label:'Remise'},{value:'other',label:'Autre'}];
@@ -142,12 +142,13 @@ function NomArticle({index,line,neuf,prisParAutre,onNom,enLigne}:{index:number;l
   </div>;
 }
 
-export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense}:ExpenseSheetProps) {
+export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,existingEquipmentName,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense}:ExpenseSheetProps) {
   /* Le banc de développement : la prop n'existe qu'en développement (éliminée du bundle de production) ; elle remplace la lecture et l'enregistrement. */
   const apercu=import.meta.env.DEV?apercuProp:undefined;
   const [draft,setDraft]=useState<PurchaseDraft>(()=>{
     const plan=initialPlanId?FinanceService.getPlans().find(p=>p.id===initialPlanId):undefined;
-    return {submissionId:crypto.randomUUID(),date:swissToday(),vendor:plan?.vendor??'',invoiceNumber:'',description:plan?.title??'',planId:initialPlanId,category:initialIntent==='equipment'?'materiel':'brassage',lines:[{...newLine(initialIntent),description:plan?.title??'',...(existingEquipmentId?{equipmentAction:'existing' as const,equipmentRef:existingEquipmentId}: {})}],paymentStatus:'paid',paymentMethod:'bank',paymentDate:swissToday(),dueDate:'',sourceCurrency:'CHF'};
+    const entretien=initialIntent==='expense'&&existingEquipmentId?existingEquipmentName?.trim()||undefined:undefined;
+    return {submissionId:crypto.randomUUID(),date:swissToday(),vendor:plan?.vendor??'',invoiceNumber:'',description:entretien?'Entretien · '+entretien:plan?.title??'',...(entretien?{descriptionSource:'typed' as const}:{}),planId:initialPlanId,category:initialIntent==='equipment'||entretien?'materiel':'brassage',lines:[{...newLine(initialIntent),description:entretien?'Entretien · '+entretien:plan?.title??'',...(existingEquipmentId?{equipmentAction:'existing' as const,equipmentRef:existingEquipmentId,...(entretien?{kind:'maintenance' as const}:{})}: {})}],paymentStatus:'paid',paymentMethod:'bank',paymentDate:swissToday(),dueDate:'',sourceCurrency:'CHF'};
   });
   const [scan,setScan]=useState<ScanOutcome|null>(null),[busy,setBusy]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState(''),[attachment,setAttachment]=useState<File|null>(null),[pendingId,setPendingId]=useState<string|null>(null);
   const [showForm,setShowForm]=useState(!startWithScan);
@@ -752,8 +753,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const setTotal=(amount:number|undefined)=>{if(amount!==draft.amount)reviewed('amountTTC');setDraft(previous=>({...previous,amount,lines:previous.lines.length===1?[{...previous.lines[0],amount}]:previous.lines,duplicateConfirmed:false}));};
   const stockCount=draft.lines.filter(line=>line.stockAction!=='none').length;
   const equipmentCount=draft.lines.filter(line=>line.equipmentAction!=='none').length;
+  const ligneMateriel=draft.lines.find(line=>line.equipmentAction==='existing');
+  const nomMaterielUnique=ligneMateriel?stocks.equipment.find(item=>item.ref===ligneMateriel.equipmentRef)?.name:undefined;
   const proposedCount=draft.lines.filter(line=>line.stockAction==='existing'&&proposedStock.current.has(line.id)).length;
-  const linkedSummary=[stockCount?stockCount+' entrée'+(stockCount>1?'s':'')+' en stock':'',equipmentCount?equipmentCount+' fiche'+(equipmentCount>1?'s':'')+' de matériel':''].filter(Boolean).join(' · ');
+  const linkedSummary=[stockCount?stockCount+' entrée'+(stockCount>1?'s':'')+' en stock':'',equipmentCount===1&&nomMaterielUnique?'matériel · '+nomMaterielUnique:equipmentCount?equipmentCount+' fiche'+(equipmentCount>1?'s':'')+' de matériel':''].filter(Boolean).join(' · ');
   // La candidate la plus forte vient en tête (règle exacte, puis date la plus proche).
   const existing=duplicates[0],existingReasons=existing?purchaseDuplicateReasons(draftEff,existing):[],attachable=Boolean(existing&&purchaseProofAttachable(draft,existing));
   const sameChosen=Boolean(existing&&sameAs===`${existing.id}|${draft.documentHash??''}`);

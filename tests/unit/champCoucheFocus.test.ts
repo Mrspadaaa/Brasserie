@@ -24,9 +24,19 @@ describe('champ numérique couché : l’anneau de focus ne recouvre ni l’éti
     const classe = src.match(/<label className="flex items-center (gap-[\d.]+) min-w-0">/)?.[1] ?? '';
     expect(px(classe), `écart ${classe}`).toBeGreaterThan(portee);
   });
-  it('les champs Empâtage et Rinçage sont séparés d’au moins deux fois cette portée', () => {
-    const src = lire('src/ui/water/WaterVolumes.tsx');
-    const classe = src.match(/flex flex-wrap items-center (gap-x-\d+) gap-y-1\.5/)?.[1] ?? '';
-    expect(px(classe), `écart ${classe}`).toBeGreaterThanOrEqual(2 * portee);
+  // Eau w1b (15.11) : les deux champs vivent dans deux cuves côte à côte (`.ew-cuves`, eau.css) ; l'écart entre cuves remplace l'ancien `gap-x-5`.
+  it('les cuves Empâtage et Rinçage, qui portent chacune son champ, sont séparées d’au moins deux fois cette portée', () => {
+    const tsx = lire('src/ui/water/WaterVolumes.tsx');
+    expect(tsx).toMatch(/<section className="ew-cuves"[^>]*>[\s\S]*aria-label="Cuve d’empâtage"[\s\S]*aria-label="Cuve de rinçage"/);
+    expect(tsx).toContain('id="wz-mash-water"');
+    const eau = lire('src/ui/water/eau.css');
+    const ecart = Number(eau.match(/\.ew-cuves\s*\{[^}]*?\bgap:\s*(\d+)px/)?.[1]);
+    expect(ecart, `écart entre cuves ${ecart}`).toBeGreaterThanOrEqual(2 * portee);
+  });
+  it('le champ de volume de l’onglet Eau ne trace pas d’anneau qui recouvrirait le « L » : le focus est un trait plus épais sous le champ', () => {
+    const eau = lire('src/ui/water/eau.css');
+    const regle = eau.match(/\.ew-in\.ew-in:focus\s*\{([^}]*)\}/)?.[1] ?? '';
+    expect(regle).toMatch(/outline:\s*none/);
+    expect(regle).toMatch(/border-bottom:\s*2px solid/);
   });
 });

@@ -33,6 +33,17 @@ import { ViewNavigation } from '../ui/ViewNavigation';
 import { useMobileLayout } from '../ui/useViewport';
 import { ContactsView, type NouveauContact } from '../ui/atelier/ContactsView';
 import { TodoTimeline } from '../ui/atelier/TodoTimeline';
+import { NoteCarnet, type FiltreCarnet } from '../ui/atelier/NoteCarnet';
+import { modeRangerNote } from '../config/rangerNoteIA';
+import { TarifsFrise } from '../ui/atelier/TarifsFrise';
+import { FileText, Tag, Wrench } from 'lucide-react';
+
+/** ks4 : la rangée Matériel · Carnet · Tarifs ; Bières, Contacts et À faire sont les filtres du Carnet. */
+type Onglet = 'materiel' | 'carnet' | 'tarifs';
+const VERS_ONGLET: Record<CreativeItem['type'], [Onglet, FiltreCarnet]> = {
+  equipment: ['materiel', 'tout'], 'pricing-test': ['tarifs', 'tout'], 'recipe-idea': ['carnet', 'bieres'], prospect: ['carnet', 'contacts'], event: ['carnet', 'afaire']
+};
+const SECTION_DU_FILTRE: Record<FiltreCarnet, CreativeItem['type'] | null> = { tout: null, bieres: 'recipe-idea', contacts: 'prospect', afaire: 'event' };
 
 export interface CreativeLabSectionRequest {
   section: CreativeItem['type'];
@@ -63,11 +74,21 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   onOpenSectionRequestHandled
 }) => {
   const mobile = useMobileLayout();
-  const [activeSection, setActiveSection] = useState<CreativeItem['type']>(() => openSectionRequest?.section ?? 'equipment');
+  const [onglet, setOnglet] = useState<Onglet>(() => VERS_ONGLET[openSectionRequest?.section ?? 'equipment'][0]);
+  const [filtre, setFiltre] = useState<FiltreCarnet>(() => VERS_ONGLET[openSectionRequest?.section ?? 'equipment'][1]);
+  const [focusCarnet, setFocusCarnet] = useState(0);
+  /** La rubrique de l'ancien code (ajout, assistant) ; `null` : le Carnet sous « Tout ». */
+  const section: CreativeItem['type'] | null = onglet === 'materiel' ? 'equipment' : onglet === 'tarifs' ? 'pricing-test' : SECTION_DU_FILTRE[filtre];
+  const activeSection: CreativeItem['type'] = section ?? 'recipe-idea';
+  const setActiveSection = (s: CreativeItem['type']) => { const [o, f] = VERS_ONGLET[s]; setOnglet(o); setFiltre(f); };
   const handledSectionRequest = React.useRef<CreativeLabSectionRequest | null>(null);
   const [assistantOpen,setAssistantOpen] = useState(false);
 
   const items = useStorageValue(StorageService.getCreativeItems);
+  /** Carnet (ks4) : Tarifs pour le prix deviné, bières connues (recettes et tarifs) pour la case Bière. */
+  const tarifs = useStorageValue(StorageService.getTarifs);
+  const recettes = useStorageValue(StorageService.getRecipes);
+  const bieres = React.useMemo(() => [...new Set([...recettes.map((r) => r.name), ...tarifs.map((t) => t.biere ?? '')].map((b) => b?.trim()).filter((b): b is string => Boolean(b)))].sort((a, b) => a.localeCompare(b, 'fr')), [recettes, tarifs]);
 
   React.useEffect(() => {
     if (!openSectionRequest) return;
@@ -89,7 +110,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   /** Le bouton d'action ouvre le formulaire d'ajout de la section courante. */
   React.useEffect(() => {
-    if (createRequest?.kind === 'newIdea') { if(activeSection==='equipment')setEquipmentCreateRequest(createRequest);else setIsAdding(true); onCreateRequestHandled?.(); }
+    if (createRequest?.kind === 'newIdea') { if(activeSection==='equipment')setEquipmentCreateRequest(createRequest);else if(section===null)setFocusCarnet(Date.now());else setIsAdding(true); onCreateRequestHandled?.(); }
   }, [createRequest?.at]);
 
 
@@ -214,18 +235,9 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     return true;
   };
 
-  return (
-    <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
-      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
-      <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Idées de tarif',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
-      <div className="creative-nav" role="group" aria-label="Mon atelier">
-        {([['equipment','Matériel'],['recipe-idea','Bières'],['pricing-test','Tarifs'],['prospect','Contacts'],['event','À faire']] as const).map(([key,label])=><button key={key} aria-pressed={activeSection===key} onClick={()=>setActiveSection(key)}>{label}</button>)}
-      </div>
-      </ViewNavigation>
-      {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
-
-      {/* 4. SECTION 2: RECIPE STUDIO & PASSERELLE EN 1 CLIC */}
-      {activeSection === 'recipe-idea' && (
+  const assistantBouton = <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>;
+  /** Bières (filtre du Carnet) : la liste actuelle, telle qu'en ligne (kb3 sera porté à part). */
+  const vueBieres = (
         <div className="space-y-3">
           <button
             onClick={() => setIsAdding(true)}
@@ -281,16 +293,27 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
             ))}
           </div>
         </div>
-      )}
+  );
 
-      {activeSection==='pricing-test'&&<><p className="finance-muted">Pour fixer un prix : Clients › Prix (le coût y vient du brassin). Ici, tes idées de tarif.</p><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
+  return (
+    <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
+      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
+      <div className="nc-seg" role="group" aria-label="Mon atelier">
+        {([['materiel', 'Matériel', Wrench], ['carnet', 'Carnet', FileText], ['tarifs', 'Tarifs', Tag]] as const).map(([cle, nom, Icone]) => <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => setOnglet(cle)}><Icone size={18} aria-hidden="true" />{nom}</button>)}
+      </div>
+      {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
 
-      {activeSection === 'prospect' && <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />}
-      {activeSection === 'event' && <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} />}
+      {/* kxc (15.11) : la frise des prix pratiqués ; « + Noter » garde une idée de tarif, les idées gardées et l'assistant sous la liste. */}
+      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>setIsAdding(true)} apres={<>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}{assistantBouton}</>}/>}
+
+      {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={setFiltre} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
+        vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
+        assistant={assistantBouton} onAjouter={(i) => StorageService.addCreativeItem(i)} onMaj={(i) => StorageService.updateCreativeItem(i)} onRetirer={handleDelete}
+        onEdit={setEditing} onConvert={handleConvertToClient} focusDemande={focusCarnet} />}
 
       {/* Form modal when adding an item */}
-      <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>
-      {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
+      {onglet === 'materiel' && assistantBouton}
+      {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={section===null?'Aide-moi à faire le point sur mes notes, mes idées de bières, mes contacts et mes tâches dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.':activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
       {isAdding && activeSection !== 'prospect' && activeSection !== 'event' && (
         <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
           <div className="flex justify-between items-center px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
