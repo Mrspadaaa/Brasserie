@@ -25,3 +25,8 @@ Pas de session neuve possible, car l'app la refuse en Remote Control : c'est le 
 
 ## Suite
 Classement par une critique Opus (5 candidates et des greffes), passe 2, revues (brasseur, UX/UI, parcours, navigation), puis une page avec Choisir, Copier et les propositions côte à côte.
+
+## Pages
+| Sujet | Version | Adresse | Source |
+|---|---|---|---|
+| Calendrier global | passe 2 · 16.11 | https://claude.ai/artifact/KkTtnqzuRef5pXotpfPjE4 | `work/missions/2026-11-16-calendrier/page/index.html` |
