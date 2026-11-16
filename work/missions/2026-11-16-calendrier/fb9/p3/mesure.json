@@ -1,0 +1,162 @@
+[
+ {
+  "tache": "T1 voir ce que je peux me permettre",
+  "touchers": 0,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "chiffre 166 visible au repos",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T2 ajouter un achat avec budget sur des semaines",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "chose posée (18->19), 166->-374, 166 → −374 · Malt groupé 2 posé · S48 → S51 · besoins › Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T3 ajouter une activité sans budget avec jours",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "chose posée (18->19), 166 = · Nettoyer les cuves posé · S47 · 1 j Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T4 changer la durée",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "a-04 327:60 -> 132:255",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T5 changer budget ou jours",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "budget e-01 +1 180 -> +1 400, 166 -> 386",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T5b changer les jours (activité)",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "t-01 67:320 -> 67:320 Ranger la réserve · 2 j Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T6 déplacer",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "b-01 2:255 -> 132:255 166 = · Blonde · S47 → S49 · étapes suivent Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T7 supprimer",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "a-04 retiré, 166 → 706 · Malt groupé retiré Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T8 filtrer par type",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "filtre achat, choses 18->3",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T9 trier",
+  "touchers": 1,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "tri « Urgent » -> « Prochain »",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T10 épingler ou mettre en favori",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "épinglés : e-01 ★ Marché de Noël épinglé Annuler",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T11 retrouver une chose épinglée",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "a-02 atteint et visible",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T12 brassin, facture, fût du reste de l app",
+  "touchers": 0,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "voies : brassage fut charge achat renovation vente activite idee evenement | genres : brassage retourfut facture charge stock achat panne entretien livraison vente activite atelier idee evenement | maintenant : k-07 x-01 b-01:2",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T13a détail facture (Maintenant) puis retour",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "fiche : « Facture Brewferm −86 Finances 13 nov. · S46 · échue depuis 3 j Payer 86 » puis fermée",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T13b détail brassin (frise) puis retour",
+  "touchers": 2,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "fiche : « Blonde d’automne −148 Brassins S47 → S50 −130 −148 −160 Étapes 0/5 · Brassage · cuve 2 Rec » puis fermée",
+  "clavier": false,
+  "nombre": 0
+ },
+ {
+  "tache": "T13c détail dans le module de l app puis retour calendrier",
+  "touchers": 4,
+  "frappes": 0,
+  "input": 0,
+  "reussi": true,
+  "effet": "module ouvert puis retour calendrier, fiche fermée",
+  "clavier": false,
+  "nombre": 0
+ }
+]

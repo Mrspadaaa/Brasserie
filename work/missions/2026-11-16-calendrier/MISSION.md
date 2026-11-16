@@ -101,3 +101,11 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 2. Une boucle à 9,5 avec CRITERES-10.md.
 3. Ensuite seulement, les calendriers de section (Finances d'abord) sur cette base, en reprenant PLAN.md de vues-calendrier.
 - Les maquettes finance m1 à m3 du 16.11 ne servent que d'exploration du contenu : ne pas les publier comme choix final.
+
+## Méthode changée (16.11) : calendrier-85
+- fb9 est arrêté après p3, qui tournait à vide : p1 à 6,9, p2 à 7,3, p3 à 7,2, toutes sous fb (8). p4 est resté inachevé.
+- Workflow `calendrier-85`, task wv5b7urpi, run wf_41571955-632. Sortie dans `c85/` :
+  - le repos de fb rendu lisible seul (r1 à r3, avec le paysage) ;
+  - puis quatre lots ajoutés sous garde de lisibilité : gestes, ajout, trier, sources ;
+  - puis trois juges, avec 8,5 pour cible.
+- Livrables : page4/ et jouable/. La boucle à 9,5 est abandonnée, la cible devient 8,5.
