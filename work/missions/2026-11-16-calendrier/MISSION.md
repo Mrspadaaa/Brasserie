@@ -110,3 +110,13 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
   - puis quatre lots ajoutés sous garde de lisibilité : gestes, ajout, trier, sources ;
   - puis trois juges, avec 8,5 pour cible.
 - Livrables : page4/ et jouable/. La boucle à 9,5 est abandonnée, la cible devient 8,5.
+
+## Carnet après le refus de p5 (16.11)
+- p5 est refusé (« je comprends pas trop P5 », « pas fini »).
+- Workflow `carnet-retouches`, task wv22laf3g, run wf_dfac1257-090. Sortie : `carnet-decision/r2/` (ra, rc, rac), puis page3.
+- Retouches de da et dc, sans fusion :
+  - le champ de note de da reste visible au-dessus du clavier ;
+  - les écartés restent visibles ;
+  - rien n'est retiré.
+- Au retour : publier page3, sans note chiffrée annoncée.
+- Calendrier : calendrier-85 (task wv5b7urpi) continue.
