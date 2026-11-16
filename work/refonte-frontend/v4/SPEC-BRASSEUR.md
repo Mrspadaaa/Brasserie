@@ -1890,3 +1890,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : la base reste g-d1, compacte et lisible d'un coup d'œil. cd1 apporte de bonnes idées, mais il est trop fouillis, surtout l'en-tête. Suite : on ajoute à g-d1 les idées de cd1 une à une, en paliers montrés avant/après, sans jamais agrandir l'en-tête de g-d1. Il choisit celles qu'il garde.)
 - **16.11**, mot pour mot, sur la page cd1 : « Beaucoup mieux la vue paysage même si l'entête reste trop lourde (Paysage cd1) »
   (lu : pour le paysage, la base est cd1-paysage (`cd/cd1-paysage.html`), bien meilleure, mais son en-tête est trop lourd et doit s'alléger, comme en portrait. Prochaine étape paysage : cd1-paysage avec un en-tête allégé, montré avant/après.)
+- **16.11**, mot pour mot : « Je pense que l'entête peut encore être amélioré !!! »
+  (lu : l'en-tête est le prochain sujet, en portrait comme en paysage. Lot d'en-têtes seuls, avec le reste figé : la frise de g-d1 en portrait, le reste de cd1-paysage en paysage. Il doit tenir le même contenu (montant à dépenser, au plus serré, en retard, période, courbe et sa fenêtre) en plus léger et plus clair.)
