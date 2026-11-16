@@ -110,3 +110,11 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
 - Lien avec le calendrier : une idée avec une échéance ou un budget apparaît dans le calendrier global ; une baisse de prix signalée par la veille s'y affiche aussi.
 - Propositions acceptées en un toucher : les caractéristiques de la catégorie et les fournisseurs à comparer.
 - Essais sur son téléphone : le prototype retenu doit pouvoir être joué seul, avec des tâches chronométrées.
+
+## Tout est lié (16.11, « Dans l'application tout a un lien avec tout... »)
+- Le carnet n'est pas une île. Liens à montrer dans le prototype, simulés :
+  - **Calendrier** : un + dans la bonne section du calendrier crée une idée qui arrive dans le carnet ; l'échéance et le budget du carnet apparaissent sur la frise.
+  - **Compta** : le budget prévu passe dans la prévision de caisse. Le choix fait devient un besoin d'achat, puis le devis et la facture se rattachent au carnet, et le prix payé se compare au prix noté.
+  - **Fournisseurs** : un fournisseur retenu est le même que celui de la compta.
+  - **Atelier et matériel** : l'article acheté devient du matériel, avec son entretien.
+- La carte complète des liens sera dans `work/missions/2026-11-16-liens-app/LIENS-APP.md`, dès qu'elle existe ; la lire à chaque passe.

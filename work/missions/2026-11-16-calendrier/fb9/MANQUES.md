@@ -82,3 +82,8 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 ## K12 Lisibilité visuelle (16.11, à propos du carnet, valable ici aussi : « difficile à lire, voir... »)
 - Mesure par script, sur chaque écran au repos à 390 : au plus 40 mots visibles hors étiquettes de la frise, aucun texte sous 14 px, contraste d'au moins 4,5:1, un seul titre dominant.
 - Le juge lisibilité donne 9 au moins sur captures ouvertes.
+
+## Tout est lié (16.11)
+- Exemple du brasseur : un + dans la section voulue du calendrier ajoute une nouvelle idée, qui arrive directement dans le carnet.
+- Règle générale : dans chaque section de la frise, le + crée la chose dans son module (idée → carnet, achat → besoins, brassin → brassins, facture → compta) sans quitter le calendrier.
+- La carte des liens sera dans `work/missions/2026-11-16-liens-app/LIENS-APP.md`, dès qu'elle existe ; la lire à chaque passe.
