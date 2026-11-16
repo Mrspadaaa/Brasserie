@@ -143,3 +143,7 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
 
 ## Paysage mobile (16.11, « Il faut vraiment une version horizontal pour mobile btw »)
 - La comparaison et la liste des carnets ont une vraie vue paysage à 844 × 390. La comparaison y montre au moins 5 articles côte à côte.
+
+## Ses choix sur les liens (16.11)
+- L1 : une idée créée depuis le calendrier arrive au carnet, sans rien ajouter à l'écran du calendrier.
+- L9 : un achat choisi au carnet, une fois reçu, entre dans la table des consommables (geste → décompte).

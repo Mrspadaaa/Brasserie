@@ -126,3 +126,8 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - Au moins 5 rangées de la frise et 12 semaines visibles sans défilement. L'en-tête et la caisse tiennent sur au plus 25 % de la hauteur, par exemple en colonne latérale.
 - Les gestes K11 marchent. Pas de 9/10 sans K13.
 - La mesure joue la rotation (390 × 844 vers 844 × 390) et garde la position, le thème et les filtres.
+
+## Ses choix sur les liens (16.11)
+- L1 (le + vers le carnet) est gardé, mais **sans intrusion** (LIEN-PLACE) : aucune rangée ni case de plus. Il passe par le + volant ou par un appui long sur une semaine, et l'idée reste un point discret.
+- L18 est retiré : l'entretien du matériel ne va pas sur la frise.
+- L9 est prioritaire : chaque geste décompte ce qu'il use, avec un bandeau et Annuler.

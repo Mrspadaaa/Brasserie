@@ -137,3 +137,10 @@ Transversaux : L29 « lié à », L30 recherche, L31 À venir, L32 partage entra
 - Son accord, groupé : L17 (appel externe), migrations des noms vers les ids (L7, L16, L22), conversion L34.
 - En réserve, un seul regard : conditionnement en bouteilles ou canettes (B ; il travaille sur l'embouteillage, à reproposer d'abord), cuves libres au calendrier, rétroplanning d'un événement, factures clients, jour J vers d1b et p2a, fûts propres suffisants, ventes vers produits finis, consigne des fûts, stock sous le seuil daté, recette ↔ stock réservé, valeur du stock, + des Finances, annulation d'une transition.
 - À montrer en mini maquettes, artefact neuf, sur fb tel que choisi (règle n° 1, D123) : la case jour × rangée qui s'ouvre, les pastilles « lié à », le jalon de L4, le bandeau Annuler de L9. Rien ici ne remplace une maquette choisie.
+
+## Ses choix (16.11)
+- Gardés : L5, L1, L11, L3+L4, L12, L7+L22, L6, L9, L29, L33, L16, L36, L25.
+- Retiré : L18, l'entretien du matériel daté au calendrier.
+- Sans réponse : L14.
+- **L1, à reprendre sans intrusion (LIENS-PLACE)** : pas de rangée « Idées » ni de case dédiée. L'idée datée se crée par le + volant (« Idée » dans le menu de la frise) ou par un appui long sur une semaine. Elle apparaît ensuite en point discret sur la frise.
+- **L9, prioritaire, à généraliser partout** : chaque geste qui consomme décompte ses consommables (laver un fût, brasser, embouteiller, nettoyer une cuve, conditionner…). Le décompte suit une table réglée une fois par geste, avec un bandeau d'effet et Annuler. C'est une règle de l'app, pas un écran.
