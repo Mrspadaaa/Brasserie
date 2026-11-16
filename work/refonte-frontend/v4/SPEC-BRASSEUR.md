@@ -1797,3 +1797,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : fb est choisi. Viser 9/10 ou plus : c'est le cœur de l'app, où toutes les sources datées s'intègrent (LIENS.md). Il faut des filtres, un tri, épingler ou mettre en favori. Combler les points importants qui manquent. Rendre l'écran hyper lisible et réduire au minimum les actions : le clavier compte comme un coût, d'où les puces, les valeurs proposées et l'IA.)
 - **16.11**, mot pour mot : « Est-ce que il y aurait d'autres levier pour encore améliorer, facilité tout ça ? »
   (lu : il demande d'autres leviers pour le calendrier et le carnet. Proposés : partager un lien depuis le navigateur vers l'app, raccourcis sur l'écran d'accueil, la voix au +, des gestes directs sur la frise, une tâche ou une date proposée et acceptée en un toucher, le lien entre carnet et calendrier, des essais chronométrés sur son téléphone.)
+- **16.11**, mot pour mot : « Tous »
+  (lu : il retient les sept leviers ; ils sont ajoutés aux deux chantiers, calendrier et carnet.)

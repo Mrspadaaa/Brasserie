@@ -49,3 +49,6 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
   - Constats Finances 17, 18, 22, 25, 26, 28 à 30 non rejoués en ligne.
   - Données ZZ non supprimables en ligne : idée de tarif, matériel, prévision, deux recettes ZZ.
   - Quota hebdomadaire autour de 91 % au matin.
+
+## Leviers (16.11, « Tous »)
+Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE.md. Au retour des workflows, le pilote vérifie que chaque levier est traité ; sinon, il relance une passe. L7 : publier le prototype final jouable, avec 5 tâches chronométrées sur son téléphone.
