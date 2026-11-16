@@ -21,3 +21,7 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 - Calendrier : « Le critique tranche, j'ajuste » : enchaîner page15 → assemblage (corps gi2/r2-c + en-tête retenue + gestes retenus) → critique → correction → page du matin.
 - Déploiement : « Oui, si tout est vert » : seulement les parties portées, rejouées en ligne sur ZZ TEST puis retirées.
 - Carnet : « Assembler étape par étape » : le critique choisit ra ou p5f par étape, scénario rejoué de zéro.
+
+## Ports (lancés 16.11 soir)
+- Les cinq : onglet, fournisseur, suppression, lot, pastille. Worktree ../ports-nuit, branche claude/ports-nuit-1611 depuis en-ligne/2026-11-16-brassins-apresmidi. Workflow wi5w4ykc0 (wf_54c86dfd-f79) : ports en série, critique vision, correction + checklist DEPLOY.md.
+- Au retour PRET A DEPLOYER : déployer l'hébergement seul depuis ../ports-nuit (pas npm run deploy), tag en-ligne/2026-11-17-ports-nuit, jouer en ligne sur ZZ TEST puis retirer.
