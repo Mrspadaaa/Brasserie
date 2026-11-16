@@ -34,6 +34,8 @@ export interface LedgerDuplicate {
   key: string;
   /** « commande » : de petites lignes anciennes d'une même commande déjà reprise par une facture saisie. */
   kind: 'facture' | 'reference' | 'commande';
+  /** m1do-a : la raison en tête du cadre (« Même référence QR ») et son repère à droite (« finit par 04471 »). */
+  titre: string; detail: string;
 }
 
 const isExpense = (tx: FinanceTransaction): boolean => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.sourceDocumentType !== 'credit_note';
@@ -70,6 +72,12 @@ export function ledgerDuplicates(transactions: FinanceTransaction[]): LedgerDupl
     const old = expenses.filter(tx => !tx.finance?.sourceOrderNumber && !invoices.includes(tx) && new RegExp(`(^|\\D)${number}(\\D|$)`).test(tx.description ?? ''));
     if (old.length) add(`commande|${number}`, `Même commande ${number} : ${old.length} ${old.length > 1 ? 'petites lignes anciennes' : 'petite ligne ancienne'} (libellé « Cmd ${number} ») et ${invoices.length > 1 ? 'les factures saisies' : 'la facture saisie'} qui la reprend`, ...invoices.map(tx => tx.id), ...old.map(tx => tx.id));
   }
-  return [...groups.entries()].map(([key, { ids, reason }]) => ({ ids: [...ids], reason, key, kind: key.split('|')[0] as LedgerDuplicate['kind'] }));
+  return [...groups.entries()].map(([key, { ids, reason }]) => {
+    const [kind, repere = ''] = key.split('|');
+    const titre = kind === 'facture' ? 'Même facture' : kind === 'reference' ? 'Même référence QR' : 'Même commande';
+    const premiere = groups.get(key) && expenses.find(tx => tx.id === [...ids][0]);
+    const detail = kind === 'reference' ? `finit par ${repere.slice(-5)}` : kind === 'commande' ? `n° ${repere}` : `n° ${(premiere?.finance?.invoiceNumber ?? '').trim()}`;
+    return { ids: [...ids], reason, key, kind: kind as LedgerDuplicate['kind'], titre, detail };
+  });
 }
 export const ledgerDuplicateIds = (transactions: FinanceTransaction[]): Set<string> => new Set(ledgerDuplicates(transactions).flatMap(group => group.ids));

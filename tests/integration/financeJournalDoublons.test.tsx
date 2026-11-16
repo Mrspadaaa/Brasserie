@@ -33,17 +33,19 @@ describe('Journal : les doublons déjà inscrits sont signalés', () => {
     expect(puce.textContent).toMatch(/27/);
     expect(screen.queryByTestId('journal-duplicates')).toBeNull();
     fireEvent.click(puce);
-    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/27 écritures possiblement en double/);
+    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/27 pièces peut-être en double/);
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Rien n’est supprimé/);
     expect(screen.getAllByTestId('ligne')).toHaveLength(27);
-    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Même commande 686863/);
+    // m1do-a : la raison en tête du cadre (« Même commande · n° 686863 »), un seul cadre pour les 27 lignes.
+    expect(screen.getByRole('region', { name: /Même commande, n° 686863 · 27 écritures/ })).toBeInTheDocument();
+    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Même commande.*n° 686863/);
   });
-  it('RF-3 : le texte dit ce que c’est (petites lignes anciennes d’une commande) et « Ce n’est pas un doublon » écarte l’avertissement, durablement et sans toucher aux écritures', () => {
+  it('RF-3 : le cadre dit la raison (m1do-a : « Même commande · n° 686863 », à la place de l’ancien paragraphe) et « Ce n’est pas un doublon » écarte l’avertissement, durablement et sans toucher aux écritures', () => {
     window.localStorage.removeItem('laffinee.doublons-ecartes');
     const livre = [facture(), ...Array.from({ length: 26 }, (_, i) => ancien(i + 1))];
     const { unmount } = rendre(livre);
     fireEvent.click(screen.getByRole('button', { name: /^Doublons/ }));
-    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/26 petites lignes anciennes \(libellé « Cmd 686863 »\) et la facture saisie qui la reprend/);
+    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Même commande.*n° 686863/);
     fireEvent.click(screen.getByRole('button', { name: 'Ce n’est pas un doublon' }));
     expect(screen.queryByTestId('journal-duplicates')).toBeNull();
     expect(screen.getByRole('button', { name: /^Doublons/ })).toBeDisabled();

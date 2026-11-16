@@ -73,46 +73,50 @@ afterEach(() => {
   brewerJobs.stop();
 });
 describe('Conversation dans la recette / le brassin', () => {
-  it('prépare une analyse financière datée sans consommer de génération à l’ouverture', async () => {
+  it('envoie l’analyse financière datée choisie, sans la modifier ni consommer de génération avant l’envoi', async () => {
     vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
     render(<FinanceAssistant view="costs" month="2026-08" allDates={false} year={2025} horizon={90} />);
     fireEvent.click(screen.getByRole('button', { name: /Comprendre mes dépenses/ }));
+    expect(api.submit).not.toHaveBeenCalled(); // la puce ouvre la feuille : rien n'est envoyé
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c + autoSend : « Envoyer » ouvre le chat et envoie la question
     await waitFor(() => expect(api.history).toHaveBeenCalledWith({ kind: 'app', id: 'finances' }));
-    await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('2026-08');
-    expect(screen.getByText(/L’IA reçoit un résumé de tes comptes/)).toBeVisible();
-    expect(api.submit).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Compare acheter, réparer ou attendre');
-    expect(api.submit).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare une nouvelle pompe à 300 CHF avec une réparation à 80 CHF.' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
     expect(vi.mocked(api.submit).mock.calls[0][0]).toMatchObject({
       scope: { kind: 'app', id: 'finances' },
-      question: 'Compare une nouvelle pompe à 300 CHF avec une réparation à 80 CHF.',
-      editableTargets: []
+      phase: 'Finances de la brasserie',
+      editableTargets: [],
+      question: expect.stringContaining('2026-08')
     });
+    expect(vi.mocked(api.submit).mock.calls[0][0].question).toContain('Analyse mes dépenses');
+    expect(screen.getByRole('textbox')).toHaveValue('');
   });
 
-  it('porte l’exercice choisi dans le brouillon annuel et exige un envoi explicite', async () => {
+  it('porte l’exercice choisi dans la question annuelle, envoyée par « Envoyer »', async () => {
+    vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
     render(<FinanceAssistant view="annual" month="2026-09" allDates={false} year={2024} horizon={30} />);
     fireEvent.click(screen.getByRole('button', { name: /Préparer l’année 2024/ }));
-    await waitFor(() => expect(api.history).toHaveBeenCalled());
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('dossier annuel 2024');
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Si cette année n’est pas couverte');
     expect(api.submit).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c + autoSend
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    const question = vi.mocked(api.submit).mock.calls[0][0].question;
+    expect(question).toContain('dossier annuel 2024');
+    expect(question).toContain('Si cette année n’est pas couverte');
+    expect(vi.mocked(api.submit).mock.calls[0][0].scope).toEqual({ kind: 'app', id: 'finances' });
   });
 
   it('garde les questions financières disponibles après les premiers échanges', async () => {
     vi.mocked(api.history).mockResolvedValue([turn('Analyse précédente')]);
+    vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
     render(<FinanceAssistant view="forecast" month="2026-09" allDates={false} year={2026} horizon={30} />);
     fireEvent.click(screen.getByRole('button', { name: /Prévoir mes prochains paiements/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' })); // m4ia-c + autoSend : la question de la vue part
     await screen.findByText('Analyse précédente');
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(api.submit).mock.calls[0][0].question).toContain('Explique ma prévision sur 30 jours');
     fireEvent.click(screen.getByText('Autres questions'));
     fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('achat de matériel');
-    expect(api.submit).not.toHaveBeenCalled();
+    expect(api.submit).toHaveBeenCalledTimes(1); // le choix d'une autre question ne l'envoie pas
   });
 
   it('ne transforme pas une réponse récupérée en erreur si le premier envoi expire ensuite', async () => {

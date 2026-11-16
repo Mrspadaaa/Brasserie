@@ -1,0 +1,15 @@
+fi : ok
+do : bouton désactivé (Doublons, attribut disabled) ; écran capturé avec le bouton visible
+ar : ar2 : « Gérer les archives » absent
+ap : ok
+fo : ok (rangée « Achats divers · Quincaillerie », toucher)
+pa : ECHEC : aucune rangée « à payer » en novembre (« à payer » absent) ; toutes les rangées sont « ✓ payé »
+mo : ok (« + pièce » = Joindre une pièce, première rangée)
+pr : ECHEC : aucun bouton « + » ni « prévision » dans Prévisions (« + » absent)
+pm : ok (lecture provisoire : ligne « Fournisseurs, matériel » de Synthèse ; projet matériel non confirmé)
+im : ok (« Ajouter un matériel »)
+bb : ok (« + Estimer un brassin » : choix du brassin, budget non ouvert)
+pf : ok (« Solde et paramètres financiers », En caisse)
+ia : ok (Comprendre mes dépenses, Compagnon brasseur)
+erreurs de page : 0 ; requêtes bloquées : 29
+captures : 13 png

@@ -1,6 +1,6 @@
 import type { Transaction } from '../../types';
 import type { FinancialPayment } from './types';
-import { isActiveTransaction, isoDate, paidForTransaction, transactionAmount, transactionDirection, transactionKind, validPayment } from './ledger';
+import { isActiveTransaction, isoDate, paidForTransaction, transactionAmount, transactionDirection, transactionKind, validPayment, ventilationAvoir } from './ledger';
 
 /**
  * Corriger le montant d'une pièce, payée ou non (maquette m5mo-c, décision du pilote du 15.11).
@@ -13,15 +13,27 @@ import { isActiveTransaction, isoDate, paidForTransaction, transactionAmount, tr
  * Centimes entiers partout ; aucune horloge, aucun identifiant ici : l'écran les fournit en exécutant le plan.
  */
 
-export type ChoixPaiement = 'suit' | 'reste';
+/**
+ * `suit` / `reste` : une pièce soldée dont le montant change. `avoir` (FN-10, jeu en ligne du 15.11) : sous le payé seulement, « j'ai bien payé le montant d'avant » :
+ * le paiement redescend au nouveau montant (les règles interdisent un réglé au-dessus du montant) et l'excédent devient un avoir à recevoir de l'autre partie.
+ */
+export type ChoixPaiement = 'suit' | 'reste' | 'avoir';
 
 export type EtapeCorrection =
   | { type: 'contre'; paiementId: string }
   | { type: 'montant'; cents: number }
   /** `date` : celle du dernier paiement inversé pour une baisse (une correction n'est pas un nouveau virement) ; absente pour une hausse (le complément se paie aujourd'hui). */
-  | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string };
+  | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string }
+  /** L'excédent versé, à recevoir (`direction: 'in'` pour une dépense) : un avoir `refund` lié à la pièce, par le mécanisme d'avoir existant, non encore encaissé. */
+  | { type: 'avoir'; cents: number; direction: 'in' | 'out' };
 
-export interface EffetCorrection { montantCents: number; payeCents: number; resteCents: number }
+export interface EffetCorrection { montantCents: number; payeCents: number; resteCents: number; avoirCents: number }
+
+/** Un apport ou un prélèvement privé n'est jamais une créance (FN-12) : son paiement suit toujours le montant, jamais « Reste à payer », jamais d'avoir. */
+export function estMouvementPrive(piece: Transaction): boolean {
+  const kind = transactionKind(piece);
+  return kind === 'contribution' || kind === 'withdrawal';
+}
 
 /** Les paiements réels de la pièce encore en vigueur : ni contre-paiement, ni paiement déjà annulé, du sens de la pièce. */
 function paiementsVivants(piece: Transaction, paiements: FinancialPayment[]): FinancialPayment[] {
@@ -54,8 +66,10 @@ export function baisseSousLePaye(piece: Transaction, paiements: FinancialPayment
  * La suite d'écritures qui amène la pièce à `nouveauMontantCents`, dans l'ordre où les règles Firestore l'acceptent.
  * Sous le payé, le choix est ignoré : le paiement suit toujours (voir `baisseSousLePaye`). Vide si le montant ne change pas. Lève une erreur si le montant est invalide ou si un paiement à inverser est introuvable.
  */
-export function planCorrection(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, choix: ChoixPaiement): EtapeCorrection[] {
+export function planCorrection(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, choixDemande: ChoixPaiement): EtapeCorrection[] {
   if (!Number.isSafeInteger(nouveauMontantCents) || nouveauMontantCents <= 0) throw new Error('Montant invalide : un nombre positif en CHF est requis.');
+  // FN-12 : un apport ou un prélèvement ne devient pas une créance ; son paiement suit, et il n'a pas de facture à avoir.
+  const choix: ChoixPaiement = estMouvementPrive(piece) ? 'suit' : choixDemande;
   const ancien = transactionAmount(piece);
   if (nouveauMontantCents === ancien) return [];
   const paye = payeNet(piece, paiements);
@@ -89,6 +103,8 @@ export function planCorrection(piece: Transaction, paiements: FinancialPayment[]
   etapes.push({ type: 'montant', cents: nouveauMontantCents });
   // q6, point 1 : sous le payé, « Reste à payer » n'existe pas (le payé ne disparaît jamais, aucune échéance inventée pour une pièce payée) : le paiement suit toujours, quel que soit `choix`.
   if (nouveauMontantCents - reste > 0) etapes.push({ type: 'paiement', cents: nouveauMontantCents - reste, direction, method: mode, date: dateInversee });
+  // FN-10 : « j'ai bien payé » : l'argent sorti ne disparaît pas, l'excédent est une créance (un avoir à recevoir, de sens inverse à la pièce).
+  if (choix === 'avoir') etapes.push({ type: 'avoir', cents: paye - nouveauMontantCents, direction: direction === 'out' ? 'in' : 'out' });
   return etapes;
 }
 
@@ -96,15 +112,34 @@ export function planCorrection(piece: Transaction, paiements: FinancialPayment[]
 export function effetCorrection(piece: Transaction, paiements: FinancialPayment[], etapes: EtapeCorrection[]): EffetCorrection {
   let montant = transactionAmount(piece);
   let paye = payeNet(piece, paiements);
+  let avoir = 0;
   for (const etape of etapes) {
     if (etape.type === 'montant') montant = etape.cents;
     else if (etape.type === 'paiement') paye += etape.cents;
+    else if (etape.type === 'avoir') avoir += etape.cents;
     else {
       const p = paiements.find(x => x.id === etape.paiementId);
       if (p) paye -= p.amountCents;
     }
   }
-  return { montantCents: montant, payeCents: paye, resteCents: Math.max(0, montant - paye) };
+  return { montantCents: montant, payeCents: paye, resteCents: Math.max(0, montant - paye), avoirCents: avoir };
+}
+
+/**
+ * L'avoir que l'étape « avoir » écrit : exactement ce que `MovementSheet` écrit pour « Avoir ou remboursement » en argent (`refundApplication: 'cash'`, non encaissé),
+ * sur la pièce déjà au nouveau montant (`pieceCorrigee`). Pure : l'identifiant, la date et l'instant viennent de l'appelant. Le montant ne dépasse jamais celui de la pièce.
+ */
+export function avoirDeTropPaye(pieceCorrigee: Transaction, etape: Extract<EtapeCorrection, { type: 'avoir' }>, ctx: { aujourdhui: string; maintenant: string }, id: string): Transaction {
+  const ventile = ventilationAvoir(pieceCorrigee, etape.cents);
+  const motif = `Trop payé sur « ${pieceCorrigee.description} » : montant corrigé`;
+  return {
+    id, date: ctx.aujourdhui, description: motif, category: pieceCorrigee.category, subcategory: 'Avoir',
+    amountHT: ventile.amountHT, amountTTC: etape.cents / 100, tvaRate: ventile.tvaRate, tvaAmount: ventile.tvaAmount,
+    finance: {
+      version: 1, kind: 'refund', amountCents: etape.cents, lines: [], refundOfId: pieceCorrigee.id, refundDirection: etape.direction, refundApplication: 'cash',
+      paymentStatus: 'unpaid', recordedAt: ctx.maintenant, ...(pieceCorrigee.finance?.vendor ? { vendor: pieceCorrigee.finance.vendor } : {}), notes: motif
+    }
+  };
 }
 
 export interface ContexteVerrou {

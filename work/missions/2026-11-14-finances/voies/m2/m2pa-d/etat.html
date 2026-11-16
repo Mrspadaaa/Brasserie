@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m2pa-d · Payer, libre : un virement à l'Atelier solde le retard d'abord</title>
+<style>
+@font-face{font-family:"Source Sans 3";font-weight:400;src:url(../fonts/SourceSans3-400.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;src:url(../fonts/SourceSans3-600.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;src:url(../fonts/SourceSans3-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(../fonts/IBMPlexMono-500.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;src:url(../fonts/IBMPlexMono-600.woff2) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.m2pa-d-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m2pa-d-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.m2pa-d-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.m2pa-d-hd b{font-size:18px;font-weight:600;flex:1}
+.m2pa-d-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.m2pa-d-bx{background:#F5F5F5;border:1px solid #DADADA}
+.m2pa-d-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.m2pa-d-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.m2pa-d-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.m2pa-d-tabs a.m2pa-d-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.m2pa-d-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m2pa-d-top{display:flex;align-items:center;gap:6px}
+.m2pa-d-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.m2pa-d-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.m2pa-d-pill b{font-size:15px;padding:0 4px}
+.m2pa-d-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.m2pa-d-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.m2pa-d-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.m2pa-d-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.m2pa-d-p b{font-size:12px;line-height:14px}
+.m2pa-d-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m2pa-d-st i{display:block}
+.m2pa-d-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m2pa-d-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.m2pa-d-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.m2pa-d-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.m2pa-d-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.m2pa-d-key span{display:flex;align-items:center;gap:4px}
+.m2pa-d-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.m2pa-d-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.m2pa-d-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.m2pa-d-g .m2pa-d-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m2pa-d-g b{font-size:13px;letter-spacing:.02em}
+.m2pa-d-g .m2pa-d-sub{font-size:13px;color:#444}
+.m2pa-d-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.m2pa-d-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m2pa-d-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m2pa-d-q small{font-weight:400;color:#555;font-size:13px}
+.m2pa-d-a{font-size:14px;text-align:right}
+.m2pa-d-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.m2pa-d-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.m2pa-d-ok{background:#E8F5EC;color:#22663A}
+.m2pa-d-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.m2pa-d-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m2pa-d-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.m2pa-d-pc.m2pa-d-no{color:#7A5500}
+.m2pa-d-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.m2pa-d-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.m2pa-d-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.m2pa-d-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.m2pa-d-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.m2pa-d-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.m2pa-d-foot .m2pa-d-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.m2pa-d-ex{font-size:12px;color:#666;padding:0 10px}
+.m2pa-d-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.m2pa-d-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.m2pa-d-nav a.m2pa-d-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.m2pa-d-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.m2pa-d-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.m2pa-d-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.m2pa-d-flash{background:#F1FAF3}
+@media (min-width:900px){.m2pa-d-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.m2pa-d-full{grid-column:1/3}.m2pa-d-left{position:sticky;top:0}.m2pa-d-piles{height:200px}.m2pa-d-nav{justify-content:center}}
+
+
+.m2pa-d-fond{position:relative;height:250px;overflow:hidden}
+.m2pa-d-fond .m2pa-d-nav,.m2pa-d-fond .m2pa-d-fab{display:none}
+.m2pa-d-voile{position:absolute;inset:0;background:rgba(17,17,17,.46);z-index:3}
+.m2pa-d-sh{position:relative;z-index:4;margin-top:-30px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.20);padding:6px 14px 22px;min-height:624px}
+.m2pa-d-grab{width:40px;height:5px;border-radius:3px;background:#D4D4D4;margin:2px auto 10px}
+.m2pa-d-x{width:36px;height:36px;border-radius:12px;background:#F5F5F5;border:1px solid #DADADA;display:grid;place-items:center;flex:none}
+.m2pa-d-mu{color:#555}
+.m2pa-d-b1{min-height:44px;padding:0 18px;border-radius:16px;background:#111;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2pa-d-b2{min-height:44px;padding:0 14px;border-radius:14px;background:#F5F5F5;border:1px solid #DADADA;font-size:15px;color:#222;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2pa-d-lk{color:#2F6EA8;font-weight:600}
+input.m2pa-d-in{font:inherit;border:1px solid #DADADA;border-radius:12px;height:44px;padding:0 12px;font-size:16px;width:100%;background:#fff;color:#111}
+input.m2pa-d-in:focus{outline:2px solid #2F6EA8;outline-offset:-1px}
+
+
+.m2pa-d-hd2{display:flex;align-items:flex-start;gap:8px}
+.m2pa-d-hd2 div{flex:1}
+.m2pa-d-hd2 b{display:block;font-size:18px;line-height:22px}
+.m2pa-d-hd2 span{font-size:13px;color:#555}
+.m2pa-d-who{display:flex;align-items:center;gap:10px;margin:12px 0 8px}
+.m2pa-d-who span{flex:1;font-size:15px;font-weight:600;color:#333}
+.m2pa-d-who input{font:inherit;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:24px;width:150px;text-align:right;background:#fff;border:1px solid #DADADA;border-radius:12px;color:#111;height:52px;padding:0 12px}
+.m2pa-d-cap{font-size:12px;color:#666;margin:10px 2px 4px}
+.m2pa-d-it{display:grid;grid-template-columns:28px 5px 1fr auto;gap:0 9px;align-items:center;min-height:62px;border-bottom:1px solid #F0F0F0}
+.m2pa-d-ck{width:26px;height:26px;border-radius:8px;border:2px solid #111;display:grid;place-items:center;background:#111;color:#fff;font-size:15px;font-weight:700}
+.m2pa-d-it .m2pa-d-br{align-self:stretch;margin:10px 0;border-radius:2px}
+.m2pa-d-it b{font-size:15px}
+.m2pa-d-it .m2pa-d-meta{margin-top:3px}
+.m2pa-d-fill{text-align:right}
+.m2pa-d-fill .m2pa-d-m{font-size:15px;display:block}
+.m2pa-d-fill small{font-size:12px}
+.m2pa-d-flow{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:10px 0 4px}
+.m2pa-d-fk{display:flex;justify-content:space-between;font-size:12px;color:#555}
+.m2pa-d-ft{display:grid;grid-template-columns:1fr 1.7fr;gap:8px;margin-top:16px}
+.m2pa-d-row2{display:flex;gap:6px;margin-top:10px;font-size:14px;align-items:center}
+.m2pa-d-row2 button{min-height:40px;padding:0 12px;border-radius:12px;border:1px solid #DADADA}
+.m2pa-d-row2 .m2pa-d-on{background:#111;color:#fff;border-color:#111;font-weight:600}
+
+</style>
+</head>
+<body>
+<div class="m2pa-d-fond"><header class="m2pa-d-hd">
+  <span class="m2pa-d-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="m2pa-d-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="m2pa-d-ic m2pa-d-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="m2pa-d-ic m2pa-d-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+
+<div class="m2pa-d-app">
+ <div class="m2pa-d-full">
+  <nav class="m2pa-d-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="m2pa-d-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+
+ <div class="m2pa-d-left">
+  <section class="m2pa-d-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="m2pa-d-top">
+    <span class="m2pa-d-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="m2pa-d-due" data-booster="pastille-retard"><i></i>en retard <b class="m2pa-d-m">60,00</b></button>
+   </div>
+   <div class="m2pa-d-piles">
+    <div class="m2pa-d-p"><b class="m2pa-d-m" style="color:#2A7240">+720,00</b><span class="m2pa-d-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="m2pa-d-sep"></span>
+    <div class="m2pa-d-p"><b class="m2pa-d-m">468,00</b><span class="m2pa-d-st" style="height:57px"><i class="m2pa-d-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="m2pa-d-p"><b class="m2pa-d-m">186,80</b><span class="m2pa-d-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="m2pa-d-p"><b class="m2pa-d-m">42,00</b><span class="m2pa-d-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="m2pa-d-sep"></span>
+    <div class="m2pa-d-p"><b class="m2pa-d-m">28,60</b><span class="m2pa-d-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="m2pa-d-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="m2pa-d-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="m2pa-d-m">325,40</b></span><span><i class="m2pa-d-hat"></i>à payer <b class="m2pa-d-m">400,00</b></span><span>dépensé <b class="m2pa-d-m">696,80</b></span></div>
+  </section>
+ </div>
+
+ </div><div class="m2pa-d-voile"></div></div>
+<section class="m2pa-d-sh" aria-label="Payer l'Atelier">
+ <div class="m2pa-d-grab"></div>
+ <div class="m2pa-d-hd2"><div><b>Payer l'Atelier</b><span>2 pièces à payer au même fournisseur</span></div><button class="m2pa-d-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+ <div class="m2pa-d-who" data-booster="un-virement"><span>Ton virement</span><input type="text" inputmode="decimal" value="300,00" aria-label="Montant du virement (CHF)"></div>
+ <div class="m2pa-d-flow" data-booster="repartition" data-etat="paiement-partiel"><i style="flex:60;background:#D6453D"></i><i style="flex:240;background:#9856D2"></i><i class="m2pa-d-hat" style="flex:160"></i></div>
+ <div class="m2pa-d-fk"><span>retard 60,00</span><span>loyer 240,00</span><span>reste 160,00</span></div>
+ <p class="m2pa-d-cap">Le plus ancien d'abord</p>
+ <div class="m2pa-d-it"><span class="m2pa-d-ck">✓</span><span class="m2pa-d-br" style="background:#D6453D"></span><span><b>Solde atelier · ancienne année</b><span class="m2pa-d-meta"><span class="m2pa-d-tg m2pa-d-late">depuis le 20 déc. 2025</span></span></span><span class="m2pa-d-fill"><span class="m2pa-d-m">60,00</span><small style="color:#22663A">✓ soldé</small></span></div>
+ <div class="m2pa-d-it"><span class="m2pa-d-ck">✓</span><span class="m2pa-d-br m2pa-d-hat"></span><span><b>Loyer de l'atelier</b><span class="m2pa-d-meta"><span class="m2pa-d-tg m2pa-d-pay">à payer · 25 nov.</span></span></span><span class="m2pa-d-fill"><span class="m2pa-d-m">240,00</span><small class="m2pa-d-mu">sur 400,00 · reste 160,00</small></span></div>
+ <div class="m2pa-d-row2"><span class="m2pa-d-mu">Le</span><button class="m2pa-d-on">aujourd'hui</button><button>autre</button><span class="m2pa-d-mu">avec</span><button class="m2pa-d-on">banque</button><button aria-label="Autres moyens"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.4"><path d="M5 9l7 7 7-7"/></svg></button></div>
+ <div class="m2pa-d-ft"><button class="m2pa-d-b2">Annuler</button><button class="m2pa-d-b1">✓ Payer <span class="m2pa-d-m">300,00</span></button></div>
+</section>
+</body>
+</html>

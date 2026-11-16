@@ -1,29 +1,32 @@
-OK — quatre mini maquettes v6a + plage par booster (frise, calendrier, 12 mois, brush), repos et après
+REPRISE : work/missions/2026-11-14-finances/voies/s2/RESULTAT.md — 1 vue sur 4 portée (m3pr-c), contexte de l'auteur épuisé ; tests, captures et 3 vues restent
 
-## Variantes (id · idée · images ouvertes · défauts vus)
-- s2a · frise des 30 jours sous les piles, deux poignées · oui (repos, apres) · +62 px au repos ; une plage à cheval ne tient pas dans la frise d'un mois
-- s2b · bouton ▦ → feuille calendrier mode plage (react-day-picker), pilule « ▦ 1 → 15 nov. × » après · oui (repos, feuille, apres) · flèches ‹ › masquées pendant la plage ; la feuille cache le graphe pendant le choix
-- s2c · frise des 12 mois ; un mois touché s'ouvre sur ses jours (avec le mois d'avant) ; plage 15 oct. → 10 nov. · oui (repos, zoom, apres) · un jour = 5,8 px au zoom (glisser + lecture en tête, pas de toucher par case) ; la frise des mois doublonne ‹ ›
-- s2d · brush : histogramme quotidien au-dessus des piles, fenêtre glissée (9 → 15 nov.), piles fantômes du mois · oui (repos, apres) · +62 px au repos ; proche de s2a par la frise (diffère par la fenêtre mobile et le fantôme)
+# État de reprise de la voie s2 (15.11)
 
-Commun aux quatre après : loyer du 25 nov. sorti en ligne « hors plage » (400,00 en gris, pas mis à 0) ; Fixes 68,00 ; payé 325,40 · à payer 0,00 · dépensé 296,80 (recalculé : 68 + 186,80 + 42 ; matériel à part) ; retard 2025 gardé (dette hors période).
+## Fait (tsc : TSC OK après ces écritures)
+- `src/ui/finance/prevision/base.tsx` : CATEGORY_LABELS, idFor, MoneyInput, Field, FormSheet (exporté, accepte `className`, `subtitle`) déplacés hors de FinanceForms pour éviter tout cycle d'import ; FinanceForms les ré-exporte (`export { CATEGORY_LABELS, idFor, MoneyInput }`, `export { Field, FormSheet }`). Les quatre vues portées importent `./prevision/base` (ou `../prevision/base`).
+- `src/ui/finance/prevision/PlanSheetC.tsx` : m3pr-c complet (une ligne libellé + CHF, trois pastilles À payer / catégorie / date, segment de répétition, frise 5 mois avec zone « après les 90 jours », marches avant gris / après noir avec étiquettes de la prévision, ligne « avec … / sans », effet « Fin … avant (barré) → après », rangée « Compte dans mon litre ? » (costAllocation, si répétition + sortie), rangée repliée « Fournisseur, note, fin de la répétition, état » avec la phrase « aucune écriture »). Calcul : `effetDeLaPrevision` appelle `buildForecast`, `regrouperTendance`, `construireEscalier` de Prévisions (deux fois : sans / avec la prévision, horizon 90 j) ; solde de départ via `summarizeLedger` ; sans solde confirmé : écart dit « écart » ; sans montant valide : « — » (jamais 0). Enregistrement inchangé (`FinanceService.savePlan`, mêmes refus).
+- `src/ui/finance/prevision/prevision.css` : classes `pvc-` (m3pr-c) et pied commun `.fx4-sheet` / `.pvc-sheet` (Enregistrer plein, Annuler cerclé, 44 px), jetons du thème (clair et cave).
+- `FinanceForms.tsx` : `PlanSheet` délègue à `PlanSheetC`.
 
-## Fichiers écrits (tous sous voies/s2)
-- s2a/, s2b/, s2c/, s2d/ : etat.html, NOTE.md, <id>-repos.png, <id>-apres.png (+ s2b-feuille.png, s2c-zoom.png)
-- outils/construire.mjs (assemble depuis ref/v6a/etat.html par split/join, préfixe par id), outils/capturer.mjs (390 px, échelle 2)
-- fonts/ (Source Sans 3, IBM Plex Mono en woff2 locaux : aucune requête réseau dans les pages), tests.txt
+## Reste à faire (ordre conseillé)
+1. **Projet m3pm-d** : `src/ui/finance/projet/` (ProjetPiste.tsx + projet.css, classes `pjd-`), branché dans `UpgradeSheet.tsx` : en-tête « titre + budget en mono », piste verticale Idée (Bientôt/Plus tard + but), À étudier (prix + livraison + pose ? + source), Devis (quote : fournisseur, référence, « Noter un devis »), Prêt à acheter (« Payé en » mois + interrupteur « Dans mes prévisions » = status active), Acheté (achats liés via `upgradeProgress`/factures `planId`, « Noter l'achat »), En service (usure : durée, catégorie AFC, mise en service). Stations passées = une ligne cochée ; station en cours ouverte ; toucher une station l'ouvre. Pied : Archiver (save 'cancelled') + « Enregistrer le projet ». Garder : « Marquer comme réalisé » (= station Acheté cochée), « Reprendre ce projet », notes, `onOpenTransaction`, l'erreur `role=alert` + scrollIntoView (TE-35), `.upgrade-budget` (test upgradeSheetTe35 : libellés « Matériel ou aménagement », « Prix estimé TTC (CHF) », « Livraison TTC (CHF) », « Installation TTC (CHF) », case « Inclure dans mes prévisions », bouton « Enregistrer le projet », `.upgrade-budget` avec `justify-between gap-x-4`).
+2. **Bien m3im-c** : `src/ui/finance/bien/` (BienCuve.tsx + bien.css, `bic-`), `AssetSheet` délègue. Segment « 20 % du reste dégressive · AFC cuves » / « 10 % du prix linéaire » ; barres année par année calculées par `depreciationForYear(asset, année)` de `domain/finance/annual` (intouché), 2026 en plein, années prévues en clair ; un seul chiffre « si 10 % du prix : −180,00 en 2026 » ; « Usure à garder en 2026 » ; curseur Part pro ; cases Prix, Achetée, En service, Départ, Valeur 1er janv., 1re année ; ligne verte « Catégorie et départ confirmés » (= openingConfirmed) ; rangées « Matériel du stock, achat lié, catégorie » et « Vendue ou mise au rebut » (cession) qui gardent tous les champs actuels (avoirs, ligne de l'achat, valeur d'ouverture, fraction, catégorie AFC, taux). Garder `validateAsset`, `saveAsset`, titres, confirmation.
+3. **Profil m4pf-c** : `src/ui/finance/profil/` (ProfilEffets.tsx + profil.css, `pfc-`), `ProfileSheet` délègue ; titre « Solde et paramètres ». Cartes : Solde de départ (frise 1 janv. → aujourd'hui avec la courbe de caisse, bascule « Vérifié »), « Tout est noté depuis » (12 cases de mois, « N mois complets : la tendance est calculée » — la règle du domaine est dans `forecast.ts` : 6 mois de tendance, 3 au moins), Production prévue (curseur 0–4 000 L ; effets : charges fixes = `annualBrewFixedCosts(plans)` ÷ litres ; brassins = litres ÷ 27 ; Pale Ale = coût du litre de `estimerBrassinsPlanifies` avec le profil brouillon ; inconnu = « — »), TVA : texte « sans TVA, ventes sur 12 mois X sur le seuil Y » par `tvaThresholdStatus` (pas de jauge : 3 graphiques au plus). Garder `parametres` (ouvre d'emblée les réglages), refus « date du solde », MoneyInput signé.
+4. Tests : `tests/integration/previsionAjout.test.tsx`, `projetPiste.test.tsx`, `bienAmorti.test.tsx`, `profilEffets.test.tsx` (enregistrement en centimes et dates, effet affiché = calcul du domaine ; services simulés, `useStorageValue` simulé comme dans `upgradeSheetTe35.test.tsx`). Puis la ligne Tests : `npx vitest run tests/integration/previsionAjout.test.tsx tests/integration/projetPiste.test.tsx tests/integration/bienAmorti.test.tsx tests/integration/profilEffets.test.tsx --reporter=dot --no-color > work/missions/2026-11-14-finances/voies/s2/tests.txt`.
+5. Tests existants à rejouer (touchés par le port, non possédés) : `soldeDepartCause`, `soldeDepartVisible`, `upgradeSheetTe35`, `coutBrassinRenvois`, `prixACompleter`. Ceux de ProfileSheet cherchent le dialogue « Solde et paramètres financiers », la case « J’ai vérifié ce solde » (role checkbox) et le détail « Paramètres des prévisions et des brassins » : le titre de la maquette est « Solde et paramètres » ; si la bascule « Vérifié » est un `input type=checkbox` avec `role=switch` et aria-label « J’ai vérifié ce solde… », seul le nom du dialogue change : à signaler au pilote (tests non possédés).
+6. Critères : `node work/missions/2026-11-14-finances/outils/vitest-lu.mjs work/missions/2026-11-14-finances/voies/s2/tests.txt` (VITEST OK), `node work/missions/2026-11-14-finances/outils/tsc.mjs` (TSC OK), `node work/missions/2026-11-14-finances/voies/o1/controle-v6a.mjs 3000` (V6A OK), FRISE OK (`voies/f1/controle-frise.mjs 3000`).
+7. Captures 390 et 1280, clair et cave, ouvertes et après geste, côte à côte avec la maquette, dans `voies/s2/cap/` (banc `http://localhost:3000/?dev-local&finance-demo`, déjà lancé) : à confier à Haiku (DEMANDE EXECUTANT) puis jugées par l'auteur.
 
-## Critères
-- G1 controle-serie : `SERIE OK` (aussi dans tests.txt)
-- G2 à G5 verifier-page s2a/s2b/s2c/s2d : `PAGE OK (1 images chargées, 390 px, sans erreur)` ×4
-- Captures : node outils/capturer.mjs → « sans erreur », 5 polices chargées, pour les quatre
+## Écarts à la maquette m3pr-c (à confirmer sur capture)
+- Champs à 44 px (exigence transversale) au lieu de 36 ; segment et pastilles gardent leurs 28–30 px visibles, zone tactile étendue à 44 px en hauteur (pseudo-élément / sélecteur transparent).
+- Titre de l'horizon : `titreHorizon` du domaine (« Jusqu’au 13 févr. » si l'horizon de 90 jours ne tombe pas sur une fin de mois), pas « Fin janvier » figé.
+- Pied : Enregistrer en encre du thème (noir en clair, clair en cave), comme la maquette ; Annuler cerclé.
+- « … » : « Mouvement » devient la pastille « À payer / À recevoir » ; « État » (modification) et la phrase « aucune écriture » vont dans la rangée repliée.
 
-## Captures (toutes ouvertes)
-work/missions/2026-11-14-finances/voies/s2/s2a/s2a-repos.png, s2a-apres.png ; s2b/s2b-repos.png, s2b-feuille.png, s2b-apres.png ; s2c/s2c-repos.png, s2c-zoom.png, s2c-apres.png ; s2d/s2d-repos.png, s2d-apres.png
+## Doutes
+- `PlanSheetC` n'a été vérifié que par `tsc` : ni test, ni rendu, ni capture. Le graphique à 1280 est plafonné à 420 px de large (centré) ; à juger sur capture.
+- `useStorageValue(lire)` : `lire` est une constante de module (obligatoire : une fonction instable ferait boucler le hook).
 
-## Prédiction
-« La 2b, c'est ce que je connais : je touche le calendrier, je pose mes deux jours, et je vois la plage en haut » ; s2a/s2d lui plairont pour voir où tombent les dépenses, s2c sera jugée trop petite au doigt.
-
-DÉCISION À PRENDRE : aucune pour la voie ; au brasseur (page de choix) : la frise des 12 mois de s2c pourrait remplacer les flèches ‹ ›.
-CONNAISSANCE : aucune
-LEÇON PROPOSÉE : aucune (une collision de classes du socle, « -g » et « -on », vue sur capture et corrigée : L26 tient)
+DÉCISION À PRENDRE : aucune pour l'instant.
+CONNAISSANCE : `useStorageValue` ré-évalue et re-souscrit si la fonction de lecture change : toujours une constante de module.
+LEÇON PROPOSÉE : aucune (la voie dépasse le contexte d'un auteur : quatre feuilles portées en une voie ; en prévoir une par feuille).

@@ -63,7 +63,7 @@ describe('coût du brassin : chaque manque est un renvoi (CP-18)', () => {
   });
   it('ingrédient sans prix : le renvoi ouvre ses lignes, filtrées sur « À compléter »', () => {
     rendre({ batch: brassin, savedEstimate: sansRien(), onMesures: vi.fn() });
-    fireEvent.click(within(screen.getByRole('region', { name: 'Données à compléter' })).getByRole('button', { name: /Prix de 1 ingrédient : malt/ }));
+    fireEvent.click(within(screen.getByRole('region', { name: 'Données à compléter' })).getByRole('button', { name: /Prix d.1 ingrédient : pilsner/i })); // m4bb-a : « Prix d’1 ingrédient : pilsner » (le nom de l’ingrédient, plus le groupe)
     expect(screen.getByLabelText('Prix de Pilsner')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^À compléter/ })).toHaveAttribute('aria-pressed', 'true');
   });
@@ -74,6 +74,7 @@ describe('coût du brassin : chaque manque est un renvoi (CP-18)', () => {
   });
   it('« Déjà payé » inconnu : sa ligne et sa tâche ouvrent le prix manquant', () => {
     rendre({ batch: brassin, savedEstimate: sansRien(), onMesures: vi.fn() });
+    fireEvent.click(screen.getByRole('button', { name: 'Détail du litre' })); // m4bb-a : les trois sources de c3a sont à un toucher
     fireEvent.click(screen.getByRole('button', { name: /^Déjà payé/ }));
     const tache = document.querySelector<HTMLButtonElement>('button[data-manque="stock"]')!;
     expect(tache.textContent).toMatch(/Sans eux, le déjà payé est un minimum/);

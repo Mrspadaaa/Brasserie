@@ -1,0 +1,12 @@
+(unité financière et Opérations ; exclus, ils ne se chargent pas dans ce worktree : firebase-admin absent de functions/ : brewerBudgetLedger, financeDocumentHistory, financeDocumentMigration)
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+····················································································································································································································································································
+
+ Test Files  24 passed (24)
+      Tests  276 passed (276)
+   Start at  16:37:48
+   Duration  5.82s (transform 3.06s, setup 7.45s, collect 5.59s, tests 1.03s, environment 4ms, prepare 3.32s)
+

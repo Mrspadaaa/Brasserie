@@ -12,14 +12,12 @@ import { parseFiscalYear } from '../../domain/finance/annual';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { PayerVirement } from './payer/PayerVirement';
+import { CATEGORY_LABELS, Field, FormSheet, MoneyInput, idFor } from './prevision/base';
+import { PlanSheetC } from './prevision/PlanSheetC';
+import { ProfilEffets } from './profil/ProfilEffets';
+import { BienCuve } from './bien/BienCuve';
 
-export const CATEGORY_LABELS: Record<FinanceCategory,string> = { brassage:'Brassage', materiel:'Matériel', nettoyage:'Nettoyage', chargesFixes:'Charges fixes', renovation:'Local et travaux', divers:'Autres frais', recettes:'Ventes', apports:'Apports privés' };
-export const idFor = (prefix:string) => `${prefix}-${crypto.randomUUID()}`;
-export function MoneyInput({label,value,onChange,required=false,signed=false,maxCents=BORNES_FINANCE.operationCents.valeur}:{label:string;value:number|undefined;onChange:(v:number|undefined)=>void;required?:boolean;signed?:boolean;/** Borne du champ en centimes ; par défaut celle d'une écriture. */maxCents?:number}) {
-  /* BE-64, BE-71 : un montant non signé refuse VISIBLEMENT un négatif (« −1 » devenait 0 en silence), un millième (« 0,004 ») et ce qui dépasse la borne d'une écriture. Le solde de départ, signé, garde la saisie libre. */
-  if (!signed) return <label className="finance-field">{label}<ChampNombre aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} max={maxCents/100} maxDecimales={2} dire /></label>;
-  return <label className="finance-field">{label}<NumberInput aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} emptyValue={undefined} required={required} /></label>;
-}
+export { CATEGORY_LABELS, idFor, MoneyInput };
 /** Exercice fiscal : une année entière de quatre chiffres. Une saisie invalide est refusée sur place avec un message ; l'écran ne la reçoit jamais (BE-60). */
 export function ExerciceField({year,onYear}:{year:number;onYear:(year:number)=>void}) {
   const [draft,setDraft]=useState(String(year)),[error,setError]=useState('');
@@ -42,71 +40,13 @@ export function ExerciceField({year,onYear}:{year:number;onYear:(year:number)=>v
   };
   return <div className="finance-year-field"><Field label="Exercice"><Input value={draft} inputMode="numeric" maxLength={6} className="finance-year-input" aria-invalid={error?true:undefined} aria-describedby={error?messageId:undefined} onFocus={e=>e.currentTarget.select()} onChange={e=>push(e.target.value)} onBlur={leave}/></Field>{error&&<p id={messageId} className="finance-error" role="alert">{error}</p>}</div>;
 }
-export function Field({label,children}:{label:string;children:React.ReactNode}) { return <label className="finance-field">{label}{children}</label>; }
-function FormSheet({title,onClose,onSave,children,saveLabel='Enregistrer'}:{title:string;onClose:()=>void;onSave:()=>void|Promise<void>;children:React.ReactNode;saveLabel?:string}) {
-  const [error,setError]=useState(''), [busy,setBusy]=useState(false);
-  const submit=async(e?:React.FormEvent)=>{e?.preventDefault(); if(busy)return; setBusy(true); setError(''); try {await onSave();onClose();}catch(err){setError(err instanceof Error?err.message:'Enregistrement impossible.');}finally{setBusy(false);}};
-  return <Sheet open title={title} onClose={onClose} dismissible={!busy} className="finance-sheet" footer={<div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose} disabled={busy}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy?'Enregistrement…':saveLabel}</button></div>}><form autoComplete="off" id="finance-form" onSubmit={submit} className="finance-form">{error&&<p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
-}
-export function ProfileSheet({profile,onClose,parametres=false}:{profile:FinancialProfile;onClose:()=>void;/** CP-7 : ouvre d'emblée « Paramètres des prévisions et des brassins » (le renvoi « Tendance à calculer »). */parametres?:boolean}) {
-  const [draft,setDraft]=useState(profile), [cash,setCash]=useState(profile.openingCash?.amountCents), [date,setDate]=useState(profile.openingCash?.date??todayISO()), [confirmed,setConfirmed]=useState(profile.openingCash?.confirmed??false);
-  return <FormSheet title="Solde et paramètres financiers" onClose={onClose} onSave={()=>{if(cash!=null&&!isoDate(date))throw Error('Choisis la date du solde.'); FinanceService.saveProfile({...draft,openingCash:cash!=null?{date,amountCents:cash,confirmed}:undefined});}}>
-    <p className="finance-muted">Le solde de départ sert à calculer l’argent disponible après les paiements enregistrés.</p>
-    <div className="finance-form-grid"><MoneyInput signed label="Solde de départ (CHF)" value={cash} onChange={value=>{setCash(value);setConfirmed(false);}}/>
-    <Field label="Date du solde"><input type="date" value={date} max={todayISO()} onChange={e=>{setDate(e.target.value);setConfirmed(false);}} required/></Field></div>
-    <label className="finance-check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>J’ai vérifié ce solde, avant les paiements de cette journée.</label>
-    {cash!=null&&!confirmed&&<p className="finance-muted" role="note">Sans cette case, ce solde n’est compté ni dans la caisse ni dans les prévisions.</p>}
-    <details className="finance-disclosure" open={parametres||undefined}><summary>Paramètres des prévisions et des brassins</summary><div className="finance-form">
-    <Field label="Historique des dépenses complet depuis"><input type="month" value={draft.historyCompleteFrom?.slice(0,7)??''} onChange={e=>setDraft({...draft,historyCompleteFrom:e.target.value?`${e.target.value}-01`:undefined})}/></Field>
-    <p className="finance-muted">La tendance n’est calculée qu’avec au moins trois mois complets. Les anciens paiements inconnus restent à confirmer.</p>
-    <Field label="Production annuelle prévue (litres conditionnés)"><NumberInput value={draft.annualProductionL} onValue={v=>setDraft({...draft,annualProductionL:v??undefined})} emptyValue={undefined} min={1}/></Field>
-    <p className="finance-muted">Cette production permet de répartir les charges fixes entre les brassins. Ton temps personnel n’est pas compté.</p>
-    </div></details>
-  </FormSheet>;
-}
-export function PlanSheet({plan,onClose}:{plan?:FinancialPlan;onClose:()=>void}) {
-  const [draft,setDraft]=useState<FinancialPlan>(()=>plan??{id:idFor('PREV'),title:'',date:todayISO(),amountCents:0,direction:'out',category:'chargesFixes',source:'manual',status:'active',createdAt:new Date().toISOString()});
-  const field=<K extends keyof FinancialPlan>(key:K,value:FinancialPlan[K])=>setDraft({...draft,[key]:value});
-  return <FormSheet title={plan?'Modifier la prévision':'Prévoir une dépense'} onClose={onClose} onSave={()=>{if(!draft.title.trim()||draft.amountCents<=0)throw Error('Un libellé et un montant positif sont nécessaires.');FinanceService.savePlan({...draft,title:draft.title.trim()});}}>
-    <Field label="Libellé"><Input value={draft.title} onChange={e=>field('title',e.target.value)} placeholder="Loyer, commande de malt, vente prévue…" required/></Field>
-    <div className="finance-form-grid"><MoneyInput label="Montant (CHF)" value={draft.amountCents||undefined} onChange={v=>field('amountCents',v??0)} required/><Field label="Date de paiement prévue"><input type="date" value={draft.date} onChange={e=>field('date',e.target.value)} required/></Field></div>
-    <Field label="Mouvement"><select value={draft.direction} onChange={e=>field('direction',e.target.value as 'in'|'out')}><option value="out">Argent à payer</option><option value="in">Argent à recevoir</option></select></Field>
-    <Field label="Catégorie"><select value={draft.category} onChange={e=>field('category',e.target.value as FinanceCategory)}>{Object.entries(CATEGORY_LABELS).map(([key,label])=><option value={key} key={key}>{label}</option>)}</select></Field>
-    <Field label="Répétition"><select value={draft.recurrence?.frequency??'none'} onChange={e=>{const freq=e.target.value;setDraft({...draft,source:freq==='none'?'manual':'recurring',recurrence:freq==='none'?undefined:{frequency:freq as 'monthly'|'quarterly'|'yearly'}});}}><option value="none">Une seule fois</option><option value="monthly">Chaque mois</option><option value="quarterly">Chaque trimestre</option><option value="yearly">Chaque année</option></select></Field>
-    {draft.recurrence&&<Field label="Fin de la répétition (facultatif)"><input type="date" value={draft.recurrence.endDate??''} onChange={e=>field('recurrence',{...draft.recurrence!,endDate:e.target.value||undefined})}/></Field>}
-    {draft.recurrence&&draft.direction==='out'&&<Field label="Coût de revient des brassins"><select value={draft.costAllocation??''} onChange={e=>field('costAllocation',e.target.value as 'fixed'|'brew'||undefined)}><option value="">À confirmer dans le budget du brassin</option><option value="fixed">Charge fixe à répartir (loyer, assurance…)</option><option value="brew">Déjà estimé par brassin (eau, énergie…)</option></select></Field>}
-    <Field label="Fournisseur ou client"><Input value={draft.vendor??''} onChange={e=>field('vendor',e.target.value)} /></Field>
-    <Field label="Note"><Textarea rows={2} value={draft.notes??''} onChange={e=>field('notes',e.target.value)}/></Field>
-    <p className="finance-muted">Cette prévision n’ajoute aucune écriture comptable. Relie la facture à cette prévision lors de son enregistrement.</p>
-    {plan&&<Field label="État"><select value={draft.status} onChange={e=>field('status',e.target.value as FinancialPlan['status'])}><option value="draft">Brouillon</option><option value="active">À venir</option><option value="completed">Terminée</option><option value="cancelled">Annulée</option></select></Field>}
-  </FormSheet>;
-}
-const ASSET_CATEGORIES = {tanks:['Cuves et conteneurs',20],furniture:['Installations et mobilier',25],production:['Machines de production',30],electronics:['Informatique et mesure électronique',40],tools:['Outillage et instruments',45],custom:['Taux personnalisé',0]} as const;
-export function AssetSheet({asset,initial,onClose}:{asset?:FinancialAsset;/** Préremplissage d'un matériel neuf (l'achat que l'Annuel propose de passer au registre) : rien n'est enregistré sans le geste du brasseur. */initial?:Partial<FinancialAsset>;onClose:()=>void}) {
-  const [draft,setDraft]=useState<FinancialAsset>(()=>asset??{id:idFor('IMMO'),name:'',acquisitionDate:todayISO(),inServiceDate:todayISO(),acquisitionCents:0,businessUsePct:100,category:'production',method:'declining',ratePct:30,openingYear:new Date().getFullYear(),openingValueCents:0,openingConfirmed:false,firstYearFraction:1,...initial});
-  const equipment=StorageService.getStocks().equipment;
-  const allTransactions=StorageService.getTransactions().filter(t=>!t.finance?.voidedAt);
-  const transactions=allTransactions.filter(t=>t.finance?.kind!=='refund'&&(t.category==='materiel'||t.finance?.lines.some(l=>l.kind==='equipment')));
-  const credits=allTransactions.filter(t=>t.finance?.kind==='refund'&&t.finance.refundOfId===draft.transactionId&&transactionDirection(t,allTransactions)==='in');
-  const field=<K extends keyof FinancialAsset>(key:K,value:FinancialAsset[K])=>setDraft({...draft,[key]:value});
-  return <FormSheet title={asset?'Modifier l’amortissement':'Ajouter un amortissement'} onClose={onClose} onSave={()=>{if(!draft.name.trim()||draft.acquisitionCents<0||draft.acquisitionCents===0&&!draft.capitalAdjustmentTransactionIds?.length)throw Error('Renseigne le matériel et sa valeur d’acquisition.');FinanceService.saveAsset(draft);}}>
-    <Field label="Matériel"><select value={draft.equipmentRef??''} onChange={e=>{const item=equipment.find(x=>x.ref===e.target.value);setDraft({...draft,equipmentRef:item?.ref,name:item?.name??draft.name,acquisitionDate:isoDate(item?.purchaseDate)??draft.acquisitionDate,acquisitionCents:item?.purchasePrice!=null?Math.round(item.purchasePrice*100):draft.acquisitionCents});}}><option value="">Saisie manuelle</option>{equipment.map(e=><option key={e.ref} value={e.ref}>{e.name}</option>)}</select></Field>
-    <Field label="Nom de l’immobilisation"><Input value={draft.name} onChange={e=>field('name',e.target.value)} required/></Field>
-    <Field label="Achat lié"><select value={draft.transactionId??''} onChange={e=>setDraft({...draft,transactionId:e.target.value||undefined,lineId:undefined,capitalAdjustmentTransactionIds:undefined})}><option value="">Achat ancien ou à relier</option>{transactions.map(t=><option key={t.id} value={t.id}>{t.description} · {formatCHF(transactionAmount(t))}</option>)}</select></Field>
-    {draft.transactionId&&<Field label="Ligne de l’achat"><select value={draft.lineId??''} onChange={e=>field('lineId',e.target.value||undefined)}><option value="">Achat complet</option>{transactions.find(t=>t.id===draft.transactionId)?.finance?.lines.map(l=><option key={l.id} value={l.id}>{l.description} · {formatCHF(l.amountCents)}</option>)}</select></Field>}
-    <MoneyInput label="Valeur d’acquisition TTC (CHF)" value={draft.acquisitionCents||undefined} onChange={v=>field('acquisitionCents',v??0)} required/>
-    {credits.length>0&&<div className="finance-item-editor"><p className="font-semibold">Avoirs sur cet achat</p><p className="finance-muted">Corrige la valeur d’acquisition ci-dessus, puis coche les avoirs déjà déduits de ce coût. Pour un ancien bien, vérifie aussi sa valeur comptable d’ouverture.</p>{credits.map(credit=><label className="finance-check" key={credit.id}><input type="checkbox" checked={draft.capitalAdjustmentTransactionIds?.includes(credit.id)??false} onChange={e=>field('capitalAdjustmentTransactionIds',e.target.checked?[...(draft.capitalAdjustmentTransactionIds??[]),credit.id]:(draft.capitalAdjustmentTransactionIds??[]).filter(id=>id!==credit.id))}/>{credit.description} · {formatCHF(transactionAmount(credit))}</label>)}</div>}
-    <div className="finance-form-grid"><Field label="Date d’achat"><input type="date" value={draft.acquisitionDate} onChange={e=>field('acquisitionDate',e.target.value)} required/></Field><Field label="Mise en service"><input type="date" value={draft.inServiceDate} onChange={e=>field('inServiceDate',e.target.value)} required/></Field></div>
-    <Field label="Catégorie AFC à confirmer"><select value={draft.category} onChange={e=>{const category=e.target.value as FinancialAsset['category'];setDraft({...draft,category,ratePct:ASSET_CATEGORIES[category][1]/(draft.method==='linear'?2:1)});}}>{Object.entries(ASSET_CATEGORIES).map(([key,[label]])=><option key={key} value={key}>{label}</option>)}</select></Field>
-    <div className="finance-form-grid"><Field label="Méthode"><select value={draft.method} onChange={e=>{const method=e.target.value as FinancialAsset['method'];setDraft({...draft,method,ratePct:ASSET_CATEGORIES[draft.category][1]/(method==='linear'?2:1)});}}><option value="declining">Dégressive</option><option value="linear">Linéaire</option></select></Field><Field label="Taux annuel (%)"><NumberInput value={draft.ratePct} onValue={v=>field('ratePct',v??0)} min={0} max={100}/></Field></div>
-    <div className="finance-form-grid"><Field label="Part professionnelle (%)"><NumberInput value={draft.businessUsePct} onValue={v=>field('businessUsePct',v??0)} min={0} max={100}/></Field><Field label="Première année retenue"><NumberInput value={draft.openingYear} onValue={v=>field('openingYear',v??new Date().getFullYear())} min={1900} max={2200}/></Field></div>
-    <MoneyInput label="Valeur professionnelle restante à l’ouverture (CHF)" value={draft.openingValueCents} onChange={v=>field('openingValueCents',v??0)}/>
-    <Field label="Fraction de la première année (1 = année entière)"><NumberInput value={draft.firstYearFraction} onValue={v=>field('firstYearFraction',v??0)} min={0} max={1}/></Field>
-    <label className="finance-check"><input type="checkbox" checked={draft.openingConfirmed} onChange={e=>field('openingConfirmed',e.target.checked)}/>Je confirme la catégorie, les valeurs d’ouverture et le traitement de la première année.</label>
-    <p className="finance-muted">Les années précédentes ne sont pas recalculées. Pour un bien neuf, la valeur d’ouverture est nulle ; l’acquisition est ajoutée dans son année.</p>
-    <details><summary>Cession du matériel</summary><div className="finance-form"><Field label="Date de cession"><input type="date" value={draft.disposedDate??''} onChange={e=>field('disposedDate',e.target.value||undefined)}/></Field><MoneyInput label="Produit de la cession (CHF)" value={draft.disposalProceedsCents} onChange={v=>field('disposalProceedsCents',v)}/><Field label="Vente de ce matériel liée"><select value={draft.disposalTransactionId??''} onChange={e=>field('disposalTransactionId',e.target.value||undefined)}><option value="">À relier si déjà enregistrée dans les ventes</option>{StorageService.getTransactions().filter(t=>t.category==='recettes'&&!t.finance?.voidedAt).map(t=><option key={t.id} value={t.id}>{t.description} · {formatCHF(transactionAmount(t))}</option>)}</select></Field><p className="finance-muted">Relie la vente déjà enregistrée pour compter son produit une seule fois.</p></div></details>
-  </FormSheet>;
-}
+export { Field, FormSheet };
+/** Solde et paramètres = m4pf-c (voie s2c) : la feuille vit dans `profil/`. `parametres` : le renvoi « Tendance à calculer » ou « Production annuelle » amène sur les cartes des réglages. */
+export function ProfileSheet(props:{profile:FinancialProfile;onClose:()=>void;parametres?:boolean}) { return <ProfilEffets {...props}/>; }
+/** Ajouter une prévision = m3pr-c (voie s2) : la feuille vit dans `prevision/`. */
+export function PlanSheet(props:{plan?:FinancialPlan;onClose:()=>void}) { return <PlanSheetC {...props}/>; }
+/** Bien amorti = m3im-c (voie s2c) : la feuille vit dans `bien/`. `initial` : préremplissage d'un matériel neuf (l'achat que l'Annuel propose de passer au registre) ; rien n'est enregistré sans le geste du brasseur. */
+export function AssetSheet(props:{asset?:FinancialAsset;initial?:Partial<FinancialAsset>;onClose:()=>void}) { return <BienCuve {...props}/>; }
 /** Une ligne d'inventaire dont la valeur n'est pas encore saisie n'a PAS de valeur (jamais 0 pour un inconnu) : le champ reste vide, l'enregistrement la refuse. `propositions` : valeurs estimées (dernière facture), offertes par « Utiliser », jamais écrites seules. */
 export type PropositionInventaire={stockItemRef:string;valueCents:number;note:string};
 const lignesDuStock=(stockItems:StockItem[]):FinancialInventoryLine[]=>stockItems.map(s=>({id:idFor('INV'),name:s.name,kind:s.category==='Emballage'?'packaging' as const:'raw' as const,quantity:s.currentStock,unit:s.unit,valueCents:0,stockItemRef:s.ref,note:'Copié du stock actuel : quantité et valeur à vérifier.'}));
@@ -150,4 +90,4 @@ export function ClosingSheet({closing,year,onClose,stockItems,cote,proposer,prop
   </FormSheet>;
 }
 /** Payer = m5pa-d (voie q1) : un virement, plusieurs pièces du même tiers, un justificatif. La feuille vit dans `payer/`. */
-export function PaymentSheet(props:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void}) { return <PayerVirement {...props}/>; }
+export function PaymentSheet(props:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void;remplace?:FinancialPayment}) { return <PayerVirement {...props}/>; }

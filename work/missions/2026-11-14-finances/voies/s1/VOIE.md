@@ -1,42 +1,52 @@
-# Voie s1 — mini maquettes : la plage depuis la pilule du mois
+# Voie s1 — Doublons m1do-a, Archives m1ar-c, FN-2
 
 - Mission : 2026-11-14-finances
-- Agent : concepteur
-- Modèle : opus
-- Niveau : conception
-- Plafond : 60 tours ; 3 essais par critère
-- Dépend de : —
-- Décideur en cas de doute : brasseur (par la page de choix) ; pilote pour le reste
+- Agent : auteur
+- Modèle : sonnet
+- Niveau : jugement
+- Plafond : 120 tours ; 3 essais par critère
+- Dépend de : 386e29f4 (commité)
+- Décideur en cas de doute : pilote
 
 ## Objectif
-Quatre mini maquettes **statiques** (images, non jouables) d'Opérations « Lignes serrées v6a » avec un filtre précis « du … au … », chacune au repos et après le geste. Chaleur : froide à tiède.
+Doublons m1do-a, Archives m1ar-c, FN-2 : porté dans l'app, branché, typé, testé, au banc (choix du brasseur du 15.11, SPEC-BRASSEUR).
 
 ## Entrées
-- `work/missions/2026-11-14-finances/DOSSIER.md` — tout ce qu'il faut savoir (ses mots, la base, les états, les exigences). Lire en premier ; ne pas relire les sources qu'il résume.
-- `work/missions/2026-11-14-finances/ref/v6a/etat.html`, `work/missions/2026-11-14-finances/ref/v6a/NOTE.md`, `work/missions/2026-11-14-finances/ref/v6a/v6a-page.png` — la base, telle quelle.
-- `work/missions/2026-11-14-finances/analyse/cap/ops-plage-390-clair.png` — ce qu'il a aujourd'hui.
+- Ses mots (15.11) : « m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c ».
+- Les maquettes citées ci-dessous (etat.html, png, NOTE.md) ; `work/missions/2026-11-14-finances/DOSSIER-SOUS-VUES.md` pour ses goûts.
 
 ## Possède (seuls chemins où écrire, avec RESULTAT.md)
+- `src/ui/finance/TransactionJournal.tsx`
+- `src/ui/finance/operations`
+- `src/ui/finance/operations.css`
+- `src/ui/finance/journal.css`
+- `src/ui/finance/ArchiveManagerSheet.tsx`
+- `src/ui/finance/TransactionRow.tsx`
+- `src/domain/finance/duplicates.ts`
+- `src/domain/finance/archive.ts`
+- `tests/integration/doublonsPaire.test.tsx`
+- `tests/integration/archivesFrise.test.tsx`
+- `tests/integration/operationsPeriode.test.tsx`
 - `work/missions/2026-11-14-finances/voies/s1`
 
 ## Consignes
-Charger d'abord les skills `boosters-ux`, `impeccable`, `ui-design-system`. Une variante par axe :
-- s1a — toucher le nom du mois « novembre » ouvre une petite feuille « du [date] au [date] » (deux sélecteurs natifs) ; après : la pilule dit « 1 → 15 nov. » avec ×
-- s1b — la pilule s'étire en deux bornes touchables « ‹ 1 nov. — 15 nov. › » ; les flèches décalent la plage entière
-- s1c — une rangée fine « du … au … » repliée sous la pilule, dépliée par un chevron ; les deux champs restent visibles une fois posés
-- s1d — bascule à deux segments « Mois | Plage » dans la carte du graphe ; Plage montre deux bornes datées
-Chaque axe est une piste, pas un carcan : si l'idée casse v6a, dis-le dans NOTE.md et propose mieux dans le même esprit. Pas de Fable, aucun sous-agent.
+- **Doublons = m1do-a** (`work/missions/2026-11-14-finances/voies/m1/m1do-a/`) : la paire dans la liste, ses gestes (garder les deux / annuler celle-ci) ; « Ce n'est pas un doublon » gardé.
+- **Archives = m1ar-c** (`work/missions/2026-11-14-finances/voies/m1/m1ar-c/`) : la frise des années avec la poignée, ranger une année finie, parcourir une année rangée ; « Gérer les archives » mène ici. Règles d'archive du domaine inchangées.
+- **FN-2** (`work/missions/BUGS.md`) : le « ✓ Payé » de la rangée reste un toucher (v6a), suivi d'un avis « Payé 400,00 · Annuler · Autre montant » ; « Autre montant » ouvre la feuille Payer m5pa-d sur cette pièce ; « Annuler » inverse le paiement par un contre-paiement.
+- Tests : la paire et son geste ; ranger et parcourir une année ; l'avis après « ✓ Payé ».
+- Captures 390 et 1280, clair et cave, de chaque vue ouverte et après son geste, côte à côte avec sa maquette, dans `work/missions/2026-11-14-finances/voies/s1/cap/`, ouvertes.
 
-## Exigences transversales et acquis (recopiés, leçons L05 et L06)
-- Règle n° 1 : v6a reprise telle quelle ; seul le filtre de dates s'ajoute. « ✓ Payé » 24 px minimum.
-- Peu de texte au premier plan ; au style (DESIGN.md) ; jamais type="number" ; inconnu ≠ 0 ; montants recalculés justes dans la plage.
-- Lignes-tâches filtrantes gardées (acquis 10.11). Classes préfixées par l'id (L26).
+## Exigences transversales et acquis (recopiés, L05, L06)
+- Règle n° 1 : chaque maquette choisie portée telle quelle (`etat.html`, image, NOTE.md de sa voie ; les défauts du critique y sont déjà corrigés en passe 2) : mots, ordre, couleurs, tailles, gestes ; un port retire ce qu'elle n'a pas ; captures côte à côte maquette / app. Plancher à enrichir pour le contenu actuel (L07) : une donnée ou action actuelle sans place dans la maquette va dans un « … » et RESULTAT.md le dit.
+- Acquis à garder verts : `node work/missions/2026-11-14-finances/voies/o1/controle-v6a.mjs 3000` (V6A OK), `node work/missions/2026-11-14-finances/voies/f1/controle-frise.mjs 3000` (FRISE OK), ses choix déjà en ligne (v6a + s2ap2, g3a, p5b, g6, m5pa-d, m5ap-a, m5fo-a, m5mo-c).
+- Écritures et paiements : risque élevé. Aucune donnée réelle ; banc `http://localhost:3000/?dev-local&finance-demo` (déjà lancé, ne pas relancer). Services existants seulement ; règles Firestore `C:/Users/mrspa/Documents/Brasserie/firestore.rules` en lecture seule (paiement immuable, contre-paiement `CONTRE-<id>`, un lot par étape comme `src/ui/finance/modifier/executerCorrection.ts`).
+- Hors ligne gardé ; jamais `type="number"` ; 44 px ; inconnu ≠ 0 ; hachure = à payer, rouge = en retard, pointillé = sans pièce ; clair et cave. Gemini jamais appelé (simulé dans les tests).
+- Pas de Fable, aucun sous-agent. `npx tsc` : `node work/missions/2026-11-14-finances/outils/tsc.mjs` ignore `functions/`. Rien hors de « Possède » ; `git status --short` à la fin. Ne commite pas. Trois autres voies écrivent en même temps dans d'autres fichiers.
 
 ## Critères
-Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depuis la racine du dépôt.
+Dans `GATES.md`, même dossier. Ne pas le modifier.
 
 ## Rendre
-- `RESULTAT.md` tenu au fil (une ligne par variante : id, idée, images ouvertes oui/non, défauts vus).
-- Tests : maquettes statiques, aucun Vitest ; la ligne « Tests » est le contrôle de série écrit dans un fichier : `node work/missions/2026-11-14-finances/outils/controle-serie.mjs work/missions/2026-11-14-finances/voies/s1 s1a,s1b,s1c,s1d > work/missions/2026-11-14-finances/voies/s1/tests.txt` (à la place de `npx vitest run … --reporter=dot > tests.txt`).
-- Voie d'écran : 390, clair, repos et après ; images toutes ouvertes avant de rendre.
+- `RESULTAT.md` tenu au fil (plan, chaque étape, écarts à la maquette).
+- La ligne « Tests » : `npx vitest run tests/integration/doublonsPaire.test.tsx tests/integration/archivesFrise.test.tsx tests/integration/operationsPeriode.test.tsx --reporter=dot --no-color > work/missions/2026-11-14-finances/voies/s1/tests.txt`.
 Réponse finale au pilote : une ligne.

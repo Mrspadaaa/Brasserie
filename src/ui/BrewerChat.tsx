@@ -157,10 +157,14 @@ interface CommonProps {
   onApplied?: () => void;
   initialOpen?: boolean;
   initialQuestion?: string;
+  /** t2 : envoie `initialQuestion` dès l'ouverture, une seule fois (compagnon des finances : « Envoyer » envoie en un toucher). Absent : rien ne change. */
+  autoSend?: boolean;
   suggestedPrompts?: Array<{ label: string; question: string }>;
   /** Finances : l'élément d'où vient la question (bandeau « Depuis Finances · … »). */
   origine?: string;
   hideLauncher?: boolean;
+  /** Classe ajoutée à la feuille du compagnon (Finances : croix simple, contrastes en clair). */
+  classeFeuille?: string;
   onClose?: () => void;
 }
 
@@ -278,11 +282,13 @@ function ScopedChat({
   onApplied,
   initialOpen = false,
   initialQuestion = '',
+  autoSend = false,
   suggestedPrompts,
   origine,
   assistedAdvice,
   assistedRuntime,
   hideLauncher = false,
+  classeFeuille,
   onClose
 }: LegacyProps) {
   const [savedDraft, setSavedDraft] = useState<unknown>();
@@ -614,6 +620,15 @@ function ScopedChat({
     setQuestion('');
     setError('');
   };
+  const autoEnvoye = useRef(false);
+  const askCourant = useRef(ask);
+  askCourant.current = ask;
+  useEffect(() => {
+    if (!autoSend || autoEnvoye.current || !open || question.trim().length < 2) return;
+    autoEnvoye.current = true;
+    void askCourant.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSend, open]);
   const older = async () => {
     if (hasAssistedSession && !assistedRuntimeReady) {
       setError('Le transport dédié à l’historique assisté est indisponible.');
@@ -920,7 +935,7 @@ function ScopedChat({
         // est la description (CSS `cmp-une`, plus.css), « Compagnon » en gras venant de la feuille de style.
         title={vue === 'limites' ? 'Limites IA' : 'Compagnon brasseur'}
         subtitle={vue === 'limites' ? undefined : `· ${enTete}`}
-        className={`brewer-chat-sheet cmp-root${vue === 'limites' ? '' : ' cmp-une'}${finance ? ' cmp-fin' : ''}`}
+        className={`brewer-chat-sheet cmp-root${vue === 'limites' ? '' : ' cmp-une'}${finance ? ' cmp-fin' : ''}${classeFeuille ? ` ${classeFeuille}` : ''}`}
         footer={
           vue === 'limites' ? undefined : (
             <form

@@ -19,6 +19,7 @@ import { FinanceService } from '../../src/services/financeService';
 import { executerPlan } from '../../src/ui/finance/modifier/executerCorrection';
 import { PayerVirement } from '../../src/ui/finance/payer/PayerVirement';
 import { saveFinanceDocumentConfirmed } from '../../src/services/financeDocuments';
+import { periodeSynthese } from '../../src/domain/finance/periodeSynthese';
 import * as correction from '../../src/domain/finance/correctionMontant';
 import type { Transaction } from '../../src/types';
 
@@ -40,6 +41,9 @@ const taper = (valeur: string) => {
   fireEvent.change(champ, { target: { value: valeur } });
   fireEvent.blur(champ);
 };
+
+/** FN-10 : sous le payé, il faut dire ce qui s'est passé ; ici « Erreur de saisie : j'ai payé… » (le paiement suit). */
+const taperSous = (valeur: string) => { taper(valeur); fireEvent.click(screen.getByRole('radio', { name: /Erreur de saisie/ })); };
 
 beforeEach(async () => {
   const vrai = await vi.importActual<typeof import('../../src/domain/finance/correctionMontant')>('../../src/domain/finance/correctionMontant');
@@ -100,8 +104,8 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
 
   it('baisse sous le payé : contre-paiement CONTRE-PAI-1, montant, puis paiement du nouveau montant, daté du paiement inversé (M2)', async () => {
     const { onSave } = ouvrir();
-    taper('40');
-    expect(screen.getByRole('radio', { name: /Le paiement suit/ })).toHaveAttribute('aria-checked', 'true');
+    taperSous('40');
+    expect(screen.getByRole('radio', { name: /Erreur de saisie/ })).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(onSave).toHaveBeenCalled());
     const paiements = FinanceService.getPayments();
@@ -115,19 +119,57 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
     expect(vivante().settlementBalanceCents).toBe(4000);
   });
 
-  it('q6 point 1 : sous le payé, seul « Le paiement suit » est proposé, avec « Trop payé 12,00 ? » vers l’avoir ; jamais de « Reste à payer »', () => {
-    ouvrir();
+  it('FN-10 : sous le payé, deux choix explicites (erreur de saisie / bien payé : trop payé), aucun d’office, jamais « Reste à payer »', async () => {
+    const { onSave } = ouvrir();
     taper('30');
     const groupe = screen.getByRole('radiogroup', { name: 'Le paiement déjà noté' });
-    expect(within(groupe).getAllByRole('radio')).toHaveLength(1);
-    expect(within(groupe).getByRole('radio', { name: /Le paiement suit/ })).toHaveAttribute('aria-checked', 'true');
-    expect(within(groupe).getByRole('radio')).toHaveTextContent('payé 30,00');
+    expect(within(groupe).getAllByRole('radio')).toHaveLength(2);
+    expect(within(groupe).getByRole('radio', { name: /Erreur de saisie : j’ai payé 30,00/ })).toHaveAttribute('aria-checked', 'false');
+    expect(within(groupe).getByRole('radio', { name: /J’ai bien payé 42,00 : 12,00 trop payé/ })).toHaveAttribute('aria-checked', 'false');
     expect(screen.queryByRole('radio', { name: /Reste à payer/ })).toBeNull();
-    expect(screen.getByText(/Trop payé/)).toHaveTextContent('Trop payé 12,00 ? Enregistre un avoir depuis la fiche');
+    // Sans choix, rien ne s'écrit.
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(screen.getAllByText(/Choisis/).length).toBeGreaterThan(0));
+    expect(onSave).not.toHaveBeenCalled();
+    expect(vivante().finance?.amountCents).toBe(4200);
     // L'aperçu « après » garde le payé : aucune échéance inventée, aucun « à payer ».
+    fireEvent.click(screen.getByRole('radio', { name: /Erreur de saisie/ }));
     const apercu = screen.getByText('Dans Opérations').parentElement!;
     expect(apercu).not.toHaveTextContent(/à payer/);
     expect(apercu).not.toHaveTextContent(/reste 30,00/);
+  });
+
+  it('FN-10 (t2, point 1) : « J’ai bien payé 42,00 » garde la sortie du virement : la pièce vaut 30,00, le trop-payé de 12,00 est une créance « à récupérer » portée par une vraie sortie de 12,00', async () => {
+    // Le virement du 09.11 : 42,00 sur la pièce T-NET + 2,00 sur une autre pièce, moyen « bank » : 44,00 sortis.
+    StorageService.addTransaction({ ...piece(), id: 'T-B', description: 'Autre pièce', amountHT: 2, amountTTC: 2, finance: { version: 1, kind: 'expense', amountCents: 200, lines: [], paymentStatus: 'unpaid' } });
+    FinanceService.recordPayment({ id: 'PAI-B', transactionId: 'T-B', date: '2026-11-09', amountCents: 200, direction: 'out', method: 'bank', recordedAt: '2026-11-09T08:00:00.000Z' });
+    const sortiesDuJour = () => FinanceService.getPayments().filter(p => p.date === '2026-11-09' && p.method === 'bank').reduce((n, p) => n + (p.direction === 'out' ? p.amountCents : -p.amountCents), 0);
+    const synthese = () => periodeSynthese({ transactions: StorageService.getTransactions(), payments: FinanceService.getPayments(), mois: '2026-11', aujourdhui: '2026-11-15' });
+    expect(sortiesDuJour()).toBe(4400);
+    const avant = synthese();
+    const { onSave } = ouvrir();
+    taper('30');
+    fireEvent.click(screen.getByRole('radio', { name: /J’ai bien payé 42,00/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    // La pièce vaut son nouveau montant, payée en entier.
+    expect(vivante().finance?.amountCents).toBe(3000);
+    expect(vivante().settlementBalanceCents).toBe(3000);
+    // Les 44,00 sortis restent sortis, à leur date et par leur moyen : le contre-paiement efface les 42,00, le nouveau paiement (30,00) et la sortie du trop-payé (12,00) les rendent.
+    expect(sortiesDuJour()).toBe(4400);
+    // La créance : une vraie pièce de 12,00, payée par une sortie de 12,00 du même jour et du même moyen. Ni avoir (recette sans sortie), ni retrait de la dépense.
+    const toutes = StorageService.getTransactions();
+    expect(toutes.some(t => t.finance?.kind === 'refund')).toBe(false);
+    const creance = toutes.find(t => t.id !== 'T-NET' && t.id !== 'T-B' && /À récupérer/.test(t.description));
+    expect(creance?.finance).toMatchObject({ kind: 'expense', amountCents: 1200 });
+    expect(creance?.description).toContain('Nettoyant alcalin');
+    expect(creance?.settlementBalanceCents).toBe(1200);
+    expect(FinanceService.getPayments().filter(p => p.transactionId === creance!.id)).toMatchObject([{ amountCents: 1200, direction: 'out', method: 'bank', date: '2026-11-09' }]);
+    // Opérations : « payé » reste celui du virement (44,00 en tout), la pièce compte 30,00 et n'est pas retirée une seconde fois.
+    const apres = synthese();
+    expect(apres.payeCents).toBe(avant.payeCents);
+    expect(apres.depenseCents).toBe(avant.depenseCents);
+    expect(apres.aVerifier.avoirsInvalides).toEqual([]);
   });
   it('une baisse au-dessus du payé et une hausse gardent les deux choix', () => {
     ouvrir();
@@ -173,7 +215,7 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
   it('M3 : changer la date vers un exercice clos verrouille le montant, et l’enregistrement n’écrit aucun montant', async () => {
     FinanceService.saveClosing({ id: 'C-2025', year: 2025, createdAt: '2026-01-05T08:00:00.000Z', openingInventory: [], closingInventory: [], inventoriesConfirmed: true, adjustments: [], report: { generatedAt: '2026-01-05T08:00:00.000Z' } as never });
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     fireEvent.change(screen.getByPlaceholderText('JJ.MM.AAAA'), { target: { value: '03.04.2025' } });
     expect(screen.getByLabelText('Montant (CHF)')).toBeDisabled();
     expect(screen.getByText(/Exercice 2025 clôturé/)).toBeInTheDocument();
@@ -187,7 +229,7 @@ describe('m5mo-c : le montant d’une pièce payée se modifie', () => {
   it('M1 : un plan impossible et un montant changé : l’erreur s’affiche et rien ne s’écrit', async () => {
     vi.mocked(correction.planCorrection).mockImplementation(() => { throw new Error('Aucun paiement à inverser pour descendre sous le montant déjà réglé.'); });
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     expect(screen.getByText(/Aucun paiement à inverser/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(screen.getAllByText(/Aucun paiement à inverser/).length).toBeGreaterThan(0));
@@ -229,7 +271,7 @@ describe('B1 : un lot Firestore par étape', () => {
   it('ne dit « mise à jour » qu’après la mise en file de toutes les étapes, et sans attendre le serveur', async () => {
     const attente = vi.spyOn(FirestoreRepo, 'waitForWrites');
     const { onSave } = ouvrir();
-    taper('40');
+    taperSous('40');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(onSave).not.toHaveBeenCalled(); // les étapes sont encore en train de partir, lot par lot
     await waitFor(() => expect(onSave).toHaveBeenCalled());

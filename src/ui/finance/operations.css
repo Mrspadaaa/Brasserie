@@ -178,6 +178,9 @@
 /* Test d'écran 14.11 (14) : « Doublons » désactivé se lisait à peine (gris sur brun, opacité .5). Désactivé = contour seul, texte du ton courant (≥ 4,5:1). */
 .ops-pu:disabled { opacity:1; background:transparent; box-shadow:inset 0 0 0 1px var(--ops-bord); color:var(--ops-t2); cursor:default; }
 .ops-pu[data-urgent] { box-shadow:inset 0 0 0 1px rgb(var(--attention)); color:rgb(var(--attention-texte)); }
+/* m1do-a : « Doublons » ouvert = la pastille pleine de la maquette (texte inversé), son compte dans une pastille inverse ; jamais le contour d'alerte par-dessus. */
+.ops-pu[data-urgent][aria-pressed=true] { box-shadow:none; color:rgb(var(--cave-950)); }
+.ops-pu[data-urgent][aria-pressed=true] .ops-n { display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:rgb(var(--cave-950)); color:var(--ops-t1); line-height:18px; }
 .ops-n { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; font-weight:600; }
 .ops-panneau { display:flex; flex-direction:column; gap:6px; padding:8px 0 10px; border-top:1px solid var(--ops-bord); }
 .ops-chips { display:flex; flex-wrap:wrap; gap:4px; }
@@ -194,11 +197,6 @@
 .ops-lien:hover { text-decoration:underline; text-underline-offset:3px; }
 .ops-archives { padding:6px 0; font-size:13px; color:var(--ops-t2); }
 .ops-archives select { min-height:32px; margin-left:6px; padding:3px 6px; border:1px solid rgb(var(--cave-600)); border-radius:10px; background:rgb(var(--cave-850)); color:var(--ops-t1); font-size:16px; }
-.ops-doublons { margin:6px 0; padding:6px 8px; border-left:3px solid rgb(var(--attention)); background:rgb(var(--c-302719)); font-size:13px; line-height:18px; color:var(--ops-t2); }
-.ops-doublons strong { color:rgb(var(--attention-texte)); font-weight:600; }
-.ops-doublons p { margin:0; }
-.ops-doublons ul { margin:4px 0 0; padding-left:16px; list-style:disc; }
-.ops-doublons .ops-lien { display:inline; min-height:0; }
 .ops-pages { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:8px 0; font-size:13px; }
 .ops-pages .ops-mini { display:grid; place-items:center; min-width:28px; }
 .ops-vide { border-bottom:1px solid var(--ops-bord); padding:10px 0; }

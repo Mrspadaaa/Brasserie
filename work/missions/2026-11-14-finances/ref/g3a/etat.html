@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>g3a — Synthèse, passe 2 : les deux colonnes, payé et à payer dans la même image (09.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finA:#86B9E6;--gain:#2F6B22;--vert:#56D27B;--perte:#C8382F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.g3a-m{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.g3a-hd{position:sticky;top:0;z-index:5;background:var(--page)}
+.g3a-tb{display:flex;align-items:center;gap:6px;height:44px;padding:0 8px;border-bottom:1px solid var(--bord)}
+.g3a-logo{width:30px;height:30px;border-radius: 10px;background:#111;display:grid;place-items:center}
+.g3a-nom{font-weight:600;font-size:16px;color:var(--t0);flex:1}
+.g3a-ic{width:32px;height:32px;border-radius: 10px;display:grid;place-items:center}
+.g3a-ic.b{border:1px solid var(--bordm);background:var(--panel)}
+.g3a-rail{display:flex;border-bottom:1px solid var(--bord);padding:0 8px}
+.g3a-rail button{flex:1;height:36px;font-size:14px;color:var(--t2);border-bottom:2px solid transparent}
+.g3a-rail button[aria-selected=true]{color:var(--fin);font-weight:600;border-color:var(--fin)}
+.g3a-main{padding:8px 10px 120px;max-width:1080px;margin:0 auto}
+.g3a-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.g3a-top h2{font-size:16px;font-weight:600;color:var(--t0)}
+.g3a-seg{display:flex;background:var(--panel);border-radius: 10px;padding:2px}
+.g3a-seg button{height:28px;padding:0 10px;border-radius: 10px;font-size:12px;color:var(--t2)}
+.g3a-seg button[aria-pressed=true]{background:#111;color:#fff;font-weight:600}
+/* scène */
+.g3a-scene{position:relative;display:grid;grid-template-columns:1fr 1fr 58px;gap:8px;align-items:end;height:340px;margin-top:6px}
+.g3a-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.g3a-hc{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--t2);padding:0 2px 4px}
+.g3a-hc .g3a-m{font-size:14px;font-weight:600;color:var(--t0)}
+.g3a-pile{display:flex;flex-direction:column;border-radius: 10px;overflow:hidden}
+.g3a-s{display:flex;justify-content:space-between;align-items:flex-start;padding:2px 8px;font-size:12px;border-top:1px solid rgba(255,255,255,.75);min-height:0}
+.g3a-s .g3a-m{font-size:12px}
+.g3a-ap{background:repeating-linear-gradient(135deg,#9856D2 0 4px,#EADCF7 4px 9px)!important;color:#2A0F47!important}
+.g3a-ap .g3a-tag{background:#fff;border-radius: 10px;padding:0 4px;font-weight:600}
+.g3a-ecart{height:10px;border:2px dashed var(--gain);border-bottom:0;border-radius: 10px 10px 0 0;background:var(--vert)}
+.g3a-gain{position:absolute;left:0;top:70px;width:calc(50% - 33px);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2}
+.g3a-gb{background:#fff;border:2px solid var(--gain);border-radius: 10px;padding:2px 12px 4px;text-align:center;color:var(--gain)}
+.g3a-gb b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;line-height:1.05}
+.g3a-gb span{font-size:12px;font-weight:600}
+.g3a-why{height:28px;padding:0 10px;border-radius: 16px;background:#fff;border:1px solid #9CC79A;color:#1d4d17;font-size:12px;font-weight:600}
+.g3a-fil{position:absolute;top:45px;left:25%;width:calc(25% + 6px);height:25px;border-top:2px dashed var(--gain);border-left:2px dashed var(--gain);border-radius: 10px 0 0 0;z-index:1}
+.g3a-apart .g3a-pile{height:12px;border:1px dashed #567BD2;background:repeating-linear-gradient(135deg,#BFD0F2 0 3px,#fff 3px 7px)}
+.g3a-apart .g3a-hc{flex-direction:column;align-items:flex-start}
+.g3a-apart .g3a-hc .g3a-m{font-size:12px;font-weight:400;color:var(--t1)}
+.g3a-leg{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--t2);margin-top:6px}
+.g3a-leg i{display:inline-block;width:14px;height:12px;border-radius: 10px;vertical-align:-2px;margin-right:4px}
+/* caisse */
+.g3a-caisse{margin-top:10px;padding:8px;background:var(--panel);border-radius: 10px}
+.g3a-ct{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--t2)}
+.g3a-ct .g3a-m{font-size:14px;color:var(--t0)}
+.g3a-ct .g3a-m.f{font-weight:600}
+.g3a-cb{display:flex;height:14px;border-radius: 10px;overflow:hidden;margin:6px 0}
+.g3a-pay{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.g3a-chip{display:flex;align-items:center;gap:6px;height:32px;border-radius: 10px;background:#fff;border:1px solid var(--bord);padding:0 4px 0 8px;font-size:12px}
+.g3a-chip b{font-weight:600;color:var(--fin);padding:0 6px;height:24px;display:grid;place-items:center}
+.g3a-chip.r{border-color:#E9A8A2}
+.g3a-dot{width:8px;height:8px;border-radius: 10px;background:var(--perte)}
+.g3a-row{display:flex;align-items:center;gap:8px;min-height:44px;border-bottom:1px solid var(--bord);width:100%;text-align:left}
+.g3a-row .g3a-t{flex:1;font-size:14px;color:var(--t0)}
+.g3a-row .g3a-t small{font-size:12px;color:var(--t2);display:block}
+.g3a-plus{width:28px;height:28px;border-radius: 16px;border:1px solid var(--bordm);display:grid;place-items:center;font-size:16px}
+.g3a-ann{margin-top:640px;border-top:2px dashed var(--bordm);padding-top:8px;font-size:12px;color:var(--t2)}
+.g3a-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--panel);border-top:1px solid var(--bord);display:flex;padding-right:84px;z-index:6}
+.g3a-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t2)}
+.g3a-nav button.on{color:var(--t0);font-weight:600;background:#E3EAF2;box-shadow:inset 0 2px 0 var(--fin)}
+.g3a-fab{position:fixed;right:10px;bottom:6px;width:64px;height:44px;border-radius: 22px;background:#111;color:#fff;display:grid;place-items:center;z-index:7}
+/* état : <i class="g3a-sp" aria-hidden="true" style="font-style:normal"></i>ouvert */
+.g3a-voile{display:none}
+.g3a-voile:target{display:block;position:fixed;inset:0;background:rgba(17,17,17,.35);z-index:20}
+.g3a-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius: 16px 16px 0 0;padding:12px 12px 20px;max-width:560px;margin:0 auto}
+.g3a-sheet h3{font-size:16px;color:var(--t0);display:flex;justify-content:space-between;align-items:center}
+.g3a-ex{font-size:12px;font-weight:600;background:#FFF2D6;color:#7A5300;border-radius: 10px;padding:1px 6px}
+.g3a-sheet p{font-size:14px;margin-top:8px;color:var(--t1)}
+.g3a-src{font-size:12px;color:var(--t2);margin-top:8px}
+.g3a-bar{display:flex;height:22px;border-radius: 10px;overflow:hidden;margin-top:8px;font-size:12px;color:#fff}
+.g3a-bar i{display:flex;align-items:center;padding-left:6px;font-style:normal}
+@media (min-width:900px){.g3a-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:0 40px;align-items:start}.g3a-nav{padding-right:calc(50% - 300px);padding-left:calc(50% - 380px)}.g3a-gain{width:calc(50% - 33px)}}
+.g3a-sp::before{content:"\2726";margin-right:4px}.g3a-ch::before{content:"\203A"}.g3a-dt::before{content:"\00B7";margin:0 4px}.g3a-dv::before{content:"\00F7"}
+</style></head><body>
+<header class="g3a-hd">
+ <div class="g3a-tb">
+  <span class="g3a-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0A02E" stroke-width="2"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/><path d="M6 7c0-2 2-3 5-3s5 1 5 3"/></svg></span>
+  <span class="g3a-nom">L'Affinée</span>
+  <button class="g3a-ic" aria-label="Thème"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a7 7 0 0 0 10 10z"/></svg></button>
+  <button class="g3a-ic b" aria-label="Rechercher"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+  <button class="g3a-ic b" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+ </div>
+ <nav class="g3a-rail" role="tablist"><button role="tab" aria-selected="true">Synthèse</button><button role="tab">Opérations</button><button role="tab">Prévisions</button><button role="tab">Annuel</button></nav>
+</header>
+
+<main class="g3a-main">
+<div class="g3a-wrap">
+ <section>
+  <div class="g3a-top">
+   <h2>Novembre</h2>
+   <div class="g3a-seg" data-booster="periode" role="group" aria-label="Période"><button aria-pressed="false">sept.</button><button aria-pressed="false">oct.</button><button aria-pressed="true">nov.</button><button aria-pressed="false">tout</button></div>
+  </div>
+  <div class="g3a-scene" data-booster="deux-colonnes">
+   <div class="g3a-col">
+    <div class="g3a-hc">Entré <span class="g3a-m">720,00</span></div>
+    <div class="g3a-pile" style="height:300px;background:var(--vert)">
+     <div class="g3a-s" style="flex:1;align-items:flex-end;color:#123d1f;padding-bottom:6px">Vente au marché</div>
+    </div>
+   </div>
+   <div class="g3a-col">
+    <div class="g3a-hc">Dépensé <span class="g3a-m">696,80</span></div>
+    <div class="g3a-ecart" title="Gagné : ce que la vente n'a pas consommé"></div>
+    <div class="g3a-pile" style="height:290px;border-radius: 0 0 10px 10px">
+     <div class="g3a-s" style="flex:42;background:#56C1D2;color:#0f3a40">Nettoyage <span class="g3a-m">42,00</span></div>
+     <div class="g3a-s" style="flex:186.8;background:#D2B356;color:#3a2f10">Brassage <span class="g3a-m">186,80</span></div>
+     <div class="g3a-s" style="flex:68;background:#9856D2;color:#fff">Électricité <span class="g3a-m">68,00</span></div>
+     <div class="g3a-s g3a-ap" style="flex:400;flex-direction:column;gap:4px"><span class="g3a-tag">Loyer <span class="g3a-m">400,00</span></span><span class="g3a-tag">à payer 25 nov.</span></div>
+    </div>
+   </div>
+   <div class="g3a-col g3a-apart">
+    <div class="g3a-hc"><span>Matériel</span><span class="g3a-m">28,60</span><span>à part</span></div>
+    <div class="g3a-pile" title="Matériel : son usure compte dans l'Annuel"></div>
+   </div>
+   <span class="g3a-fil" aria-hidden="true"></span>
+   <div class="g3a-gain" data-booster="gain-loupe">
+    <div class="g3a-gb"><b>+23,20</b><span>CHF gagnés</span></div>
+    <a class="g3a-why" href="#etat" data-booster="ia-pourquoi" style="display:flex;align-items:center;text-decoration:none"><i class="g3a-sp" aria-hidden="true" style="font-style:normal"></i>Pourquoi ?</a>
+   </div>
+  </div>
+  <div class="g3a-leg"><span><i style="background:#9856D2"></i>payé</span><span><i style="background:repeating-linear-gradient(135deg,#9856D2 0 3px,#EADCF7 3px 6px)"></i>à payer</span></div>
+ </section>
+
+ <section>
+  <div class="g3a-caisse" data-booster="caisse-libre">
+   <div class="g3a-ct"><span>En caisse</span><span class="g3a-m f">4 181,60 CHF</span></div>
+   <div class="g3a-cb"><i style="flex:3721.6;background:var(--finA)"></i><i style="flex:460;background:repeating-linear-gradient(135deg,#C8382F 0 3px,#F6D3D0 3px 7px)"></i></div>
+   <div class="g3a-ct"><span>libre <span class="g3a-m">3 721,60</span></span><span>à payer <span class="g3a-m">460,00</span></span></div>
+   <div class="g3a-pay">
+    <span class="g3a-chip r"><span class="g3a-dot"></span>Solde atelier <span class="g3a-m">60,00</span><b>Payer</b></span>
+    <span class="g3a-chip">Loyer <span class="g3a-m">400,00</span><b>Payer</b></span>
+   </div>
+  </div>
+  <div class="g3a-row" data-booster="litre"><span class="g3a-t">Pale Ale<small>27 L nets<i class="g3a-dt" aria-hidden="true" style="font-style:normal"></i>tout compris<i class="g3a-dt" aria-hidden="true" style="font-style:normal"></i>estimé</small></span><span class="g3a-m" style="font-size:16px;font-weight:600;color:var(--t0)">7,51 CHF/L</span><button class="g3a-plus" aria-label="Coût d'un autre brassin">+</button></div>
+  <button class="g3a-row"><span class="g3a-t">Fournisseurs, matériel</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  <button class="g3a-row"><span class="g3a-t"><i class="g3a-sp" aria-hidden="true" style="font-style:normal"></i>Compagnon brasseur</span><span aria-hidden="true"><i class="g3a-ch" aria-hidden="true" style="font-style:normal"></i></span></button>
+ </section>
+</div>
+ <section class="g3a-ann">
+  <p>Annexe<i class="g3a-dt" aria-hidden="true" style="font-style:normal"></i>octobre (aucune vente) : la colonne « Entré » reste en pointillé, « 0,00 » écrit ; dépensé 28,00 (petits achats courants) ; la pastille devient « Perdu −28,00 », rouge. Tout payé : plus de hachure.</p>
+ </section>
+</main>
+
+<div class="g3a-voile" id="etat">
+ <div class="g3a-sheet" role="dialog" aria-label="Pourquoi si peu ?">
+  <h3><i class="g3a-sp" aria-hidden="true" style="font-style:normal"></i>Pourquoi si peu ? <span class="g3a-ex">exemple</span></h3>
+  <p>Ta vente du marché (720,00) a payé surtout le loyer : 400,00, soit 56 % de ce qui est entré. Le brassage en prend 26 %. Une deuxième vente du même ordre en novembre resterait presque entière, puisque le loyer est déjà couvert.</p>
+  <div class="g3a-bar"><i style="flex:400;background:#9856D2">Loyer 56 %</i><i style="flex:68;background:#B98BE3"></i><i style="flex:186.8;background:#D2B356;color:#3a2f10">Brassage 26 %</i><i style="flex:42;background:#56C1D2"></i><i style="flex:23.2;background:var(--gain)"></i></div>
+  <p class="g3a-src">Source : Opérations de novembre (6 lignes). Le calcul ne vient pas de l'IA ; elle le raconte.</p>
+ </div>
+</div>
+
+<nav class="g3a-nav">
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</button>
+ <button class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A4F1E" stroke-width="1.8"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></svg>Brassins</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/></svg>Stocks</button>
+ <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/></svg>Clients</button>
+</nav>
+<button class="g3a-fab" data-commun aria-label="Ajouter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+</body></html>

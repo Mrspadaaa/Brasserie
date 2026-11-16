@@ -103,3 +103,5 @@
 .mod-quit button { min-height:44px; padding:0 12px; border-radius:12px; background:var(--mod-t1); color:rgb(var(--cave-950)); border:0; font-weight:600; }
 .mod-pied { display:grid; grid-template-columns:1fr 1.6fr; gap:8px; padding:10px 14px 14px; flex:none; background:var(--mod-fond); border-top:1px solid var(--mod-bord); }
 .mod-corps::after { content:''; display:block; height:14px; }
+.mod-ch-sous button { padding:6px 8px; }
+.mod-ch-sous button + button { border-left:1px solid var(--mod-bord); }

@@ -1,0 +1,28 @@
+puce: Pourquoi les charges fixes pèsent autant ?Compagnon brasseur
+feuille-390-clair
+état 390 clair: {"pastilles":["novembre:true","6 opérations:true","Loyer de l’atelier à payer 400,00:true","6 sans pièce:true","profil : sans TVA:true","tout l’historique:false","archives:false","projets de matériel:false"],"vise":"chargesFixes","q":"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,80 dépensés.","h":[44,44,44,44,44,44,44,44,44,44]}
+coche-390-clair
+chat-390-clair
+chat 390 clair: Contexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer. /  / Pourquoi les charges fixes pèsent autant sur le mois 2026-11 ? Explique
+erreurs 390 clair: 
+puce: Pourquoi les charges fixes pèsent autant ?Compagnon brasseur
+feuille-390-cave
+état 390 cave: {"pastilles":["novembre:true","6 opérations:true","Loyer de l’atelier à payer 400,00:true","6 sans pièce:true","profil : sans TVA:true","tout l’historique:false","archives:false","projets de matériel:false"],"vise":"chargesFixes","q":"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,80 dépensés.","h":[44,44,44,44,44,44,44,44,44,44]}
+coche-390-cave
+chat-390-cave
+chat 390 cave: Contexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer. /  / Pourquoi les charges fixes pèsent autant sur le mois 2026-11 ? Explique
+erreurs 390 cave: 
+puce: Pourquoi les charges fixes pèsent autant ?Compagnon brasseur
+feuille-1280-clair
+état 1280 clair: {"pastilles":["novembre:true","6 opérations:true","Loyer de l’atelier à payer 400,00:true","6 sans pièce:true","profil : sans TVA:true","tout l’historique:false","archives:false","projets de matériel:false"],"vise":"chargesFixes","q":"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,80 dépensés.","h":[44,44,44,44,44,44,44,44,44,44]}
+coche-1280-clair
+chat-1280-clair
+chat 1280 clair: Contexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer. /  / Pourquoi les charges fixes pèsent autant sur le mois 2026-11 ? Explique
+erreurs 1280 clair: 
+puce: Pourquoi les charges fixes pèsent autant ?Compagnon brasseur
+feuille-1280-cave
+état 1280 cave: {"pastilles":["novembre:true","6 opérations:true","Loyer de l’atelier à payer 400,00:true","6 sans pièce:true","profil : sans TVA:true","tout l’historique:false","archives:false","projets de matériel:false"],"vise":"chargesFixes","q":"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,80 dépensés.","h":[44,44,44,44,44,44,44,44,44,44]}
+coche-1280-cave
+chat-1280-cave
+chat 1280 cave: Contexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer. /  / Pourquoi les charges fixes pèsent autant sur le mois 2026-11 ? Explique
+erreurs 1280 cave: 

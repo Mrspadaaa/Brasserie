@@ -1802,3 +1802,6 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
   (lu, contrat réécrit du pilote, 15.11 : Payer = m5pa-d, porté 1:1 avec les autres choix de la page ; Modifier et Fiche sans choix explicite : sa règle du 15.11 « SI non candidat 1 » s'applique, donc m5mo-c et m5fo-a (première du critique, cadre bleu), réversibles ; Apport = m5ap-a (m1ap-c choisie + justificatif demandé).)
 - **15.11**, mot pour mot, sur la page « Finances : tes retours du 15.11 », vignette m5mo-c : « Tu choisis, avant / après ok »
   (lu : Modifier = m5mo-c, choisi explicitement ; déjà en port, voie q4.)
+- **15.11**, mot pour mot, sur la page des choix (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c Pour le workflow, relancer avec plusieurs agent , , c'est mal target »
+  (lu : Finances, 8 vues choisies. Simplicité (les parcours) : mal ciblé, à relancer avec plusieurs agents en parallèle, à partir de ses vrais parcours et de ses mots, pas de parcours supposés.)
+  (lu, pilote Finances : m4bb-a est portée en premier plan de la feuille du budget (choix du brassin, piles « quand tu paies ») ; le flux c3a, son choix du 09.11, reste à un toucher, rien n'est retiré.)

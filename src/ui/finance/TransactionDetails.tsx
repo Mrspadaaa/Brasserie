@@ -11,8 +11,9 @@ import { etatDeLigne } from './operations/calculs';
 import { GROUPES, groupeDe } from './operations/groupes';
 import { FactureLignes } from './fiche/FactureLignes';
 import { dateFiche, MODE_COURT } from './fiche/format';
-import { dateAffichee, formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
+import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
+import { estMouvementPrive } from '../../domain/finance/correctionMontant';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
 import './fiche/fiche.css';
@@ -24,13 +25,23 @@ import './fiche/fiche.css';
  * Ce que la maquette n'a pas et que l'écran garde : « Noter un paiement » (quand il reste à payer), et sous « … » : confirmer qu'une pièce reste à régler, traitement annuel du matériel.
  * Toute écriture passe par `StorageService` et `FinanceService`, comme avant ; ce composant n'ouvre aucun chemin d'écriture neuf.
  */
-export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe}: {
+/** FN-7 : la note d'un paiement issu d'un virement sur plusieurs pièces (« Virement de 12.00 CHF réparti sur 2 pièces ») se lit « virement de 12,00 · 2 pièces ». Une autre note ne dit rien. */
+function lienVirement(p:FinancialPayment):string{
+  const m=/Virement de\s+(.+?)\s+réparti sur\s+(\d+)\s+pièces?/i.exec(p.note??'');
+  if(!m) return '';
+  const nombre=Number(m[1].replace(/[^\d.,]/g,'').replace(',','.'));
+  return Number.isFinite(nombre)&&nombre>0?`virement de ${amountOnly(Math.round(nombre*100))} · ${m[2]} pièces`:'';
+}
+
+export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe,onOpenTransaction}: {
   transaction:Transaction; transactions:Transaction[]; payments:FinancialPayment[]; plans:FinancialPlan[];
   onClose:()=>void; onEdit:()=>void; onPay:()=>void; onRefund:()=>void;
   /** Renvoi vers l'article acheté, quand la ligne sait de quel article il s'agit (segment de la barre comme rangée). */
   onOpenStockItem?:(ref:string)=>void;
   /** Renvoi vers la recette estimée par le budget auquel cette facture se rattache. */
   onOpenRecipe?:(recipeId:string)=>void;
+  /** t3 (A2) : renvoi vers une autre opération (la créance « À récupérer » née d'un trop-payé sur cette pièce). */
+  onOpenTransaction?:(transaction:Transaction)=>void;
 }) {
   const [error,setError]=useState(''), [correction,setCorrection]=useState<string|null>(null);
   const state=paymentState(tx,payments,transactions), plan=plans.find(p=>p.id===tx.finance?.planId);
@@ -38,10 +49,14 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const brewRecipeId=estimate?.recipeId, brewTitle=estimate?.title;
   const outgoing=transactionDirection(tx,transactions)==='out';
   const voided=!!tx.finance?.voidedAt;
+  /* t3 (A2) : le franc de trop payé a une adresse. La créance écrite par la correction porte « « <pièce> » » dans son motif (`creanceDeTropPaye`) ; la pièce la montre et y renvoie. */
+  const creances=transactions.filter(c=>c.id!==tx.id&&isActiveTransaction(c)&&(c.subcategory==='À récupérer'||c.subcategory==='À rembourser')&&(c.description??'').includes(`« ${tx.description} »`));
   const etat=etatDeLigne(tx,state,!outgoing,payments,todayISO());
   /* Payé : le texte de la maquette (✓ payé 9 nov. · banque). Ouvert : les mots que cette fiche a toujours dits (« Reste à payer : 100,00 CHF »), l'échéance en dessous ; la couleur (hachure, rouge) vient de l'état. */
   const ouvert=state.state==='unpaid'||state.state==='partial';
-  const pastille=ouvert?`${state.state==='partial'?'Reste à':'À'} ${outgoing?'payer':'encaisser'} : ${formatCHF(state.remainingCents)}`:etat.texte;
+  /* FN-12 : un apport ou un prélèvement n'est jamais une créance : jamais « À encaisser », jamais « Noter un encaissement », pas d'échéance (FN-11) ; son paiement se corrige par Modifier ou par l'annulation de l'écriture. */
+  const prive=estMouvementPrive(tx);
+  const pastille=ouvert&&prive?`${transactionKind(tx)==='contribution'?'Apport':'Prélèvement'} : aucun paiement noté`:ouvert?`${state.state==='partial'?'Reste à':'À'} ${outgoing?'payer':'encaisser'} : ${formatCHF(state.remainingCents)}`:etat.texte;
   const year=Number((isoDate(tx.date)??todayISO()).slice(0,4));
   const occurrences=plan?.recurrence?planOccurrences(plan,`${year-1}-01-01`,`${year+2}-12-31`):[];
   const apply=(fn:()=>void)=>{try{fn();setError('');setCorrection(null);}catch(e){setError((e as Error).message);}};
@@ -58,14 +73,15 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   return <Sheet open title={tx.description} subtitle={tiers} onClose={onClose} className="finance-sheet fiche-sheet">
     <div className="fiche">
       <div className="fiche-hd">
-        <span className="fiche-sq" style={{background:groupe.fond}} aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={groupe.trait} strokeWidth="2.8"><path d={groupe.chemin}/></svg></span>
+        <span className="fiche-sq" style={{background:groupe.fond}} aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={groupe.trait} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d={groupe.chemin}/></svg></span>
         <span className="fiche-t"><b>{tx.description}</b><span>{tiers}</span></span>
         <button type="button" className="fiche-x" aria-label="Fermer" onClick={onClose}><X size={18} aria-hidden="true"/></button>
       </div>
       {error&&<p role="alert" className="fiche-erreur">{error}</p>}
       <div className="fiche-sum"><strong className="fiche-amt fiche-m reading">{amountOnly(transactionAmount(tx))}</strong><span className="fiche-cur">CHF</span>{!voided&&<span className={`fiche-tg fiche-tg-${etat.ton}`}>{pastille}</span>}</div>
+      {!voided&&creances.map(c=><button type="button" key={c.id} className="fiche-rec" disabled={!onOpenTransaction} onClick={()=>onOpenTransaction?.(c)}>{amountOnly(c.finance?.amountCents??0)} CHF {c.subcategory==='À récupérer'?'à récupérer':'à rembourser'} : voir la créance<ChevronRight size={16} aria-hidden="true"/></button>)}
       {voided&&<p className="fiche-note">Écriture annulée. Justificatif et historique conservés.</p>}
-      {!voided&&tx.finance?.dueDate&&state.remainingCents>0&&<p className="fiche-note">Échéance : {new Date(`${tx.finance.dueDate}T12:00:00`).toLocaleDateString('fr-CH')}</p>}
+      {!voided&&!prive&&tx.finance?.dueDate&&state.remainingCents>0&&<p className="fiche-note">Échéance : {new Date(`${tx.finance.dueDate}T12:00:00`).toLocaleDateString('fr-CH')}</p>}
       {!voided&&state.state==='partial'&&state.paidCents>0&&<p className="fiche-note">{outgoing?'Déjà payé':'Déjà encaissé'} : {formatCHF(state.paidCents)}</p>}
       {tx.finance?.refundApplication==='offset'?<p className="fiche-note">Cet avoir est imputé sur la facture d’origine. Aucun mouvement d’argent n’est enregistré.</p>:state.appliedCreditCents>0?<p className="fiche-note">Avoirs imputés : {formatCHF(state.appliedCreditCents)}. Reste à régler : {formatCHF(state.remainingCents)}.</p>:null}
       {!voided&&state.overpaidCents>0&&<p className="fiche-note">Paiement en trop : {formatCHF(state.overpaidCents)}. Vérifie l’historique des paiements.</p>}
@@ -78,8 +94,8 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
       <FactureLignes lines={lines} onOpenStockItem={onOpenStockItem}/>
       {brewRecipeId&&onOpenRecipe&&<button type="button" className="fiche-rec" onClick={()=>onOpenRecipe(brewRecipeId)}>
         <Wheat size={17} aria-hidden="true"/>Recette{brewTitle?` · ${brewTitle}`:''}<ChevronRight size={14} aria-hidden="true"/></button>}
-      {!voided&&state.remainingCents>0&&<button type="button" className="fiche-b1" onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}
-      {!voided&&<div className="fiche-acts" style={{marginTop:state.remainingCents>0?8:4}}>
+      {!voided&&!prive&&state.remainingCents>0&&<button type="button" className="fiche-b1" onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}
+      {!voided&&<div className="fiche-acts" style={{marginTop:state.remainingCents>0&&!prive?8:4}}>
         <button type="button" className="fiche-b2" onClick={onEdit}><Pencil size={15} aria-hidden="true"/>Modifier</button>
         {['expense','income'].includes(transactionKind(tx))&&<button type="button" className="fiche-b2" onClick={onRefund}><Undo2 size={15} aria-hidden="true"/>Avoir ou remboursement</button>}
       </div>}
@@ -87,17 +103,24 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         {aConfirmer&&<button type="button" className="fiche-b2" onClick={()=>update({paymentStatus:'unpaid'})}>Confirmer que cette pièce reste à régler</button>}
         {equipement&&<div><p className="fiche-note"><strong>Traitement annuel du matériel</strong><br/>Confirme le traitement de chaque achat avec tes règles comptables. Aucun seuil d’immobilisation n’est imposé.</p>{lines.filter(l=>l.kind==='equipment').map(line=><Field key={line.id} label={line.description}><select value={line.capitalTreatment??''} onChange={e=>update({lines:tx.finance!.lines.map(l=>l.id===line.id?{...l,capitalTreatment:e.target.value as 'expense'|'asset'||undefined}:l)})}><option value="">À confirmer</option><option value="expense">Passer en charge (petit matériel)</option><option value="asset">Immobiliser et amortir</option></select></Field>)}</div>}
       </div></details>}
-      {!voided&&<details className="fiche-dt"><summary><span>Échéance et prévision</span>{plan&&<em>{plan.title}</em>}<ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps">
+      {!voided&&!prive&&<details className="fiche-dt"><summary><span>Échéance et prévision</span>{plan&&<em>{plan.title}</em>}<ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps">
         <Field label="Échéance de la facture"><input type="date" value={tx.finance?.dueDate??''} onChange={e=>update({dueDate:e.target.value||undefined})}/></Field>
         <Field label="Rattacher à une prévision"><select value={tx.finance?.planId??''} onChange={e=>update({planId:e.target.value||undefined,occurrenceId:undefined,planAllocatedCents:undefined})}><option value="">Aucune</option>{plans.filter(p=>(p.status==='active'||p.source==='equipment'&&p.status==='draft'||p.id===tx.finance?.planId)&&p.direction===transactionDirection(tx,transactions)).map(p=><option key={p.id} value={p.id}>{p.title} · {formatCHF(p.amountCents)}</option>)}</select></Field>
         {plan&&<MoneyInput label="Montant de cette facture qui remplace la prévision (CHF)" value={tx.finance?.planAllocatedCents} onChange={v=>update({planAllocatedCents:v})}/>}
         {plan?.recurrence&&<Field label="Échéance prévue remplacée par cette facture"><select value={tx.finance?.occurrenceId??''} onChange={e=>update({occurrenceId:e.target.value||undefined})}><option value="">Choisir la période concernée</option>{occurrences.map(o=><option key={o.id} value={o.id}>{dateAffichee(o.date)}</option>)}</select></Field>}
       </div></details>}
       <details className="fiche-dt fiche-dt-bas" open={paiements.length>0}><summary><span>Paiements</span><em>{paiements.length||''}</em><ChevronDown size={16} aria-hidden="true"/></summary>
-        {paiements.map(p=><div className="fiche-hist" key={p.id}><div><span>{dateFiche(p.date)} · {MODE_COURT[p.method]??p.method}{p.reversalOfId?' · correction':''}</span><span className="fiche-m">{p.direction==='in'?'+':'−'}{amountOnly(p.amountCents)}</span></div>
+        {paiements.filter(p=>!(p.reversalOfId&&paiements.some(o=>o.id===p.reversalOfId))).map(p=>{
+          const contre=paiements.find(r=>r.reversalOfId===p.id);
+          const ligne=(q:FinancialPayment)=><div key={q.id}><span>{dateFiche(q.date)} · {MODE_COURT[q.method]??q.method}{q.reversalOfId?' · correction':''}{!q.reversalOfId&&lienVirement(q)?` · ${lienVirement(q)}`:''}</span><span className="fiche-m">{q.direction==='in'?'+':'−'}{amountOnly(q.amountCents)}</span></div>;
+          const preuve=(q:FinancialPayment)=>q.proofDocumentId&&<div className="fiche-hist-pj"><FileCheck2 size={14} aria-hidden="true"/><span>{q.proofFileName||'justificatif du virement'}</span><DocumentProofLink transaction={tx} document={{id:q.proofDocumentId,fileName:q.proofFileName}}/></div>;
+          /* FN-6 : une paire paiement / contre-paiement se replie en une ligne « corrigé » ; le détail (les deux écritures) s'ouvre d'un toucher. */
+          if(contre) return <details className="fiche-hist fiche-hist-corr" key={p.id}><summary><span>{dateFiche(p.date)} · {MODE_COURT[p.method]??p.method} · corrigé</span><span className="fiche-m fiche-m-barre">{amountOnly(p.amountCents)}</span><ChevronDown size={14} aria-hidden="true"/></summary>
+            {ligne(p)}{preuve(p)}{ligne(contre)}</details>;
+          return <div className="fiche-hist" key={p.id}>{ligne(p)}
           {/* m5pa-d : un virement a un seul justificatif, lié à chaque paiement qu'il a réglé ; il se montre sur la ligne de ce paiement, distinct du justificatif de la pièce. */}
-          {p.proofDocumentId&&<div className="fiche-hist-pj"><FileCheck2 size={14} aria-hidden="true"/><span>{p.proofFileName||'justificatif du virement'}</span><DocumentProofLink transaction={tx} document={{id:p.proofDocumentId,fileName:p.proofFileName}}/></div>}
-          {!p.reversalOfId&&!payments.some(r=>r.reversalOfId===p.id)&&<button type="button" onClick={()=>setCorrection(p.id)}>Corriger ce paiement saisi par erreur</button>}</div>)}
+          {preuve(p)}
+          {!p.reversalOfId&&!prive&&<button type="button" onClick={()=>setCorrection(p.id)}>Corriger ce paiement saisi par erreur</button>}</div>;})}
         {!paiements.length&&<p className="fiche-note">Aucun paiement daté enregistré.</p>}
       </details>
       {!voided&&<details className="fiche-dt"><summary><span>Corriger une erreur de saisie</span><ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps"><p className="fiche-note">Une annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.</p><button type="button" className="fiche-b2" onClick={()=>setCorrection('void')}>Annuler cette écriture</button></div></details>}

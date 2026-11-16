@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>m3im-c — Immobilisation : la cuve année par année, le taux sous le doigt (chaude)</title>
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;--vertf:#E4F1E8;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.m3im-c-f{position:relative;width:390px;min-height:844px;background:#4a4a4a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.m3im-c-f::before{content:"";flex:0 0 52px}
+.m3im-c-bg{position:absolute;top:0;left:0;width:390px;height:844px;display:block}
+.m3im-c-voile{position:absolute;inset:0;background:rgba(17,17,17,.48)}
+.m3im-c-sh{margin-top:0!important;min-height:0!important;position:relative;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.m3im-c-poi{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.m3im-c-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.m3im-c-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.m3im-c-x{width:32px;height:32px;border:0;background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.m3im-c-pied{display:flex;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord);background:var(--page)}
+.m3im-c-btn{height:44px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--bordm);background:var(--page);color:var(--t0);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m3im-c-btn.m3im-c-pri{flex:1;background:var(--t0);border-color:var(--t0);color:#fff}
+.m3im-c-lab{font-size:12px;color:var(--t2);display:block;margin-bottom:3px}
+.m3im-c-in{display:flex;align-items:center;gap:6px;width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;color:var(--t0);background:var(--page)}
+.m3im-c-in::placeholder{color:#8a8a8a}
+.m3im-c-muet{font-size:12px;color:var(--t2)}
+.m3im-c-sh{margin-top:46px;min-height:798px}
+.m3im-c-h{display:flex;align-items:center;padding:2px 6px 0 12px}
+.m3im-c-h div{flex:1}.m3im-c-h h2{font-size:17px;font-weight:600;color:var(--t0)}.m3im-c-h p{font-size:12px;color:var(--t2)}
+.m3im-c-c{padding:4px 12px 8px;display:flex;flex-direction:column;gap:8px}
+.m3im-c-pan{background:var(--panel);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.m3im-c-seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:44px;background:var(--page)}
+.m3im-c-seg button{border:0;background:none;font-size:13px;color:var(--t2);line-height:15px}
+.m3im-c-seg button b{display:block;font-size:14px;color:var(--t0)}
+.m3im-c-seg button+button{border-left:1px solid var(--bordm)}
+.m3im-c-seg button[aria-pressed=true]{background:var(--t0);color:#ddd}.m3im-c-seg button[aria-pressed=true] b{color:#fff}
+svg.m3im-c-g{display:block;width:100%}
+.m3im-c-zero{stroke:var(--t1)}
+.m3im-c-b0{fill:#C9D9F0}.m3im-c-bp{fill:#7FA3DA}.m3im-c-bc{fill:var(--fin)}.m3im-c-bf{fill:#EEF3FA;stroke:#7FA3DA;stroke-width:1}
+.m3im-c-v{font-family:var(--mono);font-size:12px;fill:var(--t1)}.m3im-c-vc{font-family:var(--mono);font-size:13px;font-weight:700;fill:var(--fin)}
+.m3im-c-a{font-size:12px;fill:var(--t2)}.m3im-c-ac{font-size:12px;fill:var(--t0);font-weight:700}
+.m3im-c-pe{font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--t0)}
+.m3im-c-lg{display:flex;gap:12px;font-size:12px;color:var(--t2);align-items:center}
+.m3im-c-lg i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.m3im-c-res{display:flex;align-items:baseline;gap:6px;border-top:1px solid var(--bord);padding-top:6px}
+.m3im-c-res span{font-size:13px;font-weight:600;color:var(--t1);flex:1}
+.m3im-c-res b{font-family:var(--mono);font-size:20px;color:var(--t0)}
+.m3im-c-cur{display:flex;align-items:center;gap:8px}
+.m3im-c-cur span{font-size:13px;color:var(--t1);width:70px}
+.m3im-c-tr{flex:1;height:4px;border-radius:2px;background:var(--fin);position:relative}
+.m3im-c-tr::after{content:"";position:absolute;right:-2px;top:-10px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid var(--fin);box-shadow:0 2px 6px -2px rgba(0,0,0,.4)}
+.m3im-c-cur b{font-family:var(--mono);font-size:14px;width:48px;text-align:right;color:var(--t0)}
+.m3im-c-g3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:6px}
+.m3im-c-cell{border:1px solid var(--bord);border-radius:10px;padding:4px 8px;min-height:44px}
+.m3im-c-cell span{display:block;font-size:12px;color:var(--t2)}.m3im-c-cell b{font-family:var(--mono);font-size:14px;color:var(--t0);font-weight:600}
+.m3im-c-conf{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--vert);font-weight:600}
+.m3im-c-row{display:flex;align-items:center;gap:6px;min-height:36px;border-bottom:1px solid var(--bord);font-size:14px}
+.m3im-c-row span{flex:1}.m3im-c-row em{font-style:normal;font-size:12px;color:var(--t2)}
+</style></head><body>
+<div class="m3im-c-f"><img class="m3im-c-bg" src="../../../ref/g6/g6-4-materiel.png" alt=""><div class="m3im-c-voile"></div><div class="m3im-c-sh">
+<div class="m3im-c-poi"></div>
+<header class="m3im-c-h"><div><h2>Cuve de fermentation</h2><p>son usure · terme : amortissement</p></div><button class="m3im-c-x" aria-label="Fermer"><svg class="m3im-c-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+<div class="m3im-c-c">
+ <div class="m3im-c-pan">
+  <div class="m3im-c-seg" role="group" aria-label="Comment elle s'use" data-booster="methode"><button aria-pressed="true"><b>20 % du reste</b>dégressive · AFC cuves</button><button aria-pressed="false"><b>10 % du prix</b>linéaire</button></div>
+  <svg class="m3im-c-g" viewBox="0 0 346 168" height="168" data-booster="annees"><line x1="0" x2="346" y1="140" y2="140" class="m3im-c-zero"/><rect x="4" y="22.0" width="40" height="118.0" rx="4" class="m3im-c-b0"/><text x="24" y="18" text-anchor="middle" class="m3im-c-v">1 800</text><text x="24" y="156" text-anchor="middle" class="m3im-c-a">achat</text><rect x="53" y="45.6" width="40" height="94.4" rx="4" class="m3im-c-bp"/><text x="73" y="42" text-anchor="middle" class="m3im-c-v">1 440</text><text x="73" y="156" text-anchor="middle" class="m3im-c-a">2025</text><rect x="102" y="64.5" width="40" height="75.5" rx="4" class="m3im-c-bc"/><text x="122" y="60" text-anchor="middle" class="m3im-c-vc">1 152</text><text x="122" y="156" text-anchor="middle" class="m3im-c-ac">2026</text><rect x="151" y="79.6" width="40" height="60.4" rx="4" class="m3im-c-bf"/><text x="171" y="76" text-anchor="middle" class="m3im-c-v">921</text><text x="171" y="156" text-anchor="middle" class="m3im-c-a">2027</text><rect x="200" y="91.7" width="40" height="48.3" rx="4" class="m3im-c-bf"/><text x="220" y="88" text-anchor="middle" class="m3im-c-v">737</text><text x="220" y="156" text-anchor="middle" class="m3im-c-a">2028</text><rect x="249" y="101.3" width="40" height="38.7" rx="4" class="m3im-c-bf"/><text x="269" y="97" text-anchor="middle" class="m3im-c-v">589</text><text x="269" y="156" text-anchor="middle" class="m3im-c-a">2029</text><rect x="298" y="109.1" width="40" height="30.9" rx="4" class="m3im-c-bf"/><text x="318" y="105" text-anchor="middle" class="m3im-c-v">471</text><text x="318" y="156" text-anchor="middle" class="m3im-c-a">2030</text><text x="122" y="167" text-anchor="middle" class="m3im-c-pe">−288</text></svg>
+  <div class="m3im-c-lg"><span><i style="background:var(--fin)"></i>2026</span><span><i style="background:#EEF3FA;border:1px solid #7FA3DA"></i>prévu</span><span style="margin-left:auto">si 10 % du prix : <b class="m3im-c-m" style="color:var(--t0)">−180,00</b> en 2026</span></div>
+  <div class="m3im-c-res"><span>Usure à garder en 2026</span><b>288,00</b></div>
+ </div>
+ <div class="m3im-c-cur" data-booster="part-pro"><span>Part pro</span><i class="m3im-c-tr"></i><b>100 %</b></div>
+ <div class="m3im-c-g3"><div class="m3im-c-cell"><span>Prix d'achat</span><b>1 800,00</b></div><div class="m3im-c-cell"><span>Achetée</span><b>01.02.25</b></div><div class="m3im-c-cell"><span>En service</span><b>01.02.25</b></div></div>
+ <div class="m3im-c-g3"><div class="m3im-c-cell"><span>Départ</span><b>2026</b></div><div class="m3im-c-cell"><span>Valeur 1er janv.</span><b>1 440,00</b></div><div class="m3im-c-cell"><span>1re année</span><b style="font-family:var(--sans)">entière</b></div></div>
+ <div class="m3im-c-conf"><svg class="m3im-c-i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>Catégorie et départ confirmés</div>
+ <div class="m3im-c-row"><span>Matériel du stock, achat lié, catégorie</span><em>Cuves 20 %</em><svg class="m3im-c-i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+ <div class="m3im-c-row"><span>Vendue ou mise au rebut</span><em>non</em><svg class="m3im-c-i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+</div>
+<footer class="m3im-c-pied" style="margin-top:auto"><button class="m3im-c-btn">Annuler</button><button class="m3im-c-btn m3im-c-pri">Enregistrer</button></footer>
+</div></div>
+</body></html>

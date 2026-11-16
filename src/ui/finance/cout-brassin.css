@@ -119,3 +119,8 @@
 .cbf-noeud [data-poste-actif='true'] { padding: 4px 6px; background: color-mix(in srgb, var(--cbf-att) 14%, transparent); border-radius: 10px; outline: 1.5px solid var(--cbf-att); outline-offset: 2px; }
 .cbf-lien { display: inline-flex; align-items: center; min-height: 32px; font-size: 13px; font-weight: 600; color: var(--cbf-t0); text-decoration: underline; text-underline-offset: 3px; }
 .cbf-ingr-calcul { color: var(--cbf-t2); }
+/* t3, bloquant 1 : à 390, les trois gestes du pied (Expliquer · Enregistrer · Prévoir 64,26) tiennent en entier, comme m4bb-a (écart 6, sans icône sur Enregistrer ni Prévoir). */
+.cbf-act-3 { gap: 6px; }
+.cbf-act-3 .cbf-pri, .cbf-act-3 .cbf-sec, .cbf-act-3 .cbf-ia { padding: 0 10px; gap: 6px; font-size: 14px; white-space: nowrap; min-width: 0; }
+.cbf-act-3 .cbf-pri { flex: 1 1 auto; }
+.cbf-act-3 .cbf-sec svg, .cbf-act-3 .cbf-pri svg { display: none; }

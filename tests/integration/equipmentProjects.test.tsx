@@ -54,7 +54,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     fireEvent.click(screen.getByRole('button', { name: /Nouvelle cuverie.*À estimer/ }));
     change('Prix estimé TTC (CHF)', '2000.50'); fireEvent.input(screen.getByLabelText('Paiement prévu en'), { target: { value: todayISO().slice(0, 7) } });
     fireEvent.click(screen.getByRole('button', { name: 'Ensuite', exact: true }));
-    fireEvent.click(screen.getByText('Livraison, installation et devis', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^À étudier/ })); // m3pm-d : la piste, station « À étudier » (livraison et pose)
     change('Livraison TTC (CHF)', '49.50'); change('Installation TTC (CHF)', '100');
     fireEvent.click(screen.getByRole('checkbox', { name: 'Inclure dans mes prévisions', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' })); await saved();
@@ -128,8 +128,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
     fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte de brassage.*Depuis le début du projet/ }));
-    fireEvent.click(screen.getByText(/Achats liés ·/));
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Hotte de brassage.*Part du projet/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Acheté/ })); // m3pm-d : station « Acheté · n achat lié »
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Hotte de brassage.*part du projet/ }));
     expect(screen.getByRole('dialog', { name: 'Hotte de brassage' })).toBeInTheDocument();
   });
 

@@ -1,0 +1,12 @@
+scène : ?CHF : résultat en attenteÀ classer 5 500,00sans classement, pas de résultat ›Stock au 31 déc. ?sans lui, perte avant stock ›Entré 5 695,00Vente 10 × Bière · 75 cl — Restaurant du LacDépensé + usure 265,40Local et travauxà classer ›5 500,00Brassage15,20Autres frais250,20
+ok  la tête ne dit pas « CHF perdus / gagnés » ferme tant qu’une pièce attend son classement
+ok  la tête dit que le résultat attend le classement (mots « résultat » et « à classer »)
+ok  un segment « Local et travaux » existe dans la colonne Dépensé
+ok  ce segment est hachuré, marqué « à classer », avec 5 500,00 (vu : Local et travauxà classer ›5 500,00 / ann-s ann-hachA)
+ok  le segment « à classer » est un bouton (renvoi touchable)
+ok  « Dépensé + usure » ne compte plus la pièce à classer (vu : Dépensé + usure 265,40)
+ok  le toucher du segment ouvre l’étape 4 (vu : 4)
+ok  l’étape 4 montre « Local et travaux » avec le geste « Matériel »
+ok  l’étape 4 offre aussi d’ouvrir la pièce (la passer en charge)
+ok  la puce « à classer » de la tête ouvre aussi l’étape 4 (vu : 4)
+ANNUEL OK

@@ -17,6 +17,6 @@ export function questionPoste(periode: PeriodeSynthese, periodeDite: string): { 
   const verbe = poste.pluriel ? 'pèsent' : 'pèse';
   return {
     libelle: `Pourquoi ${poste.nom} ${verbe} autant ?`,
-    question: `Pourquoi ${poste.nom} ${verbe} autant sur ${periodeDite} ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer).`,
+    question: `Pourquoi ${poste.nom} ${verbe} autant ${/^(en|du|pendant|sur) /.test(periodeDite) ? '' : 'sur '}${periodeDite} ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer).`,
   };
 }

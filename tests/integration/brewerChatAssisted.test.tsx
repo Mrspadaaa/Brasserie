@@ -228,6 +228,25 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     expect(vi.mocked(api.submit).mock.calls[0][0].hopAdvice).toBeUndefined();
   });
 
+  it('t2, point 4 : `autoSend` envoie la question préparée à l’ouverture, une seule fois, sans second « Envoyer » ; sans la prop, rien ne part seul (Gemini simulé)', async () => {
+    vi.mocked(api.submit).mockImplementation(async (input) => ({
+      turn: {
+        id: 'auto-turn', operationId: input.operationId, question: input.question, createdAt: Date.now(),
+        model: 'model-test', reviewed: true, contextLabel: 'Mes finances', evidence: [],
+        advice: { level: 'info', summary: 'Réponse', action: '', why: '', watch: '', question: '', evidenceIds: [] }
+      }
+    }));
+    const sans = render(<BrewerChat {...baseProps} initialOpen initialQuestion="Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?" />);
+    await new Promise(r => setTimeout(r, 30));
+    expect(api.submit).not.toHaveBeenCalled();
+    sans.unmount();
+    render(<BrewerChat {...baseProps} initialOpen autoSend initialQuestion="Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?" />);
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(api.submit).mock.calls[0][0]).toMatchObject({ question: 'Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?' });
+    await new Promise(r => setTimeout(r, 30));
+    expect(api.submit).toHaveBeenCalledTimes(1);
+  });
+
   it('envoie le texte Unicode exact après le hook et rend le reçu complet une seule fois', async () => {
     const question = '\u00a0Quel houblon\u202f: garde-le\t?\u00a0';
     const request = requestFor(question);

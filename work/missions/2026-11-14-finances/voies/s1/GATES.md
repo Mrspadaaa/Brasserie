@@ -1,30 +1,20 @@
-# Gates: voie s1 — mini maquettes : la plage depuis la pilule du mois
+# Gates: voie s1 — Doublons m1do-a, Archives m1ar-c, FN-2
 
-OWNS: work/missions/2026-11-14-finances/voies/s1
+OWNS: src/ui/finance/TransactionJournal.tsx, src/ui/finance/operations, src/ui/finance/operations.css, src/ui/finance/journal.css, src/ui/finance/ArchiveManagerSheet.tsx, src/ui/finance/TransactionRow.tsx, src/domain/finance/duplicates.ts, src/domain/finance/archive.ts, tests/integration/doublonsPaire.test.tsx, tests/integration/archivesFrise.test.tsx, tests/integration/operationsPeriode.test.tsx, work/missions/2026-11-14-finances/voies/s1
 
-Scope: quatre mini maquettes statiques de v6a avec un filtre du … au …, au repos et après le geste.
+Scope: Doublons m1do-a, Archives m1ar-c, FN-2, porté, typé, testé.
 
-- [ ] G1: les quatre variantes ont etat.html, repos, après et NOTE, base v6a gardée, sans type number
-  CHECK: node work/missions/2026-11-14-finances/outils/controle-serie.mjs work/missions/2026-11-14-finances/voies/s1 s1a,s1b,s1c,s1d
-  EXPECT: SERIE OK
+- [ ] G1: les tests de la voie passent
+  CHECK: node work/missions/2026-11-14-finances/outils/vitest-lu.mjs work/missions/2026-11-14-finances/voies/s1/tests.txt
+  EXPECT: VITEST OK
   EVIDENCE: pending
 
-- [ ] G2: s1a se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s1/s1a/etat.html
-  EXPECT: PAGE OK
+- [ ] G2: le typage passe
+  CHECK: node work/missions/2026-11-14-finances/outils/tsc.mjs
+  EXPECT: TSC OK
   EVIDENCE: pending
 
-- [ ] G3: s1b se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s1/s1b/etat.html
-  EXPECT: PAGE OK
-  EVIDENCE: pending
-
-- [ ] G4: s1c se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s1/s1c/etat.html
-  EXPECT: PAGE OK
-  EVIDENCE: pending
-
-- [ ] G5: s1d se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s1/s1d/etat.html
-  EXPECT: PAGE OK
+- [ ] G3: les rangées v6a restent conformes
+  CHECK: node work/missions/2026-11-14-finances/voies/o1/controle-v6a.mjs 3000
+  EXPECT: V6A OK
   EVIDENCE: pending

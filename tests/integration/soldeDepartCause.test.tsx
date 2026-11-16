@@ -162,7 +162,7 @@ describe('Feuille du solde : dire ce que fait la case', () => {
     ouvrir(sansSolde);
     expect(screen.queryByText(PHRASE)).toBeNull();
     fireEvent.change(screen.getByLabelText('Solde de départ (CHF)'), { target: { value: '100' } });
-    const dialogue = within(screen.getByRole('dialog', { name: 'Solde et paramètres financiers' }));
+    const dialogue = within(screen.getByRole('dialog', { name: 'Solde et paramètres' }));
     expect(dialogue.getByText(PHRASE)).toBeTruthy();
     fireEvent.click(dialogue.getByRole('checkbox', { name: /J’ai vérifié ce solde/ }));
     expect(screen.queryByText(PHRASE)).toBeNull();
@@ -225,11 +225,16 @@ describe('Prévisions plate : dire pourquoi et renvoyer', () => {
     fireEvent.click(tete); // se replie
     expect(document.querySelectorAll('.prv-depart')).toHaveLength(1);
   });
-  it('feuille du solde ouverte sur « Paramètres des prévisions et des brassins » quand on y est renvoyé', () => {
-    render(<ProfileSheet profile={confirme} parametres onClose={() => {}} />);
-    expect((screen.getByText('Paramètres des prévisions et des brassins').closest('details') as HTMLDetailsElement).open).toBe(true);
-    cleanup();
-    render(<ProfileSheet profile={confirme} onClose={() => {}} />);
-    expect((screen.getByText('Paramètres des prévisions et des brassins').closest('details') as HTMLDetailsElement).open).toBe(false);
+  it('feuille du solde renvoyée aux réglages (m4pf-c : la carte « Tout est noté depuis » est visible, plus de pli) : `parametres` y amène, sinon rien ne défile', () => {
+    const vise = vi.fn(), avant = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollIntoView');
+    Element.prototype.scrollIntoView = vise as never;
+    try {
+      render(<ProfileSheet profile={confirme} parametres onClose={() => {}} />);
+      expect(vise).toHaveBeenCalledTimes(1);
+      expect((vise.mock.contexts[0] as HTMLElement).getAttribute('aria-label')).toBe('Tout est noté depuis');
+      cleanup(); vise.mockClear();
+      render(<ProfileSheet profile={confirme} onClose={() => {}} />);
+      expect(vise).not.toHaveBeenCalled();
+    } finally { if (avant) Object.defineProperty(Element.prototype, 'scrollIntoView', avant); else delete (Element.prototype as unknown as Record<string, unknown>).scrollIntoView; }
   });
 });

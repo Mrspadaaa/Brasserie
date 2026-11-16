@@ -90,3 +90,10 @@
 .fiche-corriger .finance-actions { justify-content:flex-end; }
 @media (min-width:768px) { .fiche-sheet { max-width:640px; margin-left:auto; margin-right:auto; } }
 @media (prefers-reduced-motion:reduce) { .fiche *, .fiche-sheet * { transition:none!important; } }
+/* FN-6 : une paire paiement / contre-paiement repliée en une ligne « corrigé » ; le détail s'ouvre d'un toucher. */
+.fiche-hist-corr > summary { display:flex; align-items:center; gap:8px; min-height:36px; cursor:pointer; list-style:none; font-size:14px; color:var(--fiche-t2); }
+.fiche-hist-corr > summary::-webkit-details-marker { display:none; }
+.fiche-hist-corr > summary > span:first-child { flex:1; min-width:0; }
+.fiche-hist-corr .fiche-m-barre { text-decoration:line-through; }
+.fiche-hist-corr[open] > summary svg { transform:rotate(180deg); }
+.fiche-hist-corr > div { color:var(--fiche-t2); }

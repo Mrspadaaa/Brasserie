@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m1do-a · Doublons, la paire dans la liste (tiède)</title>
+<style>
+@font-face{font-family:"Source Sans 3";font-weight:400;src:url(../fonts/SourceSans3-400.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;src:url(../fonts/SourceSans3-600.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;src:url(../fonts/SourceSans3-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(../fonts/IBMPlexMono-500.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;src:url(../fonts/IBMPlexMono-600.woff2) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px;overflow-x:hidden}
+.m1do-a-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.m1do-a-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.m1do-a-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.m1do-a-hd b{font-size:18px;font-weight:600;flex:1}
+.m1do-a-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.m1do-a-bx{background:#F5F5F5;border:1px solid #DADADA}
+.m1do-a-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.m1do-a-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.m1do-a-tabs a.m1do-a-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+.m1do-a-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m1do-a-top{display:flex;align-items:center;gap:6px}
+.m1do-a-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.m1do-a-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.m1do-a-pill b{font-size:15px;padding:0 4px}
+.m1do-a-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.m1do-a-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.m1do-a-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.m1do-a-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.m1do-a-p b{font-size:12px;line-height:14px;white-space:nowrap;letter-spacing:-.4px}
+.m1do-a-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m1do-a-st i{display:block}
+.m1do-a-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m1do-a-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.m1do-a-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.m1do-a-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.m1do-a-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.m1do-a-key span{display:flex;align-items:center;gap:4px}
+.m1do-a-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.m1do-a-key b{font-size:13px;color:#111}
+.m1do-a-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;background:#fff}
+.m1do-a-g .m1do-a-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m1do-a-g b{font-size:13px;letter-spacing:.02em}
+.m1do-a-g .m1do-a-sub{font-size:13px;color:#444}
+.m1do-a-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center;background:#fff}
+.m1do-a-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m1do-a-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m1do-a-q small{font-weight:400;color:#555;font-size:13px}
+.m1do-a-a{font-size:14px;text-align:right}
+.m1do-a-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.m1do-a-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px;white-space:nowrap}
+.m1do-a-ok{background:#E8F5EC;color:#22663A}
+.m1do-a-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.m1do-a-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m1do-a-pc{display:inline-flex;align-items:center;gap:2px;color:#555;white-space:nowrap}
+.m1do-a-pc.m1do-a-no{color:#7A5500}
+.m1do-a-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.m1do-a-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.m1do-a-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.m1do-a-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.m1do-a-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.m1do-a-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444;display:inline-flex;align-items:center;gap:4px}
+.m1do-a-foot .m1do-a-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.m1do-a-foot .m1do-a-prs{background:#111;color:#fff;font-weight:600}
+.m1do-a-foot .m1do-a-urg{background:#FDF1F0;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m1do-a-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#D6453D;color:#fff;font-size:12px;font-weight:600;line-height:18px}
+.m1do-a-prs .m1do-a-n{background:#fff;color:#111}
+.m1do-a-ex{font-size:12px;color:#666;padding:0 10px}
+.m1do-a-nav{position:relative;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;margin-top:12px}
+.m1do-a-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.m1do-a-nav a.m1do-a-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.m1do-a-fab{position:absolute;right:10px;top:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px}
+.m1do-a-back{position:relative}
+.m1do-a-voile::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.44)}
+.m1do-a-sheet{position:relative;z-index:2;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.25);padding:6px 12px 16px}
+.m1do-a-grab{width:40px;height:4px;border-radius:2px;background:#CFCFCF;margin:0 auto 8px}
+.m1do-a-shd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.m1do-a-shd h2{font-size:18px;line-height:22px;font-weight:700;flex:1}
+.m1do-a-x{width:32px;height:32px;border-radius:10px;background:#F5F5F5;display:grid;place-items:center;font-size:20px;color:#444}
+.m1do-a-cta{width:100%;min-height:44px;border-radius:14px;background:#111;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.m1do-a-sec{min-height:44px;border-radius:14px;background:#F5F5F5;color:#111;font-weight:600;padding:0 14px}
+.m1do-a-lien{color:#2F6EA8;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px;min-height:28px}
+
+
+.m1do-a-avis{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:8px 10px;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.m1do-a-avis b{font-size:15px}
+.m1do-a-avis p{font-size:13px;color:#444}
+.m1do-a-two{width:28px;height:28px;border-radius:10px;background:#FDF1F0;box-shadow:inset 0 0 0 1px #F1C9C5;color:#8E2A23;display:grid;place-items:center;font-weight:700;font-size:13px}
+.m1do-a-grp{margin:8px 10px 0;border:1px solid #E6E6E6;border-radius:16px;overflow:hidden}
+.m1do-a-why{display:flex;align-items:center;gap:6px;padding:6px 10px;background:#FFF;font-size:13px;color:#333;border-bottom:1px solid #F0F0F0}
+.m1do-a-why b{font-weight:600}
+.m1do-a-grp .m1do-a-op{padding-left:10px}
+.m1do-a-gf{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#FAFAFA}
+.m1do-a-grp .m1do-a-act,.m1do-a-annex .m1do-a-act{white-space:nowrap}
+.m1do-a-gf span{font-size:12px;color:#555}
+.m1do-a-out{min-height:32px;padding:0 12px;border-radius:12px;border:1px solid #CFCFCF;background:#fff;font-size:13px;font-weight:600}
+.m1do-a-annex{margin:16px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:8px 0 4px;background:#fff}
+.m1do-a-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.m1do-a-void .m1do-a-q,.m1do-a-void .m1do-a-a{text-decoration:line-through;color:#8A8A8A}
+.m1do-a-gris{background:#F0F0F0;color:#555}
+.m1do-a-eff{display:flex;gap:10px;padding:6px 10px 4px;font-size:12px;color:#444;flex-wrap:wrap}
+.m1do-a-eff b{font-size:13px;color:#111}
+</style>
+</head>
+<body>
+<header class="m1do-a-hd">
+  <span class="m1do-a-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="m1do-a-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="m1do-a-ic m1do-a-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="m1do-a-ic m1do-a-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header><nav class="m1do-a-tabs"><a href="#">Synthèse</a><a href="#" class="m1do-a-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav><section class="m1do-a-band">
+   <div class="m1do-a-top"><span class="m1do-a-pill"><button>‹</button><b>novembre</b><button>›</button></span><button class="m1do-a-due"><i></i>en retard <b class="m1do-a-m">60,00</b></button></div>
+   <div class="m1do-a-piles">
+    <div class="m1do-a-p"><b class="m1do-a-m" style="color:#2A7240">+720,00</b><span class="m1do-a-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="m1do-a-sep"></span><div class="m1do-a-p"><b class="m1do-a-m">468,00</b><span class="m1do-a-st" style="height:57px"><i class="m1do-a-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div><div class="m1do-a-p"><b class="m1do-a-m">186,80</b><span class="m1do-a-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div><div class="m1do-a-p"><b class="m1do-a-m">42,00</b><span class="m1do-a-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div><span class="m1do-a-sep"></span><div class="m1do-a-p"><b class="m1do-a-m">28,60</b><span class="m1do-a-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="m1do-a-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="m1do-a-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="m1do-a-m">325,40</b></span><span><i class="m1do-a-hat"></i>à payer <b class="m1do-a-m">400,00</b></span><span>dépensé <b class="m1do-a-m">696,80</b></span></div>
+  </section>
+ <div class="m1do-a-avis" role="note"><span class="m1do-a-two">×2</span><div><b>2 pièces peut-être en double</b><p>Rien n'est supprimé. Annule celle en trop, ou écarte l'avertissement.</p></div></div>
+ <section class="m1do-a-grp" data-booster="paire-doublon">
+  <div class="m1do-a-why"><span class="m1do-a-sq" style="width:22px;height:22px;border-radius:10px;background:#564925;display:grid;place-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Même référence QR</b><span style="margin-left:auto">finit par <b class="m1do-a-m" style="font-size:13px">04471</b></span></div>
+  <div class="m1do-a-op"><span class="m1do-a-bar" style="background:#D2B356"></span>
+   <span class="m1do-a-q">Houblons Citra 1 kg <small>· Hopfen &amp; Co</small></span><span class="m1do-a-a m1do-a-m">94,50</span>
+   <span class="m1do-a-meta"><span class="m1do-a-tg m1do-a-ok">✓ payé 16 oct. · banque</span><span class="m1do-a-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · photo</span></span><button class="m1do-a-mini m1do-a-act">Annuler celle-ci</button>
+  </div>
+  <div class="m1do-a-op"><span class="m1do-a-bar" style="background:#D2B356"></span>
+   <span class="m1do-a-q">Houblons Citra 1 kg <small>· Hopfen &amp; Co</small></span><span class="m1do-a-a m1do-a-m">94,50</span>
+   <span class="m1do-a-meta"><span class="m1do-a-tg m1do-a-ok">✓ payé 16 oct. · banque</span><span class="m1do-a-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · courriel</span></span><button class="m1do-a-mini m1do-a-act">Annuler celle-ci</button>
+  </div>
+  <div class="m1do-a-gf"><span>saisies le 14 et le 15 oct.</span><button class="m1do-a-out" data-booster="ecarter">Ce n'est pas un doublon</button></div>
+ </section>
+ <div class="m1do-a-foot"><button class="m1do-a-ia">✦ Pourquoi les charges fixes pèsent autant ?</button><button class="">Par date</button><button class="">Filtres ⌄</button><button class="m1do-a-prs">Doublons <span class="m1do-a-n">2</span></button><button class="">Apport ou prélèvement privé</button><button class="">Archives</button></div>
+ <section class="m1do-a-annex" aria-label="État : la seconde annulée">
+  <h2>Après « Annuler celle-ci » sur la pièce du courriel</h2>
+  <div class="m1do-a-op"><span class="m1do-a-bar" style="background:#D2B356"></span>
+   <span class="m1do-a-q">Houblons Citra 1 kg <small>· Hopfen &amp; Co</small></span><span class="m1do-a-a m1do-a-m">94,50</span>
+   <span class="m1do-a-meta"><span class="m1do-a-tg m1do-a-ok">✓ payé 16 oct. · banque</span><span class="m1do-a-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · photo</span></span>
+  </div>
+  <div class="m1do-a-op m1do-a-void"><span class="m1do-a-bar" style="background:#D2B356"></span>
+   <span class="m1do-a-q">Houblons Citra 1 kg <small>· Hopfen &amp; Co</small></span><span class="m1do-a-a m1do-a-m">94,50</span>
+   <span class="m1do-a-meta"><span class="m1do-a-tg m1do-a-ok m1do-a-gris">annulée le 9 nov.</span><span class="m1do-a-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · courriel</span></span><button class="m1do-a-mini m1do-a-act">Rétablir</button>
+  </div>
+  <div class="m1do-a-eff"><span>octobre, brassage <b class="m1do-a-m">−94,50</b></span><span>Doublons : plus rien, le filtre se referme</span></div>
+ </section>
+ <nav class="m1do-a-nav">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="m1do-a-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+  <button class="m1do-a-fab" aria-label="Ajouter">+</button>
+</nav>
+</body>
+</html>
