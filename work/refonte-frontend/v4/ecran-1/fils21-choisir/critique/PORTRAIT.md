@@ -117,7 +117,7 @@ Ses notes, mot pour mot (jeu : `c-1511-f1`, `c-1611-fb`, `c-1611-dc`, `c-1611-da
 | da, carnet | même phrase ; 7,5 | besoin 8,5 · brasseur 8 · fluidité 8 · uxui 7,5 (moyenne 8,0) | + 0,5 |
 | s2a2, fiche embouteillage | « Ça correspond pas du tout à mes besoins ?? » | ACCEPT, 0 bloquant | rejet manqué |
 | c3b, c6b, c1b, pastille Stocks (C enrichi) | « C tel quel · C toujours le meilleur... Et de loin... » | c6 et c3 « nettement mieux que C » | préférence inversée : il garde le plus simple |
-| L29 a/b, liens d'une fiche | « L29 b » (liens en mots, aperçu sur place) | a premier, b « mots soulignés pas touchables » | il préfère le texte en ligne aux pastilles |
+| L29 a/b, liens d'une fiche | « L29 b », puis « a est meilleur effectivement, la critique a bien fait son travail » | a premier (+ aperçu de b) | aucun : le critique avait raison |
 
 **Constat.** Nos juges notent environ + 0,5 à + 1 au-dessus de lui, et une fois acceptent ce qu'il rejette. « pas incroyable » ne veut pas dire « ajoute » : sur la pastille, chaque ajout (colonnes, cumuls, bulle) l'a éloigné ; il garde C « de loin ».
 
