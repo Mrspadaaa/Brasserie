@@ -135,3 +135,4 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 - calendrier-85 est arrêté au jugement : la base sources2 est validée en direction (« Ça semble bon »), mais elle n'est pas compacte.
 - Workflow `calendrier-compact`, task wzhk5e0tc, run wf_25a87aa5-b10. Sortie dans `cc/` (v1 à v3 et corrections), puis page5.
 - Gardes : CAL-COMPACT, THEME-APP, scénario S1 à S12 joué de zéro, audit à trois regards. Le pilote ouvre les captures avant de publier.
+- Méthode (16.11, L30) : l'exploration se fait en mini maquettes statiques nombreuses. calendrier-compact est arrêté. Workflow `calendrier-fils`, task wm37jf5do, run wf_8eef9f82-18f : 16 versions statiques dans `fils/`, puis page5. Le + reste à droite, juste au-dessus des onglets.

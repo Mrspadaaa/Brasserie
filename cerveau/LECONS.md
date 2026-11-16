@@ -61,6 +61,13 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, auteur, conseil
 - Contrôle : `systeme.mjs mission` refuse une mission de code sans « ## État de l'art » (problème type, examiné, décision)
 
+### L30 — Explorer en mini maquettes statiques nombreuses ; jouable seulement après son choix
+- Erreur : 16.11, prototypes jouables bouclés (mesures, juges, scénarios) pendant des heures avant qu'il ait choisi une direction. « on perds beaucoup de temps pour pas grand chose… juste avoir pleins de versions ?? »
+- Cause : la vérification d'une version finie a été appliquée à l'exploration.
+- Faire : explorer en HTML et CSS statiques, 12 à 16 versions, avec le seul contrôle des règles dures (thème, +, compacité, police) ; il choisit ; le jouable, le scénario de zéro et l'audit viennent après, sur la version choisie. Voir [[fil-de-fer-d-abord]].
+- Rôles : pilote, concepteur
+- Contrôle : aucun
+
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
