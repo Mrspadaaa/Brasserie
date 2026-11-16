@@ -41,6 +41,8 @@ export function restoreCatalogFilters(kind: CatalogKind, saved: unknown): Catalo
   if (kind === 'batches') {
     result.use = 'all';
     result.versions = 'all';
+    /* BUGS 32 : un texte cherché est un geste d'un instant ; il ne se rouvre pas (« Rien pour ZZ TEST » restait sur Brassins). */
+    result.search = '';
   }
   return result;
 }

@@ -19,7 +19,7 @@ export interface DonneesFrise {
   moisSaisi: (mois: string) => boolean;
 }
 
-const HAUTEUR_MAX = 18, BORD = 3, ROUTE_MAX = 400;
+const HAUTEUR_MAX = 18, BORD = 3, ROUTE_MAX = 1500;
 
 /** La bulle de la poignée tenue reste dans la frise : collée à gauche ou à droite quand la poignée est près d'un bord (capture du 14.11 : « 22 oct. » coupé). */
 const bulleX = (x: number) => (x < 0.22 ? 'gauche' : x > 0.78 ? 'droite' : undefined);
@@ -29,9 +29,11 @@ function Sup({ texte }: { texte: string }) {
   return apres === undefined ? <>{texte}</> : <>{avant}1<sup>er</sup>{apres}</>;
 }
 
-export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees, onPlage, onMois }: {
+export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees, onPlage, onMois, resume }: {
   mois: string; plage: Plage | null; aujourdhui: string; jourMax: string; nbOperations: number; donnees: DonneesFrise;
   onPlage: (du: string, au: string) => void; onMois: () => void;
+  /** v1 (33) : quand la période n'est pas la fenêtre dessinée (« Tout l'historique » : la frise montre le mois en cours), la ligne de compte dit la période, jamais « 30 jours » du mois montré. */
+  resume?: React.ReactNode;
 }) {
   const eff = plage ?? plageDuMois(mois);
   const [fen, setFen] = useState<Fenetre>(() => fenetreInitiale(plage, mois));
@@ -136,12 +138,12 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
   return <>
     <div className="ops-frise" data-testid="frise">
       <div className="ops-fr-rd">
-        <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>
-        {plage && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
+        {resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
+        {plage && !resume && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
       </div>
       <div className="ops-tr" ref={piste} onClick={toucher}>
         <span className="ops-sel" style={{ left: pct(duX), width: pct(auX - duX) }}/>
-        <div className="ops-fjours" role="img" aria-label={`Dépense de chaque jour, ${titre}`} style={{ gridTemplateColumns: `repeat(${fenEff.nb}, 1fr)` }}>
+        <div className="ops-fjours" role="img" aria-label={`Dépense de chaque jour, ${titre}`} style={{ gridTemplateColumns: `repeat(${fenEff.nb}, minmax(0, 1fr))` }}>
           {jours.map((j, i) => {
             const p = cellules[i], hors = j < eff.du || j > eff.au || undefined;
             if (!dessine) return <span key={j} className="ops-fj" data-hors={hors}/>;

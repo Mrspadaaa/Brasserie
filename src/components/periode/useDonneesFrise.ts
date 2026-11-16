@@ -26,10 +26,15 @@ export function useDonneesFrise(transactions: Transaction[]) {
     return {
       donnees: donneesFriseDe(entrees, payments, aujourdhui, jours),
       /** Opérations actives comptées dans [du, au] (jour où elles comptent). */
-      nombre: (du: string, au: string) => entrees.filter(e => {
+      nombre: (du: string | null, au: string | null) => entrees.filter(e => {
         const j = jours.get(e.transaction.id) ?? e.date;
         return !!j && isActiveTransaction(e.transaction) && dansJours(j, du, au);
-      }).length
+      }).length,
+      /** v1 (33) : premier et dernier jour des opérations actives (« Tout l'historique » dit d'où à où) ; `null` sans opération datée. */
+      etendue: (() => {
+        const js = entrees.filter(e => isActiveTransaction(e.transaction)).map(e => jours.get(e.transaction.id) ?? e.date).filter((j): j is string => !!j).sort();
+        return js.length ? { du: js[0], au: js[js.length - 1] } : null;
+      })()
     };
   }, [transactions, payments, aujourdhui]);
 }

@@ -111,3 +111,5 @@ Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. 
   - « Rien de prévu » reste affiché après l'enregistrement ;
   - une prévision et un projet ne peuvent pas être supprimés.
 - Pour chaque constat : d'abord un test qui échoue, puis la correction. Ensuite tests, build et test d'écran ; mise en ligne si tout est vert, depuis le dernier tag. Aucune question au brasseur.
+
+- Exécuté (16.11 nuit) : constats 18 à 27 corrigés (u1, u2), 17 écarté, test d'écran fca6caf6 0 bloquant (5 mineurs FN-17 à FN-21), fusion de en-ligne/2026-11-16-brassins, 258 tests, build, gardes ; déployé 2746109c, bundle servi = build ; tag local en-ligne/2026-11-16-finances-nuit.
