@@ -13,6 +13,7 @@ import { estDemo } from './demo';
 import { domaineKxc, echelleLog } from '../../domain/tarifs/echellePrix';
 import { bieresDesVentes, groupesParFormat, hors, nomFormat, PLAGE_LITRE_PLAUSIBLE, raisonAVerifier, separerAVerifier, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
 import { disposerFrise, marqueProche, type Marque } from '../../domain/tarifs/friseDisposition';
+import { VenteDeTarifs } from './VenteDeTarifs';
 import './tarifs-frise.css';
 
 /**
@@ -101,13 +102,9 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
   const dispo = useMemo(() => disposerFrise(groupes, echelle.x, W, X0), [groupes, echelle, W]);
 
   const [sel, setSel] = useState<{ marque: Marque; vente: VenteAuLitre | null } | null>(null);
-  /** Constat 12 : « Ouvrir la vente » demande à l'app d'ouvrir cette vente là où elle se corrige (Finances › Opérations). Sans écouteur, la ligne dit où aller. */
-  const [sansPage, setSansPage] = useState<VenteAuLitre | null>(null);
-  const ouvrirLaVente = (v: VenteAuLitre) => {
-    const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-operation', { cancelable: true, detail: { id: v.transactionId } }));
-    setSansPage(pris ? null : v);
-    if (pris) setSel(null);
-  };
+  /** Constat 12 : « Ouvrir la vente » ouvre la vente dans sa feuille PAR-DESSUS Tarifs (mêmes gestes que Finances › Opérations : Modifier…). On ne quitte pas l'Atelier. */
+  const [venteOuverte, setVenteOuverte] = useState<string | null>(null);
+  const ouvrirLaVente = (v: VenteAuLitre) => { setSel(null); setVenteOuverte(v.transactionId); };
   const [ouverts, setOuverts] = useState<Set<string>>(new Set());
   const ouvrir = (m: Marque) => setSel({ marque: m, vente: m.ventes.length === 1 ? m.ventes[0] : null });
   const ouvrirVente = (v: VenteAuLitre) => {
@@ -194,7 +191,6 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
               </div>
             </div>}
           <AVerifier ventes={aVoir} onVoir={ouvrirVente} onOuvrir={ouvrirLaVente} />
-          {sansPage && <p className="tf-verif-n" role="status">Ouvre Finances › Opérations pour corriger cette vente ({sansPage.date}, {sansPage.qui}).</p>}
         </div>
         <div>
           <ul className="tf-liste">
@@ -214,6 +210,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
         </div>
       </div>
       <VenteFeuille sel={sel} onClose={() => setSel(null)} onVente={(v) => sel && setSel({ ...sel, vente: v })} revient={revient} onOuvrir={ouvrirLaVente} />
+      {venteOuverte && <VenteDeTarifs id={venteOuverte} onClose={() => setVenteOuverte(null)} />}
     </section>
   );
 }

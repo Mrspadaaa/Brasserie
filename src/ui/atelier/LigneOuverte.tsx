@@ -85,8 +85,12 @@ function QuestionSuppression({ titre, onOui, onGarder }: { titre: string; onOui:
 /** Une idée de tarif archivée, ligne fermée : « Supprimer » se voit sans l'ouvrir (constat 31), sous son titre, au-dessus de « Revenir à mes idées » ; la question vient sur la ligne. */
 function SupprimerRangee({ titre, onSupprimer }: { titre: string; onSupprimer: () => void }) {
   const [sur, setSur] = useState(false);
-  if (sur) return <QuestionSuppression titre={titre} onOui={onSupprimer} onGarder={() => setSur(false)} />;
-  return <button type="button" className="lo-rdel" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" />Supprimer</button>;
+  const bouton = useRef<HTMLButtonElement>(null);
+  const redonner = useRef(false);
+  /* « Garder » ferme la question : le focus revient au « Supprimer » de la ligne, pas en haut de page. */
+  useEffect(() => { if (!sur && redonner.current) { redonner.current = false; bouton.current?.focus?.(); } }, [sur]);
+  if (sur) return <QuestionSuppression titre={titre} onOui={onSupprimer} onGarder={() => { redonner.current = true; setSur(false); }} />;
+  return <button type="button" ref={bouton} className="lo-rdel" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" />Supprimer</button>;
 }
 
 /**
@@ -283,7 +287,7 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
   };
   return <div className="lo lo-prix">
     {vide && <p className="lo-first">Aucune idée de prix encore. Note la première ici :</p>}
-    {!vide && <div className="lo-bar lo-bar-t"><h3 className="lo-ht">Mes idées de tarif <span>· CHF HT</span></h3></div>}
+    {!vide && <div className="lo-bar lo-bar-t"><h3 className="lo-ht">{voirRangees ? 'Idées de tarif archivées' : <>Mes idées de tarif <span>· CHF HT</span></>}</h3></div>}
     {(ajout || vide) && <NouveauPrix refermable={!vide} signal={signal} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setRangees(false); setOuvert(i.id); }} />}
     {!vide && <div className="lo-list" aria-label={voirRangees ? 'Mes idées de prix archivées' : 'Mes idées de prix'}>
       {liste.map((i) => {

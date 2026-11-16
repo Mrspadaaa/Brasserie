@@ -33,6 +33,9 @@ describe('constat 31 · Archives de Mes idées de tarif', () => {
     expect(within(q).getByRole('button', { name: 'Garder' })).toHaveFocus();
     fireEvent.click(within(q).getByRole('button', { name: 'Garder' }));
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    // Le focus revient au « Supprimer » de la ligne ; la vue s'appelle « Idées de tarif archivées » (passe 2).
+    expect(screen.getByRole('button', { name: /Supprimer « Verre 3 dl pour ZZ TEST client »/ })).toHaveFocus();
+    expect(screen.getByRole('heading', { name: 'Idées de tarif archivées' })).toBeInTheDocument();
     expect(sup).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: /Supprimer « Verre 3 dl pour ZZ TEST client »/ }));
     fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, supprimer' }));

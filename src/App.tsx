@@ -346,17 +346,9 @@ export const App: React.FC = () => {
   useEffect(() => {
     const versClients = (event: Event) => { setActiveTab('clients'); event.preventDefault(); };
     const versBord = (event: Event) => { setActiveTab('dashboard'); event.preventDefault(); };
-    // « Ouvrir la vente » (Atelier › Tarifs, prix à vérifier) : la vente s'ouvre dans Finances, là où elle se corrige (feuille de l'opération, puis Modifier).
-    const versOperation = (event: Event) => {
-      const id = (event as CustomEvent<{ id?: string }>).detail?.id;
-      if (typeof id !== 'string' || !id) return;
-      setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); event.preventDefault();
-    };
-    window.addEventListener('affinee:ouvrir-operation', versOperation);
     window.addEventListener('affinee:ouvrir-clients', versClients);
     window.addEventListener('affinee:ouvrir-bord', versBord);
     return () => {
-      window.removeEventListener('affinee:ouvrir-operation', versOperation);
       window.removeEventListener('affinee:ouvrir-clients', versClients);
       window.removeEventListener('affinee:ouvrir-bord', versBord);
     };
