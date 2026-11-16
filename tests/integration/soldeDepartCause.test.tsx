@@ -202,8 +202,14 @@ describe('Prévisions plate : dire pourquoi et renvoyer', () => {
     expect(screen.queryByRole('button', { name: /Tendance à calculer/ })).toBeNull();
     expect(screen.getByRole('button', { name: /Rien de prévu/ })).toBeTruthy();
   });
-  it('seulement une marche aujourd’hui (ses achats du 10.11) : « Rien de prévu » reste', () => {
-    monter(confirme, [{ ...loyerPrevu, id: 'AUJ', date: ASOF }]);
+  // u2, constat 22 (jeu en ligne du 16.11) : « Rien de prévu » restait affiché après l'enregistrement d'une prévision de 7,00 (la date par défaut est aujourd'hui).
+  // Ce qui dit « rien » = aucune prévision (plan, récurrence, brassin, projet) dans l'horizon ; les achats déjà passés aujourd'hui (factures) n'en sont pas une.
+  it('une prévision enregistrée pour aujourd’hui : « Rien de prévu » disparaît', () => {
+    monter(confirme, [{ ...loyerPrevu, id: 'AUJ', date: ASOF, source: 'manual' }]);
+    expect(screen.queryByRole('button', { name: /Rien de prévu/ })).toBeNull();
+  });
+  it('une prévision annulée ou terminée n’est pas à venir : « Rien de prévu » reste', () => {
+    monter(confirme, [{ ...loyerPrevu, id: 'ANN', date: ASOF, source: 'manual', status: 'cancelled' }]);
     expect(screen.getByRole('button', { name: /Rien de prévu/ })).toBeTruthy();
   });
   it('une sortie à venir : aucune des deux lignes', () => {

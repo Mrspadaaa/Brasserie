@@ -1,0 +1,4 @@
+G1 . VERDICT OK
+G2 . HORS OK
+
+ Checks  2 passed (2)

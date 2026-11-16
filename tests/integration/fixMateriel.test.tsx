@@ -79,11 +79,14 @@ describe('8 et 27 : supprimer un projet, confirmer l’archivage', () => {
     expect(screen.getByRole('dialog', { name: 'Mon projet de matériel' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer ce projet' }));
     const alerte = screen.getByRole('alertdialog');
-    expect(alerte).toHaveTextContent('Supprimer ce projet ? Ses achats liés restent dans les comptes.');
-    expect(within(alerte).getByRole('button', { name: 'Annuler' })).toBeVisible();
+    // fusion du 16.11 : la brique en ligne `Confirmation` (« Garder » · « Oui, supprimer »), notre texte sur les achats liés
+    expect(alerte).toHaveTextContent('Supprimer « ZZ TEST - Matériel » ?');
+    expect(alerte).toHaveTextContent('Ses achats liés restent dans les comptes.');
+    expect(within(alerte).getByRole('button', { name: 'Garder' })).toBeVisible();
+    expect(within(alerte).getByRole('button', { name: 'Garder' })).toHaveFocus();
     // rien n'est encore supprimé
     expect(FinanceService.getPlans().some(p => p.id === 'ZZ-TEST-MATERIEL')).toBe(true);
-    fireEvent.click(within(alerte).getByRole('button', { name: 'Supprimer' }));
+    fireEvent.click(within(alerte).getByRole('button', { name: 'Oui, supprimer' }));
     await waitFor(() => expect(FinanceService.getPlans().some(p => p.id === 'ZZ-TEST-MATERIEL')).toBe(false));
     expect(confirmer).not.toHaveBeenCalled();
     // les achats liés restent dans les comptes ; l'autre projet n'est pas touché
@@ -91,10 +94,10 @@ describe('8 et 27 : supprimer un projet, confirmer l’archivage', () => {
     expect(FinanceService.getPlans().some(p => p.id === 'ZZ-MOULIN')).toBe(true);
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Mon projet de matériel' })).not.toBeInTheDocument());
   });
-  it('Annuler garde le projet', () => {
+  it('Garder (l’annulation) garde le projet', () => {
     ouvrirArchive('ZZ TEST - Matériel');
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer ce projet' }));
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Annuler' }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Garder' }));
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     expect(FinanceService.getPlans().some(p => p.id === 'ZZ-TEST-MATERIEL')).toBe(true);
   });
@@ -104,9 +107,9 @@ describe('8 et 27 : supprimer un projet, confirmer l’archivage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier ZZ Évier' }));
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' }));
     const alerte = screen.getByRole('alertdialog');
-    expect(alerte).toHaveTextContent('Archiver ce projet ?');
+    expect(alerte).toHaveTextContent('Archiver « ZZ Évier » ?');
     expect(FinanceService.getPlans().find(p => p.id === 'ZZ-VENIR')?.status).toBe('draft');
-    fireEvent.click(within(alerte).getByRole('button', { name: 'Archiver' }));
+    fireEvent.click(within(alerte).getByRole('button', { name: 'Oui, archiver' }));
     await waitFor(() => expect(FinanceService.getPlans().find(p => p.id === 'ZZ-VENIR')?.status).toBe('cancelled'));
   });
   it('un projet à venir se supprime depuis sa fiche, avec la même confirmation', async () => {
@@ -115,8 +118,9 @@ describe('8 et 27 : supprimer un projet, confirmer l’archivage', () => {
     fireEvent.click(screen.getByText('ZZ Évier'));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }));
     const alerte = screen.getByRole('alertdialog');
-    expect(alerte).toHaveTextContent('Supprimer ce projet ? Ses achats liés restent dans les comptes.');
-    fireEvent.click(within(alerte).getByRole('button', { name: 'Supprimer' }));
+    expect(alerte).toHaveTextContent('Supprimer « ZZ Évier » ?');
+    expect(alerte).toHaveTextContent('Ses achats liés restent dans les comptes.');
+    fireEvent.click(within(alerte).getByRole('button', { name: 'Oui, supprimer' }));
     await waitFor(() => expect(FinanceService.getPlans().some(p => p.id === 'ZZ-VENIR')).toBe(false));
   });
   it('un projet né d’une ancienne idée de matériel se supprime pour de bon (l’idée d’origine ne le fait pas revenir)', () => {

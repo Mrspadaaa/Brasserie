@@ -1,0 +1,1376 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/b2-wt[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — cible nulle, zéro ou absente face à une projection exacte[2m > [22m[2mune FG et un ABV cibles nuls restent nuls ; l’estimation exacte reste à part dans l’export
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun style sans repère d’eau, enregistré puis rouvert, suit encore le style importé ensuite
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun profil hérité sans provenance, même égal à la suggestion, reste gardé et n’est pas déclaré choisi
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mune cible chiffrée (origine undefined) reste la cible après changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mune cible chiffrée (origine choice) reste la cible après changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun ancien brouillon local (suivi false, sans provenance) garde son propre mode
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun ancien brouillon local (suivi true, sans provenance) garde son propre mode
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun import partiel ne prouve aucune provenance : son profil est gardé sans être déclaré suivi ni choisi
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — analyse d’eau introuvable[2m > [22m[2mgarde la référence et ses valeurs retenues, sans analyse empruntée à la source active, ni dans l’export
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence vide sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence vide sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence blanche sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence blanche sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mtémoins d’omission : un plan ancien sans référence et un import partiel qui l’omet gardent leur comportement acquis
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2mpilote : engager le profil en cours sans changer sa valeur enregistre un choix que le style ne déplace plus
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2mpilote, témoin : un autre réglage d’eau ne devient pas un choix de profil
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2matelier réel : sélectionner l’option déjà cochée du profil suggéré le garde après réouverture et changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2matelier réel, témoin : ouvrir puis fermer la liste sans sélectionner laisse le profil suivre le style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot legacy sans identité utilisable[2m > [22m[2mtémoins C03 : une référence blanche déclarée ne se résout pas par un snapshot de même id blanc, ni après un import partiel
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot vide exact sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot composé d’espaces sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot d’une autre identité sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mle reste d’un import partiel s’applique : seule l’analyse ambiguë est écartée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mune mise à jour documentaire portant exactement l’identité A est admise et annoncée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mune recette déjà anonyme garde son propre snapshot devant un autre snapshot anonyme importé
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msans référence ni analyse détenues, le snapshot anonyme importé devient l’analyse de la recette, annoncé comme tel
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mtémoin C03 : un import partiel qui déclare sa référence et son snapshot cohérent remplace A comme avant
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE fixture-ready 1232ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 46ms revision 1 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 155ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE active-reading 8117ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 203ms revision 2 preparations 0
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 91ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 89ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 252ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE scopes-retained 14380ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 173ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 132ms revision 3 preparations 0
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 452ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 125ms
+Q09_ADVICE_BUILD 314ms variants 298
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 131ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 133ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 351ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 130ms revision 3 preparations 0
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 5872ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 138ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 133ms revision 3 preparations 0
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 1704ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-visible-after-CAS-retry 39225ms
+Q09_FULL_CATALOGUE_RESULT {"referenceVarieties":136,"referenceKnowledge":1779,"fixtureVarieties":3,"savedVarieties":140,"assembledVariants":298,"basisEvidence":0,"oldDiagnostic":{"sourceReadingReference":"hop-v55-decision-reading-v3:sha256:02e43d3cef4bb942069fcbf094263396d5aa7a2798205251b5a07df8594551b2","assembledVariants":162,"savedVarieties":4,"savedLots":0,"basisEvidence":0},"currentSourceReadingReference":"hop-v55-decision-reading-v3:sha256:1b56f20f45e1486f5f0a5611d44f3a22d475cccbc3c39a24f7f70980a737cd1a","candidateIds":["variety:fixture-q09-candidate"],"studyReference":"hop-advice-study-v3:sha256:bd662fa17826457d0f180a1765f92fc79395421738738e84c29c991e3766ef02","optionCount":5}
+Q09_FULL_PHASE before-create-button-wait 39304ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE create-button-enabled 39319ms
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1156ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 902ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 902ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 862ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 19967ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 1
+Q09_DAO_CREATE_CLONE 1 31ms
+Q09_DAO_CREATE_FAIL 1 31ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE dao-retry-ready 67678ms
+Q09_FULL_PHASE before-DAO-retry-button-wait 67745ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE DAO-retry-button-enabled 67759ms
+Q09_FULL_PHASE dao-retry-clicked 68093ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1197ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 901ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 891ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 896ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 4851ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 2
+Q09_DAO_CREATE_CLONE 2 36ms
+Q09_DAO_CREATE_VALIDATE 2 191ms
+Q09_DAO_CREATE_DONE 2 259ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 30ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 132ms
+Q09_DAO_READ_EVENTS 0ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 896ms revision 4 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2777ms revision 5 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-saved-after-DAO-retry 87562ms
+Q09_FULL_PHASE before-preference-choice 87649ms
+Q09_FULL_PHASE preference-choice-selected 87741ms
+Q09_FULL_PHASE before-preference-submit 87778ms
+Q09_FULL_PHASE preference-submit-clicked 88176ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1184ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 31ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 123ms
+Q09_STUDY_REFERENCE 128ms
+Q09_ADVICE_BUILD 325ms variants 298
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 913ms revision 5 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 997ms revision 5 preparations 1
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardDraftFreshness.test.tsx[2m > [22m[2m#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)[2m > [22m[2moption de liste choisie par Entrée au clavier (Combobox du Style) : brouillon écrit (revue ciblée, B1-r)
+[22m[39mAn update to Combobox inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to Combobox inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 11883ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2609ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 34ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 973ms revision 6 preparations 1
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 32ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 951ms revision 6 preparations 1
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE preference-appended 114560ms
+Q09_DAO_READ_EVENTS 0ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 31ms
+Q09_DAO_READ_EVENTS 0ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE history-reloaded 119303ms
+Q09_FULL_PHASE complete 119454ms
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardDraftFreshness.test.tsx[2m > [22m[2m#97 ARB-97 — attribution sans horloge[2m > [22m[2mappui long relâché juste après le premier tic, fil bloqué 300 ms : le tic affiché est dans le brouillon
+[22m[39mAn update to EtapeFermentescibles inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/HopRecipeGuide.test.tsx[2m > [22m[2mGuide aromatique dans la recette[2m > [22m[2médite chaque phase avec ses unités sans convertir un contact chaud en contact à cru
+[22m[39mAn update to HopRecipeGuide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/HopRecipeGuide.test.tsx[2m > [22m[2mGuide aromatique dans la recette[2m > [22m[2médite chaque phase avec ses unités sans convertir un contact chaud en contact à cru
+[22m[39mAn update to HopRecipeGuide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/HopRecipeGuide.test.tsx[2m > [22m[2mGuide aromatique dans la recette[2m > [22m[2mignore un modèle incomplet et permet de retirer un ancien protocole devenu indisponible
+[22m[39mAn update to HopRecipeGuide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/HopRecipeGuide.test.tsx[2m > [22m[2mGuide aromatique dans la recette[2m > [22m[2mignore un modèle incomplet et permet de retirer un ancien protocole devenu indisponible
+[22m[39mAn update to HopRecipeGuide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeWorkspace.test.tsx[2m > [22m[2mComptabilité quotidienne intégrée[2m > [22m[2mguide la préparation annuelle du solde vers les opérations de l’exercice
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeWorkspace.test.tsx[2m > [22m[2mComptabilité quotidienne intégrée[2m > [22m[2mouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeWorkspace.test.tsx[2m > [22m[2mComptabilité quotidienne intégrée[2m > [22m[2mfige une version annuelle et garde ses chiffres après une nouvelle dépense
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWorkspace.test.tsx[2m > [22m[2mPoste de brassage : les bons gestes au bon moment[2m > [22m[2msépare la préparation des eaux du concassage sans perdre les quantités
+[22m[39mAn update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWorkspace.test.tsx[2m > [22m[2mPoste de brassage : les bons gestes au bon moment[2m > [22m[2mla levure apparaît à l’ensemencement et le refroidissement demande une mesure
+[22m[39mAn update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewCompanion.test.tsx[2m > [22m[2mGestes à la cuve[2m > [22m[2msubstitution en stock sans écraser la recette ni hériter d’un potentiel inconnu
+[22m[39mAn update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to BrewAide inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/dashboardNavigation.test.tsx[2m > [22m[2mDirect batch navigation from the dashboard[2m > [22m[2mopens a batch outside this month without widening the catalog, closes and reopens it only for a new request
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/dashboardNavigation.test.tsx[2m > [22m[2mDirect batch navigation from the dashboard[2m > [22m[2mwaits for the requested live record, selects Brassins and consumes its request once under StrictMode
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/dashboardNavigation.test.tsx[2m > [22m[2mDirect batch navigation from the dashboard[2m > [22m[2mwires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/dashboardNavigation.test.tsx[2m > [22m[2mDirect batch navigation from the dashboard[2m > [22m[2mwires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewerNavigation.test.tsx[2m > [22m[2mBouton d’action flottant et gestion des conversations[2m > [22m[2mouvre chaque saisie à son écran, sans repasser par un sommaire
+[22m[39mAn update to BrewerActivity inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to FloatingActions inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewerNavigation.test.tsx[2m > [22m[2mBouton d’action flottant et gestion des conversations[2m > [22m[2mouvre chaque saisie à son écran, sans repasser par un sommaire
+[22m[39mAn update to BrewerActivity inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to FloatingActions inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to BrewerActivity inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to FloatingActions inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mOG 1,150 : improbable mais possible, à confirmer ; rien n’est écrit tant qu’elle n’est pas gardée
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2m« Annuler la saisie » rétablit la dernière valeur enregistrée
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mOG 1,050 et FG 1,010 plausibles : enregistrées sans confirmation, alcool 5,3 %
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mFG 0,992 : improbable mais possible, à confirmer, et jamais un alcool de plusieurs centaines de %
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mRJ-2 · une densité impossible ne s’enregistre pas et n’offre pas « Garder cette valeur »
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mRJ-2 · FG au-dessus de l’OG : refusée, l’ancien alcool reste
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mRJ-2 · une saisie refusée n’est pas emportée par l’enregistrement de l’autre champ
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mRJ-2 · une OG sous la FG déjà notée est refusée
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/batchAm4Am5.test.tsx[2m > [22m[2mAM 5 · OG et FG bornées[2m > [22m[2mvider un champ l’enregistre vide, sans alerte
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : les neuf étapes[2m > [22m[2mchaque segment de la piste ouvre son étape avec sa question, son terme et son action noire
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : les neuf étapes[2m > [22m[2mclavier : ← → entre segments, Échap revient à la tête
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : les neuf étapes[2m > [22m[2mun inconnu n’est jamais 0 : étapes 1, 3 et 8 sur la démo
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : les neuf étapes[2m > [22m[2métape 4 : l’escalier de la cuve et la ligne des joints
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : les neuf étapes[2m > [22m[2métape 9 : le classeur, « Figer » désactivé sans clôture, le nom du téléchargement gardé
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : version figée et ancienne archive[2m > [22m[2mlecture seule : bandeau, gestes d’écriture désactivés, « Travailler sur une nouvelle version » crée un brouillon
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelEcran.test.tsx[2m > [22m[2mAnnuel g6 : version figée et ancienne archive[2m > [22m[2mun rapport figé ancien (sans outstanding, tax, supportingDocuments, adjustments) : la tête et les neuf étapes se rendent
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[2m[90m-[39m[22m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : la petite ligne tient sur une ligne, les articles à 0 sont exclus[2m > [22m[2monze malts dont trois à 0 kg : le plus gros avec sa quantité, puis « +7 » (huit en stock), sans « aujourd’hui » qui ferait couper
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : la petite ligne tient sur une ligne, les articles à 0 sont exclus[2m > [22m[2mun seul article : « Pilsner 3 kg aujourd’hui » ; emballages : les noms, sans quantité ; sans article : « bouteilles, capsules »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : la petite ligne tient sur une ligne, les articles à 0 sont exclus[2m > [22m[2msans article d’emballage : la petite ligne dit ce que la nature compte (g6)
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : la petite ligne tient sur une ligne, les articles à 0 sont exclus[2m > [22m[2mplus de phrase « La bière en cave se saisit dans la feuille »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : chaque case « ? » ou « ≈ » renvoie à la feuille, du bon côté, avec sa nature[2m > [22m[2m« ? » Malt 31 déc. (onze malts, un seul facturé) ouvre la clôture, nature malt, proposition du stock
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : chaque case « ? » ou « ≈ » renvoie à la feuille, du bon côté, avec sa nature[2m > [22m[2m« ? » du 1er janv. ouvre l’ouverture ; le stock d’aujourd’hui n’y est pas proposé
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : chaque case « ? » ou « ≈ » renvoie à la feuille, du bon côté, avec sa nature[2m > [22m[2mBière en cave : la nature bière est déjà choisie
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : chaque case « ? » ou « ≈ » renvoie à la feuille, du bon côté, avec sa nature[2m > [22m[2mla case « ≈ 22,42 » est aussi un bouton, avec l’estimé en une ligne ; le brouillon reste vide
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : l’estimé « ≈ » pour les houblons et les emballages, jamais 0[2m > [22m[2mhoublons et emballages facturés : « ≈ » ; houblon sans facture : « ? » hachuré
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/clotureInventaires.test.tsx[2m > [22m[2mÉtape 3 : l’estimé « ≈ » pour les houblons et les emballages, jamais 0[2m > [22m[2mun article en stock sans facture empêche l’estimé de la nature : « ? », pas un total partiel
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille « Solde d’ouverture »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille « Inventaires »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille « Comptes et dettes »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille « Parts privées »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille « Vérifications de l’année »
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/financeAnnuelSaisie.test.tsx[2m > [22m[2mFinances › Annuel : une virgule dans les autres champs numériques ne fait rien tomber[2m > [22m[2mla feuille d’un matériel à amortir
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 1 « Tout est noté » : relecture du journal posée avec sa base, puis étape 2
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 2 : « Oui » n’écrit rien ; « Non, corriger » ouvre le solde ; une année passée se saisit
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 3 : ✦ propose 22,42 sans rien enregistrer
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 4 : la cuve ouvre sa feuille ; « Matériel » préremplit l’achat sans rien écrire
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 6 : la base de l’électricité (68,00) vient des charges de l’année ; le curseur écrit une correction à réintégrer et invalide privé et social
+[22m[39mNot implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 6 : sans charge reconnue, le montant se saisit (aucune valeur par défaut)
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 6 : « Rien pris pour moi » coche la relecture sans correction
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2métape 7 : l’activité s’écrit sans effacer les relectures posées
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2mparcours : relecture posée à l’étape 1, puis les comptes changent : l’étape 1 repasse « à faire » et le message le dit
+[22m[39mNot implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+An update to Banc inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/annuelGestes.test.tsx[2m > [22m[2mAnnuel g6 : les gestes écrivent par une seule voie, jamais une valeur déduite[2m > [22m[2m✦ : prépare une question dans le compagnon, rien n’est envoyé
+[22m[39mNot implemented: Window's scrollTo() method
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchFollowUp.test.tsx[2m > [22m[2mAccessible fermentation follow-up in the active lot sheet[2m > [22m[2mappends a comma-decimal reading while preserving OG, FG and previous readings, without inventing temperature
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAbvOgConfirmee.test.tsx[2m > [22m[2ml’alcool d’une OG confirmée[2m > [22m[2mOG 1,140 gardée puis FG 1,012 : « Alcool calculé 17,7 % vol », jamais « non calculé », et l’alcool est écrit
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/batchAbvOgConfirmee.test.tsx[2m > [22m[2ml’alcool d’une OG confirmée[2m > [22m[2mune fiche déjà gardée (OG 1,140, FG 1,012) affiche l’alcool à la réouverture
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[90mstderr[2m | tests/integration/batchAbvOgConfirmee.test.tsx[2m > [22m[2ml’alcool d’une OG confirmée[2m > [22m[2mau-delà de 18 % : non calculé, et la raison le dit (pas « densités hors bornes »)
+[22m[39mThe width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Channel closed[39m
+[90m [2m❯[22m target.send node:internal/child_process:[2m794:16[22m[39m
+[90m [2m❯[22m ProcessWorker.send ../deploy-bc70/node_modules/tinypool/dist/index.js:[2m140:41[22m[39m
+[90m [2m❯[22m MessagePort.<anonymous> ../deploy-bc70/node_modules/tinypool/dist/index.js:[2m149:62[22m[39m
+[90m [2m❯[22m [nodejs.internal.kHybridDispatch] node:internal/event_target:[2m856:20[22m[39m
+[90m [2m❯[22m MessagePort.<anonymous> node:internal/per_context/messageport:[2m23:28[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 'ERR_IPC_CHANNEL_CLOSED' }[39m
+
+
+

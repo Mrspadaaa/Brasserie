@@ -1,0 +1,11 @@
+# r2d — chaude
+Chaleur : chaude (forme libre : sa roue des houblons et le radar Beer Maverick appliqués au carnet entier).
+Idée : Le carnet par le goût.
+Ce qui change : on ne cherche plus une recette par son nom dans une liste ; une roue des 12 familles d'arômes de l'app montre où vit le carnet (pétale = nombre de recettes qui portent ce goût), toucher un goût filtre, toucher deux goûts les croise ; le centre « Malt d'abord » garde les bières sans houblon marqué.
+Geste : après Agrumes puis Épicé touchés (les deux parts cerclées, le reste éteint ; le centre dit « 3 ont les deux » ; dessous Witbier, Saison V2, Saison au thym, goûts croisés cerclés ; « 16 n'ont qu'un des deux »).
+Problèmes résolus : n° 3 (trouver sans réfléchir : il sait le goût qu'il veut avant le nom), n° 1 (la roue tient 35 comme 300 recettes, sans liste longue), n° 9 (comparer sans cocher : le croisement trouve les voisines de goût, et la recette ouverte les nomme).
+- Recette : Witbier · V1 ouverte : « Son goût » en barre des familles, « D'où il vient » (écorce d'orange, coriandre, levure WB-06, Saaz, chacun avec sa famille), 4,8 % · 1,048 · 5,0 kg, « Même goût » (Saison V2, Saison au thym), Modifier / Brasser.
+- Vide : la roue en pointillés, ses 12 noms, « 0 recette » ; « Une NEIPA colore Agrumes, Tropical, Résine » ; Nouvelle recette, Importer une recette.
+- Données : 5 réelles (NEIPA V3 LOT-019 J+5, Saison V2 6,1 % LOT-012 écoulé, Pils, Pale Ale, Stout) ; 30 d'exemple (fictives) ; comptes par famille, Witbier, Saison au thym et leurs chiffres : fictifs. Noms des familles : `levels.ts` (l. 190-192) ; couleurs : `jetons-familles.json`. Dans l'app, le goût d'une recette viendrait des familles de ses houblons (index v4), des effets de sa levure et des épices saisies : non calculé ici.
+- Identité : trousse ; voir sortie IDENTITE. Écart : la roue est un SVG propre à la variante (aucun composant de l'app ne la porte), couleurs des familles en dur comme dans r2c.
+- Vu (captures ouvertes) : roue lisible à 390, noms à 11,5 px dans l'anneau, comptes nets ; « Pomme-poire » et « Petits fruits » sur deux lignes ; en cave, l'anneau pâle tranche fort sur le fond noir (assumé : chaude). Premier état : chiffres en police à chasse fixe trop « machine à écrire », remplacés par des chiffres tabulaires.

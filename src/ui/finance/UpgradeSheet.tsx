@@ -8,27 +8,18 @@ import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { Sheet } from '../Sheet';
-import { idFor } from './prevision/base';
+import { Confirmation, idFor } from './prevision/base';
+import { supprimerPlan } from './prevision/supprimerPlan';
 import { ProjetPiste } from './projet/ProjetPiste';
 import { etatPiste, type StationId } from './projet/piste';
 import './upgrade-plan.css';
 
 /**
- * Confirmation sur place (jamais `confirm()` du navigateur) : la question, ce qui reste, « Annuler » et le verbe, deux cibles de 44 px.
- * Réemployée par la feuille du projet et par la fiche d'À venir (constats 8 et 27 du jeu en ligne 16.11).
+ * Constats 8 et 27 (jeu en ligne 16.11) : une seule suppression de projet. La question est `Confirmation` (prevision/base, en ligne : sur place,
+ * 44 px, « Garder » pris au focus), le geste `supprimerPlan`, qui confie un projet à `StorageService.deleteUpgradePlan` : le projet part,
+ * ses achats liés restent dans les comptes. Ce texte est commun à la feuille et à la fiche d'À venir.
  */
-export function ConfirmerSurPlace({ question, precision, verbe, danger, busy, onAnnuler, onConfirmer }: { question: string; precision?: string; verbe: string; danger?: boolean; busy?: boolean; onAnnuler: () => void; onConfirmer: () => void }) {
-  const annuler = useRef<HTMLButtonElement>(null);
-  useEffect(() => { annuler.current?.focus?.(); }, []);
-  return <div className="fm" role="alertdialog" aria-label={question}>
-    <p className="fm-q"><b>{question}</b>{precision ? ` ${precision}` : ''}</p>
-    <div className="fm-b">
-      <button type="button" ref={annuler} className="fm-non" disabled={busy} onClick={onAnnuler}>Annuler</button>
-      <button type="button" className={`fm-oui${danger ? ' fm-danger' : ''}`} disabled={busy} onClick={onConfirmer}>{verbe}</button>
-    </div>
-  </div>;
-}
-export const SUPPRIMER_PRECISION = 'Ses achats liés restent dans les comptes.';
+export const SUPPRIMER_DETAIL = 'Ses achats liés restent dans les comptes. Pour le garder sans le compter : Archiver.';
 
 /** La saisie d'un achat n'est chargée que si on la demande : la feuille du projet reste légère. */
 const ExpenseSheet = lazy(() => import('./ExpenseSheet').then(m => ({ default: m.ExpenseSheet })));
@@ -44,7 +35,9 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     id: idFor('UPGRADE'), title: '', date: '', amountCents: 0, direction: 'out', category: 'materiel', source: 'equipment', status: 'draft', createdAt: new Date().toISOString(),
     upgrade: { version: 1, timing: 'later', stage: 'idea', budgetKnown: false, datePrecision: 'month', estimateSource: 'estimate' },
   });
-  const [error, setError] = useState(''), [busy, setBusy] = useState(false), [achat, setAchat] = useState(false), [confirmer, setConfirmer] = useState<'archiver' | 'supprimer' | null>(null);
+  const [error, setError] = useState(''), [busy, setBusy] = useState(false), [achat, setAchat] = useState(false);
+  /* u2 (27) : « Archiver » et « Supprimer » demandent d'abord ; un refus du service s'écrit dans la question. */
+  const [demande, setDemande] = useState<'archiver' | 'supprimer' | null>(null), [refus, setRefus] = useState('');
   const invoices = purchases.transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === draft.id);
   const [ouvert, setOuvert] = useState<StationId | null>(() => etatPiste(draft, invoices.length, todayISO().slice(0, 7)).actuelle);
   const locked = useRef(false), erreurRef = useRef<HTMLParagraphElement>(null);
@@ -67,20 +60,30 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     }
     finally { locked.current = false; setBusy(false); }
   };
+  const archiver = async () => { await save('cancelled'); setDemande(null); };
   /** Supprimer : le projet part (Dexie et Firestore, hors ligne compris) ; les achats liés ne sont jamais touchés. */
-  const supprimer = () => { if (!plan || locked.current) return; locked.current = true; setBusy(true); try { StorageService.deleteUpgradePlan(plan); onSaved?.(); onClose(); } catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être supprimé.'); setConfirmer(null); } finally { locked.current = false; setBusy(false); } };
+  const supprimer = async () => {
+    if (locked.current || !plan) return;
+    locked.current = true; setBusy(true); setRefus('');
+    try { supprimerPlan(plan.id); onSaved?.(); onClose(); }
+    catch (e) { setRefus(e instanceof Error ? e.message : 'Le projet n’a pas pu être supprimé.'); }
+    finally { locked.current = false; setBusy(false); }
+  };
   const missing = upgradeReadiness(draft);
   const progress = upgradeProgress(draft, purchases.transactions, purchases.payments);
   const ferme = plan && ['cancelled', 'completed'].includes(plan.status);
   return <>
     <Sheet open title={plan ? 'Mon projet de matériel' : 'Prévoir du matériel'} subtitle="Du besoin à l’achat" className="finance-sheet pjd-sheet" dismissible={!busy} onClose={onClose}
-      footer={confirmer === 'supprimer' ? <ConfirmerSurPlace question="Supprimer ce projet ?" precision={SUPPRIMER_PRECISION} verbe="Supprimer" danger busy={busy} onAnnuler={() => setConfirmer(null)} onConfirmer={supprimer}/>
-        : confirmer === 'archiver' ? <ConfirmerSurPlace question="Archiver ce projet ?" precision="Il reste dans Archives, tu pourras le reprendre." verbe="Archiver" busy={busy} onAnnuler={() => setConfirmer(null)} onConfirmer={() => { setConfirmer(null); void save('cancelled'); }}/>
+      footer={demande === 'supprimer'
+        ? <Confirmation question={`Supprimer « ${draft.title.trim() || 'ce projet'} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" onOui={() => void supprimer()} onGarder={() => { setDemande(null); setRefus(''); }} busy={busy} erreur={refus} />
+        : demande === 'archiver'
+        ? <Confirmation question={`Archiver « ${draft.title.trim() || 'ce projet'} » ?`} detail="Il sort de tes prévisions et reste dans Archives, où « Reprendre ce projet » le remet." oui="Oui, archiver" onOui={() => void archiver()} onGarder={() => setDemande(null)} busy={busy} danger={false} />
         : <div className="pjd-pied fm-pied">
-        {plan && <button type="button" className="fm-sup" aria-label="Supprimer ce projet" disabled={busy} onClick={() => setConfirmer('supprimer')}><Trash2 aria-hidden="true" />Supprimer</button>}
+        {/* Déclencheur de fix-materiel (lien rouge de 44 px en tête du pied, mesuré au banc) ; celui en ligne, `pjd-suppr`, n'avait pas de style. */}
+        {plan && <button type="button" className="fm-sup" aria-label="Supprimer ce projet" disabled={busy} onClick={() => setDemande('supprimer')}><Trash2 aria-hidden="true" />Supprimer</button>}
         {!plan ? <button type="button" className="pjd-btn" disabled={busy} onClick={onClose}>Annuler</button>
           : ferme ? <button type="button" className="pjd-btn" disabled={busy} onClick={() => void save('draft')}><RotateCcw aria-hidden="true" />Reprendre ce projet</button>
-          : <button type="button" className="pjd-btn" aria-label="Archiver ce projet" disabled={busy} onClick={() => setConfirmer('archiver')}><Archive aria-hidden="true" />Archiver</button>}
+          : <button type="button" className="pjd-btn" aria-label="Archiver ce projet" disabled={busy} onClick={() => setDemande('archiver')}><Archive aria-hidden="true" />Archiver</button>}
         <button type="button" className="pjd-btn pjd-pri" disabled={busy} onClick={() => void save()}>{busy ? 'Enregistrement…' : 'Enregistrer le projet'}</button>
       </div>}>
       <ProjetPiste draft={draft} plan={plan} setDraft={setDraft} patch={patch} setMonth={setMonth} ouvert={ouvert} setOuvert={setOuvert} progress={progress} invoices={invoices} missing={missing}

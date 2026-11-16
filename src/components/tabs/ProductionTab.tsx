@@ -3,17 +3,16 @@ import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { useLiveSelection } from '../../hooks/useLiveData';
-import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
-import { describeMoment } from '../../domain/hopStage';
-import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
+import { CarnetRecettes } from '../../ui/production/recettes/CarnetRecettes';
+import { CarteApres } from '../../ui/production/creer/CarteApres';
+import { useStorageValue } from '../../hooks/useLiveData';
 import type { BatchDetailSection } from '../../domain/productionInsights';
-import { QuantityStepper } from '../../ui/QuantityStepper';
-import { formatDecimal, parseDecimal } from '../../ui/numericInput';
-import { BORNES_PROCEDE } from '../../domain/bornesProcede';
 import '../../ui/production/compact.css';
-import { ViewNavigation } from '../../ui/ViewNavigation';
+import { SegmentsCoque } from '../../ui/production/volumes/Coque';
+import { AdapterVolumes } from '../../ui/production/volumes/AdapterVolumes';
+import { batchesVisiblesSousPeriode } from '../../ui/production/volumes/periode';
 import { loadRecipePage } from '../../pages/recipePageLoader';
 
 // l2 (10.11) : la fiche d'un brassin (graphiques, chat, procédé…) ne se télécharge plus avec l'accueil : elle part à la première ouverture,
@@ -43,6 +42,9 @@ interface ProductionTabProps {
   /** Ouvre un brassin précis, même hors de la période du catalogue. */
   openBatchRequest?: { id: string; at: number } | null;
   onOpenBatchRequestHandled?: () => void;
+  /** c2a, état « après » : le brassin que « Planifier » vient de créer ; la liste le montre en tête avec ses effets. */
+  batchCree?: { id: string; at: number } | null;
+  onBatchCreeHandled?: () => void;
   openLabSectionRequest?: CreativeLabSectionRequest | null;
   onOpenLabSectionRequestHandled?: () => void;
   /** Ouvre la fiche recette en plein écran. */
@@ -53,7 +55,11 @@ interface ProductionTabProps {
   /** Ouvre l'assistant de recette, prérempli depuis une idée du labo. */
   onDraftRecipe: (seed: { title: string; description?: string }) => void;
   onSuccessMessage?: (msg: string) => void;
+  /** e2a : « Rebrasser cette <style> » ouvre le brassin de la recette d'origine. */
+  onRebrewRecipe?: (recipeId: string) => void;
 }
+
+const lireArticles = () => { try { return StorageService.getStocks().rawMaterials ?? []; } catch { return []; } };
 
 export const ProductionTab: React.FC<ProductionTabProps> = ({
   visible = true,
@@ -69,10 +75,13 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onCreateRequestHandled,
   openBatchRequest,
   onOpenBatchRequestHandled,
+  batchCree,
+  onBatchCreeHandled,
   openLabSectionRequest,
   onOpenLabSectionRequestHandled,
   onOpenRecipe,
   onEditRecipe,
+  onRebrewRecipe,
   onOpenBrewDay,
   onDraftRecipe,
   onSuccessMessage
@@ -114,24 +123,18 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     };
   }, [visible, subTab, recipes.length]);
 
-  // Peut être indéfini : au tout premier lancement la base est vide, et il n'y
-  // a alors aucune recette à mettre à l'échelle.
-  const currentRecipes = useMemo(() => recipes.filter(isCurrent), [recipes]);
-  const [selectedRecipeToScale, setSelectedRecipeToScale] = useLiveSelection(currentRecipes, 'id');
+  // e7a : le bilan des brassins remplace la phrase-réponse et la barre de la liste ; « ‹ Le bilan » vient juste sous les onglets.
+  const [bilanOuvert, setBilanOuvert] = useState(false);
 
-  // Dès qu'une première recette arrive (synchronisation Firestore), on la
-  // sélectionne pour que le calculateur cesse d'être vide.
-  useEffect(() => {
-    if (!selectedRecipeToScale && currentRecipes.length > 0) {
-      setSelectedRecipeToScale(currentRecipes[0]);
-    }
-  }, [currentRecipes, selectedRecipeToScale]);
-  const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
-  // BR-111, BE-101 : un volume hors bornes est dit, avec la valeur retenue, au lieu d'être changé en silence ou calculé jusqu'au bout.
-  const [volumeNote, setVolumeNote] = useState<string | undefined>();
-  const [invalidTargetVolume, setInvalidTargetVolume] = useState<string>();
+  const currentRecipes = useMemo(() => recipes.filter(isCurrent), [recipes]);
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
+  // e2a : la recette d'origine du brassin ouvert (référence, sinon le nom figé) ; sans elle, pas de « Rebrasser » (jamais une autre recette).
+  const rebrewRecipeId = useMemo(() => {
+    if (!detailBatch) return undefined;
+    const nom = (detailBatch.recipeSnapshot?.name ?? detailBatch.name ?? '').trim().toLowerCase();
+    return (recipes.find(r => r.id === detailBatch.recipeRef) ?? recipes.find(r => nom && r.name.trim().toLowerCase() === nom))?.id;
+  }, [detailBatch, recipes]);
   const feuilleOuverte = React.useRef(false);
   if (detailBatch) feuilleOuverte.current = true;
   const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
@@ -156,6 +159,18 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     }
   }, [createRequest?.at]);
 
+  // c2a « après » : la liste des brassins, le lot neuf en tête avec ses effets ; « Défaire » supprime le brassin créé (geste existant).
+  const [apres, setApres] = useState<string | null>(null);
+  const articles = useStorageValue(lireArticles);
+  useEffect(() => {
+    if (!batchCree) return;
+    setSubTab('batches');
+    setApres(batchCree.id);
+    onBatchCreeHandled?.();
+  }, [batchCree?.at]);
+  const lotApres = apres ? batches.find((b) => b.id === apres) : undefined;
+  const recetteApres = lotApres ? recipes.find((r) => r.id === lotApres.recipeRef) : undefined;
+
   useEffect(() => {
     if (!openBatchRequest) return;
     const handled = handledOpenBatchRequest.current;
@@ -174,77 +189,34 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     StorageService.setUiState('production_subtab', subTab);
   }, [subTab]);
 
-  const sourceBh = selectedRecipeToScale?.brewhouse ?? brewhouses.find((b) => b.id === activeBrewhouseId) ?? brewhouses[0];
-  const targetBh = targetVolumeL >= 250 ? (brewhouses.find((b) => b.volumeL >= 250) || sourceBh) : sourceBh;
-  const targetVolumeError = invalidTargetVolume
-    ? `Volume « ${invalidTargetVolume} » non reconnu. Indique un volume cible de 0,5 L ou plus.`
-    : !Number.isFinite(targetVolumeL) || targetVolumeL < BORNES_PROCEDE.volumeBrassinL.min ? 'Indique un volume cible de 0,5 L ou plus.'
-      : targetVolumeL > BORNES_PROCEDE.volumeBrassinL.max ? `Volume cible de ${formatDecimal(targetVolumeL)} L : au plus ${formatDecimal(BORNES_PROCEDE.volumeBrassinL.max)} L (la plus grande cuve d’une micro-brasserie). Erreur de saisie probable.` : undefined;
-  // Sans recette ni cuverie configurée, on ne calcule rien plutôt que de planter.
-  const scaleResult =
-    subTab === 'scaler' && selectedRecipeToScale?.volumeL > 0 && Number.isFinite(selectedRecipeToScale.volumeL) && sourceBh && !targetVolumeError
-      ? scaleBrewRecipeScenario(selectedRecipeToScale, targetVolumeL, sourceBh, targetBh)
-      : null;
+  // La période de l'application ne juge que les brassins terminés : un brassin en cours reste visible sous toute période.
+  const brassinsListe = useMemo(() => batchesVisiblesSousPeriode(batches, globalTimeFilter), [batches, globalTimeFilter]);
+  const nbBrassins = useMemo(() => brassinsListe.filter(isCurrent).length, [brassinsListe]);
 
   return (
     <div className="production-screen space-y-2 pb-12 pt-1">
-      <ViewNavigation<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
-        {value:'batches',label:`Brassins (${batches.filter(isCurrent).length})`,shortLabel:'Brassins'},
-        {value:'recipes',label:`Recettes (${currentRecipes.length})`,shortLabel:'Recettes'},
-        {value:'lab',label:'Atelier R&D',shortLabel:'Atelier'}, {value:'scaler',label:'Adapter les volumes',shortLabel:'Volumes'}
-      ]}>
-      <div role="group" aria-label="Atelier de brassage" className="grid grid-cols-4 gap-1 bg-cave-900 p-1 rounded-2xl border border-cave-800">
-        <button
-          type="button"
-          aria-pressed={subTab === 'batches'}
-          aria-label={`Brassins (${batches.filter(isCurrent).length})`}
-          onClick={() => setSubTab('batches')}
-          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
-            subTab === 'batches' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          Brassins<span className="hidden sm:inline"> ({batches.filter(isCurrent).length})</span>
-        </button>
-        <button
-          type="button"
-          aria-pressed={subTab === 'recipes'}
-          aria-label={`Recettes (${currentRecipes.length})`}
-          onClick={() => setSubTab('recipes')}
-          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
-            subTab === 'recipes' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          Recettes<span className="hidden sm:inline"> ({currentRecipes.length})</span>
-        </button>
-        <button
-          type="button"
-          aria-pressed={subTab === 'lab'}
-          onClick={() => setSubTab('lab')}
-          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
-            subTab === 'lab' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          Atelier R&D
-        </button>
-        <button
-          type="button"
-          aria-pressed={subTab === 'scaler'}
-          onClick={() => setSubTab('scaler')}
-          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
-            subTab === 'scaler' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          Volumes
-        </button>
-      </div>
-
-      </ViewNavigation>
-
+      {/* e11a : la barre segmentée avec ses compteurs ; « Atelier Houblons V5.5 » n'est plus sur l'écran (menu du + : Outils houblons). */}
+      <SegmentsCoque<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
+        {value:'batches',label:`Brassins (${nbBrassins})`,court:'Brassins',compteur:nbBrassins},
+        {value:'recipes',label:`Recettes (${currentRecipes.length})`,court:'Recettes',compteur:currentRecipes.length},
+        {value:'lab',label:'Atelier R&D',court:'Atelier'}, {value:'scaler',label:'Adapter les volumes',court:'Volumes'}
+      ]}/>
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
-        <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
-        <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter}
-          onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} />
+        {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : <h2 className="sr-only">Le carnet de recettes</h2>}
+        {subTab === 'batches' && lotApres && !bilanOuvert && (
+          <CarteApres batch={lotApres} recipe={recetteApres} batches={batches} stock={articles}
+            onOuvrir={() => { setDetailSection('measurements'); setDetailBatch(lotApres); }}
+            onDefaire={() => { StorageService.deleteBatch(lotApres.id); setApres(null); onSuccessMessage?.(`${lotApres.id} défait : le brassin est supprimé.`); }} />
+        )}
+        {subTab === 'batches' ? (
+          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter="all"
+            onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
+        ) : (
+          /* r2a (choix du 15.11) : le carnet dit ce qui est prêt à brasser et ce qui manque ; « Brasser » ouvre la feuille de préparation actuelle. */
+          <CarnetRecettes recipes={recipes} batches={batches} onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe}
+            onOpenBatch={(batch) => { setDetailSection('measurements'); setDetailBatch(batch); }} onBrew={(id) => (onRebrewRecipe ? onRebrewRecipe(id) : onOpenCreateBatch())} onNewRecipe={onOpenCreateBatch} />
+        )}
       </>}
 
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}
@@ -262,63 +234,13 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         </Suspense>
       )}
 
-      {subTab === 'scaler' && !selectedRecipeToScale && (
-        <div className="panel p-2 space-y-2">
-          <h3 className="font-semibold text-sm text-cave-50">Aucune recette à adapter</h3>
-          {/* « Créer une recette » est dans le bouton d'action, en bas à droite. */}
-          <p className="text-sm text-cave-400">Le bouton + crée une recette ; ses ingrédients et son eau s’adapteront ensuite au volume voulu.</p>
-        </div>
-      )}
-      {subTab === 'scaler' && selectedRecipeToScale && (
-        <section className="panel p-2 space-y-2" aria-label="Adapter une recette au volume">
-          <label className="block space-y-1 text-xs text-cave-400">Recette source
-            <select name="production_scale_recipe_select" value={selectedRecipeToScale.id}
-              onChange={event=>{const found=currentRecipes.find(recipe=>recipe.id===event.target.value); if(found)setSelectedRecipeToScale(found);}}
-              className="w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50">
-              {currentRecipes.map(recipe=><option key={recipe.id} value={recipe.id}>{recipe.name} · {formatDecimal(recipe.volumeL)} L</option>)}
-            </select>
-          </label>
-          <div className="volume-controls" onChangeCapture={event => {
-            if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) return;
-            const entered = event.target.value;
-            // Le compteur garde son dernier nombre pendant une frappe illisible.
-            // Ce nombre ne doit pas produire un scénario, même après le blur.
-            setInvalidTargetVolume(entered.trim() && parseDecimal(entered) === null ? entered : undefined);
-            const lu = parseDecimal(entered), { min, max } = BORNES_PROCEDE.volumeBrassinL;
-            setVolumeNote(lu !== null && (lu < min || lu > max) ? `${formatDecimal(lu)} L est hors bornes : de ${formatDecimal(min)} à ${formatDecimal(max)} L.${lu < min ? ` ${formatDecimal(min)} L retenu.` : ''}` : undefined);
-          }}>
-            <QuantityStepper compact label="Volume cible" unit="L" value={targetVolumeL} emptyValue={Number.NaN}
-              onChange={value => { setTargetVolumeL(value); setInvalidTargetVolume(undefined); }}
-              aria-invalid={Boolean(targetVolumeError)} aria-describedby={targetVolumeError ? 'production-target-volume-error' : undefined}
-              min={0.5} customStep={0.5} customLadder={[0.5,5,10]} initialValue={selectedRecipeToScale.volumeL}/>
-            {scaleResult && <output className="text-xs text-cave-400" aria-live="polite">× {(targetVolumeL/selectedRecipeToScale.volumeL).toLocaleString('fr-CH',{maximumFractionDigits:2})} de la recette</output>}
-          </div>
-          {volumeNote && !targetVolumeError && <p role="status" data-role="borne-refusee" className="text-xs text-ebc-amber">{volumeNote}</p>}
-          {!scaleResult && <p id={targetVolumeError ? 'production-target-volume-error' : undefined} role="alert" className="text-sm text-alert-strong">{targetVolumeError ?? (!sourceBh ? 'Configure une cuverie dans les réglages pour adapter cette recette.' : 'Le volume de la recette source doit être renseigné et positif.')}</p>}
-          {scaleResult && <>
-          <dl aria-label="Eaux adaptées" className="grid grid-cols-2 gap-2 border-y border-cave-800 py-1.5">
-            <div><dt className="text-xs text-cave-400">Empâtage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.mashWaterL,'L')}</dd></div>
-            <div><dt className="text-xs text-cave-400">Rinçage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.spargeWaterL,'L')}</dd></div>
-          </dl>
-          {/* TE-39 : plus de grain laisse moins d'eau d'empâtage quand la cuve est pleine ; le dire là où le nombre baisse. */}
-          {scaleResult.waterPlan.mashLimitedByKettleL != null && <p className="text-xs text-cave-400">Empâtage plafonné par la cuve ({formatDecimal(scaleResult.waterPlan.mashLimitedByKettleL)} L utiles).</p>}
-          <table className="volume-ingredients">
-            <caption className="text-left text-sm font-semibold text-cave-50 pb-1">Ingrédients pour {Units.format(targetVolumeL,'L')}</caption>
-            <thead><tr><th scope="col">Ingrédient</th><th scope="col">Quantité</th></tr></thead>
-            <tbody>
-              {scaleResult.scaledRecipe.fermentables.map((m,index)=><tr key={'m'+index}><th scope="row">{m.name}</th><td>{Units.format(m.weightKg,'kg')}</td></tr>)}
-              {scaleResult.scaledRecipe.hops.map((hop,index)=><tr key={'h'+index}><th scope="row">{hop.name}<span className="block text-xs text-cave-400">{describeMoment(hop)}</span></th><td>{Units.format(hop.weightG,'g')}</td></tr>)}
-              {scaleResult.scaledRecipe.adjuncts?.map((item,index)=><tr key={'a'+index}><th scope="row">{item.name}<span className="block text-xs text-cave-400">{item.step}</span></th><td>{Units.format(item.amount,item.unit)}</td></tr>)}
-            </tbody>
-          </table>
-          </>}
-        </section>
-      )}
+      {subTab === 'scaler' && <AdapterVolumes recettes={recipes} brewhouses={brewhouses} activeBrewhouseId={activeBrewhouseId} onNouvelleRecette={onOpenCreateBatch} />}
 
-      {/* Monté à la première ouverture, puis gardé monté (fermeture comme avant : la feuille se ferme d'elle-même quand batch est nul). */}
+      {/* l2 : monté à la première ouverture, puis gardé monté (la feuille se ferme d'elle-même quand batch est nul). */}
       {(detailBatch || feuilleOuverte.current) && (
         <Suspense fallback={null}>
-          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onClose={() => setDetailBatch(null)} />
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={onOpenBrewDay} onClose={() => setDetailBatch(null)}
+            onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
         </Suspense>
       )}
     </div>

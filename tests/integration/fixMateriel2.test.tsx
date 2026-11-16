@@ -117,14 +117,17 @@ describe('héros et confirmations (upgrade-plan.css)', () => {
     const corps = regle(source, '.kh-cost .kh-u');
     expect(corps).toMatch(/min-height:\s*0/);
   });
-  it('les boutons des deux confirmations (Archiver, Supprimer) sont centrés pareil, dans la fiche comme dans la feuille', () => {
-    const corps = regle(source, '.fm .fm-b button');
+  // Fusion du 16.11 : les deux confirmations sont la brique en ligne `Confirmation` (`.fin-conf`, prevision.css) ; ses boutons sont des `.finance-action`.
+  it('les boutons des deux confirmations (Archiver, Supprimer) sont centrés pareil, dans la fiche comme dans la feuille, et font 44 px', () => {
+    const corps = regle(css('finance.css'), '.finance-action');
     expect(corps).toMatch(/justify-content:\s*center/);
     expect(corps).toMatch(/text-align:\s*center/);
+    expect(px(regle(css('prevision/prevision.css'), '.fin-conf .finance-action'), 'min-height')).toBe(44);
   });
   it('le cadre de focus ne vient qu’au clavier : aucune règle :focus nue sur les confirmations', () => {
-    expect(source).toMatch(/\.fm-b button:focus-visible/);
+    expect(source).toMatch(/\.fm-sup:focus-visible/);
     expect(source).not.toMatch(/\.fm[^{]*button:focus\s*[,{]/);
-    expect(source).not.toMatch(/\.fm-[a-z]+:focus\s*[,{]/);
+    expect(source).not.toMatch(/\.fm-[a-z-]+:focus\s*[,{]/);
+    expect(css('prevision/prevision.css')).not.toMatch(/\.fin-conf[^{]*:focus\s*[,{]/);
   });
 });

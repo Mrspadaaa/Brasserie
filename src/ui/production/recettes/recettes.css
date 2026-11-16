@@ -1,0 +1,121 @@
+/*
+ * Le carnet de recettes (r2a) : choix du brasseur du 15.11, porté tel quel depuis sa maquette (voies/r2/r2a/etat.html).
+ * Valeurs de la maquette reprises ; couleurs lues dans les jetons de l'app (themes.css) pour suivre le thème.
+ * Échelle 12 / 13 / 14 / 15 / 16 / 28, graisse 600 au plus. Classes préfixées rcp- (L26).
+ */
+.rcp-ecran { display: block; }
+.rcp-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin: 6px 0 4px; }
+.rcp-phrase { display: flex; flex-direction: column; font-size: 28px; line-height: 1.12; font-weight: 600; letter-spacing: -0.01em; color: rgb(var(--cave-texte-50)); min-width: 0; }
+.rcp-phrase .rcp-ok { color: rgb(var(--hop-texte)); }
+.rcp-phrase .rcp-presque { color: rgb(var(--attention-texte)); }
+.rcp-total { text-align: right; font-size: 12px; line-height: 1.25; color: rgb(var(--cave-texte-400)); flex: none; }
+.rcp-total b { display: block; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-cherche { display: flex; gap: 8px; margin: 8px 0 10px; }
+.rcp-champ { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 10px;
+  background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-400)); }
+.rcp-champ:focus-within { border-color: rgb(var(--water)); }
+.rcp-champ svg { width: 18px; height: 18px; flex: none; }
+.rcp-champ input { flex: 1; min-width: 0; height: 44px; background: transparent; border: 0; outline: 0; font-size: 16px; color: rgb(var(--cave-texte-50)); }
+.rcp-champ input::placeholder { color: rgb(var(--cave-texte-400)); }
+.rcp-filtre { position: relative; flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px;
+  background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-50)); }
+.rcp-filtre svg { width: 20px; height: 20px; }
+.rcp-filtre > span { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 10px; display: grid; place-items: center; font-size: 12px; font-weight: 600;
+  background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.rcp-btn:focus-visible, .rcp-filtre:focus-visible, .rcp-reste:focus-visible, .rcp-ouvrir:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+
+.rcp-groupe { margin-bottom: 10px; }
+.rcp-groupe-tete { display: flex; align-items: baseline; gap: 8px; padding: 0 2px 4px; }
+.rcp-groupe-tete h2 { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-groupe-tete span { font-size: 13px; color: rgb(var(--cave-texte-400)); }
+.rcp-liste { background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); border-radius: 16px; overflow: hidden; }
+.rcp-ligne { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 6px 10px 6px 12px; min-height: 58px; }
+.rcp-ligne + .rcp-ligne, .rcp-court + .rcp-court { border-top: 1px solid rgb(var(--cave-800)); }
+.rcp-marque { width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; }
+.rcp-marque svg { width: 14px; height: 14px; }
+.rcp-marque[data-etat='ok'] { background: rgb(var(--hop)); color: rgb(var(--cave-950)); }
+.rcp-marque[data-etat='presque'] { background: rgb(var(--attention) / 0.18); border: 2px solid rgb(var(--attention)); }
+.rcp-marque[data-etat='loin'] { width: 14px; height: 14px; margin-left: 4px; border: 2px solid rgb(var(--cave-texte-400)); }
+.rcp-ouvrir { min-width: 0; text-align: left; display: flex; flex-direction: column; justify-content: center; min-height: 44px; width: 100%; background: transparent; border: 0; padding: 0; color: inherit; }
+.rcp-nomt { display: flex; align-items: center; gap: 8px; }
+.rcp-nomt strong { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.rcp-nom .rcp-sous { display: block; font-size: 13px; line-height: 1.35; color: rgb(var(--cave-texte-400)); }
+.rcp-nom .rcp-sous b { font-weight: 600; color: rgb(var(--attention-texte)); }
+.rcp-nom .rcp-sous i { font-style: normal; color: rgb(var(--hop-texte)); }
+.rcp-nom .rcp-sous .rcp-retard { color: rgb(var(--attention-texte)); }
+/* le métro des versions : la dernière version pleine, à la couleur de la bière */
+.rcp-metro { display: inline-flex; align-items: center; flex: none; }
+.rcp-st { width: 7px; height: 7px; border-radius: 999px; border: 2px solid var(--rcp-c); background: rgb(var(--cave-900)); display: inline-block; box-sizing: content-box; }
+.rcp-st[data-der] { width: 11px; height: 11px; background: var(--rcp-c); box-sizing: border-box; }
+.rcp-tr { width: 6px; height: 2px; background: var(--rcp-c); opacity: .6; display: inline-block; }
+.rcp-v { margin-left: 5px; font-family: theme('fontFamily.mono'); font-size: 13px; font-weight: 600; color: rgb(var(--cave-texte-400)); }
+[data-theme='cave'] .rcp-st { box-shadow: 0 0 0 1px rgb(var(--cave-texte-400) / .5); }
+/* cave : un point plein très sombre (stout) garde un filet net, sinon il se perd dans le fond */
+[data-theme='cave'] .rcp-st[data-der] { box-shadow: 0 0 0 1px rgb(var(--cave-texte-400) / .85); }
+/* un seul verbe par ligne, en filet : les noms restent devant */
+.rcp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  background: transparent; border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-50)); }
+.rcp-btn svg { width: 16px; height: 16px; }
+.rcp-btn-lot { border-color: transparent; color: rgb(var(--cave-texte-200)); padding: 0 4px 0 8px; }
+.rcp-btn-primaire { background: rgb(var(--ebc-straw)); border-color: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.rcp-btn-second { background: rgb(var(--cave-850)); }
+.rcp-court { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 0; }
+.rcp-court strong { font-size: 15px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-court .rcp-nomt { gap: 6px; }
+.rcp-court > span:last-child { font-size: 13px; color: rgb(var(--cave-texte-400)); }
+.rcp-reste { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 12px; text-align: left; border: 0; border-top: 1px solid rgb(var(--cave-800));
+  color: rgb(var(--cave-texte-200)); font-size: 14px; background: rgb(var(--cave-850)); }
+.rcp-reste svg { width: 18px; height: 18px; flex: none; }
+.rcp-reste b { font-family: theme('fontFamily.mono'); font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-reste span { flex: 1; }
+.rcp-vide-filtre { padding: 20px 12px; text-align: center; font-size: 15px; color: rgb(var(--cave-texte-200)); }
+.rcp-lien { font-size: 14px; font-weight: 600; color: rgb(var(--cave-texte-50)); min-height: 44px; padding: 0 4px; background: transparent; border: 0; text-decoration: underline; }
+
+/* Feuille d'une recette */
+.rcp-bloc { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; }
+.rcp-bloc h3 { font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 2px; }
+.rcp-ingr { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; min-height: 32px; padding: 0 2px; font-size: 14px; color: rgb(var(--cave-texte-50)); }
+.rcp-ingr svg { width: 16px; height: 16px; }
+.rcp-ingr .rcp-vv { color: rgb(var(--hop-texte)); }
+.rcp-ingr .rcp-x { color: rgb(var(--attention-texte)); }
+.rcp-ingr .rcp-q { font-size: 14px; color: rgb(var(--cave-texte-400)); text-align: right; }
+.rcp-ingr .rcp-manque { color: rgb(var(--attention-texte)); font-weight: 600; }
+.rcp-alerte { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--attention) / 0.14); border: 1px solid rgb(var(--attention) / 0.5); }
+.rcp-alerte p { font-size: 15px; color: rgb(var(--cave-texte-50)); }
+.rcp-alerte p b { font-weight: 600; }
+.rcp-alerte small { font-size: 13px; color: rgb(var(--cave-texte-200)); }
+.rcp-prete { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--hop) / 0.12); border: 1px solid rgb(var(--hop) / 0.4); font-size: 15px; color: rgb(var(--cave-texte-50)); }
+.rcp-prete svg { width: 18px; height: 18px; color: rgb(var(--hop-texte)); flex: none; }
+.rcp-change { font-size: 13px; color: rgb(var(--cave-texte-200)); padding: 8px 2px 0; margin-top: 8px; border-top: 1px solid rgb(var(--cave-800)); }
+.rcp-change b { font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-detail { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0 2px; margin-top: 4px; font-size: 14px; text-align: left; background: transparent; border: 0; border-top: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-texte-200)); }
+.rcp-detail b { font-family: theme('fontFamily.mono'); font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-detail svg { width: 18px; height: 18px; }
+.rcp-pied { display: flex; gap: 8px; }
+.rcp-pied .rcp-btn { flex: 1; }
+
+/* Feuille « Filtrer » */
+.rcp-filtres { display: flex; flex-direction: column; gap: 12px; }
+.rcp-filtres label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: rgb(var(--cave-texte-400)); }
+.rcp-filtres select { min-height: 44px; border-radius: 10px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); padding: 0 10px; font-size: 16px; color: rgb(var(--cave-texte-50)); }
+
+/* Vide */
+.rcp-vide { display: flex; flex-direction: column; gap: 12px; padding-top: 8px; }
+.rcp-vide-titre { font-size: 28px; line-height: 1.15; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.rcp-vide-texte { font-size: 15px; color: rgb(var(--cave-texte-200)); }
+.rcp-exemple .rcp-liste { border-style: dashed; }
+.rcp-pastille { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-200)); }
+.rcp-vide-pied { display: flex; flex-direction: column; gap: 8px; }
+.rcp-vide-pied .rcp-btn { min-height: 44px; font-size: 15px; }
+.rcp-sources { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.rcp-sources .rcp-btn { min-height: 56px; flex-direction: column; gap: 2px; font-size: 14px; }
+
+@media (min-width: 1024px) {
+  .rcp-ecran { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .rcp-col-g { position: sticky; top: 8px; }
+}
+
+/* Le focus initial d'une feuille est posé sur son contenu, jamais sur le ×, et ne dessine pas d'anneau */
+.rcp-debut:focus { outline: none; }
+/* Le résultat d'une recherche ou d'un filtre, sous le champ : la tête, elle, parle du carnet entier */
+.rcp-resultat { margin: -4px 2px 8px; font-size: 13px; color: rgb(var(--cave-texte-400)); }

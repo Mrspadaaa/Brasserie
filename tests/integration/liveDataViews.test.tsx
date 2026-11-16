@@ -70,21 +70,25 @@ describe('Live records and unsaved forms', () => {
   });
 
   it('updates an open batch sheet after a server edit, preserving an in-progress density reading', async () => {
-    const batch: any = { id: 'B-live', name: 'Avant', style: 'Stout', volumeL: 30, status: 'planifie', brewDate: '07.09.2026' };
+    const batch: any = { id: 'B-live', name: 'Avant', style: 'Stout', volumeL: 30, status: 'fermentation', brewDate: '07.09.2026' }; // e1a : un planifié n'a plus de saisie de densité ; la lecture se fait en fermentation
     const view = (b: any) => <ProductionTab batches={[b]} recipes={[]} brewhouses={defaultConfig.brewhouses}
       activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab="batches"
       onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenBrewDay={vi.fn()} onOpenRecipe={vi.fn()} />;
     const { rerender } = render(view(batch));
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin B-live' }));
-    await screen.findByRole('dialog', { name: 'Avant' }, { timeout: 10000 });
-    const density = document.querySelector('input[name="batch_sheet_og"]')!;
-    fireEvent.change(density, { target: { value: '1.054' } });
+    await screen.findByRole('dialog', { name: /^Avant/ }, { timeout: 10000 }); // l2 : la fiche se charge à la demande
+    // gfc (15.11) : la lecture en cours est le geste « Mesurer » (« Taper » : saisie décimale) ; elle doit survivre à une mise à jour serveur.
+    if (!screen.queryByRole('button', { name: /Mesurer/ })) fireEvent.click(screen.getByRole('button', { name: 'Mesures' }));
+    fireEvent.click(screen.getByRole('button', { name: /Mesurer/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Taper' })[0]);
+    const density = screen.getByLabelText('Densité du relevé');
+    fireEvent.change(density, { target: { value: '1,054' } });
     rerender(view({ ...batch, name: 'Nom confirmé par IA', volumeL: 24 }));
-    expect(screen.getByRole('dialog', { name: 'Nom confirmé par IA' })).toBeInTheDocument();
-    expect(density).toHaveValue('1.054');
+    expect(screen.getByRole('dialog', { name: 'Nom confirmé par IA en fermentation' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Densité du relevé')).toHaveValue('1,054');
     const save = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
-    fireEvent.blur(density);
-    expect(save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Nom confirmé par IA', volumeL: 24, og: '1.054' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le relevé' }));
+    expect(save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Nom confirmé par IA', volumeL: 24, gravityLog: [expect.objectContaining({ sg: 1.054 })] }));
   });
 
   it('recalculates the selected recipe in the scaler when its fermentables change', () => {

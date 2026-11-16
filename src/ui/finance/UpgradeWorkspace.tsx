@@ -11,8 +11,10 @@ import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
-import { ConfirmerSurPlace, SUPPRIMER_PRECISION, UpgradeSheet } from './UpgradeSheet';
+import { SUPPRIMER_DETAIL, UpgradeSheet } from './UpgradeSheet';
 import { ArchivesCarte, CarteVide } from './ArchivesCarte';
+import { Confirmation } from './prevision/base';
+import { supprimerPlan } from './prevision/supprimerPlan';
 import { ExpenseSheet } from './ExpenseSheet';
 import { useMobileLayout } from '../useViewport';
 import { ViewNavigation } from '../ViewNavigation';
@@ -185,8 +187,8 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
   </section>;
 }
 function FicheProjet({ plan, plans, prevision, transactions, payments, mois, busy, onClose, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions }: { plan: FinancialPlan; plans: FinancialPlan[]; prevision: FinanceForecast; transactions: FinanceTransaction[]; payments: FinancialPayment[]; mois: string[]; busy?: string;
-  onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; onSupprimer: () => void; onPrevisions: () => void }) {
-  const [confirmer, setConfirmer] = useState<'archiver' | 'supprimer' | null>(null);
+  onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; /** u2 (27) : supprime le projet ; renvoie le refus du service ou null. */ onSupprimer: () => string | null; onPrevisions: () => void }) {
+  const [demande, setDemande] = useState<'archiver' | 'supprimer' | null>(null), [refus, setRefus] = useState('');
   const d = upgradeDetails(plan), pose = estPose(plan), effet = pose ? effetProjet(plan, plans, prevision.months, prevision.items) : null, progress = upgradeProgress(plan, transactions, payments);
   const lignes: Array<[string, number | undefined]> = [['Achat', d.purchaseCents], ['Livraison', d.deliveryCents], ['Installation', d.installationCents]], connus = lignes.filter(([, v]) => v != null);
   const etape = REPERES[repereDe(plan)];
@@ -214,15 +216,15 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
       <button type="button" className="kh-cta kh-cta-fiche" onClick={onEdit}><PenLine size={18}/>Modifier</button>
       <details className="kh-fold"><summary>Après l’achat<ChevronDown size={18}/></summary><p>Ta facture se range dans Dépenses › Matériel, liée à ce projet ; la fiche d’usure se lit dans Annuel.</p></details>
       <details className="kh-fold"><summary>Usure et mise en service<ChevronDown size={18}/></summary><p>Durée d’usage : {d.usefulLifeYears != null ? `${String(d.usefulLifeYears).replace('.', ',')} ans` : 'à renseigner'} · Mise en service : {d.inServiceMonth ?? 'à renseigner'}</p></details>
-      {confirmer === 'supprimer' ? <ConfirmerSurPlace question="Supprimer ce projet ?" precision={SUPPRIMER_PRECISION} verbe="Supprimer" danger busy={!!busy} onAnnuler={() => setConfirmer(null)} onConfirmer={onSupprimer}/>
-        : confirmer === 'archiver' ? <ConfirmerSurPlace question="Archiver ce projet ?" precision="Il reste dans Archives, tu pourras le reprendre." verbe="Archiver" busy={!!busy} onAnnuler={() => setConfirmer(null)} onConfirmer={() => onStatut('cancelled')}/>
-        : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => onStatut('completed')}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setConfirmer('archiver')}><Archive size={18}/>Archiver</button>
-          <button type="button" className="fm-sup-f" disabled={!!busy} onClick={() => setConfirmer('supprimer')}><Trash2 size={18}/>Supprimer</button></div>}
+      {demande === 'archiver' ? <Confirmation question={`Archiver « ${plan.title} » ?`} detail="Il sort de tes prévisions ; Archives le garde et un geste l’annule." oui="Oui, archiver" danger={false} busy={!!busy} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('cancelled'); }}/>
+        : demande === 'supprimer' ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" busy={!!busy} erreur={refus} onGarder={() => { setDemande(null); setRefus(''); }} onOui={() => { const r = onSupprimer(); if (r) setRefus(r); }}/>
+        : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => onStatut('completed')}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setDemande('archiver')}><Archive size={18}/>Archiver</button>
+          <button type="button" className="fm-sup-f" disabled={!!busy} onClick={() => setDemande('supprimer')}><Trash2 size={18}/>Supprimer</button></div>}
     </div>
   </Sheet>;
 }
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
-  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onSupprimer: (p: FinancialPlan) => void; onPrevisions: () => void;
+  onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onSupprimer: (p: FinancialPlan) => string | null; onPrevisions: () => void;
   contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
   fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void }
 function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
@@ -266,7 +268,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
     {avis && <Avis avis={avis} onVoir={onVoirRealises} onFermer={onFermerAvis}/>}
     <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
-      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { setFiche(null); onSupprimer(dansFiche); }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
+      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { const r = onSupprimer(dansFiche); if (!r) setFiche(null); return r; }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
   </div>;
 }
 
@@ -324,10 +326,23 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   /** Archives › « Reprendre » : le projet retourne dans À venir (brouillon, hors prévisions, comme « Reprendre ce projet » de la feuille) ; un avis passager le dit. */
   const reprendre = async (plan: FinancialPlan) => { if (await enregistrer(plan, { ...plan, status: 'draft' })) setRepris(plan.title); };
   useEffect(() => { if (!repris) return; const t = setTimeout(() => setRepris(null), 8000); return () => clearTimeout(t); }, [repris]);
+  /** u2 (27) : un projet qui vient d'être archivé se reprend d'un geste (« Annuler » sous les onglets) ; l'état d'avant est gardé ici. */
+  const [archive, setArchive] = useState<FinancialPlan | null>(null);
+  const defaireArchive = async () => {
+    if (!archive || busy) return;
+    setBusy(archive.id); setError('');
+    try { await FinanceService.saveUpgrade(archive); setArchive(null); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être repris.'); }
+    finally { setBusy(undefined); }
+  };
+  const supprimer = (plan: FinancialPlan): string | null => {
+    try { supprimerPlan(plan.id); setArchive(null); return null; }
+    catch (e) { return e instanceof Error ? e.message : 'Le projet n’a pas pu être supprimé.'; }
+  };
   const changerStatut = async (plan: FinancialPlan, status: 'completed' | 'cancelled'): Promise<boolean> => {
     if (busy) return false;
     setBusy(plan.id); setError('');
-    try { await FinanceService.saveUpgrade({ ...plan, status }); return true; }
+    try { await FinanceService.saveUpgrade({ ...plan, status }); setArchive(status === 'cancelled' ? plan : null); return true; }
     catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être mis à jour.'); return false; }
     finally { setBusy(undefined); }
   };
@@ -368,9 +383,10 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     </div>{!compact ? <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>
       : mobile && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
     {error && <p className="finance-error" role="alert">{error}</p>}
+    {archive && <p className="finance-muted upgrade-archive" role="status">« {archive.title} » est archivé. <button type="button" className="finance-link" disabled={!!busy} onClick={() => void defaireArchive()}>Annuler</button></p>}
     {compact && scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
-    {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onSupprimer={p => StorageService.deleteUpgradePlan(p)} onPrevisions={voirPrevisions}
+    {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onSupprimer={supprimer} onPrevisions={voirPrevisions}
       contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
       avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
     : vueAVenir ? null : !compact && scope === 'archived' && visible.length > 0 ? <ArchivesCarte plans={visible} transactions={data.transactions} payments={data.payments} busy={busy} onOuvrir={open} onReprendre={p => void reprendre(p)}/>

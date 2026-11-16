@@ -36,11 +36,16 @@ export function estMouvementPrive(piece: Transaction): boolean {
 }
 
 /** Les paiements réels de la pièce encore en vigueur : ni contre-paiement, ni paiement déjà annulé, du sens de la pièce. */
-function paiementsVivants(piece: Transaction, paiements: FinancialPayment[]): FinancialPayment[] {
+export function paiementsVivants(piece: Transaction, paiements: FinancialPayment[]): FinancialPayment[] {
   const annules = new Set(paiements.filter(p => p.reversalOfId).map(p => p.reversalOfId));
   return paiements
     .filter(p => p.transactionId === piece.id && validPayment(p) && !p.reversalOfId && !annules.has(p.id))
     .sort((a, b) => a.date.localeCompare(b.date) || a.recordedAt.localeCompare(b.recordedAt));
+}
+
+/** u1 (20) : retirer une pièce payée = inverser chacun de ses paiements en vigueur (puis l'annuler) ; jamais un paiement déjà inversé. */
+export function planRetrait(piece: Transaction, paiements: FinancialPayment[]): EtapeCorrection[] {
+  return paiementsVivants(piece, paiements).map(p => ({ type: 'contre' as const, paiementId: p.id }));
 }
 
 /** Réglé net de la pièce (paiements moins contre-paiements), en centimes. */

@@ -64,7 +64,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(StorageService.getStocks().equipment).toHaveLength(0);
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
     expect(screen.getByRole('button', { name: /Nouvelle cuverie −2['’\s]?150,00/ })).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: /Sans nouvelle cuverie/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Sans Nouvelle cuverie/ }));
     expect(screen.queryByRole('button', { name: /Nouvelle cuverie −/ })).not.toBeInTheDocument();
     expect(FinanceService.getPlans()[0].status).toBe('active'); // simulation temporaire
   });
@@ -87,8 +87,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(screen.getByRole('button', { name: 'Modifier Hotte historique' })).toBeInTheDocument();
     fireEvent.click(screen.getByText('Hotte historique')); fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
-    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); // fix-materiel : une confirmation légère sur place d'abord
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Archiver' })); await saved();
+    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); // u2 (27) et fix-materiel : une confirmation sur place d'abord
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, archiver' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Archives', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte historique.*750/ }));
@@ -127,8 +127,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
       expect(screen.getByRole('button', { name: /1 pièce sans date.*800,00 hors graphe/ })).toBeVisible();
     }
     const bascule = within(screen.getByRole('group', { name: /Avec ou sans/ }));
-    expect(bascule.getByRole('button', { name: /Avec hotte de brassage/ })).toHaveTextContent(/2['’\s]?800,00/);
-    expect(bascule.getByRole('button', { name: /Sans hotte de brassage/ })).toHaveTextContent(paymentStatus === 'paid' ? /3['’\s]?200,00/ : /4['’\s]?000,00/);
+    expect(bascule.getByRole('button', { name: /Avec Hotte de brassage/ })).toHaveTextContent(/2['’\s]?800,00/);
+    expect(bascule.getByRole('button', { name: /Sans Hotte de brassage/ })).toHaveTextContent(paymentStatus === 'paid' ? /3['’\s]?200,00/ : /4['’\s]?000,00/);
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
     fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte de brassage.*Depuis le début du projet/ }));

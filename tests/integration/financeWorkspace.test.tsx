@@ -70,11 +70,11 @@ describe('Comptabilité quotidienne intégrée',()=>{
     FinanceService.savePlan({id:'POMPE',title:'Pompe prévue',date:todayISO(),amountCents:20000,direction:'out',category:'materiel',source:'equipment',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
     const bascule=within(screen.getByRole('group',{name:/Avec ou sans/}));
-    expect(bascule.getByRole('button',{name:/Avec pompe prévue/})).toHaveTextContent(/650,00/);
-    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveTextContent(/850,00/);
+    expect(bascule.getByRole('button',{name:/Avec pompe prévue/i})).toHaveTextContent(/650,00/);
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/i})).toHaveTextContent(/850,00/);
     expect(screen.getByText('À payer').parentElement).toHaveTextContent('150,00');
-    fireEvent.click(bascule.getByRole('button',{name:/Sans pompe prévue/}));
-    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveAttribute('aria-pressed','true');
+    fireEvent.click(bascule.getByRole('button',{name:/Sans pompe prévue/i}));
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/i})).toHaveAttribute('aria-pressed','true');
   });
   it('ne redemande pas le solde déjà confirmé lorsque les paiements empêchent de calculer la trésorerie',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});

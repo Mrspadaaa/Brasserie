@@ -131,8 +131,8 @@ describe('Projet matériel m3pm-d : la piste', () => {
   it('Archiver enregistre « cancelled » ; sur un projet archivé, « Reprendre ce projet » le remet en idée', async () => {
     const { unmount } = render(<UpgradeSheet plan={frigo()} onClose={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' }));
-    expect(state.saveUpgrade).not.toHaveBeenCalled(); // fix-materiel : confirmation légère sur place d'abord
-    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Archiver' }));
+    expect(state.saveUpgrade).not.toHaveBeenCalled(); // u2 (27) et fix-materiel : « Archiver » demande d'abord
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, archiver' }));
     await waitFor(() => expect(state.saveUpgrade).toHaveBeenCalled());
     expect(enregistre()).toMatchObject({ id: 'FRIGO', status: 'cancelled', amountCents: 300000 });
     unmount(); state.saveUpgrade.mockClear();

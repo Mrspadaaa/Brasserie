@@ -61,7 +61,7 @@ describe('Prévisions dit les projets de matériel qu’elle ne compte pas (CP-1
   it('(b) un projet daté, budgété et inclus compte déjà (la marche « frigo »), sans ligne', () => {
     semer([frigo()]); ouvrirPrevisions();
     expect(screen.queryByRole('button', { name: /achats? de matériel pas compté/ })).not.toBeInTheDocument();
-    expect(within(screen.getByRole('group', { name: /Avec ou sans/ })).getByRole('button', { name: /Avec frigo/ })).toBeVisible();
+    expect(within(screen.getByRole('group', { name: /Avec ou sans/ })).getByRole('button', { name: /Avec Frigo/ })).toBeVisible();
   });
   it('(b bis) un projet annulé ou réalisé n’est pas « pas compté »', () => {
     semer([projet('FAIT', 'Vieille cuve', 50_000, { status: 'completed' }), projet('ANN', 'Idée morte', 10_000, { status: 'cancelled' })]); ouvrirPrevisions();

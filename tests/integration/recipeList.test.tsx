@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { normalizeRecipe } from '../../src/domain/recipeSnapshot';
 import { Recipe, BrewhouseProfile } from '../../src/types';
@@ -84,8 +84,11 @@ describe('La liste des recettes', () => {
 
   it('⚠️ ne compte que le GRAIN dans la facture, pas le lactose', () => {
     monter([normalizeRecipe(RECETTE_MODERNE)]);
-    // 6 kg de grain, et non 6.5 : le lactose n'est pas de la facture de grain.
-    expect(screen.getByText(/6 kg/)).toBeInTheDocument();
+    // r2a : la feuille de la recette dit « Ce qu’elle demande », ligne par ligne. Le grain y est à 6 kg, le lactose à part : jamais 6,5 kg.
+    fireEvent.click(screen.getByRole('button', { name: /NEIPA Tropicale/ }));
+    expect(screen.getByText(/Pale Ale 6 kg/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Lactose/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/6,5 kg/)).not.toBeInTheDocument();
   });
 
   it('lit encore une ancienne recette qui n’a que `malts`', () => {

@@ -63,7 +63,7 @@ import { LigneP3c,LignePerdue } from '../depense/Ligne';
 import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,TuilesQuantite } from '../depense/Plateau';
 import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
-import { totalSeulEnUn,appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
+import { totalSeulEnUn,appliquerFinale,payeCopieDuTotal,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { articleDuDessus,bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
@@ -219,8 +219,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const setVerif=(v:'aucune'|'attente'|'finie'|'echec')=>{verifRef.current=v;setVerifEtat(v);};
   const lectureJeton=useRef(0),lectureAbort=useRef<AbortController|null>(null),provRef=useRef<{base:BaseFusion;scan:ScanOutcome}|null>(null),courantRef=useRef<{reviewedFields:string[];reglees:ReadonlySet<string>;stockItems:StockItem[]}>({reviewedFields:[],reglees:new Set(),stockItems:[]});
   /* Ce que la fusion a corrigé (pour le bleu des cellules, l'ancienne valeur barrée, la puce), les lignes que la 3.8 ne lit plus (hors du brouillon, donc hors des sommes) et le nombre de lignes gardées. */
+  const [payeCopie,setPayeCopie]=useState(false);
   const [fusion,setFusion]=useState<{lignes:Record<string,Correction[]>;entete:Record<string,{avant:unknown;apres:unknown}>;ajoutees:ReadonlySet<string>;n:number;avant:Record<string,CellulesLigne>}|null>(null);
-  const [perdues,setPerdues]=useState<Perdue[]>([]),[nGardees,setNGardees]=useState(0);
+  const [perdues,setPerdues]=useState<Perdue[]>([]),[nGardees,setNGardees]=useState(0),[nPerduesGardees,setNPerduesGardees]=useState(0);
   /* D329 : la file des changements de la 3e lecture. `tranchees` : les corrections et lignes ajoutées gardées (D354 : la marque, bleu et ancienne valeur barrée, ne reste que tant que son geste l'attend) ; `nTranchees` : les gestes faits (le « 2/7 » du bandeau). */
   const [tranchees,setTranchees]=useState<Set<string>>(()=>new Set()),[nTranchees,setNTranchees]=useState(0);
   /* D332 : les lignes d'avant « Regrouper en une dépense », rendues par « Rétablir » jusqu'à « Confirmer ». */
@@ -466,8 +467,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const surProvisoire=(provisoire:ScanOutcome,documentHash?:string)=>{
     const posee=applyOutcome(provisoire,documentHash);
     if(!posee||!provisoire.jeton)return;
+    /* p3 (jeu 5, cache) : le brouillon posé est le brouillon COURANT dès maintenant, sans attendre le rendu : une fusion qui suit tout de suite (final du cache) ne doit pas lire le brouillon vide d'avant la lecture. */
+    draftCourant.current=posee.posee;
     provRef.current={base:baseDeBrouillon(posee.posee,provisoire.jeton,posee.propositions,posee.nLignes),scan:provisoire};
-    setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);
+    setFusion(null);setPayeCopie(false);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);
     setBusy(false);setShowForm(true);setVerif('attente');
   };
   /** La fin de partie (M2, R1) : le final n'arrive pas (délai, erreur, flux fermé) : les valeurs du provisoire restent, avec le point « lecture coupée » (`delai-saute`), comme une 3.8 coupée aujourd'hui. Ses saisies restent. */
@@ -516,7 +519,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const lignesCorr:Record<string,Correction[]>={};let nCorr=s.nCorrigees;
     for(const [id,cs] of Object.entries(s.corrections.lignes)){const vraies=sansTraductions(cs,prov.base.lignes[id]);if(vraies.length)lignesCorr[id]=vraies;else nCorr-=1;}
     setFusion({lignes:lignesCorr,entete:s.corrections.entete,ajoutees:new Set(s.ajoutees),n:nCorr,avant:prov.base.lignes});
-    setPerdues(s.perdues);setNGardees(0);setTranchees(new Set());setNTranchees(0);
+    setPayeCopie(payeCopieDuTotal(final.result,s.corrections.entete.total));
+    setPerdues(s.perdues);setNGardees(0);setNPerduesGardees(0);setTranchees(new Set());setNTranchees(0);
     setVerif('finie');
     /* M6 : la traduction du provisoire en vol est jetée (`nomsJeton`) ; les lignes sans français (nom changé, ligne ajoutée, traduction jetée) se traduisent à nouveau, ce seul appel. */
     traduire(s.draft.lines.filter(l=>!l.nameFr),jeton,stockItems);
@@ -524,6 +528,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /** Ce que l'écran fait de la valeur rendue par `scanDocument` / `scanPages` : un morceau a été reçu → fusion ; sinon (cache, pièce sans 3.8, ancien serveur) → comme avant. */
   const finLecture=(outcome:ScanOutcome,documentHash?:string)=>{
     if(provRef.current){surFinal(outcome,documentHash);return;}
+    /* p2 : un final servi SANS flux (cache) qui porte ce que la 3.8 a retiré : on rejoue la même fusion que le flux (provisoire reconstruit = lignes retirées remises à leur rang, total et TVA d'avant), pour que la perte reste dite et tranchable. */
+    const reconstruit=outcome.ok&&outcome.result?provisoireDeRetirees(outcome.result):null;
+    if(reconstruit&&outcome.result){const final:ScanOutcome={...outcome,result:{...reconstruit.final}};surProvisoire({...outcome,result:reconstruit.provisoire,jeton:JETON_CACHE},documentHash);if(provRef.current)surFinal(final,documentHash);return;}
     /* LL-5, B2-17 : une lecture « ok » sans rien d'exploitable est un document illisible, dit une fois ; aucune ligne n'est fabriquée à sa place. */
     setVerif('aucune');applyOutcome(illisibleSiVide(outcome),documentHash);
   };
@@ -539,7 +546,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
   const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
   /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
-  const effacerLecture=()=>{setRelecture({enCours:false,erreur:null});setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  const effacerLecture=()=>{setRelecture({enCours:false,erreur:null});setFusion(null);setPayeCopie(false);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
   /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
   const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -712,6 +719,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       scanLocked.current=true;lectureJeton.current++;surProvisoire(apercu.provisoire,'simule');
       const fin=apercu.final;if(fin&&apercu.delaiMs!==null&&apercu.delaiMs!==undefined)minuteur=setTimeout(()=>{if(!mounted.current)return;scanLocked.current=false;finLecture(fin,'simule');},apercu.delaiMs);
     }
+    else if(apercu.cache)finLecture(apercu.cache,'simule');
     else applyOutcome(apercu.outcome,'simule');
     /* Le banc du QR : un vrai fichier fictif, lu par le vrai décodeur du navigateur (la lecture Gemini reste simulée). */
     if(apercu.qrSimule){qrJeton.current++;setQrRes(apercu.qrSimule);}
@@ -1334,7 +1342,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Lenteur D, son choix 2 D : les lignes que la 3.8 ne lit plus : barrées en fin de leur bande, hors des sommes (elles ne sont pas dans le brouillon). « Confirmer » sans trancher : elles partent. */
   const perduesParBande=new Map<string,React.ReactNode[]>();
   for(const p of perdues){const l=p.ligne,g=groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category),u=uniteEffective(l);
-    perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id))}/>]);}
+    perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id))} sansStock={depenseHorsBrassage(draft.category)}/>]);}
   /* D329 (son choix B étendu) : le bandeau au pouce est la file de TOUS les changements de la 3e lecture encore à trancher, dans l'ordre : lignes pas retrouvées, valeurs corrigées, lignes ajoutées, désaccords qui pèsent. */
   const estDesaccord=(c:Chip)=>c.source==='point'&&c.codes.includes('lectures-divergentes')&&c.nom!=='TVA';
   const desaccordsRestants=chips.filter(c=>estDesaccord(c)&&!reglesSet.has(c.id));
@@ -1345,7 +1353,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     ...desaccordsRestants.map((c):Changement=>({type:'desaccord',cle:`des:${c.id}`,id:c.id,mot:'désaccord'})),
   ];
   const courantChg=fileChangements[0];
-  const garderPerdue=(id:string)=>{const p=perdues.find(x=>x.ligne.id===id);if(!p)return;setDraft(previous=>({...previous,lines:rangerLaPerdue(previous.lines,p,p.ligne)}));setPerdues(ps=>ps.filter(x=>x.ligne.id!==id));setNGardees(n=>n+1);};
+  const garderPerdue=(id:string)=>{const p=perdues.find(x=>x.ligne.id===id);if(!p)return;setDraft(previous=>({...previous,lines:rangerLaPerdue(previous.lines,p,p.ligne)}));setPerdues(ps=>ps.filter(x=>x.ligne.id!==id));setNGardees(n=>n+1);setNPerduesGardees(n=>n+1);};
   const retirerPerdue=(id:string)=>setPerdues(ps=>ps.filter(x=>x.ligne.id!==id));
   /* « Annuler » : la valeur du provisoire revient (les cellules corrigées seules), la correction et son bleu partent, la puce baisse d'un. */
   const annulerCorrection=(id:string)=>{
@@ -1361,7 +1369,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const garderCourant=()=>{const c=courantChg;if(!c)return;
     if(c.type==='perdue')garderPerdue(c.id);else if(c.type==='desaccord')setReglees(r=>new Set(r).add(c.id));else setTranchees(t=>new Set(t).add(c.cle));
     setNTranchees(n=>n+1);};
-  const toutValider=()=>{setPerdues([]);setTranchees(t=>new Set([...t,...fileChangements.filter(c=>c.type==='corrigee'||c.type==='ajoutee').map(c=>c.cle)]));setReglees(r=>new Set([...r,...desaccordsRestants.map(c=>c.id)]));setNTranchees(n=>n+fileChangements.length);};
+  const toutValider=()=>{setPerdues([]);setTranchees(t=>new Set([...t,'entete:total','entete:tva',...fileChangements.filter(c=>c.type==='corrigee'||c.type==='ajoutee').map(c=>c.cle)]));setReglees(r=>new Set([...r,...desaccordsRestants.map(c=>c.id)]));setNTranchees(n=>n+fileChangements.length);};
   const ligneChg=courantChg?(courantChg.type==='perdue'?perdues.find(x=>x.ligne.id===courantChg.id)?.ligne:draft.lines.find(l=>l.id===courantChg.id)):undefined;
   const chgNom=courantChg?.type==='desaccord'?sansMotsBruts((points??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
   const chgMontant=courantChg?.type==='desaccord'?'':ligneChg?.amount===undefined?'—':fr2c(Math.round(ligneChg.amount*100));
@@ -1471,15 +1479,20 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const MOYENS:Record<string,string>={twint:'TWINT',card:'Carte',cash:'Espèces',bank_transfer:'Virement',other:'Autre'};
   /* d2 : les contrôles de la pièce (`controlesPiece.ts`, voie c1) se lisent sur le BROUILLON : ce que le brasseur garde, ajoute, corrige ou retire les change. Rang n = `draft.lines[n-1]`. Contexte : dépenses déjà saisies (doublon, paiement partagé) et prix du stock (prix plausible) ; sans lui ces contrôles restent non vérifiables, jamais « bons ». */
   const vatCodeDe=new Map((result?.items??[]).map(it=>[it.id,it.vatCode]));
+  const payeFiable=payeCopie?undefined:result?.amountPaid;
   const lectureCtl:LectureControlee|undefined=result?{vendor:draft.vendor,date:draft.date,printedTime:result.printedTime,amountTTC:totalImprimeCts===null?null:totalImprimeCts/100,tvaRate:result.tvaRate,tvaAmount:result.tvaAmount,vat:result.vat,
     items:draft.lines.map(l=>({name:l.imprime?.nom??l.nomLu??l.description,kind:l.kind,quantity:l.quantity??null,unit:l.unit,price:l.unitPrice??null,amountTTC:l.amount??null,reference:l.sourceReference,evidence:l.evidence,vatCode:vatCodeDe.get(l.id)})),
-    amountPaid:result.amountPaid,terminalAmount:result.terminalAmount,paymentMethod:result.paymentMethod,printedLineCount:result.printedLineCount,printedItemCount:result.printedItemCount,countedAmounts:result.countedAmounts,countedAmountsConfirmed:result.countedAmountsConfirmed,documentType:result.documentType,countedEans:result.countedEans,ignoredLines:result.ignoredLines,photoIncomplete:result.photoIncomplete,photoIncompleteNote:result.photoIncompleteNote}:undefined;
+    amountPaid:payeFiable,terminalAmount:result.terminalAmount,paymentMethod:result.paymentMethod,printedLineCount:result.printedLineCount,printedItemCount:result.printedItemCount,countedAmounts:result.countedAmounts,countedAmountsConfirmed:result.countedAmountsConfirmed,documentType:result.documentType,countedEans:result.countedEans,ignoredLines:result.ignoredLines,photoIncomplete:result.photoIncomplete,photoIncompleteNote:result.photoIncompleteNote}:undefined;
   const ctxPiece:ContexteControles={depenses:transactions.map(tx=>({id:tx.id,vendor:tx.finance?.vendor??'',date:tx.date,total:tx.amountTTC})),
     prixConnus:[...stocks.rawMaterials,...stocks.cleaning].filter(a=>typeof a.pricePerUnit==='number'&&a.pricePerUnit>0&&a.unit).map(a=>({nom:a.name,reference:a.ref,prix:a.pricePerUnit!,unite:a.unit,source:'stock' as const}))};
   const piece=lectureCtl?controlesPiece(lectureCtl,ctxPiece):[];
   const ligneSuspecte=piece.find(c=>c.id==='prix-plausible'&&c.ok===false)?.lignes?.[0]??null;
   const ajouteeAVide=(()=>{const i=draft.lines.findIndex(l=>estAjouteeAMain(l)&&!l.description.trim());return i>=0?i+1:null;})();
-  const ctrlBloc=controlesCroises({ajouteeAVide,ligneSuspecte,photo:Boolean(draft.proofDataUrl&&!busy),lignesCents:lignesCtsBloc,nLignes:draft.lines.length,nAjoutes:draft.lines.filter(estAjouteeAMain).length,ajoutsCents:ajoutsMain.reduce((t,a)=>t+a.cents,0),totalCents:totalImprimeCts,attendus:typeof result?.printedLineCount==='number'?result.printedLineCount:null,attendusIndependant:typeof result?.countedAmounts==='number'&&piece.find(c=>c.id==='comptage-montants')?.ok!==null?result.countedAmounts:null,nRabais:draft.lines.filter(l=>l.kind==='discount').length,nSansMontant:draft.lines.filter(l=>!estAjouteeAMain(l)&&l.amount===undefined).length,nPort:draft.lines.filter(l=>!estAjouteeAMain(l)&&port.has(l.id)).length,vusUneLecture:(()=>{const avecMontant=perdues.filter(p=>p.ligne.amount!==undefined);return avecMontant.length&&avecMontant.length===perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0)}:null;})(),payeCents:lectureCtl?payeEffectif(lectureCtl)?.cts??null:null,moyen:result?.paymentMethod?MOYENS[result.paymentMethod]??null:null,qte:qteBloc,notePaye:notePaiement(piece),
+  /* p2 : le total et la TVA que la vérification a changés et que le brasseur n'a pas tranchés (ni retapés, ni « Remettre », ni « Tout valider ») : le bloc ne les dit pas « = imprimé ». */
+  const cts100=(v:unknown)=>typeof v==='number'&&Number.isFinite(v)?Math.round(v*100):null;
+  const totalChange=(()=>{const e=fusion?.entete.total,a=cts100(e?.avant),b=cts100(e?.apres);return e&&a!==null&&b!==null&&a!==b&&memeValeur(draft.amount,e.apres)&&!tranchees.has('entete:total')?{avantCents:a,apresCents:b}:null;})();
+  const tvaChange=(()=>{const e=fusion?.entete.tva,a=cts100(e?.avant),b=cts100(e?.apres);return e&&a!==null&&b!==null&&a!==b&&memeValeur(draft.sourceVatAmount,e.apres)&&!tranchees.has('entete:tva')?{avantCents:a,apresCents:b}:null;})();
+  const ctrlBloc=controlesCroises({ajouteeAVide,ligneSuspecte,photo:Boolean(draft.proofDataUrl&&!busy),lignesCents:lignesCtsBloc,nLignes:draft.lines.length,nAjoutes:draft.lines.filter(estAjouteeAMain).length,ajoutsCents:ajoutsMain.reduce((t,a)=>t+a.cents,0),totalCents:totalImprimeCts,attendus:typeof result?.printedLineCount==='number'?result.printedLineCount:null,attendusIndependant:typeof result?.countedAmounts==='number'&&piece.find(c=>c.id==='comptage-montants')?.ok!==null?result.countedAmounts:null,nRabais:draft.lines.filter(l=>l.kind==='discount').length,nSansMontant:draft.lines.filter(l=>!estAjouteeAMain(l)&&l.amount===undefined).length,nPort:draft.lines.filter(l=>!estAjouteeAMain(l)&&port.has(l.id)).length,vusUneLecture:(()=>{const avecMontant=perdues.filter(p=>p.ligne.amount!==undefined);return avecMontant.length&&avecMontant.length===perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0)}:null;})(),payeCents:lectureCtl?payeEffectif(lectureCtl)?.cts??null:null,terminalCents:typeof result?.terminalAmount==='number'?Math.round(result.terminalAmount*100):null,partageExplique:Boolean(piece.find(c=>c.id==='paiement')?.refs?.length),gardees:nPerduesGardees,retirees:perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0),sansMontant:perdues.filter(p=>p.ligne.amount===undefined).length}:null,totalCorrige:totalChange,tvaCorrigee:tvaChange,moyen:result?.paymentMethod?MOYENS[result.paymentMethod]??null:null,qte:qteBloc,notePaye:notePaiement(piece),
     piece:rangsDePiece(piece.filter(c=>!(c.id==='doublon'&&(existing||similar))),{nRemises:compterArticles(lectureCtl?.items??[]).remises,sommeEnEcart:lignesCtsBloc!==totalImprimeCts&&totalImprimeCts!==null})});
   /* d3 (VERDICT-2, bloquant 1) : une seule source pour l'accord des lectures, celle de la barre du bas : les chips « lectures-divergentes » encore à trancher (TVA comprise). L'ancien compte lisait origine 'lecture' et pese : il disait « 3/3 d'accord » pendant que la barre disait « désaccord ». */
   const nDesaccords=chips.filter(c=>c.source==='point'&&!reglesSet.has(c.id)).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0);
@@ -1505,7 +1518,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(r==='lignes'){const id=draft.lines[(rang?.lignes?.[0]??0)-1]?.id;flushSync(()=>setRecherche(''));if(id)versLigne(id);else versListe();return;}
     if(r==='photo'){if(surFichier){setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}else versListe();return;}
     if(r==='doublon'){const id=rang?.refs?.[0];if(id&&onOpenExpense){onClose();onOpenExpense(id);}else viser(bandeauRef.current);return;}
-    if(r==='perdues'){perdues.forEach(p=>garderPerdue(p.ligne.id));return;}
+    /* p2 : « Les garder » rend les lignes ; si la vérification avait changé le total d'exactement leur somme (163,85 → 149,25 pour 14,60), le total d'avant revient avec elles (une seule décision, la lecture des deux premiers lecteurs). */
+    if(r==='perdues'){const retire=perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0);perdues.forEach(p=>garderPerdue(p.ligne.id));if(totalChange&&Math.abs(totalChange.avantCents-totalChange.apresCents-retire)<=5)surRenvoi('reprendre-total');return;}
+    /* p2 : « Remettre 163,85 » : la valeur lue par les deux premiers lecteurs revient ; la correction ne se marque plus. */
+    if(r==='reprendre-total'){const e=fusion?.entete.total;if(e&&typeof e.avant==='number'){setTotal(e.avant);setTranchees(t=>new Set(t).add('entete:total'));setFusion(f=>f?{...f,entete:Object.fromEntries(Object.entries(f.entete).filter(([k])=>k!=='total'))}:f);}return;}
+    if(r==='reprendre-tva'){const e=fusion?.entete.tva;if(e&&typeof e.avant==='number'){patch({sourceVatAmount:e.avant});setTranchees(t=>new Set(t).add('entete:tva'));setFusion(f=>f?{...f,entete:Object.fromEntries(Object.entries(f.entete).filter(([k])=>k!=='tva'))}:f);}return;}
     if(r==='lectures'){const c=desaccordsRestants[0];if(c)aller(c);else versListe();return;}
     versListe();
   };
@@ -1691,7 +1708,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
   </fieldset>:null;
   /* Sans lecture (R5) : la liste et les champs d'aujourd'hui, dans le cadre p3c-3 (en-tête, pied sans bascule). */
-  const sansLecture=<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 px-2 pt-1.5 pb-2 lg:mx-auto lg:max-w-[760px]">
+  const sansLecture=<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 px-2 pt-4 pb-2 lg:mx-auto lg:max-w-[760px]">
     {doublons}
     <div className={hints.amountTTC?uncertainClass:''}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>
     {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
@@ -1703,6 +1720,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </fieldset>;
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!saving)fermer();}} dismissible={!saving} labelledBy={titleId} size="xl" plein>
+    {/* u1 (18) : à 1280, la feuille est une colonne centrée comme les autres feuilles : en-tête, bande des documents, champs et pied dans la même largeur (le fond reste plein écran, D235). */}
+    <div data-dp="colonne" className="flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[760px] lg:border-x lg:border-cave-700">
     <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={saving} onFermer={fermer} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
       milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
     {abandon?<div data-dp="abandon" role="alertdialog" aria-labelledby="dp-abandon-titre" className="mx-2 mt-1.5 space-y-1.5 rounded-panel border border-attention/40 bg-attention/10 p-2.5 text-sm text-cave-50">
@@ -1726,6 +1745,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
     {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise&&desaccordsRestants.length>0} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
     {showForm?<Pied mois={!done&&!attached&&!dejaTx?<BoutonMois effet={effetMois} variante="depense" ouvert={moisOuvert&&!!effetMois} onBascule={()=>setMoisOuvert(o=>!o)}/>:null} carte={moisOuvert&&effetMois&&!done&&!attached&&!dejaTx?<CarteMois effet={effetMois} variante="depense" aujourdhui={todayIsoMois()} onFermer={()=>setMoisOuvert(false)} onChoisir={reglee=>{reviewed('paymentEvidence');patch({paymentStatus:reglee?'paid':'unpaid',...(reglee&&toIsoDate(draft.paymentDate)>toIsoDate(swissToday())?{paymentDate:swissToday()}:{})});}}/>:null} ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
+    </div>
   {prive?<MovementSheet prefill={{kind:'withdrawal',...prive}} onClose={()=>setPrive(null)} onSaved={()=>{onSaved();onClose();}}/>:null}</ModalShell>;
 }
 const todayIsoMois=()=>toIsoDate(swissToday());

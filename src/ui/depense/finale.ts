@@ -11,6 +11,7 @@ import { sansCetteSaisie, uniteEffective, type PurchaseDraft, type PurchaseLineD
 import { PROPOSAL_WEIGHT_MARK, STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, donneesDArticle, donneesDeLigne, isReadableUnit, matchStockLine, regleProduit, shortUnit } from '../../services/stockLineMatching';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import { ecartsEntre } from '../../domain/stock/donnees';
+import { rangsHorsPiece } from '../../domain/finance/controlesPiece';
 import { lireOptions } from './optionsDuNom';
 import { articleDeMemeNom, libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
@@ -327,6 +328,9 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
   const corrections: SortieFusion['corrections'] = { lignes: {}, entete: {} };
   const perdues: Perdue[] = [], gardees: PurchaseLineDraft[] = [];
   let precedente: string | null = null;
+  /* p3 : un total, un sous-total, un règlement ou un rabais global que la 3.8 ne rend plus n'est pas une ligne retirée : ni proposé, ni compté (« Les garder » ne ramène que des articles). */
+  const horsPiece = new Set(
+    [...rangsHorsPiece(courant.lines.map(l => ({ name: l.imprime?.nom ?? l.nomLu ?? l.description, kind: l.kind, quantity: l.quantity ?? null, unit: l.unit, price: l.unitPrice ?? null, amountTTC: l.amount ?? null })))].map(i => courant.lines[i].id));
 
   const touchee = (id: string, c: Cellule, l: PurchaseLineDraft, b: CellulesLigne): boolean => {
     if (!memes(l[c], b[c])) return true;
@@ -346,7 +350,7 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
     if (!F) {
       // Pas retrouvée : si le brasseur l'a retouchée, elle reste une ligne comme les autres ; sinon elle sort du brouillon et attend sa décision (son choix 2 D).
       if (CELLULES_LIGNE.some(c => touchee(l.id, c, l, b))) { gardees.push(l); precedente = l.id; }
-      else perdues.push({ ligne: l, apres: precedente });
+      else if (!horsPiece.has(l.id)) perdues.push({ ligne: l, apres: precedente });
       continue;
     }
     const fusionnee: PurchaseLineDraft = { ...l, evidence: F.evidence };
@@ -411,3 +415,40 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
 /** R1 : la fin de partie (rien du final n'a pu être posé) : le provisoire, avec le point « lecture coupée » (`delai-saute`) qui marque les lignes « reprises ». */
 export const provisoireCoupe = (provisoire: ScannedInvoiceResult): ScannedInvoiceResult => ajouterCoupure(clone(provisoire) as any, 'delai-saute', phraseCoupure('delai-saute')) as ScannedInvoiceResult;
 export { shortUnit };
+
+/** p2 : le jeton du provisoire reconstruit à partir d'un final servi du cache (aucun flux n'a eu lieu). */
+export const JETON_CACHE = 'cache-retirees';
+
+/**
+ * p2 (jeu en ligne 4 : deux tickets lus comme deux pages, la 3.8 retire la page 1) : un final servi du cache n'a plus de flux provisoire, donc plus de « pas retrouvée ». Le serveur écrit ce qu'il a retiré dans
+ * `result.retirees` (lignes avec leur rang, total et TVA d'avant) ; on en refait le provisoire (lignes remises à leur rang, total et TVA d'avant) et le final (chaque ligne dit son rang), puis la fusion habituelle
+ * (`appliquerFinale`) donne les mêmes lignes barrées, les mêmes valeurs changées et les mêmes gestes que sur le flux. Limite : une ligne que la 3.8 a AJOUTÉE n'est pas connue (le serveur ne l'écrit pas) : elle
+ * se lit comme une ligne inchangée. Rend `null` quand rien n'a été retiré.
+ */
+export function provisoireDeRetirees(final: ScannedInvoiceResult): { provisoire: ScannedInvoiceResult; final: ScannedInvoiceResult } | null {
+  const re = final.retirees;
+  if (!re || (!re.lignes.length && re.amountTTC === undefined && re.tvaAmount === undefined)) return null;
+  const prov: Array<{ ligne: ScannedInvoiceResult['items'][number]; deFinal: number | null }> = final.items.map((ligne, j) => ({ ligne, deFinal: j }));
+  for (const r of [...re.lignes].sort((a, b) => a.rang - b.rang)) prov.splice(Math.min(r.rang, prov.length), 0, { ligne: r.ligne, deFinal: null });
+  const { retirees: _retirees, ...sans } = final;
+  const rangDuFinal = new Map<number, number>();
+  prov.forEach((p, k) => { if (p.deFinal !== null) rangDuFinal.set(p.deFinal, k); });
+  const provisoire: ScannedInvoiceResult = {
+    ...sans, points: [], provisoireJeton: undefined,
+    items: prov.map((p, k) => ({ ...p.ligne, id: `line-${k + 1}`, rangProvisoire: undefined })),
+    ...(re.amountTTC !== undefined ? { amountTTC: re.amountTTC } : {}), ...(re.tvaAmount !== undefined ? { tvaAmount: re.tvaAmount } : {}),
+  };
+  delete (provisoire as { provisoireJeton?: string }).provisoireJeton;
+  return { provisoire, final: { ...sans, provisoireJeton: JETON_CACHE, items: final.items.map((it, j) => ({ ...it, rangProvisoire: rangDuFinal.get(j) ?? null })) } };
+}
+
+/**
+ * p3 (jeu en ligne 5, « Payé = imprimé · TWINT 14,60 » vert sous un terminal à 163,85) : le payé lu par la 3.8 sur la PARTIE qu'elle a gardée n'est pas le règlement du document. Quand la vérification a changé le total (163,85 → 14,60),
+ * que le payé lu égale ce total changé et que le terminal égale le total d'AVANT, le payé est une copie du total changé : il n'est pas retenu. Le règlement est alors le terminal, comparé au total (rouge tant que le total est le changé,
+ * « Payé = imprimé » une fois le total remis). Sans terminal lu, ou sans total changé, le payé lu reste : jamais une valeur inventée.
+ */
+export function payeCopieDuTotal(final: ScannedInvoiceResult | undefined, total: { avant: unknown; apres: unknown } | undefined): boolean {
+  const c = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const avant = c(total?.avant), apres = c(total?.apres), paye = c(final?.amountPaid), terminal = c(final?.terminalAmount);
+  return paye !== null && avant !== null && apres !== null && avant !== apres && paye === apres && terminal !== null && Math.abs(terminal - avant) <= 5;
+}

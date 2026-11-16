@@ -1,0 +1,40 @@
+OK — fiche p5 : e1a, e2a, e4c corrigées, palet glissable prouvé (banc, test), 14/14, TSC et 95 tests verts
+
+## Fait (code, tsc vert, `npx vitest run port-` : 91 verts dont 10 neufs `tests/unit/port-p5-modele.test.tsx`)
+- [x] e1a n° 1 : Reporter lisible. Cause : mon `!text-cave-950` ; retiré, texte blanc sur fond noir en clair (capture 1280 clair ouverte).
+- [x] e1a n° 2 : jour proposé calculé (`jourPropose` dans `ficheModel.ts` : premier jour ≥ demain où `faisabilite` = 'oui', sinon rien) ; puces demain · propose (cochée) · +7 j ; titre et geste Reporter sur ce jour (capture 390 clair ouverte : « Mardi 17.11 », puce « ma 17 » cochée).
+- [x] e1a n° 3 : `BudgetLien` (Cible « Budget » qui ouvre `BrewBudgetDialog`) dans la grille Budget / Compagnon / Étape (capture ouverte) et dans la carte-liste de l'annulé.
+- [x] e1a n° 4 : graduations « di 15 · lu 16 » en police du texte (`gradsSans` de `Curseur`) ; capture 390 clair ouverte, plus collées.
+- [x] e1a (aperçu, plan n° 5) : `planDecale` ; `YeastPreparationPanel apercu` (au geste = jour du curseur, au repos = jour proposé) ; pastille « à temps / à lancer ce soir / trop tard pour ce jour » ; aucune case cochable en aperçu (capture geste ouverte : « à temps » vendredi 20.11, dates 19.11).
+- [x] e1a (plan n° 6) : `startLabel` et les trois alertes déplacés en tête de « Produit, inoculum, régularisation ».
+- [x] e1a (plan n° 7) et e2a n° 10 : focus sur le × retiré à l'ouverture (effet 80 ms dans `BatchDetailSheet`, `Sheet.tsx` intact).
+- [x] e2a n° 1 : FG confirmée = toujours « ✓ FG 1,011 », plus de « pas encore stable » (capture 390 clair de e4c-glisse ouverte : « ✓ FG 1,011 » seul).
+- [x] e2a n° 2 : verdict « à refaire · à corriger · sans suite » = ligne `Verdict : …` dans `notesTasting` (`avecVerdict` / `verdictDe`, testés), `aria-pressed`, exclusives.
+- [x] e2a n° 3 : « Observations du jour de brassage » et « Inspiration et profil visé » en lignes repliées « libellé — ✎ » (`LigneRepliee`) ; carte dégustation ouverte avec les puces dessous.
+- [x] e2a n° 4 : pied du Terminé « Rebrasser cette <style> » (`Cible prim`) si `onRebrew` est fourni, sinon « Fermer » ; prop `onRebrew` ajoutée (câblage : voir DÉCISION).
+- [x] e2a n° 6 : annulé, Dossier = panneau Étape (Revenir à « Planifié » en `prim`) + carte-liste Budget du brassin › / Historique conservé › / Supprimer ce brassin ×. Plus de budget en tête, de pastille de style, de BrewerChat ni de gros bouton.
+- [x] e2a (plan n° 5, 7, 8, 9) : Carnet des post-fermentation = dégustation + puces, lignes repliées, `CarteDensite`, `HopTastingsPanel` ; pastille « Annulée » hachurée ; Contenants : « {n} L dedans » (un fût) et « {n} L non répartis » (`volumesConditionnes`, testé) ; toast FG `fixed` bas de feuille, `bg-ebc-straw`, bouton Annuler, 8 s.
+- [x] e4c n° 1 : dates des marches connues seulement (`datesDeMarches`, testé) : « dès 28.10 », « → {conditionnement} », conditionné ; la date d'entrée en garde n'existe pas dans le modèle : non montrée.
+- [x] e4c n° 2 : jauge = bouteilles + fûts + reste hachuré ; libellé « ≈ 43 L en cuve » dans un seul `<span>` (capture ouverte : espaces corrects), seulement tant que rien n'est posé.
+- [x] e4c n° 3 : palet glissable codé (`Palet` : pointeur capturé, `touch-action: none`, translation Y, seuil 8 px, `elementsFromPoint` + `[data-depot]` avancer / retour / abandon ; un dépôt ouvre une confirmation, jamais l'acte). Le déplacement suit bien le doigt (capture « en vol » ouverte, palet descendu de 20 px). Dépôt prouvé (voir « Reprise terminée »).
+- [x] e4c n° 4 : retour = palet rouge ↑ + rail rouge sur la marche cible, point brun sur l'actuelle (code ; capture e4c-retour à ouvrir).
+- [x] e4c n° 5 : carte Conditionné teintée par la bière (`teinteBiere` = `recipeBeerColor` de `src/domain/beerColor.ts`, bande ; sans couleur de malt : teinte actuelle) et barre « n bt | fût · L | pertes hachurées » (code ; capture e4c-conditionne-echelle à ouvrir).
+- e4c plan n° 6 à 9 codés (« Aucun ingrédient remis en rayon » si stock déduit, « Laisser conditionnée » sur une ligne, « Revenir en garde » plein rouge, « ≈ 43 L à tirer » en `text-water`, icône bouteille, « tout vendu », Clôturer petit en retour, hachures abandon).
+
+## Reprise terminée (15.11)
+- **Bug du dépôt du palet : corrigé.** Cause (mesurée par sonde : la ligne Abandonner passait de y 778 à 1208 pendant le glisser) : la feuille est un Drawer Vaul, qui prend le glisser vers le bas pour une fermeture et emmenait toute la feuille avec lui. Correction : `data-vaul-no-drag` sur le palet glissable (`StageLadder.tsx`). Capture après correction : abandon, la confirmation « Abandonner le lot » s'ouvre sans rien écrire ; retour, la confirmation « retour en fermentation » s'ouvre (ouvertes).
+- **Test** : `tests/unit/port-p5-depot.test.tsx` (4 tests) : palet porteur de `data-vaul-no-drag` ; dépôt sur la bande Abandonner ouvre « Garder le lot / Abandonner » ; un déplacement sous 8 px reste un toucher ; `jjmm` lit une date ISO.
+- 8 captures e2a/e4c ouvertes à côté des maquettes (390 clair, plus cave pour retour, repos, annulé). Défauts trouvés et corrigés : (1) e2a Terminé : « du 2026- à son dernier verre » (`jjmm` coupait une date ISO) → « du 01.09 » ; (2) e4c barre du Conditionné : la hachure « pertes » prenait tout le reste (le fût au volume inconnu y passait pour des pertes) → largeur proportionnelle, le reste inconnu laissé vide ; (3) e4c retour glissé : carte de confirmation et bouton rouge débordaient à droite à 390 → colonne `minmax(0,1fr)` et boutons sans `nowrap` (« Revenir en fermentation » passe sur deux lignes, capture ouverte).
+- Écarts restants, constatés et non corrigés : e4c retour, la carte Conditionné n'est pas teintée brun comme la maquette parce que la fixture ZZ-004 n'a pas de couleur de malt (repli prévu) ; libellé « retour ? » à droite de la carte Garde là où la maquette dit « touchée ou palet lâché » ; « Garde » et non « Garde froide » (le modèle n'a pas ce nom) ; la carte Terminé garde le bouton Clôturer, absent de la maquette en retour ; e2a Terminé, pied « Fermer » tant que `onRebrew` n'est pas câblé (DÉCISION ci-dessous) ; e2a annulé : « Budget du brassin » sans valeur à droite (inconnue).
+- G1 `COCHE OK 14/14` ; G2 `TSC OK` ; G3 `TESTS OK` (9 fichiers, 95 tests verts). Essais : 1 par critère. Sondes du banc retirées. Servi sur le port 3105.
+
+## Tests d'intégration (hors Possède, non modifiés)
+Rejoués : 8 fichiers qui citent `BatchDetailSheet`/`StageLadder`. 7 verts. 1 échec : `tests/integration/batchAm4Am5.test.tsx` « un retour en arrière se confirme dans la page… » cherche le texte « aucun ingrédient n'est remis en rayon » : la maquette e4c montre la ligne courte « Aucun ingrédient remis en rayon » quand le stock a été déduit (plan n° 6). Assertion à aligner par le pilote (hors Possède).
+
+## Fichiers écrits
+`src/ui/BatchDetailSheet.tsx`, `src/ui/production/fiche/{PlannedDate,PostFiche,StageLadder,ficheModel,ui}.tsx|ts`, `tests/unit/port-p5-modele.test.tsx`, `voies/p5/{banc.mjs,fixtures.json,tests.txt,captures/}`. Aucun champ Firestore neuf (le verdict est une ligne de `notesTasting`).
+
+DÉCISION À PRENDRE : « Rebrasser cette <style> » (e2a n° 4) demande que `ProductionTab` (ou `App`) passe `onRebrew` à `BatchDetailSheet` ; le geste existe (`setBrewRecipeId(recipeRef)` + `setQuickAction('brew-batch')` dans `App.tsx`, lignes 846 et 1071) mais ces fichiers sont hors Possède. Sans le câblage, le pied du Terminé garde « Fermer ». Recommandation : le pilote ajoute 2 lignes dans `ProductionTab`/`App` après p5.
+DÉCISION À PRENDRE : verdict sans champ neuf, écrit comme ligne dans `notesTasting`. Recommandation : oui, réversible.
+CONNAISSANCE : une dérogation de texte `!text-cave-950` sur un fond `bg-ebc-straw` rend le texte noir sur noir en clair : `text-cave-950` seul est déjà la bonne encre (le contraire de ce que suggérait le plan).
+LEÇON PROPOSÉE : un geste de glisser demande sa preuve dès le premier jet (banc + sonde `elementsFromPoint`), pas après le code complet ; et donner à l'agent de reprise un plafond de relecture (ici 3 gros fichiers lus en entier = 60 k).

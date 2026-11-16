@@ -1,0 +1,14 @@
+Pas de vitest (voie en ligne, par gestes). Comparaison départ (r3, « État attendu au retour ») / lu en ligne, 10.11, bundle index-Cmht_ZH1.js, 390 clair.
+
+Indicateur            | départ     | lu         | ok
+Entré (Synthèse)      | 5 695,00   | 5 695,00   | oui
+Dépensé               | 0,00       | 0,00       | oui
+En caisse             | 5 663,00   | 5 663,00   | oui
+Brassins              | 4          | 4          | oui
+Recettes              | 24         | 24         | oui
+Clients               | 5          | 5          | oui
+Stock « Tous »        | 53         | 53         | oui
+Annuel                | −70,40     | −70,40     | oui
+Prévisions (au-dessus de zéro) | 5 035,32 | 5 035,32 | oui
+Recherche « ZZ » (Stock)       | rien     | « Rien ne correspond » | oui
+À commander           | 17         | 17         | oui

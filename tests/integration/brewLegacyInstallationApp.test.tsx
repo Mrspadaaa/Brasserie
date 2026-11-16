@@ -62,9 +62,9 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     const { App } = await import('../../src/App');
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: 'Lancer depuis la recette' }));
-    // première ouverture : le chunk de la modale se charge à froid. Passe 3 : la question se dit avant le geste, Lancer reste désactivé.
-    expect(await screen.findByText(/Recette à adapter à .* avant de lancer/, {}, { timeout: 8000 })).toBeVisible();
-    expect(screen.getByRole('button', { name: /^Lancer à / })).toBeDisabled();
+    // d1b : la recette ouvre la feuille « Brasser » ; « Planifier » est le geste qui crée.
+    fireEvent.click(await screen.findByRole('button', { name: /^Planifier/ }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
@@ -83,6 +83,6 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    expect(screen.queryByRole('button', { name: /^Lancer à / })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Planifier/ })).not.toBeInTheDocument();
   });
 });

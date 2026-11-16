@@ -58,6 +58,26 @@ export function courbeDeCaisse(profile: FinancialProfile, cents: number, date: s
   return points;
 }
 
+export interface EtiquetteAxe { texte: string; ratio: number }
+/**
+ * u2, constat 25 (jeu en ligne du 16.11) : six étiquettes à pas égal de jours répétaient un mois (« août août sept. oct. oct. nov. »).
+ * Une étiquette par mois, posée à sa date (le 1er du mois, le premier mois au bord gauche), jamais deux fois le même mois ; trop serrées ou plus de six : les premières gardées, les autres écartées.
+ * `ratio` : la place sur l'axe, de 0 (début) à 1 (aujourd'hui).
+ */
+export function etiquettesAxe(debut: string, fin: string, long: boolean): EtiquetteAxe[] {
+  const total = Math.max(1, jours(debut, fin)), ecart = long ? 0.14 : 0.1, texte = (iso: string) => (long ? `${moisCourt(iso)} ${iso.slice(2, 4)}` : moisCourt(iso));
+  const candidats: EtiquetteAxe[] = [{ texte: texte(debut), ratio: 0 }];
+  for (let m = indexMois(debut.slice(0, 7)) + 1; ; m++) {
+    const premier = `${moisDe(m)}-01`;
+    if (premier > fin) break;
+    candidats.push({ texte: texte(premier), ratio: jours(debut, premier) / total });
+  }
+  const gardes: EtiquetteAxe[] = [];
+  for (const c of candidats) if (!gardes.length || (c.ratio - gardes[gardes.length - 1].ratio >= ecart && c.ratio <= 0.93)) gardes.push(c);
+  if (gardes.length <= 6) return gardes;
+  return Array.from({ length: 6 }, (_, i) => gardes[Math.round((i * (gardes.length - 1)) / 5)]);
+}
+
 function FriseSolde({ points, confirme }: { points: PointCaisse[]; confirme: boolean }) {
   if (points.length < 2) return <p className="pfc-cap pfc-vide">{points.length ? 'Pas encore de mouvement depuis cette date.' : 'Solde et date à saisir : la courbe de la caisse s’affiche ici.'}</p>;
   const debut = points[0].date, total = Math.max(1, jours(debut, points[points.length - 1].date));
@@ -66,7 +86,7 @@ function FriseSolde({ points, confirme }: { points: PointCaisse[]; confirme: boo
   let trace = `M${X(points[0].date).toFixed(1)} ${Y(points[0].cents).toFixed(1)}`;
   for (let i = 1; i < points.length; i++) trace += ` H${X(points[i].date).toFixed(1)} V${Y(points[i].cents).toFixed(1)}`;
   const dernier = points[points.length - 1], long = jours(debut, dernier.date) > 330;
-  const etiquettes = Array.from({ length: 6 }, (_, i) => { const d = new Date(Date.parse(`${debut}T12:00:00Z`) + (total * i / 5) * 86_400_000).toISOString().slice(0, 10); return long ? `${moisCourt(d)} ${d.slice(2, 4)}` : moisCourt(d); });
+  const etiquettes = etiquettesAxe(debut, dernier.date, long);
   const pc = (x: number) => `${((x / 350) * 100).toFixed(2)}%`, py = (y: number) => `${((y / 60) * 100).toFixed(2)}%`;
   return <div className="pfc-sol" data-booster="frise-solde">
     <div className="pfc-pin">aujourd’hui <b className="pfc-m">{montant(dernier.cents)}</b></div>
@@ -74,7 +94,7 @@ function FriseSolde({ points, confirme }: { points: PointCaisse[]; confirme: boo
       <svg viewBox="0 0 350 60" preserveAspectRatio="none" role="img" aria-label={`Caisse du ${jourLong(debut)} à aujourd’hui : de ${montant(points[0].cents)} à ${montant(dernier.cents)}`}><path d={trace} className={confirme ? 'pfc-courbe' : 'pfc-courbe pfc-essai'} /></svg>
       <i className="pfc-pt pfc-pt0" style={{ left: pc(X(points[0].date)), top: py(Y(points[0].cents)) }} /><i className="pfc-pt pfc-pt1" style={{ left: pc(X(dernier.date)), top: py(Y(dernier.cents)) }} />
     </div>
-    <div className="pfc-ax" aria-hidden="true">{etiquettes.map((e, i) => <span key={i}>{e}</span>)}</div>
+    <div className="pfc-ax" aria-hidden="true">{etiquettes.map(e => <span key={e.texte} className={e.ratio === 0 ? 'pfc-ax0' : undefined} style={{ left: `${(e.ratio * 100).toFixed(1)}%` }}>{e.texte}</span>)}</div>
   </div>;
 }
 
