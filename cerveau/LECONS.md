@@ -43,7 +43,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
 - Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
-- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`. Un réglage qu'il répète (16.11, le + en bas à gauche, « la 200eme fois ») entre dans SPEC et DEFAUTS dès la première fois, et chaque brief de maquette le recopie (FAB-GAUCHE). Contenu ajouté en voie : revoir ses plafonds (mots).
+- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`. Un réglage qu'il répète (16.11, le + juste au-dessus des onglets, « la 200eme fois », à droite après correction) entre dans SPEC et DEFAUTS dès la première fois, et chaque brief de maquette le recopie (FAB-GAUCHE). Contenu ajouté en voie : revoir ses plafonds (mots).
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
 
