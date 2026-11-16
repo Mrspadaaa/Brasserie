@@ -124,7 +124,11 @@ export interface FicheFournisseur {
   /** Le délai de commande à livraison : aucune date de commande n'est notée, donc inconnu (jamais 0). */
   delaiJours: number | null;
 }
-export interface LigneListe { cle: string; nom: string; factures: number; noms: number; sansFacture: boolean; delaiJours: number | null }
+export interface LigneListe {
+  cle: string; nom: string; factures: number; noms: number; sansFacture: boolean; delaiJours: number | null;
+  /** Le nom plus fourni dont celui-ci semble une autre écriture (jamais caché : le brasseur réunit ou laisse). */
+  procheDe?: string;
+}
 
 interface Groupe {
   cle: string;
@@ -229,8 +233,11 @@ export function analyserFournisseurs(transactions: Transaction[], articlesStock:
     });
   }
 
+  const plusFournis = (f: FicheFournisseur): FicheFournisseur | undefined => [...fiches.values()]
+    .filter(o => o.candidats.some(c => c.cle === f.cle) && (o.factures.length > f.factures.length || (o.factures.length === f.factures.length && o.nom.localeCompare(f.nom, 'fr') < 0)))
+    .sort((a, b) => b.factures.length - a.factures.length)[0];
   const liste = [...fiches.values()].map(f => ({
-    cle: f.cle, nom: f.nom, factures: f.factures.length, noms: 1 + f.candidats.length, sansFacture: f.sansFacture, delaiJours: f.delaiJours
+    cle: f.cle, nom: f.nom, factures: f.factures.length, noms: 1 + f.candidats.length, sansFacture: f.sansFacture, delaiJours: f.delaiJours, procheDe: plusFournis(f)?.nom
   })).sort((a, b) => b.factures - a.factures || a.nom.localeCompare(b.nom, 'fr'));
   return { liste, fiches };
 }

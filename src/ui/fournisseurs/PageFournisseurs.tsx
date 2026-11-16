@@ -132,7 +132,7 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
           <p className="fo-vide fo-m">Aucun fournisseur encore. Ils arrivent seuls avec la première facture ou le premier article du stock.<button type="button" className="fo-btn fo-pri" onClick={onScanner}><ScanLine aria-hidden="true" />Scanner une facture</button></p>
         ) : analyse.liste.map(l => (
           <button key={l.cle} type="button" className="fo-fo" data-fournisseur={l.cle} onClick={() => ouvrir(l.cle)}>
-            <span className="fo-t"><b>{l.nom}</b><i>{l.sansFacture ? 'aucune facture encore' : pluriel(l.factures, 'facture')}{l.noms > 1 ? ` · ${l.noms} noms` : ''}</i></span>
+            <span className="fo-t"><b>{l.nom}</b><i>{l.sansFacture ? 'aucune facture encore' : pluriel(l.factures, 'facture')}{l.procheDe ? ` · proche de ${l.procheDe}` : l.noms > 1 ? ` · ${l.noms} noms` : ''}</i></span>
             <span className="fo-d fo-num" title="Délai de livraison : pas encore noté">{l.delaiJours === null ? '? j' : `${l.delaiJours} j`}</span>
           </button>
         ))}

@@ -63,6 +63,14 @@ describe('analyserFournisseurs', () => {
       ['brouwland.com', 1, 'même nom, écrit comme une adresse web']
     ]);
   });
+  it('la liste garde chaque nom en ligne ; le moins fourni dit de qui il semble l’écriture', () => {
+    const l = Object.fromEntries(a.liste.map(x => [x.nom, x]));
+    expect(l['Brouwland'].procheDe).toBeUndefined();
+    expect(l['Brouwland'].noms).toBe(3);
+    expect(l['brouwland.com'].procheDe).toBe('Brouwland');
+    expect(l['Brouwland Belgique'].procheDe).toBe('Brouwland');
+    expect(l['Hopsteiner'].procheDe).toBeUndefined();
+  });
   it('le délai est inconnu, jamais 0', () => {
     expect(brouwland.delaiJours).toBeNull();
     expect(a.liste.every(l => l.delaiJours === null)).toBe(true);

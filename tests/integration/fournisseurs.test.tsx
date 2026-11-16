@@ -3,6 +3,7 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { PagePlus } from '../../src/components/plus/PagePlus';
 import { PageFournisseurs } from '../../src/ui/fournisseurs/PageFournisseurs';
 import { StorageService } from '../../src/services/storage';
 import type { StockItem, Transaction } from '../../src/types';
@@ -39,6 +40,8 @@ describe('Fournisseurs', () => {
     expect(brouwland.textContent).toContain('3 noms');
     expect(brouwland.textContent).toContain('? j');
     expect(screen.getByText('aucune facture encore')).toBeTruthy();
+    // les noms proches restent des lignes (rien n'est caché) et disent de qui ils semblent l'écriture
+    expect(screen.getAllByText('1 facture · proche de Brouwland', { selector: 'i' })).toHaveLength(2);
   });
 
   it('la fiche : le délai inconnu, le dernier prix et son écart, la courbe ouvre l\'historique', () => {
@@ -110,5 +113,13 @@ describe('Fournisseurs', () => {
     expect(screen.getByRole('heading', { name: 'Fournisseurs' })).toBeTruthy();
     fireEvent.click(screen.getByText('Plus').closest('button')!);
     expect(onBack).toHaveBeenCalled();
+  });
+
+  it('le menu Plus porte la ligne Fournisseurs qui ouvre la page', () => {
+    const ouvrir = vi.fn();
+    render(<PagePlus courant="Gaëtan" onSigner={() => {}} periode="all" onChoisirPeriode={() => {}} logs={[]} batches={[]} pendingTodosCount={0} horsConnexion={false}
+      onBack={() => {}} onAssistant={() => {}} onAtelier={() => {}} onConversations={() => {}} onJournal={() => {}} onFournisseurs={ouvrir} onReglages={() => {}} />);
+    fireEvent.click(screen.getByText('Fournisseurs').closest('button')!);
+    expect(ouvrir).toHaveBeenCalledTimes(1);
   });
 });
