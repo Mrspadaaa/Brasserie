@@ -86,3 +86,10 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 
 ## Thèmes comme le + (16.11)
 - Workflow `themes-calendrier`, task wzn6vkgmr, run wf_8aa4818e-66e. Sortie : `vues-calendrier/themes/` (ta, tb, tc, CRITIQUE.md, page). Au retour : publier la page.
+
+## Relances du 16.11 (après suite/SESSIONS.md)
+- Relancées : Finances, Atelier, Menu, Recette, Fûts, Stock, Simplicité (vote du conseil) et Besoins (calendrier propre abandonné au profit de fb9).
+- Non relancée : Matériel, qui attend un /compact du brasseur.
+- À grouper pour lui : la vente réelle de 5 695,00 de l'Atelier (constat 12).
+- vues-calendrier a repris (task w67d2yjw3) avec la lecture corrigée : un calendrier général et un calendrier par section.
+- themes-calendrier est arrêté, sa lecture était fausse.
