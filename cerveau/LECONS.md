@@ -73,7 +73,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
 - Cause : aucune force minimale exigée, captures non ouvertes.
-- Faire : « sous le doigt / au loin » ×3 au moins. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342).
+- Faire : « sous le doigt / au loin » ×3 au moins. Le pilote ouvre lui-même les captures avant d'annoncer une note (16.11 : p5 annoncé à 8,2, captures jamais ouvertes par le pilote, refusé). Un juge compare côte à côte avec la version que le brasseur préfère, écran par écran. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342).
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
