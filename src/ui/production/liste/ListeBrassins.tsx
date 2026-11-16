@@ -2,7 +2,8 @@
 // Un geste (puce, recherche) pose un critère : la puce passe en tête avec son ×, le reste se replie en « n autres hors du filtre ».
 import React, { useEffect, useMemo, useState } from 'react';
 import { Archive, Calendar, ChevronRight, Search, SlidersHorizontal, X } from 'lucide-react';
-import type { Batch, KegItem, TimeFilterPeriod } from '../../../types';
+import type { Batch, KegItem } from '../../../types';
+import { enPeriode, etiquetteCourte, type Periode, type PeriodeEntree } from '../../../components/periode/periode';
 import type { CatalogEntry, CatalogFilters } from '../../../domain/productionCatalog';
 import { isArchived } from '../../../domain/catalogOrganization';
 import type { BatchDetailSection } from '../../../domain/productionInsights';
@@ -46,16 +47,12 @@ function houblonsDesBrassins(entries: CatalogEntry[]): { nom: string; style: str
   return [...vus.values()].sort((a, b) => b.n - a.n || a.nom.localeCompare(b.nom, 'fr')).slice(0, 4);
 }
 
-function libellePeriode(c: Criteres, appPeriode: TimeFilterPeriod, now: number): { texte: string; suite: string; actif: boolean } {
-  const mois = new Date(now).toLocaleDateString('fr-CH', { month: 'short' });
-  const Mois = mois.charAt(0).toLocaleUpperCase('fr') + mois.slice(1);
-  const suite = c.periode.enCours ? '+ en cours' : '';
-  if (c.periode.mode === 'mois') return { texte: Mois, suite, actif: true };
-  if (c.periode.mode === 'annee') return { texte: 'Cette année', suite, actif: true };
-  if (c.periode.mode === 'dates') return { texte: 'Dates', suite, actif: true };
-  if (appPeriode === 'all') return { texte: 'Toutes', suite: '', actif: false };
-  if (appPeriode === 'this-month') return { texte: Mois, suite: '+ en cours', actif: true };
-  return { texte: DateUtils.getPeriodLabel(appPeriode), suite: '+ en cours', actif: true };
+/* Une seule période dans l'app (m3r-a, 16.11 : « on peut le réglés à plusieurs endroits, attention à ce détails très important ») : celle de l'en-tête.
+   Ce bouton la lit (« Nov. », « T4 », « 2026 ») et la feuille qui s'ouvre l'écrit ; « + en cours » dit que les brassins en cours restent listés hors période. */
+function libellePeriode(c: Criteres, appPeriode: PeriodeEntree, now: number): { texte: string; suite: string; actif: boolean } {
+  const app = enPeriode(appPeriode, new Date(now));
+  if (app.genre === 'tout') return { texte: 'Toutes', suite: '', actif: false };
+  return { texte: etiquetteCourte(app), suite: c.periode.enCours ? '+ en cours' : '', actif: true };
 }
 
 export function ListeBrassins({
@@ -65,6 +62,7 @@ export function ListeBrassins({
   criteres,
   onCriteres,
   appPeriode,
+  onChoisirPeriode,
   now,
   kegs,
   onOpenBatch,
@@ -78,7 +76,10 @@ export function ListeBrassins({
   onFiltres: (f: CatalogFilters) => void;
   criteres: Criteres;
   onCriteres: (c: Criteres) => void;
-  appPeriode: TimeFilterPeriod;
+  /** La période de l'application : celle de l'en-tête. */
+  appPeriode: PeriodeEntree;
+  /** La feuille « Période » l'écrit ici : même source que l'en-tête. */
+  onChoisirPeriode?: (p: Periode) => void;
   now?: number;
   kegs?: KegItem[];
   onOpenBatch: (b: Batch, section?: BatchDetailSection) => void;
@@ -91,11 +92,11 @@ export function ListeBrassins({
   const [pliOuvert, setPliOuvert] = useState(true);
   const [couleurs, setCouleurs] = useState<Record<string, string[]>>({});
   const t = now ?? Date.now();
-  const ctx: Contexte = { entries, criteres, filtres, now: t };
-  const resultats = useMemo(() => appliquer(ctx), [entries, criteres, filtres, t]);
+  const ctx: Contexte = { entries, criteres, filtres, now: t, periode: appPeriode };
+  const resultats = useMemo(() => appliquer(ctx), [entries, criteres, filtres, t, appPeriode]);
   const dossier = useMemo(() => dansLeDossier(ctx), [entries, filtres.folder]);
-  const comptes = useMemo(() => comptesAvancement(ctx), [entries, criteres, filtres, t]);
-  const tousN = useMemo(() => appliquer(ctx, ['avancement']).length, [entries, criteres, filtres, t]);
+  const comptes = useMemo(() => comptesAvancement(ctx), [entries, criteres, filtres, t, appPeriode]);
+  const tousN = useMemo(() => appliquer(ctx, ['avancement']).length, [entries, criteres, filtres, t, appPeriode]);
   const poses = criteresPoses(criteres, filtres.search);
   const sansRecherche = poses.filter((x) => x.groupe !== 'recherche').length;
   const bornesPosees = [filtres.volumeMin, filtres.volumeMax, filtres.ibuMin, filtres.ibuMax, filtres.colorMin, filtres.colorMax].filter((v) => v.trim()).length;
@@ -286,7 +287,7 @@ export function ListeBrassins({
         onOuvrir={(e) => { setFeuille(false); onOpenBatch(e.batch!); }}
         couleursHoublon={couleurs}
         onBilan={onBilan}
-        notePeriodeApp={appPeriode !== 'all' ? `L’en-tête limite déjà les brassins terminés à « ${DateUtils.getPeriodLabel(appPeriode)} » ; ce choix s’y ajoute.` : undefined}
+        onPeriode={onChoisirPeriode}
       />
     </div>
   );

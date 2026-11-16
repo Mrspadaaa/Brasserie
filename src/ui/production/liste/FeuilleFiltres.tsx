@@ -6,6 +6,7 @@ import type { CatalogEntry, CatalogFilters } from '../../../domain/productionCat
 import type { KegItem } from '../../../types';
 import { CATALOG_FOLDER_LABELS, inCatalogFolder, type CatalogFolder } from '../../../domain/catalogOrganization';
 import { Sheet } from '../../Sheet';
+import { bornes as bornesPeriode, depuisJours, enPeriode, moisDe, serialiser, type Periode } from '../../../components/periode/periode';
 import {
   AVANCEMENTS,
   appliquer,
@@ -22,7 +23,6 @@ import {
   type Avancement,
   type Contexte,
   type Criteres,
-  type ModePeriode,
   type TonCarte
 } from './listeModel';
 import './liste.css';
@@ -87,8 +87,8 @@ export interface FeuilleProps {
   onBilan?: () => void;
   /** Couleurs de familles d'arômes par houblon (source : radar du catalogue) ; absent = aucune bande. */
   couleursHoublon: Record<string, string[]>;
-  /** Période de l'application, quand elle limite déjà la liste en amont. */
-  notePeriodeApp?: string;
+  /** La feuille écrit la période de l'application (celle de l'en-tête) : il n'y en a qu'une. Absent : la section se lit seulement. */
+  onPeriode?: (p: Periode) => void;
 }
 
 function Puce({ texte, n, on, mauvaise, bandes, onClick, plus }: { texte: string; n?: number; on?: boolean; mauvaise?: boolean; bandes?: string[]; onClick: () => void; plus?: boolean }) {
@@ -144,16 +144,39 @@ export function FeuilleFiltres(p: FeuilleProps) {
   // La bande montre tous les brassins du dossier, dans l'ordre choisi ; ceux hors des critères s'éteignent.
   const ordre = appliquer({
     ...ctx,
-    criteres: { ...c, avancement: [], styles: [], houblons: [], malts: [], levures: [], alcool: undefined, periode: { ...c.periode, mode: 'toutes' } },
+    criteres: { ...c, avancement: [], styles: [], houblons: [], malts: [], levures: [], alcool: undefined },
+    periode: { genre: 'tout' },
     filtres: { ...f, search: '', volumeMin: '', volumeMax: '', ibuMin: '', ibuMax: '', colorMin: '', colorMax: '' }
   });
   const ids = new Set(resultats.map((e) => e.id));
   const bande = ordre.slice(0, 8);
   const pourquoi = vide ? comptesSiRetire(ctx) : [];
   const nHoublonsVus = plusHoublons ? houblons.length : 6;
+  type ModePeriode = 'mois' | 'annee' | 'toutes' | 'dates';
   const periodeSeg: { id: ModePeriode; label: string }[] = [
     { id: 'mois', label: 'Ce mois' }, { id: 'annee', label: 'Cette année' }, { id: 'toutes', label: 'Toutes' }, { id: 'dates', label: 'Dates…' }
   ];
+  const maintenant = new Date(ctx.now ?? Date.now());
+  const periodeApp = enPeriode(ctx.periode, maintenant);
+  const modePeriode: ModePeriode = periodeApp.genre === 'tout' ? 'toutes'
+    : periodeApp.genre === 'mois' && serialiser(periodeApp) === serialiser(moisDe(maintenant)) ? 'mois'
+    : periodeApp.genre === 'annee' && periodeApp.annee === maintenant.getFullYear() ? 'annee' : 'dates';
+  const [datesVoulues, setDatesVoulues] = useState(false);
+  const bornesApp = bornesPeriode(periodeApp);
+  const [du, setDu] = useState(bornesApp.du ?? ''), [au, setAu] = useState(bornesApp.au ?? '');
+  const cle = serialiser(periodeApp);
+  useEffect(() => { setDu(bornesApp.du ?? ''); setAu(bornesApp.au ?? ''); }, [cle]); // eslint-disable-line react-hooks/exhaustive-deps
+  const segmentDates = modePeriode === 'dates' || datesVoulues;
+  const poserPeriode = (mode: ModePeriode) => {
+    setDatesVoulues(mode === 'dates');
+    if (mode === 'mois') p.onPeriode?.(moisDe(maintenant));
+    else if (mode === 'annee') p.onPeriode?.({ genre: 'annee', annee: maintenant.getFullYear() });
+    else if (mode === 'toutes') p.onPeriode?.({ genre: 'tout' });
+  };
+  const poserDates = (nouveauDu: string, nouvelAu: string) => {
+    setDu(nouveauDu); setAu(nouvelAu);
+    if (nouveauDu && nouvelAu && nouveauDu <= nouvelAu) p.onPeriode?.(depuisJours(nouveauDu, nouvelAu));
+  };
   const [lo, hi] = c.alcool ?? (alcool ? [alcool.min, alcool.max] : [0, 0]);
   // L'étiquette du milieu dit l'étendue des brassins (« 5,8 – 6,1 ») tant que rien n'est posé, puis la plage posée.
   const [eLo, eHi] = c.alcool ?? alcool?.etendue ?? [0, 0];
@@ -326,19 +349,19 @@ export function FeuilleFiltres(p: FeuilleProps) {
           <h3 className="lst-section">Période</h3>
           <div className="lst-segments" role="group" aria-label="Période">
             {periodeSeg.map((s) => (
-              <button key={s.id} type="button" aria-pressed={c.periode.mode === s.id} onClick={() => set({ periode: { ...c.periode, mode: s.id } })}>{s.label}</button>
+              <button key={s.id} type="button" aria-pressed={s.id === 'dates' ? segmentDates : !datesVoulues && modePeriode === s.id} onClick={() => poserPeriode(s.id)}>{s.label}</button>
             ))}
           </div>
-          {c.periode.mode === 'dates' && (
+          {segmentDates && (
             <div className="lst-dates">
-              <label>Du<input type="date" value={c.periode.de} onChange={(e) => set({ periode: { ...c.periode, de: e.target.value } })} /></label>
-              <label>Au<input type="date" value={c.periode.a} onChange={(e) => set({ periode: { ...c.periode, a: e.target.value } })} /></label>
+              <label>Du<input type="date" value={du} onChange={(e) => poserDates(e.target.value, au)} /></label>
+              <label>Au<input type="date" value={au} onChange={(e) => poserDates(du, e.target.value)} /></label>
             </div>
           )}
           <button type="button" role="switch" aria-checked={c.periode.enCours} className="lst-panneau lst-tg" onClick={() => set({ periode: { ...c.periode, enCours: !c.periode.enCours } })}>
             <span className="lst-pt" aria-hidden />Les en cours, toujours<span className="lst-sw" aria-hidden />
           </button>
-          {p.notePeriodeApp && <p className="lst-note">{p.notePeriodeApp}</p>}
+          <p className="lst-note">Même période que l’en-tête : la régler ici la règle partout dans l’app.</p>
         </div>
 
         <div className="lst-f">

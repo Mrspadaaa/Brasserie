@@ -55,4 +55,6 @@
 .fin-conf-d { margin: 0; font-size: 12px; line-height: 16px; color: var(--pv-t2, rgb(var(--cave-texte-300))); }
 .fin-conf .finance-actions { justify-content: flex-end; }
 .fin-conf .finance-action { min-height: 44px; padding: 0 16px; font-size: 14px; }
+/* « Garder » est `.finance-action.secondary` (finance.css : min-height 28 px, spécificité 3 classes) : sans cette règle, il battait les 44 px ci-dessus (mesuré 77×28 au banc, 16.11). */
+.fin-conf .finance-action.secondary, .fin-conf .finance-action.danger { min-height: 44px; }
 .finance-actions .fin-suppr { margin-left: auto; gap: 4px; }

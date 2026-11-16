@@ -67,6 +67,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
         onClose={onClose}
         title={item.title}
         subtitle={TYPES.find((t) => t.value === item.type)?.label}
+        className="md:max-w-[560px] md:mx-auto"
         footer={
           <div className="flex gap-3">
             <button

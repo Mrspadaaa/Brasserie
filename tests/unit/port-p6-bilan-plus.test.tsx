@@ -57,16 +57,20 @@ describe('e11a · le menu du +', () => {
     return { onRecipe };
   };
 
-  it('Brassins : l’ordre de la maquette (sans « Outils houblons », retiré par d4523967)', () => {
+  /* Fusion avec le tag brassins : le menu du + est celui de b1s-a « Deux étages » (choisi le 15.11, `PlusSheet`), qui remplace les groupes
+     en dur de e11a ; l'action de l'écran reste en tête, « Sur Brassins ». Sans « Outils houblons » (retiré par d4523967). */
+  it('Brassins : l’action de l’écran en tête, puis les gestes de partout (Deux étages)', () => {
     montrer('batches');
     const noms = screen.getAllByRole('menuitem').map((b) => b.textContent);
     expect(noms).toEqual([
       'Nouveau brassinSur Brassins',
-      'Créer une recette',
-      'Entrer une facture',
-      'Vendre',
-      expect.stringContaining('Compagnon brasseur')
+      'Écriture',
+      'Facture',
+      'Vente',
+      'Recette',
+      'Compagnon'
     ]);
+    expect(noms).not.toContain('Outils houblons');
   });
 
   it('Recettes : l’action de l’écran en tête, sans doublon « Créer une recette »', () => {
@@ -82,9 +86,11 @@ describe('e11a · le menu du +', () => {
     expect(screen.queryByRole('menuitem', { name: 'Outils houblons' })).toBeNull();
   });
 
-  it('le bouton porte le nom court à côté du +', () => {
+  /* Décision du pilote (16.11) : le + de Brassins garde le carré de b1s-b2, sans texte ; le nom de l'action vit en tête de la pile (« Nouveau brassin »). */
+  it('le + de Brassins est le carré de b1s-b2 : aucun texte à côté du +, le nom de l’action est en tête de la pile', () => {
     montrer('batches');
-    expect(screen.getByRole('button', { name: 'Actions rapides' }).textContent).toContain('Brassin');
+    expect(screen.getByRole('button', { name: 'Actions rapides' }).textContent).toBe('');
+    expect(screen.getAllByRole('menuitem')[0].textContent).toContain('Nouveau brassin');
   });
 
   it('un autre onglet garde son menu et son bouton nu', () => {

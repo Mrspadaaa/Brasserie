@@ -1,4 +1,4 @@
-import React, { useId, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Sheet } from '../../Sheet';
 import { NumberInput } from '../../NumberInput';
@@ -25,11 +25,13 @@ export function Field({ label, children }: { label: string; children: React.Reac
  * Même brique pour la feuille de la prévision et celle du projet de matériel.
  */
 export function Confirmation({ question, detail, oui, onOui, onGarder, busy = false, erreur = '', danger = true }: { question: string; detail?: string; oui: string; onOui: () => void; onGarder: () => void; busy?: boolean; erreur?: string; danger?: boolean }) {
-  const id = useId();
+  const id = useId(), garder = useRef<HTMLButtonElement>(null);
+  /* Fusion fix-materiel (16.11) : la question remplace le bouton touché ; le focus va au geste sûr, « Garder », au lieu de tomber sur la page. */
+  useEffect(() => { garder.current?.focus?.(); }, []);
   return <div className="fin-conf" role="alertdialog" aria-labelledby={id} aria-describedby={detail ? `${id}d` : undefined}>
     <p id={id} className="fin-conf-q">{question}</p>{detail && <p id={`${id}d`} className="fin-conf-d">{detail}</p>}
     {erreur && <p role="alert" className="finance-error">{erreur}</p>}
-    <div className="finance-actions"><button type="button" className="finance-action secondary" onClick={onGarder} disabled={busy}>Garder</button>
+    <div className="finance-actions"><button type="button" ref={garder} className="finance-action secondary" onClick={onGarder} disabled={busy}>Garder</button>
       <button type="button" className={`finance-action${danger ? ' danger' : ''}`} onClick={onOui} disabled={busy}>{oui}</button></div>
   </div>;
 }

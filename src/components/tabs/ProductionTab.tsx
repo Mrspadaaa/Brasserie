@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
-import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
+import { Batch, Recipe, BrewhouseProfile } from '../../types';
+import type { Periode, PeriodeEntree } from '../periode/periode';
 import { StorageService } from '../../services/storage';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import type { CreativeLabSectionRequest } from '../CreativeLabTab';
@@ -31,7 +32,9 @@ interface ProductionTabProps {
   recipes: Recipe[];
   brewhouses: BrewhouseProfile[];
   activeBrewhouseId: string;
-  globalTimeFilter: TimeFilterPeriod;
+  globalTimeFilter: PeriodeEntree;
+  /** Écrit la période de l'application (celle de l'en-tête) : la liste des brassins la règle d'ici, il n'y en a qu'une. */
+  onChangeGlobalTimeFilter?: (p: Periode) => void;
   targetSubTab?: 'batches' | 'recipes' | 'lab' | 'scaler';
   onOpenCreateBatch: () => void;
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */
@@ -68,6 +71,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   brewhouses,
   activeBrewhouseId,
   globalTimeFilter,
+  onChangeGlobalTimeFilter,
   targetSubTab,
   onOpenCreateBatch,
   onSubTabChange,
@@ -210,7 +214,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             onDefaire={() => { StorageService.deleteBatch(lotApres.id); setApres(null); onSuccessMessage?.(`${lotApres.id} défait : le brassin est supprimé.`); }} />
         )}
         {subTab === 'batches' ? (
-          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter="all"
+          <ProductionCatalog key={subTab} kind="batches" recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter} onChoisirPeriode={onChangeGlobalTimeFilter}
             onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} onVueChange={(vue) => setBilanOuvert(vue === 'analysis')} />
         ) : (
           /* r2a (choix du 15.11) : le carnet dit ce qui est prêt à brasser et ce qui manque ; « Brasser » ouvre la feuille de préparation actuelle. */
@@ -225,6 +229,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
           <CreativeLabTab
             onSuccessMessage={onSuccessMessage}
             onDraftRecipe={onDraftRecipe}
+            onOpenRecipe={(id) => { const r = recipes.find((x) => x.id === id); if (r) onOpenRecipe(r); }}
             createRequest={createRequest}
             onCreateRequestHandled={onCreateRequestHandled}
             openSectionRequest={openLabSectionRequest}
@@ -238,7 +243,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {/* l2 : monté à la première ouverture, puis gardé monté (la feuille se ferme d'elle-même quand batch est nul). */}
       {(detailBatch || feuilleOuverte.current) && (
         <Suspense fallback={null}>
-          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={onOpenBrewDay} onClose={() => setDetailBatch(null)}
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={(b) => { setDetailBatch(null); onOpenBrewDay(b); }} onClose={() => setDetailBatch(null)}
             onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
         </Suspense>
       )}

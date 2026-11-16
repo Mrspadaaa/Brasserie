@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronRight, CircleHelp, Plus, Store, Tag, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, CircleHelp, Plus, Store, Tag, TriangleAlert, X } from 'lucide-react';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
 import { Sheet } from '../Sheet';
@@ -11,7 +11,7 @@ import { tarifsDuFormat, type FormatId } from '../prix/calculPrix';
 import { biereDuBrassin, brassinDuCout, lireDonneesPrix } from '../prix/donneesPrix';
 import { estDemo } from './demo';
 import { domaineKxc, echelleLog } from '../../domain/tarifs/echellePrix';
-import { bieresDesVentes, groupesParFormat, nomFormat, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
+import { bieresDesVentes, groupesParFormat, hors, nomFormat, PLAGE_LITRE_PLAUSIBLE, separerAVerifier, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
 import { disposerFrise, marqueProche, type Marque } from '../../domain/tarifs/friseDisposition';
 import './tarifs-frise.css';
 
@@ -68,10 +68,13 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
     const lots = new Map(d.batches.map((b) => [b.id, biereDuBrassin(b)]));
     return ventesAuLitre({ transactions: d.transactions, clients, decoder: decoderLigneVente, biereDuLot: (id) => (id ? lots.get(id) ?? null : null), estDemo });
   }, [d.transactions, d.batches, clients]);
+  /** Constat 12 : un point hors de la plage plausible (> 100 CHF le litre…) ne tire pas l'échelle ; il est montré à part, « à vérifier ». */
+  const { sures, aVerifier } = useMemo(() => separerAVerifier(ventes), [ventes]);
   const bieres = useMemo(() => bieresDesVentes(ventes), [ventes]);
   const [choix, setChoix] = useState<string | null | undefined>(undefined);
   const biere = choix === undefined ? bieres[0] ?? null : choix;
-  const groupes = useMemo(() => groupesParFormat(ventes, biere), [ventes, biere]);
+  const groupes = useMemo(() => groupesParFormat(sures, biere), [sures, biere]);
+  const aVoir = useMemo(() => aVerifier.filter((v) => biere === null || v.biere === biere), [aVerifier, biere]);
   const demo = ventes.some((v) => v.demo);
 
   /** Référence : le tarif fixé dans Clients (33 cl d'abord) ; revient : le coût du litre liquide du dernier brassin chiffré. */
@@ -94,7 +97,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
     const lire = () => setW(Math.max(280, Math.round(el.clientWidth)));
     lire(); const ro = new ResizeObserver(lire); ro.observe(el); return () => ro.disconnect();
   }, [groupes.length > 0]);
-  const echelle = useMemo(() => echelleLog(...domaineKxc([...ventes.map((v) => v.litre), reference?.litre, revient]), X0, W - DROITE), [ventes, reference, revient, W]);
+  const echelle = useMemo(() => echelleLog(...domaineKxc([...sures.map((v) => v.litre), reference?.litre, revient]), X0, W - DROITE), [sures, reference, revient, W]);
   const dispo = useMemo(() => disposerFrise(groupes, echelle.x, W, X0), [groupes, echelle, W]);
 
   const [sel, setSel] = useState<{ marque: Marque; vente: VenteAuLitre | null } | null>(null);
@@ -145,7 +148,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
       <div className="tf-cols">
         <div>
           {assujetti ? <p className="tf-vide">Assujetti à la TVA : la base des ventes (HT ou TTC) n’est pas sûre, la frise attend.</p>
-            : !groupes.length ? <p className="tf-vide">Aucune vente avec un prix : la frise se remplit avec les ventes de la caisse.</p>
+            : !groupes.length ? <p className="tf-vide">{aVoir.length > 0 ? 'Aucun prix sûr à tracer : les prix à vérifier sont plus bas.' : 'Aucune vente avec un prix : la frise se remplit avec les ventes de la caisse.'}</p>
             : <div className="tf-fig">
               <div className="tf-leg">{genres.map((g) => <span key={g}><i><Genre genre={g} /></i>{GENRE_NOM[g]}</span>)}</div>
               <p className="tf-ech">Échelle log</p>
@@ -183,6 +186,17 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
                 })}
               </div>
             </div>}
+          {aVoir.length > 0 && <div className="tf-verif" role="group" aria-label="Prix à vérifier">
+            <h4><TriangleAlert size={16} aria-hidden="true" />À vérifier</h4>
+            <p className="tf-verif-n">Hors de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]} CHF le litre : pas tracé sur l’axe.</p>
+            <ul className="tf-gl">{aVoir.map((v) => <li key={v.cle}>
+              <button type="button" className="tf-gr" onClick={() => ouvrirVente(v)}>
+                <span className="tf-gi"><Genre genre={v.genre} /></span>
+                <span className="tf-gn"><span className="tf-gq">{v.qui}<span className="tf-pill tf-pill-verif">à vérifier</span></span>
+                  <small><span className="tf-nw">{nomFormat(v.formatId, v.litresUnite)}</span> · <span className="tf-nw">{chf(v.prix)} l’unité</span> · <span className="tf-nw">{fr2(v.litre)} CHF le litre</span></small></span>
+              </button>
+            </li>)}</ul>
+          </div>}
         </div>
         <div>
           <ul className="tf-liste">
@@ -236,6 +250,7 @@ function VenteFeuille({ sel, onClose, onVente, revient }: { sel: { marque: Marqu
             <NumberInput className="tf-pv" value={essai} onValue={(n: number | undefined) => setEssai(n)} fractionDigits={2} min={0} emptyValue={undefined} aria-label="Prix à essayer, rien n’est enregistré" />
             <button type="button" className="tf-stp" aria-label={`Plus ${fr2(pas)}`} onClick={() => setEssai(Math.round(((prix ?? 0) + pas) * 100) / 100)}>+</button>
           </div>
+          {hors(v.litre) && <p className="tf-warn" role="note"><TriangleAlert size={16} aria-hidden="true" />À vérifier : {fr2(v.litre)} CHF le litre sort de la plage de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]}. Le montant de la vente est peut-être faux ; rien n’est corrigé ici.</p>}
           <div className="tf-kv">
             <div><small>Au litre</small><b className="tf-n">{prix ? fr2(prix / v.litresUnite) : '?'}</b></div>
             <div><small>Coût · revient {v.biere ?? ''}<span className="tf-leger">hors contenant</span></small><b className="tf-n">{revient !== null && v.biere ? fr2(revient * v.litresUnite) : '?'}</b></div>

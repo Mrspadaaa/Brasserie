@@ -1395,6 +1395,19 @@ export const StorageService = {
   },
 
   /**
+   * Supprime un projet de matériel (constats 8 et 27, jeu en ligne 16.11). Le document `financialPlans` part ; un projet né d'une ancienne idée de matériel
+   * (`mergeUpgradePlans` : idée `creativeItems` de type equipment, projet « ombre » `UPGRADE-…`) retire aussi cette idée, sans quoi la lecture le ferait revenir.
+   * Les achats liés (`transactions`, `finance.planId`) et leurs paiements ne sont jamais touchés : ils restent dans les comptes.
+   * Hors ligne comme les autres suppressions : la file d'écriture de `FirestoreRepo.remove` part à la reconnexion.
+   */
+  deleteUpgradePlan(plan: { id: string; title: string; upgrade?: { sourceCreativeItemId?: string } }) {
+    const ideaId = plan.upgrade?.sourceCreativeItemId ?? (plan.id.startsWith('UPGRADE-') ? decodeURIComponent(plan.id.slice('UPGRADE-'.length)) : undefined);
+    FirestoreRepo.remove('financialPlans', plan.id);
+    if (ideaId && this.getCreativeItems().some(i => i.id === ideaId && i.type === 'equipment')) FirestoreRepo.remove('creativeItems', ideaId);
+    this.logAction('Suppression', 'Finances', plan.id, `Projet de matériel supprimé : ${plan.title}`);
+  },
+
+  /**
    * Épingle ou dépingle une entité.
    *
    * Un seul point d'entrée pour les quatre types concernés : les favoris

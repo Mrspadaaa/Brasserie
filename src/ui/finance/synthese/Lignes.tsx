@@ -40,7 +40,6 @@ export function LigneLitre({ plans, batches, recipes, onOpenBudget, onAbsent, on
   const dernier = derniersInstantanes(plans)[0];
   if (!dernier) return <div className="syn-row" data-ligne="litre">
     <span className="syn-t">Estimer un brassin<small>pour connaître son coût du litre</small></span>
-    <button type="button" className="syn-plus" aria-label="Estimer un brassin" onClick={onPicker}>+</button>
   </div>;
   const { snapshot } = dernier;
   const batch = batches.find(b => b.id === snapshot.batchId), recipe = recipes.find(r => r.id === snapshot.recipeId);
@@ -54,7 +53,6 @@ export function LigneLitre({ plans, batches, recipes, onOpenBudget, onAbsent, on
     {/* CP-18 : « À compléter » est un renvoi : il ouvre le budget du brassin, dont les lignes-tâches disent quoi saisir (litres nets, prix, charges). */}
     {litre.chfParL !== null ? <span className="syn-m syn-litre">{`${formatCHF(Math.round(litre.chfParL * 100))}/L`}</span>
       : <button type="button" className="syn-m syn-litre syn-litre-bouton" onClick={ouvrir} aria-label={`${snapshot.title} : coût du litre à compléter, ouvrir le budget pour saisir ce qui manque`}>À compléter ›</button>}
-    <button type="button" className="syn-plus" aria-label="Coût d’un autre brassin" onClick={onPicker}>+</button>
   </div>;
 }
 

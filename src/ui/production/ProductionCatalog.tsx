@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SearchX, X } from 'lucide-react';
-import type { Batch, Recipe, TimeFilterPeriod } from '../../types';
+import type { Batch, Recipe } from '../../types';
+import { dansPeriode, enPeriode, type Periode, type PeriodeEntree } from '../../components/periode/periode';
 import { StorageService } from '../../services/storage';
 import {
   CatalogFilters,
@@ -32,6 +33,7 @@ export function ProductionCatalog({
   recipes,
   batches,
   globalTimeFilter,
+  onChoisirPeriode,
   onOpenRecipe,
   onEditRecipe,
   onOpenBatch,
@@ -41,7 +43,9 @@ export function ProductionCatalog({
   kind: CatalogKind;
   recipes: Recipe[];
   batches: Batch[];
-  globalTimeFilter: TimeFilterPeriod;
+  globalTimeFilter: PeriodeEntree;
+  /** La feuille « Période » de la liste écrit la période de l'application. */
+  onChoisirPeriode?: (p: Periode) => void;
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
@@ -87,13 +91,23 @@ export function ProductionCatalog({
     undo?: () => void;
     error?: boolean;
   } | null>(null);
+  /* m3r-a : une seule période. Brassins suit toujours celle de l'app ; Recettes garde « toutes les dates » ou la suit. Les anciens
+     réglages locaux (30 j, 90 j, cette année, dates choisies) ne filtrent plus rien : ils étaient une seconde période. */
   const effectiveFilters = useMemo(
     () => ({
       ...filters,
+      period: (kind === 'batches' || filters.period !== 'all' ? 'global' : 'all') as CatalogFilters['period'],
+      from: '',
+      to: '',
       folder: view === 'analysis' ? analysisFolder : filters.folder
     }),
-    [filters, view, analysisFolder]
+    [filters, view, analysisFolder, kind]
   );
+  const periodeApp = enPeriode(globalTimeFilter);
+  const suitLaPeriode = effectiveFilters.period === 'global' && periodeApp.genre !== 'tout';
+  /* Un brassin planifié sans date reste dans la liste sous toute période : sa date est inconnue (PD-3, PD-7). */
+  const dansLaPeriode = (e: { batch?: { status?: string }; timestamp?: number; date?: string }) =>
+    !suitLaPeriode || (e.batch?.status === 'planifie' && e.timestamp === undefined) || (e.timestamp !== undefined && dansPeriode(e.date ?? '', periodeApp));
   const changeFilters = (next: CatalogFilters) => {
     if (view === 'analysis') {
       setAnalysisFolder(next.folder);
@@ -131,13 +145,13 @@ export function ProductionCatalog({
     try { return StorageService.getStocks().kegs ?? []; } catch { return []; }
   }, [kind, batches]);
   const filtered = useMemo(() => {
-    return filterCatalog(entries, effectiveFilters, globalTimeFilter).filter((e) =>
-      matchesWorkFilter(e, work)
+    return filterCatalog(entries, effectiveFilters, 'all').filter((e) =>
+      dansLaPeriode(e) && matchesWorkFilter(e, work)
     );
-  }, [entries, effectiveFilters, globalTimeFilter, work]);
+  }, [entries, effectiveFilters, periodeApp, work]); // eslint-disable-line react-hooks/exhaustive-deps
   const facetEntries = useMemo(
-    () => filterCatalog(entries, { ...effectiveFilters, status: '', use: 'all' }, globalTimeFilter),
-    [entries, effectiveFilters, globalTimeFilter]
+    () => filterCatalog(entries, { ...effectiveFilters, status: '', use: 'all' }, 'all').filter(dansLaPeriode),
+    [entries, effectiveFilters, periodeApp] // eslint-disable-line react-hooks/exhaustive-deps
   );
   const selected = selectedIds.flatMap((id) => {
     const e = entries.find((e) => e.id === id);
@@ -185,13 +199,14 @@ export function ProductionCatalog({
       });
     }
   };
+  /* Fusion avec le tag en-ligne/2026-11-16-brassins : le bilan et la liste e6a sont les leurs ; la période de l'app reste celle d'ici (dansLaPeriode). */
   const bilanBrassins = kind === 'batches' && view === 'analysis';
   const bilanEntries = useMemo(
-    () => bilanBrassins ? filterCatalog(entries, { ...DEFAULT_CATALOG_FILTERS, folder: 'all' }, globalTimeFilter) : [],
-    [bilanBrassins, entries, globalTimeFilter]
+    () => bilanBrassins ? filterCatalog(entries, { ...DEFAULT_CATALOG_FILTERS, folder: 'all' }, 'all').filter(dansLaPeriode) : [],
+    [bilanBrassins, entries, periodeApp] // eslint-disable-line react-hooks/exhaustive-deps
   );
   const listeBrassins = kind === 'batches' && view === 'list';
-  const hasCriteria = catalogCriteria(effectiveFilters, work, globalTimeFilter).length > 0;
+  const hasCriteria = catalogCriteria(effectiveFilters, work, 'all').length > 0;
   const scopeCount = entries.filter((e) => inCatalogFolder(e, effectiveFilters.folder)).length;
   const archiveCount = entries.filter(isArchived).length;
   return (
@@ -205,7 +220,7 @@ export function ProductionCatalog({
         onChange={changeFilters}
         view={view}
         onViewChange={setView}
-        globalPeriod={globalTimeFilter}
+        globalPeriod="all"
         work={work}
         onWorkChange={setWork}
         comparing={comparing}
@@ -279,7 +294,8 @@ export function ProductionCatalog({
           criteres={criteres}
           onCriteres={setCriteres}
           kegs={kegs}
-          appPeriode={StorageService.getUiState<TimeFilterPeriod>('app_global_time_filter', 'this-month')}
+          appPeriode={globalTimeFilter}
+          onChoisirPeriode={onChoisirPeriode}
           onOpenBatch={onOpenBatch}
           onBrew={onOpenBrewDay}
           onFavorite={onFavorite}

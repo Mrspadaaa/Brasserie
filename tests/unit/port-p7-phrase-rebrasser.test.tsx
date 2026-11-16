@@ -28,9 +28,8 @@ function monter(extra: Partial<React.ComponentProps<typeof ProductionTab>> = {},
   return render(<ProductionTab recipes={recettes} batches={LOTS} brewhouses={[brewhouse]} activeBrewhouseId="qa" globalTimeFilter="all" targetSubTab="batches"
     onOpenCreateBatch={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} {...extra} />);
 }
-// q6 : la liste démarre sur « le mois + les en cours » ; ces tests ouvrent un Terminé vieux de 60 jours, donc « Toutes ».
-const TOUTES = { 'catalog-batches-criteres': { periode: { mode: 'toutes', de: '', a: '', enCours: true } } };
-beforeEach(() => { localStorage.clear(); localStorage.setItem('laffinee_ui_state', JSON.stringify(TOUTES)); vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {}); });
+// m3r-a : la liste lit la période de l'application (`globalTimeFilter="all"` plus haut = « Toutes ») ; ces tests ouvrent un Terminé vieux de 60 jours.
+beforeEach(() => { localStorage.clear(); vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {}); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('e11a : la phrase-réponse de la liste', () => {

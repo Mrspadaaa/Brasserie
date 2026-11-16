@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { ArrowUp, Clock, Plus, Sparkles, WifiOff, X } from 'lucide-react';
 import type { CreativeItem, PricingItem } from '../../types';
 import {
-  apresAnnuler, contexteModele, ecrire, envoi, estNote, lireReponse, lireSuisse, nbCochees, niveauAppel, proposer, statutEnvoi, versStockage,
+  apresAnnuler, assezPourIA, MOTS_MIN_IA, contexteModele, ecrire, envoi, estNote, lireReponse, lireSuisse, nbCochees, niveauAppel, proposer, statutEnvoi, versStockage,
   type Contexte, type ItemCarnet, type ModeIA, type NiveauIA, type Proposition
 } from '../../domain/rangerNote';
 import { AiClient } from '../../services/aiClient';
@@ -33,6 +33,8 @@ interface Props {
   onRetirer: (id: string) => void;
   onEdit: (item: CreativeItem) => void;
   onConvert: (item: CreativeItem) => boolean;
+  /** Toucher une idée de prix du fil : ouvre l'onglet Tarifs (c'est là qu'elle se règle). */
+  onTarifs?: () => void;
   /** Le « + » de la barre du bas, sous Tout : place le pouce dans le compositeur. */
   focusDemande?: number;
 }
@@ -49,7 +51,7 @@ const useEnLigne = () => {
   return en;
 };
 
-export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vues, assistant, mode, tarifs, bieres, onAjouter, onMaj, onRetirer, onEdit, onConvert, focusDemande }) => {
+export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vues, assistant, mode, tarifs, bieres, onAjouter, onMaj, onRetirer, onEdit, onConvert, onTarifs, focusDemande }) => {
   const items = bruts as unknown as ItemCarnet[];
   const enLigne = useEnLigne();
   const [texte, setTexte] = useState('');
@@ -80,8 +82,8 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
 
   const contexte = (): Contexte => ({ saisie: new Date(), contacts: bruts.filter((i) => i.type === 'prospect'), tarifs, bieres });
 
-  /** Le « + » est-il offert pour cette note ? (une fois par note, en ligne, IA allumée) */
-  const plusOffert = (note: ItemCarnet) => niveauAppel(true, mode, enLigne, plusFait.has(note.id)) !== null;
+  /** Le « + » est-il offert pour cette note ? (une fois par note, en ligne, IA allumée, et la note assez longue pour avoir été envoyée : sous 3 mots on a dit « sans IA ») */
+  const plusOffert = (note: ItemCarnet) => assezPourIA(note.title) && niveauAppel(true, mode, enLigne, plusFait.has(note.id)) !== null;
 
   /**
    * La note part à l'IA : simulée au banc, réelle seulement si le drapeau le permet. `null` : rien d'utilisable, la note reste brute.
@@ -89,7 +91,8 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
    */
   const demander = async (note: ItemCarnet, plus = false) => {
     const niveau = niveauAppel(plus, mode, enLigne, plusFait.has(note.id));
-    if (!niveau) return;
+    // Constat 13 : une note de moins de 3 mots n'a rien à ranger, aucun appel ne part.
+    if (!niveau || !assezPourIA(note.title)) return;
     const avant = geste?.note.id === note.id ? geste : null;
     const ctx = contexte();
     setCharge(note); setNiveauCharge(niveau); setGeste(null); setFiche(null); setMessage(null);
@@ -102,8 +105,9 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
     const props = effets ? proposer(effets, ctx) : [];
     if (props.length === 0) {
       if (avant) { setGeste({ ...avant, info: panne ? 'Le modèle plus précis n’a pas répondu : la proposition reste.' : 'Le modèle plus précis n’a rien proposé d’autre : la proposition reste.' }); return; }
+      // Constat 13 : le message dit que la note est gardée, il n'alarme pas.
       const qui = niveau === 'max' ? 'Le modèle plus précis' : 'L’IA';
-      setMessage({ texte: `${qui} ${panne ? 'n’a pas répondu' : 'n’a rien proposé'} : ta note reste telle quelle.`, noteId: note.id });
+      setMessage({ texte: panne ? `${qui} n’a pas répondu : ta note est gardée telle quelle.` : 'Gardée telle quelle : rien à ranger dans cette note.', noteId: note.id });
       return;
     }
     setGeste({ note, props, niveau });
@@ -121,11 +125,12 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
   const envoyer = () => {
     const phrase = texte.trim();
     if (!phrase) return;
-    const quoi = envoi(mode, enLigne);
+    const quoi = envoi(mode, enLigne, phrase);
     const note: ItemCarnet = { id: `CR-${Date.now()}`, type: 'note', title: phrase, status: statutEnvoi(quoi) };
     onAjouter(versStockage(note));
     setTexte(''); onFiltre('tout'); setFiche(null);
     if (quoi === 'ia') void demander(note);
+    else if (mode !== 'eteint' && !assezPourIA(phrase)) setMessage({ texte: `Gardée telle quelle : moins de ${MOTS_MIN_IA} mots, rien n’est envoyé à l’IA.`, noteId: note.id });
   };
 
   const ranger = () => {
@@ -165,7 +170,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
       tous.forEach((t) => prises.add(t.id));
       enfants.set(n.id, tous);
     }
-    const libres = items.filter((i) => !estNote(i) && !prises.has(i.id) && ['event', 'prospect', 'recipe-idea'].includes(i.type) && !(i.type === 'event' && i.status === 'done'));
+    const libres = items.filter((i) => !estNote(i) && !prises.has(i.id) && ['event', 'prospect', 'recipe-idea', 'pricing-test'].includes(i.type) && !(i.type === 'event' && i.status === 'done') && !(i as { archivedAt?: string }).archivedAt);
     const datees = libres.filter((i) => i.type === 'event' && lireSuisse(i.date)).sort((a, b) => lireSuisse(a.date)!.getTime() - lireSuisse(b.date)!.getTime());
     const reste = [...notes, ...libres.filter((i) => !datees.includes(i))].sort((a, b) => horodatage(b.id) - horodatage(a.id));
     return { entrees: [...datees, ...reste], enfants };
@@ -175,7 +180,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
   useEffect(() => { if (message) document.querySelector('.nc-msg')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, [message]);
 
   const ficheContact = fiche?.contactId ? bruts.find((i) => i.id === fiche.contactId) : undefined;
-  const carte = (item: CreativeItem) => <CarteChose item={item} onOuvrir={(i) => (i.type === 'prospect' ? onFiltre('contacts') : onEdit(i))} onDate={onEdit} />;
+  const carte = (item: CreativeItem) => <CarteChose item={item} onOuvrir={(i) => (i.type === 'prospect' ? onFiltre('contacts') : i.type === 'pricing-test' ? onTarifs?.() : onEdit(i))} onDate={onEdit} />;
   
   return (
     <section ref={racine} className="nc" aria-label="Carnet" style={{ display: 'flex', flexDirection: 'column', minHeight: dock.haut ? `calc(100dvh - ${dock.haut + dock.bas}px)` : undefined, ['--nc-dock' as string]: `${dock.bas}px` }}>
@@ -193,7 +198,7 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
               if (enf.length > 0) return <NoteRangee key={i.id} note={i} enfants={enf} carte={carte} />;
               return <div key={i.id} className="nc-ph nc-brute"><span><small>ta note</small>{i.title}{message?.noteId === i.id && <small className="nc-msg" role="status">{message.texte}</small>}
                 {message?.noteId === i.id && plusOffert(i) && <button type="button" className="nc-add nc-plus-l" aria-label="Relancer avec le modèle plus précis" onClick={() => void demander(i, true)}><Plus size={16} aria-hidden="true" />modèle plus précis</button>}</span>
-                {mode !== 'eteint' && enLigne && <button type="button" className="nc-add" onClick={() => void demander(i)}><Sparkles size={14} aria-hidden="true" />Ranger</button>}
+                {mode !== 'eteint' && enLigne && assezPourIA(i.title) && <button type="button" className="nc-add" onClick={() => void demander(i)}><Sparkles size={14} aria-hidden="true" />Ranger</button>}
                 <button type="button" className="nc-x" aria-label={`Retirer la note « ${i.title} »`} onClick={() => setRetirer(i)}><X size={18} aria-hidden="true" /></button></div>;
             })}
             {charge && <div className="nc-big" role="status"><div className="nc-aih"><Sparkles size={14} aria-hidden="true" />{niveauCharge === 'max' ? 'Le modèle plus précis range ta note…' : 'L’IA range ta note…'}{mode === 'simule' && <em>exemple</em>}</div><div className="nc-ph">{charge.title}</div></div>}
@@ -207,8 +212,9 @@ export const NoteCarnet: React.FC<Props> = ({ items: bruts, filtre, onFiltre, vu
       {filtre === 'tout' && <div className="nc-comp">
         {enLigne && !geste && !fiche && !charge && assistant}
         {attente.map((n) => <div key={n.id} className="nc-ph nc-att">{n.title}<span className="nc-wait"><Clock size={14} aria-hidden="true" />rangée au retour du réseau</span></div>)}
+        {mode !== 'eteint' && texte.trim() && <p className="nc-hint" id="nc-hint">{!assezPourIA(texte) ? `Moins de ${MOTS_MIN_IA} mots : gardée telle quelle, sans IA.` : enLigne ? `Envoyer : l’IA lit ta note pour la ranger${mode === 'simule' ? ' (exemple)' : ''}.` : 'Hors ligne : la note attend le retour du réseau pour être rangée.'}</p>}
         <div className="nc-line">
-          <textarea ref={champ} className="nc-field" rows={1} placeholder="Noter…" aria-label="Noter" value={texte} enterKeyHint="send"
+          <textarea ref={champ} className="nc-field" rows={1} placeholder="Noter…" aria-label="Noter" aria-describedby={mode !== 'eteint' && texte.trim() ? 'nc-hint' : undefined} value={texte} enterKeyHint="send"
             onChange={(e) => setTexte(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyer(); } }} />
           <button type="button" className="nc-send" aria-label="Envoyer la note" disabled={!texte.trim()} onClick={envoyer}><ArrowUp size={20} aria-hidden="true" /></button>
         </div>

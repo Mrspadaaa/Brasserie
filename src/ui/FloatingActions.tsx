@@ -1,8 +1,11 @@
 import React from 'react';
-import { Beer, ClipboardList, FileText, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
-import { type FabAction } from '../domain/fabActions';
+import { Plus } from 'lucide-react';
+import type { FabAction } from '../domain/fabActions';
+import { plusMenuPage, type PlusCle, type PlusMenu, LETTRES } from '../domain/plusEcran';
+import { PlusSheet } from '../components/navigation/PlusSheet';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
+import { useRail } from '../components/navigation/useRail';
 import './floating-actions.css';
 
 /**
@@ -16,8 +19,11 @@ import './floating-actions.css';
  * portait quel bouton. Ici, le même geste au même endroit ouvre les six
  * actions, et l'action de l'écran courant reste la première de la liste.
  *
- * ⚠️ Sur les onglets, le bouton se pose sur la case réservée à droite de la
- * barre (`ActionDock`, dans `PageShell.tsx`), hors de toute zone défilante.
+ * ⚠️ Sur les onglets (b1s-a, 15.11 : « le bouton doit toujours être flottant »),
+ * le + FLOTTE aux deux largeurs : 56 px, 12 px au-dessus de la barre à droite
+ * au téléphone, au coin bas droit du contenu au 1280. La barre n'a plus de case
+ * pour lui ; la fin des listes réserve 72 px (`navigation.css`). Une case
+ * `ActionDock` reste suivie quand une page ou un écran en réserve une.
  * Sur une page plein écran, il FLOTTE en bas à droite, au-dessus du pied de la
  * page s'il y en a un (#114 : une case de pied coûtait une bande basse sur
  * chaque page). La page réserve en fin de contenu la place du bouton : son
@@ -42,29 +48,20 @@ export interface FloatingActionsProps {
   onAction: () => void;
   /** Ce dont parle le compagnon ici : écran ou page en cours. */
   companionLabel: string;
+  /** Le menu du + de cet écran (`plusMenuFor`). Absent : dérivé de `action` et des quatre gestes de partout. */
+  menu?: PlusMenu;
+  /** Le geste choisi dans le menu. Absent : `onAction`, `onInvoice`, `onSale`, `onRecipe`, `onBrew`. */
+  onPlus?: (cle: PlusCle | 'ecran') => void;
+  /** Le compagnon n'est pas joignable : la ligne Compagnon le dit (plus de pastille flottante). */
+  horsConnexion?: boolean;
   /** Facture d'achat : lecture du justificatif, puis vérification. */
-  onInvoice: () => void;
-  onSale: () => void;
-  onRecipe: () => void;
-  onBrew: () => void;
+  onInvoice?: () => void;
+  onSale?: () => void;
+  onRecipe?: () => void;
+  onBrew?: () => void;
   /** Ancrage de repli quand aucune case n'est réservée : barre d'onglets, ou pied de page plein écran. */
   anchor: 'nav' | 'page';
   launcherRef?: React.MutableRefObject<HTMLButtonElement | null>;
-}
-
-interface Item {
-  key: string;
-  label: string;
-  /** Seconde ligne : ce que l'action vise ici. */
-  hint?: string;
-  Icon: typeof Plus;
-  /** Couleur de rubrique, portée par l'icône seule. */
-  tone: string;
-  count?: number;
-  busy?: boolean;
-  /** L'action principale de l'écran, en tête et mise en avant. */
-  strong?: boolean;
-  run: () => void;
 }
 
 /** Position et taille de la case réservée, en px depuis le bas et la droite de la fenêtre. */
@@ -74,13 +71,6 @@ interface DockGeometry {
   width: number;
   height: number;
 }
-
-const ROW = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs text-cave-200 ' +
-  'hover:bg-cave-850 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
-
-/** e11a : l'action de l'écran, en aplat plein comme le bouton lui-même (noir en clair, paille en cave). */
-const ROW_FORTE = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs rounded-control bg-ebc-straw text-cave-950 ' +
-  'focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
 
 /** Suit la case réservée : sa taille, et sa place quand la page se déplace (clavier, pied qui change). */
 function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null {
@@ -123,7 +113,7 @@ function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null 
 }
 
 export const FloatingActions: React.FC<FloatingActionsProps> = ({
-  action, onAction, companionLabel, onInvoice, onSale, onRecipe, onBrew, anchor, launcherRef
+  action, onAction, companionLabel, menu: menuProp, onPlus, horsConnexion = false, onInvoice, onSale, onRecipe, onBrew, anchor, launcherRef
 }) => {
   const [open, setOpen] = React.useState(false);
   /* Docké en haut d'écran — atelier de l'eau, en-tête clavier ouvert — le menu s'ouvre vers le bas. */
@@ -156,51 +146,23 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   // Le menu disparaît avant la nouvelle surface : son opener doit rester connecté.
   const choose = (run: () => void) => () => { close(); run(); };
 
-  const groups: Item[][] = [];
-  if (action) {
-    groups.push([{
-      key: 'screen', label: action.label, hint: action.hint ?? 'Sur cet écran', strong: true,
-      Icon: action.intent === 'copyShoppingList' ? ClipboardList : Plus,
-      tone: 'text-ebc-straw', run: onAction
-    }]);
-  }
-  const compagnon: Item[] = [
-    {
-      key: 'companion', label: 'Compagnon brasseur', hint: companionLabel,
-      // `hop` dit « disponible, validé » : DESIGN.md le refuse pour un assistant.
-      Icon: busy ? LoaderCircle : MessageCircle, tone: 'text-cave-200',
-      count: waiting, busy,
-      run: () => window.dispatchEvent(new Event('brewer-companion-open'))
-    },
-    ...(jobs.length ? [{
-      key: 'inbox', label: `Mes conversations · ${jobs.length}`,
-      Icon: MessagesSquare, tone: 'text-cave-400',
-      run: () => window.dispatchEvent(new Event('brewer-inbox-open'))
-    }] : [])
-  ];
-  /* e11a : sur Brassins, le menu de la maquette, dans son ordre : action de l'écran, Créer une recette, Outils houblons | facture, vente | Compagnon. */
-  const menuBrassins = action?.menu === 'brassins';
-  if (!menuBrassins) groups.push(compagnon);
-  /* BX-4 (09.11) : l'action de l'écran ne se répète pas plus bas (« Nouvelle recette » et « Créer une recette », « Nouvelle écriture » et « Entrer une facture »). */
-  const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
-  const facture: Item[] = [
-    { key: 'invoice', label: 'Entrer une facture', hint: menuBrassins ? undefined : 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
-    { key: 'sale', label: 'Vendre', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
-  ];
-  const production: Item[] = [
-    { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },
-    { key: 'brew', label: 'Lancer un brassin', hint: 'À partir d’une recette existante', Icon: Beer, tone: 'text-area-production', run: onBrew }
-  ];
-  if (menuBrassins) {
-    /* La maquette ne garde que « Créer une recette » : « Lancer un brassin » double l'action de l'écran sur Brassins, et « Brasser » est sur chaque recette. */
-    /* d4523967 : les entrées Atelier Houblons V5.5 sont retirées partout, le menu aussi ; le module et la route restent. */
-    groups[0].push(production[0]);
-    groups.push(facture, compagnon);
-  } else {
-    groups.push(facture, production);
-  }
-
-  const groupes = groups.map(g => g.filter(item => item.key !== doublon)).filter(g => g.length);
+  /* Le menu : celui de l'écran quand l'App le donne ; sinon l'action reçue et les quatre gestes de partout. */
+  const menu: PlusMenu = menuProp ?? plusMenuPage({}, action);
+  const lancer = (cle: PlusCle | 'ecran') => {
+    if (onPlus) return onPlus(cle);
+    ({ ecran: onAction, facture: onInvoice, vente: onSale, recette: onRecipe, brassin: onBrew } as Record<string, (() => void) | undefined>)[cle]?.();
+  };
+  const choisir = (cle: PlusCle | 'ecran') => choose(() => lancer(cle));
+  const compagnon = {
+    horsConnexion, attente: waiting, occupe: busy, contexte: companionLabel, conversations: jobs.length
+  };
+  const ouvrirCompagnon = () => choose(() => window.dispatchEvent(new Event('brewer-companion-open')))();
+  const ouvrirConversations = () => choose(() => window.dispatchEvent(new Event('brewer-inbox-open')))();
+  /* Au 1280 la feuille devient une liste à lettres sous le + du rail ; ailleurs, une feuille au-dessus de la barre. */
+  const rail = useRail() && anchor === 'nav';
+  const forme = rail ? 'liste' : 'feuille';
+  const lettres: Record<string, PlusCle | 'ecran' | 'compagnon'> = { C: 'compagnon', N: 'ecran' };
+  (Object.keys(LETTRES) as PlusCle[]).forEach((cle) => { lettres[LETTRES[cle]] = cle; });
 
   React.useEffect(() => {
     if (!open) return;
@@ -211,8 +173,11 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     return () => document.removeEventListener('pointerdown', outside);
   }, [open]);
 
+  /* Le focus va à la première ligne à l'ouverture ; l'anneau ne se voit que si le + a été activé au clavier
+     (un toucher ou un clic ne laisse pas d'anneau noir sur « Sur cet écran »). */
+  const ouvertAuClavier = React.useRef(false);
   React.useEffect(() => {
-    if (open) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    if (open) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus({ focusVisible: ouvertAuClavier.current } as FocusOptions);
   }, [open]);
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -220,6 +185,15 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     // La tabulation referme le menu ; le focus revient alors sur le bouton,
     // qui suit les lignes dans l'ordre du document.
     if (event.key === 'Tab') { setOpen(false); return; }
+    // Une lettre lance son geste, même si l'écran ne le montre pas (b1r : « une lettre reste active »).
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const cle = lettres[event.key.toUpperCase()];
+      if (cle && (cle !== 'ecran' || menu.action)) {
+        event.preventDefault();
+        if (cle === 'compagnon') ouvrirCompagnon(); else choisir(cle)();
+        return;
+      }
+    }
     const items = [...(menuRef.current?.querySelectorAll<HTMLButtonElement>('button') ?? [])];
     const current = items.indexOf(event.target as HTMLButtonElement);
     const target: Record<string, number | undefined> = {
@@ -238,19 +212,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
      décollé de 16 px du bas — zone sûre ou pied de la page compris. */
   const fallbackBottom = anchor === 'page'
     ? 'calc(var(--page-footer-height, 0px) + 1rem)'
-    : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)';
-  /* BX-4 (09.11, « Différents ») : flottant, il garde la forme de sa case (64 × 40, icône 22) au lieu d'un rond de 48. */
-  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 22;
+    : 'calc(var(--main-navigation-height, 2.5rem) + 12px)';
+  /* b1s-a (15.11, « le bouton doit toujours être flottant ») : sur les onglets, le + est un carré arrondi de 56 px à
+     12 px au-dessus de la barre (24 px du coin au 1280), icône 28 ; sur une page plein écran, la forme de sa case (BX-4). */
+  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : anchor === 'nav' ? 28 : 22;
   /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
   const quiet = !geometry && anchor === 'page' && pageFooter;
-  /* e11a : « + Brassin », « + Recette ». Docké, la case des onglets s'élargit (variable lue par `floating-actions.css`) et le bouton garde son bord droit. */
-  const court = action?.court;
-  React.useLayoutEffect(() => {
-    if (!court || !geometry) return;
-    const root = document.documentElement;
-    root.style.setProperty('--floating-actions-nav-dock', '7.75rem');
-    return () => { root.style.removeProperty('--floating-actions-nav-dock'); };
-  }, [court, geometry !== null]);
+  /* Le + reste le carré de b1s-b2 sur chaque écran, Brassins compris : « + Brassin » (e11a, `court` de `fabActions.ts`) n'est plus écrit sur le bouton ;
+     le nom de l'action est « Nouveau brassin », en tête de la pile. */
 
   return (
     <div
@@ -258,53 +227,36 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       data-page-overlay
       data-floating-actions-dock={dock?.kind ?? 'none'}
       data-floating-actions-docked={geometry ? 'true' : 'false'}
+      data-floating-actions-anchor={anchor}
       data-floating-actions-tone={quiet ? 'quiet' : 'primary'}
       className="floating-actions fixed z-[51]"
       style={{
         '--floating-actions-bottom': geometry ? `${geometry.bottom}px` : fallbackBottom,
         ...(geometry ? {
           '--floating-actions-right': `${geometry.right}px`,
-          ...(court ? { '--floating-actions-right': '0.75rem' } : {}),
-          '--floating-actions-width': court ? 'auto' : `${geometry.width}px`,
+          '--floating-actions-width': `${geometry.width}px`,
           '--floating-actions-height': `${geometry.height}px`
         } : {}),
         '--floating-actions-icon': `${iconSize}px`
       } as React.CSSProperties}
     >
+      {open && anchor === 'nav' && <div aria-hidden="true" className="plus-voile z-[-1]" onPointerDown={() => close(false)} />}
       {open && (
         <div
           ref={menuRef}
           id={menuId}
           role="menu"
           aria-label="Actions rapides"
+          data-plus-forme={anchor === 'nav' ? forme : 'page'}
+          data-plus-ecran={menu.ecran}
           onKeyDown={onKeyDown}
-          className={`absolute right-0 ${menuBrassins ? 'w-[18rem] p-1 space-y-0.5' : 'w-[15rem]'} max-w-[calc(100vw-1.5rem)] overflow-hidden
-                      rounded-panel border border-cave-700 bg-cave-900 shadow-lift
-                      ${placement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}
+          data-sens={anchor === 'page' && placement === 'bottom' ? 'bas' : 'haut'}
+          className="plus-pile"
         >
-          {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux
-              flèches, et la tabulation le referme pour rendre la main au bouton. */}
-          {groupes.map((group, index) => (
-            <div key={group[0].key} className={index ? 'border-t border-cave-800' : undefined}>
-              {group.map(({ key, label, hint, Icon, tone, count, busy, strong, run }) => (
-                <button key={key} type="button" role="menuitem" tabIndex={-1} onClick={choose(run)}
-                  className={strong && menuBrassins ? ROW_FORTE : ROW}>
-                  <Icon size={16} aria-hidden="true"
-                    className={`shrink-0 ${strong && menuBrassins ? 'text-cave-950' : tone} ${busy ? 'motion-safe:animate-spin' : ''}`} />
-                  <span className="min-w-0 flex-1">
-                    <span className={strong ? 'font-semibold ' + (menuBrassins ? '' : 'text-cave-50') : undefined}>{label}</span>
-                    {hint && <span className={`block text-footnote ${strong && menuBrassins ? 'opacity-75' : 'text-cave-400'}`}>{hint}</span>}
-                  </span>
-                  {!!count && (
-                    <span className="shrink-0 min-w-4 px-1 rounded-full bg-attention text-cave-950
-                                     font-mono text-footnote leading-4 font-semibold">
-                      {count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          ))}
+          {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
+              pour rendre la main au bouton. */}
+          <PlusSheet menu={menu} forme={anchor === 'nav' ? forme : 'feuille'} compagnon={compagnon}
+            onChoisir={choisir} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
         </div>
       )}
 
@@ -325,24 +277,26 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           : 'Actions rapides'}
         title="Actions rapides"
         onKeyDown={(event) => { if (event.key === 'Escape' && open) { event.preventDefault(); close(); } }}
-        onClick={() => {
+        onClick={(event) => {
           if (open) { close(false); return; }
+          ouvertAuClavier.current = event.detail === 0;
           const rect = buttonRef.current?.getBoundingClientRect();
           setPlacement(rect && rect.top < window.innerHeight / 2 ? 'bottom' : 'top');
           setOpen(true);
         }}
         // En ligne : aucune règle d'écran ne retire le bouton de sa case (voir en tête).
         style={{ display: 'flex' }}
-        className={`relative rounded-full items-center justify-center ${court ? 'gap-1 pl-3 pr-4' : ''} select-none touch-manipulation [-webkit-touch-callout:none]
+        className={`relative rounded-full items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
-                   ${quiet
-                     ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
-                     : 'bg-ebc-straw text-cave-950'} shadow-lift`}
+                   ${open
+                     ? 'bg-cave-850 text-cave-50 border border-cave-700'
+                     : quiet
+                       ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
+                       : 'bg-ebc-straw text-cave-950'} shadow-lift`}
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
           className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
-        {court && <span className="text-sm font-semibold">{court}</span>}
         {waiting > 0 && (
           <span aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-4 min-h-4 px-1 rounded-full

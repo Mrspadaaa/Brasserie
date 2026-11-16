@@ -87,13 +87,17 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(screen.getByRole('button', { name: 'Modifier Hotte historique' })).toBeInTheDocument();
     fireEvent.click(screen.getByText('Hotte historique')); fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
     expect(screen.getByLabelText('À quoi va-t-il servir ?')).toHaveValue('Évacuer la vapeur');
-    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); fireEvent.click(screen.getByRole('button', { name: 'Oui, archiver' })); await saved(); // u2 (27) : Archiver demande d'abord
+    fireEvent.click(screen.getByRole('button', { name: 'Archiver ce projet' })); // u2 (27) et fix-materiel : une confirmation sur place d'abord
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Oui, archiver' })); await saved();
     expect(screen.queryByRole('button', { name: /Hotte historique.*750/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Archives', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte historique.*750/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre ce projet' })); await saved();
     fireEvent.click(screen.getByRole('button', { name: 'À venir', exact: true }));
-    expect(screen.getAllByRole('button', { name: /Hotte historique.*750/ })).toHaveLength(1);
+    // fix-materiel (constat 7) : seul projet à venir, il est le « prochain achat » même non posé ; une seule fois à l'écran
+    const hero = screen.getByRole('region', { name: 'Prochain achat' });
+    expect(within(hero).getByText('Hotte historique')).toBeVisible(); expect(hero).toHaveTextContent('750');
+    expect(screen.getAllByText('Hotte historique')).toHaveLength(1);
     expect(FinanceService.getPlans()[0]).toMatchObject({ status: 'draft', notes: legacy.notes });
     expect(StorageService.getCreativeItems()).toEqual([legacy]);
   });
@@ -157,6 +161,97 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' })); await saved();
     expect(save.mock.calls[1][0].id).toBe(save.mock.calls[0][0].id);
     expect(FinanceService.getPlans()).toHaveLength(1);
+  });
+
+  // ka4 : Archives = la carte de l'argent mis de côté ; À venir sans projet = la carte en pointillés.
+  describe('ka4 : Archives en carte et état vide', () => {
+    const archive = (id: string, title: string, cents: number | null, stage: 'idea' | 'research' | 'quote' | 'ready' = 'quote', purpose?: string): FinancialPlan => ({ id, title, date: '2026-02-01', amountCents: cents ?? 0, direction: 'out', category: 'materiel', source: 'equipment', status: 'cancelled', createdAt: '2026-01-01T10:00:00.000Z',
+      upgrade: { version: 1, timing: 'later', stage, budgetKnown: cents != null, datePrecision: 'month', estimateSource: 'estimate', ...(cents != null ? { purchaseCents: cents } : {}), ...(purpose ? { purpose } : {}) } });
+    const ouvrirArchives = () => { render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Archives', exact: true })); };
+
+    it('À venir sans projet : la carte vide, sa légende, et « Premier besoin » ouvre le même geste que « + Besoin »', () => {
+      render(<UpgradeWorkspace/>);
+      expect(screen.getByRole('group', { name: 'Ta carte de l’argent, vide' })).toBeVisible();
+      expect(screen.getByText('Chaque besoin y prend la place de son prix.')).toBeVisible();
+      ['Prêt', 'Devis', 'Idée', 'sans prix : hors carte'].forEach(t => expect(screen.getByText(t)).toBeVisible());
+      expect(screen.getByRole('button', { name: 'Ajouter un besoin' })).toBeVisible(); // « + Besoin » reste en ligne
+      fireEvent.click(screen.getByRole('button', { name: 'Premier besoin' }));
+      expect(screen.getByRole('dialog', { name: 'Prévoir du matériel' })).toBeInTheDocument();
+    });
+
+    it('Archives : total des prix connus, une case par projet chiffré, le sans-prix hors carte, la légende', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000, 'research')); FinanceService.savePlan(archive('A-TIREUSE', 'Tireuse mobile', null, 'idea'));
+      ouvrirArchives();
+      expect(screen.getByText(/3[\s  ’']?050 CHF/)).toBeVisible();
+      expect(screen.getByText(/au moins · mis de côté · 2 prix connus sur 3/)).toBeVisible();
+      expect(screen.getByRole('button', { name: /Chambre froide 2 m³.*2[\s  ’']?400/ })).toBeVisible();
+      expect(screen.getByRole('button', { name: /Moulin à malt.*arrêté à l’étude.*650/ })).toBeVisible();
+      expect(screen.getByText(/hors carte : prix à estimer · févr\. 26/)).toBeVisible();
+      expect(screen.getByRole('button', { name: /^Tireuse mobile/ })).toBeVisible();
+      expect(screen.queryByText(/Tireuse mobile.*0 CHF/)).not.toBeInTheDocument(); // jamais une case à zéro
+      expect(screen.getByText('surface = prix prévu')).toBeVisible();
+      expect(screen.queryByText('hors carte : prix à estimer', { selector: '.ak-chip' })).not.toBeInTheDocument(); // dit une fois, sur sa ligne pointillée
+      expect(screen.queryByText('déjà payé')).not.toBeInTheDocument(); // aucun achat lié : pas de bande, pas de légende
+      expect(screen.queryByText('démo')).not.toBeInTheDocument(); // ids réels : pas de marque démo
+      expect(document.querySelectorAll('input[type=number]')).toHaveLength(0);
+    });
+
+    it('une petite case n’agrandit pas la carte : hauteur de la maquette, case mini sans bouton, le projet se lit et se reprend dans « petits montants »', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000)); FinanceService.savePlan(archive('A-REFRAC', 'Réfractomètre', 4500, 'research'));
+      ouvrirArchives();
+      expect(document.querySelector('.ak-map')).toHaveStyle({ height: '250px' });
+      const mini = document.querySelector('.ak-mi') as HTMLElement;
+      expect(mini).toBeTruthy(); expect(mini.querySelector('button')).toBeNull(); expect(mini).not.toHaveTextContent('45'); expect(screen.getByText(/45 CHF/)).toBeVisible(); // trop étroite pour le montant : la liste le porte
+      expect(screen.getByRole('button', { name: /^Réfractomètre/ })).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Reprendre Réfractomètre' })).toBeVisible();
+      expect(screen.getAllByText(/Réfractomètre/).length).toBeGreaterThan(0);
+    });
+
+    it('la raison du projet reste entière dans la case basse (« févr. 26 · malt acheté concassé »)', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000, 'research', 'malt acheté concassé'));
+      ouvrirArchives();
+      expect(screen.getByText('févr. 26 · malt acheté concassé')).toBeVisible();
+    });
+
+    it('une seule archive chiffrée : son montant n’est écrit qu’une fois (pas de total en double)', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); ouvrirArchives();
+      expect(screen.getAllByText(/2[s  ’']?400/)).toHaveLength(1);
+      expect(screen.getByText('Mis de côté')).toBeVisible();
+    });
+
+    it('un projet d’exemple (DEMO-…) est marqué « démo »', () => {
+      FinanceService.savePlan(archive('DEMO-FROID', 'Chambre froide', 240000)); ouvrirArchives();
+      expect(screen.getByText('démo')).toBeVisible();
+    });
+
+    it('« Reprendre » remet le projet en brouillon dans À venir, l’avis le dit et « Voir » y mène', async () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000));
+      ouvrirArchives();
+      fireEvent.click(screen.getByRole('button', { name: 'Reprendre Moulin à malt' }));
+      await waitFor(() => expect(FinanceService.getPlans().find(p => p.id === 'A-MOULIN')).toMatchObject({ status: 'draft' }));
+      expect(FinanceService.getPlans().find(p => p.id === 'A-FROID')).toMatchObject({ status: 'cancelled' });
+      expect(screen.getByRole('status')).toHaveTextContent('Moulin à malt · de retour dans À venir');
+      expect(screen.queryByRole('button', { name: 'Reprendre Moulin à malt' })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Voir' }));
+      expect(screen.getByRole('button', { name: /^Moulin à malt/ })).toBeVisible();
+    });
+
+    it('toucher une case ouvre le projet (« Reprendre ce projet » reste dans sa feuille)', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); ouvrirArchives();
+      fireEvent.click(screen.getByRole('button', { name: /Chambre froide 2 m³.*2[\s  ’']?400/ }));
+      expect(screen.getByRole('button', { name: 'Reprendre ce projet' })).toBeVisible();
+    });
+
+    it('l’acompte déjà payé (achat lié) paraît en bande dans sa case, la légende « déjà payé » avec lui', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000));
+      StorageService.addTransaction({ id: 'T-ACOMPTE', description: 'Acompte chambre froide', date: '2026-02-10', category: 'materiel', subcategory: '', amountHT: 200, amountTTC: 200, tvaRate: 0, tvaAmount: 0,
+        finance: { version: 1, kind: 'expense', amountCents: 20000, planId: 'A-FROID', paymentStatus: 'paid', lines: [{ id: 'T-ACOMPTE-0', description: 'Acompte', kind: 'equipment', quantity: 1, amountCents: 20000 }] } } as never);
+      FirestoreRepo.put('financialPayments', 'P-ACOMPTE', { id: 'P-ACOMPTE', transactionId: 'T-ACOMPTE', date: '2026-02-10', amountCents: 20000, direction: 'out', method: 'bank' }); // un « payé » sans paiement enregistré resterait inconnu
+      ouvrirArchives();
+      expect(screen.getByRole('img', { name: /Déjà payé : 200 sur 2[\s  ’']?400 CHF/ })).toBeInTheDocument();
+      expect(screen.getByText(/acompte payé/)).toBeVisible();
+      expect(screen.getByText('déjà payé')).toBeVisible();
+    });
   });
 
 });

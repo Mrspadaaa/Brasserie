@@ -393,7 +393,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         subtitle={fermentation
           ? [draft.id, 'cuve', section === 'measurements' ? formatLitres(draft.volumeL) : draft.brewDay?.pitchedAt != null ? `levuré le ${breweryDay(draft.brewDay.pitchedAt).slice(0, 5)}` : null].filter(Boolean).join(' · ')
           : `${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)}${planned ? '' : ''}${planned || post ? '' : ' visés'}`}
-        className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto'}
+        className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto h-[88dvh]'}
         footer={fermentation && section === 'tasting' ? <CarnetPied c={carnet} /> : rappel ? <DossierPied batch={draft} now={nowMs} ajoute={() => setConfirmStock('remaining')} /> : ficheM ? (
           <div className="space-y-2">
             {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} /></div>}

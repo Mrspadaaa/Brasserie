@@ -238,9 +238,21 @@ export function ecrire(note: ItemCarnet, props: readonly Proposition[], ctx: Pic
 }
 
 export type ModeIA = 'eteint' | 'simule' | 'production';
-/** Une note envoyée : vers l'IA, en attente du réseau, ou gardée brute (IA éteinte). */
-export function envoi(mode: ModeIA, enLigne: boolean): 'ia' | 'attente' | 'brute' {
+
+/** Sous ce nombre de mots, une note n'a rien à ranger : elle est gardée telle quelle, sans appel (constat 13, jeu en ligne 16.11 : coût de l'IA). */
+export const MOTS_MIN_IA = 3;
+/** Les mots d'une note : les morceaux séparés par des espaces qui portent au moins une lettre ou un chiffre (« - », « … » ne comptent pas). */
+export const motsDe = (texte: string): string[] => texte.split(/\s+/).filter((m) => /[\p{L}\p{N}]/u.test(m));
+/** La note est-elle assez longue pour partir à l'IA ? (au moins `MOTS_MIN_IA` mots) */
+export const assezPourIA = (texte: string): boolean => motsDe(texte).length >= MOTS_MIN_IA;
+
+/**
+ * Une note envoyée : vers l'IA, en attente du réseau, ou gardée brute (IA éteinte, ou note de moins de `MOTS_MIN_IA` mots : aucun appel,
+ * et rien n'attend le retour du réseau). `texte` absent : seule la phrase n'est pas jugée.
+ */
+export function envoi(mode: ModeIA, enLigne: boolean, texte?: string): 'ia' | 'attente' | 'brute' {
   if (mode === 'eteint') return 'brute';
+  if (texte !== undefined && !assezPourIA(texte)) return 'brute';
   return enLigne ? 'ia' : 'attente';
 }
 /**

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
+import { ChevronRight } from 'lucide-react';
+import type { Transaction, BudgetLine, AppConfig, Recipe, Batch, StockItem } from '../../types';
+import { depuisJournal, depuisMois, depuisPlageFinances, enJournal, enPeriode, mentionArrondiMois, pourFinances, serialiser, type Periode, type PeriodeEntree } from '../periode/periode';
 import type { FinancialAsset, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { FinancialArchiveService } from '../../services/financialArchiveService';
@@ -32,7 +34,9 @@ import { ChoixBrassin } from '../../ui/finance/budget/ChoixBrassin';
 installerModeClavier();
 
 interface FinancesTabProps {
-  transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig; globalTimeFilter:TimeFilterPeriod;
+  transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig;
+  /** LA période de l'app (m3r-a) : Finances la lit et la règle, il n'en garde aucune à lui. */
+  globalTimeFilter:PeriodeEntree; onChangeGlobalTimeFilter?:(p:Periode)=>void;
   recipes?:Recipe[]; batches?:Batch[]; stockItems?:StockItem[];
   openTransactionRequest?:{id:string;at:number}|null;
   /** Renvoi vers l’article acheté, depuis le détail d’une opération. */
@@ -55,7 +59,7 @@ const initialView = (): FinanceView => {
 const EMPTY: never[]=[];
 const ONGLETS_DEMANDES:Record<string,FinanceView>={synthese:'overview',operations:'journal',previsions:'forecast',annuel:'annual'};
 
-export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe,onOpenSale,ongletRequest}:FinancesTabProps) {
+export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobalTimeFilter,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe,onOpenSale,ongletRequest}:FinancesTabProps) {
   const data=useStorageValue(readFinance);
   const archives=useStorageValue(FinancialArchiveService.getArchives);
   const [archiveOpen,setArchiveOpen]=useState(false),[journalRequest,setJournalRequest]=useState<JournalRequest>();
@@ -63,8 +67,18 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const handledOpenRequest=useRef<string>('');
   const [view,setView]=useState<FinanceView>(initialView);
   const projetsRef=useRef(StorageService.getUiState<string>('finances_workspace','overview')==='projects'),[cible,setCible]=useState<CiblePrevoir|null>(null);
-  const [month,setMonth]=useState(todayISO().slice(0,7)),[allDates,setAllDates]=useState(false);
-  const [plage,setPlage]=useState<{du:string;au:string}|null>(null);
+  /* m3r-a : une seule période. Sans réglage venu de l'app (aperçus, tests), l'écran garde la dernière choisie ici, rien de plus. */
+  const [choisieIci,setChoisieIci]=useState<Periode|null>(null);
+  const periodeApp=onChangeGlobalTimeFilter?enPeriode(globalTimeFilter):(choisieIci??enPeriode(globalTimeFilter));
+  const changerPeriode=(p:Periode)=>{if(onChangeGlobalTimeFilter)onChangeGlobalTimeFilter(p);else setChoisieIci(p);};
+  const cleP=serialiser(periodeApp);
+  const mentionMois=mentionArrondiMois(periodeApp);
+  /* Le journal d'Opérations non plus n'a plus de période à lui : mois, plage et « tout » viennent de l'app, et ce qu'il choisit y retourne.
+     Un exercice ou les archives (year, scope) gardent leur propre lecture. */
+  const suitApp=!journalState.year&&journalState.scope!=='archives';
+  const etatJournal=useMemo(()=>suitApp?{...journalState,...enJournal(periodeApp)}:journalState,[journalState,cleP,suitApp]); // eslint-disable-line react-hooks/exhaustive-deps
+  const changerJournal=(s:typeof journalState)=>{setJournalState(s);if(!s.year&&s.scope!=='archives'){const p=depuisJournal(s);if(serialiser(p)!==cleP)changerPeriode(p);}};
+  const {month,allDates,plage}=useMemo(()=>pourFinances(periodeApp),[cleP]); // eslint-disable-line react-hooks/exhaustive-deps
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
   const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
@@ -73,6 +87,8 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[remplace,setRemplace]=useState<FinancialPayment|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
+  /* Le + flottant : « Estimer un brassin » ouvre le choix du brassin (l'ancien + de la ligne du coût du litre). */
+  useEffect(()=>{const ouvrir=()=>setBudgetPicker(true);window.addEventListener('finances-estimer',ouvrir);return()=>window.removeEventListener('finances-estimer',ouvrir);},[]);
   const [closingOpts,setClosingOpts]=useState<OuvertureInventaire>({}),[assetInitial,setAssetInitial]=useState<Partial<FinancialAsset>>();
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile,undefined,{includeScheduled:true}),[transactions,data.payments,data.profile]);
   /* AM n° 10 : le seuil d'assujettissement à la TVA (100 000 CHF sur 12 mois glissants) est surveillé tant que l'app est non assujettie. */
@@ -111,13 +127,14 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {/* Titre, sous-vue et réglages sur une seule rangée : trois barres empilées
         mangeaient un tiers de l'écran avant la première donnée. */}
     {notice&&<div className="finance-notice" role="status"><span>{notice}</span>{' '}<button className="finance-link" style={{marginInlineStart:'0.5rem'}} onClick={()=>setNotice('')}>Fermer</button></div>}
+    {mentionMois&&view==='overview'&&<p className="finance-muted" data-finance-arrondi style={{margin:'0 0 0.5rem'}}>{mentionMois}</p>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
       {view==='overview'&&<FinanceOverview transactions={transactions} payments={data.payments} plans={data.plans} assets={data.assets} batches={batches} recipes={recipes} ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} openingCash={data.profile.openingCash}
-        month={month} allDates={allDates} onMonth={value=>{setMonth(value);setAllDates(false);}} onAllDates={()=>setAllDates(true)} plage={plage} onPlage={setPlage} assistant={financeAssistant}
+        month={month} allDates={allDates} onMonth={value=>changerPeriode(depuisMois(value))} onAllDates={()=>changerPeriode({genre:'tout'})} plage={plage} onPlage={value=>{if(value)changerPeriode(depuisPlageFinances(value.du,value.au));}} assistant={financeAssistant}
         onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>{setRemplace(null);setPaying(transactions.find(t=>t.id===id)??null);}}
         onOpenBudget={setBudget} onBudgetPicker={()=>setBudgetPicker(true)} onUpgrade={setUpgrade} onBrowseProjects={showProjects} onNotice={setNotice}
         profile={data.profile} stockItems={stockItems} onPrevisions={()=>selectView('forecast')}/>}
-      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)} assistant={financeAssistant}/></>}
+      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={etatJournal} onStateChange={changerJournal} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)} assistant={financeAssistant}/></>}
       {view==='forecast'&&<Previsions asOf={todayISO()} horizon={horizon} onHorizon={setHorizon} transactions={transactions} payments={data.payments} plans={data.plans} profile={data.profile} assets={data.assets} batches={batches} stockItems={stockItems}
         ledger={ledger} openingCashReady={openingCashReady} avecProjets={includeEquipmentProjects} onAvecProjets={setIncludeEquipmentProjects}
         onProfile={()=>setProfileOpen(true)} onPayments={()=>openJournal({scope:'all',allDates:true,filter:'unknown'})} onRegistre={()=>openJournal({scope:'all',allDates:true})} onHistorique={()=>{setProfileParams(true);setProfileOpen(true);}} onOpenTransaction={setSelected} onCorrigerPiece={setEditing} onOpenPlan={openPlan} onOpenUpgrade={setUpgrade}

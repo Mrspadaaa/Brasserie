@@ -70,7 +70,7 @@ export const ContactsView: React.FC<Props> = ({ items, adding, onAdding, onCreat
   return (
     <section className="ct" aria-label="Contacts">
       <div className="ct-bar">
-        <h3>Contacts <span className="ct-c ct-num">{items.length}</span></h3>
+        <h3>Contacts <span className="ct-c ct-num">{visibles.length}</span></h3>
         {demo && <span className="ct-pill">démo</span>}
         <span className="ct-sp" />
         {items.length > 0 && <button type="button" className="ct-new" onClick={() => onAdding(true)}><Plus size={18} aria-hidden="true" />Noter<span className="sr-only"> un contact</span></button>}

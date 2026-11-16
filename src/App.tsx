@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContext, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
+import { PagePlus } from './components/plus/PagePlus';
+import { lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
@@ -25,6 +27,12 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
+import { plusMenuFor, type PlusCle } from './domain/plusEcran';
+import { joursDepuisBrassage } from './domain/productionInsights';
+import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
+import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
+import { INVENTORY_REASONS } from './services/storage';
+import { nextBatchId, nextRef } from './services/refs';
 import { batchDisplayDate } from './domain/batchSchedule';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
 import { isCurrent } from './domain/catalogOrganization';
@@ -42,8 +50,7 @@ import type { QuickActionScreen } from './components/QuickActionModal';
 
 import { 
   AppConfig, 
-  TimeFilterPeriod, 
-  Transaction, 
+  Transaction,
   StockItem,
   EquipmentItem,
   KegItem,
@@ -59,12 +66,15 @@ import {
   CreativeItem 
 } from './types';
 import { FirebaseAuthService } from './services/firebaseAuth';
+import { etatConnexions, etatReglages } from './components/plus/etats';
+import { bilanReglages } from './components/reglages/regles';
+import { COMPANY_FALLBACK } from './domain/companyDefaults';
 import { runMigrationIfNeeded } from './services/migration';
 import { User } from 'firebase/auth';
 
 import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
-import { ActionDock, PageShell } from './pages/PageShell';
+import { PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 import { prechargerVuesAuRepos } from './services/prechargeVues';
 import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
@@ -73,6 +83,7 @@ import { montantChf } from './domain/finance/ledger';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
+const InventoryCorrectionSheet = lazy(() => import('./ui/InventoryCorrectionSheet').then(module => ({ default: module.InventoryCorrectionSheet })));
 const AuditLogModal = lazy(() => import('./components/AuditLogModal').then(module => ({ default: module.AuditLogModal })));
 const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then(module => ({ default: module.CloudConfigModal })));
 const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
@@ -173,9 +184,32 @@ export const App: React.FC = () => {
   );
 
   // Persistent Global Time Filter (Single Source of Truth across the ENTIRE APP)
-  const [globalTimeFilter, setGlobalTimeFilter] = useState<TimeFilterPeriod>(() =>
-    StorageService.getUiState('app_global_time_filter', 'this-month')
+  // m3r-a : UNE période pour toute l'app (pastille d'en-tête, page Plus, Finances, Brassins, Bord lisent celle-ci). Gardée en texte, anciennes valeurs relues.
+  const [globalTimeFilter, setGlobalTimeFilter] = useState<Periode>(() =>
+    lirePeriode(StorageService.getUiState('app_global_time_filter', 'this-month'))
   );
+  /** La page « Plus » (m3) : posée à la place de l'écran, qui reste monté dessous ; le geste retour la ferme. */
+  const [plusOuvert, setPlusOuvert] = useState(false);
+  const plusPousse = useRef(false);
+  /** Changer de signataire redessine l'en-tête et la page Plus (le nom se lit dans le stockage). */
+  const [signataireNonce, setSignataireNonce] = useState(0);  const fermerPlus = React.useCallback(() => {
+    setPlusOuvert(false);
+    if (plusPousse.current) { plusPousse.current = false; window.history.back(); }
+  }, []);
+  const ouvrirPlus = React.useCallback(() => {
+    if (plusPousse.current) { fermerPlus(); return; }
+    // Même profondeur d'historique que l'entrée courante : le retour du téléphone ferme Plus sans toucher à la pile des pages.
+    window.history.pushState({ ...(window.history.state ?? {}), 'laffinee-plus': true }, '');
+    plusPousse.current = true;
+    setPlusOuvert(true);
+  }, [fermerPlus]);
+  // Changer d'écran (barre, retour, lien) referme Plus.
+  useEffect(() => { if (plusPousse.current) fermerPlus(); }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); } };
+    window.addEventListener('popstate', retour);
+    return () => window.removeEventListener('popstate', retour);
+  }, []);
 
   // SubTab targeting for Production (e.g. from 💡 or 🧰 in Header)
   const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() => StorageService.getUiState('production_subtab', 'batches'));
@@ -349,6 +383,8 @@ export const App: React.FC = () => {
   }, []);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
+  /** L'article dont la recherche ouvre la correction d'inventaire (le geste « Corriger » de sa ligne). */
+  const [correctingItem, setCorrectingItem] = useState<StockItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [writeError, setWriteError] = useState<string | null>(null);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -356,6 +392,7 @@ export const App: React.FC = () => {
 
   // Reactive state from StorageService (STRICTLY ISOLATED: Empty by default until Google auth validates!)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  /** Les dates des écritures : les comptes de la grille de période. */
   const [stocks, setStocks] = useState<{ rawMaterials: StockItem[]; cleaning: StockItem[]; equipment: EquipmentItem[]; kegs: KegItem[] }>({
     rawMaterials: [],
     cleaning: [],
@@ -448,7 +485,7 @@ export const App: React.FC = () => {
   // Save global time filter
   useEffect(() => {
     if (currentUser) {
-      StorageService.setUiState('app_global_time_filter', globalTimeFilter);
+      StorageService.setUiState('app_global_time_filter', serialiserPeriode(globalTimeFilter));
     }
   }, [globalTimeFilter, currentUser]);
 
@@ -617,6 +654,55 @@ export const App: React.FC = () => {
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
+  /* Le brassin dont « Saisir une densité » ouvre la fiche : le premier en fermentation (le même que l'assistant de Plus). */
+  const brassinEnFermentation = batches.find(b => b.status === 'fermentation');
+  /* Le menu du + de l'écran (b1r). Les précisions viennent de l'app : prochain numéro de brassin et de fût, articles à commander. */
+  const plusMenu = plusMenuFor(activeTab, subTab, {
+    prochainBrassin: nextBatchId(batches.map(b => b.id)),
+    prochainFut: nextRef('F', stocks.kegs.map(k => k.id)),
+    aCommander: criticalStockCount,
+    enCuve: batches.filter(b => b.status === 'fermentation' || b.status === 'garde').length,
+    enFermentation: brassinEnFermentation ? { id: brassinEnFermentation.id, jours: joursDepuisBrassage(brassinEnFermentation) } : undefined
+  });
+  const [navNonce, setNavNonce] = useState(0);
+  const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
+
+  /** Un geste « Depuis ici » : ouvre l'écran voulu (sous-onglet compris), puis sa création. Chaque geste garde sa fonction d'aujourd'hui. */
+  const runPlus = (cle: PlusCle | 'ecran') => {
+    if (cle === 'ecran') { runFabAction(); return; }
+    const vers = (tab: TabType, cle2: 'stocks_subtab' | 'clients_subtab' | null, sous: string | null, kind?: FabIntent) => {
+      if (cle2 && sous) StorageService.setUiState(cle2, sous);
+      setNavNonce(n => n + 1);
+      setActiveTab(tab);
+      if (kind) {
+        const at = Date.now();
+        setCreateRequest({ kind, at });
+        // La demande ne doit pas rouvrir la feuille au prochain retour sur l'écran.
+        window.setTimeout(() => setCreateRequest(c => (c && c.at === at ? null : c)), 3000);
+      }
+    };
+    switch (cle) {
+      case 'ecriture':
+      case 'facture': setQuickAction('scan', actionLauncherRef.current); break;
+      case 'vente': setQuickAction('quick-sale', actionLauncherRef.current); break;
+      case 'brassin': setQuickAction('brew-batch', actionLauncherRef.current); break;
+      case 'recette': openWizard(); break;
+      case 'idee': setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
+      case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
+      case 'estimer': window.dispatchEvent(new CustomEvent('finances-estimer')); break;
+      // Le geste « Mesure » de la recherche : la fiche du brassin s'ouvre à la section Mesures.
+      case 'densite':
+        if (brassinEnFermentation) { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: brassinEnFermentation.id, at: Date.now() }); }
+        break;
+      case 'houblon': vers('stocks', 'stocks_subtab', 'hops', 'newHopVariety'); break;
+      case 'article': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
+      case 'fut': vers('stocks', 'stocks_subtab', 'futs', 'newKeg'); break;
+      case 'materiel': vers('stocks', 'stocks_subtab', 'materiel', 'newEquipment'); break;
+      case 'client': vers('clients', 'clients_subtab', 'crm', 'newClient'); break;
+      case 'tarif': vers('clients', 'clients_subtab', 'tarifs', 'newTarif'); break;
+    }
+  };
+
   const runFabAction = () => {
     switch (fabAction.intent) {
       case 'newBatch':
@@ -777,6 +863,32 @@ export const App: React.FC = () => {
 
   // --- Recherche universelle ------------------------------------------------
 
+  /** « Aller à » de la recherche : les mêmes ouvertures que la barre et le + (sous-onglet mémorisé, puis l'onglet). */
+  const allerA = (id: DestinationId) => {
+    const stocksVers = (sous: string) => { StorageService.setUiState('stocks_subtab', sous); setNavNonce(n => n + 1); setActiveTab('stocks'); };
+    const clientsVers = (sous: string) => { StorageService.setUiState('clients_subtab', sous); setNavNonce(n => n + 1); setActiveTab('clients'); };
+    const production = (sous: 'batches' | 'recipes' | 'lab' | 'scaler') => { setProductionSubTab(sous); setActiveTab('production'); };
+    switch (id) {
+      case 'bord': setActiveTab('dashboard'); break;
+      case 'finances': setActiveTab('finances'); break;
+      case 'brassins': production('batches'); break;
+      case 'recettes': production('recipes'); break;
+      case 'atelier': production('lab'); break;
+      case 'volumes': production('scaler'); break;
+      case 'stock': stocksVers('stock'); break;
+      case 'courses': stocksVers('courses'); break;
+      case 'futs': stocksVers('futs'); break;
+      case 'materiel': stocksVers('materiel'); break;
+      case 'houblons': stocksVers('hops'); break;
+      case 'clients': clientsVers('crm'); break;
+      case 'impot': clientsVers('ofdf'); break;
+      case 'tarifs': clientsVers('tarifs'); break;
+      case 'assistant': navigateToBrewAssistant(); break;
+      case 'journal': setIsAuditLogsOpen(true); break;
+      case 'reglages': setIsSettingsOpen(true); break;
+    }
+  };
+
   const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
   const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
   const commandGroups: CommandGroup[] = [
@@ -788,6 +900,7 @@ export const App: React.FC = () => {
         detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
         icon: <Beaker className="w-4 h-4" />,
         keywords: [r.style, r.id],
+        gestes: [{ id: 'brasser' as const, label: 'Brasser', run: () => { setBrewRecipeId(r.id); setQuickAction('brew-batch', actionLauncherRef.current); } }],
         onSelect: () => openRecipe(r)
       }))
     },
@@ -799,6 +912,11 @@ export const App: React.FC = () => {
         detail: [b.style, batchDisplayDate(b), b.status].filter(Boolean).join(' · '),
         icon: <FlaskConical className="w-4 h-4" />,
         keywords: [b.style, b.status],
+        // Un brassin en cours de fermentation ou de garde : le jour J+N seulement s'il est connu, et le geste « Mesure » ouvre sa fiche à la section Mesures.
+        ...((b.status === 'fermentation' || b.status === 'garde') ? {
+          valeur: joursDepuisBrassage(b) !== undefined ? `J+${joursDepuisBrassage(b)}` : undefined,
+          gestes: [{ id: 'mesure' as const, label: 'Mesure', run: () => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: b.id, at: Date.now() }); } }]
+        } : {}),
         onSelect: () => openBrewDay(b)
       }))
     },
@@ -807,10 +925,18 @@ export const App: React.FC = () => {
       items: allStockItems.map((s) => ({
         id: `stk-${s.ref}`,
         label: s.name,
-        detail: `${Units.format(s.currentStock, s.unit)} · ${s.category}`,
+        // Un houblon se lit à son α (L04), les autres articles à leur catégorie ; la quantité est la valeur de la ligne.
+        detail: formaterAlpha(s.alphaPct) ? `α ${formaterAlpha(s.alphaPct)}` : s.category,
+        valeur: Units.format(s.currentStock, s.unit),
         icon: <Package className="w-4 h-4" />,
         keywords: [s.ref, s.category, s.supplier ?? ''],
-        onSelect: () => setActiveTab('stocks')
+        gestes: [
+          { id: 'corriger' as const, label: 'Corriger', run: () => setCorrectingItem(s) },
+          { id: 'courses' as const, label: 'Courses', run: () => runPlus('courses') }
+        ],
+        apercu: () => apercuArticle(s, recipes, transactions),
+        // La fiche de l'article, comme avant mais jusqu'à la donnée : Stocks › Stock, la fiche ouverte (le mécanisme du renvoi existant).
+        onSelect: () => { StorageService.setUiState('stocks_subtab', 'stock'); setNavNonce(n => n + 1); setActiveTab('stocks'); setStockOpenRequest({ ref: s.ref, at: Date.now() }); }
       }))
     },
     {
@@ -818,9 +944,10 @@ export const App: React.FC = () => {
       items: clients.map((c) => ({
         id: `cli-${c.id}`,
         label: c.name,
-        detail: [c.type, c.contact].filter(Boolean).join(' · '),
+        detail: [c.contact].filter(Boolean).join(' · '),
+        valeur: c.type || undefined,
         icon: <Users className="w-4 h-4" />,
-        keywords: [c.email, c.phone],
+        keywords: [c.email, c.phone, c.type],
         onSelect: () => setActiveTab('clients')
       }))
     },
@@ -829,10 +956,13 @@ export const App: React.FC = () => {
       items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
         id: `tx-${t.id}`,
         label: t.description,
-        detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
+        // r3p2 : la date et la première ligne en détail (« 09.11 · Citra T90 1 kg »), le montant à droite ; sans ligne reliée, la sous-catégorie.
+        detail: [dateCourte(t.date), resumeLigneEcriture(t) ?? t.subcategory].filter(Boolean).join(' · '),
+        valeur: `${montantChf(t.amountTTC)} CHF`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: motsCleEcriture(t),
         archived: isTransactionArchived(t, financialArchiveIndex),
+        ...(t.proofUrl ? { gestes: [{ id: 'piece' as const, label: 'Pièce', run: () => { setActiveTab('finances'); setFinanceOpenRequest({ id: t.id, at: Date.now() }); } }] } : {}),
         onSelect: () => {
           setActiveTab('finances');
           setFinanceOpenRequest({ id: t.id, at: Date.now() });
@@ -989,7 +1119,7 @@ export const App: React.FC = () => {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div role="status" className="pointer-events-none fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-ebc-straw text-cave-950 px-4 py-2.5 rounded-2xl shadow-2xl font-bold text-sm flex items-center space-x-2 animate-in fade-in slide-in-from-top-4 border border-ebc-gold max-w-sm text-center">
+        <div role="status" data-toast className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -1002,23 +1132,48 @@ export const App: React.FC = () => {
       <Header
         compactLayout
         large={activeTab === 'stocks'}
-        hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
-        config={config}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenCloudConfig={() => setIsCloudConfigOpen(true)}
-        onOpenAuditLogs={() => setIsAuditLogsOpen(true)}
-        onNavigateToBrewAssistant={navigateToBrewAssistant}
-        onNavigateToCreativeLab={navigateToCreativeLab}
+        transactions={transactions}
+        onAnnoncePeriode={showToast}
+        onOpenPlus={ouvrirPlus}
+        plusOpen={plusOuvert}
         onOpenSearch={() => setIsPaletteOpen(true)}
-        onGoHome={() => setActiveTab('dashboard')}
-        onLogout={handleLogout}
+        onGoHome={() => { fermerPlus(); setActiveTab('dashboard'); }}
         pendingTodosCount={pendingTodosCount}
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px]' : ''} w-full mx-auto px-2 xs:px-3`}>
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]' : 'min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]'} w-full mx-auto px-2 xs:px-3`}>
+        {plusOuvert && (
+          <PagePlus
+            key={signataireNonce}
+            courant={StorageService.getCurrentUser()}
+            onSigner={(cible) => { StorageService.setCurrentUser(cible); setSignataireNonce(n => n + 1); }}
+            periode={globalTimeFilter}
+            onChoisirPeriode={(p) => setGlobalTimeFilter(p)}
+            transactions={transactions}
+            logs={auditLogs}
+            batches={batches}
+            pendingTodosCount={pendingTodosCount}
+            horsConnexion={horsConnexion}
+            entreprise={config.company?.name}
+            etatCloud={etatConnexions(
+              FirebaseAuthService.hasDriveAccess() ? 'connecte' : FirebaseAuthService.driveTokenExpired() ? 'a-renouveler' : 'a-connecter',
+              StorageService.getUiState<string>('ai_default_tier', 'fast')
+            )}
+            etatReglages={etatReglages(bilanReglages(config, { ibanEffectif: config.company.iban || COMPANY_FALLBACK.iban, compteConnecte: !!FirebaseAuthService.getCurrentUser() }))}
+            onBack={fermerPlus}
+            onAssistant={() => { fermerPlus(); navigateToBrewAssistant(); }}
+            onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
+            onConversations={() => window.dispatchEvent(new Event('brewer-inbox-open'))}
+            onJournal={() => setIsAuditLogsOpen(true)}
+            onCloud={() => setIsCloudConfigOpen(true)}
+            onReglages={() => setIsSettingsOpen(true)}
+            onLogout={handleLogout}
+          />
+        )}
+        <div style={{ display: plusOuvert ? 'none' : 'contents' }}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -1052,6 +1207,7 @@ export const App: React.FC = () => {
             budgetLines={budgetLines}
             config={config}
             globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
             onOpenStockItem={(ref) => {
               setStockOpenRequest({ ref, at: Date.now() });
               setActiveTab('stocks');
@@ -1072,6 +1228,7 @@ export const App: React.FC = () => {
             brewhouses={config.brewhouses}
             activeBrewhouseId={config.activeBrewhouseId}
             globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}
@@ -1094,6 +1251,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'stocks' && (
           <StocksTab
+            key={navNonce}
             stocks={stocks}
             batches={batches}
             clients={clients}
@@ -1110,6 +1268,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'clients' && (
           <ClientsTab
+            key={navNonce}
             clients={clients}
             batches={batches}
             tarifs={tarifs}
@@ -1120,6 +1279,7 @@ export const App: React.FC = () => {
           />
         )}
         </LazySurface>
+        </div>
       </main>
 
       {/* Bottom Navigation Bar, et la case réservée au bouton d'action à sa droite :
@@ -1132,11 +1292,9 @@ export const App: React.FC = () => {
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}
+          horsConnexion={horsConnexion}
         />
-        <div aria-hidden="true" className="app-bottom-dock-cell fixed bottom-0 right-0 z-40 bg-cave-900 pb-safe">
-          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-cave-800" />
-          <ActionDock kind="nav" className="h-10 w-16 ml-1 mr-3" />
-        </div>
+        {/* b1s-a (15.11) : plus de case pour le + dans la barre, il flotte (FloatingActions). */}
       </div>
 
       {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,
@@ -1150,6 +1308,9 @@ export const App: React.FC = () => {
         // sommaire des saisies que le menu liste déjà en clair.
         action={view.view === 'tabs' && fabAction.intent !== 'quickAction' ? fabAction : null}
         onAction={runFabAction}
+        menu={view.view === 'tabs' ? plusMenu : undefined}
+        onPlus={runPlus}
+        horsConnexion={horsConnexion}
         companionLabel={companionLabel}
         anchor={view.view === 'tabs' ? 'nav' : 'page'}
         onInvoice={() => setQuickAction('scan', actionLauncherRef.current)}
@@ -1208,7 +1369,27 @@ export const App: React.FC = () => {
         open={isPaletteOpen}
         onOpenChange={setIsPaletteOpen}
         groups={commandGroups}
+        menu={view.view === 'tabs' ? plusMenu : undefined}
+        onGeste={runPlus}
+        onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+        onAllerA={allerA}
       />
+      {/* Le geste « Corriger » d'une ligne de la recherche : la même feuille de correction d'inventaire que la fiche de l'article. */}
+      <DeferredSurface active={correctingItem !== null} fallback={<Sheet open={correctingItem !== null} title="Chargement…" onClose={() => setCorrectingItem(null)}><p role="status">Ouverture…</p></Sheet>}><InventoryCorrectionSheet
+        open={correctingItem !== null}
+        item={correctingItem}
+        onClose={() => setCorrectingItem(null)}
+        onConfirm={(qty, reason, note) => {
+          const item = correctingItem;
+          if (!item) return;
+          const type = stocks.cleaning.some(c => c.ref === item.ref) ? 'cleaning' : 'rawMaterials';
+          const result = StorageService.adjustInventory(type, item.ref, qty, reason, note);
+          showToast(!result ? `${item.name} : correction refusée, le stock n’a pas changé.`
+            : result.delta === 0 ? `${item.name} : inventaire confirmé.`
+            : `${item.name} : ${result.delta > 0 ? '+' : ''}${Units.format(result.delta, item.unit)} — ${INVENTORY_REASONS[reason]}.`);
+          setCorrectingItem(null);
+        }}
+      /></DeferredSurface>
 
       {/* --- Pages plein écran ------------------------------------------
           Elles se ferment au geste retour du téléphone, contrairement aux

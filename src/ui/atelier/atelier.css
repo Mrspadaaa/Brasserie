@@ -48,7 +48,8 @@
 .ct-ghost .ct-tx b { font-size: 16px; }
 
 /* Feuilles (contenu posé dans ModalShell) */
-.ct-sheet { padding: 12px 14px 14px; color: var(--a-ink); }
+/* Constat 15 : la feuille défile dans le panneau (max 94 dvh) au lieu de couper « Convertir en client » ; le bouton garde sa hauteur. */
+.ct-sheet { padding: 12px 14px 14px; color: var(--a-ink); flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .ct-sh { display: flex; align-items: center; gap: 8px; }
 .ct-sh h2 { font-size: 19px; font-weight: 600; flex: 1; }
 .ct-x { width: 44px; height: 44px; border: 1px solid var(--a-line2); border-radius: 10px; display: grid; place-items: center; flex: none; }
@@ -56,7 +57,7 @@
 .ct-lbl { font-size: 12px; color: var(--a-mut); margin: 12px 0 5px; }
 .ct-note { font-size: 14px; line-height: 1.35; background: var(--a-s1); border: 1px solid var(--a-line); border-radius: 10px; padding: 8px 10px; white-space: pre-wrap; }
 .ct-cta { width: 100%; height: 48px; border-radius: 10px; background: var(--a-act); color: var(--a-onact) !important; font-weight: 600; font-size: 16px; display: flex !important; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
-.ct-sec { width: 100%; min-height: 52px; border-radius: 10px; border: 1.5px solid var(--a-fin); color: var(--a-fin); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 10px; padding: 6px 12px; margin-top: 8px; }
+.ct-sec { flex-shrink: 0; width: 100%; min-height: 52px; border-radius: 10px; border: 1.5px solid var(--a-fin); color: var(--a-fin); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 10px; padding: 6px 12px; margin-top: 8px; }
 .ct-sec small { display: block; font-weight: 400; font-size: 12px; color: var(--a-mut); }
 .ct-sec.ct-done { border-style: dashed; }
 .ct-ends { display: flex; justify-content: space-between; margin-top: 8px; }
@@ -259,6 +260,8 @@
 .nc-att { margin: 0 0 8px auto; max-width: 90%; border-color: var(--a-line2); display: flex; flex-direction: column; }
 .nc-wait { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--a-mut); margin-top: 4px; }
 .nc-line { display: flex; align-items: center; gap: 8px; }
+/* Constat 13 : dit, sous le champ, si l'envoi part à l'IA. */
+.nc-hint { margin: 0 0 6px 4px; font-size: 13px; color: var(--a-mut); }
 .nc-field { flex: 1; min-height: 44px; padding: 10px 16px; border: 1px solid var(--a-line); border-radius: 24px; background: var(--a-s1); color: var(--a-ink); font: inherit; font-size: 16px; resize: none; line-height: 1.3; max-height: 120px; }
 .nc-field::placeholder { color: var(--a-mut); }
 .nc-send { width: 44px; height: 44px; border-radius: 999px !important; background: var(--a-act) !important; color: var(--a-onact) !important; display: grid !important; place-items: center; flex: none; }
@@ -274,3 +277,105 @@
 p.nc-msg { margin: 0 0 2px 4px; }
 .nc-ancre { scroll-margin-bottom: calc(var(--nc-dock, 0px) + 88px); }
 .nc-cl { margin-left: 8px; vertical-align: middle; }
+
+/* kb3 (« la ligne s'ouvre sur place », 14.11) : Carnet › Bières et Tarifs › idées de prix. Classes `lo-` (L26), jetons de l'app, rayons 10 / 16 ;
+   cibles 44 px ; chiffres tabulaires. La ligne ouverte : bord de la teinte visée (--c), voisines visibles, aucune fenêtre. */
+.lo {
+  --a-bg: rgb(var(--cave-950)); --a-s1: rgb(var(--cave-900)); --a-s2: rgb(var(--cave-850));
+  --a-line: rgb(var(--cave-800)); --a-line2: rgb(var(--cave-700));
+  --a-mut: rgb(var(--cave-texte-400)); --a-ink: rgb(var(--cave-texte-50));
+  --a-act: rgb(var(--ebc-straw)); --a-onact: rgb(var(--sur-paille));
+  --a-prod: rgb(var(--area-production-texte)); --a-fin: rgb(var(--area-finances-texte));
+  --a-hop: rgb(var(--hop-texte)); --a-hopbg: rgb(var(--hop) / .16); --a-att: rgb(var(--attention-texte)); --a-attbg: rgb(var(--attention) / .16);
+  --a-finbg: rgb(var(--water) / .16);
+  --a-late: rgb(var(--alert-texte)); /* manquait dans .lo : « Supprimer » (fond --a-late) était invisible (passe 3, neuf n° 2) */
+  color: var(--a-ink); font-size: 14px; line-height: 1.25;
+}
+:where(.lo) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+.lo-num { font-variant-numeric: tabular-nums lining-nums; }
+.lo-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.lo-flt { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--a-line2) !important; display: inline-flex; align-items: center; gap: 5px; font-size: 14px; }
+.lo-flt[aria-pressed=true] { background: var(--a-s2) !important; border-color: var(--a-s2) !important; font-weight: 600; }
+.lo-flt b { font-weight: 600; }
+.lo-new { margin-left: auto; min-height: 44px; padding: 0 14px; border-radius: 999px; background: var(--a-act) !important; color: var(--a-onact) !important; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.lo-first { color: var(--a-mut); font-size: 14px; margin: 12px 0 6px; }
+.lo-list { margin-top: 6px; }
+.lo-row { border-bottom: 1px solid var(--a-line); }
+.lo-h { margin: 0; font: inherit; }
+.lo-hd { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 52px; }
+.lo-t { flex: 1; min-width: 0; font-weight: 600; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lo-sty { font-size: 14px; color: var(--a-mut); font-weight: 400; white-space: nowrap; }
+.lo-pill, .lo-est { font-size: 12px; padding: 0 8px; border-radius: 999px; white-space: nowrap; line-height: 20px; flex: none; }
+.lo-pill { background: var(--a-s2); color: var(--a-mut); }
+.lo-est { font-weight: 600; color: var(--a-att); background: var(--a-attbg); border: 1px dashed var(--a-att); }
+.lo-pr { font-weight: 700; font-size: 16px; }
+.lo-chev { width: 24px; display: grid; place-items: center; color: var(--a-mut); flex: none; }
+.lo-dot { width: 14px; height: 14px; border-radius: 999px; flex: none; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25); }
+.lo-dot-l { width: 18px; height: 18px; }
+.lo-dot-0 { background: transparent; box-shadow: inset 0 0 0 2px var(--a-line2); }
+.lo-ti { width: 36px; height: 36px; border-radius: 12px; background: color-mix(in srgb, var(--a-prod) 14%, transparent); color: var(--a-prod); display: grid; place-items: center; flex: none; }
+.lo-open { margin: 6px -4px; border: 1px solid var(--a-line2); border-left: 5px solid var(--c, var(--a-line2)); border-radius: 16px; padding: 2px 10px 10px; background: var(--a-bg); box-shadow: 0 6px 18px rgb(0 0 0 / .08); }
+.lo-open .lo-t { font-size: 17px; font-weight: 700; white-space: normal; }
+.lo-up { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--a-line2); display: grid; place-items: center; flex: none; }
+.lo-oh { display: flex; align-items: center; gap: 8px; min-height: 52px; }
+.lo-oh-r { justify-content: space-between; }
+.lo-in { flex: 1; min-width: 0; min-height: 44px; font: inherit; font-size: 17px; color: var(--a-ink); background: transparent; border: 0; border-bottom: 2px solid var(--a-ink); border-radius: 0; padding: 0; outline-offset: 4px; }
+.lo-in::placeholder, .lo-val::placeholder, .lo-pin::placeholder { color: var(--a-mut); font-weight: 400; }
+.lo-kv { display: grid; grid-template-columns: 76px 1fr; align-items: center; row-gap: 6px; column-gap: 8px; margin-top: 4px; }
+.lo-k { font-size: 12px; color: var(--a-mut); }
+.lo-k2 { grid-column: 1 / -1; margin-bottom: -2px; }
+.lo-full { grid-column: 1 / -1; }
+.lo-txt { font-size: 14px; line-height: 1.35; margin: 0; padding: 4px 0; border-bottom: 1px dashed var(--a-line2); }
+.lo-val { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 8px; font: inherit; font-size: 16px; font-weight: 600; color: var(--a-ink); background: transparent; border: 0; border-bottom: 1px dashed var(--a-line2); border-radius: 0; padding: 0; }
+.lo-val small { font-weight: 400; color: var(--a-mut); font-size: 13px; white-space: nowrap; }
+.lo-segm { display: flex; border: 1px solid var(--a-line2); border-radius: 10px; overflow: hidden; min-width: 0; }
+.lo-segm button { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 2px; font-size: 14px; text-align: center; border-left: 1px solid var(--a-line) !important; }
+.lo-segm button:first-child { border-left: 0 !important; }
+.lo-segm button[aria-pressed=true] { background: var(--a-act) !important; color: var(--a-onact) !important; font-weight: 600; }
+.lo-full .lo-segm button, .lo-segm.lo-full button { font-size: 13px; }
+.lo-sw { display: flex; gap: 0; }
+.lo-sw button { width: 44px; height: 44px; display: grid; place-items: center; }
+.lo-sw i { width: 26px; height: 26px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--a-line2); display: block; }
+.lo-sw button[aria-pressed=true] i { outline: 2px solid var(--a-ink); outline-offset: 2px; }
+.lo-act { display: flex; gap: 8px; margin-top: 10px; }
+.lo-cta { flex: 1; min-height: 48px; border-radius: 10px; background: var(--a-act) !important; color: var(--a-onact) !important; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.lo-cta:disabled { opacity: .45; cursor: default; }
+.lo-sec { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--a-line2) !important; display: grid; place-items: center; flex: none; }
+.lo-linked { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-height: 48px; padding: 0 6px 0 12px; border-radius: 10px; background: var(--a-hopbg); color: var(--a-hop); font-weight: 600; }
+.lo-linked button { margin-left: auto; min-height: 44px; padding: 0 12px; border-radius: 10px; background: var(--a-hop) !important; color: var(--a-bg) !important; display: inline-flex; align-items: center; gap: 6px; }
+.lo-bigp { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.lo-bigv { flex: 1; font-size: 22px; }
+.lo-bigv small { font-size: 13px; }
+.lo-pin { flex: 1; min-width: 0; width: 100%; font: inherit; font-weight: 600; color: inherit; background: transparent; border: 0; padding: 0; outline-offset: 4px; font-size: inherit; }
+.lo-pose::placeholder { color: var(--a-att); font-weight: 600; opacity: 1; }
+.lo-cout { font-size: 16px; }
+.lo-ink { border-bottom: 2px solid var(--a-ink); font-size: 20px; }
+.lo-stp { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--a-line2) !important; font-size: 20px; display: grid; place-items: center; flex: none; text-align: center !important; }
+.lo-hint { font-size: 13px; color: var(--a-mut); margin: 4px 0 2px; }
+.lo-hint b { color: var(--a-ink); }
+.lo-fix { flex: 1; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 12px; border-radius: 10px; background: var(--a-finbg) !important; color: var(--a-fin) !important; font-size: 14px; }
+.lo-fix b { font-weight: 600; flex: 1; }
+.lo-prix .finance-assistant { margin-top: 12px; }
+.lo button:focus-visible, .lo input:focus-visible { outline: 2px solid var(--a-ink); outline-offset: 2px; }
+/* Passe 3 (critique de kb3) : champs de 44 px, unité collée au nombre, liseré des pastilles (cave), entête des idées de tarif, toast, suppression confirmée. */
+/* Un champ nombre est un textarea (NumberInput) : le texte colle en haut de ses 44 px. Hauteur de ligne = hauteur du champ, pour que le nombre et son unité (« 7,2 % vol ») partagent la même ligne. */
+.lo-pin { min-height: 44px; height: 44px; line-height: 44px; resize: none; overflow: hidden; }
+.lo-pin.lo-fit { flex: 0 1 auto; width: auto; min-width: 5ch; max-width: 100%; field-sizing: content; }
+.lo-val > .lo-pin.lo-fit + small { flex: 1; }
+.lo-dot, .lo-sw i { box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1.5px color-mix(in srgb, var(--a-ink) 38%, transparent); }
+.lo-dot-0 { box-shadow: inset 0 0 0 2px var(--a-line2); }
+.lo-sw i { box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1px color-mix(in srgb, var(--a-ink) 38%, transparent); }
+.lo-bar-t { justify-content: space-between; }
+.lo-ht { margin: 0; font-size: 14px; font-weight: 600; color: var(--a-mut); }
+.lo-ht span { font-weight: 400; }
+.lo-arch { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--a-mut) !important; font-size: 14px; }
+.lo-sec.lo-danger { color: var(--a-late) !important; border-color: var(--a-late) !important; }
+/* La confirmation de suppression remplace la rangée d'actions : la question, puis « Supprimer » (rouge) et « Garder » côte à côte, pleine largeur, 48 px. */
+.lo-act.lo-conf { flex-direction: column; align-items: stretch; gap: 8px; font-size: 14px; }
+.lo-conf p { margin: 0; font-weight: 600; }
+.lo-conf-b { display: flex; gap: 8px; }
+.lo-conf-b button { flex: 1; min-height: 48px; padding: 0 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--a-line2) !important; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.lo-conf .lo-yes { background: var(--a-late) !important; color: var(--a-bg) !important; border-color: var(--a-late) !important; }
+.lo-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgb(0 0 0 / .2); max-width: 520px; margin: 0 auto; }
+.lo-toast span { flex: 1; }
+.lo-toast button { white-space: nowrap; min-height: 44px; min-width: 44px; padding: 0 12px; font-weight: 700; color: inherit !important; text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; justify-content: center; }
