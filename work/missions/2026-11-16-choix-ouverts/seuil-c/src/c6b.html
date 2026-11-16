@@ -1,0 +1,77 @@
+@@TITRE
+c6b · La pastille s’explique
+@@CSS
+.c6-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c6-bul{min-width:80px;height:66px;padding:0 14px;border-radius:33px;background:var(--fin);color:var(--onfin);font-size:48px;font-weight:800;line-height:66px;text-align:center;letter-spacing:-1px;font-variant-numeric:tabular-nums;transition:background .2s}
+.c6-bul.seu{background:var(--att);color:var(--onact)}
+.c6-t{flex:1;min-width:0;line-height:1.25}.c6-t span{display:block;font-size:15px;color:var(--mut)}.c6-t b{display:block;font-size:19px}
+.c6-ch{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 12px 0}
+.c6-ch button{position:relative;min-height:58px;border:1.5px solid var(--line2);border-radius:14px;padding:6px 8px;text-align:left;display:flex;flex-direction:column;justify-content:center}
+.c6-ch button b{font-size:17px}.c6-ch button span{font-size:14px;color:var(--mut)}
+.c6-ch button i{position:absolute;top:-11px;right:6px;min-width:30px;height:24px;padding:0 6px;border-radius:12px;font-style:normal;font-weight:800;font-size:15px;line-height:21px;text-align:center;border:1.5px solid var(--fin);background:var(--bg);color:var(--fin)}
+.c6-ch button.on{border-color:var(--fin);background:var(--finbg);box-shadow:inset 0 0 0 1px var(--fin)}.c6-ch button.on i{background:var(--fin);color:var(--onfin)}
+.c6-ch button.s.on{border-color:var(--att);background:var(--attbg);box-shadow:inset 0 0 0 1px var(--att)}.c6-ch button.s i{border-color:var(--att);color:var(--att)}.c6-ch button.s.on i{background:var(--att);color:var(--onact)}
+.c6-wk{margin:12px 12px 0;border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.c6-w{display:grid;grid-template-columns:26px 1fr auto 40px;align-items:center;gap:10px;width:100%;min-height:54px;padding:4px 10px 4px 12px;border-top:1px solid var(--line);text-align:left}
+.c6-w:first-child{border-top:0}.c6-w.on{background:var(--finbg)}.c6-w.on.seu{background:var(--attbg)}
+.c6-w .ico{width:24px;height:24px;color:var(--mut)}.c6-w.on .ico{color:var(--prod)}.c6-w.on.seu .ico{color:var(--att)}
+.c6-w .c6-x{min-width:0}.c6-w .c6-x b{display:block;font-size:16px;white-space:nowrap}.c6-w .c6-x b small{font-size:15px;font-weight:600;color:var(--mut)}
+.c6-w .c6-x span{display:block;font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c6-w .c6-k{font-size:15px;font-weight:700;color:var(--mut)}
+.c6-w .c6-p{justify-self:end;min-width:34px;height:26px;padding:0 6px;border-radius:13px;font-weight:800;font-size:16px;line-height:23px;text-align:center;border:1.5px solid var(--line2);color:var(--mut)}
+.c6-w.on .c6-p{border-color:var(--fin);color:var(--fin)}.c6-w.cut .c6-p{background:var(--fin);color:var(--onfin)}
+.c6-w.on.seu .c6-p{border-color:var(--att);color:var(--att)}.c6-w.cut.seu .c6-p{background:var(--att);color:var(--onact)}
+.c6-cut{display:flex;align-items:center;gap:8px;padding:5px 12px;font-size:14px;font-weight:700;color:var(--fin);border-top:2.5px solid var(--fin)}
+.c6-cut.seu{color:var(--att);border-color:var(--att)}
+.c6-sec{display:flex;align-items:baseline;justify-content:space-between;padding:14px 12px 6px}.c6-sec b{font-size:17px}
+.c6-pas{margin:12px 12px 6px;font-size:15px;font-weight:700;color:var(--mut)}
+.c6-gr .k-row{opacity:.5}
+.c6-voile{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:7}
+.c6-pop{position:fixed;right:10px;bottom:90px;width:316px;z-index:8;background:var(--bg);border:1.5px solid var(--line2);border-radius:18px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.c6-pop::after{content:'';position:absolute;bottom:-9px;right:62px;width:16px;height:16px;background:var(--bg);border-right:1.5px solid var(--line2);border-bottom:1.5px solid var(--line2);transform:rotate(45deg)}
+.c6-pop h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:17px}
+.c6-pop h3 .c6-pb{min-width:30px;height:26px;padding:0 6px;border-radius:13px;background:var(--fin);color:var(--onfin);font-size:16px;line-height:26px;text-align:center}
+.c6-op{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;width:100%;min-height:52px;padding:4px 8px;border-radius:12px;text-align:left}
+.c6-op+.c6-op{margin-top:4px}.c6-op.on{background:var(--finbg)}
+.c6-op .c6-r{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}.c6-op.on .c6-r{border:6px solid var(--fin)}
+.c6-op b{display:block;font-size:16px}.c6-op small{display:block;font-size:14px;color:var(--mut)}
+.c6-op .c6-n{min-width:34px;height:28px;padding:0 6px;border-radius:14px;border:1.5px solid var(--fin);color:var(--fin);font-weight:800;font-size:16px;line-height:25px;text-align:center}
+.c6-op.on .c6-n{background:var(--fin);color:var(--onfin)}
+.c6-ring{position:fixed;z-index:8;width:44px;height:38px;border-radius:19px;border:3px solid var(--fin);pointer-events:none}
+.k-pas{cursor:pointer}.c6-ouv .k-nav{z-index:8}
+@@CORPS
+<div class="c6-head"><span class="c6-bul" id="c6-big">5</span><div class="c6-t"><span>à commander, comme la pastille</span><b id="c6-qui"></b></div></div>
+<div class="c6-ch" id="c6-ch" data-booster="horizon"></div>
+<div class="c6-wk" id="c6-wk" data-booster="couper"></div>
+<div class="c6-sec"><b id="c6-lt"></b><span class="k-ex">exemple</span></div>
+<div class="k-rows" id="c6-l"></div>
+<div class="c6-gr" id="c6-gr"></div>
+@@APRES
+<div class="c6-voile" id="c6-v" hidden></div>
+<div class="c6-pop" id="c6-pop" hidden role="dialog" aria-label="Ce que compte la pastille"><h3>La pastille compte <span class="c6-pb" id="c6-pb"></span></h3><div id="c6-ops"></div></div>
+<i class="c6-ring" id="c6-ring" hidden></i>
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;
+const C=[[49,'S49','Porter'],[52,'6 sem.','jusqu’à S52'],[99,'Tout','au seuil']];
+const OP=[[49,'jusqu’au Porter','S49 · prochain brassin'],[52,'6 semaines','jusqu’à S52 · Pils, Marché'],[99,'tout le seuil','même sans brassin prévu']];
+const nom=w=>S.EV.find(e=>e[0]===w)[1];
+function rendre(){const X=S.dans(H),Y=S.A.filter(a=>S.sem(a)>H);
+$('#c6-big').textContent=X.length;
+$('#c6-qui').textContent=H===99?'tout ce qui est au seuil':'jusqu’à '+nom(H)+' · S'+H;
+$('#c6-ch').innerHTML=C.map(([h,a,b])=>'<button data-h="'+h+'" class="'+(h===H?'on':'')+(h===99?' s':'')+'"><i>'+S.cumul(h)+'</i><b>'+a+'</b><span>'+b+'</span></button>').join('');
+let h='';for(const [w,n,s,ic] of S.EV){const L=S.par(w),on=w<=H,cut=w===H;
+h+='<button class="c6-w'+(on?' on':'')+(cut?' cut':'')+(w===99?' seu':'')+'" data-h="'+w+'">'+ic+'<span class="c6-x"><b>'+n+' <small>'+(w===99?'':'S'+w)+'</small></b><span>'+(w===99?L.length+' articles · aucun brassin':L.map(a=>a.n).join(', '))+'</span></span><span class="c6-k">+'+L.length+'</span><span class="c6-p">'+S.cumul(w)+'</span></button>';
+if(cut)h+='<div class="c6-cut'+(w===99?' seu':'')+'"><svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M12 19V5M6 11l6-6 6 6"/></svg>'+(w===99?'tout est compté dans la pastille':'comptés dans la pastille')+'</div>'}
+$('#c6-wk').innerHTML=h;
+for(const b of $$('#c6-ch button,.c6-w'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+$('#c6-lt').textContent=H===99?'Les 24, par semaine':'Les '+X.length+' jusqu’à '+nom(H);
+$('#c6-l').innerHTML=X.map(a=>S.row(a,a.sem?'var(--fin)':'var(--att)')).join('');
+$('#c6-gr').innerHTML=Y.length?'<div class="c6-pas">Pas encore comptés · '+Y.length+'</div><div class="k-rows">'+Y.map(a=>S.row(a,'var(--line2)')).join('')+'</div>':'';
+$('#c6-pb').textContent=X.length;
+$('#c6-ops').innerHTML=OP.map(([o,a,b])=>'<button class="c6-op'+(o===H?' on':'')+'" data-h="'+o+'"><i class="c6-r"></i><span><b>'+a+'</b><small>'+b+'</small></span><span class="c6-n">'+S.cumul(o)+'</span></button>').join('');
+for(const b of $$('.c6-op'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+S.cta(X.length,H===99?'Commander tout':'Commander jusqu’à '+(H===51?'Pils':nom(H)));S.pastille(X.length);place()}
+function place(){const r=$('#k-pas').getBoundingClientRect(),g=$('#c6-ring');g.style.left=(r.left+r.width/2-22)+'px';g.style.top=(r.top+r.height/2-19)+'px'}
+function ouvrir(o){for(const id of ['c6-v','c6-pop','c6-ring'])$('#'+id).hidden=!o;document.body.classList.toggle('c6-ouv',o);place()}
+$('#k-pas').onclick=e=>{e.preventDefault();ouvrir(true)};$('#c6-v').onclick=()=>ouvrir(false);
+rendre();if(S.etat==='geste'){H=51;rendre()}if(S.etat==='tout'){H=99;rendre();scrollTo(0,0)}if(S.etat==='pastille')ouvrir(true)})()</script>

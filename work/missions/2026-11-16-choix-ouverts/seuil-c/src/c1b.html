@@ -1,0 +1,44 @@
+@@TITRE
+c1b · La même bulle
+@@CSS
+.c1-head{display:flex;align-items:center;gap:12px;padding:14px 12px 0}
+.c1-bul{min-width:84px;height:72px;padding:0 16px;border-radius:36px;background:var(--fin);color:var(--onfin);font-size:52px;font-weight:800;line-height:72px;text-align:center;letter-spacing:-1px;font-variant-numeric:tabular-nums;transition:background .2s}
+.c1-bul.seu{background:var(--att);color:var(--onact)}
+.c1-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.25}.c1-t b{display:block;color:var(--ink);font-size:18px}
+.c1-ch{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 12px 0}
+.c1-ch button{position:relative;min-height:64px;border:1.5px solid var(--line2);border-radius:14px;padding:8px 6px 6px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.c1-ch button b{font-size:18px}.c1-ch button span{font-size:14px;color:var(--mut)}
+.c1-ch button i{position:absolute;top:-11px;right:6px;min-width:30px;height:24px;padding:0 6px;border-radius:12px;font-style:normal;font-weight:800;font-size:15px;line-height:21px;text-align:center;border:1.5px solid var(--fin);background:var(--bg);color:var(--fin)}
+.c1-ch button.on{border-color:var(--fin);background:var(--finbg);box-shadow:inset 0 0 0 1px var(--fin)}.c1-ch button.on i{background:var(--fin);color:var(--onfin)}
+.c1-ch button.s i{border-color:var(--att);color:var(--att)}.c1-ch button.s.on{border-color:var(--att);background:var(--attbg);box-shadow:inset 0 0 0 1px var(--att)}.c1-ch button.s.on i{background:var(--att);color:var(--onact)}
+.c1-his{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:92px;margin:14px 12px 0;border-bottom:1.5px solid var(--line2)}
+.c1-his div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}
+.c1-his i{width:100%;max-width:38px;border-radius:5px 5px 0 0;background:var(--c)}
+.c1-his span{font-size:14px;font-weight:700;color:var(--t,var(--c))}
+.c1-wk{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:4px 12px 0;font-size:14px;color:var(--mut);text-align:center;line-height:1.15}
+.c1-wk .ico{display:block;margin:2px auto 0;width:22px;height:22px;color:var(--c2)}
+.c1-wk b{display:block;font-weight:600;color:var(--ink)}
+.c1-sec{display:flex;align-items:baseline;justify-content:space-between;padding:14px 12px 6px}.c1-sec b{font-size:17px}
+@@CORPS
+<div class="c1-head"><span class="c1-bul" id="c1-big">5</span><span class="c1-t" id="c1-t"></span><span class="k-ex">exemple</span></div>
+<div class="c1-ch" id="c1-ch" data-booster="horizon"></div>
+<div class="c1-his" id="c1-his" aria-hidden="true"></div>
+<div class="c1-wk" id="c1-wk"></div>
+<div class="c1-sec"><b id="c1-lt"></b></div>
+<div class="k-rows" id="c1-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;
+const C=[[49,'S49','Porter'],[52,'6 sem.','jusqu’à S52'],[99,'Tout','au seuil']];
+function rendre(){const X=S.dans(H);
+$('#c1-big').textContent=X.length;
+$('#c1-t').innerHTML=H===99?'à commander<b>tout le seuil · 24</b>':'à commander<b>'+(H===49?'d’ici S49 · Porter':'d’ici S52 · 6 semaines')+'</b>';
+$('#c1-ch').innerHTML=C.map(([h,a,b])=>'<button data-h="'+h+'" class="'+(h===H?'on':'')+(h===99?' s':'')+'"><i>'+S.cumul(h)+'</i><b>'+a+'</b><span>'+b+'</span></button>').join('');
+for(const b of $$('#c1-ch button'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+const n=S.EV.map(e=>S.par(e[0]).length),m=Math.max(...n);
+$('#c1-his').innerHTML=S.EV.map(([w],i)=>{const on=w<=H;const c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';return '<div style="--c:'+c+(on?'':';--t:var(--mut)')+'"><span>'+n[i]+'</span><i style="height:'+Math.max(6,n[i]/m*62)+'px"></i></div>'}).join('');
+$('#c1-wk').innerHTML=S.EV.map(([w,nm,s,ic])=>{const on=w<=H;return '<span style="--c2:'+(on?(w===99?'var(--att)':'var(--prod)'):'var(--mut)')+'">'+(w===99?'seuil':'S'+w)+ic+'<b>'+(w===51?'Pils':w===99?'sans brassin':nm)+'</b></span>'}).join('');
+$('#c1-lt').textContent=H===99?'Les 24, par semaine':'Les '+X.length+' d’ici S'+H;
+$('#c1-l').innerHTML=X.map(a=>S.row(a,a.sem?'var(--fin)':'var(--att)')).join('');
+S.cta(X.length,H===99?'Commander tout':H===49?'Commander jusqu’à Porter':'Commander jusqu’à S52');S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=52;rendre()}if(S.etat==='tout'){H=99;rendre()}})()</script>

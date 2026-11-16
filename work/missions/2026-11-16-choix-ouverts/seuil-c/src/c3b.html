@@ -1,0 +1,45 @@
+@@TITRE
+c3b · Un brassin par colonne
+@@CSS
+.c3-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c3-bul{min-width:80px;height:66px;padding:0 14px;border-radius:33px;background:var(--fin);color:var(--onfin);font-size:48px;font-weight:800;line-height:66px;text-align:center;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.c3-bul.seu{background:var(--att);color:var(--onact)}
+.c3-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.3}
+.c3-chip{display:inline-flex;align-items:center;gap:6px;margin-top:2px;padding:2px 10px 2px 6px;border-radius:999px;background:var(--finbg);color:var(--ink);font-size:17px;font-weight:700;white-space:nowrap}
+.c3-chip.seu{background:var(--attbg)}.c3-chip .ico{color:var(--prod);width:20px;height:20px}.c3-chip.seu .ico{color:var(--att)}
+.c3-lien{display:flex;align-items:center;gap:6px;margin:14px 12px 0;font-size:15px;color:var(--mut)}
+.c3-lien .c3-mi{position:relative;width:30px;height:24px;color:var(--stk)}.c3-lien .c3-mi .ico{position:absolute;left:0;bottom:0;width:22px;height:22px}
+.c3-lien .c3-mi i{position:absolute;right:-4px;top:-5px;width:14px;height:12px;border-radius:6px;background:var(--fin)}
+.c3-lien b{color:var(--ink)}
+.c3-tl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:6px 12px 0}
+.c3-col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 8px;border-radius:12px;border:1.5px solid transparent;min-height:196px}
+.c3-col.on{background:var(--finbg)}.c3-col.sel{border-color:var(--fin)}
+.c3-col.seu.on{background:var(--attbg)}.c3-col.seu.sel{border-color:var(--att)}
+.c3-col .c3-p{min-width:32px;height:26px;padding:0 5px;border-radius:13px;font-weight:800;font-size:16px;line-height:23px;text-align:center;border:1.5px solid var(--line2);color:var(--mut);background:var(--bg)}
+.c3-col.on .c3-p{border-color:var(--fin);color:var(--fin)}.c3-col.sel .c3-p{background:var(--fin);color:var(--onfin)}
+.c3-col.seu.on .c3-p{border-color:var(--att);color:var(--att)}.c3-col.seu.sel .c3-p{background:var(--att);color:var(--onact)}
+.c3-col .c3-bar{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.c3-col .c3-bar span{font-size:14px;font-weight:700;color:var(--t,var(--c))}
+.c3-col .c3-bar i{width:30px;border-radius:5px 5px 0 0;background:var(--c)}
+.c3-col .ico{width:24px;height:24px;color:var(--c2)}
+.c3-col .c3-n{font-size:14px;line-height:1.15;text-align:center;color:var(--ink);font-weight:600;min-height:32px}
+.c3-col .c3-w{font-size:14px;color:var(--mut)}
+.c3-g{margin:0 12px 10px}#c3-l{padding-top:14px}
+.c3-gh{display:flex;align-items:baseline;gap:8px;padding:0 4px 4px;font-size:15px;color:var(--mut)}.c3-gh b{color:var(--ink);font-size:16px}
+@@CORPS
+<div class="c3-head"><span class="c3-bul" id="c3-big">5</span><div class="c3-t">à commander jusqu’à<br><span class="c3-chip" id="c3-chip"></span></div><span class="k-ex">exemple</span></div>
+<div class="c3-lien"><span class="c3-mi"><svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg><i></i></span><b>pastille</b> si tu coupes là</div>
+<div class="c3-tl" id="c3-tl" data-booster="brassin-horizon"></div>
+<div id="c3-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;const m=13;
+function rendre(){const X=S.dans(H),E=S.EV.find(e=>e[0]===H);
+$('#c3-big').textContent=X.length;
+$('#c3-chip').className='c3-chip'+(H===99?' seu':'');$('#c3-chip').innerHTML=E[3]+(H===99?'tout le seuil':E[1]+' · S'+H);
+$('#c3-tl').innerHTML=S.EV.map(([w,n,s,ic])=>{const k=S.par(w).length,on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';
+return '<button class="c3-col'+(on?' on':'')+(w===H?' sel':'')+(w===99?' seu':'')+'" data-h="'+w+'" style="--c:'+c+(on?'':';--t:var(--mut)')+';--c2:'+(on?(w===99?'var(--att)':'var(--prod)'):'var(--mut)')+'"><span class="c3-p">'+S.cumul(w)+'</span><span class="c3-bar"><span>+'+k+'</span><i style="height:'+Math.max(6,k/m*64)+'px"></i></span>'+ic+'<span class="c3-n">'+n+'</span><span class="c3-w">'+(w===99?'seuil':'S'+w)+'</span></button>'}).join('');
+for(const b of $$('#c3-tl button'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+$('#c3-l').innerHTML=S.EV.filter(e=>e[0]<=H).map(([w,n,s])=>{const L=S.par(w);return '<div class="c3-g"><div class="c3-gh"><b>'+(w===99?'Au seuil':n)+'</b>'+(w===99?'aucun brassin prévu':'S'+w+' · '+s)+' · '+L.length+'</div><div class="k-rows" style="margin:0">'+L.map(a=>S.row(a,w===99?'var(--att)':'var(--fin)')).join('')+'</div></div>'}).join('');
+S.cta(X.length,H===99?'Commander tout':'Commander jusqu’à '+(H===51?'Pils':E[1]));S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=51;rendre()}if(S.etat==='tout'){H=99;rendre()}})()</script>
