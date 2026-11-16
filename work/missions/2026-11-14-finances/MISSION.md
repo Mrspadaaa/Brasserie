@@ -101,3 +101,13 @@ Mot pour mot : « m5pa-d Un virement, plusieurs pièces top ». Payer = m5pa-d. 
 ### Mise en ligne du 16.11 (pilote)
 - 8 vues (m1do-a, m1ar-c, m3pr-c, m3pm-d, m3im-c, m4bb-a avec c3a à un toucher, m4pf-c, m4ia-c) et FN-2 à FN-12 ; tests d'écran 28e87fb1 → 762f37df → efff31bd → a2c5db31 (0 bloquant, 4 mineurs FN-13 à FN-16) ; fusion de en-ligne/2026-11-15-atelier-lot8 (conflits BrewerChat et FinanceAssistant résolus) ; 243 tests Finances verts, build, garde Firebase, check-no-dev-auth ; déployé b8b3b678, bundle servi = build ; tag local en-ligne/2026-11-16-finances (non poussé).
 - Ouvert : jeu ZZ TEST non joué, Claude in Chrome non connecté (le brasseur doit ouvrir Chrome avec l'extension) ; relancer le brief de voies/z1 étendu aux 8 vues.
+
+## Contrat réécrit — 16.11, nuit (pilote, carte blanche du brasseur)
+- Le jeu en ligne de nuit sur `en-ligne/2026-11-16-finances` a relevé les constats Finances 17 à 28, dans `C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\BUGS.md`, section « Jeu en ligne nuit 16.11 ».
+- Le n° 19 est grave : il est impossible d'annuler un apport, parce que « Corriger ce paiement » manque.
+- Les autres :
+  - « de4 ingrédients » ;
+  - des mois répétés dans la frise m4pf-c ;
+  - « Rien de prévu » reste affiché après l'enregistrement ;
+  - une prévision et un projet ne peuvent pas être supprimés.
+- Pour chaque constat : d'abord un test qui échoue, puis la correction. Ensuite tests, build et test d'écran ; mise en ligne si tout est vert, depuis le dernier tag. Aucune question au brasseur.
