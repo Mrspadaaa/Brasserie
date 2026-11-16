@@ -168,9 +168,9 @@ export function Previsions(p: PrevisionsProps) {
   const tendanceACalculer = avec.warnings.some(w => w.startsWith('Tendance non calculée'));
   // CP-4 : la ligne en pointillé dit la cause exacte de la caisse inconnue et renvoie là où elle se règle (solde, paiements à confirmer, registre).
   const renvoi = renvoiCaisse(ledger, p.profile.openingCash, asOf) ?? { cause: 'absent' as const, geste: 'profil' as const, titre: 'Solde de départ à renseigner', aide: 'sans lui, seul l’écart de la période est connu' };
-  const carte = (s: typeof affiche, etiquette: string, actif: boolean | null, onClick?: () => void) => {
+  const carte = (s: typeof affiche, etiquette: string, actif: boolean | null, onClick?: () => void, entier?: string) => {
     const contenu = <><span>{etiquette}<small>{connu ? sousZero(s) : `écart ${horizon === 365 ? '12 mois' : `${horizon} j`}`}</small></span><b className={`prv-m${(dernier(s) == null ? montantSigne(s.ecartFinCents) : montant(dernier(s)!)).length > 8 ? ' prv-long' : ''}`}>{dernier(s) == null ? montantSigne(s.ecartFinCents) : montant(dernier(s)!)}</b></>;
-    return onClick ? <button type="button" aria-pressed={!!actif} className={actif ? 'prv-on' : ''} onClick={onClick}>{contenu}</button> : <div className="prv-seule">{contenu}</div>;
+    return onClick ? <button type="button" aria-pressed={!!actif} className={actif ? 'prv-on' : ''} title={entier} onClick={onClick}>{contenu}</button> : <div className="prv-seule">{contenu}</div>;
   };
 
   // Les lignes en pointillé (solde, tendance, rien de prévu, projets) : à trois ou plus, une seule ligne-tâche qui se déplie sur place et les liste avec leurs renvois.
@@ -191,8 +191,9 @@ export function Previsions(p: PrevisionsProps) {
         {tachesOuvertes && <div id="prv-taches-liste" className="prv-taches-liste" style={COLONNE}>{taches.map(ligneTache)}</div>}</div>
       : taches.map(ligneTache)}
     {eSans && planTeste ? <div className="prv-sw" role="group" aria-label="Avec ou sans le projet de matériel">
-      {carte(eAvec, `Avec ${nomProjet(planTeste.title, 20)}`, !modeSans, () => p.onAvecProjets(true))}
-      {carte(eSans, `Sans ${nomProjet(planTeste.title, 20)}`, modeSans, () => p.onAvecProjets(false))}</div>
+      {/* w1 (FN-24) : le nom entier sur la carte (elle se replie sur deux lignes) ; au-delà de 40 signes, coupé par la fin, nom entier au toucher (title). */}
+      {carte(eAvec, `Avec ${nomProjet(planTeste.title, 40)}`, !modeSans, () => p.onAvecProjets(true), `Avec ${planTeste.title.trim()}`)}
+      {carte(eSans, `Sans ${nomProjet(planTeste.title, 40)}`, modeSans, () => p.onAvecProjets(false), `Sans ${planTeste.title.trim()}`)}</div>
       : carte(eAvec, titre, null)}
     <div className="prv-g" ref={zone}>
       {affiche.marches.length === 0 && <p className="prv-vide">Aucune sortie prévue sur {horizon === 365 ? '12 mois' : `${horizon} jours`}.</p>}

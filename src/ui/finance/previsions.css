@@ -63,6 +63,9 @@
 .prv-fiche.prv-haute { min-height:50dvh; }
 .prv-fiche-tete { display:flex; align-items:center; gap:8px; } .prv-fiche-tete h3 { flex:1; display:flex; align-items:center; gap:8px; font-size:16px; font-weight:600; margin:0; }
 .prv-aside { font-size:12px; color:var(--prv-t2); white-space:nowrap; }
+/* w1, FN-26 : le montant et « CHF » du titre restent ensemble ; c'est le nom qui passe à la ligne, jamais « CHF » seul. */
+.prv-nb { white-space:nowrap; flex:none; }
+.prv-fiche-tete h3 { flex-wrap:wrap; column-gap:4px; row-gap:0; }
 /* test d'écran P5B : solde après sur la marche (p5b : 664,18), nom du pointillé (« sans frigo 2 107,34 »), « + N sorties » hors du tracé, carte « solde à renseigner » */
 .prv-solde { font-family:ui-monospace,"IBM Plex Mono",monospace; font-size:12px; font-weight:600; fill:var(--prv-t2); paint-order:stroke; stroke:var(--prv-panel); stroke-width:3px; }
 .prv-solde.prv-rt { fill:var(--prv-alerte); }

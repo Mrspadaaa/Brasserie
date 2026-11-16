@@ -3,4 +3,4 @@
  * Les deux premiers noms sont dits, « … » annonce le reste.
  */
 export const titrePrixManquant = (n: number, noms: string[]): string =>
-  `Prix de ${n} ingrédient${n > 1 ? 's' : ''}${noms.length ? ` : ${noms.slice(0, 2).join(', ')}${noms.length > 2 ? '…' : ''}` : ''}`;
+  `Prix ${n > 1 ? 'de ' : 'd’'}${n} ingrédient${n > 1 ? 's' : ''}${noms.length ? ` : ${noms.slice(0, 2).join(', ')}${noms.length > 2 ? '…' : ''}` : ''}`;

@@ -40,7 +40,7 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
   const duree = detail.usefulLifeYears;
   const bas = mesure.pointBas, fin = mesure.soldeFinCents;
   const litreVide = mesure.litreManque === 'brassin-partiel' ? 'brassin planifié partiel' : 'aucun brassin planifié';
-  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, {montant(plan.amountCents)} CHF</>} onClose={onClose}
+  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, <span className="prv-nb">{montant(plan.amountCents)}{' '}CHF</span></>} onClose={onClose}
     aside={`${detail.estimateSource === 'quote' ? 'devis' : 'estimé'} · ${plan.date ? jourCourt(plan.date) : 'date à choisir'}`}>
     <div className="prv-row"><span>Usure sur</span>
       <span className="prv-sel" role="group" aria-label="Durée d’usure">{DUREES.map(a => <button key={a} type="button" disabled={occupe} aria-pressed={duree === a} onClick={() => void ecrire({ ...plan, upgrade: { ...detail, usefulLifeYears: a } })}>{a} ans</button>)}</span></div>
