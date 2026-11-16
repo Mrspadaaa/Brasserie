@@ -194,9 +194,11 @@ export function problemeRemplissageMultiple(batch: VolumesLot, choisis: KegItem[
   if (volume === undefined || choisis.length === 0) return undefined;
   const caps = choisis.map((k) => (Number.isFinite(k.capacityL) ? k.capacityL : 0));
   const pleins = caps.reduce((a, b) => a + b, 0) - Math.min(...caps);
-  const couvert = litresDansLesAutresFuts(batch.id, kegs, '') + pleins;
-  if (couvert >= volume)
-    return `Les fûts déjà remplis et ceux choisis couvrent ${nombreFr(couvert, 1)} L pour ${nombreFr(volume, 1)} L produits : un fût resterait vide.`;
+  const ailleurs = litresDansLesAutresFuts(batch.id, kegs, '');
+  if (ailleurs >= volume)
+    return `Ce lot est déjà tout en fût (${nombreFr(volume, 1)} L) : plus rien à remplir.`;
+  if (ailleurs + pleins >= volume)
+    return `Trop de fûts choisis : il reste ${nombreFr(volume - ailleurs, 1)} L à mettre en fût, un fût resterait vide. Retires-en un.`;
   return undefined;
 }
 

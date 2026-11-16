@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>m3pr-a — Ajouter une prévision : le contenu actuel, rangé (tiède)</title>
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;--vertf:#E4F1E8;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.m3pr-a-f{position:relative;width:390px;min-height:844px;background:#4a4a4a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.m3pr-a-f::before{content:"";flex:0 0 52px}
+.m3pr-a-bg{position:absolute;top:0;left:0;width:390px;height:844px;display:block}
+.m3pr-a-voile{position:absolute;inset:0;background:rgba(17,17,17,.48)}
+.m3pr-a-sh{margin-top:0!important;min-height:0!important;position:relative;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.m3pr-a-poi{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.m3pr-a-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.m3pr-a-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.m3pr-a-x{width:32px;height:32px;border:0;background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.m3pr-a-pied{display:flex;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord);background:var(--page)}
+.m3pr-a-btn{height:44px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--bordm);background:var(--page);color:var(--t0);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m3pr-a-btn.m3pr-a-pri{flex:1;background:var(--t0);border-color:var(--t0);color:#fff}
+.m3pr-a-lab{font-size:12px;color:var(--t2);display:block;margin-bottom:3px}
+.m3pr-a-in{display:flex;align-items:center;gap:6px;width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;color:var(--t0);background:var(--page)}
+.m3pr-a-in::placeholder{color:#8a8a8a}
+.m3pr-a-muet{font-size:12px;color:var(--t2)}
+.m3pr-a-sh{margin-top:84px;min-height:760px}
+.m3pr-a-tete{display:flex;align-items:center;gap:6px;padding:4px 6px 4px 12px}
+.m3pr-a-tete h2{flex:1;font-size:17px;font-weight:600;color:var(--t0)}
+.m3pr-a-corps{padding:2px 12px 10px;display:flex;flex-direction:column;gap:10px}
+.m3pr-a-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:32px}
+.m3pr-a-seg button{border:0;background:var(--page);font-size:13px;color:var(--t2);border-right:1px solid var(--bordm)}
+.m3pr-a-seg button:last-child{border-right:0}
+.m3pr-a-seg button[aria-pressed=true]{background:var(--t0);color:#fff;font-weight:600}
+.m3pr-a-sens{height:36px}.m3pr-a-sens button{font-size:14px}
+.m3pr-a-sens button[aria-pressed=true]{background:var(--t0);color:#fff;font-weight:600}
+.m3pr-a-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m3pr-a-puces{display:flex;flex-wrap:wrap;gap:4px}
+.m3pr-a-puces button{height:28px;padding:0 9px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:13px;color:var(--t1)}
+.m3pr-a-puces button[aria-pressed=true]{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.m3pr-a-puces button.m3pr-a-hors{color:#9a9a9a;background:var(--panel);border-color:var(--bord)}
+.m3pr-a-suite{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;color:var(--t2)}
+.m3pr-a-suite .m3pr-a-in{height:32px;font-size:14px;width:auto;flex:1;color:var(--t2)}
+.m3pr-a-radios{display:flex;flex-direction:column;border:1px solid var(--bord);border-radius:10px;overflow:hidden}
+.m3pr-a-radios label{display:flex;align-items:center;gap:8px;min-height:34px;padding:0 10px;font-size:13px;color:var(--t1);border-bottom:1px solid var(--bord)}
+.m3pr-a-radios label:last-child{border-bottom:0}
+.m3pr-a-radios i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--bordm);flex-shrink:0}
+.m3pr-a-radios label.m3pr-a-on{background:var(--panel);font-weight:600;color:var(--t0)}
+.m3pr-a-radios label.m3pr-a-on i{border:5px solid var(--t0)}
+.m3pr-a-radios small{color:var(--t2);font-weight:400}
+.m3pr-a-pli{display:flex;align-items:center;justify-content:space-between;height:36px;border:1px solid var(--bord);border-radius:10px;padding:0 10px;font-size:14px;color:var(--t1)}
+.m3pr-a-pli span{color:var(--t2);font-size:12px;margin-left:auto;margin-right:4px}
+</style></head><body>
+<div class="m3pr-a-f"><img class="m3pr-a-bg" src="../../../ref/p5b/p5b-haut.png" alt=""><div class="m3pr-a-voile"></div><div class="m3pr-a-sh">
+<div class="m3pr-a-poi"></div>
+<header class="m3pr-a-tete"><h2>Prévoir une dépense</h2><button class="m3pr-a-x" aria-label="Fermer"><svg class="m3pr-a-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+<div class="m3pr-a-corps">
+ <div class="m3pr-a-seg m3pr-a-sens" role="group" aria-label="Mouvement" data-booster="sens"><button aria-pressed="true">À payer</button><button aria-pressed="false">À recevoir</button></div>
+ <label><span class="m3pr-a-lab">Libellé</span><input class="m3pr-a-in" value="Électricité" placeholder="Loyer, commande de malt, vente prévue…"></label>
+ <div class="m3pr-a-g2">
+  <label><span class="m3pr-a-lab">Montant CHF</span><input class="m3pr-a-in m3pr-a-m" inputmode="decimal" value="68,00"></label>
+  <label><span class="m3pr-a-lab">Paiement prévu le</span><span class="m3pr-a-in"><svg class="m3pr-a-i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span class="m3pr-a-m">09.12.2026</span></span></label>
+ </div>
+ <div><span class="m3pr-a-lab">Catégorie</span><div class="m3pr-a-puces" data-booster="categorie">
+  <button aria-pressed="false">Brassage</button><button aria-pressed="false">Matériel</button><button aria-pressed="false">Nettoyage</button><button aria-pressed="true">Charges fixes</button><button aria-pressed="false">Local et travaux</button><button aria-pressed="false">Autres frais</button><button class="m3pr-a-hors" aria-pressed="false">Ventes</button><button class="m3pr-a-hors" aria-pressed="false">Apports privés</button></div></div>
+ <div><span class="m3pr-a-lab">Répétition</span>
+  <div class="m3pr-a-seg" role="group" aria-label="Répétition" data-booster="repetition"><button aria-pressed="false">Une fois</button><button aria-pressed="true">Chaque mois</button><button aria-pressed="false">Trimestre</button><button aria-pressed="false">Année</button></div>
+  <div class="m3pr-a-suite"><svg class="m3pr-a-i" viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg><span>jusqu'au</span><span class="m3pr-a-in">sans fin</span></div></div>
+ <div><span class="m3pr-a-lab">Dans le coût des brassins</span><div class="m3pr-a-radios" data-booster="cout-brassin">
+  <label class="m3pr-a-on"><i></i>À confirmer dans le budget du brassin</label>
+  <label><i></i>Charge fixe à répartir <small>loyer, assurance…</small></label>
+  <label><i></i>Déjà estimée par brassin <small>eau, énergie…</small></label></div></div>
+ <div class="m3pr-a-g2"><label><span class="m3pr-a-lab">Fournisseur ou client</span><input class="m3pr-a-in" placeholder="facultatif"></label>
+  <div><span class="m3pr-a-lab">Note</span><div class="m3pr-a-pli">Ajouter<svg class="m3pr-a-i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div></div></div>
+ <p class="m3pr-a-muet">Rien n'est compté avant la facture, qui s'y reliera.</p>
+</div>
+<footer class="m3pr-a-pied"><button class="m3pr-a-btn">Annuler</button><button class="m3pr-a-btn m3pr-a-pri">Enregistrer</button></footer>
+</div></div>
+</body></html>

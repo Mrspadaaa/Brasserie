@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s2b · Opérations v6a + plage du … au … (mini maquette statique)</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.s2b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.s2b-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.s2b-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.s2b-hd b{font-size:18px;font-weight:600;flex:1}
+.s2b-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.s2b-bx{background:#F5F5F5;border:1px solid #DADADA}
+.s2b-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.s2b-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.s2b-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.s2b-tabs a.s2b-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.s2b-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.s2b-top{display:flex;align-items:center;gap:6px}
+.s2b-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.s2b-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.s2b-pill b{font-size:15px;padding:0 4px}
+.s2b-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.s2b-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.s2b-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.s2b-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.s2b-p b{font-size:12px;line-height:14px}
+.s2b-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.s2b-st i{display:block}
+.s2b-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.s2b-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.s2b-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.s2b-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.s2b-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.s2b-key span{display:flex;align-items:center;gap:4px}
+.s2b-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.s2b-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.s2b-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.s2b-g .s2b-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.s2b-g b{font-size:13px;letter-spacing:.02em}
+.s2b-g .s2b-sub{font-size:13px;color:#444}
+.s2b-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.s2b-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.s2b-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s2b-q small{font-weight:400;color:#555;font-size:13px}
+.s2b-a{font-size:14px;text-align:right}
+.s2b-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.s2b-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.s2b-ok{background:#E8F5EC;color:#22663A}
+.s2b-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.s2b-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.s2b-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.s2b-pc.s2b-no{color:#7A5500}
+.s2b-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.s2b-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.s2b-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.s2b-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.s2b-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.s2b-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.s2b-foot .s2b-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.s2b-ex{font-size:12px;color:#666;padding:0 10px}
+.s2b-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.s2b-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.s2b-nav a.s2b-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.s2b-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.s2b-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.s2b-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.s2b-flash{background:#F1FAF3}
+@media (min-width:900px){.s2b-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.s2b-full{grid-column:1/3}.s2b-left{position:sticky;top:0}.s2b-piles{height:200px}.s2b-nav{justify-content:center}}
+
+body{background:#ECECEC}
+.s2b-shot{margin:0 0 20px}
+.s2b-shot figcaption{font-size:14px;line-height:20px;padding:10px 10px 6px;color:#333;font-weight:600}
+.s2b-frame{position:relative;width:390px;height:844px;overflow:hidden;background:#fff;margin:0}
+.s2b-frame .s2b-nav,.s2b-frame .s2b-fab{position:absolute}
+.s2b-frame .s2b-app{padding-bottom:0}
+.s2b-frame .s2b-g{position:static}
+.s2b-ref img{display:block;width:390px;height:auto}
+.s2b-hors{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;min-height:26px;padding:2px 10px 2px 22px;border-bottom:1px solid #F0F0F0;font-size:12px;color:#666}
+.s2b-hors b{font-size:13px;color:#8A8A8A;font-weight:500}
+.s2b-hp{border:1px dashed #BDBDBD;border-radius:999px;padding:0 6px;line-height:16px;color:#555}
+.s2b-cal{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.s2b-rg{display:flex;align-items:center;gap:6px;min-height:30px;padding:0 2px 0 10px;border-radius:16px;background:#111;color:#fff}
+.s2b-rg b{font-size:15px}
+.s2b-rg button{width:28px;height:28px;border-radius:50%;color:#fff;font-size:18px}
+.s2b-scrim{position:absolute;inset:0;background:rgba(17,17,17,.38);z-index:7}
+.s2b-sh{position:absolute;left:0;right:0;bottom:0;z-index:8;background:#fff;border-radius:16px 16px 0 0;padding:6px 10px 12px;box-shadow:0 -6px 24px rgba(0,0,0,.18)}
+.s2b-grab{display:block;width:36px;height:4px;border-radius:2px;background:#D0D0D0;margin:0 auto 6px}
+.s2b-mn{display:flex;align-items:center;gap:4px;height:36px}
+.s2b-mn b{font-size:15px;padding:0 4px}
+.s2b-mn button{min-width:32px;height:32px;border-radius:50%;font-size:18px}
+.s2b-mn .s2b-txt{margin-left:auto;border-radius:16px;font-size:13px;color:#2F6EA8;padding:0 10px;border:1px solid #CFE0F0}
+.s2b-wk,.s2b-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.s2b-wk span{text-align:center;font-size:12px;color:#666;line-height:22px}
+.s2b-c{position:relative;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.s2b-c b{font-weight:400;font-size:14px;width:34px;height:30px;line-height:30px;border-radius:50%;text-align:center;font-variant-numeric:tabular-nums}
+.s2b-in::before{content:"";position:absolute;left:0;right:0;top:5px;height:34px;background:#DCE8F5;z-index:-1}
+.s2b-grid{position:relative;z-index:0}
+.s2b-deb::before{left:50%;border-radius:0}.s2b-fin::before{right:50%}
+.s2b-deb b,.s2b-fin b{background:#111;color:#fff;font-weight:600}
+.s2b-auj b{box-shadow:inset 0 0 0 2px #2F6EA8;font-weight:600}
+.s2b-dt{position:absolute;bottom:2px;display:flex;gap:2px}
+.s2b-dt i{width:4px;height:4px;border-radius:50%}
+.s2b-dt .s2b-dh{width:12px;height:5px;border-radius:2px}
+.s2b-ft{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid #EBEBEB}
+.s2b-sum{display:flex;flex-direction:column;font-size:15px;font-weight:600;flex:1}
+.s2b-sum small{font-size:12px;font-weight:400;color:#555}
+.s2b-go{min-height:44px;padding:0 22px;border-radius:16px;background:#111;color:#fff;font-size:15px;font-weight:600}</style>
+</head>
+<body>
+<figure class="s2b-shot" data-shot="repos"><figcaption>Repos : novembre ; le calendrier à côté du mois</figcaption>
+<div class="s2b-frame">
+ <header class="s2b-hd">
+  <span class="s2b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s2b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s2b-ic s2b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s2b-ic s2b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+ <div class="s2b-app">
+  <nav class="s2b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s2b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <section class="s2b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s2b-top"><span class="s2b-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span><button class="s2b-cal s2b-bx" aria-label="Choisir des jours" data-booster="calendrier-plage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.9"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><path d="M8 14h3M13 14h3M8 17h3" stroke-width="2.2"/></svg></button><button class="s2b-due" data-booster="pastille-retard"><i></i>en retard <b class="s2b-m">60,00</b></button></div>
+   
+   <div class="s2b-piles">
+    <div class="s2b-p"><b class="s2b-m" style="color:#2A7240">+720,00</b><span class="s2b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">468,00</b><span class="s2b-st" style="height:57px"><i class="s2b-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">186,80</b><span class="s2b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">42,00</b><span class="s2b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">28,60</b><span class="s2b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s2b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   
+   <div class="s2b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s2b-m">325,40</b></span><span><i class="s2b-hat"></i>à payer <b class="s2b-m">400,00</b></span><span>dépensé <b class="s2b-m">696,80</b></span></div>
+  </section>
+  <div data-mots="lignes" data-booster="lignes-entieres"><!-- Charges fixes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s2b-sub s2b-m">468,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar s2b-hat"></span>
+   <span class="s2b-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s2b-a s2b-m">400,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-pay">à payer · 25 nov. · dans 16 j</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-btn s2b-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#9856D2"></span>
+   <span class="s2b-q">Électricité <small>· Énergie</small></span><span class="s2b-a s2b-m">68,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s2b-sub s2b-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56D27B"></span>
+   <span class="s2b-q">Vente au marché <small>· Marché du village</small></span><span class="s2b-a s2b-m" style="color:#2A7240">+720,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ encaissé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s2b-sub s2b-m">186,80</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D2B356"></span>
+   <span class="s2b-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">186,80</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s2b-sub s2b-m">42,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56C1D2"></span>
+   <span class="s2b-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">42,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s2b-part"></div>
+  <div class="s2b-g"><span class="s2b-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s2b-sub s2b-m">28,60</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#567BD2"></span>
+   <span class="s2b-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s2b-a s2b-m">28,60</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s2b-sub s2b-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D6453D"></span>
+   <span class="s2b-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s2b-a s2b-m">60,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-late">à payer depuis le 20 déc. 2025</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">✓ Payé</button>
+  </div>
+  <p class="s2b-ex">Pièces jointes : exemple.</p>
+  <div class="s2b-foot"><button class="s2b-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  </div>
+ </div>
+ <nav class="s2b-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s2b-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s2b-fab" aria-label="Ajouter">+</button>
+ 
+</div>
+</figure>
+<figure class="s2b-shot" data-shot="feuille"><figcaption>Le calendrier : toucher le 1er, puis le 15</figcaption>
+<div class="s2b-frame">
+ <header class="s2b-hd">
+  <span class="s2b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s2b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s2b-ic s2b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s2b-ic s2b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+ <div class="s2b-app">
+  <nav class="s2b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s2b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <section class="s2b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s2b-top"><span class="s2b-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span><button class="s2b-cal s2b-bx" aria-label="Choisir des jours" data-booster="calendrier-plage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.9"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><path d="M8 14h3M13 14h3M8 17h3" stroke-width="2.2"/></svg></button><button class="s2b-due" data-booster="pastille-retard"><i></i>en retard <b class="s2b-m">60,00</b></button></div>
+   
+   <div class="s2b-piles">
+    <div class="s2b-p"><b class="s2b-m" style="color:#2A7240">+720,00</b><span class="s2b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">468,00</b><span class="s2b-st" style="height:57px"><i class="s2b-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">186,80</b><span class="s2b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">42,00</b><span class="s2b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">28,60</b><span class="s2b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s2b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   
+   <div class="s2b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s2b-m">325,40</b></span><span><i class="s2b-hat"></i>à payer <b class="s2b-m">400,00</b></span><span>dépensé <b class="s2b-m">696,80</b></span></div>
+  </section>
+  <div data-mots="lignes" data-booster="lignes-entieres"><!-- Charges fixes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s2b-sub s2b-m">468,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar s2b-hat"></span>
+   <span class="s2b-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s2b-a s2b-m">400,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-pay">à payer · 25 nov. · dans 16 j</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-btn s2b-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#9856D2"></span>
+   <span class="s2b-q">Électricité <small>· Énergie</small></span><span class="s2b-a s2b-m">68,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s2b-sub s2b-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56D27B"></span>
+   <span class="s2b-q">Vente au marché <small>· Marché du village</small></span><span class="s2b-a s2b-m" style="color:#2A7240">+720,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ encaissé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s2b-sub s2b-m">186,80</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D2B356"></span>
+   <span class="s2b-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">186,80</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s2b-sub s2b-m">42,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56C1D2"></span>
+   <span class="s2b-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">42,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s2b-part"></div>
+  <div class="s2b-g"><span class="s2b-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s2b-sub s2b-m">28,60</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#567BD2"></span>
+   <span class="s2b-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s2b-a s2b-m">28,60</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s2b-sub s2b-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D6453D"></span>
+   <span class="s2b-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s2b-a s2b-m">60,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-late">à payer depuis le 20 déc. 2025</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">✓ Payé</button>
+  </div>
+  <p class="s2b-ex">Pièces jointes : exemple.</p>
+  <div class="s2b-foot"><button class="s2b-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  </div>
+ </div>
+ <nav class="s2b-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s2b-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s2b-fab" aria-label="Ajouter">+</button>
+ <div class="s2b-scrim"></div>
+  <div class="s2b-sh" role="dialog" aria-label="Choisir des jours">
+   <i class="s2b-grab"></i>
+   <div class="s2b-mn"><button aria-label="Mois précédent">‹</button><b>novembre 2026</b><button aria-label="Mois suivant">›</button><button class="s2b-txt">Mois entier</button></div>
+   <div class="s2b-wk"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+   <div class="s2b-grid"><span></span><span></span><span></span><span></span><span></span><span></span><button class="s2b-c s2b-in s2b-deb"><b>1</b></button><button class="s2b-c s2b-in"><b>2</b></button><button class="s2b-c s2b-in"><b>3</b></button><button class="s2b-c s2b-in"><b>4</b></button><button class="s2b-c s2b-in"><b>5</b></button><button class="s2b-c s2b-in"><b>6</b></button><button class="s2b-c s2b-in"><b>7</b></button><button class="s2b-c s2b-in"><b>8</b></button><button class="s2b-c s2b-in s2b-auj"><b>9</b><i class="s2b-dt"><i style="background:#2FA855"></i><i style="background:#9856D2"></i><i style="background:#D2B356"></i><i style="background:#56C1D2"></i><i style="background:#567BD2"></i></i></button><button class="s2b-c s2b-in"><b>10</b></button><button class="s2b-c s2b-in"><b>11</b></button><button class="s2b-c s2b-in"><b>12</b></button><button class="s2b-c s2b-in"><b>13</b></button><button class="s2b-c s2b-in"><b>14</b></button><button class="s2b-c s2b-in s2b-fin"><b>15</b></button><button class="s2b-c"><b>16</b></button><button class="s2b-c"><b>17</b></button><button class="s2b-c"><b>18</b></button><button class="s2b-c"><b>19</b></button><button class="s2b-c"><b>20</b></button><button class="s2b-c"><b>21</b></button><button class="s2b-c"><b>22</b></button><button class="s2b-c"><b>23</b></button><button class="s2b-c"><b>24</b></button><button class="s2b-c"><b>25</b><i class="s2b-dt"><i class="s2b-hat s2b-dh"></i></i></button><button class="s2b-c"><b>26</b></button><button class="s2b-c"><b>27</b></button><button class="s2b-c"><b>28</b></button><button class="s2b-c"><b>29</b></button><button class="s2b-c"><b>30</b></button></div>
+   <div class="s2b-ft"><span class="s2b-sum"><span>dim. 1<sup>er</sup> → dim. 15 nov.</span><small>15 jours · le loyer du 25 reste dehors</small></span><button class="s2b-go">Voir</button></div>
+  </div>
+</div>
+</figure>
+<figure class="s2b-shot" data-shot="apres"><figcaption>Après « Voir » : la pilule devient la plage, × revient au mois</figcaption>
+<div class="s2b-frame">
+ <header class="s2b-hd">
+  <span class="s2b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s2b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s2b-ic s2b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s2b-ic s2b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+ <div class="s2b-app">
+  <nav class="s2b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s2b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+  <section class="s2b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s2b-top"><span class="s2b-rg" data-booster="pastille-plage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><path d="M8 14h3M13 14h3M8 17h3" stroke-width="2.2"/></svg><b>1 → 15 nov.</b><button aria-label="Revenir au mois">×</button></span><button class="s2b-due" data-booster="pastille-retard"><i></i>en retard <b class="s2b-m">60,00</b></button></div>
+   
+   <div class="s2b-piles">
+    <div class="s2b-p"><b class="s2b-m" style="color:#2A7240">+720,00</b><span class="s2b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">68,00</b><span class="s2b-st" style="height:8px"><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">186,80</b><span class="s2b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s2b-p"><b class="s2b-m">42,00</b><span class="s2b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s2b-sep"></span>
+    <div class="s2b-p"><b class="s2b-m">28,60</b><span class="s2b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s2b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   
+   <div class="s2b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s2b-m">325,40</b></span><span><i class="s2b-hat"></i>à payer <b class="s2b-m">0,00</b></span><span>dépensé <b class="s2b-m">296,80</b></span></div>
+  </section>
+  <div data-mots="lignes" data-booster="lignes-entieres"><!-- Charges fixes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s2b-sub s2b-m">68,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#9856D2"></span>
+   <span class="s2b-q">Électricité <small>· Énergie</small></span><span class="s2b-a s2b-m">68,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <div class="s2b-hors"><span class="s2b-hp">hors plage</span><span>Loyer de l'atelier · à payer 25 nov.</span><b class="s2b-m">400,00</b></div>
+  <!-- Ventes -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s2b-sub s2b-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56D27B"></span>
+   <span class="s2b-q">Vente au marché <small>· Marché du village</small></span><span class="s2b-a s2b-m" style="color:#2A7240">+720,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ encaissé 9 nov. · banque</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s2b-sub s2b-m">186,80</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D2B356"></span>
+   <span class="s2b-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">186,80</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s2b-sub s2b-m">42,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#56C1D2"></span>
+   <span class="s2b-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s2b-a s2b-m">42,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s2b-part"></div>
+  <div class="s2b-g"><span class="s2b-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s2b-sub s2b-m">28,60</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#567BD2"></span>
+   <span class="s2b-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s2b-a s2b-m">28,60</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-ok">✓ payé 9 nov.</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s2b-g"><span class="s2b-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s2b-sub s2b-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s2b-op">
+   <span class="s2b-bar" style="background:#D6453D"></span>
+   <span class="s2b-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s2b-a s2b-m">60,00</span>
+   <span class="s2b-meta"><span class="s2b-tg s2b-late">à payer depuis le 20 déc. 2025</span><span class="s2b-pc s2b-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s2b-mini s2b-act">✓ Payé</button>
+  </div>
+  <p class="s2b-ex">Pièces jointes : exemple.</p>
+  <div class="s2b-foot"><button class="s2b-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+
+  </div>
+ </div>
+ <nav class="s2b-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s2b-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s2b-fab" aria-label="Ajouter">+</button>
+ 
+</div>
+</figure>
+<figure class="s2b-shot s2b-ref"><figcaption>Aujourd’hui en ligne : « … » ouvre des mois, pas des jours</figcaption><img src="../../../analyse/cap/ops-plage-390-clair.png" alt="Opérations en ligne, plage par mois"></figure>
+</body>
+</html>

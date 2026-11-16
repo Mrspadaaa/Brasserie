@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m2fo-b · Fiche, froide : trois tuiles et Modifier</title>
+<style>
+@font-face{font-family:"Source Sans 3";font-weight:400;src:url(../fonts/SourceSans3-400.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;src:url(../fonts/SourceSans3-600.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;src:url(../fonts/SourceSans3-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(../fonts/IBMPlexMono-500.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;src:url(../fonts/IBMPlexMono-600.woff2) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.m2fo-b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m2fo-b-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.m2fo-b-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.m2fo-b-hd b{font-size:18px;font-weight:600;flex:1}
+.m2fo-b-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.m2fo-b-bx{background:#F5F5F5;border:1px solid #DADADA}
+.m2fo-b-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.m2fo-b-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.m2fo-b-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.m2fo-b-tabs a.m2fo-b-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.m2fo-b-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m2fo-b-top{display:flex;align-items:center;gap:6px}
+.m2fo-b-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.m2fo-b-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.m2fo-b-pill b{font-size:15px;padding:0 4px}
+.m2fo-b-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.m2fo-b-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.m2fo-b-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.m2fo-b-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.m2fo-b-p b{font-size:12px;line-height:14px}
+.m2fo-b-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m2fo-b-st i{display:block}
+.m2fo-b-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m2fo-b-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.m2fo-b-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.m2fo-b-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.m2fo-b-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.m2fo-b-key span{display:flex;align-items:center;gap:4px}
+.m2fo-b-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.m2fo-b-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.m2fo-b-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.m2fo-b-g .m2fo-b-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m2fo-b-g b{font-size:13px;letter-spacing:.02em}
+.m2fo-b-g .m2fo-b-sub{font-size:13px;color:#444}
+.m2fo-b-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.m2fo-b-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m2fo-b-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m2fo-b-q small{font-weight:400;color:#555;font-size:13px}
+.m2fo-b-a{font-size:14px;text-align:right}
+.m2fo-b-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.m2fo-b-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.m2fo-b-ok{background:#E8F5EC;color:#22663A}
+.m2fo-b-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.m2fo-b-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m2fo-b-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.m2fo-b-pc.m2fo-b-no{color:#7A5500}
+.m2fo-b-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.m2fo-b-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.m2fo-b-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.m2fo-b-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.m2fo-b-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.m2fo-b-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.m2fo-b-foot .m2fo-b-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.m2fo-b-ex{font-size:12px;color:#666;padding:0 10px}
+.m2fo-b-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.m2fo-b-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.m2fo-b-nav a.m2fo-b-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.m2fo-b-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.m2fo-b-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.m2fo-b-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.m2fo-b-flash{background:#F1FAF3}
+@media (min-width:900px){.m2fo-b-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.m2fo-b-full{grid-column:1/3}.m2fo-b-left{position:sticky;top:0}.m2fo-b-piles{height:200px}.m2fo-b-nav{justify-content:center}}
+
+
+.m2fo-b-fond{position:relative;height:250px;overflow:hidden}
+.m2fo-b-fond .m2fo-b-nav,.m2fo-b-fond .m2fo-b-fab{display:none}
+.m2fo-b-voile{position:absolute;inset:0;background:rgba(17,17,17,.46);z-index:3}
+.m2fo-b-sh{position:relative;z-index:4;margin-top:-30px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.20);padding:6px 14px 22px;min-height:624px}
+.m2fo-b-grab{width:40px;height:5px;border-radius:3px;background:#D4D4D4;margin:2px auto 10px}
+.m2fo-b-x{width:36px;height:36px;border-radius:12px;background:#F5F5F5;border:1px solid #DADADA;display:grid;place-items:center;flex:none}
+.m2fo-b-mu{color:#555}
+.m2fo-b-b1{min-height:44px;padding:0 18px;border-radius:16px;background:#111;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2fo-b-b2{min-height:44px;padding:0 14px;border-radius:14px;background:#F5F5F5;border:1px solid #DADADA;font-size:15px;color:#222;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2fo-b-lk{color:#2F6EA8;font-weight:600}
+input.m2fo-b-in{font:inherit;border:1px solid #DADADA;border-radius:12px;height:44px;padding:0 12px;font-size:16px;width:100%;background:#fff;color:#111}
+input.m2fo-b-in:focus{outline:2px solid #2F6EA8;outline-offset:-1px}
+
+
+.m2fo-b-top{display:flex;justify-content:space-between;align-items:flex-start}
+.m2fo-b-big{font-size:38px;line-height:42px;letter-spacing:-.01em}
+.m2fo-b-nm{font-size:16px;font-weight:600;margin-top:2px}
+.m2fo-b-nm small{font-weight:400;color:#555;font-size:14px}
+.m2fo-b-row{display:flex;gap:6px;margin:8px 0 14px}
+.m2fo-b-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.m2fo-b-tl{border-radius:16px;border:1px solid #E4E0D6;background:#FAF8F3;padding:9px 10px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px;text-align:left}
+.m2fo-b-tl b{font-size:15px;line-height:18px}
+.m2fo-b-tl span{font-size:12px;color:#555;line-height:15px}
+.m2fo-b-tl .m2fo-b-ico{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#fff;border:1px solid #E4E0D6}
+.m2fo-b-strip{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:4px}
+.m2fo-b-main{display:flex;gap:8px;margin-top:14px}
+.m2fo-b-main .m2fo-b-b1{flex:1}
+.m2fo-b-plus{margin-top:10px;border:1px solid #EBEBEB;border-radius:16px;overflow:hidden}
+.m2fo-b-plus div{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-top:1px solid #F0F0F0;font-size:15px}
+.m2fo-b-plus div:first-child{border-top:0}
+.m2fo-b-plus div span{flex:1}
+.m2fo-b-plus em{font-style:normal;color:#555;font-size:13px}
+.m2fo-b-cap{font-size:12px;color:#666;margin:12px 2px 4px;letter-spacing:.03em}
+
+</style>
+</head>
+<body>
+<div class="m2fo-b-fond"><header class="m2fo-b-hd">
+  <span class="m2fo-b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="m2fo-b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="m2fo-b-ic m2fo-b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="m2fo-b-ic m2fo-b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+
+<div class="m2fo-b-app">
+ <div class="m2fo-b-full">
+  <nav class="m2fo-b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="m2fo-b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+
+ <div class="m2fo-b-left">
+  <section class="m2fo-b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="m2fo-b-top">
+    <span class="m2fo-b-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="m2fo-b-due" data-booster="pastille-retard"><i></i>en retard <b class="m2fo-b-m">60,00</b></button>
+   </div>
+   <div class="m2fo-b-piles">
+    <div class="m2fo-b-p"><b class="m2fo-b-m" style="color:#2A7240">+720,00</b><span class="m2fo-b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="m2fo-b-sep"></span>
+    <div class="m2fo-b-p"><b class="m2fo-b-m">468,00</b><span class="m2fo-b-st" style="height:57px"><i class="m2fo-b-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="m2fo-b-p"><b class="m2fo-b-m">186,80</b><span class="m2fo-b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="m2fo-b-p"><b class="m2fo-b-m">42,00</b><span class="m2fo-b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="m2fo-b-sep"></span>
+    <div class="m2fo-b-p"><b class="m2fo-b-m">28,60</b><span class="m2fo-b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="m2fo-b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="m2fo-b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="m2fo-b-m">325,40</b></span><span><i class="m2fo-b-hat"></i>à payer <b class="m2fo-b-m">400,00</b></span><span>dépensé <b class="m2fo-b-m">696,80</b></span></div>
+  </section>
+ </div>
+
+ </div><div class="m2fo-b-voile"></div></div>
+<section class="m2fo-b-sh" aria-label="Fiche de l'opération">
+ <div class="m2fo-b-grab"></div>
+ <div class="m2fo-b-top"><div><span class="m2fo-b-big m2fo-b-m">186,80</span><div class="m2fo-b-nm">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></div></div><button class="m2fo-b-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+ <div class="m2fo-b-row"><span class="m2fo-b-tg m2fo-b-ok">✓ payé 9 nov. · banque</span><span class="m2fo-b-tg" style="background:#F3EEDD;color:#5F4B12">Brassage · 7 nov.</span></div>
+ <div class="m2fo-b-tiles">
+  <button class="m2fo-b-tl"><span class="m2fo-b-ico" style="color:#22663A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg></span><span><b>Facture</b><br>n° 1187<br>du 7 nov.</span></button>
+  <button class="m2fo-b-tl"><span class="m2fo-b-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="2.2"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg></span><span><b>4 lignes</b><br>malt 110,90 · houblon 75,90</span><span class="m2fo-b-strip"><i style="flex:72.5;background:#D2B356"></i><i style="flex:38.4;background:#B8913A"></i><i style="flex:48.9;background:#7FB24A"></i><i style="flex:27;background:#5E9440"></i></span></button>
+  <button class="m2fo-b-tl"><span class="m2fo-b-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A6D1E" stroke-width="2.2"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5zM12 13c-3 0-4-2-4-4 2 0 4 1 4 4zM12 13c3 0 4-2 4-4-2 0-4 1-4 4zM12 8c3 0 4-3 4-5-2 0-4 1-4 5z"/></svg></span><span><b>Pale Ale</b><br>recette · Citra, Cascade</span></button>
+ </div>
+ <div class="m2fo-b-main"><button class="m2fo-b-b1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M4 20l1-5L16 4l4 4L9 19z"/></svg>Modifier</button><button class="m2fo-b-b2" aria-expanded="true">Plus <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.4"><path d="M5 9l7 7 7-7"/></svg></button></div>
+ <div class="m2fo-b-plus">
+  <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 0 1 0 10h-2"/></svg><span>Avoir ou remboursement</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></div>
+  <div><span>Échéance et prévision</span><em>Brassin Pale Ale</em><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></div>
+  <div><span>Paiements</span><em>1 · 9 nov. · −186,80</em><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></div>
+  <div><span style="color:#8E2A23">Corriger une erreur de saisie</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></div>
+ </div>
+</section>
+</body>
+</html>

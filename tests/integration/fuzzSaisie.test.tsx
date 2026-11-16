@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { allerEtape } from '../helpers/wizard';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { QuantityStepper } from '../../src/ui/QuantityStepper';
 import { NumberInput } from '../../src/ui/NumberInput';
@@ -125,7 +125,8 @@ describe('Fuzz — l’atelier de l’eau encaisse n’importe quelle saisie', (
     expect(fautes).toEqual([]);
     // This batch exercises hundreds of sequential React updates. Keep its
     // assertions intact while allowing the full suite's parallel CPU load.
-  }, 30_000);
+    // Port w1b (15.11) : l'onglet porte plus de champs (cuves, litres, curseurs) ; 30 s ne suffisent plus seul.
+  }, 120_000);
 
   it('⚠️ aucune dose de sel ne devient négative', () => {
     const { container } = atelier();
@@ -296,19 +297,29 @@ describe('Fuzz — l’assistant de recette', () => {
   it('un palier vidé demande ses valeurs et ne présente pas un total de maintien partiel', () => {
     monterAssistant();
     allerEtape('Paliers');
+    /* Maquette r2 : les champs d'un palier n'apparaissent qu'après son toucher sur la courbe. */
+    fireEvent.click(screen.getByRole('button', { name: /^Palier 1 ·/ }));
     const temp = screen.getByRole('textbox', { name: 'Température du palier 1 — Saccharification, en degrés' });
     const duration = screen.getByRole('textbox', { name: 'Durée du palier 1 — Saccharification, en minutes' });
     saisir(temp as HTMLInputElement, '');
     saisir(duration as HTMLInputElement, '');
-    const plan = screen.getByRole('region', { name: 'Temps et conduite du brassage' });
-    expect(plan).toHaveTextContent('Température à renseigner');
-    expect(plan).toHaveTextContent('Durées de maintien à renseigner');
-    expect(plan).not.toHaveTextContent(/NaN|Infinity|undefined|10 min de maintien/);
+    /* Le tableau « Temps et conduite » est remplacé par la courbe : son résumé et son total portent la même information. */
+    const plan = screen.getByRole('region', { name: 'Courbe d\'empâtage' });
+    const courbe = within(plan).getByRole('group', { name: /^Courbe/ });
+    expect(courbe.getAttribute('aria-label')).toContain('température à renseigner');
+    expect(courbe.getAttribute('aria-label')).toContain('durée à renseigner');
+    expect(plan).not.toHaveTextContent(/NaN|Infinity|undefined/);
+    expect(courbe.getAttribute('aria-label')).not.toMatch(/NaN|Infinity|undefined/);
+    expect(within(plan).getByText('— min')).toBeInTheDocument();
     expect(screen.queryByText('Comparer sans mash-out')).not.toBeInTheDocument();
     saisir(temp as HTMLInputElement, '67');
     saisir(duration as HTMLInputElement, '60');
-    expect(plan).toHaveTextContent('70 min de maintien');
-    expect(plan).not.toHaveTextContent('Durées de maintien à renseigner');
+    expect(courbe.getAttribute('aria-label')).not.toContain('à renseigner');
+    expect(within(plan).queryByText('— min')).not.toBeInTheDocument();
+    /* Le total de la courbe compte le maintien (60 + 10 min de mash-out) et les montées estimées (« ≈ »). */
+    expect(courbe.getAttribute('aria-label')).toContain('pendant 60 minutes');
+    const total = plan.querySelector('[data-booster="duree-totale"]')!.textContent!;
+    expect(Number(/(\d+) min/.exec(total)![1])).toBeGreaterThanOrEqual(70);
   });
 
   it('⚠️ aucune étape ne fait apparaître NaN, undefined ou Infinity', () => {

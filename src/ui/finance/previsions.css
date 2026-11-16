@@ -97,3 +97,7 @@
 .prv-lim { font-size:13px; } .prv-lim ul { margin:4px 0 0; padding-left:16px; } .prv-plan { display:flex; align-items:center; gap:8px; width:100%; min-height:36px; text-align:left; } .prv-plan span { flex:1; } .prv-plan small { display:block; color:var(--prv-t2); }
 .prv-sans { margin:0; padding-left:16px; font-size:13px; } .prv h4, .prv-fiche h4 { font-size:13px; font-weight:600; margin:6px 0 2px; }
 @media (min-width:640px) { .prv { max-width:560px; margin:0 auto; width:100%; } }
+/* t3, bloquant 2 : à 390, « Sans fermenteur supplémentaire » (nom long) ne se coupe plus ; le nom passe à la ligne, le montant reste entier à droite. */
+.prv-sw button { white-space:normal; padding-top:6px; padding-bottom:6px; align-items:center; }
+.prv-sw button > span { min-width:0; overflow-wrap:anywhere; }
+.prv-sw button > b { flex:none; white-space:nowrap; }

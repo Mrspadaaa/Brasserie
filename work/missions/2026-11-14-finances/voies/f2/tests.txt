@@ -1,0 +1,11 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+···················
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  16:44:09
+   Duration  3.05s (transform 1.07s, setup 533ms, collect 1.47s, tests 539ms, environment 636ms, prepare 130ms)
+

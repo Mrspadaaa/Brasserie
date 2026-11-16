@@ -312,7 +312,6 @@ export const App: React.FC = () => {
     void import('./ui/hopIndex/precharge').then(m => { if (!demonte) annuler = m.prechargerOutilsAuRepos(c => { coucheOutils = c; }); });
     return () => { demonte = true; annuler(); };
   }, []);
-  const [hopV55Journal, setHopV55Journal] = useState<{ batchId: string; journal: import('./types').BrewDayState }>();
   // A resolved background import should not still mount a Suspense fallback.
   // Lock the surface for this route so later data updates preserve local UI state.
   const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
@@ -1056,7 +1055,6 @@ export const App: React.FC = () => {
         }}
         onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
         onOpenBatch={openBrewDay}
-        onOpenHopV55={() => route.open({ view: 'hopV55', recipeId: routedRecipe.id })}
       />
     )}
   
@@ -1069,7 +1067,6 @@ export const App: React.FC = () => {
         onClose={route.close}
         onSave={(b) => StorageService.updateBatch(b)}
         onFinish={finishBrewDay}
-        onOpenHopV55={journal => { setHopV55Journal({ batchId: routedBatch.id, journal }); route.open({ view: 'hopV55', batchId: routedBatch.id }); }}
       />
     )}
   
@@ -1232,7 +1229,6 @@ export const App: React.FC = () => {
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}
-            onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onEditRecipe={(recipe) => openWizard({ recipe })}
             onOpenBrewDay={openBrewDay}
             onSubTabChange={handleProductionSubTabChange}
@@ -1253,7 +1249,6 @@ export const App: React.FC = () => {
             stocks={stocks}
             batches={batches}
             clients={clients}
-            onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
             onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
@@ -1406,7 +1401,6 @@ export const App: React.FC = () => {
                 ? <HopV55Host key={`${currentUser.uid}:${layer.recipeId ?? layer.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
                     recipe={layer.recipeId ? recipes.find(recipe => recipe.id === layer.recipeId) : undefined}
                     batch={layer.batchId ? batches.find(batch => batch.id === layer.batchId) : undefined}
-                    journal={layer.batchId === hopV55Journal?.batchId ? hopV55Journal?.journal : undefined}
                     onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />
                 : <HopToolLayer route={layer} level={i + 1} onClose={route.close} />}
             </LazySurface>

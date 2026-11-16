@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p5b — Prévisions : les étiquettes accrochées (p4a, chaque sortie est une étiquette posée sur sa marche, la liste repliée) — passe 4, 09.11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#C8382F;--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9E9E9;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+.p5b-planche{display:flex;flex-wrap:wrap;gap:24px;padding:16px;align-items:flex-start}
+.p5b-fig{display:flex;flex-direction:column;gap:6px}
+.p5b-cap{font-size:13px;font-weight:600;color:var(--t1);max-width:390px}
+.p5b-f{width:390px;height:844px;position:relative;overflow:hidden;background:var(--page);display:flex;flex-direction:column}
+@media (max-width:500px){body{background:var(--page)}.p5b-planche{display:block;padding:0}.p5b-fig{gap:0}.p5b-cap{order:2;padding:6px 10px 14px;background:#E9E9E9}}
+.p5b-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.p5b-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.p5b-app{height:44px;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.p5b-logo{width:26px;height:26px;border-radius:10px;background:var(--t0);display:flex;align-items:center;justify-content:center}
+.p5b-logo svg{width:14px;height:14px;stroke:#fff}
+.p5b-app b{flex:1;font-size:16px;color:var(--t0)}
+.p5b-ic{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.p5b-rail{display:flex;height:34px;border-bottom:1px solid var(--bord)}
+.p5b-rail span{flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--t2);position:relative}
+.p5b-rail .p5b-on{color:var(--fin);font-weight:600}
+.p5b-rail .p5b-on::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:var(--fin)}
+.p5b-nav{position:absolute;left:0;right:0;bottom:0;height:56px;border-top:1px solid var(--bord);background:var(--page);display:flex;padding-right:72px}
+.p5b-nav span{flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--t2)}
+.p5b-nav .p5b-on{color:var(--fin);font-weight:600;background:var(--fint)}
+.p5b-fab{position:absolute;right:10px;bottom:10px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5)}
+.p5b-fab svg{width:24px;height:24px}
+.p5b-c{flex:1;padding:6px 10px 60px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.p5b-tete{display:flex;align-items:center;gap:8px;height:30px}
+.p5b-tete h1{font-size:18px;font-weight:600;color:var(--t0);flex:1}
+.p5b-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px}
+.p5b-seg span{padding:0 9px;display:flex;align-items:center;font-size:12px;color:var(--t2);border-right:1px solid var(--bordm);font-family:var(--mono)}
+.p5b-seg span:last-child{border-right:0}
+.p5b-seg .p5b-on{background:var(--t0);color:#fff;font-weight:600}
+/* la bascule avec / sans, en une barre */
+.p5b-sw{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:44px}
+.p5b-sw button{border:0;background:#fff;font:inherit;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 8px;color:var(--t2);font-size:12px;text-align:left;cursor:pointer;white-space:nowrap}
+.p5b-sw button+button{border-left:1px solid var(--bordm)}
+.p5b-sw button b{font-size:17px;font-weight:600;color:var(--t0);white-space:nowrap}
+.p5b-sw button[aria-pressed="true"]{background:var(--frigot);color:var(--frigo);font-weight:600;box-shadow:inset 0 0 0 2px var(--frigo)}
+.p5b-sw button[aria-pressed="true"] b{color:var(--alertet)}
+.p5b-sw button[aria-pressed="true"].p5b-bleu{background:var(--fint);color:var(--fin);box-shadow:inset 0 0 0 2px var(--fin)}
+.p5b-sw button[aria-pressed="true"].p5b-bleu b{color:var(--t0)}
+.p5b-sw small{display:block;font-weight:400;font-size:12px}
+/* l'escalier aux étiquettes */
+.p5b-g{position:relative;height:500px;border-radius:16px;background:var(--panel);overflow:hidden}
+.p5b-g svg{position:absolute;inset:0;width:100%;height:100%}
+.p5b-step{fill:none;stroke:var(--frigo);stroke-width:2.5;stroke-linejoin:round}
+.p5b-stepn{fill:none;stroke:var(--alerte);stroke-width:2.5;stroke-linejoin:round}
+.p5b-aire{fill:var(--frigo);opacity:.14}
+.p5b-airen{fill:var(--alerte);opacity:.22}
+.p5b-ghost{fill:none;stroke:var(--fin);stroke-width:1.8;stroke-dasharray:3 4;stroke-linejoin:round}
+.p5b-plein{fill:none;stroke:var(--fin);stroke-width:2.5;stroke-linejoin:round}
+.p5b-aireb{fill:var(--finc);opacity:.3}
+.p5b-grid{stroke:var(--bord);stroke-width:1}
+.p5b-zero{stroke:var(--t1);stroke-width:1.2}
+.p5b-ax{font-family:var(--mono);font-size:12px;fill:var(--t2)}
+.p5b-ax.p5b-z{fill:var(--t0);font-weight:600}
+.p5b-mois{font-family:var(--sans);font-size:12px;fill:var(--t2);font-weight:600}
+.p5b-sep{stroke:var(--bordm);stroke-dasharray:2 3}
+.p5b-ici{stroke:var(--t0);stroke-width:1.5}
+.p5b-pt{fill:var(--alerte)}.p5b-ptb{fill:var(--fin)}
+.p5b-chip{fill:#fff;stroke:var(--t1);stroke-width:1.2}
+.p5b-chip.p5b-cf{stroke:var(--frigo);stroke-width:2}
+.p5b-chip.p5b-cb{stroke:var(--brassin);stroke-width:1.5}
+.p5b-chip.p5b-cv{stroke:var(--fin);stroke-dasharray:3 3}
+.p5b-fil{stroke:var(--t1);stroke-width:1.2}
+.p5b-fil.p5b-cf{stroke:var(--frigo);stroke-width:2}.p5b-fil.p5b-cb{stroke:var(--brassin)}.p5b-fil.p5b-cv{stroke:var(--fin)}
+.p5b-tx{font-family:var(--sans);font-size:13px;font-weight:600;fill:var(--t0)}
+.p5b-tx.p5b-cf{fill:var(--frigo);font-size:15px;font-weight:700}
+.p5b-tx.p5b-cb{fill:var(--brassin)}
+.p5b-tx.p5b-cv{fill:var(--fin)}
+.p5b-sub{font-family:var(--sans);font-size:12px;fill:var(--t2)}
+.p5b-mt{font-family:var(--mono);font-weight:600}
+.p5b-et{font-family:var(--sans);font-size:13px;fill:var(--t1);paint-order:stroke;stroke:var(--panel);stroke-width:3.5px;stroke-linejoin:round}
+.p5b-et.p5b-rt{fill:var(--alertet);font-weight:700}
+.p5b-et.p5b-bl{fill:var(--fin);font-weight:600}
+.p5b-solde{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--t1);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.p5b-fin{font-family:var(--mono);font-size:16px;font-weight:700;fill:var(--alertet);paint-order:stroke;stroke:var(--panel);stroke-width:3.5px}
+.p5b-fin.p5b-bl{fill:var(--fin)}
+/* dessous : les notions, les plis, l'action */
+.p5b-leg{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--t2);height:20px}
+.p5b-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.p5b-leg .p5b-dp{background:var(--alerte)}
+.p5b-leg .p5b-dv{background:#fff;border:2px solid var(--fin)}
+.p5b-leg .p5b-df{background:var(--frigo)}.p5b-leg .p5b-db{background:var(--brassin)}
+.p5b-leg b{color:var(--t0);font-weight:600}
+.p5b-pied{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.p5b-pli{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--t1);height:28px}
+.p5b-pli+.p5b-pli{margin-left:-2px}
+.p5b-prim{height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;border:0;font-family:inherit}
+.p5b-prim.p5b-rouge{background:var(--alertet)}
+/* annexe : la fiche d'une étiquette touchée */
+.p5b-voile{position:absolute;inset:0;background:rgba(17,17,17,.28)}
+.p5b-fiche{position:absolute;left:10px;right:10px;bottom:66px;background:#fff;border-radius:16px;padding:12px;box-shadow:0 16px 40px -16px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:8px}
+.p5b-fiche h2{font-size:16px;font-weight:600;color:var(--frigo);display:flex;align-items:center;gap:8px}
+.p5b-fiche h2 small{margin-left:auto;font-weight:400;color:var(--t2);font-size:12px}
+.p5b-fiche .p5b-gr{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.p5b-fiche .p5b-k{background:var(--panel);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:1px;font-size:12px;color:var(--t2)}
+.p5b-fiche .p5b-k b{font-size:16px;font-weight:600;color:var(--t0)}
+.p5b-fiche .p5b-k b.p5b-rt{color:var(--alertet)}
+.p5b-fiche .p5b-k.p5b-l{grid-column:1/-1;background:var(--frigot);color:var(--frigo)}
+.p5b-fiche .p5b-row{display:flex;align-items:center;gap:8px}
+.p5b-fiche .p5b-sel{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;margin-left:auto}
+.p5b-fiche .p5b-sel span{padding:0 9px;display:flex;align-items:center;font-size:12px;color:var(--t2);border-right:1px solid var(--bordm);font-family:var(--mono)}
+.p5b-fiche .p5b-sel span:last-child{border-right:0}
+.p5b-fiche .p5b-sel .p5b-on{background:var(--frigo);color:#fff;font-weight:600}
+.p5b-fiche .p5b-acts{display:flex;gap:6px;justify-content:flex-end}
+.p5b-fiche .p5b-sec{height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;font-family:inherit;color:var(--t1)}
+</style></head>
+<body>
+<div class="p5b-planche">
+
+<!-- premier écran : chaque sortie est une étiquette accrochée à sa marche -->
+<figure class="p5b-fig"><div class="p5b-f" id="p5b-e1">
+ <header class="p5b-app"><span class="p5b-logo"><svg viewBox="0 0 24 24" class="p5b-i"><path d="M6 4h9v16H6zM15 9h3v7h-3"/></svg></span><b>L'Affinée</b>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 7 7 0 0 0 10 10z"/></svg></span>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></span>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span></header>
+ <nav class="p5b-rail"><span>Synthèse</span><span>Opérations</span><span class="p5b-on">Prévisions</span><span>Annuel</span></nav>
+ <div class="p5b-c">
+  <div class="p5b-tete"><h1>Fin janvier</h1>
+   <span class="p5b-seg" role="group" data-booster="horizon"><span>30j</span><span class="p5b-on">90j</span><span>12 mois</span></span></div>
+
+  <div class="p5b-sw" role="group" data-booster="avant-apres">
+   <button aria-pressed="true"><span>Avec frigo<small>sous zéro 25.01</small></span><b class="p5b-m">− 892,66</b></button>
+   <button class="p5b-bleu" aria-pressed="false"><span>Sans frigo<small>CHF, estimé</small></span><b class="p5b-m" style="color:var(--vert)">2 107,34</b></button>
+  </div>
+
+  <div class="p5b-g" data-booster="etiquettes">
+   <svg viewBox="0 0 370 500" preserveAspectRatio="none">
+    <!-- y = 16 + (4 400 − v) × 0,08182 ; zéro à 376 ; x = 48 + jours × 3,783 (9 nov. → 31 janv.) -->
+    <line class="p5b-grid" x1="48" x2="362" y1="48.7" y2="48.7"/><text class="p5b-ax" x="44" y="51.5" text-anchor="end">4 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="130.5" y2="130.5"/><text class="p5b-ax" x="44" y="133.5" text-anchor="end">3 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="212.4" y2="212.4"/><text class="p5b-ax" x="44" y="215" text-anchor="end">2 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="294.2" y2="294.2"/><text class="p5b-ax" x="44" y="297" text-anchor="end">1 000</text>
+    <line class="p5b-zero" x1="48" x2="362" y1="376" y2="376"/><text class="p5b-ax p5b-z" x="44" y="379" text-anchor="end">0</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="457.8" y2="457.8"/><text class="p5b-ax" x="44" y="460.5" text-anchor="end">−1 000</text>
+    <line class="p5b-sep" x1="131.2" x2="131.2" y1="16" y2="470"/><line class="p5b-sep" x1="248.5" x2="248.5" y1="16" y2="470"/>
+    <text class="p5b-mois" x="90" y="492" text-anchor="middle">nov.</text><text class="p5b-mois" x="190" y="492" text-anchor="middle">déc.</text><text class="p5b-mois" x="290" y="492" text-anchor="middle">janv.</text>
+    <!-- sans frigo, pointillé -->
+    <path class="p5b-ghost" d="M48 33.9 H55.6 V38.8 H89.6 V43.5 H108.5 V76.2 H195.5 V76.8 H222 V109.5 H339.3 V142.2 H350.6 V203.6 H362"/>
+    <text class="p5b-et p5b-bl" x="362" y="221" text-anchor="end">sans frigo <tspan class="p5b-mt">2 107,34</tspan></text>
+    <!-- avec le frigo -->
+    <path class="p5b-aire" d="M48 33.9 H55.6 V38.8 H70.7 V284.2 H89.6 V288.9 H108.5 V321.7 H195.5 V322.2 H222 V354.9 H339.3 V376 H48 Z"/>
+    <path class="p5b-airen" d="M339.3 376 V387.7 H350.6 V449 H362 V376 Z"/>
+    <path class="p5b-step" d="M48 33.9 H55.6 V38.8 H70.7 V284.2 H89.6 V288.9 H108.5 V321.7 H195.5 V322.2 H222 V354.9 H339.3 V376"/>
+    <path class="p5b-stepn" d="M339.3 376 V387.7 H350.6 V449 H362"/>
+    <line class="p5b-ici" x1="48" x2="48" y1="16" y2="376"/>
+    <text class="p5b-et" x="52" y="13">aujourd'hui <tspan class="p5b-mt">4 181,60</tspan></text>
+    <!-- 1 · atelier -->
+    <line class="p5b-fil" x1="55.6" y1="37.5" x2="62" y2="56"/>
+    <rect class="p5b-chip" x="62" y="46" width="150" height="20" rx="10"/><text class="p5b-tx" x="72" y="60">atelier <tspan class="p5b-mt">−60</tspan></text>
+    <!-- 2 · frigo -->
+    <line class="p5b-fil p5b-cf" x1="70.7" y1="150" x2="82" y2="150"/>
+    <rect class="p5b-chip p5b-cf" x="82" y="128" width="256" height="42" rx="12"/>
+    <text class="p5b-tx p5b-cf" x="92" y="147">frigo <tspan class="p5b-mt">−3 000</tspan>, 15.11, exemple</text>
+    <text class="p5b-sub" x="92" y="164">usure <tspan class="p5b-mt">600</tspan>, litre <tspan class="p5b-mt">8,01</tspan></text>
+    <!-- 3 · brassin -->
+    <line class="p5b-fil p5b-cb" x1="89.6" y1="286" x2="100" y2="268"/>
+    <rect class="p5b-chip p5b-cb" x="100" y="242" width="246" height="38" rx="12"/>
+    <text class="p5b-tx p5b-cb" x="110" y="259">brassin Pale Ale <tspan class="p5b-mt">−57,42</tspan>, 20.11</text>
+    <text class="p5b-sub" x="110" y="275">recette, stock, facture</text>
+    <!-- 4 · loyer 25.11 -->
+    <text class="p5b-solde" x="116" y="317">664,18</text>
+    <line class="p5b-fil" x1="108.5" y1="320" x2="112" y2="341"/>
+    <rect class="p5b-chip" x="112" y="332" width="120" height="18" rx="9"/><text class="p5b-tx" x="120" y="345">loyer <tspan class="p5b-mt">−400</tspan>, 25.11</text>
+    <!-- 5 · impôt -->
+    <line class="p5b-fil p5b-cb" x1="195.5" y1="312" x2="195.5" y2="320"/>
+    <rect class="p5b-chip p5b-cb" x="186" y="294" width="170" height="18" rx="9"/><text class="p5b-tx p5b-cb" x="194" y="307">impôt <tspan class="p5b-mt">−6,84</tspan>, ~18.12</text>
+    <!-- 6 · loyer 25.12 -->
+    <line class="p5b-fil" x1="222" y1="339" x2="236" y2="339"/>
+    <rect class="p5b-chip" x="236" y="330" width="120" height="18" rx="9"/><text class="p5b-tx" x="244" y="343">loyer <tspan class="p5b-mt">−400</tspan>, 25.12</text>
+    <text class="p5b-solde" x="330" y="372" text-anchor="end">257,34</text>
+    <!-- 7 · loyer 25.01, sous zéro -->
+    <circle class="p5b-pt" cx="339.3" cy="376" r="3.5"/>
+    <text class="p5b-et p5b-rt" x="334" y="398" text-anchor="end">loyer <tspan class="p5b-mt">−400</tspan>, 25.01</text>
+    <!-- 8 · fermenteur -->
+    <line class="p5b-fil p5b-cv" x1="344" y1="427" x2="350.6" y2="427"/>
+    <rect class="p5b-chip p5b-cv" x="178" y="418" width="166" height="18" rx="9"/><text class="p5b-tx p5b-cv" x="186" y="431">fermenteur <tspan class="p5b-mt">−750</tspan></text>
+    <circle class="p5b-pt" cx="362" cy="449" r="4"/>
+    <text class="p5b-fin" x="362" y="471" text-anchor="end">− 892,66</text>
+   </svg>
+  </div>
+
+  <div class="p5b-leg" data-booster="notions"><span><i class="p5b-dp"></i>À payer <b class="p5b-m">460,00</b></span><span><i class="p5b-dv"></i>Prévu <b class="p5b-m">~ 1 550,00</b></span></div>
+
+  <div class="p5b-pied"><span class="p5b-pli">Entrées : aucune <svg class="p5b-i" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m9 6 6 6-6 6"/></svg></span>
+   <button class="p5b-prim p5b-rouge"><svg class="p5b-i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Vente</button></div>
+ </div>
+ <nav class="p5b-nav"><span>Bord</span><span class="p5b-on">Finances</span><span>Brassins</span><span>Stocks</span><span>Clients</span></nav>
+ <span class="p5b-fab"><svg class="p5b-i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+</div><figcaption class="p5b-cap">p5b · les étiquettes accrochées : l'escalier prend l'écran, chaque sortie est une étiquette tenue par un fil à sa marche (nom, montant, date ; le frigo et le brassin disent leur source dessus), le solde après posé sur la marche ; la liste est repliée (« 8 sorties »).</figcaption></figure>
+
+<!-- annexe : l'étiquette du frigo touchée, sa fiche -->
+<figure class="p5b-fig"><div class="p5b-f">
+ <header class="p5b-app"><span class="p5b-logo"><svg viewBox="0 0 24 24" class="p5b-i"><path d="M6 4h9v16H6zM15 9h3v7h-3"/></svg></span><b>L'Affinée</b>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 7 7 0 0 0 10 10z"/></svg></span>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></span>
+  <span class="p5b-ic"><svg class="p5b-i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span></header>
+ <nav class="p5b-rail"><span>Synthèse</span><span>Opérations</span><span class="p5b-on">Prévisions</span><span>Annuel</span></nav>
+ <div class="p5b-c">
+  <div class="p5b-tete"><h1>Fin janvier</h1>
+   <span class="p5b-seg" role="group"><span>30j</span><span class="p5b-on">90j</span><span>12 mois</span></span></div>
+  <div class="p5b-sw" role="group">
+   <button aria-pressed="true"><span>Avec frigo<small>sous zéro 25.01</small></span><b class="p5b-m">− 892,66</b></button>
+   <button class="p5b-bleu" aria-pressed="false"><span>Sans frigo<small>CHF, estimé</small></span><b class="p5b-m" style="color:var(--vert)">2 107,34</b></button>
+  </div>
+  <div class="p5b-g">
+   <svg viewBox="0 0 370 500" preserveAspectRatio="none">
+    <line class="p5b-grid" x1="48" x2="362" y1="48.7" y2="48.7"/><text class="p5b-ax" x="44" y="51.5" text-anchor="end">4 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="130.5" y2="130.5"/><text class="p5b-ax" x="44" y="133.5" text-anchor="end">3 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="212.4" y2="212.4"/><text class="p5b-ax" x="44" y="215" text-anchor="end">2 000</text>
+    <line class="p5b-grid" x1="48" x2="362" y1="294.2" y2="294.2"/><text class="p5b-ax" x="44" y="297" text-anchor="end">1 000</text>
+    <line class="p5b-zero" x1="48" x2="362" y1="376" y2="376"/><text class="p5b-ax p5b-z" x="44" y="379" text-anchor="end">0</text>
+    <line class="p5b-sep" x1="131.2" x2="131.2" y1="16" y2="470"/><line class="p5b-sep" x1="248.5" x2="248.5" y1="16" y2="470"/>
+    <path class="p5b-ghost" d="M48 33.9 H55.6 V38.8 H89.6 V43.5 H108.5 V76.2 H195.5 V76.8 H222 V109.5 H339.3 V142.2 H350.6 V203.6 H362"/>
+    <path class="p5b-aire" d="M48 33.9 H55.6 V38.8 H70.7 V284.2 H89.6 V288.9 H108.5 V321.7 H195.5 V322.2 H222 V354.9 H339.3 V376 H48 Z"/>
+    <path class="p5b-airen" d="M339.3 376 V387.7 H350.6 V449 H362 V376 Z"/>
+    <path class="p5b-step" d="M48 33.9 H55.6 V38.8 H70.7 V284.2 H89.6 V288.9 H108.5 V321.7 H195.5 V322.2 H222 V354.9 H339.3 V376"/>
+    <path class="p5b-stepn" d="M339.3 376 V387.7 H350.6 V449 H362"/>
+    <line class="p5b-ici" x1="48" x2="48" y1="16" y2="376"/>
+    <text class="p5b-et" x="52" y="13">aujourd'hui <tspan class="p5b-mt">4 181,60</tspan></text>
+    <line class="p5b-fil" x1="55.6" y1="37.5" x2="62" y2="56"/>
+    <rect class="p5b-chip" x="62" y="46" width="150" height="20" rx="10"/><text class="p5b-tx" x="72" y="60">atelier <tspan class="p5b-mt">−60</tspan></text>
+    <line class="p5b-fil p5b-cf" x1="70.7" y1="150" x2="82" y2="150"/>
+    <rect class="p5b-chip p5b-cf" x="82" y="128" width="256" height="42" rx="12" style="fill:var(--frigot);stroke-width:3"/>
+    <text class="p5b-tx p5b-cf" x="92" y="147">frigo <tspan class="p5b-mt">−3 000</tspan>, 15.11, exemple</text>
+    <text class="p5b-sub" x="92" y="164">usure <tspan class="p5b-mt">600</tspan>, litre <tspan class="p5b-mt">8,01</tspan></text>
+   </svg>
+  </div>
+  <div class="p5b-leg"><span><i class="p5b-dp"></i>À payer <b class="p5b-m">460,00</b></span><span><i class="p5b-dv"></i>Prévu <b class="p5b-m">~ 1 550,00</b></span></div>
+  <div class="p5b-pied"><span class="p5b-pli"><b class="p5b-m">8</b>&nbsp;sorties</span><button class="p5b-prim p5b-rouge">Vente</button></div>
+ </div>
+ <div class="p5b-voile"></div>
+ <div class="p5b-fiche" data-booster="fiche-projet">
+  <h2><svg class="p5b-i" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 6v1M9 13v2"/></svg>Frigo, 3 000,00 CHF<small>exemple · 15.11</small></h2>
+  <div class="p5b-row"><span style="font-size:12px;color:var(--t2)">Usure sur</span><span class="p5b-sel" role="group" data-booster="duree"><span>3 ans</span><span class="p5b-on">5 ans</span><span>8 ans</span></span></div>
+  <div class="p5b-gr">
+   <div class="p5b-k">Usure par an<b class="p5b-m">600,00</b></div>
+   <div class="p5b-k">Mon litre<b class="p5b-m">7,51 → 8,01</b></div>
+   <div class="p5b-k">Fin janvier<b class="p5b-m p5b-rt">− 892,66</b></div>
+   <div class="p5b-k">Plus bas<b class="p5b-m p5b-rt">− 892,66 <span style="font-size:12px;font-weight:400">le 28.01</span></b></div>
+   <div class="p5b-k p5b-l">Pour rester à zéro<b class="p5b-m">179 <span style="font-size:12px;font-weight:400">bouteilles 33 cl à 5,00 · exemple</span></b></div>
+  </div>
+  <div class="p5b-acts"><button class="p5b-sec">Retirer</button><button class="p5b-sec">Déplacer</button><button class="p5b-prim">Ouvrir le projet</button></div>
+ </div>
+ <nav class="p5b-nav"><span>Bord</span><span class="p5b-on">Finances</span><span>Brassins</span><span>Stocks</span><span>Clients</span></nav>
+</div><figcaption class="p5b-cap">p5b · l'étiquette du frigo touchée : sa fiche monte du bas (usure, litre, plus bas, les 179 bouteilles pour rester à zéro), la durée d'usure réglable ; l'escalier reste visible derrière.</figcaption></figure>
+
+</div>
+</body></html>

@@ -1,0 +1,27 @@
+/* Doublons = m1do-a (la paire dans la liste) et l'avis du « ✓ Payé » (FN-2). Classes `ops-` (L26), jetons du thème : clair comme cave. */
+.ops-doublons { display:flex; flex-direction:column; gap:8px; margin:8px 0 0; }
+.ops-dbl-avis { display:grid; grid-template-columns:28px minmax(0,1fr); gap:8px; align-items:start; border-radius:16px; background:var(--ops-fond); padding:8px 10px; }
+.ops-dbl-avis b { font-size:15px; line-height:20px; font-weight:600; }
+.ops-dbl-avis p { margin:0; font-size:13px; line-height:18px; color:var(--ops-t2); }
+.ops-dbl-x { display:grid; place-items:center; width:28px; height:28px; border-radius:10px; background:rgb(var(--c-402320)); box-shadow:inset 0 0 0 1px rgb(var(--alert-strong-texte)); color:rgb(var(--alert-strong-texte)); font-size:13px; font-weight:700; }
+.ops-paire { border:1px solid var(--ops-bord); border-radius:16px; overflow:hidden; background:rgb(var(--cave-950)); }
+.ops-pq { display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:13px; line-height:18px; border-bottom:1px solid var(--ops-bord); }
+.ops-pq > b { font-weight:600; }
+.ops-pq .ops-sq { display:grid; place-items:center; flex:none; width:22px; height:22px; border-radius:10px; }
+.ops-pd { margin-left:auto; color:var(--ops-t2); }
+.ops-pd b { font-size:13px; color:var(--ops-t1); }
+.ops-paire .ops-row { padding-left:10px; padding-right:10px; }
+.ops-paire .ops-act { white-space:nowrap; }
+.ops-pf { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 10px; background:var(--ops-fond); }
+.ops-pf > span { font-size:12px; line-height:16px; color:var(--ops-t2); }
+.ops-sortir { min-height:32px; padding:0 12px; border-radius:12px; border:1px solid rgb(var(--cave-600)); background:rgb(var(--cave-950)); color:var(--ops-t1); font-size:13px; font-weight:600; text-align:center; }
+
+/* FN-2 : sous la ligne qu'on vient de payer d'un toucher. Les liens font 44 px de haut ; l'avis s'efface seul après dix secondes. */
+.ops-avis { grid-column:1 / -1; grid-row:3; display:flex; align-items:center; gap:4px 12px; flex-wrap:wrap; margin:2px 0 -3px; padding:0 10px 0 12px; border-radius:10px; background:rgb(var(--c-20311d)); font-size:13px; line-height:18px; color:var(--ops-t1); }
+.ops-avis > span { margin-right:auto; }
+.ops-avis-b { min-height:44px; padding:0 4px; font-size:13px; font-weight:600; color:var(--finance-accent,rgb(var(--area-finances-texte))); text-align:center; }
+.ops-avis-b:hover { text-decoration:underline; text-underline-offset:3px; }
+
+/* m1do-a : le statut s'affiche ENTIER (« ✓ payé 16 oct. · banque »). À 390 le bouton « Annuler celle-ci » prend la droite : « sans pièce » passe dessous plutôt que de couper le statut (t1, problème 9). */
+.ops-paire .ops-meta { flex-wrap:wrap; }
+.ops-paire .ops-meta .ops-tg { flex:0 0 auto; max-width:none; }

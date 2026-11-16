@@ -1,33 +1,35 @@
-OK — quatre mini maquettes v6a + filtre du … au (puces, phrase, loupe, règle), repos et après
+ECHEC — contexte plein : les noyaux purs (piles, rangées, contexte du compagnon) sont écrits et verts, l'écran (m4bb-a, m4ia-c) n'est pas porté ; REPRISE ci-dessous.
 
-## Variantes (id · idée · images ouvertes · défauts vus)
-- s3a · puces « 7 j · 30 j · ce mois · trimestre · du … au », chacune avec un trait à la longueur de sa durée ; « du … au » ouvre deux dates natives ; la pilule devient « ‹ 1er – 15 nov. › » · oui (repos, après) · +36 px au repos ; 7 j et 30 j débordent sur octobre (pas de données : inconnu)
-- s3b · phrase « du 1er nov. au 30 nov. » aux dates touchables ; calendrier à plage (react-day-picker, mode range) avec points d'opérations ; « ↺ novembre » · oui (repos, ouvert, après) · « novembre » dit deux fois au repos ; le calendrier couvre les piles pendant le choix
-- s3c · la loupe lit « 3-17 nov. » comme une période (suggestion avec frise), posée en pastille « 3 → 17 nov. × » ; puce « du … au » à côté du mois · oui (repos, ouvert, après) · rangée du mois pleine à 354 px (1re version : retour à la ligne, corrigé) ; analyse des dates tapées = bibliothèque à choisir
-- s3d (libre) · la règle du mois sous les piles : 30 jours, flux du 9 et loyer hachuré du 25 visibles, deux poignées qui pincent la plage ; bulle « 1er → 15 nov. », jours hors plage hachurés · oui (repos, après) · +60 px au repos ; étiquettes sous les poignées (1re version masquée, corrigé)
+(Ce fichier remplace l'ancien RESULTAT.md de la voie s3 d'une mission précédente, « quatre mini maquettes v6a + filtre » ; ses dossiers s3a à s3d, `_outils`, `fonts` sont intacts.)
 
-Après le geste (toutes) : loyer (25 nov.) sorti ; Fixes 68,00 ; payé 325,40 · à payer 0,00 · dépensé 296,80 ; retard 2025 (60,00) gardé à part comme v6a ; « ✓ Payé » 24 px inchangé.
+## Fait (prouvé)
+- `src/ui/finance/budget/piles.ts` : `bandeDuBudget` (trois piles déjà payé / à payer / part de l'année en centimes, = `dejaPaye`, `aPayer`, `annee` du snapshot de `estimateBrewBudget` ; litre « complet », « au moins » ou « — » ; « 202,77 ÷ 27 L ») et `groupesDuBudget` (Malt, Houblon levure, Autres, Frais, Part de l'année ; état de chaque rangée : stock, mixte, à acheter, ? prix, à payer, compris, année ; l'inconnu = null, jamais 0 ; houblon/levure absents = « hors recette »).
+- `src/ui/finance/compagnon/contexte.ts` : `contexteCompagnon(réglages, données)` = `buildFinanceAssistantContext` du domaine bâti sur les seules pastilles cochées (mois / tout l'historique, opérations, à payer, sans pièce, profil, archives, projets de matériel) + la consigne écrite (`consigne`) qui nomme ce qui est exclu.
+- `tests/integration/budgetPiles.test.tsx` (4 tests) et `tests/integration/compagnonContexte.test.tsx` (6 tests) : 10 verts. Pastille décochée absente du contexte : prouvé (loyer, pièces sans justificatif, octobre, projets).
+- G1 `VITEST OK` (tests.txt) ; G2 `TSC OK`. G3 (`controle-v6a.mjs 3000`) non rejoué : aucun écran touché.
+- Ligne « Tests » : `npx vitest run tests/integration/budgetPiles.test.tsx tests/integration/compagnonContexte.test.tsx --reporter=dot --no-color > work/missions/2026-11-14-finances/voies/s3/tests.txt` (10 passed).
+- Baseline avant tout changement d'écran : les 22 fichiers de test qui touchent la feuille du budget et le compagnon passent (241 tests).
 
 ## Fichiers écrits
-- `work/missions/2026-11-14-finances/voies/s3/{s3a,s3b,s3c,s3d}/` : etat.html, `<id>-repos.png`, `<id>-apres.png` (+ `s3b-ouvert.png`, `s3c-ouvert.png`), NOTE.md
-- `work/missions/2026-11-14-finances/voies/s3/fonts/` (copie locale des polices de s1, aucun appel réseau)
-- `work/missions/2026-11-14-finances/voies/s3/_outils/fabriquer.mjs` (base v6a découpée par indices, préfixe par split/join, captures 390 × 844 à l'échelle 2)
-- `work/missions/2026-11-14-finances/voies/s3/tests.txt`
+`src/ui/finance/budget/piles.ts`, `src/ui/finance/compagnon/contexte.ts`, `tests/integration/budgetPiles.test.tsx`, `tests/integration/compagnonContexte.test.tsx`, ce fichier, `tests.txt`.
+Aucun écran modifié, aucune capture (`cap/` vide) : la voie n'est pas rendue.
 
-## Critères
-- G1 : `controle-serie.mjs … s3a,s3b,s3c,s3d` → SERIE OK (aussi dans tests.txt)
-- G2 : s3a → PAGE OK (2 images chargées, 390 px, sans erreur)
-- G3 : s3b → PAGE OK (3 images chargées, 390 px, sans erreur)
-- G4 : s3c → PAGE OK (3 images chargées, 390 px, sans erreur)
-- G5 : s3d → PAGE OK (2 images chargées, 390 px, sans erreur)
-- Tests : maquettes statiques, aucun Vitest ; la ligne « Tests » = tests.txt (SERIE OK).
+## REPRISE (ce qu'il reste, dans l'ordre ; tout est tracé dans le code lu)
+1. **Feuille m4bb-a** dans `BrewBudgetSheet.tsx` (vue `flux`, lignes ~238-254, `vue.id === 'flux'`) : remplacer `<CoutBrassinFlux>` par un composant `budget/BudgetBande.tsx` (bande « Quand tu paies » : 3 piles via `bandeDuBudget`, `=`, boîte du litre) + `budget/BudgetRangees.tsx` (groupes via `groupesDuBudget`, rangée = liseré, nom · quantité, pastille d'état, montant ; hachure = à payer, pointillé gris = inconnu « ? », « ≈ » si `estime`). Garder dans la vue : `renderPlanReconciliation`, avertissement « déjà produit », erreur, tâches `manques` (ligne-tâche pointillée, région « Données à compléter »), `BrewerChat` d'« Expliquer ».
+   - Toucher une rangée = `ouvrir(noeud)` (les vues Ingrédients / Frais / Annuel existantes portent le détail : lot minimum, TVA, origine du prix, « facturé avec les charges »).
+   - Nouvelle vue `{ id: 'litre' }` = le flux c3a inchangé (`CoutBrassinFlux`), ouverte par la boîte du litre (« détail › », nom accessible « Détail du litre »), avec « Retour au budget » ; même pied que `flux`. Mémoriser l'origine pour qu'un nœud ouvert depuis c3a revienne à c3a.
+   - Pastille de volumes « 30 L brassés · 27 L nets › » : garder l'aria-label `Volumes : 27 L nets` / `Volumes : litres nets à renseigner` (16 occurrences dans les tests) ; Sheet n'accepte qu'une chaîne en `subtitle` : « Coût du brassin · brassage 20 nov. » en sous-titre, la pastille en tête de corps (écart à noter).
+   - Styles : racine `<div className="ops bbx">` avec `import '../operations.css'` (jetons clair/cave, `ops-sq`, `ops-tg-*`, `ops-hach`) + `budget/budget.css` en classes `bbx-`. Couleurs des groupes : Malt `#D2B356`, Houblon `#8DBF5A`, Frais teal, Année `#9856D2` / usure `#567BD2`.
+   - Pied : maquette « Prévoir 64,26 » sans « CHF » (le test existant attend « Prévoir 64,26 CHF » : à trancher).
+2. **Choix du brassin** (`FinancesTab.tsx`, sheet « Quel brassin veux-tu estimer ? », ligne ~137) : composant `budget/ChoixBrassin.tsx` — sections « Prévus » (lots planifiés : nom, « B-… · brassage 20 nov. », « 30 L », ›) puis « Recettes » (« Recette », liseré or), rangées 44 px ; garder le message « Crée d'abord une recette… ». Ne rien changer d'autre dans `FinancesTab.tsx`.
+3. **Compagnon m4ia-c** : `FinanceAssistant.tsx` ouvre aujourd'hui `BrewerChat` directement. Ajouter `compagnon/CompagnonFeuille.tsx` : « ✦ Compagnon brasseur », bande « Ta question vise » (piles via `colonnesDe(periodeSynthese(...))` de `operations/Piles.tsx`, pile visée = le plus gros poste, comme `questionPoste`, entourée ; seulement pour Opérations/Synthèse), question modifiable, pastilles « Ce qu'il va lire » (`REGLAGES_DEFAUT`, comptes tirés de `periodeSynthese` : lignes, `aPayer`, sans pièce, profil TVA), « Auto ⌄ » (clé `brewer-chat-mode` de `BrewerChat`), « Envoyer » (44 px). Les sections `consigne` + question partent dans `initialQuestion`.
+4. Captures 390 et 1280, clair et cave, repos et après geste, côte à côte avec `voies/m4/m4bb-a/m4bb-a.png` et `voies/m4/m4ia-c/m4ia-c.png` dans `voies/s3/cap/`, ouvertes ; rejouer G3 (`controle-v6a.mjs 3000`), `controle-frise.mjs 3000`.
+5. Les tests existants à adapter après le port (non possédés par la voie) : 4 fichiers lisent le flux c3a à l'ouverture (`.cbf-src`, `.cbf-dst`, `.cbf-litl`, « Déjà payé », « Coût de l'année ») : `brewBudgetSheet`, `coutBrassinCorrections`, `coutBrassinRenvois`, `f2ReelCout`, `f3ReelCoutImpotClient`, `prixACompleter` (« Prix de 2 ingrédients »), `coutBrassinRenvois` (« Prix de 1 ingrédient : malt », maquette : « Prix d'1 ingrédient : acide lactique »). Ils doivent d'abord toucher « Détail du litre ».
 
-## Captures (toutes ouvertes)
-`voies/s3/s3a/s3a-repos.png`, `s3a-apres.png` ; `s3b/s3b-repos.png`, `s3b-ouvert.png`, `s3b-apres.png` ; `s3c/s3c-repos.png`, `s3c-ouvert.png`, `s3c-apres.png` ; `s3d/s3d-repos.png`, `s3d-apres.png`.
+## DÉCISION À PRENDRE
+- **Le contexte du compagnon n'est pas restreignable côté client.** `functions/src/brewerFinanceContext.ts` lit tout le registre (1 500 opérations, plans, archives, projets, profil) quel que soit le mois affiché ; `BrewerChat` n'envoie que `scope`, `question`, `phase`, `mode`. Les pastilles décochées sont donc absentes du contexte du domaine (prouvé en test) mais, en ligne, la restriction ne passe que par la consigne écrite dans la question, pas par le serveur. Options : (a) afficher les pastilles et écrire cette limite dans la feuille (« consigne », pas filtre) ; (b) une voie sur `functions/` pour que le serveur accepte les réglages (hors « Possède ») ; (c) ne montrer que des pastilles non décochables. Recommandation : (b) plus (a) en attendant ; ne jamais promettre « il ne lira pas » avant (b).
+- **« Envoyer » n'envoie pas encore.** `BrewerChat` ne démarre jamais seul (la génération vient de l'historique chargé au montage) : la feuille mène à la question préremplie dans le chat, qui demande un second toucher. Un prop `autoSend` dans `BrewerChat` (hors « Possède ») supprimerait ce double geste.
+- **Écarts à la maquette, déjà connus** : « Impôt bière · à payer ~18 déc. » (la date de l'impôt n'existe dans aucune donnée lue : « à payer » seul) ; « Emballage · 81 × 33 cl » (nombre de bouteilles non fourni par le snapshot : pas de détail) ; ligne mixte stock + achat (même ingrédient en partie en stock, en partie à acheter) : pastille « stock + achat », liseré mi-plein mi-hachuré.
 
-## Prédiction
-s3d le frappe (« je vois quand l'argent bouge et je pince ») ; s3a est celle qu'il pose le plus vite au pouce ; s3c lui paraît la plus « gadget » au téléphone.
-
-DÉCISION À PRENDRE : aucune hors page de choix (le brasseur choisit entre s3a à s3d).
-CONNAISSANCE : novembre 2026 commence un dimanche ; dans les données v6a, « dépensé » exclut le matériel à part (696,80 = 468 + 186,80 + 42), d'où 296,80 sur 1er–15 nov.
-LEÇON PROPOSÉE : aucune
+CONNAISSANCE : le contexte d'une question « Finances » est construit côté serveur sur tout le registre ; le client ne peut ni l'élargir ni le restreindre (`brewerFinanceContext.ts`, `BrewerChat.tsx` ~l. 583).
+LEÇON PROPOSÉE : un brief « porter deux écrans + leurs contrôles » dépasse un contexte : le découper en deux voies (budget, compagnon) dès le VOIE.md.

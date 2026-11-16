@@ -1,30 +1,20 @@
-# Gates: voie s3 — mini maquettes : préréglages et saisie, chaude
+# Gates: voie s3 — Budget d'un brassin m4bb-a, Compagnon m4ia-c
 
-OWNS: work/missions/2026-11-14-finances/voies/s3
+OWNS: src/ui/finance/BrewBudgetDialog.tsx, src/ui/finance/BrewBudgetSheet.tsx, src/ui/finance/brew-budget.css, src/ui/finance/budget, src/ui/finance/FinanceAssistant.tsx, src/ui/finance/compagnon, src/components/tabs/FinancesTab.tsx, tests/integration/budgetPiles.test.tsx, tests/integration/compagnonContexte.test.tsx, work/missions/2026-11-14-finances/voies/s3
 
-Scope: quatre mini maquettes statiques de v6a avec un filtre du … au …, au repos et après le geste.
+Scope: Budget d'un brassin m4bb-a, Compagnon m4ia-c, porté, typé, testé.
 
-- [ ] G1: les quatre variantes ont etat.html, repos, après et NOTE, base v6a gardée, sans type number
-  CHECK: node work/missions/2026-11-14-finances/outils/controle-serie.mjs work/missions/2026-11-14-finances/voies/s3 s3a,s3b,s3c,s3d
-  EXPECT: SERIE OK
+- [ ] G1: les tests de la voie passent
+  CHECK: node work/missions/2026-11-14-finances/outils/vitest-lu.mjs work/missions/2026-11-14-finances/voies/s3/tests.txt
+  EXPECT: VITEST OK
   EVIDENCE: pending
 
-- [ ] G2: s3a se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s3/s3a/etat.html
-  EXPECT: PAGE OK
+- [ ] G2: le typage passe
+  CHECK: node work/missions/2026-11-14-finances/outils/tsc.mjs
+  EXPECT: TSC OK
   EVIDENCE: pending
 
-- [ ] G3: s3b se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s3/s3b/etat.html
-  EXPECT: PAGE OK
-  EVIDENCE: pending
-
-- [ ] G4: s3c se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s3/s3c/etat.html
-  EXPECT: PAGE OK
-  EVIDENCE: pending
-
-- [ ] G5: s3d se rend sans erreur
-  CHECK: node scripts/agents/verifier-page.mjs work/missions/2026-11-14-finances/voies/s3/s3d/etat.html
-  EXPECT: PAGE OK
+- [ ] G3: les rangées v6a restent conformes
+  CHECK: node work/missions/2026-11-14-finances/voies/o1/controle-v6a.mjs 3000
+  EXPECT: V6A OK
   EVIDENCE: pending

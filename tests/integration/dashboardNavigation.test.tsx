@@ -128,7 +128,9 @@ describe('Dashboard agenda navigation', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Plus : saisie au nom de/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
     expect(screen.getByRole('button', { name: 'Matériel', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'false');
+    // ks4 (15.11) : À faire est un filtre du Carnet, absent quand Matériel est ouvert.
+    expect(screen.getByRole('button', { name: 'Carnet', exact: true })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: 'À faire', exact: true })).not.toBeInTheDocument();
     expect(create).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();
   });

@@ -1,0 +1,60 @@
+/* fx2b : ajouts propres à l'accueil, à l'attente, à l'erreur, à la remise à zéro et à Finances. Maquette p2a (style.css) :
+   la frise, la marge du brassin, « déjà lu et calculé », la portée en cases, les pastilles de conversations, la note cloche.
+   Spécificité volontairement un cran au-dessus de companion.css (`.cmp-root …`) pour ne rien y changer. */
+
+/* contexte sous le titre : nombres en mono 600 */
+.cmp-root .cmp-pres p { font-size: 14px; }
+.cmp-root .cmp-pres p .cmp-n { font-weight: 600; color: var(--t0); }
+
+/* frise des jalons J+0 → bout */
+.cmp-frise { position: relative; height: 62px; margin: 0 6px 0 4px; }
+.cmp-fr-rail { position: absolute; left: 0; right: 0; top: 30px; height: 4px; border-radius: 2px; background: var(--bord); }
+.cmp-fr-fait { position: absolute; left: 0; top: 30px; height: 4px; border-radius: 2px; background: var(--cmp-hop); }
+.cmp-fr-pt { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; font-size: 12px; color: var(--t2); gap: 0; }
+.cmp-fr-pt b { font-weight: 600; font-size: 13px; color: var(--t0); height: 20px; white-space: nowrap; }
+.cmp-fr-pt::after { content: ""; order: 1; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--cmp-hop); background: var(--page); margin: 4px 0 2px; }
+.cmp-fr-pt small { order: 2; font-size: 12px; }
+.cmp-fr-pt.cmp-fait::after { background: var(--cmp-hop); }
+.cmp-fr-auj { position: absolute; top: 16px; width: 2px; height: 32px; background: var(--t0); transform: translateX(-50%); }
+.cmp-fr-auj b { position: absolute; top: 34px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--t0); white-space: nowrap; font-weight: 600; }
+.cmp-fr-bout { position: absolute; right: 0; top: 40px; font-size: 12px; color: var(--t2); }
+
+/* grille 2 colonnes : avec un nombre impair de questions, la dernière prend toute la largeur */
+.cmp-root .cmp-tuiles > .cmp-tuile:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 72px; }
+
+/* mini-carte conversations : pastilles comptées sur une ligne */
+.cmp-root .cmp-pts { white-space: nowrap; }
+.cmp-root .cmp-pts .cmp-n { font-size: 14px; font-weight: 600; color: var(--t0); }
+
+/* amorces au-dessus des modes : une ligne, défile sans passer à la ligne */
+.cmp-root .cmp-amorces { flex-wrap: nowrap; }
+
+/* attente : chrono, quatre étapes (le serveur n'a pas d'étape de rédaction), marge du brassin, déjà calculé */
+.cmp-root .cmp-chrono-h .cmp-n { font-size: 30px; }
+.cmp-root .cmp-etapes { grid-template-columns: repeat(4, 1fr); }
+.cmp-marge { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 10px; background: var(--hopf); font-size: 14px; color: var(--t0); }
+.cmp-marge svg.cmp-i { color: var(--hopt); }
+.cmp-calc { display: flex; flex-direction: column; gap: 6px; }
+.cmp-pile { display: flex; gap: 3px; height: 16px; }
+.cmp-pile i { border-radius: 4px; border: 1.5px solid var(--cmp-hop); background: repeating-linear-gradient(135deg, var(--hopf) 0 4px, transparent 4px 8px); }
+.cmp-leg { display: grid; gap: 3px; font-size: 12px; color: var(--t2); padding-bottom: 4px; border-bottom: 1px solid var(--bord); }
+.cmp-leg > span { display: flex; flex-direction: column; white-space: nowrap; min-width: 0; }
+.cmp-leg b { font-weight: 600; color: var(--t0); }
+
+/* erreur : pied hors ligne en 13 px */
+.cmp-root .cmp-bandeau { font-size: 13px; }
+
+/* remise à zéro : colonne « reste » en encart, note cloche */
+.cmp-note-cloche { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: var(--t2); line-height: 1.35; }
+.cmp-note-cloche svg.cmp-i { width: 14px; height: 14px; margin-top: 1px; }
+
+/* Finances : « Je vérifie · 4 sur 4 » en cases à contour bleu */
+.cmp-portee { display: flex; flex-direction: column; gap: 8px; }
+.cmp-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.cmp-cf { display: flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--fin); background: var(--finf); font-size: 13px; color: var(--t0); text-align: left; }
+.cmp-cf svg.cmp-i { color: var(--fint); }
+/* zone haute de Finances : grandit jusqu'à 4 lignes et montre tout le texte (la saisie règle sa hauteur) */
+.cmp-root .cmp-saisie-haute .cmp-zone { min-height: 44px; }
+
+/* fx3 accueil 5 : le × de la feuille est nu à l'ouverture (maquette) ; l'anneau ne se montre qu'au clavier (:focus-visible). */
+.cmp-root > header button[aria-label='Fermer']:focus:not(:focus-visible) { outline: none; box-shadow: none; }

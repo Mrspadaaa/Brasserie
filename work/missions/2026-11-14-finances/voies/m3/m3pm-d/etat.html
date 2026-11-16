@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>m3pm-d — Projet matériel : la piste, de l'idée à la mise en service (libre)</title>
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;--vertf:#E4F1E8;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.m3pm-d-f{position:relative;width:390px;min-height:844px;background:#4a4a4a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.m3pm-d-f::before{content:"";flex:0 0 52px}
+.m3pm-d-bg{position:absolute;top:0;left:0;width:390px;height:844px;display:block}
+.m3pm-d-voile{position:absolute;inset:0;background:rgba(17,17,17,.48)}
+.m3pm-d-sh{margin-top:0!important;min-height:0!important;position:relative;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.m3pm-d-poi{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.m3pm-d-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.m3pm-d-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.m3pm-d-x{width:32px;height:32px;border:0;background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.m3pm-d-pied{display:flex;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord);background:var(--page)}
+.m3pm-d-btn{height:44px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--bordm);background:var(--page);color:var(--t0);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m3pm-d-btn.m3pm-d-pri{flex:1;background:var(--t0);border-color:var(--t0);color:#fff}
+.m3pm-d-lab{font-size:12px;color:var(--t2);display:block;margin-bottom:3px}
+.m3pm-d-in{display:flex;align-items:center;gap:6px;width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;color:var(--t0);background:var(--page)}
+.m3pm-d-in::placeholder{color:#8a8a8a}
+.m3pm-d-muet{font-size:12px;color:var(--t2)}
+.m3pm-d-h{display:flex;align-items:center;padding:2px 6px 4px 12px;gap:8px}
+.m3pm-d-h h2{flex:1;font-size:18px;font-weight:600;color:var(--t0);line-height:22px}
+.m3pm-d-h b{font-family:var(--mono);font-size:20px;color:var(--t0)}
+.m3pm-d-p{padding:2px 12px 6px}
+.m3pm-d-s{display:grid;grid-template-columns:28px 1fr;column-gap:8px;position:relative;padding-bottom:8px}
+.m3pm-d-s::before{content:"";position:absolute;left:13px;top:24px;bottom:-2px;width:2px;background:var(--bord)}
+.m3pm-d-s:last-child::before{display:none}
+.m3pm-d-s.m3pm-d-fait::before{background:var(--fin)}
+.m3pm-d-o{width:28px;height:28px;border-radius:50%;border:2px solid var(--bordm);background:var(--page);display:flex;align-items:center;justify-content:center;color:#fff;position:relative;z-index:1}
+.m3pm-d-o svg{width:15px;height:15px}
+.m3pm-d-fait .m3pm-d-o{background:var(--fin);border-color:var(--fin)}
+.m3pm-d-ici .m3pm-d-o{border:3px solid var(--fin);box-shadow:0 0 0 4px var(--fint)}
+.m3pm-d-n{min-height:28px;display:flex;flex-direction:column;justify-content:center}
+.m3pm-d-hl{display:flex;align-items:center;gap:6px;min-height:28px}
+.m3pm-d-n h3{font-size:14px;font-weight:600;color:var(--t0);display:flex;align-items:center;gap:6px}
+.m3pm-d-n h3 em{font-style:normal;font-size:12px;font-weight:400;color:var(--t2)}
+.m3pm-d-n p{font-size:13px;color:var(--t1);line-height:17px}
+.m3pm-d-ici .m3pm-d-carte{margin-top:4px;background:var(--fint);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.m3pm-d-l{display:flex;align-items:center;gap:8px;font-size:13px;min-height:32px}
+.m3pm-d-l span{flex:1;color:var(--t1)}.m3pm-d-l b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.m3pm-d-l small{display:block;font-size:12px;color:var(--t2)}
+.m3pm-d-mois{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 10px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:14px;color:var(--t0)}
+.m3pm-d-a{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:var(--page);font-size:13px;font-weight:600;color:var(--t0);margin-left:auto}
+.m3pm-d-a svg{width:15px;height:15px}
+.m3pm-d-sw{width:44px;height:26px;border-radius:13px;background:var(--fin);position:relative;flex-shrink:0}
+.m3pm-d-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+.m3pm-d-pas .m3pm-d-n h3{color:var(--t1)}
+.m3pm-d-pas .m3pm-d-n p{color:var(--t2)}
+.m3pm-d-pied .m3pm-d-btn:first-child{color:var(--t2)}
+</style></head><body>
+<div class="m3pm-d-f"><img class="m3pm-d-bg" src="../../../ref/p5b/p5b-haut.png" alt=""><div class="m3pm-d-voile"></div><div class="m3pm-d-sh">
+<div class="m3pm-d-poi"></div>
+<div class="m3pm-d-h"><h2>Frigo</h2><b>3 000,00</b><button class="m3pm-d-x" aria-label="Fermer"><svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<div class="m3pm-d-p" data-booster="piste-projet">
+ <div class="m3pm-d-s m3pm-d-fait"><span class="m3pm-d-o"><svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><div class="m3pm-d-n"><h3>Idée <em>· Bientôt</em></h3><p>Garder fûts et bouteilles au froid jusqu'à la vente.</p></div></div>
+ <div class="m3pm-d-s m3pm-d-fait"><span class="m3pm-d-o"><svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><div class="m3pm-d-n"><h3>À étudier <em>· mon estimation</em></h3><p><span class="m3pm-d-m">2 800,00</span> + livraison <span class="m3pm-d-m">200,00</span> · pose ?</p></div></div>
+ <div class="m3pm-d-s m3pm-d-fait"><span class="m3pm-d-o"><svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><div class="m3pm-d-n"><div class="m3pm-d-hl"><h3>Devis <em>· aucun noté</em></h3><span class="m3pm-d-a"><svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Noter un devis</span></div></div></div>
+ <div class="m3pm-d-s m3pm-d-ici"><span class="m3pm-d-o"></span><div class="m3pm-d-n"><h3>Prêt à acheter <em>· tu en es là</em></h3>
+  <div class="m3pm-d-carte">
+   <div class="m3pm-d-l"><span>Payé en</span><span class="m3pm-d-mois"><svg class="m3pm-d-i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>nov. 2026</span></div>
+   <div class="m3pm-d-l"><span style="color:var(--fin);font-weight:600">Dans mes prévisions<small>compté dans les sorties du 15.11</small></span><i class="m3pm-d-sw" role="switch" aria-checked="true" data-booster="inclure"></i></div>
+  </div></div></div>
+ <div class="m3pm-d-s m3pm-d-pas"><span class="m3pm-d-o"></span><div class="m3pm-d-n"><div class="m3pm-d-hl"><h3>Acheté <em>· achats liés : aucun</em></h3><span class="m3pm-d-a">Noter l'achat<svg class="m3pm-d-i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></div></div>
+ <div class="m3pm-d-s m3pm-d-pas"><span class="m3pm-d-o"></span><div class="m3pm-d-n"><h3>En service <em>· son usure</em></h3><p>5 ans · <span class="m3pm-d-m">600,00</span> par an · mise en service ?</p></div></div>
+</div>
+<footer class="m3pm-d-pied" style="margin-top:auto"><button class="m3pm-d-btn"><svg class="m3pm-d-i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/></svg>Archiver</button><button class="m3pm-d-btn m3pm-d-pri">Enregistrer le projet</button></footer>
+</div></div>
+</body></html>

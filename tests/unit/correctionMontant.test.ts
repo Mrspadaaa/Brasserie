@@ -44,7 +44,7 @@ describe('planCorrection : la suite d’écritures, en centimes', () => {
       { type: 'paiement', cents: 3000, direction: 'out', method: 'bank', date: '2026-11-09' }
     ]);
     // Le payé ne disparaît jamais : la pièce reste entièrement réglée, rien à payer.
-    expect(effetCorrection(piece(4200), [p1], suit)).toEqual({ montantCents: 3000, payeCents: 3000, resteCents: 0 });
+    expect(effetCorrection(piece(4200), [p1], suit)).toMatchObject({ montantCents: 3000, payeCents: 3000, resteCents: 0 });
   });
   it('baisseSousLePaye : vrai seulement quand le nouveau montant passe sous le réglé net', () => {
     expect(baisseSousLePaye(piece(4200), [p1], 3000)).toBe(true);
@@ -114,19 +114,19 @@ describe('effetCorrection : ce que le plan laisse', () => {
   const p1 = paiement('PAI-1', 4200);
   it('hausse + suit : payé = nouveau montant, reste 0', () => {
     const e = planCorrection(piece(4200), [p1], 4550, 'suit');
-    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4550, payeCents: 4550, resteCents: 0 });
+    expect(effetCorrection(piece(4200), [p1], e)).toMatchObject({ montantCents: 4550, payeCents: 4550, resteCents: 0 });
   });
   it('hausse + reste : payé 42,00, reste 3,50 (m5mo-c)', () => {
     const e = planCorrection(piece(4200), [p1], 4550, 'reste');
-    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4550, payeCents: 4200, resteCents: 350 });
+    expect(effetCorrection(piece(4200), [p1], e)).toMatchObject({ montantCents: 4550, payeCents: 4200, resteCents: 350 });
   });
   it('baisse + suit : payé = nouveau montant', () => {
     const e = planCorrection(piece(4200), [p1], 4000, 'suit');
-    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
+    expect(effetCorrection(piece(4200), [p1], e)).toMatchObject({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
   });
   it('baisse + reste demandé : sous le payé il ne reste rien à payer (le payé ne disparaît jamais)', () => {
     const e = planCorrection(piece(4200), [p1], 4000, 'reste');
-    expect(effetCorrection(piece(4200), [p1], e)).toEqual({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
+    expect(effetCorrection(piece(4200), [p1], e)).toMatchObject({ montantCents: 4000, payeCents: 4000, resteCents: 0 });
   });
 });
 

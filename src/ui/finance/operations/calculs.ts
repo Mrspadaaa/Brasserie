@@ -1,7 +1,7 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { formatCHF, isActiveTransaction, isoDate, paymentState, transactionAmount, validPayment } from '../../../domain/finance/ledger';
-import { shortDate } from '../financeFormat';
+import { amountOnly, shortDate } from '../financeFormat';
 
 /**
  * Règles pures de l'écran Opérations (v6b) : échéance, état d'une ligne, pièce, paiement rapide et contre-écriture.
@@ -97,6 +97,11 @@ export function etatDeLigne(tx: Transaction, etat: EtatPaiement, entrant: boolea
   const date = dernier ? (isoDate(dernier.date) === today ? 'aujourd’hui' : shortDate(dernier.date)) : '';
   const mode = dernier ? MODES[dernier.method] : '';
   const mot = entrant ? 'encaissé' : 'payé';
+  /* t3 (A1) : le trop-payé (« À récupérer ») est une sortie réelle, mais la créance reste à récupérer tant qu'aucun avoir ne l'a soldée : la ligne le dit, elle ne dit pas « payé ». */
+  if (tx.subcategory === 'À récupérer' || tx.subcategory === 'À rembourser') {
+    const recup = tx.subcategory === 'À récupérer', cents = tx.finance?.amountCents ?? 0;
+    return { texte: `${recup ? 'à récupérer' : 'à rembourser'} ${amountOnly(cents)}${date ? ` · ${recup ? 'sorti' : 'encaissé'} ${date}` : ''}${mode ? ` · ${mode}` : ''}`, ton: 'pay', regle: false, retard: false };
+  }
   return { texte: `✓ ${mot}${date ? ` ${date}` : ''}${mode ? ` · ${mode}` : ''}`, ton: 'ok', regle: true, retard: false };
 }
 

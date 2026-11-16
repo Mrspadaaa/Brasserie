@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s1d · v6a, la bascule Mois | Plage dans la carte · 14.11</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#E9E7E1;font-size:14px;line-height:18px}
+.s1d-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.s1d-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.s1d-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.s1d-hd b{font-size:18px;font-weight:600;flex:1}
+.s1d-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.s1d-bx{background:#F5F5F5;border:1px solid #DADADA}
+.s1d-app{padding-bottom:84px}
+.s1d-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.s1d-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.s1d-tabs a.s1d-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+.s1d-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.s1d-top{display:flex;align-items:center;gap:6px}
+.s1d-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.s1d-pill>button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.s1d-pill b{font-size:15px;padding:0 4px}
+.s1d-pill>.s1d-mo{width:auto;white-space:nowrap;font-size:15px}
+.s1d-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23;white-space:nowrap}
+.s1d-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.s1d-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.s1d-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.s1d-p b{font-size:12px;line-height:14px}
+.s1d-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.s1d-st i{display:block}
+.s1d-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.s1d-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.s1d-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.s1d-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.s1d-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.s1d-key span{display:flex;align-items:center;gap:4px}
+.s1d-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.s1d-key b{font-size:13px;color:#111}
+.s1d-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.s1d-g .s1d-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.s1d-g b{font-size:13px;letter-spacing:.02em}
+.s1d-g .s1d-sub{font-size:13px;color:#444}
+.s1d-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.s1d-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.s1d-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s1d-q small{font-weight:400;color:#555;font-size:13px}
+.s1d-a{font-size:14px;text-align:right}
+.s1d-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.s1d-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.s1d-ok{background:#E8F5EC;color:#22663A}
+.s1d-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.s1d-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.s1d-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.s1d-pc.s1d-no{color:#7A5500}
+.s1d-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.s1d-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.s1d-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.s1d-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.s1d-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.s1d-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.s1d-foot .s1d-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.s1d-ex{font-size:12px;color:#666;padding:0 10px}
+.s1d-nav{position:absolute;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.s1d-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.s1d-nav a.s1d-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.s1d-fab{position:absolute;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* planche : un cadre de téléphone par état */
+.s1d-page{display:flex;flex-direction:column;align-items:center;gap:14px;padding:12px 0 24px}
+.s1d-cap{width:390px;padding:0 10px;font-size:13px;line-height:17px;color:#333}
+.s1d-cap b{color:#111}
+.s1d-ecran{position:relative;width:390px;background:#fff;overflow:hidden}
+.s1d-court{height:844px}
+.s1d-ref{display:block;width:390px;height:auto;border:1px solid #DADADA}
+/* commun au filtre : champ de date natif sous une étiquette lisible (le sélecteur du téléphone s'ouvre au toucher) */
+.s1d-dt{position:relative;display:inline-flex;align-items:center;cursor:pointer}
+.s1d-dt input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.s1d-hors{font-size:12px;color:#555;padding:4px 10px 6px;display:flex;align-items:center;gap:6px}
+
+.s1d-seg{display:flex;align-items:center;gap:2px;padding:2px;border-radius:16px;background:#ECE8DF;flex:none}
+.s1d-seg .s1d-pill{border-color:#E4E0D6}
+.s1d-opt{display:flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:14px;font-size:13px;color:#444;font-weight:600}
+.s1d-opt.s1d-sel{background:#fff;color:#1F4F7A;box-shadow:inset 0 0 0 1px #A9C9E8}
+.s1d-tuiles{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;margin-top:6px}
+.s1d-tuile{height:44px;display:flex;align-items:center;gap:7px;padding:0 10px;border-radius:10px;background:#fff;border:1px solid #A9C9E8}
+.s1d-tuile .s1d-k{font-size:12px;color:#555}
+.s1d-tuile .s1d-j{font-size:22px;line-height:24px;color:#1F4F7A}
+.s1d-tuile .s1d-mm{display:flex;flex-direction:column;font-size:12px;line-height:14px;color:#333}
+.s1d-tuile svg{margin-left:auto}
+.s1d-duree{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#555}
+.s1d-duree i{width:100%;border-top:2px dashed #A9C9E8;display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+<main class="s1d-page">
+<p class="s1d-cap"><b>Base</b> · « Lignes serrées v6a », son choix du 10.11, telle quelle : seul le filtre du … au … s’ajoute.</p>
+<img class="s1d-ref" src="../../../ref/v6a/v6a-haut.png" width="390" alt="v6a, maquette choisie, haut de l’écran">
+<p class="s1d-cap"><b>Repos</b> · la pilule du mois devient le segment « Mois » d’une bascule ; « Plage » attend à côté.</p>
+<section class="s1d-ecran" id="repos" data-etat="repos">
+<header class="s1d-hd">
+  <span class="s1d-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s1d-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s1d-ic s1d-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s1d-ic s1d-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+<nav class="s1d-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s1d-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+<div class="s1d-app">
+ <section class="s1d-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s1d-top"><span class="s1d-seg" role="radiogroup" aria-label="Mois ou plage" data-booster="bascule-mois-plage"><span class="s1d-pill" role="radio" aria-checked="true"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span><button class="s1d-opt" role="radio" aria-checked="false"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="3.05" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v14M21 5v14M6.5 12h11M9.5 8.5 6 12l3.5 3.5M14.5 8.5 18 12l-3.5 3.5"/></svg>Plage</button></span><button class="s1d-due" data-booster="pastille-retard"><i></i>en retard <b class="s1d-m">60,00</b></button></div>
+   <div class="s1d-piles">
+    <div class="s1d-p"><b class="s1d-m" style="color:#2A7240">+720,00</b><span class="s1d-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s1d-sep"></span>
+    <div class="s1d-p"><b class="s1d-m">468,00</b><span class="s1d-st" style="height:57px"><i class="s1d-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s1d-p"><b class="s1d-m">186,80</b><span class="s1d-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s1d-p"><b class="s1d-m">42,00</b><span class="s1d-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s1d-sep"></span>
+    <div class="s1d-p"><b class="s1d-m">28,60</b><span class="s1d-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s1d-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="s1d-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s1d-m">325,40</b></span><span><i class="s1d-hat"></i>à payer <b class="s1d-m">400,00</b></span><span>dépensé <b class="s1d-m">696,80</b></span></div>
+  </section>
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <div class="s1d-g"><span class="s1d-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s1d-sub s1d-m">468,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar s1d-hat"></span>
+   <span class="s1d-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s1d-a s1d-m">400,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-pay">à payer · 25 nov. · dans 16 j</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-btn s1d-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#9856D2"></span>
+   <span class="s1d-q">Électricité <small>· Énergie</small></span><span class="s1d-a s1d-m">68,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov. · banque</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s1d-sub s1d-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#56D27B"></span>
+   <span class="s1d-q">Vente au marché <small>· Marché du village</small></span><span class="s1d-a s1d-m" style="color:#2A7240">+720,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ encaissé 9 nov. · banque</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s1d-sub s1d-m">186,80</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#D2B356"></span>
+   <span class="s1d-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s1d-a s1d-m">186,80</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s1d-sub s1d-m">42,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#56C1D2"></span>
+   <span class="s1d-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s1d-a s1d-m">42,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">+ pièce</button>
+  </div>
+  <div class="s1d-part"></div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s1d-sub s1d-m">28,60</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#567BD2"></span>
+   <span class="s1d-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s1d-a s1d-m">28,60</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">+ pièce</button>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s1d-sub s1d-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#D6453D"></span>
+   <span class="s1d-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s1d-a s1d-m">60,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-late">à payer depuis le 20 déc. 2025</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">✓ Payé</button>
+  </div>
+  <p class="s1d-ex">Pièces jointes : exemple.</p>
+  <div class="s1d-foot"><button class="s1d-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+ </div>
+</div>
+<nav class="s1d-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s1d-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s1d-fab" aria-label="Ajouter">+</button>
+</section>
+<p class="s1d-cap"><b>Après</b> · « Plage » : deux feuillets datés dans la carte, du 1 au 15 nov. ; « Mois » revient à novembre.</p>
+<section class="s1d-ecran" id="apres" data-etat="apres">
+<header class="s1d-hd">
+  <span class="s1d-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s1d-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s1d-ic s1d-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s1d-ic s1d-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+<nav class="s1d-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s1d-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+<div class="s1d-app">
+ <section class="s1d-band" aria-label="La plage par catégorie" data-booster="piles-basses">
+   <div class="s1d-top"><span class="s1d-seg" role="radiogroup" aria-label="Mois ou plage" data-booster="bascule-mois-plage"><button class="s1d-opt" role="radio" aria-checked="false">Mois</button><button class="s1d-opt s1d-sel" role="radio" aria-checked="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1F4F7A" stroke-width="3.05" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v14M21 5v14M6.5 12h11M9.5 8.5 6 12l3.5 3.5M14.5 8.5 18 12l-3.5 3.5"/></svg>Plage</button></span><button class="s1d-due" data-booster="pastille-retard"><i></i>en retard <b class="s1d-m">60,00</b></button></div>
+   <div class="s1d-tuiles" data-booster="feuillets-dates"><label class="s1d-dt s1d-tuile"><span class="s1d-k">du</span><b class="s1d-j s1d-m">1</b><span class="s1d-mm"><span>nov.</span><span>dim.</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="2.48" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" value="2026-11-01" aria-label="du"></label><span class="s1d-duree"><i></i><span class="s1d-m">15 j</span></span><label class="s1d-dt s1d-tuile"><span class="s1d-k">au</span><b class="s1d-j s1d-m">15</b><span class="s1d-mm"><span>nov.</span><span>dim.</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="2.48" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" value="2026-11-15" aria-label="au"></label></div>
+   <div class="s1d-piles">
+    <div class="s1d-p"><b class="s1d-m" style="color:#2A7240">+720,00</b><span class="s1d-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s1d-sep"></span>
+    <div class="s1d-p"><b class="s1d-m">68,00</b><span class="s1d-st" style="height:8px"><i style="flex:1;background:#9856D2"></i></span></div>
+    <div class="s1d-p"><b class="s1d-m">186,80</b><span class="s1d-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s1d-p"><b class="s1d-m">42,00</b><span class="s1d-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s1d-sep"></span>
+    <div class="s1d-p"><b class="s1d-m">28,60</b><span class="s1d-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s1d-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="s1d-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s1d-m">325,40</b></span><span><i class="s1d-hat"></i>à payer <b class="s1d-m">0,00</b></span><span>dépensé <b class="s1d-m">296,80</b></span></div>
+  </section>
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <div class="s1d-g"><span class="s1d-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s1d-sub s1d-m">68,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#9856D2"></span>
+   <span class="s1d-q">Électricité <small>· Énergie</small></span><span class="s1d-a s1d-m">68,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov. · banque</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s1d-sub s1d-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#56D27B"></span>
+   <span class="s1d-q">Vente au marché <small>· Marché du village</small></span><span class="s1d-a s1d-m" style="color:#2A7240">+720,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ encaissé 9 nov. · banque</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s1d-sub s1d-m">186,80</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#D2B356"></span>
+   <span class="s1d-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s1d-a s1d-m">186,80</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s1d-sub s1d-m">42,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#56C1D2"></span>
+   <span class="s1d-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s1d-a s1d-m">42,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">+ pièce</button>
+  </div>
+  <div class="s1d-part"></div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s1d-sub s1d-m">28,60</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#567BD2"></span>
+   <span class="s1d-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s1d-a s1d-m">28,60</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-ok">✓ payé 9 nov.</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">+ pièce</button>
+  </div>
+  <div class="s1d-g"><span class="s1d-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s1d-sub s1d-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s1d-op">
+   <span class="s1d-bar" style="background:#D6453D"></span>
+   <span class="s1d-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s1d-a s1d-m">60,00</span>
+   <span class="s1d-meta"><span class="s1d-tg s1d-late">à payer depuis le 20 déc. 2025</span><span class="s1d-pc s1d-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s1d-mini s1d-act">✓ Payé</button>
+  </div>
+  <p class="s1d-hors"><span class="s1d-tg s1d-pay">hors plage : loyer de l'atelier · 25 nov. · 400,00</span></p>
+  <p class="s1d-ex">Pièces jointes : exemple.</p>
+  <div class="s1d-foot"><button class="s1d-ia" data-booster="ia-expliquer">✦ Pourquoi le brassage pèse autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+ </div>
+</div>
+<nav class="s1d-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s1d-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s1d-fab" aria-label="Ajouter">+</button>
+</section>
+</main>
+<script>(function(){document.querySelectorAll('.s1d-dt input').forEach(function(i){i.addEventListener('click',function(){try{i.showPicker()}catch(e){}})});})();</script>
+</body>
+</html>

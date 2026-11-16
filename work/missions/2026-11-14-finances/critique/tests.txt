@@ -1,0 +1,4 @@
+12 captures · remplissage médian 0,65, 0 sous 0,50 · ressemblance moyenne 0,93 · paires presque identiques 10/66 (15 %)
+  - DIVERSITÉ : ressemblance moyenne 0,93 ≥ 0,90 (lot 21 : 0,88) : le panel partage un même squelette
+  - DIVERSITÉ : 15 % de paires presque identiques (≥ 0,95), 1 % au plus ; par exemple s1a-repos~s1b-repos, s1a-repos~s1c-repos, s1a-repos~s2b-repos, s1a-repos~s3c-repos, s1b-repos~s1c-repos
+PANEL ECHEC

@@ -7,142 +7,66 @@ import { WaterAnalysisTable } from "../WaterAnalysisTable";
 import { IonComparison } from "../IonComparison";
 import { formatDecimal } from "../numericInput";
 
-import { Droplets, ChevronRight } from "lucide-react";
+import { Droplets, ChevronRight, ChevronDown } from "lucide-react";
+import "./eau.css";
 
 import type { WaterIons } from "../../types";
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
-type Tab = "empatage" | "rincage";
 
-type Props = Pick<
-  WaterWorkshopModel,
-  | "source"
-  | "onSourceChange"
-  | "beerVolumeL"
-  | "brew"
-  | "onMashRatioChange"
-  | "state"
-  | "onChange"
-  | "onNoSpargeChange"
-  | "set"
-  | "setTab"
-  | "activeStep"
-  | "handleStepChange"
-  | "totalWaterL"
-  | "style"
-  | "start"
-  | "spargeDi"
-  | "spargeLinked"
-  | "mashRatioLPerKg"
-  | "vol"
-  | "raBand"
-  | "alkaliGoal"
-  | "treatment"
-  | "achievedSparge"
-  | "ra"
-  | "phEstimate"
-  | "justEnough"
-  | "applyMinimum"
-  | "spargeAcidCalcule"
-  | "mashAcid"
-  | "spargeAcid"
-  | "raApresAcide"
-  | "placeAcide"
-  | "spargeAlkalinity"
-  | "achievedTotalApresAcide"
-  | "hasSparge"
-  | "activeTab"
-  | "totalOsmoseeL"
-  | "totalReseauL"
->;
-export function WaterPreparation(model: Props) {
+/** Onglet « 1. Eau » : la maquette w1b (15.11). L'analyse source se replie sur une ligne ; puis les deux cuves, la coupe à l'osmosée, l'acidité. */
+export function WaterPreparation(props: WaterWorkshopModel & { sousVolumes?: import("react").ReactNode }) {
+  const { sousVolumes, ...model } = props;
   const {
     source,
     onSourceChange,
-    beerVolumeL,
-    brew,
-    onMashRatioChange,
     state,
-    onChange,
-    onNoSpargeChange,
-    set,
-    setTab,
     activeStep,
     handleStepChange,
-    totalWaterL,
     style,
     start,
-    spargeDi,
-    spargeLinked,
-    mashRatioLPerKg,
-    vol,
-    raBand,
-    alkaliGoal,
     treatment,
-    achievedSparge,
-    ra,
-    phEstimate,
-    justEnough,
-    spargeAcidCalcule,
-    mashAcid,
-    spargeAcid,
-    raApresAcide,
-    placeAcide,
-    spargeAlkalinity,
     achievedTotalApresAcide,
-    hasSparge,
-    activeTab,
-    totalOsmoseeL,
-    totalReseauL,
   } = model;
   const unknownIons = (['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as Array<keyof WaterIons>)
     .filter(ion => !Number.isFinite(source[ion]));
   return (
-    <>
-      {" "}
-      <div
-        className={`space-y-4 ${activeStep === "eau" ? "block" : "hidden sm:block"}`}
-      >
-        <div className="hidden sm:flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-cave-400 border-b border-cave-800 pb-1.5">
-          <Droplets className="w-4 h-4 text-water" />
-          <span>1 · L’eau — analyse, style et volumes</span>
+    <div className={`ew ${activeStep === "eau" ? "block" : "hidden"}`} data-ew-tab="eau">
+      <details className="ew-srcd" data-action="source-eau">
+        <summary aria-label={`Analyse source : ${source.name}`}>
+          <Droplets size={16} aria-hidden="true" />
+          <span>Analyse source · {source.name}</span>
+          {unknownIons.length > 0 && <em className="ew-tag">à confirmer</em>}
+          <ChevronDown size={18} aria-hidden="true" />
+        </summary>
+        <div className="ew-srcb">
+          <WaterAnalysisTable
+            source={source}
+            onChange={onSourceChange}
+            display={{
+              ions: start,
+              caption:
+                state.diRatioPct > 0
+                  ? `${source.name} · coupée à ${formatDecimal(Number(state.diRatioPct.toFixed(2)))} % d’osmosée`
+                  : source.name,
+            }}
+          />
+          <IonComparison
+            start={treatment.startTotal}
+            achieved={achievedTotalApresAcide}
+            style={style}
+            unknownIons={unknownIons}
+          />
         </div>
-
-        <details><summary className="min-h-touch cursor-pointer text-sm text-water">Analyse source · {source.name}</summary>
-        <WaterAnalysisTable
-          source={source}
-          onChange={onSourceChange}
-          display={{
-            ions: start,
-            caption:
-              state.diRatioPct > 0
-                ? `${source.name} · coupée à ${formatDecimal(Number(state.diRatioPct.toFixed(2)))} % d’osmosée`
-                : source.name,
-          }}
-        />
-
-        <IonComparison
-          start={treatment.startTotal}
-          achieved={achievedTotalApresAcide}
-          style={style}
-          unknownIons={unknownIons}
-        />
-
-        </details>
-        {source.note&&<p className="text-xs text-cave-400">{source.note}</p>}
-        <WaterVolumes {...model} />
-        <WaterDilution {...model} />
-        <WaterAcidity {...model} />
-        <div className="sm:hidden pt-2">
-          <button
-            type="button"
-            onClick={() => handleStepChange("sels")}
-            className="w-full min-h-touch py-3 px-4 rounded-control bg-cave-850 hover:bg-cave-800 text-cave-50 text-sm font-medium flex items-center justify-center gap-2 border border-cave-700 transition-colors shadow-sm"
-          >
-            <span>Profil & pesée des sels</span>
-            <ChevronRight className="w-4 h-4 text-ebc-straw" />
-          </button>
-        </div>
-      </div>
-    </>
+      </details>
+      {source.note && <p className="ew-note">{source.note}</p>}
+      <WaterVolumes {...model} />
+      {sousVolumes}
+      <WaterDilution {...model} />
+      <WaterAcidity {...model} />
+      <button type="button" data-action="onglet-sels" onClick={() => handleStepChange("sels")} className="ew-lien">
+        <span>Profil et pesée des sels</span>
+        <ChevronRight size={16} aria-hidden="true" />
+      </button>
+    </div>
   );
 }

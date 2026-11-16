@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4ia-b · Une question, un bouton (froide)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-700.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4ia-b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4ia-b-back{position:relative;height:520px;overflow:hidden}.m4ia-b-back img{width:390px;display:block}
+.m4ia-b-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4ia-b-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 10px 14px;min-height:344px}
+.m4ia-b-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 8px}
+.m4ia-b-q{display:flex;gap:10px;align-items:flex-start}
+.m4ia-b-q span{flex:none;width:32px;height:32px;border-radius:50%;background:#E6EFF8;color:#2F6EA8;display:grid;place-items:center;font-size:16px}
+.m4ia-b-q p{font-size:20px;line-height:26px;font-weight:700;flex:1}
+.m4ia-b-q p b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:18px}
+.m4ia-b-edit{display:inline-flex;align-items:center;margin:2px 0 0 32px;padding:0 10px;font-size:14px;color:#2F6EA8;min-height:44px}
+.m4ia-b-row{display:flex;gap:6px;margin-top:14px}
+.m4ia-b-other{flex:1;min-height:44px;border-radius:10px;background:#F5F5F5;text-align:left;padding:0 10px;font-size:13px;color:#333}
+.m4ia-b-mode{min-height:44px;border-radius:10px;border:1px solid #D9D9D9;padding:0 10px;font-size:13px}
+.m4ia-b-pri{display:block;width:100%;height:48px;margin-top:8px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:16px}
+.m4ia-b-cap{text-align:center;font-size:12px;color:#555;margin-top:6px}
+</style></head><body>
+<div class="m4ia-b-back"><img src="../../../ref/v6a/v6a-haut.png" alt=""></div>
+<section class="m4ia-b-sheet" aria-label="Compagnon brasseur">
+ <div class="m4ia-b-grip"></div>
+ <div class="m4ia-b-q" data-booster="question-unique"><span>✦</span><p>Pourquoi les charges fixes pèsent autant en novembre : <b>468,00</b> sur <b>696,80</b> ?</p></div>
+ <button class="m4ia-b-edit">Modifier la question ›</button>
+ <div class="m4ia-b-row">
+  <button class="m4ia-b-other" data-booster="autres-questions">5 autres questions ⌄<br><span style="color:#777;font-size:12px">vérifier, dépenses, paiements, matériel, année</span></button>
+  <button class="m4ia-b-mode" data-booster="mode-reponse">Réponse auto ⌄<br><span style="color:#777;font-size:12px">courte ou fouillée</span></button>
+ </div>
+ <button class="m4ia-b-pri">Demander au compagnon</button>
+ <p class="m4ia-b-cap">Rien ne part sans ce bouton · aucune opération modifiée</p>
+</section></body></html>

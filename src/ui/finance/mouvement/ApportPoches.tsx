@@ -32,6 +32,8 @@ export interface ApportPochesProps {
   method: Methode; onMethod: (m: Methode) => void;
   note: string; onNote: (n: string) => void;
   piece: PieceJointe | null; onPiece: (file: File | null) => void; pieceError: string;
+  /** Enregistrer sans motif : le champ le dit dans l'app (pas la bulle native du navigateur, posée n'importe où) et prend le focus (t1, problème 6). */
+  motifManque?: boolean;
   effet: EffetMouvement;
 }
 
@@ -39,7 +41,8 @@ export function ApportPoches(p: ApportPochesProps) {
   const entrant = p.kind === 'contribution';
   const aujourdhui = todayISO();
   const [autre, setAutre] = useState(p.date !== aujourdhui);
-  const photo = useRef<HTMLInputElement>(null), fichier = useRef<HTMLInputElement>(null);
+  const photo = useRef<HTMLInputElement>(null), fichier = useRef<HTMLInputElement>(null), champMotif = useRef<HTMLInputElement>(null);
+  React.useEffect(() => { if (p.motifManque) { champMotif.current?.scrollIntoView?.({ block: 'center' }); champMotif.current?.focus(); } }, [p.motifManque]);
   const { effet } = p;
   const piste = pisteCaisse(effet), resultat = pisteResultat(effet);
   const choisir = (e: React.ChangeEvent<HTMLInputElement>) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) p.onPiece(f); };
@@ -81,7 +84,7 @@ export function ApportPoches(p: ApportPochesProps) {
         {COMPTES.map(([valeur, nom]) => <button key={valeur} type="button" role="radio" aria-checked={p.method === valeur} className="mvt-c" onClick={() => p.onMethod(valeur)}>{nom}</button>)}
       </div>
     </div>
-    <label className="mvt-f"><span>Motif</span><span className="mvt-in"><Input aria-label="Motif" value={p.note} onChange={e => p.onNote(e.target.value)} required placeholder={entrant ? 'Apport pour le malt de décembre' : 'Prélèvement personnel…'} /></span></label>
+    <label className="mvt-f"><span>Motif</span><span className="mvt-in" data-manque={p.motifManque ? 'true' : undefined}><Input ref={champMotif} aria-label="Motif" aria-invalid={p.motifManque ? true : undefined} aria-describedby={p.motifManque ? 'mvt-motif-err' : undefined} value={p.note} onChange={e => p.onNote(e.target.value)} placeholder={entrant ? 'Apport pour le malt de décembre' : 'Prélèvement personnel…'} /></span>{p.motifManque && <span id="mvt-motif-err" role="alert" className="mvt-err">{entrant ? 'Dis à quoi sert cet apport (le motif) pour l’enregistrer.' : 'Dis à quoi sert ce prélèvement (le motif) pour l’enregistrer.'}</span>}</label>
 
     <div className="mvt-f" role="group" aria-labelledby="mvt-just"><span id="mvt-just">Justificatif · relevé ou quittance</span>
       <input ref={photo} type="file" accept="image/*" capture="environment" hidden aria-label="Justificatif : photo" onChange={choisir} />

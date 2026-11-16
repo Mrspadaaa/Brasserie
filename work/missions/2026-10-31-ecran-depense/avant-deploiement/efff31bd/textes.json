@@ -1,0 +1,1694 @@
+{
+ "journal": [
+  [
+   "390-clair",
+   "paire",
+   2
+  ],
+  [
+   "390-clair",
+   "puce",
+   "Doublons2"
+  ],
+  [
+   "390-clair",
+   "annuler",
+   "Annuler celle-ci"
+  ],
+  [
+   "390-clair",
+   "filtres",
+   "Filtres"
+  ],
+  [
+   "390-clair",
+   "archives",
+   "Gérer les archives"
+  ],
+  [
+   "390-clair",
+   "annee",
+   "20252"
+  ],
+  [
+   "390-clair",
+   "ranger",
+   "Ranger 2024 à 2025"
+  ],
+  [
+   "390-clair",
+   "consulter",
+   "Consulter ›"
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-clair",
+   "paye",
+   "✓ Payé"
+  ],
+  [
+   "390-clair",
+   "autre",
+   "Autre montant"
+  ],
+  [
+   "390-clair",
+   "payer",
+   "✓ Payer 400,00"
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-clair",
+   "ligne",
+   "Malt et houblons · Pale Ale · Comptoir du brasseur✓ payé aujourd’hui · banquesan"
+  ],
+  [
+   "390-clair",
+   "modifier",
+   "Modifier"
+  ],
+  [
+   "390-clair",
+   "autres-frais",
+   false
+  ],
+  [
+   "390-clair",
+   "apport",
+   "Apport ou prélèvement privé"
+  ],
+  [
+   "390-clair",
+   "enr-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "390-clair",
+   "apres-enr",
+   1
+  ],
+  [
+   "390-clair",
+   "ligne-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "390-clair",
+   "boutons-apport",
+   "🍺 L'Affinée | Thème sombre (cave) | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | ‹ | novembre | › | en retard 60,00 | Rechercher | Loyer de l’atelier à payer · 2 | ✓ Payé | Électricité · Énergie ✓ payé a | + pièce | Vente au marché · Marché du vi | + pièce | Malt et houblons · Pale Ale ·  | + pièce | Nettoyant alcalin · Comptoir d | + pièce | Joints de la cuve · Inox & C"
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-clair",
+   "profild",
+   "En caisse4 181,60 CHF"
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-clair",
+   "plus",
+   true
+  ],
+  [
+   "390-clair",
+   "row",
+   "Pale Ale de septembreRecette30 L"
+  ],
+  [
+   "390-clair",
+   "litre",
+   "estimé7,51CHF / L"
+  ],
+  [
+   "390-clair",
+   "retour",
+   "Retour au budget"
+  ],
+  [
+   "390-clair",
+   "op",
+   "Pilsner · 6 kgstock + achat44,83"
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-clair",
+   "puce",
+   "Pourquoi les charges fixes pèsent autant ?Compagnon brasseur"
+  ],
+  [
+   "390-clair",
+   "envoyer",
+   "Envoyer"
+  ],
+  [
+   "390-clair",
+   "bloquees",
+   [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity"
+   ]
+  ],
+  [
+   "390-clair",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "paire",
+   2
+  ],
+  [
+   "390-sombre",
+   "puce",
+   "Doublons2"
+  ],
+  [
+   "390-sombre",
+   "annuler",
+   "Annuler celle-ci"
+  ],
+  [
+   "390-sombre",
+   "filtres",
+   "Filtres"
+  ],
+  [
+   "390-sombre",
+   "archives",
+   "Gérer les archives"
+  ],
+  [
+   "390-sombre",
+   "annee",
+   "20252"
+  ],
+  [
+   "390-sombre",
+   "ranger",
+   "Ranger 2024 à 2025"
+  ],
+  [
+   "390-sombre",
+   "consulter",
+   "Consulter ›"
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "paye",
+   "✓ Payé"
+  ],
+  [
+   "390-sombre",
+   "autre",
+   "Autre montant"
+  ],
+  [
+   "390-sombre",
+   "payer",
+   "✓ Payer 400,00"
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "ligne",
+   "Malt et houblons · Pale Ale · Comptoir du brasseur✓ payé aujourd’hui · banquesan"
+  ],
+  [
+   "390-sombre",
+   "modifier",
+   "Modifier"
+  ],
+  [
+   "390-sombre",
+   "autres-frais",
+   false
+  ],
+  [
+   "390-sombre",
+   "apport",
+   "Apport ou prélèvement privé"
+  ],
+  [
+   "390-sombre",
+   "enr-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "390-sombre",
+   "apres-enr",
+   1
+  ],
+  [
+   "390-sombre",
+   "ligne-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "390-sombre",
+   "boutons-apport",
+   "🍺 L'Affinée | Thème clair | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | ‹ | novembre | › | en retard 60,00 | Rechercher | Loyer de l’atelier à payer · 2 | ✓ Payé | Électricité · Énergie ✓ payé a | + pièce | Vente au marché · Marché du vi | + pièce | Malt et houblons · Pale Ale ·  | + pièce | Nettoyant alcalin · Comptoir d | + pièce | Joints de la cuve · Inox & Co  | + p"
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "profild",
+   "En caisse4 181,60 CHF"
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "plus",
+   true
+  ],
+  [
+   "390-sombre",
+   "row",
+   "Pale Ale de septembreRecette30 L"
+  ],
+  [
+   "390-sombre",
+   "litre",
+   "estimé7,51CHF / L"
+  ],
+  [
+   "390-sombre",
+   "retour",
+   "Retour au budget"
+  ],
+  [
+   "390-sombre",
+   "op",
+   "Pilsner · 6 kgstock + achat44,83"
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "390-sombre",
+   "puce",
+   "Pourquoi les charges fixes pèsent autant ?Compagnon brasseur"
+  ],
+  [
+   "390-sombre",
+   "envoyer",
+   "Envoyer"
+  ],
+  [
+   "390-sombre",
+   "bloquees",
+   [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity"
+   ]
+  ],
+  [
+   "390-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "paire",
+   2
+  ],
+  [
+   "1280-clair",
+   "puce",
+   "Doublons2"
+  ],
+  [
+   "1280-clair",
+   "annuler",
+   "Annuler celle-ci"
+  ],
+  [
+   "1280-clair",
+   "filtres",
+   "Filtres"
+  ],
+  [
+   "1280-clair",
+   "archives",
+   "Gérer les archives"
+  ],
+  [
+   "1280-clair",
+   "annee",
+   "20252"
+  ],
+  [
+   "1280-clair",
+   "ranger",
+   "Ranger 2024 à 2025"
+  ],
+  [
+   "1280-clair",
+   "consulter",
+   "Consulter ›"
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "paye",
+   "✓ Payé"
+  ],
+  [
+   "1280-clair",
+   "autre",
+   "Autre montant"
+  ],
+  [
+   "1280-clair",
+   "payer",
+   "✓ Payer 400,00"
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "ligne",
+   "Malt et houblons · Pale Ale · Comptoir du brasseur✓ payé aujourd’hui · banquesan"
+  ],
+  [
+   "1280-clair",
+   "modifier",
+   "Modifier"
+  ],
+  [
+   "1280-clair",
+   "autres-frais",
+   false
+  ],
+  [
+   "1280-clair",
+   "apport",
+   "Apport ou prélèvement privé"
+  ],
+  [
+   "1280-clair",
+   "enr-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "1280-clair",
+   "apres-enr",
+   1
+  ],
+  [
+   "1280-clair",
+   "ligne-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "1280-clair",
+   "boutons-apport",
+   "🍺 L'Affinée | Thème sombre (cave) | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | ‹ | novembre | › | en retard 60,00 | Rechercher | Loyer de l’atelier à payer · 2 | ✓ Payé | Électricité · Énergie ✓ payé a | + pièce | Vente au marché · Marché du vi | + pièce | Malt et houblons · Pale Ale ·  | + pièce | Nettoyant alcalin · Comptoir d | + pièce | Joints de la cuve · Inox & C"
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "profild",
+   "En caisse4 181,60 CHF"
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "plus",
+   true
+  ],
+  [
+   "1280-clair",
+   "row",
+   "Pale Ale de septembreRecette30 L"
+  ],
+  [
+   "1280-clair",
+   "litre",
+   "estimé7,51CHF / L"
+  ],
+  [
+   "1280-clair",
+   "retour",
+   "Retour au budget"
+  ],
+  [
+   "1280-clair",
+   "op",
+   "Pilsner · 6 kgstock + achat44,83"
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-clair",
+   "puce",
+   "Pourquoi les charges fixes pèsent autant ?Compagnon brasseur"
+  ],
+  [
+   "1280-clair",
+   "envoyer",
+   "Envoyer"
+  ],
+  [
+   "1280-clair",
+   "bloquees",
+   [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity"
+   ]
+  ],
+  [
+   "1280-clair",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "paire",
+   2
+  ],
+  [
+   "1280-sombre",
+   "puce",
+   "Doublons2"
+  ],
+  [
+   "1280-sombre",
+   "annuler",
+   "Annuler celle-ci"
+  ],
+  [
+   "1280-sombre",
+   "filtres",
+   "Filtres"
+  ],
+  [
+   "1280-sombre",
+   "archives",
+   "Gérer les archives"
+  ],
+  [
+   "1280-sombre",
+   "annee",
+   "20252"
+  ],
+  [
+   "1280-sombre",
+   "ranger",
+   "Ranger 2024 à 2025"
+  ],
+  [
+   "1280-sombre",
+   "consulter",
+   "Consulter ›"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "paye",
+   "✓ Payé"
+  ],
+  [
+   "1280-sombre",
+   "autre",
+   "Autre montant"
+  ],
+  [
+   "1280-sombre",
+   "payer",
+   "✓ Payer 400,00"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "ligne",
+   "Malt et houblons · Pale Ale · Comptoir du brasseur✓ payé aujourd’hui · banquesan"
+  ],
+  [
+   "1280-sombre",
+   "modifier",
+   "Modifier"
+  ],
+  [
+   "1280-sombre",
+   "autres-frais",
+   false
+  ],
+  [
+   "1280-sombre",
+   "apport",
+   "Apport ou prélèvement privé"
+  ],
+  [
+   "1280-sombre",
+   "enr-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "1280-sombre",
+   "apres-enr",
+   1
+  ],
+  [
+   "1280-sombre",
+   "ligne-apport",
+   "Enregistrer l’apport"
+  ],
+  [
+   "1280-sombre",
+   "boutons-apport",
+   "🍺 L'Affinée | Thème clair | Rechercher (⌘K) | Menu | Synthèse | Opérations | Prévisions | Annuel | ‹ | novembre | › | en retard 60,00 | Rechercher | Loyer de l’atelier à payer · 2 | ✓ Payé | Électricité · Énergie ✓ payé a | + pièce | Vente au marché · Marché du vi | + pièce | Malt et houblons · Pale Ale ·  | + pièce | Nettoyant alcalin · Comptoir d | + pièce | Joints de la cuve · Inox & Co  | + p"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "profild",
+   "En caisse4 181,60 CHF"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "plus",
+   true
+  ],
+  [
+   "1280-sombre",
+   "row",
+   "Pale Ale de septembreRecette30 L"
+  ],
+  [
+   "1280-sombre",
+   "litre",
+   "estimé7,51CHF / L"
+  ],
+  [
+   "1280-sombre",
+   "retour",
+   "Retour au budget"
+  ],
+  [
+   "1280-sombre",
+   "op",
+   "Pilsner · 6 kgstock + achat44,83"
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ],
+  [
+   "1280-sombre",
+   "puce",
+   "Pourquoi les charges fixes pèsent autant ?Compagnon brasseur"
+  ],
+  [
+   "1280-sombre",
+   "envoyer",
+   "Envoyer"
+  ],
+  [
+   "1280-sombre",
+   "bloquees",
+   [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerConversation",
+    "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity"
+   ]
+  ],
+  [
+   "1280-sombre",
+   "err",
+   []
+  ]
+ ],
+ "textes": {
+  "dbl-repos-390-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "dbl-annule-390-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\nannulée le 16 nov.\nsans pièce\nRétablir\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "arc-repos-390-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n‹›\nrien n’est rangé\nrien n’est supprimé\nLe journal de tous les jours garde\n15\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-poignee-390-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n15\n→\n13\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024 à 2025",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-range-390-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n13\npièces\n2024\n rangée le 16.11.2026 · 1\nConsulter ›\n2025\n rangée le 16.11.2026 · 2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-consulte-390-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nAnnées 2024, 2025 archivées. Les factures ouvertes restent dans le suivi. Fermer\n‹\nArchives 2024\n›\nretard\n60,00\n+800,00\nVentes\npayé\n0,00\nà payer\n0,00\ndépensé\n0,00\nVentes\n+800,00\nFête du village · ancienne édition · Comité du village\n✓ encaissé 1 juin 2024 · banque\nsans pièce\n+ pièce\n+800,00\nAnnée archivée \n2025\n2024\nToutes les années archivées\nVérifier mes opérations\nPar date\nFiltres\nDoublons\nArchives\nCourantes\nTout\nToutes\n1\nÀ payer\nÀ encaisser\nÀ compléter\n1\nSans justificatif\n1\nToutes catégories\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\nÉcritures annulées uniquement\nGérer les archives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Année archivée=\"2024\"",
+    "Catégorie=\"all\""
+   ],
+   "deborde": 0
+  },
+  "fn2-avis-390-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n400,00\nPayé 400,00\nAnnuler\nAutre montant\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-390-clair.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-bas-390-clair.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-apres-390-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-390-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-bas-390-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-390-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-bas-390-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-autres-390-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "apport-apres-390-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-390-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-bas-390-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-390-clair.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-bas-390-clair.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "bb-choix-390-clair.png": {
+   "t": "Quel brassin veux-tu estimer ?\nQuel brassin veux-tu estimer ?\nRecettes\nPale Ale de septembre\nRecette\n30 L",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-repos-390-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-complet-390-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-390-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-bas-390-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-rangee-390-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Malt\nRetour au budget\nMalt\n1/1 prix connus\nTous\n1\nÀ acheter\n1\nÀ compléter\n0\nPilsner\n6 kg · 22,41 en stock + 22,42 à acheter\n44,83 CHF\nRetour\nEnregistrer",
+   "champs": [
+    "Article de stock pour Pilsner=\"DEMO-MALT\"",
+    "=\"on\"",
+    "Prix de Pilsner=\"186,8\"",
+    "Quantité du prix de Pilsner=\"25\"",
+    "Unité du prix de Pilsner=\"kg\"",
+    "Lot minimum de Pilsner=\"\"",
+    "Base du prix de Pilsner=\"TTC\"",
+    "TVA de Pilsner=\"0\"",
+    "Origine du prix de Pilsner=\"invoice\"",
+    "Référence du prix de Pilsner=\"Comptoir du brasseur · DEMO-T1\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-390-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-bas-390-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-coche-390-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n13 opérations\n2 à payer 460,00\n15 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-chat-390-clair.png": {
+   "t": "Compagnon brasseur\nMes finances\nFinances de la brasserie · contexte actualisé à chaque question\nMe notifier à la réponse\nLimites IA\nGemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.\nAutres questions utiles\nPourquoi les charges fixes pèsent autant sur le mois novembre 2026 ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer). 468,00 sur 696,80 dépensés.\nContexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer.\nEnvoi à confirmer\n0:03\nRéception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.\nRéessayer l’envoi\nReformuler\nSuivi hors connexion. Les analyses déjà reçues continuent sur le serveur ; leur état sera récupéré au retour du réseau. Actualiser\nLe conseil n’a pas pu être reçu ou vérifié. Ta question est conservée ; tu peux réessayer.\nMode de réponse\nRapide\nAuto\nApprofondi\nFlash adapte ses recherches et vérifie le conseil\nQuestion au compagnon brasseur\nEnvoyer",
+   "champs": [
+    "=\"fast\"",
+    "=\"auto\"",
+    "=\"deep\"",
+    "Une dépense à comprendre, un achat à préparer…=\"\""
+   ],
+   "deborde": 0
+  },
+  "dbl-repos-390-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "dbl-annule-390-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\nannulée le 16 nov.\nsans pièce\nRétablir\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "arc-repos-390-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n‹›\nrien n’est rangé\nrien n’est supprimé\nLe journal de tous les jours garde\n15\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-poignee-390-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n15\n→\n13\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024 à 2025",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-range-390-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n13\npièces\n2024\n rangée le 16.11.2026 · 1\nConsulter ›\n2025\n rangée le 16.11.2026 · 2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-consulte-390-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nAnnées 2024, 2025 archivées. Les factures ouvertes restent dans le suivi. Fermer\n‹\nArchives 2024\n›\nretard\n60,00\n+800,00\nVentes\npayé\n0,00\nà payer\n0,00\ndépensé\n0,00\nVentes\n+800,00\nFête du village · ancienne édition · Comité du village\n✓ encaissé 1 juin 2024 · banque\nsans pièce\n+ pièce\n+800,00\nAnnée archivée \n2025\n2024\nToutes les années archivées\nVérifier mes opérations\nPar date\nFiltres\nDoublons\nArchives\nCourantes\nTout\nToutes\n1\nÀ payer\nÀ encaisser\nÀ compléter\n1\nSans justificatif\n1\nToutes catégories\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\nÉcritures annulées uniquement\nGérer les archives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Année archivée=\"2024\"",
+    "Catégorie=\"all\""
+   ],
+   "deborde": 0
+  },
+  "fn2-avis-390-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n400,00\nPayé 400,00\nAnnuler\nAutre montant\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-390-sombre.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-bas-390-sombre.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-apres-390-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-390-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-bas-390-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-390-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-bas-390-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-autres-390-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "apport-apres-390-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-390-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-bas-390-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-390-sombre.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-bas-390-sombre.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "bb-choix-390-sombre.png": {
+   "t": "Quel brassin veux-tu estimer ?\nQuel brassin veux-tu estimer ?\nRecettes\nPale Ale de septembre\nRecette\n30 L",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-repos-390-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-complet-390-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-390-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-bas-390-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-rangee-390-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Malt\nRetour au budget\nMalt\n1/1 prix connus\nTous\n1\nÀ acheter\n1\nÀ compléter\n0\nPilsner\n6 kg · 22,41 en stock + 22,42 à acheter\n44,83 CHF\nRetour\nEnregistrer",
+   "champs": [
+    "Article de stock pour Pilsner=\"DEMO-MALT\"",
+    "=\"on\"",
+    "Prix de Pilsner=\"186,8\"",
+    "Quantité du prix de Pilsner=\"25\"",
+    "Unité du prix de Pilsner=\"kg\"",
+    "Lot minimum de Pilsner=\"\"",
+    "Base du prix de Pilsner=\"TTC\"",
+    "TVA de Pilsner=\"0\"",
+    "Origine du prix de Pilsner=\"invoice\"",
+    "Référence du prix de Pilsner=\"Comptoir du brasseur · DEMO-T1\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-390-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-bas-390-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-coche-390-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n13 opérations\n2 à payer 460,00\n15 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-chat-390-sombre.png": {
+   "t": "Compagnon brasseur\nMes finances\nFinances de la brasserie · contexte actualisé à chaque question\nMe notifier à la réponse\nLimites IA\nGemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.\nAutres questions utiles\nPourquoi les charges fixes pèsent autant sur le mois novembre 2026 ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer). 468,00 sur 696,80 dépensés.\nContexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer.\nEnvoi à confirmer\n0:03\nRéception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.\nRéessayer l’envoi\nReformuler\nSuivi hors connexion. Les analyses déjà reçues continuent sur le serveur ; leur état sera récupéré au retour du réseau. Actualiser\nLe conseil n’a pas pu être reçu ou vérifié. Ta question est conservée ; tu peux réessayer.\nMode de réponse\nRapide\nAuto\nApprofondi\nFlash adapte ses recherches et vérifie le conseil\nQuestion au compagnon brasseur\nEnvoyer",
+   "champs": [
+    "=\"fast\"",
+    "=\"auto\"",
+    "=\"deep\"",
+    "Une dépense à comprendre, un achat à préparer…=\"\""
+   ],
+   "deborde": 0
+  },
+  "dbl-repos-1280-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "dbl-annule-1280-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\nannulée le 16 nov.\nsans pièce\nRétablir\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "arc-repos-1280-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n‹›\nrien n’est rangé\nrien n’est supprimé\nLe journal de tous les jours garde\n15\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-poignee-1280-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n15\n→\n13\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024 à 2025",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-range-1280-clair.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n13\npièces\n2024\n rangée le 16.11.2026 · 1\nConsulter ›\n2025\n rangée le 16.11.2026 · 2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-consulte-1280-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nAnnées 2024, 2025 archivées. Les factures ouvertes restent dans le suivi. Fermer\n‹\nArchives 2024\n›\nen\nretard\n60,00\ndu\nau\n+800,00\nVentes\npayé\n0,00\nà payer\n0,00\ndépensé\n0,00\nVentes\n+800,00\nFête du village · ancienne édition · Comité du village\n✓ encaissé 1 juin 2024 · banque\nsans pièce\n+ pièce\n+800,00\nAnnée archivée \n2025\n2024\nToutes les années archivées\nVérifier mes opérations\nPar date\nFiltres\nDoublons\nArchives\nCourantes\nTout\nToutes\n1\nÀ payer\nÀ encaisser\nÀ compléter\n1\nSans justificatif\n1\nToutes catégories\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\nÉcritures annulées uniquement\nGérer les archives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"\"",
+    "Au=\"\"",
+    "Année archivée=\"2024\"",
+    "Catégorie=\"all\""
+   ],
+   "deborde": 0
+  },
+  "fn2-avis-1280-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n400,00\nPayé 400,00\nAnnuler\nAutre montant\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-1280-clair.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-bas-1280-clair.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-apres-1280-clair.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-1280-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-bas-1280-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-1280-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-bas-1280-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-autres-1280-clair.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "apport-apres-1280-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-1280-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-bas-1280-clair.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-1280-clair.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-bas-1280-clair.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "bb-choix-1280-clair.png": {
+   "t": "Quel brassin veux-tu estimer ?\nQuel brassin veux-tu estimer ?\nRecettes\nPale Ale de septembre\nRecette\n30 L",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-repos-1280-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-complet-1280-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-1280-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-bas-1280-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-rangee-1280-clair.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Malt\nRetour au budget\nMalt\n1/1 prix connus\nTous\n1\nÀ acheter\n1\nÀ compléter\n0\nPilsner\n6 kg · 22,41 en stock + 22,42 à acheter\n44,83 CHF\nRetour\nEnregistrer",
+   "champs": [
+    "Article de stock pour Pilsner=\"DEMO-MALT\"",
+    "=\"on\"",
+    "Prix de Pilsner=\"186,8\"",
+    "Quantité du prix de Pilsner=\"25\"",
+    "Unité du prix de Pilsner=\"kg\"",
+    "Lot minimum de Pilsner=\"\"",
+    "Base du prix de Pilsner=\"TTC\"",
+    "TVA de Pilsner=\"0\"",
+    "Origine du prix de Pilsner=\"invoice\"",
+    "Référence du prix de Pilsner=\"Comptoir du brasseur · DEMO-T1\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-1280-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-bas-1280-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-coche-1280-clair.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n13 opérations\n2 à payer 460,00\n15 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-chat-1280-clair.png": {
+   "t": "Compagnon brasseur\nMes finances\nFinances de la brasserie · contexte actualisé à chaque question\nMe notifier à la réponse\nLimites IA\nGemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.\nAutres questions utiles\nPourquoi les charges fixes pèsent autant sur le mois novembre 2026 ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer). 468,00 sur 696,80 dépensés.\nContexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer.\nEnvoi à confirmer\n0:04\nRéception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.\nRéessayer l’envoi\nReformuler\nSuivi hors connexion. Les analyses déjà reçues continuent sur le serveur ; leur état sera récupéré au retour du réseau. Actualiser\nLe conseil n’a pas pu être reçu ou vérifié. Ta question est conservée ; tu peux réessayer.\nMode de réponse\nRapide\nAuto\nApprofondi\nFlash adapte ses recherches et vérifie le conseil\nQuestion au compagnon brasseur\nEnvoyer",
+   "champs": [
+    "=\"fast\"",
+    "=\"auto\"",
+    "=\"deep\"",
+    "Une dépense à comprendre, un achat à préparer…=\"\""
+   ],
+   "deborde": 0
+  },
+  "dbl-repos-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "dbl-annule-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n375,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n485,80\nà payer\n400,00\ndépensé\n885,80\n×2\n2 pièces peut-être en double\nRien n’est supprimé. Annule celle en trop, ou écarte l’avertissement.\nMême facture\nn° F-2024-117\nAtelier du Houblon · F-2024-117\nannulée le 16 nov.\nsans pièce\nRétablir\n94,50\nAtelier du Houblon · F-2024-117\n✓ payé 15 nov. · banque\nsans pièce\nAnnuler celle-ci\n94,50\nsaisies le 14 et le 15 janv.\nCe n’est pas un doublon\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\n2\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "arc-repos-1280-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n‹›\nrien n’est rangé\nrien n’est supprimé\nLe journal de tous les jours garde\n15\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-poignee-1280-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n15\n→\n13\npièces\n2024\n1\nConsulter ›\n2025\n2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger 2024 à 2025",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-range-1280-sombre.png": {
+   "t": "Les archives\nLes archives\n2024\n1\n2025\n2\n2026\n12\n60,00 reste au suivi ↓\n‹›\nrangé jusqu’à fin 2025\nrien n’est supprimé\nLe journal de tous les jours garde\n13\npièces\n2024\n rangée le 16.11.2026 · 1\nConsulter ›\n2025\n rangée le 16.11.2026 · 2 · 1 à suivre\nConsulter ›\n2026\nen cours · 12 · 1 à suivre\nRemettre\nRanger",
+   "champs": [],
+   "deborde": 0
+  },
+  "arc-consulte-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\nAnnées 2024, 2025 archivées. Les factures ouvertes restent dans le suivi. Fermer\n‹\nArchives 2024\n›\nen\nretard\n60,00\ndu\nau\n+800,00\nVentes\npayé\n0,00\nà payer\n0,00\ndépensé\n0,00\nVentes\n+800,00\nFête du village · ancienne édition · Comité du village\n✓ encaissé 1 juin 2024 · banque\nsans pièce\n+ pièce\n+800,00\nAnnée archivée \n2025\n2024\nToutes les années archivées\nVérifier mes opérations\nPar date\nFiltres\nDoublons\nArchives\nCourantes\nTout\nToutes\n1\nÀ payer\nÀ encaisser\nÀ compléter\n1\nSans justificatif\n1\nToutes catégories\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nVentes\nApports privés\nÉcritures annulées uniquement\nGérer les archives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"\"",
+    "Au=\"\"",
+    "Année archivée=\"2024\"",
+    "Catégorie=\"all\""
+   ],
+   "deborde": 0
+  },
+  "fn2-avis-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n400,00\nPayé 400,00\nAnnuler\nAutre montant\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-1280-sombre.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-autre-bas-1280-sombre.png": {
+   "t": "Payer l’Atelier\n2 pièces à payer au même fournisseur\nTon virement\nloyer 400,00\nLe plus ancien d’abord\n✓\nSolde atelier · ancienne année\ndepuis le 20 déc. 2025\n60,00\npas dans ce virement\n✓\nLoyer de l’atelier\nà payer · 25 nov.\n400,00\n✓ soldé\nJustificatif du virement\nsera joint à la pièce\nPhoto\nFichier\nLe\naujourd’hui\nautre\navec\nbanque\nAnnuler\n✓ Payer\n400,00",
+   "champs": [
+    "Montant du virement (CHF)=\"400,00\""
+   ],
+   "deborde": 0
+  },
+  "fn2-apres-1280-sombre.png": {
+   "t": "Synthèse\nOpérations\nPrévisions\nAnnuel\n‹\nnovembre\n›\nen\nretard\n60,00\ndu\nau\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\npayé\n696,80\nà payer\n0,00\ndépensé\n696,80\nCharges fixes\n468,00\nLoyer de l’atelier\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n400,00\nÉlectricité · Énergie\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n68,00\nVentes\n+720,00\nVente au marché · Marché du village\n✓ encaissé aujourd’hui · banque\nsans pièce\n+ pièce\n+720,00\nBrassage\n186,80\nMalt et houblons · Pale Ale · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n186,80\nNettoyage\n42,00\nNettoyant alcalin · Comptoir du brasseur\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n42,00\nMatériel · à part\n28,60\nJoints de la cuve · Inox & Co\n✓ payé aujourd’hui · banque\nsans pièce\n+ pièce\n28,60\nEn retard · 2025\n60,00\nSolde atelier · ancienne année\nà payer depuis le 20 déc. 2025\nsans pièce\n✓ Payé\n60,00\nPourquoi les charges fixes pèsent autant ?\nPar date\nFiltres\nDoublons\nApport ou prélèvement privé\nArchives",
+   "champs": [
+    "Période du journal=\"2026-11\"",
+    "Du=\"2026-11-01\"",
+    "Au=\"2026-11-30\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-1280-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-malt-bas-1280-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nBrassage · Comptoir du brasseur · 16 nov. 2026\n186,80\nCHF\n✓ payé aujourd’hui · banque\nSans justificatif\nDans la facture\n1 ligne · au stock\nPilsner · 25 kg\n186,80\nModifier\nAvoir ou remboursement\nÉchéance et prévision\nPaiements\n1\n16 nov. 2026 · banque\n−186,80\nCorriger ce paiement saisi par erreur\nCorriger une erreur de saisie",
+   "champs": [
+    "=\"2026-11-25\"",
+    "=\"\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-1280-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-malt-bas-1280-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "modif-autres-1280-sombre.png": {
+   "t": "Malt et houblons · Pale Ale\nPas encore de pièce\nPhoto du ticket\nFichier ou PDF\nNom\nCatégorie\nBrassage\nMatériel\nNettoyage\nCharges fixes\nLocal et travaux\nAutres frais\nPrécision\nDate\nMontant\nsans TVA\nFournisseur, n° de pièce\nDrive · Novembre › Brassage\nCopier le lien\nAnnuler\nEnregistrer",
+   "champs": [
+    "=\"Malt et houblons · Pale Ale\"",
+    "tx_edit_category=\"brassage\"",
+    "CIP, malt, outillage…=\"\"",
+    "JJ.MM.AAAA=\"16.11.2026\"",
+    "Montant (CHF)=\"186,80\"",
+    "Brau-Rauchshop cmd 686863, Bauhaus…=\"Comptoir du brasseur\""
+   ],
+   "deborde": 0
+  },
+  "apport-apres-1280-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-1280-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "fiche-apport-bas-1280-sombre.png": {
+   "t": "De ta poche à la brasserie\nDe ta poche à la brasserie\nTa poche\nLa brasserie\n⇄\nDans l’autre sens : je reprends\nCaisse\n+500,00\nVentes − dépenses\n+23,20\ninchangé : un apport n’est pas une vente\nQuand\naujourd’hui · 16 nov.\nautre date…\nSur quel compte\nBanque\nEspèces\nTWINT\nAutre\nMotif\nDis à quoi sert cet apport (le motif) pour l’enregistrer.\nJustificatif · relevé ou quittance\nPhoto\nFichier ou PDF\nEnregistrer l’apport",
+   "champs": [
+    "Montant (CHF)=\"500,00\"",
+    "Motif=\"\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-1280-sombre.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "pfd-ouvert-bas-1280-sombre.png": {
+   "t": "Solde et paramètres\nSolde et paramètres\nSolde de départ\nCHF\naujourd’hui 4 181,60\njanv.\nmars\nmai\njuil.\nsept.\nnov.\n1 janv. 2026\nVérifié\nTout est noté depuis\njanv. 2026\nj\nf\nm\na\nm\nj\nj\na\ns\no\nn\nd\n10 mois complets : la tendance est calculée.\nProduction prévue\nL/an\n0\n2 000\n4 000 L\ncharges fixes\n4,00/L\n4 800 ÷ 1 200\nsoit\n≈ 44\nbrassins de 27 L\nPale Ale\n≥ 7,51/L\navec ce réglage\nIndépendant · Fribourg · TVA\n✓ sans TVA\nventes sur 12 mois 720 sur le seuil 100 000 CHF\nPrécisions\nAnnuler\nEnregistrer",
+   "champs": [
+    "Solde de départ (CHF)=\"4 000,00\"",
+    "Date du solde=\"2026-01-01\"",
+    "J’ai vérifié ce solde, avant les paiements de cette journée.=\"on\"",
+    "Historique des dépenses complet depuis=\"2026-01\"",
+    "Production annuelle prévue (litres conditionnés)=\"1 200\"",
+    "Production annuelle, curseur=\"1200\""
+   ],
+   "deborde": 0
+  },
+  "bb-choix-1280-sombre.png": {
+   "t": "Quel brassin veux-tu estimer ?\nQuel brassin veux-tu estimer ?\nRecettes\nPale Ale de septembre\nRecette\n30 L",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-repos-1280-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-complet-1280-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · brassage 20 nov.\n30 L\nbrassés ·\n27 L\nnets ›\nQuand tu paies\nton litre ›\n22,41\n64,26\n116,10\n=\nestimé\n7,51\nCHF / L\ndéjà payé\nstock\nà payer\npart de l'année\n202,77 ÷ 27 L\nMalt\n44,83\nPilsner · 6 kg\nstock + achat\n44,83\nHoublon, levure\n—\nhors recette\naucun houblon ni levure : le litre ne les compte pas\nFrais\n41,84\nÉnergie\nà payer\n8,00\nNettoyage\nà payer\n3,00\nEmballage\nà payer\n24,00\nImpôt bière · 1,050\nà payer\n6,84\nPart de l'année\n116,10\nCharges fixes · 4 800 / an\nréparti\n108,00\nUsure du matériel · 360 / an\nréparti\n8,10\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-1280-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-c3a-bas-1280-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Détail du litre\nRetour au budget\nQUAND TU PAIES\n27 L nets\nPOUR QUOI\nDéjà payé\n22,41\nÀ payer\n64,26\nCoût de l’année\n116,10\nMalt\n44,83\nÉnergie\n8,00\nNettoyage\n3,00\nEmballage\n24,00\nImpôt bière\n6,84\nHoublon, levure\n?\nUsure matériel\n8,10\nCharges fixes\n108,00\n0,00 pointillé : estimé\n202,77\n÷ 27 L\n=\n7,51\nCHF/L\nemballage compris · estimé\nsans houblon ni levure\nTon litre, quand tu le paies\npayé 0,83\nà payer 2,38\nannée 4,30\nExpliquer\nEnregistrer\nPrévoir\n64,26",
+   "champs": [],
+   "deborde": 0
+  },
+  "bb-rangee-1280-sombre.png": {
+   "t": "Pale Ale de septembre\nCoût du brassin · Malt\nRetour au budget\nMalt\n1/1 prix connus\nTous\n1\nÀ acheter\n1\nÀ compléter\n0\nPilsner\n6 kg · 22,41 en stock + 22,42 à acheter\n44,83 CHF\nRetour\nEnregistrer",
+   "champs": [
+    "Article de stock pour Pilsner=\"DEMO-MALT\"",
+    "=\"on\"",
+    "Prix de Pilsner=\"186,8\"",
+    "Quantité du prix de Pilsner=\"25\"",
+    "Unité du prix de Pilsner=\"kg\"",
+    "Lot minimum de Pilsner=\"\"",
+    "Base du prix de Pilsner=\"TTC\"",
+    "TVA de Pilsner=\"0\"",
+    "Origine du prix de Pilsner=\"invoice\"",
+    "Référence du prix de Pilsner=\"Comptoir du brasseur · DEMO-T1\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-1280-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-feuille-bas-1280-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n6 opérations\nLoyer de l’atelier à payer 400,00\n6 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-coche-1280-sombre.png": {
+   "t": "✦ Compagnon brasseur\n✦ Compagnon brasseur\nTa question vise\nnovembre\n+720,00\nVentes\n468,00\nFixes\n186,80\nBrassage\n42,00\nNettoyage\n28,60\nMatériel\nTa question\nCe qu’il va lire\nnovembre\n13 opérations\n2 à payer 460,00\n15 sans pièce\nprofil : sans TVA\ntout l’historique\narchives\nprojets de matériel\nIl lit aussi le registre : une pastille décochée lui est demandée en consigne, elle n’est pas coupée du registre.\nRapide\nAuto\nApprofondi\n⌄\nEnvoyer",
+   "champs": [
+    "=\"Pourquoi les charges fixes pèsent autant ? 468,00 sur 696,8",
+    "Mode de réponse=\"auto\""
+   ],
+   "deborde": 0
+  },
+  "ia-chat-1280-sombre.png": {
+   "t": "Compagnon brasseur\nMes finances\nFinances de la brasserie · contexte actualisé à chaque question\nMe notifier à la réponse\nLimites IA\nGemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.\nAutres questions utiles\nPourquoi les charges fixes pèsent autant sur le mois novembre 2026 ? Explique ce qui compose ce poste (pièces, fournisseurs, charges qui reviennent), ce qui est payé ou à payer, et ce qui sort de l'ordinaire. Signale les données manquantes (pièce sans date, montant à confirmer). 468,00 sur 696,80 dépensés.\nContexte choisi par le brasseur : tout l’historique. N’utilise pas : les archives, les projets de matériel, les pièces à payer.\nEnvoi à confirmer\n0:03\nRéception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.\nRéessayer l’envoi\nReformuler\nSuivi hors connexion. Les analyses déjà reçues continuent sur le serveur ; leur état sera récupéré au retour du réseau. Actualiser\nLe conseil n’a pas pu être reçu ou vérifié. Ta question est conservée ; tu peux réessayer.\nMode de réponse\nRapide\nAuto\nApprofondi\nFlash adapte ses recherches et vérifie le conseil\nQuestion au compagnon brasseur\nEnvoyer",
+   "champs": [
+    "=\"fast\"",
+    "=\"auto\"",
+    "=\"deep\"",
+    "Une dépense à comprendre, un achat à préparer…=\"\""
+   ],
+   "deborde": 0
+  }
+ }
+}

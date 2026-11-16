@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m2mo-a · Modifier, tiède : la pièce en tête, les champs rangés</title>
+<style>
+@font-face{font-family:"Source Sans 3";font-weight:400;src:url(../fonts/SourceSans3-400.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;src:url(../fonts/SourceSans3-600.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;src:url(../fonts/SourceSans3-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(../fonts/IBMPlexMono-500.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;src:url(../fonts/IBMPlexMono-600.woff2) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.m2mo-a-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m2mo-a-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.m2mo-a-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.m2mo-a-hd b{font-size:18px;font-weight:600;flex:1}
+.m2mo-a-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.m2mo-a-bx{background:#F5F5F5;border:1px solid #DADADA}
+.m2mo-a-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.m2mo-a-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.m2mo-a-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.m2mo-a-tabs a.m2mo-a-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.m2mo-a-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m2mo-a-top{display:flex;align-items:center;gap:6px}
+.m2mo-a-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.m2mo-a-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.m2mo-a-pill b{font-size:15px;padding:0 4px}
+.m2mo-a-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.m2mo-a-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.m2mo-a-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.m2mo-a-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.m2mo-a-p b{font-size:12px;line-height:14px}
+.m2mo-a-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m2mo-a-st i{display:block}
+.m2mo-a-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m2mo-a-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.m2mo-a-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.m2mo-a-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.m2mo-a-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.m2mo-a-key span{display:flex;align-items:center;gap:4px}
+.m2mo-a-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.m2mo-a-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.m2mo-a-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.m2mo-a-g .m2mo-a-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m2mo-a-g b{font-size:13px;letter-spacing:.02em}
+.m2mo-a-g .m2mo-a-sub{font-size:13px;color:#444}
+.m2mo-a-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.m2mo-a-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m2mo-a-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m2mo-a-q small{font-weight:400;color:#555;font-size:13px}
+.m2mo-a-a{font-size:14px;text-align:right}
+.m2mo-a-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.m2mo-a-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.m2mo-a-ok{background:#E8F5EC;color:#22663A}
+.m2mo-a-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.m2mo-a-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m2mo-a-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.m2mo-a-pc.m2mo-a-no{color:#7A5500}
+.m2mo-a-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.m2mo-a-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.m2mo-a-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.m2mo-a-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.m2mo-a-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.m2mo-a-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.m2mo-a-foot .m2mo-a-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.m2mo-a-ex{font-size:12px;color:#666;padding:0 10px}
+.m2mo-a-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.m2mo-a-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.m2mo-a-nav a.m2mo-a-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.m2mo-a-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.m2mo-a-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.m2mo-a-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.m2mo-a-flash{background:#F1FAF3}
+@media (min-width:900px){.m2mo-a-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.m2mo-a-full{grid-column:1/3}.m2mo-a-left{position:sticky;top:0}.m2mo-a-piles{height:200px}.m2mo-a-nav{justify-content:center}}
+
+
+.m2mo-a-fond{position:relative;height:250px;overflow:hidden}
+.m2mo-a-fond .m2mo-a-nav,.m2mo-a-fond .m2mo-a-fab{display:none}
+.m2mo-a-voile{position:absolute;inset:0;background:rgba(17,17,17,.46);z-index:3}
+.m2mo-a-sh{position:relative;z-index:4;margin-top:-30px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.20);padding:6px 14px 22px;min-height:624px}
+.m2mo-a-grab{width:40px;height:5px;border-radius:3px;background:#D4D4D4;margin:2px auto 10px}
+.m2mo-a-x{width:36px;height:36px;border-radius:12px;background:#F5F5F5;border:1px solid #DADADA;display:grid;place-items:center;flex:none}
+.m2mo-a-mu{color:#555}
+.m2mo-a-b1{min-height:44px;padding:0 18px;border-radius:16px;background:#111;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2mo-a-b2{min-height:44px;padding:0 14px;border-radius:14px;background:#F5F5F5;border:1px solid #DADADA;font-size:15px;color:#222;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2mo-a-lk{color:#2F6EA8;font-weight:600}
+input.m2mo-a-in{font:inherit;border:1px solid #DADADA;border-radius:12px;height:44px;padding:0 12px;font-size:16px;width:100%;background:#fff;color:#111}
+input.m2mo-a-in:focus{outline:2px solid #2F6EA8;outline-offset:-1px}
+
+
+.m2mo-a-hd2{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.m2mo-a-hd2 .m2mo-a-sq{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none}
+.m2mo-a-hd2 b{flex:1;font-size:18px}
+.m2mo-a-drop{border:2px dashed #C9B98A;border-radius:18px;background:#FDFAF1;padding:12px;display:grid;grid-template-columns:1.25fr 1fr;gap:8px}
+.m2mo-a-drop p{grid-column:1/3;font-size:14px;color:#6E500F;display:flex;align-items:center;gap:6px}
+.m2mo-a-drop .m2mo-a-b1,.m2mo-a-drop .m2mo-a-b2{min-height:48px}
+.m2mo-a-f{display:block;margin-top:10px}
+.m2mo-a-f>span{display:block;font-size:13px;font-weight:600;color:#444;margin-bottom:4px}
+.m2mo-a-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m2mo-a-f>span.m2mo-a-sel,.m2mo-a-f>span.m2mo-a-lock{display:flex}
+.m2mo-a-sel{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #DADADA;border-radius:12px;padding:0 10px;font-size:16px}
+.m2mo-a-sel .m2mo-a-sq{width:20px;height:20px;border-radius:7px;display:grid;place-items:center}
+.m2mo-a-sel em{margin-left:auto;font-style:normal}
+.m2mo-a-lock{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #E6E6E6;background:#F7F7F7;border-radius:12px;padding:0 10px}
+.m2mo-a-lock .m2mo-a-m{font-size:17px;margin-left:auto;color:#333}
+.m2mo-a-why{font-size:12px;color:#666;margin-top:4px}
+.m2mo-a-why a{color:#2F6EA8}
+.m2mo-a-drv{display:flex;align-items:center;gap:8px;margin-top:12px;padding:4px 10px;border-radius:12px;background:#EEF4FA;font-size:14px}
+.m2mo-a-drv span{flex:1;color:#2B4A66}
+.m2mo-a-drv button{min-height:36px;display:flex;align-items:center;gap:4px;color:#2F6EA8;font-weight:600;font-size:13px}
+.m2mo-a-ft{display:grid;grid-template-columns:1fr 1.6fr;gap:8px;margin-top:16px}
+
+</style>
+</head>
+<body>
+<div class="m2mo-a-fond"><header class="m2mo-a-hd">
+  <span class="m2mo-a-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="m2mo-a-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="m2mo-a-ic m2mo-a-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="m2mo-a-ic m2mo-a-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+
+<div class="m2mo-a-app">
+ <div class="m2mo-a-full">
+  <nav class="m2mo-a-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="m2mo-a-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+
+ <div class="m2mo-a-left">
+  <section class="m2mo-a-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="m2mo-a-top">
+    <span class="m2mo-a-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="m2mo-a-due" data-booster="pastille-retard"><i></i>en retard <b class="m2mo-a-m">60,00</b></button>
+   </div>
+   <div class="m2mo-a-piles">
+    <div class="m2mo-a-p"><b class="m2mo-a-m" style="color:#2A7240">+720,00</b><span class="m2mo-a-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="m2mo-a-sep"></span>
+    <div class="m2mo-a-p"><b class="m2mo-a-m">468,00</b><span class="m2mo-a-st" style="height:57px"><i class="m2mo-a-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="m2mo-a-p"><b class="m2mo-a-m">186,80</b><span class="m2mo-a-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="m2mo-a-p"><b class="m2mo-a-m">42,00</b><span class="m2mo-a-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="m2mo-a-sep"></span>
+    <div class="m2mo-a-p"><b class="m2mo-a-m">28,60</b><span class="m2mo-a-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="m2mo-a-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="m2mo-a-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="m2mo-a-m">325,40</b></span><span><i class="m2mo-a-hat"></i>à payer <b class="m2mo-a-m">400,00</b></span><span>dépensé <b class="m2mo-a-m">696,80</b></span></div>
+  </section>
+ </div>
+
+ </div><div class="m2mo-a-voile"></div></div>
+<section class="m2mo-a-sh" aria-label="Modifier l'opération">
+ <div class="m2mo-a-grab"></div>
+ <div class="m2mo-a-hd2"><span class="m2mo-a-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyant alcalin</b><button class="m2mo-a-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+ <div class="m2mo-a-drop" data-booster="piece-d-abord"><p><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>Pas encore de pièce</p><button class="m2mo-a-b1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>Photo du ticket</button><button class="m2mo-a-b2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M12 11v6M9.5 14.5L12 17l2.5-2.5"/></svg>Fichier ou PDF</button></div>
+ <label class="m2mo-a-f"><span>Nom</span><input class="m2mo-a-in" type="text" value="Nettoyant alcalin"></label>
+ <div class="m2mo-a-g2"><label class="m2mo-a-f"><span>Catégorie</span><span class="m2mo-a-sel"><span class="m2mo-a-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span>Nettoyage<em><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.4"><path d="M5 9l7 7 7-7"/></svg></em></span></label><label class="m2mo-a-f"><span>Précision</span><input class="m2mo-a-in" type="text" value="CIP" placeholder="CIP, malt, outillage…"></label></div>
+ <div class="m2mo-a-g2"><label class="m2mo-a-f"><span>Date</span><input class="m2mo-a-in" type="text" inputmode="numeric" value="09.11.2026"></label><div class="m2mo-a-f"><span>Montant</span><span class="m2mo-a-lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="m2mo-a-mu" style="font-size:13px">sans TVA</span><b class="m2mo-a-m">42,00</b></span></div></div>
+ <p class="m2mo-a-why">Déjà payé : <a href="#">avoir</a> ou <a href="#">annuler l'opération</a></p>
+ <label class="m2mo-a-f"><span>Fournisseur, n° de pièce</span><input class="m2mo-a-in" type="text" value="Comptoir du brasseur · ticket 5521"></label>
+ <div class="m2mo-a-drv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="2.2"><path d="M3 6h7l2 2h9v11H3z"/></svg><span>Drive · Novembre › Nettoyage</span><button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="2.2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></svg>Copier le lien</button></div>
+ <div class="m2mo-a-ft"><button class="m2mo-a-b2">Annuler</button><button class="m2mo-a-b1">Enregistrer</button></div>
+</section>
+</body>
+</html>

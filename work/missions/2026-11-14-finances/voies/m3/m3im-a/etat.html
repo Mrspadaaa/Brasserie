@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>m3im-a — Immobilisation : le contenu actuel, rangé (tiède)</title>
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;--vertf:#E4F1E8;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.m3im-a-f{position:relative;width:390px;min-height:844px;background:#4a4a4a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.m3im-a-f::before{content:"";flex:0 0 52px}
+.m3im-a-bg{position:absolute;top:0;left:0;width:390px;height:844px;display:block}
+.m3im-a-voile{position:absolute;inset:0;background:rgba(17,17,17,.48)}
+.m3im-a-sh{margin-top:0!important;min-height:0!important;position:relative;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.m3im-a-poi{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.m3im-a-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.m3im-a-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.m3im-a-x{width:32px;height:32px;border:0;background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.m3im-a-pied{display:flex;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord);background:var(--page)}
+.m3im-a-btn{height:44px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--bordm);background:var(--page);color:var(--t0);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m3im-a-btn.m3im-a-pri{flex:1;background:var(--t0);border-color:var(--t0);color:#fff}
+.m3im-a-lab{font-size:12px;color:var(--t2);display:block;margin-bottom:3px}
+.m3im-a-in{display:flex;align-items:center;gap:6px;width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;color:var(--t0);background:var(--page)}
+.m3im-a-in::placeholder{color:#8a8a8a}
+.m3im-a-muet{font-size:12px;color:var(--t2)}
+.m3im-a-sh{margin-top:40px;min-height:804px}
+.m3im-a-h{display:flex;align-items:center;padding:2px 6px 2px 12px}
+.m3im-a-h div{flex:1}.m3im-a-h h2{font-size:17px;font-weight:600;color:var(--t0)}.m3im-a-h p{font-size:12px;color:var(--t2)}
+.m3im-a-c{padding:4px 12px 8px;display:flex;flex-direction:column;gap:9px}
+.m3im-a-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m3im-a-g3{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:8px}
+.m3im-a-sel{justify-content:space-between;color:var(--t0);font-size:14px;white-space:nowrap;overflow:hidden}.m3im-a-sel svg{color:var(--t2)}
+.m3im-a-sel small{font-size:12px;color:var(--fin);font-weight:600}
+.m3im-a-puces{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.m3im-a-puces button{height:32px;padding:0 8px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:13px;display:flex;align-items:center;justify-content:space-between;text-align:left;color:var(--t1)}
+.m3im-a-puces button b{font-family:var(--mono);font-weight:600;font-size:13px}
+.m3im-a-puces button[aria-pressed=true]{background:var(--t0);border-color:var(--t0);color:#fff}
+.m3im-a-seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:36px}
+.m3im-a-seg button{border:0;background:var(--page);font-size:13px;color:var(--t2);white-space:nowrap;padding:0 4px}
+.m3im-a-seg button+button{border-left:1px solid var(--bordm)}.m3im-a-seg button[aria-pressed=true]{background:var(--t0);color:#fff;font-weight:600}
+.m3im-a-dep{background:var(--panel);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.m3im-a-dep h3{font-size:13px;font-weight:600;color:var(--t1)}
+.m3im-a-ok{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--t1);line-height:17px}
+.m3im-a-ok i{width:20px;height:20px;border-radius:6px;background:var(--vert);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.m3im-a-ok i svg{width:14px;height:14px}
+.m3im-a-pl{display:flex;align-items:center;gap:6px;min-height:40px;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);font-size:14px;color:var(--t0)}
+.m3im-a-pl span{flex:1}.m3im-a-pl em{font-style:normal;font-size:12px;color:var(--t2)}
+</style></head><body>
+<div class="m3im-a-f"><img class="m3im-a-bg" src="../../../ref/g6/g6-4-materiel.png" alt=""><div class="m3im-a-voile"></div><div class="m3im-a-sh">
+<div class="m3im-a-poi"></div>
+<header class="m3im-a-h"><div><h2>L'usure de ta cuve</h2><p>terme : amortissement</p></div><button class="m3im-a-x" aria-label="Fermer"><svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+<div class="m3im-a-c">
+ <div class="m3im-a-g2">
+  <div><span class="m3im-a-lab">Matériel du stock</span><span class="m3im-a-in m3im-a-sel">Cuve de fermentation<svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span></div>
+  <label><span class="m3im-a-lab">Nom</span><input class="m3im-a-in" value="Cuve de fermentation"></label>
+ </div>
+ <div><span class="m3im-a-lab">Achat lié</span><span class="m3im-a-in m3im-a-sel"><span style="color:var(--t2)">achat ancien ou à relier</span><svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span></div>
+ <div class="m3im-a-g3">
+  <label><span class="m3im-a-lab">Prix d'achat TTC</span><input class="m3im-a-in m3im-a-m" inputmode="decimal" value="1 800,00"></label>
+  <div><span class="m3im-a-lab">Achetée le</span><span class="m3im-a-in m3im-a-m" style="font-size:14px">01.02.25</span></div>
+  <div><span class="m3im-a-lab">En service le</span><span class="m3im-a-in m3im-a-m" style="font-size:14px">01.02.25</span></div>
+ </div>
+ <div><span class="m3im-a-lab">Catégorie, taux de l'AFC · à confirmer</span><div class="m3im-a-puces" data-booster="categorie-taux">
+  <button aria-pressed="true">Cuves et conteneurs<b>20 %</b></button><button aria-pressed="false">Installations, mobilier<b>25 %</b></button>
+  <button aria-pressed="false">Machines<b>30 %</b></button><button aria-pressed="false">Informatique, mesure<b>40 %</b></button>
+  <button aria-pressed="false">Outillage<b>45 %</b></button><button aria-pressed="false">Taux à moi<b>…</b></button></div></div>
+ <div class="m3im-a-g3" style="grid-template-columns:2fr 1fr">
+  <div><span class="m3im-a-lab">Elle perd chaque année</span><div class="m3im-a-seg" data-booster="methode"><button aria-pressed="true">20 % du reste</button><button aria-pressed="false">10 % du prix</button></div></div>
+  <label><span class="m3im-a-lab">Part pro %</span><input class="m3im-a-in m3im-a-m" inputmode="decimal" value="100"></label>
+ </div>
+ <div class="m3im-a-dep"><h3>Ton départ dans l'app</h3>
+  <div class="m3im-a-g3"><label><span class="m3im-a-lab">Année</span><input class="m3im-a-in m3im-a-m" inputmode="numeric" value="2026"></label><label><span class="m3im-a-lab">Valeur 1er janv.</span><input class="m3im-a-in m3im-a-m" inputmode="decimal" value="1 440,00"></label><label><span class="m3im-a-lab">Comptée</span><span class="m3im-a-in" style="font-size:14px">entière<svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span></label></div>
+  <div class="m3im-a-ok"><i><svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></i>Je confirme la catégorie, l'année et la valeur de départ. Les années d'avant ne sont pas recalculées.</div>
+ </div>
+ <div class="m3im-a-pl"><svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>Vendue ou mise au rebut</span><em>non</em><svg class="m3im-a-i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+</div>
+<footer class="m3im-a-pied" style="margin-top:auto"><button class="m3im-a-btn">Annuler</button><button class="m3im-a-btn m3im-a-pri">Enregistrer</button></footer>
+</div></div>
+</body></html>

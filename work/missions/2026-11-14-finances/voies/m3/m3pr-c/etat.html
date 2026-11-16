@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>m3pr-c — Ajouter une prévision : l'effet sur la fin janvier, en marches (chaude)</title>
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finc:#86B9E6;--fint:#E6EFF8;--alerte:#C8382F;--alertet:#A8291F;--alertef:#FBE9E7;--vert:#2A7347;--vertf:#E4F1E8;
+--brassin:#9A4F1E;--brassint:#FBEDE3;--frigo:#176878;--frigot:#E2F2F5;
+--sans:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.m3pr-c-f{position:relative;width:390px;min-height:844px;background:#4a4a4a;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.m3pr-c-f::before{content:"";flex:0 0 52px}
+.m3pr-c-bg{position:absolute;top:0;left:0;width:390px;height:844px;display:block}
+.m3pr-c-voile{position:absolute;inset:0;background:rgba(17,17,17,.48)}
+.m3pr-c-sh{margin-top:0!important;min-height:0!important;position:relative;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.m3pr-c-poi{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.m3pr-c-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg.m3pr-c-i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.m3pr-c-x{width:32px;height:32px;border:0;background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.m3pr-c-pied{display:flex;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord);background:var(--page)}
+.m3pr-c-btn{height:44px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--bordm);background:var(--page);color:var(--t0);padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m3pr-c-btn.m3pr-c-pri{flex:1;background:var(--t0);border-color:var(--t0);color:#fff}
+.m3pr-c-lab{font-size:12px;color:var(--t2);display:block;margin-bottom:3px}
+.m3pr-c-in{display:flex;align-items:center;gap:6px;width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;color:var(--t0);background:var(--page)}
+.m3pr-c-in::placeholder{color:#8a8a8a}
+.m3pr-c-muet{font-size:12px;color:var(--t2)}
+.m3pr-c-sh{margin-top:70px;min-height:774px}
+.m3pr-c-tete{display:flex;align-items:center;padding:2px 6px 0 12px}
+.m3pr-c-tete h2{flex:1;font-size:17px;font-weight:600;color:var(--t0)}
+.m3pr-c-c{padding:4px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.m3pr-c-r{display:grid;grid-template-columns:1fr 112px;gap:8px}
+.m3pr-c-pills{display:flex;gap:4px;flex-wrap:wrap}
+.m3pr-c-pills button{display:inline-flex;align-items:center;gap:2px;height:28px;padding:0 5px 0 9px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:13px}
+.m3pr-c-pills button svg{width:14px;height:14px;color:var(--t2)}
+.m3pr-c-pills .m3pr-c-pay{border-color:var(--t0);color:var(--t0);font-weight:600}
+.m3pr-c-pan{background:var(--panel);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.m3pr-c-seg{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:30px;background:var(--page)}
+.m3pr-c-seg button{border:0;border-right:1px solid var(--bordm);background:none;font-size:13px;color:var(--t2)}
+.m3pr-c-seg button:last-child{border-right:0}.m3pr-c-seg button[aria-pressed=true]{background:var(--t0);color:#fff;font-weight:600}
+.m3pr-c-pan svg.m3pr-c-g{display:block;width:100%;overflow:visible}
+.m3pr-c-ax{stroke:var(--bordm);stroke-width:1}.m3pr-c-mo{font-size:12px;fill:var(--t2);font-weight:600}
+.m3pr-c-hz{font-size:12px;fill:var(--t2)}
+.m3pr-c-oc{fill:var(--t0);stroke:#fff;stroke-width:2}.m3pr-c-oc.m3pr-c-oh{fill:#fff;stroke:#9a9a9a;stroke-width:1.5}
+.m3pr-c-ol{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--t0)}
+.m3pr-c-gr{stroke:#E2E2E2;stroke-width:1}.m3pr-c-ech{font-family:var(--mono);font-size:12px;fill:var(--t2)}
+.m3pr-c-auj{stroke:var(--t0);stroke-width:2}
+.m3pr-c-fin{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);height:22px}
+.m3pr-c-fin .m3pr-c-fl{width:30px;height:2px;background:var(--t0)}
+.m3pr-c-avant{fill:none;stroke:#B0B0B0;stroke-width:1.6}
+.m3pr-c-apres{fill:none;stroke:var(--t0);stroke-width:2.4;stroke-linejoin:round}
+.m3pr-c-sous{fill:var(--t1);opacity:.14}.m3pr-c-aire{fill:var(--frigo);opacity:.14}
+.m3pr-c-zero{stroke:var(--t1);stroke-width:1}
+.m3pr-c-pt{font-family:var(--mono);font-size:12px;font-weight:700;fill:var(--t0);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.m3pr-c-eff{display:flex;align-items:baseline;gap:8px;padding:6px 4px 0;border-top:1px solid var(--bord)}
+.m3pr-c-eff span{font-size:13px;color:var(--t1);font-weight:600}
+.m3pr-c-eff s{font-family:var(--mono);color:var(--t2);font-size:14px}
+.m3pr-c-eff b{font-family:var(--mono);font-size:20px;color:var(--t0);margin-left:auto}
+.m3pr-c-eff small{display:block;font-size:12px;color:var(--t2);font-weight:400}
+.m3pr-c-row{display:flex;align-items:center;gap:6px;height:36px;border-bottom:1px solid var(--bord);font-size:14px}
+.m3pr-c-row span{flex:1}.m3pr-c-row em{font-style:normal;color:var(--t2);font-size:13px}
+</style></head><body>
+<div class="m3pr-c-f"><img class="m3pr-c-bg" src="../../../ref/p5b/p5b-haut.png" alt=""><div class="m3pr-c-voile"></div><div class="m3pr-c-sh">
+<div class="m3pr-c-poi"></div>
+<header class="m3pr-c-tete"><h2>Prévoir une dépense</h2><button class="m3pr-c-x" aria-label="Fermer"><svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+<div class="m3pr-c-c">
+ <div class="m3pr-c-r"><label><span class="m3pr-c-lab">Libellé</span><input class="m3pr-c-in" value="Électricité"></label><label><span class="m3pr-c-lab">CHF</span><input class="m3pr-c-in m3pr-c-m" inputmode="decimal" value="68,00"></label></div>
+ <div class="m3pr-c-pills"><button class="m3pr-c-pay">À payer<svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><button>Charges fixes<svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><button><svg class="m3pr-c-i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>&nbsp;9 déc.<svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
+ <div class="m3pr-c-pan">
+  <div class="m3pr-c-seg" role="group" aria-label="Répétition" data-booster="repetition"><button aria-pressed="false">Une fois</button><button aria-pressed="true">Chaque mois</button><button aria-pressed="false">Trimestre</button><button aria-pressed="false">Année</button></div>
+  <svg class="m3pr-c-g" viewBox="0 0 346 56" height="56" data-booster="frise-repetition"><rect x="196.16058394160584" y="0" width="143.83941605839416" height="56" rx="6" fill="#E4E4E4"/><text x="200.16058394160584" y="12" class="m3pr-c-hz">après les 90 jours</text><line x1="6" y1="34" x2="340" y2="34" class="m3pr-c-ax"/><line x1="6" y1="30" x2="6" y2="38" class="m3pr-c-ax"/><text x="9" y="52" class="m3pr-c-mo">nov.</text><line x1="47.44525547445256" y1="30" x2="47.44525547445256" y2="38" class="m3pr-c-ax"/><text x="50.44525547445256" y="52" class="m3pr-c-mo">déc.</text><line x1="123.02189781021899" y1="30" x2="123.02189781021899" y2="38" class="m3pr-c-ax"/><text x="126.02189781021899" y="52" class="m3pr-c-mo">janv.</text><line x1="198.5985401459854" y1="30" x2="198.5985401459854" y2="38" class="m3pr-c-ax"/><text x="201.5985401459854" y="52" class="m3pr-c-mo">févr.</text><line x1="266.86131386861314" y1="30" x2="266.86131386861314" y2="38" class="m3pr-c-ax"/><text x="269.86131386861314" y="52" class="m3pr-c-mo">mars</text><circle cx="66.94890510948906" cy="34" r="6" class="m3pr-c-oc"/><text x="66.94890510948906" y="22" text-anchor="middle" class="m3pr-c-ol">9.12</text><circle cx="142.52554744525548" cy="34" r="6" class="m3pr-c-oc"/><text x="142.52554744525548" y="22" text-anchor="middle" class="m3pr-c-ol">9.01</text><circle cx="218.1021897810219" cy="34" r="5" class="m3pr-c-oc m3pr-c-oh"/><circle cx="286.3649635036496" cy="34" r="5" class="m3pr-c-oc m3pr-c-oh"/><line x1="6" y1="26" x2="6" y2="42" class="m3pr-c-auj"/></svg>
+  <svg class="m3pr-c-g" viewBox="0 0 346 168" height="168" data-booster="marches-fin-janvier">
+   <line class="m3pr-c-gr" x1="40" x2="346" y1="10.5" y2="10.5"/><text class="m3pr-c-ech" x="36" y="14.5" text-anchor="end">4 000</text><line class="m3pr-c-gr" x1="40" x2="346" y1="63.2" y2="63.2"/><text class="m3pr-c-ech" x="36" y="67.2" text-anchor="end">2 000</text><line class="m3pr-c-gr" x1="40" x2="346" y1="115.8" y2="115.8"/><text class="m3pr-c-ech" x="36" y="119.8" text-anchor="end">0</text><line class="m3pr-c-gr" x1="40" x2="346" y1="142.1" y2="142.1"/><text class="m3pr-c-ech" x="36" y="146.1" text-anchor="end">−1 000</text>
+   <defs><clipPath id="m3pr-c-cH"><rect x="0" y="0" width="346" height="115.8"/></clipPath><clipPath id="m3pr-c-cB"><rect x="0" y="115.8" width="346" height="150"/></clipPath></defs><path class="m3pr-c-aire" clip-path="url(#m3pr-c-cH)" d="M40.0,5.7 H40.0 V7.3 H43.9 V86.3 H63.5 V87.8 H83.2 V98.3 H138.1 V100.1 H173.4 V100.3 H200.8 V110.8 H259.7 V112.6 H322.5 V123.1 H342.1 V142.9 H346.0 V115.8 H40 Z"/><path class="m3pr-c-sous" clip-path="url(#m3pr-c-cB)" d="M40.0,5.7 H40.0 V7.3 H43.9 V86.3 H63.5 V87.8 H83.2 V98.3 H138.1 V100.1 H173.4 V100.3 H200.8 V110.8 H259.7 V112.6 H322.5 V123.1 H342.1 V142.9 H346.0 V115.8 H40 Z"/>
+   <line class="m3pr-c-zero" x1="40" x2="346" y1="115.8" y2="115.8"/>
+   <path class="m3pr-c-avant" d="M40.0,5.7 H40.0 V7.3 H43.9 V86.3 H63.5 V87.8 H83.2 V98.3 H173.4 V98.5 H200.8 V109.0 H322.5 V119.5 H342.1 V139.3 H346.0"/><path class="m3pr-c-apres" d="M40.0,5.7 H40.0 V7.3 H43.9 V86.3 H63.5 V87.8 H83.2 V98.3 H138.1 V100.1 H173.4 V100.3 H200.8 V110.8 H259.7 V112.6 H322.5 V123.1 H342.1 V142.9 H346.0"/>
+   <text class="m3pr-c-pt" x="141.0769230769231" y="92">−68</text>
+   <text class="m3pr-c-pt" x="262.6923076923077" y="103">−68</text>
+   <text class="m3pr-c-mo" x="40" y="166">aujourd'hui</text><text class="m3pr-c-mo" x="346" y="166" text-anchor="end">31 janv.</text>
+  </svg>
+  <div class="m3pr-c-fin"><i class="m3pr-c-fl"></i>avec l'électricité<i class="m3pr-c-fl" style="background:#B0B0B0;height:1.6px"></i>sans</div>
+  <div class="m3pr-c-eff"><span>Fin janvier<small>2 × 68,00 dans les 90 jours</small></span><s>−892,66</s><b>−1 028,66</b></div>
+ </div>
+ <div class="m3pr-c-row" data-booster="cout-brassin"><span>Compte dans mon litre ?</span><em>à décider</em><svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+ <div class="m3pr-c-row"><span>Fournisseur, note, fin de la répétition</span><svg class="m3pr-c-i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+</div>
+<footer class="m3pr-c-pied" style="margin-top:auto"><button class="m3pr-c-btn">Annuler</button><button class="m3pr-c-btn m3pr-c-pri">Enregistrer</button></footer>
+</div></div>
+</body></html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m2mo-b · Modifier, froide : « + pièce » ouvre l'appareil photo, la feuille ne fait que confirmer</title>
+<style>
+@font-face{font-family:"Source Sans 3";font-weight:400;src:url(../fonts/SourceSans3-400.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;src:url(../fonts/SourceSans3-600.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;src:url(../fonts/SourceSans3-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(../fonts/IBMPlexMono-500.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;src:url(../fonts/IBMPlexMono-600.woff2) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.m2mo-b-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m2mo-b-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.m2mo-b-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.m2mo-b-hd b{font-size:18px;font-weight:600;flex:1}
+.m2mo-b-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.m2mo-b-bx{background:#F5F5F5;border:1px solid #DADADA}
+.m2mo-b-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.m2mo-b-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.m2mo-b-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.m2mo-b-tabs a.m2mo-b-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.m2mo-b-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m2mo-b-top{display:flex;align-items:center;gap:6px}
+.m2mo-b-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.m2mo-b-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.m2mo-b-pill b{font-size:15px;padding:0 4px}
+.m2mo-b-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.m2mo-b-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.m2mo-b-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.m2mo-b-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.m2mo-b-p b{font-size:12px;line-height:14px}
+.m2mo-b-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m2mo-b-st i{display:block}
+.m2mo-b-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m2mo-b-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.m2mo-b-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.m2mo-b-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.m2mo-b-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.m2mo-b-key span{display:flex;align-items:center;gap:4px}
+.m2mo-b-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.m2mo-b-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.m2mo-b-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.m2mo-b-g .m2mo-b-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.m2mo-b-g b{font-size:13px;letter-spacing:.02em}
+.m2mo-b-g .m2mo-b-sub{font-size:13px;color:#444}
+.m2mo-b-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.m2mo-b-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.m2mo-b-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m2mo-b-q small{font-weight:400;color:#555;font-size:13px}
+.m2mo-b-a{font-size:14px;text-align:right}
+.m2mo-b-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.m2mo-b-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.m2mo-b-ok{background:#E8F5EC;color:#22663A}
+.m2mo-b-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.m2mo-b-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.m2mo-b-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.m2mo-b-pc.m2mo-b-no{color:#7A5500}
+.m2mo-b-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.m2mo-b-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.m2mo-b-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.m2mo-b-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.m2mo-b-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.m2mo-b-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.m2mo-b-foot .m2mo-b-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.m2mo-b-ex{font-size:12px;color:#666;padding:0 10px}
+.m2mo-b-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.m2mo-b-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.m2mo-b-nav a.m2mo-b-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.m2mo-b-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.m2mo-b-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.m2mo-b-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.m2mo-b-flash{background:#F1FAF3}
+@media (min-width:900px){.m2mo-b-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.m2mo-b-full{grid-column:1/3}.m2mo-b-left{position:sticky;top:0}.m2mo-b-piles{height:200px}.m2mo-b-nav{justify-content:center}}
+
+
+.m2mo-b-fond{position:relative;height:250px;overflow:hidden}
+.m2mo-b-fond .m2mo-b-nav,.m2mo-b-fond .m2mo-b-fab{display:none}
+.m2mo-b-voile{position:absolute;inset:0;background:rgba(17,17,17,.46);z-index:3}
+.m2mo-b-sh{position:relative;z-index:4;margin-top:-30px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.20);padding:6px 14px 22px;min-height:624px}
+.m2mo-b-grab{width:40px;height:5px;border-radius:3px;background:#D4D4D4;margin:2px auto 10px}
+.m2mo-b-x{width:36px;height:36px;border-radius:12px;background:#F5F5F5;border:1px solid #DADADA;display:grid;place-items:center;flex:none}
+.m2mo-b-mu{color:#555}
+.m2mo-b-b1{min-height:44px;padding:0 18px;border-radius:16px;background:#111;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2mo-b-b2{min-height:44px;padding:0 14px;border-radius:14px;background:#F5F5F5;border:1px solid #DADADA;font-size:15px;color:#222;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.m2mo-b-lk{color:#2F6EA8;font-weight:600}
+input.m2mo-b-in{font:inherit;border:1px solid #DADADA;border-radius:12px;height:44px;padding:0 12px;font-size:16px;width:100%;background:#fff;color:#111}
+input.m2mo-b-in:focus{outline:2px solid #2F6EA8;outline-offset:-1px}
+
+
+.m2mo-b-step{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;margin-bottom:10px}
+.m2mo-b-step i{width:22px;height:22px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:700}
+.m2mo-b-step i.m2mo-b-off{background:#E8F5EC;color:#22663A}
+.m2mo-b-step span{flex:none}
+.m2mo-b-step b{flex:1;border-top:1px solid #DADADA}
+.m2mo-b-shot{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:center}
+.m2mo-b-tk{height:150px;border-radius:10px;background:#FFFEFA;box-shadow:0 2px 10px rgba(0,0,0,.18);padding:10px 9px;font-family:"IBM Plex Mono",monospace;font-size:7.5px;line-height:11px;color:#333;transform:rotate(-3deg);position:relative;overflow:hidden}
+.m2mo-b-tk b{font-size:9.5px;display:block;text-align:center;letter-spacing:.04em}
+.m2mo-b-tk hr{border:0;border-top:1px dashed #AAA;margin:4px 0}
+.m2mo-b-tk p{display:flex;justify-content:space-between}
+.m2mo-b-ok2{font-size:17px;font-weight:600;display:flex;align-items:center;gap:6px;color:#22663A}
+.m2mo-b-row{margin-top:8px}
+.m2mo-b-row .m2mo-b-op{padding:6px 0;border:0}
+.m2mo-b-mini2{display:flex;gap:6px;margin-top:8px}
+.m2mo-b-mini2 button{min-height:36px;padding:0 12px;border-radius:12px;background:#F5F5F5;font-size:14px;color:#444}
+.m2mo-b-match{display:flex;align-items:center;gap:6px;margin-top:12px;padding:8px 10px;border-radius:12px;background:#F1FAF3;font-size:13px;color:#22663A}
+.m2mo-b-ft{display:flex;gap:8px;margin-top:14px}
+.m2mo-b-ft .m2mo-b-b1{flex:1;min-height:52px}
+.m2mo-b-det{display:flex;align-items:center;gap:8px;min-height:44px;margin-top:8px;border-top:1px solid #EBEBEB;font-size:15px}
+.m2mo-b-det span{flex:1}
+.m2mo-b-det em{font-style:normal;color:#555;font-size:13px}
+
+</style>
+</head>
+<body>
+<div class="m2mo-b-fond"><header class="m2mo-b-hd">
+  <span class="m2mo-b-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="m2mo-b-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="m2mo-b-ic m2mo-b-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="m2mo-b-ic m2mo-b-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+
+<div class="m2mo-b-app">
+ <div class="m2mo-b-full">
+  <nav class="m2mo-b-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="m2mo-b-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+
+ <div class="m2mo-b-left">
+  <section class="m2mo-b-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="m2mo-b-top">
+    <span class="m2mo-b-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="m2mo-b-due" data-booster="pastille-retard"><i></i>en retard <b class="m2mo-b-m">60,00</b></button>
+   </div>
+   <div class="m2mo-b-piles">
+    <div class="m2mo-b-p"><b class="m2mo-b-m" style="color:#2A7240">+720,00</b><span class="m2mo-b-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="m2mo-b-sep"></span>
+    <div class="m2mo-b-p"><b class="m2mo-b-m">468,00</b><span class="m2mo-b-st" style="height:57px"><i class="m2mo-b-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="m2mo-b-p"><b class="m2mo-b-m">186,80</b><span class="m2mo-b-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="m2mo-b-p"><b class="m2mo-b-m">42,00</b><span class="m2mo-b-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="m2mo-b-sep"></span>
+    <div class="m2mo-b-p"><b class="m2mo-b-m">28,60</b><span class="m2mo-b-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="m2mo-b-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="m2mo-b-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="m2mo-b-m">325,40</b></span><span><i class="m2mo-b-hat"></i>à payer <b class="m2mo-b-m">400,00</b></span><span>dépensé <b class="m2mo-b-m">696,80</b></span></div>
+  </section>
+ </div>
+
+ </div><div class="m2mo-b-voile"></div></div>
+<section class="m2mo-b-sh" aria-label="+ pièce">
+ <div class="m2mo-b-grab"></div>
+ <div class="m2mo-b-step"><i class="m2mo-b-off">✓</i><span>photo prise</span><b></b><i>2</i><span>joindre</span></div>
+ <div class="m2mo-b-shot">
+  <div class="m2mo-b-tk" aria-label="Le ticket photographié"><b>COMPTOIR DU BRASSEUR</b>Rue des Malteurs 4<hr><p><span>09.11.26</span><span>N° 5521</span></p><hr><p><span>NETTOYANT 5L</span><span>42.00</span></p><hr><p><b style="display:inline;font-size:9.5px">TOTAL CHF</b><b style="display:inline;font-size:9.5px">42.00</b></p></div>
+  <div><p class="m2mo-b-ok2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>Ticket prêt</p><p class="m2mo-b-mu" style="font-size:14px;margin-top:2px">ticket-5521.jpg</p>
+   <div class="m2mo-b-mini2"><button><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg> Reprendre</button></div></div>
+ </div>
+ <div class="m2mo-b-match" data-booster="concorde">✓ même montant que l'opération</div>
+ <div class="m2mo-b-row"><div class="m2mo-b-op"><span class="m2mo-b-bar" style="background:#56C1D2"></span><span class="m2mo-b-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="m2mo-b-a m2mo-b-m">42,00</span><span class="m2mo-b-meta"><span class="m2mo-b-tg m2mo-b-ok">✓ payé 9 nov.</span><span class="m2mo-b-pc" style="color:#22663A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span></div></div>
+ <div class="m2mo-b-ft"><button class="m2mo-b-b1">Joindre la pièce</button></div>
+ <div class="m2mo-b-det"><span>Modifier les détails</span><em>nom, catégorie, date, fournisseur</em><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></div>
+</section>
+</body>
+</html>

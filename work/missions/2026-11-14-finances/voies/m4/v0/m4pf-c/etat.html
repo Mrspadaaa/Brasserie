@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4pf-c · Chaque réglage montre ce qu'il change (chaude)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4pf-c-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4pf-c-back{position:relative;height:90px;overflow:hidden}.m4pf-c-back img{width:390px;display:block}
+.m4pf-c-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4pf-c-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 10px 14px}
+.m4pf-c-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 6px}
+.m4pf-c-hd{display:flex;align-items:center}.m4pf-c-hd h1{font-size:16px;flex:1}
+.m4pf-c-x{width:32px;height:32px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:18px}
+.m4pf-c-card{margin-top:10px;border-radius:16px;background:#FAF8F3;padding:8px}
+.m4pf-c-top{display:flex;align-items:center;gap:8px}
+.m4pf-c-top h2{font-size:13px;font-weight:600;flex:1}
+.m4pf-c-val{min-height:32px;padding:0 10px;border-radius:10px;border:1px solid #CFCFCF;background:#fff;display:inline-flex;align-items:center;gap:4px}
+.m4pf-c-sw{width:40px;height:24px;border-radius:12px;background:#2A7240;position:relative;flex:none}
+.m4pf-c-sw::after{content:"";position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.m4pf-c-cap{font-size:12px;color:#555;margin-top:4px;line-height:15px}
+/* solde : de départ à aujourd'hui */
+.m4pf-c-sol{position:relative;height:66px;margin-top:6px}
+.m4pf-c-sol svg{position:absolute;inset:0}
+.m4pf-c-pin{position:absolute;font-size:12px;line-height:14px}
+/* mois couverts */
+.m4pf-c-months{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin-top:6px}
+.m4pf-c-months i{height:24px;border-radius:4px;background:#56C1D2;display:grid;place-items:center;font-style:normal;font-size:12px;color:#0E3A41}
+.m4pf-c-months i.m4pf-c-cur{background:#fff;box-shadow:inset 0 0 0 1px #56C1D2;color:#555}
+.m4pf-c-months i.m4pf-c-no{background:#fff;color:#999;box-shadow:inset 0 0 0 1px #DADADA}
+/* production : curseur */
+.m4pf-c-sl{position:relative;height:30px;margin-top:6px}
+.m4pf-c-track{position:absolute;left:0;right:0;top:12px;height:6px;border-radius:3px;background:#E4E0D6}
+.m4pf-c-fill{position:absolute;left:0;top:12px;height:6px;border-radius:3px;background:#D2B356;width:45%}
+.m4pf-c-thumb{position:absolute;left:45%;top:3px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;border:2px solid #111}
+.m4pf-c-ticks{display:flex;justify-content:space-between;font-size:12px;color:#777}
+.m4pf-c-eff{display:flex;gap:6px;margin-top:6px}
+.m4pf-c-eff span{flex:1;border-radius:10px;background:#fff;border:1px solid #E4E0D6;padding:4px 6px;font-size:12px;color:#555;line-height:14px}
+.m4pf-c-eff b{display:block;font-size:15px;line-height:20px;color:#111}
+/* TVA : jauge */
+.m4pf-c-g{position:relative;height:16px;border-radius:8px;background:#fff;border:1px solid #DADADA;margin-top:6px;overflow:hidden}
+.m4pf-c-g i{position:absolute;left:0;top:0;bottom:0;width:18.6%;background:#9856D2}
+.m4pf-c-foot{display:flex;gap:6px;margin-top:12px}
+.m4pf-c-foot button{height:44px;border-radius:10px;padding:0 14px;font-weight:600}
+.m4pf-c-sec{background:#F5F5F5}.m4pf-c-pri{flex:1;background:#111;color:#fff}
+</style></head><body>
+<div class="m4pf-c-back"><img src="../../../ref/g3a/g3a-haut.png" alt=""></div>
+<section class="m4pf-c-sheet" aria-label="Solde et paramètres">
+ <div class="m4pf-c-grip"></div>
+ <div class="m4pf-c-hd"><h1>Solde et paramètres</h1><button class="m4pf-c-x" aria-label="Fermer">×</button></div>
+
+ <div class="m4pf-c-card" data-booster="frise-solde">
+  <div class="m4pf-c-top"><h2>Solde de départ</h2><span class="m4pf-c-val" role="textbox" inputmode="decimal"><b class="m4pf-c-m">3 250,00</b> CHF</span><span class="m4pf-c-sw" role="switch" aria-checked="true" aria-label="Vérifié"></span></div>
+  <div class="m4pf-c-sol">
+   <svg viewBox="0 0 350 66" preserveAspectRatio="none"><path d="M4 44 H60 V36 H120 V40 H170 V28 H230 V24 H290 V18 H346" fill="none" stroke="#2F6EA8" stroke-width="2.5"/><circle cx="4" cy="44" r="5" fill="#2A7240"/><circle cx="346" cy="18" r="5" fill="#2F6EA8"/></svg>
+   <span class="m4pf-c-pin" style="left:0;top:50px">1 janv. 2025 · <b>✓ vérifié</b></span>
+   <span class="m4pf-c-pin" style="right:0;top:0;text-align:right">aujourd'hui <b class="m4pf-c-m">4 181,60</b></span>
+  </div>
+ </div>
+
+ <div class="m4pf-c-card" data-booster="mois-couverts">
+  <div class="m4pf-c-top"><h2>Tout est noté depuis</h2><span class="m4pf-c-val">janv. 2025 ⌄</span></div>
+  <div class="m4pf-c-months"><i>j</i><i>f</i><i>m</i><i>a</i><i>m</i><i>j</i><i>j</i><i>a</i><i>s</i><i>o</i><i class="m4pf-c-cur">n</i><i class="m4pf-c-no">d</i></div>
+  <p class="m4pf-c-cap">10 mois complets : la tendance est calculée (3 au moins).</p>
+ </div>
+
+ <div class="m4pf-c-card" data-booster="curseur-production">
+  <div class="m4pf-c-top"><h2>Production prévue</h2><span class="m4pf-c-val"><b class="m4pf-c-m">1 800</b> L/an</span></div>
+  <div class="m4pf-c-sl"><span class="m4pf-c-track"></span><span class="m4pf-c-fill"></span><span class="m4pf-c-thumb" role="slider" aria-valuenow="1800"></span></div>
+  <div class="m4pf-c-ticks"><span class="m4pf-c-m">0</span><span class="m4pf-c-m">2 000</span><span class="m4pf-c-m">4 000 L</span></div>
+  <div class="m4pf-c-eff"><span>charges fixes<b class="m4pf-c-m">3,88/L</b>6 978 ÷ 1 800</span><span>soit<b class="m4pf-c-m">≈ 67</b>brassins de 27 L</span><span>Pale Ale<b class="m4pf-c-m">≥ 7,51/L</b>avec ce réglage</span></div>
+ </div>
+
+ <div class="m4pf-c-card" data-booster="jauge-tva">
+  <div class="m4pf-c-top"><h2>Indépendant · Fribourg · TVA</h2><span style="font-size:13px;color:#22663A">✓ sans TVA</span></div>
+  <div class="m4pf-c-g"><i></i></div>
+  <p class="m4pf-c-cap">ventes sur 12 mois <b class="m4pf-c-m">18 640</b> sur le seuil <b class="m4pf-c-m">100 000</b> CHF</p>
+ </div>
+
+ <div class="m4pf-c-foot"><button class="m4pf-c-sec">Annuler</button><button class="m4pf-c-pri">Enregistrer</button></div>
+</section></body></html>

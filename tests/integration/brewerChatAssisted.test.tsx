@@ -220,12 +220,31 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     }));
     render(<BrewerChat {...baseProps} initialQuestion="  Question normale  " />);
     await openChat();
-    expect(screen.getByText('On regarde ça ensemble.')).toBeVisible();
+    expect(screen.getByText('Agir, mesurer ou attendre ?')).toBeVisible();
     expect(screen.getByRole('button', { name: /Vérifie ma recette et mon matériel/ })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
     expect(vi.mocked(api.submit).mock.calls[0][0]).toMatchObject({ question: 'Question normale' });
     expect(vi.mocked(api.submit).mock.calls[0][0].hopAdvice).toBeUndefined();
+  });
+
+  it('t2, point 4 : `autoSend` envoie la question préparée à l’ouverture, une seule fois, sans second « Envoyer » ; sans la prop, rien ne part seul (Gemini simulé)', async () => {
+    vi.mocked(api.submit).mockImplementation(async (input) => ({
+      turn: {
+        id: 'auto-turn', operationId: input.operationId, question: input.question, createdAt: Date.now(),
+        model: 'model-test', reviewed: true, contextLabel: 'Mes finances', evidence: [],
+        advice: { level: 'info', summary: 'Réponse', action: '', why: '', watch: '', question: '', evidenceIds: [] }
+      }
+    }));
+    const sans = render(<BrewerChat {...baseProps} initialOpen initialQuestion="Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?" />);
+    await new Promise(r => setTimeout(r, 30));
+    expect(api.submit).not.toHaveBeenCalled();
+    sans.unmount();
+    render(<BrewerChat {...baseProps} initialOpen autoSend initialQuestion="Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?" />);
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(api.submit).mock.calls[0][0]).toMatchObject({ question: 'Pourquoi les charges fixes pèsent autant sur le mois novembre 2026 ?' });
+    await new Promise(r => setTimeout(r, 30));
+    expect(api.submit).toHaveBeenCalledTimes(1);
   });
 
   it('envoie le texte Unicode exact après le hook et rend le reçu complet une seule fois', async () => {
@@ -283,7 +302,7 @@ describe('BrewerChat — raccord de lecture assistée', () => {
     await act(async () => { local.publish(localJob); });
     expect(screen.getByText('Réponse simulée en attente')).toBeVisible();
     expect(screen.getByText('Traitement local · réponse simulée')).toBeVisible();
-    expect(screen.queryByText('Gemini analyse ta question')).not.toBeInTheDocument();
+    expect(screen.queryByText('Analyse de ta question')).not.toBeInTheDocument();
     expect(screen.queryByText('Enregistrée sur le serveur')).not.toBeInTheDocument();
 
     cleanup();
@@ -295,8 +314,8 @@ describe('BrewerChat — raccord de lecture assistée', () => {
       onBeforeSend: vi.fn(async (_input: BrewerChatInput) => {}), onAssistedTurn: vi.fn() }} />);
     await openChat();
     await act(async () => { host.publish(hostJob); });
-    expect(screen.getByText('Gemini analyse ta question')).toBeVisible();
-    expect(screen.getByText('Enregistrée sur le serveur')).toBeVisible();
+    expect(screen.queryByText('Analyse de ta question')).not.toBeInTheDocument(); // fx2b : texte d'étape retiré (maquette)
+    expect(screen.queryByText('Enregistrée sur le serveur')).not.toBeInTheDocument();
   });
 
   it.each([

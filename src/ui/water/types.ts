@@ -94,4 +94,6 @@ export interface SaltSolverProps {
 
   noSparge: boolean;
   onNoSpargeChange: (next: boolean) => void;
+  /** w1b : ce que l'hôte pose juste sous les deux cuves (le bandeau « recaler » des volumes périmés). Onglet Eau seulement. */
+  sousVolumes?: import("react").ReactNode;
 }

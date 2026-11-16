@@ -24,6 +24,7 @@ export function MovementSheet({original,onClose,onSaved,prefill}:{original?:Tran
   const [application,setApplication]=useState<'cash'|'offset'|''>('');
   const [paid,setPaid]=useState(!original), [method,setMethod]=useState<FinancialPayment['method']>('bank'), [error,setError]=useState(''),[busy,setBusy]=useState(false),[pending,setPending]=useState(false);
   const [piece,setPiece]=useState<PieceJointe|null>(null),[pieceError,setPieceError]=useState('');
+  const [motifManque,setMotifManque]=useState(false);
   const lock=useRef(false),submitted=useRef(false),mounted=useRef(true),retry=useRef(false);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
   const choisirPiece=async(file:File|null)=>{setPieceError('');if(!file){setPiece(null);return;}try{setPiece(await lirePiece(file));}catch(e){setPiece(null);setPieceError((e as Error).message);}};
@@ -31,6 +32,8 @@ export function MovementSheet({original,onClose,onSaved,prefill}:{original?:Tran
   const effet=useMemo(()=>original?null:effetMouvement({transactions:StorageService.getTransactions(),payments:FinanceService.getPayments(),profile:FinanceService.getProfile(),date,sens:kind==='contribution'?'in':'out',amountCents:amount}),[original,date,kind,amount]);
   const save=async(e:React.FormEvent)=>{e.preventDefault();if(lock.current)return;lock.current=true;setBusy(true);setError('');let queuedId:string|undefined;try {
     if(!submitted.current){
+      /* Un motif manquant se dit sur le champ, dans l'app : plus de bulle native du navigateur (`required`), posée sur un autre champ (t1, problème 6). */
+      if(!original&&amount>0&&!note.trim()){setMotifManque(true);throw Error('Dis à quoi sert ce mouvement (le motif) pour l’enregistrer.');}
       if(!amount||amount<=0||!note.trim())throw Error('Indique un montant positif et un motif.');
       if(original&&!application)throw Error('Choisis si l’avoir réduit la facture ou sera remboursé en argent.');
       const txs=StorageService.getTransactions(),currentOriginal=original?txs.find(t=>t.id===original.id):undefined;
@@ -65,9 +68,9 @@ export function MovementSheet({original,onClose,onSaved,prefill}:{original?:Tran
   const titre=original?'Avoir ou remboursement':kind==='contribution'?'De ta poche à la brasserie':'De la brasserie à ta poche';
   const libelleBouton=busy?'Confirmation…':pending?'Vérifier la synchronisation':original?'Enregistrer ce mouvement':kind==='contribution'?'Enregistrer l’apport':'Enregistrer le prélèvement';
   return <Sheet open title={titre} onClose={onClose} dismissible={!busy} className={original?'finance-sheet':'finance-sheet mvt-feuille'} footer={<button type="submit" form="finance-movement" disabled={busy} className={original?'finance-action w-full':'finance-action mvt-cta w-full'}>{libelleBouton}</button>}><form autoComplete="off" id="finance-movement" className="finance-form" onSubmit={save}>
-    {error&&<p role="alert" className="finance-error">{error}</p>}
+    {error&&!motifManque&&<p role="alert" className="finance-error">{error}</p>}
     <fieldset disabled={busy||pending} className="finance-form min-w-0 border-0 p-0 m-0">
-    {!original&&effet&&<ApportPoches kind={kind} onKind={setKind} amount={amount} onAmount={setAmount} date={date} onDate={setDate} method={method} onMethod={setMethod} note={note} onNote={setNote} piece={piece} onPiece={choisirPiece} pieceError={pieceError} effet={effet}/>}
+    {!original&&effet&&<ApportPoches kind={kind} onKind={setKind} amount={amount} onAmount={setAmount} date={date} onDate={setDate} method={method} onMethod={setMethod} note={note} onNote={t=>{setNote(t);setMotifManque(false);}} motifManque={motifManque} piece={piece} onPiece={choisirPiece} pieceError={pieceError} effet={effet}/>}
     {original&&<>
     <p className="finance-muted">Pièce liée : {original.description} · {formatCHF(transactionAmount(original))}. Aucun stock n’est modifié par l’avoir ; consigne un retour physique dans l’inventaire.</p>
     <Field label="Comment appliquer cet avoir ?"><select value={application} onChange={e=>setApplication(e.target.value as typeof application)} required><option value="">Choisir le traitement</option><option value="offset">Déduire de la facture restant à régler</option><option value="cash">Remboursement d’argent, reçu ou attendu</option></select></Field>

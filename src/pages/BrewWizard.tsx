@@ -1,6 +1,5 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
-import { RecapEtat } from '../ui/RecapEtat';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -31,7 +30,7 @@ import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCan
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
-import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
+import { EtapePaliers } from '../ui/paliers/EtapePaliers';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
 import { currentInstallation, snapshotBrewhouse, snapshotMashRatio } from '../domain/brewPreferences';
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
@@ -73,6 +72,7 @@ import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
 import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOverview';
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
+import { styleNomme } from '../ui/recap/styleRecette';
 import { StorageService } from '../services/storage';
 import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
@@ -126,17 +126,18 @@ import type { VueLevure } from '../ui/etapeLevure/props';
 import { useYeastSupply } from '../hooks/useYeastSupply';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
-import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesign';
+import { completeYeastRecipeDesignApplication, readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
 import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState, type WaterChangeIntent } from '../ui/SaltSolver';
+import { useWaterPreload } from '../ui/water/useWaterPreload';
 import { BrewerChat } from '../ui/BrewerChat';
 import { RECIPE_FIELDS } from '../../functions/src/brewerContext';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import type { ImportedRecipe } from '../ui/RecipeImportSheet';
 import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoComplete';
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
-import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
+import { EtapeRecap as SyncBrewSheet } from '../ui/recap/EtapeRecap';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
 import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
@@ -718,7 +719,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   // --- Étape 1 : identité ---------------------------------------------------
   const [name, setNameRaw] = useState(base?.name ?? seed?.title ?? '');
-  const [style, setStyleRaw] = useState(base?.style ?? '');
+  // RC-2 : un style écrit en code seul (« 21A ») devient son nom, sinon ni l'eau ni la levure ne le reconnaissent (`styleRecette.ts`).
+  const styleDeBase = useMemo(() => styleNomme(base?.style ?? '', styles), [base?.style, styles]);
+  const [style, setStyleRaw] = useState(styleDeBase);
   const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
   const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
   const [equipmentNotice,setEquipmentNotice]=useState('');
@@ -772,13 +775,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
   const [mashSteps, setMashStepsRaw] = useState<TempStep[]>(
-    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
+    () => base?.mash?.steps ?? mashProgramForStyle(styleDeBase,base?.styleRef,styles).steps
   );
   const [spargeType, setSpargeTypeRaw] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
   const [ferment, setFermentRaw] = useState<FermentationStep[]>(
-    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
+    () => base?.fermentation ?? fermentProgramForStyle(styleDeBase,base?.styleRef,styles).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
@@ -817,7 +820,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     spargeDiRatioPct: base?.waterPlan?.spargeDiRatioPct,
     // Le style d'eau se devine du style de bière saisi — c'est le point de
     // départ le plus juste, et il reste modifiable.
-    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(base?.style ?? '').code,
+    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(styleDeBase).code,
     // Une cible chiffrée enregistrée reprend la main sur le style deviné du nom.
     customTarget: base?.waterPlan?.targetIons
       ? {
@@ -2307,6 +2310,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     </nav>
   ) : undefined;
 
+  // Ce que la recette sait déjà et que l'eau ignorait ; le même objet nourrit l'onglet Eau et son préchargement.
+  const waterBrew = {
+    style,
+    targetPh: details.waterPlan?.targetPh,
+    nolo: details.nolo, styleRef: details.styleRef,
+    grist: grains,
+    totalGristKg: totalGrist,
+    hops,
+    ibu,
+    og: ogPredicted,
+    volumes: suggestedVolumes,
+    equipment: brewhouse?.equipment,
+    preferences: brewhouse?.preferences,
+    boilMin
+  };
+  // Préchargement : l'analyse de l'eau part dès que la recette est connue, avant l'ouverture de l'onglet Eau (15.11, « moins de 2 secondes… assez lent »).
+  useWaterPreload({ source: waterSource, beerEbc: color?.ebc ?? null, beerVolumeL: volumeL, brew: waterBrew, state: water },
+    step !== 'eau' && !(details.nolo?.enabled && details.nolo.process === 'secondRunnings'));
+
   return (
     <PageShell
       // Un seul nom d'écran, celui de sa maquette, à toutes les largeurs (B1 n° 10) : « Fermentescibles 2/7 » (le même haut d'écran qu'au téléphone, `WizardStepName`),
@@ -2960,7 +2982,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
             </Suspense>
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
-              <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
+
             </Suspense>
           </div>
         </Section>
@@ -3043,165 +3065,34 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
       {/* ---------------------------------------------------- ÉTAPE 5 */}
       {step === 'paliers' && (
-        <>
-          <RecipeThermalPlan recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setDetails(d=>({...d,mash:next.mash}));}}/>
-          <Section
-            title="Empâtage"
-            hint="Le palier de saccharification décide de la sécheresse de la bière."
-          >
-            <div className={`space-y-2 sm:space-y-3${retraitPalier.verrou ? ' pointer-events-none' : ''}`}>
-              <PresetChips
-                name="Programme d’empâtage"
-                presets={MASH_PROGRAMS}
-                id={(p) => p.id}
-                label={(p) => p.name}
-                purpose={(p) => p.purpose}
-                activeId={activeMashProgram}
-                onApply={(prog) => {
-                  setMashSteps(prog.steps.map((s) => ({ ...s })));
-                  setSpargeType(prog.spargeType);
-                }}
-              />
-
-              <ul className="space-y-1.5">
-                {mashSteps.map((s, i) => (
-                  <li key={i} className="panel p-2 sm:p-2.5 space-y-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <TextInput
-                        aria-label={`Nom du palier ${i + 1}`}
-                        name={`mash_step_name_${i}`}
-                        className={`${inputClass} flex-1 text-sm sm:text-base`}
-                        value={s.name}
-                        onChange={(val) =>
-                          setMashSteps(
-                            mashSteps.map((x, j) => (j === i ? { ...x, name: val } : x))
-                          )
-                        }
-                      />
-                      <button
-                        type="button"
-                        onClick={() => retraitPalier.retirer(i)}
-                        aria-label={`Retirer le palier ${s.name}`}
-                        className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    {/*
-                      ⚠️ Les deux champs portent un `aria-label` NOMMANT LE
-                      PALIER. Trouvé en pilotant l'application : `Field` posait
-                      bien une étiquette « Température (°C) », mais sans
-                      `htmlFor`, et le champ n'avait pas d'identifiant — rien ne
-                      les reliait. Deux conséquences, l'une invisible et l'autre
-                      pas : au lecteur d'écran, les huit champs d'un empâtage à
-                      quatre paliers s'annonçaient « champ de saisie », et
-                      taper sur le libellé ne donnait pas le focus, ce qui sur
-                      téléphone se ressent comme un champ qui ne répond pas.
-
-                      Le nom porte le rang ET le nom du palier : « Température du
-                      palier 2 — Saccharification ». Répété à l'identique, il
-                      n'aurait rien désambiguïsé.
-                    */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Field label="Température (°C)">
-                        <NumberInput
-                          aria-label={`Température du palier ${i + 1}${s.name ? ` — ${s.name}` : ''}, en degrés`}
-                          id={`wz-mash-temp-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-mash-temp-${i}`)}
-                          aria-describedby={fieldError(`wz-mash-temp-${i}`) ? 'wz-validation' : undefined}
-                          min={0}
-                          max={100}
-                          value={s.tempC}
-                          onValue={(v) =>
-                            setMashSteps(
-                              mashSteps.map((x, j) =>
-                                j === i ? { ...x, tempC: v } : x
-                              )
-                            )}
-                          pad
-                          className={`${inputClass} font-mono text-center`}
-                        />
-                      </Field>
-                      <Field label="Durée (min)">
-                        <NumberInput
-                          aria-label={`Durée du palier ${i + 1}${s.name ? ` — ${s.name}` : ''}, en minutes`}
-                          id={`wz-mash-duration-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-mash-duration-${i}`)}
-                          aria-describedby={fieldError(`wz-mash-duration-${i}`) ? 'wz-validation' : undefined}
-                          min={0}
-                          value={s.durationMin}
-                          onValue={(v) =>
-                            setMashSteps(
-                              mashSteps.map((x, j) =>
-                                j === i
-                                  ? { ...x, durationMin: v }
-                                  : x
-                              )
-                            )}
-                          integer
-                          pad
-                          className={`${inputClass} font-mono text-center`}
-                        />
-                      </Field>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setMashSteps([...mashSteps, { name: nomPalierAjoute(mashSteps), tempC: 67, durationMin: 30 }])
-                }
-                className="w-full min-h-touch rounded-control border border-cave-700
-                           text-cave-200 text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Ajouter un palier
-              </button>
-
-              <Field label="Rinçage">
-                <SegmentedControl
-                  label="Type de rinçage"
-                  value={spargeType}
-                  onChange={setSpargeType}
-                  options={[
-                    { value: 'batch', label: 'Par bacs' },
-                    { value: 'fly', label: 'Continu' },
-                    { value: 'none', label: 'Aucun' }
-                  ]}
-                />
-              </Field>
-
-              {attenuation != null && yeast.attenuationPct != null && (
-                <p className="text-sm text-cave-400 leading-relaxed">
-                  Atténuation retenue pour ce moût :{' '}
-                  <span className="reading text-ebc-straw">{nombreFr(attenuation, 1)} %</span>
-                  {(() => {
-                    // FG retenue (la cible de la recette, entrées inchangées) ou estimée ; si elles diffèrent, l'écart est dit.
-                    const retenue = fgRecette({ fgTarget: keepTargets ? details.fgTarget : undefined }, null);
-                    if (retenue != null && fgPredicted && formatDensite(retenue) !== formatDensite(fgPredicted)) return ` · FG retenue ${formatDensite(retenue)} · calculée ${formatDensite(fgPredicted)}.`;
-                    const fg = retenue ?? fgPredicted;
-                    return fg ? ` · FG ${retenue != null ? 'retenue' : 'estimée'} ${formatDensite(fg)}.` : '.';
-                  })()}
-                </p>
-              )}
-            </div>
-            {adviceList('wz-mash-')}
-            <AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />
-          </Section>
-
-          <Section
-            title="Fermentation"
-            hint="Phases de fermentation et températures de consigne."
-          >
-            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
-            <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
-            <div className={`space-y-2 sm:space-y-3${retraitPhase.verrou ? ' pointer-events-none' : ''}`}>
+        <EtapePaliers
+          recipe={build()}
+          etat={{ steps: mashSteps, mash: details.mash }}
+          onEmpatage={(next) => {
+            if (next.steps !== mashSteps) setMashSteps(next.steps);
+            if (next.mash !== details.mash) setDetails((d) => ({ ...d, mash: { ...(d.mash ?? {}), ...next.mash } as Recipe['mash'] }));
+          }}
+          programmes={MASH_PROGRAMS}
+          programmeActif={activeMashProgram}
+          onProgramme={(prog) => {
+            setMashSteps(prog.steps.map((s) => ({ ...s })));
+            setSpargeType(prog.spargeType);
+          }}
+          onRetirer={(rang) => retraitPalier.retirer(rang)}
+          verrou={retraitPalier.verrou}
+          avisRetrait={<AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />}
+          erreur={fieldError}
+          spargeType={spargeType}
+          onSparge={setSpargeType}
+          ferment={ferment}
+          onOuvrirLevure={() => setStep('levure')}
+          conseilsEmpatage={adviceList('wz-mash-')}
+          conseilsFermentation={adviceList('wz-ferment-')}
+          contexteLevure={<YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />}
+          erreurFermentation={visibleIssues.find((issue) => issue.field.startsWith('wz-ferment-'))?.message}
+          fermentationDetail={(
+            <div className="space-y-2">
+              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
               <PresetChips
                 name="Programme de fermentation"
                 presets={FERMENT_PROGRAMS}
@@ -3211,79 +3102,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 activeId={activeFermentProgram}
                 onApply={(prog) => setFerment(prog.steps.map((s) => ({ ...s })))}
               />
-
-              <ul className="space-y-1.5">
-                {ferment.map((s, i) => {
-                  const phase = PHASE_LABEL[s.kind];
-                  return (
-                    <li key={i} className="panel p-2 sm:p-2.5 space-y-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="min-w-0 flex-1">
-                          <span
-                            className={`inline-block text-sm px-1.5 py-0.5 rounded-full border ${phase.tone}`}
-                          >
-                            {phase.label}
-                          </span>
-                          <span className="block text-sm sm:text-base text-cave-50 font-medium truncate mt-0.5">
-                            {s.name}
-                          </span>
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => retraitPhase.retirer(i)}
-                          aria-label={`Retirer ${s.name}`}
-                          className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                        {/*
-                          Deux lignes couchées, comme les cartes de houblon. Le
-                          nom porte la PHASE et non son rang : « Température de
-                          Froid court » se distingue, « Température (°C) »
-                          répété trois fois ne se distinguait pas.
-                        */}
-                        <InlineNum
-                          label="T°"
-                          id={`wz-ferment-temp-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-ferment-temp-${i}`)}
-                          aria-describedby={fieldError(`wz-ferment-temp-${i}`) ? 'wz-validation' : undefined}
-                          name={`Température de la phase ${s.name || i + 1}, en degrés`}
-                          unit="°C"
-                          min={0}
-                          value={s.tempC}
-                          onValue={(v) =>
-                            setFerment(ferment.map((x, j) => (j === i ? { ...x, tempC: v } : x)))
-                          }
-                        />
-                        <InlineNum
-                          label="Durée"
-                          id={`wz-ferment-days-${i}`}
-                          emptyValue={Number.NaN}
-                          required
-                          aria-invalid={!!fieldError(`wz-ferment-days-${i}`)}
-                          aria-describedby={fieldError(`wz-ferment-days-${i}`) ? 'wz-validation' : undefined}
-                          name={`Durée de la phase ${s.name || i + 1}, en jours`}
-                          unit="j"
-                          min={0}
-                          value={s.days}
-                          onValue={(v) =>
-                            setFerment(ferment.map((x, j) => (j === i ? { ...x, days: v } : x)))
-                          }
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
             </div>
-            {adviceList('wz-ferment-')}
-            <AvisRetrait dernier={retraitPhase.dernier} onAnnuler={retraitPhase.annuler} />
-          </Section>
-        </>
+          )}
+        />
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 6 */}
@@ -3305,20 +3126,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
              * sortent les volumes. Chaque champ est vivant — changer un malt,
              * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
              */
-            brew={{
-              style,
-              targetPh: details.waterPlan?.targetPh,
-              nolo: details.nolo, styleRef: details.styleRef,
-              grist: grains,
-              totalGristKg: totalGrist,
-              hops,
-              ibu,
-              og: ogPredicted,
-              volumes: suggestedVolumes,
-              equipment: brewhouse?.equipment,
-              preferences: brewhouse?.preferences,
-              boilMin
-            }}
+            brew={waterBrew}
             onMashRatioChange={(lPerKg) => {
               setMashRatioOverride(lPerKg);
               // Le ratio REPREND la main sur les volumes : c'est une consigne,
@@ -3330,51 +3138,39 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             profileMode={waterProfileMode.current}
             noSparge={spargeType === 'none'}
             onNoSpargeChange={setNoSparge}
+            sousVolumes={volumesStale && (
+              /* w1b : UNE ligne sous les deux cuves (le brasseur recale là où il lit les volumes). */
+              <button
+                type="button"
+                data-action="recaler-volumes"
+                onClick={() =>
+                  setWater((w) => ({
+                    ...w,
+                    mashWaterL: suggestedVolumes.mashWaterL,
+                    spargeWaterL: suggestedVolumes.spargeWaterL
+                  }))
+                }
+                className="ew-recal"
+              >
+                <AlertTriangle size={16} aria-hidden="true" />
+                <span>Le calcul donne <b>{formatDecimal(suggestedVolumes.mashWaterL)} / {formatDecimal(suggestedVolumes.spargeWaterL)} L</b></span>
+                <em>recaler</em>
+              </button>
+            )}
           />}
 
-          {(!details.nolo?.enabled||details.nolo.process!=='secondRunnings') && volumesStale && (
+          {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. w1b : un lien souligné, au pied. */}
+          <div className="ew">
             <button
               type="button"
-              onClick={() =>
-                setWater((w) => ({
-                  ...w,
-                  mashWaterL: suggestedVolumes.mashWaterL,
-                  spargeWaterL: suggestedVolumes.spargeWaterL
-                }))
-              }
-              className="w-full mb-2 px-2 py-1.5 rounded-control border border-ebc-amber/40
-                         bg-ebc-amber/10 text-left flex items-center gap-1.5"
+              data-action="retour-fiche"
+              onClick={() => setStep('recap')}
+              className="ew-fl"
             >
-              {/*
-                ⚠️ UNE ligne. Le bandeau en faisait cinq et disait trois fois la
-                même chose : le titre annonçait l'écart, le corps répétait les
-                volumes saisis (qui sont dans les champs, deux centimètres plus
-                bas), puis rappelait pourquoi les sels se dosent au litre. Ne
-                reste que ce qu'on ne peut PAS lire ailleurs — les volumes que
-                le calcul propose — et le geste pour les prendre.
-              */}
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-ebc-amber" />
-              <span className="min-w-0 flex-1 text-sm text-cave-200 leading-snug">
-                Le calcul donne{' '}
-                <span className="reading text-ebc-amber">
-                  {formatDecimal(suggestedVolumes.mashWaterL)} / {formatDecimal(suggestedVolumes.spargeWaterL)} L
-                </span>
-              </span>
-              <span className="shrink-0 text-sm text-ebc-amber font-medium">recaler</span>
+              <ClipboardList size={16} aria-hidden="true" />
+              Retour à la fiche de brassage
             </button>
-          )}
-
-          {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. */}
-          <button
-            type="button"
-            onClick={() => setStep('recap')}
-            className="w-full mt-4 min-h-touch rounded-control border border-cave-700
-                       text-cave-200 text-sm flex items-center justify-center gap-2
-                       transition-colors hover:bg-cave-850"
-          >
-            <ClipboardList className="w-4 h-4" />
-            Retour à la fiche de brassage
-          </button>
+          </div>
         </div>
       )}
 
@@ -3390,23 +3186,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       */}
       {step === 'recap' && (
         <>
-        <RecapEtat readiness={readiness} etape={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
-          onCorriger={issue => requestCorrection([issue])} />
-        {waterSourceNotice}
-        {/*
-          Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
-          potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand
-          la fiche est complète.
-        */}
-
-        {details.nolo?.enabled&&<>
-          <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
-          {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
-          <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure>
-        </>}
         <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
           onLearnIngredient={onLearnIngredient}
-          yeastSummary={!details.nolo?.enabled ? <Suspense fallback={<span>{yeast.name || 'Souche à préciser'}</span>}><YeastRecipeHeading recipe={build()} /></Suspense> : undefined}
+          yeastSummary={!details.nolo?.enabled && readYeastRecipeDesign(build()) ? <Suspense fallback={null}><YeastRecipeHeading recipe={build()} seulementObjectif /></Suspense> : undefined}
           reviewData={{
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
@@ -3420,6 +3202,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           }}
           recipeForCompanion={build()}
           knowledge={knowledge}
+          styleRepere={resolveBrewingStyle(style, details.styleRef, styles)}
+          readiness={readiness}
+          etapeLabel={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
+          onCorriger={issue => requestCorrection([issue])}
+          onAllerEtape={setStep}
+          ibu={ibu}
+          ebc={color && !ogHorsBornes(og) ? color.ebc : null}
+          fgRange={yeastProjection?.fg.range ?? null}
+          abvRange={yeastProjection?.abv.range ?? null}
+          onBrasser={() => submitRecipe(true)}
+          budget={<BrewBudgetButton recipe={build()} />}
+          sousVerdict={<>
+            {waterSourceNotice}
+            {details.nolo?.enabled&&<>
+              <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
+              {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
+            </>}
+          </>}
+          atelierNolo={details.nolo?.enabled ? <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure> : undefined}
           name={name}
           onName={setName}
           style={style}
@@ -3509,7 +3310,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             })
           }
         /></Suspense>
-        <BrewBudgetButton recipe={build()} />
         </>
       )}
 

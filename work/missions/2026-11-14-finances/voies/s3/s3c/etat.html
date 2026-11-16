@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s3c · la loupe comprend une période · Opérations v6a, filtre du … au … · mission 2026-11-14-finances</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px}
+.s3c-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.s3c-hd{display:flex;align-items:center;gap:8px;height:52px;padding:0 10px;border-bottom:1px solid #EBEBEB}
+.s3c-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.s3c-hd b{font-size:18px;font-weight:600;flex:1}
+.s3c-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.s3c-bx{background:#F5F5F5;border:1px solid #DADADA}
+.s3c-app{max-width:760px;margin:0 auto;padding-bottom:84px}
+.s3c-tabs{display:flex;margin:0 10px;border-bottom:1px solid #DADADA}
+.s3c-tabs a{flex:1;text-align:center;padding:8px 0;font-size:14px;color:#444;text-decoration:none}
+.s3c-tabs a.s3c-on{color:#2F6EA8;font-weight:600;box-shadow:inset 0 -3px 0 #2F6EA8}
+/* bandeau : mois + piles basses, d'un seul bloc */
+.s3c-band{margin:8px 10px 0;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.s3c-top{display:flex;align-items:center;gap:6px}
+.s3c-pill{display:flex;align-items:center;gap:2px;border-radius:16px;background:#fff;border:1px solid #E4E0D6;padding:1px}
+.s3c-pill button{width:28px;height:28px;border-radius:50%;font-size:17px}
+.s3c-pill b{font-size:15px;padding:0 4px}
+.s3c-due{margin-left:auto;display:flex;align-items:center;gap:5px;min-height:28px;padding:0 9px;border-radius:16px;background:#FDF1F0;border:1px solid #F1C9C5;font-size:13px;color:#8E2A23}
+.s3c-due i{width:8px;height:8px;border-radius:50%;background:#D6453D}
+.s3c-piles{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;align-items:end;height:112px;gap:4px;margin-top:6px}
+.s3c-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center}
+.s3c-p b{font-size:12px;line-height:14px}
+.s3c-st{border-radius:10px 6px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.s3c-st i{display:block}
+.s3c-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.s3c-sep{height:100%;border-left:1px dashed #BDBDBD;justify-self:center}
+.s3c-base{display:grid;grid-template-columns:1.15fr 8px 1fr 1fr 1fr 10px .9fr;gap:4px;border-top:2px solid #111;padding-top:3px}
+.s3c-base span{font-size:12px;color:#333;text-align:center;line-height:14px}
+.s3c-key{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#444;align-items:center;flex-wrap:wrap}
+.s3c-key span{display:flex;align-items:center;gap:4px}
+.s3c-key i{width:13px;height:11px;border-radius:3px;display:inline-block}
+.s3c-key b{font-size:13px;color:#111}
+/* liste : groupes toujours ouverts, une opération = un bloc de deux étages */
+.s3c-g{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:5px 10px 1px;position:sticky;top:0;background:#fff}
+.s3c-g .s3c-sq{width:22px;height:22px;border-radius:10px;display:grid;place-items:center}
+.s3c-g b{font-size:13px;letter-spacing:.02em}
+.s3c-g .s3c-sub{font-size:13px;color:#444}
+.s3c-op{display:grid;grid-template-columns:4px 1fr auto;column-gap:8px;padding:2px 10px 5px 10px;border-bottom:1px solid #F0F0F0;align-items:center}
+.s3c-bar{grid-row:1/3;align-self:stretch;border-radius:2px}
+.s3c-q{font-size:14px;font-weight:600;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s3c-q small{font-weight:400;color:#555;font-size:13px}
+.s3c-a{font-size:14px;text-align:right}
+.s3c-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;line-height:16px;min-height:18px}
+.s3c-tg{display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;line-height:16px;font-size:12px}
+.s3c-ok{background:#E8F5EC;color:#22663A}
+.s3c-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px);color:#6E500F;box-shadow:inset 0 0 0 1px #E3C27E}
+.s3c-late{background:#FDECEA;color:#8E2A23;box-shadow:inset 0 0 0 1px #F1C9C5}
+.s3c-pc{display:inline-flex;align-items:center;gap:2px;color:#555}
+.s3c-pc.s3c-no{color:#7A5500}
+.s3c-act{grid-column:3;justify-self:end;margin:1px 0 -4px}
+.s3c-btn{min-height:24px;padding:0 10px;border-radius:16px;background:#111;color:#fff;font-size:13px;font-weight:600}
+.s3c-mini{min-height:24px;padding:0 7px;border-radius:10px;border:1px solid #D9D9D9;font-size:12px;color:#444;background:#fff}
+.s3c-part{margin:4px 10px 0;border-top:1px dashed #BDBDBD}
+.s3c-foot{display:flex;gap:6px;flex-wrap:wrap;padding:10px}
+.s3c-foot button{min-height:30px;padding:0 10px;border-radius:10px;background:#F5F5F5;font-size:13px;color:#444}
+.s3c-foot .s3c-ia{border:1px dashed #A9C9E8;background:#fff;color:#2F6EA8}
+.s3c-ex{font-size:12px;color:#666;padding:0 10px}
+.s3c-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #EBEBEB;display:flex;padding-right:76px;z-index:5}
+.s3c-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:#444;text-decoration:none;max-width:110px}
+.s3c-nav a.s3c-on{background:#E6EFF8;color:#111;font-weight:600;box-shadow:inset 0 3px 0 #2F6EA8}
+.s3c-fab{position:fixed;right:10px;bottom:6px;width:60px;height:52px;border-radius:26px;background:#111;color:#fff;font-size:30px;z-index:6}
+/* annexe : l'état après « ✓ Payé » */
+.s3c-annex{margin:18px 10px 0;border:1px solid #DADADA;border-radius:16px;padding:10px 0 6px;background:#fff}
+.s3c-annex h2{font-size:13px;font-weight:600;color:#2F6EA8;padding:0 10px 6px}
+.s3c-flash{background:#F1FAF3}
+@media (min-width:900px){.s3c-app{max-width:1120px;display:grid;grid-template-columns:400px 1fr;gap:0 24px;align-items:start}.s3c-full{grid-column:1/3}.s3c-left{position:sticky;top:0}.s3c-piles{height:200px}.s3c-nav{justify-content:center}}
+
+.s3c-ecran{position:relative}
+.s3c-lab{font:600 13px/18px "Source Sans 3",system-ui,sans-serif;color:#2F6EA8;padding:14px 10px 6px;border-top:6px solid #EBEBEB}
+.s3c-ecran:first-of-type .s3c-lab{border-top:0}
+.s3c-band{position:relative}
+.s3c-hid{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.s3c-mute b{color:#8A8478;font-weight:600}
+.s3c-planche{padding:16px 10px 90px;border-top:6px solid #EBEBEB}
+.s3c-planche h2{font-size:13px;font-weight:600;color:#2F6EA8;margin-bottom:8px}
+.s3c-planche>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.s3c-planche img{width:100%;border:1px solid #DADADA;border-radius:10px;display:block}
+.s3c-planche figcaption{font-size:12px;color:#555;padding:2px 2px 0}
+html[data-vue] .s3c-ecran:not(.s3c-vis),html[data-vue] .s3c-planche,html[data-vue] .s3c-lab{display:none}
+
+.s3c-top>*{flex:none;white-space:nowrap}
+.s3c-dda{position:relative;display:flex;align-items:center;gap:3px;min-height:28px;padding:0 7px;white-space:nowrap;border-radius:16px;border:1px dashed #A9A291;font-size:13px;color:#444}
+.s3c-dda::after{content:"";position:absolute;inset:-8px -2px}
+.s3c-act3{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.s3c-tok{display:flex;align-items:center;gap:5px;min-height:30px;padding:0 2px 0 8px;border-radius:16px;background:#E6EFF8;border:1px solid #A9C9E8;color:#1F4E7A;font-size:14px;font-weight:600}
+.s3c-tok .s3c-x{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:16px;color:#1F4E7A}
+.s3c-hors{font-size:12px;color:#555}
+.s3c-srch{gap:6px}
+.s3c-fld{flex:1;display:flex;align-items:center;gap:6px;height:38px;padding:0 10px;border-radius:12px;border:2px solid #2F6EA8;background:#fff;font-size:16px}
+.s3c-fld em{font-style:normal;background:#E6EFF8;border-radius:4px;padding:0 2px;color:#1F4E7A}
+.s3c-car{width:2px;height:20px;background:#2F6EA8;margin-left:-4px}
+.s3c-sc{position:absolute;left:0;right:0;top:52px;bottom:0;background:rgba(17,17,17,.32);z-index:3}
+.s3c-sug{position:absolute;left:0;right:0;top:52px;background:#fff;border-bottom:1px solid #DADADA;box-shadow:0 12px 24px rgba(0,0,0,.16);z-index:4;padding:6px 10px 10px}
+.s3c-s1{display:grid;grid-template-columns:28px 1fr auto;gap:2px 8px;align-items:center;width:100%;text-align:left;padding:8px;border-radius:12px;background:#F2F7FC;border:1px solid #A9C9E8}
+.s3c-s1 .s3c-ic2{width:28px;height:28px;border-radius:8px;background:#2F6EA8;color:#fff;display:grid;place-items:center;grid-column:1;grid-row:1/3}
+.s3c-s1 b{font-size:15px;grid-column:2;grid-row:1;line-height:18px}
+.s3c-s1 kbd{grid-column:3;grid-row:1/3;font:600 13px "Source Sans 3",sans-serif;background:#111;color:#fff;border-radius:10px;padding:5px 10px}
+.s3c-fr{grid-column:2;grid-row:2;height:14px;margin-top:4px;display:grid;grid-template-columns:repeat(30,1fr);gap:1px}
+.s3c-fr span{background:#E4E0D6;border-radius:1px}
+.s3c-fr span.s3c-x2{background:#2F6EA8}
+.s3c-fr span.s3c-op9{background:#111}
+.s3c-fr span.s3c-op25{background:repeating-linear-gradient(135deg,#E3B55D 0 3px,#FCEFD2 3px 6px)}
+.s3c-s2{display:flex;align-items:center;gap:8px;padding:10px 8px 4px;font-size:14px;color:#444;border-bottom:1px solid #F0F0F0}
+.s3c-s3{padding:8px 8px 0;font-size:12px;color:#555}
+.s3c-s3 span{display:inline-block;margin:4px 4px 0 0;padding:1px 8px;border-radius:999px;background:#F5F5F5;color:#333;font-size:13px}
+</style>
+</head>
+<body>
+
+<section class="s3c-ecran" data-ecran="repos">
+<p class="s3c-lab">Repos : v6a, et la puce « du … au » à côté du mois</p>
+<header class="s3c-hd">
+  <span class="s3c-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s3c-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s3c-ic s3c-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s3c-ic s3c-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+<div class="s3c-app">
+ <div class="s3c-full">
+  <nav class="s3c-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s3c-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+ <div class="s3c-left">
+  <section class="s3c-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s3c-top">
+    <span class="s3c-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="s3c-dda" data-booster="du-au"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>du … au</button>
+    <button class="s3c-due" data-booster="pastille-retard"><i></i>en retard <b class="s3c-m">60,00</b></button>
+   </div>
+   <div class="s3c-piles">
+    <div class="s3c-p"><b class="s3c-m" style="color:#2A7240">+720,00</b><span class="s3c-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">468,00</b><span class="s3c-st" style="height:57px"><i class="s3c-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">186,80</b><span class="s3c-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">42,00</b><span class="s3c-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">28,60</b><span class="s3c-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s3c-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="s3c-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s3c-m">325,40</b></span><span><i class="s3c-hat"></i>à payer <b class="s3c-m">400,00</b></span><span>dépensé <b class="s3c-m">696,80</b></span></div>
+  </section>
+ </div>
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <!-- Charges fixes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s3c-sub s3c-m">468,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar s3c-hat"></span>
+   <span class="s3c-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s3c-a s3c-m">400,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-pay">à payer · 25 nov. · dans 16 j</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-btn s3c-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#9856D2"></span>
+   <span class="s3c-q">Électricité <small>· Énergie</small></span><span class="s3c-a s3c-m">68,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s3c-sub s3c-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56D27B"></span>
+   <span class="s3c-q">Vente au marché <small>· Marché du village</small></span><span class="s3c-a s3c-m" style="color:#2A7240">+720,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ encaissé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s3c-sub s3c-m">186,80</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D2B356"></span>
+   <span class="s3c-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">186,80</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s3c-sub s3c-m">42,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56C1D2"></span>
+   <span class="s3c-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">42,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s3c-part"></div>
+  <div class="s3c-g"><span class="s3c-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s3c-sub s3c-m">28,60</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#567BD2"></span>
+   <span class="s3c-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s3c-a s3c-m">28,60</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s3c-sub s3c-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D6453D"></span>
+   <span class="s3c-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s3c-a s3c-m">60,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-late">à payer depuis le 20 déc. 2025</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">✓ Payé</button>
+  </div>
+  <p class="s3c-ex">Pièces jointes : exemple.</p>
+  <div class="s3c-foot"><button class="s3c-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+ </div>
+</div>
+
+</section>
+<section class="s3c-ecran" data-ecran="ouvert">
+<p class="s3c-lab">La loupe : « 3-17 nov. » tapé est lu comme une période</p>
+<header class="s3c-hd s3c-srch">
+  <button class="s3c-ic" aria-label="Fermer la recherche"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div class="s3c-fld" data-booster="recherche-periode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg><em>3-17 nov.</em><span class="s3c-car"></span></div>
+  <button class="s3c-ic s3c-bx" aria-label="Effacer">×</button>
+</header>
+<div class="s3c-app">
+ <div class="s3c-full">
+  <nav class="s3c-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s3c-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+ <div class="s3c-left">
+  <section class="s3c-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s3c-top">
+    <span class="s3c-pill"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="s3c-dda" data-booster="du-au"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>du … au</button>
+    <button class="s3c-due" data-booster="pastille-retard"><i></i>en retard <b class="s3c-m">60,00</b></button>
+   </div>
+   <div class="s3c-piles">
+    <div class="s3c-p"><b class="s3c-m" style="color:#2A7240">+720,00</b><span class="s3c-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">468,00</b><span class="s3c-st" style="height:57px"><i class="s3c-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">186,80</b><span class="s3c-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">42,00</b><span class="s3c-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">28,60</b><span class="s3c-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s3c-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="s3c-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s3c-m">325,40</b></span><span><i class="s3c-hat"></i>à payer <b class="s3c-m">400,00</b></span><span>dépensé <b class="s3c-m">696,80</b></span></div>
+  </section>
+ </div>
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <!-- Charges fixes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s3c-sub s3c-m">468,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar s3c-hat"></span>
+   <span class="s3c-q">Loyer de l'atelier <small>· Atelier</small></span><span class="s3c-a s3c-m">400,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-pay">à payer · 25 nov. · dans 16 j</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-btn s3c-act" data-booster="paye-sur-ligne">✓ Payé</button>
+  </div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#9856D2"></span>
+   <span class="s3c-q">Électricité <small>· Énergie</small></span><span class="s3c-a s3c-m">68,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s3c-sub s3c-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56D27B"></span>
+   <span class="s3c-q">Vente au marché <small>· Marché du village</small></span><span class="s3c-a s3c-m" style="color:#2A7240">+720,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ encaissé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s3c-sub s3c-m">186,80</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D2B356"></span>
+   <span class="s3c-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">186,80</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s3c-sub s3c-m">42,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56C1D2"></span>
+   <span class="s3c-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">42,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s3c-part"></div>
+  <div class="s3c-g"><span class="s3c-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s3c-sub s3c-m">28,60</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#567BD2"></span>
+   <span class="s3c-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s3c-a s3c-m">28,60</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s3c-sub s3c-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D6453D"></span>
+   <span class="s3c-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s3c-a s3c-m">60,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-late">à payer depuis le 20 déc. 2025</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">✓ Payé</button>
+  </div>
+  <p class="s3c-ex">Pièces jointes : exemple.</p>
+  <div class="s3c-foot"><button class="s3c-ia" data-booster="ia-expliquer">✦ Pourquoi les charges fixes pèsent autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+ </div>
+</div>
+<div class="s3c-sc"></div><div class="s3c-sug">
+  <button class="s3c-s1"><span class="s3c-ic2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><b>Période : du mar. 3 au mar. 17 nov.</b><kbd>Poser</kbd><span class="s3c-fr" aria-hidden="true"><span></span><span></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-op9"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span class="s3c-x2"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span class="s3c-op25"></span><span></span><span></span><span></span><span></span><span></span></span></button>
+  <div class="s3c-s2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg>Texte « 3-17 nov. » · aucune opération</div>
+  <p class="s3c-s3">Compris aussi :<br><span>15.10–10.11</span><span>semaine 45</span><span>octobre</span><span>depuis le 3</span></p>
+</div>
+</section>
+<section class="s3c-ecran" data-ecran="apres">
+<p class="s3c-lab">Après « Poser » : la période en pastille, × pour revenir</p>
+<header class="s3c-hd">
+  <span class="s3c-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2.2"><path d="M6 5h10v15H6z"/><path d="M16 9h3v6h-3"/></svg></span>
+  <b>L'Affinée</b>
+  <span class="s3c-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></svg></span>
+  <button class="s3c-ic s3c-bx" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></button>
+  <button class="s3c-ic s3c-bx" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+</header>
+<div class="s3c-app">
+ <div class="s3c-full">
+  <nav class="s3c-tabs" aria-label="Finances"><a href="#">Synthèse</a><a href="#" class="s3c-on">Opérations</a><a href="#">Prévisions</a><a href="#">Annuel</a></nav>
+ </div>
+ <div class="s3c-left">
+  <section class="s3c-band" aria-label="Le mois par catégorie" data-booster="piles-basses">
+   <div class="s3c-top">
+    <span class="s3c-pill s3c-mute"><button aria-label="Mois précédent">‹</button><b>novembre</b><button aria-label="Mois suivant">›</button></span>
+    <button class="s3c-due" data-booster="pastille-retard"><i></i>en retard <b class="s3c-m">60,00</b></button>
+   </div>
+   <div class="s3c-act3" data-booster="pastille-periode"><span class="s3c-tok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>3 → 17 nov.<button class="s3c-x" aria-label="Retirer la période">×</button></span><span class="s3c-hors">5 opérations · 1 après le 17</span></div>
+   <div class="s3c-piles">
+    <div class="s3c-p"><b class="s3c-m" style="color:#2A7240">+720,00</b><span class="s3c-st" style="height:88px"><i style="flex:1;background:#56D27B"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">68,00</b><span class="s3c-st" style="height:8px"><i style="flex:1;background:#9856D2"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">186,80</b><span class="s3c-st" style="height:23px"><i style="flex:1;background:#D2B356"></i></span></div>
+    <div class="s3c-p"><b class="s3c-m">42,00</b><span class="s3c-st" style="height:6px"><i style="flex:1;background:#56C1D2"></i></span></div>
+    <span class="s3c-sep"></span>
+    <div class="s3c-p"><b class="s3c-m">28,60</b><span class="s3c-st" style="height:4px"><i style="flex:1;background:#567BD2"></i></span></div>
+   </div>
+   <div class="s3c-base"><span>Ventes</span><span></span><span>Fixes</span><span>Brassage</span><span>Nettoyage</span><span></span><span>Matériel</span></div>
+   <div class="s3c-key"><span><i style="background:linear-gradient(90deg,#9856D2 25%,#D2B356 25% 50%,#56C1D2 50% 75%,#567BD2 75%)"></i>payé <b class="s3c-m">325,40</b></span><span><i class="s3c-hat"></i>à payer <b class="s3c-m">0,00</b></span><span>dépensé <b class="s3c-m">296,80</b></span></div>
+  </section>
+ </div>
+ <div data-mots="lignes" data-booster="lignes-entieres">
+  <!-- Charges fixes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#3F2556"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D8B9F4" stroke-width="2.8"><path d="M4 11l8-6 8 6v9H4z"/></svg></span><b>Charges fixes</b><span class="s3c-sub s3c-m">68,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#9856D2"></span>
+   <span class="s3c-q">Électricité <small>· Énergie</small></span><span class="s3c-a s3c-m">68,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture</span></span>
+  </div>
+  <!-- Ventes -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#255633"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9F4CA" stroke-width="2.8"><path d="M12 6v12M6 12h12"/></svg></span><b>Ventes</b><span class="s3c-sub s3c-m" style="color:#2A7240">+720,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56D27B"></span>
+   <span class="s3c-q">Vente au marché <small>· Marché du village</small></span><span class="s3c-a s3c-m" style="color:#2A7240">+720,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ encaissé 9 nov. · banque</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>ticket</span></span>
+  </div>
+  <!-- Brassage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#564925"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4E5B9" stroke-width="2.8"><path d="M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z"/></svg></span><b>Brassage</b><span class="s3c-sub s3c-m">186,80</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D2B356"></span>
+   <span class="s3c-q">Malt et houblons · Pale Ale <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">186,80</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 3h7l4 4v14H7z"/><path d="M9.5 14l2 2 3.5-4"/></svg>facture · Pilsner 25 kg</span></span>
+  </div>
+  <!-- Nettoyage -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#254F56"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9ECF4" stroke-width="2.8"><path d="M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z"/></svg></span><b>Nettoyage</b><span class="s3c-sub s3c-m">42,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#56C1D2"></span>
+   <span class="s3c-q">Nettoyant alcalin <small>· Comptoir du brasseur</small></span><span class="s3c-a s3c-m">42,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Matériel à part -->
+  <div class="s3c-part"></div>
+  <div class="s3c-g"><span class="s3c-sq" style="background:#253356"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B9CAF4" stroke-width="2.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg></span><b>Matériel · à part</b><span class="s3c-sub s3c-m">28,60</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#567BD2"></span>
+   <span class="s3c-q">Joints de la cuve <small>· Inox &amp; Co</small></span><span class="s3c-a s3c-m">28,60</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-ok">✓ payé 9 nov.</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">+ pièce</button>
+  </div>
+  <!-- Retard, hors du mois -->
+  <div class="s3c-g"><span class="s3c-sq" style="background:#6E1F1A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8C9C4" stroke-width="2.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg></span><b>En retard · 2025</b><span class="s3c-sub s3c-m" style="color:#8E2A23">60,00</span></div>
+  <div class="s3c-op">
+   <span class="s3c-bar" style="background:#D6453D"></span>
+   <span class="s3c-q">Solde atelier · ancienne année <small>· Atelier</small></span><span class="s3c-a s3c-m">60,00</span>
+   <span class="s3c-meta"><span class="s3c-tg s3c-late">à payer depuis le 20 déc. 2025</span><span class="s3c-pc s3c-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2.4"><path d="M7 3h7l4 4v14H7z"/></svg>sans pièce</span></span>
+   <button class="s3c-mini s3c-act">✓ Payé</button>
+  </div>
+  <p class="s3c-ex">Pièces jointes : exemple.</p>
+  <div class="s3c-foot"><button class="s3c-ia" data-booster="ia-expliquer">✦ Pourquoi le brassage pèse autant ?</button><button>Par date</button><button>Filtres ⌄</button><button>Doublons</button><button>Apport ou prélèvement privé</button><button>Archives</button></div>
+ </div>
+</div>
+
+</section>
+<section class="s3c-planche"><h2>Les images, côte à côte</h2><div><figure><img src="s3c-repos.png" alt="s3c repos"><figcaption>repos</figcaption></figure><figure><img src="s3c-ouvert.png" alt="s3c ouvert"><figcaption>ouvert</figcaption></figure><figure><img src="s3c-apres.png" alt="s3c apres"><figcaption>apres</figcaption></figure></div></section>
+<nav class="s3c-nav" aria-label="Navigation">
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#" class="s3c-on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6EA8" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12h6"/></svg>Finances</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C87A2C" stroke-width="1.8"><path d="M6 6h10v14H6zM16 9h3v6h-3"/></svg>Brassins</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E9B5B" stroke-width="1.8"><path d="M12 3l7 4v8l-7 4-7-4V7z"/></svg>Stocks</a>
+  <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2 .6 3 2.5 3 5.5"/></svg>Clients</a>
+</nav>
+<button class="s3c-fab" aria-label="Ajouter">+</button>
+<script>(function(){var v=new URLSearchParams(location.search).get('vue');if(!v)return;document.documentElement.setAttribute('data-vue',v);var e=document.querySelector('[data-ecran="'+v+'"]');if(e)e.classList.add('s3c-vis');})();</script>
+</body>
+</html>

@@ -16,19 +16,23 @@ const { EquipmentSheet } = await import('../../../src/ui/EquipmentSheet');
 
 afterEach(cleanup);
 
+// Depuis za3 (15.11), un appareil existant s'ouvre sur sa fiche ; la correction de l'achat est sous ⋯ › Modifier.
+const ouvrirModifier = () => { fireEvent.click(screen.getByRole('button', { name: /Gestion du matériel/ })); fireEvent.click(screen.getByRole('menuitem', { name: 'Modifier' })); };
+
 // Valeurs de test, simulées.
 const materiel = { id: 'EQ-x', ref: 'EQ-012', name: 'Pompe', category: 'Brassage', state: 'Neuf' };
 
 describe('TE-47 — le prix négatif se dit, visiblement, et le bouton éteint y renvoie', () => {
   it('« -1 » tapé, section « Achat » refermée : le message reste visible, annoncé, relié au champ et au bouton', () => {
     render(<EquipmentSheet item={materiel} onClose={() => {}} onSave={vi.fn()} onDelete={() => {}} />);
-    fireEvent.click(screen.getByText(/Achat/));
+    ouvrirModifier();
+    fireEvent.click(screen.getByText(/Achat/, { selector: 'summary' }));
     const prix = document.getElementById('eq-price') as HTMLInputElement;
     fireEvent.focus(prix);
     fireEvent.change(prix, { target: { value: '-1' } });
     fireEvent.blur(prix);
     // Le brasseur referme la section ou sa disposition la replie : le refus doit rester lisible.
-    fireEvent.click(screen.getByText(/Achat/));
+    fireEvent.click(screen.getByText(/Achat/, { selector: 'summary' }));
     const alerte = screen.getByRole('alert');
     expect(alerte).toHaveTextContent(/ne peut pas être négatif/);
     expect(alerte).toBeVisible();
@@ -41,6 +45,7 @@ describe('TE-47 — le prix négatif se dit, visiblement, et le bouton éteint y
 
   it('une fiche rouverte avec un prix négatif déjà enregistré montre le message sans qu’on ouvre « Achat »', () => {
     render(<EquipmentSheet item={{ ...materiel, purchasePrice: -1 }} onClose={() => {}} onSave={vi.fn()} onDelete={() => {}} />);
+    ouvrirModifier();
     expect(screen.getByRole('alert')).toBeVisible();
   });
 });

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m4ia-c · Ce que le compagnon va lire, en pastilles (chaude)</title>
+<style>
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Source Sans 3";src:url(../fonts/SourceSans3-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"IBM Plex Mono";src:url(../fonts/IBMPlexMono-600.woff2) format("woff2");font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#111;background:#fff;font-size:14px;line-height:18px;width:390px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.m4ia-c-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.m4ia-c-back{position:relative;height:120px;overflow:hidden}.m4ia-c-back img{width:390px;display:block}
+.m4ia-c-back::after{content:"";position:absolute;inset:0;background:rgba(17,17,17,.42)}
+.m4ia-c-sheet{position:relative;margin-top:-20px;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:6px 10px 14px;min-height:744px}
+.m4ia-c-grip{width:36px;height:4px;border-radius:2px;background:#D6D6D6;margin:0 auto 6px}
+.m4ia-c-hd{display:flex;align-items:center}.m4ia-c-hd h1{font-size:16px;flex:1}
+.m4ia-c-x{width:32px;height:32px;border-radius:10px;background:#F5F5F5;border:1px solid #DADADA;font-size:18px}
+.m4ia-c-band{margin-top:8px;border-radius:16px;background:#FAF8F3;padding:6px 8px 8px}
+.m4ia-c-t{font-size:12px;color:#555;display:flex;justify-content:space-between}
+.m4ia-c-piles{display:grid;grid-template-columns:1.15fr 1fr 1fr 1fr .9fr;align-items:end;gap:4px;height:84px;margin-top:4px}
+.m4ia-c-p{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;text-align:center;opacity:.35}
+.m4ia-c-p.m4ia-c-on{opacity:1}
+.m4ia-c-p b{font-size:12px;line-height:14px}
+.m4ia-c-st{border-radius:8px 5px 2px 2px;display:flex;flex-direction:column;overflow:hidden}
+.m4ia-c-on .m4ia-c-st{outline:2.5px solid #2F6EA8;outline-offset:2px}
+.m4ia-c-hat{background:repeating-linear-gradient(135deg,#E3B55D 0 4px,#FCEFD2 4px 8px);box-shadow:inset 0 0 0 1px #C99A3A}
+.m4ia-c-base{display:grid;grid-template-columns:1.15fr 1fr 1fr 1fr .9fr;gap:4px;border-top:2px solid #111;padding-top:2px;font-size:12px;text-align:center;color:#333}
+.m4ia-c-q{margin-top:10px;border:1.5px solid #2F6EA8;border-radius:10px;padding:8px 10px;font-size:15px;line-height:20px;box-shadow:0 0 0 3px #E6EFF8}
+.m4ia-c-k{font-size:12px;color:#555;margin:10px 0 4px;display:flex;justify-content:space-between}
+.m4ia-c-pills{display:flex;flex-wrap:wrap;gap:6px}
+.m4ia-c-pl{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 10px;border-radius:16px;border:1px solid #D9D9D9;font-size:13px;background:#fff}
+.m4ia-c-pl.m4ia-c-in{background:#E6EFF8;border-color:#A9C9E8;color:#123F68}
+.m4ia-c-pl.m4ia-c-in::before{content:"✓";font-weight:700}
+.m4ia-c-pl.m4ia-c-outp{color:#666;background:#F5F5F5;border-color:#F5F5F5}
+.m4ia-c-pl.m4ia-c-outp::before{content:"+"}
+.m4ia-c-pay{background:repeating-linear-gradient(135deg,#FBEBC9 0 4px,#FFF7E6 4px 8px)!important;box-shadow:inset 0 0 0 1px #E3C27E;border-color:#E3C27E!important;color:#6E500F!important}
+.m4ia-c-ex{font-size:12px;color:#555;margin-top:6px;line-height:15px}
+.m4ia-c-send{display:flex;gap:6px;margin-top:12px}
+.m4ia-c-mode{height:44px;padding:0 10px;border-radius:10px;border:1px solid #D9D9D9;font-size:13px}
+.m4ia-c-pri{flex:1;height:44px;border-radius:10px;background:#111;color:#fff;font-weight:600}
+</style></head><body>
+<div class="m4ia-c-back"><img src="../../../ref/v6a/v6a-haut.png" alt=""></div>
+<section class="m4ia-c-sheet" aria-label="Compagnon brasseur">
+ <div class="m4ia-c-grip"></div>
+ <div class="m4ia-c-hd"><h1>✦ Compagnon brasseur</h1><button class="m4ia-c-x" aria-label="Fermer">×</button></div>
+
+ <div class="m4ia-c-band" data-booster="piles-visees">
+  <div class="m4ia-c-t"><span>Ta question vise</span><span>novembre</span></div>
+  <div class="m4ia-c-piles">
+   <div class="m4ia-c-p"><b class="m4ia-c-m" style="color:#2A7240">+720,00</b><span class="m4ia-c-st" style="height:62px;background:#56D27B"></span></div>
+   <div class="m4ia-c-p m4ia-c-on"><b class="m4ia-c-m">468,00</b><span class="m4ia-c-st" style="height:40px"><i class="m4ia-c-hat" style="flex:400"></i><i style="flex:68;background:#9856D2"></i></span></div>
+   <div class="m4ia-c-p"><b class="m4ia-c-m">186,80</b><span class="m4ia-c-st" style="height:16px;background:#D2B356"></span></div>
+   <div class="m4ia-c-p"><b class="m4ia-c-m">42,00</b><span class="m4ia-c-st" style="height:5px;background:#56C1D2"></span></div>
+   <div class="m4ia-c-p"><b class="m4ia-c-m">28,60</b><span class="m4ia-c-st" style="height:4px;background:#567BD2"></span></div>
+  </div>
+  <div class="m4ia-c-base"><span>Ventes</span><span><b>Fixes</b></span><span>Brassage</span><span>Nettoyage</span><span>Matériel</span></div>
+ </div>
+
+ <div class="m4ia-c-q" role="textbox">Pourquoi les charges fixes pèsent autant ? <b class="m4ia-c-m">468,00</b> sur <b class="m4ia-c-m">696,80</b> dépensés.</div>
+
+ <p class="m4ia-c-k"><span>Ce qu'il va lire</span><span></span></p>
+ <div class="m4ia-c-pills" data-booster="contexte-envoye">
+  <button class="m4ia-c-pl m4ia-c-in">novembre</button>
+  <button class="m4ia-c-pl m4ia-c-in">6 opérations</button>
+  <button class="m4ia-c-pl m4ia-c-in">loyer à payer 400,00</button>
+  <button class="m4ia-c-pl m4ia-c-in">2 sans pièce</button>
+  <button class="m4ia-c-pl m4ia-c-in">profil : sans TVA</button>
+  <button class="m4ia-c-pl m4ia-c-outp">tout l'historique</button>
+  <button class="m4ia-c-pl m4ia-c-outp">archives</button>
+  <button class="m4ia-c-pl m4ia-c-outp">projets de matériel</button>
+ </div>
+
+ <div class="m4ia-c-send"><button class="m4ia-c-mode" data-booster="mode-reponse">Auto ⌄</button><button class="m4ia-c-pri">Envoyer</button></div>
+</section></body></html>

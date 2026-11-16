@@ -14,6 +14,8 @@ const valeursDe = (nom) => textes.flatMap(([f, t]) => [...t.matchAll(new RegExp(
 const DRAPEAUX = [
   { nom: 'VITE_HOP_V4', attendu: ['"on"'], dit: 'écrans Houblons allumés' },
   { nom: 'VITE_ENRICHISSEMENT_IA', attendu: ['"production"', '"eteinte"'], dit: 'enrichissement des fiches (production ou éteint exprès)' },
+  // ks4 passe 3 (15.11) : la note du Carnet rangée par l'IA (src/config/rangerNoteIA.ts) ; `eteint` est un choix exprès.
+  { nom: 'VITE_RANGER_NOTE_IA', attendu: ['"production"', '"eteint"'], dit: 'note du Carnet rangée par l\'IA (production ou éteint exprès)' },
 ];
 let ok = true;
 for (const d of DRAPEAUX) {

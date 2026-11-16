@@ -63,6 +63,8 @@ const volumeField = () => screen.getByRole('textbox', { name: 'Volume en ferment
 const validationAlert = () => screen.getByText(/^(Une valeur|\d+ valeurs) à corriger$/).closest('[role="alert"]');
 const close = () => fireEvent.click(screen.getAllByRole('button', { name: 'Fermer', exact: true })[0]);
 const reopen = () => fireEvent.click(screen.getByRole('button', { name: 'Ouvrir l’éditeur' }));
+/** Maquette r2 : les champs d'un palier se montrent après le toucher de sa colonne sur la courbe. */
+const toucherPalier1 = () => fireEvent.click(screen.getByRole('button', { name: /^Palier 1 ·/ }));
 const replace = (field: HTMLElement, value: string) => {
   fireEvent.change(field, { target: { value } });
   fireEvent.blur(field);
@@ -146,6 +148,7 @@ describe('Recipe wizard submission safeguards', () => {
     const draftKey = `safety:${scenario.title}`;
     const { onSave } = wizard({ draftKey });
     allerEtape(scenario.step);
+    toucherPalier1(); // maquette r2 : les champs du palier se montrent après son toucher
     await erase(screen.getAllByRole('textbox', { name: scenario.label })[0]);
     expect(scenario.value(readRecipeDraft(draftKey)!.recipe)).toBeNaN();
     recap();
@@ -215,6 +218,7 @@ describe('Recipe drafts survive leaving the editor', () => {
     replace(titleField(), 'Brouillon du dimanche');
     replace(volumeField(), '24,5');
     allerEtape(/^Paliers$/);
+    toucherPalier1(); // maquette r2 : les champs du palier se montrent après son toucher
     replace(screen.getByRole('textbox', { name: /^Température du palier 1/ }), '66,5');
 
     if (mode === 'close') {
@@ -229,6 +233,8 @@ describe('Recipe drafts survive leaving the editor', () => {
 
     expect(screen.getByRole('main', { name: 'Paliers' })).toBeInTheDocument();
     expect(screen.getByText(/Brouillon repris/)).toBeVisible();
+    expect(screen.getByRole('button', { name: /^Palier 1 · .*66,5 °C/ })).toBeInTheDocument(); // la colonne porte la valeur reprise
+    toucherPalier1();
     expect(screen.getByRole('textbox', { name: /^Température du palier 1/ })).toHaveValue('66,5');
     allerEtape(/^Identité$/);
     expect(titleField()).toHaveValue('Brouillon du dimanche');

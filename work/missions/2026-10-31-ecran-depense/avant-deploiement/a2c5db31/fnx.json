@@ -1,0 +1,526 @@
+{
+ "390-clair ecrit": 2,
+ "390-clair fn0-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 296,80 / à payer / 425,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-clair paye-A": 1,
+ "390-clair fn6-avis": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 306,80 / à payer / 415,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / 10,00 / Payé 10,00 / Annuler / Autre montant / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-clair annuler-avis": "Annuler",
+ "390-clair fiche-A": "ZZ TEST — pièce A · ZZ TEST — Fournisseurà payer · sans échéancesans p",
+ "390-clair fn6-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair corr-ouvre": "16 nov. 2026 · banque · corrigé10,00",
+ "390-clair fn6-ficheA-detail": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −10,00 / 16 nov. 2026 · banque · correction / +10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair noter": "Noter un paiement",
+ "390-clair fn7-payer": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 15,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 15,00 / ✓ soldé / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 25,00 ## Montant du virement (CHF)=25,00",
+ "390-clair vir": "TEXTAREA:Montant du virement (CHF) 150x52",
+ "390-clair fn7-payer12": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 2,00 / reste 13,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 2,00 / sur 15,00 · reste 13,00 / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 12,00 ## Montant du virement (CHF)=12,00",
+ "390-clair payer": "✓ Payer 12,00",
+ "390-clair fn7-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-clair fiche-B": "ZZ TEST — pièce B · ZZ TEST — FournisseurReste 13,00 CHF à payer · san",
+ "390-clair fn7-ficheB": "ZZ TEST — pièce B / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 15,00 / CHF / Reste à payer : 13,00 CHF / Déjà payé : 2,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −2,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair fiche-A2": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-clair fn7-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / ✓ payé aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 3 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −10,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair modif1": "Modifier",
+ "390-clair fn9-modif1": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair fn9-modif1-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair autres": "divers",
+ "390-clair fn5-autres": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair mt9": "TEXTAREA:Montant (CHF) 94.640625x42",
+ "390-clair fn10-baisse": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair fn10-baisse-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair boutons": " | Erreur de saisie : j’ai payé 9,00payé 9, | J’ai bien payé 10,00 : 1,00 trop payé1,0 | Copier le lien | Annuler | Enregistrer",
+ "390-clair choix": "J’ai bien payé 10,00 : 1,00 trop payé1,00 à récupérer du fournisseur ·",
+ "390-clair fn10-choix": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Dans Opérations / ZZ TEST — pièce A / 10,00 / ✓ payé aujourd’hui · banque / sans pièce / avant / ZZ TEST — pièce A / 9,00 / ✓ payé aujourd’hui · banque / sans pièce / après / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair enr": "Enregistrer",
+ "390-clair fn10-apres": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-clair fn10-creance": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-clair fiche-A3": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-clair fn10-ficheA": "ZZ TEST — pièce A / Autres frais · ZZ TEST — Fournisseur · 15 nov. 2026 / 9,00 / CHF / ✓ payé aujourd’hui · banque / 1,00 CHF à récupérer : voir la créance / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 5 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −9,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair fiche-C": "À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fourniss",
+ "390-clair fn10-ficheC": "À récupérer : trop payé sur « ZZ TEST — pièce A » / Autres frais · ZZ TEST — Fournisseur · 16 nov. 2026 / 1,00 / CHF / à récupérer 1,00 · sorti aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque / −1,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-clair fiche-A4": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-clair modif2": "Modifier",
+ "390-clair fn9-modif2": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair fn9-modif2-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-clair compte": {
+  "tx": [
+   [
+    "ZZ-FNA",
+    "ZZ TEST — pièce A",
+    "divers",
+    "expense",
+    900,
+    "unpaid",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "ZZ TEST — pièce B",
+    "brassage",
+    "expense",
+    1500,
+    "unpaid",
+    ""
+   ],
+   [
+    "MOUV-c6151879-cec6-4a84-a702-30fe159436c2",
+    "À récupérer : trop payé sur « ZZ TEST — pièce A »",
+    "divers",
+    "expense",
+    100,
+    "unpaid",
+    ""
+   ]
+  ],
+  "pay": [
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Correction d’un paiement saisi par erreur",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "out",
+    200,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Contre-écriture : montant de la pièce corrigé",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    900,
+    "",
+    "Paiement après correction du montant de la pièce",
+    ""
+   ],
+   [
+    "MOUV-c6151879-cec6-4a84-a702-30fe159436c2",
+    "out",
+    100,
+    "",
+    "Trop payé : l’argent sorti reste sorti, il est à récupérer",
+    ""
+   ]
+  ]
+ },
+ "390-clair err": [],
+ "1280-sombre ecrit": 2,
+ "1280-sombre fn0-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 296,80 / à payer / 425,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-sombre paye-A": 1,
+ "1280-sombre fn6-avis": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 306,80 / à payer / 415,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / 10,00 / Payé 10,00 / Annuler / Autre montant / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-sombre annuler-avis": "Annuler",
+ "1280-sombre fiche-A": "ZZ TEST — pièce A · ZZ TEST — Fournisseurà payer · sans échéancesans p",
+ "1280-sombre fn6-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre corr-ouvre": "16 nov. 2026 · banque · corrigé10,00",
+ "1280-sombre fn6-ficheA-detail": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −10,00 / 16 nov. 2026 · banque · correction / +10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre noter": "Noter un paiement",
+ "1280-sombre fn7-payer": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 15,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 15,00 / ✓ soldé / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 25,00 ## Montant du virement (CHF)=25,00",
+ "1280-sombre vir": "INPUT:Montant du virement (CHF) 150x52",
+ "1280-sombre fn7-payer12": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 2,00 / reste 13,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 2,00 / sur 15,00 · reste 13,00 / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 12,00 ## Montant du virement (CHF)=12,00",
+ "1280-sombre payer": "✓ Payer 12,00",
+ "1280-sombre fn7-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-sombre fiche-B": "ZZ TEST — pièce B · ZZ TEST — FournisseurReste 13,00 CHF à payer · san",
+ "1280-sombre fn7-ficheB": "ZZ TEST — pièce B / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 15,00 / CHF / Reste à payer : 13,00 CHF / Déjà payé : 2,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −2,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre fiche-A2": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-sombre fn7-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / ✓ payé aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 3 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −10,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre modif1": "Modifier",
+ "1280-sombre fn9-modif1": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre fn9-modif1-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre autres": "divers",
+ "1280-sombre fn5-autres": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre mt9": "INPUT:Montant (CHF) 155.640625x42",
+ "1280-sombre fn10-baisse": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre fn10-baisse-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre boutons": " | Erreur de saisie : j’ai payé 9,00payé 9, | J’ai bien payé 10,00 : 1,00 trop payé1,0 | Copier le lien | Annuler | Enregistrer",
+ "1280-sombre choix": "J’ai bien payé 10,00 : 1,00 trop payé1,00 à récupérer du fournisseur ·",
+ "1280-sombre fn10-choix": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Dans Opérations / ZZ TEST — pièce A / 10,00 / ✓ payé aujourd’hui · banque / sans pièce / avant / ZZ TEST — pièce A / 9,00 / ✓ payé aujourd’hui · banque / sans pièce / après / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre enr": "Enregistrer",
+ "1280-sombre fn10-apres": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-sombre fn10-creance": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-sombre fiche-A3": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-sombre fn10-ficheA": "ZZ TEST — pièce A / Autres frais · ZZ TEST — Fournisseur · 15 nov. 2026 / 9,00 / CHF / ✓ payé aujourd’hui · banque / 1,00 CHF à récupérer : voir la créance / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 5 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −9,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre fiche-C": "À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fourniss",
+ "1280-sombre fn10-ficheC": "À récupérer : trop payé sur « ZZ TEST — pièce A » / Autres frais · ZZ TEST — Fournisseur · 16 nov. 2026 / 1,00 / CHF / à récupérer 1,00 · sorti aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque / −1,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-sombre fiche-A4": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-sombre modif2": "Modifier",
+ "1280-sombre fn9-modif2": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre fn9-modif2-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-sombre compte": {
+  "tx": [
+   [
+    "ZZ-FNA",
+    "ZZ TEST — pièce A",
+    "divers",
+    "expense",
+    900,
+    "unpaid",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "ZZ TEST — pièce B",
+    "brassage",
+    "expense",
+    1500,
+    "unpaid",
+    ""
+   ],
+   [
+    "MOUV-6d47297c-0002-42fe-83a9-8afd1ef5b08e",
+    "À récupérer : trop payé sur « ZZ TEST — pièce A »",
+    "divers",
+    "expense",
+    100,
+    "unpaid",
+    ""
+   ]
+  ],
+  "pay": [
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Correction d’un paiement saisi par erreur",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "out",
+    200,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Contre-écriture : montant de la pièce corrigé",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    900,
+    "",
+    "Paiement après correction du montant de la pièce",
+    ""
+   ],
+   [
+    "MOUV-6d47297c-0002-42fe-83a9-8afd1ef5b08e",
+    "out",
+    100,
+    "",
+    "Trop payé : l’argent sorti reste sorti, il est à récupérer",
+    ""
+   ]
+  ]
+ },
+ "1280-sombre err": [],
+ "390-sombre ecrit": 2,
+ "390-sombre fn0-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 296,80 / à payer / 425,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-sombre paye-A": 1,
+ "390-sombre fn6-avis": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 306,80 / à payer / 415,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / 10,00 / Payé 10,00 / Annuler / Autre montant / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-sombre annuler-avis": "Annuler",
+ "390-sombre fiche-A": "ZZ TEST — pièce A · ZZ TEST — Fournisseurà payer · sans échéancesans p",
+ "390-sombre fn6-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre corr-ouvre": "16 nov. 2026 · banque · corrigé10,00",
+ "390-sombre fn6-ficheA-detail": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −10,00 / 16 nov. 2026 · banque · correction / +10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre noter": "Noter un paiement",
+ "390-sombre fn7-payer": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 15,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 15,00 / ✓ soldé / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 25,00 ## Montant du virement (CHF)=25,00",
+ "390-sombre vir": "TEXTAREA:Montant du virement (CHF) 150x52",
+ "390-sombre fn7-payer12": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 2,00 / reste 13,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 2,00 / sur 15,00 · reste 13,00 / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 12,00 ## Montant du virement (CHF)=12,00",
+ "390-sombre payer": "✓ Payer 12,00",
+ "390-sombre fn7-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-sombre fiche-B": "ZZ TEST — pièce B · ZZ TEST — FournisseurReste 13,00 CHF à payer · san",
+ "390-sombre fn7-ficheB": "ZZ TEST — pièce B / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 15,00 / CHF / Reste à payer : 13,00 CHF / Déjà payé : 2,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −2,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre fiche-A2": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-sombre fn7-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / ✓ payé aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 3 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −10,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre modif1": "Modifier",
+ "390-sombre fn9-modif1": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre fn9-modif1-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre autres": "divers",
+ "390-sombre fn5-autres": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre mt9": "TEXTAREA:Montant (CHF) 94.640625x42",
+ "390-sombre fn10-baisse": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre fn10-baisse-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre boutons": " | Erreur de saisie : j’ai payé 9,00payé 9, | J’ai bien payé 10,00 : 1,00 trop payé1,0 | Copier le lien | Annuler | Enregistrer",
+ "390-sombre choix": "J’ai bien payé 10,00 : 1,00 trop payé1,00 à récupérer du fournisseur ·",
+ "390-sombre fn10-choix": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Dans Opérations / ZZ TEST — pièce A / 10,00 / ✓ payé aujourd’hui · banque / sans pièce / avant / ZZ TEST — pièce A / 9,00 / ✓ payé aujourd’hui · banque / sans pièce / après / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre enr": "Enregistrer",
+ "390-sombre fn10-apres": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-sombre fn10-creance": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11",
+ "390-sombre fiche-A3": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-sombre fn10-ficheA": "ZZ TEST — pièce A / Autres frais · ZZ TEST — Fournisseur · 15 nov. 2026 / 9,00 / CHF / ✓ payé aujourd’hui · banque / 1,00 CHF à récupérer : voir la créance / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 5 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −9,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre fiche-C": "À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fourniss",
+ "390-sombre fn10-ficheC": "À récupérer : trop payé sur « ZZ TEST — pièce A » / Autres frais · ZZ TEST — Fournisseur · 16 nov. 2026 / 1,00 / CHF / à récupérer 1,00 · sorti aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque / −1,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "390-sombre fiche-A4": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "390-sombre modif2": "Modifier",
+ "390-sombre fn9-modif2": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre fn9-modif2-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "390-sombre compte": {
+  "tx": [
+   [
+    "ZZ-FNA",
+    "ZZ TEST — pièce A",
+    "divers",
+    "expense",
+    900,
+    "unpaid",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "ZZ TEST — pièce B",
+    "brassage",
+    "expense",
+    1500,
+    "unpaid",
+    ""
+   ],
+   [
+    "MOUV-6402e23b-e12c-4c1a-b431-de1f8df26eee",
+    "À récupérer : trop payé sur « ZZ TEST — pièce A »",
+    "divers",
+    "expense",
+    100,
+    "unpaid",
+    ""
+   ]
+  ],
+  "pay": [
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Correction d’un paiement saisi par erreur",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "out",
+    200,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Contre-écriture : montant de la pièce corrigé",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    900,
+    "",
+    "Paiement après correction du montant de la pièce",
+    ""
+   ],
+   [
+    "MOUV-6402e23b-e12c-4c1a-b431-de1f8df26eee",
+    "out",
+    100,
+    "",
+    "Trop payé : l’argent sorti reste sorti, il est à récupérer",
+    ""
+   ]
+  ]
+ },
+ "390-sombre err": [],
+ "1280-clair ecrit": 2,
+ "1280-clair fn0-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 296,80 / à payer / 425,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-clair paye-A": 1,
+ "1280-clair fn6-avis": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 306,80 / à payer / 415,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / 10,00 / Payé 10,00 / Annuler / Autre montant / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-clair annuler-avis": "Annuler",
+ "1280-clair fiche-A": "ZZ TEST — pièce A · ZZ TEST — Fournisseurà payer · sans échéancesans p",
+ "1280-clair fn6-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair corr-ouvre": "16 nov. 2026 · banque · corrigé10,00",
+ "1280-clair fn6-ficheA-detail": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / À payer : 10,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 2 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −10,00 / 16 nov. 2026 · banque · correction / +10,00 / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair noter": "Noter un paiement",
+ "1280-clair fn7-payer": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 15,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 15,00 / ✓ soldé / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 25,00 ## Montant du virement (CHF)=25,00",
+ "1280-clair vir": "INPUT:Montant du virement (CHF) 150x52",
+ "1280-clair fn7-payer12": "Payer ZZ TEST — Fournisseur / 2 pièces à payer au même fournisseur / Ton virement / pièce A 10,00 / pièce B 2,00 / reste 13,00 / Le plus ancien d’abord / ✓ / ZZ TEST — pièce A / à payer / 10,00 / ✓ soldé / ✓ / ZZ TEST — pièce B / à payer / 2,00 / sur 15,00 · reste 13,00 / Justificatif du virement / sera joint aux 2 pièces / Photo / Fichier / Le / aujourd’hui / autre / avec / banque / Annuler / ✓ Payer / 12,00 ## Montant du virement (CHF)=12,00",
+ "1280-clair payer": "✓ Payer 12,00",
+ "1280-clair fn7-ops": "Synthèse / Opérations / Prévisions / Annuel / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 211,80 / Brassage / 42,00 / Nettoyage / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 211,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 10,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-clair fiche-B": "ZZ TEST — pièce B · ZZ TEST — FournisseurReste 13,00 CHF à payer · san",
+ "1280-clair fn7-ficheB": "ZZ TEST — pièce B / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 15,00 / CHF / Reste à payer : 13,00 CHF / Déjà payé : 2,00 CHF / Sans justificatif / Noter un paiement / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −2,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair fiche-A2": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-clair fn7-ficheA": "ZZ TEST — pièce A / Brassage · ZZ TEST — Fournisseur · 15 nov. 2026 / 10,00 / CHF / ✓ payé aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 3 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · virement de 12,00 · 2 pièces / −10,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair modif1": "Modifier",
+ "1280-clair fn9-modif1": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair fn9-modif1-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Brassage / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=brassage ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair autres": "divers",
+ "1280-clair fn5-autres": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=10,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair mt9": "INPUT:Montant (CHF) 155.640625x42",
+ "1280-clair fn10-baisse": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair fn10-baisse-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Le montant passe sous ce qui est déjà payé (10,00) : choisis ce qui s’est passé. / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair boutons": " | Erreur de saisie : j’ai payé 9,00payé 9, | J’ai bien payé 10,00 : 1,00 trop payé1,0 | Copier le lien | Annuler | Enregistrer",
+ "1280-clair choix": "J’ai bien payé 10,00 : 1,00 trop payé1,00 à récupérer du fournisseur ·",
+ "1280-clair fn10-choix": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / 10,00 / sans TVA / Erreur de saisie : j’ai payé 9,00 / payé 9,00 / J’ai bien payé 10,00 : 1,00 trop payé / 1,00 à récupérer du fournisseur · la sortie reste comptée / Dans Opérations / ZZ TEST — pièce A / 10,00 / ✓ payé aujourd’hui · banque / sans pièce / avant / ZZ TEST — pièce A / 9,00 / ✓ payé aujourd’hui · banque / sans pièce / après / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair enr": "Enregistrer",
+ "1280-clair fn10-apres": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-clair fn10-creance": "Synthèse / Opérations / Prévisions / Annuel / Opération mise à jour. Fermer / ‹ / novembre / › / en / retard / 60,00 / du / au / +720,00 / Ventes / 468,00 / Fixes / 201,80 / Brassage / 42,00 / Nettoyage / 10,00 / Autres / 28,60 / Matériel / payé / 308,80 / à payer / 413,00 / dépensé / 721,80 / Charges fixes / 468,00 / Loyer de l’atelier / à payer · 25 nov. · dans 9 j / sans pièce / ✓ Payé / 400,00 / Électricité · Énergie / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 68,00 / Ventes / +720,00 / Vente au marché · Marché du village / ✓ encaissé aujourd’hui · banque / sans pièce / + pièce / +720,00 / Brassage / 201,80 / Malt et houblons · Pale Ale · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 186,80 / ZZ TEST — pièce B · ZZ TEST — Fournisseur / Reste 13,00 CHF à payer · sans échéance / sans pièce / ✓ Payé / 15,00 / Nettoyage / 42,00 / Nettoyant alcalin · Comptoir du brasseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 42,00 / Autres frais / 10,00 / À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fournisseur / à récupérer 1,00 · sorti aujourd’hui · banque / sans pièce / + pièce / 1,00 / ZZ TEST — pièce A · ZZ TEST — Fournisseur / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 9,00 / Matériel · à part / 28,60 / Joints de la cuve · Inox & Co / ✓ payé aujourd’hui · banque / sans pièce / + pièce / 28,60 / En retard · 2025 / 60,00 / Solde atelier · ancienne année / à payer depuis le 20 déc. 2025 / sans pièce / ✓ Payé / 60,00 / Pourquoi les charges fixes pèsent autant ? / Par date / Filtres / Doublons / Apport ou prélèvement privé / Archives ## Période du journal=2026-11 ; Du=2026-11-01 ; Au=2026-11-30",
+ "1280-clair fiche-A3": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-clair fn10-ficheA": "ZZ TEST — pièce A / Autres frais · ZZ TEST — Fournisseur · 15 nov. 2026 / 9,00 / CHF / ✓ payé aujourd’hui · banque / 1,00 CHF à récupérer : voir la créance / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 5 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque · corrigé / 10,00 / 16 nov. 2026 · banque / −9,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair fiche-C": "À récupérer : trop payé sur « ZZ TEST — pièce A » · ZZ TEST — Fourniss",
+ "1280-clair fn10-ficheC": "À récupérer : trop payé sur « ZZ TEST — pièce A » / Autres frais · ZZ TEST — Fournisseur · 16 nov. 2026 / 1,00 / CHF / à récupérer 1,00 · sorti aujourd’hui · banque / Sans justificatif / Modifier / Avoir ou remboursement / Échéance et prévision / Paiements / 1 / 16 nov. 2026 · banque / −1,00 / Corriger ce paiement saisi par erreur / Corriger une erreur de saisie ## = ; ?=",
+ "1280-clair fiche-A4": "ZZ TEST — pièce A · ZZ TEST — Fournisseur✓ payé aujourd’hui · banquesa",
+ "1280-clair modif2": "Modifier",
+ "1280-clair fn9-modif2": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair fn9-modif2-bas": "ZZ TEST — pièce A / Pas encore de pièce / Photo du ticket / Fichier ou PDF / Nom / Catégorie / Brassage / Matériel / Nettoyage / Charges fixes / Local et travaux / Autres frais / Précision / Date / Montant / sans TVA / Fournisseur, n° de pièce / Drive · Novembre › Autres frais / Copier le lien / Annuler / Enregistrer ## =ZZ TEST — pièce A ; ?=divers ; CIP, malt, outillage…= ; JJ.MM.AAAA=15.11.2026 ; Montant (CHF)=9,00 ; Brau-Rauchshop cmd 686863, Bauhaus…=ZZ TEST — Fournisseur · ZZ-FNA",
+ "1280-clair compte": {
+  "tx": [
+   [
+    "ZZ-FNA",
+    "ZZ TEST — pièce A",
+    "divers",
+    "expense",
+    900,
+    "unpaid",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "ZZ TEST — pièce B",
+    "brassage",
+    "expense",
+    1500,
+    "unpaid",
+    ""
+   ],
+   [
+    "MOUV-179dfd66-08cc-4fe9-b191-ae2814979d17",
+    "À récupérer : trop payé sur « ZZ TEST — pièce A »",
+    "divers",
+    "expense",
+    100,
+    "unpaid",
+    ""
+   ]
+  ],
+  "pay": [
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Correction d’un paiement saisi par erreur",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    1000,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNB",
+    "out",
+    200,
+    "",
+    "Virement de 12,00 CHF réparti sur 2 pièces",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "in",
+    1000,
+    "contre",
+    "Contre-écriture : montant de la pièce corrigé",
+    ""
+   ],
+   [
+    "ZZ-FNA",
+    "out",
+    900,
+    "",
+    "Paiement après correction du montant de la pièce",
+    ""
+   ],
+   [
+    "MOUV-179dfd66-08cc-4fe9-b191-ae2814979d17",
+    "out",
+    100,
+    "",
+    "Trop payé : l’argent sorti reste sorti, il est à récupérer",
+    ""
+   ]
+  ]
+ },
+ "1280-clair err": []
+}

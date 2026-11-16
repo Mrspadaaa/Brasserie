@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
 import { ChampVirement } from './ChampVirement';
+import { couleursPieces, etiquettesPieces } from './etiquettes';
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { formatCHF, isoDate, paymentState, todayISO, transactionVendor } from '../../../domain/finance/ledger';
@@ -10,7 +11,7 @@ import { prepareFinanceDocument, saveFinanceDocumentConfirmed } from '../../../s
 import { driveProofFileName } from '../../../services/purchaseEntry';
 import { GeminiScannerService } from '../../../services/geminiScanner';
 import { amountOnly, shortDate } from '../financeFormat';
-import { echeance } from '../operations/calculs';
+import { contrePaiement, echeance } from '../operations/calculs';
 import { GROUPES, type GroupeId } from '../operations/groupes';
 import './payer.css';
 
@@ -31,18 +32,20 @@ const couleurDe = (p: PieceOuverte, aujourdhui: string): string => {
   const groupe = GROUPES[(GROUPE_DE[p.transaction.category] ?? p.transaction.category) as GroupeId] ?? GROUPES.divers;
   return groupe.liseré;
 };
-const premierMot = (texte: string) => (texte.trim().split(/\s+/)[0] ?? '').toLowerCase();
 
 interface Joint { nom: string; dataUrl: string; mime: string }
 const IcoDoc = ({ plein }: { plein?: boolean }) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray={plein ? undefined : '3 2.4'} aria-hidden="true"><path d="M7 3h7l4 4v14H7z" />{plein && <path d="M9.5 14l2 2 3.5-4" />}</svg>;
 
-export function PayerVirement({ transaction, payments, transactions, onClose }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void }) {
+export function PayerVirement({ transaction, payments: paiementsBruts, transactions, onClose, remplace }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void; remplace?: FinancialPayment }) {
   const aujourdhui = todayISO();
+  /** « Autre montant » : le paiement rapide à remplacer ne compte pas (ni son inversion, une fois écrite) : la pièce se lit comme avant ce paiement, avec son montant comme reste. */
+  const payments = useMemo(() => remplace ? paiementsBruts.filter(p => p.id !== remplace.id && p.reversalOfId !== remplace.id) : paiementsBruts, [paiementsBruts, remplace]);
   const pieces = useMemo(() => piecesOuvertesDuTiers(transaction, transactions, payments), [transaction, transactions, payments]);
   const entrant = pieces[0]?.entrant ?? false;
   const inconnu = paymentState(transaction, payments, transactions).state === 'unknown';
   const tiers = transactionVendor(transaction);
-  const [exclues, setExclues] = useState<Set<string>>(() => new Set());
+  // Avec un paiement à remplacer, la feuille s'ouvre sur cette seule pièce : les autres du tiers restent à cocher.
+  const [exclues, setExclues] = useState<Set<string>>(() => new Set(remplace ? pieces.filter(p => p.id !== transaction.id).map(p => p.id) : []));
   /** `null` : le montant par défaut (tout ce qui reste sur les pièces cochées) ; sinon la saisie du brasseur (`undefined` : champ vidé). */
   const [saisi, setSaisi] = useState<number | undefined | null>(null);
   const [modeDate, setModeDate] = useState<'auj' | 'autre'>(inconnu ? 'autre' : 'auj');
@@ -55,7 +58,7 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
   const [occupe, setOccupe] = useState(false);
   const fichier = useRef<HTMLInputElement>(null), photo = useRef<HTMLInputElement>(null);
   // Un virement = une écriture reprise à l'identique si on réessaie : mêmes identifiants, même horodatage (un paiement est immuable).
-  const virement = useRef({ id: `VIR-${uuid()}`, recordedAt: new Date().toISOString(), paiements: new Map<string, string>(), preuve: undefined as { id: string; nom: string } | undefined });
+  const virement = useRef({ id: `VIR-${uuid()}`, recordedAt: new Date().toISOString(), paiements: new Map<string, string>(), inverse: false, preuve: undefined as { id: string; nom: string } | undefined });
 
   const choisies = pieces.filter(p => !exclues.has(p.id));
   const total = totalDu(choisies);
@@ -95,6 +98,8 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
         v.preuve = { id: prepare.id, nom: recu?.fileName ?? nom };
       }
       const preuve = joint ? v.preuve : undefined;
+      // Un lot par étape : d'abord l'inversion du paiement rapide ; si elle échoue, rien d'autre n'est écrit. Une reprise ne la rejoue pas.
+      if (remplace && !v.inverse) { FinanceService.recordPayment(contrePaiement(remplace, v.recordedAt)); v.inverse = true; await Promise.resolve(); }
       for (const part of touchees) {
         const piece = pieces.find(p => p.id === part.id)!;
         if (!v.paiements.has(part.id)) v.paiements.set(part.id, `PAI-${uuid()}`);
@@ -108,7 +113,9 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
       onClose();
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Enregistrement impossible.';
-      if (ecrites > 0) {
+      if (ecrites === 0 && virement.current.inverse) {
+        setErreur(`${message} Déjà enregistré : le paiement rapide est inversé. Le nouveau paiement n’est pas écrit.`);
+      } else if (ecrites > 0) {
         // Les pièces déjà payées quittent la liste ; le montant restant à virer est ce qui n'a pas pu être écrit.
         setSaisi(Math.max(0, valeur! - ecrites));
         setErreur(`${message} Déjà enregistré : ${formatCHF(ecrites)}. Le reste du virement n’est pas écrit.`);
@@ -129,7 +136,11 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
   const reste = rep ? total - rep.imputeCents : 0;
   const troncons = touchees.map(t => ({ ...t, piece: pieces.find(p => p.id === t.id)! }));
   const legende: string[] = [];
-  troncons.slice(0, troncons.length > 3 ? 2 : 3).forEach(t => legende.push(`${t.piece.echeance && t.piece.echeance < aujourdhui ? 'retard' : premierMot(t.piece.transaction.description)} ${amountOnly(t.partCents)}`));
+  // FN-3, FN-4 : une couleur par pièce (celles de m5pa-d, variées si deux pièces ont la même) et un nom court qui les distingue.
+  const teintes = couleursPieces(troncons.map(t => couleurDe(t.piece, aujourdhui)));
+  const noms = etiquettesPieces(troncons.map(t => t.piece.transaction.description));
+  const enRetard = troncons.filter(t => t.piece.echeance && t.piece.echeance < aujourdhui).length;
+  troncons.slice(0, troncons.length > 3 ? 2 : 3).forEach((t, i) => legende.push(`${t.piece.echeance && t.piece.echeance < aujourdhui ? (enRetard > 1 ? `retard · ${noms[i]}` : 'retard') : noms[i]} ${amountOnly(t.partCents)}`));
   if (troncons.length > 3) legende.push(`${troncons.length - 2} autres ${amountOnly(troncons.slice(2).reduce((s, t) => s + t.partCents, 0))}`);
   if (reste > 0) legende.push(`reste ${amountOnly(reste)}`);
 
@@ -145,7 +156,7 @@ export function PayerVirement({ transaction, payments, transactions, onClose }: 
         onValeur={v => setSaisi(v)} />
       {refus && saisi !== null && !(saisi !== undefined && saisi > total) && <p className="pay-err" role="alert">{refus}</p>}
       <div className="pay-flow" data-booster="repartition" aria-hidden="true">
-        {troncons.map(t => <i key={t.id} style={{ flex: t.partCents, background: couleurDe(t.piece, aujourdhui) }} />)}
+        {troncons.map((t, i) => <i key={t.id} style={{ flex: t.partCents, background: teintes[i] }} />)}
         {reste > 0 && <i className="pay-hach" style={{ flex: reste }} />}
       </div>
       <div className="pay-fk">{legende.map((l, i) => <span key={i}>{l}</span>)}</div>

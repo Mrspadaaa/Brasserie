@@ -1,0 +1,70 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+···stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : les neuf étapes > chaque segment de la piste ouvre son étape avec sa question, son terme et son action noire
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+·stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : les neuf étapes > clavier : ← → entre segments, Échap revient à la tête
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : les neuf étapes > un inconnu n’est jamais 0 : étapes 1, 3 et 8 sur la démo
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+··stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : les neuf étapes > étape 4 : l’escalier de la cuve et la ligne des joints
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : les neuf étapes > étape 9 : le classeur, « Figer » désactivé sans clôture, le nom du téléchargement gardé
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : version figée et ancienne archive > lecture seule : bandeau, gestes d’écriture désactivés, « Travailler sur une nouvelle version » crée un brouillon
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+···stderr | tests/integration/annuelEcran.test.tsx > Annuel g6 : version figée et ancienne archive > un rapport figé ancien (sans outstanding, tax, supportingDocuments, adjustments) : la tête et les neuf étapes se rendent
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+·······························································································································································································································································································
+
+ Test Files  21 passed (21)
+      Tests  296 passed (296)
+   Start at  15:07:39
+   Duration  6.93s (transform 3.50s, setup 3.83s, collect 11.49s, tests 2.37s, environment 5.38s, prepare 1.32s)
+

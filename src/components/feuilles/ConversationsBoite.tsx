@@ -14,6 +14,8 @@ export interface LigneConversation {
   enAttente: boolean;
   echanges: number;
   selected: boolean;
+  /** Un échec se relance depuis la ligne (geste du compagnon déployé). */
+  relancer?: () => void;
 }
 
 interface Props {
@@ -28,6 +30,9 @@ interface Props {
   onChoisir: (cle: string | null) => void;
   onConfirmer: () => void;
   onIndice: () => void;
+  /** Gestes du compagnon déployé, gardés dans la feuille d3p2 : « Repartir à zéro » au-dessus de la liste, l'interrupteur de notification en dessous. */
+  avant?: React.ReactNode;
+  apres?: React.ReactNode;
 }
 
 const PICTOS: Record<IconeConversation, React.ReactNode> = {
@@ -40,7 +45,7 @@ const COULEUR = { prod: 'rgb(var(--area-production))', sto: 'rgb(var(--area-stoc
  * puis les conversations, une ligne chacune. On supprime en glissant la ligne vers la gauche (au pointeur : au survol ;
  * au clavier : au focus) ; la suppression se confirme toujours, et se dit.
  */
-export const ConversationsBoite: React.FC<Props> = ({ open, onClose, lignes, enLigne, erreurLien, notice, suppressionEnCours, onOuvrir, onChoisir, onConfirmer, onIndice }) => {
+export const ConversationsBoite: React.FC<Props> = ({ open, onClose, lignes, enLigne, erreurLien, notice, suppressionEnCours, onOuvrir, onChoisir, onConfirmer, onIndice, avant, apres }) => {
   const depart = useRef<number | null>(null);
   const lien = etatLienCompagnon(enLigne, erreurLien);
   const maintenant = new Date();
@@ -66,6 +71,7 @@ export const ConversationsBoite: React.FC<Props> = ({ open, onClose, lignes, enL
           <Trash2 size={14} aria-hidden="true" />{suppressionEnCours ? 'Suppression…' : 'Supprimer les échanges'}</button>
       </>}>
       {notice && <p className="fe-notice" role="status">{notice}</p>}
+      {avant}
       {!lignes.length
         ? <p className="fe-emp" role="status"><b>Aucune conversation</b>Le bouton + ouvre le compagnon sur l’écran en cours.</p>
         : <>
@@ -85,9 +91,10 @@ export const ConversationsBoite: React.FC<Props> = ({ open, onClose, lignes, enL
                     <button type="button" className="fe-cv" disabled={suppressionEnCours} onClick={() => onOuvrir(l.cle)}>
                       <span className="fe-ci" style={{ background: COULEUR[zone] }} aria-hidden="true">{PICTOS[icone]}</span>
                       <span className="fe-l">{l.label}<small>{l.question}</small>
-                        <small>{l.statut}{l.echanges > 1 ? ` · ${l.echanges} échanges` : ''}</small></span>
+                        <small>{l.statut}{l.echanges > 1 && !/échange/.test(l.statut) ? ` · ${l.echanges} échanges` : ''}</small></span>
                       {l.enAttente ? <span className="fe-wait">attend le réseau</span> : <time className="fe-m">{horodatageConversation(l.createdAt, maintenant)}</time>}
                     </button>
+                    {l.relancer && !l.selected && <button type="button" className="fe-b2" disabled={suppressionEnCours} aria-label={`Relancer la conversation ${l.label}`} onClick={l.relancer}>Relancer</button>}
                     <button type="button" className="fe-del" aria-label={`Supprimer la conversation ${l.label}`} disabled={suppressionEnCours} onClick={() => onChoisir(l.cle)}>
                       <Trash2 size={16} aria-hidden="true" />Supprimer</button>
                   </div>
@@ -96,6 +103,7 @@ export const ConversationsBoite: React.FC<Props> = ({ open, onClose, lignes, enL
               );
             })}
           </>}
+      {apres}
     </Feuille>
   );
 };

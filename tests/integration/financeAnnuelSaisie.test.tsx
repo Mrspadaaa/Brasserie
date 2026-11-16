@@ -97,7 +97,7 @@ describe('Finances › Annuel : une virgule dans les autres champs numériques n
     }
     return champs.length;
   };
-  const ecranTient = () => expect(screen.queryByRole('button', { name: /^Année \d{4}/ }) ?? screen.getByRole('heading', { level: 3 })).toBeVisible();
+  const ecranTient = () => expect(screen.queryByRole('button', { name: /^Année \d{4}/ }) ?? screen.getAllByRole('heading', { level: 3 })[0]).toBeVisible();
   const allerAnnuel = () => { render(<Workspace />); fireEvent.click(screen.getByRole('tab', { name: 'Annuel' })); };
   /* g6 : chaque feuille s'ouvre depuis son étape (étape, bouton). */
   const feuilles: Array<[string, number, RegExp]> = [
@@ -122,7 +122,7 @@ describe('Finances › Annuel : une virgule dans les autres champs numériques n
     allerAnnuel();
     fireEvent.click(piste(4));
     fireEvent.click(screen.getByRole('button', { name: /Cuve 30 L/ }));
-    const dialog = screen.getByRole('dialog', { name: 'Modifier l’amortissement' });
+    const dialog = screen.getByRole('dialog', { name: 'Cuve 30 L' }) /* m3im-c : le titre est le nom du bien */;
     expect(sweep(dialog)).toBeGreaterThan(2);
     ecranTient();
   });

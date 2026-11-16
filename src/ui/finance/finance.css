@@ -245,3 +245,10 @@
 @media (prefers-reduced-motion:reduce) { .finance *, .finance-sheet * { animation:none!important; transition:none!important; } }
 .finance-summary-head { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px; }
 .finance-summary-head .finance-label { display:inline; }
+
+/* t3, problème 7 : la croix × des feuilles de Finances (Prévoir, Projet, Cuve, Profil, Compagnon, Archives, Budget) est simple, comme dans les maquettes. Le cadre de focus ne se montre qu'au clavier (`modeClavier.ts`) ; la règle ne vit qu'une fois le suivi installé par l'onglet Finances. */
+html[data-clavier-suivi]:not([data-clavier]) [role="dialog"] header button[aria-label="Fermer"]:focus-visible { outline: none; }
+
+/* t3, A4 : le compagnon en clair. La question envoyée (ocre sur gris moyen) et « Auto » (texte sombre sur vert foncé) passent à 4,5:1 au moins ; le thème cave garde ses jetons. */
+:root:not([data-theme='cave']) .brewer-chat-finances .brewer-chat-question { background: #E6ECDD; color: #1F2A1B; }
+:root:not([data-theme='cave']) .brewer-chat-finances .brewer-chat-mode :is(input):checked + span { background: #2F5A2B; color: #FFFFFF; }

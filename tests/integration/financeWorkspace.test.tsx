@@ -113,7 +113,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     // g6 : la préparation se fait étape par étape ; le solde d'ouverture est l'étape 2 de la piste.
     fireEvent.click(screen.getByRole('button',{name:/^2\. Solde d’ouverture/}));
     fireEvent.click(screen.getByRole('button',{name:'Renseigner le solde',exact:true}));
-    expect(screen.getByRole('dialog',{name:'Solde et paramètres financiers'})).toBeVisible();
+    expect(screen.getByRole('dialog',{name:'Solde et paramètres'})).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Annuler',exact:true}));
     act(()=>FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:10000,confirmed:true}}));
     // Étape 1 « Tout est noté ? » : « Joindre » ouvre les opérations de l'exercice sans justificatif.
@@ -151,7 +151,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     const asset=screen.getByRole('button',{name:/Cuve 30 L.*À compléter/});
     expect(asset).toBeVisible();fireEvent.click(asset);
-    expect(screen.getByRole('dialog',{name:'Modifier l’amortissement'})).toBeInTheDocument();
+    expect(screen.getByRole('dialog',{name:'Cuve 30 L'}) /* m3im-c : le titre est le nom du bien */).toBeInTheDocument();
   });
   it('affiche exactement 30 jours et douze mois glissants, y compris le dernier mois partiel',()=>{
     vi.useFakeTimers();vi.setSystemTime(new Date('2026-09-09T10:00:00Z'));

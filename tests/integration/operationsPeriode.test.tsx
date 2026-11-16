@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
 const recordPayment = vi.fn();
@@ -184,14 +184,55 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     expect(screen.getByRole('button', { name: 'Joindre une pièce' })).toHaveTextContent('+ pièce');
   });
 
-  it('(d bis) juste après le geste « ✓ Payé » de cette session : « Annuler » apparaît', () => {
-    const due = tx('DUE', today, 'brassage');
+  it('(d bis) juste après « ✓ Payé » : l\'avis « Payé 100,00 · Annuler · Autre montant » (FN-2) pendant 10 s, puis « Annuler » seul', () => {
+    vi.useFakeTimers();
+    try {
+      const due = tx('DUE', today, 'brassage');
+      const { rerender } = render(ligne(due, []));
+      fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+      expect(recordPayment).toHaveBeenCalledTimes(1);
+      const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
+      rerender(ligne(due, [ecrit]));
+      const avis = screen.getByRole('status');
+      expect(avis).toHaveTextContent(/Payé\s*100,00/);
+      expect(within(avis).getByRole('button', { name: 'Annuler le paiement de 100,00' })).toHaveTextContent('Annuler');
+      expect(within(avis).getByRole('button', { name: /^Autre montant/ })).toHaveTextContent('Autre montant');
+      // Pendant l'avis, le geste de droite est masqué : un seul « Annuler », pas deux.
+      expect(screen.queryByRole('button', { name: 'Annuler le paiement du jour' })).not.toBeInTheDocument();
+      act(() => { vi.advanceTimersByTime(10_500); });
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Annuler le paiement du jour' })).toHaveTextContent('Annuler');
+    } finally { vi.useRealTimers(); }
+  });
+
+  it('(d ter) « Annuler » de l\'avis écrit le contre-paiement CONTRE-<id> du paiement du geste', () => {
+    const due = tx('DUE2', today, 'brassage');
     const { rerender } = render(ligne(due, []));
     fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
-    expect(recordPayment).toHaveBeenCalledTimes(1);
     const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
     rerender(ligne(due, [ecrit]));
-    expect(screen.getByRole('button', { name: 'Annuler le paiement du jour' })).toHaveTextContent('Annuler');
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler le paiement de 100,00' }));
+    expect(recordPayment).toHaveBeenCalledTimes(2);
+    const contre = recordPayment.mock.calls[1][0] as FinancialPayment;
+    expect(contre.id).toBe(`CONTRE-${ecrit.id}`);
+    expect(contre.reversalOfId).toBe(ecrit.id);
+    expect(contre.amountCents).toBe(ecrit.amountCents);
+  });
+
+  it('(d quater) « Autre montant » ouvre Payer SANS rien écrire et lui passe le paiement à remplacer ; la fermer ne change rien (décision du pilote, 15.11)', () => {
+    const due = tx('DUE3', today, 'brassage');
+    const onPay = vi.fn();
+    const avecPay = (payments: FinancialPayment[]) => <TransactionRow transaction={due} transactions={[due]} payments={payments} onOpen={() => {}} onPay={onPay}/>;
+    const { rerender } = render(avecPay([]));
+    fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+    const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
+    rerender(avecPay([ecrit]));
+    fireEvent.click(screen.getByRole('button', { name: /^Autre montant/ }));
+    expect(recordPayment).toHaveBeenCalledTimes(1); // aucune inversion : elle part à l'enregistrement de Payer
+    expect(onPay).toHaveBeenCalledTimes(1);
+    expect(onPay.mock.calls[0][0]).toMatchObject({ id: ecrit.id, transactionId: 'DUE3', amountCents: 10000 });
+    // La feuille se ferme sans rien payer : l'avis et le paiement rapide sont intacts.
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 });
 
