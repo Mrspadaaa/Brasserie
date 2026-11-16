@@ -53,11 +53,39 @@ export function validateUpgrade(plan: FinancialPlan): void {
   if (plan.status === 'active' && upgradeReadiness(plan).length) throw Error(upgradeReadiness(plan).join(' '));
 }
 
+/**
+ * L'index des achats : par projet, par écriture, par avoir, par paiement. Construit une fois par jeu de données (les tableaux que rend le stockage ne changent de
+ * référence qu'avec les données), il évite de relire toutes les écritures et tous les paiements pour chaque projet (constat 9 : Archives, 200 projets × 3 000 écritures,
+ * rejoué à chaque rendu). Le résultat de `upgradeProgress` est celui de l'ancienne lecture complète ; un test le garde.
+ */
+interface IndexAchats { achatsParPlan: Map<string, FinanceTransaction[]>; parId: Map<string, FinanceTransaction>; avoirsDe: Map<string, FinanceTransaction[]>; paiementsDe: Map<string, FinancialPayment[]> }
+const indexes = new WeakMap<FinanceTransaction[], WeakMap<FinancialPayment[], IndexAchats>>();
+const pousse = <T,>(m: Map<string, T[]>, cle: string, v: T) => { const l = m.get(cle); if (l) l.push(v); else m.set(cle, [v]); };
+function indexAchats(transactions: FinanceTransaction[], payments: FinancialPayment[]): IndexAchats {
+  let parPaiements = indexes.get(transactions);
+  if (!parPaiements) { parPaiements = new WeakMap(); indexes.set(transactions, parPaiements); }
+  const connu = parPaiements.get(payments); if (connu) return connu;
+  const index: IndexAchats = { achatsParPlan: new Map(), parId: new Map(), avoirsDe: new Map(), paiementsDe: new Map() };
+  for (const tx of transactions) {
+    if (!index.parId.has(tx.id)) index.parId.set(tx.id, tx);
+    const planId = tx.finance?.planId;
+    if (planId && isActiveTransaction(tx) && transactionKind(tx) === 'expense') pousse(index.achatsParPlan, planId, tx);
+    const origine = tx.finance?.refundOfId; if (origine) pousse(index.avoirsDe, origine, tx);
+  }
+  for (const p of payments) pousse(index.paiementsDe, p.transactionId, p);
+  parPaiements.set(payments, index);
+  return index;
+}
+
 export function upgradeProgress(plan: FinancialPlan, transactions: FinanceTransaction[], payments: FinancialPayment[], asOf = todayISO()) {
-  const purchases = transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === plan.id);
+  const index = indexAchats(transactions, payments);
+  const purchases = index.achatsParPlan.get(plan.id) ?? [];
   const purchaseById = new Map(purchases.map(tx => [tx.id, tx]));
-  const credits = transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'refund' && purchaseById.has(tx.finance?.refundOfId ?? '') && !refundLinkIssue(tx, transactions) && transactionDirection(tx, transactions) === 'in');
-  const rows = purchases.map(tx => ({ tx, share: planInvoiceAllocation(tx).amountCents, payment: paymentState(tx, payments, transactions, asOf) }));
+  /* `paymentState` et `refundLinkIssue` relisent « les écritures » et « les paiements » : on ne leur donne que ceux de l'écriture (elle, son origine, ses avoirs), le résultat est le même. */
+  const contexte = (tx: FinanceTransaction) => { const origine = tx.finance?.refundOfId ? index.parId.get(tx.finance.refundOfId) : undefined; return [tx, ...(origine ? [origine] : []), ...(index.avoirsDe.get(tx.id) ?? [])]; };
+  const etat = (tx: FinanceTransaction) => paymentState(tx, index.paiementsDe.get(tx.id) ?? [], contexte(tx), asOf);
+  const credits = purchases.flatMap(achat => index.avoirsDe.get(achat.id) ?? []).filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'refund' && purchaseById.get(tx.finance?.refundOfId ?? '') && !refundLinkIssue(tx, contexte(tx)) && transactionDirection(tx, contexte(tx)) === 'in');
+  const rows = purchases.map(tx => ({ tx, share: planInvoiceAllocation(tx).amountCents, payment: etat(tx) }));
   const allocated = rows.reduce((sum, row) => sum + (row.share ?? 0), 0);
   // A credit on a partially allocated invoice cannot be attributed to this project automatically.
   const creditAllocations = credits.map(tx => {
@@ -67,8 +95,8 @@ export function upgradeProgress(plan: FinancialPlan, transactions: FinanceTransa
   const invoicedCents = allocated - creditAllocations.filter(row => row.known).reduce((sum, row) => sum + transactionAmount(row.tx), 0);
   const invoicedComplete = rows.every(row => row.share != null) && creditAllocations.every(row => row.known);
   const paidCents = rows.reduce((sum, { tx, share, payment }) => sum + (share === transactionAmount(tx) ? payment.paidCents : payment.paidCents === transactionAmount(tx) ? share ?? 0 : 0), 0)
-    - creditAllocations.filter(row => row.known && row.tx.finance?.refundApplication !== 'offset').reduce((sum, row) => sum + paymentState(row.tx, payments, transactions, asOf).paidCents, 0);
+    - creditAllocations.filter(row => row.known && row.tx.finance?.refundApplication !== 'offset').reduce((sum, row) => sum + etat(row.tx).paidCents, 0);
   const paymentKnown = invoicedComplete && rows.every(({ tx, share, payment }) => payment.state !== 'unknown' && (share === transactionAmount(tx) || payment.paidCents === 0 || payment.paidCents === transactionAmount(tx)))
-    && credits.every(tx => paymentState(tx, payments, transactions, asOf).state !== 'unknown');
+    && credits.every(tx => etat(tx).state !== 'unknown');
   return { invoiceCount: purchases.length, invoicedCents, invoicedComplete, paidCents, paymentKnown, remainingBudgetCents: upgradeDetails(plan).budgetKnown ? Math.max(0, plan.amountCents - allocated) : null };
 }

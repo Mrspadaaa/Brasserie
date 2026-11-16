@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Undo2 } from 'lucide-react';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { isoDate } from '../../domain/finance/ledger';
@@ -26,8 +26,11 @@ export function useLargeur(initiale = 366) {
 interface Props { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; busy?: string; onOuvrir: (plan: FinancialPlan) => void; onReprendre: (plan: FinancialPlan) => void }
 
 /** Archives : la carte en hachures (surface = prix prévu), l'acompte déjà payé en bande bleue au pied de sa case, « hors carte » sous elle, la légende, « Reprendre ». */
-export function ArchivesCarte({ plans, transactions, payments, busy, onOuvrir, onReprendre }: Props) {
+export function ArchivesCarte({ plans, transactions, payments, busy, onOuvrir: ouvrirProp, onReprendre: reprendreProp }: Props) {
   const { largeur, racine } = useLargeur();
+  /* Constat 9 : les gestes gardent une identité stable (l'atelier en recrée de neufs à chaque rendu) pour que les 200 cases ne se redessinent pas à chaque rendu de l'atelier. */
+  const ouvrirRef = useRef(ouvrirProp), reprendreRef = useRef(reprendreProp); ouvrirRef.current = ouvrirProp; reprendreRef.current = reprendreProp;
+  const onOuvrir = useCallback((p: FinancialPlan) => ouvrirRef.current(p), []), onReprendre = useCallback((p: FinancialPlan) => reprendreRef.current(p), []);
   const parId = useMemo(() => new Map(plans.map(p => [p.id, p])), [plans]);
   const avances = useMemo(() => new Map(plans.map(p => { const pr = upgradeProgress(p, transactions, payments); return [p.id, pr.invoiceCount > 0 && pr.paymentKnown ? pr.paidCents : null] as const; })), [plans, transactions, payments]);
   const carte = useMemo(() => carteArchives(plans.map(p => ({ id: p.id, cents: upgradeDetails(p).budgetKnown ? p.amountCents : null, payeCents: avances.get(p.id) })), largeur), [plans, avances, largeur]);
@@ -66,7 +69,7 @@ export function ArchivesCarte({ plans, transactions, payments, busy, onOuvrir, o
   </section>;
 }
 
-function Case({ c, plan, busy, onOuvrir, onReprendre }: { c: CaseCarte; plan: FinancialPlan; busy: boolean; onOuvrir: (p: FinancialPlan) => void; onReprendre: (p: FinancialPlan) => void }) {
+const Case = memo(function Case({ c, plan, busy, onOuvrir, onReprendre }: { c: CaseCarte; plan: FinancialPlan; busy: boolean; onOuvrir: (p: FinancialPlan) => void; onReprendre: (p: FinancialPlan) => void }) {
   const forme = formeCase(c), h = c.h - 2 * JOUR, w = c.w - 2 * JOUR, mois = moisCourt(plan), { stage, purpose } = upgradeDetails(plan), etat = ARRET[stage];
   const place = { left: c.x + JOUR, top: c.y + JOUR, width: w, height: h };
   const bande = c.payeCents != null && <span className="ak-paye" style={{ height: Math.max(3, c.partPayee * h) }} role="img" aria-label={`Déjà payé : ${chf0(c.payeCents)} sur ${chf0(c.cents)} CHF`}/>;
@@ -89,7 +92,7 @@ function Case({ c, plan, busy, onOuvrir, onReprendre }: { c: CaseCarte; plan: Fi
       ? <button type="button" className="ak-rep" aria-label={`Reprendre ${plan.title}`} disabled={busy} onClick={() => onReprendre(plan)}><Undo2 size={20} aria-hidden="true"/>Reprendre</button>
       : <button type="button" className="ak-repi" aria-label={`Reprendre ${plan.title}`} disabled={busy} onClick={() => onReprendre(plan)}><Undo2 size={20} aria-hidden="true"/></button>}
   </div>;
-}
+});
 
 /** À venir sans projet : la carte en pointillés attend sa première case ; la légende dit les couleurs à venir ; le geste est celui de « + Besoin » (même `onAjouter`). */
 export function CarteVide({ onAjouter }: { onAjouter: () => void }) {

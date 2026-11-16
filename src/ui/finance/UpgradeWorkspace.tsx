@@ -286,7 +286,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   const open = (plan: FinancialPlan | null) => onOpenProject ? onOpenProject(plan) : setEditing(plan);
   const handled = React.useRef<number>(undefined);
   React.useEffect(() => { if (createRequest?.kind === 'newIdea' && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
-  const projects = data.plans.filter(isUpgradePlan);
+  const projects = useMemo(() => data.plans.filter(isUpgradePlan), [data.plans]);
   /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
   const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
   const aVenir = useMemo(() => projects.filter(p => !realises.has(p.id)), [data, realises]);
@@ -330,7 +330,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     catch (e) { setError(e instanceof Error ? e.message : 'Le projet n’a pas pu être mis à jour.'); return false; }
     finally { setBusy(undefined); }
   };
-  const visible = projects.filter(p => scope === 'future' ? ['draft', 'active'].includes(p.status) && !realises.has(p.id) : scope === 'completed' ? p.status === 'completed' || realises.has(p.id) : p.status === 'cancelled');
+  const visible = useMemo(() => projects.filter(p => scope === 'future' ? ['draft', 'active'].includes(p.status) && !realises.has(p.id) : scope === 'completed' ? p.status === 'completed' || realises.has(p.id) : p.status === 'cancelled'), [projects, scope, realises]);
   const changeInclusion = async (plan: FinancialPlan, include: boolean) => {
     if (busy) return;
     if (include && upgradeReadiness(plan).length) { open(plan); return; }
