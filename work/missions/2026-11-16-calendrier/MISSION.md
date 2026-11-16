@@ -40,6 +40,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Choix ouverts (onglet, fournisseur, suppression, lot, seuil) | 3 variantes chacun · 16.11 | https://claude.ai/artifact/MuxnsQKBdfJLoxSjB6iVYK | `work/missions/2026-11-16-choix-ouverts/page/index.html` |
 | Stocks : que compte la pastille (seul choix ouvert) | 16.11 soir | https://claude.ai/artifact/FMLHmLiuovMmcoUNryfYwu | `work/missions/2026-11-16-choix-ouverts/page-seuil/index.html` |
 | Stocks pastille plus loin que C (c6b, c3b, c1b) | 16.11 soir | https://claude.ai/artifact/8zRX1TfLs8Dyhpsmy447YT | `work/missions/2026-11-16-choix-ouverts/page-c/index.html` |
+| Jouable de ses cinq choix | 16.11 soir | https://claude.ai/artifact/CngKmMBWfCm5dDMQBu2t83 | `work/missions/2026-11-16-choix-ouverts/jouable/index.html` |
 | Calendrier, paliers depuis sources2 | 5 paliers + 2 greffes · 16.11 | https://claude.ai/artifact/MLW1E6fAHrpCfYmAb7BZbC | `work/missions/2026-11-16-calendrier/page6/index.html` |
 | État des lieux de ses choix | 15 et 16.11 · 16.11 | https://claude.ai/artifact/PdCJCSwTjpLAD4uHJCDNrV | `work/missions/2026-11-16-calendrier/page8/index.html` |
 | g-d1 et les idées de cd1, une à la fois | 16.11 soir | https://claude.ai/artifact/VE966bkeVCnCsBPUX2KREC | `work/missions/2026-11-16-calendrier/page9/index.html` |
