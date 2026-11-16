@@ -12,10 +12,10 @@
  "chantiers": {
   "calendrier": {
    "base": {
-    "proto": "work/missions/2026-11-16-calendrier/paliers/g-d1.html",
-    "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil cd1 a des bonnes idées mais mais c'est trop le fouillis. Surtout l'entête..",
+    "proto": "work/missions/2026-11-16-calendrier/gi2/r2-c.html",
+    "parole": "Calendrier compact gi2 · choisi-a · r2-c",
     "date": "2026-11-16",
-    "note": "Base au 16.11 au soir (CHOIX-CALENDRIER.md, fin). g-d1 échoue encore sur des gardés (filtres visibles, paysage, titres de rangée) : ce sont ses manques à combler sans agrandir l'en-tête. cd1 (cd/cd1.html) est une réserve d'idées, une à la fois.",
+    "note": "g-d1 + i1 i3 i4 i6 i8, le + dans le carré de couleur, l'œil pour masquer (choisi-a), i2 en étiquette proportionnelle (r2-c). En-tête : voir entete (q5 / l5), en cours d'amélioration.",
     "entete": {
      "portrait": "work/missions/2026-11-16-calendrier/en/q5.html",
      "paysage": "work/missions/2026-11-16-calendrier/en/l5.html",
@@ -44,6 +44,12 @@
     }
    },
    "anciennes_bases": [
+    {
+     "proto": "work/missions/2026-11-16-calendrier/paliers/g-d1.html",
+     "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil cd1 a des bonnes idées mais mais c'est trop le fouillis. Surtout l'entête..",
+     "date": "2026-11-16",
+     "remplacee_par": "gi2/r2-c.html (choisi-a + r2-c), le 16.11 au soir"
+    },
     {
      "proto": "work/missions/2026-11-16-calendrier/fl/fb/proto.html",
      "parole": "Clairement Calendrier gestes · fb Est le meilleur mais pas 9/10... Ça va être le cœur de l'application",
