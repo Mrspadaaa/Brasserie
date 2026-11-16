@@ -177,3 +177,6 @@ Trois regards, 390 tactile avec clavier et 844×390 ; détail : `r2/P5-AUDIT.md`
 - Pas de crème neutre sans couleur. L'onglet actif de la barre correspond à l'écran.
 - Contrôle : ligne THEME-APP de DEFAUTS-RECURRENTS.md, deux thèmes capturés.
 - Bloc « Façons possibles » proposé par l'IA : barré d'un X rouge par le brasseur, à retirer ou à revoir (en attente de sa précision).
+
+## FAB-GAUCHE, bloquant (16.11 : « En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis »)
+- Le + volant va en bas à GAUCHE, juste au-dessus de la barre d'onglets, en portrait comme en paysage. Ce n'est jamais à droite.

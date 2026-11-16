@@ -155,3 +155,6 @@ Règle : aucun geste n'ouvre le clavier par défaut.
   - le bloc « libre en fin de semaine » : la ligne des mois, les semaines et leurs montants ;
   - les lignes de titre de rangée, sans ligne dédiée : titre dans la marge gauche ou sur la ligne de la première barre.
 - À garder en avant : la courbe de caisse et les barres de la frise.
+
+## FAB-GAUCHE, bloquant (16.11 : « En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis »)
+- Le + volant va en bas à GAUCHE, juste au-dessus de la barre d'onglets, en portrait comme en paysage. Ce n'est jamais à droite.
