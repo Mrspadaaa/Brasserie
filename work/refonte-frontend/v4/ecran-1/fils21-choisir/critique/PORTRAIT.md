@@ -116,8 +116,9 @@ Ses notes, mot pour mot (jeu : `c-1511-f1`, `c-1611-fb`, `c-1611-dc`, `c-1611-da
 | dc, carnet | « pas trop Mal » ; « l'ux UI assez mauvaise, et difficile à lire, voir » ; 7,5 | besoin 9 · brasseur 8 · fluidité 8,5 · uxui 7,5 (moyenne 8,25) | + 0,75 |
 | da, carnet | même phrase ; 7,5 | besoin 8,5 · brasseur 8 · fluidité 8 · uxui 7,5 (moyenne 8,0) | + 0,5 |
 | s2a2, fiche embouteillage | « Ça correspond pas du tout à mes besoins ?? » | ACCEPT, 0 bloquant | rejet manqué |
+| c3b, c6b, c1b, pastille Stocks (C enrichi) | « C tel quel · C toujours le meilleur... Et de loin... » | c6 et c3 « nettement mieux que C » | préférence inversée : il garde le plus simple |
 
-**Constat.** Nos juges notent environ + 0,5 à + 1 au-dessus de lui, et une fois acceptent ce qu'il rejette.
+**Constat.** Nos juges notent environ + 0,5 à + 1 au-dessus de lui, et une fois acceptent ce qu'il rejette. « pas incroyable » ne veut pas dire « ajoute » : sur la pastille, chaque ajout (colonnes, cumuls, bulle) l'a éloigné ; il garde C « de loin ».
 
 **Pourquoi.**
 1. **La lisibilité visuelle est sous-pesée.** Nos juges ont vu juste sur l'axe UX/UI (7,5 sur dc, da et fb, sa note),

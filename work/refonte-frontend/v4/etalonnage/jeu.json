@@ -1199,6 +1199,20 @@
    "notes_juges": "critique Opus passe 2 (2026-11-15-besoins/revues/passe2.md) : ACCEPT, 4 problèmes, 0 bloquant",
    "source": "SPEC-BRASSEUR.md, ligne du 16.11 avec sa capture de la fiche « Système d'embouteillage » (solutions, prix, barre de caisse fin mai). Capture copiée de nuit/p1/page/img/s2a2-besoin-390.png (autre worktree), même état.",
    "hors_image": "besoin : il rejette ce que la fiche résout (prix et caisse au premier plan) contre son besoin réel (noter ses recherches, garder le pourquoi, comparer les caractéristiques) ; une capture seule ne le départage pas"
+  },
+  {
+   "id": "c-1611-c3b",
+   "type": "classe",
+   "lot": "stocks-pastille-c",
+   "sujet": "pastille du Stocks",
+   "variante": "c3b (et c6b, c1b)",
+   "capture": "work/refonte-frontend/v4/etalonnage/captures/c-1611-c3b-pastille.png",
+   "classe": "rejette",
+   "mots": "« Stocks pastille C+ · C tel quel · C toujours le meilleur... Et de loin... »",
+   "date": "2026-11-16",
+   "notes_juges": "critique Opus (wf_8dcca64d-d2d) : c6, c3, c1 « nettement mieux que C » (c6, c3), gardées et corrigées ; C jugée « pas incroyable »",
+   "source": "SPEC-BRASSEUR.md, 16.11, page https://claude.ai/artifact/8zRX1TfLs8Dyhpsmy447YT",
+   "hors_image": "enrichir a ajouté colonnes, cumuls, bulles et textes : il garde C, plus simple, « de loin »"
   }
  ],
  "amendements": [

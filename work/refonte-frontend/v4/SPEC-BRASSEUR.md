@@ -1923,3 +1923,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : choisi-a (le + dans le carré de couleur plein, l'œil pour masquer, « n choses cachées ») et r2-c (résumé par rangée en étiquette remplie en proportion). Nouvelle base du corps du calendrier : gi2/r2-c.html (= choisi-a + r2-c), avec l'en-tête choisi q5 / l5 à poser dessus.)
 - **16.11**, mot pour mot : « Pas besoin des mini maquettes en cave »
   (lu : les mini maquettes se font et se montrent en clair seul. Les deux thèmes restent pour l'app réelle et le jouable (CLAUDE.md, D343).)
+- **16.11**, mot pour mot, sur la page de C enrichi (https://claude.ai/artifact/8zRX1TfLs8Dyhpsmy447YT) : « Stocks pastille C+ · C tel quel · C toujours le meilleur... Et de loin... »
+  (lu : C reste tel quel, aucune des versions enrichies (c6b, c3b, c1b) ; le chantier pastille est clos sur C. Étalonnage : c-1611-c3b, le critique avait jugé c6 et c3 nettement meilleures.)
