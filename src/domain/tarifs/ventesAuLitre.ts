@@ -32,6 +32,25 @@ export interface VenteAuLitre {
   demo: boolean;
 }
 
+/**
+ * Plage plausible d'un prix de vente, CHF le litre (garde-fou de lecture, pas une règle de prix) : une bière se vend de quelques francs le
+ * litre (fût) à quelques dizaines (bouteille). Hors de [1 ; 100], le prix est lu comme « à vérifier » (montant saisi à tort, test d'un autre,
+ * quantité fausse) : il n'est jamais tracé sur l'axe, où il tirerait l'échelle (jeu en ligne 16.11 : 759,33 CHF le litre, soit 5 695 CHF
+ * pour 10 bouteilles de 75 cl). Les bornes viennent de la voie fix-carnet (100) et de l'auteur (1) : à valider par le brasseur.
+ */
+export const PLAGE_LITRE_PLAUSIBLE = [1, 100] as const;
+
+/** Vrai si le prix au litre sort de la plage plausible. Un prix inconnu ou non fini n'est pas plausible non plus. */
+export const hors = (litre: number): boolean =>
+  !Number.isFinite(litre) || litre < PLAGE_LITRE_PLAUSIBLE[0] || litre > PLAGE_LITRE_PLAUSIBLE[1];
+
+/** Les ventes sûres (sur l'axe) et celles « à vérifier » (montrées à part, jamais sur l'axe). */
+export function separerAVerifier<T extends { litre: number }>(ventes: readonly T[]): { sures: T[]; aVerifier: T[] } {
+  const sures: T[] = [], aVerifier: T[] = [];
+  for (const v of ventes) (hors(v.litre) ? aVerifier : sures).push(v);
+  return { sures, aVerifier };
+}
+
 export interface LigneDecodee { batchId: string | undefined; formatId: string; litresUnite: number }
 export interface ClientConnu { name: string; type: 'Pro' | 'Privé' }
 

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Plus, Sparkles, UserCheck, UserPlus, Users, Utensils } from 'lucide-react';
+import { Beer, Calendar, Check, ChevronDown, ChevronRight, Pencil, Phone, Plus, Sparkles, Tag, UserCheck, UserPlus, Users, Utensils } from 'lucide-react';
 import type { CreativeItem, PricingItem } from '../../types';
 import {
   chf, dateDeNote, jourComplet, jourMois, JOURS, lireSuisse, nbCochees, prixDevine, type ItemCarnet, type NiveauIA, type Proposition
 } from '../../domain/rangerNote';
+import { titreIdee } from '../../domain/atelier/ideesPrix';
 import './atelier.css';
 
 /**
@@ -117,6 +118,17 @@ export const CarteChose: React.FC<{ item: CreativeItem; onOuvrir: (item: Creativ
         {d ? <><span className="nc-st"><Calendar size={13} aria-hidden="true" />{jourComplet(d)}</span><b>{item.title}</b></> : <b className="nc-ti"><Calendar size={18} aria-hidden="true" />{item.title}</b>}
       </button>
       {!d && <button type="button" className="nc-add" onClick={() => onDate(item)} aria-label={`Poser une date à ${item.title}`}><span aria-hidden="true">+</span> date</button>}
+    </div>;
+  }
+  if (item.type === 'pricing-test') {
+    // Constat 11 : une idée de prix se lit aussi dans le Carnet « Tout », avec son type ; la toucher ouvre Tarifs, où elle se règle.
+    const prix = item.targetPrice !== undefined && item.targetPrice > 0 ? item.targetPrice : undefined;
+    // Retouche finale n° 6 : la teinte de Tarifs (celle des idées de prix de l'onglet : --a-prod), pas le bleu d'« À faire » (--a-fin).
+    return <div className="nc-car nc-car-tarif" style={{ ['--c' as string]: 'var(--a-prod)' }}>
+      <button type="button" className="nc-tx" onClick={() => onOuvrir(item)} aria-label={`Idée de prix ${titreIdee(item)}, ouvrir Tarifs`}>
+        <span className="nc-st"><Tag size={13} aria-hidden="true" />Tarif</span><b>{titreIdee(item)}</b>
+        <span className="nc-px">{prix !== undefined ? `${chf(prix)} CHF HT` : 'prix à estimer'}</span>
+      </button>
     </div>;
   }
   return <div className="nc-car" style={{ ['--c' as string]: 'var(--a-prod)' }}>

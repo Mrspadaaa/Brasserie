@@ -25,7 +25,9 @@
 .tf-dot-copper { background: #A0522D; } .tf-dot-brown { background: #6B3A1E; } .tf-dot-stout { background: #3B1F14; }
 .tf-dot-vide { border: 1.5px solid var(--tf-t2); box-shadow: none; }
 .tf-bieres button[aria-pressed='true'] .tf-dot { box-shadow: 0 0 0 1.5px var(--tf-onacc); }
-.tf-cols { display: grid; gap: 12px; margin-top: 10px; }
+.tf-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 10px; }
+/* Débord à 390 (kb3, passe 4) : une colonne de grille a `min-width: auto` et prend la largeur du texte sans retour (« Carton 12 × 33 cl pour … · à estimer ») ; chaque enfant se contraint à la colonne. */
+.tf-cols > * { min-width: 0; }
 @media (min-width: 900px) { .tf-cols { grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr); align-items: start; } }
 .tf-fig { border-radius: 16px; background: var(--tf-pan); border: 1px solid var(--tf-bord); padding: 10px 12px 2px; }
 .tf-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--tf-t1); }
@@ -98,3 +100,17 @@ body:has(.tf-sheet) [data-vaul-overlay] { background: rgb(0 0 0 / .03); backdrop
 /* Liste repliée : les prix des sous-lignes s'alignent sur celui de l'en-tête (le chevron est de 18 px + 10 px d'écart). */
 .tf-liste .tf-gl { padding-right: 28px; }
 .tf-rn { white-space: nowrap; }
+
+/* Constat 12 (16.11) : les prix hors plage plausible, à part, jamais sur l'axe. */
+.tf-verif { margin-top: 10px; border-radius: 12px; border: 1px dashed rgb(var(--attention-texte)); padding: 8px 12px; }
+.tf-verif h4 { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 2px; font-size: 14px; font-weight: 700; color: rgb(var(--attention-texte)); }
+.tf-pill-verif { color: rgb(var(--attention-texte)); border-color: rgb(var(--attention-texte)); white-space: nowrap; flex: none; }
+/* Retouche finale n° 4 : « 759,33 CHF le litre » d'un bloc (jamais coupé entre le nombre et l'unité), picto sur la première ligne, aucun retrait à gauche. */
+.tf-verif .tf-gl { padding: 0 0 4px; }
+.tf-verif .tf-gr { align-items: flex-start; padding: 6px 0; }
+.tf-verif .tf-gi { padding-top: 2px; }
+.tf-gq { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.tf-nw { white-space: nowrap; }
+.tf-warn { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font-size: 14px; color: rgb(var(--attention-texte)); }
+.tf-warn svg { flex: none; margin-top: 2px; }
+.tf-verif-n { margin: 0 0 4px; font-size: 13px; color: var(--tf-t2); }

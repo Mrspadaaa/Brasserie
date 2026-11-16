@@ -253,6 +253,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
           <CreativeLabTab
             onSuccessMessage={onSuccessMessage}
             onDraftRecipe={onDraftRecipe}
+            onOpenRecipe={(id) => { const r = recipes.find((x) => x.id === id); if (r) onOpenRecipe(r); }}
             createRequest={createRequest}
             onCreateRequestHandled={onCreateRequestHandled}
             openSectionRequest={openLabSectionRequest}

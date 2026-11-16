@@ -36,6 +36,9 @@ import { TodoTimeline } from '../ui/atelier/TodoTimeline';
 import { NoteCarnet, type FiltreCarnet } from '../ui/atelier/NoteCarnet';
 import { modeRangerNote } from '../config/rangerNoteIA';
 import { TarifsFrise } from '../ui/atelier/TarifsFrise';
+import { IdeesBieres, IdeesPrix } from '../ui/atelier/LigneOuverte';
+import { brouillonDeLIdee } from '../domain/atelier/ideesBieres';
+import { defaultBrewVolume } from '../domain/brewEquipment';
 import { FileText, Tag, Wrench } from 'lucide-react';
 
 /** ks4 : la rangée Matériel · Carnet · Tarifs ; Bières, Contacts et À faire sont les filtres du Carnet. */
@@ -57,6 +60,8 @@ interface CreativeLabTabProps {
    * de l'idée. Rien d'autre n'est deviné à sa place.
    */
   onDraftRecipe?: (seed: { title: string; description?: string }) => void;
+  /** kb3 : ouvre la page d'une recette. Absent (ProductionTab ne le passe pas encore) : « En recette » s'affiche sans le bouton « Ouvrir la recette ». */
+  onOpenRecipe?: (recipeId: string) => void;
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
   onCreateRequestHandled?: () => void;
@@ -67,7 +72,7 @@ interface CreativeLabTabProps {
 
 export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   onSuccessMessage,
-  onDraftRecipe,
+  onOpenRecipe,
   createRequest,
   onCreateRequestHandled,
   openSectionRequest,
@@ -106,6 +111,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const [newCost, setNewCost] = useState<string>('');
   const [newDate, setNewDate] = useState('');
   const [newContact, setNewContact] = useState('');
+  /** Change à chaque « Noter » de la frise (Tarifs) : la ligne neuve reçoit le focus même si elle est déjà ouverte. */
+  const [signalNoter, setSignalNoter] = useState(0);
   const [equipmentCreateRequest,setEquipmentCreateRequest]=useState<{kind:string;at:number}|null>(null);
 
   /** Le bouton d'action ouvre le formulaire d'ajout de la section courante. */
@@ -186,19 +193,21 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
 
   /**
-   * Passer d'une idée à une recette.
+   * Passer d'une idée à une recette (kb3 : « Brouillon créé dans Recettes »), sans quitter l'Atelier.
    *
-   * ⚠️ Cette fonction FABRIQUAIT auparavant une recette entière : style deviné
-   * d'après le titre, 30 L, OG 1.060, FG 1.015, 35 IBU, 6.5 kg de grain, deux
-   * malts et deux houblons génériques, une levure US-05. Aucune de ces valeurs
-   * ne venait de l'idée ni du stock. Gaëtan récupérait une recette d'apparence
-   * complète, entièrement inventée, sur laquelle il aurait pu brasser.
-   *
-   * Elle ouvre désormais l'assistant de création avec le seul élément réel :
-   * ce que l'idée contient. Tout le reste se saisit.
+   * ⚠️ Une ancienne version FABRIQUAIT une recette entière (style deviné, 30 L, OG 1.060, 35 IBU, 6.5 kg de grain, deux malts, deux houblons,
+   * une levure US-05) : rien de cela ne venait de l'idée. Le brouillon n'a que ce que l'idée dit : nom, style, degré visé s'il est posé, et un
+   * mot (couleur, phare, saison) dans les notes de création ; ni grain, ni houblon, ni levure. Le volume est celui que l'assistant propose à
+   * une recette neuve. L'idée garde l'identifiant de la recette (champ `recetteId`) : « En recette » ne dépend plus du nom.
+   * Rend l'identifiant de la recette créée.
    */
-  const handleConvertToOfficialRecipe = (item: CreativeItem) => {
-    onDraftRecipe?.({ title: item.title, description: item.description });
+  const passerEnBrouillon = (item: CreativeItem): string | null => {
+    const cfg = StorageService.getConfig();
+    const profil = cfg.brewhouses?.find((b) => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses?.[0];
+    const id = `REC-${Date.now().toString(36).toUpperCase()}`;
+    StorageService.addRecipe(brouillonDeLIdee(item, id, defaultBrewVolume(profil)));
+    StorageService.updateCreativeItem({ ...item, recetteId: id } as CreativeItem);
+    return id;
   };
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
@@ -236,85 +245,36 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
 
   const assistantBouton = <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>;
-  /** Bières (filtre du Carnet) : la liste actuelle, telle qu'en ligne (kb3 sera porté à part). */
+  /**
+   * Bières (filtre du Carnet), kb3 : la ligne s'ouvre sur place. « Passer dans mes recettes » crée le brouillon dans Recettes sans quitter
+   * l'Atelier (toast « Brouillon créé dans Recettes · Ouvrir »). « En recette » : la recette créée par l'idée (identifiant), ou une recette de même nom.
+   */
   const vueBieres = (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Noter une idée de bière / style décalé</span>
-          </button>
-
-          <div className="space-y-2.5">
-            {currentItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 shadow-sm hover:border-cave-700 transition"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-50 flex items-center">
-                      <Beer className="w-4 h-4 text-ebc-straw mr-1.5" />
-                      {item.title}
-                    </h4>
-                    {item.description && (
-                      <p className="text-sm text-cave-400 mt-1 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-                    {item.notes && (
-                      <div className="mt-1 text-footnote text-ebc-gold italic bg-ebc-straw/10 p-1.5 rounded-lg border border-ebc-straw/20 inline-block">
-                        🎨 Visuel : {item.notes}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-400 hover:text-alert p-1"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* PASSERELLE MAGIQUE EN 1 CLIC */}
-                <div className="pt-2 border-t border-cave-800/80 flex justify-end">
-                  <button
-                    onClick={() => handleConvertToOfficialRecipe(item)}
-                    className="px-3.5 py-1.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 mr-1" />
-                    <span>Passer dans mes recettes</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+    <IdeesBieres idees={currentItems} recettes={recettes} ajout={isAdding} onAjout={setIsAdding} onCreer={(i) => StorageService.addCreativeItem(i)}
+      onMaj={(i) => StorageService.updateCreativeItem(i)} onPasser={passerEnBrouillon} onOuvrirRecette={onOpenRecipe} onSupprimer={(i) => handleDelete(i.id)} />
   );
 
   return (
     <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
       {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
       <div className="nc-seg" role="group" aria-label="Mon atelier">
-        {([['materiel', 'Matériel', Wrench], ['carnet', 'Carnet', FileText], ['tarifs', 'Tarifs', Tag]] as const).map(([cle, nom, Icone]) => <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => setOnglet(cle)}><Icone size={18} aria-hidden="true" />{nom}</button>)}
+        {([['materiel', 'Matériel', Wrench], ['carnet', 'Carnet', FileText], ['tarifs', 'Tarifs', Tag]] as const).map(([cle, nom, Icone]) => <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => { setOnglet(cle); setIsAdding(false); }}><Icone size={18} aria-hidden="true" />{nom}</button>)}
       </div>
       {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
 
       {/* kxc (15.11) : la frise des prix pratiqués ; « + Noter » garde une idée de tarif, les idées gardées et l'assistant sous la liste. */}
-      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>setIsAdding(true)} apres={<>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}{assistantBouton}</>}/>}
+      {/* kb3 : la ligne d'une idée de prix s'ouvre sur place (prix − / +, au litre, format, pour qui, coût) ; « + Noter » ouvre la ligne neuve. */}
+      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>{setIsAdding(true);setSignalNoter(Date.now());}} apres={<IdeesPrix idees={currentItems} ajout={isAdding} onAjout={setIsAdding} onCreer={(i)=>StorageService.addCreativeItem(i)} onMaj={(i)=>StorageService.updateCreativeItem(i)} onSupprimer={(i)=>handleDelete(i.id)} signal={signalNoter} apres={assistantBouton}/>}/>}
 
-      {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={setFiltre} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
+      {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={(f) => { setFiltre(f); setIsAdding(false); }} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
         vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
         assistant={assistantBouton} onAjouter={(i) => StorageService.addCreativeItem(i)} onMaj={(i) => StorageService.updateCreativeItem(i)} onRetirer={handleDelete}
-        onEdit={setEditing} onConvert={handleConvertToClient} focusDemande={focusCarnet} />}
+        onEdit={setEditing} onConvert={handleConvertToClient} onTarifs={() => { setOnglet('tarifs'); setIsAdding(false); }} focusDemande={focusCarnet} />}
 
       {/* Form modal when adding an item */}
       {onglet === 'materiel' && assistantBouton}
       {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={section===null?'Aide-moi à faire le point sur mes notes, mes idées de bières, mes contacts et mes tâches dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.':activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
-      {isAdding && activeSection !== 'prospect' && activeSection !== 'event' && (
+      {isAdding && activeSection !== 'prospect' && activeSection !== 'event' && activeSection !== 'recipe-idea' && activeSection !== 'pricing-test' && (
         <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
           <div className="flex justify-between items-center px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
             <h4 className="font-bold text-base text-cave-50">Nouvelle note / piste</h4>

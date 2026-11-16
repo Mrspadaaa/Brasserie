@@ -1,6 +1,6 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { CreativeLabTab } from '../../src/components/CreativeLabTab';
 import { StorageService, defaultConfig } from '../../src/services/storage';
@@ -49,6 +49,13 @@ function productionProps(): React.ComponentProps<typeof ProductionTab> {
     onOpenRecipe: vi.fn(), onOpenBrewDay: vi.fn(), onDraftRecipe: vi.fn()
   };
 }
+
+/**
+ * Lenteur l2 (9dfa82a5) : ProductionTab charge la fiche brassin (BatchDetailSheet) à la première ouverture, par `lazy`. Ce n'est pas un défaut du code :
+ * le test attendait la feuille en synchrone ou dans la seconde, or le premier import de ce gros module dépasse la seconde de `findBy`.
+ * La feuille est donc chargée une fois avant les tests ; l'ouverture reste asynchrone (microtâche), d'où `findByRole`.
+ */
+beforeAll(async () => { await import('../../src/ui/BatchDetailSheet'); }, 30000);
 
 beforeEach(() => {
   window.history.replaceState({}, '', '/?dev-local');
@@ -180,7 +187,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(handled).not.toHaveBeenCalled();
 
     view.rerender(<React.StrictMode><ProductionTab {...props} /></React.StrictMode>);
-    expect(screen.getByRole('dialog', { name: oldBatch.name })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: oldBatch.name })).toBeInTheDocument();
     expect(handled).toHaveBeenCalledTimes(1);
     expect(StorageService.getUiState('production_subtab', '')).toBe('batches');
 
