@@ -66,3 +66,10 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 ## Critères 9,5-10 (16.11)
 - Workflow `criteres-10`, task wbmq9a7qc, run wf_bc96b504-6b7. Sortie : `work/missions/2026-11-16-criteres-10/CRITERES-10.md`, ajoutée en fin de fb9/MANQUES.md et de carnet-decision/CADRE.md.
 - Les boucles calendrier-fb-9 et carnet-9 s'arrêtent à 9. Ensuite : une boucle à 9,5 (deux passes de suite), partant de leur dernière passe, avec CRITERES-10.md.
+
+## Mode autonome (16.11)
+- Il ne faut pas attendre son retour. Une décision passe au conseil ou aux personas. Enchaînement prévu :
+  1. carnet-9 et calendrier-fb-9 vont à 9 ;
+  2. puis une boucle à 9,5 avec CRITERES-10.md ;
+  3. puis les liens de l'app.
+- Seuls les gestes irréversibles ou externes attendent son accord : déploiement, données réelles, Gemini facturé.
