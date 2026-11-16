@@ -177,23 +177,24 @@
 
 /* ───── ka4 : Archives (la carte de l'argent mis de côté, hachures) et l'état vide (la carte en pointillés). Classes `ak-`, jetons du thème (clair et cave) ───── */
 .ak { --ak-h1:rgb(var(--cave-800)); --ak-h2:rgb(var(--cave-900)); margin-top:6px; }
-.ak-tot { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 8px; margin:8px 0; }
+.ak-tot { display:grid; grid-template-columns:1fr auto; align-items:start; gap:2px 8px; margin:8px 0; }
+.ak-totl { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 8px; min-width:0; }
 .ak-tot b { font-size:28px; font-weight:700; letter-spacing:-.4px; line-height:1.1; }
 .ak-tot small { font-size:13px; color:var(--kh-mut); }
-.ak-demo { margin-left:auto; font-size:12px; border:1px solid var(--kh-line2); border-radius:999px; padding:1px 8px; color:var(--kh-mut); }
+.ak-demo { margin-top:6px; font-size:12px; border:1px solid var(--kh-line2); border-radius:999px; padding:1px 8px; color:var(--kh-mut); }
 .ak-map { position:relative; margin:0 -2px; width:calc(100% + 4px); }
 .ak-c { position:absolute; overflow:hidden; border-radius:10px; border:1px solid var(--kh-line2); color:var(--kh-ink); background:repeating-linear-gradient(135deg,var(--ak-h1) 0 6px,var(--ak-h2) 6px 12px); }
 .ak-main { position:absolute; inset:0; padding:8px 10px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; border-radius:inherit; }
 .ak-n { font-size:16px; font-weight:600; line-height:1.15; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ak-a { font-size:34px; font-weight:700; letter-spacing:-.5px; line-height:1.1; }
 .ak-a small { font-size:15px; font-weight:600; margin-left:4px; letter-spacing:0; }
-.ak-tag { display:inline-flex; align-items:center; height:24px; padding:0 8px; margin-top:4px; border-radius:999px; background:var(--kh-bg); border:1px solid var(--kh-line2); font-size:13px; max-width:100%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.ak-tag { display:inline-flex; align-items:center; min-height:24px; padding:1px 10px; margin-top:4px; border-radius:12px; background:var(--kh-bg); border:1px solid var(--kh-line2); font-size:13px; max-width:100%; text-align:left; overflow-wrap:anywhere; }
 .ak-s { font-size:13px; color:var(--kh-mut); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 /* petite case : nom et sous-titre à gauche, montant à droite du bouton Reprendre (44 px) */
 .ak-pt .ak-main { padding-right:116px; justify-content:center; }
 .ak-pt .ak-a { position:absolute; right:58px; top:50%; transform:translateY(-50%); font-size:20px; letter-spacing:0; }
 .ak-paye { position:absolute; left:0; right:0; bottom:0; background:var(--kh-fin); pointer-events:none; }
-.ak-payel { position:absolute; left:10px; bottom:22px; font-size:13px; font-weight:600; color:var(--kh-fin-t); background:var(--kh-bg); border-radius:999px; padding:1px 8px; pointer-events:none; }
+.ak-payel { position:absolute; left:10px; font-size:13px; font-weight:600; color:var(--kh-fin-t); background:var(--kh-bg); border-radius:12px 12px 0 0; padding:3px 10px 2px; pointer-events:none; }
 .ak-payel i { font-style:normal; }
 .ak-rep { position:absolute; top:8px; right:8px; height:44px; padding:0 12px; border-radius:10px; background:var(--kh-act); color:var(--kh-onact); font-weight:600; font-size:15px; display:inline-flex; align-items:center; gap:6px; }
 .ak-repi { width:44px; height:44px; flex:none; border-radius:10px; border:1px solid var(--kh-line2); background:var(--kh-bg); color:var(--kh-ink); display:grid; place-items:center; }
@@ -204,10 +205,11 @@
 .ak-nopm { flex:1; min-width:0; min-height:44px; display:flex; flex-direction:column; justify-content:center; }
 .ak-nopm b { font-size:16px; font-weight:600; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ak-nopm small { font-size:13px; color:var(--kh-att); }
+.ak-leg:empty { display:none; }
 .ak-leg { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 .ak-chip { height:28px; padding:0 9px; border-radius:999px; border:1px solid var(--kh-line2); font-size:13px; display:inline-flex; align-items:center; gap:5px; }
 .ak-chip-d { border-style:dashed; }
-.ak-sw { width:12px; height:12px; border-radius:999px; border:1px solid var(--kh-line2); display:inline-block; }
+.ak-sw { width:12px; height:12px; border-radius:999px; border:1.5px solid var(--kh-mut); display:inline-block; }
 .ak-sw-h { background:repeating-linear-gradient(135deg,var(--ak-h1) 0 3px,var(--ak-h2) 3px 6px); }
 .ak-sw-p { background:var(--kh-fin); border-color:var(--kh-fin); }
 /* légende « à venir » : les trois couleurs de la carte de l'argent d'À venir (maquette ka4) */
@@ -234,3 +236,11 @@
 .ak-et .ak-repi { top:6px; transform:none; }
 .ak-pt .ak-main { padding-top:4px; padding-bottom:4px; gap:0; }
 .ak-pt .ak-s, .ak-pt .ak-n { line-height:1.2; }
+
+/* case mini (trop petite pour un texte et un bouton de 44 px) : le montant seul, la case entière sans bouton ; le projet est dans la liste « petits montants » */
+.ak-mi { display:flex; align-items:center; justify-content:center; padding:0; box-sizing:border-box; cursor:pointer; }
+.ak-mi .ak-a { font-size:15px; letter-spacing:0; line-height:1; position:relative; background:var(--kh-bg); border-radius:999px; padding:2px 8px; }
+.ak-mi .ak-paye { z-index:0; }
+.ak-pm { border:1px solid var(--kh-line2); background:var(--kh-bg); }
+.ak-pmsw { width:30px; height:30px; flex:none; }
+.ak-pm .ak-nopm small { color:var(--kh-mut); }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CASE_MIN, carteArchives, hauteurCarte, pireRapport, squarify, type Rect } from '../../src/domain/finance/archivesCarte';
+import { carteArchives, formeCase, hauteurCarte, montantDansCase, pireRapport, squarify, type Rect } from '../../src/domain/finance/archivesCarte';
 
 const aire = (r: Rect) => r.w * r.h;
 const dedans = (r: Rect, b: Rect) => r.x >= b.x - 1e-9 && r.y >= b.y - 1e-9 && r.x + r.w <= b.x + b.w + 1e-9 && r.y + r.h <= b.y + b.h + 1e-9;
@@ -79,12 +79,24 @@ describe('carteArchives : la carte de l’argent mis de côté', () => {
     const c = carteArchives([{ id: 'x', cents: null }], 366);
     expect(c.cases).toEqual([]); expect(c.horsCarte).toHaveLength(1); expect(c.nbPrix).toBe(0);
   });
-  it('la hauteur grandit jusqu’à ce que chaque case garde un bouton de 44 px et une largeur lisible', () => {
-    const prix = [240000, 150000, 65000, 40000, 35000, 20000];
-    const h = hauteurCarte(prix, 366);
-    expect(h).toBeGreaterThanOrEqual(250);
-    const rects = squarify(prix, { x: 0, y: 0, w: 366, h }, 'largeur');
-    rects.forEach(r => { expect(r.h).toBeGreaterThanOrEqual(CASE_MIN.h); expect(r.w).toBeGreaterThanOrEqual(CASE_MIN.w); });
+  it('la hauteur suit le rapport de la maquette, quelle que soit la dispersion des prix : 53 × d’écart n’agrandit rien', () => {
+    expect(hauteurCarte(366)).toBe(250); expect(hauteurCarte(680)).toBe(Math.round(680 * 250 / 366));
+    const prix = [240000, 150000, 65000, 40000, 35000, 20000, 4500, 3000, 500];
+    for (const largeur of [366, 680]) {
+      const c = carteArchives(prix.map((cents, i) => ({ id: 'p' + i, cents })), largeur);
+      expect(c.hauteur).toBe(hauteurCarte(largeur));
+      expect(c.cases.reduce((t, r) => t + r.w * r.h, 0)).toBeCloseTo(largeur * c.hauteur, 3);
+    }
+  });
+  it('formeCase : la maquette (366×250, 2 400 et 650) donne une grande case et une bande ; une petite (45 sur 2 400) est mini', () => {
+    const [froid, moulin] = carteArchives([{ id: 'f', cents: 240000 }, { id: 'm', cents: 65000 }], 366).cases;
+    expect(formeCase(froid)).toBe('grande'); expect(formeCase(moulin)).toBe('bande');
+    const c = carteArchives([{ id: 'f', cents: 240000 }, { id: 'm', cents: 65000 }, { id: 'r', cents: 4500 }], 366).cases;
+    const r = c.find(x => x.id === 'r')!;
+    expect(formeCase(r)).toBe('mini'); expect(r.w).toBeLessThan(48); expect(montantDansCase(r)).toBe(false);
+    expect(montantDansCase({ x: 0, y: 0, w: 100, h: 30 })).toBe(true);
+    expect(montantDansCase({ x: 0, y: 0, w: 30, h: 30 })).toBe(false);
+    expect(formeCase({ x: 0, y: 0, w: 150, h: 160 })).toBe('etroite');
   });
   it('les cases sont dans la carte et ne se recouvrent pas, à 390 comme à 680 de large', () => {
     for (const largeur of [366, 680]) {

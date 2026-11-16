@@ -55,25 +55,39 @@ export interface CaseCarte extends Rect { id: string; cents: number; payeCents: 
 export interface HorsCarte { id: string; /** vrai : un prix de 0, sans surface ; faux : le prix reste à estimer. */ prixNul: boolean }
 export interface Carte { cases: CaseCarte[]; horsCarte: HorsCarte[]; /** somme des prix connus, centimes. */ totalCents: number; nbPrix: number; nbProjets: number; hauteur: number }
 
-/** Plus petite case lisible : un bouton de 44 px plus les 2 px de marge de chaque côté ; assez large pour un nom et un montant. */
-export const CASE_MIN = { h: 52, w: 110 } as const;
-export const HAUTEUR_BASE = 250, HAUTEUR_MAX = 2400;
+/** La carte garde le rapport de la maquette (366 × 250 px) quelle que soit la dispersion des prix : une petite case ne l'agrandit jamais (53 × d'écart = une case de 4 px, pas trois écrans). */
+export const RATIO_CARTE = 250 / 366, HAUTEUR_BASE = 250;
+/** Marge de chaque côté d'une case (la carte est posée avec 2 px de jour entre les cases). */
+export const JOUR = 2;
 
 const prixValide = (c: number | null | undefined): c is number => c != null && Number.isFinite(c) && c > 0;
 
-/** La plus petite hauteur (par pas de 10 px, à partir de la hauteur de la maquette) où chaque case garde sa taille minimale ; au-delà du plafond, le plafond. */
-export function hauteurCarte(valeurs: number[], largeur: number): number {
-  if (!valeurs.length) return 0;
-  for (let h = HAUTEUR_BASE; h <= HAUTEUR_MAX; h += 10) {
-    if (squarify(valeurs, { x: 0, y: 0, w: largeur, h }, 'largeur').every(r => r.h >= CASE_MIN.h && r.w >= CASE_MIN.w)) return h;
-  }
-  return HAUTEUR_MAX;
+/** Hauteur de la carte : le rapport de la maquette, jamais moins de 250 px. */
+export function hauteurCarte(largeur: number): number { return Math.max(HAUTEUR_BASE, Math.round(largeur * RATIO_CARTE)); }
+
+/**
+ * Ce que la case peut porter, d'après sa taille (le jour retiré) :
+ * - `grande` : nom, montant, étape et bouton « Reprendre » (200 × 110 px au moins) ;
+ * - `etroite` : colonne haute, nom sur plusieurs lignes, montant au pied (100 × 100 px) ;
+ * - `bande` : une ligne de nom, une ligne d'étape, le montant et le bouton en icône de 44 px, comme la maquette (240 × 46 px) ;
+ * - `mini` : trop petite pour un texte et un bouton de 44 px. La case ne dit que le montant (si 48 × 20 px le permettent), le projet se lit et se reprend
+ *   dans la liste « petits montants » sous la carte.
+ */
+export type FormeCase = 'grande' | 'etroite' | 'bande' | 'mini';
+export function formeCase(r: Rect): FormeCase {
+  const h = r.h - 2 * JOUR, w = r.w - 2 * JOUR;
+  if (h >= 110 && w >= 200) return 'grande';
+  if (h >= 100 && w >= 100 && w < 200) return 'etroite';
+  if (h >= 46 && w >= 240) return 'bande';
+  return 'mini';
 }
+/** Le montant tient-il dans une case `mini` ? Sinon la liste du dessous le porte. */
+export const montantDansCase = (r: Rect) => r.h - 2 * JOUR >= 20 && r.w - 2 * JOUR >= 48;
 
 export function carteArchives(entrees: EntreeCarte[], largeur: number): Carte {
   const avecPrix = entrees.filter(e => prixValide(e.cents)).sort((a, b) => b.cents! - a.cents!);
   const horsCarte = entrees.filter(e => !prixValide(e.cents)).map(e => ({ id: e.id, prixNul: e.cents === 0 }));
-  const valeurs = avecPrix.map(e => e.cents!), hauteur = hauteurCarte(valeurs, largeur);
+  const valeurs = avecPrix.map(e => e.cents!), hauteur = valeurs.length ? hauteurCarte(largeur) : 0;
   const rects = squarify(valeurs, { x: 0, y: 0, w: largeur, h: hauteur }, 'largeur');
   const cases = avecPrix.map((e, i) => {
     const paye = e.payeCents != null && Number.isFinite(e.payeCents) && e.payeCents > 0 ? Math.min(e.payeCents, e.cents!) : null;

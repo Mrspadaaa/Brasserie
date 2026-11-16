@@ -161,8 +161,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   // ka4 : Archives = la carte de l'argent mis de côté ; À venir sans projet = la carte en pointillés.
   describe('ka4 : Archives en carte et état vide', () => {
-    const archive = (id: string, title: string, cents: number | null, stage: 'idea' | 'research' | 'quote' | 'ready' = 'quote'): FinancialPlan => ({ id, title, date: '2026-02-01', amountCents: cents ?? 0, direction: 'out', category: 'materiel', source: 'equipment', status: 'cancelled', createdAt: '2026-01-01T10:00:00.000Z',
-      upgrade: { version: 1, timing: 'later', stage, budgetKnown: cents != null, datePrecision: 'month', estimateSource: 'estimate', ...(cents != null ? { purchaseCents: cents } : {}) } });
+    const archive = (id: string, title: string, cents: number | null, stage: 'idea' | 'research' | 'quote' | 'ready' = 'quote', purpose?: string): FinancialPlan => ({ id, title, date: '2026-02-01', amountCents: cents ?? 0, direction: 'out', category: 'materiel', source: 'equipment', status: 'cancelled', createdAt: '2026-01-01T10:00:00.000Z',
+      upgrade: { version: 1, timing: 'later', stage, budgetKnown: cents != null, datePrecision: 'month', estimateSource: 'estimate', ...(cents != null ? { purchaseCents: cents } : {}), ...(purpose ? { purpose } : {}) } });
     const ouvrirArchives = () => { render(<UpgradeWorkspace/>); fireEvent.click(screen.getByRole('button', { name: 'Archives', exact: true })); };
 
     it('À venir sans projet : la carte vide, sa légende, et « Premier besoin » ouvre le même geste que « + Besoin »', () => {
@@ -186,10 +186,33 @@ describe('Projets de matériel, du besoin à l’achat', () => {
       expect(screen.getByRole('button', { name: /^Tireuse mobile/ })).toBeVisible();
       expect(screen.queryByText(/Tireuse mobile.*0 CHF/)).not.toBeInTheDocument(); // jamais une case à zéro
       expect(screen.getByText('surface = prix prévu')).toBeVisible();
-      expect(screen.getByText('hors carte : prix à estimer', { selector: '.ak-chip' })).toBeVisible();
+      expect(screen.queryByText('hors carte : prix à estimer', { selector: '.ak-chip' })).not.toBeInTheDocument(); // dit une fois, sur sa ligne pointillée
       expect(screen.queryByText('déjà payé')).not.toBeInTheDocument(); // aucun achat lié : pas de bande, pas de légende
       expect(screen.queryByText('démo')).not.toBeInTheDocument(); // ids réels : pas de marque démo
       expect(document.querySelectorAll('input[type=number]')).toHaveLength(0);
+    });
+
+    it('une petite case n’agrandit pas la carte : hauteur de la maquette, case mini sans bouton, le projet se lit et se reprend dans « petits montants »', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000)); FinanceService.savePlan(archive('A-REFRAC', 'Réfractomètre', 4500, 'research'));
+      ouvrirArchives();
+      expect(document.querySelector('.ak-map')).toHaveStyle({ height: '250px' });
+      const mini = document.querySelector('.ak-mi') as HTMLElement;
+      expect(mini).toBeTruthy(); expect(mini.querySelector('button')).toBeNull(); expect(mini).not.toHaveTextContent('45'); expect(screen.getByText(/45 CHF/)).toBeVisible(); // trop étroite pour le montant : la liste le porte
+      expect(screen.getByRole('button', { name: /^Réfractomètre/ })).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Reprendre Réfractomètre' })).toBeVisible();
+      expect(screen.getAllByText(/Réfractomètre/).length).toBeGreaterThan(0);
+    });
+
+    it('la raison du projet reste entière dans la case basse (« févr. 26 · malt acheté concassé »)', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); FinanceService.savePlan(archive('A-MOULIN', 'Moulin à malt', 65000, 'research', 'malt acheté concassé'));
+      ouvrirArchives();
+      expect(screen.getByText('févr. 26 · malt acheté concassé')).toBeVisible();
+    });
+
+    it('une seule archive chiffrée : son montant n’est écrit qu’une fois (pas de total en double)', () => {
+      FinanceService.savePlan(archive('A-FROID', 'Chambre froide 2 m³', 240000)); ouvrirArchives();
+      expect(screen.getAllByText(/2[s  ’']?400/)).toHaveLength(1);
+      expect(screen.getByText('Mis de côté')).toBeVisible();
     });
 
     it('un projet d’exemple (DEMO-…) est marqué « démo »', () => {
