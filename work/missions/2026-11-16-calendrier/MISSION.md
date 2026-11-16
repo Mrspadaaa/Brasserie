@@ -32,3 +32,20 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Calendrier global | passe 2 · 16.11 | https://claude.ai/artifact/KkTtnqzuRef5pXotpfPjE4 | `work/missions/2026-11-16-calendrier/page/index.html` |
 | Calendrier global | passe 8 · 16.11 | https://claude.ai/artifact/KAZV8p46ETVRuTiuYGzjQK | `work/missions/2026-11-16-calendrier/page2/index.html` |
 | Calendrier global, un geste | prototypes fb/fc/fa · 16.11 | https://claude.ai/artifact/Ho37S3SppXy2SJ7fEHdE3Z | `work/missions/2026-11-16-calendrier/page3/index.html` |
+
+## REPRISE pilote — 16.11, ~10 h
+- **Workflows en cours** (pilote) :
+  - `calendrier-fb-9` (run wf_d426e0fa-fea) : fb vers 9/10. Sorties dans `fb9/` (MANQUES.md, pN, page4). À publier : page4, puis l'ajouter à la table Pages.
+  - `carnet-decision` (run wf_ff368cd5-005, dernier relancé ; script `carnet-decision-wf_553ee689-af0.js`) : sorties dans `work/missions/2026-11-16-carnet-decision/` (CADRE, da, db, dc, page). À publier.
+- **Choix du brasseur** : calendrier fb (page3), à porter à 9/10. Carnet de recherche et de décision : générique, caractéristiques dynamiques, vue sans détails puis détail, aperçu de lien, veille « Surveiller » tous les 3 jours (stock, autres fournisseurs, baisse de prix ; tâche planifiée et recherche payante à soumettre à son accord), ultra simple.
+- **Sessions** :
+  - Besoins d'achat : calendrier seul, l'embouteilleuse est retirée.
+  - Finances : corrige 20, 21, 33.
+  - Atelier : corrige 31 et 12.
+  - Menu : corrige 32 et 34.
+  - Recette : corrige 36, 37, le + de l'assistant et 19 L.
+  - Brassins : en ligne.
+- **Reste** :
+  - Constats Finances 17, 18, 22, 25, 26, 28 à 30 non rejoués en ligne.
+  - Données ZZ non supprimables en ligne : idée de tarif, matériel, prévision, deux recettes ZZ.
+  - Quota hebdomadaire autour de 91 % au matin.
