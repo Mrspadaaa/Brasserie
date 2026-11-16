@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { Archive, RotateCcw } from 'lucide-react';
+import { Archive, RotateCcw, Trash2 } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { EquipmentUpgrade, FinancialPlan } from '../../domain/finance/types';
 import { upgradeBudget, upgradeDetails, upgradeProgress, upgradeReadiness } from '../../domain/finance/upgrades';
@@ -8,7 +8,8 @@ import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { Sheet } from '../Sheet';
-import { idFor } from './prevision/base';
+import { Confirmation, idFor } from './prevision/base';
+import { supprimerPlan } from './prevision/supprimerPlan';
 import { ProjetPiste } from './projet/ProjetPiste';
 import { etatPiste, type StationId } from './projet/piste';
 
@@ -27,6 +28,8 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     upgrade: { version: 1, timing: 'later', stage: 'idea', budgetKnown: false, datePrecision: 'month', estimateSource: 'estimate' },
   });
   const [error, setError] = useState(''), [busy, setBusy] = useState(false), [achat, setAchat] = useState(false);
+  /* u2 (27) : « Archiver » et « Supprimer » demandent d'abord ; le refus de la suppression (achats liés) s'écrit dans la question. */
+  const [demande, setDemande] = useState<'archiver' | 'supprimer' | null>(null), [refus, setRefus] = useState('');
   const invoices = purchases.transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === draft.id);
   const [ouvert, setOuvert] = useState<StationId | null>(() => etatPiste(draft, invoices.length, todayISO().slice(0, 7)).actuelle);
   const locked = useRef(false), erreurRef = useRef<HTMLParagraphElement>(null);
@@ -49,15 +52,28 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     }
     finally { locked.current = false; setBusy(false); }
   };
+  const archiver = async () => { await save('cancelled'); setDemande(null); };
+  const supprimer = async () => {
+    if (locked.current || !plan) return;
+    locked.current = true; setBusy(true); setRefus('');
+    try { supprimerPlan(plan.id); onSaved?.(); onClose(); }
+    catch (e) { setRefus(e instanceof Error ? e.message : 'Le projet n’a pas pu être supprimé.'); }
+    finally { locked.current = false; setBusy(false); }
+  };
   const missing = upgradeReadiness(draft);
   const progress = upgradeProgress(draft, purchases.transactions, purchases.payments);
   const ferme = plan && ['cancelled', 'completed'].includes(plan.status);
   return <>
     <Sheet open title={plan ? 'Mon projet de matériel' : 'Prévoir du matériel'} subtitle="Du besoin à l’achat" className="finance-sheet pjd-sheet" dismissible={!busy} onClose={onClose}
-      footer={<div className="pjd-pied">
+      footer={demande === 'supprimer'
+        ? <Confirmation question={`Supprimer « ${draft.title.trim() || 'ce projet'} » ?`} detail="Le projet disparaît pour de bon. Pour le garder sans le compter : Archiver." oui="Oui, supprimer" onOui={() => void supprimer()} onGarder={() => { setDemande(null); setRefus(''); }} busy={busy} erreur={refus} />
+        : demande === 'archiver'
+        ? <Confirmation question={`Archiver « ${draft.title.trim() || 'ce projet'} » ?`} detail="Il sort de tes prévisions et reste dans Archives, où « Reprendre ce projet » le remet." oui="Oui, archiver" onOui={() => void archiver()} onGarder={() => setDemande(null)} busy={busy} danger={false} />
+        : <div className="pjd-pied">
         {!plan ? <button type="button" className="pjd-btn" disabled={busy} onClick={onClose}>Annuler</button>
           : ferme ? <button type="button" className="pjd-btn" disabled={busy} onClick={() => void save('draft')}><RotateCcw aria-hidden="true" />Reprendre ce projet</button>
-          : <button type="button" className="pjd-btn" aria-label="Archiver ce projet" disabled={busy} onClick={() => void save('cancelled')}><Archive aria-hidden="true" />Archiver</button>}
+          : <button type="button" className="pjd-btn" aria-label="Archiver ce projet" disabled={busy} onClick={() => setDemande('archiver')}><Archive aria-hidden="true" />Archiver</button>}
+        {plan && <button type="button" className="pjd-btn pjd-suppr" aria-label="Supprimer ce projet" disabled={busy} onClick={() => setDemande('supprimer')}><Trash2 aria-hidden="true" />Supprimer</button>}
         <button type="button" className="pjd-btn pjd-pri" disabled={busy} onClick={() => void save()}>{busy ? 'Enregistrement…' : 'Enregistrer le projet'}</button>
       </div>}>
       <ProjetPiste draft={draft} plan={plan} setDraft={setDraft} patch={patch} setMonth={setMonth} ouvert={ouvert} setOuvert={setOuvert} progress={progress} invoices={invoices} missing={missing}

@@ -8,6 +8,8 @@
  *   · montant : `transactions/<id>` en `set` complet (la pièce relue au moment même, comme `executerPlan`) + une entrée `auditLogs` (comme `logAction`).
  * Les plans viennent du vrai `planCorrection` et la répartition du vrai `repartirVirement` (empaquetés par esbuild depuis `src/`, jamais réécrits ici).
  * Règles : celles du dépôt principal (`firestore.rules`, lecture seule) copiées dans un dossier temporaire, avec l'adresse autorisée remplacée par celle du banc.
+ * u1 (16.11) : « Retirer cette écriture » (constat 20) et l'apport annulable (19) : contre-paiement de chaque paiement en vigueur (un lot chacun), puis l'annulation
+ *   (pièce complète avec `voidedAt` + registre `movements` + `auditLogs`, un lot), comme `revertTransaction` ; témoin : annuler sans contre-paiement est refusé par les règles.
  * Aucune donnée réelle : projet `demo-q5`, pièces « ZZ TEST ». Témoin : l'ancien regroupement de toutes les étapes en un seul lot doit être refusé.
  *
  * Usage, depuis la racine du worktree : node work/missions/2026-11-14-finances/voies/q5/emulateur.mjs > .../emulateur.txt
@@ -42,7 +44,7 @@ if (!process.argv.includes('--inner')) {
   // Le vrai code de l'app, empaqueté : plan de correction, contre-paiement, répartition d'un virement.
   const esbuild = await import(pathToFileURL(join(racinePaquets, 'node_modules/esbuild/lib/main.js')).href);
   mkdirSync(join(tmp, 'pack'), { recursive: true });
-  await esbuild.build({ entryPoints: [join(ICI, 'entree.ts')], bundle: true, format: 'esm', platform: 'node', outfile: join(tmp, 'pack', 'app.mjs'), logLevel: 'error' });
+  await esbuild.build({ entryPoints: [join(ICI, '..', 'u1', 'entree.ts')], bundle: true, format: 'esm', platform: 'node', outfile: join(tmp, 'pack', 'app.mjs'), logLevel: 'error' });
   const bin = join(racinePaquets, 'node_modules/.bin', process.platform === 'win32' ? 'firebase.cmd' : 'firebase');
   const commande = `"${process.execPath}" "${SELF}" --inner "${join(tmp, 'pack', 'app.mjs')}"`;
   const r = spawnSync(`"${bin}" emulators:exec --only firestore --project ${PROJET} --config "${join(tmp, 'firebase.json')}" "${commande.replace(/"/g, '\\"')}"`,
@@ -58,7 +60,7 @@ const { initializeApp } = await import('firebase/app');
 const fs = await import('firebase/firestore');
 const { getFirestore, connectFirestoreEmulator, writeBatch, doc, collection, getDoc, getDocs, query, where, increment, terminate } = fs;
 const app = await import(pathToFileURL(process.argv[process.argv.indexOf('--inner') + 1]).href);
-const { planCorrection, contrePaiement, repartirVirement, creanceDeTropPaye, paiementDeCreance } = app;
+const { planCorrection, planRetrait, contrePaiement, repartirVirement, creanceDeTropPaye, paiementDeCreance } = app;
 
 const sortir = (texte) => console.log(`Q5| ${texte}`);
 const base = initializeApp({ projectId: PROJET, apiKey: 'banc' });
@@ -209,6 +211,47 @@ try {
       const ea = await etat(a), eb = await etat(b);
       verifier('virement de 300,00 sur deux pièces du même fournisseur (un lot)', ea.solde === 6000 && eb.solde === 24000, `pièce 1 réglée ${ea.solde}/6000, pièce 2 réglée ${eb.solde}/40000`);
     } catch (e) { verifier('virement de 300,00 sur deux pièces du même fournisseur (un lot)', false, `refusé : ${refus(e)}`); }
+  }
+
+  // u1 (constat 20, et 19 pour l'apport) : retirer une pièce payée = un contre-paiement par paiement (un lot chacun), puis l'annulation de l'écriture (un lot).
+  // Une pièce ne se supprime jamais (les règles l'interdisent) : l'annulation est une mise à jour avec voidedAt, un réglé nul, et le registre / le journal en création.
+  const opsAnnulation = async (id) => {
+    const vivante = await lire(id);
+    return [
+      { ref: doc(db, 'transactions', id), data: { ...vivante, finance: { ...vivante.finance, voidedAt: MAINTENANT } } },
+      { ref: doc(db, 'movements', 'VOID-' + id), data: { id: 'VOID-' + id, type: 'transaction-void', transactionId: id, createdAt: MAINTENANT } },
+      { ref: doc(db, 'auditLogs', neuf('LOG')), data: { id, action: 'Annulation', details: 'ZZ TEST retrait' } }
+    ];
+  };
+  const seme = async (id, kind, cents, paiements, sens) => {
+    const piece = pieceDe(id, cents);
+    piece.finance.kind = kind; if (kind === 'contribution') piece.category = 'apports';
+    await commit([{ ref: doc(db, 'transactions', id), data: piece }]);
+    for (const [i, [montant, date]] of paiements.entries()) await commit(opsPaiement({ id: `PAI-${id}-${i + 1}`, transactionId: id, date, amountCents: montant, direction: sens, method: 'bank', recordedAt: `${date}T08:00:00.000Z` }));
+  };
+  for (const [nom, kind, cents, paiements, sens] of [
+    ['retrait d’une dépense payée en deux fois', 'expense', 4200, [[3000, '2026-11-05'], [1200, '2026-11-09']], 'out'],
+    ['retrait d’un apport (19 : +5,00 impossible à retirer)', 'contribution', 500, [[500, '2026-11-15']], 'in'],
+    ['retrait d’un prélèvement privé', 'withdrawal', 800, [[800, '2026-11-15']], 'out']
+  ]) {
+    const id = neuf('T');
+    try {
+      await seme(id, kind, cents, paiements, sens);
+      const plan = planRetrait(await lire(id), await paiementsDe(id));
+      await jouer(id, plan, true);
+      await commit(await opsAnnulation(id));
+      const t = await lire(id), ps = await paiementsDe(id);
+      verifier(nom, plan.length === paiements.length && (t.settlementBalanceCents ?? 0) === 0 && !!t.finance.voidedAt && ps.length === paiements.length * 2, `${plan.length} contre-paiement(s) puis l'annulation : réglé ${t.settlementBalanceCents ?? 0}, annulée ${t.finance.voidedAt ? 'oui' : 'non'}, ${ps.length} paiements conservés`);
+    } catch (e) { verifier(nom, false, `refusé : ${refus(e)}`); }
+  }
+  // Témoin : annuler une pièce encore payée (sans contre-paiement) doit être refusé : c'est pourquoi « Retirer » inverse d'abord.
+  {
+    const id = neuf('T');
+    try {
+      await seme(id, 'expense', 4200, [[4200, '2026-11-09']], 'out');
+      await commit(await opsAnnulation(id));
+      verifier('témoin : annuler une pièce encore payée est refusé', false, 'ACCEPTÉ : le témoin devait échouer');
+    } catch (e) { verifier('témoin : annuler une pièce encore payée est refusé', true, `refusé comme attendu (${e?.code ?? 'erreur'})`); }
   }
 
   // Témoins : l'ancien regroupement. Les deux premiers sont certains (deux paiements d'une même pièce dans un lot) ; les deux suivants éclairent le cas « montant + paiement ».

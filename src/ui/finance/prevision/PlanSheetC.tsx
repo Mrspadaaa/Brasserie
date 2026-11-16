@@ -13,6 +13,7 @@ import { useStorageValue } from '../../../hooks/useLiveData';
 import { construireEscalier, dernierJourInclus, graduations, regrouperTendance, titreHorizon, type Escalier } from '../previsions/escalier';
 import { jourCourt, montant, montantCourt, montantEntier, moisCourt } from '../previsions/format';
 import { CATEGORY_LABELS, FormSheet, idFor } from './base';
+import { supprimerPlan } from './supprimerPlan';
 import './prevision.css';
 
 /**
@@ -111,7 +112,8 @@ export function PlanSheetC({ plan, onClose }: { plan?: FinancialPlan; onClose: (
   const titreFin = titreHorizon(effet.fin, HORIZON);
   const [ouvert, setOuvert] = useState(false);
   return <FormSheet className="pvc-sheet" title={plan ? 'Modifier la prévision' : 'Prévoir une dépense'}
-    onSave={() => { if (!draft.title.trim() || draft.amountCents <= 0) throw Error('Un libellé et un montant positif sont nécessaires.'); FinanceService.savePlan({ ...draft, title: draft.title.trim() }); }} onClose={onClose}>
+    onSave={() => { if (!draft.title.trim() || draft.amountCents <= 0) throw Error('Un libellé et un montant positif sont nécessaires.'); FinanceService.savePlan({ ...draft, title: draft.title.trim() }); }} onClose={onClose}
+    suppression={plan ? { etiquette: 'Supprimer cette prévision', question: `Supprimer « ${plan.title} » ?`, detail: `${plan.recurrence ? 'Toutes ses échéances disparaissent des prévisions. ' : ''}Les pièces déjà saisies ne bougent pas. Pour la garder sans la compter : état « Annulée ».`, faire: () => supprimerPlan(plan.id) } : undefined}>
     <div className="pvc">
       <div className="pvc-r">
         <label><span className="pvc-lab">Libellé</span><input className="pvc-in" value={draft.title} onChange={e => field('title', e.target.value)} placeholder="Loyer, commande de malt, vente prévue…" required autoComplete="off" /></label>

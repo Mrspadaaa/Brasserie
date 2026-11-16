@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useMemo } from 'react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
-import { graduations, groupesRecurrents, joursEntre, motCle, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
+import { graduations, groupesRecurrents, joursEntre, motEtiquette, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
 import { largeurTexte, obstaclesDeCourbe, placerEtiquettes, pointDAccroche, type Demande, type Rect } from './placement';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
@@ -28,7 +28,7 @@ export const libelleLong = (item: ForecastItem) => `${nomLong(item)} ${item.dire
 export const montantEtiquette = (item: ForecastItem) => item.partial?.length
   ? `≥ ${montantCourt(item.amountCents)}` : item.direction === 'out' ? montantCourt(-item.amountCents) : `+${montantCourt(item.amountCents)}`;
 export const texteEtiquette = (item: ForecastItem, groupe?: GroupeRecurrent) => {
-  const mot = item.source === 'trend' ? 'dépenses' : motCle(item.label, item.source === 'brew');
+  const mot = motEtiquette(item);
   const m = montantEtiquette(item);
   if (groupe) return `${mot} ${m} ×${groupe.n}${groupe.jour ? `, le ${groupe.jour}` : ''}`;
   return `${mot} ${m}, ${item.label.includes('date estimée') ? '~' : ''}${jourCourt(item.date)}`;
@@ -39,7 +39,7 @@ export const texteEtiquette = (item: ForecastItem, groupe?: GroupeRecurrent) => 
  */
 export const texteLot = (items: ForecastItem[]) => {
   const total = items.reduce((s, i) => s + i.amountCents, 0), partiel = items.some(i => i.partial?.length);
-  const mots = [...new Set(items.map(i => (i.source === 'trend' ? 'dépenses' : motCle(i.label, i.source === 'brew'))))];
+  const mots = [...new Set(items.map(motEtiquette))];
   const m = partiel ? `≥ ${montantCourt(total)}` : montantCourt(-total);
   return mots.length === 1 ? `${mots[0]} ${m} ×${items.length}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
 };

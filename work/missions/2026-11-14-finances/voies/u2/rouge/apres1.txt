@@ -1,0 +1,42 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+·········x·········stderr | tests/integration/u2FeuillePrevision.test.tsx > 21 : supprimer une prévision > confirmée : la prévision est supprimée par le service, la feuille se ferme
+An update to FormSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+······························
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/u2Pures.test.ts > 26 : le projet garde son nom tel quel, raccourci par la fin > nomProjet : entier jusqu’à la limite, sinon la fin remplacée par « … »
+AssertionError: expected 'ZZ TEST - Pro…' to be 'ZZ TEST - Proj…' // Object.is equality
+
+Expected: [32m"ZZ TEST - Pro[7mj[27m…"[39m
+Received: [31m"ZZ TEST - Pro…"[39m
+
+ ❯ tests/integration/u2Pures.test.ts:56:56
+     54|   it('nomProjet : entier jusqu’à la limite, sinon la fin remplacée par…
+     55|     expect(nomProjet('Hotte', 14)).toBe('Hotte');
+     56|     expect(nomProjet('ZZ TEST - Projet materiel', 14)).toBe('ZZ TEST -…
+       |                                                        ^
+     57|     expect(nomProjet('  Frigo  ')).toBe('Frigo');
+     58|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 48 passed (49)
+   Start at  02:53:52
+   Duration  6.40s (transform 3.68s, setup 2.54s, collect 8.32s, tests 2.96s, environment 6.29s, prepare 344ms)
+
