@@ -91,6 +91,13 @@ describe('voies Ventes et Achats', () => {
     expect(sortie[0]).toMatchObject({ partiel: true });
     expect(sortie[0].detail).toContain('montant partiel');
   });
+  it('une ligne à 0 CHF est un montant non renseigné : posée sans montant, jamais « +0,00 »', () => {
+    const sortie = evenementsArgent([ligne({ id: 'f0', amountCents: 0, label: 'Porter · énergie' }), ligne({ id: 'f1b', amountCents: 8000 })], semaines);
+    const zero = sortie.find(e => e.id === 'argent-f0')!;
+    expect(zero.centimes).toBeUndefined();
+    expect(zero.detail).toContain('montant non renseigné');
+    expect(totalVoie(sortie, 'achats')).toBe(-8000);
+  });
   it('totalVoie : somme des montants connus, null quand aucun (l’inconnu n’est pas 0)', () => {
     const sortie = evenementsArgent([ligne({}), ligne({ id: 'f4', amountCents: 8000 })], semaines);
     expect(totalVoie(sortie, 'achats')).toBe(-50000);

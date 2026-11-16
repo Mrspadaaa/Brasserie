@@ -141,6 +141,11 @@ export function evenementsArgent(items: readonly ForecastItem[], semaines: reado
     const i = indexSemaine(semaines, item.date);
     if (i === null) continue;
     const entree = item.direction === 'in';
+    // Une ligne datée à 0 CHF est un coût que la fiche ne connaît pas encore : on ne l'écrit pas « +0,00 » (l'inconnu n'est jamais 0).
+    if (!item.amountCents) {
+      sortie.push({ id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre: item.label, detail: `le ${jourCourt(item.date)} · montant non renseigné`, a: i, b: i });
+      continue;
+    }
     sortie.push({
       id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre: item.label,
       detail: `le ${jourCourt(item.date)}${item.partial?.length ? ' · montant partiel' : ''}`, a: i, b: i,
