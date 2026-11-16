@@ -31,3 +31,7 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 - Retenus par le critique : déplacer f1-b (+ courbe avant/après de c4-a ; brassin : f6-a) ; allonger f2-a (+ alerte de promesse) ; poser f3-a (vente), f3-b (durée) ; ouvrir f4-b (+ actions de f4-a) ; appui long f5-b ; dépendances f6-b ; période c1-b + c5-a ; lire une semaine c2-b (+ glisser c3-a) ; agrandir c3-b ; et si c4-a.
 - À assembler sur la base gi2/r2-c + en-tête retenue (page15), après son ajustement au matin.
 - surligner-ecarts : un élément déplacé (puce « 6 sem. ») ou une bande qui change fait un rectangle presque plein écran : à améliorer (zones par composants, pas par pixels) avant la prochaine page.
+
+## Tranché par le critique cette nuit (à ajuster au matin)
+- En-tête portrait : z2 (un seul rang sous la courbe, « S47 – S52 » dans la brosse) ; z1 en second. Paysage : w3 (comme le portrait), w2 en second.
+- Liens : L9 = l9-b (+ boutons −/+ de a, lien « Tous les gestes » vers c) ; L4 = l4-a et l4-b ; L1 = l1-b et l1-a ; L29 = l29-a (+ aperçu de b) ; L14 = l14-a (+ ligne « attendue ≈ … » de b). Restes du critique : Porter unique d'un écran à l'autre, pastille cohérente, « Lié à » à une seule place.
