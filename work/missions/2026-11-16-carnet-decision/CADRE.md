@@ -168,3 +168,12 @@ Trois regards, 390 tactile avec clavier et 844×390 ; détail : `r2/P5-AUDIT.md`
 - Jouer son scénario au doigt, d'un carnet VIDE, sans fixture. Les étapes sont détaillées à la ligne CARNET-COEUR de DEFAUTS-RECURRENTS.md.
 - Refaire ensuite tout de zéro pour un frigo, une ventilation et un évier.
 - La fixture ne sert qu'à montrer un carnet déjà mûr. Elle ne remplace jamais un geste.
+
+## THEME-APP, bloquant (16.11 : « Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ? »)
+- Reprendre les jetons de DESIGN.md (frontmatter `colors`) :
+  - le thème cave sombre par défaut, avec son clair ;
+  - les accents EBC (paille, or, ambre, cuivre) ;
+  - les couleurs de zone (production, finances, stocks, agenda), le houblon et l'eau.
+- Pas de crème neutre sans couleur. L'onglet actif de la barre correspond à l'écran.
+- Contrôle : ligne THEME-APP de DEFAUTS-RECURRENTS.md, deux thèmes capturés.
+- Bloc « Façons possibles » proposé par l'IA : barré d'un X rouge par le brasseur, à retirer ou à revoir (en attente de sa précision).

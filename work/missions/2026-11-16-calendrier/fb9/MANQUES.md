@@ -131,3 +131,12 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - L1 (le + vers le carnet) est gardé, mais **sans intrusion** (LIEN-PLACE) : aucune rangée ni case de plus. Il passe par le + volant ou par un appui long sur une semaine, et l'idée reste un point discret.
 - L18 est retiré : l'entretien du matériel ne va pas sur la frise.
 - L9 est prioritaire : chaque geste décompte ce qu'il use, avec un bandeau et Annuler.
+
+## THEME-APP, bloquant (16.11 : « Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ? »)
+- Reprendre les jetons de DESIGN.md (frontmatter `colors`) :
+  - le thème cave sombre par défaut, avec son clair ;
+  - les accents EBC (paille, or, ambre, cuivre) ;
+  - les couleurs de zone (production, finances, stocks, agenda), le houblon et l'eau.
+- Pas de crème neutre sans couleur. L'onglet actif de la barre correspond à l'écran.
+- Contrôle : ligne THEME-APP de DEFAUTS-RECURRENTS.md, deux thèmes capturés.
+- Bloc « Façons possibles » proposé par l'IA : barré d'un X rouge par le brasseur, à retirer ou à revoir (en attente de sa précision).
