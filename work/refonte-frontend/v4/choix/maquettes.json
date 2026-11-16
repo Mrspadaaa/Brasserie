@@ -18,72 +18,522 @@
         "note": "Base au 16.11 au soir (CHOIX-CALENDRIER.md, fin). g-d1 échoue encore sur des gardés (filtres visibles, paysage, titres de rangée) : ce sont ses manques à combler sans agrandir l'en-tête. cd1 (cd/cd1.html) est une réserve d'idées, une à la fois."
       },
       "anciennes_bases": [
-        { "proto": "work/missions/2026-11-16-calendrier/fl/fb/proto.html", "parole": "Clairement Calendrier gestes · fb Est le meilleur mais pas 9/10... Ça va être le cœur de l'application", "date": "2026-11-16", "remplacee_par": "g-d1, le 16.11 au soir" },
-        { "proto": "work/missions/2026-11-15-besoins/f (absent de cette copie, branche claude/infallible-grothendieck-129ed4)", "parole": "Caisse et semaines f1 top !", "date": "2026-11-15", "remplacee_par": "fb" }
+        {
+          "proto": "work/missions/2026-11-16-calendrier/fl/fb/proto.html",
+          "parole": "Clairement Calendrier gestes · fb Est le meilleur mais pas 9/10... Ça va être le cœur de l'application",
+          "date": "2026-11-16",
+          "remplacee_par": "g-d1, le 16.11 au soir"
+        },
+        {
+          "proto": "work/missions/2026-11-15-besoins/f (absent de cette copie, branche claude/infallible-grothendieck-129ed4)",
+          "parole": "Caisse et semaines f1 top !",
+          "date": "2026-11-15",
+          "remplacee_par": "fb"
+        }
       ],
       "gardes": [
-        { "id": "G1", "element": "Courbe de caisse au-dessus, une barre par chose dessous, mêmes semaines", "parole": "Caisse et semaines f1 top !", "parole2": "Il faudrait une vue exprès détaillé de t1b2 La frise sous la caisse. C'est top ça avec temps et argent !!", "date": "2026-11-15", "source": "f1, t1b2", "signature": { "tous": [{ "selecteur": "svg path, svg polyline" }, { "regex": "S4\\d[\\s\\S]*S5\\d" }] } },
-        { "id": "G2", "element": "Projets sans budget et activités, comptés en jours", "parole": "Et aussi penser aux projets sans budget ou autre activité. Type nettoyage fenêtre Pose du sol Prospection ECT...", "date": "2026-11-15", "source": "f1, planificateur", "signature": { "tous": [{ "texte": "Activités" }, { "regex": "\\d+ j\\b" }] } },
-        { "id": "G3", "element": "Filtres de planification par genre, visibles au premier plan (3 au moins)", "parole": "Aussi faire des filtres de plannif, car il y a aussi, brassage, event, ou autre activité... Ajouter tout ça...", "parole2": "Mais il faut aussi pour filtrer, trier pinner ou star certaines choses", "date": "2026-11-16", "source": "fb ; perte 6 de g-d1 (CHOIX-CALENDRIER), hors de ses zones entourées", "signature": { "un": [{ "selecteur": "[data-filtre]", "min": 3 }, { "selecteur": "[class*=\"chip\"]", "min": 3 }] } },
-        { "id": "G4", "element": "Trier les rangées", "parole": "Mais il faut aussi pour filtrer, trier pinner ou star certaines choses", "date": "2026-11-16", "source": "sources2, g-d1 (dans le menu)", "signature": { "selecteur": "[aria-label*=\"Trier\" i], [title*=\"Trier\" i], [data-trier]", "visible": false } },
-        { "id": "G5", "element": "Vue paysage 844 × 390, plus de semaines (10 au moins)", "parole": "Il faut vraiment une version horizontal pour mobile btw", "parole2": "Une vue full screen sur téléphone qui fait une rotation horizontal, possible ?", "date": "2026-11-16", "source": "K13, fb-repos-844, cd1-paysage", "signature": { "paysage": { "minSemaines": 10 } } },
-        { "id": "G6", "element": "Onglet Calendrier, 6e, entre Finances et Brassins", "parole": "Je pense que même avoir un onglet calendrier en bas pour le global ferait vraiment sens", "parole2": "Onglet v1", "date": "2026-11-16", "source": "choix-ouverts onglet v1", "signature": { "regex": "Finances\\s+Calendrier\\s+Brassins" } },
-        { "id": "G7", "element": "Le + volant, à droite, juste au-dessus des onglets", "parole": "Et le bouton+ est pas au bon endroit btw En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis", "parole2": "Non c'est à droit pardon pas à gauche", "date": "2026-11-16", "source": "FAB-GAUCHE", "signature": { "plus": true } },
-        { "id": "G8", "element": "Compacité de g-d1 : la première barre de la frise dans les 30 % du haut", "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil", "parole2": "Ça semble bon mais pas très compact...", "date": "2026-11-16", "source": "g-d1, CAL-COMPACT", "signature": { "position": { "texte": "Blonde d", "hautMax": 0.30 } } },
-        { "id": "G9", "element": "Thème de l'app, avec ses couleurs (EBC, zones)", "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?", "parole2": "Pas besoin de focus sur cave, mais utiliser le thème de l'app oui...", "date": "2026-11-16", "source": "THEME-APP", "signature": { "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b" } },
-        { "id": "G10", "element": "Titre de rangée en clair, à gauche, juste au-dessus de ses barres", "parole": "Fan d'aucun et beaucoup de régression. Mais voilà les deux moins pire : Calendrier compact · a3 · d1 Même si ils sont tous très mauvaise, 5/10", "date": "2026-11-16", "source": "CAL-REGRESS (« mêmes noms de rangée en clair ») ; perte 12 de g-d1", "signature": { "auDessus": ["Fêtes", "Marché de Noël"] } }
+        {
+          "id": "G1",
+          "element": "Courbe de caisse au-dessus, une barre par chose dessous, mêmes semaines",
+          "parole": "Caisse et semaines f1 top !",
+          "parole2": "Il faudrait une vue exprès détaillé de t1b2 La frise sous la caisse. C'est top ça avec temps et argent !!",
+          "date": "2026-11-15",
+          "source": "f1, t1b2",
+          "signature": {
+            "tous": [
+              {
+                "selecteur": "svg path, svg polyline"
+              },
+              {
+                "regex": "S4\\d[\\s\\S]*S5\\d"
+              }
+            ]
+          }
+        },
+        {
+          "id": "G2",
+          "element": "Projets sans budget et activités, comptés en jours",
+          "parole": "Et aussi penser aux projets sans budget ou autre activité. Type nettoyage fenêtre Pose du sol Prospection ECT...",
+          "date": "2026-11-15",
+          "source": "f1, planificateur",
+          "signature": {
+            "tous": [
+              {
+                "texte": "Activités"
+              },
+              {
+                "regex": "\\d+ j\\b"
+              }
+            ]
+          }
+        },
+        {
+          "id": "G3",
+          "element": "Filtres de planification par genre, visibles au premier plan (3 au moins)",
+          "parole": "Aussi faire des filtres de plannif, car il y a aussi, brassage, event, ou autre activité... Ajouter tout ça...",
+          "parole2": "Mais il faut aussi pour filtrer, trier pinner ou star certaines choses",
+          "date": "2026-11-16",
+          "source": "fb ; perte 6 de g-d1 (CHOIX-CALENDRIER), hors de ses zones entourées",
+          "signature": {
+            "un": [
+              {
+                "selecteur": "[data-filtre]",
+                "min": 3
+              },
+              {
+                "selecteur": "[class*=\"chip\"]",
+                "min": 3
+              }
+            ]
+          }
+        },
+        {
+          "id": "G4",
+          "element": "Trier les rangées",
+          "parole": "Mais il faut aussi pour filtrer, trier pinner ou star certaines choses",
+          "date": "2026-11-16",
+          "source": "sources2, g-d1 (dans le menu)",
+          "signature": {
+            "selecteur": "[aria-label*=\"Trier\" i], [title*=\"Trier\" i], [data-trier]",
+            "visible": false
+          }
+        },
+        {
+          "id": "G5",
+          "element": "Vue paysage 844 × 390, plus de semaines (10 au moins)",
+          "parole": "Il faut vraiment une version horizontal pour mobile btw",
+          "parole2": "Une vue full screen sur téléphone qui fait une rotation horizontal, possible ?",
+          "date": "2026-11-16",
+          "source": "K13, fb-repos-844, cd1-paysage",
+          "signature": {
+            "paysage": {
+              "minSemaines": 10
+            }
+          }
+        },
+        {
+          "id": "G6",
+          "element": "Onglet Calendrier, 6e, entre Finances et Brassins",
+          "parole": "Je pense que même avoir un onglet calendrier en bas pour le global ferait vraiment sens",
+          "parole2": "Onglet v1",
+          "date": "2026-11-16",
+          "source": "choix-ouverts onglet v1",
+          "signature": {
+            "regex": "Finances\\s+Calendrier\\s+Brassins"
+          }
+        },
+        {
+          "id": "G7",
+          "element": "Le + volant, à droite, juste au-dessus des onglets",
+          "parole": "Et le bouton+ est pas au bon endroit btw En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis",
+          "parole2": "Non c'est à droit pardon pas à gauche",
+          "date": "2026-11-16",
+          "source": "FAB-GAUCHE",
+          "signature": {
+            "plus": true
+          }
+        },
+        {
+          "id": "G8",
+          "element": "Compacité de g-d1 : la première barre de la frise dans les 30 % du haut",
+          "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil",
+          "parole2": "Ça semble bon mais pas très compact...",
+          "date": "2026-11-16",
+          "source": "g-d1, CAL-COMPACT",
+          "signature": {
+            "position": {
+              "texte": "Blonde d",
+              "hautMax": 0.3
+            }
+          }
+        },
+        {
+          "id": "G9",
+          "element": "Thème de l'app, avec ses couleurs (EBC, zones)",
+          "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?",
+          "parole2": "Pas besoin de focus sur cave, mais utiliser le thème de l'app oui...",
+          "date": "2026-11-16",
+          "source": "THEME-APP",
+          "signature": {
+            "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b"
+          }
+        },
+        {
+          "id": "G10",
+          "element": "Titre de rangée en clair, à gauche, juste au-dessus de ses barres",
+          "parole": "Fan d'aucun et beaucoup de régression. Mais voilà les deux moins pire : Calendrier compact · a3 · d1 Même si ils sont tous très mauvaise, 5/10",
+          "date": "2026-11-16",
+          "source": "CAL-REGRESS (« mêmes noms de rangée en clair ») ; perte 12 de g-d1",
+          "signature": {
+            "auDessus": [
+              "Fêtes",
+              "Marché de Noël"
+            ]
+          }
+        }
       ],
       "refuses": [
-        { "id": "R1", "element": "En-tête de cd1 (chiffre, paliers suivants, hypothèses, « libre en fin de semaine · dessous… » empilés)", "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil cd1 a des bonnes idées mais mais c'est trop le fouillis. Surtout l'entête..", "date": "2026-11-16", "source": "cd/cd1.html", "signature": { "tous": [{ "regex": "dès S\\d+" }, { "texte": "/ sem. · présence" }, { "texte": "libre en fin de semaine · dessous" }] } },
-        { "id": "R2", "element": "Rangées ou cases de pose dédiées au + (L1 intrusif)", "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif", "date": "2026-11-16", "source": "LIENS-APP (LIENS-PLACE) ; fb", "signature": { "un": [{ "texte": "touche pour poser" }, { "selecteur": "[aria-label=\"Toucher pour poser\"]", "min": 3 }] } },
-        { "id": "R3", "element": "L18 : entretien daté au calendrier", "parole": "L18 retirer", "date": "2026-11-16", "source": "LIENS-APP", "signature": { "regex": "entretien", "flags": "iu" } },
-        { "id": "R4", "element": "Thème flottant, éventail, balayage (ta, tb, tc)", "parole": "Non pas du tout", "date": "2026-11-16", "source": "themes ta/tb/tc", "signature": null, "raison": "maquettes ta, tb, tc absentes de cette copie : aucune signature sûre ; au critique" },
-        { "id": "R5", "element": "Les 16 calendriers compacts de fils/ (rangées en icônes, régressions)", "parole": "Fan d'aucun et beaucoup de régression. Mais voilà les deux moins pire : Calendrier compact · a3 · d1 Même si ils sont tous très mauvaise, 5/10", "date": "2026-11-16", "source": "fils/", "signature": null, "raison": "refus de versions entières ; G10 garde les noms de rangée en clair" }
+        {
+          "id": "R1",
+          "element": "En-tête de cd1 (chiffre, paliers suivants, hypothèses, « libre en fin de semaine · dessous… » empilés)",
+          "parole": "g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil cd1 a des bonnes idées mais mais c'est trop le fouillis. Surtout l'entête..",
+          "date": "2026-11-16",
+          "source": "cd/cd1.html",
+          "signature": {
+            "tous": [
+              {
+                "regex": "dès S\\d+"
+              },
+              {
+                "texte": "/ sem. · présence"
+              },
+              {
+                "texte": "libre en fin de semaine · dessous"
+              }
+            ]
+          }
+        },
+        {
+          "id": "R2",
+          "element": "Rangées ou cases de pose dédiées au + (L1 intrusif)",
+          "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif",
+          "date": "2026-11-16",
+          "source": "LIENS-APP (LIENS-PLACE) ; fb",
+          "signature": {
+            "un": [
+              {
+                "texte": "touche pour poser"
+              },
+              {
+                "selecteur": "[aria-label=\"Toucher pour poser\"]",
+                "min": 3
+              }
+            ]
+          }
+        },
+        {
+          "id": "R3",
+          "element": "L18 : entretien daté au calendrier",
+          "parole": "L18 retirer",
+          "date": "2026-11-16",
+          "source": "LIENS-APP",
+          "signature": {
+            "regex": "entretien",
+            "flags": "iu"
+          }
+        },
+        {
+          "id": "R4",
+          "element": "Thème flottant, éventail, balayage (ta, tb, tc)",
+          "parole": "Non pas du tout",
+          "date": "2026-11-16",
+          "source": "themes ta/tb/tc",
+          "signature": null,
+          "raison": "maquettes ta, tb, tc absentes de cette copie : aucune signature sûre ; au critique"
+        },
+        {
+          "id": "R5",
+          "element": "Les 16 calendriers compacts de fils/ (rangées en icônes, régressions)",
+          "parole": "Fan d'aucun et beaucoup de régression. Mais voilà les deux moins pire : Calendrier compact · a3 · d1 Même si ils sont tous très mauvaise, 5/10",
+          "date": "2026-11-16",
+          "source": "fils/",
+          "signature": null,
+          "raison": "refus de versions entières ; G10 garde les noms de rangée en clair"
+        }
       ],
       "idees": [
-        { "id": "I1", "element": "Mouvement de la semaine sous le solde (−148, +120…)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1, fb (perte 1)", "signature": { "regex": "4 032 [−+]\\d" } },
-        { "id": "I2", "element": "Le solde nommé « libre en fin de semaine »", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 2)", "signature": { "texte": "libre en fin de semaine" } },
-        { "id": "I3", "element": "Date de chaque semaine (23 nov., 30 nov.…)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 3)", "signature": { "texte": "23 nov." } },
-        { "id": "I4", "element": "Charge par semaine contre présence (1/2 j, « sur 2 »)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1, fb (perte 4)", "signature": { "regex": "sur 2|\\d/2 j" } },
-        { "id": "I5", "element": "Hypothèses réglables (caisse, +/sem., présence, « exemple »)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 5)", "signature": { "tous": [{ "texte": "présence" }, { "texte": "exemple" }] } },
-        { "id": "I6", "element": "Résumé par rangée (« 2 · −324 »)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 8)", "signature": { "regex": "\\d+ · [−+]\\d" } },
-        { "id": "I7", "element": "Prochains paliers de caisse (« ensuite … dès S26 »)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 9)", "signature": { "regex": "dès S\\d+" } },
-        { "id": "I8", "element": "Le chiffre clé dit ce qu'il est (« à dépenser », « au plus serré »)", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 10)", "signature": { "regex": "à dépenser|te permettre|au plus serré" } },
-        { "id": "I9", "element": "« 2 en retard » en mots", "parole": "cd1 a des bonnes idées", "date": "2026-11-16", "source": "cd1 (perte 13)", "signature": { "texte": "en retard" } },
-        { "id": "I10", "element": "Jours dans les barres (7 cases, « en cuve »)", "parole": "à confirmer avec lui (perte 17)", "date": "2026-11-16", "source": "fb", "signature": { "texte": "en cuve" } }
+        {
+          "id": "I1",
+          "element": "Mouvement de la semaine sous le solde (−148, +120…)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1, fb (perte 1)",
+          "signature": {
+            "regex": "4 032 [−+]\\d"
+          }
+        },
+        {
+          "id": "I2",
+          "element": "Le solde nommé « libre en fin de semaine »",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 2)",
+          "signature": {
+            "texte": "libre en fin de semaine"
+          }
+        },
+        {
+          "id": "I3",
+          "element": "Date de chaque semaine (23 nov., 30 nov.…)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 3)",
+          "signature": {
+            "texte": "23 nov."
+          }
+        },
+        {
+          "id": "I4",
+          "element": "Charge par semaine contre présence (1/2 j, « sur 2 »)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1, fb (perte 4)",
+          "signature": {
+            "regex": "sur 2|\\d/2 j"
+          }
+        },
+        {
+          "id": "I5",
+          "element": "Hypothèses réglables (caisse, +/sem., présence, « exemple »)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 5)",
+          "signature": {
+            "tous": [
+              {
+                "texte": "présence"
+              },
+              {
+                "texte": "exemple"
+              }
+            ]
+          }
+        },
+        {
+          "id": "I6",
+          "element": "Résumé par rangée (« 2 · −324 »)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 8)",
+          "signature": {
+            "regex": "\\d+ · [−+]\\d"
+          }
+        },
+        {
+          "id": "I7",
+          "element": "Prochains paliers de caisse (« ensuite … dès S26 »)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 9)",
+          "signature": {
+            "regex": "dès S\\d+"
+          }
+        },
+        {
+          "id": "I8",
+          "element": "Le chiffre clé dit ce qu'il est (« à dépenser », « au plus serré »)",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 10)",
+          "signature": {
+            "regex": "à dépenser|te permettre|au plus serré"
+          }
+        },
+        {
+          "id": "I9",
+          "element": "« 2 en retard » en mots",
+          "parole": "cd1 a des bonnes idées",
+          "date": "2026-11-16",
+          "source": "cd1 (perte 13)",
+          "signature": {
+            "texte": "en retard"
+          }
+        },
+        {
+          "id": "I10",
+          "element": "Jours dans les barres (7 cases, « en cuve »)",
+          "parole": "à confirmer avec lui (perte 17)",
+          "date": "2026-11-16",
+          "source": "fb",
+          "signature": {
+            "texte": "en cuve"
+          }
+        }
       ],
       "a_preciser": [
-        { "element": "Segments 6 sem. / 3 mois / 6 mois / An visibles ou en menu", "parole": "Beaucoup de choses peu utilie pour le brasseur prend beaucoup de place...", "date": "2026-11-16" },
-        { "element": "Période réglable, cohérente aux endroits où elle se règle", "parole": "m3 -> attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits, attention à ce détails très important !!", "date": "2026-11-15" },
-        { "element": "Gestes directs K11 (glisser, tirer le bord, appui long) et menu du + : se jouent après son choix, jamais en mini maquette", "parole": "Surtout Gestes directs sur la frise : tu glisses une barre pour la déplacer, tu tires son bord pour l'allonger. Un appui long ouvre épingler, étoile et filtrer.", "date": "2026-11-16" }
+        {
+          "element": "Segments 6 sem. / 3 mois / 6 mois / An visibles ou en menu",
+          "parole": "Beaucoup de choses peu utilie pour le brasseur prend beaucoup de place...",
+          "date": "2026-11-16"
+        },
+        {
+          "element": "Période réglable, cohérente aux endroits où elle se règle",
+          "parole": "m3 -> attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits, attention à ce détails très important !!",
+          "date": "2026-11-15"
+        },
+        {
+          "element": "Gestes directs K11 (glisser, tirer le bord, appui long) et menu du + : se jouent après son choix, jamais en mini maquette",
+          "parole": "Surtout Gestes directs sur la frise : tu glisses une barre pour la déplacer, tu tires son bord pour l'allonger. Un appui long ouvre épingler, étoile et filtrer.",
+          "date": "2026-11-16"
+        }
       ]
     },
     "carnet": {
       "base": {
-        "proto": "work/missions/2026-11-16-carnet-decision/r3p5f/final/proto.html",
-        "parole": "Okay adapté p5 fini alors",
+        "proto": "work/missions/2026-11-16-carnet-decision/r3/c5/proto.html",
+        "parole": "Da semble globalement meilleure",
         "date": "2026-11-16",
-        "note": "Ligne p5 (r3p5f/final, 21/21), final2 en retouche. La ligne da (r3/c4) reste une réserve : « Da et dc sont pas trop Mal ». Le résidu « ↓ 600 CHF » de final est un refus à retirer."
+        "note": "Base provisoire : ra (da retouché, r3/c5), d après « Da semble globalement meilleure ». Son choix entre ra et p5f (r3p5f/final2) est attendu sur la page 2XTmkaNxtHEBRuvkyvnFsL ; p5f reste candidat (« Okay adapté p5 fini alors »)."
       },
       "gardes": [
-        { "id": "C1", "element": "Vue sans détails d'abord : la liste des carnets, une ligne par idée", "parole": "une vue sans détails juste pour savoir de quoi on parle", "date": "2026-11-16", "source": "CADRE n° 9", "signature": { "regex": "\\d+ façons? · \\d+ articles?" } },
-        { "id": "C2", "element": "Générique : frigo, ventilation, évier", "parole": "ça doit être générique, un frigo, une ventil, un évier", "date": "2026-11-16", "source": "CADRE", "signature": { "tous": [{ "regex": "Frigo", "flags": "iu" }, { "regex": "Ventil", "flags": "iu" }, { "regex": "Évier", "flags": "iu" }] } },
-        { "id": "C3", "element": "Lien collé qui montre l'objet ; veille tous les 3 jours", "parole": "je mets un liens, ça montre l'objet… toggle switch… tout les 3 jours", "date": "2026-11-16", "source": "CADRE n° 11, 12", "signature": { "regex": "veille|lien", "flags": "iu" } },
-        { "id": "C4", "element": "Sortie vers À venir (kh1r), pas de caisse dans le carnet", "parole": "kyg1 sans étape de liaison, graphe de kh1r 1:1 kyh1 top", "date": "2026-11-15", "source": "CADRE « Acquis »", "signature": { "texte": "À venir" } },
-        { "id": "C5", "element": "Onglet Calendrier entre Finances et Brassins", "parole": "Onglet v1", "date": "2026-11-16", "source": "choix-ouverts", "signature": { "regex": "Finances\\s+Calendrier\\s+Brassins" } },
-        { "id": "C6", "element": "Thème de l'app, avec couleur", "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?", "date": "2026-11-16", "source": "THEME-APP", "signature": { "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b" } },
-        { "id": "C7", "element": "Écartés visibles ; un seul champ ; l'IA propose le critère", "parole": "écartés visibles · da · un seul champ ; l'IA propose le critère le meilleur", "date": "2026-11-16", "source": "page2", "signature": null, "raison": "se voit sur la fiche ouverte, pas sur la liste au repos ; au critique, sur la capture de la fiche" },
-        { "id": "C8", "element": "Champ en bas, que le clavier ne cache pas", "parole": "parcontre le champs text en bas ? SI non sur mobile le clavier cache tout", "date": "2026-11-16", "source": "page2", "signature": null, "raison": "état clavier ouvert : mesuré sur la version choisie, pas en mini maquette" }
+        {
+          "id": "C1",
+          "element": "Vue sans détails d'abord : la liste des carnets, une ligne par idée",
+          "parole": "une vue sans détails juste pour savoir de quoi on parle",
+          "date": "2026-11-16",
+          "source": "CADRE n° 9",
+          "signature": {
+            "regex": "\\d+ façons? · \\d+ articles?"
+          }
+        },
+        {
+          "id": "C2",
+          "element": "Générique : frigo, ventilation, évier",
+          "parole": "ça doit être générique, un frigo, une ventil, un évier",
+          "date": "2026-11-16",
+          "source": "CADRE",
+          "signature": {
+            "tous": [
+              {
+                "regex": "Frigo",
+                "flags": "iu"
+              },
+              {
+                "regex": "Ventil",
+                "flags": "iu"
+              },
+              {
+                "regex": "Évier",
+                "flags": "iu"
+              }
+            ]
+          }
+        },
+        {
+          "id": "C3",
+          "element": "Lien collé qui montre l'objet ; veille tous les 3 jours",
+          "parole": "je mets un liens, ça montre l'objet… toggle switch… tout les 3 jours",
+          "date": "2026-11-16",
+          "source": "CADRE n° 11, 12",
+          "signature": {
+            "regex": "veille|lien",
+            "flags": "iu"
+          }
+        },
+        {
+          "id": "C4",
+          "element": "Sortie vers À venir (kh1r), pas de caisse dans le carnet",
+          "parole": "kyg1 sans étape de liaison, graphe de kh1r 1:1 kyh1 top",
+          "date": "2026-11-15",
+          "source": "CADRE « Acquis »",
+          "signature": {
+            "texte": "À venir"
+          }
+        },
+        {
+          "id": "C5",
+          "element": "Onglet Calendrier entre Finances et Brassins",
+          "parole": "Onglet v1",
+          "date": "2026-11-16",
+          "source": "choix-ouverts",
+          "signature": {
+            "regex": "Finances\\s+Calendrier\\s+Brassins"
+          }
+        },
+        {
+          "id": "C6",
+          "element": "Thème de l'app, avec couleur",
+          "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?",
+          "date": "2026-11-16",
+          "source": "THEME-APP",
+          "signature": {
+            "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b"
+          }
+        },
+        {
+          "id": "C7",
+          "element": "Écartés visibles ; un seul champ ; l'IA propose le critère",
+          "parole": "écartés visibles · da · un seul champ ; l'IA propose le critère le meilleur",
+          "date": "2026-11-16",
+          "source": "page2",
+          "signature": null,
+          "raison": "se voit sur la fiche ouverte, pas sur la liste au repos ; au critique, sur la capture de la fiche"
+        },
+        {
+          "id": "C8",
+          "element": "Champ en bas, que le clavier ne cache pas",
+          "parole": "parcontre le champs text en bas ? SI non sur mobile le clavier cache tout",
+          "date": "2026-11-16",
+          "source": "page2",
+          "signature": null,
+          "raison": "état clavier ouvert : mesuré sur la version choisie, pas en mini maquette"
+        }
       ],
       "refuses": [
-        { "id": "K1", "element": "Onglets « En cours, Choisis »", "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???", "date": "2026-11-16", "source": "page2", "signature": { "tous": [{ "regex": "\\bEn cours\\b" }, { "regex": "\\bChoisis\\b" }] } },
-        { "id": "K2", "element": "« ✓ choix »", "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???", "date": "2026-11-16", "source": "page2", "signature": { "texte": "✓ choix" } },
-        { "id": "K3", "element": "« ↓ 600 CHF » (flèche de baisse en montant)", "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???", "date": "2026-11-16", "source": "page2", "signature": { "regex": "↓ ?\\d[\\d ']* ?CHF" } },
-        { "id": "K4", "element": "Parcours à étapes (ky, kz)", "parole": "J'aime toujours pas, le workflow est trop contraignant", "date": "2026-11-15", "source": "CADRE « Refusés »", "signature": { "regex": "[ée]tape \\d+ ?(/|sur) ?\\d+", "flags": "iu" } },
-        { "id": "K5", "element": "Fiche prix + caisse (s2a2), dossier de solutions", "parole": "Ça correspond pas du tout à mes besoins ??", "date": "2026-11-16", "source": "CADRE « Refusés »", "signature": null, "raison": "refus d'une forme entière, sans mot propre ; au critique" }
+        {
+          "id": "K1",
+          "element": "Onglets « En cours, Choisis »",
+          "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???",
+          "date": "2026-11-16",
+          "source": "page2",
+          "signature": {
+            "tous": [
+              {
+                "regex": "\\bEn cours\\b"
+              },
+              {
+                "regex": "\\bChoisis\\b"
+              }
+            ]
+          }
+        },
+        {
+          "id": "K2",
+          "element": "« ✓ choix »",
+          "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???",
+          "date": "2026-11-16",
+          "source": "page2",
+          "signature": {
+            "texte": "✓ choix"
+          }
+        },
+        {
+          "id": "K3",
+          "element": "« ↓ 600 CHF » (flèche de baisse en montant)",
+          "parole": "p5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ???",
+          "date": "2026-11-16",
+          "source": "page2",
+          "signature": {
+            "regex": "↓ ?\\d[\\d ']* ?CHF"
+          }
+        },
+        {
+          "id": "K4",
+          "element": "Parcours à étapes (ky, kz)",
+          "parole": "J'aime toujours pas, le workflow est trop contraignant",
+          "date": "2026-11-15",
+          "source": "CADRE « Refusés »",
+          "signature": {
+            "regex": "[ée]tape \\d+ ?(/|sur) ?\\d+",
+            "flags": "iu"
+          }
+        },
+        {
+          "id": "K5",
+          "element": "Fiche prix + caisse (s2a2), dossier de solutions",
+          "parole": "Ça correspond pas du tout à mes besoins ??",
+          "date": "2026-11-16",
+          "source": "CADRE « Refusés »",
+          "signature": null,
+          "raison": "refus d'une forme entière, sans mot propre ; au critique"
+        }
       ],
       "a_preciser": [
-        { "element": "Bloc « Façons possibles » proposé par l'IA (X rouge sur r3/c2)", "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?", "date": "2026-11-16" }
+        {
+          "element": "Bloc « Façons possibles » proposé par l'IA (X rouge sur r3/c2)",
+          "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?",
+          "date": "2026-11-16"
+        }
       ]
     },
     "calendriers-section": {
@@ -94,16 +544,59 @@
         "note": "Un calendrier par section, réglé depuis le calendrier général : fb-fin = le calendrier réglé sur l'argent ; la greffe de m1 (vues-calendrier/finance/m1/proto.html) selon le contradicteur. La base générale suit celle du calendrier (g-d1 depuis le 16.11 au soir). Pas encore fait (sections/ vide)."
       },
       "gardes": [
-        { "id": "S1", "element": "Un général dans son onglet, un par section (finance, stock, brassage…)", "parole": "Un général avec son Tab Mais aussi un spécifique aux thématiques, finance, stock, brassage ECT... ?", "date": "2026-11-16", "source": "fb9/MANQUES L8", "signature": { "regex": "Finances\\s+Calendrier\\s+Brassins" } },
-        { "id": "S2", "element": "Mêmes semaines que le calendrier général, en tête de section", "parole": "Finances fb-fin · Brassins ok · Matériel ok · Stocks ok · Agenda ok", "date": "2026-11-16", "source": "vues-calendrier/CHOIX.md", "signature": { "regex": "S4\\d[\\s\\S]*S5\\d" } },
-        { "id": "S3", "element": "Thème de l'app, avec couleur", "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?", "date": "2026-11-16", "source": "THEME-APP", "signature": { "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b" } }
+        {
+          "id": "S1",
+          "element": "Un général dans son onglet, un par section (finance, stock, brassage…)",
+          "parole": "Un général avec son Tab Mais aussi un spécifique aux thématiques, finance, stock, brassage ECT... ?",
+          "date": "2026-11-16",
+          "source": "fb9/MANQUES L8",
+          "signature": {
+            "regex": "Finances\\s+Calendrier\\s+Brassins"
+          }
+        },
+        {
+          "id": "S2",
+          "element": "Mêmes semaines que le calendrier général, en tête de section",
+          "parole": "Finances fb-fin · Brassins ok · Matériel ok · Stocks ok · Agenda ok",
+          "date": "2026-11-16",
+          "source": "vues-calendrier/CHOIX.md",
+          "signature": {
+            "regex": "S4\\d[\\s\\S]*S5\\d"
+          }
+        },
+        {
+          "id": "S3",
+          "element": "Thème de l'app, avec couleur",
+          "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?",
+          "date": "2026-11-16",
+          "source": "THEME-APP",
+          "signature": {
+            "source": "#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\\b"
+          }
+        }
       ],
       "refuses": [
-        { "id": "S9", "element": "Thème flottant, éventail, balayage (ta, tb, tc)", "parole": "Non pas du tout", "date": "2026-11-16", "source": "themes ta/tb/tc", "signature": null, "raison": "maquettes absentes de cette copie ; au critique" }
+        {
+          "id": "S9",
+          "element": "Thème flottant, éventail, balayage (ta, tb, tc)",
+          "parole": "Non pas du tout",
+          "date": "2026-11-16",
+          "source": "themes ta/tb/tc",
+          "signature": null,
+          "raison": "maquettes absentes de cette copie ; au critique"
+        }
       ],
       "a_preciser": [
-        { "element": "Place de m3pr-c, m3pm-d · kyh1 · kh1r, m3im-c dans le calendrier", "parole": "Prévoir une dépensem3pr-c à voir... Mes projets de matériel, À venir, graphe de caissem3pm-d · kyh1 · kh1rg pareil Bien amortim3im-c pariel à voir..", "date": "2026-11-16" },
-        { "element": "Courses, Bord, AC1 à AC6, BO2 à BO9", "parole": "(sans réponse)", "date": "2026-11-16" }
+        {
+          "element": "Place de m3pr-c, m3pm-d · kyh1 · kh1r, m3im-c dans le calendrier",
+          "parole": "Prévoir une dépensem3pr-c à voir... Mes projets de matériel, À venir, graphe de caissem3pm-d · kyh1 · kh1rg pareil Bien amortim3im-c pariel à voir..",
+          "date": "2026-11-16"
+        },
+        {
+          "element": "Courses, Bord, AC1 à AC6, BO2 à BO9",
+          "parole": "(sans réponse)",
+          "date": "2026-11-16"
+        }
       ]
     },
     "liens": {
@@ -114,16 +607,72 @@
         "note": "Carte LIENS-APP.md et proto. L9 codé sur la branche claude/wonderful-elbakyan-d93ca6 (tag regle-l9-2026-11-16)."
       },
       "gardes": [
-        { "id": "L9", "element": "Chaque geste décompte ce qu'il use, partout", "parole": "8Chaque geste décompte ce qu'il use super important!! À bien mettre et généralisé partout", "date": "2026-11-16", "source": "LIENS-APP", "signature": null, "raison": "un geste joué, pas un état statique ; se prouve dans l'app (règle L9)" },
-        { "id": "L1", "element": "Le + du calendrier envoie l'idée au carnet, sans rangée dédiée", "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif", "date": "2026-11-16", "source": "LIENS-APP (LIENS-PLACE)", "signature": null, "raison": "fonction jouée ; la forme intrusive est le refus L1-i" },
-        { "id": "L-onglet", "element": "Onglet Calendrier dans la barre", "parole": "Onglet v1", "date": "2026-11-16", "source": "choix-ouverts", "signature": { "regex": "Finances\\s+Calendrier\\s+Brassins" } }
+        {
+          "id": "L9",
+          "element": "Chaque geste décompte ce qu'il use, partout",
+          "parole": "8Chaque geste décompte ce qu'il use super important!! À bien mettre et généralisé partout",
+          "date": "2026-11-16",
+          "source": "LIENS-APP",
+          "signature": null,
+          "raison": "un geste joué, pas un état statique ; se prouve dans l'app (règle L9)"
+        },
+        {
+          "id": "L1",
+          "element": "Le + du calendrier envoie l'idée au carnet, sans rangée dédiée",
+          "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif",
+          "date": "2026-11-16",
+          "source": "LIENS-APP (LIENS-PLACE)",
+          "signature": null,
+          "raison": "fonction jouée ; la forme intrusive est le refus L1-i"
+        },
+        {
+          "id": "L-onglet",
+          "element": "Onglet Calendrier dans la barre",
+          "parole": "Onglet v1",
+          "date": "2026-11-16",
+          "source": "choix-ouverts",
+          "signature": {
+            "regex": "Finances\\s+Calendrier\\s+Brassins"
+          }
+        }
       ],
       "refuses": [
-        { "id": "L18", "element": "Entretien daté au calendrier", "parole": "L18 retirer", "date": "2026-11-16", "source": "LIENS-APP", "signature": { "regex": "entretien", "flags": "iu" } },
-        { "id": "L1-i", "element": "Rangées ou cases de pose dédiées (L1 intrusif)", "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif", "date": "2026-11-16", "source": "LIENS-APP", "signature": { "un": [{ "texte": "touche pour poser" }, { "selecteur": "[aria-label=\"Toucher pour poser\"]", "min": 3 }] } }
+        {
+          "id": "L18",
+          "element": "Entretien daté au calendrier",
+          "parole": "L18 retirer",
+          "date": "2026-11-16",
+          "source": "LIENS-APP",
+          "signature": {
+            "regex": "entretien",
+            "flags": "iu"
+          }
+        },
+        {
+          "id": "L1-i",
+          "element": "Rangées ou cases de pose dédiées (L1 intrusif)",
+          "parole": "2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif",
+          "date": "2026-11-16",
+          "source": "LIENS-APP",
+          "signature": {
+            "un": [
+              {
+                "texte": "touche pour poser"
+              },
+              {
+                "selecteur": "[aria-label=\"Toucher pour poser\"]",
+                "min": 3
+              }
+            ]
+          }
+        }
       ],
       "a_preciser": [
-        { "element": "L14 commande en double", "parole": "(sans réponse)", "date": "2026-11-16" }
+        {
+          "element": "L14 commande en double",
+          "parole": "(sans réponse)",
+          "date": "2026-11-16"
+        }
       ]
     },
     "choix-ouverts": {
@@ -139,14 +688,75 @@
         }
       },
       "gardes": [
-        { "id": "O1", "portee": "onglet", "element": "6e onglet Calendrier entre Finances et Brassins ; Bord ne bouge pas", "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???", "date": "2026-11-16", "source": "onglet/v1", "signature": { "regex": "Bord\\s+Finances\\s+Calendrier\\s+Brassins" } },
-        { "id": "O2", "portee": "fournisseur", "element": "Les prix d'abord, puis le délai, et les noms à réunir avec leur preuve", "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???", "date": "2026-11-16", "source": "fournisseur/v1", "signature": { "tous": [{ "texte": "Ce que tu paies ici" }, { "texte": "Voir et réunir" }, { "regex": "souvent \\d+ j" }] } },
-        { "id": "O3", "portee": "suppression", "element": "« n liens le retiennent » ; à 0, Supprimer s'allume", "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???", "date": "2026-11-16", "source": "suppression/v2 (état ouvert)", "signature": { "source": "liens? le retien" } },
-        { "id": "O4", "portee": "lot", "element": "Le lot se ramifie vers chaque client", "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???", "date": "2026-11-16", "source": "lot/v1", "signature": { "tous": [{ "texte": "Qui a reçu ce lot" }, { "texte": "chez le client" }] } }
+        {
+          "id": "O1",
+          "portee": "onglet",
+          "element": "6e onglet Calendrier entre Finances et Brassins ; Bord ne bouge pas",
+          "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???",
+          "date": "2026-11-16",
+          "source": "onglet/v1",
+          "signature": {
+            "regex": "Bord\\s+Finances\\s+Calendrier\\s+Brassins"
+          }
+        },
+        {
+          "id": "O2",
+          "portee": "fournisseur",
+          "element": "Les prix d'abord, puis le délai, et les noms à réunir avec leur preuve",
+          "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???",
+          "date": "2026-11-16",
+          "source": "fournisseur/v1",
+          "signature": {
+            "tous": [
+              {
+                "texte": "Ce que tu paies ici"
+              },
+              {
+                "texte": "Voir et réunir"
+              },
+              {
+                "regex": "souvent \\d+ j"
+              }
+            ]
+          }
+        },
+        {
+          "id": "O3",
+          "portee": "suppression",
+          "element": "« n liens le retiennent » ; à 0, Supprimer s'allume",
+          "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???",
+          "date": "2026-11-16",
+          "source": "suppression/v2 (état ouvert)",
+          "signature": {
+            "source": "liens? le retien"
+          }
+        },
+        {
+          "id": "O4",
+          "portee": "lot",
+          "element": "Le lot se ramifie vers chaque client",
+          "parole": "Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5???",
+          "date": "2026-11-16",
+          "source": "lot/v1",
+          "signature": {
+            "tous": [
+              {
+                "texte": "Qui a reçu ce lot"
+              },
+              {
+                "texte": "chez le client"
+              }
+            ]
+          }
+        }
       ],
       "refuses": [],
       "a_preciser": [
-        { "element": "Seuil : pastille 24 contre « 5 à commander »", "parole": "5???", "date": "2026-11-16" }
+        {
+          "element": "Seuil : pastille 24 contre « 5 à commander »",
+          "parole": "5???",
+          "date": "2026-11-16"
+        }
       ]
     },
     "simplicite": {
@@ -157,11 +767,35 @@
         "note": "pe1, pe3, pe4 codés avec L9 sur la même branche. Signatures à écrire quand les maquettes reviennent dans cette copie."
       },
       "gardes": [
-        { "id": "P1", "element": "Moins de touches, moins d'info en une fois", "parole": "Moins de touche. Moi d'info en une fois", "date": "2026-11-15", "source": "SPEC 15.11", "signature": null, "raison": "maquettes absentes de cette copie" },
-        { "id": "P2", "element": "pa1 à pl2 retenues", "parole": "pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2", "date": "2026-11-16", "source": "page 82HDNSfh4ADr8aigeigoH1", "signature": null, "raison": "maquettes absentes de cette copie" }
+        {
+          "id": "P1",
+          "element": "Moins de touches, moins d'info en une fois",
+          "parole": "Moins de touche. Moi d'info en une fois",
+          "date": "2026-11-15",
+          "source": "SPEC 15.11",
+          "signature": null,
+          "raison": "maquettes absentes de cette copie"
+        },
+        {
+          "id": "P2",
+          "element": "pa1 à pl2 retenues",
+          "parole": "pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2",
+          "date": "2026-11-16",
+          "source": "page 82HDNSfh4ADr8aigeigoH1",
+          "signature": null,
+          "raison": "maquettes absentes de cette copie"
+        }
       ],
       "refuses": [
-        { "id": "P9", "element": "c1 à c3 et les sept parcours de la passe 1", "parole": "c'est mal target", "date": "2026-11-15", "source": "SPEC 15.11", "signature": null, "raison": "refus de versions entières" }
+        {
+          "id": "P9",
+          "element": "c1 à c3 et les sept parcours de la passe 1",
+          "parole": "c'est mal target",
+          "date": "2026-11-15",
+          "source": "SPEC 15.11",
+          "signature": null,
+          "raison": "refus de versions entières"
+        }
       ]
     }
   }
