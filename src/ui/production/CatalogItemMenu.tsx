@@ -31,6 +31,7 @@ export function CatalogItemMenu({
         onClose={() => setOpen(false)}
         title={`Ranger ${entry.name}`}
         subtitle={entry.recipe ? `Recette V${entry.version}` : entry.id}
+        className="lg:max-w-xl lg:mx-auto"
       >
         <div className="space-y-4">
           <p className="text-base text-cave-200">

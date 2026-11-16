@@ -100,14 +100,23 @@ export function evenements(batches: Batch[]): Evenement[] {
   return sortie;
 }
 
-export interface EtatJour { etat: 'pleine' | 'libre' | 'inconnu'; par: Occupation[] }
+export interface EtatJour {
+  etat: 'pleine' | 'libre' | 'inconnu';
+  par: Occupation[];
+  /** Vrai quand la cuve n'est pleine que parce qu'un brassin n'a aucune fin datée (ni mise en bouteille, ni plan) : la case le dit, elle ne prétend pas savoir quand la cuve se libère. */
+  finNonDatee: boolean;
+}
 
 /** La cuve un jour donné pour un brassin de `volumeL` : pleine si les brassins qui l'occupent et celui-ci ne tiennent pas dans la capacité. */
 export function etatCuve(occ: Occupation[], jour: number, capaciteL: number | undefined, volumeL: number): EtatJour {
   const par = occ.filter(o => o.debut <= jour && (o.fin === undefined || jour <= o.fin));
-  if (capaciteL === undefined || !(capaciteL > 0)) return { etat: 'inconnu', par };
-  const pris = par.reduce((s, o) => s + (o.litres ?? capaciteL), 0);
-  return { etat: pris + volumeL > capaciteL + 1e-9 ? 'pleine' : 'libre', par };
+  if (capaciteL === undefined || !(capaciteL > 0)) return { etat: 'inconnu', par, finNonDatee: false };
+  const prisPar = (liste: Occupation[]) => liste.reduce((s, o) => s + (o.litres ?? capaciteL), 0);
+  const pleinePar = (liste: Occupation[]) => prisPar(liste) + volumeL > capaciteL + 1e-9;
+  const pleine = pleinePar(par);
+  // Sans les brassins à fin inconnue, le jour serait-il libre ? Alors il n'est plein que sur leur parole.
+  const finNonDatee = pleine && !pleinePar(par.filter(o => o.fin !== undefined));
+  return { etat: pleine ? 'pleine' : 'libre', par, finNonDatee };
 }
 
 export interface Contexte {
@@ -136,7 +145,7 @@ const pluriel = (n: number, un: string, pl: string) => (n > 1 ? pl : un);
 
 /** La phrase du jour choisi : sa raison (ou son conflit), dite avec les données ; aucun choix silencieux. */
 export function raisonDe(c: Contexte, jour: number): Raison {
-  const { etat, par } = etatCuve(c.occ, jour, c.capaciteL, c.volumeL);
+  const { etat, par, finNonDatee } = etatCuve(c.occ, jour, c.capaciteL, c.volumeL);
   const houblon = houblonLe(c, jour);
   const ecart = ecartJours(c.aujourdhui, jour);
   const loin = ecart > 7;
@@ -145,11 +154,12 @@ export function raisonDe(c: Contexte, jour: number): Raison {
 
   if (etat === 'pleine') {
     // Le premier à quitter la cuve est celui dont on attend la fin ; sans aucune date, un brassin non daté.
-    const o = [...par].sort((a, b) => (a.fin ?? Infinity) - (b.fin ?? Infinity))[0];
+    // Pleine seulement sur la parole d'un brassin sans fin datée : on le nomme, et on dit que rien ne dit quand la cuve se libère.
+    const o = finNonDatee ? par.find(x => x.fin === undefined) : [...par].sort((a, b) => (a.fin ?? Infinity) - (b.fin ?? Infinity))[0];
     const quand = !o ? '' : o.finSource === 'bouteille' ? `${o.nom} n'est en bouteille que ${jourCourt(o.fin!)}.`
       : o.finSource === 'plan' ? `${o.nom} y reste jusqu'au ${ddmm(o.fin!)}, selon son plan de fermentation.`
-      : `${o.nom} n'a pas de mise en bouteille datée : la cuve se libère à ce moment-là.`;
-    return { gras: 'La cuve est encore pleine', reste: `${quand ? ' : ' + quand : ''}${houblon ? ` Et c'est le dry hop de ${houblon.nom}.` : ''}`, conflit: true, alternative, loin };
+      : `${o.nom} n'a pas de mise en bouteille datée : rien ne dit quand la cuve se libère.`;
+    return { gras: finNonDatee ? 'La cuve est pleine, sa fin n\'est pas datée' : 'La cuve est encore pleine', reste: `${quand ? ' : ' + quand : ''}${houblon ? ` Et c'est le dry hop de ${houblon.nom}.` : ''}`, conflit: true, alternative, loin };
   }
   if (houblon) {
     return { gras: `C'est le dry hop de ${houblon.nom}`, reste: ' : la cuve est libre, mais tu seras à la cave ce jour-là.', conflit: true, alternative, loin };

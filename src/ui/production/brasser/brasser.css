@@ -33,6 +33,7 @@
 .d1b-j svg { width: 14px; height: 14px; color: rgb(var(--cave-texte-200)); }
 .d1b-j::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; }
 .d1b-j[data-cuve='pleine']::before { background: repeating-linear-gradient(135deg, rgb(var(--attention)) 0 3px, rgb(var(--attention) / 0.25) 3px 6px); }
+.d1b-j[data-cuve='pleine'][data-fin='non-datee']::before { background: repeating-linear-gradient(90deg, rgb(var(--attention)) 0 3px, transparent 3px 6px); }
 .d1b-j[data-cuve='libre']::before { background: rgb(var(--hop)); }
 .d1b-j[data-cuve='inconnu']::before { display: none; }
 .d1b-j[data-passe] { background: none; }
@@ -51,6 +52,7 @@
 .d1b-cles svg { width: 13px; height: 13px; color: rgb(var(--cave-texte-200)); }
 .d1b-cles i { width: 14px; height: 6px; border-radius: 2px; background: rgb(var(--hop)); }
 .d1b-cles i[data-cuve='pleine'] { background: repeating-linear-gradient(135deg, rgb(var(--attention)) 0 3px, rgb(var(--attention) / 0.25) 3px 6px); }
+.d1b-cles i[data-cuve='pleine'][data-fin='non-datee'] { background: repeating-linear-gradient(90deg, rgb(var(--attention)) 0 3px, transparent 3px 6px); }
 
 .d1b-choix { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(var(--cave-800)); background: rgb(var(--cave-950)); }
 .d1b-choix[data-ton='attention'] { border-color: rgb(var(--attention)); background: rgb(var(--attention) / 0.10); }
