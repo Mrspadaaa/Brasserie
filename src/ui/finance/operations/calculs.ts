@@ -105,6 +105,16 @@ export function etatDeLigne(tx: Transaction, etat: EtatPaiement, entrant: boolea
   return { texte: `✓ ${mot}${date ? ` ${date}` : ''}${mode ? ` · ${mode}` : ''}`, ton: 'ok', regle: true, retard: false };
 }
 
+/**
+ * FN-42 : le nom d'une ligne à l'écran. La créance écrite par une correction se nomme « À récupérer : trop payé sur « <pièce> » » : à 390 le nom de la pièce était coupé.
+ * À l'affichage, le nom de la pièce d'abord (« <pièce> · trop payé ») ; « à récupérer 2,00 » reste l'étiquette de la ligne. La donnée écrite ne change pas.
+ */
+export function nomAffiche(tx: Pick<Transaction, 'description' | 'subcategory'>): string {
+  if (tx.subcategory !== 'À récupérer' && tx.subcategory !== 'À rembourser') return tx.description;
+  const m = /^À (?:récupérer|rembourser) : trop (payé|encaissé) sur « (.+) »$/.exec(tx.description);
+  return m ? `${m[2]} · trop ${m[1]}` : tx.description;
+}
+
 export type Piece = { texte: string; manque: boolean };
 
 /** La pièce de la ligne : type et détail quand ils sont connus ; « sans pièce » seulement s'il n'y en a vraiment aucune (un envoi en cours n'est pas une absence). */
