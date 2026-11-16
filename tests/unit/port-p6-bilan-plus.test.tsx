@@ -57,16 +57,20 @@ describe('e11a · le menu du +', () => {
     return { onRecipe };
   };
 
-  it('Brassins : l’ordre de la maquette (sans « Outils houblons », retiré par d4523967)', () => {
+  /* Fusion avec le tag brassins : le menu du + est celui de b1s-a « Deux étages » (choisi le 15.11, `PlusSheet`), qui remplace les groupes
+     en dur de e11a ; l'action de l'écran reste en tête, « Sur Brassins ». Sans « Outils houblons » (retiré par d4523967). */
+  it('Brassins : l’action de l’écran en tête, puis les gestes de partout (Deux étages)', () => {
     montrer('batches');
     const noms = screen.getAllByRole('menuitem').map((b) => b.textContent);
     expect(noms).toEqual([
       'Nouveau brassinSur Brassins',
-      'Créer une recette',
-      'Entrer une facture',
-      'Vendre',
-      expect.stringContaining('Compagnon brasseur')
+      'Écriture',
+      'Facture',
+      'Vente',
+      'Recette',
+      'Compagnon'
     ]);
+    expect(noms).not.toContain('Outils houblons');
   });
 
   it('Recettes : l’action de l’écran en tête, sans doublon « Créer une recette »', () => {
