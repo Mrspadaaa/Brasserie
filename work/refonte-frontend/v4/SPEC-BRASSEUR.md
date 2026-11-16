@@ -1849,3 +1849,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : le besoin central n'est pas tenu. Les prototypes montraient un embouteillage déjà rempli par la fixture, au lieu de lui laisser faire sa recherche. Les façons et le critère ne se créent pas, Comparer est inutilisable au téléphone, et le cas générique (évier, carnet neuf) est vide. Le critère d'acceptation devient son scénario joué de zéro, puis le même scénario sur un autre objet partant de zéro.)
 - **16.11**, mot pour mot : « Okay adapté p5 fini alors »
   (lu : p5f n'est pas abandonné. Il passe le même traitement que ra, en parallèle : son scénario joué de zéro, Comparer à 390 corrigé avec les 4 écrans de l'audit, l'audit écran par écran, puis sa page. Il choisira entre ra et p5f, tous deux finis.)
+- **16.11**, mot pour mot : « déployer les fonctions serveur (compagnon et Finances) : oui ou non ?oui pousser le tag de la recette du matin : oui ou non ?oui que faire de la vente réelle de 5 695,00 de l'Atelier (constat 12) ? Supprime c'était un test »
+  (lu : trois accords.
+  1. Déployer les fonctions changées du compagnon et de Finances, et seulement elles ; jamais dispatchBrewerHopAdviceV1 ni notifyBrewerHopAdviceAnswerV1.
+  2. Pousser le tag en-ligne/2026-11-16-recette-matin.
+  3. Supprimer la vente de 5 695,00 du constat 12 : c'était un test. Par le bouton de suppression de l'app, sur ce seul enregistrement.)
+- **16.11**, mot pour mot, sur « À tester dans l'app en ligne, au doigt sur ton téléphone » : « Non ça c'est les sessions ou toi... »
+  (lu : tester au toucher réel, c'est notre travail, jamais le sien. Moyens : l'émulation tactile de Chrome (CDP) à 390 sur la version exacte du tag en ligne, jouée en local ; ou le panneau intégré en mode mobile, qui émule le toucher.)
