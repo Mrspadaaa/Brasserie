@@ -37,6 +37,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Calendrier par section, vues | exploration · 16.11 | https://claude.ai/artifact/TUrDFEM6Z5jywbS8yJsr3f | `work/missions/2026-11-16-vues-calendrier/page/index.html` |
 | Carnet de décision | fusion p5 · 16.11 | https://claude.ai/artifact/L8kQ1LbsTefsYgbM3RJCzh | `work/missions/2026-11-16-carnet-decision/page2/index.html` |
 | Calendrier compact | 16 fils statiques · 16.11 | https://claude.ai/artifact/A5b5ZPhA4ByQ3HRcFZqHem | `work/missions/2026-11-16-calendrier/page5/index.html` |
+| Choix ouverts (onglet, fournisseur, suppression, lot, seuil) | 3 variantes chacun · 16.11 | https://claude.ai/artifact/MuxnsQKBdfJLoxSjB6iVYK | `work/missions/2026-11-16-choix-ouverts/page/index.html` |
 
 ## REPRISE pilote — 16.11, ~10 h
 - **Workflows en cours** (pilote) :
