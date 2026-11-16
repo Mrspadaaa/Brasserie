@@ -146,7 +146,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
 - Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ».
 - Cause : pièces fictives ou réduites, écran jamais jugé contre la pièce ; réponse IA rejouée inventée.
-- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie, anonymisée avant Git. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels). Défaut en ligne : rejouer le banc serveur puis écran, noter le geste du testeur (LO-3).
+- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie, anonymisée avant Git. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels). Défaut en ligne : rejouer le banc serveur puis écran, noter le geste du testeur (LO-3). « Claude in Chrome non connecté » est souvent passager : réessayer (list_connected_browsers) dans l'heure, ne pas reporter (16.11 : « il a toujours été possible de tester »).
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 
