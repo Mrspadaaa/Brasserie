@@ -93,3 +93,9 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 - À grouper pour lui : la vente réelle de 5 695,00 de l'Atelier (constat 12).
 - vues-calendrier a repris (task w67d2yjw3) avec la lecture corrigée : un calendrier général et un calendrier par section.
 - themes-calendrier est arrêté, sa lecture était fausse.
+
+## Ordre (16.11, « attendre que le 9.5/10 soit terminé »)
+1. fb9 atteint 9.
+2. Une boucle à 9,5 avec CRITERES-10.md.
+3. Ensuite seulement, les calendriers de section (Finances d'abord) sur cette base, en reprenant PLAN.md de vues-calendrier.
+- Les maquettes finance m1 à m3 du 16.11 ne servent que d'exploration du contenu : ne pas les publier comme choix final.
