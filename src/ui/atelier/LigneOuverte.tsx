@@ -8,7 +8,7 @@ import {
   archiverIdee, avecChamp, COULEURS, MOMENTS, nouvelleIdee, recetteDeLIdee, repartir, restaurerIdee, SAISONS, STYLES_RAPIDES, teinteDe,
   type CouleurId, type FiltreIdee, type IdeeBiere, type MomentId, type SaisonId
 } from '../../domain/atelier/ideesBieres';
-import { archiverPrix, auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, restaurerPrix, titreIdee, type FormatPrixId, type IdeePrix } from '../../domain/atelier/ideesPrix';
+import { archiverPrix, auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, prixDeReference, restaurerPrix, titreIdee, type FormatPrixId, type IdeePrix } from '../../domain/atelier/ideesPrix';
 import './atelier.css';
 
 /**
@@ -66,14 +66,22 @@ function Toast({ message, onFermer }: { message: MessageLO; onFermer: () => void
     {message.action && <button type="button" onClick={() => { message.action?.run(); onFermer(); }}>{message.action.nom}</button>}</div>;
 }
 
-/** « Supprimer » d'une idée rangée : un second toucher, nommé, confirme ; jamais d'un seul geste. */
-function Supprimer({ titre, onSupprimer }: { titre: string; onSupprimer: () => void }) {
+/**
+ * La rangée d'actions d'une idée archivée : « Supprimer » (corbeille) et « Remettre dans mes idées ». Le toucher sur la corbeille REMPLACE la rangée
+ * par la question nommée, « Supprimer » (rouge) et « Garder » côte à côte en pleine largeur : jamais un autre bouton plus gros à côté (critique, passe 3).
+ */
+function ActionsRangees({ titre, onSupprimer, onRemettre }: { titre: string; onSupprimer: () => void; onRemettre: () => void }) {
   const [sur, setSur] = useState(false);
-  if (!sur) return <button type="button" className="lo-sec lo-danger" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" /></button>;
-  return <div className="lo-conf" role="alertdialog" aria-label="Confirmer la suppression">
-    <span>Supprimer « {titre} » pour de bon ?</span>
-    <button type="button" className="lo-yes" onClick={onSupprimer}>Supprimer</button>
-    <button type="button" className="lo-no" onClick={() => setSur(false)}>Garder</button>
+  if (sur) return <div className="lo-act lo-conf" role="alertdialog" aria-label="Confirmer la suppression">
+    <p>Supprimer « {titre} » pour de bon ?</p>
+    <div className="lo-conf-b">
+      <button type="button" className="lo-yes" onClick={onSupprimer}><Trash2 size={18} aria-hidden="true" />Supprimer</button>
+      <button type="button" className="lo-no" onClick={() => setSur(false)}>Garder</button>
+    </div>
+  </div>;
+  return <div className="lo-act">
+    <button type="button" className="lo-sec lo-danger" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" /></button>
+    <button type="button" className="lo-cta" onClick={onRemettre}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button>
   </div>;
 }
 
@@ -106,12 +114,15 @@ export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, o
   const vide = idees.length === 0;
   const maj = (i: CreativeItem) => onMaj(i);
   const fermerMessage = React.useCallback(() => setMessage(null), []);
+  /** Le toast vit 7 s : son action doit lire la fonction COURANTE. Celle d'avant la création ne trouve pas encore la recette dans la liste de l'app (passe 3, « Ouvrir » sans effet). */
+  const ouvrirRef = useRef(onOuvrirRecette);
+  ouvrirRef.current = onOuvrirRecette;
   const passer = (i: CreativeItem) => {
     const id = onPasser(i);
     if (!id) return;
     setFiltre('recette');
     setOuvert(i.id);
-    setMessage({ texte: 'Brouillon créé dans Recettes', action: onOuvrirRecette ? { nom: 'Ouvrir', run: () => onOuvrirRecette(id) } : undefined });
+    setMessage({ texte: 'Brouillon créé dans Recettes', action: onOuvrirRecette ? { nom: 'Ouvrir', run: () => ouvrirRef.current?.(id) } : undefined });
   };
   const archiver = (i: CreativeItem) => {
     maj(archiverIdee(i, new Date().toISOString()));
@@ -126,7 +137,7 @@ export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, o
       {!vide && <button type="button" className="lo-new" onClick={() => { onAjout(true); setOuvert(null); setFiltre('essayer'); }}><Plus size={18} aria-hidden="true" />Noter</button>}
     </div>
     {vide && <p className="lo-first">Aucune idée de bière encore. Écris la première ici :</p>}
-    {(ajout || vide) && <NouvelleBiere refermable={!vide} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setFiltre('essayer'); setOuvert(i.id); }} />}
+    {(ajout || vide) && <NouvelleBiere refermable={!vide} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setFiltre(recetteDeLIdee(i as IdeeBiere, recettes) ? 'recette' : 'essayer'); setOuvert(i.id); }} />}
     {!vide && liste.length === 0 && <p className="lo-first">{filtreAffiche === 'essayer' ? 'Rien à essayer : toutes tes idées sont en recette ou archivées.' : 'Aucune idée n’est encore passée en recette.'}</p>}
     <div className="lo-list">
       {liste.map((i) => {
@@ -151,10 +162,7 @@ export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, o
               <span className="lo-k">Notes</span><ChampTexte valeur={i.notes ?? ''} etiquette="Notes" placeholder="à noter" onValider={(v) => maj({ ...i, notes: v || undefined })} />
             </div>
             {rangee
-              ? <div className="lo-act">
-                  <Supprimer titre={i.title} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} />
-                  <button type="button" className="lo-cta" onClick={() => { maj(restaurerIdee(i)); setFiltre('essayer'); }}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button>
-                </div>
+              ? <ActionsRangees titre={i.title} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} onRemettre={() => { maj(restaurerIdee(i)); setFiltre('essayer'); }} />
               : recette
                 ? <div className="lo-linked" role="status"><Check size={18} aria-hidden="true" />En recette{onOuvrirRecette && <button type="button" onClick={() => onOuvrirRecette(recette.id)}><BookOpen size={16} aria-hidden="true" />Ouvrir la recette</button>}</div>
                 : <div className="lo-act">
@@ -244,7 +252,13 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
   const voirRangees = rangees && archivees.length > 0;
   const liste = voirRangees ? archivees : actives;
   const vide = idees.length === 0;
-  useEffect(() => { if (ajout) setOuvert(null); }, [ajout]);
+  useEffect(() => { if (ajout) { setOuvert(null); setRangees(false); } }, [ajout]);
+  /** « + » / « − » : part du prix déjà noté pour ce format (prixDeReference). Sans prix noté nulle part, rien n'est écrit : le pouce va dans le champ. */
+  const pas = (i: CreativeItem, f: ReturnType<typeof formatDe>, prix: number | undefined, sens: 1 | -1, bouton: HTMLElement) => {
+    const v = pousser(prix, f, sens, prixDeReference(idees, i, f));
+    if (v === undefined) { bouton.closest('.lo-bigp')?.querySelector<HTMLElement>('input, textarea')?.focus(); return; }
+    onMaj(avecPrix(i, { targetPrice: v }));
+  };
   const archiver = (i: CreativeItem) => {
     onMaj(archiverPrix(i, new Date().toISOString()));
     setOuvert(null);
@@ -252,8 +266,7 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
   };
   return <div className="lo lo-prix">
     {vide && <p className="lo-first">Aucune idée de prix encore. Note la première ici :</p>}
-    {!vide && <div className="lo-bar lo-bar-t"><h3 className="lo-ht">Mes idées de tarif <span>· CHF HT</span></h3>
-      {!ajout && <button type="button" className="lo-new" onClick={() => { onAjout(true); setOuvert(null); setRangees(false); }}><Plus size={18} aria-hidden="true" />Noter</button>}</div>}
+    {!vide && <div className="lo-bar lo-bar-t"><h3 className="lo-ht">Mes idées de tarif <span>· CHF HT</span></h3></div>}
     {(ajout || vide) && <NouveauPrix refermable={!vide} signal={signal} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setRangees(false); setOuvert(i.id); }} />}
     {!vide && <div className="lo-list" aria-label={voirRangees ? 'Mes idées de prix archivées' : 'Mes idées de prix'}>
       {liste.map((i) => {
@@ -266,9 +279,9 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
             droite={!ouv && (prix !== undefined ? <span className="lo-pr lo-num">{fr2(prix)}</span> : <span className="lo-est">à estimer</span>)} />
           {ouv && <>
             <div className="lo-bigp">
-              <button type="button" className="lo-stp" aria-label={`Moins ${f ? fr2(f.pas) : '1'}`} onClick={() => onMaj(avecPrix(i, { targetPrice: pousser(prix, f, -1) }))}>−</button>
+              <button type="button" className="lo-stp" aria-label={`Moins ${f ? fr2(f.pas) : '1'}`} onClick={(e) => pas(i, f, prix, -1, e.currentTarget)}>−</button>
               <div className="lo-val lo-bigv"><NumberInput value={prix} onValue={(v) => onMaj(avecPrix(i, { targetPrice: v }))} emptyValue={undefined} fractionDigits={2} className="lo-pin lo-num lo-fit" aria-label="Prix visé en CHF HT" placeholder="CHF HT" />{f && <small>{f.unite}</small>}</div>
-              <button type="button" className="lo-stp" aria-label={`Plus ${f ? fr2(f.pas) : '1'}`} onClick={() => onMaj(avecPrix(i, { targetPrice: pousser(prix, f, 1) }))}>+</button>
+              <button type="button" className="lo-stp" aria-label={`Plus ${f ? fr2(f.pas) : '1'}`} onClick={(e) => pas(i, f, prix, 1, e.currentTarget)}>+</button>
             </div>
             <p className="lo-hint lo-num" role="status">{litre !== null && f
               ? <>soit <b>{fr2(litre)}</b> le litre · pas de {fr2(f.pas).replace(/,00$/, '')}</>
@@ -281,13 +294,10 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, 
               <div className="lo-val lo-cout"><NumberInput value={i.estimatedCost} onValue={(v) => onMaj(avecPrix(i, { estimatedCost: v }))} emptyValue={undefined} fractionDigits={2} className={`lo-pin lo-num lo-fit${i.estimatedCost === undefined ? ' lo-pose' : ''}`} aria-label="Coût en CHF" placeholder="à poser" />
                 <small>{i.estimatedCost === undefined ? '· marge sans chiffre' : 'CHF'}</small></div>
             </div>
-            <div className="lo-act">
-              {voirRangees
-                ? <><Supprimer titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} />
-                    <button type="button" className="lo-cta" onClick={() => { onMaj(restaurerPrix(i)); setRangees(false); }}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button></>
-                : <><button type="button" className="lo-sec" aria-label={`Archiver « ${titreIdee(i)} »`} onClick={() => archiver(i)}><Archive size={18} aria-hidden="true" /></button>
-                    <button type="button" className="lo-fix" onClick={versPrix}><Tag size={18} aria-hidden="true" /><b>Fixer dans Clients › Prix</b><ChevronRight size={18} aria-hidden="true" /></button></>}
-            </div>
+            {voirRangees
+                ? <ActionsRangees titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} onRemettre={() => { onMaj(restaurerPrix(i)); setRangees(false); }} />
+                : <div className="lo-act"><button type="button" className="lo-sec" aria-label={`Archiver « ${titreIdee(i)} »`} onClick={() => archiver(i)}><Archive size={18} aria-hidden="true" /></button>
+                    <button type="button" className="lo-fix" onClick={versPrix}><Tag size={18} aria-hidden="true" /><b>Fixer dans Clients › Prix</b><ChevronRight size={18} aria-hidden="true" /></button></div>}
           </>}
         </div>;
       })}

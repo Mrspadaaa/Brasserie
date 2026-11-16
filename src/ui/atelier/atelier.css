@@ -285,6 +285,7 @@ p.nc-msg { margin: 0 0 2px 4px; }
   --a-prod: rgb(var(--area-production-texte)); --a-fin: rgb(var(--area-finances-texte));
   --a-hop: rgb(var(--hop-texte)); --a-hopbg: rgb(var(--hop) / .16); --a-att: rgb(var(--attention-texte)); --a-attbg: rgb(var(--attention) / .16);
   --a-finbg: rgb(var(--water) / .16);
+  --a-late: rgb(var(--alert-texte)); /* manquait dans .lo : « Supprimer » (fond --a-late) était invisible (passe 3, neuf n° 2) */
   color: var(--a-ink); font-size: 14px; line-height: 1.25;
 }
 :where(.lo) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
@@ -354,7 +355,8 @@ p.nc-msg { margin: 0 0 2px 4px; }
 .lo-prix .finance-assistant { margin-top: 12px; }
 .lo button:focus-visible, .lo input:focus-visible { outline: 2px solid var(--a-ink); outline-offset: 2px; }
 /* Passe 3 (critique de kb3) : champs de 44 px, unité collée au nombre, liseré des pastilles (cave), entête des idées de tarif, toast, suppression confirmée. */
-.lo-pin { min-height: 44px; }
+/* Un champ nombre est un textarea (NumberInput) : le texte colle en haut de ses 44 px. Hauteur de ligne = hauteur du champ, pour que le nombre et son unité (« 7,2 % vol ») partagent la même ligne. */
+.lo-pin { min-height: 44px; height: 44px; line-height: 44px; resize: none; overflow: hidden; }
 .lo-pin.lo-fit { flex: 0 1 auto; width: auto; min-width: 5ch; max-width: 100%; field-sizing: content; }
 .lo-val > .lo-pin.lo-fit + small { flex: 1; }
 .lo-dot, .lo-sw i { box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1.5px color-mix(in srgb, var(--a-ink) 38%, transparent); }
@@ -365,9 +367,11 @@ p.nc-msg { margin: 0 0 2px 4px; }
 .lo-ht span { font-weight: 400; }
 .lo-arch { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--a-mut) !important; font-size: 14px; }
 .lo-sec.lo-danger { color: var(--a-late) !important; border-color: var(--a-late) !important; }
-.lo-conf { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 14px; }
-.lo-conf span { flex: 1 1 100%; }
-.lo-conf button { min-height: 44px; padding: 0 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--a-line2) !important; }
+/* La confirmation de suppression remplace la rangée d'actions : la question, puis « Supprimer » (rouge) et « Garder » côte à côte, pleine largeur, 48 px. */
+.lo-act.lo-conf { flex-direction: column; align-items: stretch; gap: 8px; font-size: 14px; }
+.lo-conf p { margin: 0; font-weight: 600; }
+.lo-conf-b { display: flex; gap: 8px; }
+.lo-conf-b button { flex: 1; min-height: 48px; padding: 0 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--a-line2) !important; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
 .lo-conf .lo-yes { background: var(--a-late) !important; color: var(--a-bg) !important; border-color: var(--a-late) !important; }
 .lo-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgb(0 0 0 / .2); max-width: 520px; margin: 0 auto; }
 .lo-toast span { flex: 1; }

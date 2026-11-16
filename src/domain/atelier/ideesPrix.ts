@@ -40,12 +40,30 @@ export function auLitre(prix: number | undefined, f: FormatPrix | undefined): nu
   return prix !== undefined && Number.isFinite(prix) && prix > 0 && f ? r2(prix / f.litres) : null;
 }
 
-/** Le − et le + : un pas du format ; le prix ne descend jamais sous le pas, et un prix absent part de zéro (le premier « + » pose un pas). */
-export function pousser(prix: number | undefined, f: FormatPrix | undefined, sens: 1 | -1): number | undefined {
+/**
+ * Le prix de référence d'un format : celui déjà noté pour ce format dans l'idée (`prixParFormat`), sinon celui de l'idée la plus récente du
+ * même format qui en a un. `undefined` : rien de noté, et rien n'est inventé.
+ */
+export function prixDeReference(idees: readonly CreativeItem[], courante: CreativeItem, f: FormatPrix | undefined): number | undefined {
+  if (!f) return undefined;
+  const propre = (courante as IdeePrix).prixParFormat?.[f.id];
+  if (propre !== undefined && propre > 0) return propre;
+  const num = (i: CreativeItem) => Number(/^CR-(\d+)/.exec(i.id)?.[1] ?? 0);
+  const voisines = idees.filter((i) => i.id !== courante.id && !(i as IdeePrix).archivedAt && (i as IdeePrix).format === f.id && i.targetPrice !== undefined && i.targetPrice > 0);
+  return voisines.sort((a, b) => num(b) - num(a))[0]?.targetPrice;
+}
+
+/**
+ * Le − et le + : un pas du format ; le prix ne descend jamais sous le pas.
+ * Un prix absent part du prix de référence du format (voir `prixDeReference`) ; sans référence, rien n'est écrit (`undefined`) : un premier
+ * « + » ne fabrique pas 1,00 ou 5,00, le brasseur tape son prix.
+ */
+export function pousser(prix: number | undefined, f: FormatPrix | undefined, sens: 1 | -1, reference?: number): number | undefined {
   const pas = f?.pas ?? 1;
-  const base = prix ?? 0;
+  const base = prix ?? reference;
+  if (base === undefined) return undefined;
   const suite = r2(sens === 1 ? arrondiPas(base, pas) + pas : arrondiPas(base, pas) - pas);
-  return suite < pas ? (prix === undefined ? undefined : r2(pas)) : suite;
+  return suite < pas ? r2(pas) : suite;
 }
 
 /** Le titre de la ligne : le format et, s'il est connu, pour qui. Une ancienne idée sans format garde son titre tel quel. */

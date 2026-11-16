@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CreativeItem } from '../../src/types';
 import { archiverIdee, avecChamp, brouillonDeLIdee, nouvelleIdee, recetteDeLIdee, repartir, type IdeeBiere } from '../../src/domain/atelier/ideesBieres';
-import { auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, titreIdee } from '../../src/domain/atelier/ideesPrix';
+import { auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, prixDeReference, titreIdee } from '../../src/domain/atelier/ideesPrix';
 
 const idee = (id: string, title: string): CreativeItem => ({ id, type: 'recipe-idea', title, status: 'idea' });
 const fut = FORMATS_PRIX.find((f) => f.id === 'fut')!;
@@ -41,7 +41,12 @@ describe('idées de prix (kb3)', () => {
     expect(pousser(140, fut, -1)).toBe(135);
     expect(pousser(3, fut, -1)).toBe(5);
     expect(pousser(undefined, fut, -1)).toBeUndefined();
-    expect(pousser(undefined, fut, 1)).toBe(5);
+    // Sans prix noté nulle part, rien n'est écrit : ni 1,00 pour un carton, ni 5,00 pour un fût.
+    expect(pousser(undefined, fut, 1)).toBeUndefined();
+    expect(pousser(undefined, FORMATS_PRIX.find((f) => f.id === 'carton'), 1)).toBeUndefined();
+    // Avec un prix de référence (déjà noté pour ce format), le premier « + » part de lui.
+    expect(pousser(undefined, fut, 1, 140)).toBe(145);
+    expect(pousser(undefined, FORMATS_PRIX.find((f) => f.id === 'carton'), 1, 38)).toBe(39);
     expect(pousser(6, FORMATS_PRIX.find((f) => f.id === 'verre'), 1)).toBe(6.5);
   });
   it('une idée neuve : le format suffit ; le titre suit le format et le client tant qu’il en vient', () => {
@@ -81,5 +86,16 @@ describe('passe 3 : critique de kb3', () => {
     expect(recetteDeLIdee(i as IdeeBiere, [{ id: 'REC-1', name: 'Autre nom' }])?.id).toBe('REC-1');
     const r = repartir([archiverIdee(idee('j', 'X'), '2026-11-16')], []);
     expect([r.essayer.length, r.recette.length, r.archivees.length]).toEqual([0, 0, 1]);
+  });
+
+  it('prix de référence : celui déjà noté pour ce format (autre idée la plus récente, ou prixParFormat), jamais inventé', () => {
+    const carton = FORMATS_PRIX.find((f) => f.id === 'carton');
+    const mk = (id: string, extra: object) => ({ id, type: 'pricing-test', title: id, status: 'idea', ...extra }) as never;
+    const courante = mk('CR-3', { format: 'carton' });
+    expect(prixDeReference([courante], courante, carton)).toBeUndefined();
+    const idees = [mk('CR-1', { format: 'carton', targetPrice: 30 }), mk('CR-2', { format: 'carton', targetPrice: 36 }), mk('CR-4', { format: 'fut', targetPrice: 140 }), courante];
+    expect(prixDeReference(idees, courante, carton)).toBe(36);
+    expect(prixDeReference(idees, mk('CR-3', { format: 'carton', prixParFormat: { carton: 33 } }), carton)).toBe(33);
+    expect(prixDeReference(idees, courante, undefined)).toBeUndefined();
   });
 });

@@ -116,3 +116,12 @@ describe('teintes des pastilles de bière', () => {
     expect(bandForEbc(25).band).toBe('amber');
   });
 });
+
+describe('Tarifs · débord à 390 (kb3, passe 4)', () => {
+  it('la grille de la frise est une colonne minmax(0, 1fr) et ses enfants ont min-width: 0 (le texte long d’une idée ne la pousse pas)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const css = readFileSync(new URL('../../src/ui/atelier/tarifs-frise.css', import.meta.url), 'utf8');
+    expect(css).toMatch(/\.tf-cols \{[^}]*grid-template-columns: minmax\(0, 1fr\)/);
+    expect(css).toMatch(/\.tf-cols > \* \{ min-width: 0; \}/);
+  });
+});
