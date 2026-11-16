@@ -144,3 +144,6 @@ Transversaux : L29 « lié à », L30 recherche, L31 À venir, L32 partage entra
 - L14 : gardé, compris dans « Tous » (seul L18 est retiré). Plus une question ouverte (16.11 soir : « tout les choix que tu m'a présenté je le ai fait ou refusé »).
 - **L1, à reprendre sans intrusion (LIENS-PLACE)** : pas de rangée « Idées » ni de case dédiée. L'idée datée se crée par le + volant (« Idée » dans le menu de la frise) ou par un appui long sur une semaine. Elle apparaît ensuite en point discret sur la frise.
 - **L9, prioritaire, à généraliser partout** : chaque geste qui consomme décompte ses consommables (laver un fût, brasser, embouteiller, nettoyer une cuve, conditionner…). Le décompte suit une table réglée une fois par geste, avec un bandeau d'effet et Annuler. C'est une règle de l'app, pas un écran.
+
+## Gestes choisis (16.11 nuit)
+- « Liens interactions · L9 b+c · L1 a+b · L4 a+b · L29 b · L14 a+b » (page https://claude.ai/artifact/GWus9iVdYSBKtM2mBt1kb6, maquettes inter/). Restes du critique à corriger avant le port : Porter unique d'un écran à l'autre, pastille cohérente, « Lié à » à une seule place, liens de L29 b visibles comme touchables.
