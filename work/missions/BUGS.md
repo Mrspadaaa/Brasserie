@@ -993,3 +993,42 @@ Couverture : viewport réel 2174 × 1297 (desktop), clair puis cave (page de la 
 3. Eau : KO / non reproduit. Cas posé : eau/grain 5,7 L/kg, acide lactique 1,1 mL, alcalinité après acide −27 dans le repère (−37 à 0), pH 5,68 hors cible 5,2-5,5. L'écran Eau montre « — dans le repère des malts » ; la page recette montre « 1,1 mL d'acide lactique 80 % dans l'eau d'empâtage, pour l'alcalinité résiduelle ». La phrase « … acide dosé pour le profil <style> » n'apparaît nulle part. Repère affiché « bière pâle », pas le style Adambier.
 4. Atelier Houblons V5.5 : OK sur Brassins › Atelier R&D, Stocks et page de la recette (aucune occurrence). Jour de brassage non vérifié (pas de brassin lancé).
 - Suppression : ZZ TEST — recette2 supprimée (feuille intégrée, Recettes 25 → 24, plus de « recette2 »). « ZZ TEST — Recette » (autre, préexistante) intacte.
+
+### Déploiement transversaux (16.11) : TransactionJournal.tsx, `/^d{4}$/` jamais vrai
+Ligne `const jours = … scope === 'archives' && /^d{4}$/.test(String(selectedYear)) …` (tag `en-ligne/2026-11-16-finances`) : le `\d` a perdu sa barre inverse, la regex cherche quatre « d ». L'année d'archive consultée (t3, problème 5) ne remplit donc jamais les champs « du … au … ». Non corrigé (consigne du pilote) ; correction : `/^\d{4}$/`.
+
+### Jeu en ligne nuit 16.11
+Joué en ligne (brasserie-l-affinee.web.app, desktop 1538x784), données « ZZ TEST » seulement. Constats 1 à 18 repris de `work/missions/jeu-en-ligne-nuit-16.11-REPRISE.md`.
+
+1. grave | Brassins › feuille Conduite (d1b) | « Prévu le 30.11.2020 » alors que le brassin est prévu le 30.11.2026 | Brasser une recette ZZ, Planifier, Ouvrir LOT-020, Commencer le brassage
+2. moyen | Brassins › fiche | Après « Commencer le brassage », la fiche reste ouverte devant l'écran Conduite (fond flou) ; fermer par × | Commencer le brassage
+3. mineur | Brassins › fiche | La feuille saute en hauteur à chaque changement d'onglet Préparer/Carnet/Dossier, le clic suivant rate sa cible | Onglets de la fiche
+4. mineur | Brassins › Ranger | La feuille « Ranger » s'étale sur toute la largeur écran (1538 px), pas en colonne centrée | « … » sur la carte
+5. mineur | Brassins › calendrier c2a | Tous les jours (16.11 au 6.12) en « cuve pleine » ; à confirmer si voulu (Milk Stout sans date de mise en bouteille) | Brasser une recette
+6. mineur | Brassins › filtres | « Tout effacer » ne retire pas la puce « À brasser » restée active | Filtres › style › Voir › Tout effacer
+7. mineur | Atelier › Matériel | Pas de « prochain achat » mis en avant ; ligne sans prix (ZZ) sans crayon ni « + mois » : la modifier oblige à ouvrir la feuille | À venir
+8. moyen | Atelier › Matériel | Aucune suppression d'un projet, seulement Archiver, sans confirmation ; « ZZ TEST — Matériel » reste dans Archives | Ouvrir ligne › Archiver
+9. mineur | Atelier › Archives | Ouvrir un projet archivé gèle la page ~30 s | Archives › ligne
+10. moyen | Atelier › Tarifs | « Noter » ouvre « Nouvelle note / piste » (carnet), pas une saisie de tarif | Tarifs › Noter
+11. mineur | Atelier › Tarifs | Notes de type Tarif mêlées aux tarifs, absentes du Carnet « Tout » ; la note créée par « Noter » est toujours de type Tarif | Noter, titre, Enregistrer
+12. moyen | Atelier › Tarifs | Graphe log : 2 points aux extrêmes (5 et 900 CHF/L) ; « Bouteille 75 cl 569,50 » = 759,33 CHF/L (Restaurant du Lac), à vérifier (Vente 10 × bière 75 cl = 5 695) | Toucher le point bouteille
+13. moyen | Atelier › Carnet | Saisie « Noter… » : message « L'IA n'a rien proposé » : un appel IA part-il à l'enregistrement ? à vérifier (coût Gemini) | Carnet › Noter… › Entrée
+14. mineur | Atelier › Tarifs/Carnet | Feuille d'édition de note pleine largeur écran, non centrée | Crayon sur une note
+15. mineur | Atelier › Contacts | « Contacts 1 » affiché avec 2 lignes ; menu contact : feuille tronquée (« Convertir en client » coupé) | Carnet › Contacts › ligne
+16. mineur | Atelier | Le premier clic sur un onglet juste après la fermeture d'une feuille est avalé | Fermer une feuille puis cliquer un onglet
+17. NON REPRODUIT (16.11, zoom) | Finances › Opérations › Modifier une dépense | Le formulaire Modifier affiche bien « 16.11.2026 » (zoomé). Le « 15.11.2025 » du premier passage n'est pas revu : écarté, à rejouer si une dépense d'une autre date le montre | Dépense ZZ › Modifier
+18. mineur | Finances › Nouvelle dépense | Page pleine largeur 1538 px ; libellé « Total TTC » collé sous l'en-tête | + › Nouvelle écriture › Saisir sans justificatif
+
+Constats ajoutés (reprise, Finances) :
+19. grave | Finances › Opérations › Apport ou prélèvement privé | « ZZ TEST — Apport » (+5,00) impossible à retirer : « Annuler cette écriture » demande « d'abord le paiement erroné » mais la ligne Paiements d'un apport n'offre aucun « Corriger ce paiement » (la dépense, elle, l'offre). Apport ZZ resté dans la période (nov. 2026) | Apport › Corriger une erreur de saisie › Annuler cette écriture
+20. moyen | Finances › Opérations › dépense | Retirer une dépense payée exige deux étapes cachées (corriger le paiement, puis annuler l'écriture) ; l'écriture reste visible, rayée, avec contre-écriture : pas de suppression | Dépense › Corriger ce paiement › Annuler cette écriture
+21. moyen | Finances › Prévisions › Modifier la prévision | Aucune suppression d'une prévision, seulement État « Annulée » ; « ZZ TEST — Prévision » (7,00) reste donc en base, état Annulée | Sorties prévues › ligne › Fournisseur, note, état
+22. mineur | Finances › Prévisions | « Rien de prévu » reste affiché alors qu'une prévision ZZ de 7,00 venait d'être enregistrée (les sorties passent de 6 à 7, Prévu ~607) | Prévoir une dépense › Enregistrer
+23. info | Finances › Opérations › Archives (m1ar-c) | État vide « Aucune année archivée » : joué, rien à signaler ; Doublons (m1do-a) bouton grisé (aucun doublon), vue non jouable sur ces données | Opérations › Archives / Doublons
+
+Vues Finances (hub « Sorties et entrées prévues », bouton « N sorties » de Prévisions) :
+- m3pr-c (Prévoir une dépense) : jouée (aperçu du solde en direct OK, enregistrement OK ; ZZ annulée, constats 21 et 22).
+- m3pm-d (Mes projets de matériel) : feuille ouverte (À venir, Réalisés, Archivés ; 3 projets réels), non jouée plus loin.
+- m1ar-c : jouée (vide). m1do-a : bouton grisé.
+- NON JOUÉES (plafond de 70 tours) : m3im-c (Bien amorti), m4bb-a (« Budget d'un brassin », même hub), m4pf-c (« Soldes et paramètres », même hub), m4ia-c (Compagnon : « Prévoir mes prochains paiements », appel IA payant à ne pas lancer).
+- Fûts : refus de remplissage et « Marqué propre » : NON joués.
