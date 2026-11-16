@@ -118,3 +118,25 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
   - **Fournisseurs** : un fournisseur retenu est le même que celui de la compta.
   - **Atelier et matériel** : l'article acheté devient du matériel, avec son entretien.
 - La carte complète des liens sera dans `work/missions/2026-11-16-liens-app/LIENS-APP.md`, dès qu'elle existe ; la lire à chaque passe.
+
+## Critères 9,5-10 (panel 16.11)
+- Détail (mesure exacte, seuil, sources, rejetés) : `work/missions/2026-11-16-criteres-10/CRITERES-10.md`. Aucun n'ajoute de texte au repos ; toucher sa maquette se montre en variantes.
+- Q1 Zéro redite (tous) : clés `data-fait` comptées dans la fenêtre, rappel collé exclu si l'original est hors de vue ; 0 doublon dans chaque état (p1 échoue : 173 ×3).
+- Q3 Zéro troncature (tous) : scrollWidth > clientWidth + 1 ou ellipse sur noms, montants, dates, échéances ; 0 coupé, nom court K5 puis deux lignes, jamais « … ».
+- Q4 Cibles et pouce (tous) : zone touchable sondée par elementFromPoint à 390 × 844 ; 0 cible < 44 px, 0 voisine < 8 px, bord tiré ≥ 24 px, 100 % des actions de fin dans les 45 % du bas.
+- Q5 Contexte et effet visibles (tous) : rect de la cible et de la surface ouverte, MutationObserver des valeurs changées ; cible jamais couverte, surface ≤ 40 % à 390, 100 % des valeurs changées vues ou signalées.
+- Q6 Rien ne saute (tous) : layout-shift et FLIP pendant T1-T16 et K11 ; CLS ≤ 0,01, chose touchée à ±8 px, glissement 120-250 ms, 0 ms en reduced-motion.
+- Q7 Fluidité au doigt (tous) : CPU ×4, fixture ×4, trace des glissers ; ≥ 55 images/s, 0 tâche > 50 ms, INP ≤ 100 ms, barre ≤ 4 px du doigt, caisse dans la même image.
+- Q9 Le geste s'annonce (tous) : poignée si et seulement si déplaçable, `data-ro` sans poignée avec picto d'origine, aucun pointillé de saisie ; 100 % conformes, juge neuf ≥ 95 % et 5 gestes sur 5.
+- Q10 Icônes reconnues seules (tous) : chaque icône à 12 px nommée par un juge neuf ; 8 sur 8, une ratée se montre en variantes.
+- Q11 Grammaire des signes (tous) : signes relevés contre `signes.json` ; ≤ 5 par écran, 0 à double sens, ≥ 90 % nommés à l'aveugle.
+- Q12 Rouge réservé au problème (tous) : tout chaud porte `data-etat` d'alerte et une forme ; 0 chaud hors alerte, ≤ 3 masses rouges, au flou 6 px alerte et grand chiffre en tête.
+- Q13 Palette daltonien (tous) : `validate_palette.js` deux thèmes ; CVD ≥ 6, normal ≥ 15, aucun genre gris, ΔE ≥ 15 avec `--bad` ; correction en variantes.
+- Q15 Base honnête (tous) : ligne zéro, ≤ 2 graduations, avant/après pendant le geste seulement, barres de Comparer depuis un zéro commun ; erreur ≤ 2 %.
+- Q17 Test des 5 secondes (tous) : 3 juges Haiku neufs, capture 50 % floutée 2 px, 3 questions par écran ; 3 sur 3 chez chacun, deux thèmes.
+- Q18 Zéro confirmation (tous) : boutons OK, Poser, Valider, Confirmer comptés hors toast, Annuler rejoué en égalité profonde ; 0 confirmation, Annuler ≥ 5 s, état identique hors ligne compris.
+- Q19 Provenance visible (tous) : `data-origine` sur chaque valeur ; 0 valeur étrangère sans picto ≥ 14 px, 0 raison écrite sans sa validation, 0 inconnu à zéro.
+- Q20 Aller-retour sans perte (liens) : 12 genres et carnet ↔ calendrier, aller-retour et sens inverse ; 1 geste, scroll ±8 px, filtres, tri, période identiques, 0 écart de valeur.
+- Q21 Même signe partout (liens) : jetons picto, teinte, nom court par genre dans tous les modules ; 0 écart.
+- Q22 Propositions justes (tous) : leave-one-out, réglé 2021-2023, jugé 2024-2025 ; 1re puce ≥ 60 %, 3 premières ≥ 90 %, semaine ±1 ≥ 80 %, montant ±10 % ≥ 70 %, carnet ≥ 80 % gardées.
+- Q23 Son essai réel (tous) : page L7 chronométrée, journal des touchers ; médiane ≤ 6 s, 0 clavier, ≤ 1 hésitation, sa phrase classée « aime ». Juge final, non bloquant.
