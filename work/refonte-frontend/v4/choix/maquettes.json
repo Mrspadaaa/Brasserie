@@ -22,6 +22,25 @@
      "parole": "En gros Calendrier en-tête · portrait q5 · paysage l5",
      "date": "2026-11-16",
      "note": "En-tête choisi sur la page10. Posé sur « tout » (g-d1 + i1 i4 i7 i8, provisoire tant que ses garder/non de la page9 manquent) : en/q5-tout.html."
+    },
+    "idees_cd1": {
+     "date": "2026-11-16",
+     "parole": "Calendrier compact · i1 garder · i2 non · i3 garder · i4 garder · i5 non · i6 garder · i7 non · i8 garder · I8 oui mais attention c'est pas très clair... I1 oui mais aligné et fonction pas à cette endroit pour laisser la place aux vrais info. Le plus de faire dans le carré de fêtes, vente, achats ECT.. i2 bonne idée mais mal réalisé",
+     "gardes": [
+      "i1 titres à gauche alignés, + dans le carré de couleur (plus de colonne de +)",
+      "i3 date au toucher de la semaine",
+      "i4 mouvement sous chaque solde",
+      "i6 retard en mots au toucher",
+      "i8 masquer une rangée, à rendre clair"
+     ],
+     "refuses": [
+      "i5 jauge des jours",
+      "i7 + S47 dans le bouton volant"
+     ],
+     "a_refaire": [
+      "i2 résumé par rangée : bonne idée mal réalisée"
+     ],
+     "source": "work/missions/2026-11-16-calendrier/gi/ (page9)"
     }
    },
    "anciennes_bases": [
