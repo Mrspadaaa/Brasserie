@@ -1789,3 +1789,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : les caractéristiques à comparer changent selon le besoin. L'IA propose celles de la catégorie, le brasseur en ajoute ou en retire ; aucun modèle propre à l'embouteillage.)
 - **16.11**, mot pour mot : « Et va doit être facile d'utilisation, une vue sans détails juste pour savoir de quoi on parle et ensuite on peut détaillé et comparé. Utiliser l'ai au besoin »
   (lu : au premier plan, une vue sans détails qui dit de quoi on parle et où on en est ; le détail et la comparaison sont à un toucher ; l'IA aide au besoin.)
+- **16.11**, mot pour mot : « Et aussi important, par exemple je mets un liens, ça montre l'objet, et je peux faire un toggle switch qui va regarder tout les 3 jours si l'article est en stock aussi Chez d'autres fournisseurs et si il a baissé de prix »
+  (lu : un lien collé affiche un aperçu de l'objet. Une bascule par article lance une veille tous les 3 jours : stock, autres fournisseurs, baisse de prix. Côté app, il faudra une tâche planifiée et une recherche en ligne payante, à soumettre à son accord le moment venu.)
