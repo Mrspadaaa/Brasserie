@@ -48,6 +48,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | En-tête choisi (q5, l5) posé sur tout | 16.11 soir | https://claude.ai/artifact/Drad8d1AG4zrxsPKgDaPqP | `work/missions/2026-11-16-calendrier/page11/index.html` |
 | Idées gardées assemblées, carré-bouton, i2 refait | 16.11 soir | https://claude.ai/artifact/Joxat3gJk6CpdEhM1whFdK | `work/missions/2026-11-16-calendrier/page13/index.html` |
 | En-têtes plus loin (r6, r2, r5 ; s1, s3) | 16.11 soir | https://claude.ai/artifact/N7bMbjKfX2uzXyNLbbkxwG | `work/missions/2026-11-16-calendrier/page12/index.html` |
+| Gestes de la frise et de la courbe | 16.11 nuit | https://claude.ai/artifact/C6DF63RCtgTF5zp87rFVrf | `work/missions/2026-11-16-calendrier/page14/index.html` |
 | Calendrier cd1 (g-d1 complété) | 16.11 | https://claude.ai/artifact/4Asn377oaJjCegYuo16uP6 | `work/missions/2026-11-16-calendrier/page7/index.html` |
 | Carnet ra ou p5f, finis | 16.11 | https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL | `work/missions/2026-11-16-carnet-decision/page5/index.html` |
 | Carnet ra ou p5f, étape par étape | 16.11 soir | https://claude.ai/artifact/XJoWq1jW88DGGT9EpxUbuD | `work/missions/2026-11-16-carnet-decision/page6/index.html` |

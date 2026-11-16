@@ -26,3 +26,8 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 - Les cinq : onglet, fournisseur, suppression, lot, pastille. Worktree ../ports-nuit, branche claude/ports-nuit-1611 depuis en-ligne/2026-11-16-brassins-apresmidi. Workflow wi5w4ykc0 (wf_54c86dfd-f79) : ports en série, critique vision, correction + checklist DEPLOY.md.
 - Au retour PRET A DEPLOYER : déployer l'hébergement seul depuis ../ports-nuit (pas npm run deploy), tag en-ligne/2026-11-17-ports-nuit, jouer en ligne sur ZZ TEST puis retirer.
 - Pastille : la fenêtre de l'histogramme se règle au doigt (bords et déplacement, début libre : « juste 50 51 ») : jouable fait par un agent ; l'ajouter au port (claude/ports-nuit-1611) au retour de wi5w4ykc0.
+
+## Gestes (page14, critique tranche, nuit)
+- Retenus par le critique : déplacer f1-b (+ courbe avant/après de c4-a ; brassin : f6-a) ; allonger f2-a (+ alerte de promesse) ; poser f3-a (vente), f3-b (durée) ; ouvrir f4-b (+ actions de f4-a) ; appui long f5-b ; dépendances f6-b ; période c1-b + c5-a ; lire une semaine c2-b (+ glisser c3-a) ; agrandir c3-b ; et si c4-a.
+- À assembler sur la base gi2/r2-c + en-tête retenue (page15), après son ajustement au matin.
+- surligner-ecarts : un élément déplacé (puce « 6 sem. ») ou une bande qui change fait un rectangle presque plein écran : à améliorer (zones par composants, pas par pixels) avant la prochaine page.

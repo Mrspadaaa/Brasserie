@@ -1,0 +1,4 @@
+BASE g-d1 : + OK écart 16 px, droite 51 px ; 0 constats de base (ignorés ensuite) : 
+f6-a-avant : + OK écart 16 px, droite 51 px ; TEXTE OK (14 px, rien de coupé ni chevauché)
+f6-a-apres : + OK écart 16 px, droite 51 px ; TEXTE OK (14 px, rien de coupé ni chevauché)
+FRISE OK : 2 états, texte et + conformes
