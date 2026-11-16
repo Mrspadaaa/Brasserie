@@ -379,3 +379,6 @@ p.nc-msg { margin: 0 0 2px 4px; }
 .lo-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgb(0 0 0 / .2); max-width: 520px; margin: 0 auto; }
 .lo-toast span { flex: 1; }
 .lo-toast button { white-space: nowrap; min-height: 44px; min-width: 44px; padding: 0 12px; font-weight: 700; color: inherit !important; text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; justify-content: center; }
+/* Constat 31 (fix-tarifs) : « Supprimer » visible sur la ligne archivée d'une idée de tarif ; la question reprend .lo-conf (Garder · Oui, supprimer). */
+.lo-rdel { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; margin: 0 0 6px 0; border-radius: 10px; border: 1px solid var(--a-late) !important; color: var(--a-late) !important; font-size: 14px; font-weight: 600; }
+.lo-row > .lo-conf { margin: 0 0 8px; }

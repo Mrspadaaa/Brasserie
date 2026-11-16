@@ -25,6 +25,9 @@ export interface VenteAuLitre {
   prix: number;
   /** CHF le litre. */
   litre: number;
+  /** Quantité de la ligne (« 10 » bouteilles) et son montant en CHF, tels que saisis : la raison d'un « à vérifier » s'écrit avec eux. */
+  quantite: number;
+  montantLigne: number;
   /** JJ.MM.AAAA, celle de la vente. */
   date: string;
   transactionId: string;
@@ -49,6 +52,20 @@ export function separerAVerifier<T extends { litre: number }>(ventes: readonly T
   const sures: T[] = [], aVerifier: T[] = [];
   for (const v of ventes) (hors(v.litre) ? aVerifier : sures).push(v);
   return { sures, aVerifier };
+}
+
+const COURT_FORMAT: Record<string, string> = { '33cl': '33 cl', '75cl': '75 cl' };
+const UNITE_FORMAT: Record<string, string> = { '33cl': 'la bouteille', '75cl': 'la bouteille', fut: 'le fût', growler: 'le growler', carton: 'le carton', verre: 'le verre' };
+const mFr = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/**
+ * La raison d'un « à vérifier », en une ligne, tirée de la ligne de la vente : « 10 × 75 cl à 5 695,00 : 569,50 la bouteille ».
+ * Le brasseur y lit tout de suite si c'est la quantité ou le montant qui est faux. Rien n'est ajouté à ce que la ligne dit.
+ */
+export function raisonAVerifier(v: Pick<VenteAuLitre, 'quantite' | 'montantLigne' | 'prix' | 'formatId' | 'litresUnite'>): string {
+  const fmt = COURT_FORMAT[v.formatId] ?? nomFormat(v.formatId, v.litresUnite).replace(/^./, (c) => c.toLowerCase());
+  const unite = UNITE_FORMAT[v.formatId] ?? 'l’unité';
+  return `${String(Number(v.quantite.toFixed(3))).replace('.', ',')} × ${fmt} à ${mFr.format(v.montantLigne)} : ${mFr.format(v.prix)} ${unite}`;
 }
 
 export interface LigneDecodee { batchId: string | undefined; formatId: string; litresUnite: number }
@@ -85,7 +102,7 @@ export function ventesAuLitre(input: {
       const cle = `${norm(qui)}|${biere ?? ''}|${lue.formatId}|${lue.litresUnite}${nom ? '' : `|${t.id}|${l.id}`}`;
       if (vues.has(cle)) continue;
       vues.set(cle, { cle, qui, genre, biere, formatId: lue.formatId, litresUnite: lue.litresUnite, prix, litre: prix / lue.litresUnite,
-        date: t.date, transactionId: t.id, demo: input.estDemo(t.id) });
+        quantite: q, montantLigne: l.amountCents / 100, date: t.date, transactionId: t.id, demo: input.estDemo(t.id) });
     }
   }
   return [...vues.values()];

@@ -21,7 +21,7 @@
 .fiche-t { flex:1; min-width:0; }
 .fiche-t b { display:block; font-size:18px; line-height:22px; font-weight:600; overflow-wrap:anywhere; }
 .fiche-t span { font-size:13px; color:var(--fiche-t2); }
-.fiche-x { position:relative; width:36px; height:36px; border-radius:12px; background:rgb(var(--cave-800)); border:1px solid rgb(var(--cave-600)); display:grid; place-items:center; flex:none; }
+.fiche-x { position:relative; width:44px; height:44px; border-radius:12px; background:rgb(var(--cave-800)); border:1px solid rgb(var(--cave-600)); display:grid; place-items:center; flex:none; }
 .fiche-x::after { content:''; position:absolute; inset:-4px; }
 
 .fiche-sum { display:flex; align-items:baseline; gap:6px; margin:10px 0 4px; flex-wrap:wrap; }
