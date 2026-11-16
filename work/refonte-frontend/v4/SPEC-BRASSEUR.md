@@ -1837,3 +1837,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : il corrige son message précédent, qui disait « DC et da ». da devient la base du carnet (règle n° 1) : ra, da retouché, est la piste principale. rac (da avec le journal de dc) n'est qu'une greffe. rc reste seulement pour comparaison.)
 - **16.11**, mot pour mot : « Mais en soit p5 a des bonnes idées mais comment il a pu passer les critiques ??? »
   (lu : il demande pourquoi nos critiques ont laissé passer p5. Les bonnes idées de p5 sont à greffer sur da retouché (ra) : police chargée, noms entiers, dates lisibles, raisons cochées, offres ailleurs avec prix et stock.)
+- **16.11**, mot pour mot : « En soit peut être faire une p5 mais aller jusqu'au bout et répondent au critère... »
+  (lu : on ajoute une variante p5f, « p5 fini ». Elle garde les bonnes idées de p5 et rend tout ce que da montrait. La liste est refaite, aucun écran ne reste à moitié vide, et chaque critère de CADRE.md est coché avec sa preuve. Elle est montrée à côté de ra, da retouché, qui reste la base.)

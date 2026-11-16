@@ -113,7 +113,7 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 
 ## Carnet après le refus de p5 (16.11)
 - p5 est refusé (« je comprends pas trop P5 », « pas fini »).
-- Workflow `carnet-retouches`, task wv22laf3g, run wf_dfac1257-090. Sortie : `carnet-decision/r2/` (ra, rc, rac), puis page3.
+- Workflow `carnet-retouches` (relancé avec p5f), task wclfzo5yw, run wf_91a0da48-d0c. Sortie : `carnet-decision/r2/` (ra, rc, rac), puis page3.
 - Retouches de da et dc, sans fusion :
   - le champ de note de da reste visible au-dessus du clavier ;
   - les écartés restent visibles ;
