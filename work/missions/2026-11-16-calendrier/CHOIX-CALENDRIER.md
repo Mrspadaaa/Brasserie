@@ -79,3 +79,4 @@ Bilan : 16 pertes ou dégradations sûres (1 à 16), 1 à confirmer (17), 1 à p
 ## Base au 16.11 au soir
 - La base du calendrier est **g-d1** (`paliers/g-d1.html`) : « g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil ».
 - cd1 sert de réserve d'idées, une à la fois. Son en-tête est refusé (« trop le fouillis. Surtout l'entête.. »).
+- **Paysage** : la base est **cd1-paysage** (`cd/cd1-paysage.html`) : « Beaucoup mieux la vue paysage même si l'entête reste trop lourde ». À faire : alléger son en-tête, sans rien perdre d'autre.
