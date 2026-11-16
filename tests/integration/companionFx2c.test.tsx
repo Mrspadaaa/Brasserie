@@ -47,12 +47,12 @@ const ouvrirConversations = async (detail?: unknown) => {
 };
 
 describe('Mes conversations (fx2c)', () => {
-  it('a une flèche « Retour au fil » qui ferme la feuille', async () => {
+  it('se ferme par le × de la feuille d3p2 (la flèche « Retour au fil » cède la place au ×)', async () => {
     vi.mocked(api.activity).mockResolvedValue([job('1', 'REC-A')]);
     render(<BrewerActivity />);
     await ouvrirConversations();
     expect(screen.getByRole('dialog', { name: 'Mes conversations' })).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Retour au fil' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));
     expect(screen.queryByRole('dialog', { name: 'Mes conversations' })).not.toBeInTheDocument();
   });
   it('ajoute le niveau du verdict (attention) à « Réponse prête », sans l’inventer quand le tour manque', async () => {

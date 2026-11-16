@@ -188,6 +188,12 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   const vivantes = brewerConversations(state.jobs).filter(({ jobs }) => jobs.some((j) => j.status !== 'cancelled'));
   const courant = vivantes.find(({ latest }) => origine && sameBrewerScope(latest.scope, origine))
     ?? vivantes.find(({ latest }) => sameBrewerScope(latest.scope, context.scope));
+  const statutsResume = statutsConversations(state.jobs);
+  const partsResume = [
+    { n: statutsResume.prets, cls: 'cmp-pv', texte: statutsResume.prets > 1 ? 'prêtes' : 'prête' },
+    { n: statutsResume.enCours, cls: 'cmp-pa', texte: 'en cours' },
+    { n: statutsResume.echecs, cls: 'cmp-pr', texte: 'à relancer' }
+  ];
   return <>
     {!mobile && !hideActivityPill && !dialogOpen && !inbox && !focus &&
       (pending.length > 0 || unread.length > 0 || unconfirmed.length > 0) && <button type="button"
@@ -210,8 +216,16 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
       onChoisir={(cle) => { setNotice(''); setZero(null); const j = cle ? conversations.find(g => cleConversation(g.latest) === cle)?.latest : null; setRemoval(j ? { job: j, operationId: crypto.randomUUID() } : null); }}
       onConfirmer={() => void remove()}
       onIndice={() => setNotice('Glisse une conversation vers la gauche (au pointeur : survole-la), puis confirme ici.')}
-      avant={courant && <div className="cmp-lx">
-        {!zero && !removal && <button type="button" className="cmp-ligne-btn" disabled={deleting}
+      avant={<div className="cmp-lx">
+        {state.jobs.length > 0 && <div className="cmp-carte cmp-resume">
+          <div className="cmp-resume-b" role="img" aria-label={partsResume.map((x) => `${x.n} ${x.texte}`).join(', ')}>
+            {partsResume.filter((x) => x.n > 0).map((x) => <i key={x.cls} className={x.cls} style={{ flex: x.n }} />)}
+          </div>
+          <div className="cmp-resume-l">
+            {partsResume.map((x) => <span key={x.cls}><i className={`cmp-pt ${x.cls}`} /><span className="cmp-n">{x.n}</span>{NBSP}{x.texte}</span>)}
+          </div>
+        </div>}
+        {courant && !zero && !removal && <button type="button" className="cmp-ligne-btn" disabled={deleting}
           onClick={() => { setNotice(''); setRemoval(null); setZero({ job: courant.latest, operationId: crypto.randomUUID() }); }}>
           <RotateCcw className="cmp-i" aria-hidden="true" /><span>Repartir à zéro · nouvelle conversation</span><ChevronRight className="cmp-i" aria-hidden="true" /></button>}
         {zero && <div className="cmp-carte"><div className="cmp-confirme">

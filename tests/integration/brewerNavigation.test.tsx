@@ -164,9 +164,8 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     vi.mocked(api.reset).mockImplementation(() => new Promise((done) => { resolve = done; }));
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 3 questions/ }));
-    expect(screen.getAllByRole('button', { name: /Plus d’actions/ })).toHaveLength(2);
-    expect(screen.queryByRole('button', { name: /Supprimer la conversation/ })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
+    // d3p2 : une ligne par conversation (les deux échanges de REC-A sont groupés), le « Supprimer » de chaque ligne se révèle au glissé.
+    expect(screen.getAllByRole('button', { name: /Supprimer la conversation/ })).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     expect(api.reset).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
@@ -174,8 +173,8 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await act(async () => resolve({ generation: 1 }));
     expect(brewerJobs.snapshot().jobs).toEqual([expect.objectContaining({ scope: other.scope })]);
     await act(async () => { brewerJobs.merge([a, b]); });
-    expect(screen.queryByRole('button', { name: 'Plus d’actions : REC-A' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Plus d’actions : REC-B' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Supprimer la conversation REC-A' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Supprimer la conversation REC-B' })).toBeInTheDocument();
   });
   it('résume les conversations par statut, sans nom de modèle, et relance un échec en un geste', async () => {
     const prete = { ...job('1', 'REC-A'), status: 'done' as const, readAt: 1 };
@@ -199,7 +198,6 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     vi.mocked(api.reset).mockRejectedValueOnce(Error('offline')).mockResolvedValueOnce({ generation: 1 });
     render(<BrewerActivity />);
     fireEvent.click(await screen.findByRole('button', { name: /Compagnon : 1 question/ }));
-    fireEvent.click(screen.getByRole('button', { name: 'Plus d’actions : REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer la conversation REC-A' }));
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer les échanges' }));
     await screen.findByText(/Suppression non confirmée/);
