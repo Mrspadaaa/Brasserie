@@ -78,6 +78,7 @@ import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
+import { usePlusPage } from '../ui/plusPage';
 
 interface RecipePageProps {
   recipe: Recipe;
@@ -109,6 +110,19 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onOpenBatch
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Matin 16.11 (b1r : « celle de l'écran actuel sont plus mis en avant ») : le menu du « + » de la page porte ses actions, contre le + d'abord :
+  // préparer un brassin, modifier, dupliquer, exporter ; « Supprimer la recette » en dernier, le plus loin du + (la plus rare, la seule qui détruit),
+  // en rouge. Chaque geste est celui du bouton de la page ; la suppression ouvre la même feuille de confirmation, le bouton du bas reste.
+  usePlusPage({
+    titre: recipe.name,
+    actions: [
+      { id: 'brasser', label: 'Préparer un brassin', genre: 'brasser', lancer: onBrew },
+      { id: 'modifier', label: 'Modifier la recette', genre: 'modifier', lancer: onEdit },
+      { id: 'dupliquer', label: 'Dupliquer la recette', genre: 'dupliquer', lancer: onDuplicate },
+      { id: 'exporter', label: 'Exporter la recette', hint: 'copier le texte', genre: 'exporter', lancer: () => setExportOpen(true) },
+      { id: 'supprimer', label: 'Supprimer la recette', hint: 'après confirmation', genre: 'supprimer', lancer: () => setConfirmDelete(true) }
+    ]
+  });
   const [simulatingNolo, setSimulatingNolo] = useState(false);
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const noloWort = useMemo(() => {
@@ -243,7 +257,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     <PageShell
       className="recipe-reference"
       // Maquette r1 : l'en-tête tient sur une ligne, « New England IPA 19 L » (le style est dans la pastille sous le bandeau).
-      title={`${recipe.name} ${formatLitres(recipe.volumeL)}`}
+      // Le volume est celui de la recette (jamais le défaut du matériel), grisé comme sur r1 (r1-repos-haut.png) ;
+      // `titleLabel` garde « nom volume » en texte pour le titre et la zone de contenu. Inconnu : « — L », jamais 0.
+      title={<>{recipe.name} <span className="font-normal text-cave-400">{formatLitres(recipe.volumeL)}</span></>}
+      titleLabel={`${recipe.name} ${formatLitres(recipe.volumeL)}`}
       onClose={onClose}
       footer={!simulatingNolo &&
         <div className="flex items-center gap-2">
@@ -936,7 +953,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         title="Supprimer cette recette ?"
-        what={`${recipe.name} — ${recipe.style}, ${formatLitres(recipe.volumeL)}`}
+        gros
+        // Le style n'est dit que s'il diffère du nom (« American IPA — American IPA, 30 L » répétait le nom).
+        what={`${recipe.name} — ${[recipe.style && recipe.style.trim() !== recipe.name.trim() ? recipe.style : '', formatLitres(recipe.volumeL)].filter(Boolean).join(', ')}`}
         consequence={
           relatedBatches.length > 0
             ? `${relatedBatches.length} brassin${relatedBatches.length > 1 ? 's ont' : ' a'} été lancé${relatedBatches.length > 1 ? 's' : ''} depuis cette recette. Chacun garde sa propre copie figée : leur historique reste intact.`

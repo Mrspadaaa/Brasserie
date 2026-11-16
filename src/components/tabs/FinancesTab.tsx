@@ -8,7 +8,7 @@ import { FinancialArchiveService } from '../../services/financialArchiveService'
 import { StorageService } from '../../services/storage';
 import { useStorageValue, useLiveSelection } from '../../hooks/useLiveData';
 import { tvaThresholdStatus } from '../../domain/finance/tvaThreshold';
-import { isoDate, todayISO, paymentState, summarizeLedger } from '../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, todayISO, paymentState, summarizeLedger } from '../../domain/finance/ledger';
 
 import { buildAnnualReport } from '../../domain/finance/annual';
 import { TaxWorkspace } from '../../ui/finance/TaxWorkspace';
@@ -87,6 +87,9 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[remplace,setRemplace]=useState<FinancialPayment|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
+  /* v2 (3) : l'avis d'une écriture (« Mouvement enregistré », « Opération mise à jour ») ne survit pas à l'annulation d'une écriture : il parlerait d'une opération retirée. */
+  const nbAnnulees=transactions.filter(t=>!isActiveTransaction(t)).length,annuleesVues=useRef(nbAnnulees);
+  useEffect(()=>{if(nbAnnulees>annuleesVues.current)setNotice(n=>n==='Mouvement enregistré.'||n==='Opération mise à jour.'?'':n);annuleesVues.current=nbAnnulees;},[nbAnnulees]);
   /* Le + flottant : « Estimer un brassin » ouvre le choix du brassin (l'ancien + de la ligne du coût du litre). */
   useEffect(()=>{const ouvrir=()=>setBudgetPicker(true);window.addEventListener('finances-estimer',ouvrir);return()=>window.removeEventListener('finances-estimer',ouvrir);},[]);
   const [closingOpts,setClosingOpts]=useState<OuvertureInventaire>({}),[assetInitial,setAssetInitial]=useState<Partial<FinancialAsset>>();

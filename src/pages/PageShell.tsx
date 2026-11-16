@@ -280,7 +280,13 @@ function pageFocusTargets(page: HTMLElement) {
  */
 
 interface PageShellProps {
-  title: string;
+  /**
+   * Un nœud permet de mettre une partie du titre en retrait (le volume grisé de la page de la recette, maquette r1).
+   * Il porte alors `titleLabel`, son nom en texte : c'est lui qui nomme le titre et la zone de contenu.
+   */
+  title: React.ReactNode;
+  /** Nom accessible du titre quand `title` est un nœud ; une chaîne se nomme elle-même. */
+  titleLabel?: string;
   /** Ligne secondaire : style, volume, date. */
   subtitle?: string;
   onClose: () => void;
@@ -328,6 +334,7 @@ interface PageShellProps {
 
 export const PageShell: React.FC<PageShellProps> = ({
   title,
+  titleLabel,
   subtitle,
   onClose,
   actions,
@@ -607,7 +614,7 @@ export const PageShell: React.FC<PageShellProps> = ({
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-sm font-semibold text-cave-50 break-words leading-tight">
+                  <h1 aria-label={titleLabel} className="text-sm font-semibold text-cave-50 break-words leading-tight">
                     {title}
                   </h1>
                   {subtitle && !tight && (
@@ -649,7 +656,7 @@ export const PageShell: React.FC<PageShellProps> = ({
               </button>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-sm font-semibold text-cave-50 break-words leading-tight">
+                <h1 aria-label={titleLabel} className="text-sm font-semibold text-cave-50 break-words leading-tight">
                   {title}
                 </h1>
                 {/* Le sous-titre — style, volume, date — est concis et discret */}
@@ -681,7 +688,7 @@ export const PageShell: React.FC<PageShellProps> = ({
 
       {/* Le pied est hors de cette zone défilante. Le lanceur flotte au-dessus :
           `data-floating-actions-gap="page"` lui réserve la fin du contenu. */}
-      <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
+      <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || titleLabel || (typeof title === 'string' ? title : undefined)}
         // Le conteneur (tabIndex -1) ne prend le focus que par programme (changement d'étape, ouverture) : aucun anneau autour de tout le contenu (cadre de 2 px noir en
         // clair, jaune en cave, vu sur la fiche et l'assistant). Les commandes gardent le leur.
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain outline-none focus:outline-none focus-visible:outline-none">

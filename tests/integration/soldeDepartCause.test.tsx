@@ -197,6 +197,10 @@ describe('Prévisions plate : dire pourquoi et renvoyer', () => {
     fireEvent.click(rien);
     expect(fn.onAddPlan).toHaveBeenCalledTimes(1);
   });
+  it('constat 22 : une prévision datée du jour même efface « Rien de prévu »', () => {
+    monter(confirme, [{ id: 'PLAN-ZZ', title: 'ZZ TEST — Prévision', date: ASOF, amountCents: 700, direction: 'out', category: 'autres', source: 'manual', status: 'active' }]);
+    expect(screen.queryByRole('button', { name: /Rien de prévu/ })).toBeNull();
+  });
   it('historique déclaré complet : plus de « Tendance à calculer », « Rien de prévu » reste', () => {
     monter({ ...confirme, historyCompleteFrom: '2026-01-01' });
     expect(screen.queryByRole('button', { name: /Tendance à calculer/ })).toBeNull();

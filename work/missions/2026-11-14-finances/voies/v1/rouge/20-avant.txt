@@ -1,0 +1,46 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+·xx·
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/ecritureAnnuleeCachee.test.tsx > 20 : une écriture annulée n’apparaît plus nulle part par défaut > recherche (demande arrivée d’ailleurs, portée « Tout ») : absente
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <button>
+  ZZ TEST — Apport
+</button> instead[39m
+ ❯ tests/integration/ecritureAnnuleeCachee.test.tsx:38:76
+     36|     render(<TransactionJournal {...defaults} transactions={[vivante, a…
+     37|     expect(screen.getByRole('button', { name: 'ZZ TEST — vivante' })).…
+     38|     expect(screen.queryByRole('button', { name: 'ZZ TEST — Apport' }))…
+       |                                                                            ^
+     39|   });
+     40| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/integration/ecritureAnnuleeCachee.test.tsx > 20 : une écriture annulée n’apparaît plus nulle part par défaut > « Tout » : absente ; aucun groupe « Annulées » ni compte d’annulée
+Error: [2mexpect([22m[31melement[39m[2m).not.toBeInTheDocument()[22m
+
+[31mexpected document not to contain element, found <button>
+  ZZ TEST — Apport
+</button> instead[39m
+ ❯ tests/integration/ecritureAnnuleeCachee.test.tsx:43:76
+     41|   it('« Tout » : absente ; aucun groupe « Annulées » ni compte d’annul…
+     42|     render(<TransactionJournal {...defaults} transactions={[vivante, a…
+     43|     expect(screen.queryByRole('button', { name: 'ZZ TEST — Apport' }))…
+       |                                                                            ^
+     44|     expect(screen.queryByText(/1 annulée/)).not.toBeInTheDocument();
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  08:29:22
+   Duration  2.89s (transform 998ms, setup 282ms, collect 1.56s, tests 216ms, environment 621ms, prepare 60ms)
+

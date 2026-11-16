@@ -11,6 +11,8 @@
 .pr-pill>button.pr-fl{width:44px}
 .pr-pill>button.pr-ce{min-width:52px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr-ce .pr-court{display:none}
+/* v2 (2) : « 18 oct. → 16 nov. » se lit entière à 1280 (108 px la rognait contre la flèche) ; la plage garde sa largeur, les flèches restent à 44 px. */
+.pr-pill>button.pr-ce:has(.pr-long){max-width:none;text-overflow:clip}
 /* Sous 430 px, une plage se dit en « 12.10–03.11 » : la pastille longue chassait le duo d'avatars sur une seconde ligne. */
 @media (max-width:429px){.pr-ce .pr-long{display:none}.pr-ce .pr-court{display:inline}.pr-pill>button.pr-ce:has(.pr-court){padding:0 4px;font-size:13px}}
 .pr-pill>button:active{background:var(--s)}
@@ -44,6 +46,8 @@
 .pr-lib>.pr-lbl{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1)}
 .pr-lib input{width:72px;height:36px;border-radius:10px;border:1px dashed var(--tf);background:transparent;color:var(--t0);text-align:center;font-size:14px;font-family:"IBM Plex Mono",ui-monospace,monospace}
 .pr-lib input::placeholder{color:var(--t2)}
+/* v1 (33) : « Tout l'historique » écrit l'étendue réelle (jj.mm.aaaa) en grisé dans les champs : ils s'élargissent pour que l'année ne soit pas coupée. */
+.pr-lib.pr-tout input{width:104px}
 .pr-lib input[aria-invalid=true]{border-color:var(--al);border-style:solid}
 .pr-lib input:focus{outline:2px solid var(--act);outline-offset:1px;border-style:solid}
 .pr-lib>.pr-n{margin-left:auto;font-size:13px;color:var(--t2)}

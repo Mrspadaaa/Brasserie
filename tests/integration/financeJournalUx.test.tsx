@@ -172,7 +172,7 @@ describe('Journal financier compact', () => {
     }
     render(<Workspace/>);
     expect(screen.getByRole('button', { name: 'Retirer le filtre : À payer et encaisser' })).toBeVisible();
-    fireEvent.click(filterButton('Toutes'));
+    fireEvent.click(filterButton('Sans filtre')); // w1 (FN-22) : « Toutes » ressemblait à « Tout » et « toutes les dates »
     fireEvent.change(categorie(), { target: { value: 'brassage' } });
     fireEvent.change(recherche(), { target: { value: 'Opération' } });
     fireEvent.click(screen.getByRole('button', { name: 'Page suivante' }));
@@ -182,7 +182,7 @@ describe('Journal financier compact', () => {
     expect(screen.getByText('Page 2 sur 2')).toBeInTheDocument();
     expect(categorie()).toHaveValue('brassage');
     expect(recherche()).toHaveValue('Opération');
-    expect(filterButton('Toutes')).toHaveAttribute('aria-pressed', 'true');
+    expect(filterButton('Sans filtre')).toHaveAttribute('aria-pressed', 'true');
     fireEvent.change(recherche(), { target: { value: 'Opération 000' } });
     expect(screen.getByRole('button', { name: 'Opération 000' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Pages du journal' })).not.toBeInTheDocument();
@@ -199,10 +199,12 @@ describe('Journal financier compact', () => {
     const onSale = vi.fn(), onPrivateMovement = vi.fn(), onManageArchives = vi.fn(), onScopeChange = vi.fn();
     render(<TransactionJournal {...defaults} transactions={[voided]} archives={[archive]} request={{ key: 'annual', year: String(previousYear), allDates: true }}
       onPrivateMovement={onPrivateMovement} onManageArchives={onManageArchives} onScopeChange={onScopeChange}/>);
-    expect(screen.getByText(`Exercice ${previousYear}`)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
+    expect(screen.getAllByText(`Exercice ${previousYear}`)[0]).toBeVisible();
+    // v1 (20) : une annulée n'est plus listée par défaut ; seule la puce la montre.
+    expect(screen.queryByRole('button', { name: 'Opération ANNULÉE' })).not.toBeInTheDocument();
     ouvrirFiltres();
     fireEvent.click(screen.getByRole('button', { name: 'Écritures annulées uniquement' }));
+    expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Retirer le filtre : Écritures annulées' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives' }));
     // La vente s'encaisse depuis le bouton d'action, plus depuis le journal.

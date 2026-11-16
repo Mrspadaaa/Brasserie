@@ -1,0 +1,552 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+ ❯ tests/integration/coutBrassinRenvois.test.tsx (8 tests | 1 failed) 1273ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > aucun « ? » ni « à confirmer » nu : tous sont dans un bouton 162ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > le bloc « Données à compléter » liste litres, prix du malt et production annuelle, chacun avec ce que le manque empêche 99ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > litres : un brassin produit renvoie à la fiche › Mesures (la feuille se ferme) 168ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > litres : sans fiche (recette), le renvoi ouvre « Volumes et date », où le net se saisit 98ms
+   × coût du brassin : chaque manque est un renvoi (CP-18) > ingrédient sans prix : le renvoi ouvre ses lignes, filtrées sur « À compléter » 126ms
+     → Unable to find an accessible element with the role "button" and name `/Prix d.1 ingrédient : pilsner/i`
+
+Here are the accessible roles:
+
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"bbx-taches"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Litres nets du brassinSans eux, pas de coût du litre ni d’impôt bière.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"litres"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Prix de 1 ingrédient : pilsnerSans lui, le coût reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"malt"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Énergie du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"ener"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Nettoyage du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"net"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Emballage du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"emb"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Production annuelle prévueSans elle, ni charges fixes ni usure ne se répartissent sur le litre.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"annuel"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"Données à compléter"[39m
+  [33mdata-booster[39m=[32m"tache-filtrante"[39m
+[36m>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [0m1 ingrédient sans prix. [0m
+    [0mPour compléter ce coût :[0m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"bbx-taches"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"litres"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mLitres nets du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans eux, pas de coût du litre ni d’impôt bière.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"malt"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mPrix de 1 ingrédient : pilsner[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans lui, le coût reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"ener"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mÉnergie du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"net"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mNettoyage du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"emb"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mEmballage du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"annuel"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mProduction annuelle prévue[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans elle, ni charges fixes ni usure ne se répartissent sur le litre.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+[36m</section>[39m
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > production annuelle : le renvoi ouvre le solde avec « Paramètres des prévisions et des brassins » dépliés  389ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > « Déjà payé » inconnu : sa ligne et sa tâche ouvrent le prix manquant 189ms
+   ✓ coût du brassin : chaque manque est un renvoi (CP-18) > Prévoir attend : la raison est un bouton qui mène au manque 41ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/coutBrassinRenvois.test.tsx > coût du brassin : chaque manque est un renvoi (CP-18) > ingrédient sans prix : le renvoi ouvre ses lignes, filtrées sur « À compléter »
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Prix d.1 ingrédient : pilsner/i`
+
+Here are the accessible roles:
+
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"bbx-taches"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Litres nets du brassinSans eux, pas de coût du litre ni d’impôt bière.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"litres"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Prix de 1 ingrédient : pilsnerSans lui, le coût reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"malt"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Énergie du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"ener"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Nettoyage du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"net"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Emballage du brassinSans ce montant, le coût du brassin reste un minimum.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"emb"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Production annuelle prévueSans elle, ni charges fixes ni usure ne se répartissent sur le litre.":
+  [36m<button[39m
+    [33mclass[39m=[32m"bbx-tache"[39m
+    [33mdata-manque[39m=[32m"annuel"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33maria-label[39m=[32m"Données à compléter"[39m
+  [33mdata-booster[39m=[32m"tache-filtrante"[39m
+[36m>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"sr-only"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m>[39m
+    [0m1 ingrédient sans prix. [0m
+    [0mPour compléter ce coût :[0m
+  [36m</p>[39m
+  [36m<ul[39m
+    [33mclass[39m=[32m"bbx-taches"[39m
+  [36m>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"litres"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mLitres nets du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans eux, pas de coût du litre ni d’impôt bière.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"malt"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mPrix de 1 ingrédient : pilsner[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans lui, le coût reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"ener"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mÉnergie du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"net"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mNettoyage du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"emb"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mEmballage du brassin[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans ce montant, le coût du brassin reste un minimum.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+    [36m<li>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"bbx-tache"[39m
+        [33mdata-manque[39m=[32m"annuel"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [36m<i[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m?[0m
+        [36m</i>[39m
+        [36m<span>[39m
+          [36m<b>[39m
+            [0mProduction annuelle prévue[0m
+          [36m</b>[39m
+          [36m<small>[39m
+            [0mSans elle, ni charges fixes ni usure ne se répartissent sur le litre.[0m
+          [36m</small>[39m
+        [36m</span>[39m
+        [36m<em[39m
+          [33maria-hidden[39m=[32m"true"[39m
+        [36m>[39m
+          [0m›[0m
+        [36m</em>[39m
+      [36m</button>[39m
+    [36m</li>[39m
+  [36m</ul>[39m
+[36m</section>[39m
+ ❯ Object.getElementError ../../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/integration/coutBrassinRenvois.test.tsx:66:89
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  10:55:23
+   Duration  6.38s (transform 1.49s, setup 537ms, collect 2.41s, tests 1.27s, environment 1.43s, prepare 85ms)
+

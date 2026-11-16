@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronRight, CircleHelp, Plus, Store, Tag, TriangleAlert, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, CircleHelp, Plus, Receipt, Store, Tag, TriangleAlert, X } from 'lucide-react';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
 import { Sheet } from '../Sheet';
@@ -11,8 +11,9 @@ import { tarifsDuFormat, type FormatId } from '../prix/calculPrix';
 import { biereDuBrassin, brassinDuCout, lireDonneesPrix } from '../prix/donneesPrix';
 import { estDemo } from './demo';
 import { domaineKxc, echelleLog } from '../../domain/tarifs/echellePrix';
-import { bieresDesVentes, groupesParFormat, hors, nomFormat, PLAGE_LITRE_PLAUSIBLE, separerAVerifier, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
+import { bieresDesVentes, groupesParFormat, hors, nomFormat, PLAGE_LITRE_PLAUSIBLE, raisonAVerifier, separerAVerifier, ventesAuLitre, type GenreClient, type VenteAuLitre } from '../../domain/tarifs/ventesAuLitre';
 import { disposerFrise, marqueProche, type Marque } from '../../domain/tarifs/friseDisposition';
+import { VenteDeTarifs } from './VenteDeTarifs';
 import './tarifs-frise.css';
 
 /**
@@ -101,6 +102,9 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
   const dispo = useMemo(() => disposerFrise(groupes, echelle.x, W, X0), [groupes, echelle, W]);
 
   const [sel, setSel] = useState<{ marque: Marque; vente: VenteAuLitre | null } | null>(null);
+  /** Constat 12 : « Ouvrir la vente » ouvre la vente dans sa feuille PAR-DESSUS Tarifs (mêmes gestes que Finances › Opérations : Modifier…). On ne quitte pas l'Atelier. */
+  const [venteOuverte, setVenteOuverte] = useState<string | null>(null);
+  const ouvrirLaVente = (v: VenteAuLitre) => { setSel(null); setVenteOuverte(v.transactionId); };
   const [ouverts, setOuverts] = useState<Set<string>>(new Set());
   const ouvrir = (m: Marque) => setSel({ marque: m, vente: m.ventes.length === 1 ? m.ventes[0] : null });
   const ouvrirVente = (v: VenteAuLitre) => {
@@ -186,17 +190,7 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
                 })}
               </div>
             </div>}
-          {aVoir.length > 0 && <div className="tf-verif" role="group" aria-label="Prix à vérifier">
-            <h4><TriangleAlert size={16} aria-hidden="true" />À vérifier</h4>
-            <p className="tf-verif-n">Hors de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]} CHF le litre : pas tracé sur l’axe.</p>
-            <ul className="tf-gl">{aVoir.map((v) => <li key={v.cle}>
-              <button type="button" className="tf-gr" onClick={() => ouvrirVente(v)}>
-                <span className="tf-gi"><Genre genre={v.genre} /></span>
-                <span className="tf-gn"><span className="tf-gq">{v.qui}<span className="tf-pill tf-pill-verif">à vérifier</span></span>
-                  <small><span className="tf-nw">{nomFormat(v.formatId, v.litresUnite)}</span> · <span className="tf-nw">{chf(v.prix)} l’unité</span> · <span className="tf-nw">{fr2(v.litre)} CHF le litre</span></small></span>
-              </button>
-            </li>)}</ul>
-          </div>}
+          <AVerifier ventes={aVoir} onVoir={ouvrirVente} onOuvrir={ouvrirLaVente} />
         </div>
         <div>
           <ul className="tf-liste">
@@ -215,12 +209,34 @@ export function TarifsFrise({ onNoter, apres }: TarifsFriseProps) {
           {apres}
         </div>
       </div>
-      <VenteFeuille sel={sel} onClose={() => setSel(null)} onVente={(v) => sel && setSel({ ...sel, vente: v })} revient={revient} />
+      <VenteFeuille sel={sel} onClose={() => setSel(null)} onVente={(v) => sel && setSel({ ...sel, vente: v })} revient={revient} onOuvrir={ouvrirLaVente} />
+      {venteOuverte && <VenteDeTarifs id={venteOuverte} onClose={() => setVenteOuverte(null)} />}
     </section>
   );
 }
 
-function VenteFeuille({ sel, onClose, onVente, revient }: { sel: { marque: Marque; vente: VenteAuLitre | null } | null; onClose: () => void; onVente: (v: VenteAuLitre) => void; revient: number | null }) {
+/**
+ * Constat 12 : les prix hors plage, à part. Chaque entrée dit pourquoi en une ligne (« 10 × 75 cl à 5 695,00 : 569,50 la bouteille ») et porte
+ * « Ouvrir la vente » (44 px) : la vente s'ouvre là où l'app la corrige. Rien n'est corrigé ici ; une fois corrigée, le point revient sur l'axe.
+ */
+export function AVerifier({ ventes, onVoir, onOuvrir }: { ventes: readonly VenteAuLitre[]; onVoir?: (v: VenteAuLitre) => void; onOuvrir: (v: VenteAuLitre) => void }) {
+  if (ventes.length === 0) return null;
+  return <div className="tf-verif" role="group" aria-label="Prix à vérifier">
+    <h4><TriangleAlert size={16} aria-hidden="true" />À vérifier</h4>
+    <p className="tf-verif-n">Hors de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]} CHF le litre : pas tracé sur l’axe.</p>
+    <ul className="tf-gl">{ventes.map((v) => <li key={v.cle} className="tf-vl">
+      <button type="button" className="tf-gr" onClick={() => onVoir?.(v)}>
+        <span className="tf-gi"><Genre genre={v.genre} /></span>
+        <span className="tf-gn"><span className="tf-gq">{v.qui}<span className="tf-pill tf-pill-verif">à vérifier</span></span>
+          <small className="tf-raison">{raisonAVerifier(v)}</small>
+          <small><span className="tf-nw">{fr2(v.litre)} CHF le litre</span> · <span className="tf-nw">{v.date}</span></small></span>
+      </button>
+      <button type="button" className="tf-ouvrir" onClick={() => onOuvrir(v)}><Receipt size={18} aria-hidden="true" />Ouvrir la vente</button>
+    </li>)}</ul>
+  </div>;
+}
+
+function VenteFeuille({ sel, onClose, onVente, revient, onOuvrir }: { sel: { marque: Marque; vente: VenteAuLitre | null } | null; onClose: () => void; onVente: (v: VenteAuLitre) => void; revient: number | null; onOuvrir: (v: VenteAuLitre) => void }) {
   const v = sel?.vente ?? null;
   const [essai, setEssai] = useState<number | undefined>(undefined);
   const [pour, setPour] = useState<string | null>(null);
@@ -251,6 +267,7 @@ function VenteFeuille({ sel, onClose, onVente, revient }: { sel: { marque: Marqu
             <button type="button" className="tf-stp" aria-label={`Plus ${fr2(pas)}`} onClick={() => setEssai(Math.round(((prix ?? 0) + pas) * 100) / 100)}>+</button>
           </div>
           {hors(v.litre) && <p className="tf-warn" role="note"><TriangleAlert size={16} aria-hidden="true" />À vérifier : {fr2(v.litre)} CHF le litre sort de la plage de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]}. Le montant de la vente est peut-être faux ; rien n’est corrigé ici.</p>}
+          {hors(v.litre) && <button type="button" className="tf-ouvrir" onClick={() => onOuvrir(v)}><Receipt size={18} aria-hidden="true" />Ouvrir la vente</button>}
           <div className="tf-kv">
             <div><small>Au litre</small><b className="tf-n">{prix ? fr2(prix / v.litresUnite) : '?'}</b></div>
             <div><small>Coût · revient {v.biere ?? ''}<span className="tf-leger">hors contenant</span></small><b className="tf-n">{revient !== null && v.biere ? fr2(revient * v.litresUnite) : '?'}</b></div>

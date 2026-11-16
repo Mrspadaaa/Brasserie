@@ -20,7 +20,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('24 : « Prix de 4 ingrédients », une espace après « de », « 1 ingrédient » au singulier', () => {
   it('pluriel, singulier, noms', () => {
     expect(titrePrixManquant(4, ['Pilsner', 'Saaz', 'Citra', 'S-04'])).toBe('Prix de 4 ingrédients : Pilsner, Saaz…');
-    expect(titrePrixManquant(1, ['Saaz'])).toBe('Prix de 1 ingrédient : Saaz');
+    expect(titrePrixManquant(1, ['Saaz'])).toBe('Prix d’1 ingrédient : Saaz'); // m4bb-a (maquette choisie) : « Prix d'1 ingrédient : acide lactique »
     expect(titrePrixManquant(2, ['Saaz', 'Citra'])).toBe('Prix de 2 ingrédients : Saaz, Citra');
     expect(titrePrixManquant(5, [])).not.toMatch(/de5/);
   });
