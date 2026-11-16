@@ -225,6 +225,27 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     } finally { vi.useRealTimers(); }
   });
 
+  it('FN-33 (test d’écran dfe9189e, point 2) : le second toucher d’un double ne paie pas deux fois et n’ouvre pas la fiche', () => {
+    vi.useFakeTimers();
+    try {
+      const due = tx('DOUBLE2', today, 'brassage');
+      const onOpen = vi.fn();
+      const rang = (payments: FinancialPayment[]) => <TransactionRow transaction={due} transactions={[due]} payments={payments} onOpen={onOpen}/>;
+      const { rerender } = render(rang([]));
+      const payer = screen.getByRole('button', { name: /^Payer/ });
+      fireEvent.click(payer);
+      fireEvent.click(payer); // avant que la liste se redessine
+      expect(recordPayment).toHaveBeenCalledTimes(1);
+      rerender(rang([recordPayment.mock.calls[0][0] as FinancialPayment]));
+      act(() => { vi.advanceTimersByTime(150); });
+      fireEvent.click(screen.getByRole('button', { name: /^Op DOUBLE2/ }));
+      expect(onOpen).not.toHaveBeenCalled();
+      act(() => { vi.advanceTimersByTime(1000); });
+      fireEvent.click(screen.getByRole('button', { name: /^Op DOUBLE2/ }));
+      expect(onOpen).toHaveBeenCalledTimes(1);
+    } finally { vi.useRealTimers(); }
+  });
+
   it('(d ter) « Annuler » de l\'avis écrit le contre-paiement CONTRE-<id> du paiement du geste', () => {
     vi.useFakeTimers();
     const due = tx('DUE2', today, 'brassage');

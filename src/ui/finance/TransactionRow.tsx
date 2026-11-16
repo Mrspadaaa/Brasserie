@@ -37,6 +37,8 @@ const payesParLeGeste = new Map<string, number>();
 const DUREE_AVIS_MS = 10000;
 /** FN-33 : l'avis naît là où l'on vient de toucher « ✓ Payé » ; le second toucher d'un double (ou un toucher sur une ligne qui vient de bouger) ne doit ni annuler ni ouvrir Payer. */
 const GARDE_AVIS_MS = 800;
+/** FN-33 : l'heure du dernier « ✓ Payé » de chaque pièce (hors du composant : la ligne peut se remonter en changeant de groupe). */
+const gesteParPiece = new Map<string, number>();
 
 export function TransactionRow({ transaction, transactions, payments, state: given, onOpen, onAddProof, onPay }: {
   transaction: Transaction;
@@ -95,14 +97,18 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
     try { action(); setErreur(''); } catch (e) { setErreur(e instanceof Error ? e.message : 'Écriture impossible.'); } finally { occupe.current = false; }
   };
   const payer = () => ecrire(() => {
+    if (tropTot()) return; // un double toucher avant que la liste se redessine ne paie pas deux fois
     const paiement = paiementRapide(transaction, state, sens, aujourdhui, paiementId.id, paiementId.at);
     if (!paiement) throw new Error('Rien à régler sur cette pièce.');
     FinanceService.recordPayment(paiement);
     payesParLeGeste.set(paiement.id, Date.now());
+    gesteParPiece.set(transaction.id, Date.now());
     setPaiementId(() => ({ id: idFor('PAI'), at: new Date().toISOString() })); // le prochain paiement de cette ligne (après « Annuler ») est un autre paiement
     setFlash(true); clearTimeout(minuteur.current); minuteur.current = setTimeout(() => setFlash(false), 3000);
   });
-  const tropTot = () => avis && Date.now() - poseLe < GARDE_AVIS_MS;
+  const tropTot = () => Date.now() - (gesteParPiece.get(transaction.id) ?? 0) < GARDE_AVIS_MS;
+  /** Le second toucher d'un double sur « ✓ Payé » tombe sur la ligne (le bouton a laissé place à l'avis) : il n'ouvre pas la fiche. */
+  const ouvrir = () => { if (!tropTot()) onOpen(); };
   const annuler = () => { if (tropTot()) return; ecrire(() => { if (annulable) FinanceService.recordPayment(contrePaiement(annulable, new Date().toISOString())); }); };
   /** « Autre montant » : la feuille Payer (m5pa-d) s'ouvre SANS rien écrire ; le paiement rapide lui est passé pour que son enregistrement l'inverse puis écrive le nouveau. */
   const autreMontant = () => { if (!annulable || tropTot()) return; if (onPay) onPay(annulable); else onOpen(); };
@@ -140,7 +146,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
 
   return <div className="ops-row" data-flash={flash || undefined} data-ton={ton} data-partiel={partiel ? '' : undefined}>
     <span className="ops-bar" data-hachure={liseré} style={{ '--ops-couleur': lisereCouleur } as React.CSSProperties} aria-hidden="true"/>
-    <button type="button" className="ops-main finance-op" onClick={onOpen}
+    <button type="button" className="ops-main finance-op" onClick={ouvrir}
       aria-label={`${transaction.description} · ${categorie}${tiers ? ` · ${tiers}` : ''} · ${money} · ${lisible} · ${piece.texte}`}>
       <span className="ops-q" title={`${transaction.description}${tiers ? ` · ${tiers}` : ''}`}><span className="ops-nom" id={nomId}>{transaction.description}</span>{tiers && <small> · {tiers}</small>}</span>
       <span className="ops-meta">

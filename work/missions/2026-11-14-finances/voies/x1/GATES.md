@@ -5,7 +5,7 @@ OWNS: work/missions/2026-11-14-finances/voies/x1
 Scope: test d'écran de la version qui corrige les trois constats graves sur l'argent, avant sa mise en ligne.
 
 - [ ] G1: le verdict existe et compte ses bloquants
-  CHECK: node -e "const t=require('fs').readFileSync(process.argv[1],'utf8');process.stdout.write(/^OK — \d+ problèmes?, \d+ bloquants?/.test(t)&&/Bloquants : \d+/.test(t)?'VERDICT OK':'VERDICT ECHEC')" work/missions/2026-11-14-finances/voies/x1/VERDICT-chemin.txt
+  CHECK: node -e "const t=require('fs').readFileSync(process.argv[1],'utf8');process.stdout.write(/^OK — \d+ problèmes?, \d+ bloquants?/.test(t)&&/Bloquants : \d+/.test(t)?'VERDICT OK':'VERDICT ECHEC')" work/missions/2026-10-31-ecran-depense/avant-deploiement/dfe9189e/VERDICT.md
   EXPECT: VERDICT OK
   EVIDENCE: pending
 
