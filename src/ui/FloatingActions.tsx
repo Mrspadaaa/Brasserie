@@ -6,6 +6,7 @@ import { PlusSheet } from '../components/navigation/PlusSheet';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
 import { useRail } from '../components/navigation/useRail';
+import { usePlusPageActions } from './plusPage';
 import './floating-actions.css';
 
 /**
@@ -153,6 +154,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     ({ ecran: onAction, facture: onInvoice, vente: onSale, recette: onRecipe, brassin: onBrew } as Record<string, (() => void) | undefined>)[cle]?.();
   };
   const choisir = (cle: PlusCle | 'ecran') => choose(() => lancer(cle));
+  /* b1r : ce que la page plein écran ouverte (l'assistant de recette) déclare passe en tête, contre le +. */
+  const pagePlus = usePlusPageActions();
   const compagnon = {
     horsConnexion, attente: waiting, occupe: busy, contexte: companionLabel, conversations: jobs.length
   };
@@ -256,7 +259,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
               pour rendre la main au bouton. */}
           <PlusSheet menu={menu} forme={anchor === 'nav' ? forme : 'feuille'} compagnon={compagnon}
-            onChoisir={choisir} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
+            onChoisir={choisir} page={anchor === 'page' ? pagePlus : null} onPage={choose} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
         </div>
       )}
 

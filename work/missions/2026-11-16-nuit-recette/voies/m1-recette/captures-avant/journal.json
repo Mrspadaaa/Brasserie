@@ -1,0 +1,173 @@
+{
+ "erreurs": [],
+ "mesures": {
+  "clair-390-haut": {
+   "vue": [
+    390,
+    844
+   ],
+   "supprimer": [
+    241,
+    1926,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    795,
+    390,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    8,
+    41,
+    374,
+    41
+   ]
+  },
+  "clair-390-bas": {
+   "vue": [
+    390,
+    844
+   ],
+   "supprimer": [
+    241,
+    755,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    795,
+    390,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    8,
+    33,
+    374,
+    41
+   ]
+  },
+  "clair-390-clic-supprimer": true,
+  "clair-390-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprimer la recette"
+  ],
+  "cave-390-haut": {
+   "vue": [
+    390,
+    844
+   ],
+   "supprimer": [
+    241,
+    1926,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    795,
+    390,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    8,
+    41,
+    374,
+    41
+   ]
+  },
+  "cave-390-bas": {
+   "vue": [
+    390,
+    844
+   ],
+   "supprimer": [
+    241,
+    755,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    795,
+    390,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    8,
+    33,
+    374,
+    41
+   ]
+  },
+  "cave-390-clic-supprimer": true,
+  "cave-390-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprimer la recette"
+  ],
+  "clair-1280-haut": {
+   "vue": [
+    1280,
+    800
+   ],
+   "supprimer": [
+    769,
+    2052,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    751,
+    1280,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    370,
+    41,
+    540,
+    41
+   ]
+  },
+  "clair-1280-bas": {
+   "vue": [
+    1280,
+    800
+   ],
+   "supprimer": [
+    769,
+    711,
+    141,
+    28
+   ],
+   "pied": [
+    0,
+    751,
+    1280,
+    49
+   ],
+   "titre": "American IPA 30 L",
+   "titreHtml": "American IPA 30 L",
+   "modifier": [
+    370,
+    33,
+    540,
+    41
+   ]
+  },
+  "clair-1280-clic-supprimer": true,
+  "clair-1280-feuille": [
+   "Supprimer cette recette ?Supprimer cette recette ?American IPA — American IPA, 30 LLa recette quitte le catalogue. La suppression est journalisée.AnnulerSupprimer la recette"
+  ]
+ }
+}

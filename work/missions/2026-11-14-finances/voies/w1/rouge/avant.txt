@@ -1,0 +1,137 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/festive-wilbur-d80f3a
+
+ ❯ tests/integration/w1Mineurs.test.tsx (7 tests | 6 failed) 464ms
+   × FN-22 : le panneau Filtres ne répète pas trois mots presque pareils > « Courantes / Tout » (périmètre) et « toutes les dates » restent ; l’état « tous » prend un autre mot 181ms
+     → expected [ 'Toutes' ] to deeply equal []
+   × FN-23 : la légende du graphique de la prévision garde le nom tel quel > « avec ZZ TEST — Prévision », pas « avec zz test — prévision » 62ms
+     → expected 'avec zz test — prévisionsans' to contain 'avec ZZ TEST — Prévision'
+   × FN-24 : le nom du projet des cartes Avec / Sans n’est pas coupé > un nom de 25 signes est entier sur les deux cartes 79ms
+     → expected 'Avec ZZ TEST - Projet ma…sous zéro 25…' to contain 'Avec ZZ TEST - Projet materiel'
+   × FN-24 : le nom du projet des cartes Avec / Sans n’est pas coupé > un nom très long est coupé par la fin, et son nom entier est au toucher (title) 58ms
+     → [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"title"[32m[39m[2m, [22m[32m[32m"Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[32m[39m[2m) // element.getAttribute("title") === "Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[22m
+
+Expected the element to have attribute:
+[32m  title="Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[39m
+Received:
+[31m  null[39m
+   × FN-25 : « Limites » du projet dit son horizon > « aucun mois ne tient le seuil » ne contredit pas « tu restes au-dessus de zéro » : il dit jusqu’où il regarde 3ms
+     → expected 'Avec cet achat, aucun mois ne tient l…' to match /au-delà|plus loin|13 mois|jusqu’à/
+   × FN-26 : « 750,00 CHF » du titre de la fiche ne se coupe pas > le montant et « CHF » sont liés (espace insécable, bloc sans retour à la ligne) 2ms
+     → Le budget doit réunir le prix, la livraison et l’installation.
+   ✓ constat 22 : « Rien de prévu » disparaît dès qu’une prévision est enregistrée (service, onglet vivant) > aucune prévision : la ligne est là ; savePlan d’une dépense de 7,00 aujourd’hui : elle s’efface 78ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-22 : le panneau Filtres ne répète pas trois mots presque pareils > « Courantes / Tout » (périmètre) et « toutes les dates » restent ; l’état « tous » prend un autre mot
+AssertionError: expected [ 'Toutes' ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Toutes",[39m
+[31m+ ][39m
+
+ ❯ tests/integration/w1Mineurs.test.tsx:53:49
+     51|     expect(perimetre).toEqual(['Courantes', 'Tout']);
+     52|     const etats = within(screen.getByRole('group', { name: 'État des o…
+     53|     expect(etats.filter(e => /^tout/i.test(e))).toEqual([]);
+       |                                                 ^
+     54|     expect(etats).toContain('Sans filtre');
+     55|     expect(screen.getByText('toutes les dates')).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-23 : la légende du graphique de la prévision garde le nom tel quel > « avec ZZ TEST — Prévision », pas « avec zz test — prévision »
+AssertionError: expected 'avec zz test — prévisionsans' to contain 'avec ZZ TEST — Prévision'
+
+Expected: [32m"avec [7mZZ TEST[27m — [7mP[27mrévision"[39m
+Received: [31m"avec [7mzz test[27m — [7mp[27mrévision[7msans[27m"[39m
+
+ ❯ tests/integration/w1Mineurs.test.tsx:65:33
+     63|     fireEvent.change(d.getByPlaceholderText(/Loyer, commande de malt/)…
+     64|     const legende = document.querySelector('.pvc-fin')!;
+     65|     expect(legende.textContent).toContain('avec ZZ TEST — Prévision');
+       |                                 ^
+     66|     expect(legende.textContent).not.toContain('zz test');
+     67|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-24 : le nom du projet des cartes Avec / Sans n’est pas coupé > un nom de 25 signes est entier sur les deux cartes
+AssertionError: expected 'Avec ZZ TEST - Projet ma…sous zéro 25…' to contain 'Avec ZZ TEST - Projet materiel'
+
+Expected: [32m"Avec ZZ TEST - Projet ma[7mteriel[27m"[39m
+Received: [31m"Avec ZZ TEST - Projet ma[7m…sous zéro 25.01−142,66[27m"[39m
+
+ ❯ tests/integration/w1Mineurs.test.tsx:76:30
+     74|     const bascule = within(screen.getByRole('group', { name: /Avec ou …
+     75|     const [avec, sans] = bascule.getAllByRole('button');
+     76|     expect(avec.textContent).toContain('Avec ZZ TEST - Projet materiel…
+       |                              ^
+     77|     expect(sans.textContent).toContain('Sans ZZ TEST - Projet materiel…
+     78|     expect(avec.textContent).not.toContain('…');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-24 : le nom du projet des cartes Avec / Sans n’est pas coupé > un nom très long est coupé par la fin, et son nom entier est au toucher (title)
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"title"[32m[39m[2m, [22m[32m[32m"Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[32m[39m[2m) // element.getAttribute("title") === "Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[22m
+
+Expected the element to have attribute:
+[32m  title="Avec Fermenteur cylindro-conique inox 300 litres avec double paroi"[39m
+Received:
+[31m  null[39m
+ ❯ tests/integration/w1Mineurs.test.tsx:86:18
+     84|     const [avec] = within(screen.getByRole('group', { name: /Avec ou s…
+     85|     expect(avec.textContent).toContain('…');
+     86|     expect(avec).toHaveAttribute('title', `Avec ${long}`);
+       |                  ^
+     87|   });
+     88| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-25 : « Limites » du projet dit son horizon > « aucun mois ne tient le seuil » ne contredit pas « tu restes au-dessus de zéro » : il dit jusqu’où il regarde
+AssertionError: expected 'Avec cet achat, aucun mois ne tient l…' to match /au-delà|plus loin|13 mois|jusqu’à/
+
+[32m- Expected:[39m 
+/au-delà|plus loin|13 mois|jusqu’à/
+
+[31m+ Received:[39m 
+"Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF dans l’horizon."
+
+ ❯ tests/integration/w1Mineurs.test.tsx:102:30
+    100|     expect(m.pointBas && m.pointBas.soldeCents >= 0).toBe(true);
+    101|     const ligne = m.avertissements.find(a => /aucun mois ne tient/.tes…
+    102|     if (ligne) expect(ligne).toMatch(/au-delà|plus loin|13 mois|jusqu’…
+       |                              ^
+    103|     expect(ligne).toBeDefined();
+    104|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/integration/w1Mineurs.test.tsx > FN-26 : « 750,00 CHF » du titre de la fiche ne se coupe pas > le montant et « CHF » sont liés (espace insécable, bloc sans retour à la ligne)
+Error: Le budget doit réunir le prix, la livraison et l’installation.
+ ❯ validateUpgrade src/domain/finance/upgrades.ts:51:95
+     49|   if (detail.inServiceMonth != null && !/^\d{4}-(0[1-9]|1[0-2])$/.test…
+     50|   if (detail.depreciationCategory != null && !DEPRECIATION_CATEGORIES.…
+     51|   if (plan.upgrade && detail.budgetKnown && upgradeBudget(detail) !== …
+       |                                                                                               ^
+     52|   if (plan.upgrade && !detail.budgetKnown && plan.amountCents !== 0) t…
+     53|   if (plan.status === 'active' && upgradeReadiness(plan).length) throw…
+ ❯ validatePlan src/services/financeService.ts:66:28
+ ❯ Object.savePlan src/services/financeService.ts:81:41
+ ❯ semer tests/integration/w1Mineurs.test.tsx:35:41
+ ❯ tests/integration/w1Mineurs.test.tsx:109:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)
+   Start at  11:02:02
+   Duration  10.82s (transform 5.29s, setup 701ms, collect 7.96s, tests 464ms, environment 1.39s, prepare 109ms)
+

@@ -138,6 +138,8 @@ import type { ImportedRecipe } from '../ui/RecipeImportSheet';
 import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoComplete';
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
 import { EtapeRecap as SyncBrewSheet } from '../ui/recap/EtapeRecap';
+import { usePlusPage } from '../ui/plusPage';
+import { declarationPlusAssistant } from './wizardPlus';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
 import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
@@ -2326,6 +2328,78 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     boilMin
   };
   // Préchargement : l'analyse de l'eau part dès que la recette est connue, avant l'ouverture de l'onglet Eau (15.11, « moins de 2 secondes… assez lent »).
+  /* b1r : le menu du « + » met en tête les actions de la recette (ajouter à l'étape, enregistrer, exporter) ; « Partout » reste dessous.
+     « Aller à » n'y est plus (16.11) : le fil d'étapes, visible en haut, le fait déjà. */
+  /* ⚠️ L'export part d'ICI et non de la fiche, parce que les grandeurs CALCULÉES — OG, FG, IBU, EBC, rendement — vivent dans l'assistant.
+     Les recalculer dans la fiche les ferait diverger de ce que l'écran affiche : une recette exportée annonçant un IBU que l'application
+     ne montre nulle part serait pire que pas d'export du tout. Le Récapitulatif et le menu du « + » copient ce même texte. */
+  const texteRecette = () => recipeToText({
+    recipe: build(),
+    name,
+    style,
+    volumeL,
+    boilMin,
+    og: ogPredicted,
+    fg: fgPredicted,
+    abv: abvPredicted,
+    ibu,
+    ebc: color?.ebc ?? null,
+    efficiencyPct: efficiency,
+    carboTarget,
+    mashRatioLPerKg: totalGrist > 0 ? water.mashWaterL / totalGrist : undefined,
+    spargeType,
+    adjuncts: details.adjuncts,
+    fermentables,
+    totalGristKg: totalGrist,
+    hops,
+    hopIbu: (h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin),
+    yeast,
+    mashSteps,
+    fermentation: ferment,
+    water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForRecord ? {
+      ...waterRecapForRecord,
+      sourceName: waterRecapForRecord.sourceName,
+      styleName: waterRecapForRecord.styleName,
+      mashWaterL: waterRecapForRecord.mashWaterL,
+      spargeWaterL: waterRecapForRecord.spargeWaterL,
+      mashOsmoseeL: waterRecapForRecord.mashOsmoseeL,
+      spargeOsmoseeL: waterRecapForRecord.spargeOsmoseeL,
+      wortIons: waterRecapForRecord.wortIons,
+      doses: waterRecapForRecord.doses,
+      acidId: waterRecapForRecord.acidId,
+      mashAcid: waterRecapForRecord.mashAcid,
+      spargeAcid: waterRecapForRecord.spargeAcid,
+      ra: waterRecapForRecord.ra,
+      mashPh: waterRecapForRecord.mashPh
+    }:undefined,
+    notes
+  });
+  // « Exporter la recette » du « + » : copie ce texte sans quitter l'étape, et le dit (« Recette copiée ») ; un refus se dit aussi, jamais en silence.
+  const [messageExport, setMessageExport] = useState<{ texte: string; echec?: boolean } | null>(null);
+  const messageExportMinuterie = useRef<number | undefined>(undefined);
+  const direExport = (m: { texte: string; echec?: boolean }) => {
+    setMessageExport(m);
+    window.clearTimeout(messageExportMinuterie.current);
+    messageExportMinuterie.current = window.setTimeout(() => setMessageExport(null), 4000);
+  };
+  useEffect(() => () => window.clearTimeout(messageExportMinuterie.current), []);
+  const exporterDepuisPlus = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Presse-papier indisponible : ouvre le Récapitulatif pour copier le texte.');
+      await navigator.clipboard.writeText(texteRecette());
+      direExport({ texte: 'Recette copiée.' });
+    } catch (e) {
+      direExport({ texte: e instanceof Error && e.name !== 'NotAllowedError' ? e.message : 'Copie refusée : ouvre le Récapitulatif pour copier le texte.', echec: true });
+    }
+  };
+  usePlusPage(declarationPlusAssistant({
+    steps: STEPS,
+    step,
+    levurePosee: !!yeast.name?.trim(),
+    enregistrable: !saving && !draftReadOnly,
+    enregistrer: submitRecipe,
+    exporter: () => { void exporterDepuisPlus(); }
+  }));
   useWaterPreload({ source: waterSource, beerEbc: color?.ebc ?? null, beerVolumeL: volumeL, brew: waterBrew, state: water },
     step !== 'eau' && !(details.nolo?.enabled && details.nolo.process === 'secondRunnings'));
 
@@ -2390,6 +2464,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
       </div>}
       {draftKey && messageDeBase && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
+      {/* « Exporter la recette » du « + » : le même toast que celui de l'App (bas de l'écran, à gauche du « + »), sans quitter l'étape. */}
+      {messageExport && <div role={messageExport.echec ? 'alert' : 'status'} data-toast="export" className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
+        <span>{messageExport.texte}</span>
+      </div>}
       {visibleIssues.length > 0 && <div id="wz-validation" role="alert" tabIndex={-1} className="border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
         <p className="font-semibold">{visibleIssues.length === 1 ? 'Une valeur à corriger' : `${visibleIssues.length} valeurs à corriger`}</p>
         <ul>{visibleIssues.map(issue => <li key={issue.field}><button type="button" className="text-left underline underline-offset-2" onClick={() => requestCorrection([issue])}>{issue.message}</button></li>)}</ul>
@@ -3265,50 +3343,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             affiche : une recette exportée annonçant un IBU que l'application
             ne montre nulle part serait pire que pas d'export du tout.
           */
-          onExportText={() =>
-            recipeToText({
-              recipe: build(),
-              name,
-              style,
-              volumeL,
-              boilMin,
-              og: ogPredicted,
-              fg: fgPredicted,
-              abv:
-                abvPredicted,
-              ibu,
-              ebc: color?.ebc ?? null,
-              efficiencyPct: efficiency,
-              carboTarget,
-              mashRatioLPerKg: totalGrist > 0 ? water.mashWaterL / totalGrist : undefined,
-              spargeType,
-              adjuncts: details.adjuncts,
-              fermentables,
-              totalGristKg: totalGrist,
-              hops,
-              hopIbu: (h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin),
-              yeast,
-              mashSteps,
-              fermentation: ferment,
-              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForRecord ? {
-                ...waterRecapForRecord,
-                sourceName: waterRecapForRecord.sourceName,
-                styleName: waterRecapForRecord.styleName,
-                mashWaterL: waterRecapForRecord.mashWaterL,
-                spargeWaterL: waterRecapForRecord.spargeWaterL,
-                mashOsmoseeL: waterRecapForRecord.mashOsmoseeL,
-                spargeOsmoseeL: waterRecapForRecord.spargeOsmoseeL,
-                wortIons: waterRecapForRecord.wortIons,
-                doses: waterRecapForRecord.doses,
-                acidId: waterRecapForRecord.acidId,
-                mashAcid: waterRecapForRecord.mashAcid,
-                spargeAcid: waterRecapForRecord.spargeAcid,
-                ra: waterRecapForRecord.ra,
-                mashPh: waterRecapForRecord.mashPh
-              }:undefined,
-              notes
-            })
-          }
+          onExportText={texteRecette}
         /></Suspense>
         </>
       )}

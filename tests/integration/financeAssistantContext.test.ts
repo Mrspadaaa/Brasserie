@@ -41,7 +41,7 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     input.creativeItems = [{ id: 'LEGACY', type: 'equipment', title: 'Fermenteur', status: 'idea' }];
     const result = buildFinanceAssistantContext(input);
     expect(result.equipmentProjects).toMatchObject({ loaded: 3, includedCount: 1, complete: true });
-    expect(result.equipmentProjects.records.find(p => p.id === 'HOTTE')).toMatchObject({ inForecast: true, timing: 'soon', purpose: 'Évacuer la vapeur', invoicedCents: 40000, remainingBudgetCents: 60000, deliveryCents: null });
+    expect(result.equipmentProjects.records.find(p => p.inForecast)).toMatchObject({ title: 'Matériel fictif', inForecast: true, timing: 'soon', purpose: 'Évacuer la vapeur', invoicedCents: 40000, remainingBudgetCents: 60000, deliveryCents: null });
     expect(result.equipmentProjects.records.find(p => p.title === 'Fermenteur')).toMatchObject({ inForecast: false, budgetCents: null, date: null });
     expect(result.forecast.windows[0]).toMatchObject({ expenseCents: 100000, equipmentProjectCents: 60000, withoutEquipmentProjectsExpenseCents: 40000, withoutEquipmentProjectsBalanceCents: 60000 });
     expect(FINANCE_ADVICE_GUIDANCE).toContain('equipmentProjects');
@@ -62,7 +62,7 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     database.data.set('financialPlans', [{ ...plan('UPGRADE-OLD', '2026-06-15', 50000), status: 'cancelled', upgrade: { version: 1, sourceCreativeItemId: 'OLD', timing: 'soon', stage: 'quote', budgetKnown: true, purchaseCents: 50000, datePrecision: 'month', estimateSource: 'quote' } }]);
     const result = await loadBrewerFinanceContext(database.db as any);
     expect(result.equipmentProjects.loaded).toBe(1);
-    expect(result.equipmentProjects.records[0]).toMatchObject({ id: 'UPGRADE-OLD', inForecast: false, status: 'cancelled' });
+    expect(result.equipmentProjects.records[0]).toMatchObject({ title: 'Matériel fictif', inForecast: false, status: 'cancelled' });
     expect(database.calls.find(call => call.collection === 'financialPlans')?.fields).toContain('upgrade');
     expect(database.calls.find(call => call.collection === 'creativeItems')?.fields).not.toContain('contactPhone');
   });
@@ -77,8 +77,8 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     expect(after.ledger.trackedPayablesCents).toBe(6000);
     expect(after.ledger.archivedCount).toBe(1);
     expect(after.forecast.windows).toEqual(before.forecast.windows);
-    expect(after.ledger.actionable[0]).toMatchObject({ id: 'TX-OLD', archived: true, payment: 'partial', remainingCents: 6000 });
-    expect(after.forecast.windows[0].sourceIds).toContain('invoice:TX-OLD');
+    expect(after.ledger.actionable[0]).toMatchObject({ label: 'Malt fictif', vendor: 'Malterie fictive', archived: true, payment: 'partial', remainingCents: 6000 });
+    expect(after.forecast.windows[0].sourceCount).toBeGreaterThan(0); expect(JSON.stringify(after)).not.toMatch(/TX-OLD/);
   });
 
   it('distingue avoir imputé, vrai paiement et pièce annulée sans transformer le crédit en argent', () => {
@@ -97,7 +97,7 @@ describe('contexte financier déterministe — aucune génération IA', () => {
 
   it('ne donne pas de solde certain pour un paiement historique inconnu ou un registre tronqué', () => {
     const input = base(); input.transactions = [tx()]; input.transactions[0].finance!.paymentStatus = 'paid';
-    expect(buildFinanceAssistantContext(input).ledger).toMatchObject({ cashCents: null, cashComplete: false, unknownPaymentCount: 1 });
+    expect(buildFinanceAssistantContext(input).ledger).toMatchObject({ cashCents: null, unknownPaymentCount: 1 }); expect('caisse' in buildFinanceAssistantContext(input).ledger).toBe(false);
     input.transactions[0].finance!.paymentStatus = 'unpaid';
     input.coverage.transactions = { ...input.coverage.transactions, complete: false, loaded: 1500, totalAtLeast: 1501 };
     const result = buildFinanceAssistantContext(input);
@@ -135,7 +135,7 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     const report = buildAnnualReport({ year: 2025, transactions: input.transactions, payments: [], assets: [], profile: input.profile!, closing, generatedAt: '2026-01-02T10:00:00Z' });
     input.closings = [{ ...closing, report }]; input.coverage.transactions.complete = false;
     const result = buildFinanceAssistantContext(input);
-    expect(result.annual.find(row => row.year === 2025)).toMatchObject({ frozen: true, closingId: 'CLOSE-2025', generatedAt: '2026-01-02T10:00:00Z', resultCents: report.resultCents });
+    expect(result.annual.find(row => row.year === 2025)).toMatchObject({ frozen: true, generatedAt: '2026-01-02T10:00:00Z', resultCents: report.resultCents });
     expect(result.annual.find(row => row.year === 2026)?.resultCents).toBeNull();
   });
 
@@ -144,8 +144,8 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     input.stock = [{ id: 'MP-1', ref: 'MP-1', name: 'Malt fictif', category: 'Malt', unit: 'kg', currentStock: 2, minStock: 0, reorder: false }];
     input.recipes = [{ id: 'REC-1', name: 'Blonde fictive', style: 'Blonde', volumeL: 20, malts: [{ name: 'Malt fictif', weightKg: 4 }], hops: [], yeast: { name: '', qty: 0, unit: 'sachet' } } as any];
     const result = buildFinanceAssistantContext(input), budget = result.budgets[0];
-    expect(result.stock.priceExamples[0].sourceIds).toEqual(['PRICE']);
-    expect(budget).toMatchObject({ recipeId: 'REC-1', kind: 'simulation', complete: false, costedConsumptionCents: 2000, costedPurchasesCents: 1000, fullCostPerLiterCents: null });
+    expect(result.stock.priceExamples[0]).toMatchObject({ name: 'Malt fictif' }); expect(JSON.stringify(result)).not.toContain('PRICE');
+    expect(budget).toMatchObject({ title: 'Blonde fictive', kind: 'simulation', complete: false, costedConsumptionCents: 2000, costedPurchasesCents: 1000, fullCostPerLiterCents: null });
     expect('issues' in budget && budget.issues?.items.join(' ')).toMatch(/Énergie|Conditionnement/);
     expect(result.business.personalLaborIncluded).toBe(false);
   });
@@ -158,7 +158,7 @@ describe('contexte financier déterministe — aucune génération IA', () => {
     expect(result.budgets[0].complete).toBe(false);
     expect('issues' in result.budgets[0] && result.budgets[0].issues?.items.join(' ')).toMatch(/Amortissement|reprise/);
     input.batches = [{ id: 'LOT', name: 'Double volume fictif', status: 'planifie', brewDate: '2026-06-15', recipeRef: 'REC-1', volumeL: 40 } as any];
-    expect(buildFinanceAssistantContext(input).budgets[0]).toMatchObject({ batchId: 'LOT', complete: false, error: expect.stringContaining('Volume du brassin différent') });
+    expect(buildFinanceAssistantContext(input).budgets[0]).toMatchObject({ complete: false, error: expect.stringContaining('Volume du brassin différent') });
   });
 
   it('n’expose pas notes, fichiers ou fausses absences de justificatif legacy', () => {
@@ -229,7 +229,7 @@ describe('simulation de matériel et contrat compagnon — transport factice uni
     expect(generator).toHaveBeenCalledTimes(4);
     expect(JSON.stringify(generator.mock.calls[0][1].systemInstruction)).toContain('temps personnel');
     for (const index of [2, 3]) {
-      expect(JSON.stringify(generator.mock.calls[index][1].systemInstruction)).toContain('cashComplete=false');
+      expect(JSON.stringify(generator.mock.calls[index][1].systemInstruction)).toContain('caisse');
       const received = JSON.parse(generator.mock.calls[index][1].contents[0].parts[0].text);
       expect(received.evidence.find((item: any) => item.id === 'E1')?.data).toMatchObject({ paybackMonths: 69, initialCostCents: 115_000 });
     }
@@ -254,7 +254,7 @@ describe('chargement serveur borné sans réseau dans les tests', () => {
     database.failures.add('financialPayments'); database.data.set('financialProfiles/current', [base().profile]);
     const result = await loadBrewerFinanceContext(database.db as any);
     expect(result.coverage.financialPayments).toMatchObject({ complete: false, unavailable: true });
-    expect(result.ledger.cashComplete).toBe(false);
+    expect('caisse' in result.ledger).toBe(false);
     expect(result.forecast.windows.every(window => window.balanceCents === null)).toBe(true);
   });
 });

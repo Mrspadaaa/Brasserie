@@ -5,6 +5,7 @@ import { mesurerAchat } from '../../../domain/finance/materielFutur';
 import { upgradeBudget, upgradeDetails } from '../../../domain/finance/upgrades';
 import type { FinanceTransaction, FinancialAsset, FinancialPlan, FinancialProfile } from '../../../domain/finance/types';
 import type { Escalier } from './escalier';
+import { moisCourt } from './format';
 
 /** Fiche d'un projet de matériel : usure, litre avant → après, plus bas, bouteilles. Assemble `mesurerAchat` (d3) et l'escalier quotidien (pas les soldes de fin de mois). */
 export interface MesureProjet {
@@ -43,5 +44,18 @@ export function mesureDuProjet(input: { plan: FinancialPlan; plans: FinancialPla
   return { usureParAnCents: mesure.usureParAnCents, litreAvant: litre ? litre.affiche.complet : null, litreApres: apres == null ? null : Math.round(apres) / 100,
     litreManque: litre ? null : brassins.length ? 'brassin-partiel' : 'aucun-brassin',
     pointBas: input.escalier.pointBas, soldeFinCents: input.escalier.soldeFinCents, bouteillesPourZero: bouteillesPourZero(input.escalier.pointBas?.soldeCents, prix),
-    bouteillesPourPayer: mesure.ventes?.bouteilles ?? null, avertissements: mesure.avertissements };
+    bouteillesPourPayer: mesure.ventes?.bouteilles ?? null, avertissements: mesure.avertissements.map(a => direHorizon(a, input.forecast, input.fin)) };
+}
+
+/**
+ * w1, FN-25 (test d'écran 8b9e1732) : « aucun mois ne tient le seuil … dans l’horizon » parle des soldes de FIN DE MOIS sur tout l'horizon du domaine
+ * (13 mois), alors que « Plus bas » et « Tu restes au-dessus de zéro » lisent l'escalier du jour sur la vue affichée (30 j, 90 j ou 12 mois). Les deux
+ * phrases ne se contredisent pas si la limite dit jusqu'où elle regarde, et que la vue est plus courte.
+ */
+export function direHorizon(avertissement: string, forecast: Pick<FinanceForecast, 'months'>, fin: string): string {
+  if (!avertissement.startsWith('Avec cet achat, aucun mois ne tient') || !avertissement.endsWith(' dans l’horizon.')) return avertissement;
+  const mois = forecast.months.map(m => m.month), dernier = mois[mois.length - 1];
+  if (!dernier) return avertissement;
+  const vue = fin.slice(0, 7) < dernier ? ` ; au-delà de la vue affichée (jusqu’au ${Number(fin.slice(8, 10))} ${moisCourt(fin)})` : '';
+  return `${avertissement.slice(0, -' dans l’horizon.'.length)} d’ici fin ${moisCourt(`${dernier}-01`)} ${dernier.slice(0, 4)} (soldes de fin de mois, ${mois.length} mois)${vue}.`;
 }

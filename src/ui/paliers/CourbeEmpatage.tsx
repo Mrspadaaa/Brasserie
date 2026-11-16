@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { MashProgram } from '../../domain/brewPrograms';
 import { NumberInput } from '../NumberInput';
+import { declarerAjoutPalier } from './ajoutPalier';
 import {
   BANDE_CORPS, G, basculerMashout, disposer, dureeDepuisX, dureeTotale, echelleTemp, insererAvant, rangFinDeCourbe, rangMashout, renommerColonne,
   reglerColonne, tempDepuisY, traceCourbe, yDeTemp, type Colonne, type EtatEmpatage,
@@ -92,6 +93,10 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
 
   const ecrire = (suivant: EtatEmpatage) => { setAvisMasque(true); onChange(suivant); };
   const ajouter = (avant: number) => { const r = insererAvant(etat, avant); ecrire(r.etat); setChoisi(r.rang); };
+  // Le menu du « + » flottant ajoute un palier par ce même geste : la fonction de fin de courbe, toujours la dernière (fermeture sur l'état).
+  const ajoutFin = useRef(() => {});
+  ajoutFin.current = () => ajouter(finCourbe);
+  useEffect(() => declarerAjoutPalier(() => ajoutFin.current()), []);
   const toucher = (rang: number) => { setAvisMasque(true); setChoisi(c => (c === rang ? null : rang)); };
   const retirer = (rangReel: number) => { setAvisMasque(false); onRetirer(rangReel); setChoisi(null); };
 

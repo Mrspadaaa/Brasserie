@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { Archive, ChevronRight, Wrench, Wheat } from 'lucide-react';
+import { Archive, ChevronRight, Trash2, Wrench, Wheat } from 'lucide-react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
 import type { FinancialPlan } from '../../../domain/finance/types';
 import { upgradeDetails } from '../../../domain/finance/upgrades';
 import { FinanceService } from '../../../services/financeService';
 import { Feuille } from './Feuille';
+import { Confirmation } from '../prevision/base';
+import { supprimerPlan } from '../prevision/supprimerPlan';
 import type { MesureProjet } from './mesureProjet';
 import { centimesDeSaisie, jourCourt, litreFr, montant } from './format';
 
@@ -31,11 +33,14 @@ interface ProjetProps { plan: FinancialPlan; mesure: MesureProjet; titreFin: str
 export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onOuvrir }: ProjetProps) {
   const detail = upgradeDetails(plan), { ecrire, occupe, etat } = useEcriture();
   const [deplace, setDeplace] = useState(false), [mois, setMois] = useState(plan.date.slice(0, 7));
+  /* v1 (21) : « Supprimer » demande d'abord (même brique que la feuille de la prévision et celle du projet) ; un refus du service s'écrit dans la question. */
+  const [demande, setDemande] = useState(false), [refus, setRefus] = useState('');
+  const supprimer = () => { try { supprimerPlan(plan.id); onClose(); } catch (e) { setRefus(e instanceof Error ? e.message : 'Suppression impossible.'); } };
   const prixC = centimesDeSaisie(prix);
   const duree = detail.usefulLifeYears;
   const bas = mesure.pointBas, fin = mesure.soldeFinCents;
   const litreVide = mesure.litreManque === 'brassin-partiel' ? 'brassin planifié partiel' : 'aucun brassin planifié';
-  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, {montant(plan.amountCents)} CHF</>} onClose={onClose}
+  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, <span className="prv-nb">{montant(plan.amountCents)}{' '}CHF</span></>} onClose={onClose}
     aside={`${detail.estimateSource === 'quote' ? 'devis' : 'estimé'} · ${plan.date ? jourCourt(plan.date) : 'date à choisir'}`}>
     <div className="prv-row"><span>Usure sur</span>
       <span className="prv-sel" role="group" aria-label="Durée d’usure">{DUREES.map(a => <button key={a} type="button" disabled={occupe} aria-pressed={duree === a} onClick={() => void ecrire({ ...plan, upgrade: { ...detail, usefulLifeYears: a } })}>{a} ans</button>)}</span></div>
@@ -58,10 +63,12 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
     {deplace && <div className="prv-row"><label>Payer en <input type="month" value={mois} onChange={e => setMois(e.target.value)} /></label>
       <button type="button" className="prv-prim" disabled={occupe || !/^\d{4}-\d{2}$/.test(mois)} onClick={() => void ecrire({ ...plan, date: `${mois}-01`, upgrade: { ...detail, datePrecision: 'month' } }, () => setDeplace(false))}>Valider</button></div>}
     {etat && <p className={`prv-etat prv-${etat.kind}`} role="status">{etat.texte}</p>}
-    <div className="prv-acts">
+    {demande ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail="Ses achats liés restent dans les comptes. Pour le garder sans le compter : Retirer." oui="Oui, supprimer" onOui={supprimer} onGarder={() => { setDemande(false); setRefus(''); }} erreur={refus} />
+    : <div className="prv-acts">
       <button type="button" className="prv-sec" disabled={occupe} onClick={() => void ecrire({ ...plan, status: 'draft' }, onClose)}><Archive size={14} aria-hidden="true" /> Retirer</button>
       <button type="button" className="prv-sec" disabled={occupe} aria-expanded={deplace} onClick={() => setDeplace(!deplace)}>Déplacer</button>
-      <button type="button" className="prv-prim" onClick={onOuvrir}>Ouvrir le projet</button></div>
+      <button type="button" className="prv-sec" disabled={occupe} aria-label="Supprimer ce projet" onClick={() => setDemande(true)}><Trash2 size={14} aria-hidden="true" /> Supprimer</button>
+      <button type="button" className="prv-prim" onClick={onOuvrir}>Ouvrir le projet</button></div>}
   </Feuille>;
 }
 

@@ -10,7 +10,7 @@ import { isoDate, summarizeLedger, todayISO } from '../../../domain/finance/ledg
 import { FinanceService } from '../../../services/financeService';
 import { StorageService } from '../../../services/storage';
 import { useStorageValue } from '../../../hooks/useLiveData';
-import { construireEscalier, dernierJourInclus, graduations, regrouperTendance, titreHorizon, type Escalier } from '../previsions/escalier';
+import { construireEscalier, dernierJourInclus, graduations, nomProjet, regrouperTendance, titreHorizon, type Escalier } from '../previsions/escalier';
 import { jourCourt, montant, montantCourt, montantEntier, moisCourt } from '../previsions/format';
 import { CATEGORY_LABELS, FormSheet, idFor } from './base';
 import { supprimerPlan } from './supprimerPlan';
@@ -131,7 +131,7 @@ export function PlanSheetC({ plan, onClose }: { plan?: FinancialPlan; onClose: (
         </div>
         <Frise asOf={asOf} fin={effet.fin} dates={datesFrise} />
         <Marches effet={effet} planId={draft.id} asOf={asOf} signe={!sansSolde} />
-        <div className="pvc-fin"><i className="pvc-fl" />{draft.title.trim() ? `avec ${draft.title.trim().toLowerCase()}` : 'avec cette prévision'}<i className="pvc-fl pvc-fa" />sans</div>
+        <div className="pvc-fin"><i className="pvc-fl" />{draft.title.trim() ? `avec ${nomProjet(draft.title, 28)}` : 'avec cette prévision'}<i className="pvc-fl pvc-fa" />sans</div>
         <div className="pvc-eff" aria-live="polite">
           <span>{titreFin}{sansSolde ? ' · écart' : ''}<small>{rien ? (valide ? 'cette prévision n’est pas à venir : aucun effet' : 'montant à saisir pour voir l’effet') : n ? `${n} × ${montant(unitaire)} dans les ${HORIZON} jours` : `aucune échéance dans les ${HORIZON} jours`}</small></span>
           <s>{montant(val(effet.avant))}</s><b className="pvc-m">{valide ? montant(val(effet.apres)) : '—'}</b>
