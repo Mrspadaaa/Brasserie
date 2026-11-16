@@ -229,6 +229,16 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
 Un contrôle né d'une plainte entre dans les GATES des voies suivantes. C'est ce qui empêche le défaut
 de revenir.
 
+## Méthode maquettes (16.11)
+
+« Met en place des choses pour plus perdre autant de temps ni pour plus perdre mes retours... » (16.11). Une seule méthode, nommée, sans changement en cours de route :
+1. Ses paroles : le hook `paroles.mjs` (UserPromptSubmit) journalise chaque message mot pour mot dans `~/.claude/paroles/AAAA-MM-JJ.md` ; `systeme.mjs paroles` liste ceux absents de SPEC-BRASSEUR, à verser au tour même.
+2. Ses choix : `work/refonte-frontend/v4/choix/maquettes.json`, par chantier, la base choisie, les gardés, les refusés et les idées, chacun avec sa parole, sa date et sa signature.
+3. Toute version part de la base du registre, jamais de la dernière itération. Un nouveau choix du brasseur entre au registre avant toute version.
+4. Workflow `.claude/workflows/maquettes.js` : base lue, N mini maquettes statiques par des concepteurs Opus (sans limite de temps), `controle-base.mjs <chantier> <f> --dures --statique`, critique calibré (PORTRAIT.md) sur toutes, une correction, page de choix écrite à la main.
+5. Une version KO au contrôle n'est jamais montrée comme candidate. Le critique n'est jamais sauté.
+6. Pas de jouable, de scénario ni d'audit avant son choix (L30) : ils viennent après, sur la version choisie, dans une autre étape.
+
 ## Commandes
 
 | Commande | Rôle |
