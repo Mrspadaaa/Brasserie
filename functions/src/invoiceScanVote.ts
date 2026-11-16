@@ -157,14 +157,108 @@ export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
 
 /**
  * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3.8 l'ajoute. Le rapprochement est celui de la production
- * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position). Repli par la position (PLAN § 2 bis) : quand les deux listes ont la même
- * longueur, une ligne sans paire des deux côtés au même rang est la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13 du banc).
+ * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position : ce sont les ANCRES).
+ * p3 (jeu en ligne 5, BAUHAUS : « GANTS DE TRAVAIL » posé sur « METRE AUGA » à un autre montant) : problème d'école, l'alignement de deux séquences autour d'ancres communes (diff, Needleman-Wunsch).
+ * L'ancien repli (même longueur totale, ligne sans paire au même rang des deux côtés) devinait des paires dès que les deux listes avaient le même nombre de lignes, sans regarder si l'espace entre deux ancres
+ * avait le même nombre de lignes de chaque côté : sur une photo tachée (10 lignes sans paire de chaque côté) il rapprochait des lignes sans rapport et décalait les corrections. Le repli se fait DANS UN INTERVALLE
+ * entre deux ancres voisines (dans l'ordre des deux listes) : les lignes sans paire de l'intervalle se rapprochent une à une, dans l'ordre, seulement s'il y en a le même nombre des deux côtés (le doc13 du banc :
+ * la 3.8 change le nom et le montant d'une ligne entre deux lignes sûres). Sinon aucune paire : celle du provisoire est « retirée », celle du final « ajoutée », sans correction inventée.
  */
+const SEUIL_NOM = 0.7, SEUIL_NOM_MONTANT_EGAL = 0.5, SEUIL_UNE_PAIRE = 0.5;
+const texteDeNom = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** Ressemblance de deux noms : 1 − (distance de Levenshtein / longueur du plus long), sur le texte sans accents ni ponctuation. 0 si l'un est vide. */
+export function ressemblance(a: unknown, b: unknown): number {
+  const x = texteDeNom(a), y = texteDeNom(b);
+  if (!x || !y) return 0;
+  let precedente = Array.from({ length: y.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= x.length; i++) {
+    const courante = [i];
+    for (let j = 1; j <= y.length; j++) courante[j] = Math.min(precedente[j] + 1, courante[j - 1] + 1, precedente[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+    precedente = courante;
+  }
+  return 1 - precedente[y.length] / Math.max(x.length, y.length);
+}
 export function rangsProvisoires(provisoire: any[], final: any[]): Array<number | null> {
   const paire = alignerLignes(provisoire, final);
   const rangDe = new Map<number, number>([...paire.match].map(([p, f]) => [f, p]));
-  const repli = provisoire.length === final.length;
-  return final.map((_, f) => rangDe.get(f) ?? (repli && paire.orphansBase.includes(f) && paire.orphansOther.includes(f) ? f : null));
+  const rangs: Array<number | null> = final.map((_, f) => rangDe.get(f) ?? null);
+  const sansPaire = new Set(paire.orphansBase);
+  let precedenteF = -1, precedenteP = -1; // la dernière ancre (rang final, rang provisoire)
+  const intervalle = (finF: number, finP: number) => {
+    const deF: number[] = []; for (let f = precedenteF + 1; f < finF; f++) if (rangs[f] === null) deF.push(f);
+    const deP: number[] = []; for (let p = precedenteP + 1; p < finP; p++) if (sansPaire.has(p)) deP.push(p);
+    if (!deF.length || !deP.length) return;
+    // Une seule ligne sans paire de chaque côté : la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13) SEULEMENT si la pièce n'a que cette ligne ou si les noms se ressemblent : entre deux ancres,
+    // la position seule rapprochait « PINCEAU PLAT » de « ROBAN DE MASQUAGE » (BAUHAUS, banc : deux lignes sans rapport, montants 3,40 et 4,50).
+    if (deF.length === 1 && deP.length === 1) { if ((final.length === 1 && provisoire.length === 1) || ressemblance(final[deF[0]]?.name, provisoire[deP[0]]?.name) >= SEUIL_UNE_PAIRE) rangs[deF[0]] = deP[0]; return; }
+    // Plusieurs : jamais la position (elle décale tout). Seule une ressemblance du nom lu (une faute d'OCR corrigée : BNOSEE / BROSSE) rapproche, la plus forte d'abord, une paire à la fois.
+    const candidats = deF.flatMap(f => deP.map(p => ({ f, p, s: ressemblance(final[f]?.name, provisoire[p]?.name), memeMontant: final[f]?.amountTTC === provisoire[p]?.amountTTC })))
+      .filter(c => c.s >= SEUIL_NOM || (c.memeMontant && c.s >= SEUIL_NOM_MONTANT_EGAL)).sort((a, b) => b.s - a.s);
+    const prisF = new Set<number>(), prisP = new Set<number>();
+    for (const c of candidats) if (!prisF.has(c.f) && !prisP.has(c.p)) { rangs[c.f] = c.p; prisF.add(c.f); prisP.add(c.p); }
+  };
+  for (let f = 0; f < final.length; f++) {
+    const p = rangDe.get(f);
+    if (p === undefined || p <= precedenteP) continue; // une ancre qui revient en arrière n'ouvre aucun intervalle sûr
+    intervalle(f, p);
+    precedenteF = f; precedenteP = p;
+  }
+  intervalle(final.length, provisoire.length);
+  return rangs;
+}
+
+/**
+ * p2 (jeu en ligne 4, 10.11) : deux tickets Sun Store lus comme deux pages d'UNE dépense, « Total EFT 163,85 » imprimé sur les deux. Les deux Flash-Lite lisent les 7 lignes et 163,85 ; la 3.8, qui tranche SEULE (C★),
+ * rend la page 2 seule : 5 lignes, 149,25, TVA 0,00. Le client voit la perte tant que le flux provisoire est là (« pas retrouvée »), mais le résultat gardé au cache ne la dit plus : relu plus tard, la dépense
+ * affiche 149,25 sans aucune trace. Ce que la 3.8 retire est donc écrit dans le résultat lui-même : les lignes que les deux premières lectures avaient et que la 3.8 n'a pas (rapprochement de production,
+ * `alignerLignes`), et, avec elles, le total et la TVA d'avant quand la 3.8 les change. Additif : aucune valeur du résultat n'est modifiée ici, le client décide (Garder / Retirer).
+ */
+export interface Retirees { lignes: Array<{ rang: number; ligne: any }>; amountTTC?: number | null; tvaAmount?: number | null }
+export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: LectureVote | undefined, final: any): Retirees | null {
+  if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
+  const provisoire = provisoireDeDeux(l1, l2);
+  if (!provisoire) return null;
+  // p3 : la même table que le flux (`rangsProvisoires`) : une ligne que le repli rapproche est corrigée par la 3.8, pas retirée.
+  const rapprochees = new Set(rangsProvisoires(provisoire.items, final.items ?? []).filter((r): r is number => r !== null));
+  const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang));
+  const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
+  const tva = centimes(provisoire.tvaAmount) !== null && centimes(provisoire.tvaAmount) !== centimes(final.tvaAmount);
+  // Seules les LIGNES retirées déclenchent l'écriture (une donnée perdue) ; un total ou une TVA que la 3.8 corrige seul reste, comme avant, une correction ordinaire (le banc `scripts/banc-lecture-facture.ts`, oracle de parité, ne l'écrit pas).
+  if (!lignes.length) return null;
+  return { lignes, ...(total ? { amountTTC: provisoire.amountTTC } : {}), ...(tva ? { tvaAmount: provisoire.tvaAmount } : {}) };
+}
+
+/**
+ * p3 relance 1 (jeu en ligne 6, BAUHAUS : « OPSHGE CHANTIER » à 8,50 posé sur « CRATONS DE CHARPENTTER · 3,10 », 8 lignes au nom d'une voisine) : preuve sur les lectures réelles du banc (`analyse-decalage-sortie.txt`,
+ * 113 tirages à trois lectures, aucun appel) : c'est la 3.8 elle-même, pas le rapprochement : sur le ticket BAUHAUS tâché (doc24) et un second ticket de la même boutique (doc25), jusqu'à 12 lignes sur 29 de sa lecture portent le montant
+ * d'une ligne VOISINE ; ailleurs, aucune. Quand elle tranche seule (C★), ses lignes remplacent celles des deux Flash-Lite, qui s'accordaient sur ces lignes.
+ * Détection (pas de modèle de plus) : une ligne de la 3.8 dont le nom est retrouvé (ressemblance ≥ 0,6) dans CHACUNE des deux Flash-Lite, les deux lignes retrouvées s'accordant sur le montant, alors que le montant de la 3.8 diffère
+ * de ce montant d'accord ET est celui d'une ligne voisine (rang ± 1 à 2, d'un autre nom) dans chacune des deux. Alors le montant, le prix, la quantité et l'unité d'accord des deux Flash-Lite remplacent ceux de la 3.8 :
+ * le nom (sa lecture, meilleure) reste. Une correction de nom ne change jamais le montant d'une ligne. Rend les rangs redressés.
+ */
+export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote): { items: any[]; redressees: number[] } {
+  const items: any[] = final?.items ?? [];
+  if (!l1.normalized || !l2.normalized || !items.length) return { items, redressees: [] };
+  const lites = [l1.normalized.items as any[], l2.normalized.items as any[]];
+  const montant = (x: any) => (typeof x?.amountTTC === 'number' && Number.isFinite(x.amountTTC) ? Math.round(x.amountTTC * 100) : null);
+  // Le raisonnement par les voisines ne vaut que si les trois listes ont une structure comparable (à une ligne près) : deux Flash-Lite qui ont perdu des lignes (doc25, tirage p5 : 18 et 21 pour 22) se décalent elles-mêmes.
+  if (lites.some(liste => Math.abs(liste.length - items.length) > 1)) return { items, redressees: [] };
+  const redressees: number[] = [];
+  const sortie = items.map((it, i) => {
+    const a3 = montant(it);
+    if (a3 === null) return it;
+    const proches = lites.map(liste => liste.map((x, j) => ({ j, s: ressemblance(it.name, x?.name) })).sort((p, q) => q.s - p.s)[0]);
+    if (proches.some(p => !p || p.s < 0.6)) return it;
+    const [pa, pb] = proches, xa = lites[0][pa.j], xb = lites[1][pb.j], aF = montant(xa);
+    // les deux Flash-Lite s'accordent sur la ligne ET sur son rang : deux listes de longueurs différentes n'ont pas les mêmes voisines (doc25, tirage p5 : la 3.8 avait raison contre deux listes décalées entre elles)
+    if (aF === null || aF !== montant(xb) || aF === a3 || pa.j !== pb.j) return it;
+    const voisine = (liste: any[], p: { j: number }) => [-2, -1, 1, 2].some(dj => liste[p.j + dj] && montant(liste[p.j + dj]) === a3 && ressemblance(liste[p.j + dj].name, it.name) < 0.6);
+    if (!voisine(lites[0], pa) || !voisine(lites[1], pb)) return it;
+    redressees.push(i);
+    return { ...it, amountTTC: xa.amountTTC, price: xa.price ?? null, quantity: xa.quantity ?? null, unit: xa.unit ?? it.unit };
+  });
+  return { items: sortie, redressees };
 }
 
 /**
@@ -191,6 +285,9 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
   }
   const final = finalOfStarVote(l1, l2, third);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
+  if (third?.normalized) { const { items, redressees } = redresserDecalage(final.result, l1, l2); if (redressees.length) final.result = { ...final.result, items }; }
+  const retirees = retireesParLaTroisieme(l1, l2, third, final.result);
+  if (retirees) final.result = { ...final.result, retirees };
   if (!provisoire) return final.result;
   // La 3.8 a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
   const rangs = third?.normalized ? rangsProvisoires(provisoire.items, final.result.items) : final.result.items.map((_: unknown, rang: number) => rang);

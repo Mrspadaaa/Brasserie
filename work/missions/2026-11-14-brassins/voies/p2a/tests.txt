@@ -1,0 +1,17 @@
+# p2a — sorties des contrôles (2026-11-14)
+Aucune suite Vitest : rien dans src/.
+
+## G1
+PASSE OK
+
+## controle-panel (commande de VOIE.md, 4 captures)
+4 captures · remplissage médian 0,73, 0 sous 0,50 · ressemblance moyenne 0,91 · paires presque identiques 1/6 (17 %)
+  - DIVERSITÉ : ressemblance moyenne 0,91 ≥ 0,90 (lot 21 : 0,88) : le panel partage un même squelette
+  - DIVERSITÉ : 17 % de paires presque identiques (≥ 0,95), 1 % au plus ; par exemple s1g-repos-390-clair~s1g-geste-390-clair
+PANEL ECHEC
+
+## Script de capture (p2a-cap.mjs)
+s1e2 et s1g : 12 images, petits=[] partout, aucun débord, aucune erreur JS, aucun double espace
+
+## G2
+MESURE OK

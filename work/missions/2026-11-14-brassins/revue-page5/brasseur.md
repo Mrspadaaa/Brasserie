@@ -1,0 +1,8 @@
+# Regard Brasseur (Opus) sur page5, 15.11 — « Toujours pas très clair »
+
+Ce qui le perd : ~40 vignettes (retenues, parents, 11 variantes, 6 groupes « sans réponse ») ; titres de concepteur (« s4a × s6c », « Parents », « rejoue e5a ») ; groupes déjà tranchés remontrés (e2a, e10c, e11a, carnet refusé : « j'ai déjà donné mon avis la dessus ») ; gfa–gfd = mêmes pièces réordonnées (PORTRAIT §2 : il rejette une série dont les propositions se ressemblent).
+En cuverie : fiche en fermentation = lire/saisir la densité, savoir quand mettre le dry hop et le cocher ; liste = trouver le brassin à suivre ; créer = bière, date, cuve, repartir.
+Phrases probables : gfa « Le graph en haut, les houblons dessous, ok. Mais "cuve —" ? » ; gfb « Pourquoi le graph est en bas » ; gfc « Citra et Mosaic tombent à J+6, ça c'est clair » ; gfd « La bulle cache la suite de la courbe » ; g6a « 4 lignes de filtres pour 5 brassins ?? » ; g6b « Des filtres qui comptent, oui » ; g6c « "Seule" ça veut dire quoi ? » ; e5na « je veux juste le planifier » ; e5nb « Rapide, direct dans la liste » ; e5nc « 3 écrans pour ça, non » ; e5nd « au planning je pense en litres » (incertain).
+Garderait (hypothèse, à lui montrer) : fiche gfc (graph grand, trait J+6 → houblons ; manque α du lot au lieu de la plage catalogue, °C cuve réellement saisi — accord en attente) ; liste g6b (filtre par style et houblon visible) ; créer : déjà répondu (greffe e5na × e5nb).
+Prochaine page : trois blocs (fiche, liste, créer), une question par bloc avec ses gestes, ≤ 3 variantes vraiment différentes, rien de tranché, libellés en mots de brasseur.
+LEÇON PROPOSÉE : confronter une page de choix aux réponses versées (MISSION, SPEC) avant publication ; pas de série de variantes qui réordonnent les mêmes pièces.

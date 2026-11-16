@@ -1,0 +1,4 @@
+G1 CHECK (GATES.md, VERDICT.md)
+VERDICT OK
+
+ 1 passed (1)

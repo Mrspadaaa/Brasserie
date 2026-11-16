@@ -144,6 +144,29 @@ export function montantDeLigneCts(ligne: LigneControlee): number | null {
 /** Une remise : lue comme telle, ou de montant négatif (arrondi compris). Jamais un article. */
 export const estRemise = (ligne: LigneControlee): boolean => ligne.kind === 'discount' || (montantDeLigneCts(ligne) ?? 0) < 0;
 
+/**
+ * p3 (jeu en ligne 5, « 7 lignes retirées · 348,50 CHF » : un sous-total et le rabais total comptés comme des articles) : les rangs (base 0) des lignes qui ne sont PAS des lignes de la pièce : total, sous-total,
+ * règlement, montant en devise (par la désignation, `estHorsArticle`), et un RABAIS GLOBAL, c'est-à-dire une remise dont le montant est la somme d'au moins deux autres remises de la même liste (à un centime : -0,68 et -1,90 font
+ * le « Rabais » de -2,58). Preuve par la somme, jamais par le montant seul : une remise unique reste une remise.
+ */
+export function rangsHorsPiece(items: LigneControlee[]): Set<number> {
+  const hors = new Set<number>();
+  items.forEach((l, i) => { if (estHorsArticle(l)) hors.add(i); });
+  const remises = items.map((l, i) => ({ i, c: estRemise(l) && !hors.has(i) ? montantDeLigneCts(l) : null })).filter((x): x is { i: number; c: number } => x.c !== null);
+  for (const r of remises) {
+    const autres = remises.filter(x => x.i !== r.i);
+    if (autres.length < 2) continue;
+    // sous-ensembles d'au moins deux autres remises, bornés (12 au plus) : la somme exacte, au centime
+    const pool = autres.slice(0, 12);
+    for (let masque = 1; masque < (1 << pool.length); masque++) {
+      let n = 0, somme = 0;
+      for (let k = 0; k < pool.length; k++) if (masque & (1 << k)) { n++; somme += pool[k].c; }
+      if (n >= 2 && Math.abs(somme - r.c) <= 1) { hors.add(r.i); break; }
+    }
+  }
+  return hors;
+}
+
 /** Articles (hors remises, hors lignes qui n'en sont pas) et remises d'une lecture, avec leurs rangs (base 1). */
 export function compterArticles(items: LigneControlee[]): { articles: number; remises: number; horsArticles: number; rangsHors: number[] } {
   let articles = 0, remises = 0; const rangsHors: number[] = [];

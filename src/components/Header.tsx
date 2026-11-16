@@ -97,8 +97,11 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex-1" />
 
+        {/* data-periode-entete (écran Brassins, e6a/q9) : la liste des brassins porte sa propre période, `liste.css` masque la pastille de l'en-tête là seulement. */}
         {!hidePeriod && (
-          <PastillePeriode periode={globalTimeFilter} onChoisir={onChangeGlobalTimeFilter} transactions={transactions} onAnnonce={onAnnoncePeriode} />
+          <span data-periode-entete className="contents">
+            <PastillePeriode periode={globalTimeFilter} onChoisir={onChangeGlobalTimeFilter} transactions={transactions} onAnnonce={onAnnoncePeriode} />
+          </span>
         )}
         {/* Recherche universelle. Au clavier c'est ⌘K / Ctrl+K ; au doigt, cette loupe est le seul chemin — d'où sa place en clair. */}
         <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary" className={compactLayout ? 'min-h-7 min-w-7' : ''}>

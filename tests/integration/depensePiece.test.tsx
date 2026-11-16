@@ -80,11 +80,12 @@ describe('Dépense : contrôles de la pièce dans le bloc (d2)',()=>{
     const sans=await ouvrir(ticketEan());
     expect(rangee(sans,'brut-rabais')).toBeNull();
   });
-  it('paiement : un terminal plus grand que le total est dit sous « Payé », sans drapeau',async()=>{
+  it('paiement (p2, jeu en ligne 4 : changé exprès) : un terminal plus grand que le total, sans autre dépense qui l’explique, est un « Payé ≠ imprimé » rouge, plus « montant non lu » en gris',async()=>{
     const view=await ouvrir(ticketEan({amountPaid:undefined,terminalAmount:500}));
     const paye=rangee(view,'paye')!;
-    expect(paye.textContent).toMatch(/montant non lu/);
-    expect(paye.getAttribute('data-dp-verdict')).toBe('inconnu');
+    expect(paye.textContent).not.toMatch(/montant non lu/);
+    expect(paye.getAttribute('data-dp-verdict')).toBe('ecart');
+    expect(paye.getAttribute('data-dp-ton')).toBe('rouge');
     expect(view.container.querySelector('[data-dp="controle-note"]')!.textContent).toMatch(/terminal affiche 500,00/);
   });
   it('payé effectif : sans reçu imprimé, le terminal égal au total vaut paiement (ticket de caisse) ; sur une facture il reste « montant non lu »',async()=>{

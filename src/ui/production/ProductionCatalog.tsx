@@ -19,6 +19,8 @@ import {
 } from '../../domain/productionInsights';
 import { CatalogToolbar } from './CatalogToolbar';
 import { CatalogAnalysis } from './CatalogAnalysis';
+import { ListeBrassins } from './liste/ListeBrassins';
+import { CRITERES_VIDES, restaurerCriteres, type Avancement, type Criteres } from './liste/listeModel';
 import { RecipeCard, BatchCard } from './CatalogCards';
 import { RecipeComparison } from './RecipeComparison';
 import { Sheet } from '../Sheet';
@@ -34,7 +36,8 @@ export function ProductionCatalog({
   onOpenRecipe,
   onEditRecipe,
   onOpenBatch,
-  onOpenBrewDay
+  onOpenBrewDay,
+  onVueChange
 }: {
   kind: CatalogKind;
   recipes: Recipe[];
@@ -44,6 +47,8 @@ export function ProductionCatalog({
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
   onOpenBrewDay: (batch: Batch) => void;
+  /** Dit à l'écran parent si le bilan est ouvert : il masque alors sa phrase-réponse (e7a). */
+  onVueChange?: (view: 'list' | 'analysis') => void;
 }) {
   const mobile = useMobileLayout();
   const [filters, setFilters] = useState<CatalogFilters>(() =>
@@ -63,6 +68,10 @@ export function ProductionCatalog({
           return ['all', 'measurements', 'tasting'].includes(saved) ? saved : 'all';
         })()
       : 'all'
+  );
+  // e6a, e6c : les critères posés par la liste des brassins (plusieurs par groupe), par-dessus le filtre du catalogue.
+  const [criteres, setCriteres] = useState<Criteres>(() =>
+    kind === 'batches' ? restaurerCriteres(StorageService.getUiState('catalog-batches-criteres', CRITERES_VIDES)) : CRITERES_VIDES
   );
   const [view, setView] = useState<'list' | 'analysis'>(() =>
     StorageService.getUiState<string>(`catalog-${kind}-view`, 'list') === 'analysis'
@@ -110,10 +119,14 @@ export function ProductionCatalog({
   }, [analysisFolder, kind]);
   useEffect(() => {
     StorageService.setUiState(`catalog-${kind}-view`, view);
+    if (kind === 'batches') onVueChange?.(view);
   }, [view, kind]);
   useEffect(() => {
     if (kind === 'batches') StorageService.setUiState('catalog-batches-work', work);
   }, [work, kind]);
+  useEffect(() => {
+    if (kind === 'batches') StorageService.setUiState('catalog-batches-criteres', criteres);
+  }, [criteres, kind]);
   const entries = useMemo(
     () => {
       if (kind !== 'recipes') return batchEntries(batches);
@@ -123,6 +136,11 @@ export function ProductionCatalog({
     },
     [kind, recipes, batches]
   );
+  // Tailles des fûts (stock) : la carte dit « fût 20 L » quand elle les connaît.
+  const kegs = useMemo(() => {
+    if (kind !== 'batches') return [];
+    try { return StorageService.getStocks().kegs ?? []; } catch { return []; }
+  }, [kind, batches]);
   const filtered = useMemo(() => {
     return filterCatalog(entries, effectiveFilters, 'all').filter((e) =>
       dansLaPeriode(e) && matchesWorkFilter(e, work)
@@ -178,12 +196,19 @@ export function ProductionCatalog({
       });
     }
   };
+  /* Fusion avec le tag en-ligne/2026-11-16-brassins : le bilan et la liste e6a sont les leurs ; la période de l'app reste celle d'ici (dansLaPeriode). */
+  const bilanBrassins = kind === 'batches' && view === 'analysis';
+  const bilanEntries = useMemo(
+    () => bilanBrassins ? filterCatalog(entries, { ...DEFAULT_CATALOG_FILTERS, folder: 'all' }, 'all').filter(dansLaPeriode) : [],
+    [bilanBrassins, entries, periodeApp] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const listeBrassins = kind === 'batches' && view === 'list';
   const hasCriteria = catalogCriteria(effectiveFilters, work, 'all').length > 0;
   const scopeCount = entries.filter((e) => inCatalogFolder(e, effectiveFilters.folder)).length;
   const archiveCount = entries.filter(isArchived).length;
   return (
     <div className="space-y-3">
-      <CatalogToolbar
+      {!bilanBrassins && !listeBrassins && <CatalogToolbar
         kind={kind}
         entries={entries}
         facetEntries={facetEntries}
@@ -201,7 +226,7 @@ export function ProductionCatalog({
           setSelectedIds([]);
           setView('list');
         }}
-      />
+      />}
       {notice && (
         <div
           className={`flex items-center gap-2 rounded-control border px-3 ${notice.error ? 'border-alert/40 text-alert' : 'border-water/40 text-water'}`}
@@ -258,7 +283,22 @@ export function ProductionCatalog({
           </button>
         </div>
       )}
-      {filtered.length === 0 ? (
+      {listeBrassins ? (
+        <ListeBrassins
+          entries={entries}
+          filtres={effectiveFilters}
+          onFiltres={changeFilters}
+          criteres={criteres}
+          onCriteres={setCriteres}
+          kegs={kegs}
+          appPeriode={StorageService.getUiState<string>('app_global_time_filter', 'this-month') as PeriodeEntree}
+          onOpenBatch={onOpenBatch}
+          onBrew={onOpenBrewDay}
+          onFavorite={onFavorite}
+          onArchive={onArchive}
+          onBilan={() => setView('analysis')}
+        />
+      ) : (bilanBrassins ? bilanEntries.length === 0 : filtered.length === 0) ? (
         <div className="panel p-6 text-center space-y-3">
           <SearchX className="h-7 w-7 mx-auto text-cave-400" />
           <h3 className="font-semibold text-cave-50">
@@ -281,7 +321,12 @@ export function ProductionCatalog({
                   ? 'Élargis les filtres ou la période pour retrouver tes fiches.'
                   : 'Crée une recette, puis planifie son brassin.'}
           </p>
-          {hasCriteria && (
+          {bilanBrassins && (
+            <button type="button" onClick={() => setView('list')} className="min-h-touch px-4 rounded-control border border-cave-700 text-ebc-straw">
+              Retour aux brassins
+            </button>
+          )}
+          {!bilanBrassins && hasCriteria && (
             <button
               type="button"
               onClick={reset}
@@ -303,10 +348,26 @@ export function ProductionCatalog({
       ) : view === 'analysis' ? (
         <CatalogAnalysis
           kind={kind}
-          entries={filtered}
+          entries={bilanBrassins ? bilanEntries : filtered}
           includeArchivedBatches={effectiveFilters.folder !== 'current'}
+          onBack={bilanBrassins ? () => setView('list') : undefined}
+          onFolder={bilanBrassins ? setAnalysisFolder : undefined}
           onOpenBatch={onOpenBatch}
           onFilter={(field, value) => {
+            if (kind === 'batches') {
+              // Du bilan vers la liste : le critère devient une puce posée de la liste (e6a), le reste est effacé.
+              const av: Record<string, Avancement> = { fermentation: 'cuve', garde: 'cuve', planifie: 'brasser', conditionne: 'conditionnes', termine: 'termines' };
+              setCriteres({
+                ...CRITERES_VIDES,
+                avancement: field === 'status' && av[value] ? [av[value]] : [],
+                styles: field === 'style' ? [value] : [],
+                houblons: field === 'hop' ? [value] : []
+              });
+              setFilters((f) => ({ ...f, search: '', folder: effectiveFilters.folder }));
+              setWork('all');
+              setView('list');
+              return;
+            }
             setFilters((f) => ({
               ...f,
               folder: effectiveFilters.folder,

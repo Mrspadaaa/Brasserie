@@ -26,6 +26,8 @@ export interface ApercuDepense {
   provisoire?: ScanOutcome;
   final?: ScanOutcome;
   delaiMs?: number | null;
+  /** p3 (développement seulement, SIMULÉ) : un résultat servi du CACHE (aucun flux : pas de provisoire), rendu par `finLecture` comme à une relecture. */
+  cache?: ScanOutcome;
   /** SIMULÉ : remplace l'enregistrement réel (aucune écriture, aucun Drive) ; rend un reçu fabriqué. */
   enregistrer: (draft: PurchaseDraft) => Promise<DriveProofReceipt | undefined>;
 }
