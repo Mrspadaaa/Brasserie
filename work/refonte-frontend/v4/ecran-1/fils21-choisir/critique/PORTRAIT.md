@@ -104,3 +104,37 @@ automatique (erreur 1).
 4. Ça parle brasseur (α, rôle, arômes, moment, dose) ? Les chiffres répondent-ils à « lequel, quand, combien » ?
 5. Un refus explicite revient-il ? C'est alors un rejet.
 6. Entre deux écrans : lequel lui en apprend le plus pour choisir, et lequel montre en plus grand ce qui compte ?
+
+## 7. Écart des juges (16.11)
+
+Ses notes, mot pour mot (jeu : `c-1511-f1`, `c-1611-fb`, `c-1611-dc`, `c-1611-da`, `c-1611-s2a2`) :
+
+| Écran | Lui | Nos juges | Écart |
+|---|---|---|---|
+| f1, Caisse et semaines (15.11) | « top ! », puis « c'est du 8/10 » | — | — |
+| fb, Calendrier gestes | « le meilleur mais pas 9/10 » (lu 8) | brasseur 8,5 · parcours 8,5 · fluidité 8 · uxui 7,5 · navigation 7,5 | + 0,5 sur ses axes hauts |
+| dc, carnet | « pas trop Mal » ; « l'ux UI assez mauvaise, et difficile à lire, voir » ; 7,5 | besoin 9 · brasseur 8 · fluidité 8,5 · uxui 7,5 (moyenne 8,25) | + 0,75 |
+| da, carnet | même phrase ; 7,5 | besoin 8,5 · brasseur 8 · fluidité 8 · uxui 7,5 (moyenne 8,0) | + 0,5 |
+| s2a2, fiche embouteillage | « Ça correspond pas du tout à mes besoins ?? » | ACCEPT, 0 bloquant | rejet manqué |
+
+**Constat.** Nos juges notent environ + 0,5 à + 1 au-dessus de lui, et une fois acceptent ce qu'il rejette.
+
+**Pourquoi.**
+1. **La lisibilité visuelle est sous-pesée.** Nos juges ont vu juste sur l'axe UX/UI (7,5 sur dc, da et fb, sa note),
+   puis l'ont noyé dans une moyenne avec besoin, brasseur et fluidité, plus hauts. Lui ne fait pas de moyenne : « ça
+   doit être hyper lisible, hyper facile à voir les chose » ; « Ça fait partie des critères ». Un écran difficile à
+   lire plafonne sa note, quelle que soit la qualité de l'idée. Mesuré sur dc et da (`f9/LISIBILITE.md`) : 3 à 9 fois
+   trop de mots au premier écran, corps de 11 à 13 px, 6 à 10 tailles, jusqu'à 16 pastilles.
+2. **Le besoin se juge contre ses mots, pas contre l'écran.** s2a2 était propre et cohérent ; il résolvait la mauvaise
+   question (prix et caisse au premier plan) au lieu de « noter toutes ces recherches », « pas revenir en arrière »,
+   comparer.
+3. **Son 9/10 exige aussi le moins de gestes** : « Clicker pour ouvrir le clavier et taper c'est déjà beaucoup
+   d'action... ».
+
+**Règle pour noter à sa place.**
+- Sa note est au plus la plus basse de lisibilité visuelle (UX/UI, « se voit en 3 secondes ») et de besoin. Ne jamais
+  faire la moyenne.
+- Un écran dense en petits corps (premier écran à plus de 14 px de corps minimum non tenu, plus de 3 tailles) ne passe
+  pas 7,5.
+- Avant toute note : relire ses mots sur le besoin. Une réponse à une autre question est un rejet, même propre.
+- Retirer 0,5 à toute note qu'on lui prête avant de la montrer, jusqu'à ce que le jeu prouve l'écart refermé.

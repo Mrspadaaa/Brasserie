@@ -1,5 +1,5 @@
 {
- "maj": "2026-11-01",
+ "maj": "2026-11-16",
  "items": [
   {
    "id": "p-l5a-comparer-p03-p01",
@@ -1126,6 +1126,79 @@
    "mots": "« Même si c'est un peu enfantin j'aime assez bien, après pas convaincu vraiment du design. Mais avoir une vrai vu comme ça c'est top, aussi il y a pas vraiment le roi, et la partie maron ? Ni vraiment combien je gagne ? »",
    "date": "2026-11-01",
    "source": "SPEC-BRASSEUR.md, § « La vue TVA, et la rénovation d'abord » (D259). Sa capture de téléphone (haut marron entouré) est hors Git ; la capture citée est celle de la voie, même état. Le critique l'avait classée 9 sur 12 (critique/tva/SYNTHESE.md)"
+  },
+  {
+   "id": "c-1511-f1",
+   "type": "classe",
+   "lot": "besoins-f",
+   "sujet": "calendrier",
+   "variante": "f1",
+   "capture": "work/refonte-frontend/v4/etalonnage/captures/c-1511-f1-caisse-semaines.png",
+   "classe": "aime",
+   "note_brasseur": 8,
+   "mots": "« Caisse et semaines f1 top ! » ; puis « Je pense que F1 peut être encore améliorer pour être 10/10 pour le même c'est du 8/10 »",
+   "date": "2026-11-15",
+   "page": "https://claude.ai/artifact/9FsyLTSLFpwsAvH3D64YVv",
+   "source": "SPEC-BRASSEUR.md, lignes du 15.11 sur « Caisse et semaines ». Capture copiée de la mission 2026-11-15-besoins (f/f1/f1-vue-390.png, autre worktree)."
+  },
+  {
+   "id": "c-1611-fb",
+   "type": "classe",
+   "lot": "calendrier-fl",
+   "sujet": "calendrier",
+   "variante": "fb",
+   "capture": "work/missions/2026-11-16-calendrier/fl/fb/cap/fb-repos-390.png",
+   "classe": "aime",
+   "note_brasseur": 8,
+   "mots": "« Clairement Calendrier gestes · fb Est le meilleur mais pas 9/10... » ; « surtout le plus important, ça doit être hyper lisible, hyper facile à voir les chose »",
+   "date": "2026-11-16",
+   "page": "https://claude.ai/artifact/Ho37S3SppXy2SJ7fEHdE3Z",
+   "notes_juges": "critique passe 2 (fl/fb/CRITIQUE.md) : brasseur 8,5 · uxui 7,5 · parcours 8,5 · navigation 7,5 · fluidité 8 (moyenne 8,0)",
+   "source": "SPEC-BRASSEUR.md, ligne du 16.11 sur « Calendrier en un geste » (page3). « pas 9/10 » lu 8/10, comme f1 dont fb part ; il ne donne pas de chiffre."
+  },
+  {
+   "id": "c-1611-dc",
+   "type": "classe",
+   "lot": "carnet",
+   "sujet": "carnet",
+   "variante": "dc",
+   "capture": "work/missions/2026-11-16-carnet-decision/dc/captures/dc-repos-390.png",
+   "classe": "mitige",
+   "note_brasseur": 7.5,
+   "mots": "« Da et dc sont pas trop Mal, certains aspec de l'un sont meilleurs que d'autres à toi de décider :) Ça reste du l'ux UI assez mauvaise, et difficile à lire, voir... Ça fait partie des critères.. mais on c'est largement améliorer, on est passé de 5/10 à 7.5 »",
+   "date": "2026-11-16",
+   "page": "https://claude.ai/artifact/793n3GJYxJHc52JH5ynw1h",
+   "notes_juges": "dc/CRITIQUE.md : besoin 9 · brasseur 8 · uxui 7,5 · fluidité 8,5 (moyenne 8,25)",
+   "source": "SPEC-BRASSEUR.md, ligne du 16.11 sur la page du carnet. Mitigé : « pas trop mal » avec un défaut qui gêne la lecture (PORTRAIT § 2)."
+  },
+  {
+   "id": "c-1611-da",
+   "type": "classe",
+   "lot": "carnet",
+   "sujet": "carnet",
+   "variante": "da",
+   "capture": "work/missions/2026-11-16-carnet-decision/da/captures/da-repos-390.png",
+   "classe": "mitige",
+   "note_brasseur": 7.5,
+   "mots": "« Da et dc sont pas trop Mal […] Ça reste du l'ux UI assez mauvaise, et difficile à lire, voir... […] on est passé de 5/10 à 7.5 »",
+   "date": "2026-11-16",
+   "page": "https://claude.ai/artifact/793n3GJYxJHc52JH5ynw1h",
+   "notes_juges": "da/CRITIQUE.md : besoin 8,5 · brasseur 8 · uxui 7,5 · fluidité 8 (moyenne 8,0)",
+   "source": "SPEC-BRASSEUR.md, ligne du 16.11 sur la page du carnet (même phrase que c-1611-dc)."
+  },
+  {
+   "id": "c-1611-s2a2",
+   "type": "classe",
+   "lot": "besoins-nuit",
+   "sujet": "besoin",
+   "variante": "s2a2",
+   "capture": "work/refonte-frontend/v4/etalonnage/captures/c-1611-s2a2-embouteillage.png",
+   "classe": "rejette",
+   "mots": "« Ça correspond pas du tout à mes besoins ?? »",
+   "date": "2026-11-16",
+   "notes_juges": "critique Opus passe 2 (2026-11-15-besoins/revues/passe2.md) : ACCEPT, 4 problèmes, 0 bloquant",
+   "source": "SPEC-BRASSEUR.md, ligne du 16.11 avec sa capture de la fiche « Système d'embouteillage » (solutions, prix, barre de caisse fin mai). Capture copiée de nuit/p1/page/img/s2a2-besoin-390.png (autre worktree), même état.",
+   "hors_image": "besoin : il rejette ce que la fiche résout (prix et caisse au premier plan) contre son besoin réel (noter ses recherches, garder le pourquoi, comparer les caractéristiques) ; une capture seule ne le départage pas"
   }
  ],
  "amendements": [
@@ -1133,6 +1206,7 @@
   "23.10, pilote : c-l22-r4 montrait sa capture barrée de sa croix rouge (le verdict sur l'image) ; remplacée par la planche d'origine.",
   "23.10, pilote : à l'épreuve, toute capture d'écran plus haute qu'un premier écran est ramenée au premier écran (390 × 844), pour que le format ne pèse pas.",
   "23.10, pilote, après la première épreuve : 7 items marqués hors_image (geste, comparaison, besoin) : une capture fixe ne peut pas les départager ; ils restent au jeu, hors du score.",
-  "24.10, e1 : 5 verdicts du 23 et 24.10 versés (c-l23-etape-v410, c-l23-biere-v410, c-l23-q2b, p-l23-x3b-comparer-v410, p-l24-rail-froid-base-maquette), chacun avec une capture existante de ce qu'il a jugé ; les autres verdicts du 23.10 soir portent sur la maquette d332792c, dont aucune capture n'est archivée (non pris)."
+  "24.10, e1 : 5 verdicts du 23 et 24.10 versés (c-l23-etape-v410, c-l23-biere-v410, c-l23-q2b, p-l23-x3b-comparer-v410, p-l24-rail-froid-base-maquette), chacun avec une capture existante de ce qu'il a jugé ; les autres verdicts du 23.10 soir portent sur la maquette d332792c, dont aucune capture n'est archivée (non pris).",
+  "16.11, étalonneur : cinq classes ajoutées (f1 du 15.11, fb, dc, da, s2a2) avec note_brasseur et notes_juges. Hors de la clé en cours : elles entreront à la prochaine épreuve (systeme.mjs epreuve). s2a2 est hors_image (besoin)."
  ]
 }
