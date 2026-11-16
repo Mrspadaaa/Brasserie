@@ -21,15 +21,15 @@ describe('En-tête de l’app : opaque, rien ne se voit à travers', () => {
     expect(entete.className).not.toMatch(/backdrop-blur/);
   });
 
-  // La vraie cause du fantôme gris (dev-local) : la pastille « Compagnon hors connexion · mode local » était fixe à 4 px du haut, sous l'en-tête qui la recouvrait.
-  // Elle est passée en bas de l'écran, puis (b1r) a quitté l'écran : « hors connexion » se lit dans l'entrée Compagnon du + et au pied du rail.
-  // L'exigence reste : aucune pastille flottante, donc rien sous l'en-tête ni au-dessus de la barre.
-  it('hors connexion, aucune pastille flottante : ni sous l’en-tête ni en bas (b1r)', () => {
+  // La vraie cause du fantôme gris (dev-local) : la pastille « Compagnon hors connexion · mode local » est fixe à 4 px du haut, au même z-index que
+  // l'en-tête mais montée avant lui : l'en-tête la recouvrait et seul son bas dépassait, gris, sous « L'Affinée ». Elle passe en bas de l'écran, au-dessus de la barre, sur une ligne : rien sous l'en-tête.
+  it('la pastille hors connexion ne se place plus sous l’en-tête : en bas, sur une ligne', () => {
     window.history.replaceState({}, '', '/?dev-local');
-    const { container } = render(<BrewerActivity localOnly />);
-    expect(screen.queryByRole('status')).toBeNull();
-    expect(container.querySelector('.fixed')).toBeNull();
-    expect(container).toBeEmptyDOMElement();
+    render(<BrewerActivity localOnly />);
+    const pastille = screen.getByRole('status');
+    expect(pastille.className).toMatch(/bottom-/);
+    expect(pastille.className).not.toMatch(/top-/);
+    expect(pastille.className).not.toMatch(/z-40/);
+    expect(pastille.className).toMatch(/whitespace-nowrap/);
   });
-
 });
