@@ -20,10 +20,12 @@ for (const f of fichiers) {
     const traces = svgs.flatMap((s) => [...s.querySelectorAll('path, polyline, polygon')]).map((e) => e.getBoundingClientRect()).filter((r) => r.width > 150);
     const courbe = Math.max(0, ...traces.map((r) => Math.round(r.height)));
     const fh = document.querySelector('#fh, [data-bande-semaines]'); const vis = fh && fh.offsetParent !== null && fh.getBoundingClientRect().height > 0;
-    return { courbe, bande: vis ? Math.round(fh.getBoundingClientRect().height) : 0, existe: !!vis, tete: Math.round(haut) };
+    const MOIS = /^(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc).?$/; let ecart = 999;
+    if (vis) { const top = fh.getBoundingClientRect().top; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const t = n.textContent.trim(); if (!MOIS.test(t) || fh.contains(n.parentElement)) continue; const r = document.createRange(); r.selectNodeContents(n); const b = r.getBoundingClientRect(); if (b.height && b.bottom <= top + 1 && b.bottom > top - 60) ecart = Math.min(ecart, Math.round(top - b.bottom)); } }
+    return { courbe, bande: vis ? Math.round(fh.getBoundingClientRect().height) : 0, existe: !!vis, tete: Math.round(haut), ecart };
   });
-  const bon = m.courbe >= COURBE_MIN && ((pays && !m.existe) || (m.existe && m.bande <= BANDE_MAX)); if (!bon) ko++;
-  console.log(`${bon ? 'ok' : 'KO'} ${path.basename(f)} : courbe ${m.courbe} px (min ${COURBE_MIN}), bande des semaines ${m.existe ? m.bande + ' px' : 'absente'} (max ${BANDE_MAX}, présente), en-tête ${m.tete} px`);
+  const bon = m.ecart >= 12 && m.courbe >= COURBE_MIN && ((pays && !m.existe) || (m.existe && m.bande <= BANDE_MAX)); if (!bon) ko++;
+  console.log(`${bon ? 'ok' : 'KO'} ${path.basename(f)} : courbe ${m.courbe} px (min ${COURBE_MIN}), bande des semaines ${m.existe ? m.bande + ' px' : 'absente'} (max ${BANDE_MAX}, présente), en-tête ${m.tete} px, mois → bande ${m.ecart === 999 ? "sans mois au-dessus" : m.ecart + " px (min 12)"}`);
   await p.close();
 }
 await nav.close(); console.log(ko ? 'ENTETE ECHEC' : 'ENTETE OK'); process.exit(ko ? 1 : 0);
