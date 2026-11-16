@@ -1787,3 +1787,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : le carnet compare les caractéristiques techniques des systèmes, et pas seulement les prix : oxygène capté, cadence, becs, matière, CO2, nettoyage, encombrement, formats.)
 - **16.11**, mot pour mot : « Mais ça doit pas être uniquement pour ce système, ça doit être générique, un frigo, une ventil, un évier, ECT... Ça doit être dynamique et générique »
   (lu : les caractéristiques à comparer changent selon le besoin. L'IA propose celles de la catégorie, le brasseur en ajoute ou en retire ; aucun modèle propre à l'embouteillage.)
+- **16.11**, mot pour mot : « Et va doit être facile d'utilisation, une vue sans détails juste pour savoir de quoi on parle et ensuite on peut détaillé et comparé. Utiliser l'ai au besoin »
+  (lu : au premier plan, une vue sans détails qui dit de quoi on parle et où on en est ; le détail et la comparaison sont à un toucher ; l'IA aide au besoin.)
