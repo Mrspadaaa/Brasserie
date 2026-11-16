@@ -158,3 +158,6 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 
 ## FAB-GAUCHE, bloquant (16.11 : « En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis »)
 - CORRIGÉ par lui (« Non c'est à droit pardon pas à gauche ») : le + volant va en bas à DROITE, juste au-dessus de la barre d'onglets (4 à 24 px), en portrait comme en paysage. Il ne flotte jamais au milieu du contenu.
+
+## Thème (16.11 au soir)
+- Le thème de l'app tel qu'il s'affiche, avec ses couleurs. La version cave n'est pas exigée.

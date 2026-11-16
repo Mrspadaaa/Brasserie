@@ -180,3 +180,7 @@ Trois regards, 390 tactile avec clavier et 844×390 ; détail : `r2/P5-AUDIT.md`
 
 ## FAB-GAUCHE, bloquant (16.11 : « En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis »)
 - CORRIGÉ par lui (« Non c'est à droit pardon pas à gauche ») : le + volant va en bas à DROITE, juste au-dessus de la barre d'onglets (4 à 24 px), en portrait comme en paysage. Il ne flotte jamais au milieu du contenu.
+
+## Corrections du 16.11 au soir
+- Pas de paysage pour le carnet (« Non c'est que par le calendrier la version horizontal ???? Pas besoin pour le carnet... ») : la section « Paysage mobile » ci-dessus est caduque.
+- Thème : celui de l'app tel qu'il s'affiche, avec ses couleurs. Pas d'obligation de cave (« Pas besoin de focus sur cave, mais utiliser le thème de l'app oui... »).

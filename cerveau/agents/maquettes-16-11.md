@@ -26,3 +26,4 @@ Précisions plus anciennes, sorties de LECONS pour la même raison :
 - **L20** Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Une garde se prouve sur chaque variante de lecture, pas sur le tirage (LO-1). Un chiffre de brief sort du code (09.11).
 - **L24** Un retour nomme le groupe par son titre (« Créer un brassin »), pas son id : rattacher par titre avant de redemander (15.11 : e5, e8 redemandés, « j'ai déjà donné mon avis »). Statut « needs the user » : lire (list_events) avant de dire qu'une session attend (15.11 : « ??? »).
 - **L28** Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels). Défaut en ligne : rejouer le banc serveur puis écran, noter le geste du testeur (LO-3).
+- L01, sens inverse (16.11) : une exigence donnée pour un écran ne s'étend pas aux autres sans ses mots. Le paysage était demandé pour le calendrier seul : « Pas besoin pour le carnet... ».
