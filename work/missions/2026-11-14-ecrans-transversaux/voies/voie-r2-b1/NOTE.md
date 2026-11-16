@@ -35,3 +35,23 @@ b1s-c · La couleur dit « ici » · chaude · ce qui change de b1r : + flottant
 - b1s-a est la plus fidèle à b1 : sa feuille, son « Partout », juste le + sorti de la barre ; préférée.
 - b1s-b met l'écran sous le pouce mais couvre beaucoup d'écran ; b1s-c est la plus parlante (couleur = ici) et garde chaque commune à sa place, au prix d'un + coloré qui change d'un onglet à l'autre.
 - Contrôle : controle.txt.
+
+## Passe 2 de son choix (15.11 : « Ça j'aime énormément, à améliorer et implémenter »)
+b1s-b2 · La pile au pouce, passe 2 · tiède · ce qui change de b1s-b : rien de sa forme (+ flottant 56 px, pilules alignées à droite qui montent du +, action de l'écran pleine contre le +, ses autres actions juste au-dessus, « Partout » plus haut, ordre figé) ; corrigé : (1) voile propre derrière la pile (fond de page à 80 % + flou 6 px, fondu sur 110 px vers le haut) : plus aucun texte de la liste entre les pilules, ni sous « Partout » ; (2) le commun passe en deux colonnes de pilules de 44 px (même ordre E F V R B C, l'impaire seule en haut à droite) : la pile monte à 498 px du bas au pire (Brassins, Clients) contre 594, le haut de l'écran reste lisible ; (3) en-têtes « Partout » et « Sur <écran> » en texte (nom de l'écran à sa couleur), plus de pastilles qui mordent la liste ; (4) à l'ouverture le × devient neutre (surface, bord) : un seul accent, l'action de l'écran (cave : plus de jaune + pêche) ; (5) repos : 80 px d'air en fin de liste, la dernière ligne (B-022 · 19.09) finit au-dessus du + ; (6) Triple 1,078 → 1,014 (8,4 % comme la recette v2 ; 1,010 donnait 8,9 %) ; 1280 : + flottant en bas à droite, pile de 460 px, libellés entiers et lettres.
+
+### Menu par écran pour le port (b1s-b2) — de bas en haut : action pleine contre le + · ses autres actions · Partout (communes restantes, ordre figé)
+- Bord : Nouvelle écriture (facture ou à la main) · Ajouter aux courses (pour B-032) · Facture, Vente, Recette, Brassin, Compagnon
+- Finances : Nouvelle écriture · Entrer une facture (photo ou PDF), Encaisser une vente (Marché, bar) · Recette, Brassin, Compagnon
+- Brassins : Nouveau brassin (sera B-033) · Saisir une densité (B-031 · J+4), Ajouter aux courses (froment) · Écriture, Facture, Vente, Recette, Compagnon
+- Recettes : Nouvelle recette · Lancer un brassin (B-033 · recette) · Écriture, Facture, Vente, Compagnon
+- Atelier : Nouvelle idée · Lancer un brassin (essai 5 L) · Écriture, Facture, Vente, Recette, Compagnon (un seul + : celui de l'Atelier disparaît)
+- Volumes : rien à créer · Lancer un brassin (IPA Nelson 25 L), Ajouter aux courses (pour 25 L) · Écriture, Facture, Vente, Recette, Compagnon
+- Articles : Nouvel article · Ajouter aux courses (Citra T90 · 2 kg) · les six
+- Courses : Copier la liste (3 articles) · Nouvel article · les six
+- Fûts : Nouveau fût (sera F-07) · Encaisser une vente (fût vendu) · Écriture, Facture, Recette, Brassin, Compagnon
+- Matériel : Nouveau matériel · — · les six
+- Houblons : Nouvelle variété · Ajouter aux courses (Citra T90 · 2 kg) · les six
+- Clients : Nouveau client · Encaisser une vente, Nouveau tarif · Écriture, Facture, Recette, Brassin, Compagnon
+- Impôt bière : rien à créer · — · les six (« Copier cette estimation » reste dans l'écran)
+- Prix et marges : Nouveau tarif · Nouveau client · les six
+- Port : libellés courts au 390 (Écriture, Facture, Vente, Recette, Brassin, Compagnon), entiers au 1280 ; × neutre ; voile = surface à 80 % + backdrop-filter ; marge basse de liste 80 px sur chaque écran ; le reste comme b1s-b (`fabActions.ts`).

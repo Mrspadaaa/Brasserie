@@ -1,0 +1,350 @@
+[
+ {
+  "mode": "390",
+  "theme": "clair",
+  "etapes": [
+   {
+    "nom": "bord-repos",
+    "pastille": "Nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "plus-t4-saisi",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "retour-de-plus",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "feuille-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": [
+     "Oct. – déc. 2026",
+     "oct.",
+     "nov."
+    ]
+   },
+   {
+    "nom": "brassins-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": []
+   },
+   {
+    "nom": "brassins-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true,
+    "lu": [
+     "Juil. – sept. 2026",
+     "juil."
+    ]
+   },
+   {
+    "nom": "finances-mois-precedent",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-apres-finances",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "dates-libres",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-dates",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true,
+    "mention": "Arrondi aux mois entiers : octobre 2026 à novembre 2026"
+   },
+   {
+    "nom": "brassins-dates",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true
+   }
+  ]
+ },
+ {
+  "mode": "390",
+  "theme": "cave",
+  "etapes": [
+   {
+    "nom": "bord-repos",
+    "pastille": "Nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "plus-t4-saisi",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "retour-de-plus",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "feuille-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": [
+     "Oct. – déc. 2026",
+     "oct.",
+     "nov."
+    ]
+   },
+   {
+    "nom": "brassins-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": []
+   },
+   {
+    "nom": "brassins-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true,
+    "lu": [
+     "Juil. – sept. 2026",
+     "juil."
+    ]
+   },
+   {
+    "nom": "finances-mois-precedent",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-apres-finances",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "dates-libres",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-dates",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true,
+    "mention": "Arrondi aux mois entiers : octobre 2026 à novembre 2026"
+   },
+   {
+    "nom": "brassins-dates",
+    "pastille": "12.10–03.11",
+    "duoMemeLigne": true
+   }
+  ]
+ },
+ {
+  "mode": "1280",
+  "theme": "clair",
+  "etapes": [
+   {
+    "nom": "bord-repos",
+    "pastille": "Nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "plus-t4-saisi",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "retour-de-plus",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "feuille-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": [
+     "Oct. – déc. 2026",
+     "oct.",
+     "nov."
+    ]
+   },
+   {
+    "nom": "brassins-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": []
+   },
+   {
+    "nom": "brassins-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true,
+    "lu": [
+     "Juil. – sept. 2026",
+     "juil."
+    ]
+   },
+   {
+    "nom": "finances-mois-precedent",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-apres-finances",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "dates-libres",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-dates",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true,
+    "mention": "Arrondi aux mois entiers : octobre 2026 à novembre 2026"
+   },
+   {
+    "nom": "brassins-dates",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true
+   }
+  ]
+ },
+ {
+  "mode": "1280",
+  "theme": "cave",
+  "etapes": [
+   {
+    "nom": "bord-repos",
+    "pastille": "Nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "plus-t4-saisi",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "retour-de-plus",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "feuille-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": [
+     "Oct. – déc. 2026",
+     "oct.",
+     "nov."
+    ]
+   },
+   {
+    "nom": "brassins-t4",
+    "pastille": "T4",
+    "duoMemeLigne": true,
+    "lu": []
+   },
+   {
+    "nom": "brassins-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-t3",
+    "pastille": "T3",
+    "duoMemeLigne": true,
+    "lu": [
+     "Juil. – sept. 2026",
+     "juil."
+    ]
+   },
+   {
+    "nom": "finances-mois-precedent",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "bord-apres-finances",
+    "pastille": "T3",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "dates-libres",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true
+   },
+   {
+    "nom": "finances-dates",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true,
+    "mention": "Arrondi aux mois entiers : octobre 2026 à novembre 2026"
+   },
+   {
+    "nom": "brassins-dates",
+    "pastille": "12 oct. → 3 nov.",
+    "duoMemeLigne": true
+   }
+  ]
+ }
+]
