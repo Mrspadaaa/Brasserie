@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CreativeItem } from '../../src/types';
-import { avecChamp, nouvelleIdee, recetteDeLIdee, repartir, type IdeeBiere } from '../../src/domain/atelier/ideesBieres';
+import { archiverIdee, avecChamp, brouillonDeLIdee, nouvelleIdee, recetteDeLIdee, repartir, type IdeeBiere } from '../../src/domain/atelier/ideesBieres';
 import { auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, titreIdee } from '../../src/domain/atelier/ideesPrix';
 
 const idee = (id: string, title: string): CreativeItem => ({ id, type: 'recipe-idea', title, status: 'idea' });
@@ -60,5 +60,26 @@ describe('idées de prix (kb3)', () => {
     expect(titreIdee(vieux)).toBe('Tarif de Noël');
     expect(avecPrix(vieux, { format: 'verre' }).title).toBe('Tarif de Noël');
     expect(auLitre(vieux.targetPrice, formatDe(vieux))).toBeNull();
+  });
+});
+
+describe('passe 3 : critique de kb3', () => {
+  it('changer de format ne transporte pas le prix : le prix du fût n’est pas celui du carton, et il revient au retour', () => {
+    const f = nouvelleIdeePrix('fut', 145, 'ZZ TEST', 'p')!;
+    const carton = avecPrix(f, { format: 'carton' });
+    expect(carton.targetPrice).toBeUndefined();
+    expect(avecPrix(carton, { format: 'fut' }).targetPrice).toBe(145);
+  });
+  it('le brouillon de recette ne reprend que l’idée : nom, style, degré posé ; ni grain, ni houblon, ni levure', () => {
+    const b = brouillonDeLIdee({ ...idee('i', 'Dubbel d’hiver'), style: 'Dubbel', couleur: 'brun', phare: 'miel' } as CreativeItem, 'REC-1', 30);
+    expect(b).toMatchObject({ name: 'Dubbel d’hiver', style: 'Dubbel', abvTarget: null, fermentables: [], hops: [] });
+    expect(b.notesCreation).toContain('Couleur visée : brune');
+    expect(b.notesCreation).toContain('Ingrédient phare : miel');
+  });
+  it('« En recette » suit l’identifiant même si la recette est renommée ; une idée archivée n’est ni à essayer ni en recette', () => {
+    const i = { ...idee('i', 'Dubbel'), recetteId: 'REC-1' } as CreativeItem;
+    expect(recetteDeLIdee(i as IdeeBiere, [{ id: 'REC-1', name: 'Autre nom' }])?.id).toBe('REC-1');
+    const r = repartir([archiverIdee(idee('j', 'X'), '2026-11-16')], []);
+    expect([r.essayer.length, r.recette.length, r.archivees.length]).toEqual([0, 0, 1]);
   });
 });

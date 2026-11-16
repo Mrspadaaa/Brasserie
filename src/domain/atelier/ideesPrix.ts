@@ -24,7 +24,12 @@ export const FORMATS_PRIX: readonly FormatPrix[] = [
   { id: '33cl', court: 'Bouteille', nom: 'Bouteille 33 cl', litres: 0.33, unite: 'la bouteille', pas: 0.1 }
 ];
 
-export type IdeePrix = CreativeItem & { format?: FormatPrixId };
+/**
+ * `prixParFormat` : le prix déjà posé pour chaque autre format de l'idée. Changer de format ne transporte jamais le prix d'un format dans un autre
+ * (145 CHF le fût n'est pas 145 CHF le carton) : le prix du nouveau format est celui déjà noté pour lui, sinon « à poser ».
+ * `archivedAt` : l'idée est rangée (ISO), pas supprimée.
+ */
+export type IdeePrix = CreativeItem & { format?: FormatPrixId; prixParFormat?: Partial<Record<FormatPrixId, number>>; archivedAt?: string };
 
 export const formatDe = (i: CreativeItem): FormatPrix | undefined => FORMATS_PRIX.find((f) => f.id === (i as IdeePrix).format);
 export const r2 = (n: number) => Math.round(n * 100 + 1e-9) / 100;
@@ -50,6 +55,14 @@ export const titreIdee = (i: CreativeItem): string => {
   return i.contactName?.trim() ? `${f.nom} pour ${i.contactName.trim()}` : f.nom;
 };
 
+/** Ranger une idée de prix (réversible) ou la remettre. */
+export const archiverPrix = (i: CreativeItem, quand: string): CreativeItem => ({ ...(i as IdeePrix), archivedAt: quand }) as CreativeItem;
+export function restaurerPrix(i: CreativeItem): CreativeItem {
+  const { archivedAt: _a, ...reste } = i as IdeePrix;
+  void _a;
+  return reste as CreativeItem;
+}
+
 /** Une idée de prix neuve, écrite sur place : le format suffit ; prix et client absents restent absents. */
 export function nouvelleIdeePrix(format: FormatPrixId | undefined, prix: number | undefined, pourQui: string, id: string): CreativeItem | null {
   const f = FORMATS_PRIX.find((x) => x.id === format);
@@ -63,7 +76,16 @@ export function nouvelleIdeePrix(format: FormatPrixId | undefined, prix: number 
 /** Réécrit un champ de l'idée ; le titre suit le format et le client tant qu'il a été fabriqué par eux (sinon il reste celui que tu as écrit). */
 export function avecPrix(i: CreativeItem, patch: { format?: FormatPrixId; targetPrice?: number | undefined; contactName?: string; estimatedCost?: number | undefined }): CreativeItem {
   const suivait = formatDe(i) ? i.title === titreIdee(i) : /^Idée de prix/.test(i.title);
+  const avant = formatDe(i);
   const next = { ...(i as IdeePrix), ...patch } as IdeePrix;
+  if (patch.format && avant && patch.format !== avant.id) {
+    // Le prix du format quitté est gardé ; le nouveau format repart de son propre prix, ou de rien.
+    const memo = { ...(i as IdeePrix).prixParFormat };
+    if (i.targetPrice !== undefined) memo[avant.id] = i.targetPrice; else delete memo[avant.id];
+    next.targetPrice = memo[patch.format];
+    delete memo[patch.format];
+    if (Object.keys(memo).length) next.prixParFormat = memo; else delete next.prixParFormat;
+  }
   for (const k of ['targetPrice', 'estimatedCost', 'contactName'] as const) if (next[k] === undefined || next[k] === '') delete next[k];
   if (suivait && formatDe(next)) next.title = titreIdee(next);
   return next as CreativeItem;

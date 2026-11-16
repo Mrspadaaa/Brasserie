@@ -353,3 +353,22 @@ p.nc-msg { margin: 0 0 2px 4px; }
 .lo-fix b { font-weight: 600; flex: 1; }
 .lo-prix .finance-assistant { margin-top: 12px; }
 .lo button:focus-visible, .lo input:focus-visible { outline: 2px solid var(--a-ink); outline-offset: 2px; }
+/* Passe 3 (critique de kb3) : champs de 44 px, unité collée au nombre, liseré des pastilles (cave), entête des idées de tarif, toast, suppression confirmée. */
+.lo-pin { min-height: 44px; }
+.lo-pin.lo-fit { flex: 0 1 auto; width: auto; min-width: 5ch; max-width: 100%; field-sizing: content; }
+.lo-val > .lo-pin.lo-fit + small { flex: 1; }
+.lo-dot, .lo-sw i { box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1.5px color-mix(in srgb, var(--a-ink) 38%, transparent); }
+.lo-dot-0 { box-shadow: inset 0 0 0 2px var(--a-line2); }
+.lo-sw i { box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25), 0 0 0 1px color-mix(in srgb, var(--a-ink) 38%, transparent); }
+.lo-bar-t { justify-content: space-between; }
+.lo-ht { margin: 0; font-size: 14px; font-weight: 600; color: var(--a-mut); }
+.lo-ht span { font-weight: 400; }
+.lo-arch { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 4px; color: var(--a-mut) !important; font-size: 14px; }
+.lo-sec.lo-danger { color: var(--a-late) !important; border-color: var(--a-late) !important; }
+.lo-conf { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 14px; }
+.lo-conf span { flex: 1 1 100%; }
+.lo-conf button { min-height: 44px; padding: 0 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--a-line2) !important; }
+.lo-conf .lo-yes { background: var(--a-late) !important; color: var(--a-bg) !important; border-color: var(--a-late) !important; }
+.lo-toast { position: fixed; left: 10px; right: 10px; bottom: 72px; z-index: 70; min-height: 48px; border-radius: 16px; background: var(--a-ink); color: var(--a-bg); display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; font-size: 14px; box-shadow: 0 6px 18px rgb(0 0 0 / .2); max-width: 520px; margin: 0 auto; }
+.lo-toast span { flex: 1; }
+.lo-toast button { white-space: nowrap; min-height: 44px; min-width: 44px; padding: 0 12px; font-weight: 700; color: inherit !important; text-decoration: underline; text-underline-offset: 3px; display: inline-flex; align-items: center; justify-content: center; }

@@ -1,31 +1,34 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Check, ChevronDown, ChevronRight, ChevronUp, Pencil, Plus, Tag } from 'lucide-react';
+import { Archive, ArchiveRestore, BookOpen, Check, ChevronDown, ChevronRight, ChevronUp, Plus, Tag, Trash2 } from 'lucide-react';
 import type { CreativeItem, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { NumberInput } from '../NumberInput';
 import { estDemo } from './demo';
 import {
-  avecChamp, COULEURS, MOMENTS, nouvelleIdee, recetteDeLIdee, repartir, SAISONS, STYLES_RAPIDES, teinteDe,
-  type CouleurId, type EtatIdee, type IdeeBiere, type MomentId, type SaisonId
+  archiverIdee, avecChamp, COULEURS, MOMENTS, nouvelleIdee, recetteDeLIdee, repartir, restaurerIdee, SAISONS, STYLES_RAPIDES, teinteDe,
+  type CouleurId, type FiltreIdee, type IdeeBiere, type MomentId, type SaisonId
 } from '../../domain/atelier/ideesBieres';
-import { arrondiPas, auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, titreIdee, type FormatPrixId, type IdeePrix } from '../../domain/atelier/ideesPrix';
+import { archiverPrix, auLitre, avecPrix, formatDe, FORMATS_PRIX, nouvelleIdeePrix, pousser, restaurerPrix, titreIdee, type FormatPrixId, type IdeePrix } from '../../domain/atelier/ideesPrix';
 import './atelier.css';
 
 /**
  * kb3 (choisi le 14.11, « la ligne s'ouvre sur place ») : Carnet › Bières et Tarifs › idées de prix.
  * Aucune fenêtre : la ligne touchée s'ouvre dans la liste, bord de la teinte visée, les voisines restent visibles ; une seule ouverte.
  * Vide : la première ligne s'écrit déjà sur place. Classes `lo-` (L26). Les champs sont décrits dans domain/atelier/ideesBieres.ts et ideesPrix.ts.
+ * Le carré à gauche du bouton principal est la boîte « Archiver » de la maquette : l'idée est rangée (réversible : « Annuler », puis le filtre
+ * « Archivées » où on la remet ou la supprime après confirmation), sans feuille.
  */
 
 const fr2 = (n: number) => n.toFixed(2).replace('.', ',');
 const attrsTexte = { autoComplete: 'off', autoCorrect: 'off', spellCheck: false, 'data-form-type': 'other', 'data-lpignore': 'true', 'data-1p-ignore': 'true', 'data-bwignore': 'true' } as const;
 
-/** Un texte écrit sur place : il part au rangement à la sortie du champ (ou « Entrée »), pas à chaque lettre. */
-function ChampTexte({ valeur, onValider, etiquette, placeholder, className = 'lo-val', autoFocus }: { valeur: string; onValider: (v: string) => void; etiquette: string; placeholder: string; className?: string; autoFocus?: boolean }) {
+/** Un texte écrit sur place : il part au rangement à la sortie du champ (ou « Entrée »), pas à chaque lettre. `requis` : un champ vidé revient à sa valeur. */
+function ChampTexte({ valeur, onValider, etiquette, placeholder, className = 'lo-val', autoFocus, requis }: { valeur: string; onValider: (v: string) => void; etiquette: string; placeholder: string; className?: string; autoFocus?: boolean; requis?: boolean }) {
   const [t, setT] = useState(valeur);
   useEffect(() => setT(valeur), [valeur]);
   return <input type="text" className={className} aria-label={etiquette} value={t} placeholder={placeholder} autoFocus={autoFocus} {...attrsTexte}
-    onChange={(e) => setT(e.target.value)} onBlur={() => { if (t.trim() !== valeur.trim()) onValider(t.trim()); }}
+    onChange={(e) => setT(e.target.value)}
+    onBlur={() => { if (requis && !t.trim()) { setT(valeur); return; } if (t.trim() !== valeur.trim()) onValider(t.trim()); }}
     onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }} />;
 }
 
@@ -55,6 +58,25 @@ const Pastille = ({ id, grand }: { id: CouleurId | undefined; grand?: boolean })
   return <i className={`lo-dot${grand ? ' lo-dot-l' : ''}${teinte ? '' : ' lo-dot-0'}`} style={teinte ? { background: teinte } : undefined} aria-hidden="true" />;
 };
 
+/** Le toast de la maquette (« Brouillon créé dans Recettes · Ouvrir ») : un mot, une action, il s'efface seul au bout de 7 s. */
+interface MessageLO { texte: string; action?: { nom: string; run: () => void } }
+function Toast({ message, onFermer }: { message: MessageLO; onFermer: () => void }) {
+  useEffect(() => { const t = window.setTimeout(onFermer, 7000); return () => window.clearTimeout(t); }, [message, onFermer]);
+  return <div className="lo-toast" role="status"><Check size={18} aria-hidden="true" /><span>{message.texte}</span>
+    {message.action && <button type="button" onClick={() => { message.action?.run(); onFermer(); }}>{message.action.nom}</button>}</div>;
+}
+
+/** « Supprimer » d'une idée rangée : un second toucher, nommé, confirme ; jamais d'un seul geste. */
+function Supprimer({ titre, onSupprimer }: { titre: string; onSupprimer: () => void }) {
+  const [sur, setSur] = useState(false);
+  if (!sur) return <button type="button" className="lo-sec lo-danger" aria-label={`Supprimer « ${titre} »`} onClick={() => setSur(true)}><Trash2 size={18} aria-hidden="true" /></button>;
+  return <div className="lo-conf" role="alertdialog" aria-label="Confirmer la suppression">
+    <span>Supprimer « {titre} » pour de bon ?</span>
+    <button type="button" className="lo-yes" onClick={onSupprimer}>Supprimer</button>
+    <button type="button" className="lo-no" onClick={() => setSur(false)}>Garder</button>
+  </div>;
+}
+
 /* ─────────────── Bières ─────────────── */
 
 export interface IdeesBieresProps {
@@ -65,57 +87,85 @@ export interface IdeesBieresProps {
   onAjout: (v: boolean) => void;
   onCreer: (idee: CreativeItem) => void;
   onMaj: (idee: CreativeItem) => void;
-  /** Le geste de l'app : ouvre l'assistant de recette prérempli du titre et de la description de l'idée. */
-  onPasser: (idee: CreativeItem) => void;
-  /** Absent : la recette est dite « En recette » sans bouton (la page recette s'ouvre depuis App). */
+  /** « Passer dans mes recettes » : crée le brouillon dans Recettes sans quitter l'Atelier et rend l'identifiant de la recette (`null` : rien créé). */
+  onPasser: (idee: CreativeItem) => string | null;
+  /** Absent : la recette est dite « En recette » sans bouton. */
   onOuvrirRecette?: (recetteId: string) => void;
-  /** La fiche complète de l'app (modifier, supprimer avec confirmation). */
-  onFiche: (idee: CreativeItem) => void;
+  /** Suppression définitive d'une idée archivée (après confirmation dans la ligne). */
+  onSupprimer: (idee: CreativeItem) => void;
 }
 
-export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, onPasser, onOuvrirRecette, onFiche }: IdeesBieresProps) {
-  const [filtre, setFiltre] = useState<EtatIdee>('essayer');
+export function IdeesBieres({ idees, recettes, ajout, onAjout, onCreer, onMaj, onPasser, onOuvrirRecette, onSupprimer }: IdeesBieresProps) {
+  const [filtre, setFiltre] = useState<FiltreIdee>('essayer');
   const [ouvert, setOuvert] = useState<string | null>(null);
+  const [message, setMessage] = useState<MessageLO | null>(null);
   const parEtat = useMemo(() => repartir(idees, recettes), [idees, recettes]);
-  const liste = parEtat[filtre];
+  const nbArchivees = parEtat.archivees.length;
+  const filtreAffiche: FiltreIdee = filtre === 'archivees' && nbArchivees === 0 ? 'essayer' : filtre;
+  const liste = parEtat[filtreAffiche];
   const vide = idees.length === 0;
   const maj = (i: CreativeItem) => onMaj(i);
+  const fermerMessage = React.useCallback(() => setMessage(null), []);
+  const passer = (i: CreativeItem) => {
+    const id = onPasser(i);
+    if (!id) return;
+    setFiltre('recette');
+    setOuvert(i.id);
+    setMessage({ texte: 'Brouillon créé dans Recettes', action: onOuvrirRecette ? { nom: 'Ouvrir', run: () => onOuvrirRecette(id) } : undefined });
+  };
+  const archiver = (i: CreativeItem) => {
+    maj(archiverIdee(i, new Date().toISOString()));
+    setOuvert(null);
+    setMessage({ texte: 'Idée archivée', action: { nom: 'Annuler', run: () => maj(restaurerIdee(i)) } });
+  };
   return <div className="lo">
     <div className="lo-bar" role="group" aria-label="Idées de bière">
-      <button type="button" className="lo-flt" aria-pressed={filtre === 'essayer'} onClick={() => setFiltre('essayer')}>À essayer <b className="lo-num">{parEtat.essayer.length}</b></button>
-      <button type="button" className="lo-flt" aria-pressed={filtre === 'recette'} onClick={() => setFiltre('recette')}>En recette <b className="lo-num">{parEtat.recette.length}</b></button>
+      <button type="button" className="lo-flt" aria-pressed={filtreAffiche === 'essayer'} onClick={() => setFiltre('essayer')}>À essayer <b className="lo-num">{parEtat.essayer.length}</b></button>
+      <button type="button" className="lo-flt" aria-pressed={filtreAffiche === 'recette'} onClick={() => setFiltre('recette')}>En recette <b className="lo-num">{parEtat.recette.length}</b></button>
+      {nbArchivees > 0 && <button type="button" className="lo-flt" aria-pressed={filtreAffiche === 'archivees'} onClick={() => setFiltre('archivees')}>Archivées <b className="lo-num">{nbArchivees}</b></button>}
       {!vide && <button type="button" className="lo-new" onClick={() => { onAjout(true); setOuvert(null); setFiltre('essayer'); }}><Plus size={18} aria-hidden="true" />Noter</button>}
     </div>
     {vide && <p className="lo-first">Aucune idée de bière encore. Écris la première ici :</p>}
-    {(ajout || vide) && <NouvelleBiere refermable={!vide} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setOuvert(i.id); }} />}
-    {!vide && liste.length === 0 && <p className="lo-first">{filtre === 'essayer' ? 'Rien à essayer : toutes tes idées sont en recette.' : 'Aucune idée n’est encore passée en recette.'}</p>}
+    {(ajout || vide) && <NouvelleBiere refermable={!vide} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setFiltre('essayer'); setOuvert(i.id); }} />}
+    {!vide && liste.length === 0 && <p className="lo-first">{filtreAffiche === 'essayer' ? 'Rien à essayer : toutes tes idées sont en recette ou archivées.' : 'Aucune idée n’est encore passée en recette.'}</p>}
     <div className="lo-list">
       {liste.map((i) => {
         const idee = i as IdeeBiere;
         const ouv = ouvert === i.id;
-        const recette = recetteDeLIdee(i, recettes);
+        const recette = recetteDeLIdee(idee, recettes);
+        const rangee = filtreAffiche === 'archivees';
         return <div key={i.id} className={ouv ? 'lo-open' : 'lo-row'} style={ouv ? ({ ['--c' as string]: teinteDe(idee.couleur) ?? 'var(--a-line2)' }) : undefined}>
           <Entete ouvert={ouv} onBascule={() => setOuvert(ouv ? null : i.id)} gauche={<Pastille id={idee.couleur} grand={ouv} />} titre={i.title}
             droite={!ouv && (estDemo(i.id) ? <span className="lo-pill">Démo</span> : idee.style ? <small className="lo-sty">{idee.style}</small> : null)} />
           {ouv && <>
             <div className="lo-kv">
+              <span className="lo-k">Nom</span><ChampTexte valeur={i.title} etiquette="Nom de l’idée" placeholder="à écrire" requis onValider={(v) => maj({ ...i, title: v })} />
               <span className="lo-k">Style</span><ChampTexte valeur={idee.style ?? ''} etiquette="Style" placeholder="à choisir" onValider={(v) => maj(avecChamp(i, 'style', v))} />
               <span className="lo-k">Couleur</span><Pastilles valeur={idee.couleur} onChoisir={(c) => maj(avecChamp(i, 'couleur', c ?? ''))} />
+              <span className="lo-k">Degré</span>
+              <div className="lo-val"><NumberInput value={idee.degre} onValue={(v) => maj(avecChamp(i, 'degre', v ?? ''))} emptyValue={undefined} fractionDigits={1} min={0} max={30} className="lo-pin lo-num lo-fit" aria-label="Degré visé en % vol" placeholder="à poser" />{idee.degre !== undefined && <small>% vol</small>}</div>
+              <span className="lo-k">Phare</span><ChampTexte valeur={idee.phare ?? ''} etiquette="Ingrédient phare" placeholder="à poser" onValider={(v) => maj(avecChamp(i, 'phare', v))} />
               <span className="lo-k">Quand</span><Segment<MomentId> nom="Quand" choix={MOMENTS.map((m) => ({ id: m.id, texte: m.court }))} valeur={idee.moment} onChoisir={(m) => maj(avecChamp(i, 'moment', m ?? ''))} />
               <span className="lo-k">Brasser</span><Segment<SaisonId> nom="Brasser" choix={SAISONS.map((s) => ({ id: s.id, texte: s.nom }))} valeur={idee.saison} onChoisir={(s) => maj(avecChamp(i, 'saison', s ?? ''))} />
-              {i.description && <><span className="lo-k">Idée</span><p className="lo-txt">{i.description}</p></>}
-              {i.notes && <><span className="lo-k">Notes</span><p className="lo-txt">{i.notes}</p></>}
+              {i.description && <><span className="lo-k">Idée</span><ChampTexte valeur={i.description} etiquette="Idée" placeholder="à écrire" onValider={(v) => maj({ ...i, description: v || undefined })} /></>}
+              <span className="lo-k">Notes</span><ChampTexte valeur={i.notes ?? ''} etiquette="Notes" placeholder="à noter" onValider={(v) => maj({ ...i, notes: v || undefined })} />
             </div>
-            {recette
-              ? <div className="lo-linked" role="status"><Check size={18} aria-hidden="true" />En recette{onOuvrirRecette && <button type="button" onClick={() => onOuvrirRecette(recette.id)}><BookOpen size={16} aria-hidden="true" />Ouvrir la recette</button>}</div>
-              : <div className="lo-act">
-                  <button type="button" className="lo-sec" aria-label={`Modifier ou supprimer « ${i.title} »`} onClick={() => onFiche(i)}><Pencil size={18} aria-hidden="true" /></button>
-                  <button type="button" className="lo-cta" onClick={() => onPasser(i)}><BookOpen size={18} aria-hidden="true" />Passer dans mes recettes</button>
-                </div>}
+            {rangee
+              ? <div className="lo-act">
+                  <Supprimer titre={i.title} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} />
+                  <button type="button" className="lo-cta" onClick={() => { maj(restaurerIdee(i)); setFiltre('essayer'); }}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button>
+                </div>
+              : recette
+                ? <div className="lo-linked" role="status"><Check size={18} aria-hidden="true" />En recette{onOuvrirRecette && <button type="button" onClick={() => onOuvrirRecette(recette.id)}><BookOpen size={16} aria-hidden="true" />Ouvrir la recette</button>}</div>
+                : <div className="lo-act">
+                    <button type="button" className="lo-sec" aria-label={`Archiver « ${i.title} »`} onClick={() => archiver(i)}><Archive size={18} aria-hidden="true" /></button>
+                    <button type="button" className="lo-cta" onClick={() => passer(i)}><BookOpen size={18} aria-hidden="true" />Passer dans mes recettes</button>
+                  </div>}
           </>}
         </div>;
       })}
     </div>
+    {message && <Toast message={message} onFermer={fermerMessage} />}
   </div>;
 }
 
@@ -176,20 +226,37 @@ export interface IdeesPrixProps {
   onAjout: (v: boolean) => void;
   onCreer: (idee: CreativeItem) => void;
   onMaj: (idee: CreativeItem) => void;
-  onFiche: (idee: CreativeItem) => void;
+  /** Suppression définitive d'une idée archivée (après confirmation dans la ligne). */
+  onSupprimer: (idee: CreativeItem) => void;
+  /** Change à chaque « Noter » de la frise : la ligne neuve (déjà ouverte ou non) reçoit le focus dans le prix. */
+  signal?: number;
   /** Sous la liste : l'assistant. */
   apres?: React.ReactNode;
 }
 
-export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onFiche, apres }: IdeesPrixProps) {
+export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onSupprimer, signal, apres }: IdeesPrixProps) {
   const [ouvert, setOuvert] = useState<string | null>(null);
+  const [rangees, setRangees] = useState(false);
+  const [message, setMessage] = useState<MessageLO | null>(null);
+  const fermerMessage = React.useCallback(() => setMessage(null), []);
+  const actives = useMemo(() => idees.filter((i) => !(i as IdeePrix).archivedAt), [idees]);
+  const archivees = useMemo(() => idees.filter((i) => (i as IdeePrix).archivedAt), [idees]);
+  const voirRangees = rangees && archivees.length > 0;
+  const liste = voirRangees ? archivees : actives;
   const vide = idees.length === 0;
   useEffect(() => { if (ajout) setOuvert(null); }, [ajout]);
+  const archiver = (i: CreativeItem) => {
+    onMaj(archiverPrix(i, new Date().toISOString()));
+    setOuvert(null);
+    setMessage({ texte: 'Idée archivée', action: { nom: 'Annuler', run: () => onMaj(restaurerPrix(i)) } });
+  };
   return <div className="lo lo-prix">
     {vide && <p className="lo-first">Aucune idée de prix encore. Note la première ici :</p>}
-    {(ajout || vide) && <NouveauPrix refermable={!vide} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setOuvert(i.id); }} />}
-    {!vide && <div className="lo-list" aria-label="Mes idées de prix">
-      {idees.map((i) => {
+    {!vide && <div className="lo-bar lo-bar-t"><h3 className="lo-ht">Mes idées de tarif <span>· CHF HT</span></h3>
+      {!ajout && <button type="button" className="lo-new" onClick={() => { onAjout(true); setOuvert(null); setRangees(false); }}><Plus size={18} aria-hidden="true" />Noter</button>}</div>}
+    {(ajout || vide) && <NouveauPrix refermable={!vide} signal={signal} onFermer={() => onAjout(false)} onGarder={(i) => { onCreer(i); onAjout(false); setRangees(false); setOuvert(i.id); }} />}
+    {!vide && <div className="lo-list" aria-label={voirRangees ? 'Mes idées de prix archivées' : 'Mes idées de prix'}>
+      {liste.map((i) => {
         const ouv = ouvert === i.id;
         const f = formatDe(i);
         const prix = i.targetPrice;
@@ -200,7 +267,7 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onFiche, apre
           {ouv && <>
             <div className="lo-bigp">
               <button type="button" className="lo-stp" aria-label={`Moins ${f ? fr2(f.pas) : '1'}`} onClick={() => onMaj(avecPrix(i, { targetPrice: pousser(prix, f, -1) }))}>−</button>
-              <div className="lo-val lo-bigv"><NumberInput value={prix} onValue={(v) => onMaj(avecPrix(i, { targetPrice: v }))} emptyValue={undefined} fractionDigits={2} className="lo-pin lo-num" aria-label="Prix visé en CHF HT" placeholder="CHF HT" />{f && <small>{f.unite}</small>}</div>
+              <div className="lo-val lo-bigv"><NumberInput value={prix} onValue={(v) => onMaj(avecPrix(i, { targetPrice: v }))} emptyValue={undefined} fractionDigits={2} className="lo-pin lo-num lo-fit" aria-label="Prix visé en CHF HT" placeholder="CHF HT" />{f && <small>{f.unite}</small>}</div>
               <button type="button" className="lo-stp" aria-label={`Plus ${f ? fr2(f.pas) : '1'}`} onClick={() => onMaj(avecPrix(i, { targetPrice: pousser(prix, f, 1) }))}>+</button>
             </div>
             <p className="lo-hint lo-num" role="status">{litre !== null && f
@@ -211,26 +278,45 @@ export function IdeesPrix({ idees, ajout, onAjout, onCreer, onMaj, onFiche, apre
               <Segment<FormatPrixId> nom="Format" choix={CHOIX_FORMAT} valeur={f?.id} large retirable={false} onChoisir={(v) => v && onMaj(avecPrix(i, { format: v }))} />
               <span className="lo-k">Pour qui</span><ChampTexte valeur={i.contactName ?? ''} etiquette="Pour qui" placeholder="à choisir" onValider={(v) => onMaj(avecPrix(i, { contactName: v }))} />
               <span className="lo-k">Coût</span>
-              <div className="lo-val lo-cout"><NumberInput value={i.estimatedCost} onValue={(v) => onMaj(avecPrix(i, { estimatedCost: v }))} emptyValue={undefined} fractionDigits={2} className={`lo-pin lo-num${i.estimatedCost === undefined ? ' lo-pose' : ''}`} aria-label="Coût en CHF" placeholder="à poser" />
+              <div className="lo-val lo-cout"><NumberInput value={i.estimatedCost} onValue={(v) => onMaj(avecPrix(i, { estimatedCost: v }))} emptyValue={undefined} fractionDigits={2} className={`lo-pin lo-num lo-fit${i.estimatedCost === undefined ? ' lo-pose' : ''}`} aria-label="Coût en CHF" placeholder="à poser" />
                 <small>{i.estimatedCost === undefined ? '· marge sans chiffre' : 'CHF'}</small></div>
             </div>
-            <div className="lo-act"><button type="button" className="lo-sec" aria-label={`Modifier ou supprimer « ${titreIdee(i)} »`} onClick={() => onFiche(i)}><Pencil size={18} aria-hidden="true" /></button>
-              <button type="button" className="lo-fix" onClick={versPrix}><Tag size={18} aria-hidden="true" /><b>Fixer dans Clients › Prix</b><ChevronRight size={18} aria-hidden="true" /></button></div>
+            <div className="lo-act">
+              {voirRangees
+                ? <><Supprimer titre={titreIdee(i)} onSupprimer={() => { onSupprimer(i); setOuvert(null); }} />
+                    <button type="button" className="lo-cta" onClick={() => { onMaj(restaurerPrix(i)); setRangees(false); }}><ArchiveRestore size={18} aria-hidden="true" />Remettre dans mes idées</button></>
+                : <><button type="button" className="lo-sec" aria-label={`Archiver « ${titreIdee(i)} »`} onClick={() => archiver(i)}><Archive size={18} aria-hidden="true" /></button>
+                    <button type="button" className="lo-fix" onClick={versPrix}><Tag size={18} aria-hidden="true" /><b>Fixer dans Clients › Prix</b><ChevronRight size={18} aria-hidden="true" /></button></>}
+            </div>
           </>}
         </div>;
       })}
+      {archivees.length > 0 && <button type="button" className="lo-arch" aria-pressed={voirRangees} onClick={() => { setRangees(!voirRangees); setOuvert(null); }}><Archive size={16} aria-hidden="true" />{voirRangees ? 'Revenir à mes idées' : `Archivées ${archivees.length}`}</button>}
     </div>}
+    {message && <Toast message={message} onFermer={fermerMessage} />}
     {apres}
   </div>;
 }
 
 /** La ligne neuve d'une idée de prix : le format, le prix visé, pour qui. Il suffit d'un format ou d'un prix. */
-function NouveauPrix({ refermable, onFermer, onGarder }: { refermable: boolean; onFermer: () => void; onGarder: (i: CreativeItem) => void }) {
+function NouveauPrix({ refermable, signal, onFermer, onGarder }: { refermable: boolean; signal?: number; onFermer: () => void; onGarder: (i: CreativeItem) => void }) {
   const [format, setFormat] = useState<FormatPrixId | undefined>(undefined);
   const [prix, setPrix] = useState<number | undefined>(undefined);
   const [pour, setPour] = useState('');
+  /** Le prix tapé pour un format n'est pas celui d'un autre : changer de format le range, et reprend celui déjà tapé pour le nouveau, sinon rien. */
+  const [memo, setMemo] = useState<Partial<Record<FormatPrixId, number>>>({});
+  const choisirFormat = (v: FormatPrixId | undefined) => {
+    if (v && format && v !== format) {
+      const m = { ...memo };
+      if (prix !== undefined) m[format] = prix; else delete m[format];
+      setPrix(m[v]); delete m[v]; setMemo(m);
+    }
+    setFormat(v);
+  };
   const racine = useRef<HTMLDivElement>(null);
   useEffect(() => { if (refermable) racine.current?.scrollIntoView({ block: 'nearest' }); }, [refermable]);
+  // « Noter » de la frise alors que la ligne neuve est déjà là : le focus va dans le prix.
+  useEffect(() => { if (signal) racine.current?.querySelector<HTMLElement>('[aria-label="Prix visé en CHF HT"]')?.focus(); }, [signal]);
   const i = nouvelleIdeePrix(format, prix, pour, `CR-${Date.now()}`);
   const f = FORMATS_PRIX.find((x) => x.id === format);
   const litre = auLitre(prix, f);
@@ -238,9 +324,9 @@ function NouveauPrix({ refermable, onFermer, onGarder }: { refermable: boolean; 
     {refermable && <div className="lo-oh lo-oh-r"><span className="lo-k">Nouvelle idée de prix</span><button type="button" className="lo-up" aria-label="Refermer" onClick={onFermer}><ChevronUp size={18} aria-hidden="true" /></button></div>}
     <div className="lo-kv">
       <span className="lo-k lo-k2">Format</span>
-      <Segment<FormatPrixId> nom="Format" choix={CHOIX_FORMAT} valeur={format} large onChoisir={setFormat} />
+      <Segment<FormatPrixId> nom="Format" choix={CHOIX_FORMAT} valeur={format} large onChoisir={choisirFormat} />
       <span className="lo-k">Prix visé</span>
-      <div className="lo-val lo-bigv lo-ink"><NumberInput value={prix} onValue={setPrix} emptyValue={undefined} fractionDigits={2} className="lo-pin lo-num" aria-label="Prix visé en CHF HT" placeholder="CHF HT" /></div>
+      <div className="lo-val lo-bigv lo-ink"><NumberInput value={prix} onValue={setPrix} emptyValue={undefined} fractionDigits={2} className="lo-pin lo-num lo-fit" aria-label="Prix visé en CHF HT" placeholder="CHF HT" />{f && <small>{f.unite}</small>}</div>
       {litre !== null && f && <><span className="lo-k" /><p className="lo-hint lo-num">soit <b>{fr2(litre)}</b> le litre</p></>}
       <span className="lo-k">Pour qui</span><ChampTexte valeur={pour} etiquette="Pour qui" placeholder="à choisir" onValider={setPour} />
     </div>

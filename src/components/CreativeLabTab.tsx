@@ -37,6 +37,8 @@ import { NoteCarnet, type FiltreCarnet } from '../ui/atelier/NoteCarnet';
 import { modeRangerNote } from '../config/rangerNoteIA';
 import { TarifsFrise } from '../ui/atelier/TarifsFrise';
 import { IdeesBieres, IdeesPrix } from '../ui/atelier/LigneOuverte';
+import { brouillonDeLIdee } from '../domain/atelier/ideesBieres';
+import { defaultBrewVolume } from '../domain/brewEquipment';
 import { FileText, Tag, Wrench } from 'lucide-react';
 
 /** ks4 : la rangée Matériel · Carnet · Tarifs ; Bières, Contacts et À faire sont les filtres du Carnet. */
@@ -70,7 +72,6 @@ interface CreativeLabTabProps {
 
 export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   onSuccessMessage,
-  onDraftRecipe,
   onOpenRecipe,
   createRequest,
   onCreateRequestHandled,
@@ -110,6 +111,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const [newCost, setNewCost] = useState<string>('');
   const [newDate, setNewDate] = useState('');
   const [newContact, setNewContact] = useState('');
+  /** Change à chaque « Noter » de la frise (Tarifs) : la ligne neuve reçoit le focus même si elle est déjà ouverte. */
+  const [signalNoter, setSignalNoter] = useState(0);
   const [equipmentCreateRequest,setEquipmentCreateRequest]=useState<{kind:string;at:number}|null>(null);
 
   /** Le bouton d'action ouvre le formulaire d'ajout de la section courante. */
@@ -190,19 +193,21 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
 
   /**
-   * Passer d'une idée à une recette.
+   * Passer d'une idée à une recette (kb3 : « Brouillon créé dans Recettes »), sans quitter l'Atelier.
    *
-   * ⚠️ Cette fonction FABRIQUAIT auparavant une recette entière : style deviné
-   * d'après le titre, 30 L, OG 1.060, FG 1.015, 35 IBU, 6.5 kg de grain, deux
-   * malts et deux houblons génériques, une levure US-05. Aucune de ces valeurs
-   * ne venait de l'idée ni du stock. Gaëtan récupérait une recette d'apparence
-   * complète, entièrement inventée, sur laquelle il aurait pu brasser.
-   *
-   * Elle ouvre désormais l'assistant de création avec le seul élément réel :
-   * ce que l'idée contient. Tout le reste se saisit.
+   * ⚠️ Une ancienne version FABRIQUAIT une recette entière (style deviné, 30 L, OG 1.060, 35 IBU, 6.5 kg de grain, deux malts, deux houblons,
+   * une levure US-05) : rien de cela ne venait de l'idée. Le brouillon n'a que ce que l'idée dit : nom, style, degré visé s'il est posé, et un
+   * mot (couleur, phare, saison) dans les notes de création ; ni grain, ni houblon, ni levure. Le volume est celui que l'assistant propose à
+   * une recette neuve. L'idée garde l'identifiant de la recette (champ `recetteId`) : « En recette » ne dépend plus du nom.
+   * Rend l'identifiant de la recette créée.
    */
-  const handleConvertToOfficialRecipe = (item: CreativeItem) => {
-    onDraftRecipe?.({ title: item.title, description: item.description });
+  const passerEnBrouillon = (item: CreativeItem): string | null => {
+    const cfg = StorageService.getConfig();
+    const profil = cfg.brewhouses?.find((b) => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses?.[0];
+    const id = `REC-${Date.now().toString(36).toUpperCase()}`;
+    StorageService.addRecipe(brouillonDeLIdee(item, id, defaultBrewVolume(profil)));
+    StorageService.updateCreativeItem({ ...item, recetteId: id } as CreativeItem);
+    return id;
   };
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
@@ -241,13 +246,12 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   const assistantBouton = <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>;
   /**
-   * Bières (filtre du Carnet), kb3 : la ligne s'ouvre sur place. « Passer dans mes recettes » reste le geste de l'app (l'assistant de recette,
-   * prérempli du titre et de la description) : il ne crée pas de brouillon dans Recettes avant son « Enregistrer ». « En recette » se lit :
-   * une recette porte le nom de l'idée.
+   * Bières (filtre du Carnet), kb3 : la ligne s'ouvre sur place. « Passer dans mes recettes » crée le brouillon dans Recettes sans quitter
+   * l'Atelier (toast « Brouillon créé dans Recettes · Ouvrir »). « En recette » : la recette créée par l'idée (identifiant), ou une recette de même nom.
    */
   const vueBieres = (
     <IdeesBieres idees={currentItems} recettes={recettes} ajout={isAdding} onAjout={setIsAdding} onCreer={(i) => StorageService.addCreativeItem(i)}
-      onMaj={(i) => StorageService.updateCreativeItem(i)} onPasser={handleConvertToOfficialRecipe} onOuvrirRecette={onOpenRecipe} onFiche={setEditing} />
+      onMaj={(i) => StorageService.updateCreativeItem(i)} onPasser={passerEnBrouillon} onOuvrirRecette={onOpenRecipe} onSupprimer={(i) => handleDelete(i.id)} />
   );
 
   return (
@@ -260,7 +264,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
       {/* kxc (15.11) : la frise des prix pratiqués ; « + Noter » garde une idée de tarif, les idées gardées et l'assistant sous la liste. */}
       {/* kb3 : la ligne d'une idée de prix s'ouvre sur place (prix − / +, au litre, format, pour qui, coût) ; « + Noter » ouvre la ligne neuve. */}
-      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>setIsAdding(true)} apres={<IdeesPrix idees={currentItems} ajout={isAdding} onAjout={setIsAdding} onCreer={(i)=>StorageService.addCreativeItem(i)} onMaj={(i)=>StorageService.updateCreativeItem(i)} onFiche={setEditing} apres={assistantBouton}/>}/>}
+      {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>{setIsAdding(true);setSignalNoter(Date.now());}} apres={<IdeesPrix idees={currentItems} ajout={isAdding} onAjout={setIsAdding} onCreer={(i)=>StorageService.addCreativeItem(i)} onMaj={(i)=>StorageService.updateCreativeItem(i)} onSupprimer={(i)=>handleDelete(i.id)} signal={signalNoter} apres={assistantBouton}/>}/>}
 
       {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={(f) => { setFiltre(f); setIsAdding(false); }} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
         vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
