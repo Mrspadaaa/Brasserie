@@ -66,3 +66,15 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - **L5 Propositions acceptées en un toucher** : les brassins habituels, la saison du frigo et les échéances.
 - **L6 Carnet lié** : une idée du carnet avec une échéance ou un budget apparaît sur la frise. Une baisse de prix signalée par la veille s'y affiche aussi.
 - **L7 Essais sur son téléphone** : le prototype final doit pouvoir être joué seul dans une page, avec 5 tâches et un chrono. Le pilote le publiera.
+
+## PRIORITÉ du brasseur (16.11) : L4, les gestes directs sur la frise
+- **K11 Gestes directs** est un critère bloquant, sans 9/10 possible tant qu'il manque.
+  - Déplacer : glisser une barre déplace la chose, avec un aimant à la semaine (ou au jour quand on zoome), en 1 geste et sans frappe.
+  - Allonger ou raccourcir : tirer un bord de la barre, en 1 geste.
+  - Menu : un appui long ouvre épingler, étoile et filtrer (« seulement ce genre »), puis dupliquer.
+- Retour visible pendant le geste :
+  - le fantôme de la barre ;
+  - les semaines visées ;
+  - la caisse qui se recalcule en direct ;
+  - un « Annuler » de 5 s après le geste.
+- La mesure puppeteer joue ces trois gestes par des événements tactiles réels et vérifie la nouvelle date. Les juges y passent en premier.

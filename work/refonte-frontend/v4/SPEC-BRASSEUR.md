@@ -1799,3 +1799,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : il demande d'autres leviers pour le calendrier et le carnet. Proposés : partager un lien depuis le navigateur vers l'app, raccourcis sur l'écran d'accueil, la voix au +, des gestes directs sur la frise, une tâche ou une date proposée et acceptée en un toucher, le lien entre carnet et calendrier, des essais chronométrés sur son téléphone.)
 - **16.11**, mot pour mot : « Tous »
   (lu : il retient les sept leviers ; ils sont ajoutés aux deux chantiers, calendrier et carnet.)
+- **16.11**, mot pour mot : « Surtout Gestes directs sur la frise : tu glisses une barre pour la déplacer, tu tires son bord pour l'allonger. Un appui long ouvre épingler, étoile et filtrer. »
+  (lu : L4 est sa priorité. Critère bloquant K11 du calendrier : glisser pour déplacer, tirer le bord pour allonger, appui long pour le menu, chacun en un geste, sans clavier, avec un retour visible et un Annuler.)
