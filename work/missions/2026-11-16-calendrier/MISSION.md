@@ -57,3 +57,8 @@ Les leviers L1 à L7 sont ajoutés à fb9/MANQUES.md et à carnet-decision/CADRE
 ## Carnet 9/10 (16.11)
 - Workflow `carnet-9`, task wqn8lksgz, run wf_547f5490-9ff. Sorties dans `carnet-decision/f9/` : LISIBILITE.md, REFERENCES.md, FUSION.md, puis p1 à p5. Livrables : `page2/` et `jouable/`.
 - Au retour : publier page2 et jouable, ajouter leurs lignes à Pages, commit, lien au brasseur.
+
+## Liens de l'app (16.11, « tout a un lien avec tout »)
+- Workflow `liens-app`, task w9zp0g7g1, run wf_d0b636f6-2aa. Sorties dans `work/missions/2026-11-16-liens-app/` : inventaires, ETAT-ART.md, LIENS-APP.md v2, `proto/`, `page/`.
+- Le carnet (CADRE.md) et le calendrier (MANQUES.md) lisent LIENS-APP.md à chaque passe.
+- Au retour : publier la page, ajouter sa ligne à Pages, commit, lien au brasseur.
