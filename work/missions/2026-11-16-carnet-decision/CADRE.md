@@ -140,3 +140,6 @@ Questions ouvertes à montrer en variantes, jamais en mots seuls (L24) : où vit
 - Q21 Même signe partout (liens) : jetons picto, teinte, nom court par genre dans tous les modules ; 0 écart.
 - Q22 Propositions justes (tous) : leave-one-out, réglé 2021-2023, jugé 2024-2025 ; 1re puce ≥ 60 %, 3 premières ≥ 90 %, semaine ±1 ≥ 80 %, montant ±10 % ≥ 70 %, carnet ≥ 80 % gardées.
 - Q23 Son essai réel (tous) : page L7 chronométrée, journal des touchers ; médiane ≤ 6 s, 0 clavier, ≤ 1 hésitation, sa phrase classée « aime ». Juge final, non bloquant.
+
+## Paysage mobile (16.11, « Il faut vraiment une version horizontal pour mobile btw »)
+- La comparaison et la liste des carnets ont une vraie vue paysage à 844 × 390. La comparaison y montre au moins 5 articles côte à côte.

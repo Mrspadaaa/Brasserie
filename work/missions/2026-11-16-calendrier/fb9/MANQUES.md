@@ -120,3 +120,9 @@ Règle : aucun geste n'ouvre le clavier par défaut.
 - Un geste flottant change le calendrier de thème : tout, finance, brassage, achats, atelier, ventes. Le + porte alors les actions du thème, et la frise montre les choses du thème au premier plan.
 - Le changement de thème se fait en 1 toucher ou 1 balayage, sans clavier.
 - Variantes en cours dans `work/missions/2026-11-16-vues-calendrier/themes/`.
+
+## K13 Paysage mobile, bloquant (16.11, « Il faut vraiment une version horizontal pour mobile btw »)
+- Une vraie vue paysage dessinée pour 844 × 390, et non le portrait étiré.
+- Au moins 5 rangées de la frise et 12 semaines visibles sans défilement. L'en-tête et la caisse tiennent sur au plus 25 % de la hauteur, par exemple en colonne latérale.
+- Les gestes K11 marchent. Pas de 9/10 sans K13.
+- La mesure joue la rotation (390 × 844 vers 844 × 390) et garde la position, le thème et les filtres.
