@@ -38,7 +38,7 @@ import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './dom
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 import { articlesACommander } from './domain/stockLevel';
-import { vueHorizon } from './domain/stock/horizon';
+import { compteDeReglage, vueHorizon } from './domain/stock/horizon';
 import { useHorizonStock, aujourdhuiLocal } from './ui/stock/useHorizonStock';
 import { formatLitres } from './domain/recipeMetrics';
 
@@ -557,7 +557,7 @@ export const App: React.FC = () => {
   const [horizonStock] = useHorizonStock();
   const criticalStockCount = useMemo(() => {
     const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, aujourdhuiLocal());
-    return vue.comptes[horizonStock];
+    return compteDeReglage(vue, horizonStock);
   }, [stocks, batches, recipes, horizonStock]);
 
   // Pending To-Do count from Creative Lab

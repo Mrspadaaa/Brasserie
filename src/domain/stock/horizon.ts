@@ -139,3 +139,83 @@ export function phraseHorizon(vue: VueHorizon, h: Horizon): string {
 }
 
 export const horizonValide = (v: unknown): v is Horizon => v === 'brassin' || v === 'six' || v === 'tout';
+
+/* ───────── La fenêtre réglable (demande du 16.11 : « Je veux pouvoir au doigt faire bouger cet encadrement… jusqu'à S50 par exemple, ou juste 50 51 ») ─────────
+ * L'histogramme a sept colonnes : les six semaines (position 0 = la semaine en cours) puis « seuil » (position 6).
+ * Une fenêtre {a, b} prend les colonnes a à b, bornes comprises. « S49 · 6 sem. · Tout » restent des raccourcis :
+ * ce sont des fenêtres qui commencent à la semaine en cours (0 à n, 0 à 5, 0 à 6).
+ * Une fenêtre libre se garde en semaines absolues (`null` = la colonne seuil) : ce qui est choisi ne glisse pas d'un jour à l'autre. */
+
+export const POSITION_SEUIL = SEMAINES_FENETRE; // 6
+export interface Fenetre { a: number; b: number }
+/** Réglage gardé : un raccourci (qui suit le prochain brassin) ou une fenêtre libre en semaines absolues. */
+export type FenetreGardee = { de: number | null; a: number | null };
+export type Reglage = Horizon | FenetreGardee;
+
+const entierOuNul = (v: unknown) => v === null || (typeof v === 'number' && Number.isInteger(v));
+export const reglageValide = (v: unknown): v is Reglage =>
+  horizonValide(v) || (typeof v === 'object' && v !== null && 'de' in v && 'a' in v
+    && entierOuNul((v as FenetreGardee).de) && entierOuNul((v as FenetreGardee).a));
+
+const borne = (p: number) => Math.max(0, Math.min(POSITION_SEUIL, p));
+
+/** Position (0 à 6) de la colonne qui porte une ligne : sa semaine si elle tient dans les six semaines, sinon « seuil ». */
+export function colonneDeLigne(vue: VueHorizon, l: LigneHorizon): number {
+  return l.semaine !== null && l.semaine <= vue.limiteSix ? l.semaine - vue.courante : POSITION_SEUIL;
+}
+
+/** La fenêtre d'un raccourci : « avant le prochain brassin » s'arrête à la dernière colonne datée. */
+export function fenetreDeHorizon(vue: VueHorizon, h: Horizon): Fenetre {
+  if (h === 'tout') return { a: 0, b: POSITION_SEUIL };
+  if (h === 'six') return { a: 0, b: POSITION_SEUIL - 1 };
+  return { a: 0, b: borne(Math.min(vue.limiteBrassin - vue.courante, POSITION_SEUIL - 1)) };
+}
+
+/** La fenêtre (positions) d'un réglage gardé ; une semaine passée revient à la semaine en cours. */
+export function fenetreDeReglage(vue: VueHorizon, r: Reglage): Fenetre {
+  if (typeof r === 'string') return fenetreDeHorizon(vue, r);
+  const pos = (s: number | null) => s === null ? POSITION_SEUIL : borne(Math.min(s - vue.courante, POSITION_SEUIL - 1));
+  const a = pos(r.de); const b = pos(r.a);
+  return { a: Math.min(a, b), b: Math.max(a, b) };
+}
+
+/** Garder une fenêtre : un raccourci s'il la dessine exactement (il suit alors le prochain brassin), sinon une fenêtre libre. */
+export function reglageDeFenetre(vue: VueHorizon, f: Fenetre): Reglage {
+  const g = (h: Horizon) => { const w = fenetreDeHorizon(vue, h); return w.a === f.a && w.b === f.b; };
+  if (g('six')) return 'six';
+  if (g('brassin') && vue.limiteBrassin <= vue.limiteSix) return 'brassin';
+  if (g('tout')) return 'tout';
+  const sem = (p: number) => p >= POSITION_SEUIL ? null : vue.courante + p;
+  return { de: sem(f.a), a: sem(f.b) };
+}
+
+/** Les lignes d'une fenêtre libre : celles dont la colonne y tombe. */
+export function lignesDeFenetre(vue: VueHorizon, f: Fenetre): LigneHorizon[] {
+  return vue.lignes.filter((l) => { const c = colonneDeLigne(vue, l); return c >= f.a && c <= f.b; });
+}
+
+/** La somme des colonnes d'une fenêtre : le gros chiffre et la pastille (rien d'autre ne compte). */
+export function sommeFenetre(vue: VueHorizon, f: Fenetre): number {
+  return vue.colonnes.slice(f.a, f.b + 1).reduce((n, c) => n + c.n, 0);
+}
+
+/** Les lignes comptées par un réglage : un raccourci garde son compte, une fenêtre libre compte ses colonnes. */
+export function lignesDeReglage(vue: VueHorizon, r: Reglage): LigneHorizon[] {
+  return typeof r === 'string' ? lignesDeHorizon(vue, r) : lignesDeFenetre(vue, fenetreDeReglage(vue, r));
+}
+export const compteDeReglage = (vue: VueHorizon, r: Reglage): number => lignesDeReglage(vue, r).length;
+
+const nomColonne = (vue: VueHorizon, p: number) => vue.colonnes[p]?.semaine == null ? 'seuil' : vue.colonnes[p].etiquette;
+
+/** « S50 », « jusqu'à S50 », « S50–S51 », « S51 → seuil » : le nom d'une fenêtre libre. */
+export function libelleFenetre(vue: VueHorizon, f: Fenetre): string {
+  if (f.a === f.b) return nomColonne(vue, f.a);
+  if (f.a === 0) return `jusqu’à ${nomColonne(vue, f.b)}`;
+  if (f.b === POSITION_SEUIL) return `${nomColonne(vue, f.a)} → seuil`;
+  return `${nomColonne(vue, f.a)}–${nomColonne(vue, f.b)}`;
+}
+
+/** La deuxième ligne du chiffre clé, pour un raccourci (phrase du brassin) ou une fenêtre libre (son nom). */
+export function phraseReglage(vue: VueHorizon, r: Reglage): string {
+  return typeof r === 'string' ? phraseHorizon(vue, r) : libelleFenetre(vue, fenetreDeReglage(vue, r));
+}

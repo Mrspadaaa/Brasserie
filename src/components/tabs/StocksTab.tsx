@@ -9,7 +9,7 @@ import { EnteteRayon } from '../../ui/stock/EnteteRayon';
 import { dernierMouvementDit, mouvementsParRef } from '../../domain/stock/dernierMouvement';
 import type { MouvementBrut } from '../../domain/stock/mouvementsArticle';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
-import { lignesDeHorizon, phraseHorizon, vueHorizon } from '../../domain/stock/horizon';
+import { lignesDeReglage, phraseReglage, vueHorizon } from '../../domain/stock/horizon';
 import { ChiffreACommander } from '../../ui/stock/ChiffreACommander';
 import { aujourdhuiLocal, useHorizonStock } from '../../ui/stock/useHorizonStock';
 import { nextUniqueRef } from '../../services/refs';
@@ -218,7 +218,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const copyEverything = () => {
     if (shoppingBySupplier.length === 0) {
       onSuccessMessage?.(aCommander.length > 0
-        ? `Rien à commander ${phraseHorizon(vueH, horizon)} : ${aCommander.length} plus tard, touchez Tout.`
+        ? `Rien à commander ${phraseReglage(vueH, horizon)} : ${aCommander.length} ${typeof horizon === 'string' ? 'plus tard' : 'hors de la fenêtre'}, touchez Tout.`
         : 'Rien à commander : le stock couvre les brassins planifiés et les recettes écrites.');
       return;
     }
@@ -320,7 +320,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // Pastille C (16.11) : un seul horizon (S49 · 6 sem. · Tout) règle le chiffre clé, la pastille de l'onglet et la liste de courses.
   const [horizon, setHorizon] = useHorizonStock();
   const vueH = useMemo(() => vueHorizon(aCommander, batches, aujourdhuiLocal()), [aCommander, batches]);
-  const refsHorizon = useMemo(() => new Set(lignesDeHorizon(vueH, horizon).map(l => l.item.ref)), [vue, horizon]);
+  const refsHorizon = useMemo(() => new Set(lignesDeReglage(vueH, horizon).map(l => l.item.ref)), [vue, horizon]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -607,13 +607,13 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         <div className="flex-1 overflow-y-auto space-y-2 pb-4">
           {aCommander.length > totalToOrder && (
             <p className="flex items-center gap-2 px-1 text-sm text-cave-200" role="status" data-testid="courses-horizon">
-              <span className="min-w-0 flex-1">{totalToOrder} sur {aCommander.length} : {phraseHorizon(vueH, horizon)}</span>
+              <span className="min-w-0 flex-1">{totalToOrder} sur {aCommander.length} : {phraseReglage(vueH, horizon)}</span>
               <button type="button" className="min-h-[44px] px-2 text-sm font-semibold underline underline-offset-4 text-cave-50" onClick={() => setHorizon('tout')}>Tout voir</button>
             </p>
           )}
           {totalToOrder === 0 ? (
             <div className="py-12 text-center space-y-2">
-              <p className="text-base text-cave-200">Rien à commander{aCommander.length > 0 ? ` ${phraseHorizon(vueH, horizon)}` : ''}</p>
+              <p className="text-base text-cave-200">Rien à commander{aCommander.length > 0 ? ` ${phraseReglage(vueH, horizon)}` : ''}</p>
               <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
                 {aCommander.length > 0
                   ? `${aCommander.length} ${aCommander.length > 1 ? 'articles viennent' : 'article vient'} plus tard.`

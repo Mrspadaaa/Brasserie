@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import { StorageService } from '../../services/storage';
-import { horizonValide, type Horizon } from '../../domain/stock/horizon';
+import { reglageValide, type Reglage } from '../../domain/stock/horizon';
 
 /**
  * L'horizon commun « S49 · 6 sem. · Tout » (pastille C) : un seul réglage, propre à l'appareil, lu par le chiffre clé du Stocks
@@ -10,15 +10,15 @@ import { horizonValide, type Horizon } from '../../domain/stock/horizon';
 const CLE = 'stocks_horizon';
 const ecouteurs = new Set<() => void>();
 
-const lire = (): Horizon => {
+const lire = (): Reglage => {
   const v = StorageService.getUiState<unknown>(CLE, 'brassin');
-  return horizonValide(v) ? v : 'brassin';
+  return reglageValide(v) ? v : 'brassin';
 };
 const abonner = (cb: () => void) => { ecouteurs.add(cb); return () => { ecouteurs.delete(cb); }; };
 
-export function useHorizonStock(): [Horizon, (h: Horizon) => void] {
-  const horizon = useSyncExternalStore(abonner, lire, () => 'brassin' as Horizon);
-  const regler = useCallback((h: Horizon) => {
+export function useHorizonStock(): [Reglage, (r: Reglage) => void] {
+  const horizon = useSyncExternalStore(abonner, lire, () => 'brassin' as Reglage);
+  const regler = useCallback((h: Reglage) => {
     StorageService.setUiState(CLE, h);
     ecouteurs.forEach((cb) => cb());
   }, []);

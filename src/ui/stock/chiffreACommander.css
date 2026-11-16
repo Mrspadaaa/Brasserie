@@ -12,12 +12,24 @@
 .cac-seg button:first-child{border-left:0}
 .cac-seg button b{display:block;font-size:19px;color:inherit}
 .cac-seg button.on{background:rgb(var(--cave-50));color:rgb(var(--cave-950))}
-.cac-his{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:100px;margin-top:12px;padding:0 2px;border-bottom:1.5px solid rgb(var(--cave-700))}
+/* La fenêtre réglable : la zone reçoit le geste (pan-y : le défilement vertical reste à la page), l'histogramme dessine, le cadre et les poignées se posent par calcul sur la même grille (7 colonnes, écart 6, marge 2). */
+.cac-prise{margin:8px -10px 0;padding:8px 10px 0;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.cac-prise.drag{cursor:grabbing}
+.cac-zone{--bl:calc(-2px + (100% - 40px) * var(--a) / 7 + 6px * var(--a));--bw:calc((100% - 40px) * var(--n) / 7 + 6px * (var(--n) - 1) + 8px);position:relative}
+.cac-his{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:100px;padding:0 2px;border-bottom:1.5px solid rgb(var(--cave-700))}
 .cac-his>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}
 .cac-his>div i{display:block;width:100%;max-width:34px;border-radius:5px 5px 0 0;background:var(--c);transition:background .2s}
 .cac-his>div span{font-size:14px;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums}
 .cac-sem{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px;padding:0 2px;font-size:14px;color:rgb(var(--cave-texte-400));text-align:center}
-.cac-br{position:absolute;top:-4px;bottom:-4px;left:-2px;border:2.5px solid rgb(var(--area-finances));border-radius:10px;pointer-events:none;transition:width .25s}
+.cac-ov{position:absolute;left:0;right:0;top:0;height:100px;pointer-events:none}
+.cac-br{position:absolute;top:-4px;bottom:-4px;left:var(--bl);width:var(--bw);border:2.5px solid rgb(var(--area-finances));border-radius:10px;transition:left .18s,width .18s}
+.cac-prise.drag .cac-br{transition:left .1s,width .1s;border-width:3px}
+.cac-hd{position:absolute;top:50%;display:block;width:12px;height:36px;margin:-18px 0 0 -6px;border-radius:6px;background:linear-gradient(rgb(var(--cave-950)),rgb(var(--cave-950))) center/2px 14px no-repeat,rgb(var(--area-finances));box-shadow:0 0 0 2px rgb(var(--cave-950));transition:left .18s,transform .12s}
+.cac-hg{left:calc(var(--bl) + 1px)}
+.cac-hdd{left:calc(var(--bl) + var(--bw) - 1px)}
+.cac-prise.drag .cac-hd{transition:left .1s,transform .12s}
+.cac-hd.on{transform:scale(1.25)}
+.cac-hd:focus-visible{outline:2px solid rgb(var(--cave-50));outline-offset:3px}
 .cac-titre{margin:12px 0 4px;font-size:17px}
 .cac-titre b{color:rgb(var(--cave-texte-50))}
 .cac-liste{list-style:none;margin:0;padding:0;border:1.5px solid rgb(var(--cave-800));border-radius:14px;overflow:hidden}
