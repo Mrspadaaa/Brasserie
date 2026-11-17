@@ -8,3 +8,4 @@ Base : ra+p5f (work/missions/2026-11-16-carnet-decision/ra-p5f/proto.html). Crit
 |---|---|---|---|
 | Carnet, 12 maquettes vers 9 | 17.11 | https://claude.ai/artifact/6LY3CH33xqPTRSw3QLTruZ | `work/missions/2026-11-17-carnet-retouches/maquettes/page/index.html` |
 | Carnet par écran (★ et notes) | 17.11 | https://claude.ai/artifact/VU5xp5f9PkiRpS1VjkDPFz | `work/missions/2026-11-17-carnet-retouches/maquettes/page2/index.html` |
+| Carnet greffe 2 sur son top 3 (par écran) | 17.11 | https://claude.ai/artifact/D8h6ehUMMcJkUbjD8APz9R | `work/missions/2026-11-17-carnet-retouches/greffe2/page/index.html` |
