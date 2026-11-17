@@ -45,3 +45,21 @@ Choisir, choisi, pourquoi : 2 g05-11 · 3 h06-8 · notes : v03-7 : Top2 ; v09-3 
 « Je pense que seul l'ajout de note/idée, modifications de note, création, suppression de note/idée doivent être revue, le reste c'est top »
 
 Lecture (L01, portée) : figés sur ce classement : liste, vide, carnet ouvert, cartes, article, comparer, choisi, À venir. À revoir seulement : créer une idée, ajouter une note (texte, lien, photo) à une idée, modifier une note, supprimer une note, supprimer une idée. Lot greffe4.
+
+## Classement de greffe 4 (17.11), mot pour mot
+
+Carnet greffe 4, classement par écran
+Créer une idée · avant : 2 v01-2 · notes : v01-2 : Mais pas besoin de la flèche avec écrivez ou collez icic
+Créer une idée · pendant : 2 v02-2
+Créer une idée · après : 2 v05-3 · 3 base-E01b, v01-4, v02-3, v03-3 · notes : v05-3 : SI tout de trie et tout automatiquement c'est top c'est une bonne structure 
+Ajouter à une idée · avant : quoi ? : 3 base-E20g · 5 v02-4 · notes : base-E20g : La moins pire, je dois pouvoir faire n'importe quoi dans le champs text et ensuite ça me le trie, construire, catégorises  ; v02-4 : Ça devrait être automatique 
+Ajouter un texte : 3 base-E06, v01-6, v05-5, v06-5
+Ajouter un lien : 3 base-E07a · notes : base-E07a : Mais ça doit être fait automatiquement je comprends pas ces vues 
+Modifier une note : 3 v01-11, v01-12, v03-11
+Modifier le titre de l’idée : 2 v01-13, v02-14
+Supprimer une note : 2 v02-12 · 3 v01-11
+Supprimer une idée : 2 v01-16, v01-17, v02-17, v02-18, v04-18, v04-19
+
+« Il y a trop besoin d'action et pas assez d'aide de l'ai.... »
+
+Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où il tape ou colle n'importe quoi (texte, lien, photo) ; l'IA trie, construit et catégorise toute seule (article, façon, critère, note ; idée existante ou nouvelle ; titre ; lien lu en fiche), comme la structure v05-3. Plus de tuiles « quoi ? » à choisir, plus d'écran de lien à remplir, plus de flèche « écrivez ou collez ici ». L'IA propose, il corrige d'un toucher (Annuler, déplacer). Gardés : v01-2 (sans la flèche), v02-2, v05-3 ; modifier v01-11, v01-12, v03-11 ; titre v01-13, v02-14 ; supprimer une note v02-12 ; supprimer une idée v01-16, v01-17, v02-17, v02-18, v04-18, v04-19. Lot greffe5.

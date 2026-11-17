@@ -690,6 +690,65 @@
           "modifier-note": [],
           "supprimer-note": [],
           "supprimer-idee": []
+        },
+        "greffe4": {
+          "date": "2026-11-17",
+          "parole": "Il y a trop besoin d'action et pas assez d'aide de l'ai....",
+          "source": "work/missions/2026-11-17-carnet-retouches/TOP3.md § Classement de greffe 4",
+          "images": "work/missions/2026-11-17-carnet-retouches/greffe4/page/img/<id>.webp",
+          "gardes": {
+            "creer-avant": [
+              "v01-2 (sans la flèche « écrivez ou collez ici »)"
+            ],
+            "creer-pendant": [
+              "v02-2"
+            ],
+            "creer-apres": [
+              "v05-3",
+              "base-E01b",
+              "v01-4",
+              "v02-3",
+              "v03-3"
+            ],
+            "ajouter": [
+              "base-E20g (« la moins pire » : un champ libre, l'IA trie)"
+            ],
+            "ajouter-texte": [
+              "base-E06",
+              "v01-6",
+              "v05-5",
+              "v06-5"
+            ],
+            "ajouter-lien": [
+              "base-E07a (à rendre automatique)"
+            ],
+            "modifier-note": [
+              "v01-11",
+              "v01-12",
+              "v03-11"
+            ],
+            "modifier-titre": [
+              "v01-13",
+              "v02-14"
+            ],
+            "supprimer-note": [
+              "v02-12",
+              "v01-11"
+            ],
+            "supprimer-idee": [
+              "v01-16",
+              "v01-17",
+              "v02-17",
+              "v02-18",
+              "v04-18",
+              "v04-19"
+            ]
+          },
+          "refuses": [
+            "tuiles « quoi ? » à choisir (v02-4 : « Ça devrait être automatique »)",
+            "écrans de lien à remplir à la main (base-E07a)",
+            "flèche « écrivez ou collez ici » (v01-2)"
+          ]
         }
       }
     },

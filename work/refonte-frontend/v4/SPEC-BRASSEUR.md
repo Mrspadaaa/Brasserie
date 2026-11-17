@@ -1999,3 +1999,21 @@ Lecture : le parcours est jugé « top » sauf les gestes de création, d'ajout,
   (lu : le + volant ouvrait directement la feuille d'ajout du calendrier, avec « S47 » dedans (refus i7). Sa règle du 15.11 : le + porte les actions de toujours, celles de l'écran en tête. Il devient le menu d'actions rapides de l'app, avec les gestes du calendrier en tête. Ensuite, le port dans l'app de tout ce qui est retenu : branche locale claude/port-calendrier-1711, depuis claude/ports-nuit-1611 ; mission 2026-11-17-port-calendrier.)
 - **17.11**, mot pour mot : « NE PERDS RIEN DANS LE PORTAGE, REGARDE BIEN TOUR CE QUI A ÉTÉ DEMANDER POUR CE CALENDRIER »
   (lu : avant tout code, un inventaire exhaustif de ses demandes pour le calendrier (DEMANDES.md, D-1 à D-n, mot pour mot, avec leur statut). Chaque D-n est porté, sauf s'il est refusé ou remplacé. Un relecteur vérifie la couverture avant le code, et le critique la vérifie sur les captures. Une demande absente compte comme un bloquant.)
+
+### 17.11 — Carnet, classement de greffe 4
+
+> Carnet greffe 4, classement par écran
+> Créer une idée · avant : 2 v01-2 · notes : v01-2 : Mais pas besoin de la flèche avec écrivez ou collez icic
+> Créer une idée · pendant : 2 v02-2
+> Créer une idée · après : 2 v05-3 · 3 base-E01b, v01-4, v02-3, v03-3 · notes : v05-3 : SI tout de trie et tout automatiquement c'est top c'est une bonne structure 
+> Ajouter à une idée · avant : quoi ? : 3 base-E20g · 5 v02-4 · notes : base-E20g : La moins pire, je dois pouvoir faire n'importe quoi dans le champs text et ensuite ça me le trie, construire, catégorises  ; v02-4 : Ça devrait être automatique 
+> Ajouter un texte : 3 base-E06, v01-6, v05-5, v06-5
+> Ajouter un lien : 3 base-E07a · notes : base-E07a : Mais ça doit être fait automatiquement je comprends pas ces vues 
+> Modifier une note : 3 v01-11, v01-12, v03-11
+> Modifier le titre de l’idée : 2 v01-13, v02-14
+> Supprimer une note : 2 v02-12 · 3 v01-11
+> Supprimer une idée : 2 v01-16, v01-17, v02-17, v02-18, v04-18, v04-19
+>
+> Il y a trop besoin d'action et pas assez d'aide de l'ai....
+
+Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où il tape ou colle n'importe quoi (texte, lien, photo) ; l'IA trie, construit et catégorise toute seule (article, façon, critère, note ; idée existante ou nouvelle ; titre ; lien lu en fiche), comme la structure v05-3. Plus de tuiles « quoi ? » à choisir, plus d'écran de lien à remplir, plus de flèche « écrivez ou collez ici ». L'IA propose, il corrige d'un toucher (Annuler, déplacer). Gardés : v01-2 (sans la flèche), v02-2, v05-3 ; modifier v01-11, v01-12, v03-11 ; titre v01-13, v02-14 ; supprimer une note v02-12 ; supprimer une idée v01-16, v01-17, v02-17, v02-18, v04-18, v04-19. Lot greffe5.
