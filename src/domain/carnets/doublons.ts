@@ -6,8 +6,29 @@
  * `carnetsDoublons.test.ts` et jugé sur l'autre (L20, critère A10). MinHash et simhash écartés (inutiles à 50 notes).
  */
 import Fuse from 'fuse.js';
-import { jetons } from './analyseLocale';
+import { jetons, normaliser } from './analyseLocale';
 import type { CarnetDoc, Note } from './modele';
+
+/**
+ * Même texte une fois normalisé (casse, accents, ponctuation, espaces) : « Plus de condensation au plafond » et « plus de
+ * condensation  au plafond. » ne font qu'un critère (P11). Égalité stricte après normalisation, jamais une ressemblance : deux
+ * critères proches mais distincts (« tient 80 °C » et « tient 90 °C ») restent deux lignes. Un texte vide n'égale rien.
+ */
+export function memeTexte(a: string, b: string): boolean {
+  const na = normaliser(a);
+  return na.length > 0 && na === normaliser(b);
+}
+
+/** Les éléments uniques par texte normalisé, dans l'ordre ; chacun garde les ids qu'il couvre (le premier reste la source). */
+export function uniquesParTexte<T extends { id: string; texte: string }>(liste: readonly T[]): { el: T; ids: string[] }[] {
+  const sortie: { el: T; ids: string[] }[] = [];
+  for (const x of liste) {
+    const deja = sortie.find(u => memeTexte(u.el.texte, x.texte));
+    if (deja) deja.ids.push(x.id);
+    else sortie.push({ el: x, ids: [x.id] });
+  }
+  return sortie;
+}
 
 /** Seuil réglé sur la première moitié des paires (A10). */
 export const SEUIL_DOUBLON = 0.4;

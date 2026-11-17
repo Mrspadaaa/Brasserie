@@ -21,8 +21,8 @@ describe('Comparer (A9), 12 cas', () => {
   });
   it('4. fixture Ventilation : tient 80 °C d’abord, puis le débit ; ordre attendu', () => {
     const t = tableau(V)!;
-    /* oui d'abord (A1 1800, A2 1200), puis non (A3 1500), puis inconnu (A4 1100), puis le lien sans valeur (A5) */
-    expect(t.lignes.map(l => l.articleId)).toEqual(['ZZ-V-A1', 'ZZ-V-A2', 'ZZ-V-A3', 'ZZ-V-A4', 'ZZ-V-A5']);
+    /* oui d'abord (A1 1800, A2 1200), puis non (A3 1500), puis inconnu (A4 1100), puis le lien sans valeur (A5), puis l'écarté (A6) */
+    expect(t.lignes.map(l => l.articleId)).toEqual(['ZZ-V-A1', 'ZZ-V-A2', 'ZZ-V-A3', 'ZZ-V-A4', 'ZZ-V-A5', 'ZZ-V-A6']);
     expect(rangePar(V)).toBe('tient 80 °C d\'abord, puis le débit');
     expect(t.rangePar).toBe('tient 80 °C d\'abord, puis le débit');
     expect(t.colonnes.map(k => k.nom)).toEqual(['tient 80 °C', 'débit']);

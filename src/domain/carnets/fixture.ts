@@ -19,8 +19,18 @@ const article = (a: Omit<Article, 'lecture' | 'domaine' | 'devise'> & { devise?:
 const carnet = (id: string, titre: string, status: CarnetDoc['status'], d: Omit<DonneesCarnet, 'version'>): CarnetDoc =>
   ({ id, type: 'carnet', title: `${PREFIXE_BANC}${titre}`, status, carnet: { version: 1, ...d } });
 
-const message = (id: string, texte: string, le: string, depuis: string, effets: MessageDoc['carnetMessage']['effets']): MessageDoc =>
-  ({ id, type: 'carnet-message', title: texte, status: 'done', carnetMessage: { texte, le, depuis, rangement: 'simulee', effets } });
+const message = (id: string, texte: string, le: string, depuis: string, effets: MessageDoc['carnetMessage']['effets'], titrePropose?: MessageDoc['carnetMessage']['titrePropose']): MessageDoc =>
+  ({ id, type: 'carnet-message', title: texte, status: 'done', carnetMessage: { texte, le, depuis, rangement: 'simulee', effets, ...(titrePropose ? { titrePropose } : {}) } });
+
+/** G29 (R46) : le titre que l'IA (simulée) a proposé pour Ventilation, d'après la phrase du message ZZ-MSG-V3 ; pas encore appliqué. */
+export const TITRE_PROPOSE_VENTILATION = `${PREFIXE_BANC}Évacuer la buée de la cuve`;
+export const PHRASE_TITRE_PROPOSE = 'surtout la buée de la cuve pendant l’ébullition, pas tant la salle';
+
+/**
+ * G11 (« Même chose que la note du 12 nov. · Garder à part ») : à taper dans Ventilation. Elle répète la note ZZ-V-N1 ; `doublons.ts`
+ * (Jaccard 0,75 ≥ 0,4) et l'IA simulée (`doublonDe`) la reconnaissent.
+ */
+export const PHRASE_DOUBLON = 'attendre l’avis du ferblantier sur la hotte';
 
 export const ID_VENTILATION = 'ZZ-CARNET-VENTILATION';
 export const ID_EVIER = 'ZZ-CARNET-EVIER';
@@ -39,16 +49,22 @@ function ventilation(): CarnetDoc {
     ],
     facons: [
       { id: 'ZZ-V-F1', nom: 'Hotte inox + extracteur', etat: 'ouverte', origine: 'exemple' },
-      { id: 'ZZ-V-F2', nom: 'Extracteur mural seul', etat: 'ouverte', origine: 'exemple' }
+      { id: 'ZZ-V-F2', nom: 'Extracteur mural seul', etat: 'ouverte', origine: 'exemple' },
+      // D-52, R06 : une façon écartée, avec sa raison ; son article reste à la fin du tableau de Comparer.
+      { id: 'ZZ-V-F3', nom: 'Ventilateur de plafond', etat: 'ecartee', raison: 'brasse la buée sans la sortir', origine: 'exemple' }
     ],
     articles: [
       article({ id: 'ZZ-V-A1', url: lien('v1'), nom: 'Hotte inox 120 cm + moteur', prixCentimes: 260000, vendeur: 'Inox Broye', pays: 'CH', dispo: 'en stock', faconId: 'ZZ-V-F1', valeurs: { 'débit': ex(1800, 'm³/h'), 'tient 80 °C': ex(true) } }),
       article({ id: 'ZZ-V-A2', url: lien('v2'), nom: 'Hotte murale 100 cm', prixCentimes: 145000, vendeur: 'Gastro Lüftung', pays: 'DE', dispo: 'délai 4 semaines', faconId: 'ZZ-V-F1', valeurs: { 'débit': ex(1200, 'm³/h'), 'tient 80 °C': ex(true) }, veille: { active: true, depuis: '2026-11-04T09:00:00.000Z' } }),
       article({ id: 'ZZ-V-A3', url: lien('v3'), nom: 'Extracteur mural hélicoïde', prixCentimes: 42000, vendeur: 'Ventil Jura', pays: 'CH', dispo: 'en stock', faconId: 'ZZ-V-F2', valeurs: { 'débit': ex(1500, 'm³/h'), 'tient 80 °C': ex(false) } }),
       article({ id: 'ZZ-V-A4', url: lien('v4'), nom: 'Extracteur centrifuge en ligne', prixCentimes: 69000, vendeur: 'Aéro Rhône', pays: 'FR', dispo: 'en stock', faconId: 'ZZ-V-F2', valeurs: { 'débit': ex(1100, 'm³/h') } }),
-      article({ id: 'ZZ-V-A5', url: lien('v5'), valeurs: {} })
+      article({ id: 'ZZ-V-A5', url: lien('v5'), valeurs: {} }),
+      article({ id: 'ZZ-V-A6', url: lien('v6'), nom: 'Ventilateur de plafond 130 cm', prixCentimes: 18000, vendeur: 'Ventil Jura', pays: 'CH', dispo: 'en stock', faconId: 'ZZ-V-F3', valeurs: { 'tient 80 °C': ex(false) } })
     ].map(a => ({ ...a, origine: 'exemple' as const })),
-    notes: [{ id: 'ZZ-V-N1', texte: 'attendre l’avis du ferblantier', genre: 'a-faire', messageId: 'ZZ-MSG-V2' }],
+    notes: [
+      { id: 'ZZ-V-N1', texte: 'attendre l’avis du ferblantier', genre: 'a-faire', messageId: 'ZZ-MSG-V2' },
+      { id: 'ZZ-V-N2', texte: PHRASE_TITRE_PROPOSE, genre: 'note', messageId: 'ZZ-MSG-V3' }
+    ],
     photos: []
   });
 }
@@ -134,6 +150,8 @@ function messages(): MessageDoc[] {
     message('ZZ-MSG-F2', 'la porte du local fait 80 cm', '2026-10-01T08:00:00.000Z', ID_FRIGO, [{ carnetId: ID_FRIGO, cible: 'note', id: 'ZZ-F-N1' }, { carnetId: ID_FRIGO, cible: 'critere', id: 'ZZ-F-K2' }]),
     message('ZZ-MSG-V1', 'buées au-dessus de la cuve', '2026-11-02T08:00:00.000Z', 'liste', [{ carnetId: ID_VENTILATION, cible: 'carnet', id: ID_VENTILATION }, { carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K1' }]),
     message('ZZ-MSG-V2', 'attendre l’avis du ferblantier', '2026-11-12T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N1' }]),
+    message('ZZ-MSG-V3', PHRASE_TITRE_PROPOSE, '2026-11-14T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N2' }],
+      { carnetId: ID_VENTILATION, titre: TITRE_PROPOSE_VENTILATION }),
     message('ZZ-MSG-E1', '2 bacs pour laver les fûts', '2026-11-15T17:00:00.000Z', 'liste', [{ carnetId: ID_EVIER, cible: 'carnet', id: ID_EVIER }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K1' }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K2' }])
   ];
 }
@@ -176,9 +194,27 @@ export const PHRASES_ESSAI: readonly { texte: string; urls?: string[]; centimes?
   { texte: 'lien : https://exemple.invalid/f1?ref=12, prix 4 900 CHF', urls: ['https://exemple.invalid/f1?ref=12'], centimes: 490000 }
 ];
 
+/**
+ * Banc `&articles=1|2` (état 52, G20) : Ventilation, le carnet de comparaison, réduit à 1 article (pas de tableau) ou à 2 (le tableau
+ * naît). On garde, dans cet ordre, Hotte inox 120 cm (façon Hotte) puis Extracteur mural (façon Extracteur) : deux articles lus, en lice,
+ * de deux façons ; la façon écartée et ses articles partent, pour que le tableau n'ait que ces lignes.
+ */
+export const ARTICLES_REDUITS = ['ZZ-V-A1', 'ZZ-V-A3'] as const;
+
+export interface OptionsFixture {
+  /** 1 ou 2 : Ventilation réduite (état 52). Toute autre valeur : la fixture entière. */
+  articles?: number;
+}
+
 /** Les documents de la fixture (idées et messages), copies neuves à chaque appel. */
-export function fixtureCarnets(): CreativeItem[] {
-  return JSON.parse(JSON.stringify([ventilation(), evier(), embouteillage(), frigo(), ...messages()])) as CreativeItem[];
+export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
+  const v = ventilation();
+  if (o.articles === 1 || o.articles === 2) {
+    const garde = new Set<string>(ARTICLES_REDUITS.slice(0, o.articles));
+    v.carnet.articles = v.carnet.articles.filter(a => garde.has(a.id));
+    v.carnet.facons = v.carnet.facons.filter(f => f.etat !== 'ecartee');
+  }
+  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), ...messages()])) as CreativeItem[];
 }
 
 const planDe = (id: string, titre: string, carnetId: string, cents: number, vendor: string, createdAt: string): FinancialPlan => ({

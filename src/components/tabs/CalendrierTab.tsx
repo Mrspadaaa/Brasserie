@@ -637,7 +637,7 @@ function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; se
             </button>
           ))}
         </div>
-        <p className="text-sm text-cave-200">{dateDeSemaine(semaine)}. Elle arrive dans le carnet.</p>
+        <p className="text-sm text-cave-200">{dateDeSemaine(semaine).replace(/\.$/, '')}. Elle arrive dans le carnet.</p>
         {refus && <p className="text-sm text-alert-strong">{refus}</p>}
       </div>
     </Sheet>

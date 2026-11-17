@@ -8,6 +8,7 @@
  */
 import React from 'react';
 import { ExternalLink, Eye, Link2, Package } from 'lucide-react';
+import { libelleEcarte } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, valeurTexte, type ArticleV, type CritereV } from './EtatIA';
 
 export interface CarteArticleProps {
@@ -71,7 +72,7 @@ export function CarteArticle(p: CarteArticleProps) {
       <div className="cn-article-tx">
         <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <span className="cn-mono cn-prix">{prix}</span>}</span>
         <span className="cn-mut">
-          {p.ecarte ? `écarté : ${p.ecarte.raison}` : [origine, a.dispo].filter(Boolean).join(' · ')}
+          {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, a.dispo].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         <span className="cn-ligne cn-article-pied">

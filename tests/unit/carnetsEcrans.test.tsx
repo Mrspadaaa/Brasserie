@@ -3,7 +3,7 @@
 // Critères C1 (figés, signatures refusées, garde C1, inconnu jamais 0) et C6 (aides, Suppression v2, veille, G8, G9, G29,
 // pastilles, G30, G32) de MISSION.md § Lot C.
 import React from 'react';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AIDES_ETEINTES, montant, valeurTexte, dateCourte, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV } from '../../src/ui/carnets/EtatIA';
 import { ListeCarnets } from '../../src/ui/carnets/ListeCarnets';
@@ -26,6 +26,12 @@ import { fixtureCarnets, ID_VENTILATION } from '../../src/domain/carnets/fixture
 import { lireCarnet, type CarnetDoc } from '../../src/domain/carnets/modele';
 import { tableau as calculerTableau } from '../../src/domain/carnets/comparer';
 
+import { CarnetsVue } from '../../src/ui/carnets/CarnetsVue';
+import { magasinMemoire } from '../../src/services/carnetsStore';
+import { appelsSimules } from '../../src/ui/carnets/rangement';
+import { aidesCarnet } from '../../src/config/carnetIA';
+
+vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {}, app: {}, auth: { currentUser: null } }));
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn(() => { throw new Error('IA réelle interdite en test'); }) } }));
 afterEach(cleanup);
 
@@ -154,7 +160,8 @@ describe('C1 · écrans figés', () => {
   it('R03 carnet ouvert : titre, Ce qui compte, façons, articles en tableau, sans tuiles « quoi ? »', () => {
     const { container } = ouvert();
     expect(screen.getByRole('heading', { name: 'Ventilation de la salle de brassage' })).toBeTruthy();
-    expect(container.textContent).toContain("Ce qui compte, proposé par l'IA : capter la buée à la source");
+    /* P11 : deux critères, « Ce qui compte » et la provenance une fois en tête, puis une ligne courte par critère */
+    expect(container.textContent).toContain("Ce qui compte, proposé par l'IA :capter la buée à la source");
     expect(container.textContent).toContain('Hotte + extracteur ou Extracteur mural ?');
     expect(container.textContent).toContain('capte la buée');
     expect(container.textContent).toContain('1 sans aperçu');
@@ -632,5 +639,77 @@ describe('Photos, état de l’IA, valeurs', () => {
     expect(valeurTexte({ valeur: true, origine: 'page' })).toBe('oui');
     expect(dateCourte(undefined)).toBeNull();
     expect(dateCourte('2026-11-16')).toBe('16 nov.');
+  });
+});
+
+describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 à P13)', () => {
+  const avecCriteres = (criteres: CarnetV['carnet']['criteres']): CarnetV => ({ ...ventilation, carnet: { ...ventilation.carnet, criteres } });
+  it('P11 : « Ce qui compte » et « tiré de votre phrase » une seule fois ; un critère en double, une ligne', () => {
+    const { container } = ouvert({ carnet: avecCriteres([
+      { id: 'k1', texte: 'plus de condensation au plafond', origine: 'vous' },
+      { id: 'k2', texte: 'tient 80 °C', origine: 'exemple' },
+      { id: 'k3', texte: 'le débit', origine: 'exemple' },
+      { id: 'k4', texte: 'Plus de condensation au plafond', origine: 'locale' },
+    ]) });
+    const rub = within(screen.getByRole('region', { name: 'Ce qui compte' }));
+    const t = rub.getByText(/Ce qui compte/).closest('section')!.textContent!;
+    expect(t.match(/Ce qui compte/g)).toHaveLength(1);
+    expect(t.match(/tiré de votre phrase/g)).toHaveLength(1);
+    expect(t.match(/condensation au plafond/gi)).toHaveLength(1);
+    expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(3);
+  });
+  it('P11 : provenances mêlées, la tête dit la plus fréquente, la ligne d’une autre provenance le dit en court', () => {
+    ouvert({ carnet: avecCriteres([
+      { id: 'k1', texte: 'capter la buée à la source', origine: 'ia' },
+      { id: 'k2', texte: 'le débit', origine: 'ia' },
+      { id: 'k3', texte: 'tient 80 °C', origine: 'vous' },
+    ]) });
+    const t = screen.getByRole('region', { name: 'Ce qui compte' }).textContent!;
+    expect(t).toContain("Ce qui compte, proposé par l'IA :");
+    expect(t.match(/proposé par l'IA/g)).toHaveLength(1);
+    expect(t).toContain('tient 80 °C · tiré de votre phrase');
+  });
+  it('P11 : la ligne rangée d’un critère en double s’encadre sur la ligne gardée', () => {
+    ouvert({ carnet: avecCriteres([
+      { id: 'k1', texte: 'plus de condensation au plafond', origine: 'vous' },
+      { id: 'k4', texte: 'Plus de condensation au plafond', origine: 'vous' },
+      { id: 'k2', texte: 'tient 80 °C', origine: 'vous' },
+    ]), rangee: { cible: 'critere', id: 'k4', phrase: 'Plus de condensation au plafond', onAnnuler: rien } });
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeTruthy();
+  });
+  it('P10 : l’en-tête Articles garde le compte entier et met « Comparer côte à côte » à part, poussé à droite', () => {
+    const { container } = ouvert();
+    const tete = container.querySelector('.cn-tete-articles')!;
+    expect(tete.querySelector('.cn-compte')!.textContent).toBe('3 lus, 1 sans aperçu');
+    expect(tete.querySelector('.cn-compte')!.classList.contains('cn-sp')).toBe(false);
+    expect(tete.querySelector('.cn-comparer-lien')!.textContent).toContain('Comparer côte à côte');
+  });
+});
+
+describe('Correction 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)', () => {
+  const monter = () => {
+    const magasin = magasinMemoire(fixtureCarnets());
+    render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode="simule" appels={appelsSimules('normal', 0)}
+      aides={aidesCarnet('simule', {})} ouvrir={{ id: ID_VENTILATION, at: 1 }} ecrirePlan={rien} />);
+    const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+    return { magasin, champ };
+  };
+  it('P13 : sur Ventilation, au focus du champ vide, la bulle G8 paraît, picto local, sans ✻', () => {
+    const { champ } = monter();
+    expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
+    fireEvent.focus(champ());
+    const bulle = screen.getByRole('button', { name: /peut trancher entre/ });
+    expect(bulle.textContent).toContain('Le critère « plus de condensation au plafond » peut trancher entre Hotte inox + extracteur et Extracteur mural seul');
+    expect(bulle.querySelector('[data-picto="local"]')).toBeTruthy();
+    expect(bulle.textContent).not.toContain('✻');
+  });
+  it('P12 : après un envoi accepté, le champ se vide et l’envoi disparaît', async () => {
+    const { champ } = monter();
+    fireEvent.change(champ(), { target: { value: 'demander un devis au ferblantier' } });
+    expect(screen.getByRole('button', { name: 'Ajouter' })).toBeTruthy();
+    await act(async () => { fireEvent.submit(champ().closest('form')!); });
+    await act(async () => { await new Promise(r => setTimeout(r, 20)); });
+    expect(champ().value).toBe('');
+    expect(screen.queryByRole('button', { name: 'Ajouter' })).toBeNull();
   });
 });

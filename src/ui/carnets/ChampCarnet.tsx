@@ -29,6 +29,8 @@ export interface ChampCarnetProps {
   /** Lien lu dans le presse-papier, proposé d'un toucher (R15). */
   coller?: string;
   onColler?: () => void;
+  /** Le champ prend le focus : la vue lit alors le presse-papier (R15, G14). */
+  onFocusChamp?: () => void;
   suggestion?: SuggestionCritere | null;
   vaDans?: VaDans | null;
   /** Grisé pendant la confirmation de suppression d'une idée (G34). */
@@ -94,7 +96,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
           value={p.valeur}
           placeholder={placeholder}
           disabled={p.desactive}
-          onFocus={() => setFocus(true)}
+          onFocus={() => { setFocus(true); p.onFocusChamp?.(); }}
           onBlur={() => setFocus(false)}
           onChange={e => p.onChange(e.target.value)}
           onKeyDown={e => {

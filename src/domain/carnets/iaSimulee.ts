@@ -9,6 +9,7 @@
  */
 import type { ContexteRangerCarnet, PageLue } from '../../../functions/src/carnetIA';
 import { liensDuTexte, sansAccents } from './ia';
+import { fixtureCarnets } from './fixture';
 
 type Brut = Record<string, unknown>;
 export interface ReponseSimulee { lignes: Brut[]; exemple: true }
@@ -32,16 +33,105 @@ export const PAGES_SIMULEES: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe
     domaine: 'evier-pro.ch', statut: 'lue', nom: 'Évier inox Riviera 2 bacs', prix: 1450, devise: 'CHF', dispo: 'rupture', vendeur: 'Evier Pro',
     valeurs: [{ nom: 'fond de bac', valeur: '38', unite: 'cm' }, { nom: 'bacs', valeur: '2' }]
   },
-  'plaque-froid.ch': { domaine: 'plaque-froid.ch', statut: 'lue', nom: 'Échangeur à plaques 30 plaques', photo: 'https://plaque-froid.ch/img/echangeur.jpg' },
-  'page-vide.ch': { domaine: 'page-vide.ch', statut: 'illisible' }
+  'plaque-froid.ch': { domaine: 'plaque-froid.ch', statut: 'lue', nom: 'Échangeur à plaques 30 plaques', photo: 'https://plaque-froid.ch/img/echangeur.jpg' }
 };
 
-/** La page d'un lien au banc : connue → lue (exemple) ; inconnue → `illisible`, jamais inventée. */
+/* ───── Banc : pages simulées sur `exemple.invalid` (P4, CRITIQUE-1 ; R15, R17, g5:v06-10) ───── */
+
+/** La puce « Coller : … » (R15, g5:v07-10) : le lien d'exemple que le banc propose de coller. */
+export const LIEN_COLLER_BANC = 'https://exemple.invalid/plaque-froid/echangeur-30';
+/** La seule adresse volontairement illisible (état 21 : « lien · page non lue ») : l'article ZZ-V-A5 de la fixture. */
+export const LIEN_ILLISIBLE_BANC = 'https://exemple.invalid/v5';
+
+/**
+ * Pages simulées, par adresse (domaine fictif `exemple.invalid`, sans `www.`, chemin sans `/` final). Tout y est **exemple** : noms,
+ * vendeurs, prix, valeurs. Aucune page ne pose de veille (R31 : éteinte à la naissance, il l'allume dans la fiche).
+ * - `hotte-140` : la carte complète de g5:v06-10, dans Ventilation (« tient 80 °C : oui », débit) ;
+ * - `pompe-inox`, `pompe-magnetique` : g5:v06-10 et g5:v06-11 (le 2e lien fait naître le tableau), collés depuis la liste ;
+ * - `evier-riviera` : G19, dans Évier (« fond de bac 38 cm ») ;
+ * - `plaque-froid/echangeur-30` : la puce « Coller : … » (R15).
+ */
+export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>>> = {
+  'exemple.invalid/hotte-140': {
+    statut: 'lue', nom: 'Hotte inox 140 cm + extracteur', prix: 1980, devise: 'CHF', dispo: 'en-stock', vendeur: 'Inox Exemple',
+    valeurs: [{ nom: 'débit', valeur: '2000', unite: 'm³/h' }, { nom: 'tient 80 °C', valeur: 'oui' }]
+  },
+  'exemple.invalid/pompe-inox': {
+    statut: 'lue', nom: 'Pompe de transfert inox', prix: 690, devise: 'CHF', dispo: 'en-stock', vendeur: 'Pompe Exemple',
+    valeurs: [{ nom: 'débit', valeur: '40', unite: 'L/min' }, { nom: 'température max', valeur: '90', unite: '°C' }, { nom: 'tient 80 °C', valeur: 'oui' }]
+  },
+  'exemple.invalid/pompe-magnetique': {
+    statut: 'lue', nom: 'Pompe magnétique 12 V', prix: 245, devise: 'CHF', dispo: 'en-stock',
+    valeurs: [{ nom: 'débit', valeur: '25', unite: 'L/min' }, { nom: 'température max', valeur: '100', unite: '°C' }, { nom: 'tient 80 °C', valeur: 'oui' }]
+  },
+  'exemple.invalid/evier-riviera': {
+    statut: 'lue', nom: 'Évier inox Riviera 2 bacs', prix: 1450, devise: 'CHF', dispo: 'rupture', vendeur: 'Évier Exemple',
+    valeurs: [{ nom: 'fond de bac', valeur: '38', unite: 'cm' }, { nom: 'bacs', valeur: '2' }]
+  },
+  'exemple.invalid/plaque-froid/echangeur-30': { statut: 'lue', nom: 'Échangeur à plaques 30 plaques', prix: 320, devise: 'CHF', vendeur: 'Froid Exemple' }
+};
+
+/** `exemple.invalid/hotte-140` : la clé d'une adresse (sans schéma, sans `www.`, sans `/` final, sans requête). `null` si illisible. */
+export function cleUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    return `${u.hostname.replace(/^www\./, '')}${u.pathname.replace(/\/+$/, '')}`;
+  } catch { return null; }
+}
+
+/** Les pages des articles de la fixture (les liens `exemple.invalid/v1`…), telles qu'elles auraient été lues : ce que l'article porte, rien de plus. */
+function pagesDeLaFixture(): Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>> {
+  const pages: Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>> = {};
+  for (const d of fixtureCarnets()) {
+    for (const a of d.carnet?.articles ?? []) {
+      const cle = a.url ? cleUrl(a.url) : null;
+      if (!cle || !a.nom) continue; // sans nom : page non lue (ZZ-V-A5, état 21)
+      pages[cle] = {
+        statut: 'lue', nom: a.nom,
+        ...(a.prixCentimes !== undefined ? { prix: a.prixCentimes / 100, devise: a.devise ?? 'CHF' } : {}),
+        ...(a.vendeur ? { vendeur: a.vendeur } : {}),
+        ...(a.dispo === 'en stock' ? { dispo: 'en-stock' as const } : a.dispo === 'rupture' ? { dispo: 'rupture' as const } : {}),
+        valeurs: Object.entries(a.valeurs).map(([nom, v]) => ({
+          nom, valeur: typeof v.valeur === 'boolean' ? (v.valeur ? 'oui' : 'non') : String(v.valeur), ...(v.unite ? { unite: v.unite } : {})
+        }))
+      };
+    }
+  }
+  return pages;
+}
+let pagesFixture: Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>> | null = null;
+
+/**
+ * La page d'un lien au banc : une adresse de `PAGES_BANC` ou de la fixture → lue (exemple) ; un domaine de `PAGES_SIMULEES` → lue ;
+ * tout le reste → `illisible`, jamais inventée.
+ */
 export function pageSimulee(url: string, luLe = 0): PageLue {
   let domaine = '';
   try { domaine = new URL(url).hostname.replace(/^www\./, ''); } catch { return { url, domaine, statut: 'refusee', luLe }; }
+  const cle = cleUrl(url);
+  pagesFixture ??= pagesDeLaFixture();
+  const parUrl = cle ? PAGES_BANC[cle] ?? pagesFixture[cle] : undefined;
+  if (parUrl) return { ...parUrl, url, domaine, luLe };
   const p = PAGES_SIMULEES[domaine];
   return p ? { ...p, url, luLe } : { url, domaine, statut: 'illisible', luLe };
+}
+
+/** Durée de lecture d'une page au banc : assez pour voir le squelette « ✻ lecture de la page… » (g5:v03-10). */
+export const DELAI_LECTURE_BANC = 1500;
+
+/**
+ * `lireLien` simulé : la page de `pageSimulee`, après `delaiMs` (défaut : 1,5 s, `DELAI_LECTURE_BANC` ; 0 dans les tests). S'interrompt
+ * au ✕ (`signal`). Aucun réseau.
+ */
+export function lireLienSimule(url: string, o: { delaiMs?: number; signal?: AbortSignal; luLe?: number } = {}): Promise<PageLue> {
+  const delai = o.delaiMs ?? DELAI_LECTURE_BANC;
+  const page = () => pageSimulee(url, o.luLe ?? Date.now());
+  return new Promise<PageLue>((resolve, reject) => {
+    if (o.signal?.aborted) { reject(o.signal.reason); return; }
+    if (delai <= 0) { resolve(page()); return; }
+    const t = setTimeout(() => resolve(page()), delai);
+    o.signal?.addEventListener('abort', () => { clearTimeout(t); reject(o.signal!.reason); }, { once: true });
+  });
 }
 
 const MOTS_VIDES = new Set(['pour', 'sous', 'dans', 'avec', 'les', 'des', 'une', 'qui', 'que', 'est', 'sur', 'pas', 'plus', 'mais', 'aussi', 'tout', 'faire', 'garder', 'dessous']);

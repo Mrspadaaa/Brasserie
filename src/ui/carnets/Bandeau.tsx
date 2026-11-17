@@ -10,14 +10,31 @@
  */
 import React from 'react';
 import { Check, Undo2 } from 'lucide-react';
-import { PictoLocal } from './EtatIA';
+import { PictoLocal, Provenance } from './EtatIA';
+
+/** La fin de la ligne citée sous « ✓ Carnet créé » : d'où vient le titre. Seule la phrase écrite par lui est « votre phrase en titre ». */
+const ORIGINE_TITRE: Record<TitreDe, string> = {
+  phrase: 'votre phrase en titre',
+  page: 'le nom lu sur la page en titre',
+  site: 'le site en titre',
+  ia: 'titre mis en forme par l’IA'
+};
+
+/**
+ * D'où vient le titre d'un carnet créé : `phrase` (« votre phrase en titre », R11) ; `page` (le nom lu sur la page d'un lien collé) ;
+ * `site` (un lien seul, page non lue : son domaine, P3) ; `ia` (l'IA a mis la phrase en forme). Seul `phrase` dit « votre phrase en titre ».
+ */
+export type TitreDe = 'phrase' | 'page' | 'site' | 'ia';
+
+/** L'article rangé ailleurs, montré dans le retour (g5:v06-14) : ce qui est connu seulement, rien d'inventé. */
+export interface ArticleRangeV { nom: string; detail?: string; prix?: string; exemple?: boolean }
 
 export type BandeauV =
-  | { sorte: 'cree'; phrase: string }
+  | { sorte: 'cree'; phrase: string; titreDe?: TitreDe }
   | { sorte: 'range' }
   | { sorte: 'article'; faconNom?: string }
   | { sorte: 'deuxieme'; nom: string; rang: number; faconsNees?: number }
-  | { sorte: 'ailleurs'; carnet: string; raison?: string; onDeplacer: () => void }
+  | { sorte: 'ailleurs'; carnet: string; raison?: string; onDeplacer?: () => void; cite?: string; article?: ArticleRangeV }
   | { sorte: 'vrac'; lignes: number; carnets: number }
   | { sorte: 'modifiee' }
   | { sorte: 'renomme'; avant: string }
@@ -52,7 +69,7 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
   enLigne?: boolean;
 }) {
   const b = bandeau;
-  const avecCoche = b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme' && b.sorte !== 'ailleurs';
+  const avecCoche = b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme';
   const texte = texteBandeau(b).replace(/^✓ /, '');
   return (
     <div className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}`} role="status" data-sorte={b.sorte}>
@@ -68,12 +85,20 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
           {b.sorte === 'cree' && <Undo2 size={16} aria-hidden />} Annuler
         </button>
       </div>
-      {b.sorte === 'cree' && <p className="cn-cite">« {b.phrase} » · votre phrase en titre</p>}
+      {b.sorte === 'cree' && <p className="cn-cite">« {b.phrase} » · {ORIGINE_TITRE[b.titreDe ?? 'phrase']}</p>}
       {b.sorte === 'deuxieme' && b.faconsNees ? <p className="cn-mut">{b.faconsNees} façons nées des {b.faconsNees} articles</p> : null}
-      {b.sorte === 'ailleurs' && (
+      {b.sorte === 'ailleurs' && b.article && (
+        <p className="cn-bandeau-article">
+          <b>{b.article.nom}</b>
+          {(b.article.detail || b.article.exemple) && <span className="cn-mut"> · {b.article.detail}{b.article.exemple && <> <Provenance origine="exemple" /></>}</span>}
+          {b.article.prix && <span> · <b className="cn-chiffre">{b.article.prix}</b></span>}
+        </p>
+      )}
+      {b.sorte === 'ailleurs' && b.cite && <p className="cn-cite">votre message : « {b.cite} »</p>}
+      {b.sorte === 'ailleurs' && (b.raison || b.onDeplacer) && (
         <div className="cn-bandeau-pied">
-          {b.raison && <span className="cn-mut cn-sp">{b.raison}</span>}
-          <button type="button" className="cn-puce" onClick={b.onDeplacer}>Déplacer</button>
+          {b.raison && <span className="cn-mut cn-sp"><Provenance origine="ia" /> {b.raison}</span>}
+          {b.onDeplacer && <button type="button" className="cn-puce" onClick={b.onDeplacer}>Déplacer</button>}
         </div>
       )}
       {aideConsequence && consequence && (

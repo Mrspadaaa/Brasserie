@@ -76,6 +76,32 @@ export const appelsReels: AppelsIA = {
   }
 };
 
+/**
+ * Ce que le retour « après » doit dire (P1, P2) : il suit le rangement final du message (ses effets), jamais l'écriture locale que l'IA
+ * a remplacée. `cree` : un seul carnet touché, né de ce message (R11, g5:v04-4) ; `range` : tout dans le carnet ouvert (R14, g5:v03-8) ;
+ * `ailleurs` : tout dans un seul carnet existant, autre que l'ouvert (G21, g5:v06-14, état 20) ; `vrac` : plusieurs carnets, ou une note de
+ * plusieurs lignes écrite depuis la liste (R19, g5:v01-16). Aucun effet : `null` (rien à annoncer).
+ */
+export type RetourRangement =
+  | { sorte: 'cree'; carnetId: string }
+  | { sorte: 'range'; carnetId: string }
+  | { sorte: 'ailleurs'; carnetId: string }
+  | { sorte: 'vrac'; lignes: number; carnets: number };
+
+export function retourDuRangement(
+  effets: readonly { carnetId: string; cible: string }[],
+  options: { depuis: string | null; plusieursLignes?: boolean }
+): RetourRangement | null {
+  if (!effets.length) return null;
+  const carnets = [...new Set(effets.map(e => e.carnetId))];
+  const lignes = Math.max(effets.filter(e => e.cible !== 'carnet').length, 1);
+  if (carnets.length > 1 || (!options.depuis && options.plusieursLignes && lignes > 1)) return { sorte: 'vrac', lignes, carnets: carnets.length };
+  const id = carnets[0];
+  if (options.depuis === id) return { sorte: 'range', carnetId: id };
+  if (effets.some(e => e.cible === 'carnet' && e.carnetId === id)) return { sorte: 'cree', carnetId: id };
+  return { sorte: 'ailleurs', carnetId: id };
+}
+
 export interface DependancesRangement<L> {
   mode: ModeCarnetIA;
   /** Le carnet ouvert, ou `null` depuis la liste. */

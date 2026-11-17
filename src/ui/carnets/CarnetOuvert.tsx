@@ -14,6 +14,8 @@ import { CalendarCheck, ChevronLeft, ChevronRight, Ellipsis, FileText, GitFork, 
 import { Bandeau } from './Bandeau';
 import { CarteArticle } from './CarteArticle';
 import { colonnesVue, meilleursDe, texteCellule, type TableauV } from './Comparer';
+import { libelleEcarte } from '../../domain/carnets/comparer';
+import { uniquesParTexte } from '../../domain/carnets/doublons';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type AidesV, type CarnetV, type CritereV, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
 import { Photos } from './Photos';
@@ -95,10 +97,26 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       ? <LigneRangee key={id} phrase={r.phrase} rangeSur={r.rangeSur} onAnnuler={r.onAnnuler} onVotreTexte={r.onVotreTexte} onDeplacer={r.onDeplacer} onChangerEnNote={r.onChangerEnNote}>{noeud}</LigneRangee>
       : <React.Fragment key={id}>{noeud}</React.Fragment>;
 
+  /* P11 : un critère par texte normalisé (les doublons d'avant la fusion ne s'affichent pas deux fois). « Ce qui compte » et sa
+     provenance s'écrivent une fois : sur la ligne même quand il n'y a qu'un critère (figé i06-4), en tête de l'encart sinon ; une
+     ligne d'une autre provenance que la tête le dit en court, à sa fin. */
+  const criteres = uniquesParTexte(k.criteres);
+  const provenance = (cr: CritereV) => (cr.origine === 'ia' ? "proposé par l'IA" : 'tiré de votre phrase');
+  const deLIA = criteres.filter(u => u.el.origine === 'ia').length;
+  const provTete = deLIA * 2 > criteres.length ? "proposé par l'IA" : 'tiré de votre phrase';
+  const encadreCritere = (ids: string[], noeud: React.ReactNode) =>
+    r && r.cible === 'critere' && ids.includes(r.id) ? encadre('critere', r.id, noeud) : <React.Fragment key={ids[0]}>{noeud}</React.Fragment>;
   const ligneCritere = (cr: CritereV) => (
     <p className="cn-critere">
       <Target size={18} aria-hidden className="cn-vert" />
-      <span>{cr.origine === 'ia' ? "Ce qui compte, proposé par l'IA" : 'Ce qui compte, tiré de votre phrase'} : <b>{cr.texte}</b>{cr.raison ? <span className="cn-mut"> · {cr.raison}</span> : null}</span>
+      <span>Ce qui compte, {provenance(cr)} : <b>{cr.texte}</b>{cr.raison ? <span className="cn-mut"> · {cr.raison}</span> : null}</span>
+    </p>
+  );
+  const ligneCritereCourte = (cr: CritereV) => (
+    <p className="cn-critere cn-critere-court">
+      <b>{cr.texte}</b>
+      {provenance(cr) !== provTete && <span className="cn-mut"> · {provenance(cr)}</span>}
+      {cr.raison ? <span className="cn-mut"> · {cr.raison}</span> : null}
     </p>
   );
 
@@ -165,7 +183,14 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       <section className="cn-rubrique" aria-label="Ce qui compte">
         {k.criteres.length === 0
           ? <p className="cn-rubrique-tete"><Target size={18} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore : l'IA le proposera</span></p>
-          : <div className="cn-encart-critere">{k.criteres.map(cr => encadre('critere', cr.id, ligneCritere(cr)))}</div>}
+          : criteres.length === 1
+            ? <div className="cn-encart-critere">{encadreCritere(criteres[0].ids, ligneCritere(criteres[0].el))}</div>
+            : (
+              <div className="cn-encart-critere">
+                <p className="cn-critere"><Target size={18} aria-hidden className="cn-vert" /><span>Ce qui compte, {provTete} :</span></p>
+                <div className="cn-criteres">{criteres.map(u => encadreCritere(u.ids, ligneCritereCourte(u.el)))}</div>
+              </div>
+            )}
       </section>
 
       <section className="cn-rubrique" aria-label="Façons">
@@ -206,10 +231,11 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           <p className="cn-rubrique-tete"><Tag size={18} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
         ) : (
           <>
-            <div className="cn-rubrique-tete">
+            {/* P10 : le compte garde sa largeur ; faute de place (390), « Comparer côte à côte › » passe à la ligne, calé à droite. */}
+            <div className="cn-rubrique-tete cn-tete-articles">
               <Tag size={18} aria-hidden /><b>Articles</b>
-              <span className="cn-mut cn-sp cn-nowrap">{lus} lu{lus > 1 ? 's' : ''}{sansApercu ? `, ${sansApercu} sans aperçu` : ''}</span>
-              {p.tableau && <button type="button" className="cn-lien" onClick={p.onComparer}>Comparer côte à côte <ChevronRight size={16} aria-hidden /></button>}
+              <span className="cn-mut cn-nowrap cn-compte">{lus} lu{lus > 1 ? 's' : ''}{sansApercu ? `, ${sansApercu} sans aperçu` : ''}</span>
+              {p.tableau && <button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer côte à côte <ChevronRight size={16} aria-hidden /></button>}
             </div>
             {articleRange && r && (
               <LigneRangee sorte="article" faconNom={faconRange?.nom} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
@@ -294,7 +320,7 @@ function TableauArticles({ tableau, facons, faconDe, sauf, onOuvrir }: { tableau
               <th scope="row">
                 <button type="button" className="cn-tableau-nom" onClick={e => { e.stopPropagation(); onOuvrir(l.articleId); }}>
                   {l.rang && !l.ecarte ? <span className={`cn-rang${l.rang === 1 ? ' cn-rang-1' : ''}`}>{l.rang}</span> : <span className="cn-rang cn-rang-vide">–</span>}
-                  <span><span>{l.nom}</span>{l.ecarte ? <span className="cn-mut">écarté : {l.ecarte.raison}</span> : l.moinsBienPartout ? <span className="cn-att">moins bien partout</span> : null}</span>
+                  <span><span>{l.nom}</span>{l.ecarte ? <span className="cn-mut">{libelleEcarte(l.ecarte.raison)}</span> : l.moinsBienPartout ? <span className="cn-att">moins bien partout</span> : null}</span>
                 </button>
               </th>
               {cols.map(c => {

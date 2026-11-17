@@ -1,18 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_FRIGO, ID_VENTILATION } from '../../src/domain/carnets/fixture';
-import { estDocCarnet, filDe, lireCarnet, lireCarnets, lireMessage, statutDe, titreDePhrase } from '../../src/domain/carnets/modele';
+import { carnetDepuisPhrase, domaineDuLienSeul, estDocCarnet, estLienSeul, filDe, lireCarnet, lireCarnets, lireMessage, statutDe, titreDePhrase } from '../../src/domain/carnets/modele';
 import type { CreativeItem } from '../../src/types';
 
 const F = fixtureCarnets();
 const doc = (id: string) => F.find(i => i.id === id)!;
 
 describe('modèle : lecture tolérante', () => {
-  it('la fixture se relit telle quelle (4 idées, 8 messages), titres « ZZ TEST — … »', () => {
+  /* 9 messages : la fixture a reçu ZZ-MSG-V3 (G29, titre proposé pour Ventilation), ajouté par un autre lot de la correction 1. */
+  it('la fixture se relit telle quelle (4 idées, 9 messages), titres « ZZ TEST — … »', () => {
     expect(lireCarnets(F).map(c => c.title)).toEqual([
       'ZZ TEST — Ventilation de la salle de brassage', 'ZZ TEST — Évier inox', 'ZZ TEST — Embouteillage', 'ZZ TEST — Frigo de garde pour fûts'
     ]);
     for (const c of lireCarnets(F)) expect(c).toEqual(doc(c.id));
-    expect(F.filter(i => lireMessage(i))).toHaveLength(8);
+    expect(F.filter(i => lireMessage(i))).toHaveLength(9);
     expect(lireCarnets(F).map(c => c.status)).toEqual(['research', 'idea', 'validated', 'validated']);
   });
 
@@ -57,7 +58,7 @@ describe('modèle : lecture tolérante', () => {
 describe('filDe (A12)', () => {
   it('ordre chronologique, tout le fil', () => {
     const fil = filDe(F, null);
-    expect(fil).toHaveLength(8);
+    expect(fil).toHaveLength(9);
     const dates = fil.map(e => e.message.carnetMessage.le);
     expect([...dates].sort()).toEqual(dates);
     expect(fil[0].message.id).toBe('ZZ-MSG-F1');
@@ -73,5 +74,29 @@ describe('filDe (A12)', () => {
     expect(fil.map(e => [e.message.id, e.carnetSupprime])).toEqual([['ZZ-MSG-F1', true], ['ZZ-MSG-F2', true]]);
     const marque = F.map(i => (i.id === 'ZZ-MSG-V2' ? { ...i, carnetMessage: { ...i.carnetMessage!, effets: [{ ...i.carnetMessage!.effets[0], carnetSupprime: true as const }] } } : i));
     expect(filDe(marque, null).find(e => e.message.id === 'ZZ-MSG-V2')!.carnetSupprime).toBe(true);
+  });
+});
+
+describe('P3 : un lien seul ne devient jamais le titre (g5:v03-10)', () => {
+  it('le domaine remplace l’URL brute ; www., ponctuation finale, domaine nu à « / »', () => {
+    expect(domaineDuLienSeul('https://www.exemple.invalid/hotte-inox-120?ref=1')).toBe('exemple.invalid');
+    expect(domaineDuLienSeul('  http://brewshop.ch/hotte.  ')).toBe('brewshop.ch');
+    expect(domaineDuLienSeul('www.inox-riviera.ch/evier-2-bacs')).toBe('inox-riviera.ch');
+    expect(domaineDuLienSeul('inox-riviera.ch/evier-2-bacs')).toBe('inox-riviera.ch');
+    expect(titreDePhrase('https://www.exemple.invalid/hotte-inox-120')).toBe('exemple.invalid');
+    expect(titreDePhrase('https://exemple.invalid/a\nà comparer')).toBe('exemple.invalid');
+  });
+  it('une phrase, un mot, un lien entouré de texte : le titre reste la phrase', () => {
+    for (const t of ['embouteillage', 'frigo de garde 2.5 °C', 'voir https://exemple.invalid/a', 'St.Gallen', 'v1.2', 'e.g.']) {
+      expect(estLienSeul(t)).toBe(false);
+    }
+    expect(titreDePhrase('voir https://exemple.invalid/a pour la hotte')).toBe('voir https://exemple.invalid/a pour la hotte');
+    expect(estLienSeul('https://exemple.invalid/a')).toBe(true);
+  });
+  it('carnetDepuisPhrase (R48) : la phrase reste gardée telle quelle, le titre est le domaine si ce n’est qu’un lien', () => {
+    const c = carnetDepuisPhrase('https://www.exemple.invalid/doseur', { id: 'C-L', le: '2026-11-17T10:00:00.000Z' })!;
+    expect(c.title).toBe('exemple.invalid');
+    expect(c.carnet.phrase).toBe('https://www.exemple.invalid/doseur');
+    expect(carnetDepuisPhrase('ZZ TEST — doseur de sucre', { id: 'C-T' })!.title).toBe('ZZ TEST — doseur de sucre');
   });
 });

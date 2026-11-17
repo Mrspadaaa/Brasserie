@@ -274,6 +274,16 @@
 @keyframes cn-tourne { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .cn-tourne { animation: none; } }
 
+/* P11 : plusieurs critères, « Ce qui compte » une fois en tête, puis une ligne courte par critère, alignée sous le texte. */
+.cn-criteres { display: flex; flex-direction: column; gap: 6px; padding-left: 26px; }
+.cn-critere-court { display: block; }
+
+/* P10 : en-tête Articles ; le compte ne se laisse jamais recouvrir, « Comparer côte à côte › » passe à la ligne, à droite. */
+.cn-tete-articles .cn-compte { flex: 0 1 auto; min-width: auto; }
+.cn-tete-articles .cn-comparer-lien { margin-left: auto; }
+/* La raison d'une façon (pastille) se replie dans sa carte au lieu d'en sortir (vu à 390 : « brasse la buée sans la sortir »). */
+.cn-facon .cn-pastille { white-space: normal; max-width: 100%; padding-top: 4px; padding-bottom: 4px; }
+
 /* Photos */
 .cn-photos { display: flex; gap: 8px; overflow-x: auto; }
 .cn-photo { display: flex; flex-direction: column; gap: 4px; width: 112px; }

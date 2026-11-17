@@ -29,6 +29,41 @@ function allerRetour(etat: Etat, r: Resultat): CreativeItem[] {
 }
 const carnet = (items: CreativeItem[], id: string): CarnetDoc => lireCarnet(items.find(i => i.id === id))!;
 
+describe('P11 : un critère au même texte normalisé ne fait qu’une ligne', () => {
+  const message = (id: string, texte: string) => ({ id, texte, le: LE, depuis: ID_VENTILATION, rangement: 'locale' as const });
+  it('ranger « Plus de condensation au plafond » : aucune ligne de plus, la source ZZ-MSG-V1 gardée, annulable', () => {
+    const etat = fixtureCarnets();
+    const r = ok(ranger(etat, { message: message('M-P11', 'Plus de condensation au plafond'), lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Plus de condensation au plafond', origine: 'locale' }] }));
+    const apres = allerRetour(etat, r);
+    const k = carnet(apres, ID_VENTILATION).carnet.criteres;
+    expect(k.filter(x => /condensation/i.test(x.texte))).toEqual([{ id: 'ZZ-V-K1', texte: 'plus de condensation au plafond', origine: 'vous', messageId: 'ZZ-MSG-V1' }]);
+    expect(k.length).toBe(3);
+    /* le message est gardé (R25), sans effet qui pointerait vers l'ancien critère : l'annuler ne le retire pas */
+    expect(lireMessage(apres.find(i => i.id === 'M-P11'))!.carnetMessage.effets.filter(e => e.cible === 'critere')).toEqual([]);
+  });
+  it('deux fois le même critère dans un message : une ligne ; la raison manquante complète l’ancien', () => {
+    const etat = fixtureCarnets();
+    const r = ok(ranger(etat, { message: message('M-P11b', 'tient 90 °C\nTient 90 °C'), lignes: [
+      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'tient 90 °C', origine: 'locale' },
+      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Tient 90 °C', origine: 'locale' },
+      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'TIENT 80 °C', raison: 'la buée est chaude', origine: 'ia' }
+    ] }));
+    const k = carnet(allerRetour(etat, r), ID_VENTILATION).carnet.criteres;
+    expect(k.filter(x => /90/.test(x.texte)).length).toBe(1);
+    expect(k.find(x => x.id === 'ZZ-V-K2')).toMatchObject({ texte: 'tient 80 °C', raison: 'la buée est chaude' });
+  });
+  it('remplacerRangement (l’IA reprend le message) : pas de doublon non plus', () => {
+    const etat = fixtureCarnets();
+    const r1 = ok(ranger(etat, { message: message('M-P11c', 'plafond'), lignes: [{ carnetId: ID_VENTILATION, sorte: 'note', texte: 'plafond' }] }));
+    const m = magasinMemoire(etat); m.appliquer(r1.ecritures);
+    const r2 = ok(remplacerRangement(m.lire(), { messageId: 'M-P11c', rangement: 'ia', lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Plus de condensation au plafond', origine: 'ia' }] }));
+    m.appliquer(r2.ecritures);
+    const c = carnet(m.lire(), ID_VENTILATION).carnet;
+    expect(c.criteres.filter(x => /condensation/i.test(x.texte)).map(x => x.id)).toEqual(['ZZ-V-K1']);
+    expect(c.notes.some(n => n.texte === 'plafond')).toBe(false);
+  });
+});
+
 describe('opérations : chaque intention a son inverse (A2)', () => {
   const F = fixtureCarnets();
 
@@ -109,7 +144,7 @@ describe('opérations : chaque intention a son inverse (A2)', () => {
     const s = supprimerNote(F, { carnetId: ID_VENTILATION, noteId: 'ZZ-V-N1' });
     const b = allerRetour(F, s);
     expect(ok(s).avis).toBe('Note supprimée');
-    expect(carnet(b, ID_VENTILATION).carnet.notes).toEqual([]);
+    expect(carnet(b, ID_VENTILATION).carnet.notes.find(n => n.id === 'ZZ-V-N1')).toBeUndefined();
     expect(b.find(i => i.id === 'ZZ-MSG-V2')).toBeDefined();
     allerRetour(F, supprimerLigne(F, { carnetId: ID_VENTILATION, cible: 'facon', id: 'ZZ-V-F2' }));
   });
@@ -177,7 +212,7 @@ describe('opérations des aides (A11, R40)', () => {
 
   it('fusionnerNotes garde les deux textes (fusionDe), rien n’est perdu ; l’effet suit la note gardée', () => {
     const a = allerRetour(etat, fusionnerNotes(etat, { carnetId: ID_VENTILATION, garderId: 'ZZ-V-N1', fusionnerId: 'N-D', le: LE }));
-    const notes = carnet(a, ID_VENTILATION).carnet.notes;
+    const notes = carnet(a, ID_VENTILATION).carnet.notes.filter(n => n.id === 'ZZ-V-N1' || n.id === 'N-D');
     expect(notes).toHaveLength(1);
     expect(notes[0].fusionDe).toEqual(['attendre l’avis du ferblantier', 'demander l’avis au ferblantier']);
     expect(lireMessage(a.find(i => i.id === 'M-D'))!.carnetMessage.effets[0].id).toBe('ZZ-V-N1');
@@ -198,7 +233,7 @@ describe('opérations des aides (A11, R40)', () => {
 
   it('regrouperNotes pose un même groupe', () => {
     const a = allerRetour(etat, regrouperNotes(etat, { carnetId: ID_VENTILATION, noteIds: ['ZZ-V-N1', 'N-D'], libelle: 'Ferblantier', groupeId: 'G1' }));
-    expect(carnet(a, ID_VENTILATION).carnet.notes.map(n => n.groupe)).toEqual([{ id: 'G1', libelle: 'Ferblantier' }, { id: 'G1', libelle: 'Ferblantier' }]);
+    expect(carnet(a, ID_VENTILATION).carnet.notes.filter(n => n.id === 'ZZ-V-N1' || n.id === 'N-D').map(n => n.groupe)).toEqual([{ id: 'G1', libelle: 'Ferblantier' }, { id: 'G1', libelle: 'Ferblantier' }]);
     expect(regrouperNotes(etat, { carnetId: ID_VENTILATION, noteIds: ['N-D'], libelle: 'x' }).ok).toBe(false);
   });
 

@@ -203,6 +203,24 @@ export function analyserLigne(texte: string): LigneLocale {
   };
 }
 
+/* ---------- R13 « Va dans » (g5:v02-10) : puces de correction, préchoisies par l'aperçu local ---------- */
+
+export type RubriqueVaDans = 'critere' | 'note' | 'facon';
+/** Les puces de la maquette g5:v02-10, dans son ordre. */
+export const PUCES_VA_DANS: readonly { id: RubriqueVaDans; libelle: string }[] = [
+  { id: 'critere', libelle: 'Ce qui compte' }, { id: 'note', libelle: 'Note' }, { id: 'facon', libelle: 'Façon' }
+];
+
+/**
+ * La rubrique que l'aperçu local choisit pour une phrase tapée dans un carnet, cochée d'avance ; les puces ne servent qu'à corriger.
+ * `null` (aucune puce) : texte vide, plusieurs lignes (note en vrac, découpée par l'IA) ou article (lien, prix : il va aux Articles).
+ */
+export function vaDansDe(texte: string): RubriqueVaDans | null {
+  const lignes = analyserTexte(texte);
+  if (lignes.length !== 1 || lignes[0].sorte === 'article') return null;
+  return lignes[0].sorte;
+}
+
 /** Analyse d'un message entier : une ligne analysée par ligne découpée. Instantané, sans réseau. */
 export function analyserTexte(texte: string): LigneLocale[] {
   return decouper(texte).map(analyserLigne);

@@ -4,7 +4,7 @@ const passerelle = vi.hoisted(() => ({ call: vi.fn() }));
 vi.mock('firebase/functions', () => ({ httpsCallable: () => passerelle.call }));
 vi.mock('../../src/services/firebase', () => ({ functions: {} }));
 import { AiClient } from '../../src/services/aiClient';
-import { AVIS, appelsSimules, creerRangement, type AppelsIA, type DependancesRangement, type EtatRangement } from '../../src/ui/carnets/rangement';
+import { AVIS, appelsSimules, creerRangement, retourDuRangement, type AppelsIA, type DependancesRangement, type EtatRangement } from '../../src/ui/carnets/rangement';
 import type { CarnetPourIA, LigneCarnet, PageLue } from '../../src/domain/carnets/ia';
 import type { ContexteRangerCarnet } from '../../functions/src/carnetIA';
 
@@ -172,5 +172,28 @@ describe('rangement : déroulé d\'un envoi (B5)', () => {
     d.resoudre({ ok: false });
     await premier;
     expect(ecrits.local.map((m) => m.texte)).toEqual(['a']);
+  });
+});
+
+describe('P1, P2 : retourDuRangement suit les effets finaux du message, jamais l’écriture locale remplacée', () => {
+  const e = (carnetId: string, cible: string) => ({ carnetId, cible });
+  it('carnet né du message, depuis la liste : « Carnet créé » (R11)', () => {
+    expect(retourDuRangement([e('neuf', 'carnet'), e('neuf', 'critere')], { depuis: null })).toEqual({ sorte: 'cree', carnetId: 'neuf' });
+  });
+  it('lien rangé par l’IA dans un carnet existant, depuis la liste : « Rangé dans … », jamais « Carnet créé » (état 20, G21)', () => {
+    expect(retourDuRangement([e('c-ventil', 'article')], { depuis: null })).toEqual({ sorte: 'ailleurs', carnetId: 'c-ventil' });
+  });
+  it('tout dans le carnet ouvert : « Rangé ici » (R14) ; dans un autre : « Rangé dans … »', () => {
+    expect(retourDuRangement([e('c-evier', 'note')], { depuis: 'c-evier' })).toEqual({ sorte: 'range', carnetId: 'c-evier' });
+    expect(retourDuRangement([e('c-frigo', 'article')], { depuis: 'c-evier' })).toEqual({ sorte: 'ailleurs', carnetId: 'c-frigo' });
+  });
+  it('plusieurs carnets, ou note de plusieurs lignes depuis la liste : « n lignes rangées dans m carnets » (R19)', () => {
+    expect(retourDuRangement([e('a', 'note'), e('b', 'note'), e('b', 'critere')], { depuis: null })).toEqual({ sorte: 'vrac', lignes: 3, carnets: 2 });
+    expect(retourDuRangement([e('a', 'note'), e('a', 'note')], { depuis: null, plusieursLignes: true })).toEqual({ sorte: 'vrac', lignes: 2, carnets: 1 });
+    /* une phrase d'une ligne, deux critères dans un carnet existant : rangé dans ce carnet, pas « vrac » */
+    expect(retourDuRangement([e('a', 'critere'), e('a', 'critere')], { depuis: null })).toEqual({ sorte: 'ailleurs', carnetId: 'a' });
+  });
+  it('aucun effet : rien à annoncer', () => {
+    expect(retourDuRangement([], { depuis: null })).toBeNull();
   });
 });

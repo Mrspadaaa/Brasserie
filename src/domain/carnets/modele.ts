@@ -305,15 +305,41 @@ export function donneesVides(phrase: string, creeLe: string): DonneesCarnet {
   return { version: VERSION_CARNET, creeLe, phrase, criteres: [], facons: [], articles: [], notes: [], photos: [] };
 }
 
-/** Le titre tiré d'une phrase : sa première ligne non vide, rognée à 120 caractères. */
+/** Un lien écrit sans « https:// » (« inox-riviera.ch/evier ») : le même motif que `liensDuTexte` (ia.ts), domaine connu suivi de « / ». */
+const DOMAINE_NU = /^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:ch|com|de|fr|it|at|eu|net|org|shop|store)\/\S*$/i;
+
+/**
+ * Le domaine d'un texte qui n'est qu'un lien (« https://www.exemple.invalid/a » → « exemple.invalid ») ; `null` s'il porte autre chose
+ * qu'un lien (un mot, une phrase, un lien entouré de texte). Parseur WHATWG `URL`, comme `liensDuTexte` (§ État de l'art).
+ */
+export function domaineDuLienSeul(texte: string): string | null {
+  const t = texte.trim().replace(/[.,;:!?)\]]+$/, '');
+  if (!t || /\s/.test(t)) return null;
+  const adresse = /^https?:\/\//i.test(t) ? t : /^www\./i.test(t) || DOMAINE_NU.test(t) ? `https://${t}` : null;
+  if (!adresse) return null;
+  try {
+    const hote = new URL(adresse).hostname.replace(/^www\./i, '');
+    return hote.includes('.') ? hote : null;
+  } catch { return null; }
+}
+
+/** Vrai si la phrase n'est qu'un lien : elle ne peut pas servir de titre (« votre phrase en titre » ne se dit pas). */
+export const estLienSeul = (phrase: string): boolean => domaineDuLienSeul(phrase) !== null;
+
+/**
+ * Le titre tiré d'une phrase : sa première ligne non vide, rognée à 120 caractères. Une ligne qui n'est qu'un lien ne devient jamais
+ * le titre : son domaine la remplace (P3, g5:v03-10), jusqu'à ce que la page lue donne un nom.
+ */
 export function titreDePhrase(phrase: string): string {
   const ligne = phrase.split(/\r?\n/).map(l => l.trim()).find(l => l !== '') ?? '';
+  const domaine = domaineDuLienSeul(ligne);
+  if (domaine) return domaine;
   return ligne.length > 120 ? `${ligne.slice(0, 119).trimEnd()}…` : ligne;
 }
 
 /**
  * R48 (L1, D-40, D-72) : l'idée notée au calendrier devient un carnet d'idées, sans IA, état Idée ; la phrase gardée en `carnet.phrase` et en
- * titre ; `date` = le lundi de la semaine si elle est donnée (sinon aucun champ `date`). Un seul document : le calendrier garde son Annuler.
+ * titre (un lien seul : son domaine en titre, jamais l'URL brute, P3) ; `date` = le lundi de la semaine si elle est donnée (sinon aucun champ `date`). Un seul document : le calendrier garde son Annuler.
  * Phrase vide : `null` (refusée).
  */
 export function carnetDepuisPhrase(phrase: string, options: { id?: string; le?: string; date?: string } = {}): CarnetDoc | null {

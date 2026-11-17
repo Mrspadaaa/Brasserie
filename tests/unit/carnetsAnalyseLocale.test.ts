@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { analyserTexte, decouper, genreLocal, nombresEcrits, prixDe, quantitesDe, urlsDe } from '../../src/domain/carnets/analyseLocale';
+import { analyserTexte, decouper, genreLocal, nombresEcrits, prixDe, PUCES_VA_DANS, quantitesDe, urlsDe, vaDansDe } from '../../src/domain/carnets/analyseLocale';
 import { PHRASES_ESSAI } from '../../src/domain/carnets/fixture';
+
+describe('R13 « Va dans » (g5:v02-10) : la puce préchoisie par l’aperçu local', () => {
+  it('Ce qui compte · Note · Façon, dans l’ordre de la maquette ; critère, note, rien pour un lien, un prix ou une note en vrac', () => {
+    expect(PUCES_VA_DANS.map(p => p.libelle)).toEqual(['Ce qui compte', 'Note', 'Façon']);
+    expect(vaDansDe('un fût de 30 L couché doit entrer dans le bac')).toBe('critere');
+    expect(vaDansDe('demander à Marc s’il revend le sien')).toBe('note');
+    expect(vaDansDe('https://inox-riviera.ch/evier-2-bacs')).toBeNull();
+    expect(vaDansDe('évier 2 bacs 480 CHF')).toBeNull();
+    expect(vaDansDe('appeler Marc\nacheter une douchette')).toBeNull();
+    expect(vaDansDe('   ')).toBeNull();
+  });
+});
 
 describe('analyse locale (A4), 30 phrases', () => {
   it('il y a bien 30 phrases, dont les trois notes de son téléphone', () => {

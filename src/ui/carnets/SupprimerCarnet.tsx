@@ -42,8 +42,16 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
   const realise = p.liens.some(l => l.reglage === 'archiver');
   const part = cequiPart(p.contenu);
   const enVeille = p.contenu.articles.filter(a => a.veille?.active).length;
+  /* P9 : la carte est à l'écran dès le geste, à 390 comme à 1280 ; le focus y va (le lecteur d'écran l'annonce, Tab mène à Garder). */
+  const ref = React.useRef<HTMLElement>(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    el.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
+  }, []);
   return (
-    <section className="cn-supprimer" aria-label={`Supprimer le carnet ${p.titre}`}>
+    <section ref={ref} tabIndex={-1} className="cn-supprimer" aria-label={`Supprimer le carnet ${p.titre}`}>
       <h3 className="cn-sous">Supprimer le carnet {p.titre} ?</h3>
       <p>
         {part ? <>Il part avec <b>{part}</b>.</> : 'Il est vide.'}

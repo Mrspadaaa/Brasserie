@@ -8,7 +8,7 @@
  */
 import React from 'react';
 import { ChevronLeft, Scale } from 'lucide-react';
-import type { Tableau } from '../../domain/carnets/comparer';
+import { nombreDe, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 
 /** Le tableau tel que `tableau(carnet)` de `comparer.ts` le rend (lot A, critère A9). */
@@ -26,9 +26,8 @@ export function colonnesVue(t: Tableau): ColonneVue[] {
 
 function nombre(v?: ValeurV): number | null {
   if (!v) return null;
-  if (typeof v.valeur === 'number') return Number.isFinite(v.valeur) ? v.valeur : null;
   if (typeof v.valeur === 'boolean') return v.valeur ? 1 : 0;
-  return null;
+  return nombreDe(v.valeur);
 }
 /** Texte d'une cellule ; `null` si inconnue (cellule vide, jamais 0). */
 export function texteCellule(l: LigneT, c: ColonneVue): string | null {

@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { doublonsDe, notesEnDouble, similarite, SEUIL_DOUBLON } from '../../src/domain/carnets/doublons';
+import { doublonsDe, memeTexte, notesEnDouble, similarite, uniquesParTexte, SEUIL_DOUBLON } from '../../src/domain/carnets/doublons';
+
+describe('P11 : même texte normalisé (critères)', () => {
+  it('casse, accents, espaces et ponctuation ne comptent pas ; une valeur différente, si ; le vide n’égale rien', () => {
+    expect(memeTexte('plus de condensation au plafond', 'Plus de condensation  au plafond.')).toBe(true);
+    expect(memeTexte('évier à 2 bacs', 'EVIER A 2 BACS')).toBe(true);
+    expect(memeTexte('tient 80 °C', 'tient 90 °C')).toBe(false);
+    expect(memeTexte('le débit', 'débit')).toBe(false);
+    expect(memeTexte('', '  ')).toBe(false);
+  });
+  it('uniquesParTexte garde le premier (la source) et les ids qu’il couvre, dans l’ordre', () => {
+    const u = uniquesParTexte([
+      { id: 'K1', texte: 'plus de condensation au plafond' }, { id: 'K2', texte: 'tient 80 °C' },
+      { id: 'K3', texte: 'le débit' }, { id: 'K4', texte: 'Plus de condensation au plafond' }
+    ]);
+    expect(u.map(x => x.el.id)).toEqual(['K1', 'K2', 'K3']);
+    expect(u[0].ids).toEqual(['K1', 'K4']);
+  });
+});
 import { fixtureCarnets, ID_VENTILATION } from '../../src/domain/carnets/fixture';
 import { lireCarnet } from '../../src/domain/carnets/modele';
 

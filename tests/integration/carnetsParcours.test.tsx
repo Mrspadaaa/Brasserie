@@ -170,3 +170,111 @@ describe('D9 (R48) : l’idée du calendrier arrive au carnet', () => {
     expect(appui.ok && (appui.enregistrement.document as { date?: string }).date).toBe('2026-11-23');
   });
 });
+
+/** Un écran seul, ses appels IA au choix ; frappe et envoi dans son propre conteneur. */
+function ecran(items: CreativeItem[], appels = appelsSimules('normal', 0), finances: FinancesCarnet = vides()) {
+  const magasin = magasinMemoire(items);
+  const vue = render(<CarnetsVue magasin={magasin} finances={finances} mode="simule" appels={appels} aides={AIDES} />);
+  const champ = () => vue.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+  const taperEtEnvoyer = async (texte: string) => {
+    fireEvent.change(champ(), { target: { value: texte } });
+    await act(async () => { fireEvent.submit(champ().closest('form')!); });
+  };
+  const attendre = async (ms: number) => { await act(async () => { await new Promise(r => setTimeout(r, ms)); }); };
+  const bandeau = () => vue.container.querySelector('.cn-bandeau[role="status"]');
+  return { magasin, vue, taperEtEnvoyer, attendre, bandeau, carnets: () => lireCarnets(magasin.lire(), { archives: true }) };
+}
+
+describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien seul ne devient jamais le titre', () => {
+  it('lien collé depuis la liste, rangé par l’IA dans Ventilation : « Rangé dans Ventilation », le lien cité ; jamais « Carnet créé » ; Annuler défait le rangement réel', async () => {
+    const e = ecran(fixtureCarnets(), appelsSimules('normal', 60));
+    const ventil = () => e.carnets().find(c => c.id === ID_VENTILATION)!.carnet.articles.length;
+    const avant = { articles: ventil(), carnets: e.carnets().length };
+    const url = 'https://brewshop.invalid/hotte-inox-120';
+    await e.taperEtEnvoyer(url);
+    /* pendant : le carnet neuf porte le domaine, jamais l'URL brute ; aucun « Carnet créé » annoncé avant la fin */
+    expect(e.carnets().some(c => c.title === url)).toBe(false);
+    expect(e.vue.container.querySelector('.cn-titre')?.textContent).toBe('brewshop.invalid');
+    expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
+    await e.attendre(400);
+    expect(ventil()).toBe(avant.articles + 1);
+    expect(e.carnets().length).toBe(avant.carnets);
+    expect(e.vue.container.querySelector('[data-vue="liste"]')).not.toBeNull();
+    const b = e.bandeau()!;
+    expect(b.getAttribute('data-sorte')).toBe('ailleurs');
+    expect(b.textContent).toMatch(/Rangé dans Ventilation de la salle de brassage, à l'instant/);
+    expect(b.textContent).toContain(url);
+    expect(b.textContent).not.toMatch(/Carnet créé|votre phrase en titre/);
+    expect(e.vue.container.querySelector('[aria-label="Carnet créé"]')).toBeNull();
+    await act(async () => { fireEvent.click(within(b as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    expect(ventil()).toBe(avant.articles);
+    expect(e.carnets().length).toBe(avant.carnets);
+    expect(e.magasin.lire().some(i => i.type === 'carnet-message' && i.title === url)).toBe(false);
+  });
+
+  it('une phrase que l’IA range dans le Frigo existant : « Rangé dans Frigo… », pas de carte « créée » en tête (P2)', async () => {
+    const e = ecran(fixtureCarnets());
+    const avant = e.carnets().length;
+    await e.taperEtEnvoyer('chambre froide pour garder 6 fûts');
+    await e.attendre(40);
+    expect(e.carnets().length).toBe(avant);
+    expect(e.bandeau()?.textContent).toMatch(/Rangé dans Frigo/);
+    expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
+  });
+
+  it('une idée neuve depuis la liste : « ✓ Carnet créé », sa phrase citée « votre phrase en titre », le carnet ouvert (R11, g5:v04-4)', async () => {
+    const e = ecran([]);
+    await e.taperEtEnvoyer('embouteillage');
+    await e.attendre(40);
+    const b = e.bandeau()!;
+    expect(b.getAttribute('data-sorte')).toBe('cree');
+    expect(b.textContent).toMatch(/Carnet créé, en tête des Carnets/);
+    expect(b.textContent).toMatch(/« embouteillage » · votre phrase en titre/);
+    expect(e.vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
+    expect(e.carnets()).toHaveLength(1);
+  });
+
+  it('lien seul, IA en panne : carnet local au nom du site, « le site en titre », jamais « votre phrase en titre » (P3)', async () => {
+    const e = ecran([], appelsSimules('echec', 0));
+    const url = 'https://www.exemple.invalid/evier-2-bacs';
+    await e.taperEtEnvoyer(url);
+    await e.attendre(40);
+    expect(e.carnets().map(c => c.title)).toEqual(['exemple.invalid']);
+    const b = e.bandeau()!;
+    expect(b.getAttribute('data-sorte')).toBe('cree');
+    expect(b.textContent).toMatch(/le site en titre/);
+    expect(b.textContent).not.toMatch(/votre phrase en titre/);
+  });
+});
+
+describe('P9 (vision 1, m390 état 36) : la confirmation de suppression est à l’écran, sous le titre, avec le focus', () => {
+  it('la carte prend la place du bandeau, avant Ce qui compte ; elle reçoit le focus et défile dans la vue ; le reste est estompé', async () => {
+    const defile = vi.fn();
+    const proto = HTMLElement.prototype as unknown as { scrollIntoView?: (o?: unknown) => void };
+    const ancien = proto.scrollIntoView;
+    proto.scrollIntoView = defile;
+    try {
+      const m = monter(fixtureCarnets(), { plans: fixturePlans(), transactions: [], payments: [] });
+      const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_VENTILATION, at: 1 }} />);
+      await m.toucher(within(vue.container).getByRole('button', { name: 'Plus' }));
+      await m.toucher(within(vue.container).getByRole('menuitem', { name: /Supprimer/ }));
+      const carte = vue.container.querySelector('.cn-supprimer') as HTMLElement;
+      expect(carte).not.toBeNull();
+      const page = vue.container.querySelector('article.cn-ouvert') as HTMLElement;
+      expect(carte.parentElement).toBe(page);
+      expect(page.classList.contains('cn-grise')).toBe(true);
+      const enfants = [...page.children];
+      const titre = enfants.findIndex(x => x.classList.contains('cn-titre-ligne'));
+      const iCarte = enfants.indexOf(carte);
+      const iCompte = enfants.findIndex(x => /Ce qui compte/.test(x.textContent ?? ''));
+      expect(titre).toBeGreaterThanOrEqual(0);
+      expect(iCarte).toBeGreaterThan(titre);
+      expect(iCarte).toBeLessThan(iCompte);
+      expect(document.activeElement).toBe(carte);
+      expect(defile).toHaveBeenCalled();
+      expect(within(carte).getByRole('button', { name: 'Garder' })).toBeTruthy();
+    } finally {
+      proto.scrollIntoView = ancien;
+    }
+  });
+});

@@ -5,6 +5,7 @@
  * critères ; « moins bien partout » = dominé au sens de Pareto sur les valeurs connues des deux articles (au moins 2 caractéristiques
  * comparables, prix compris) ; `Array.prototype.sort` stable. Une valeur inconnue se range après les connues, jamais comme 0.
  */
+import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { nomArticle, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
@@ -64,8 +65,20 @@ function ordonnable(v: Valeur | undefined, sens: Colonne['sens']): number | null
     if (typeof v.valeur === 'string') { const n = normaliser(v.valeur); return n === 'oui' ? 1 : n === 'non' ? 0 : null; }
     return null;
   }
-  if (sens === 'plus' || sens === 'moins') return typeof v.valeur === 'number' && Number.isFinite(v.valeur) ? v.valeur : null;
+  if (sens === 'plus' || sens === 'moins') return nombreDe(v.valeur);
   return null;
+}
+
+/** Un nombre, ou la chaîne qui n'est qu'un nombre (« 2000 » lu sur une page) ; jamais 0 par défaut. */
+export function nombreDe(valeur: Valeur['valeur']): number | null {
+  if (typeof valeur === 'number') return Number.isFinite(valeur) ? valeur : null;
+  if (typeof valeur === 'string') return parseDecimal(valeur.trim());
+  return null;
+}
+
+/** « écarté : <raison> », sans répéter « <façon> écartée » quand la raison le dit déjà. */
+export function libelleEcarte(raison: string): string {
+  return / \u00e9cart\u00e9e( |:|$)/.test(raison) ? raison : `écarté : ${raison}`;
 }
 
 /** Comparaison sur une colonne : < 0 si a passe devant b. Inconnue après connue ; deux inconnues : égales. */
@@ -183,7 +196,7 @@ export function seuilDe(k: Critere): Quantite | null {
 }
 
 /** L'article passe-t-il le critère ? `null` si inconnu (valeur absente ou critère sans seuil). */
-function passe(a: Article, k: Critere): boolean | null {
+export function passe(a: Article, k: Critere): boolean | null {
   const car = k.caracteristique;
   if (!car) return null;
   if (car.sens === 'oui-non') return ordonnable(valeurDe(a, car), 'oui-non') === null ? null : ordonnable(valeurDe(a, car), 'oui-non') === 1;

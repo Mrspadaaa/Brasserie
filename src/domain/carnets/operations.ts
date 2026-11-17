@@ -11,6 +11,7 @@ import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
 import { estRealise } from '../finance/upgradeRing';
 import { statutApres } from './comparer';
+import { memeTexte } from './doublons';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
@@ -109,6 +110,14 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
   switch (l.sorte) {
     case 'idee': return null;
     case 'critere': {
+      /* P11 : un critère au même texte normalisé n'ajoute pas de ligne. Le critère déjà là reste la source (son id, son `messageId`) ;
+         il reçoit seulement ce qui lui manque (raison, caractéristique). Aucun effet : annuler ce message ne retire pas l'ancien. */
+      const deja = d.criteres.find(x => memeTexte(x.texte, l.texte));
+      if (deja) {
+        if (!deja.raison && l.raison) deja.raison = l.raison;
+        if (!deja.caracteristique && l.caracteristique) deja.caracteristique = copie(l.caracteristique);
+        return null;
+      }
       const k: Critere = sansIndefinis({ id: l.id ?? nouvelIdCarnet('CRIT'), texte: l.texte, raison: l.raison, caracteristique: l.caracteristique, origine: l.origine, messageId });
       d.criteres.push(k); return { carnetId: c.id, cible: 'critere', id: k.id };
     }
