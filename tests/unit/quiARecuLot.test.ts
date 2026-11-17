@@ -23,7 +23,10 @@ describe('quiARecuLot : du lot à ses fûts, des fûts à leurs clients', () => 
     expect(r.branches.map((b) => b.nom)).toEqual(['Café du Pont', 'La Cave à Jules']);
     const pont = r.branches[0];
     expect(pont.chezLui).toBe(1);
-    expect(pont.futs.map((f) => [f.id, f.etat, f.livre, f.rentre])).toEqual([['F-22', 'chez-lui', '11.11.2026', undefined], ['F-22', 'rentre', '04.11.2026', '09.11.2026']]);
+    expect(pont.futs.map((f) => [f.id, f.etat, f.livre, f.rentre])).toEqual([['F-22', 'chez-lui', '11.11.2026', undefined]]);
+    // un seul fût physique, deux passages : livré le 4 et rentré le 9, puis relivré le 11
+    expect(pont.futs[0].passages.map((p) => [p.livre, p.rentre, p.etat])).toEqual([['04.11.2026', '09.11.2026', 'rentre'], ['11.11.2026', undefined, 'chez-lui']]);
+    expect(pont.chezLui).toBe(1);
     expect(pont.tel).toBe('079 412 33 05');
     expect(pont.contact).toBe('Mme Rochat');
     expect(r.branches[1].tel).toBeUndefined(); // numéro vide : jamais inventé
@@ -66,7 +69,7 @@ describe('quiARecuLot : du lot à ses fûts, des fûts à leurs clients', () => 
   });
 
   it('lot en cuve : personne, rien en cave ; le client est proposé selon la livraison la plus récente', () => {
-    expect(quiARecuLot(lot, [], clients)).toEqual({ branches: [], enCave: [], livres: 0, chezEux: 0 });
+    expect(quiARecuLot(lot, [], clients)).toEqual({ branches: [], enCave: [], bouteilles: 0, livres: 0, chezEux: 0 });
     const kegs = [
       fut('F-1', { state: 'livre', batchRef: 'LOT-028', clientName: 'Bar Le Tilleul', clientId: 'CL-3', deliveryDate: '14.11.2026', historique: [rempli, { date: '14.11.2026', quoi: 'livre', detail: 'Bar Le Tilleul' }] }),
       fut('F-2', { state: 'livre', batchRef: 'LOT-028', clientName: 'Café du Pont', clientId: 'CL-1', deliveryDate: '06.11.2026', historique: [rempli, { date: '06.11.2026', quoi: 'livre', detail: 'Café du Pont' }] })

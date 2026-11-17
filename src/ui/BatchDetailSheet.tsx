@@ -556,6 +556,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           )}
           {section === 'measurements' && post && (
             <>
+              {/* Lot/v1 : pour un retrait ou une plainte, on cherche vite qui l'a reçu : l'arbre ouvre la fiche d'un lot conditionné ou terminé, avant le reste. */}
+              {(draft.status === 'conditionne' || draft.status === 'termine') && <QuiARecuLot batch={draft} geste={gesteFut} />}
               {draft.status === 'garde' && (parseDecimal(draft.fg || '') === null
                 ? <CurseurFg batch={draft} valeur={fgMilli ?? fgDepart} onValeur={setFgMilli} onConfirmer={() => confirmFg(fgMilli ?? fgDepart)} erreur={fgError} />
                 : <TuilesFg batch={draft} onConditionner={openLadder} />)}
@@ -564,7 +566,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {draft.status === 'garde' && <LignesCuve batch={draft} onReleve={ouvrirReleve} onVolume={() => setPackaging({ target: null })} />}
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
               {/* Maquette lot/v1 (16.11) : le lot se ramifie vers chaque client ; les gestes du menu « Plus » (Rentrer, Livrer) s'y jouent. */}
-              {draft.status !== 'annule' && <QuiARecuLot batch={draft} geste={gesteFut} />}
+              {draft.status === 'garde' && <QuiARecuLot batch={draft} geste={gesteFut} />}
             </>
           )}
           {((section === 'measurements' && !planned && !ficheM) || mesuresDansDossier) && (

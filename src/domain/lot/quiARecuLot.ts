@@ -16,13 +16,20 @@ import type { Batch, Client, KegItem } from '../../types';
 
 export type EtatFutDuLot = 'chez-lui' | 'rentre' | 'retour-non-note';
 
-export interface FutDuLot {
-  id: string;
+/** Un passage d'un fût chez un client : livré, puis rentré ou encore là. */
+export interface PassageFut {
   /** Date de livraison telle que stockée (`JJ.MM.AAAA`) ; absente quand le fût a été livré avant l'historique. */
   livre?: string;
   /** Date du retour (vide ou plein), si elle est notée. */
   rentre?: string;
   etat: EtatFutDuLot;
+}
+
+/** Un fût physique chez un client : une seule fois, même livré, rentré puis relivré (le dernier passage dit où il en est). */
+export interface FutDuLot extends PassageFut {
+  id: string;
+  /** Tous ses passages chez ce client, du plus ancien au plus récent (au moins un). */
+  passages: PassageFut[];
 }
 
 export interface BrancheClient {
@@ -44,6 +51,8 @@ export interface QuiARecu {
   branches: BrancheClient[];
   /** Fûts de ce lot encore en cave, prêts à livrer. */
   enCave: string[];
+  /** Bouteilles conditionnées (33 cl et 75 cl) ; les ventes à la caisse, comptées en litres, n'en sont pas déduites. 0 : aucune notée. */
+  bouteilles: number;
   /** Fûts livrés au moins une fois. */
   livres: number;
   chezEux: number;
@@ -143,7 +152,9 @@ export function quiARecuLot(batch: Pick<Batch, 'id' | 'bottlingDate' | 'packagin
       const cle = fiche?.id ?? `nom:${norme(nom)}`;
       const b = parCle.get(cle) ?? { cle, clientId: fiche?.id, nom, futs: [], chezLui: 0,
         contact: fiche?.contact?.trim() || undefined, tel: fiche?.phone?.trim() || undefined };
-      b.futs.push({ id: keg.id, livre: l.livre, rentre: l.rentre, etat: l.etat });
+      const passage: PassageFut = { livre: l.livre, rentre: l.rentre, etat: l.etat };
+      const dejaLa = b.futs.find((f) => f.id === keg.id);
+      if (dejaLa) { dejaLa.passages.push(passage); Object.assign(dejaLa, passage); } else b.futs.push({ id: keg.id, ...passage, passages: [passage] });
       parCle.set(cle, b);
     }
   }
@@ -156,7 +167,8 @@ export function quiARecuLot(batch: Pick<Batch, 'id' | 'bottlingDate' | 'packagin
   }
   branches.sort((x, y) => y.chezLui - x.chezLui || (jourDe(y.derniereLivraison) ?? 0) - (jourDe(x.derniereLivraison) ?? 0) || x.nom.localeCompare(y.nom, 'fr'));
   enCave.sort((a, b) => a.localeCompare(b, 'fr', { numeric: true }));
-  return { branches, enCave, livres, chezEux: branches.reduce((n, b) => n + b.chezLui, 0) };
+  const bouteilles = Math.max(0, batch.packaging?.bottles33 ?? 0) + Math.max(0, batch.packaging?.bottles75 ?? 0);
+  return { branches, enCave, bouteilles, livres, chezEux: branches.reduce((n, b) => n + b.chezLui, 0) };
 }
 
 /** Le client proposé d'office pour le prochain fût : celui qui a reçu le lot le plus récemment (maquette : « client proposé d'office »). */

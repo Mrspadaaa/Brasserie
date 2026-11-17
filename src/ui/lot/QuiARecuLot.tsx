@@ -40,6 +40,16 @@ const ligneFut = (f: FutDuLot, auj: string): string => {
   if (f.etat === 'rentre') return `${livre} · rentré le ${jourCourt(f.rentre, auj)}`;
   return `${livre} · retour non noté`;
 };
+/** Un fût passé plusieurs fois chez le même client : « 2 passages : livré le 4 nov., rentré le 9 ; relivré le 11 nov., chez lui ». */
+const lignePassages = (f: FutDuLot, auj: string): string => {
+  if (f.passages.length < 2) return ligneFut(f, auj);
+  const dit = f.passages.map((p, i) => {
+    const livre = p.livre ? `${i ? 'relivré' : 'livré'} le ${jourCourt(p.livre, auj)}` : 'date de livraison non notée';
+    const fin = p.etat === 'chez-lui' ? 'chez lui' : p.etat === 'rentre' ? `rentré le ${jourCourt(p.rentre, auj)}` : 'retour non noté';
+    return `${livre}, ${fin}`;
+  });
+  return `${f.passages.length} passages : ${dit.join(' ; ')}`;
+};
 
 export type GesteFutLot = 'livrer' | 'rentrer';
 
@@ -142,7 +152,7 @@ export const QuiARecuLot: React.FC<Props> = ({ batch, geste }) => {
                     : <p className="qar-pasdetel">{b.clientId ? 'Aucun numéro sur sa fiche client.' : 'Ce nom n’est pas relié à une fiche client : pas de numéro.'}</p>}
                   <ul>
                     {b.futs.map((f, i) => (
-                      <li key={`${f.id}-${i}`} data-dehors={f.etat === 'chez-lui' ? 'true' : 'false'}><b className="font-mono">{f.id}</b><span>{ligneFut(f, auj)}</span></li>
+                      <li key={`${f.id}-${i}`} data-dehors={f.etat === 'chez-lui' ? 'true' : 'false'}><b className="font-mono">{f.id}</b><span>{lignePassages(f, auj)}</span></li>
                     ))}
                   </ul>
                 </div>
@@ -160,12 +170,23 @@ export const QuiARecuLot: React.FC<Props> = ({ batch, geste }) => {
           </div>
         )}
 
-        {r.enCave.length > 0 && (
-          <div className="qar-br qar-gris" data-rentre="true">
-            <button type="button" className="qar-ligne" onClick={() => { setMessage(null); setFeuille('livrer'); }}>
-              <span className="qar-nom"><b>Encore en cave</b><span><span className="font-mono">{r.enCave.join(', ')}</span></span></span>
-              <span className="qar-pilule qar-livrer">Livrer ›</span>
-            </button>
+        {(r.enCave.length > 0 || (r.bouteilles > 0 && !enCuve)) && (
+          <div className="qar-br qar-gris" data-rentre="true" data-en-cave>
+            {(() => {
+              const contenu = (
+                <>
+                  <span className="qar-nom"><b>Encore en cave</b><span>
+                    {r.enCave.length > 0 && <span className="font-mono">{r.enCave.join(', ')}</span>}
+                    {r.enCave.length > 0 && r.bouteilles > 0 && ' · '}
+                    {r.bouteilles > 0 && <span className="font-mono" title="Bouteilles conditionnées ; les ventes à la caisse, comptées en litres, n’en sont pas déduites.">{r.bouteilles} btl{vendusL > 0 ? ' conditionnées' : ''}</span>}
+                  </span></span>
+                  {r.enCave.length > 0 && <span className="qar-pilule qar-livrer">Livrer ›</span>}
+                </>
+              );
+              return r.enCave.length > 0
+                ? <button type="button" className="qar-ligne" onClick={() => { setMessage(null); setFeuille('livrer'); }}>{contenu}</button>
+                : <div className="qar-ligne" role="note">{contenu}</div>;
+            })()}
           </div>
         )}
       </div>
@@ -177,7 +198,7 @@ export const QuiARecuLot: React.FC<Props> = ({ batch, geste }) => {
       )}
 
       {feuille === 'livrer' && (
-        <Sheet open onClose={() => setFeuille(null)} title={fut ? `Livrer ${fut}` : 'Rien à livrer'} subtitle={`${batch.name} · ${batch.id} · à qui ?`}>
+        <Sheet open className="lg:max-w-2xl lg:mx-auto" onClose={() => setFeuille(null)} title={fut ? `Livrer ${fut}` : 'Rien à livrer'} subtitle={`${batch.name} · ${batch.id} · à qui ?`}>
           {!fut
             ? <p className="qar-aide">{batch.status === 'conditionne' || batch.status === 'termine' ? `Plus aucun fût de ${batch.id} en cave.` : `${batch.id} est encore en cuve : aucun fût à livrer.`}</p>
             : <>
@@ -202,7 +223,7 @@ export const QuiARecuLot: React.FC<Props> = ({ batch, geste }) => {
       )}
 
       {feuille === 'rentrer' && (
-        <Sheet open onClose={() => setFeuille(null)} title={dehors.length ? 'Rentrer un fût' : 'Rien à rentrer'} subtitle={`${batch.name} · ${batch.id} · lequel revient ?`}>
+        <Sheet open className="lg:max-w-2xl lg:mx-auto" onClose={() => setFeuille(null)} title={dehors.length ? 'Rentrer un fût' : 'Rien à rentrer'} subtitle={`${batch.name} · ${batch.id} · lequel revient ?`}>
           {dehors.length === 0
             ? <p className="qar-aide">{r.livres ? `Tous les fûts de ${batch.id} sont rentrés.` : `Aucun fût de ${batch.id} n’est sorti.`}</p>
             : <div className="qar-choix">
