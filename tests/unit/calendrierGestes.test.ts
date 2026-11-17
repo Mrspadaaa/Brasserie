@@ -214,9 +214,9 @@ describe('A10, retirer, dupliquer, accepter, fait, lier : les écritures et leur
     expect(d.ecritures[0]).toMatchObject({ op: 'creer', collection: 'batches', document: { id: 'LOT-NEW', plannedBrewDate: '2026-12-28', status: 'planifie', brewDate: '' } });
     expect(JSON.stringify(d.ecritures)).not.toContain('stockConsumption');
   });
-  it('noter une idée : un recipe-idea daté de la semaine, sans rangée', () => {
+  it('noter une idée (R48) : un carnet d’idées daté de la semaine, sans rangée', () => {
     const r = bien(noterIdee('Bière au sapin', '2026-12-07', ctx()));
-    expect(r.ecritures[0]).toMatchObject({ op: 'creer', collection: 'creativeItems', document: { type: 'recipe-idea', date: '2026-12-07' } });
+    expect(r.ecritures[0]).toMatchObject({ op: 'creer', collection: 'creativeItems', document: { type: 'carnet', status: 'idea', date: '2026-12-07' } });
     expect(noterIdee(' ', '2026-12-07', ctx())).toMatchObject({ ok: false });
   });
   it('resoudre : une intention, un seul vocabulaire ; même résultat que l’appel direct', () => {

@@ -87,7 +87,7 @@ export interface GeminiAttempt {
  */
 export function geminiAttempts(usage: string, tier: AiTier = 'fast'): GeminiAttempt[] {
   const main: GeminiAttempt = { model: GEMINI_MODEL, thinkingLevel: TIERS[tier].thinkingLevel };
-  const lite = tier === 'fast' && Object.hasOwn(LITE_ROUTES, usage) ? LITE_ROUTES[usage] : undefined;
+  const lite = tier === 'fast' && Object.prototype.hasOwnProperty.call(LITE_ROUTES, usage) ? LITE_ROUTES[usage] : undefined;
   return lite ? [{ model: GEMINI_LITE_MODEL, thinkingLevel: lite }, main] : Array.from({ length: GEMINI_ATTEMPTS }, () => main);
 }
 

@@ -48,6 +48,8 @@ interface CalendrierTabProps {
   onOpenBatch: (batchId: string) => void;
   onOpenFinances: () => void;
   onOpenAgenda: () => void;
+  /** R48 : l'icône d'une idée notée ici ouvre son carnet (Stocks › Matériel › Carnets, ce carnet ouvert). */
+  onOpenCarnet?: (id: string) => void;
   /** Les courses (Stocks › Courses), pour « Commander ». */
   onOpenCourses: () => void;
   /** « Plus de détails › » d'un brassin : la quick action de l'app. */
@@ -92,7 +94,7 @@ interface FeuilleEtat { mode: 'ajouter' | 'modifier'; initial: BrouillonAjout; c
 type Panneau = 'tri' | 'filtre' | null;
 
 export function CalendrierTab(props: CalendrierTabProps) {
-  const { transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda, onOpenCourses, onPoserBrassin, onPoserFete, onPoserDepense, onOuvrirBudget, onOpenPiece, section, centrerSur } = props;
+  const { transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda, onOpenCarnet, onOpenCourses, onPoserBrassin, onPoserFete, onPoserDepense, onOuvrirBudget, onOpenPiece, section, centrerSur } = props;
   const port = useMemo(() => props.port ?? portParDefaut(), [props.port]);
   const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui });
   const don = props.donnees ?? lues;
@@ -178,10 +180,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ouvrir = useCallback((cible: CibleOuverture) => {
     if (cible.ecran === 'brassin' && cible.id) onOpenBatch(cible.id);
     else if ((cible.ecran === 'piece') && cible.id && onOpenPiece) onOpenPiece(cible.id);
-    else if (cible.ecran === 'agenda' || cible.ecran === 'atelier') onOpenAgenda();
+    else if (cible.ecran === 'carnets' && cible.id && onOpenCarnet) onOpenCarnet(cible.id);
+    else if (cible.ecran === 'agenda' || cible.ecran === 'atelier' || cible.ecran === 'carnets') onOpenAgenda();
     else if (cible.ecran === 'courses' || cible.ecran === 'fournisseur') onOpenCourses();
     else onOpenFinances();
-  }, [onOpenBatch, onOpenPiece, onOpenAgenda, onOpenCourses, onOpenFinances]);
+  }, [onOpenBatch, onOpenPiece, onOpenCarnet, onOpenAgenda, onOpenCourses, onOpenFinances]);
 
   const lienDe = useCallback((lien: MessageGeste['lien']): MessageCal['lien'] => {
     if (!lien) return undefined;

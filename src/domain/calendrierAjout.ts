@@ -1,3 +1,4 @@
+import { carnetDepuisPhrase } from './carnets/modele';
 import type { Batch, Client, CreativeItem, FenetreCalendrier, Recipe } from '../types';
 import type { FinancialPlan } from './finance/types';
 import type { FinanceCategory } from '../types';
@@ -306,13 +307,18 @@ export function ecritureDeAjout(e: Enregistrement): Ecriture {
   return e.cible === 'batch' ? { op: 'creer', collection: e.collection, document, recetteId: e.recetteId } : { op: 'creer', collection: e.collection, document };
 }
 
-/** E36 : une idée datée, envoyée au carnet. Le carnet vit dans `CreativeItem` : une idée de bière est un `recipe-idea` (Atelier › Carnet › Bières). */
+/**
+ * E36, R48 (L1 a et b) : une idée datée, envoyée au carnet d'idées (Stocks › Matériel › Carnets). Le document est un `carnet` construit par
+ * `carnetDepuisPhrase` : état Idée, la phrase en titre et gardée telle quelle, la semaine en `date` (son lundi), aucune valeur inventée, sans IA.
+ * Un seul document (`Enregistrement` « creative ») : l'Annuler du calendrier le retire. Les `recipe-idea` datées déjà écrites ne migrent pas.
+ */
 export function enregistrementIdee(titre: string, jour: string, ctx: Pick<ContexteAjout, 'nouvelId'>): { ok: true; enregistrement: Enregistrement } | { ok: false; raison: string } {
   const texte = titre.trim();
   const date = isoDate(jour);
   if (!texte) return { ok: false, raison: 'Écris l’idée en quelques mots.' };
   if (!date) return { ok: false, raison: 'Choisis une semaine.' };
-  const document: CreativeItem = { id: (ctx.nouvelId ?? ((p: string) => `${p}-${globalThis.crypto.randomUUID()}`))('CR'), type: 'recipe-idea', title: texte, status: 'idea', date: lundiDe(date) };
+  const document: CreativeItem | null = carnetDepuisPhrase(texte, { id: (ctx.nouvelId ?? ((p: string) => `${p}-${globalThis.crypto.randomUUID()}`))('CARNET'), date: lundiDe(date) });
+  if (!document) return { ok: false, raison: 'Écris l’idée en quelques mots.' };
   return { ok: true, enregistrement: { cible: 'creative', collection: 'creativeItems', document } };
 }
 

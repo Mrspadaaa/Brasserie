@@ -19,6 +19,8 @@ import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
 import { GeminiUnusableOutputError, geminiAnswerText, unusableGeminiOutput } from './geminiResponse.js';
 import { sanitizeRecipeImport } from './recipeImportResult.js';
 import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from './rangerNote.js';
+import { RANGER_CARNET, assainirRangerCarnet, contexteRangerCarnet } from './carnetIA.js';
+import { lienDe, lireLien } from './lireLien.js';
 import {
   AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS
 } from './aiTaskDeadline.js';
@@ -345,10 +347,21 @@ export const aiTask = onCall(
       catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
     }
 
+    // Carnet d'idées (lireLien.ts) : la page d'un lien collé, lue sans modèle ni coût ; robots.txt respecté. Ne lève jamais.
+    if ((task as string) === 'lireLien') {
+      const started = Date.now();
+      return { ok: true, data: await lireLien(lienDe(context)), model: 'lecture', tier: 'fast', elapsedMs: Date.now() - started };
+    }
+
     // ks4 : la note du Carnet (rangerNote.ts) ; écrite et testée, pas déployée (accord attendu).
     const rangerNote = (task as string) === 'rangerNote';
     if (rangerNote && !contexteRangerNote(context)) throw new HttpsError('invalid-argument', 'Note ou date de saisie invalide.');
-    const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : rangerNote ? RANGER_NOTE : TASKS[task];
+    // Carnet d'idées (carnetIA.ts) : le message rangé dans les idées ; le contexte est compacté avant l'envoi au modèle.
+    const rangerCarnet = (task as string) === 'rangerCarnet';
+    const contexteCarnet = rangerCarnet ? contexteRangerCarnet(context) : null;
+    if (rangerCarnet && !contexteCarnet) throw new HttpsError('invalid-argument', 'Message ou date de saisie invalide.');
+    const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind)
+      : rangerNote ? RANGER_NOTE : rangerCarnet ? RANGER_CARNET : TASKS[task];
     if (!def) {
       throw new HttpsError('invalid-argument', `Tâche inconnue : ${task}`);
     }
@@ -390,7 +403,7 @@ export const aiTask = onCall(
     }
 
     // Le texte de l'utilisateur est celui du banc de l'enrichissement (`geminiBody.ts`) : une seule écriture.
-    const userText = userTextOf(instruction, context);
+    const userText = userTextOf(instruction, rangerCarnet ? contexteCarnet : context);
 
     if (!userText && !file) {
       throw new HttpsError('invalid-argument', 'Ni données ni pièce jointe à traiter.');
@@ -423,6 +436,7 @@ export const aiTask = onCall(
         }
         if (task === 'importRecipe') data = sanitizeRecipeImport(data);
         if (rangerNote) data = assainirRangerNote(data);
+        if (rangerCarnet) data = assainirRangerCarnet(data);
         logger.info('Tâche IA exécutée', { task, tier, model, thinkingLevel, elapsedMs, email });
         return { ok: true, data, model, tier, elapsedMs };
       } catch (err: any) {

@@ -288,7 +288,7 @@ export const estMarque = (largeurPx: number): boolean => largeurPx < LARGEUR_MAR
 
 /** Où ouvrir la source au toucher (E37). */
 export interface CibleOuverture {
-  ecran: 'brassin' | 'piece' | 'plan' | 'finances' | 'agenda' | 'atelier' | 'materiel' | 'courses' | 'fournisseur' | 'solde';
+  ecran: 'brassin' | 'piece' | 'plan' | 'finances' | 'agenda' | 'atelier' | 'materiel' | 'courses' | 'fournisseur' | 'solde' | 'carnets';
   id?: string;
 }
 
@@ -559,12 +559,15 @@ export function fenetreLue(f: FenetreCalendrier | undefined): { du: string; au: 
   return { du, au, ...(jours ? { joursActifs: jours } : {}), miseDeCote: f.miseDeCote === true };
 }
 
+/** Carnet d'idées (R48) : une idée ou un message du fil ne sont jamais une rangée ni la poche « Sans date » ; l'idée datée est une icône (`iconesIdees`). */
+const estDuCarnet = (item: CreativeItem): boolean => item.type === 'carnet' || item.type === 'carnet-message';
+
 /**
  * Fêtes (CreativeItem `event` daté, pas fait) et Activités (daté, pas un `event` ou marqué `activite`, pas fait). Une idée de recette est une
  * icône de la bande (`iconesIdees`), un projet de matériel arrive par son plan (Travaux). Sans date : `null`, jamais posée.
  */
 export function choseCreative(item: CreativeItem): ChoseCalendrier | null {
-  if (item.type === 'recipe-idea' || item.type === 'equipment' || item.status === 'done') return null;
+  if (item.type === 'recipe-idea' || item.type === 'equipment' || estDuCarnet(item) || item.status === 'done') return null;
   const jour = isoDate(item.date);
   if (!jour) return null;
   const f = fenetreLue(item.fenetre);
@@ -585,7 +588,7 @@ export function choseCreative(item: CreativeItem): ChoseCalendrier | null {
 
 /** Poche « Sans date » (E46) : un `CreativeItem` sans date, ni idée de recette ni fait. Aucune position. */
 export function choseSansDate(item: CreativeItem): ChoseCalendrier | null {
-  if (item.type === 'recipe-idea' || item.status === 'done' || isoDate(item.date)) return null;
+  if (item.type === 'recipe-idea' || estDuCarnet(item) || item.status === 'done' || isoDate(item.date)) return null;
   const activite = item.type !== 'event' || item.activite === true;
   return {
     id: `creatif-${item.id}`, rangee: activite ? 'activites' : 'fetes', titre: item.title, debut: '', fin: '', sansDate: true,
@@ -595,15 +598,21 @@ export function choseSansDate(item: CreativeItem): ChoseCalendrier | null {
 }
 
 export interface IconeSemaine { id: string; lundi: string; numero: number; genre: 'idee' | 'retard'; titre: string; ouvre?: CibleOuverture }
-/** E36, E05 : une idée du carnet (`recipe-idea` datée) est une petite icône de sa semaine, jamais une rangée. */
+/**
+ * E36, E05 : une idée datée est une petite icône de sa semaine, jamais une rangée. R48 (17.11) : l'idée notée au calendrier est un `carnet`
+ * (carnet d'idées, Stocks › Matériel › Carnets) et son icône ouvre ce carnet ; un carnet sans date, archivé ou fait n'en a pas. Les `recipe-idea`
+ * datées déjà écrites gardent leur icône vers l'Atelier (aucune migration).
+ */
 export function iconesIdees(items: readonly CreativeItem[]): IconeSemaine[] {
   const sortie: IconeSemaine[] = [];
   for (const item of items) {
-    if (item.type !== 'recipe-idea' || item.status === 'done' || (item as { archivedAt?: string }).archivedAt) continue;
+    const carnet = item.type === 'carnet';
+    if (!(carnet || item.type === 'recipe-idea') || item.status === 'done' || (item as { archivedAt?: string }).archivedAt) continue;
+    if (carnet && (item.carnet as { archive?: unknown } | undefined)?.archive) continue;
     const jour = isoDate(item.date);
     if (!jour) continue;
     const lundi = lundiDe(jour);
-    sortie.push({ id: `idee-${item.id}`, lundi, numero: numeroSemaine(lundi), genre: 'idee', titre: item.title, ouvre: { ecran: 'atelier', id: item.id } });
+    sortie.push({ id: `idee-${item.id}`, lundi, numero: numeroSemaine(lundi), genre: 'idee', titre: item.title, ouvre: { ecran: carnet ? 'carnets' : 'atelier', id: item.id } });
   }
   return sortie.sort((a, b) => a.lundi.localeCompare(b.lundi) || a.id.localeCompare(b.id));
 }

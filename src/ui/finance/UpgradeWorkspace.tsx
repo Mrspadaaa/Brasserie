@@ -22,7 +22,27 @@ import './finance.css';
 import './upgrades.css';
 import './upgrade-plan.css';
 
-const read = () => ({ ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), batches: StorageService.getBatches(), stocks: StorageService.getStocks(), contacts: StorageService.getCreativeItems().filter(i => i.type === 'prospect') });
+const read = () => {
+  const items = StorageService.getCreativeItems();
+  return { ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), batches: StorageService.getBatches(), stocks: StorageService.getStocks(), contacts: items.filter(i => i.type === 'prospect'),
+    /* R08 : les carnets d'idées présents (archivés compris : « Ouvrir le carnet » rouvre une idée archivée, D-47b). */
+    carnetIds: new Set(items.filter(i => i.type === 'carnet').map(i => i.id)) };
+};
+
+/** R08 (h05-9) : la carte d'un plan venu d'un carnet dit d'où il vient. « Ouvrir le carnet » le rouvre ; carnet supprimé : la ligne le dit, sans Ouvrir. */
+function LigneCarnet({ plan, present, onOuvrir }: { plan: FinancialPlan; present: boolean; onOuvrir?: (id: string) => void }) {
+  const u = plan.upgrade;
+  if (!u?.sourceCarnetId) return null;
+  const le = isoDate(plan.createdAt);
+  const titre = u.sourceCarnetTitre?.trim();
+  return <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-1 text-sm" data-carnet={u.sourceCarnetId}>
+    <span className="min-w-0 flex-1 text-cave-200">
+      {le && <b className="text-cave-50">Ajouté le {new Date(`${le}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })}</b>}
+      {le && ' · '}{titre ? `du carnet ${titre}` : 'd’un carnet'}{present ? '' : ' · supprimé'}
+    </span>
+    {present && onOuvrir && <button type="button" className="min-h-11 rounded-control border border-cave-700 px-3 text-sm font-semibold text-cave-50" onClick={() => onOuvrir(u.sourceCarnetId!)}>Ouvrir le carnet</button>}
+  </div>;
+}
 export const upgradeDateLabel = (plan: FinancialPlan) => {
   const date = isoDate(plan.date);
   return date ? new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric', ...(upgradeDetails(plan).datePrecision === 'day' ? { day: 'numeric' } : {}) }) : 'Date à choisir';
@@ -226,8 +246,8 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
   onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onSupprimer: (p: FinancialPlan) => string | null; onPrevisions: () => void;
   contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
-  fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void }
-function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis }: AVenirProps) {
+  fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void; carnetIds: Set<string>; onOpenCarnet?: (id: string) => void }
+function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis, carnetIds, onOpenCarnet }: AVenirProps) {
   const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null), [etape, setEtape] = useState<string | null>(null);
   const hero = prochainAchat(plans), { lignes, connuCents, inconnus } = suivants(plans, hero), mois = prevision.months.slice(1, MOIS_BANDEAU).map(m => m.month);
   /* Le prochain achat peut n'être pas posé (repli, constat 7) : sans les prévisions, pas d'effet sur la caisse à dessiner. */
@@ -240,6 +260,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
       <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {etapeHero(hero)}</span></div>
       <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
         {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
+      <LigneCarnet plan={hero} present={!!hero.upgrade?.sourceCarnetId && carnetIds.has(hero.upgrade.sourceCarnetId)} onOuvrir={onOpenCarnet}/>
       {effetHero && <EffetCaisse plan={hero} effet={effetHero}/>}
       <div className="kh-acts"><button type="button" className="kh-mon" aria-expanded={picker === hero.id} aria-label={`Mois de ${hero.title} : ${moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'long') : 'à poser'}`} onClick={() => setPicker(picker === hero.id ? null : hero.id)}><Calendar size={18}/>{moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'short') : '+ mois'}<ChevronDown size={14}/></button>
         <button type="button" className="kh-cta" aria-label={`Modifier ${hero.title}`} onClick={() => onEdit(hero)}><PenLine size={18}/>Modifier</button></div>
@@ -261,7 +282,8 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
             <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><span className="kh-nm"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
             {!d.budgetKnown && <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
             <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
-          </div>{picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
+          </div><LigneCarnet plan={plan} present={!!plan.upgrade?.sourceCarnetId && carnetIds.has(plan.upgrade.sourceCarnetId)} onOuvrir={onOpenCarnet}/>
+          {picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
           {ouvert && <PanneauEtape plan={plan} contacts={contacts} fournisseurs={fournisseurs} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
       })}</>}
@@ -272,11 +294,24 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
   </div>;
 }
 
-export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequestHandled, onVoirPrevisions }: { onOpenProject?: (plan: FinancialPlan | null) => void; createRequest?: { kind: string; at: number } | null; onCreateRequestHandled?: () => void;
-  /** Ouverte depuis Finances › Prévisions, le renvoi referme simplement cette feuille ; absent, il demande à l'app d'ouvrir Finances › Prévisions (`affinee:ouvrir-finances`). */ onVoirPrevisions?: () => void }) {
+export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequestHandled, onVoirPrevisions, vue, onVue, onOpenCarnet }: { onOpenProject?: (plan: FinancialPlan | null) => void; createRequest?: { kind: string; at: number } | null; onCreateRequestHandled?: () => void;
+  /** Ouverte depuis Finances › Prévisions, le renvoi referme simplement cette feuille ; absent, il demande à l'app d'ouvrir Finances › Prévisions (`affinee:ouvrir-finances`). */ onVoirPrevisions?: () => void;
+  /** R08 (Stocks › Matériel) : la vue est tenue par le segment « À venir · Carnets · Réalisés » ; les onglets internes cèdent la place, Archives reste un lien sous Réalisés (D-1). */
+  vue?: 'future' | 'completed'; onVue?: (vue: 'future' | 'completed') => void;
+  /** « Ouvrir le carnet » d'une carte venue d'un carnet (R08, D-47b). */
+  onOpenCarnet?: (id: string) => void }) {
   const mobile = useMobileLayout();
   const data = useStorageValue(read);
-  const [scope, setScope] = useState('future');
+  /* Hors de Stocks › Matériel (Atelier, Prévisions), « Ouvrir le carnet » passe par l'app (`affinee:ouvrir-carnet`), comme `affinee:ouvrir-finances`. */
+  const ouvrirCarnet = onOpenCarnet ?? ((id: string) => { window.dispatchEvent(new CustomEvent('affinee:ouvrir-carnet', { detail: { id } })); });
+  const [scopeInterne, setScopeInterne] = useState('future'), [archives, setArchives] = useState(false);
+  const scope = vue ? (vue === 'completed' && archives ? 'archived' : vue) : scopeInterne;
+  const setScope = (s: string) => {
+    if (!vue) { setScopeInterne(s); return; }
+    if (s === 'archived') { setArchives(true); return; }
+    setArchives(false);
+    if (s === 'future' || s === 'completed') onVue?.(s);
+  };
   const [editing, setEditing] = useState<FinancialPlan | null | undefined>();
   const [purchase, setPurchase] = useState<FinancialPlan>();
   const [busy, setBusy] = useState<string>(), [error, setError] = useState(''), [ailleurs, setAilleurs] = useState('');
@@ -364,6 +399,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
           : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
         <span className="upgrade-price">{detail.budgetKnown ? formatCHF(plan.amountCents) : 'À estimer'}<ChevronRight size={16}/></span>
       </button>
+      <LigneCarnet plan={plan} present={!!plan.upgrade?.sourceCarnetId && data.carnetIds.has(plan.upgrade.sourceCarnetId)} onOuvrir={ouvrirCarnet}/>
       {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents ? 'comme prévu' /* un montant une seule fois : il est déjà à droite */ : <>{progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</>}</p>}
       {scope === 'future' && <div className="upgrade-project-actions">
         {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>Inclure dans mes prévisions{/* TE-36 : un seul libellé pour la case, cochée ou non (comme la feuille du projet) */}</label>}
@@ -376,19 +412,24 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     <p className="finance-muted">Priorise tes équipements et choisis les achats à inclure dans tes prévisions.</p>
     <div className="upgrade-toolbar"><button className="finance-action" onClick={() => open(null)}><Plus size={18}/>Ajouter un projet</button></div>
     </>}
-    <div className={compact ? 'flex items-center gap-2' : 'kh-views'}><div className={`min-w-0 flex-1${compact ? '' : ' kh-tabs'}`}>
+    {vue && <div className="flex min-h-11 items-center justify-end gap-2">
+      {scope === 'future' && createRequest === undefined && <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>}
+      {scope === 'completed' && <button type="button" className="finance-link min-h-11 text-sm" onClick={() => setArchives(true)}>Archives<ChevronRight size={16}/></button>}
+      {scope === 'archived' && <button type="button" className="finance-link min-h-11 text-sm" onClick={() => setArchives(false)}>Réalisés<ChevronRight size={16}/></button>}
+    </div>}
+    {!vue && <div className={compact ? 'flex items-center gap-2' : 'kh-views'}><div className={`min-w-0 flex-1${compact ? '' : ' kh-tabs'}`}>
       <ViewNavigation label="Afficher les projets" value={scope} onChange={setScope} options={[{value:'future',label:'À venir'},{value:'completed',label:'Réalisés'},{value:'archived',label:'Archives'}]}>
         <div className="finance-filter upgrade-scopes" role="group" aria-label="Afficher les projets"><button aria-pressed={scope === 'future'} onClick={() => setScope('future')}>À venir</button><button aria-pressed={scope === 'completed'} onClick={() => setScope('completed')}>Réalisés</button><button aria-pressed={scope === 'archived'} onClick={() => setScope('archived')}>Archives</button></div>
       </ViewNavigation>
     </div>{!compact ? (createRequest === undefined && <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>)
-      : mobile && createRequest === undefined && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
+      : mobile && createRequest === undefined && <button type="button" aria-label="Ajouter un projet" onClick={()=>open(null)} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>}
     {error && <p className="finance-error" role="alert">{error}</p>}
     {archive && <p className="finance-muted upgrade-archive" role="status">« {archive.title} » est archivé. <button type="button" className="finance-link" disabled={!!busy} onClick={() => void defaireArchive()}>Annuler</button></p>}
     {compact && scope === 'future' && visible.length > 0 && <button type="button" className="finance-link upgrade-renvoi" onClick={voirPrevisions}>{RENVOI_PREVISIONS}<ChevronRight size={16}/></button>}
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
     {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onSupprimer={supprimer} onPrevisions={voirPrevisions}
       contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
-      avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)}/>
+      avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)} carnetIds={data.carnetIds} onOpenCarnet={ouvrirCarnet}/>
     : vueAVenir ? null : !compact && scope === 'archived' && visible.length > 0 ? <ArchivesCarte plans={visible} transactions={data.transactions} payments={data.payments} busy={busy} onOuvrir={open} onReprendre={p => void reprendre(p)}/>
     : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));

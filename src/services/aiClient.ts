@@ -41,7 +41,11 @@ export type AiTaskId =
   /** D380 : recolle les lectures des morceaux d'une longue pièce (aucune IA, aucun coût). */
   | 'assemblerLecture'
   /** ks4 : une note du Carnet → choses proposées (`functions/src/rangerNote.ts`, écrite, pas déployée : drapeau `src/config/rangerNoteIA.ts`). */
-  | 'rangerNote';
+  | 'rangerNote'
+  /** Carnet d'idées : un message rangé dans les idées (`functions/src/carnetIA.ts` ; drapeau `src/config/carnetIA.ts`). */
+  | 'rangerCarnet'
+  /** Carnet d'idées : la page d'un lien collé, lue sans modèle (`functions/src/lireLien.ts`). */
+  | 'lireLien';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',

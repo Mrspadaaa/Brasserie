@@ -305,6 +305,26 @@ describe('A3 : chaque source tombe dans sa rangée (un cas par ligne du tableau 
     ]);
     expect(choseCreative(idee)).toBeNull();
   });
+  it('R48 : un carnet d’idées daté est une icône de sa semaine qui ouvre Carnets ; sans date, archivé ou fait, rien ; un recipe-idea garde l’Atelier', () => {
+    const carnet: CreativeItem = { id: 'c', type: 'carnet', title: 'ZZ TEST — doseur de sucre', status: 'idea', date: '2026-11-16',
+      carnet: { version: 1, creeLe: '2026-11-17T10:00:00.000Z', phrase: 'ZZ TEST — doseur de sucre', criteres: [], facons: [], articles: [], notes: [], photos: [] } };
+    const recette: CreativeItem = { id: 'r', type: 'recipe-idea', title: 'Bière au sapin', status: 'idea', date: '2026-11-18' };
+    expect(iconesIdees([
+      carnet, { ...carnet, id: 'sans', date: undefined }, { ...carnet, id: 'fait', status: 'done' },
+      { ...carnet, id: 'arch', carnet: { ...carnet.carnet!, archive: { le: '2026-11-17', raison: 'plan réalisé' } } }, recette
+    ])).toEqual([
+      { id: 'idee-c', lundi: '2026-11-16', numero: 47, genre: 'idee', titre: 'ZZ TEST — doseur de sucre', ouvre: { ecran: 'carnets', id: 'c' } },
+      { id: 'idee-r', lundi: '2026-11-16', numero: 47, genre: 'idee', titre: 'Bière au sapin', ouvre: { ecran: 'atelier', id: 'r' } }
+    ]);
+  });
+  it('R48 : un carnet et un message du carnet ne sont jamais une rangée ni la poche « Sans date », datés ou non', () => {
+    const carnet: CreativeItem = { id: 'c', type: 'carnet', title: 'Évier', status: 'idea' };
+    const message: CreativeItem = { id: 'm', type: 'carnet-message', title: 'Évier', status: 'done' };
+    for (const x of [carnet, { ...carnet, date: '2026-11-16' }, { ...carnet, status: 'research' as const, date: '2026-11-16' }, message, { ...message, status: 'todo' as const }]) {
+      expect(choseCreative(x)).toBeNull();
+      expect(choseSansDate(x)).toBeNull();
+    }
+  });
   it('Sans date : un CreativeItem sans date, ni idée de recette ni fait', () => {
     const t: CreativeItem = { id: 't', type: 'event', title: 'Commander', status: 'todo' };
     expect(choseSansDate(t)).toMatchObject({ sansDate: true, debut: '', fin: '' });

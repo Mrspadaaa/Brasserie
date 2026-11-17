@@ -120,13 +120,13 @@ describe('A10 : la mise de côté n’écrit aucun plan', () => {
 });
 
 describe('A11 (D-104, D-121, D-122) : une idée datée, écrite par cette voie, relue en icône de la semaine 50', () => {
-  it('Noter une idée en S50 crée un recipe-idea daté du lundi de S50 ; le modèle la montre en icône, sans rangée', async () => {
+  it('R48 : Noter une idée en S50 crée un carnet d’idées daté du lundi de S50 ; le modèle la montre en icône qui ouvre le carnet, sans rangée', async () => {
     const m = memoire({});
     const faite = await appliquer(ok(noterIdee('Bière au sapin', '2026-12-10', ctxDe(m))).ecritures, m);
-    expect(m.tout('creativeItems')).toEqual([{ id: 'CR-NEW', type: 'recipe-idea', title: 'Bière au sapin', status: 'idea', date: '2026-12-07' }]);
+    expect(m.tout('creativeItems')).toMatchObject([{ id: 'CARNET-NEW', type: 'carnet', title: 'Bière au sapin', status: 'idea', date: '2026-12-07', carnet: { phrase: 'Bière au sapin' } }]);
     const modele = modeleDe(m);
     const icone = modele.icones.find(i => i.genre === 'idee');
-    expect(icone).toMatchObject({ numero: 50, lundi: '2026-12-07', titre: 'Bière au sapin' });
+    expect(icone).toMatchObject({ numero: 50, lundi: '2026-12-07', titre: 'Bière au sapin', ouvre: { ecran: 'carnets', id: 'CARNET-NEW' } });
     expect(modele.choses).toEqual([]);
     expect(modele.sansDate).toEqual([]);
     await faite.annuler();

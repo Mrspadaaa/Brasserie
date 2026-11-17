@@ -132,6 +132,10 @@ export interface EquipmentUpgrade {
   purpose?: string;
   quoteReference?: string;
   sourceCreativeItemId?: string;
+  /** Carnet d'idées (Stocks › Matériel › Carnets) qui a envoyé ce plan dans À venir. Optionnel, rien à migrer. */
+  sourceCarnetId?: string;
+  /** Titre du carnet au moment de l'envoi : il survit à la suppression du carnet (« du carnet X · supprimé », D-47b). */
+  sourceCarnetTitre?: string;
   /** Usure estimée du futur matériel (litre) : durée saisie, sinon taux linéaire AFC de la catégorie. Facultatifs, rien à migrer. */
   depreciationCategory?: DepreciationCategory;
   /** Années d'usage, 1 à 50 par demi-année. */

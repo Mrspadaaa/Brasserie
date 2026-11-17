@@ -21,6 +21,10 @@ import { EquipmentList, aujourdhuiIso } from '../../ui/EquipmentList';
 import { EquipmentDetail } from '../../ui/equipment/Detail';
 import { aTraiter } from '../../domain/equipment';
 import type { FinanceTransaction } from '../../domain/finance/types';
+import { FinanceService } from '../../services/financeService';
+import { isUpgradePlan } from '../../domain/finance/upgrades';
+import { estRealise } from '../../domain/finance/upgradeRing';
+import { UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
 import { Sheet } from '../../ui/Sheet';
 import { Button } from '../ui/Button';
 import { FormNav, Field, TextInput, inputClass } from '../../ui/FormNav';
@@ -43,6 +47,8 @@ import { GROUPES_LISTE, groupeListe, lignesRetenues, texteFiltre, type FiltreLis
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
 
+/* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
+const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
@@ -55,6 +61,22 @@ const readRecipes = () => StorageService.getRecipes();
 // le changerait à chaque rendu, et `getStockMovements()` rend un tableau neuf tant que la collection est absente (boucle).
 const readMovements = () => StorageService.getStockMovements();
 const readTransactions = () => StorageService.getTransactions();
+/** Les comptes du segment de Matériel (p2:g05-1 « À venir 1 · Carnets 4 · Réalisés 0 ») : la règle même d'À venir et Réalisés (`estRealise`, UpgradeWorkspace). */
+const readSegments = () => {
+  const { plans, payments } = FinanceService.snapshot();
+  const transactions = StorageService.getTransactions() as unknown as FinanceTransaction[];
+  const projets = plans.filter(isUpgradePlan);
+  const realise = (p: (typeof projets)[number]) => ['draft', 'active'].includes(p.status) && estRealise(p, transactions, payments);
+  const carnets = StorageService.getCreativeItems().filter(i => i.type === 'carnet' && !(i as { carnet?: { archive?: unknown } }).carnet?.archive).length;
+  return {
+    avenir: projets.filter(p => ['draft', 'active'].includes(p.status) && !realise(p)).length,
+    realises: projets.filter(p => p.status === 'completed' || realise(p)).length,
+    carnets
+  };
+};
+/** Stocks › Matériel : le parc tel qu'il est (Points ouverts 1 : « Parc » en tête, rien ne se perd, D-41), puis le segment figé « À venir · Carnets · Réalisés » (R08). */
+type SegMateriel = 'parc' | 'avenir' | 'carnets' | 'realises';
+const SEGMENTS_MATERIEL: SegMateriel[] = ['parc', 'avenir', 'carnets', 'realises'];
 
 interface StocksTabProps {
   stocks: {
@@ -78,6 +100,9 @@ interface StocksTabProps {
   /** Fiche d'article : « voir la facture » et « voir le bilan » (absents : les lignes ne sont pas cliquables). */
   onOpenTransaction?: (id: string) => void;
   onOpenBatch?: (id: string) => void;
+  /** Ouvrir un carnet d'idées précis (« Ouvrir le carnet » d'À venir, icône d'idée du calendrier) : Stocks › Matériel › Carnets, ce carnet ouvert. */
+  openCarnetRequest?: { id: string; at: number } | null;
+  onOpenCarnetRequestHandled?: () => void;
 }
 
 type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
@@ -121,11 +146,22 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   onSuccessMessage,
   onOpenEquipmentProjects,
   onOpenTransaction,
-  onOpenBatch
+  onOpenBatch,
+  openCarnetRequest,
+  onOpenCarnetRequestHandled
 }) => {
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
   );
+  const [segMateriel, setSegMaterielEtat] = useState<SegMateriel>(() => {
+    const lu = StorageService.getUiState<SegMateriel>('stocks_materiel', 'parc');
+    return SEGMENTS_MATERIEL.includes(lu) ? lu : 'parc';
+  });
+  const setSegMateriel = (seg: SegMateriel) => { setSegMaterielEtat(seg); StorageService.setUiState('stocks_materiel', seg); };
+  const segments = useStorageValue(readSegments);
+  /** Une demande d'ouverture (carnet précis) ou de focus du champ (+ « Nouvelle idée ») pour la vue Carnets. */
+  const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
+  const [focusChamp, setFocusChamp] = useState<number | null>(null);
   const tabsRef = useRef<HTMLElement>(null);
   useEffect(() => { tabsRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [subTab]);
   const allItems = useMemo(
@@ -236,9 +272,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   // Le bouton d'action doit savoir où l'on est : il crée ce que l'écran montre.
+  // Sur Matériel › Carnets, l'écran remonte `carnets` : le + y porte l'action du carnet (R28, D-42).
   useEffect(() => {
-    onSubTabChange?.(subTab);
-  }, [subTab, onSubTabChange]);
+    onSubTabChange?.(subTab === 'materiel' && segMateriel === 'carnets' ? 'carnets' : subTab);
+  }, [subTab, segMateriel, onSubTabChange]);
+
+  useEffect(() => {
+    if (!openCarnetRequest) return;
+    setSubTab('materiel');
+    setSegMateriel('carnets');
+    setCarnetOuvert({ id: openCarnetRequest.id, at: openCarnetRequest.at });
+    onOpenCarnetRequestHandled?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openCarnetRequest?.at]);
 
   /**
    * Le bouton d'action a demandé une création : c'est l'écran qui sait quoi
@@ -255,6 +301,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         break;
       case 'newEquipment':
         setPurchasingEquipment(true);
+        break;
+      case 'newIdea':
+        // « Nouvelle idée » (+ sur Carnets) : le champ du bas prend le focus, rien d'autre (R28).
+        setSubTab('materiel');
+        setSegMateriel('carnets');
+        setFocusChamp(createRequest.at);
         break;
       case 'copyShoppingList':
         copyEverything();
@@ -667,6 +719,35 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         addOpen={addingKegs} onAddClose={() => setAddingKegs(false)} onMessage={onSuccessMessage} />}
 
       {subTab === 'materiel' && (
+        <nav aria-label="Vue du matériel" className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
+          {SEGMENTS_MATERIEL.map((seg) => {
+            const libelle = seg === 'parc' ? 'Parc' : seg === 'avenir' ? 'À venir' : seg === 'carnets' ? 'Carnets' : 'Réalisés';
+            const n = seg === 'avenir' ? segments.avenir : seg === 'carnets' ? segments.carnets : seg === 'realises' ? segments.realises : undefined;
+            return (
+              <button key={seg} type="button" onClick={() => setSegMateriel(seg)} aria-current={segMateriel === seg ? 'page' : undefined}
+                className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5 text-sm font-medium transition-colors ${segMateriel === seg ? 'bg-ebc-straw text-cave-950' : 'text-cave-400 hover:text-cave-50'}`}>
+                <span>{libelle}</span>{n !== undefined && <span className="font-mono">{n}</span>}
+              </button>
+            );
+          })}
+        </nav>
+      )}
+
+      {subTab === 'materiel' && (segMateriel === 'avenir' || segMateriel === 'realises') && (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <UpgradeWorkspace vue={segMateriel === 'avenir' ? 'future' : 'completed'} onVue={(v) => setSegMateriel(v === 'future' ? 'avenir' : 'realises')}
+            onOpenCarnet={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now() }); }} />
+        </div>
+      )}
+
+      {subTab === 'materiel' && segMateriel === 'carnets' && (
+        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement des carnets…</div>}>
+          <CarnetsVue className="min-h-0 flex-1" ouvrir={carnetOuvert} focusChamp={focusChamp}
+            onVoirAVenir={() => setSegMateriel('avenir')} onMessage={onSuccessMessage} />
+        </Suspense>
+      )}
+
+      {subTab === 'materiel' && segMateriel === 'parc' && (
         <div className={grandEcran ? 'mt mt-wide' : undefined}>
           <div className={grandEcran ? 'mt-gauche' : undefined}>
             <EquipmentList

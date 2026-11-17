@@ -1,0 +1,81 @@
+/**
+ * Carnet d'idées : rattacher un texte au carnet le plus proche (repli local ; « ✻ Déjà un carnet proche », G21, G35).
+ *
+ * État de l'art (MISSION) : recherche floue sur des textes normalisés (NFD, sans accents), fuse.js (déjà présent) ; seuil réglé sur une
+ * moitié des phrases et jugé sur l'autre (L20, critère A5). Purement lexical : aucun mot du métier ni gabarit (C2).
+ * Score d'un carnet = somme, sur les jetons du texte, du meilleur mot du carnet qui lui ressemble (1 si même racine, sinon 1 − score
+ * fuse.js, pour un jeton d'au moins 5 lettres), pondéré par la place du mot (titre 3, critère et façon 2, reste 1), divisée par √(nombre
+ * de jetons) pour ne pas favoriser les longs textes.
+ */
+import Fuse from 'fuse.js';
+import { jetons } from './analyseLocale';
+import { nomArticle, type CarnetDoc } from './modele';
+
+/** Seuil réglé sur la première moitié des phrases de `carnetsRattacher.test.ts` (A5), jugé sur la seconde. */
+export const SEUIL_RATTACHER = 1.25;
+
+interface MotIndexe { mot: string; carnetId: string; poids: number }
+
+export interface Proposition { carnetId: string; titre: string; score: number; /** les mots en commun : la raison dite (« comme <titre du carnet> : <mots> ») */ mots: string[] }
+
+const titreSansBanc = (t: string) => t.replace(/^ZZ TEST\s*[—–-]\s*/i, '');
+
+/** Les mots d'un carnet, avec le poids de leur place. */
+function motsDe(c: CarnetDoc): MotIndexe[] {
+  const d = c.carnet;
+  const sources: [string, number][] = [
+    [titreSansBanc(c.title), 3], [d.phrase, 2],
+    ...d.criteres.map((k): [string, number] => [`${k.texte} ${k.caracteristique?.nom ?? ''}`, 2]),
+    ...d.facons.map((f): [string, number] => [f.nom, 2]),
+    ...d.articles.map((a): [string, number] => [`${a.nom ?? ''} ${a.vendeur ?? ''}`.trim() || nomArticle(a), 1]),
+    ...d.notes.map((n): [string, number] => [n.texte, 1])
+  ];
+  const meilleur = new Map<string, number>();
+  for (const [texte, poids] of sources) for (const mot of jetons(texte)) meilleur.set(mot, Math.max(meilleur.get(mot) ?? 0, poids));
+  return [...meilleur].map(([mot, poids]) => ({ mot, carnetId: c.id, poids }));
+}
+
+/** Les carnets proches d'un texte, du plus proche au moins proche (score > 0). */
+export function propositions(texte: string, carnets: readonly CarnetDoc[]): Proposition[] {
+  const requete = [...new Set(jetons(texte))];
+  if (!requete.length || !carnets.length) return [];
+  const index = carnets.flatMap(motsDe);
+  const fuse = new Fuse(index, { keys: ['mot'], includeScore: true, threshold: 0.25, ignoreLocation: true, minMatchCharLength: 4 });
+  const scores = new Map<string, { score: number; mots: Set<string> }>();
+  for (const j of requete) {
+    const parCarnet = new Map<string, { s: number; mot: string }>();
+    for (const m of index) if (m.mot === j) parCarnet.set(m.carnetId, { s: m.poids, mot: m.mot });
+    if (j.length >= 5) {
+      for (const r of fuse.search(j)) {
+        const s = (1 - (r.score ?? 1)) * r.item.poids * 0.8;
+        if (s > (parCarnet.get(r.item.carnetId)?.s ?? 0)) parCarnet.set(r.item.carnetId, { s, mot: r.item.mot });
+      }
+    }
+    for (const [id, { s, mot }] of parCarnet) {
+      const cur = scores.get(id) ?? { score: 0, mots: new Set<string>() };
+      cur.score += s;
+      cur.mots.add(mot);
+      scores.set(id, cur);
+    }
+  }
+  const norme = Math.sqrt(requete.length);
+  return carnets
+    .filter(c => scores.has(c.id))
+    .map(c => ({ carnetId: c.id, titre: c.title, score: Math.round((scores.get(c.id)!.score / norme) * 1000) / 1000, mots: [...scores.get(c.id)!.mots] }))
+    .sort((a, b) => b.score - a.score || a.titre.localeCompare(b.titre));
+}
+
+/** Le carnet proposé pour un texte, ou `null` si aucun n'atteint le seuil (alors : carnet neuf, avec sa raison). */
+export function rattacher(texte: string, carnets: readonly CarnetDoc[], seuil = SEUIL_RATTACHER): Proposition | null {
+  const p = propositions(texte, carnets)[0];
+  return p && p.score >= seuil ? p : null;
+}
+
+/** La raison dite d'un rattachement : « comme <titre> : <mots> ». Picto local (Q19). */
+export const raisonRattachement = (p: Proposition): string => `comme ${titreSansBanc(p.titre)} : ${p.mots.slice(0, 3).join(', ')}`;
+
+/** G35 : le carnet le plus proche d'un autre (pour y déplacer ses articles en veille), lui-même exclu. */
+export function carnetProche(c: CarnetDoc, carnets: readonly CarnetDoc[], seuil = SEUIL_RATTACHER): Proposition | null {
+  const texte = [titreSansBanc(c.title), c.carnet.phrase, ...c.carnet.facons.map(f => f.nom), ...c.carnet.articles.map(a => a.nom ?? '')].join(' ');
+  return rattacher(texte, carnets.filter(x => x.id !== c.id && !x.carnet.archive), seuil);
+}

@@ -12,7 +12,7 @@ export const TYPE_DE_GENRE: Record<Genre, CreativeItem['type']> = {
   biere: 'recipe-idea', contact: 'prospect', faire: 'event', tarif: 'pricing-test'
 };
 const GENRE_DE_TYPE: Record<CreativeItem['type'], Genre | null> = {
-  'recipe-idea': 'biere', prospect: 'contact', event: 'faire', 'pricing-test': 'tarif', equipment: null
+  'recipe-idea': 'biere', prospect: 'contact', event: 'faire', 'pricing-test': 'tarif', equipment: null, carnet: null, 'carnet-message': null
 };
 export const LIBELLE_GENRE: Record<Genre, string> = { biere: 'Bière', contact: 'Contact', faire: 'À faire', tarif: 'Tarif' };
 export const LIBELLE_TIROIR: Record<Tiroir, string> = { tout: 'Tout', biere: 'Bières', tarif: 'Tarifs', contact: 'Contacts', faire: 'À faire', materiel: 'Matériel' };

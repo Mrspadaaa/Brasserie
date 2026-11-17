@@ -33,7 +33,7 @@ export interface DetailChoseProps {
 
 const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
   brassin: 'Ouvrir le brassin', piece: 'Ouvrir la pièce', plan: 'Ouvrir dans Finances', finances: 'Ouvrir dans Finances', agenda: 'Ouvrir dans l’agenda',
-  atelier: 'Ouvrir dans l’atelier', materiel: 'Ouvrir dans le matériel', courses: 'Ouvrir les courses', fournisseur: 'Ouvrir le fournisseur', solde: 'Ouvrir Solde'
+  atelier: 'Ouvrir dans l’atelier', materiel: 'Ouvrir dans le matériel', courses: 'Ouvrir les courses', fournisseur: 'Ouvrir le fournisseur', solde: 'Ouvrir Solde', carnets: 'Ouvrir dans les carnets'
 };
 
 /** Les trois temps d'un brassin, lus dans ses jalons : brassage, en cuve, prête (f4-b). */

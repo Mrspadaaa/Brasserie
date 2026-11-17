@@ -27,7 +27,7 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
-import { plusMenuFor, plusMenuPage, type PlusCle } from './domain/plusEcran';
+import { ACTION_CARNETS, plusMenuFor, plusMenuPage, type PlusCle } from './domain/plusEcran';
 import { joursDepuisBrassage } from './domain/productionInsights';
 import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
 import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
@@ -271,6 +271,25 @@ export const App: React.FC = () => {
   const [batchCree, setBatchCree] = useState<{ id: string; at: number } | null>(null);
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
   const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
+  /** Carnet d'idées à ouvrir (R08 « Ouvrir le carnet », R48 icône d'idée du calendrier) : Stocks › Matériel › Carnets, ce carnet ouvert. */
+  const [carnetOpenRequest, setCarnetOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const ouvrirCarnet = React.useCallback((id: string) => {
+    StorageService.setUiState('stocks_subtab', 'materiel');
+    StorageService.setUiState('stocks_materiel', 'carnets');
+    setCarnetOpenRequest({ id, at: Date.now() });
+    setActiveTab('stocks');
+  }, []);
+  // « Ouvrir le carnet » d'une carte d'À venir montée hors de Stocks (Atelier, Prévisions) : l'événement est pris ici.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const id = (event as CustomEvent<{ id?: string }>).detail?.id;
+      if (!id) return;
+      ouvrirCarnet(id);
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-carnet', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-carnet', ouvrir);
+  }, [ouvrirCarnet]);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
   const [prevoirDepense, setPrevoirDepense] = useState<{ date: string } | null>(null);
@@ -676,7 +695,9 @@ export const App: React.FC = () => {
    * Le bouton + conserve l'action de création de l'écran courant
    * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
    */
-  const fabAction = fabActionFor(activeTab, subTab);
+  /* Stocks › Matériel › Carnets (R28, D-42) : le + porte d'abord « Nouvelle idée », le focus du champ du bas. */
+  const surCarnets = activeTab === 'stocks' && (subTab as string | null) === 'carnets';
+  const fabAction = surCarnets ? ACTION_CARNETS : fabActionFor(activeTab, subTab);
 
   /* Le brassin dont « Saisir une densité » ouvre la fiche : le premier en fermentation (le même que l'assistant de Plus). */
   const brassinEnFermentation = batches.find(b => b.status === 'fermentation');
@@ -737,6 +758,8 @@ export const App: React.FC = () => {
         openWizard();
         break;
       case 'newIdea':
+        // Sur Carnets, l'écran prend la demande lui-même : le champ du bas reçoit le focus, rien ne s'ouvre ailleurs.
+        if (surCarnets) { setCreateRequest({ kind: 'newIdea', at: Date.now() }); break; }
         setProductionSubTab('lab');
         setActiveTab('production');
         setCreateRequest({ kind: 'newIdea', at: Date.now() });
@@ -1286,6 +1309,7 @@ export const App: React.FC = () => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();
             }}
+            onOpenCarnet={ouvrirCarnet}
           />
         )}
 
@@ -1331,6 +1355,8 @@ export const App: React.FC = () => {
             onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
             openItemRequest={stockOpenRequest}
             onOpenItemRequestHandled={() => setStockOpenRequest(null)}
+            openCarnetRequest={carnetOpenRequest}
+            onOpenCarnetRequestHandled={() => setCarnetOpenRequest(null)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
           />

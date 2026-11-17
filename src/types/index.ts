@@ -1,4 +1,5 @@
 import type { TransactionFinance } from '../domain/finance/types';
+import type { DonneesCarnet, DonneesMessage } from '../domain/carnets/modele';
 
 export type FinanceCategory = 
   | 'apports'
@@ -972,7 +973,8 @@ export interface ExpenseTemplate {
 
 export interface CreativeItem {
   id: string;
-  type: 'equipment' | 'recipe-idea' | 'event' | 'pricing-test' | 'prospect';
+  /** `carnet` : une idée du carnet d'idées (Stocks › Matériel › Carnets) ; `carnet-message` : un message de son fil (17.11, rien ne migre). */
+  type: 'equipment' | 'recipe-idea' | 'event' | 'pricing-test' | 'prospect' | 'carnet' | 'carnet-message';
   title: string;
   description?: string;
   status: 'idea' | 'research' | 'quote' | 'validated' | 'todo' | 'done';
@@ -990,6 +992,10 @@ export interface CreativeItem {
   liens?: { batchId?: string; clientId?: string };
   /** Calendrier : une activité (comptée en jours, sans CHF obligatoire), rangée Activités plutôt que Fêtes. */
   activite?: boolean;
+  /** Carnet d'idées : le contenu d'une idée (`type: 'carnet'`), lu par `lireCarnet` (src/domain/carnets/modele.ts). Optionnel. */
+  carnet?: DonneesCarnet;
+  /** Carnet d'idées : un message du fil (`type: 'carnet-message'`), lu par `lireMessage`. Optionnel. */
+  carnetMessage?: DonneesMessage;
 }
 
 /** Une fenêtre du calendrier : `du` (lundi) et `au` (dimanche) en ISO ; `joursActifs` absent = inconnu (jamais 0) ; `miseDeCote` : le montant se met de côté au fil des semaines. */

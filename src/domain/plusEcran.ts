@@ -159,7 +159,7 @@ export function ecranId(tab: TabType, subTab?: AnySubTab | null): EcranId {
     case 'production':
       return ({ recipes: 'recettes', lab: 'atelier', scaler: 'volumes' } as Record<string, EcranId>)[subTab ?? ''] ?? 'brassins';
     case 'stocks':
-      return ({ courses: 'courses', futs: 'futs', materiel: 'materiel', hops: 'houblons' } as Record<string, EcranId>)[subTab ?? ''] ?? 'stock';
+      return ({ courses: 'courses', futs: 'futs', materiel: 'materiel', carnets: 'materiel', hops: 'houblons' } as Record<string, EcranId>)[subTab ?? ''] ?? 'stock';
     case 'clients':
       return ({ ofdf: 'impot', tarifs: 'tarifs' } as Record<string, EcranId>)[subTab ?? ''] ?? 'clients';
   }
@@ -192,11 +192,19 @@ function entree(cle: PlusCle, c: PlusContexte, monte?: boolean): PlusEntree {
   return { cle, label: f.label, ...(f.court ? { court: f.court } : {}), hint, lettre: LETTRES[cle], ton: f.ton, ...(monte ? { monte: true } : {}) };
 }
 
+/**
+ * L'action du + sur Stocks › Matériel › Carnets (R28, D-42, D-74) : « Nouvelle idée » met le focus dans le champ du bas, rien d'autre.
+ * Le sous-onglet `carnets` n'existe pas dans `fabActions` : l'écran le remonte quand le segment Carnets est ouvert.
+ */
+export const ACTION_CARNETS: FabAction = { intent: 'newIdea', label: 'Nouvelle idée', hint: 'le champ en bas' };
+
 /** Le menu du + pour l'écran (onglet, sous-onglet) et ce que l'app en sait. */
 export function plusMenuFor(tab: TabType, subTab?: AnySubTab | null, contexte: PlusContexte = {}): PlusMenu {
   const ecran = ecranId(tab, subTab);
   const fiche = MENUS[ecran];
-  const brute = fabActionFor(tab, subTab);
+  /* Carnet d'idées (R28, D-42) : sur Stocks › Matériel › Carnets, le + porte d'abord « Nouvelle idée » (le champ du bas prend le focus) ; aucun autre geste monté, pas de porte en double. L'écran reste `materiel` pour la recherche. */
+  const surCarnets = tab === 'stocks' && (subTab as string | null | undefined) === 'carnets';
+  const brute = surCarnets ? ACTION_CARNETS : fabActionFor(tab, subTab);
   // `quickAction` = l'écran ne crée rien (BX-4) : pas d'action pleine.
   const action = brute.intent === 'quickAction' ? null : actionDeLEcran(brute, fiche.ton, contexte);
   /* Un geste qui dépend de l'app (la densité d'un brassin en fermentation) n'est proposé que si l'app a de quoi l'ouvrir : jamais un geste vide. */
@@ -206,7 +214,7 @@ export function plusMenuFor(tab: TabType, subTab?: AnySubTab | null, contexte: P
   if (action && reprise) montes.add(reprise);
   return {
     ecran,
-    chemin: fiche.chemin,
+    chemin: surCarnets ? 'Stocks › Matériel › Carnets' : fiche.chemin,
     etat: fiche.etat?.(contexte),
     ton: fiche.ton,
     action,

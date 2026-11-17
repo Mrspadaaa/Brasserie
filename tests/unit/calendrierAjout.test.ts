@@ -155,9 +155,13 @@ describe('A14 : accepter un brassin habituel d’un toucher (E47 b)', () => {
 });
 
 describe('E36 et Modifier', () => {
-  it('une idée datée est un recipe-idea daté du lundi de sa semaine', () => {
-    const r = enregistrementIdee('Bière au sapin', '2026-12-10', { nouvelId: p => `${p}-I` });
-    expect(r.ok && r.enregistrement.cible === 'creative' && r.enregistrement.document).toMatchObject({ id: 'CR-I', type: 'recipe-idea', status: 'idea', date: '2026-12-07', title: 'Bière au sapin' });
+  it('R48 : une idée datée est un carnet d’idées (état Idée), daté du lundi de sa semaine, sa phrase en titre ; jamais un recipe-idea', () => {
+    const r = enregistrementIdee('ZZ TEST — doseur de sucre', '2026-11-18', { nouvelId: p => `${p}-I` });
+    expect(r.ok && r.enregistrement.cible === 'creative' && r.enregistrement.collection).toBe('creativeItems');
+    const doc = r.ok ? (r.enregistrement.document as unknown as Record<string, unknown> & { carnet: Record<string, unknown> }) : null;
+    expect(doc).toMatchObject({ id: 'CARNET-I', type: 'carnet', status: 'idea', date: '2026-11-16', title: 'ZZ TEST — doseur de sucre' });
+    expect(doc!.carnet).toMatchObject({ phrase: 'ZZ TEST — doseur de sucre', criteres: [], facons: [], articles: [], notes: [], photos: [] });
+    expect(doc!.type).not.toBe('recipe-idea');
     expect(enregistrementIdee('  ', '2026-12-07', {})).toMatchObject({ ok: false });
   });
   it('Modifier rouvre la feuille avec la fenêtre posée, puis écrit dans la source existante', () => {

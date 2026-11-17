@@ -22,6 +22,8 @@ const root = rootHolder.__laffineeReactRoot__ ?? (rootHolder.__laffineeReactRoot
  *   ?preview=stock  → écran Stocks, jusqu'à 5 000 articles
  *   ?preview=brew   → fiche recette, assistant, jour de brassage minuté
  *   ?preview=calendrier → onglet Calendrier sur une fixture (banc — données simulées)
+ *   ?preview=carnets → Stocks › Matériel › Carnets : magasin mémoire, IA simulée, fixture « ZZ TEST — … »
+ *                      (&vide=1, &hors-ligne=1, &ia=eteint|echec|lent, &theme=sombre, &aides=0, &taches=1)
  */
 const previewMode = import.meta.env.DEV
   ? new URLSearchParams(location.search).get('preview')
@@ -85,6 +87,11 @@ async function bootstrap() {
   if (previewMode === 'calendrier') {
     const { CalendrierPreview } = await import('./design/CalendrierPreview');
     root.render(<React.StrictMode><CalendrierPreview /></React.StrictMode>);
+    return;
+  }
+  if (previewMode === 'carnets') {
+    const { CarnetsPreview } = await import('./design/CarnetsPreview');
+    root.render(<React.StrictMode><CarnetsPreview /></React.StrictMode>);
     return;
   }
   if (previewMode === 'brew') {

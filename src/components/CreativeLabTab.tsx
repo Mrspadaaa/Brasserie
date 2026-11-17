@@ -44,7 +44,9 @@ import { FileText, Tag, Wrench } from 'lucide-react';
 /** ks4 : la rangée Matériel · Carnet · Tarifs ; Bières, Contacts et À faire sont les filtres du Carnet. */
 type Onglet = 'materiel' | 'carnet' | 'tarifs';
 const VERS_ONGLET: Record<CreativeItem['type'], [Onglet, FiltreCarnet]> = {
-  equipment: ['materiel', 'tout'], 'pricing-test': ['tarifs', 'tout'], 'recipe-idea': ['carnet', 'bieres'], prospect: ['carnet', 'contacts'], event: ['carnet', 'afaire']
+  equipment: ['materiel', 'tout'], 'pricing-test': ['tarifs', 'tout'], 'recipe-idea': ['carnet', 'bieres'], prospect: ['carnet', 'contacts'], event: ['carnet', 'afaire'],
+  /* Carnet d'idées (Stocks › Matériel › Carnets) : jamais dans un tiroir de l'Atelier ; une demande de ces types ouvre le matériel, sans les lister. */
+  carnet: ['materiel', 'tout'], 'carnet-message': ['materiel', 'tout']
 };
 const SECTION_DU_FILTRE: Record<FiltreCarnet, CreativeItem['type'] | null> = { tout: null, bieres: 'recipe-idea', contacts: 'prospect', afaire: 'event' };
 
