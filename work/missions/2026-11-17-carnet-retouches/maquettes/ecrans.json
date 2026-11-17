@@ -574,5 +574,261 @@
  "g06-13": {
   "ecran": "a-venir",
   "legende": "À venir au Calendrier"
+ },
+ "h01-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h01-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h01-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h01-4": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "h01-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h01-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h01-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h01-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h01-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h02-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h02-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h02-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h02-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h02-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h02-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h02-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h02-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h02-8a": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (a)"
+ },
+ "h02-8b": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (b)"
+ },
+ "h02-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h03-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h03-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h03-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h03-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h03-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h03-4c": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (c)"
+ },
+ "h03-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h03-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h03-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h03-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h03-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h04-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h04-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h04-3a": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert (a)"
+ },
+ "h04-3b": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert (b)"
+ },
+ "h04-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h04-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h04-4c": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (c)"
+ },
+ "h04-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h04-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h04-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h04-8a": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (a)"
+ },
+ "h04-8b": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (b)"
+ },
+ "h04-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h05-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h05-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h05-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h05-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h05-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h05-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h05-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h05-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h05-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h05-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h06-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h06-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h06-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h06-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h06-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h06-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h06-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h06-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h06-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h06-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
  }
 }
