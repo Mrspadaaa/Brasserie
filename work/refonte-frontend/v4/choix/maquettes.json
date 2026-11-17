@@ -380,6 +380,13 @@
           "signature": {
             "texte": "en cuve"
           }
+        },
+        {
+          "id": "I-AGENDA",
+          "element": "Une vue sans grille : juste les dates à venir, en liste",
+          "parole": "je pense que une vue pas calendrier avec juste des date à venir serait bien utile effectivement",
+          "date": "2026-11-17",
+          "source": "SPEC 17.11"
         }
       ],
       "a_preciser": [
@@ -589,6 +596,17 @@
           "date": "2026-11-17",
           "source": "SPEC 17.11",
           "note": "Un petit micro dans le champ suffit ; jamais une étape ni un écran voix."
+        },
+        {
+          "id": "CR-AVENIR-CAL",
+          "element": "À venir déplacé dans le Calendrier",
+          "parole": "c'est pas au bon endroit, il y a déjà une vue pour ça, et ça remplace pas le calendrie????",
+          "date": "2026-11-17",
+          "source": "SPEC 17.11",
+          "signature": {
+            "regex": "Calendrier\\s*›\\s*À venir|À venir[^<]{0,40}(dans|depuis|vers)\\s+(le\\s+)?Calendrier",
+            "flags": "iu"
+          }
         }
       ],
       "a_preciser": [
@@ -612,7 +630,8 @@
       "top3": {
         "date": "2026-11-17",
         "fichier": "work/missions/2026-11-17-carnet-retouches/TOP3.md",
-        "images": "work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/"
+        "images": "work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/",
+        "deuxieme": "2026-11-17 (TOP3.md § Deuxième classement)"
       }
     },
     "calendriers-section": {
