@@ -581,6 +581,14 @@
           "source": "CADRE « Refusés »",
           "signature": null,
           "raison": "refus d'une forme entière, sans mot propre ; au critique"
+        },
+        {
+          "id": "CR-VOIX",
+          "element": "Commande vocale mise en avant (onde, étapes, états au premier plan)",
+          "parole": "beaucoup moins de cmd vocal. Je l'utilise très peu...",
+          "date": "2026-11-17",
+          "source": "SPEC 17.11",
+          "note": "Un petit micro dans le champ suffit ; jamais une étape ni un écran voix."
         }
       ],
       "a_preciser": [
@@ -589,7 +597,18 @@
           "parole": "Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ?",
           "date": "2026-11-16"
         }
-      ]
+      ],
+      "sources_retenues": {
+        "date": "2026-11-17",
+        "parole": "Dans la v1, v2, c4,v10, v11 il y a beaucoup de bon",
+        "fichiers": [
+          "work/missions/2026-11-17-carnet-retouches/maquettes/v01.html",
+          "work/missions/2026-11-17-carnet-retouches/maquettes/v02.html",
+          "work/missions/2026-11-17-carnet-retouches/maquettes/v04.html",
+          "work/missions/2026-11-17-carnet-retouches/maquettes/v10.html",
+          "work/missions/2026-11-17-carnet-retouches/maquettes/v11.html"
+        ]
+      }
     },
     "calendriers-section": {
       "base": {

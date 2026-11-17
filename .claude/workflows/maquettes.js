@@ -3,9 +3,10 @@ export const meta = {
   description:
     'Méthode maquettes (16.11) : N mini maquettes statiques partant de SA base choisie (maquettes.json), contrôlées contre ses choix et les règles dures, jugées par le critique calibré, corrigées une fois, puis une page de choix écrite à la main. Les versions KO ne sont jamais candidates.',
   whenToUse:
-    'Toute exploration de maquettes à montrer au brasseur. Args {chantier, demande, versions (nombre, 12 à 16 conseillé), dossier?}. chantier : une clé de work/refonte-frontend/v4/choix/maquettes.json (calendrier, carnet, calendriers-section, liens, choix-ouverts, simplicite, ou choix-ouverts:<portee>). Pas de jouable, de scénario ni d’audit ici (L30) : ils viennent après son choix, sur la version choisie, dans une autre étape.',
+    'Toute exploration de maquettes à montrer au brasseur. Args {chantier, demande, versions (nombre, 12 à 16 conseillé), dossier?, sources?}. Avec sources (les versions qu’il a aimées, 17.11 : « prendre les meilleures écran et meilleures idées … répartir de 0 pour chaque vue est pas une bonne idée »), mode greffe : un inventaire des meilleurs écrans et idées, puis N versions qui combinent chacune une recette de greffe sur TOUT le parcours (6 conseillé). chantier : une clé de work/refonte-frontend/v4/choix/maquettes.json (calendrier, carnet, calendriers-section, liens, choix-ouverts, simplicite, ou choix-ouverts:<portee>). Pas de jouable, de scénario ni d’audit ici (L30) : ils viennent après son choix, sur la version choisie, dans une autre étape.',
   phases: [
     { title: 'Base', detail: 'la base, les gardés, les refusés et les idées lus dans maquettes.json' },
+    { title: 'Inventaire', detail: 'mode greffe : écrans et idées de ses versions retenues, puis N recettes de greffe' },
     { title: 'Versions', detail: 'N mini maquettes statiques, une par concepteur Opus, sans limite de temps' },
     { title: 'Contrôle', detail: 'controle-base --dures --statique sur chaque version' },
     { title: 'Critique', detail: 'le critique calibré (PORTRAIT.md) sur toutes les versions' },
@@ -50,13 +51,28 @@ Idées possibles, une seule à la fois et seulement si la demande la vise :\n- $
 ${DURES}
 Pense en brasseur (L04), compact (docs/ui-compacte.md). Données d'exemple marquées « exemple ».`
 
+const SOURCES = Array.isArray(A.sources) ? A.sources.filter(Boolean) : []
+let recettes = null
+if (SOURCES.length) {
+  phase('Inventaire')
+  const inv = await agent(
+    `${CADRE}
+MODE GREFFE. Il a retenu ces versions, ce sont aussi ses choix (règle n° 1) : ${SOURCES.join(' ; ')}.
+Ouvre chacune (captures 390 que tu prends et OUVRES, thème clair) et la base. Écris ${dossier}/INVENTAIRE.md : pour chaque écran du parcours (repos, ouvert, ajout, étapes…), la meilleure réalisation parmi les sources et la base, et pourquoi ; puis les meilleures idées isolées (une ligne chacune, sa source).
+Puis rends ${N} recettes de greffe différentes : chacune choisit, écran par écran, la source à prendre, et ajoute au plus deux idées d'autres sources. Chaque recette couvre TOUT le parcours ; aucune ne repart de zéro sur un écran.`,
+    { agentType: 'concepteur', model: 'opus', label: 'inventaire', phase: 'Inventaire', schema: { type: 'object', properties: { recettes: { type: 'array', items: { type: 'object', properties: { nom: { type: 'string' }, recette: { type: 'string' } }, required: ['nom', 'recette'] } } }, required: ['recettes'] } },
+  )
+  recettes = (inv && inv.recettes) || []
+  log(`inventaire : ${recettes.length} recettes`)
+}
 phase('Versions')
 const fichiers = Array.from({ length: N }, (_, i) => `${dossier}/v${String(i + 1).padStart(2, '0')}.html`)
 await parallel(fichiers.map((f, i) => () => agent(
   `${CADRE}
 
 Tu es le concepteur de la version ${i + 1} sur ${N}. Écris UNE mini maquette statique, 390 × 844, dans ${f} (rien d'autre).
-Prends un parti différent des autres versions : axe n° ${i + 1} — fais varier une seule décision de forme qui répond à la demande, en gardant tout le reste de la base.
+${recettes && recettes[i] ? `MODE GREFFE, recette « ${recettes[i].nom} » : ${recettes[i].recette}
+Assemble les écrans désignés depuis leurs sources (${SOURCES.join(' ; ')}, et ${dossier}/INVENTAIRE.md), sans les redessiner ; montre TOUT le parcours, écrans côte à côte (chacun 390 de large) dans le même fichier.` : `Prends un parti différent des autres versions : axe n° ${i + 1} — fais varier une seule décision de forme qui répond à la demande, en gardant tout le reste de la base.`}
 Prends le temps qu'il faut : aucune limite de temps. Lis la base en entier avant d'écrire. Puis lance « ${CONTROLE(f)} » et corrige jusqu'à BASE OK, DURES OK, STATIQUE OK (trois essais).
 Rends une ligne : le parti pris, et la dernière ligne de chaque verdict.`,
   { agentType: 'concepteur', model: 'opus', label: `v${i + 1}`, phase: 'Versions' },
