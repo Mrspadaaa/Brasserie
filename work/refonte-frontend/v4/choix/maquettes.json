@@ -435,7 +435,7 @@
         "proto": "work/missions/2026-11-16-carnet-decision/ra-p5f/proto.html",
         "parole": "Carnet ra+p5f · ça va … J'aime bien mais pas mal de retouche",
         "date": "2026-11-17",
-        "note": "Assemblage ra+p5f étape par étape (page7), gardé à 7/10 ; cible 9 : carte d'article, ajouts, thème (CARNET-CARTE-MUETTE, CARNET-AJOUT-FOUILLIS, CARNET-THEME)."
+        "note": "Assemblage ra+p5f étape par étape (page7), gardé à 7/10 ; cible 9 : carte d'article, ajouts, thème (CARNET-CARTE-MUETTE, CARNET-AJOUT-FOUILLIS, CARNET-THEME). 17.11 (3e classement) : tout le parcours est figé sur ses rangs (ecrans_choisis) sauf créer, ajouter, modifier, supprimer notes et idées."
       },
       "gardes": [
         {
@@ -632,6 +632,65 @@
         "fichier": "work/missions/2026-11-17-carnet-retouches/TOP3.md",
         "images": "work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/",
         "deuxieme": "2026-11-17 (TOP3.md § Deuxième classement)"
+      },
+      "ecrans_choisis": {
+        "date": "2026-11-17",
+        "parole": "Je pense que seul l'ajout de note/idée, modifications de note, création, suppression de note/idée doivent être revue, le reste c'est top",
+        "source": "work/missions/2026-11-17-carnet-retouches/TOP3.md § Troisième classement",
+        "images": "work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/<id>.webp",
+        "figes": {
+          "liste": [
+            "g05-1",
+            "i06-1"
+          ],
+          "vide": [
+            "i02-2",
+            "i06-2"
+          ],
+          "carnet": [
+            "h05-3",
+            "i06-4"
+          ],
+          "articles": [
+            "h03-5",
+            "h06-5"
+          ],
+          "article": [
+            "h01-6"
+          ],
+          "comparer": [
+            "g01-8",
+            "v03-4",
+            "g05-8",
+            "h04-7",
+            "h06-7"
+          ],
+          "choisi": [
+            "g05-11",
+            "v03-7",
+            "v09-3",
+            "g05-9"
+          ],
+          "a-venir": [
+            "h05-9"
+          ]
+        },
+        "a_revoir": {
+          "ajouter-idee": [
+            "h05-2",
+            "h01-2",
+            "g02-2"
+          ],
+          "ajouter-a": [
+            "h03-4b",
+            "h02-4a",
+            "h05-4b",
+            "h06-4a"
+          ],
+          "modifier-note": [],
+          "supprimer-note": [],
+          "supprimer-idee": []
+        }
       }
     },
     "calendriers-section": {

@@ -1977,3 +1977,21 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : rangs 1 à 5, plusieurs vignettes par rang ; fait sur la page du carnet, et règle des pages de choix du workflow maquettes.)
 - **17.11**, mot pour mot : « Et fait passer la critique dessus fait lui aussi les même top1,2,3 ecttt.. »
   (lu : le critique classe à l'aveugle, rangs 1 à 5 partagés, chaque écran de la page du carnet ; son classement s'affiche à côté du sien (ligne sous chaque titre, badge C1…C5 et sa raison sous chaque vignette). Sert aussi d'étalonnage (L27) quand il aura classé les mêmes écrans.)
+
+### 17.11 — Carnet, troisième classement
+
+> Carnet, classement par écran
+> Liste des carnets : 1 g05-1, i06-1 · 2 h06-1 · 3 h04-1 · notes : v11-1 : Top 4 ; g04-1 : Too1 aussi  ; h01-1 : Top1
+> Premier usage, liste vide : 2 i02-2, i06-2 · 3 i03-2 · notes : base-E00-vide : ??
+> Ajouter une idée : 1 h05-2 · 2 h01-2 · 3 g02-2 · notes : h02-2 : Top4 ; h03-2 : Top3 ; h05-2 : Top2
+> Un carnet ouvert : 2 h05-3, i06-4 · 3 h04-3b · notes : v04-1 : Top4 ; v08-3 : Top4 ; v12-2 : Top4 ; h01-3 : Top2 ; h04-3a : Top3
+> Ajouter à une idée (lien, photo, texte) : 2 h03-4b · 4 base-E01b-carnet-cree · notes : base-E01b-carnet-cree : Top4 ; v06-4 : Top4 ; v07-1 : Top4 ; v07-2 : Top4 ; v08-5 : Top4 ; h02-4a : Top2 ; h04-4a : Top4 ; h05-4b : Top2 ; h06-4a : Top2
+> Cartes d’article : 2 h03-5, h06-5 · 3 h05-5 · notes : g02-7 : Top4 ; h01-5 : Top4 ; h03-5 : Top4
+> Un article ouvert : 1 h01-6 · 2 g05-7 · 3 g04-7 · notes : v01-2 : Top5 ; g01-7 : Top4
+> Comparer sur le critère : 3 g01-8 · notes : v03-4 : Top2 ; g05-8 : Top2 ; h02-7 : Top3 ; h03-7 : Top4 ; h04-7 : Top2 ; h06-7 : Top2
+> Choisir, choisi, pourquoi : 2 g05-11 · 3 h06-8 · notes : v03-7 : Top2 ; v09-3 : Top2 ; v10-4 : Top3 ; g05-10 : Top3 ; g05-9 : Top2 ; g06-10 : Top4 ; h03-8 : Top3 ; h05-8 : Top3
+> À venir et Réalisés : 2 h05-9 · 3 h03-9 · notes : h06-9 : Top4
+>
+> Je pense que seul l'ajout de note/idée, modifications de note, création, suppression de note/idée doivent être revue, le reste c'est top
+
+Lecture : le parcours est jugé « top » sauf les gestes de création, d'ajout, de modification et de suppression des notes et des idées. Lot greffe4 sur ces seuls gestes ; le reste figé sur ses rangs (TOP3.md).
