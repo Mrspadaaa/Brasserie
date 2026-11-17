@@ -33,13 +33,13 @@ phase('Base')
 const base = await agent(
   `Lis ${REGISTRE} et rends, pour le chantier « ${chantier} » (une clé « a:b » filtre les entrées par portee = b), sans rien inventer :
 le chemin de la base (base.proto), sa parole et sa note ; la liste des gardés, des refusés, des idées et des « à préciser » (id, element, parole mot pour mot).
-Si le chantier n'existe pas, rends erreur.`,
+Si le chantier n'existe pas, rends erreur ; sinon laisse erreur vide (une remarque n'est pas une erreur).`,
   {
     agentType: 'executant', label: 'base', phase: 'Base',
     schema: { type: 'object', properties: { erreur: { type: 'string' }, proto: { type: 'string' }, parole: { type: 'string' }, note: { type: 'string' }, gardes: { type: 'array', items: { type: 'string' } }, refuses: { type: 'array', items: { type: 'string' } }, idees: { type: 'array', items: { type: 'string' } }, aPreciser: { type: 'array', items: { type: 'string' } } }, required: ['proto', 'gardes', 'refuses'] },
   },
 )
-if (!base || base.erreur) throw new Error(`maquettes : base introuvable pour ${chantier} (${base && base.erreur})`)
+if (!base || !base.proto) throw new Error(`maquettes : base introuvable pour ${chantier} (${base && base.erreur})`)
 log(`base ${base.proto} ; ${base.gardes.length} gardés, ${base.refuses.length} refusés`)
 
 const CADRE = `Chantier : ${chantier}. Sa demande, mot pour mot : « ${A.demande} ».
