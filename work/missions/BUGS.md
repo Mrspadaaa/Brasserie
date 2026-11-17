@@ -105,8 +105,8 @@ Lire :
 | work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md | LR3 | 9 | 3 |  |
 | work/missions/2026-11-17-port-calendrier/vision-1/RAPPORT.md | PC | 0 | 0 | 9ce65bb39fb7 |
 | work/missions/2026-11-17-port-calendrier/vision-2/RAPPORT.md | PC | 42 | 0 | 50229052b114 |
-| work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md | PC | 0 | 0 | 3f6a90e2cdf6 |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md | PC | 0 | 0 | 6b368f835acf |
 | work/missions/2026-11-17-port-calendrier/vision-4/cave-complet/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-m390.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-paysage-d1280.md | PC | 0 | 0 | en cours |
