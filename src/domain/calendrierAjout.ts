@@ -49,7 +49,7 @@ export interface BrouillonAjout {
 export type Puce =
   | { genre: 'recette'; id: string; libelle: string; recetteId: string }
   | { genre: 'temps'; id: string; libelle: string; jours: number }
-  | { genre: 'client'; id: string; libelle: string; clientId: string; centimes?: number }
+  | { genre: 'client'; id: string; libelle: string; clientId: string; centimes?: number; /** Sa vente habituelle, « 1 fût » (CRITIQUE-4 n° 16). */ quoi?: string; /** Le titre de sa vente habituelle, repris tel quel. */ titreHabituel?: string }
   | { genre: 'vente-probable'; id: string; libelle: string; planId: string; centimes?: number; clientId?: string }
   | { genre: 'nom'; id: string; libelle: string; centimes?: number; signe?: '+' | '-' }
   | { genre: 'montant'; id: string; libelle: string; centimes: number; signe: '+' | '-' };
@@ -118,13 +118,27 @@ export function puces(rangee: Rangee, ctx: ContexteAjout): Puce[] {
   if (rangee === 'ventes') {
     const clients = ctx.clients.filter(c => !c.archivedAt).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
     const probables = ctx.plans.filter(p => p.direction === 'in' && p.status === 'draft').sort((a, b) => a.title.localeCompare(b.title, 'fr'));
-    /* le dernier montant vendu à ce client (une prévision de rentrée qui le nomme, non annulée) ; aucun : pas de montant proposé */
-    const dernierMontant = (clientId: string) => ctx.plans
-      .filter(p => p.clientId === clientId && p.direction === 'in' && p.status !== 'cancelled' && p.amountCents > 0)
-      .sort((a, b) => b.date.localeCompare(a.date))[0]?.amountCents;
+    /*
+     * CRITIQUE-4 n° 16 (E34, D-39) : la vente habituelle de ce client, la plus récente de ses prévisions de rentrée non annulées (brouillon compris).
+     * Une prévision est à lui si elle porte son `clientId`, ou si son titre commence par son nom (« Café du Pont, 1 fût »). Ce qui suit le nom est
+     * ce qu'il achète d'habitude (« 1 fût »). Aucune : pas de montant proposé (l'inconnu n'est pas 0).
+     */
+    const debutNom = (titre: string, nom: string) => {
+      const t = titre.trim().toLocaleLowerCase('fr'), n = nom.trim().toLocaleLowerCase('fr');
+      return !!n && t.startsWith(n) && (t.length === n.length || /^[\s,·:–-]/.test(t.slice(n.length)));
+    };
+    const habituelle = (c: { id: string; name: string }) => ctx.plans
+      .filter(p => p.direction === 'in' && p.status !== 'cancelled' && p.amountCents > 0 && (p.clientId === c.id || (!p.clientId && debutNom(p.title, c.name))))
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    const quoiDe = (titre: string, nom: string) => (debutNom(titre, nom) ? titre.trim().slice(nom.trim().length).replace(/^[\s,·:–-]+/, '').trim() : '');
     return [
       ...probables.map<Puce>(p => ({ genre: 'vente-probable', id: `probable-${p.id}`, libelle: p.title, planId: p.id, ...(p.amountCents > 0 ? { centimes: p.amountCents } : {}), ...(p.clientId ? { clientId: p.clientId } : {}) })),
-      ...clients.map<Puce>(c => { const m = dernierMontant(c.id); return { genre: 'client', id: `client-${c.id}`, libelle: c.name, clientId: c.id, ...(m ? { centimes: m } : {}) }; }),
+      ...clients.map<Puce>(c => {
+        const h = habituelle(c);
+        const quoi = h ? quoiDe(h.title, c.name) : '';
+        /* le titre de la vente habituelle n'est repris que s'il commence par le nom du client (« Café du Pont, 1 fût ») ; sinon, le nom du client */
+        return { genre: 'client', id: `client-${c.id}`, libelle: c.name, clientId: c.id, ...(h ? { centimes: h.amountCents } : {}), ...(quoi && h ? { quoi, titreHabituel: h.title.trim() } : {}) };
+      }),
       ...montantsRecents(rangee, ctx)
     ];
   }
@@ -177,7 +191,7 @@ export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
   switch (puce.genre) {
     case 'recette': return { ...b, recetteId: puce.recetteId, titre: puce.libelle };
     case 'temps': return { ...b, tempsEnCuve: b.tempsEnCuve === puce.jours ? undefined : puce.jours };
-    case 'client': return { ...sansProbable(b), clientId: puce.clientId, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
+    case 'client': return { ...sansProbable(b), clientId: puce.clientId, titre: puce.titreHabituel ?? puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
     case 'vente-probable': return { ...b, titre: puce.libelle, signe: '+', planProbableId: puce.planId, ...(puce.centimes ? { centimes: puce.centimes } : {}), ...(puce.clientId ? { clientId: puce.clientId } : {}) };
     case 'nom': return { ...sansProbable(b), titre: puce.libelle, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
     case 'montant': return { ...b, centimes: puce.centimes, signe: puce.signe };

@@ -17,6 +17,9 @@
   line-height: 1.25;
   font-variant-numeric: tabular-nums;
 }
+/* L'en-tête collé couvre aussi la gouttière de la page (12 px de chaque côté) : les bouts des barres de la frise (poignées orange des brassins)
+   ne passent plus à droite de la courbe quand la frise défile dessous (CRITIQUE-4 n° 25, m390-07, 08, 16). */
+.ent { box-shadow: -16px 0 0 rgb(var(--cave-950)), 16px 0 0 rgb(var(--cave-950)); }
 
 /* Les couleurs de rangée (zones de l'app) : l'étiquette du détail, le segment de la grande courbe, la fine bande, la légende. */
 .ent-r-brassin, .ent-c-brassin { --c: rgb(var(--area-production)); }
@@ -48,7 +51,10 @@
 .ent-per { gap: 0; padding: 0 2px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
 .ent-pl { width: 24px; background: transparent; }
-.ent-lit { display: inline-flex; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; color: var(--ent-mut); }
+.ent-lit { display: inline-flex; flex: 1 1 auto; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; white-space: nowrap; overflow: hidden; color: var(--ent-mut); }
+.ent-lit b, .ent-lit em, .ent-lit i { flex: none; }
+.ent-lit-u { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ent-lit-d { flex: 0 3 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ent-ink); font-weight: 700; }
 .ent-lit b { font-size: 24px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
 .ent-lit em { font-style: normal; font-weight: 700; color: var(--ent-ink); }
 .ent-lit i { font-style: normal; font-weight: 700; font-size: 16px; margin-left: 2px; }
@@ -82,6 +88,10 @@
 .ent-p { color: var(--ent-ok); fill: var(--ent-ok); }
 .ent-f { color: var(--ent-fin-t); font-weight: 700; }
 .ent-mois { font-size: 14px; fill: var(--ent-mut); pointer-events: none; }
+/* Le trait « |déc. » des mois posés en haut (w3s). */
+.ent-mois-t { stroke: var(--ent-line2); stroke-width: 1; pointer-events: none; }
+/* Le fond de l'étiquette du creux dans la grande courbe : aucun tracé ne la barre (CRITIQUE-4 n° 27). */
+.ent-gc-fond { fill: rgb(var(--cave-950)); opacity: 0.92; pointer-events: none; }
 .ent-curseur line { stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
 .ent-cur-anneau { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .ent-cur-pt { fill: rgb(var(--cave-50)); stroke: rgb(var(--cave-950)); stroke-width: 2; }
@@ -211,8 +221,11 @@
 .ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; padding: 2px 8px 0 12px; }
 .ent--paysage .ent-t-b { margin-left: 0; }
 .ent--paysage .ent-cbz { grid-area: c; min-width: 0; }
-.ent--paysage .ent-bz { grid-area: b; margin-top: 12px; }
-.ent--paysage .ent-bd-c { min-height: 30px; }
+/* Les mois sont EN HAUT de la courbe (w3s) : la bande vient juste dessous, 4 px ; ses cases font 24 px (la date au toucher s'étend par ::after).
+   Le tracé garde 70 px, l'en-tête 120 px au plus (E02, E10, CRITIQUE-4 n° 11). */
+.ent--paysage .ent-bz { grid-area: b; margin-top: 4px; }
+.ent--paysage .ent-bd-c { min-height: 24px; }
+.ent--paysage .ent-cadre, .ent--paysage .ent-poi { top: 18px; bottom: 2px; }
 .ent--paysage .ent-lit { white-space: normal; height: auto; line-height: 20px; }
 .ent--paysage .ent-lit b { font-size: 20px; }
 .ent--paysage[data-vue='graph'] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c'; }

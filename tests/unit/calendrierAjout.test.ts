@@ -9,6 +9,7 @@ import {
 import { brassinsHabituels } from '../../src/domain/calendrierPropositions';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
+import { etatBanc } from '../../src/design/CalendrierPreview';
 
 const S20 = '2026-05-11', S40 = '2026-09-28';
 const ctx = (p: Partial<ContexteAjout> = {}): ContexteAjout => ({
@@ -206,5 +207,61 @@ describe('E34, D-39 (CRITIQUE-2 n° 16) : le montant se choisit par puces, sans 
   it('« Mettre de côté » ne se propose qu’à une dépense avec fenêtre et montant', () => {
     expect(peutMettreDeCote(travaux())).toBe(true);
     expect(peutMettreDeCote({ ...travaux(), signe: '+' })).toBe(false);
+  });
+});
+
+describe('CRITIQUE-4 n° 2 (E23, E24) : un brassin posé par la feuille porte le coût de sa recette', () => {
+  const JOUR = '2026-11-16';
+  const profil: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 403200, confirmed: true } } as FinancialProfile;
+  const modeleDe = (e: ReturnType<typeof etatBanc>) => construireModele({ aujourdhui: JOUR, transactions: e.transactions, payments: [], plans: e.plans, profile: profil, assets: [], batches: e.batches, stockItems: [], items: e.items, recettes: e.recettes, reglages: REGLAGES_VIDES, lignesCourses: [] } as never);
+  const poser = (e: ReturnType<typeof etatBanc>, recetteId: string, id: string) => {
+    const c: ContexteAjout = { aujourdhui: JOUR, recettes: e.recettes, clients: e.clients, plans: e.plans, choses: [], idBrassin: () => id, nouvelId: p => `${p}-T`, maintenant: `${JOUR}T10:00:00.000Z` };
+    const r = versEnregistrement({ ...brouillonVide('brassins', JOUR), recetteId, debutChoisi: true, tempsEnCuve: 21 }, c);
+    if (!('enregistrement' in r) || r.enregistrement.cible !== 'batch') throw new Error('brassin attendu');
+    return { ...e, batches: [...e.batches, r.enregistrement.document] };
+  };
+  const brassinDe = (m: ReturnType<typeof modeleDe>, id: string) => m.choses.find(c => c.source.genre === 'batch' && c.source.id === id);
+
+  it('la Blonde posée en S47 vaut le budget de LOT-BLONDE (même voie : la prévision), et le chiffre clé baisse de toutes ses sorties', () => {
+    const e = etatBanc(JOUR);
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-BLONDE', 'LOT-NEUF'));
+    const reference = brassinDe(apres, 'LOT-BLONDE');
+    const neuve = brassinDe(apres, 'LOT-NEUF');
+    expect(reference?.centimes).toBeLessThan(0);
+    expect(neuve?.centimes).toBe(reference?.centimes);
+    expect(neuve?.coutAVenir).toBeUndefined();
+    expect(neuve?.budgetRepris).toMatch(/budget de la recette, repris de Blonde d’automne/);
+    /* toutes ses sorties (courses, frais, emballage dans Achats ; impôt dans Papiers) entrent dans la courbe : le chiffre clé baisse d'autant */
+    const sorties = apres.choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === 'LOT-NEUF' || (c.ouvre.ecran === 'brassin' && c.ouvre.id === 'LOT-NEUF')))
+      .reduce((s, c) => s + (c.centimes ?? 0), 0);
+    expect(sorties).toBeLessThanOrEqual(neuve!.centimes!);
+    expect(apres.creux!.centimes).toBe(avant.creux!.centimes + sorties);
+    expect(apres.creux!.centimes).toBeLessThanOrEqual(avant.creux!.centimes + neuve!.centimes!);
+    /* l'hypothèse le dit : Finances ne le compte pas tant que Budget › ne l'a pas enregistré */
+    expect(apres.hypotheses.map(h => h.texte).join(' | ')).toMatch(/Blonde d’automne : −\d[\d ]* CHF, budget repris de sa recette, pas encore dans Finances/);
+    /* rien n'est écrit : les plans de l'app ne changent pas */
+    expect(poser(e, 'R-BLONDE', 'LOT-NEUF').plans).toEqual(e.plans);
+  });
+
+  it('une recette sans aucun budget : « coût à venir » en mots, pas de clé centimes (jamais 0), la caisse ne bouge pas', () => {
+    const e0 = etatBanc(JOUR);
+    const e = { ...e0, recettes: [...e0.recettes, { id: 'R-NEUVE', name: 'Bière neuve', style: 'Pale', volumeL: 100, ingredients: [] } as never] };
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-NEUVE', 'LOT-RIEN'));
+    const c = brassinDe(apres, 'LOT-RIEN');
+    expect(c).toBeDefined();
+    expect('centimes' in (c as object)).toBe(false);
+    expect(c?.coutAVenir).toBe(true);
+    expect(c?.etiquette).toBe('Bière neuve · coût à venir');
+    expect(apres.creux!.centimes).toBe(avant.creux!.centimes);
+  });
+
+  it('doute IPA −45 : un brassin en cuve n’a plus que son reste à sortir (l’emballage), et la barre le dit « reste »', () => {
+    const m = modeleDe(etatBanc(JOUR));
+    const ipa = brassinDe(m, 'LOT-IPA');
+    expect(ipa?.reste).toBe(true);
+    expect(ipa?.etiquette).toBeUndefined();
+    expect(ipa?.centimes).toBe(-4500);
   });
 });

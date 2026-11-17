@@ -409,3 +409,80 @@ describe('CRITIQUE-3 (lot t3-c-frise) : marque, détail, pastille « lié à »,
     }
   });
 });
+
+describe('CRITIQUE-4 (lot q3-donnees) : Lier, filtre, fenêtre au pied, vente habituelle', () => {
+  const pastilles = (r: string) => [...(document.querySelector(`section[data-rangee="${r}"]`) as HTMLElement).querySelectorAll('button')].filter(b => /^lié à La Cigogne/.test(b.getAttribute('aria-label') ?? '')).length;
+
+  it('n° 6 (D-126) : Lier « Noël privés » à La Cigogne écrit clientId, la pastille vient aussitôt, l’aperçu s’ouvre, « Liée à La Cigogne · Annuler » ; Annuler l’ôte', async () => {
+    const appels: Array<{ op: string; collection: string; id: string; patch?: Record<string, unknown> }> = [];
+    monter({ onAppel: a => appels.push(a) });
+    const avant = pastilles('ventes');
+    appuiLong(screen.getByRole('button', { name: /^Noël privés/ }));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Lier à un brassin, un client/ }));
+    fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: /La Cigogne/ }));
+    await waitFor(() => expect(appels).toContainEqual(expect.objectContaining({ op: 'patch', collection: 'financialPlans', id: 'P-NOEL-PRIVES', patch: { clientId: 'CL-CIGOGNE' } })));
+    await waitFor(() => expect(pastilles('ventes')).toBe(avant + 1));
+    const message = screen.getAllByRole('status').find(s => /Liée à La Cigogne/.test(s.textContent ?? ''));
+    expect(message).toBeDefined();
+    /* l'aperçu sur place : le détail de la chose, avec la ligne du lien */
+    const det = screen.getByRole('region', { name: /^Détail : Noël privés/ });
+    expect(det.querySelector('[data-apercu-lien]')?.textContent).toMatch(/lié à La Cigogne/);
+    /* le « click » fantôme qui suit le lâcher (même endroit, aussitôt) n'annule rien ; un vrai toucher, plus tard, annule */
+    fireEvent.click(within(message!).getByRole('button', { name: /Annuler/ }));
+    expect(pastilles('ventes')).toBe(avant + 1);
+    await new Promise(r => setTimeout(r, 450));
+    fireEvent.click(within(message!).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(pastilles('ventes')).toBe(avant));
+  });
+
+  it('n° 8 (D-5, D-34) : « Achats seuls » ne laisse que Achats et les épinglées ; « 6 rangées masquées · Tout afficher » ; Tout afficher rend les 7 ; non gardé', () => {
+    StorageService.setUiState('calendrier_epingles', ['creatif-CR-NOEL']);
+    const { unmount } = monter();
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /Filtrer par type/ }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Filtrer par type' })).getByRole('button', { name: 'Achats seuls' }));
+    const ligne = document.querySelector('[data-filtre]')!;
+    expect(ligne.textContent).toBe('Achats seuls · 6 rangées masquées · Tout afficher');
+    const rangees = [...document.querySelectorAll('section[data-rangee]')].map(s => s.getAttribute('data-rangee'));
+    expect(rangees.sort()).toEqual(['achats', 'fetes']);
+    expect(screen.getByRole('button', { name: /^Marché de Noël/ })).toBeInTheDocument();
+    fireEvent.click(within(ligne as HTMLElement).getByRole('button', { name: 'Tout afficher' }));
+    expect(document.querySelectorAll('section[data-rangee]')).toHaveLength(7);
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /Filtrer par type/ }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Filtrer par type' })).getByRole('button', { name: 'Achats seuls' }));
+    unmount(); cleanup();
+    monter();
+    expect(document.querySelectorAll('section[data-rangee]')).toHaveLength(7);
+    expect(document.querySelector('[data-filtre]')).toBeNull();
+  });
+
+  it('n° 10 (E45, D-8) : « S20 → S40 · 21 sem. » est au pied de la feuille, hors du corps qui défile ; puces 1, 2, 3, 5, 10 j', () => {
+    monter({ callbacks: { periode: plage(52) } });
+    fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+    const d = dialogue('Travaux');
+    const sem = (nom: RegExp) => fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: nom }));
+    sem(/^S20/); sem(/^S40/);
+    const resume = d.getByText('S20 → S40 · 21 sem.');
+    expect(resume.closest('.cal-feuille-corps')).toBeNull();
+    expect(resume.closest('[data-fenetre-pied]')).not.toBeNull();
+    expect(within(d.getByRole('group', { name: 'Jours actifs' })).getAllByRole('button').map(b => b.textContent)).toEqual(['1 j', '2 j', '3 j', '5 j', '10 j']);
+    fireEvent.click(d.getByRole('button', { name: '5 j' }));
+    expect(d.getByText(/5 j actifs/)).toBeInTheDocument();
+  });
+
+  it('n° 16 (E34, D-39) : Café du Pont propose sa vente habituelle « 1 fût +130 » ; un toucher la choisit (130) sans clavier, sans « Indique un montant »', async () => {
+    const appels: Array<{ op: string; collection: string; patch?: Record<string, unknown> }> = [];
+    monter({ onAppel: a => appels.push(a) });
+    fireEvent.click(document.querySelector('button[data-plus="ventes"]')!);
+    const d = dialogue('Ventes');
+    const pont = within(d.getByRole('group', { name: 'Clients et ventes probables' })).getByRole('button', { name: 'Café du Pont' });
+    expect(pont.textContent).toMatch(/Café du Pont.*1 fût.*\+130/);
+    fireEvent.click(pont);
+    expect(d.queryByText(/Indique un montant/)).toBeNull();
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+    await waitFor(() => expect(appels.some(a => a.op === 'creer' && a.collection === 'financialPlans')).toBe(true));
+    expect(appels.find(a => a.op === 'creer')!.patch).toMatchObject({ amountCents: 13000, direction: 'in', clientId: 'CL-PONT', title: 'Café du Pont, 1 fût' });
+    expect(screen.queryByText(/Indique un montant/)).toBeNull();
+  });
+});

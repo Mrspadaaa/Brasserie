@@ -275,7 +275,9 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     fireEvent.pointerUp(b, { clientX: 100 + lc, clientY: 10, pointerId: 1 });
     await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && typeof a.patch?.finPrevue === 'string')).toBe(true));
     expect(await screen.findByRole('alert')).toHaveTextContent(/promis (à .+ )?le .+ · prête le/);
-    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35/));
+    /* CRITIQUE-4 n° 21 (E29) : après f2-a, la barre dit aussi « prête » (forme courte permise « J0/35 · prête … ») */
+    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/prête \d/));
+    expect(barre(/^Blonde d’automne/).getAttribute('aria-label')).toMatch(/J0 \/ 35 · prête \d/);
   });
 
   it('n° 33 f6-b : décaler la Blonde ouvre « Livrer le … » ; Livrer écrit la date de la vente ; hors de la vue, « Livraison La Cigogne · S53 › »', async () => {
@@ -417,5 +419,106 @@ describe('CRITIQUE-3 (lot t3-c-frise) : le menu de l’appui long', () => {
     tape(screen.getByRole('menuitem', { name: /La Cigogne/ }));
     expect(cb.onLier).toHaveBeenCalledTimes(1);
     expect(cb.onLier).toHaveBeenCalledWith({ clientId: 'CL-CIGOGNE' }, 'La Cigogne');
+  });
+
+  it('CRITIQUE-4 n° 12 (E31) : en paysage, ni dessous ni dessus ne tiennent hors de l’en-tête : la page défile, le menu s’ouvre sous la barre, jamais sur l’en-tête ni sur elle', () => {
+    taille(844, 390);
+    const entete = document.createElement('div');
+    entete.setAttribute('data-entete-zone', '');
+    document.body.appendChild(entete);
+    vi.spyOn(entete, 'getBoundingClientRect').mockReturnValue({ top: 0, bottom: 120, left: 0, right: 844, width: 844, height: 120, x: 0, y: 0, toJSON: () => ({}) } as DOMRect);
+    let defile = 0;
+    const page = { scrollHeight: 900, clientHeight: 390, get scrollTop() { return defile; }, set scrollTop(v: number) { defile = Math.max(0, Math.min(510, v)); } };
+    Object.defineProperty(document, 'scrollingElement', { configurable: true, get: () => page });
+    try {
+      const a = document.createElement('div');
+      document.body.appendChild(a);
+      vi.spyOn(a, 'getBoundingClientRect').mockImplementation(() => ({ top: 250 - defile, bottom: 269 - defile, left: 600, right: 720, width: 120, height: 19, x: 600, y: 250 - defile, toJSON: () => ({}) }) as DOMRect);
+      menu(espions(), a);
+      const m = screen.getByRole('menu');
+      const top = parseFloat(m.style.top);
+      const barre = a.getBoundingClientRect();
+      expect(defile).toBeGreaterThan(0);
+      expect(m).toHaveAttribute('data-cote', 'bas');
+      expect(top).toBeGreaterThanOrEqual(barre.bottom + 6);
+      expect(barre.top).toBeGreaterThanOrEqual(120);
+      expect(top + HAUTEUR_REPLI_PAYSAGE_PX).toBeLessThanOrEqual(390 - 64);
+    } finally {
+      delete (document as unknown as Record<string, unknown>).scrollingElement;
+      entete.remove();
+    }
+  });
+});
+
+describe('CRITIQUE-4 (lot q2-frise) : jalon et milieu, marque en paysage, Livrer, « prête », noms', () => {
+  it('n° 17 : saisie par son milieu (la barre, pas un jalon), la Blonde planifiée se déplace d’une semaine, sans message « recette »', async () => {
+    const { appels } = monter();
+    const b = barre(/^Blonde d’automne, 23 nov/);
+    glisser(b, colonne());
+    await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE')).toBe(true));
+    expect(appels.filter(a => a.collection === 'batches' && a.id === 'LOT-BLONDE')).toHaveLength(1);
+    expect(messages().some(m => /recette/.test(m.textContent ?? ''))).toBe(false);
+  });
+
+  it('n° 17 : saisi sur l’élément jalon « garde », le refus « suit la recette » et aucune écriture', async () => {
+    const { appels } = monter();
+    const garde = barre(/^Blonde d’automne, 23 nov/).querySelector('[data-jalon="garde"]') ?? barre(/^Blonde d’automne, 23 nov/).querySelector('[data-jalon][data-glissable="false"]');
+    expect(garde).not.toBeNull();
+    glisser(garde!, colonne());
+    const m = await screen.findByRole('status');
+    expect(m.textContent).toMatch(/suit la recette/);
+    await new Promise(r => setTimeout(r, 30));
+    expect(appels).toHaveLength(0);
+  });
+
+  it('n° 4 (D-199) : en paysage (13 semaines), l’appui long sur une marque ouvre les 6 semaines centrées sur elle, jamais le menu', async () => {
+    const vrai = window.matchMedia;
+    window.matchMedia = ((q: string) => ({
+      matches: /landscape/.test(q), media: q, onchange: null, addEventListener: () => undefined, removeEventListener: () => undefined,
+      addListener: () => undefined, removeListener: () => undefined, dispatchEvent: () => false
+    })) as unknown as typeof window.matchMedia;
+    try {
+      const onPeriode = vi.fn();
+      monter({ callbacks: { onPeriode } });
+      expect(document.querySelector('[data-calendrier]')).toHaveAttribute('data-orientation', 'paysage');
+      await waitFor(() => expect(document.querySelector('[data-frise]')).toHaveAttribute('data-nb-colonnes', '13'));
+      const marque = document.querySelector<HTMLElement>('[data-marque][data-rangee="ventes"]');
+      expect(marque).not.toBeNull();
+      const id = marque!.getAttribute('data-chose');
+      onPeriode.mockClear();
+      appuiLong(marque!);
+      expect(screen.queryByRole('menu')).toBeNull();
+      await waitFor(() => expect(document.querySelector('[data-frise]')).toHaveAttribute('data-nb-colonnes', '6'));
+      expect(onPeriode).toHaveBeenCalledTimes(1);
+      const p = onPeriode.mock.calls[0][0] as { genre: string; du: string; au: string };
+      expect(p.genre).toBe('dates');
+      expect((Date.parse(p.au) - Date.parse(p.du)) / 86400000).toBe(41);
+      expect(document.querySelector(`[data-chose="${id}"]`)).not.toBeNull();
+    } finally { window.matchMedia = vrai; }
+  });
+
+  it('n° 20 (E32) : un clic sur « Livrer le … » écrit la date de la vente une fois ; le renvoi suit hors de la vue', async () => {
+    const { appels } = monter();
+    glisser(barre(/^Blonde d’automne, 23 nov/), colonne());
+    const alerte = await screen.findByRole('alert');
+    fireEvent.click(within(alerte).getByRole('button', { name: /Livrer le/ }));
+    await waitFor(() => expect(appels.some(a => a.id === 'P-CIGOGNE' && typeof a.patch?.date === 'string')).toBe(true));
+    await new Promise(r => setTimeout(r, 30));
+    expect(appels.filter(a => a.id === 'P-CIGOGNE' && typeof a.patch?.date === 'string')).toHaveLength(1);
+    expect(await screen.findByRole('button', { name: /^Livraison La Cigogne · S\d+/ })).toBeInTheDocument();
+  });
+
+  it('n° 15 et n° 22 : au téléphone, la pastille « lié à » dit le nom court sans « lié … » ; chaque caddie des 6 semaines porte son nom', () => {
+    monter();
+    const lies = [...document.querySelectorAll('[data-lie]')];
+    expect(lies.length).toBeGreaterThan(0);
+    for (const l of lies) {
+      expect(l.textContent).not.toMatch(/^lié/);
+      expect(l.textContent!.length).toBeGreaterThan(2);
+      expect(l.getAttribute('aria-label')).toMatch(/^lié à .+ : aperçu$/);
+    }
+    const caddies = document.querySelectorAll('[data-caddie]');
+    expect(caddies.length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('.cal-lbl-caddie')).toHaveLength(caddies.length);
   });
 });

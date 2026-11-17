@@ -1,5 +1,5 @@
 import React from 'react';
-import { dateDeSemaine, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
+import { etiquetteListe, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ICONE_RANGEE, dureeVue } from './Marque';
 import './feuille.css';
 
@@ -23,7 +23,7 @@ export interface VueListeProps {
   detail?: (chose: ChoseCalendrier) => React.ReactNode;
 }
 
-const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? francsSignes(c.centimes) : c.joursActifs ? `${c.joursActifs} j` : null);
+const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? `${c.reste ? 'reste ' : ''}${francsSignes(c.centimes)}` : c.coutAVenir ? 'coût à venir' : c.joursActifs ? `${c.joursActifs} j` : null);
 
 /** « Décembre 2026 » : la majuscule est écrite, aucun text-transform (« Sans Date », CRITIQUE-3 n° 37). */
 function nomMois(cle: string): string {
@@ -48,7 +48,7 @@ function Ligne({ c, selectionId, onChose, detail }: { c: ChoseCalendrier } & Pic
         <span className="cal-li-i" aria-hidden="true"><Icone size={18} /></span>
         <span className="cal-li-t">
           <b>{c.titre}{proposee ? ' · proposé' : ''}</b>
-          <small>{nomRangee(c.rangee)}{duree ? ` · ${duree}` : c.debut ? ` · ${dateDeSemaine(c.debut)}` : ''}</small>
+          <small>{nomRangee(c.rangee)}{c.debut ? ` · ${etiquetteListe(c.debut)}` : ''}{duree ? ` · ${duree}` : ''}</small>
         </span>
         {montant && <span className={`cal-li-m${c.centimes !== undefined && c.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</span>}
       </button>

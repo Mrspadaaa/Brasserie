@@ -10,7 +10,7 @@ import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCour
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeAnnee } from './BandeAnnee';
-import { MenuPeriode } from './MenuPeriode';
+import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
 import { Retards, titreRetards } from './Retards';
 import { LectureDetail, LectureTete } from './LectureCourbe';
@@ -75,7 +75,23 @@ export interface MessageEnTete { genre: 'annee' | 'invite'; texte: string }
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
 const COLONNE_T = 214;
-const HAUTEUR_COURBE = { portrait: 110, paysage: 74 };
+/**
+ * Portrait : 110 px, les mois dessous (z2s). Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
+ * (E02, CRITIQUE-4 n° 11) et l'en-tête tient dans 120 px (E10) : la place est prise sur la bande et l'écart, pas sur la courbe.
+ */
+const HAUTEUR_COURBE = { portrait: 110, paysage: 90 };
+/** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
+const HAUTEUR_GRANDE_TEL = 250;
+/** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
+const RESERVE_GRANDE = 44 + 70 + 34 + 16;
+/** Au-delà de cette largeur (tablette, ordinateur), la grande courbe prend toute la hauteur de la zone de la frise (CRITIQUE-4 n° 27). */
+const LARGE_PX = 700;
+/** « 16 nov. » ; avec l'année quand la plage change d'année (« 16 nov. 2026 → 14 nov. 2027 », CRITIQUE-4 n° 26). */
+const plageDe = (du: string, au: string): string => {
+  const autreAn = du.slice(0, 4) !== au.slice(0, 4);
+  const d = (j: string) => (autreAn ? `${jourCourt(j)} ${j.slice(0, 4)}` : jourCourt(j));
+  return `${d(du)} → ${d(au)}`;
+};
 const MESSAGE_ANNEE = 'Tire jusqu’au bout : l’année';
 const INVITATION = 'Tourne le téléphone : 13 semaines';
 
@@ -118,15 +134,30 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // La largeur : mesurée, sinon la colonne de la frise × le nombre de colonnes, sinon 390.
   const zone = useRef<HTMLDivElement>(null);
   const racine = useRef<HTMLDivElement>(null);
-  const cadreCourbe = useRef<HTMLDivElement>(null);
-  const cadreGrande = useRef<HTMLDivElement>(null);
+  const cadreCourbe = useRef<HTMLDivElement | null>(null);
+  const cadreGrande = useRef<HTMLDivElement | null>(null);
   const boutonPeriode = useRef<HTMLButtonElement>(null);
   const mesure = useMesure(zone);
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
   const repli = paysage && !graph ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
   const largeur = mesure || repli;
   const hauteur = paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
-  const hauteurGrande = paysage ? clamp((typeof window !== 'undefined' ? window.innerHeight : 390) - 150, 150, 250) : 250;
+  // La grande courbe : en paysage, la hauteur de l'écran moins l'en-tête ; au téléphone en portrait, celle de sa maquette ; plus large, toute la
+  // hauteur de la zone de la frise jusqu'au bas de l'écran (ou au haut de la barre d'onglets), moins son titre, le détail et la légende.
+  const [hautDispo, setHautDispo] = useState(0);
+  useLayoutEffect(() => {
+    if (!graph || paysage || typeof window === 'undefined' || window.innerWidth < LARGE_PX) { setHautDispo(0); return undefined; }
+    const mesurer = () => {
+      const haut = zone.current?.getBoundingClientRect().top ?? 0;
+      setHautDispo(Math.round(hautDesOnglets() - haut - RESERVE_GRANDE));
+    };
+    mesurer();
+    window.addEventListener('resize', mesurer);
+    return () => window.removeEventListener('resize', mesurer);
+  }, [graph, paysage]);
+  const hauteurGrande = paysage
+    ? clamp((typeof window !== 'undefined' ? window.innerHeight : 390) - 150, 150, 250)
+    : Math.max(HAUTEUR_GRANDE_TEL, hautDispo);
 
   // Les états de l'en-tête.
   const [creuxOuvert, setCreuxOuvert] = useState(false);
@@ -208,7 +239,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (plein) { await sortirPleinEcran(); setPlein(false); return; }
     const r = await entrerPleinEcran(document.documentElement);
     setPlein(estPleinEcran());
-    if (r === 'invite' && !paysage) dire({ genre: 'invite', texte: INVITATION });
+    // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner.
+    if (r === 'invite' && !paysage && window.innerWidth < LARGE_PX) dire({ genre: 'invite', texte: INVITATION });
   };
 
   // ---- Le doigt sur la courbe : lire (c2-b), appui long (c3-a) ----
@@ -223,7 +255,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     const r = cadreCourbe.current?.getBoundingClientRect();
     return clamp(Math.floor((((clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1)) / (largeur / n))), 0, n - 1);
   };
-  const { props: gestes } = usePointeurCourbe({
+  const { props: gestes, attacher } = usePointeurCourbe({
     indexSous,
     actif: !!courbe && !apercuC,
     onLire: i => setLecture(i),
@@ -235,6 +267,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       onVue('graph');
     }
   });
+  // Les nœuds des deux courbes reçoivent l'écouteur `touchmove` qui bloque le défilement pendant la lecture et l'appui long (n° 3).
+  const refCourbe = useCallback((el: HTMLDivElement | null) => { cadreCourbe.current = el; attacher(el); }, [attacher]);
+  const refGrande = useCallback((el: HTMLDivElement | null) => { cadreGrande.current = el; attacher(el); }, [attacher]);
   const gestesGrande = { ...gestes, onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => { gestes.onPointerDown(e); setLecture(indexSous(e.clientX)); } };
   // Sur la petite courbe, seules les deux zones de prise (44 px) tirent la fenêtre ; tout autre doigt lit la semaine (c2-b, CRITIQUE-3 n° 6).
   // La décision se prend ici, par la géométrie, pas par la cible du toucher (l'ajustement tactile la rabat sur le bouton voisin).
@@ -308,7 +343,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const retards = modele.retards ?? [];
   const sansDate = modele.sansDate?.length ?? 0;
   const premiereSemaine = visibles[0]?.debut ?? fenetre.du;
-  const plage = `${jourCourt(premiereSemaine)} → ${jourCourt(ajouterJours(premiereSemaine, nombre * 7 - 1))}`;
+  const plage = plageDe(premiereSemaine, ajouterJours(premiereSemaine, nombre * 7 - 1));
   const libelle = libelleDuree(nombre, annee);
   // La rangée d'un mouvement (sa couleur) et les noms mis de côté viennent des choses du modèle.
   const rangeeDe = useMemo(() => {
@@ -396,7 +431,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   return (
     <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
       <div className="ent-t">
-        {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} /> : cle}
+        {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} compacte={!paysage && largeur < 600} /> : cle}
         <span className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
@@ -413,10 +448,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       <div ref={zone} className="ent-cbz">
         {graph && courbeC && courbe ? (
-          <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={cadreGrande} gestes={gestesGrande} />
+          <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
         ) : courbe && base ? (
-          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={cadreCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
-            mois={!annee} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
+          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
+            mois={!annee} moisEnHaut={paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>

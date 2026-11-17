@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, PastilleLie, dureeVue, nomAccessible } from './Marque';
+import { CLASSE_TEINTE, PastilleLie, dureeVue, largeurTexte, nomAccessible } from './Marque';
 import { usePointeur } from './usePointeur';
 
 /**
@@ -26,7 +26,7 @@ export interface BarreProps {
   /** Place de l'étiquette côté libre, en px. */
   placeEtiquette: number;
   /** Le nom passe sur deux lignes à côté de la barre (3 mois, quand la rangée le permet : n° 31). */
-  deuxLignes?: boolean;
+  deuxLignes?: false | 'nom' | 'flot';
   /** « J0 / n · prête le … » à côté du nom d'un brassin, quand il tient en entier. */
   avecDuree?: boolean;
   largeurColonne: number;
@@ -41,6 +41,8 @@ export interface BarreProps {
   allongement?: number;
   /** Le texte « J0 / 35 · prête 21 déc. » pendant ou après un bord tiré. */
   etiquetteDuree?: string;
+  /** La pastille « lié à » en nom court (téléphone, 3 mois et plus : CRITIQUE-4 n° 15). */
+  lieCourt?: boolean;
   onToucher: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onAppuiLong: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onGlisse: (chose: ChoseCalendrier, k: number) => void;
@@ -52,11 +54,27 @@ export interface BarreProps {
 
 export { PastilleLie };
 
-const montantDe = (chose: ChoseCalendrier): string | null => {
+/** Le montant écrit à côté du nom (« −158 », « 3 j −600 ») : celui que la mise en page mesure (Rangee) est celui qui s'affiche. */
+export const montantBarre = (chose: ChoseCalendrier): string | null => {
   if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignes(chose.centimes)}` : ''}` : chose.centimes ? francsSignes(chose.centimes) : null;
   if (chose.centimes === undefined) return null;
   return `${francsSignes(chose.centimes)}${chose.partiel ? ' +' : ''}`;
 };
+const montantDe = montantBarre;
+
+/**
+ * CRITIQUE-4 n° 21 (E29) : les formes de la durée, de la plus longue à la plus courte, sans jamais perdre « prête » :
+ * « J0 / 42 · prête 4 janv. », « J0/42 · prête 4 janv. », « prête 4 janv. ». Une durée sans « J » (« pas brassée · prévue le 10 nov. ») garde
+ * son premier morceau (« pas brassée »).
+ */
+export function formesDuree(d: string): string[] {
+  const formes = [d];
+  const compacte = d.split(' / ').join('/');
+  if (compacte !== d) formes.push(compacte);
+  const morceaux = d.split(' · ');
+  if (morceaux.length > 1) formes.push(/^J\d/.test(morceaux[0]) ? morceaux.slice(1).join(' · ') : morceaux[0]);
+  return formes;
+}
 
 /** Les segments de phases d'un brassin : brassage, fermentation, garde, conditionnement, lus dans les jalons de la recette figée (E25). */
 function phases(jalons: readonly JalonBrassin[] | undefined, total: number) {
@@ -104,20 +122,34 @@ export const Barre: React.FC<BarreProps> = props => {
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
   const duree = dureeVue(chose);
-  /* dans la barre : la durée entière si elle tient, sinon sa forme courte (« J7 / 28 »), jamais coupée ; à droite du nom quand le nom est dedans */
-  const labDedans = cote === 'dedans' ? ((chose.etiquette ?? chose.titre).length + (montant ? montant.length + 1 : 0)) * 7.6 + 12 : 0;
-  const courte = duree ? duree.split(' · ')[0] : null;
-  const dureeDedans = !duree || props.avecDuree ? null
-    : w - 16 - labDedans >= duree.length * 7.6 ? duree
-      : courte && w - 16 - labDedans >= courte.length * 7.6 ? courte : null;
+  /* dans la barre : la durée à droite du nom, jamais coupée et jamais sans « prête » (CRITIQUE-4 n° 21) : la plus longue forme qui tient à côté du
+     nom gardé à dix lettres et son montant ; sinon la plus courte, et le nom cède (il reste entier au toucher et au lecteur d'écran) */
+  const nom = chose.etiquette ?? chose.titre;
+  const largeurMontant = montant ? largeurTexte(montant, 700) + 6 : 0;
+  const nomEntier = cote === 'dedans' ? largeurTexte(nom, 600) + largeurMontant + 12 : 0;
+  const dureeDedans = ((): { texte: string; largeur: number } | null => {
+    if (!duree || props.avecDuree) return null;
+    const formes = formesDuree(duree).map(t => ({ texte: t, largeur: Math.ceil(largeurTexte(t, 600)) + 8 }));
+    const place = w - 16;
+    /* « J0 / 42 · prête 4 janv. », puis « J0/42 · prête 4 janv. » à côté du nom entier ; sinon la forme courte à côté du nom gardé à dix lettres
+       (jamais moins) ; sinon « prête 4 janv. » à côté du nom entier ; sinon rien (le nom d'abord : la durée reste au toucher et au lecteur).
+       La mise en page (`disposer`) sort le nom de la barre, entier, quand une ligne ouverte le permet. */
+    const avecJ = formes.length > 2 ? formes.slice(0, -1) : formes;
+    const prete = formes.length > 2 ? formes[formes.length - 1] : null;
+    const nomDix = cote === 'dedans' ? Math.min(nomEntier, largeurTexte(nom.length > 10 ? `${nom.slice(0, 10)}…` : nom, 600) + largeurMontant + 12) : 0;
+    return avecJ.find(f => place - nomEntier >= f.largeur) ?? avecJ.slice(-1).find(f => place - nomDix >= f.largeur)
+      ?? (prete && place - nomEntier >= prete.largeur ? prete : null);
+  })();
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
     ? { right: `calc(100% - ${gauche + decalage}px + 6px)` }
     : cote === 'droite'
       ? { left: gauche + w + decalage + 6 }
-      : { left: gauche + decalage + 6, maxWidth: Math.max(0, w - 12) };
-  const lblPlace = { ...lblStyle, top: haut, height: hauteur, maxWidth: cote === 'dedans' ? Math.max(0, w - 12) : Math.max(40, placeEtiquette) };
+      : { left: gauche + decalage + 6 };
+  /* deux lignes (n° 31) : 2 × 14 px, la boîte prend la hauteur de la ligne, jamais une lettre rognée */
+  const lblHaut = props.deuxLignes ? { top: haut - 2, height: hauteur + 4 } : { top: haut, height: hauteur };
+  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, w - 12 - (dureeDedans ? dureeDedans.largeur + 4 : 0)) : Math.max(40, placeEtiquette) };
 
   return (
     <>
@@ -164,7 +196,7 @@ export const Barre: React.FC<BarreProps> = props => {
         )}
         {etiquetteDuree && <em className="cal-duree" data-duree>{etiquetteDuree}</em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
-        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans}</em>}
+        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans.texte}</em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens) && (
           <span className="cal-badges" aria-hidden="true">
@@ -174,11 +206,20 @@ export const Barre: React.FC<BarreProps> = props => {
           </span>
         )}
       </div>
-      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
-        <span className="cal-lbl-t" aria-hidden="true">{chose.etiquette ?? chose.titre}</span>
-        {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-        {props.avecDuree && duree && <small aria-hidden="true" className="cal-lbl-j">{duree}</small>}
-        {chose.lie && <PastilleLie lie={chose.lie} />}
+      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes === 'nom' ? ' cal-lbl-2n' : props.deuxLignes ? ' cal-lbl-2' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
+        <span className="cal-lbl-t" aria-hidden="true">{nom}</span>
+        {props.deuxLignes === 'nom' ? (
+          <span className="cal-lbl-l2">
+            {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+            {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
+          </span>
+        ) : (
+          <>
+            {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+            {props.avecDuree && duree && <small aria-hidden="true" className="cal-lbl-j">{duree}</small>}
+            {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
+          </>
+        )}
       </span>
     </>
   );

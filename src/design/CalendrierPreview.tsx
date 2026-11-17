@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import type { Batch, Client, CreativeItem, Recipe, StockItem, Transaction } from '../types';
-import type { FinancialPlan, FinancialProfile, FinanceTransaction } from '../domain/finance/types';
+import type { FinancialPayment, FinancialPlan, FinancialProfile, FinanceTransaction } from '../domain/finance/types';
 import { todayISO } from '../domain/finance/ledger';
 import { REGLAGES_VIDES, type ReglagesFournisseurs } from '../domain/fournisseurs';
 import { indiceSemaine, type LigneHorizon } from '../domain/stock/horizon';
@@ -10,6 +10,7 @@ import { brewBudgetDemands } from '../domain/finance/brewBudget';
 import { BottomNav } from '../components/BottomNav';
 import { CalendrierTab } from '../components/tabs/CalendrierTab';
 import { FloatingActions } from '../ui/FloatingActions';
+import { Sheet } from '../ui/Sheet';
 import { construireModele, type DonneesCalendrier } from '../ui/calendrier/useDonneesCalendrier';
 import type { Document, PortEcritures } from '../ui/calendrier/ecritures';
 import type { Collection } from '../domain/calendrierGestes';
@@ -32,6 +33,28 @@ export interface EtatBanc {
   reglages?: ReglagesFournisseurs;
   /** Les courses datées des brassins (jalon « commander avant le … », n° 11) ; absent : aucune. */
   lignesCourses?: LigneHorizon[];
+  /** Les paiements des pièces (la tendance de Finances, CRITIQUE-4 n° 23) ; absent : aucun. */
+  paiements?: FinancialPayment[];
+}
+
+/**
+ * CRITIQUE-4 n° 23 (E01, D-179, demande du lot q1) : la tendance de Finances, **banc — simulée**. Six mois de charges du local payées
+ * (650 CHF par mois, catégorie `chargesFixes`, la seule que la prévision projette en tendance) : `buildForecast` en tire sa médiane, moins le
+ * loyer déjà prévu (400), soit −250 CHF par mois de « dépenses courantes » ; le détail du creux la nomme avec sa source. Les pièces portent
+ * « banc — simulé » dans leur nom ; leurs paiements sont datés du jour de la pièce, la caisse reste connue.
+ */
+export function avecTendance(etat: EtatBanc, aujourdhui: string): EtatBanc {
+  const [a, m] = aujourdhui.split('-').map(Number);
+  const pieces: FinanceTransaction[] = [];
+  const paiements: FinancialPayment[] = [];
+  for (let k = 1; k <= 6; k++) {
+    const d = new Date(Date.UTC(a, m - 1 - k, 5));
+    const jour = d.toISOString().slice(0, 10);
+    const id = `F-CHARGES-${jour.slice(0, 7)}`;
+    pieces.push({ ...facture(id, jour, 65000, 'expense', jour, 'Charges du local (banc — simulé)'), category: 'chargesFixes' } as FinanceTransaction);
+    paiements.push({ id: `PAY-${id}`, transactionId: id, date: jour, amountCents: 65000, direction: 'out', method: 'bank', recordedAt: `${jour}T08:00:00.000Z` });
+  }
+  return { ...etat, transactions: [...etat.transactions, ...(pieces as unknown as Transaction[])], paiements: [...(etat.paiements ?? []), ...paiements] };
 }
 
 /** « 23.11.2026 » : le format des dates de brassin de l'app. */
@@ -295,38 +318,51 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
   const port = useMemo(() => creerPortMemoire(() => ref.current, ecrire, onAppel), [ecrire, onAppel]);
   const donnees: DonneesCalendrier = useMemo(() => {
     const modele = construireModele({
-      aujourdhui, transactions: e.transactions, payments: [], plans: e.plans, profile: profil(solde), assets: [], batches: e.batches, stockItems: [] as StockItem[],
+      aujourdhui, transactions: e.transactions, payments: e.paiements ?? [], plans: e.plans, profile: profil(solde), assets: [], batches: e.batches, stockItems: [] as StockItem[],
       items: e.items, recettes: e.recettes, reglages: e.reglages ?? REGLAGES_VIDES, lignesCourses: e.lignesCourses ?? []
     });
     return { modele, plans: e.plans, batches: e.batches, recettes: e.recettes, clients: e.clients, items: e.items, aujourdhui };
   }, [aujourdhui, e, solde]);
   /*
    * Les renvois vers les autres écrans de l'app (fiche du brassin, Finances, Courses, pièce, budget, Prévoir une dépense) : le banc ne monte pas
-   * ces écrans (ils écrivent par les services de l'app). Il dit, en clair et marqué « banc », quel écran l'app ouvrirait et avec quoi : le geste
-   * est atteint et visible à la capture. La preuve que l'écran s'ouvre vraiment est aux tests (C17, C19) et au parcours /?dev-local.
+   * ces écrans (ils écrivent par les services de l'app). CRITIQUE-4 n° 13 c (E33) : il ouvre à leur place une feuille en bas, la vraie feuille de
+   * l'app (`Sheet`, fermée par ×), titrée « banc — l’app ouvrirait », qui dit quel écran et avec quoi ; jamais une ligne sur l'en-tête.
+   * Un renvoi qui, dans l'app, quitte l'onglet (fiche, Finances, Courses, Agenda, pièce, Poser une fête) démonte le calendrier tant que la feuille
+   * est ouverte, comme l'app le démonte en changeant d'onglet : le bandeau Annuler part avec lui ; × le remonte (retour à l'onglet). Budget,
+   * Prévoir une dépense et la quick action Brassin s'ouvrent, dans l'app, par-dessus le calendrier : il reste dessous.
+   * La preuve que l'écran s'ouvre vraiment est aux tests (C17, C19) et au parcours /?dev-local.
    */
   const rien = () => undefined;
-  const [renvoi, setRenvoi] = useState<string | null>(null);
-  const vers = (texte: string) => () => setRenvoi(texte);
+  const [renvoi, setRenvoi] = useState<{ texte: string; quitte: boolean } | null>(null);
+  const vers = (texte: string, quitte = true) => () => setRenvoi({ texte, quitte });
   const nomBrassin = (id: string) => e.batches.find(b => b.id === id)?.name ?? id;
   const lundiLisible = (iso: string) => new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50" data-banc-calendrier>
       <p className="px-3 pt-1 text-sm text-cave-200" data-banc>banc — données simulées</p>
-      {renvoi && <p className="fixed left-2 top-1 z-[90] rounded bg-cave-800 px-2 py-0.5 text-sm text-cave-50 pointer-events-none" data-banc-renvoi>banc — l’app ouvrirait : {renvoi}</p>}
+      {renvoi && (
+        <Sheet open title="banc — l’app ouvrirait" onClose={() => setRenvoi(null)}>
+          <div className="space-y-2 px-4 pb-4 text-sm text-cave-100" data-banc-renvoi data-banc-quitte={renvoi.quitte ? 'oui' : undefined}>
+            <p className="text-base font-semibold text-cave-50">{renvoi.texte}</p>
+            <p className="text-cave-300">{renvoi.quitte ? 'Dans l’app, cet écran remplace le calendrier.' : 'Dans l’app, cette feuille s’ouvre par-dessus le calendrier.'} Le banc ne le monte pas : il s’ouvre pour de vrai dans /?dev-local.</p>
+          </div>
+        </Sheet>
+      )}
       {/* le même conteneur que le <main> de l'app : la barre latérale du 1280 a sa place, la vue large est centrée (E10) */}
       <main data-floating-actions-gap="nav" className="mx-auto w-full max-w-4xl px-2 xs:px-3 min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]">
-        <CalendrierTab
-          transactions={e.transactions} batches={e.batches} stockItems={[]}
-          onOpenBatch={id => setRenvoi(`la fiche du brassin ${nomBrassin(id)}`)} onOpenFinances={vers('Finances')} onOpenAgenda={vers('l’Agenda')}
-          onOpenCourses={vers('les Courses')} onPoserBrassin={vers('la quick action Brassin')}
-          onPoserFete={lundi => setRenvoi(`Poser une fête, semaine du ${lundiLisible(lundi)}`)}
-          onPoserDepense={lundi => setRenvoi(`Prévoir une dépense, datée du ${lundiLisible(lundi)}`)}
-          onOuvrirBudget={id => setRenvoi(`le budget du brassin ${nomBrassin(id)}`)}
-          onOpenPiece={id => setRenvoi(`la pièce ${id} (Payé)`)}
-          donnees={donnees} port={port} aujourdhui={aujourdhui}
-          {...callbacks}
-        />
+        {!renvoi?.quitte && (
+          <CalendrierTab
+            transactions={e.transactions} batches={e.batches} stockItems={[]}
+            onOpenBatch={id => setRenvoi({ texte: `la fiche du brassin ${nomBrassin(id)}`, quitte: true })} onOpenFinances={vers('Finances')} onOpenAgenda={vers('l’Agenda')}
+            onOpenCourses={vers('les Courses')} onPoserBrassin={vers('la quick action Brassin', false)}
+            onPoserFete={lundi => setRenvoi({ texte: `Poser une fête, semaine du ${lundiLisible(lundi)}`, quitte: true })}
+            onPoserDepense={lundi => setRenvoi({ texte: `Prévoir une dépense, datée du ${lundiLisible(lundi)}`, quitte: false })}
+            onOuvrirBudget={id => setRenvoi({ texte: `le budget du brassin ${nomBrassin(id)}`, quitte: false })}
+            onOpenPiece={id => setRenvoi({ texte: `la pièce ${id} (Payé)`, quitte: true })}
+            donnees={donnees} port={port} aujourdhui={aujourdhui}
+            {...callbacks}
+          />
+        )}
       </main>
       {!sansChrome && (
         <>
@@ -340,4 +376,10 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
   );
 };
 
-export const CalendrierPreview: React.FC = () => <BancCalendrier />;
+/** Le banc servi (`?preview=calendrier`) : la fixture, plus la tendance de Finances simulée (E01) ; les tests gardent `etatBanc` seul. */
+export const CalendrierPreview: React.FC = () => {
+  const aujourdhui = todayISO();
+  const [etat] = useState(() => avecTendance(etatBanc(aujourdhui), aujourdhui));
+  /* les six mois de charges payées (6 × 650) s'ajoutent au solde de départ : la caisse d'aujourd'hui reste celle de la fixture (4 032) */
+  return <BancCalendrier aujourdhui={aujourdhui} etat={etat} solde={403200 + 6 * 65000} />;
+};

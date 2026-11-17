@@ -13,13 +13,15 @@ const classeMv = (v: number) => (v < 0 ? 'ent-m' : 'ent-p');
 export interface LectureProps { courbe: CourbeCaisse; index: number }
 
 /** La tête, à la place du chiffre clé : libre de la semaine lue, sa date, sa variation. */
-export function LectureTete({ courbe, index }: LectureProps) {
+export function LectureTete({ courbe, index, compacte = false }: LectureProps & { compacte?: boolean }) {
   const l = lectureSemaine(courbe, index);
   if (!l) return null;
   return (
     <span className="ent-lit" aria-live="polite">
       <b className={l.libre < 0 ? 'ent-neg' : undefined}>{chf(l.libre)}</b>
-      <span className="ent-lit-u"> CHF ·</span> <em>{`S${l.numero} · ${jourCourt(l.lundi)}`}</em>
+      {/* Au téléphone, comme sa maquette (as p-c2b-pendant : « 3 801 S12 −487 ») : le montant, la semaine, sa variation ; « CHF » et la date
+          restent pour le lecteur d'écran, et la date se lit dans le détail sous la bande (« S12, 22 – 28 mars »). Plus large : tout (E11). */}
+      <span className={compacte ? 'sr-only' : 'ent-lit-u'}> CHF ·</span> <em>{`S${l.numero}`}</em><span className={compacte ? 'sr-only' : 'ent-lit-d'}>{` · ${jourCourt(l.lundi)}`}</span>
       {l.variation !== 0 && <>{' '}<i className={classeMv(l.variation)}>{sg(l.variation)}</i></>}
     </span>
   );

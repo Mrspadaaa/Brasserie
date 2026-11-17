@@ -1,22 +1,66 @@
 import React from 'react';
-import { Beer, FileText, Hammer, ListChecks, PartyPopper, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Beer, FileText, Hammer, Link2, ListChecks, PartyPopper, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
+
+/* ---------- la largeur réelle d'un texte (CRITIQUE-4 n° 24) ----------
+   Problème d'école : mesurer un texte avant de le poser. Méthode standard du navigateur : `CanvasRenderingContext2D.measureText` avec la police
+   de la page (aucune dépendance). Sous jsdom (tests), aucun canvas : l'estimation de 7,6 px par lettre à 14 px, comme avant. */
+let contexte: CanvasRenderingContext2D | null | undefined;
+let famille = 'sans-serif';
+const PX_PAR_LETTRE_14 = 7.6;
+export function largeurTexte(texte: string, poids = 600, taille = 14): number {
+  if (!texte) return 0;
+  if (contexte === undefined) {
+    contexte = null;
+    const jsdom = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
+    if (!jsdom && typeof document !== 'undefined') {
+      try { contexte = document.createElement('canvas').getContext('2d'); } catch { contexte = null; }
+      try { famille = getComputedStyle(document.body).fontFamily || famille; } catch { /* rien */ }
+    }
+  }
+  if (!contexte) return texte.length * PX_PAR_LETTRE_14 * (taille / 14);
+  contexte.font = `${poids} ${taille}px ${famille}`;
+  return contexte.measureText(texte).width;
+}
+
+/** Le nom court d'un lien : « La Cigogne » pour « lié à La Cigogne » (CRITIQUE-4 n° 15). */
+export function nomLie(lie: NonNullable<ChoseCalendrier['lie']>): string {
+  if (lie.client) return lie.client;
+  const t = lie.texte.trim();
+  return t.toLocaleLowerCase('fr').startsWith('lié à ') ? t.slice(6) : t;
+}
+/** La largeur de la pastille « lié à » : l'icône, le texte (court ou entier), son bord et son jeu. */
+export function largeurPastilleLie(lie: NonNullable<ChoseCalendrier['lie']>, court: boolean): number {
+  return Math.ceil(14 + 4 + largeurTexte(court ? nomLie(lie) : lie.texte, 600) + 14);
+}
 
 /**
  * La pastille « lié à La Cigogne » (E37, D-113, D-126) : lisible en 3 s (14 px), elle se touche et montre l'aperçu sur place
  * (`lie.apercu` : « La Cigogne · client ; Blonde d'automne · prête 21 déc. »). Elle vit à côté du nom, hors des gestes de la barre.
+ * CRITIQUE-4 n° 15 : l'icône lien et le nom, jamais « lié … » ; au téléphone et dès 3 mois, le nom court (« ↔ La Cigogne »), au 1280 le texte
+ * entier. Elle ne rétrécit pas (le nom de la chose cède d'abord) ; son aperçu reste dans l'écran.
  */
-export function PastilleLie({ lie }: { lie: NonNullable<ChoseCalendrier['lie']> }) {
+export function PastilleLie({ lie, court = false }: { lie: NonNullable<ChoseCalendrier['lie']>; court?: boolean }) {
   const [ouvert, setOuvert] = React.useState(false);
+  const ap = React.useRef<HTMLSpanElement | null>(null);
+  React.useLayoutEffect(() => {
+    const el = ap.current;
+    if (!el || typeof window === 'undefined') return;
+    el.style.transform = '';
+    const r = el.getBoundingClientRect();
+    if (!r.width) return;
+    const deborde = r.right - (window.innerWidth - 8);
+    if (deborde > 0) el.style.transform = `translateX(-${Math.ceil(Math.min(deborde, Math.max(0, r.left - 8)))}px)`;
+  }, [ouvert]);
   return (
     <span className="cal-lie-z">
       <button
-        type="button" className="cal-lie" data-lie aria-expanded={ouvert} aria-label={`${lie.texte} : aperçu`}
+        type="button" className="cal-lie" data-lie data-lie-court={court ? '' : undefined} aria-expanded={ouvert} aria-label={`${lie.texte} : aperçu`}
         onPointerDown={e => e.stopPropagation()}
         onClick={e => { e.stopPropagation(); setOuvert(o => !o); }}
-      >{lie.texte}</button>
-      {ouvert && <span role="note" className="cal-lie-ap" data-apercu-lien>{lie.apercu}</span>}
+      ><Link2 size={14} aria-hidden="true" /><span>{court ? nomLie(lie) : lie.texte}</span></button>
+      {ouvert && <span ref={ap} role="note" className="cal-lie-ap" data-apercu-lien>{lie.apercu}</span>}
     </span>
   );
 }
@@ -69,7 +113,7 @@ export function dureeVue(c: ChoseCalendrier): string | null {
 }
 
 /** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines : « Malt, houblon · Stout maison »). */
-export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string }
+export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; /** n° 24 : sur deux lignes (le nom, puis montant et pastille). */ deux?: false | 'nom' | 'flot' }
 
 export interface MarqueProps {
   chose: ChoseCalendrier;
@@ -84,6 +128,8 @@ export interface MarqueProps {
   menuOuvert?: boolean;
   /** Le nom et le montant à côté (pastille) ; absent : le nom vient au toucher. */
   libelle?: LibelleMarque;
+  /** La pastille « lié à » en nom court (téléphone, 3 mois et plus). */
+  lieCourt?: boolean;
   /** Pendant un glisser, la pastille suit le doigt (px). */
   decalage?: number;
   /** Pas permis pour le glisser, en semaines ; présent : la pastille se glisse et s'ouvre en menu comme une barre. */
@@ -122,7 +168,7 @@ export const Marque: React.FC<MarqueProps> = props => {
   const style: React.CSSProperties = { left: centre - hauteur / 2, top: haut, width: hauteur, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lbl: React.CSSProperties | undefined = libelle
     ? {
-      top: haut, height: hauteur, maxWidth: Math.max(40, libelle.place),
+      ...(libelle.deux ? { top: haut - 2, height: Math.max(hauteur + 4, 30) } : { top: haut, height: hauteur }), maxWidth: Math.max(40, libelle.place),
       ...(libelle.cote === 'droite' ? { left: centre + 14 + decalage + 6 } : { right: `calc(100% - ${centre - 14 + decalage}px + 6px)` })
     }
     : undefined;
@@ -153,10 +199,19 @@ export const Marque: React.FC<MarqueProps> = props => {
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
       </button>
       {libelle && lbl && (
-        <span className={`cal-lbl cal-lbl-${libelle.cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
+        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux === 'nom' ? ' cal-lbl-2n' : libelle.deux ? ' cal-lbl-2' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
           <span className="cal-lbl-t" aria-hidden="true">{libelle.texte ?? chose.etiquette ?? chose.titre}</span>
-          {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-          {chose.lie && <PastilleLie lie={chose.lie} />}
+          {libelle.deux === 'nom' ? (
+            <span className="cal-lbl-l2">
+              {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+              {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
+            </span>
+          ) : (
+            <>
+              {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+              {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
+            </>
+          )}
         </span>
       )}
     </>

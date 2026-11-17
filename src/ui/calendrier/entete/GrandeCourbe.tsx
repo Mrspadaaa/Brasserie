@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { CourbeCaisse, MouvementNomme } from '../../../domain/calendrierCaisse';
-import { chf, classeRangee, creuxDe, escalier, MOIS_MIN, moisDeSemaine, type Geo, type SoldeSemaine } from './Courbe';
+import { chf, classeRangee, creuxDe, escalier, largeurTexte, MOIS_MIN, moisDeSemaine, type Boite, type Geo, type SoldeSemaine } from './Courbe';
 import { LectureDetail } from './LectureCourbe';
 
 /**
@@ -36,6 +36,46 @@ export function geoGrande(courbe: readonly SoldeSemaine[], largeur: number, haut
   const unit = (largeur - MARGE_G - MARGE_D) / n;
   const hi = hiBrut + (hiBrut - lo) * 0.04;
   return { largeur, hauteur, haut: HAUT, bas, unit, lo, hi, xl: MARGE_G, x: i => MARGE_G + i * unit, y: v => bas - ((v - lo) / (hi - lo)) * (bas - HAUT) };
+}
+
+/** Une série en escalier (libre ou caisse) touche-t-elle cette boîte ? Marches horizontales et contremarches comprises. */
+function toucheSerie(valeurs: readonly number[], g: Geo, b: Boite): boolean {
+  for (let j = 0; j < valeurs.length; j++) {
+    const x0 = g.x(j), x1 = g.x(j + 1), y = g.y(valeurs[j]);
+    if (x1 >= b.l && x0 <= b.r && y >= b.t && y <= b.b) return true;
+    if (j > 0 && x0 >= b.l && x0 <= b.r) {
+      const a = g.y(valeurs[j - 1]);
+      if (Math.min(a, y) <= b.b && Math.max(a, y) >= b.t) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * La place de l'étiquette « creux S43 · −3 147 » (CRITIQUE-4 n° 27) : à côté du point, au-dessus, au-dessous ou plus haut, à droite ou à gauche ;
+ * la première place qui reste dans le dessin et que ni le libre ni la caisse ne traversent. Faute de mieux, la première place : son fond la garde
+ * lisible.
+ */
+export function placeEtiquetteCreux(courbe: readonly SoldeSemaine[], g: Geo & { xl: number }, largSvg: number, index: number, centimes: number, w: number): { x: number; y: number; ancre: 'start' | 'end'; boite: Boite } {
+  const cx = g.x(index) + g.unit / 2, cy = g.y(centimes);
+  const gauche = cx > largSvg / 2;
+  const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
+  // Les places essayées, de la plus proche du point à la plus lointaine : au-dessus, au-dessous, puis plus haut et plus loin sur le côté.
+  const essais: { dx: number; dy: number; ancre: 'start' | 'end'; cout: number }[] = [];
+  const cotes = (gauche ? ['end', 'start'] : ['start', 'end']) as ('start' | 'end')[];
+  for (const dy of [-12, 22, -26, 36, -40, -54, -68, -82, -96, -110, 50]) {
+    for (const dx of [10, 40, 80]) cotes.forEach((ancre, k) => essais.push({ dx, dy, ancre, cout: Math.abs(dy) + dx * 0.6 + k * 4 }));
+  }
+  essais.sort((a, b) => a.cout - b.cout);
+  const places = essais.map(({ dx, dy, ancre }) => {
+    const x = cx + (ancre === 'end' ? -dx : dx), y = cy + dy;
+    const l = ancre === 'end' ? x - w : x;
+    return { x, y, ancre, boite: { l: l - 3, r: l + w + 3, t: y - 13, b: y + 4 } };
+  });
+  const dedans = (b: Boite) => b.l >= g.xl && b.r <= largSvg - MARGE_D && b.t >= 0 && b.b <= g.bas;
+  return places.find(p => dedans(p.boite) && !toucheSerie(libres, g, p.boite) && !toucheSerie(caisses, g, p.boite))
+    ?? places.find(p => dedans(p.boite))
+    ?? places[0];
 }
 
 /** Largeur du dessin : toute la largeur, ou 62 % en paysage (le détail est à côté). */
@@ -83,8 +123,9 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
     const x = g.x(i) + 3, w = MOIS_MIN[m].length * 8;
     if (i > 0 && x > fin + 4 && x + w <= largSvg) { labelsMois.push({ x, t: MOIS_MIN[m] }); fin = x + w; }
   });
-  const cteGauche = creux ? g.x(creux.index) + g.unit / 2 > largSvg / 2 : false;
   const yCreux = creux ? g.y(creux.centimes) : 0;
+  const texteCreux = creux ? `creux S${creux.numero} · ` : '';
+  const etCreux = creux ? placeEtiquetteCreux(courbe, g, largSvg, creux.index, creux.centimes, largeurTexte(texteCreux) + largeurTexte(chf(creux.centimes), true)) : null;
   return (
     <section className={paysage ? 'ent-gc ent-gc--cote' : 'ent-gc'} aria-label="La courbe en grand" data-vue="graph">
       <div className="ent-gc-h">
@@ -112,11 +153,13 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
                 <text x={cx} y={g.haut - 3} textAnchor="middle" className="ent-cur-s">{`S${courbe[lecture].numero}`}</text>
               </g>
             )}
-            {creux && (
+            {creux && etCreux && (
               <g className="ent-gc-creux">
                 <circle cx={g.x(creux.index) + g.unit / 2} cy={yCreux} r={6.5} className="ent-creux-pt" />
-                <text className="ent-nom" x={g.x(creux.index) + g.unit / 2 + (cteGauche ? -10 : 10)} y={Math.max(g.haut + 12, yCreux - 12)} textAnchor={cteGauche ? 'end' : 'start'}>
-                  {`creux S${creux.numero} · `}<tspan className={creux.centimes < 0 ? 'ent-m' : 'ent-creux-m'}>{chf(creux.centimes)}</tspan>
+                {/* Posée hors du tracé, sur le fond : jamais barrée (CRITIQUE-4 n° 27). */}
+                <rect className="ent-gc-fond" data-creux-fond x={etCreux.boite.l} y={etCreux.boite.t} width={etCreux.boite.r - etCreux.boite.l} height={etCreux.boite.b - etCreux.boite.t} rx={4} />
+                <text className="ent-nom" data-creux-etiquette x={etCreux.x} y={etCreux.y} textAnchor={etCreux.ancre}>
+                  {texteCreux}<tspan className={creux.centimes < 0 ? 'ent-m' : 'ent-creux-m'}>{chf(creux.centimes)}</tspan>
                 </text>
               </g>
             )}

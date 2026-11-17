@@ -60,6 +60,8 @@ function PuceNom({ p, choisie, onChoisir }: { p: Puce; choisie: boolean; onChois
       {...(m ? { 'aria-label': nom, 'aria-describedby': id } : p.genre === 'vente-probable' ? { 'aria-label': nom } : {})}>
       {p.genre === 'vente-probable' && <span className="text-xs text-cave-200" aria-hidden="true">probable</span>}
       <span>{p.libelle}</span>
+      {/* CRITIQUE-4 n° 16 : la vente habituelle du client, « Café du Pont · 1 fût +130 » ; un toucher la choisit, sans clavier */}
+      {p.genre === 'client' && p.quoi && <span className="text-cave-200" data-quoi>· {p.quoi}</span>}
       {m && <span id={id} className={`cal-f-m ${m.signe === '+' ? 'text-hop-texte' : 'text-alert-strong'}`}>{m.texte}</span>}
     </button>
   );
@@ -134,7 +136,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const puces1 = brassin ? montrerPuces(['recette']) : b.rangee === 'ventes' ? montrerPuces(['vente-probable', 'client']) : montrerPuces(['nom']);
   const temps = brassin ? montrerPuces(['temps']) : [];
   const montants = argent ? montrerPuces(['montant']) : [];
-  const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
+  const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut && !b.fin ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
 
   return (
     <Sheet
@@ -144,6 +146,10 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
       subtitle={mode === 'modifier' ? 'Modifier' : 'Ajouter'}
       className="cal-feuille lg:left-[var(--rail-width,88px)] lg:mx-auto lg:max-w-[620px] lg:rounded-t-sheet"
       footer={(
+        <>
+        {/* CRITIQUE-4 n° 10 (E45, D-8) : la fenêtre « S20 → S40 · 21 sem. » est dite dans le pied, toujours visible sans défiler la feuille, à 390
+            comme en paysage, juste au-dessus d'« Ajouter » */}
+        {resume && <p className="cal-f-resume mb-1 text-sm text-cave-50" data-fenetre-pied><b data-fenetre>{resume}</b>{b.joursActifs ? <span> · {b.joursActifs} j actifs</span> : null}</p>}
         <div className="flex items-center gap-2" data-feuille-pied>
           {!sansPlusDeDetails && onPlusDeDetails && RANGEES_AVEC_DETAILS.includes(b.rangee) && (
             <button type="button" onClick={() => onPlusDeDetails(b)} className="min-h-11 shrink-0 rounded-control px-3 text-sm font-semibold text-cave-200 underline underline-offset-2">Plus de détails ›</button>
@@ -156,6 +162,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             className="cal-cta ml-auto min-h-11 flex-1 rounded-control px-4 text-base font-bold disabled:opacity-50"
           >{libelleAjouter}</button>
         </div>
+        </>
       )}
     >
       <div className="cal-feuille-corps space-y-3 px-3 pb-3 text-sm" data-feuille-rangee={b.rangee} data-mode={mode}>
@@ -217,8 +224,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <div>
           <div className="mb-1 flex items-baseline gap-2">
             <span className="text-sm text-cave-200">{fenetre ? 'Semaines' : 'Semaine'}</span>
-            {resume && <b className="text-sm text-cave-50" data-fenetre>{resume}</b>}
-            {!resume && b.debut && <span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(b.debut)}</span>}
+            {b.debut &&<span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(b.debut)}</span>}
           </div>
           <div
             ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}

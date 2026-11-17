@@ -76,6 +76,30 @@ describe('ET-PER : calendrier → Finances', () => {
   });
 });
 
+describe('CRITIQUE-4 n° 5 (D-14) : FinancesTab seul, monté sur une période « du … au » de l’app', () => {
+  it('Opérations ne liste que l’opération de la plage, et la plage est celle du calendrier (3 mois)', async () => {
+    const plage: Periode = { genre: 'dates', du: LUNDI, au: ajouterJours(LUNDI, 13 * 7 - 1) };
+    const loin = operation('T-LOIN', ajouterJours(LUNDI, 13 * 7 + 3), 'ZZ TEST — Fût après la plage');
+    render(<FinancesTab transactions={[dedans, dehors, loin]} config={defaultConfig} budgetLines={[]} globalTimeFilter={plage} onChangeGlobalTimeFilter={vi.fn()} />);
+    expect(screen.getByLabelText('Du')).toHaveValue(plage.du);
+    expect(screen.getByLabelText('Au')).toHaveValue(plage.au);
+    await waitFor(() => expect(screen.getAllByText(/Malt dans la plage/).length).toBeGreaterThan(0));
+    expect(document.body.textContent).not.toMatch(/Houblon hors plage/);
+    expect(document.body.textContent).not.toMatch(/Fût après la plage/);
+  });
+
+  it('« 3 mois » au calendrier écrit la plage de 13 semaines que Finances affiche', async () => {
+    const journal = vi.fn();
+    render(<App2 initiale={{ genre: 'dates', du: LUNDI, au: ajouterJours(LUNDI, 6 * 7 - 1) }} journal={journal} />);
+    fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
+    const au = ajouterJours(LUNDI, 13 * 7 - 1);
+    expect(journal).toHaveBeenLastCalledWith({ genre: 'dates', du: LUNDI, au });
+    await waitFor(() => expect(finances().getByLabelText('Au')).toHaveValue(au));
+    expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13');
+  });
+});
+
 describe('ET-PER : Finances → calendrier', () => {
   it('une plage de 4 semaines tapée dans Opérations règle la fenêtre du calendrier (4 colonnes, depuis ce lundi)', async () => {
     const journal = vi.fn();

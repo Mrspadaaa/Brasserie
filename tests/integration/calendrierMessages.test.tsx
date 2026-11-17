@@ -6,6 +6,7 @@ import { StorageService } from '../../src/services/storage';
 import { sansPointDouble, textePromesse } from '../../src/components/tabs/CalendrierTab';
 import { dateDeSemaine } from '../../src/domain/calendrier';
 import type { Promesse } from '../../src/domain/calendrierGestes';
+import { Message, separerEffet } from '../../src/ui/calendrier/frise/Message';
 
 /*
  * CRITIQUE-3 n° 7, 20, 37 (E32, E33, D-200, CAL-GESTE-BRUIT) : un seul canal de message pour tout l'onglet. L'en-tête y passe par `onMessage` :
@@ -128,5 +129,42 @@ describe('n° 37 : aucun « .. » dans les messages composés', () => {
     expect(sansPointDouble(`${dateDeSemaine('2026-12-21')}. Elle arrive dans le carnet.`)).toBe('S52, 21 – 27 déc. Elle arrive dans le carnet.');
     expect(sansPointDouble('à acheter avant le 22 nov. .')).toBe('à acheter avant le 22 nov.');
     expect(sansPointDouble('Rien à dire. Fin.')).toBe('Rien à dire. Fin.');
+  });
+});
+
+describe('CRITIQUE-4 (lot q2-frise) : le bandeau garde son effet entier ; l’alerte attend la décision', () => {
+  it('n° 13 b : « Café du Pont, 1 fût · S47 · vente confirmée · S47 : 3 510 → 3 640 » : le nom cède, l’effet reste entier sur sa ligne', () => {
+    expect(separerEffet('Café du Pont, 1 fût · S47 · vente confirmée · S47 : 3 510 → 3 640'))
+      .toEqual({ nom: 'Café du Pont, 1 fût · S47 · vente confirmée', effet: 'S47 : 3 510 → 3 640' });
+    expect(separerEffet('Hotte : S50 · S50 : 5 120 → 4 220 · rangée Achats réaffichée'))
+      .toEqual({ nom: 'Hotte : S50 · rangée Achats réaffichée', effet: 'S50 : 5 120 → 4 220' });
+    expect(separerEffet('La garde suit la recette du brassin')).toEqual({ nom: 'La garde suit la recette du brassin', effet: null });
+    render(<Message message={{ id: 1, role: 'status', texte: 'Café du Pont, 1 fût · S47 · vente confirmée · S47 : 3 510 → 3 640', annuler: () => undefined }} onFermer={() => undefined} />);
+    const ligne = document.querySelector('.cal-msg-ligne')!;
+    expect(ligne).toHaveClass('cal-msg-2l');
+    expect(ligne.querySelector('[data-msg-effet]')?.textContent).toBe('S47 : 3 510 → 3 640');
+    expect(ligne.querySelector('[data-msg-texte]')?.textContent).toMatch(/^Café du Pont, 1 fût · S47 · vente confirmée/);
+    expect(screen.getByRole('status').textContent).toMatch(/S47 : 3 510 → 3 640 · Annuler$/);
+  });
+
+  it('n° 13 b : au glisser réel, le bandeau porte l’effet chiffré entier (« S49 : 1 588 → 2 488 »), dans sa propre ligne s’il suit un nom', async () => {
+    monter();
+    glisser(barre(/^Hotte/), colonne());
+    const m = await screen.findByRole('status');
+    const effet = m.querySelector('[data-msg-effet]') ?? m.querySelector('[data-msg-texte]');
+    expect(effet?.textContent).toMatch(/^S\d+ : [\d\s −−]+ → [\d\s −−]+$/);
+  });
+
+  it('n° 20 : l’alerte « Livrer le … » ne part pas seule au bout de 7 s ; « Livrer » agit une fois ; le bandeau Annuler, lui, part seul', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const agir = vi.fn(), fermer = vi.fn();
+    const { rerender } = render(<Message message={{ id: 1, role: 'alert', texte: '3 fûts promis à La Cigogne le 23 déc. · prête le 4 janv.', livrer: { texte: 'Livrer le 5 janv.', agir }, annuler: () => undefined }} onFermer={fermer} />);
+    act(() => { vi.advanceTimersByTime(20000); });
+    expect(fermer).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Livrer le 5 janv.' }));
+    expect(agir).toHaveBeenCalledTimes(1);
+    rerender(<Message message={{ id: 2, role: 'status', texte: 'S51 : 5 064 → 4 524', annuler: () => undefined }} onFermer={fermer} />);
+    act(() => { vi.advanceTimersByTime(7100); });
+    expect(fermer).toHaveBeenCalledTimes(1);
   });
 });

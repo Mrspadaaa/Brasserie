@@ -8,6 +8,13 @@ import { ajouterJours, francs, semainesDe, type Retard } from '../../src/domain/
 import { courbeCaisse, courbeDecalee, creuxDepuis, type MouvementCaisse } from '../../src/domain/calendrierCaisse';
 import { HAUTEUR_MOIS, boiteEtiquette, boitesSeCroisent, creuxDe, geometrie, maxNoms, obstaclesCourbe, placerNoms } from '../../src/ui/calendrier/entete/Courbe';
 import { useOrientation } from '../../src/ui/calendrier/useOrientation';
+import { DELAI_CLIC_AVALE } from '../../src/ui/calendrier/usePointeurCourbe';
+import { placeEtiquetteCreux, geoGrande } from '../../src/ui/calendrier/entete/GrandeCourbe';
+import { largeurTexte } from '../../src/ui/calendrier/entete/Courbe';
+
+/** La largeur de la fenêtre (jsdom : 1024) : l'invitation à tourner est pour le téléphone tenu droit (< 700 px). */
+function largeurFenetre(px: number) { Object.defineProperty(window, 'innerWidth', { value: px, configurable: true, writable: true }); }
+afterEach(() => { largeurFenetre(1024); });
 
 /**
  * L'en-tête du calendrier (lot B, E01 à E13). La courbe vient du domaine (`courbeCaisse`) : 52 semaines depuis le lundi 2026-11-16, des mouvements
@@ -297,14 +304,17 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 160, clientY: 22 });
     // 160 px sur 390 : la 22e semaine (index 21), le lundi 12 avril 2027, S15.
-    expect(screen.getByText('S15 · 12 avr.')).toBeInTheDocument();
+    // À 390, la tête montre « montant S15 variation » (sa maquette p-c2b) ; « CHF » et la date restent pour le lecteur d'écran.
+    expect(container.querySelector('.ent-lit')!.textContent).toContain('S15 · 12 avr.');
+    expect(container.querySelector('.ent-lit .ent-lit-d')).toBeNull();
+    expect(container.querySelector('.ent-lit .sr-only')).not.toBeNull();
     expect(screen.queryByRole('button', { name: /à dépenser/ })).toBeNull();
     expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 21 * 7));
     fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
     // Sous la bande, le détail : « la semaine » et son total.
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
     fireEvent.pointerDown(document.body);
-    expect(screen.queryByText('S15 · 12 avr.')).toBeNull();
+    expect(container.querySelector('.ent-lit')).toBeNull();
     expect(container.querySelector('.ent-lu')).toBeNull();
     expect(screen.getByRole('button', { name: /à dépenser/ })).toBeInTheDocument();
     expect(onLectureSemaine).toHaveBeenLastCalledWith(null);
@@ -320,6 +330,8 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     act(() => { vi.advanceTimersByTime(1); });
     expect(e.onVue).toHaveBeenCalledWith('graph');
     fireEvent.pointerUp(window, { pointerId: 1, clientX: 100 });
+    // Le clic fabriqué au relâcher est avalé 400 ms (CRITIQUE-4 n° 3) ; le × se touche après.
+    act(() => { vi.advanceTimersByTime(DELAI_CLIC_AVALE); });
     // La grande courbe a pris la place : la courbe en grand, sa légende une fois, le creux marqué, aucune bande.
     const grande = screen.getByLabelText('La courbe en grand');
     expect(grande.querySelector('.ent-creux-pt')).not.toBeNull();
@@ -355,6 +367,7 @@ describe('E09, E10 : plein écran et paysage', () => {
     const lock = vi.fn().mockRejectedValue(new Error('NotSupportedError'));
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: requestFullscreen, configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock }, configurable: true });
+    largeurFenetre(390);
     render(<Banc {...espions()} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
     expect(requestFullscreen).toHaveBeenCalledTimes(1);
@@ -365,14 +378,50 @@ describe('E09, E10 : plein écran et paysage', () => {
     delete (window.screen as unknown as Record<string, unknown>).orientation;
   });
 
-  it('B8 : quand le verrou prend, aucune invitation', async () => {
+  it('B8 : quand le verrou prend et que l’écran tourne, aucune invitation', async () => {
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockResolvedValue(undefined) }, configurable: true });
+    const avant = window.matchMedia;
+    // L'écran est couché (orientation: landscape), la fenêtre reste haute : l'en-tête garde sa mise en page, le verrou a pris.
+    window.matchMedia = ((q: string) => ({ matches: q === '(orientation: landscape)', media: q, addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined })) as unknown as typeof window.matchMedia;
+    largeurFenetre(390);
     render(<Banc {...espions()} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
     expect(screen.queryByText(/Tourne le téléphone/)).toBeNull();
+    window.matchMedia = avant;
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
     delete (window.screen as unknown as Record<string, unknown>).orientation;
+  });
+
+  it('CRITIQUE-4 n° 19 : le verrou « pris » sans que l’écran tourne en 600 ms (émulateur) : « Tourne le téléphone », par onMessage', async () => {
+    vi.useFakeTimers();
+    const onMessage = vi.fn();
+    Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
+    Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockResolvedValue(undefined) }, configurable: true });
+    largeurFenetre(390);
+    render(<Banc {...espions()} onMessage={onMessage} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await vi.advanceTimersByTimeAsync(599); });
+    expect(onMessage).not.toHaveBeenCalled();
+    await act(async () => { await vi.advanceTimersByTimeAsync(2); });
+    expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
+    delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
+    delete (window.screen as unknown as Record<string, unknown>).orientation;
+  });
+
+  it('CRITIQUE-4 n° 19 : orientation.lock absent (iPhone) : l’invitation ; à 1280, rien à tourner, aucune invitation', async () => {
+    const onMessage = vi.fn();
+    Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
+    largeurFenetre(390);
+    const { unmount } = render(<Banc {...espions()} onMessage={onMessage} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
+    expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
+    unmount();
+    onMessage.mockClear();
+    largeurFenetre(1280);
+    render(<Banc {...espions()} onMessage={onMessage} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
+    expect(onMessage).not.toHaveBeenCalled();
+    delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
   });
 
   it('E10 : en paysage, 13 semaines, sans écrire la période ; au retour, la fenêtre d’avant', () => {
@@ -711,6 +760,7 @@ describe('CRITIQUE-3 n° 7 : les messages de l’en-tête passent par le canal u
     const onMessage = vi.fn();
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockRejectedValue(new Error('NotSupportedError')) }, configurable: true });
+    largeurFenetre(390);
     render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
     expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
@@ -810,5 +860,147 @@ describe('CRITIQUE-3 n° 23 et 34 : l’étoile sur la courbe, l’espace de « 
       periode={periodeDeFenetre({ du: LUNDI0, semaines: 6 })} onPeriode={vi.fn()} vue="semaines" onVue={vi.fn()} mouvements={false} onMouvements={vi.fn()}
       orientation="portrait" largeurColonne={65} />);
     expect(screen.getByText(/Solde de départ inconnu/).textContent).toContain('dans Finances › Solde');
+  });
+});
+
+describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le creux, la grande courbe', () => {
+  it('n° 3 : appui long de 500 ms puis doigt levé : la vue graph, et le clic fabriqué au relâcher n’ouvre AUCUN menu période', () => {
+    vi.useFakeTimers();
+    const e = espions();
+    const { container } = render(<Banc {...e} />);
+    fireEvent.pointerDown(container.querySelector('.ent-cb') as HTMLElement, { pointerId: 1, clientX: 200, clientY: 50, button: 0, pointerType: 'touch' });
+    act(() => { vi.advanceTimersByTime(500); });
+    expect(e.onVue).toHaveBeenLastCalledWith('graph');
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 200, pointerType: 'touch' });
+    // Le navigateur fabrique un clic au doigt levé ; l'ajustement tactile peut le poser sur le bouton de la période, juste au-dessus.
+    const clic = fireEvent.click(container.querySelector('[data-ent-periode]') as HTMLElement);
+    expect(clic).toBe(false);
+    expect(document.querySelector('[data-menu-periode]')).toBeNull();
+    expect(screen.queryByRole('dialog', { name: 'Période et vue' })).toBeNull();
+    expect(screen.getByLabelText('La courbe en grand')).toBeInTheDocument();
+    // Le menu contextuel de l'appui long est empêché.
+    expect(fireEvent.contextMenu(container.querySelector('.ent-gc-w') as HTMLElement)).toBe(false);
+    // Un vrai toucher ensuite (un nouveau doigt) ouvre bien le menu : rien n'est perdu.
+    fireEvent.pointerDown(container.querySelector('[data-ent-periode]') as HTMLElement);
+    fireEvent.click(container.querySelector('[data-ent-periode]') as HTMLElement);
+    expect(document.querySelector('[data-menu-periode]')).not.toBeNull();
+  });
+
+  it('n° 3 : pendant la lecture et après l’appui long, le défilement est bloqué (touchmove annulé) ; au repos il ne l’est pas', () => {
+    vi.useFakeTimers();
+    const { container } = render(<Banc {...espions()} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    const glisse = () => { const ev = new Event('touchmove', { bubbles: true, cancelable: true }); cb.dispatchEvent(ev); return ev.defaultPrevented; };
+    expect(glisse()).toBe(false);
+    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 200, clientY: 50, button: 0 });
+    act(() => { vi.advanceTimersByTime(500); });
+    expect(glisse()).toBe(true);
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 200 });
+    act(() => { vi.advanceTimersByTime(DELAI_CLIC_AVALE); });
+    const w = container.querySelector('.ent-gc-w') as HTMLElement;
+    const ev = new Event('touchmove', { bubbles: true, cancelable: true });
+    w.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(false);
+  });
+
+  it('n° 18 : glisser sur la courbe hors des poignées appelle onLectureSemaine avec la semaine ; la tête dit « … CHF · S.. · <date> ±… »', () => {
+    const onLectureSemaine = vi.fn();
+    const { container } = render(<Banc {...espions()} onLectureSemaine={onLectureSemaine} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    // Les zones de prise (cadre S47 – S52 de 0 à 45 px) : 300 px en est loin.
+    fireEvent.pointerDown(cb, { pointerId: 4, clientX: 300, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 4, clientX: 320, clientY: 51 });
+    fireEvent.pointerMove(window, { pointerId: 4, clientX: 160, clientY: 51 });
+    expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 21 * 7));
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S15 · 12 avr\. [+−]\d/);
+    expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
+    fireEvent.pointerUp(window, { pointerId: 4, clientX: 160 });
+  });
+
+  it('n° 26 : dans l’An, la plage du menu porte les deux années (« 16 nov. 2026 → … 2027 ») ; 6 semaines dans la même année, sans année', () => {
+    const { container } = render(<Banc {...espions()} />);
+    fireEvent.click(container.querySelector('[data-ent-periode]') as HTMLElement);
+    expect(document.querySelector('.ent-menu-plage')!.textContent).toBe('16 nov. → 27 déc.');
+    fireEvent.click(within(document.querySelector('[data-menu-periode]') as HTMLElement).getByRole('button', { name: 'An' }));
+    fireEvent.click(container.querySelector('[data-ent-periode]') as HTMLElement);
+    const plage = document.querySelector('.ent-menu-plage')!.textContent!;
+    expect(plage).toMatch(/^16 nov\. 2026 → \d+ \S+ 2027$/);
+    expect(plage.match(/20\d\d/g)).toHaveLength(2);
+  });
+
+  it('n° 25 : les points de la courbe sont dans un groupe coupé à la zone de tracé (clip-path)', () => {
+    const { container } = render(<Banc {...espions()} />);
+    const svg = courbeSvg(container);
+    const groupe = svg.querySelector('g.ent-pts')!;
+    expect(groupe.querySelectorAll('[data-point-semaine]')).toHaveLength(52);
+    const clip = groupe.getAttribute('clip-path')!;
+    expect(clip).toMatch(/^url\(#z\w+\)$/);
+    const rect = svg.querySelector(`clipPath${clip.slice(4, -1)} rect`)!;
+    expect([rect.getAttribute('width'), rect.getAttribute('height')]).toEqual([svg.getAttribute('width'), svg.getAttribute('height')]);
+  });
+
+  it('n° 11 : en paysage, la courbe fait 90 px, les mois en haut avec leur trait (w3s), le tracé dessous de 18 à 88 px (70 px)', () => {
+    const props = { modele: modele(), fenetre: { du: LUNDI0, semaines: 13 }, onFenetre: vi.fn(), periode: periodeDeFenetre({ du: LUNDI0, semaines: 13 }), onPeriode: vi.fn(), vue: 'semaines' as const,
+      onVue: vi.fn(), mouvements: false, onMouvements: vi.fn(), largeurColonne: 48 };
+    const { container } = render(<EnTeteCalendrier {...props} orientation="paysage" />);
+    const svg = courbeSvg(container);
+    expect(Number(svg.getAttribute('height'))).toBe(90);
+    const mois = Array.from(svg.querySelectorAll('.ent-mois'));
+    expect(mois.length).toBeGreaterThan(0);
+    mois.forEach(m => expect(Number(m.getAttribute('y'))).toBe(13));
+    expect(svg.querySelectorAll('.ent-mois-t')).toHaveLength(mois.length);
+    const ys = Array.from(svg.querySelectorAll('[data-point-semaine]')).map(p => Number(p.getAttribute('cy')));
+    expect(Math.min(...ys)).toBeGreaterThanOrEqual(18);
+    expect(Math.max(...ys)).toBeLessThanOrEqual(88);
+    // L'étendue du tracé : le plus haut et le plus bas de la courbe sont à 60 px au moins l'un de l'autre (l'échelle ajoute 4 % en haut).
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThanOrEqual(60);
+  });
+
+  it('n° 23 : le détail du creux reprend z2s (S.. → S.. · n à dépenser, ses sorties, la mise de côté) et dit la tendance de Finances avec sa source', () => {
+    const hypotheses = [
+      { id: 'depart' as const, texte: 'Solde de départ : 4 180 CHF', source: 'Finances › Solde', ouvre: { ecran: 'solde' as const } },
+      { id: 'tendance' as const, texte: 'Tendance de Finances : +120 CHF/mois', source: 'Finances › Prévision (moyenne des mois passés)', ouvre: { ecran: 'finances' as const } }
+    ];
+    render(<Banc {...espions()} modele={modele({ hypotheses } as Partial<ModeleEnTete>)} />);
+    fireEvent.click(screen.getByRole('button', { name: /à dépenser sans passer sous 0/ }));
+    const carte = screen.getByRole('region', { name: /Le creux de S\d+ : ses causes/ });
+    expect(carte.textContent).toMatch(/S\d+ → S\d+ · −?[\d\s]+ à dépenser/);
+    expect(carte.textContent).toContain('Embouteilleuse');
+    expect(carte.textContent).toContain('Mis de côté pour Frigo');
+    expect(carte.textContent).toContain('Tendance de Finances : +120 CHF/mois · source : Finances › Prévision');
+    expect(carte.textContent).toContain('Solde et réglages ›');
+  });
+
+  it('n° 27 : la grande courbe prend la hauteur de la zone de la frise sur un écran large ; au téléphone, celle de sa maquette (250)', () => {
+    largeurFenetre(1280);
+    const { container, unmount } = render(<Banc {...espions()} vueInitiale="graph" />);
+    const grand = Number(container.querySelector('.ent-gs')!.getAttribute('height'));
+    expect(grand).toBeGreaterThan(250);
+    expect(grand).toBe(window.innerHeight - (44 + 70 + 34 + 16));
+    unmount();
+    largeurFenetre(390);
+    const { container: c2 } = render(<Banc {...espions()} vueInitiale="graph" />);
+    expect(Number(c2.querySelector('.ent-gs')!.getAttribute('height'))).toBe(250);
+  });
+
+  it('n° 27 : l’étiquette « creux S.. · … » est posée hors du tracé (ni le libre ni la caisse ne la traversent), sur un fond', () => {
+    for (const [l, h] of [[1100, 560], [390, 250]]) {
+      const g = geoGrande(courbe.semaines, l, h);
+      const c = creuxDe(courbe.semaines)!;
+      const w = largeurTexte(`creux S${c.numero} · `) + largeurTexte(francs(c.centimes), true);
+      const p = placeEtiquetteCreux(courbe.semaines, g, l, c.index, c.centimes, w);
+      const traverse = (vals: number[]) => vals.some((v, j) => {
+        const x0 = g.x(j), x1 = g.x(j + 1), y = g.y(v);
+        if (x1 >= p.boite.l && x0 <= p.boite.r && y >= p.boite.t && y <= p.boite.b) return true;
+        if (j === 0 || x0 < p.boite.l || x0 > p.boite.r) return false;
+        const a = g.y(vals[j - 1]);
+        return Math.min(a, y) <= p.boite.b && Math.max(a, y) >= p.boite.t;
+      });
+      expect(traverse(courbe.semaines.map(s => s.libre))).toBe(false);
+      expect(traverse(courbe.semaines.map(s => s.caisse))).toBe(false);
+    }
+    const { container } = render(<Banc {...espions()} vueInitiale="graph" />);
+    expect(container.querySelector('[data-creux-fond]')).not.toBeNull();
+    expect(container.querySelector('[data-creux-etiquette]')!.textContent).toMatch(/^creux S\d+ · /);
   });
 });

@@ -44,7 +44,7 @@ export interface MenuPeriodeProps {
 const MARGE = 8;
 
 /** Le haut de la barre d'onglets (un `nav` fixe collé en bas), sinon le bas de l'écran. */
-function hautDesOnglets(): number {
+export function hautDesOnglets(): number {
   const h = window.innerHeight;
   let haut = h;
   for (const n of Array.from(document.querySelectorAll('nav'))) {

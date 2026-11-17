@@ -227,11 +227,17 @@ export const etiquetteS = (iso: string): string => `S${numeroSemaine(iso)}`;
 /** « 14 déc. » */
 export const jourLisible = (iso: string): string => `${Number(iso.slice(8, 10))} ${MOIS_COURTS[Number(iso.slice(5, 7)) - 1]}`;
 /** E04, i3 : « S50, 7 – 13 déc. » */
-export function dateDeSemaine(lundi: string): string {
+export function dateDeSemaine(jour: string): string {
+  /* CRITIQUE-4 n° 14 : les vraies bornes lundi – dimanche de la semaine ISO, quel que soit le jour reçu (jamais 7 jours comptés depuis la date) */
+  const lundi = lundiDe(jour);
   const fin = ajouterJours(lundi, 6);
   const m1 = Number(lundi.slice(5, 7)) - 1, m2 = Number(fin.slice(5, 7)) - 1;
   const plage = m1 === m2 ? `${Number(lundi.slice(8))} – ${Number(fin.slice(8))} ${MOIS_COURTS[m2]}` : `${Number(lundi.slice(8))} ${MOIS_COURTS[m1]} – ${Number(fin.slice(8))} ${MOIS_COURTS[m2]}`;
   return `S${numeroSemaine(lundi)}, ${plage}`;
+}
+/** La Liste (E40, CRITIQUE-4 n° 14) : la date de la chose et sa vraie semaine ISO, « 26 août · S34 ». */
+export function etiquetteListe(jour: string): string {
+  return `${jourLisible(jour)} · ${etiquetteS(jour)}`;
 }
 /** Des francs entiers à la suisse, « 5 064 » ; le signe est un vrai moins. Jamais appelé sur un montant inconnu. */
 export const francs = (centimes: number): string => {
@@ -366,6 +372,12 @@ export interface ChoseCalendrier {
   courses?: string;
   /** Le texte court montré à côté (« Malt, emballage ») ; le titre entier reste le nom accessible. */
   etiquette?: string;
+  /** Brassin à venir dont le coût n'est pas encore calculable : la barre dit « coût à venir », sans `centimes` (E23, CRITIQUE-4 n° 2). */
+  coutAVenir?: true;
+  /** Brassin commencé : `centimes` est ce qui reste à sortir (l'emballage), pas son budget entier (CRITIQUE-4, doute IPA −45). */
+  reste?: true;
+  /** Brassin posé sans budget à lui : le budget de sa recette, d'où il vient (CRITIQUE-4 n° 2). */
+  budgetRepris?: string;
   /** Pastille « lié à La Cigogne » et son aperçu sur place (E37, D-113). */
   lie?: { texte: string; apercu: string; client?: string };
   /**
@@ -824,7 +836,7 @@ export type TypeRetard = 'facture' | 'brassin' | 'tache' | 'densite' | 'courses'
 /** E08 : un retard se dit avec une date, jamais « en retard de 7 j ». `jour` est `null` quand la source n'en a pas (densité, courses). */
 export interface Retard { id: string; genre: TypeRetard; titre: string; detail: string; jour: string | null; ouvre: CibleOuverture }
 
-export interface HypotheseCaisse { id: 'depart' | 'tendance'; texte: string; source: string; ouvre: CibleOuverture }
+export interface HypotheseCaisse { id: 'depart' | 'tendance' | `budget-repris-${string}`; texte: string; source: string; ouvre: CibleOuverture }
 
 export interface ModeleCalendrier {
   aujourdhui: string;

@@ -336,12 +336,17 @@ export function fait(chose: ChoseCalendrier): Resolution {
 }
 
 /** f5-a : « Lier à un brassin, un client » (D-113). Un plan porte `batchId` et `clientId` ; une chose du carnet, `liens`. */
-export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId?: string }, ctx: ContexteGestes): Resolution {
+/**
+ * « Lier à un brassin, un client » (E31, E37, D-126) : le lien s'écrit dans la source (`liens` d'une chose du carnet ; `batchId` ou `clientId`
+ * d'un plan manuel), avec son inverse (Annuler). Le message nomme ce qui est lié : « Liée à La Cigogne » (CRITIQUE-4 n° 6).
+ */
+export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId?: string }, ctx: ContexteGestes, nom?: string): Resolution {
   const source = chose.source;
-  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { liens: { ...chose.liens, ...liens } } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler('Lié') };
+  const texte = nom?.trim() ? `Liée à ${nom.trim()}` : 'Liée';
+  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { liens: { ...chose.liens, ...liens } } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
   const plan = planDe(chose, ctx);
   if (!plan || plan.source !== 'manual') return refus('Un lien se pose sur une prévision manuelle ou une chose du carnet.', chose.ouvre);
-  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { ...(liens.batchId ? { batchId: liens.batchId } : {}), ...(liens.clientId ? { clientId: liens.clientId } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler('Lié') };
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { ...(liens.batchId ? { batchId: liens.batchId } : {}), ...(liens.clientId ? { clientId: liens.clientId } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
 }
 
 /** L1 a et b (E36) : une idée datée envoyée au carnet. Elle n'a ni rangée, ni case, ni bouton : elle se montre en icône dans la bande. */

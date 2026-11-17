@@ -281,12 +281,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
   function setDetailFerme() { setSelectionId(null); setMenu(null); }
 
   /* ---------- écrire : la source, puis le message avec son inverse ---------- */
-  const ecrire = useCallback(async (res: Resolution): Promise<boolean> => {
+  const ecrire = useCallback(async (res: Resolution, depuisMenu = false): Promise<boolean> => {
     if (res.ok === false) { montrer({ role: 'status', texte: res.raison, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) }); return false; }
     let faite: EcritureFaite;
     try { faite = await appliquer(res.ecritures as Ecriture[], port); } catch (e) { montrer({ role: 'status', texte: e instanceof Error ? e.message : 'Écriture impossible. Rien n’a changé.' }); return false; }
     setDetailFerme();
-    const annuler = async () => { await faite.annuler(); setMessage(null); };
+    /* CRITIQUE-4 n° 6 : au téléphone, le « click » qui suit le lâcher d'une action du menu tombe sur le message qui vient d'apparaître sous le
+       doigt (vu au banc : « Liée à La Cigogne » annulé aussitôt). Après une action du menu, Annuler n'écoute qu'après 400 ms : aucun doigt ne vise si vite. */
+    const montreLe = Date.now();
+    const annuler = async () => { if (depuisMenu && Date.now() - montreLe < 400) return; await faite.annuler(); setMessage(null); };
     if (res.promesse) {
       const p = res.promesse;
       montrer({
@@ -649,9 +652,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
               setFiltre(c.rangee); setMenu(null);
               montrer({ role: 'status', texte: nomSeules(c.rangee), annuler: () => { setFiltre(null); setMessage(null); } });
             }}
-            onDupliquer={() => { setMenu(null); void ecrire(dup); }}
-            onLier={(liens, nom) => { setMenu(null); void ecrire(lier(c, liens, ctxGestes)).then(ok => { if (ok) void 0; void nom; }); }}
-            onRetirer={() => { setMenu(null); void ecrire(ret); }}
+            onDupliquer={() => { setMenu(null); void ecrire(dup, true); }}
+            onLier={(liens, nom) => {
+              /* CRITIQUE-4 n° 6 (D-126) : le lien est écrit dans la source ; la pastille « lié à X » vient avec le modèle, l'aperçu s'ouvre
+                 aussitôt (le détail de la chose), et le message dit « Liée à X · Annuler » */
+              setMenu(null);
+              void ecrire(lier(c, liens, ctxGestes, nom), true).then(ok => { if (ok) setSelectionId(c.id); });
+            }}
+            onRetirer={() => { setMenu(null); void ecrire(ret, true); }}
             onFermer={() => setMenu(null)}
           />
         );

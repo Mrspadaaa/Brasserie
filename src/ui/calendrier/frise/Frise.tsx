@@ -58,7 +58,7 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   reserveDroite?: number;
   /**
    * 3 mois, 6 mois, An (E27, D-199) : une chose de moins de 24 px devient une marque, et l'appui long sur une marque appelle `onSixSemaines`
-   * au lieu du menu. Absent : déduit des colonnes (des mois, ou plus de 6 semaines ; plus de 13 en paysage, dont la vue de base a 13 semaines).
+   * au lieu du menu. Absent : déduit des colonnes (des mois, ou plus de 6 semaines, en paysage aussi : CRITIQUE-4 n° 4).
    */
   vueLarge?: boolean;
   /** La largeur mesurée et celle d'une colonne : partagées avec la courbe. */
@@ -131,7 +131,9 @@ export const Frise: React.FC<FriseProps> = props => {
   const largeur = mesuree || largeurRepli;
   const n = Math.max(1, colonnes.length);
   const enMois = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
-  const vueLarge = props.vueLarge ?? (enMois || colonnes.length > (paysage ? 13 : 6));
+  /* CRITIQUE-4 n° 4 (D-199, E27) : le paysage montre 13 semaines, c'est déjà une vue large. Plus de 6 semaines, au téléphone comme tourné :
+     une marque prend l'appui long et ouvre les 6 semaines centrées sur elle, jamais le menu f5-a (qui reste aux barres et aux 6 semaines). */
+  const vueLarge = props.vueLarge ?? (enMois || colonnes.length > 6);
   const largeurColonne = largeur / n;
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);

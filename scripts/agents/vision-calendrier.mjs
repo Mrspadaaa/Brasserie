@@ -8,7 +8,7 @@
 //
 // Gestes réels : contact tactile CDP (Input.dispatchTouchEvent) à 390 × 844 et 844 × 390, souris à 1280 × 800. Les éléments se trouvent par
 // leur texte, leur rôle, leur aria-label (ou title) ou leur data-titre ; jamais par un id daté. Un état dont un élément ou le texte attendu manque
-// est dit « ABSENT » dans RAPPORT.md ; sa capture porte le suffixe « -ABSENT » : rien n'est capturé en silence.
+// est dit « ABSENT » dans RAPPORT.md ; sa capture porte le suffixe « -ECHEC » : rien n'est capturé en silence.
 // Banc : fixture « banc — données simulées », en mémoire. /?dev-local : chaque requête vers Firestore est coupée avant de partir (rien n'est
 // écrit en ligne) ; les saisies portent « ZZ TEST — ». Gemini n'est jamais appelé.
 import { createRequire } from 'node:module';
@@ -179,7 +179,7 @@ async function glisserChose(p, titre, n, { sous = null, tenu = false } = {}) {
   await glisserXY(p, x, r.y, n * lc, 0, { tenu });
 }
 async function menuPeriode(p, choix) {
-  await toucher(p, { aria: /^Période/ });
+  await toucher(p, { data: 'data-ent-periode' });
   if (choix) await toucher(p, { dans: { role: 'dialog', aria: /Période/ }, texte: choix });
 }
 const ajouterDans = (p, rangee) => toucher(p, { aria: new RegExp(`^Ajouter dans ${rangee}`) });
@@ -393,7 +393,7 @@ async function jouerEtat(cfgNom, theme, etat) {
       statut = 'ABSENT'; dit = e instanceof Absent ? e.message : `erreur du geste : ${String(e.message || e).slice(0, 160)}`;
     }
     if (p.noteEtat) dit += ` (${p.noteEtat})`;
-    const nomFichier = `${base}${statut === 'OK' ? '' : '-ABSENT'}.png`;
+    const nomFichier = `${base}${statut === 'OK' ? '' : '-ECHEC'}.png`;
     await p.screenshot({ path: join(DOSSIER, nomFichier) });
     if (etat.fin && p.doigt) await etat.fin(p).catch(() => {});
     const err = p.erreurs.length ? ` ; ${p.erreurs.length} erreur(s) de console : ${p.erreurs[0]}` : '';
@@ -430,7 +430,7 @@ async function devLocal(cfgNom, theme) {
       dit = `${m.rangees} rangées, ${m.vides} « vide », + volant ${m.plus ? 'présent' : 'absent'}, « exemple » ${m.exemple ? 'présent' : 'absent'}`;
       if (m.rangees !== 7 || !m.plus || m.exemple) statut = 'ABSENT';
     } catch (e) { statut = 'ABSENT'; dit = e instanceof Absent ? e.message : String(e.message || e).slice(0, 160); }
-    const f = `${base56}${statut === 'OK' ? '' : '-ABSENT'}.png`;
+    const f = `${base56}${statut === 'OK' ? '' : '-ECHEC'}.png`;
     await p.screenshot({ path: join(DOSSIER, f) });
     rapport.push({ cfgNom, theme, n: '56', nom: 'dev-local-onglet', geste: '/?dev-local, Bord puis Calendrier', statut, dit: `${dit} ; requêtes Firestore coupées : ${p.coupees}`, capture: f });
     console.log(`${statut === 'OK' ? 'ok' : statut} ${base56} : ${dit}`);
@@ -476,14 +476,159 @@ async function etPer(cfgNom, theme) {
     const t = await lireTexte(p);
     const plage = /\d{1,2} \p{L}+\.? → \d{1,2} \p{L}+/u.test(t), dansVu = /ZZ TEST — dans la plage/.test(t), horsVu = /ZZ TEST — hors plage/.test(t);
     const ok = plage && dansVu && !horsVu;
-    const f = `${base33}${ok ? '' : '-ABSENT'}.png`;
+    const f = `${base33}${ok ? '' : '-ECHEC'}.png`;
     await p.screenshot({ path: join(DOSSIER, f) });
     rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ')}`, statut: ok ? 'OK' : 'ABSENT',
       dit: `plage affichée ${plage}, « dans la plage » listée ${dansVu}, « hors plage » listée ${horsVu} ; requêtes Firestore coupées : ${p.coupees}`, capture: f });
   } catch (e) {
     let f = '—';
-    if (p) { f = `${base33}-ABSENT.png`; await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {}); }
+    if (p) { f = `${base33}-ECHEC.png`; await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {}); }
     rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ') || 'rien'}`, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
+  } finally { if (p) await p.ctx.close().catch(() => {}); }
+}
+
+/* ------------------------------------------------------------------ CRITIQUE-4 n° 5, 9, 13 c (lot q4-app) : l'app réelle et la feuille du banc */
+
+/**
+ * N° 5 : au premier Finances d'un serveur Vite neuf, Vite découvre `react-virtuoso` (chunk de Finances), réoptimise ses dépendances et recharge
+ * la page (« optimized dependencies changed. reloading ») ; un autre serveur qui partage `node_modules/.vite` peut aussi invalider le cache.
+ * Le banc chauffe donc Finances une fois, attend `.finance` 30 s au plus, recharge une fois s'il le faut, et dit le temps : jamais 25 s muettes.
+ */
+async function chaufferFinances(p) {
+  const t0 = Date.now();
+  for (let essai = 0; essai < 2; essai++) {
+    await ongletApp(p, 'Finances').catch(() => {});
+    for (let i = 0; i < 60; i++) { if (await p.evaluate(() => !!document.querySelector('.finance')).catch(() => false)) return `Finances monté en ${Date.now() - t0} ms${essai ? ' (après un rechargement)' : ''}`; await attendre(500); }
+    await charger(p, null);
+  }
+  throw new Absent(`Finances toujours en « Chargement de l’écran… » après ${Math.round((Date.now() - t0) / 1000)} s et un rechargement`);
+}
+/** Un champ d'une feuille rempli comme au clavier (le setter natif, puis input et change). */
+const remplir = (p, aria, valeur) => p.evaluate((a, v) => {
+  const d = [...document.querySelectorAll('[role="dialog"], dialog')].filter(x => x.getBoundingClientRect().height > 0).pop();
+  const c = d && [...d.querySelectorAll('input, textarea')].find(i => (i.getAttribute('aria-label') || i.placeholder || '').startsWith(a));
+  if (!c) return false;
+  const s = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(c), 'value').set; s.call(c, v);
+  c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); c.dispatchEvent(new Event('blur', { bubbles: true }));
+  return true;
+}, aria, valeur);
+/** Le lundi de la prochaine semaine ISO `n`, depuis aujourd'hui (le même calcul que la fixture). */
+function lundiSemaine(n) {
+  const j = new Date(); const l = new Date(Date.UTC(j.getFullYear(), j.getMonth(), j.getDate() - ((j.getDay() + 6) % 7)));
+  for (let k = 0; k <= 53; k++) {
+    const d = new Date(l.getTime() + k * 7 * 86400000); const t = new Date(d.getTime() + 3 * 86400000);
+    const a = new Date(Date.UTC(t.getUTCFullYear(), 0, 4)); const num = 1 + Math.round(((t - a) / 86400000 - 3 + ((a.getUTCDay() + 6) % 7)) / 7);
+    if (num === n) return d.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
+/** Une capture nommée de ce qu'elle montre ; `-ECHEC` si le texte attendu n'est pas dans le DOM. */
+async function capturer(p, nom, attendu, geste, extra = '') {
+  const texte = await lireTexte(p);
+  const manques = [];
+  for (const a of attendu) { if (a instanceof RegExp) { if (!a.test(texte)) manques.push(`« ${a.source} »`); } else if (!(await a(p))) manques.push(a.dit); }
+  const statut = manques.length ? 'ABSENT' : 'OK';
+  const f = `${nom}${manques.length ? '-ECHEC' : ''}.png`;
+  await p.screenshot({ path: join(DOSSIER, f) });
+  const dit = `${manques.length ? `attendu non trouvé : ${manques.join(', ')}` : `attendu trouvé : ${attendu.map(a => (a instanceof RegExp ? `« ${a.source} »` : a.dit)).join(', ')}`}${extra ? ` ; ${extra}` : ''} ; requêtes Firestore coupées : ${p.coupees ?? 0}`;
+  rapport.push({ cfgNom: p.cfg.w === 1280 ? 'd1280' : p.cfg.w > p.cfg.h ? 'paysage' : 'm390', theme: p.theme, n: 'app', nom, geste, statut, dit, capture: f });
+  console.log(`${statut === 'OK' ? 'ok' : statut} ${nom} : ${dit.slice(0, 160)}`);
+  return statut === 'OK';
+}
+async function etape(p, nom, geste, faire, attendu, extra) {
+  try { await faire(); return await capturer(p, nom, attendu, geste, typeof extra === 'function' ? extra() : extra); }
+  catch (e) {
+    const f = `${nom}-ECHEC.png`;
+    await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {});
+    rapport.push({ cfgNom: p.cfg.w === 1280 ? 'd1280' : 'm390', theme: p.theme, n: 'app', nom, geste, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
+    console.log(`ABSENT ${nom} : ${String(e.message || e).slice(0, 140)}`);
+    return false;
+  }
+}
+
+/**
+ * N° 9 (D-33, D-45, D-49, D-68, D-71, E38) : dans /?dev-local, données locales seulement, nommées « ZZ TEST — … ». La recette du brassin est une
+ * fixture (dev-local démarre sans recette, et la feuille Brassins ne pose qu'une recette de l'app) ; le brassin, la prévision et le reste se font
+ * par les gestes de l'app. Gemini n'est jamais appelé (les requêtes vers ses hôtes sont coupées comme Firestore).
+ */
+async function parcoursApp(theme) {
+  let p;
+  const RECETTE = 'ZZ TEST — Blonde du banc';
+  try {
+    p = await ouvrir(CONFIGS.m390, theme, APP, { coupeFirestore: true });
+    const chaud = await chaufferFinances(p);
+    await ongletApp(p, 'Calendrier');
+    await p.waitForSelector('[data-frise]', { timeout: 20000 });
+    await p.evaluate(async nom => {
+      const { StorageService } = await import('/src/services/storage.ts');
+      StorageService.addRecipe({ id: 'ZZ-TEST-RECETTE', name: nom, style: 'Blonde', volumeL: 100, ingredients: [], fermentables: [{ name: 'Malt pilsner', weightKg: 20 }], hops: [{ name: 'Saaz', weightG: 250, stage: 'boil', time: 60 }], ogTarget: 1.048 });
+    }, RECETTE);
+    await attendre(800);
+    const lundi50 = lundiSemaine(50);
+    await etape(p, 'devlocal-calendrier-sources-zz-test', `${chaud} ; recette « ${RECETTE} » posée en fixture ; + Brassins, puce de la recette, Ajouter ; + Achats, S50, Plus de détails ›, « ZZ TEST — houblon Citra » 240 CHF, Enregistrer`, async () => {
+      await ajouterDans(p, 'Brassins'); await toucher(p, dansFeuille(new RegExp(`^${RECETTE}`))); await toucher(p, boutonFeuille(/^Ajouter/));
+      await attendre(600);
+      await ajouterDans(p, 'Achats'); await toucher(p, dansFeuille(/^S50/)); await toucher(p, dansFeuille(/^Plus de détails/));
+      await p.waitForFunction(() => [...document.querySelectorAll('[role="dialog"]')].some(d => /Prévoir une dépense/.test(d.textContent || '')), { timeout: 15000 });
+      if (!(await remplir(p, 'Loyer, commande', 'ZZ TEST — houblon Citra')) || !(await remplir(p, 'Montant', '240'))) throw new Absent('champs Libellé ou Montant introuvables dans Prévoir une dépense');
+      await toucher(p, { dans: { role: 'dialog', texte: /Prévoir une dépense/ }, texte: /^Enregistrer$/, role: 'button' });
+      await attendre(900);
+    }, [new RegExp(RECETTE), /ZZ TEST — houblon Citra/, fn(async q => q.evaluate(n => [...document.querySelectorAll('section[data-rangee="brassins"] [data-chose]')].some(e => (e.getAttribute('data-titre') || e.getAttribute('aria-label') || '').startsWith(n)), RECETTE), 'le brassin dans la rangée Brassins'),
+      fn(async q => q.evaluate(() => [...document.querySelectorAll('section[data-rangee="achats"] [data-chose]')].some(e => /ZZ TEST — houblon Citra/.test(e.getAttribute('data-titre') || e.getAttribute('aria-label') || ''))), 'la prévision dans la rangée Achats')]);
+    await etape(p, 'devlocal-budget-brassin-feuille', `toucher le brassin « ${RECETTE} », puis Budget ›`, async () => {
+      await toucher(p, { titre: RECETTE }); await toucher(p, { texte: /^Budget ›/ });
+      await p.waitForFunction(n => [...document.querySelectorAll('[role="dialog"]')].some(d => (d.getAttribute('aria-labelledby') ? (document.getElementById(d.getAttribute('aria-labelledby'))?.textContent || '') : d.textContent || '').includes(n)), { timeout: 15000 }, RECETTE).catch(() => {});
+    }, [fn(async q => q.evaluate(n => [...document.querySelectorAll('[role="dialog"]')].some(d => (d.textContent || '').includes(n)), RECETTE), 'la feuille de budget porte le nom du brassin'), fn(async q => q.evaluate(() => !/l’app ouvrirait/.test(document.body.innerText)), 'aucune ligne du banc')]);
+    await p.keyboard.press('Escape'); await attendre(500);
+    await etape(p, 'devlocal-plus-de-details-prevoir-une-depense-S50', '+ Achats, S50, Plus de détails ›', async () => {
+      await ajouterDans(p, 'Achats'); await toucher(p, dansFeuille(/^S50/)); await toucher(p, dansFeuille(/^Plus de détails/));
+      await p.waitForFunction(() => [...document.querySelectorAll('[role="dialog"]')].some(d => /Prévoir une dépense/.test(d.textContent || '')), { timeout: 15000 });
+    }, [/Prévoir une dépense/, fn(async q => q.evaluate(l => [...document.querySelectorAll('input[type="date"]')].some(i => i.value === l), lundi50), `date = lundi de S50 (${lundi50})`)]);
+    await p.keyboard.press('Escape'); await attendre(500);
+    await etape(p, 'devlocal-commander-courses', `toucher le brassin « ${RECETTE} », puis Commander`, async () => {
+      await toucher(p, { titre: RECETTE }); await toucher(p, { texte: /^Commander/ }); await attendre(1500);
+    }, [/Courses/, fn(async q => q.evaluate(() => !document.querySelector('[data-frise]')), 'le calendrier a laissé place aux Courses')]);
+  } catch (e) {
+    rapport.push({ cfgNom: 'm390', theme, n: 'app', nom: 'devlocal', geste: '/?dev-local', statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: '—' });
+    console.log(`ABSENT devlocal : ${String(e.message || e).slice(0, 160)}`);
+  } finally { if (p) await p.ctx.close().catch(() => {}); }
+}
+
+/** ET-PER au 1280 (parcours 6, D-12 à D-14, D-78) : 3 mois au calendrier → la plage dans Finances ; une fin réglée dans Opérations → la fenêtre. */
+async function plageApp(theme) {
+  let p;
+  try {
+    p = await ouvrir(CONFIGS.d1280, theme, APP, { coupeFirestore: true });
+    const chaud = await chaufferFinances(p);
+    await ongletApp(p, 'Calendrier'); await p.waitForSelector('[data-frise]', { timeout: 20000 });
+    await menuPeriode(p, /^3 mois/); await p.keyboard.press('Escape'); await attendre(300);
+    const plage = await p.evaluate(() => { const f = document.querySelector('[data-frise]'); return f ? f.getAttribute('data-nb-colonnes') : null; });
+    await etape(p, `d1280-${theme}-finances-plage-du-calendrier`, `${chaud} ; Calendrier, période 3 mois (${plage} semaines), puis Finances › Opérations`, async () => {
+      await ongletApp(p, 'Finances'); await toucher(p, { role: 'tab', texte: /^Opérations$/ }); await attendre(600);
+    }, [/\d{1,2} \p{L}+\.?( \d{4})? → \d{1,2} \p{L}+/u, fn(async q => q.evaluate(() => { const d = document.querySelector('input[aria-label="Du"]'), a = document.querySelector('input[aria-label="Au"]'); return !!d && !!a && d.value && a.value && (Date.parse(a.value) - Date.parse(d.value)) / 86400000 === 90; }), 'Opérations filtré du lundi au dimanche + 12 semaines (Du et Au)')]);
+    await etape(p, `d1280-${theme}-calendrier-plage-de-finances`, 'Finances › Opérations, « Au » réglé 4 semaines après « Du », puis Calendrier', async () => {
+      const ok = await p.evaluate(() => { const d = document.querySelector('input[aria-label="Du"]'), a = document.querySelector('input[aria-label="Au"]'); if (!d || !a) return false; const v = new Date(Date.parse(d.value) + 27 * 86400000).toISOString().slice(0, 10); const s = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; s.call(a, v); a.dispatchEvent(new Event('input', { bubbles: true })); a.dispatchEvent(new Event('change', { bubbles: true })); return true; });
+      if (!ok) throw new Absent('champs Du et Au introuvables dans Opérations');
+      await attendre(600); await ongletApp(p, 'Calendrier'); await p.waitForSelector('[data-frise]', { timeout: 20000 }); await attendre(500);
+    }, [fn(async q => q.evaluate(() => document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes') === '4'), 'la frise a 4 semaines')]);
+  } catch (e) {
+    rapport.push({ cfgNom: 'd1280', theme, n: 'app', nom: 'plage', geste: '/?dev-local', statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: '—' });
+    console.log(`ABSENT plage ${theme} : ${String(e.message || e).slice(0, 160)}`);
+  } finally { if (p) await p.ctx.close().catch(() => {}); }
+}
+
+/** N° 13 c au banc, 390 tactile : « Budget › » ouvre la feuille en bas, marquée « banc » ; rien sur l'en-tête. */
+async function bancBudget(theme) {
+  let p;
+  try {
+    p = await ouvrir(CONFIGS.m390, theme, BANC);
+    await etape(p, `m390-${theme}-banc-budget-feuille-bas`, 'toucher la Blonde, puis Budget ›', async () => { await toucher(p, { titre: 'Blonde d’automne' }); await toucher(p, { texte: /^Budget ›/ }); await attendre(500); },
+      [/banc — l’app ouvrirait/, /le budget du brassin Blonde d’automne/, fn(async q => q.evaluate(() => {
+        const d = [...document.querySelectorAll('[role="dialog"]')].find(x => /banc — l’app ouvrirait/.test(x.textContent || '')); const z = document.querySelector('[data-entete-zone]');
+        if (!d) return false; const D = d.getBoundingClientRect(); const Z = z ? z.getBoundingClientRect() : null;
+        return D.bottom >= innerHeight - 2 && (!Z || D.top >= Z.bottom - 1 || Z.height === 0);
+      }), 'la feuille est en bas, sous l’en-tête'), fn(async q => q.evaluate(() => !!document.querySelector('[role="dialog"] button[aria-label="Fermer"]')), 'la feuille se ferme par ×')]);
   } finally { if (p) await p.ctx.close().catch(() => {}); }
 }
 
@@ -530,6 +675,12 @@ try {
         if (garde('33')) await etPer(cfgNom, theme);
       }
     }
+  }
+  /* CRITIQUE-4 (lot q4-app) : --etats app (l'app réelle, 390), plage (Finances ↔ calendrier, 1280), banc-budget (n° 13 c) ; deux thèmes */
+  for (const theme of choixThemes) {
+    if (garde('app') && !args.includes('--sans-dev-local')) await parcoursApp(theme);
+    if (garde('plage') && !args.includes('--sans-dev-local')) await plageApp(theme);
+    if (garde('banc-budget')) await bancBudget(theme);
   }
   if (!args.includes('--sans-chrono') && choixConfigs.includes('m390') && (!choixEtats || choixEtats.has('chrono'))) await chronometrer();
 } finally {

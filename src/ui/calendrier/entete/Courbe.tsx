@@ -346,7 +346,15 @@ export interface CourbeProps {
   masque?: Boite | null;
   /** La fenêtre posée sur la courbe. */
   children?: React.ReactNode;
+  /**
+   * Les mois EN HAUT de la courbe, dans son dessin, avec leur trait « |déc. » (w3s, paysage) ; le tracé commence dessous. Par défaut, les mois
+   * sont sous la courbe (z2s, portrait).
+   */
+  moisEnHaut?: boolean;
 }
+
+/** Hauteur de la rangée des mois posée en haut (paysage, w3s) : le tracé commence dessous. */
+export const HAUTEUR_MOIS_HAUT = 18;
 
 /** Hauteur de la rangée des mois sous le tracé (texte de 14 px). */
 export const HAUTEUR_MOIS = 18;
@@ -371,7 +379,7 @@ export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { in
   return obstacles;
 }
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children }: CourbeProps) {
+export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -382,15 +390,20 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
     return () => { vivant = false; };
   }, []);
   const n = courbe.length;
-  const g = geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, 4, hauteur - HAUTEUR_MOIS);
+  const g = moisEnHaut
+    ? geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, HAUTEUR_MOIS_HAUT, hauteur - 2)
+    : geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, 4, hauteur - HAUTEUR_MOIS);
+  // La ligne de base des mois : en haut (w3s) ou sous le tracé (z2s).
+  const yMois = moisEnHaut ? 13 : hauteur - 3;
   const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
   const creux = creuxDe(courbe);
   const causes = creux ? causesDuCreux(courbe, creux.index) : null;
   const misDeCote = courbe.some(s => s.caisse - s.libre > 1);
   const mois = avecMois ? etiquettesMois(courbe, g) : [];
   // Les mois d'abord : un nom peut se poser dans leur rangée, entre deux mois, à 8 px d'eux.
-  const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: hauteur - 14, b: hauteur }));
-  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois], mise, etoiles, [hauteur - 3]);
+  const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - 11, b: yMois + 3 }));
+  // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
+  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois], mise, etoiles, [yMois]);
   const y0 = g.y(0);
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
   const cache = (e: Etiquette) => !!masque && boitesSeCroisent(e.boite, masque);
@@ -400,6 +413,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         aria-label={`Libre et caisse sur ${n} semaines${creux ? ` ; au plus serré en S${creux.numero} : ${chf(creux.centimes)} CHF` : ''} ; les mouvements sont nommés avec leur montant`}>
         <defs>
           <pattern id={`h${uid}`} patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="2.4" height="6" className="ent-hach" /></pattern>
+          <clipPath id={`z${uid}`}><rect x={0} y={0} width={largeur} height={hauteur} /></clipPath>
         </defs>
         {causes && creux && causes.causes.length > 0 && <rect className="ent-creux-zone" x={g.x(causes.debut)} y={g.haut} width={g.x(creux.index + 1) - g.x(causes.debut)} height={g.bas - g.haut} />}
         <path className="ent-aire" d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />
@@ -418,7 +432,10 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
             <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={5.5} className="ent-cur-pt" />
           </g>
         )}
-        {courbe.map((s, i) => <circle key={`p${s.lundi}`} className="ent-pt" data-point-semaine={s.numero} data-semaine={s.numero} cx={g.x(i) + g.unit / 2} cy={g.y(s.libre)} r={1.6} />)}
+        {/* Les points restent dans la zone de tracé (CRITIQUE-4 n° 25) : rien ne déborde du dessin. */}
+        <g className="ent-pts" clipPath={`url(#z${uid})`}>
+          {courbe.map((s, i) => <circle key={`p${s.lundi}`} className="ent-pt" data-point-semaine={s.numero} data-semaine={s.numero} cx={g.x(i) + g.unit / 2} cy={g.y(s.libre)} r={1.6} />)}
+        </g>
         {noms.map(e => (e.genre === 'mise' ? (
           <g key="mise" data-mise-de-cote="etiquette" className={cache(e) ? 'ent-mdc ent-nom-cache' : 'ent-mdc'} aria-hidden={cache(e) || undefined}>
             <rect x={e.boite.l + 1} y={e.y - 11} width={12} height={12} fill={`url(#h${uid})`} className="ent-mdc-c" />
@@ -435,7 +452,8 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
           </g>
         )))}
         {creux && <circle className="ent-creux-pt" cx={g.x(creux.index) + g.unit / 2} cy={g.y(creux.centimes)} r={5.5} />}
-        {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={hauteur - 3}>{m.texte}</text>)}
+        {moisEnHaut && mois.map(m => <line key={`t${m.x}`} className="ent-mois-t" x1={m.x - 3} x2={m.x - 3} y1={1} y2={16} />)}
+        {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={yMois}>{m.texte}</text>)}
       </svg>
       {children}
     </div>

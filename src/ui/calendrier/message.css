@@ -13,6 +13,15 @@
 .cal-msg[data-message] .cal-msg-ligne {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
+/* CRITIQUE-4 n° 13 b : avec un effet chiffré, deux lignes fixes. Le nom cède (points de suite) ; l'effet « S47 : 3 510 → 3 640 » reste entier. */
+/* une seule ligne quand le nom et l'effet y tiennent (paysage, 1280), sinon l'effet passe entier à la seconde */
+.cal-msg[data-message] .cal-msg-ligne.cal-msg-2l { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-nom { display: block; flex: 0 1 auto; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-effet { display: block; flex: none; white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* n° 20 : chaque bouton du message se touche sur 44 px au moins */
+.cal-msg[data-message] .cal-msg-b { min-height: 44px; }
+.cal-msg[data-message] .cal-msg-lien { position: relative; }
+.cal-msg[data-message] .cal-msg-lien::before { content: ''; position: absolute; inset: -13px -4px; }
 
 /* f6-b : l'alerte d'une promesse, sur toute la largeur au-dessus du + volant ; le texte entier sur la première ligne, Livrer et Annuler sur la
    seconde (passe 8, 03-p-f6b-alerte). */
@@ -22,6 +31,14 @@
 }
 .cal-msg-alerte[data-message] .cal-msg-ligne { font-size: 14px; letter-spacing: -0.1px; }
 .cal-msg-alerte[data-message] .cal-msg-bt { justify-content: flex-start; }
+
+/* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) : l'alerte reste en bas, à gauche du + volant, son texte et ses boutons sur une ligne */
+@media (orientation: landscape) and (max-height: 520px) {
+  .cal-msg-alerte[data-message] {
+    right: 84px; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 760px;
+    bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
+  }
+}
 
 /* paysage et grand écran : à côté du rail, jamais dessus */
 @media (min-width: 1024px) {

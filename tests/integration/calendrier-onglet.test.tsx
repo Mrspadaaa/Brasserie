@@ -7,7 +7,7 @@ import { BottomNav } from '../../src/components/BottomNav';
 import { plusMenuFor } from '../../src/domain/plusEcran';
 import { fabActionFor } from '../../src/domain/fabActions';
 import { StorageService, defaultConfig } from '../../src/services/storage';
-import { ajouterJours, lundiDe } from '../../src/domain/calendrier';
+import { ajouterJours, lundiDe, numeroSemaine } from '../../src/domain/calendrier';
 import { todayISO } from '../../src/domain/finance/ledger';
 import { recipe as recetteDeBanc } from '../fixtures/brewCompanion';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
@@ -241,8 +241,31 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     fireEvent.pointerDown(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerUp(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.click(await screen.findByRole('button', { name: 'Budget ›' }));
-    const feuille = await screen.findByRole('dialog', {}, { timeout: 10000 });
+    /* CRITIQUE-4 n° 9 : la vraie feuille de budget (BrewBudgetSheet, titrée du nom de la recette du brassin), pas une feuille quelconque */
+    const feuille = await screen.findByRole('dialog', { name: /Porter du budget/ }, { timeout: 10000 });
     await waitFor(() => expect(within(feuille).getAllByText(/Porter du budget/).length).toBeGreaterThan(0), { timeout: 10000 });
+    expect(document.body.textContent).not.toMatch(/l’app ouvrirait/);
+  }, 40000);
+
+  it('CRITIQUE-4 n° 9 (D-68, E34) : dans l’App, « Plus de détails › » de la feuille Achats en S50 ouvre PlanSheet « Prévoir une dépense » datée du lundi de S50', async () => {
+    const aujourdhui = todayISO();
+    let lundiS50 = '';
+    for (let k = 0; k <= 53 && !lundiS50; k++) { const l = ajouterJours(lundiDe(aujourdhui), 7 * k); if (numeroSemaine(l) === 50) lundiS50 = l; }
+    window.history.replaceState(null, '', '/?dev-local');
+    vi.spyOn(StorageService, 'startSync').mockImplementation(() => {});
+    vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
+    vi.spyOn(StorageService, 'getConfig').mockReturnValue(defaultConfig);
+    const { App } = await import('../../src/App');
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Calendrier' }));
+    const plus = await waitFor(() => { const b = document.querySelector<HTMLButtonElement>('button[data-plus="achats"]'); expect(b).toBeTruthy(); return b!; }, { timeout: 10000 });
+    fireEvent.click(plus);
+    const achats = within(screen.getByRole('dialog', { name: 'Achats' }));
+    fireEvent.click(within(achats.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    fireEvent.click(achats.getByRole('button', { name: 'Plus de détails ›' }));
+    const plan = within(await screen.findByRole('dialog', { name: 'Prévoir une dépense' }, { timeout: 10000 }));
+    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(lundiS50);
+    expect(document.body.textContent).not.toMatch(/l’app ouvrirait/);
   }, 40000);
 });
 

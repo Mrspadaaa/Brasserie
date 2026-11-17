@@ -5,7 +5,7 @@ import type { FinancialPlan } from '../../src/domain/finance/types';
 import {
   RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
-  retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, type Rangee
+  retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee
 } from '../../src/domain/calendrier';
 import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
@@ -506,5 +506,25 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     const seul = preparerChoses([b, ...nonChiffrees]).find(c => c.id === b.id)!;
     expect(seul.centimes).toBeUndefined();
     expect(seul.partiel).toBeUndefined();
+  });
+});
+
+describe('CRITIQUE-4 n° 14 : la Liste dit la vraie semaine ISO', () => {
+  it('« 26 août · S34 » ; les bornes lundi – dimanche de la semaine, jamais 7 jours comptés depuis la date', () => {
+    expect(etiquetteListe('2027-08-26')).toBe('26 août · S34');
+    expect(dateDeSemaine('2027-08-26')).toBe('S34, 23 – 29 août');
+    expect(etiquetteListe('2026-11-17')).toBe('17 nov. · S47');
+    expect(dateDeSemaine('2026-11-17')).toBe('S47, 16 – 22 nov.');
+    /* les libellés faux de la critique 4 ne reviennent jamais */
+    expect(dateDeSemaine('2026-11-17')).not.toContain('17 – 23');
+    expect(dateDeSemaine('2027-08-26')).not.toContain('1 sept.');
+  });
+});
+
+describe('CRITIQUE-4, doute IPA J8 : J0 est le jour du brassage', () => {
+  it('brassée le 9 nov., recette de 28 j : J7 le 16 nov., J8 le 17 nov. (le banc tournait le 17)', () => {
+    expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-09')).toBe('J0 / 28 · prête 7 déc.');
+    expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-16')).toBe('J7 / 28 · prête 7 déc.');
+    expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-17')).toBe('J8 / 28 · prête 7 déc.');
   });
 });

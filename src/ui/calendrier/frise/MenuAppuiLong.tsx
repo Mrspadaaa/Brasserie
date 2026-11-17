@@ -51,6 +51,23 @@ export interface MenuAppuiLongProps {
   onFermer: () => void;
 }
 
+/** Le bas de l'en-tête collé du calendrier (courbe et bande, `data-entete-zone`) : le menu ne s'y pose jamais. 0 s'il n'est pas à l'écran. */
+function basEntete(): number {
+  if (typeof document === 'undefined') return 0;
+  const r = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
+  return r && r.height > 0 && r.bottom > 0 ? r.bottom : 0;
+}
+/** Le conteneur qui fait défiler la frise : le premier parent qui défile, sinon la page. `null` si rien ne peut défiler. */
+function conteneurDefilant(el: HTMLElement | null): Element | null {
+  if (typeof document === 'undefined' || !el) return null;
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    const o = getComputedStyle(p).overflowY;
+    if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
+  }
+  const page = document.scrollingElement;
+  return page && page.scrollHeight > page.clientHeight + 1 ? page : null;
+}
+
 /** Le téléphone tourné (844 × 390) : plus large que haut, et bas (comme la règle `orientation: landscape and max-height: 520px` de la feuille). */
 const enPaysage = (): boolean => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerHeight <= 520;
 
@@ -98,24 +115,51 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   const paysage = enPaysage();
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
   const largeur = paysage ? Math.min(600, vw - 32) : vw > 700 ? 440 : Math.min(300, vw - 96);
-  const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut'; maxHeight?: number } | null>(null);
+  const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut' | 'cote'; maxHeight?: number; largeur?: number } | null>(null);
   /* sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; sinon borné à l'écran, au plus près de la barre.
      Jamais une hauteur fixe (n° 4). Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
+  /* CRITIQUE-4 n° 12 (E31, D-192) : sous la barre tenue ; sans la place, au-dessus d'elle ; jamais sur l'en-tête collé (courbe, bande) ni sur
+     la chose tenue. Si ni dessous ni dessus ne tiennent (le paysage n'a que 390 px), la page défile pour poser la barre juste sous l'en-tête,
+     comme sa maquette (as/cap/l-f5a-apres) ; sinon le menu se pose à côté de la barre ; en dernier recours, borné entre l'en-tête et les onglets. */
   React.useLayoutEffect(() => {
-    const rect = ancre?.getBoundingClientRect();
     const vh = typeof window !== 'undefined' ? window.innerHeight : 844;
     const bas = vh - BAS_RESERVE_PX;
     const mh = racine.current?.offsetHeight || (paysage && !lier ? HAUTEUR_REPLI_PAYSAGE_PX : HAUTEUR_REPLI_PX);
-    const left = rect ? Math.max(8, Math.min(vw - largeur - 8, rect.left + rect.width / 2 - largeur / 2)) : Math.max(8, (vw - largeur) / 2);
-    if (!rect) { setPos({ top: Math.max(8, bas - mh), left, cote: 'haut', maxHeight: bas - 8 }); return; }
-    const dessous = rect.bottom + 6, dessus = rect.top - 6 - mh;
-    if (dessous + mh <= bas) setPos({ top: dessous, left, cote: 'bas' });
-    else if (dessus >= 8) setPos({ top: dessus, left, cote: 'haut' });
-    else if (mh <= bas - 8) {
-      /* ni dessous ni dessus en entier : le menu entier, collé au bord qui la touche le moins (il couvre un bout de la barre, jamais une action) */
-      const placeBas = bas - rect.bottom, placeHaut = rect.top;
-      setPos({ top: placeBas >= placeHaut ? bas - mh : 8, left, cote: placeBas >= placeHaut ? 'bas' : 'haut' });
-    } else setPos({ top: 8, left, cote: 'haut', maxHeight: bas - 8 });
+    const haut = Math.max(8, basEntete() + 6);
+    const centre = (r: DOMRect) => Math.max(8, Math.min(vw - largeur - 8, r.left + r.width / 2 - largeur / 2));
+    let rect = ancre?.getBoundingClientRect();
+    if (!rect) { setPos({ top: Math.max(haut, bas - mh), left: Math.max(8, (vw - largeur) / 2), cote: 'haut', maxHeight: bas - haut }); return; }
+    const essai = (r: DOMRect) => {
+      if (r.bottom + 6 >= haut && r.bottom + 6 + mh <= bas) return { top: r.bottom + 6, left: centre(r), cote: 'bas' as const };
+      if (r.top - 6 - mh >= haut) return { top: r.top - 6 - mh, left: centre(r), cote: 'haut' as const };
+      return null;
+    };
+    let place = essai(rect);
+    if (!place) {
+      /* défiler : la barre juste sous l'en-tête, le menu dessous */
+      const conteneur = conteneurDefilant(ancre);
+      const delta = Math.round(rect.top - haut);
+      if (conteneur && delta !== 0) {
+        conteneur.scrollTop += delta;
+        rect = ancre!.getBoundingClientRect();
+        place = essai(rect);
+      }
+    }
+    if (place) { setPos(place); return; }
+    /* à côté de la barre, à sa hauteur, entre l'en-tête et les onglets ; plus étroit s'il le faut (400 px au moins : deux colonnes, l'effet
+       passe sous son action), jamais sur elle */
+    const top = Math.max(haut, Math.min(bas - mh, rect.top + rect.height / 2 - mh / 2));
+    const libreD = vw - rect.right - 16, libreG = rect.left - 16;
+    const cote = Math.max(libreD, libreG);
+    if (cote >= Math.min(largeur, 400)) {
+      const w = Math.min(largeur, cote);
+      setPos({ top, left: libreD >= libreG ? rect.right + 8 : rect.left - 8 - w, cote: 'cote', largeur: w, maxHeight: bas - top });
+      return;
+    }
+    if (mh <= bas - haut) {
+      const placeBas = bas - rect.bottom, placeHaut = rect.top - haut;
+      setPos({ top: placeBas >= placeHaut ? bas - mh : haut, left: centre(rect), cote: placeBas >= placeHaut ? 'bas' : 'haut' });
+    } else setPos({ top: haut, left: centre(rect), cote: 'haut', maxHeight: bas - haut });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ancre, lier, largeur, vw, paysage]);
   const retirable = 'raison' in retirer ? null : retirer;
@@ -165,9 +209,9 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
 
   return (
     <div
-      ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}${paysage ? ' cal-menu-l' : ''}`} data-menu
+      ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}${paysage ? ' cal-menu-l' : ''}${pos?.largeur && pos.largeur < largeur ? ' cal-menu-etroit' : ''}`} data-menu
       data-cote={pos?.cote ?? 'bas'} data-colonnes={paysage && !lier ? '2' : '1'}
-      style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, width: largeur, ...(pos?.maxHeight ? { maxHeight: pos.maxHeight } : {}), visibility: pos ? undefined : 'hidden' }}
+      style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, width: pos?.largeur ?? largeur, ...(pos?.maxHeight ? { maxHeight: pos.maxHeight } : {}), visibility: pos ? undefined : 'hidden' }}
     >
       {!lier ? (
         paysage ? (

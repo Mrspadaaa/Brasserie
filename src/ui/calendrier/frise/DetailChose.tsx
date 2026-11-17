@@ -96,7 +96,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
 
   return (
     <div role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
-      <h4 className="cal-det-h">{chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{montant}{chose.partiel ? ' +' : ''}</span>}</h4>
+      <h4 className="cal-det-h">{chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' +' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
       <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
 
       {brassin ? (
@@ -130,6 +130,8 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </p>
       )}
       {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {chose.courses}</span></p>}
+      {brassin && chose.budgetRepris && <p className="cal-det-p" data-budget-repris><Receipt size={16} aria-hidden="true" /><span>{chose.budgetRepris} : à confirmer par Budget ›</span></p>}
+      {brassin && chose.coutAVenir && <p className="cal-det-p" data-cout-a-venir><Receipt size={16} aria-hidden="true" /><span>Coût à venir : aucun budget pour cette recette. Budget › le calcule.</span></p>}
       {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {frais}</span></p>}
       {promesse && <p className="cal-det-p">{promesse}</p>}
       {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
@@ -140,7 +142,8 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         {props.onPoser && <button type="button" className="cal-b cal-b-pri" onClick={props.onPoser}>Poser</button>}
         {props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onFacturer}>Facturer<ChevronRight size={16} aria-hidden="true" /></button>}
         {!props.onPoser && !props.onAccepter && !props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>}
-        {brassin && props.onCommander && commander && <button type="button" className="cal-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" />Commander</button>}
+        {/* CRITIQUE-4 n° 1 (D-191, E30) : « Commander » dès que le brassin a des courses ou un manque, jamais seulement sur un manque */}
+        {brassin && props.onCommander && (commander || chose.courses) && <button type="button" className="cal-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" />Commander</button>}
         {brassin && props.onBudget && <button type="button" className="cal-b" onClick={props.onBudget}>Budget ›</button>}
         {props.onFait && <button type="button" className="cal-b" onClick={props.onFait}><Check size={16} aria-hidden="true" />Fait</button>}
         {peutMiseDeCote && props.onMettreDeCote && (
