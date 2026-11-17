@@ -2048,3 +2048,7 @@ Lecture : le carnet sert d'abord de brouillon de brasserie (notes en vrac, très
 > Non focus sur l'achat de matériel mais ça peut aussi être utilisé comme brouillon
 
 Lecture (corrige la précédente) : le carnet reste centré sur l'achat de matériel ; le brouillon est un usage secondaire, à permettre sans le mettre en avant.
+
+> (17.11) Oui je note mes trucs en gros juste un champs text et ensuite l'ai met en forme, trie, structure ECT... C'est clair ?
+
+Lecture : confirme le but de greffe 5 (un seul champ texte, l'IA met en forme, trie, structure).
