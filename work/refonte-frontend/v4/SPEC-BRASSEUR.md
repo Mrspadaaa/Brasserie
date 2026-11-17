@@ -2077,3 +2077,11 @@ Lecture (L01) : aucune version ne s'impose ; il accorde le port dans l'app tel q
 > En gros, un chat, et ça met en forme, c'est tout et ça permet de comparer les idée, en gros
 
 Lecture : le carnet est d'abord un fil de chat (il écrit ce qu'il veut, l'IA met en forme, trie, range dans les idées) ; ses autres fonctions se réduisent à comparer les idées. Moins d'écrans de gestes, l'IA fait le travail. S'applique au port du carnet (work/missions/2026-11-17-port-carnet).
+
+### 17.11 (soir) — Port en ligne puis testé en ligne
+
+> Parfait une fois en ligne puis testé sur la version en ligne, si tu arrives pas toi, utiliser les autres sessions ou trop ve une solution.
+>
+> Mode nuit activé.
+
+Lecture : le port (calendrier, puis carnet) part en ligne dès 0 bloquant, puis se teste sur la version en ligne (lecture seule, actionneurs sur « ZZ TEST — … » retirés ensuite) ; en cas de blocage, passer par une autre session ou trouver une solution, sans l'attendre.
