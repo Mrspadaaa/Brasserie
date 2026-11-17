@@ -44,3 +44,10 @@ Corps calendrier gi2/r2-c (choisi-a + r2-c) ; en-tête portrait r6b ; pastille C
 ## Ports (retour du 17.11, nuit)
 - 7 commits sur claude/ports-nuit-1611 (pastille, fournisseurs ×2, lot, onglet, suppression, calendrier « montant non renseigné »). La critique vision était VIDE : pas de déploiement. Relance w3imiwu22 (wf_6211585e-ec5) : fenêtre au doigt de la pastille, critique (relancée si vide), correction, checklist branche contre tag.
 - Échecs déjà présents sur le tag (inchangés) : check-units (22), check-brewing Stout, 7 fichiers de tests. Déployer seulement si aucun échec nouveau et critique sans bloquant ; sinon groupé pour lui au matin.
+
+## Mis en ligne (17.11, nuit)
+- Hébergement seul, depuis ../ports-nuit (claude/ports-nuit-1611, cc9f471c), tag local en-ligne/2026-11-17-ports-nuit. Bundle servi = bundle construit (index-DvcgGKfP.js).
+- Avant : critique vision par port (5 fichiers work/ports-nuit/critique/), 6 bloquants corrigés et recontrôlés (RECONTROLE OK) ; tsc et build verts ; vitest : 14 échecs, les mêmes que sur le tag.
+- En ligne, vu : sixième onglet Calendrier présent ; son écran « Cette semaine » liste beaucoup de lignes datées (impôts, emballages à compléter) : bruyant, à revoir avec le calendrier choisi.
+- Non fait : jeu en ligne des gestes qui écrivent (dépense prévue, livrer un fût, archiver) sur ZZ TEST ; functions/src/brewerAppScreens.ts (+ « calendrier » pour le compagnon) non déployé (fonctions).
+- Branche non poussée, non fusionnée : accord du brasseur.
