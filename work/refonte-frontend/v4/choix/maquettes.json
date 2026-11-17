@@ -405,6 +405,22 @@
         "parole": "C'était mieux, beaucoup mieux avant sur le graph … je veux juste la semaine, et les +/- que je puisse afficher avec un bouton, pareil pour les petites icônes",
         "date": "2026-11-17",
         "note": "Courbe de z2 / w3 avec toutes ses infos ; bande = semaine seule ; ± affiche mouvements et icônes. Les versions sobres s1, s4, t1, t3 (courbe vidée) sont refusées."
+      },
+      "gestes": {
+        "date": "2026-11-17",
+        "parole": "f1 a · f2 a · f4 b · f5 a · f6 b · c1 d · c2 b · c3 a · F3 … le plus est dans le petit carré … à la place du plus il y a l'oeil",
+        "retenus": [
+          "f1-a",
+          "f2-a",
+          "f4-b",
+          "f5-a",
+          "f6-b",
+          "c1-d",
+          "c2-b",
+          "c3-a"
+        ],
+        "f3": "aucun geste nouveau : + dans le carré de couleur de la rangée, œil à la place de l’ancien +",
+        "page": "work/missions/2026-11-16-calendrier/page14/index.html"
       }
     },
     "carnet": {
