@@ -11,8 +11,8 @@ for (const f of fichiers) {
   const p = await nav.newPage(); await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
   await p.goto(pathToFileURL(path.resolve(f)).href, { waitUntil: 'load' }); await new Promise(r => setTimeout(r, 400));
   const m = await p.evaluate(() => [...document.querySelectorAll('.lane .lt')].filter(t => t.offsetParent).map(t => {
-    const pl = t.querySelector('.k14-pl'); if (!pl || !pl.offsetParent) return null;
-    const tn = [...t.childNodes].find(n => n.nodeType === 3 && n.textContent.trim()); const r = document.createRange(); r.selectNodeContents(tn);
+    const pl = t.querySelector('.k14-pl, .g2-c'); if (!pl || !pl.offsetParent) return null;
+    const tn = [...t.childNodes].find(n => n.nodeType === 3 && n.textContent.trim()) || [...t.querySelectorAll('span,b,strong')].find(e => !e.contains(pl) && e.textContent.trim()); if (!tn) return null; const r = document.createRange(); r.selectNodeContents(tn);
     const a = r.getBoundingClientRect(), b = pl.getBoundingClientRect();
     return { nom: tn.textContent.trim(), x: Math.round(b.left + b.width / 2), dy: Math.round((b.top + b.height / 2) - (a.top + a.height / 2)) };
   }).filter(Boolean));

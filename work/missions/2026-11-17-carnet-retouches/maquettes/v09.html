@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet v09 · axe C · l'étagère : chaque carnet est une rangée de Stocks</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* v09 · axe C (CARNET-THEME). Parti pris, une seule décision de forme : le carnet s'habille comme une rangée de l'étagère
+   Stocks › Matériel. Barre de l'app, segment Stocks (Matériel actif, vert de zone), sous-vue basse, rangées groupées par état
+   dans un panneau à rayon 16, vignette photo de l'objet, chiffre en mono à droite, champ + carré au-dessus des onglets.
+   Passe b : trois écrans côte à côte (liste, fiche en cours, fiche choisie), même habit. Jetons de DESIGN.md (clair).
+   Trois tailles : 18 (marque, titre), 16 (noms, prix), 14 (le reste). Trois rayons : 10, 16, cercle. Bordures 1 px. */
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#DDDDDD;--line2:#BFBFBF;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--stkd:#3B5420;--hop:#567F45;--ok:#3F6B2E;--bdg:#8A5212;--straw:#F2C14E;
+  --stkbg:color-mix(in srgb,#4C6B2A 10%,#FFFFFF);--stkbg2:color-mix(in srgb,#4C6B2A 16%,#F5F5F5)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--s2);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.35}
+body{width:100vw;overflow-x:hidden}
+.v9-rail{display:flex;gap:28px;align-items:flex-start;width:100vw;overflow-x:auto;scroll-snap-type:x mandatory}
+.v9-rail>.v9-scr{scroll-snap-align:start}
+a{color:inherit;text-decoration:none}
+.v9-scr{position:relative;flex:none;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.v9-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v9-m{font-family:"IBM Plex Mono",Consolas,Menlo,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:0}
+.v9-m .th{display:inline-block;width:.3em}
+
+/* barre de l'app */
+.v9-bar{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;border-bottom:1px solid var(--line)}
+.v9-logo{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:var(--stk);color:var(--straw)}
+.v9-logo .v9-i{width:18px;height:18px}
+.v9-nom{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.v9-ic{margin-left:auto;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:var(--txt)}
+.v9-av{display:flex}
+.v9-av span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:14px;font-weight:700;color:#fff;border:2px solid var(--bg);margin-left:-8px}
+.v9-av span:first-child{margin-left:0;background:var(--stk)}.v9-av span:last-child{background:var(--bdg)}
+
+/* segments : même composant que les sous-vues de Stocks */
+.v9-seg{display:flex;gap:2px;margin:8px 8px 0;padding:3px;border-radius:10px;background:var(--s1);border:1px solid var(--line)}
+.v9-seg a{flex:1;display:flex;align-items:center;justify-content:center;min-height:36px;padding:0 4px;border-radius:8px;font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap}
+.v9-seg a.on{background:var(--stk);color:#fff}
+.v9-sous{display:flex;gap:6px;margin:8px 8px 0}
+.v9-sous a{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:600;color:var(--txt);border:1px solid var(--line)}
+.v9-sous a.on{background:var(--stkbg);border-color:color-mix(in srgb,var(--stk) 40%,#fff);color:var(--stkd)}
+.v9-sous .n{font-family:"IBM Plex Mono",Consolas,Menlo,ui-monospace,monospace;font-weight:500;color:var(--mut)}
+
+/* groupes, panneaux et rangées */
+.v9-list{padding:2px 14px 0}
+.v9-h{display:flex;align-items:center;gap:6px;margin:14px 0 6px}
+.v9-h .t{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:var(--stkbg2);font-size:14px;font-weight:700;color:var(--stkd)}
+.v9-h .t .n{font-family:"IBM Plex Mono",Consolas,Menlo,ui-monospace,monospace;font-weight:500;color:var(--stk)}
+.v9-h .r{margin-left:auto;font-size:14px;color:var(--mut)}
+.v9-pan{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg)}
+.v9-row{display:flex;align-items:center;gap:12px;min-height:68px;padding:10px 12px}
+.v9-row+.v9-row{border-top:1px solid var(--line)}
+.v9-vg{flex:none;width:52px;height:52px;border-radius:10px;overflow:hidden;display:grid;place-items:center}
+.v9-vg>svg{width:100%;height:100%;display:block}
+.v9-vg.pic{background:var(--stkbg2);color:var(--stkd)}
+.v9-vg.pic>svg{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.v9-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.v9-tx b{font-size:16px;font-weight:600;line-height:1.25;color:var(--ink)}
+.v9-tx span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v9-tx .q{font-style:italic}
+.v9-tx .nx{color:var(--txt)}.v9-tx .nx em{font-style:normal;font-weight:600;color:var(--stkd)}
+.v9-tx .why{color:var(--txt)}
+.v9-tx .ve{display:inline-flex;align-items:center;gap:4px}
+.v9-tx .ve .v9-i{width:16px;height:16px}
+.v9-fig{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
+.v9-fig .p{font-size:16px;font-weight:600;color:var(--ink)}
+.v9-fig .u{font-size:14px;color:var(--mut)}
+.v9-fig .d{font-size:14px;color:var(--mut);font-weight:400}
+.v9-go{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--stk);font-size:14px;font-weight:600;color:var(--stkd)}
+.v9-go .v9-i{width:16px;height:16px}
+.v9-av-l{display:flex;align-items:center;gap:6px;min-height:40px;margin:0 -12px -10px;padding:0 12px 0 76px;border-top:1px dashed var(--line);font-size:14px;font-weight:600;color:var(--stkd)}
+.v9-av-l .v9-i{width:16px;height:16px}
+.v9-av-l .go{margin-left:auto;display:inline-flex;align-items:center;gap:2px}
+.v9-col{flex-direction:column;align-items:stretch;gap:0}
+.v9-col>.v9-ln{display:flex;align-items:center;gap:12px}
+.v9-ex{margin:12px 2px 0;font-size:14px;color:var(--mut)}
+
+/* fiche */
+.v9-back{display:flex;align-items:center;gap:2px;height:40px;padding:0 10px;font-size:14px;font-weight:600;color:var(--stkd)}
+.v9-back .v9-i{width:18px;height:18px}
+.v9-back .st{margin-left:auto;display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--stkbg2);color:var(--stkd)}
+.v9-ti{margin:0 14px;font-size:18px;font-weight:700;line-height:1.25}
+.v9-kv{display:flex;gap:8px;margin:6px 14px 0;font-size:14px;color:var(--txt)}
+.v9-kv>span:first-child{flex:none;width:96px;color:var(--mut)}
+.v9-kv b{font-weight:600}
+.v9-kv .ia{color:var(--mut)}
+.v9-f .v9-row{min-height:58px;padding:8px 12px;gap:10px}
+.v9-f .v9-vg{width:44px;height:44px}
+.v9-f .v9-tx b{font-size:16px}
+.v9-hero{display:flex;gap:12px;padding:12px}
+.v9-hero .v9-vg{width:88px;height:80px}
+.v9-hero .v9-tx{gap:2px}
+.v9-why{padding:10px 12px;border-top:1px solid var(--line);font-size:14px;color:var(--txt)}
+.v9-why b{font-weight:600;color:var(--stkd)}
+.v9-send{margin:10px 14px 0;padding:10px 12px;border-radius:16px;background:var(--stkbg)}
+.v9-send p{margin:0 0 8px;font-size:14px;color:var(--txt)}
+.v9-send a{display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600}
+.v9-off .v9-tx b{color:var(--txt);font-weight:600}
+.v9-off .v9-fig .p{color:var(--mut);font-weight:500}
+.v9-off .v9-vg{opacity:.75}
+.v9-f .v9-off .v9-row{min-height:52px;padding:5px 12px}
+.v9-f .v9-off .v9-vg{width:40px;height:40px}
+
+/* champ d'une ligne et + carré de l'app, juste au-dessus des onglets */
+.v9-dock{position:absolute;left:0;right:0;bottom:56px;height:66px;padding:0 12px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%);z-index:32}
+.v9-in{flex:1;min-width:0;height:48px;padding:0 14px;border-radius:16px;border:1px solid var(--line2);background:var(--bg);font:inherit;font-size:16px;color:var(--ink);box-shadow:0 4px 12px -8px rgba(0,0,0,.35)}
+.v9-in::placeholder{color:var(--mut)}
+.v9-fab{position:absolute;right:12px;bottom:66px;z-index:33;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--stk);color:#fff;box-shadow:0 6px 16px -6px rgba(0,0,0,.45)}
+.v9-fab .v9-i{width:24px;height:24px;stroke-width:2.4}
+.v9-dock .v9-sp{flex:none;width:48px}
+
+/* barre d'onglets de l'app */
+.v9-bot{position:absolute;left:0;bottom:0;width:390px;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.v9-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:var(--txt)}
+.v9-bot a.on{background:var(--stkbg);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v9-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:#fff;font-size:14px;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-cal-in" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+<symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/><path d="M6.5 9h11"/></symbol>
+<!-- photos d'aperçu : mêmes dessins que la base ra+p5f (l'app montrera l'image de la page) -->
+<symbol id="ph-iso4p" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="18" y="14" width="64" height="22" rx="3" fill="#9aa7b2"/><circle cx="76" cy="20" r="4" fill="#2f7d6b"/><g fill="#55616b"><rect x="23" y="36" width="3" height="8"/><rect x="40.3" y="36" width="3" height="8"/><rect x="57.7" y="36" width="3" height="8"/><rect x="75" y="36" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="20" y="50" width="7" height="20" rx="2"/><rect x="22" y="44" width="3" height="7"/><rect x="37.3" y="50" width="7" height="20" rx="2"/><rect x="39.3" y="44" width="3" height="7"/><rect x="54.7" y="50" width="7" height="20" rx="2"/><rect x="56.7" y="44" width="3" height="7"/><rect x="72" y="50" width="7" height="20" rx="2"/><rect x="74" y="44" width="3" height="7"/></g><rect x="14" y="72" width="72" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-iso1" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="34.5" y="14" width="31" height="22" rx="3" fill="#9aa7b2"/><rect x="49" y="36" width="3" height="8" fill="#55616b"/><rect x="46" y="50" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="48" y="44" width="3" height="7" fill="#6a4a2a"/><rect x="30.5" y="72" width="39" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-mono" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="15" y="14" width="70" height="22" rx="3" fill="#9aa7b2"/><g fill="#55616b"><rect x="20" y="36" width="3" height="8"/><rect x="31.6" y="36" width="3" height="8"/><rect x="43.2" y="36" width="3" height="8"/><rect x="54.8" y="36" width="3" height="8"/><rect x="66.4" y="36" width="3" height="8"/><rect x="78" y="36" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="17" y="50" width="7" height="20" rx="2"/><rect x="28.6" y="50" width="7" height="20" rx="2"/><rect x="40.2" y="50" width="7" height="20" rx="2"/><rect x="51.8" y="50" width="7" height="20" rx="2"/><rect x="63.4" y="50" width="7" height="20" rx="2"/><rect x="75" y="50" width="7" height="20" rx="2"/></g><rect x="11" y="72" width="78" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-chambre" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2ecf3"/><rect x="18" y="14" width="64" height="62" rx="3" fill="#c9d6df" stroke="#7e93a3" stroke-width="2"/><rect x="40" y="26" width="22" height="46" rx="2" fill="#f4f8fb" stroke="#7e93a3" stroke-width="2"/><rect x="56" y="46" width="3" height="8" fill="#55616b"/><path d="M24 20h10M24 25h10" stroke="#7e93a3" stroke-width="2"/></symbol>
+<symbol id="ph-hotte" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e9e9e6"/><path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-extr" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="44" r="4" fill="#4c6b2a"/></symbol>
+</svg>
+
+<div class="v9-rail">
+<!-- ============ 1 · LISTE DES CARNETS ============ -->
+<section class="v9-scr" aria-label="Liste des carnets">
+<header class="v9-bar">
+  <span class="v9-logo"><svg class="v9-i"><use href="#i-glass"/></svg></span>
+  <span class="v9-nom">L'Affinée</span>
+  <span class="v9-ic" aria-label="Chercher"><svg class="v9-i"><use href="#i-search"/></svg></span>
+  <span class="v9-av"><span>M</span><span>J</span></span>
+</header>
+
+<nav class="v9-seg" aria-label="Vue des stocks">
+  <a href="#">Articles</a><a href="#">Courses</a><a href="#">Fûts</a><a href="#" class="on" aria-current="page">Matériel</a><a href="#">Houblons</a>
+</nav>
+<nav class="v9-sous" aria-label="Vue du matériel">
+  <a href="#">À venir <span class="n">1</span></a><a href="#" class="on" aria-current="page">Carnets <span class="n">4</span></a><a href="#">Réalisés</a>
+</nav>
+
+<main class="v9-list">
+  <div class="v9-h"><span class="t">À comparer <span class="n">1</span></span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="v9-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> avis du ferblantier</span><span class="ve">2 façons · 5 articles · <svg class="v9-i"><use href="#i-eye"/></svg>1 en veille</span></span>
+      <span class="v9-fig"><span class="d">dès</span><span class="p v9-m">420</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+
+  <div class="v9-h"><span class="t">Idée <span class="n">1</span></span><span class="r">pas encore d'article</span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg pic" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M4 18h32"/><path d="M6 18v9a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-9"/><path d="M20 18v12"/><path d="M20 18V9h7v4"/></svg></span>
+      <span class="v9-tx"><b>Évier inox</b><span class="q">« 2 bacs pour laver les fûts »</span></span>
+      <span class="v9-go"><svg class="v9-i"><use href="#i-search"/></svg>Chercher</span>
+    </a>
+  </div>
+
+  <div class="v9-h"><span class="t">Choisi <span class="n">2</span></span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="v9-tx"><b>Embouteillage</b><span class="why">oxygène le plus bas, SAV suisse</span><span>le 14 nov. · Brassage Romandie</span></span>
+      <span class="v9-fig"><span class="p v9-m">11<i class="th"></i>700</span><span class="u">CHF</span></span>
+    </a>
+    <div class="v9-row v9-col">
+      <a class="v9-ln" href="#">
+        <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-chambre"/></svg></span>
+        <span class="v9-tx"><b>Frigo de garde pour fûts</b><span class="why">tient 2 °C en été, 6 fûts</span><span>le 10 oct. · Froid Léman</span></span>
+        <span class="v9-fig"><span class="p v9-m">4<i class="th"></i>900</span><span class="u">CHF</span></span>
+      </a>
+      <a class="v9-av-l" href="#"><svg class="v9-i"><use href="#i-cal-in"/></svg>Dans À venir depuis le 16 nov.<span class="go">Voir<svg class="v9-i"><use href="#i-right"/></svg></span></a>
+    </div>
+  </div>
+
+  <p class="v9-ex">Fournisseurs, prix et photos : exemple</p>
+</main>
+
+<div class="v9-dock"><input class="v9-in" type="text" placeholder="Une idée, un besoin…" aria-label="Une idée, un besoin"><span class="v9-sp"></span></div>
+<a class="v9-fab" href="#" aria-label="Ajouter"><svg class="v9-i"><use href="#i-plus"/></svg></a>
+
+<nav class="v9-bot" aria-label="Navigation">
+  <a href="#"><svg class="v9-i"><use href="#i-bord"/></svg>Bord</a>
+  <a href="#"><svg class="v9-i"><use href="#i-wallet"/></svg>Finances</a>
+  <a href="#"><svg class="v9-i"><use href="#i-cal"/></svg>Calendrier</a>
+  <a href="#"><svg class="v9-i"><use href="#i-beer"/></svg>Brassins</a>
+  <a href="#" class="on" aria-current="page"><svg class="v9-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+  <a href="#"><svg class="v9-i"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+
+<!-- ============ 2 · FICHE EN COURS : VENTILATION ============ -->
+<section class="v9-scr v9-f" aria-label="Fiche en cours, Ventilation">
+<header class="v9-bar">
+  <span class="v9-logo"><svg class="v9-i"><use href="#i-glass"/></svg></span>
+  <span class="v9-nom">L'Affinée</span>
+  <span class="v9-ic" aria-label="Chercher"><svg class="v9-i"><use href="#i-search"/></svg></span>
+  <span class="v9-av"><span>M</span><span>J</span></span>
+</header>
+<a class="v9-back" href="#"><svg class="v9-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<h1 class="v9-ti">Ventilation de la salle de brassage</h1>
+<div class="v9-kv"><span>Ce qui compte</span><span><b>capter la buée à la source</b> <span class="ia">· proposé par l'IA</span></span></div>
+<div class="v9-kv"><span>Ensuite</span><span>avis du ferblantier : hotte ou extracteur</span></div>
+
+<main class="v9-list">
+  <div class="v9-h"><span class="t">Hotte inox + extracteur <span class="n">2</span></span><span class="r">dès 1<i class="th" style="display:inline-block;width:.25em"></i>450 CHF</span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="v9-tx"><b>Hotte murale 100 cm</b><span class="ve">Gastro Lüftung · DE · en stock · <svg class="v9-i"><use href="#i-eye"/></svg>veille</span></span>
+      <span class="v9-fig"><span class="p v9-m">1<i class="th"></i>450</span></span>
+    </a>
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="v9-tx"><b>Hotte inox 120 cm + moteur</b><span>Inox Broye · CH · sur commande</span></span>
+      <span class="v9-fig"><span class="p v9-m">2<i class="th"></i>600</span></span>
+    </a>
+  </div>
+
+  <div class="v9-h"><span class="t">Extracteur mural seul <span class="n">2</span></span><span class="r">dès 420 CHF</span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-extr"/></svg></span>
+      <span class="v9-tx"><b>Extracteur mural hélicoïde</b><span>Ventil Jura · CH · en stock</span></span>
+      <span class="v9-fig"><span class="p v9-m">420</span></span>
+    </a>
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-extr"/></svg></span>
+      <span class="v9-tx"><b>Extracteur centrifuge en ligne</b><span>Aéro Rhône · FR · en stock</span></span>
+      <span class="v9-fig"><span class="p v9-m">690</span></span>
+    </a>
+  </div>
+
+  <div class="v9-h"><span class="t">À compléter <span class="n">1</span></span></div>
+  <div class="v9-pan">
+    <a class="v9-row" href="#">
+      <span class="v9-vg pic" aria-hidden="true"><svg viewBox="0 0 24 24" style="width:24px;height:24px"><use href="#i-link"/></svg></span>
+      <span class="v9-tx"><b>Lien sans aperçu</b><span>nom et prix à saisir</span></span>
+      <span class="v9-go">Compléter</span>
+    </a>
+  </div>
+  <p class="v9-ex">Prix en CHF · fournisseurs et photos : exemple</p>
+</main>
+
+<div class="v9-dock"><input class="v9-in" type="text" placeholder="Ajouter à Ventilation…" aria-label="Ajouter à Ventilation"><span class="v9-sp"></span></div>
+<a class="v9-fab" href="#" aria-label="Ajouter"><svg class="v9-i"><use href="#i-plus"/></svg></a>
+
+<nav class="v9-bot" aria-label="Navigation">
+  <a href="#"><svg class="v9-i"><use href="#i-bord"/></svg>Bord</a>
+  <a href="#"><svg class="v9-i"><use href="#i-wallet"/></svg>Finances</a>
+  <a href="#"><svg class="v9-i"><use href="#i-cal"/></svg>Calendrier</a>
+  <a href="#"><svg class="v9-i"><use href="#i-beer"/></svg>Brassins</a>
+  <a href="#" class="on" aria-current="page"><svg class="v9-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+  <a href="#"><svg class="v9-i"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+
+<!-- ============ 3 · FICHE CHOISIE : EMBOUTEILLAGE ============ -->
+<section class="v9-scr v9-f" aria-label="Fiche choisie, Embouteillage">
+<header class="v9-bar">
+  <span class="v9-logo"><svg class="v9-i"><use href="#i-glass"/></svg></span>
+  <span class="v9-nom">L'Affinée</span>
+  <span class="v9-ic" aria-label="Chercher"><svg class="v9-i"><use href="#i-search"/></svg></span>
+  <span class="v9-av"><span>M</span><span>J</span></span>
+</header>
+<a class="v9-back" href="#"><svg class="v9-i"><use href="#i-left"/></svg>Carnets<span class="st">Choisi le 14 nov.</span></a>
+<h1 class="v9-ti">Embouteillage</h1>
+
+<main class="v9-list">
+  <div class="v9-pan" style="margin-top:10px">
+    <a class="v9-hero" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="v9-tx"><b>Isobarique 4 becs pré-évacuation</b><span>Brassage Romandie · CH · en stock</span><span class="p v9-m" style="font-size:16px;font-weight:600;color:var(--ink)">11<i class="th"></i>700 CHF</span></span>
+    </a>
+    <div class="v9-why"><b>Pourquoi :</b> oxygène le plus bas à 4 becs, SAV en Suisse ; la veille l'a trouvé 600 CHF moins cher.</div>
+  </div>
+  <div class="v9-kv" style="margin:8px 2px 0"><span>Ce qui comptait</span><span><b>minimiser l'oxygène</b></span></div>
+
+  <div class="v9-send" style="margin:10px 0 0">
+    <p>Part dans À venir : la machine, 11<i class="th" style="display:inline-block;width:.25em"></i>700 CHF, chez Brassage Romandie, livrable de stock.</p>
+    <a href="#"><svg class="v9-i"><use href="#i-cal-in"/></svg>Envoyer dans À venir</a>
+  </div>
+
+  <div class="v9-h"><span class="t">Écartés <span class="n">4</span></span><span class="r">et pourquoi</span></div>
+  <div class="v9-pan v9-off">
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="v9-tx"><b>Même machine, Abfülltechnik</b><span>SAV à l'étranger (DE)</span></span>
+      <span class="v9-fig"><span class="p v9-m">11<i class="th"></i>200</span></span>
+    </a>
+    <a class="v9-row" href="#">
+      <span class="v9-vg pic" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M12 6h16v14H12z"/><path d="M20 20v5"/><path d="M17 30v-3h6v3M16 36V30h8v6"/></svg></span>
+      <span class="v9-tx"><b>Par gravité</b><span>trop d'oxygène capté</span></span>
+    </a>
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso1"/></svg></span>
+      <span class="v9-tx"><b>Remplisseuse manuelle 1 bec</b><span>cadence trop basse pour 300 L</span></span>
+      <span class="v9-fig"><span class="p v9-m">190</span></span>
+    </a>
+    <a class="v9-row" href="#">
+      <span class="v9-vg" aria-hidden="true"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-mono"/></svg></span>
+      <span class="v9-tx"><b>Monobloc 6 becs</b><span>double prix, cadence inutile</span></span>
+      <span class="v9-fig"><span class="p v9-m">21<i class="th"></i>500</span></span>
+    </a>
+  </div>
+</main>
+
+<div class="v9-dock"><input class="v9-in" type="text" placeholder="Ajouter à Embouteillage…" aria-label="Ajouter à Embouteillage"><span class="v9-sp"></span></div>
+<a class="v9-fab" href="#" aria-label="Ajouter"><svg class="v9-i"><use href="#i-plus"/></svg></a>
+
+<nav class="v9-bot" aria-label="Navigation">
+  <a href="#"><svg class="v9-i"><use href="#i-bord"/></svg>Bord</a>
+  <a href="#"><svg class="v9-i"><use href="#i-wallet"/></svg>Finances</a>
+  <a href="#"><svg class="v9-i"><use href="#i-cal"/></svg>Calendrier</a>
+  <a href="#"><svg class="v9-i"><use href="#i-beer"/></svg>Brassins</a>
+  <a href="#" class="on" aria-current="page"><svg class="v9-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+  <a href="#"><svg class="v9-i"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+import {open,pause} from './lib.mjs';
+const A=await open(''); const p=A.p;
+const blur=async()=>{await p.evaluate(()=>{document.activeElement&&document.activeElement.blur();window.scrollTo(0,0)});await pause(300)};
+await A.tap('button',/Réalisés/); await pause(400); await A.snap('s6-00-realises'); console.log('REAL',await A.txt());
+await A.tap('button',/Carnets/); await pause(300);
+await A.tap('[data-act=ouvrir]',/Ventilation/); await pause(400); await blur(); await A.snap('s6-01-ventil'); console.log('VENT',(await A.txt()).slice(0,900));
+await p.evaluate(()=>window.scrollTo(0,500)); await A.snap('s6-02-ventil-bas');
+await A.tap('[data-act=ecrirecrit]').catch(e=>console.log('ens',e.message)); await pause(500); await A.snap('s6-03-ensuite'); console.log('ENS',await A.ui());
+await p.evaluate(()=>{document.activeElement&&document.activeElement.blur()});
+await A.tap('[data-act=liste]').catch(()=>{}); await A.tap('[data-act=ouvrir]',/Évier/); await pause(400); await blur(); await A.snap('s6-04-evier'); console.log('EVIER',(await A.txt()).slice(0,500));
+await A.nav.close();

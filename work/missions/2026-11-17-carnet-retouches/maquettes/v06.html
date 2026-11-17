@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet v06 · axe B · le dépôt devient une carte à ranger (17.11, passe de correction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* v06 · axe B (CARNET-AJOUT-FOUILLIS). Base : ra-p5f/proto.html (règle n° 1), thème clair de l'app, jetons de DESIGN.md.
+   Parti pris inchangé : tout dépôt (texte, photo, voix, lien) devient aussitôt une CARTE À RANGER, posée au-dessus du
+   champ, qui montre ce qui a été déposé et où ça va ; l'IA propose, un toucher corrige, puis le geste nommé.
+   Passe de correction : le champ dit COMMENT (texte, photo, voix, lien), le + dit QUOI (Article, Façon, Critère, Note) ;
+   en-tête de l'app (barre L'Affinée, segments gris à actif noir) ; 3 tailles (14, 16, 18) ; 3 rayons (10, 16, rond) ;
+   une seule teinte de sens, la zone Stocks ; l'IA en neutre (le violet est l'agenda). Statique : aucun script. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--txt:#333;--ink:#111;--act:#111;--onact:#fff;
+  --stk:#4c6b2a;--hop:#567F45;--hopl:#A3C97A;--bad:#a8291f;--bdg:#8a5212;
+  --stkbg:color-mix(in srgb,var(--stk) 10%,var(--bg));--stkbg2:color-mix(in srgb,var(--stk) 18%,var(--bg))}
+*{box-sizing:border-box}
+html,body{margin:0;background:#f5f5f5;color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.35}
+.v6-set{display:flex;flex-wrap:wrap;gap:28px 24px;justify-content:center;align-items:flex-start;padding:0 0 28px}
+.v6-col{width:390px;flex:none}
+.v6-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.v6-cap{font-size:14px;line-height:1.4;color:var(--mut);padding:10px 12px 0}.v6-cap b{color:var(--ink)}
+.v6-ex{display:inline-block;border:1px solid var(--line2);color:var(--mut);border-radius:10px;font-size:14px;line-height:18px;padding:0 6px;font-weight:600}
+.v6-ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v6-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.v6-mut{color:var(--mut)}
+/* coque de l'app : barre L'Affinée, segments, onglets, champ du bas, + carré flottant */
+.v6-app{display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border-bottom:1px solid var(--line)}
+.v6-logo{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:var(--stk);color:#fff}
+.v6-logo .v6-ico{width:18px;height:18px}
+.v6-app b{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.v6-app .m{margin-left:auto;font-size:14px;color:var(--mut);font-weight:600}
+.v6-app .lp{display:grid;place-items:center;width:32px;height:32px;color:var(--txt)}
+.v6-ava{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--s2);font-size:14px;font-weight:700;color:var(--txt)}
+.v6-seg{display:flex;gap:2px;margin:8px 12px 0;padding:2px;background:var(--s2);border-radius:10px}
+.v6-seg span{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;height:32px;border-radius:10px;font-size:14px;font-weight:600;color:var(--txt)}
+.v6-seg span.on{background:var(--act);color:var(--onact)}
+.v6-seg span i{font-style:normal;font-weight:700;color:var(--mut)}
+.v6-bot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.v6-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:var(--txt);text-decoration:none}
+.v6-bot a.on{font-weight:700;color:var(--stk);box-shadow:inset 0 2px 0 var(--stk)}
+.v6-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:#fff;font-size:14px;font-weight:600;border-radius:10px;padding:0 5px;line-height:18px}
+.v6-fab{position:absolute;right:12px;bottom:64px;z-index:36;display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--act);color:var(--onact);box-shadow:0 8px 24px -12px rgba(0,0,0,.6)}
+.v6-fab .v6-ico{width:26px;height:26px;stroke-width:2.4}
+.v6-fab.ouvert .v6-ico{transform:rotate(45deg)}
+.v6-fab.repos{background:var(--s2);color:var(--mut);box-shadow:none}
+.v6-dock{position:absolute;left:0;right:0;bottom:56px;z-index:34;height:68px;background:var(--bg);border-top:1px solid var(--line);padding:8px 80px 8px 12px}
+.v6-comp{display:flex;align-items:center;gap:2px;height:52px;background:var(--s1);border:1px solid var(--line2);border-radius:10px;padding:0 4px 0 12px}
+.v6-comp .t{flex:1;min-width:0;font-size:16px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6-comp .t.ecrit{color:var(--ink)}
+.v6-comp .t.ecrit:after{content:"";display:inline-block;width:2px;height:19px;background:var(--ink);vertical-align:-3px;margin-left:1px}
+.v6-cb{display:grid;place-items:center;width:40px;height:44px;color:var(--txt)}
+/* liste (A) : rangées de l'app, rayon 10, bordure 1 px, statut en pastille de la zone Stocks */
+.v6-list{padding:10px 12px 0;display:flex;flex-direction:column;gap:6px}
+.v6-row{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.v6-r1{display:flex;align-items:center;gap:8px}
+.v6-r1 b{flex:1;min-width:0;font-size:16px;font-weight:700;line-height:1.2}
+.v6-r2{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:14px;color:var(--mut)}
+.v6-r2 .r{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--txt);font-weight:600}
+.v6-st{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:10px;font-size:14px;font-weight:700;white-space:nowrap;border:1px solid var(--line2);color:var(--txt)}
+.v6-st.re{border-color:var(--stk);color:var(--stk)}
+.v6-st.co{background:var(--stkbg2);border-color:transparent;color:var(--stk)}
+.v6-st.ch{background:var(--stk);border-color:transparent;color:#fff}
+.v6-chx{display:flex;gap:10px;align-items:center;margin-top:6px}
+.v6-thumb{width:48px;height:44px;border-radius:10px;background:var(--s2);flex:none}
+.v6-chx .i{flex:1;min-width:0;line-height:1.3}.v6-chx .i b{display:block;font-size:14px}.v6-chx .i>span{display:block;color:var(--txt)}
+.v6-av{display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-size:14px;color:var(--txt)}
+.v6-av .v6-ico{color:var(--stk)}.v6-av .r{margin-left:auto;font-weight:700;color:var(--ink)}
+/* la carte à ranger (parti pris de la version) */
+.v6-tri{position:absolute;left:10px;right:10px;z-index:35;background:var(--bg);border:1px solid var(--line2);border-radius:16px;box-shadow:0 8px 24px -12px rgba(0,0,0,.55);padding:10px 12px 12px}
+.v6-trh{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
+.v6-trh b{color:var(--ink);font-size:16px}
+.v6-trh .d{margin-left:auto}
+.v6-two{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.v6-opt{display:flex;align-items:center;gap:8px;min-height:52px;border:1px solid var(--line2);border-radius:10px;padding:6px 8px;font-size:14px;line-height:1.2}
+.v6-opt b{display:block;font-size:14px}
+.v6-opt .rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex:none;position:relative}
+.v6-opt.on{border:2px solid var(--stk);background:var(--stkbg)}
+.v6-opt.on .rd{border-color:var(--stk)}.v6-opt.on .rd:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--stk)}
+.v6-ia{display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap}
+.v6-ia .v6-ico{width:16px;height:16px}
+.v6-lb{font-size:14px;font-weight:700;margin:8px 0 4px}
+.v6-cible{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--s1);border-radius:10px;padding:3px}
+.v6-cible span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:46px;border-radius:10px;font-size:14px;font-weight:700;color:var(--mut);text-align:center;line-height:1.1}
+.v6-cible span.on{background:var(--bg);color:var(--ink);box-shadow:inset 0 0 0 2px var(--stk)}
+.v6-cible span.on .v6-ico{color:var(--stk)}
+.v6-why{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);margin:6px 2px 0}
+.v6-acts{display:flex;align-items:center;gap:8px;margin-top:10px}
+.v6-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 14px;border-radius:10px;font-weight:700;font-size:16px;border:1px solid var(--line2);background:var(--bg)}
+.v6-b.p{flex:1;background:var(--act);color:var(--onact);border-color:transparent}
+.v6-b.l{border:0;color:var(--mut);padding:0 6px;font-weight:600}
+/* fiche (B à G) */
+.v6-fh{padding:4px 12px 8px;border-bottom:1px solid var(--line)}
+.v6-back{display:inline-flex;align-items:center;gap:2px;height:32px;font-size:14px;font-weight:600;color:var(--txt)}
+.v6-ft{display:flex;align-items:center;gap:8px}
+.v6-ft h1{flex:1;min-width:0;font-size:18px;font-weight:800;letter-spacing:-.01em;margin:0;line-height:1.2}
+.v6-fs{font-size:14px;color:var(--mut);margin-top:2px}
+.v6-crit{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:14px;color:var(--txt)}.v6-crit .v6-ico{color:var(--stk)}.v6-crit b{color:var(--ink)}
+.v6-ens{display:flex;align-items:center;gap:6px;margin-top:8px;border-radius:10px;background:var(--stkbg);padding:6px 6px 6px 10px;font-size:14px;min-height:44px}
+.v6-ens b{color:var(--stk)}
+.v6-ens .v6-b{min-height:36px;font-size:14px;padding:0 10px;margin-left:auto}
+.v6-ens .v6-b+.v6-b{margin-left:0}
+.v6-sec{padding:8px 12px 0}
+.v6-sh{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:800;margin:0 0 2px}.v6-sh small{font-size:14px;font-weight:600;color:var(--mut)}
+.v6-fl{display:flex;align-items:center;gap:8px;min-height:44px;border-top:1px solid var(--line);font-size:14px;padding:3px 0}
+.v6-sh+.v6-fl{border-top:0}
+.v6-fl .nm{flex:1;min-width:0;line-height:1.25}.v6-fl .nm b{display:block;font-size:16px}.v6-fl .nm small{display:block;font-size:14px;color:var(--mut)}
+.v6-fl .ok{color:var(--stk)}
+.v6-fl.out .nm b{color:var(--mut);font-weight:600;text-decoration:line-through}
+.v6-al{display:flex;gap:10px;align-items:center;min-height:52px;border-top:1px solid var(--line);padding:4px 0;font-size:14px}
+.v6-sh+.v6-al{border-top:0}
+.v6-al svg.ph{width:44px;height:40px;border-radius:10px;background:var(--s2);flex:none}
+.v6-al .i{flex:1;min-width:0;line-height:1.25}.v6-al .i b{display:block;font-size:14px}.v6-al .i small{display:block;font-size:14px;color:var(--mut)}
+.v6-al .px{font-size:14px;font-weight:600;white-space:nowrap;text-align:right;line-height:1.25}
+.v6-al .px small{display:block;font-family:"Source Sans 3",system-ui,sans-serif;font-weight:400;color:var(--mut)}
+.v6-al.neuf{background:var(--stkbg);border-radius:10px;border-top:0;padding:4px 6px;margin:0 -6px}
+.v6-al.ecart{color:var(--mut)}
+.v6-new{display:inline-block;font-size:14px;font-weight:700;color:var(--stk)}
+/* photo déposée */
+.v6-phw{display:flex;gap:10px;align-items:flex-start;margin-top:8px}
+.v6-photo{width:96px;height:88px;border-radius:10px;flex:none;background:#dfe3e6;border:1px solid var(--line)}
+.v6-lus{flex:1;min-width:0}
+.v6-lus .h{font-size:14px;font-weight:700;color:var(--mut);margin:0 0 2px}
+.v6-lv{display:flex;align-items:center;gap:7px;min-height:26px;font-size:14px;line-height:1.2}
+.v6-ck{display:grid;place-items:center;width:20px;height:20px;border-radius:5px;background:var(--stk);color:#fff;flex:none}
+.v6-ck .v6-ico{width:14px;height:14px;stroke-width:3}
+.v6-ck.no{background:var(--bg);border:2px solid var(--line2)}
+.v6-lv.q{color:var(--mut)}
+/* + ouvert */
+.v6-scrim{position:absolute;left:0;right:0;top:0;bottom:56px;z-index:33;background:rgba(17,17,17,.32)}
+.v6-menu{position:absolute;left:10px;right:10px;bottom:124px;z-index:35;background:var(--bg);border-radius:16px;box-shadow:0 8px 24px -12px rgba(0,0,0,.6);padding:10px 12px 6px}
+.v6-mh{font-size:16px;font-weight:800;margin:0}.v6-mh small{display:block;font-size:14px;font-weight:600;color:var(--mut)}
+.v6-mr{display:flex;align-items:center;gap:12px;min-height:56px;border-top:1px solid var(--line);padding:6px 0}
+.v6-mh+.v6-mr{border-top:0}
+.v6-mr i{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;flex:none;background:var(--s1);color:var(--ink)}
+.v6-mr .tx{flex:1;min-width:0;line-height:1.25}.v6-mr .tx b{font-size:16px}.v6-mr .tx small{display:block;font-size:14px;color:var(--mut)}
+.v6-mr .go{color:var(--mut)}
+.v6-paste{display:flex;align-items:center;gap:8px;margin:-2px 0 6px 52px;padding:4px 4px 4px 10px;border-radius:10px;background:var(--stkbg);font-size:14px}
+.v6-paste .u{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6-paste .v6-b{min-height:36px;font-size:14px;padding:0 12px;border-color:var(--stk);color:var(--stk)}
+.v6-done{position:absolute;left:10px;right:10px;bottom:132px;z-index:35;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);border-radius:10px;padding:6px 6px 6px 12px;font-size:14px;font-weight:600;min-height:52px}
+.v6-done .v6-ico{color:var(--hopl)}
+.v6-done u{margin-left:auto;text-decoration:none;font-weight:700;color:var(--bg);border:1px solid #777;border-radius:10px;padding:8px 12px}
+/* voix */
+.v6-rec{position:absolute;left:0;right:0;bottom:56px;z-index:34;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 8px 24px -12px rgba(0,0,0,.55);padding:10px 80px 10px 12px}
+.v6-rech{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--txt)}
+.v6-dot{width:10px;height:10px;border-radius:50%;background:var(--bad);flex:none}
+.v6-wave{display:block;width:100%;height:44px;margin:6px 0}
+.v6-tr{font-size:14px;color:var(--mut);font-style:italic;margin:0 0 8px}
+.v6-play{display:flex;align-items:center;gap:8px;margin-top:8px;padding:4px 10px 4px 4px;border-radius:10px;background:var(--s1)}
+.v6-play .pb{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--act);color:var(--onact);flex:none}
+.v6-play svg.w{flex:1;height:32px;min-width:0}
+.v6-quote{font-size:16px;line-height:1.35;margin:8px 0 0}
+/* lien sans aperçu */
+.v6-url{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;font-weight:600;color:var(--stk);text-decoration:underline}
+.v6-in{display:flex;align-items:center;height:44px;border:1px solid var(--line2);border-radius:10px;padding:0 10px;font-size:16px;color:var(--mut);margin-top:8px}
+.v6-in.ok{color:var(--ink);border-color:var(--stk)}
+.v6-sw{display:flex;align-items:center;gap:8px;min-height:44px;margin-top:6px;font-size:14px}
+.v6-sw .k{margin-left:auto;width:44px;height:26px;border-radius:13px;background:var(--stk);position:relative;flex:none}
+.v6-sw .k:after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v12l-4 4H5z"/><path d="M15 20v-4h4M8 9h8M8 13h5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-hop" viewBox="0 0 24 24"><path d="M12 3c3 2 4 5 4 8s-2 7-4 10c-2-3-4-6-4-10s1-6 4-8z"/><path d="M8 9h8M8 14h8"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+</svg>
+
+<div class="v6-set">
+
+<!-- ===================== A · Liste : une idée neuve, la carte dit où elle va ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-app"><span class="v6-logo"><svg class="v6-ico"><use href="#i-hop"/></svg></span><b>L'Affinée</b><span class="m">nov.</span><span class="lp"><svg class="v6-ico"><use href="#i-search"/></svg></span><span class="v6-ava">B</span></div>
+  <div class="v6-seg"><span>À venir <i class="v6-mono">1</i></span><span class="on">Carnets</span><span>Réalisés</span></div>
+  <div class="v6-list">
+    <div class="v6-row">
+      <div class="v6-r1"><b>Embouteillage</b><span class="v6-st ch">choisi</span></div>
+      <div class="v6-chx"><svg class="v6-thumb" viewBox="0 0 48 44"><rect x="6" y="30" width="36" height="8" rx="1" fill="#9aa1a6"/><rect x="10" y="10" width="28" height="20" rx="2" fill="#c9ced2" stroke="#7d858c"/><path d="M15 30v-6M21 30v-6M27 30v-6M33 30v-6" stroke="#4c6b2a" stroke-width="2"/></svg>
+        <span class="i"><b>Isobarique 4 becs pré-évacuation · CH</b><span>O₂ <span class="v6-mono">40 ppb</span>, le plus bas · SAV en Suisse</span></span></div>
+      <div class="v6-av"><svg class="v6-ico"><use href="#i-cal"/></svg>À venir · 16 nov. · Revendeur Romandie<span class="r"><span class="v6-mono">12 300 CHF</span>›</span></div>
+    </div>
+    <div class="v6-row">
+      <div class="v6-r1"><b>Ventilation de la salle de brassage</b><span class="v6-st co">compare</span></div>
+      <div class="v6-r2">2 façons · 5 articles<span class="r"><svg class="v6-ico"><use href="#i-eye"/></svg>veille sur 2</span></div>
+    </div>
+    <div class="v6-row">
+      <div class="v6-r1"><b>Frigo de garde pour fûts</b><span class="v6-st re">recherche</span></div>
+      <div class="v6-r2">2 façons · 3 articles</div>
+    </div>
+    <div class="v6-row">
+      <div class="v6-r1"><b>Évier inox</b><span class="v6-st">idée</span></div>
+      <div class="v6-r2">2 façons · 1 article</div>
+    </div>
+  </div>
+
+  <div class="v6-tri" style="bottom:132px">
+    <div class="v6-trh"><b>« condenseur de buée »</b><span class="d">pas encore rangé</span></div>
+    <div class="v6-two">
+      <div class="v6-opt on"><span class="rd"></span><span><b>Nouveau carnet</b></span></div>
+      <div class="v6-opt"><span class="rd"></span><span><b>Dans Ventilation</b><span class="v6-ia"><svg class="v6-ico"><use href="#i-spark"/></svg>IA : proche</span></span></div>
+    </div>
+    <div class="v6-acts"><span class="v6-b l">Retirer</span><span class="v6-b p">Créer le carnet</span></div>
+  </div>
+
+  <div class="v6-dock"><div class="v6-comp"><span class="t ecrit">condenseur de buée</span></div></div>
+  <div class="v6-fab repos" role="button" aria-label="Ajouter (en attente pendant la saisie)"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>A · Ajouter une idée.</b> Ce qu'on écrit devient une carte qui dit où ça va ; le seul bouton suit le choix (« Créer le carnet », ou « Ranger dans Ventilation »). Pendant la saisie, le + s'efface : une seule action. Clavier ouvert : à mesurer sur la version choisie (C8). <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== B · Fiche Évier : une photo déposée, à ranger ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Évier inox</h1><span class="v6-st">idée</span></div>
+    <div class="v6-fs">2 bacs pour laver les fûts</div>
+    <div class="v6-ens"><b>Trancher</b><span class="v6-b">À poser</span><span class="v6-b">Sur pieds</span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>2 à l'étude</small></div>
+    <div class="v6-fl"><span class="nm"><b>Évier à poser</b><small>sur le plan de travail existant</small></span></div>
+    <div class="v6-fl"><span class="nm"><b>Évier sur pieds</b><small>bac plus profond, place au sol</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>1</small></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="5" y="14" width="34" height="9" rx="2" fill="#c9ced2" stroke="#8a9096"/><rect x="8" y="16" width="12" height="5" rx="1" fill="#eef0f2"/><rect x="24" y="16" width="12" height="5" rx="1" fill="#eef0f2"/></svg>
+      <span class="i"><b>Évier inox 2 bacs à poser</b><small>Inox Pro Fribourg · CH · en stock</small></span><span class="px v6-mono">1 450 CHF</span></div>
+  </div>
+
+  <div class="v6-tri" style="bottom:132px">
+    <div class="v6-trh"><b>Photo déposée</b><span class="d">pas encore rangée</span></div>
+    <div class="v6-phw">
+      <svg class="v6-photo" viewBox="0 0 104 96" aria-label="Votre photo : un évier inox sur pieds">
+        <rect width="104" height="96" fill="#d7dcd9"/><rect y="62" width="104" height="34" fill="#bfc4bf"/>
+        <rect x="14" y="30" width="76" height="16" rx="2" fill="#e9ecee" stroke="#7d858c"/>
+        <rect x="19" y="33" width="30" height="10" rx="2" fill="#aab2b8"/><rect x="55" y="33" width="30" height="10" rx="2" fill="#aab2b8"/>
+        <path d="M52 30V18h10v4" fill="none" stroke="#7d858c" stroke-width="2.5"/>
+        <path d="M18 46v36M86 46v36M18 70h68" stroke="#7d858c" stroke-width="3"/>
+      </svg>
+      <div class="v6-lus">
+        <div class="h">Vu sur la photo, à garder ou non</div>
+        <div class="v6-lv"><span class="v6-ck"><svg class="v6-ico"><use href="#i-check"/></svg></span>2 bacs, sur pieds</div>
+        <div class="v6-lv"><span class="v6-ck"><svg class="v6-ico"><use href="#i-check"/></svg></span>Inox, égouttoir à droite</div>
+        <div class="v6-lv q"><span class="v6-ck no"></span>Cotes : ? à mesurer</div>
+        <div class="v6-lv q"><span class="v6-ck no"></span>Prix : pas sur la photo</div>
+      </div>
+    </div>
+    <div class="v6-lb">Ranger comme</div>
+    <div class="v6-cible">
+      <span class="on"><svg class="v6-ico"><use href="#i-tag"/></svg>Article</span>
+      <span><svg class="v6-ico"><use href="#i-fork"/></svg>Façon</span>
+      <span><svg class="v6-ico"><use href="#i-target"/></svg>Critère</span>
+      <span><svg class="v6-ico"><use href="#i-note"/></svg>Note</span>
+    </div>
+    <div class="v6-why"><span class="v6-ia"><svg class="v6-ico"><use href="#i-spark"/></svg>IA</span>un objet à acheter, façon « sur pieds »</div>
+    <div class="v6-acts"><span class="v6-b l">Retirer</span><span class="v6-b p">Ranger dans Articles</span></div>
+  </div>
+
+  <div class="v6-dock"><div class="v6-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v6-cb"><svg class="v6-ico"><use href="#i-cam"/></svg></span><span class="v6-cb"><svg class="v6-ico"><use href="#i-mic"/></svg></span></div></div>
+  <div class="v6-fab" role="button" aria-label="Ajouter"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>B · Ajouter à une idée (photo).</b> La photo se voit, avec ce qu'elle montre vraiment (pas de cote inventée). L'IA propose « Article », un toucher corrige. « Trancher » porte sa réponse : À poser ou Sur pieds. <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== C · Fiche Ventilation : après « Ranger », la preuve ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Ventilation de la salle de brassage</h1><span class="v6-st co">compare</span></div>
+    <div class="v6-crit"><svg class="v6-ico"><use href="#i-target"/></svg>Critère : <b>capter la buée à la source</b></div>
+    <div class="v6-ens"><b>Ensuite</b>avis du ferblantier sur la hotte 120</div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>1 gardée · 1 écartée</small></div>
+    <div class="v6-fl"><svg class="v6-ico ok"><use href="#i-check"/></svg><span class="nm"><b>Hotte inox + extracteur</b><small>capte la buée au-dessus de la cuve</small></span></div>
+    <div class="v6-fl out"><span class="nm"><b>Extracteur mural seul</b><small>écarté : ne capte pas la buée à la source</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>5</small></div>
+    <div class="v6-al neuf"><svg class="ph" viewBox="0 0 44 40"><path d="M8 18 16 8h12l8 10z" fill="#c9ced2" stroke="#7d858c"/><rect x="6" y="18" width="32" height="5" fill="#aab2b8"/></svg>
+      <span class="i"><b>Hotte inox 150 cm + extracteur</b><small><span class="v6-new">nouveau</span> · Inox Ventil · CH · en stock</small></span><span class="px v6-mono">5 100 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><path d="M10 18 17 9h10l7 9z" fill="#c9ced2" stroke="#7d858c"/><rect x="8" y="18" width="28" height="5" fill="#aab2b8"/></svg>
+      <span class="i"><b>Hotte inox 120 cm + extracteur</b><small>Inox Ventil · CH · en stock</small></span><span class="px v6-mono">4 200 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><path d="M12 18 18 10h8l6 8z" fill="#c9ced2" stroke="#7d858c"/><rect x="10" y="18" width="24" height="5" fill="#aab2b8"/></svg>
+      <span class="i"><b>Hotte inox 100 cm + extracteur</b><small>Lüftung Profi · DE · délai 4 sem.</small></span><span class="px v6-mono">3 100 CHF</span></div>
+    <div class="v6-al ecart"><svg class="ph" viewBox="0 0 44 40"><circle cx="22" cy="20" r="11" fill="#dfe2e4" stroke="#9aa1a6"/><path d="M22 20l6-5M22 20l-6 5M22 20l5 6M22 20l-5-6" stroke="#9aa1a6" stroke-width="2"/></svg>
+      <span class="i"><b>Extracteur mural hélicoïde</b><small>écarté avec sa façon · CH</small></span><span class="px v6-mono">690 CHF</span></div>
+    <div class="v6-al ecart"><svg class="ph" viewBox="0 0 44 40"><circle cx="22" cy="20" r="11" fill="#dfe2e4" stroke="#9aa1a6"/><path d="M22 20l6-5M22 20l-6 5M22 20l5 6M22 20l-5-6" stroke="#9aa1a6" stroke-width="2"/></svg>
+      <span class="i"><b>Extracteur mural 300 mm</b><small>écarté avec sa façon · DE</small></span><span class="px v6-mono">380 CHF</span></div>
+  </div>
+
+  <div class="v6-done"><svg class="v6-ico"><use href="#i-check"/></svg>Hotte inox 150 cm rangée dans Articles<u>Annuler</u></div>
+  <div class="v6-dock"><div class="v6-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v6-cb"><svg class="v6-ico"><use href="#i-cam"/></svg></span><span class="v6-cb"><svg class="v6-ico"><use href="#i-mic"/></svg></span></div></div>
+  <div class="v6-fab" role="button" aria-label="Ajouter"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>C · Après « Ranger ».</b> Le dépôt se voit à sa place, en tête des articles, marqué « nouveau » ; le bandeau dit lequel et où, et s'annule. Les cinq articles restent à l'écran. <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== D · Fiche Ventilation : le + dit QUOI ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Ventilation de la salle de brassage</h1><span class="v6-st co">compare</span></div>
+    <div class="v6-crit"><svg class="v6-ico"><use href="#i-target"/></svg>Critère : <b>capter la buée à la source</b></div>
+    <div class="v6-ens"><b>Ensuite</b>avis du ferblantier sur la hotte 120</div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>1 gardée · 1 écartée</small></div>
+    <div class="v6-fl"><svg class="v6-ico ok"><use href="#i-check"/></svg><span class="nm"><b>Hotte inox + extracteur</b><small>capte la buée au-dessus de la cuve</small></span></div>
+    <div class="v6-fl out"><span class="nm"><b>Extracteur mural seul</b><small>écarté : ne capte pas la buée à la source</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>5</small></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><path d="M8 18 16 8h12l8 10z" fill="#c9ced2" stroke="#7d858c"/><rect x="6" y="18" width="32" height="5" fill="#aab2b8"/></svg>
+      <span class="i"><b>Hotte inox 150 cm + extracteur</b><small>Inox Ventil · CH · en stock</small></span><span class="px v6-mono">5 100 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><path d="M10 18 17 9h10l7 9z" fill="#c9ced2" stroke="#7d858c"/><rect x="8" y="18" width="28" height="5" fill="#aab2b8"/></svg>
+      <span class="i"><b>Hotte inox 120 cm + extracteur</b><small>Inox Ventil · CH · en stock</small></span><span class="px v6-mono">4 200 CHF</span></div>
+  </div>
+
+  <div class="v6-scrim"></div>
+  <div class="v6-menu">
+    <div class="v6-mh">Ajouter à Ventilation<small>qu'est-ce que c'est ? Photo, voix ou texte viennent ensuite, dans le champ.</small></div>
+    <div class="v6-mr"><i><svg class="v6-ico"><use href="#i-tag"/></svg></i><span class="tx"><b>Article</b><small>un objet à acheter : lien, photo ou nom</small></span><svg class="v6-ico go"><use href="#i-right"/></svg></div>
+    <div class="v6-paste"><svg class="v6-ico"><use href="#i-link"/></svg><span class="u">Lien copié : <span class="v6-mono">ventil-shop.ch/gaine-250</span></span><span class="v6-b">Coller</span></div>
+    <div class="v6-mr"><i><svg class="v6-ico"><use href="#i-fork"/></svg></i><span class="tx"><b>Façon</b><small>une manière de faire : hotte, gaine, fenêtre…</small></span><svg class="v6-ico go"><use href="#i-right"/></svg></div>
+    <div class="v6-mr"><i><svg class="v6-ico"><use href="#i-target"/></svg></i><span class="tx"><b>Critère</b><small>ce qui départage : bruit, débit…</small></span><svg class="v6-ico go"><use href="#i-right"/></svg></div>
+    <div class="v6-mr"><i><svg class="v6-ico"><use href="#i-note"/></svg></i><span class="tx"><b>Note</b><small>un rappel, une remarque</small></span><svg class="v6-ico go"><use href="#i-right"/></svg></div>
+  </div>
+  <div class="v6-fab ouvert" role="button" aria-label="Ajouter (ouvert)"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>D · Le + dit QUOI, le champ dit COMMENT.</b> Quatre portes, une par cible ; photo et voix vivent seulement dans le champ. « Article » reste toujours là ; « Coller » n'apparaît que s'il y a un lien copié. <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== E · Fiche Frigo : la voix s'enregistre ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Frigo de garde pour fûts</h1><span class="v6-st re">recherche</span></div>
+    <div class="v6-crit"><svg class="v6-ico"><use href="#i-target"/></svg>Critère : <b>30 fûts de 20 L au froid</b></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>1 gardée · 1 écartée</small></div>
+    <div class="v6-fl"><svg class="v6-ico ok"><use href="#i-check"/></svg><span class="nm"><b>Chambre froide en kit</b><small>tous les fûts au même endroit</small></span></div>
+    <div class="v6-fl out"><span class="nm"><b>Frigo vitrine pro</b><small>écarté : <span class="v6-mono">6</span> fûts seulement</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>3</small></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="8" y="8" width="28" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2 m³</span></b><small>Froid Service Riviera · CH · en stock</small></span><span class="px v6-mono">6 900 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="6" y="8" width="32" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2,5 m³</span></b><small>Celle Frigorifere Sud · IT · délai 4 sem.</small></span><span class="px v6-mono">5 600 CHF</span></div>
+    <div class="v6-al ecart"><svg class="ph" viewBox="0 0 44 40"><rect x="10" y="4" width="24" height="32" rx="2" fill="#e6e8ea" stroke="#9aa1a6"/><rect x="13" y="7" width="18" height="26" fill="#f4f5f6"/></svg>
+      <span class="i"><b>Frigo vitrine pro <span class="v6-mono">700 L</span></b><small>écarté avec sa façon · CH</small></span><span class="px v6-mono">2 400 CHF</span></div>
+  </div>
+
+  <div class="v6-rec">
+    <div class="v6-rech"><span class="v6-dot"></span><b>J'écoute</b><span class="v6-mono" style="margin-left:auto">0:07</span></div>
+    <svg class="v6-wave" viewBox="0 0 280 44" preserveAspectRatio="none" aria-label="onde de la voix"><g fill="#4c6b2a"><rect x="0" y="18" width="4" height="8" rx="2"/><rect x="8" y="12" width="4" height="20" rx="2"/><rect x="16" y="6" width="4" height="32" rx="2"/><rect x="24" y="14" width="4" height="16" rx="2"/><rect x="32" y="4" width="4" height="36" rx="2"/><rect x="40" y="10" width="4" height="24" rx="2"/><rect x="48" y="16" width="4" height="12" rx="2"/><rect x="56" y="8" width="4" height="28" rx="2"/><rect x="64" y="2" width="4" height="40" rx="2"/><rect x="72" y="12" width="4" height="20" rx="2"/><rect x="80" y="18" width="4" height="8" rx="2"/><rect x="88" y="10" width="4" height="24" rx="2"/><rect x="96" y="6" width="4" height="32" rx="2"/><rect x="104" y="14" width="4" height="16" rx="2"/><rect x="112" y="8" width="4" height="28" rx="2"/><rect x="120" y="16" width="4" height="12" rx="2"/><rect x="128" y="11" width="4" height="22" rx="2"/><rect x="136" y="5" width="4" height="34" rx="2"/><rect x="144" y="13" width="4" height="18" rx="2"/></g><g fill="#bfbfbf"><rect x="152" y="20" width="4" height="4" rx="2"/><rect x="160" y="20" width="4" height="4" rx="2"/><rect x="168" y="20" width="4" height="4" rx="2"/><rect x="176" y="20" width="4" height="4" rx="2"/><rect x="184" y="20" width="4" height="4" rx="2"/><rect x="192" y="20" width="4" height="4" rx="2"/><rect x="200" y="20" width="4" height="4" rx="2"/><rect x="208" y="20" width="4" height="4" rx="2"/><rect x="216" y="20" width="4" height="4" rx="2"/><rect x="224" y="20" width="4" height="4" rx="2"/><rect x="232" y="20" width="4" height="4" rx="2"/><rect x="240" y="20" width="4" height="4" rx="2"/><rect x="248" y="20" width="4" height="4" rx="2"/><rect x="256" y="20" width="4" height="4" rx="2"/><rect x="264" y="20" width="4" height="4" rx="2"/><rect x="272" y="20" width="4" height="4" rx="2"/></g></svg>
+    <div class="v6-tr">« tenir 2 °C même porte ouverte… »</div>
+    <div class="v6-acts" style="margin-top:0"><span class="v6-b l">Annuler</span><span class="v6-b p"><svg class="v6-ico"><use href="#i-stop"/></svg>Arrêter</span></div>
+  </div>
+  <div class="v6-fab repos" role="button" aria-label="Ajouter (en attente pendant l'enregistrement)"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>E · Voix, pendant.</b> Le micro du champ ouvre l'enregistreur à la place du champ : point rouge, durée, onde, les mots qui arrivent, Arrêter. <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== F · Fiche Frigo : la voix, réécoutée et rangée ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Frigo de garde pour fûts</h1><span class="v6-st re">recherche</span></div>
+    <div class="v6-crit"><svg class="v6-ico"><use href="#i-target"/></svg>Critère : <b>30 fûts de 20 L au froid</b></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>1 gardée · 1 écartée</small></div>
+    <div class="v6-fl"><svg class="v6-ico ok"><use href="#i-check"/></svg><span class="nm"><b>Chambre froide en kit</b><small>tous les fûts au même endroit</small></span></div>
+    <div class="v6-fl out"><span class="nm"><b>Frigo vitrine pro</b><small>écarté : <span class="v6-mono">6</span> fûts seulement</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>3</small></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="8" y="8" width="28" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2 m³</span></b><small>Froid Service Riviera · CH · en stock</small></span><span class="px v6-mono">6 900 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="6" y="8" width="32" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2,5 m³</span></b><small>Celle Frigorifere Sud · IT · délai 4 sem.</small></span><span class="px v6-mono">5 600 CHF</span></div>
+  </div>
+
+  <div class="v6-tri" style="bottom:132px">
+    <div class="v6-trh"><b>Note vocale</b><span class="d">pas encore rangée</span></div>
+    <div class="v6-play"><span class="pb"><svg class="v6-ico"><use href="#i-play"/></svg></span>
+      <svg class="w" viewBox="0 0 200 32" preserveAspectRatio="none" aria-label="réécouter"><g fill="#4c6b2a"><rect x="0" y="12" width="4" height="8" rx="2"/><rect x="8" y="8" width="4" height="16" rx="2"/><rect x="16" y="4" width="4" height="24" rx="2"/><rect x="24" y="10" width="4" height="12" rx="2"/><rect x="32" y="2" width="4" height="28" rx="2"/><rect x="40" y="8" width="4" height="16" rx="2"/></g><g fill="#9e9e9e"><rect x="48" y="12" width="4" height="8" rx="2"/><rect x="56" y="6" width="4" height="20" rx="2"/><rect x="64" y="2" width="4" height="28" rx="2"/><rect x="72" y="9" width="4" height="14" rx="2"/><rect x="80" y="12" width="4" height="8" rx="2"/><rect x="88" y="6" width="4" height="20" rx="2"/><rect x="96" y="4" width="4" height="24" rx="2"/><rect x="104" y="10" width="4" height="12" rx="2"/><rect x="112" y="6" width="4" height="20" rx="2"/><rect x="120" y="12" width="4" height="8" rx="2"/><rect x="128" y="8" width="4" height="16" rx="2"/><rect x="136" y="3" width="4" height="26" rx="2"/><rect x="144" y="10" width="4" height="12" rx="2"/><rect x="152" y="6" width="4" height="20" rx="2"/><rect x="160" y="12" width="4" height="8" rx="2"/><rect x="168" y="9" width="4" height="14" rx="2"/><rect x="176" y="13" width="4" height="6" rx="2"/><rect x="184" y="14" width="4" height="4" rx="2"/></g></svg>
+      <span class="v6-mono">0:12</span></div>
+    <p class="v6-quote">« La chambre doit tenir <span class="v6-mono">2 °C</span> même porte ouverte : on l'ouvre dix fois par jour. »</p>
+    <div class="v6-lb">Ranger comme</div>
+    <div class="v6-cible">
+      <span><svg class="v6-ico"><use href="#i-tag"/></svg>Article</span>
+      <span><svg class="v6-ico"><use href="#i-fork"/></svg>Façon</span>
+      <span class="on"><svg class="v6-ico"><use href="#i-target"/></svg>Critère</span>
+      <span><svg class="v6-ico"><use href="#i-note"/></svg>Note</span>
+    </div>
+    <div class="v6-why"><span class="v6-ia"><svg class="v6-ico"><use href="#i-spark"/></svg>IA</span>ce qui départage : tenir <span class="v6-mono">2 °C</span> porte ouverte</div>
+    <div class="v6-acts"><span class="v6-b l">Retirer</span><span class="v6-b p">Ranger comme critère</span></div>
+  </div>
+
+  <div class="v6-dock"><div class="v6-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v6-cb"><svg class="v6-ico"><use href="#i-cam"/></svg></span><span class="v6-cb"><svg class="v6-ico"><use href="#i-mic"/></svg></span></div></div>
+  <div class="v6-fab" role="button" aria-label="Ajouter"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>F · Voix, après Arrêter.</b> On réécoute, on lit ce qui a été compris, on choisit où ça va ; l'IA propose « Critère ». <span class="v6-ex">exemple</span></div>
+</div>
+
+<!-- ===================== G · Fiche Frigo : un lien sans aperçu ===================== -->
+<div class="v6-col">
+<div class="v6-tel">
+  <div class="v6-fh">
+    <span class="v6-back"><svg class="v6-ico"><use href="#i-left"/></svg>Carnets</span>
+    <div class="v6-ft"><h1>Frigo de garde pour fûts</h1><span class="v6-st re">recherche</span></div>
+    <div class="v6-crit"><svg class="v6-ico"><use href="#i-target"/></svg>Critère : <b>30 fûts de 20 L au froid</b></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Façons <small>1 gardée · 1 écartée</small></div>
+    <div class="v6-fl"><svg class="v6-ico ok"><use href="#i-check"/></svg><span class="nm"><b>Chambre froide en kit</b><small>tous les fûts au même endroit</small></span></div>
+    <div class="v6-fl out"><span class="nm"><b>Frigo vitrine pro</b><small>écarté : <span class="v6-mono">6</span> fûts seulement</small></span></div>
+  </div>
+  <div class="v6-sec">
+    <div class="v6-sh">Articles <small>3</small></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="8" y="8" width="28" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2 m³</span></b><small>Froid Service Riviera · CH · en stock</small></span><span class="px v6-mono">6 900 CHF</span></div>
+    <div class="v6-al"><svg class="ph" viewBox="0 0 44 40"><rect x="6" y="8" width="32" height="26" rx="2" fill="#dfe3e6" stroke="#7d858c"/><path d="M22 8v26" stroke="#7d858c"/></svg>
+      <span class="i"><b>Chambre froide en kit <span class="v6-mono">2,5 m³</span></b><small>Celle Frigorifere Sud · IT · délai 4 sem.</small></span><span class="px v6-mono">5 600 CHF</span></div>
+  </div>
+
+  <div class="v6-tri" style="bottom:132px">
+    <div class="v6-trh"><b>Lien déposé</b><span class="d">pas encore rangé</span></div>
+    <div class="v6-url"><svg class="v6-ico"><use href="#i-out"/></svg><span class="v6-mono">froid-pro.ch/chambre-kit-3m3</span></div>
+    <div class="v6-why" style="margin-top:4px">Cette page ne donne pas d'aperçu : nommez l'objet, ou ajoutez une photo.</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div class="v6-in ok" style="flex:1">Chambre froide en kit <span class="v6-mono">&nbsp;3 m³</span></div>
+      <span class="v6-b" style="margin-top:8px;min-height:44px"><svg class="v6-ico"><use href="#i-cam"/></svg>Photo</span>
+    </div>
+    <div class="v6-sw"><svg class="v6-ico"><use href="#i-eye"/></svg>Veille du prix, tous les 3 jours<span class="k" aria-label="veille activée"></span></div>
+    <div class="v6-lb" style="margin-top:4px">Ranger comme</div>
+    <div class="v6-cible">
+      <span class="on"><svg class="v6-ico"><use href="#i-tag"/></svg>Article</span>
+      <span><svg class="v6-ico"><use href="#i-fork"/></svg>Façon</span>
+      <span><svg class="v6-ico"><use href="#i-target"/></svg>Critère</span>
+      <span><svg class="v6-ico"><use href="#i-note"/></svg>Note</span>
+    </div>
+    <div class="v6-acts"><span class="v6-b l">Retirer</span><span class="v6-b p">Ranger dans Articles</span></div>
+  </div>
+
+  <div class="v6-dock"><div class="v6-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v6-cb"><svg class="v6-ico"><use href="#i-cam"/></svg></span><span class="v6-cb"><svg class="v6-ico"><use href="#i-mic"/></svg></span></div></div>
+  <div class="v6-fab" role="button" aria-label="Ajouter"><svg class="v6-ico"><use href="#i-plus"/></svg></div>
+  <nav class="v6-bot" aria-label="Navigation">
+    <a href="#"><svg class="v6-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v6-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on"><svg class="v6-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v6-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+<div class="v6-cap"><b>G · Lien sans aperçu.</b> Un seul message, en mots simples ; le lien s'ouvre (↗), le nom se tape, une photo peut compléter ; la veille du prix se règle ici. <span class="v6-ex">exemple</span></div>
+</div>
+
+</div>
+</body>
+</html>
