@@ -330,3 +330,49 @@ body.as-sh-on #fab{visibility:hidden}
 .as-fm .as-fmr{flex:1 1 auto;min-width:0}
 .as-fmr input{width:0}
 @media (orientation:landscape) and (max-height:500px){.as-fm{width:190px}}
+/* ---------- passe 10 : la pile des actions rapides (habit de l'app : navigation.css, b1s-b2 « La pile au pouce ») ---------- */
+.as-pa-vo{position:fixed;inset:0 0 0 0;z-index:57;background:rgba(17,17,17,.3)}
+html[data-theme=cave] .as-pa-vo{background:rgba(0,0,0,.55)}
+/* derrière la pile, comme l'app : fond de page à 82 % et flou de 6 px, fondu vers le haut sur 110 px ; aucun texte du calendrier entre les pilules */
+.as-pa-vo::after{content:'';position:absolute;left:var(--pa-l,0);right:0;top:var(--pa-t,0);bottom:0;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 110px);mask-image:linear-gradient(to bottom,transparent 0,#000 110px)}
+.as-pp-tx{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.as-pp-tx small{font-weight:400}
+.as-pp-ct{display:none}
+body.as-pa-on #fab{z-index:59;background:var(--s1);color:var(--ink);box-shadow:0 6px 16px rgba(0,0,0,.28),inset 0 0 0 1.5px var(--line2)}
+.as-pa{position:fixed;z-index:58;width:min(300px,calc(100vw - 24px));display:flex;flex-direction:column-reverse;align-items:stretch;gap:6px;overflow-y:auto;overscroll-behavior:contain;
+ scrollbar-width:none;padding-top:4px}
+.as-pa::-webkit-scrollbar{display:none}
+.as-pa-cal,.as-pa-tout{display:flex;flex-direction:column-reverse;gap:6px}
+.as-pa-z{display:flex;justify-content:flex-end;align-items:center;gap:4px;height:20px;margin-top:4px;padding:0 6px;font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
+.as-pa-z em{font-style:normal;color:var(--ink)}
+.as-pa-g{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.as-pa .as-pp{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;height:48px;padding:0 6px 0 16px;border-radius:24px;cursor:pointer;
+ border:1px solid color-mix(in srgb,var(--c) 45%,var(--line2));background:color-mix(in srgb,var(--c) 8%,var(--bg));color:var(--ink);font-size:15px;line-height:1.25;white-space:nowrap;min-width:0;
+ box-shadow:0 2px 8px rgba(0,0,0,.14);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.as-pa .as-pp:active{transform:scale(.98)}
+.as-pa .as-pp:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.as-pp-t{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.as-pa .as-pp small{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:var(--mut)}
+.as-pp-i{margin-left:auto;flex:none;width:36px;height:36px;border-radius:18px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 16%,var(--bg));color:var(--c)}
+.as-pp-i svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* l'action principale de l'écran : pleine, à la couleur de sa rangée, contre le + */
+.as-pa .as-pp.as-pp-pi{height:56px;border-radius:16px;border-color:transparent;background:var(--c);color:var(--bg);font-weight:700;font-size:16px}
+.as-pa .as-pp.as-pp-pi small{color:inherit;opacity:.9;font-weight:400}
+.as-pp-pi .as-pp-i{width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--bg) 20%,transparent);color:var(--bg)}
+/* Partout : deux colonnes de pilules de 44 px, neutres ; leur couleur reste dans la pastille */
+.as-pa .as-pp.as-pp-c{height:44px;padding:0 4px 0 13px;gap:6px;border-radius:22px;border-color:var(--line2);background:var(--bg);font-size:14px}
+.as-pp-c .as-pp-i{width:32px;height:32px;border-radius:16px}
+.as-pp-c .as-pp-i svg{width:17px;height:17px}
+/* en largeur (844 × 390) : les deux groupes côte à côte, le calendrier contre le + ; ses lignes en deux colonnes, Brassin en bas sur toute la largeur */
+@media (orientation:landscape) and (max-height:520px){
+ .as-pa{width:min(600px,calc(100vw - 24px));flex-direction:row-reverse;align-items:flex-end;gap:14px}
+ .as-pa-cal,.as-pa-tout{flex:1 1 0;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .as-pa-z{grid-column:1/-1;order:-1;margin-top:0}
+ .as-pa-tout{display:flex;flex-direction:column}
+ /* les lignes du calendrier y portent le nom de leur rangée seul : « Sur le calendrier » le dit déjà */
+ .as-pp-lg{display:none}.as-pp-ct{display:inline}
+ .as-pa .as-pp{height:42px;font-size:14px;padding-left:13px}
+ .as-pa .as-pp.as-pp-pi{grid-column:1/-1;order:9;height:46px;font-size:15px}
+ .as-pa .as-pp.as-pp-c{height:42px}
+ .as-pp-i{width:32px;height:32px}}
+@media (prefers-reduced-motion:reduce){.as-pa .as-pp:active{transform:none}}

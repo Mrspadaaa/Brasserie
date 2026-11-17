@@ -1,0 +1,58 @@
+ok cal.html + volant : feuille (0 champ(s), 13 choix, pressé « rien ») ; cases « + » visibles : 0
+ok cal.html + Brassins : feuille (2 champ(s), 24 choix, pressé « Brassin / 28 j / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Fêtes : feuille (2 champ(s), 17 choix, pressé « Fête / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Ventes : feuille (2 champ(s), 18 choix, pressé « Vente / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Achats : feuille (2 champ(s), 17 choix, pressé « Achat / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Travaux : feuille (2 champ(s), 17 choix, pressé « Travaux / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Activités : feuille (1 champ(s), 16 choix, pressé « Activité / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Papiers : feuille (2 champ(s), 17 choix, pressé « Papier / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html feuille Vente : champs à l’ouverture «  /  », 200 130 CHF → feuille gardée, alerte « 200 130 CHF : plus de 10 fois la plus grosse somme de Ventes »
+ok cal.html brassin posé en S52 : « J0 / 28Saison · prête 18 janv. »
+ok cal.html 844 × 390, feuille Vente : largeur 840 pour 840, glisse 0 px, titre entier, montant dans l’écran
+ok cal-paysage.html 844 × 390, feuille Vente : largeur 840 pour 840, glisse 0 px, titre entier, montant dans l’écran
+PLUS-AGIT OK
+ok cal.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+ok cal.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler
+ok cal.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+ok cal.html deux ventes en S49 : pastilles « +260 » «  » « 3 » « Bar du Lac +200 » « Épicerie Rolle +150 »
+ok cal.html message puis on défile : avant « S49 : 4 132 → 4 332Annuler », après 450 px « parti »
+ok cal-paysage.html 844 × 390, Blonde décalée puis tirée : « J0 / 35 · prête 11 janv. », 4 points
+BRUIT OK
+ok cal-paysage.html + volant : feuille (0 champ(s), 13 choix, pressé « rien ») ; cases « + » visibles : 0
+ok cal-paysage.html + Brassins : feuille (2 champ(s), 24 choix, pressé « Brassin / 28 j / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Fêtes : feuille (2 champ(s), 17 choix, pressé « Fête / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Ventes : feuille (2 champ(s), 18 choix, pressé « Vente / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Achats : feuille (2 champ(s), 17 choix, pressé « Achat / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Travaux : feuille (2 champ(s), 17 choix, pressé « Travaux / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Activités : feuille (1 champ(s), 16 choix, pressé « Activité / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html + Papiers : feuille (2 champ(s), 17 choix, pressé « Papier / S4716 nov. ») ; cases « + » visibles : 0
+ok cal-paysage.html feuille Vente : champs à l’ouverture «  /  », 200 130 CHF → feuille gardée, alerte « 200 130 CHF : plus de 10 fois la plus grosse somme de Ventes »
+ok cal-paysage.html brassin posé en S52 : « J0 / 28Saison · prête 18 janv. »
+ok cal-paysage.html 844 × 390, feuille Vente : largeur 840 pour 840, glisse 0 px, titre entier, montant dans l’écran
+PLUS-AGIT OK
+ok cal-paysage.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+KO cal-paysage.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler → 1 chevauchement(s) : Achats × Commande groupée de malt
+KO cal-paysage.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras → 1 chevauchement(s) : Achats × Commande groupée de malt
+ok cal-paysage.html deux ventes en S49 : pastilles « +260 » «  » « 3 » « Bar du Lac +200 » « Épicerie Rolle +150 »
+ok cal-paysage.html message puis on défile : avant « S49 : 4 132 → 4 332Annuler », après 450 px « parti »
+BRUIT ECHEC
+ok cal.html : repos « S47 S48 S49 S50 S51 S52 » (0 icône(s)) ; bouton présent, ± montre les mouvements ; 6 semaine(s) sur leur colonne (vue de 390 px)
+BANDE OK
+ok cal-paysage.html : repos « S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 » (0 icône(s)) ; bouton présent, ± montre les mouvements ; 13 semaine(s) sur leur colonne (vue de 844 px)
+BANDE OK
+ok calendrier.html : repos « S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 » (0 icône(s)) ; bouton présent, ± montre les mouvements ; 13 semaine(s) sur leur colonne (vue de 844 px)
+BANDE OK
+ok cal.html : courbe 87 px (min 80), bande des semaines 33 px (max 40, présente), en-tête 180 px (max 180), 24 textes (max 12), mois → bande sans mois au-dessus
+ENTETE OK
+ok cal.html : 7 rangées, colonnes du + écart 0 px ; hors ligne : aucune ; x = 22,22,22,22,22,22,22
+PLUS OK
+ok calendrier.html : 390×844 → portrait 390×844 (cadre portrait.html) ; 844×390 → paysage 844×390 (cadre paysage.html) ; 390×844 → portrait 390×844 (cadre portrait.html)
+ok calendrier.html état commun : hauteur : tête −187, Papiers -300 ; tourné en largeur : tête −187, Papiers -300, Blonde +3 sem., 1 chose(s) ; revenu en hauteur : tête −387, Papiers -500, Blonde +2 sem., 2 chose(s)
+ROTATION OK
+== témoin passe 9 (copie hors du dossier)
+ok cal-paysage.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+KO cal-paysage.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler → 1 chevauchement(s) : Achats × Commande groupée de malt
+KO cal-paysage.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras → 1 chevauchement(s) : Achats × Commande groupée de malt
+ok cal-paysage.html deux ventes en S49 : pastilles « +260 » «  » « 3 » « Bar du Lac +200 » « Épicerie Rolle +150 »
+ok cal-paysage.html message puis on défile : avant « S49 : 4 132 → 4 332Annuler », après 450 px « parti »
+BRUIT ECHEC

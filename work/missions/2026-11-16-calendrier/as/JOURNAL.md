@@ -246,3 +246,32 @@ Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (cop
 Contrôles (sortie : `cap/passe9/_controles.txt`) : ROTATION OK, PLUS-AGIT OK, BRUIT OK, BANDE OK, ENTETE OK, PLUS OK. Témoins passe 8 (copie hors du dossier) : BRUIT ECHEC et PLUS-AGIT ECHEC sur chaque point neuf.
 Rejoué au doigt par `cap/passe9/jouer.mjs` (le jeu de la critique 8 ; la vente du + de Ventes touche la puce Café du Pont, comme le brasseur) et `mesure.mjs` : 58 + 6 captures, **0 erreur de page**, planches `_p9a` à `_p9f` ouvertes.
 Reste à voir : en hauteur, le message posé en bas couvre parfois une pastille de Papiers (−312) jusqu'au premier défilement ; c2-b pousse toujours la frise (doute de la critique 8).
+
+## Passe 10 (17.11, ses mots : « Le bouton+ ici n'a pas du tout la bonne fonctionne, juste fix ça et tu peux faire le portage dans la vraie app. Avec tout ce qui a été retenue ECT... »)
+Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copie de la passe 9 : `%TEMP%/as-p9/`), assemblés par `src/build.mjs` ; `pub/` réécrit.
+Sa règle du + : « certaines actions doivent toujours être possible, juste celle de l'écran actuel sont plus mis en avant. Et le bouton doit toujours être flottant.... » (15.11) ; « le bouton+ dépend de son action principal en fonction de là où il est » (16.11).
+
+| # | Changement | Preuve (`cap/passe10/_jeu.json`) |
+|---|---|---|
+| 1 | Le + volant n'ouvre plus la feuille « Ajouter » : il ouvre les **actions rapides**, à l'habit de l'app (b1s-b2 « La pile au pouce », `FloatingActions.tsx`, `PlusSheet.tsx`, `navigation.css`) : pilules alignées à droite qui montent du +, voile, fond flouté derrière la pile, le + devient × neutre | p-clair-ouvert, p-sombre-ouvert : 13 lignes, pile 39–339 × 128–722, rien ne déborde ; aria-expanded true ; le focus va à la première ligne |
+| 2 | « **Sur le calendrier** », contre le pouce : une ligne par rangée, dans l'ordre de la frise ; Poser un brassin pleine (couleur de Brassins, « S47 · prête le 14 déc. »), puis Poser une fête, Poser une vente, Prévoir un achat, Prévoir des travaux, Noter une activité, Prévoir un papier, chacune teintée de sa rangée. Chacune ouvre la feuille d'ajout existante **déjà sur sa rangée** (`ouvreAjout(v)`) | p-*-fete : « Ajouter dans Fêtes », Fête pressé, Ajouter en S47 ; p-*-brassin : Brassin pressé ; l-*-papier : Papier pressé |
+| 3 | « **Partout** », au-dessus : les gestes communs de l'app dans son ordre (`COMMUNS` de `plusEcran.ts`) : Écriture, Facture, Vente, Recette, Brassin, Compagnon, deux colonnes de pilules de 44 px. Dans le jouable, un message court « Ouvre Entrer une facture » | p-*-facture |
+| 4 | **Plus d'étiquette de semaine** sur le + (#fabl retiré, refus i7 « + S47 dans le bouton volant ») ; le + garde sa place (droite, 295–339 × 730–774, 14 px au-dessus des onglets) et sa forme ; nom « Actions rapides » | p-*-ferme |
+| 5 | Fermer : le +, le voile, Échap (focus rendu au +), Tab, un choix, la rotation. Flèches et Début/Fin dans la pile | p-*-voile, p-*-refait : pile fermée |
+| 6 | En largeur (844 × 390, `cal.html` comme `cal-paysage.html`) : les deux groupes côte à côte, le calendrier contre le +, ses lignes en deux colonnes au nom de leur rangée seul (Fête, Vente…), Poser un brassin pleine en bas | l-clair-ouvert, l-sombre-ouvert : pile 232–832 × 48–268, rien de coupé |
+
+Le + du carré de rangée ne change pas ; aucune case pointillée (refus R2 : « cases + visibles : 0 »).
+Les lignes du calendrier portent `as-ty` et `data-v` (le rôle des choix de la feuille : choisir la rangée), si bien que les contrôles qui posent par le + volant (rotation, feuille en largeur) font le vrai chemin : + → Papier → feuille sur Papiers. Aucun contrôle modifié.
+
+Rejoué au toucher par `cap/passe10/jouer.mjs` (390 × 844 tactile clair et sombre, 844 × 390 clair et sombre) : **0 erreur de page**. Captures ouvertes : p-clair-ferme, p-clair-ouvert, p-sombre-ouvert, p-sombre-fete, p-clair-facture, l-clair-ouvert, l-sombre-ouvert.
+
+### Contrôles (depuis la racine, sortie : `cap/passe10/_controles.txt`)
+- controle-plus-agit cal.html et cal-paysage.html : **PLUS-AGIT OK** (+ volant : « feuille, 13 choix »)
+- controle-geste-bruit cal.html : **BRUIT OK** ; cal-paysage.html : BRUIT ECHEC, **identique sur le témoin passe 9** (copie hors du dossier, même sortie : « f1-a puis f6-b … Achats × Commande groupée de malt ») : pas de cette passe
+- controle-bande-semaine cal.html, cal-paysage.html --paysage, pub/calendrier.html --large : **BANDE OK**
+- controle-entete-cal cal.html : **ENTETE OK** ; controle-plus-rangees cal.html : **PLUS OK**
+- controle-rotation pub/calendrier.html : **ROTATION OK** (le papier se pose par + → Papier)
+
+Reste à voir :
+- `cal-paysage.html` seul : le message de f1-a puis f6-b chevauche « Commande groupée de malt » (BRUIT, déjà là en passe 9) ;
+- au port : la pile de l'app (`PlusSheet`) reçoit les sept lignes du calendrier par `usePlusPage` (aujourd'hui trois : brassin, fête, dépense) ; « Brassin » et « Vente » de Partout ne sont pas les mêmes gestes que « Poser un brassin / une vente » du calendrier (lancer et encaisser, contre poser au calendrier).

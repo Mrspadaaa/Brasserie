@@ -535,7 +535,8 @@ function typ(v){for(var k=0;k<TYP.length;k++)if(TYP[k][0]===v)return TYP[k];retu
 function proposition(v){if(v!=='vente')return null;var p=FB.querySelector('.lane[data-voie="vente"] [data-k17-p^="k-cdp"]');if(!p||p.hidden||p.classList.contains('as-nouv'))return null;
  var a=(p.getAttribute('aria-label')||'').split(',').map(function(x){return x.trim();});var mt=parseInt((a[2]||'').replace(/[^\d]/g,''),10)||0;
  return {pin:p,nom:a[0],det:a[1],v:mt,quand:a[3],i:Math.max(0,Math.min(NC-1,Math.floor(parseFloat(p.style.left)/CW)))};}
-function semFab(){var t=(D.getElementById('fabl')||{}).textContent||'',m=/S(\d+)/.exec(t);return m?Math.max(0,Math.min(NC-1,widx(+m[1]))):0;}
+/* la feuille s'ouvre sur la semaine courante (S47) : plus d'étiquette de semaine sur le + volant (refus i7, passe 10) */
+function semFab(){return 0;}
 var SH=null,NN=0,NV=[];
 /* la feuille propose 13 semaines (comme le paysage) : en portrait, les semaines hors de la frise se posent aussi */
 var NSEM=Math.max(NC,13),DUREES=[21,28,35,42];
@@ -701,10 +702,48 @@ function detN(o){if(!o)return;DERN=o.el;fermeToast();sup();var deja=DET&&DET.bar
 /* un détail ouvert se lit en entier (au-dessus de la barre d'onglets) sans que la chose touchée sorte par le haut */
 function dedans(d,br){var r=d.getBoundingClientRect(),nv=D.querySelector('nav.bot'),bb=(nv&&nv.getClientRects().length?nv.getBoundingClientRect().top:innerHeight)-8;
  if(r.bottom>bb){var mx=br.top-hautVu();W.scrollBy({top:Math.max(0,Math.min(r.bottom-bb,mx)),behavior:'instant'});}}
+/* ---------- passe 10 : le + volant ouvre les actions rapides, à l'habit de l'app (b1s-b2 « La pile au pouce », FloatingActions + PlusSheet) ----------
+   17.11 : « Le bouton+ ici n'a pas du tout la bonne fonctionne ». Sa règle (15.11) : « certaines actions doivent toujours être possible, juste celle de l'écran
+   actuel sont plus mis en avant. Et le bouton doit toujours être flottant » ; (16.11) « le bouton+ dépend de son action principal en fonction de là où il est ».
+   Contre le + : « Sur le calendrier », une ligne par rangée (Brassin pleine, contre le pouce) ; chacune ouvre la feuille d'ajout déjà sur sa rangée.
+   Au-dessus : « Partout », les gestes communs de l'app, dans son ordre (ici, un message court). Plus d'étiquette de semaine sur le + (refus i7). ---------- */
+var PA=null;
+var PA_CAL=[['brassage','Poser un brassin','i-beer'],['evenement','Poser une fête','i-fete'],['vente','Poser une vente','i-vente'],['achat','Prévoir un achat','i-k17cart'],
+ ['renovation','Prévoir des travaux','i-outil'],['activite','Noter une activité','i-jour'],['charge','Prévoir un papier','i-doc']];
+var PA_TOUT=[['Écriture','Nouvelle écriture','i-ecr','fin','à la main'],['Facture','Entrer une facture','i-k18fac','fin','photo ou PDF'],['Vente','Encaisser une vente','i-vente','fin',''],
+ ['Recette','Créer une recette','i-epi','prod',''],['Brassin','Lancer un brassin','i-beer','prod',''],['Compagnon','Compagnon brasseur · Calendrier','i-bulle','mut','']];
+function paIco(id){return '<span class="as-pp-i" aria-hidden="true"><svg><use href="#'+id+'"></use></svg></span>';}
+function fermePa(focusFab){if(!PA)return;var p=PA;PA=null;p.pa.remove();p.vo.remove();B.classList.remove('as-pa-on');var f=D.getElementById('fab');
+ if(f){f.setAttribute('aria-expanded','false');if(focusFab)f.focus({preventScroll:true});}}
+function ouvrePa(){fermeToast();fermeDet();fermeMenu();var f=D.getElementById('fab');if(!f)return;
+ var vo=el('div','as-pa-vo'),pa=el('div','as-pa');vo.setAttribute('aria-hidden','true');pa.id='as-pa';pa.setAttribute('role','dialog');pa.setAttribute('aria-modal','true');pa.setAttribute('aria-label','Actions rapides');
+ var h='<div class="as-pa-cal" role="group" aria-labelledby="as-pa-z1">';
+ PA_CAL.forEach(function(c,k){var t=typ(c[0]),hint=k?'':'S'+wnum(0)+' · prête le '+dt(28);
+  h+='<button type="button" class="as-pp as-ty'+(k?'':' as-pp-pi')+'" data-v="'+c[0]+'" style="--c:var(--e-'+c[0]+')" aria-label="'+c[1]+', rangée '+t[2]+(hint?', '+hint:'')+'">'+
+   (hint?'<span class="as-pp-tx"><span class="as-pp-t">'+c[1]+'</span><small>'+hint+'</small></span>':'<span class="as-pp-t"><span class="as-pp-lg">'+c[1]+'</span><span class="as-pp-ct">'+t[1]+'</span></span>')+paIco(c[2])+'</button>';});
+ h+='<span class="as-pa-z" id="as-pa-z1">Sur <em>le calendrier</em></span></div><div class="as-pa-tout" role="group" aria-labelledby="as-pa-z2"><div class="as-pa-g">';
+ PA_TOUT.forEach(function(c){h+='<button type="button" class="as-pp as-pp-c" data-pa="'+c[1]+'" style="--c:var(--'+c[3]+')" aria-label="'+c[1]+(c[4]?', '+c[4]:'')+'"><span class="as-pp-t">'+c[0]+'</span>'+paIco(c[2])+'</button>';});
+ h+='</div><span class="as-pa-z" id="as-pa-z2">Partout</span></div>';pa.innerHTML=h;
+ /* posée contre le + : bord droit du +, 8 px au-dessus ; jamais plus haute que la place qui reste (elle défile alors) */
+ var fr=f.getBoundingClientRect(),nv=D.querySelector('nav.bot'),nb=nv&&nv.getClientRects().length?nv.getBoundingClientRect().top:innerHeight;
+ pa.style.right=Math.max(8,Math.round(innerWidth-fr.right))+'px';pa.style.bottom=Math.round(innerHeight-fr.top+8)+'px';pa.style.maxHeight=Math.round(fr.top-16)+'px';
+ vo.style.bottom=Math.max(0,Math.round(innerHeight-nb))+'px';
+ B.appendChild(vo);B.appendChild(pa);var pt=pa.getBoundingClientRect().top;vo.style.setProperty('--pa-t',Math.round(Math.max(0,pt-110))+'px');vo.style.setProperty('--pa-l',Math.round(Math.max(0,pa.getBoundingClientRect().left-78))+'px');
+ B.classList.add('as-pa-on');f.setAttribute('aria-expanded','true');f.setAttribute('aria-controls','as-pa');PA={pa:pa,vo:vo};
+ vo.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();fermePa(false);});
+ pa.addEventListener('click',function(e){e.stopPropagation();var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.v){fermePa(false);ouvreAjout(b.dataset.v);}else if(b.dataset.pa){fermePa(false);toast('Ouvre <b>'+b.dataset.pa+'</b>',undefined,null);}});
+ pa.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();fermePa(true);return;}if(e.key==='Tab'){fermePa(false);return;}
+  var it=[].slice.call(pa.querySelectorAll('button')),i=it.indexOf(e.target),n={ArrowUp:i+1,ArrowDown:i-1,Home:0,End:it.length-1}[e.key];
+  if(n==null||!it.length)return;e.preventDefault();it[(n+it.length)%it.length].focus();});
+ var b0=pa.querySelector('button');if(b0)b0.focus({preventScroll:true});}
+(function(){var f=D.getElementById('fab');if(!f)return;var l=D.getElementById('fabl');if(l)l.remove();f.setAttribute('aria-label','Actions rapides');f.setAttribute('aria-haspopup','dialog');f.title='Actions rapides';
+ f.addEventListener('keydown',function(e){if(e.key==='Escape'&&PA){e.preventDefault();fermePa(true);}});})();
+W.addEventListener('resize',function(){fermePa(false);});
 D.addEventListener('click',function(e){if(e.defaultPrevented||!e.target.closest)return;var n0=e.target.closest('#fb .as-nouv:not(.bar)');if(n0){e.stopPropagation();e.preventDefault();detN(objDe(n0));return;}
  var c=e.target.closest('#fb .lane .g2-c');
  if(c){e.stopPropagation();e.preventDefault();var lane=c.closest('.lane');if(ANON)quitteAn();lane.classList.remove('k14-ouv');c.setAttribute('aria-expanded','false');ouvreAjout(lane.dataset.voie);return;}
- if(e.target.closest('#fab')){e.stopPropagation();ouvreAjout(null);}},true);
+ if(e.target.closest('#fab')){e.stopPropagation();e.preventDefault();if(PA)fermePa(false);else ouvrePa();}},true);
 /* ---------- passe 8 : un seul état pour les deux sens du téléphone (CRITIQUE7 n° 1) ----------
    Chaque vue écrit ses données à chaque changement (sessionStorage commun, et au cadre parent qui les passe à l'autre vue) ;
    elle relit le dernier état quand elle le reçoit, quand elle change de taille (on tourne) ou redevient visible. Les données, pas le dessin :
