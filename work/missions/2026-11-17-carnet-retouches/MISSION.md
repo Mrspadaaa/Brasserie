@@ -10,3 +10,4 @@ Base : ra+p5f (work/missions/2026-11-16-carnet-decision/ra-p5f/proto.html). Crit
 | Carnet par écran (★ et notes) | 17.11 | https://claude.ai/artifact/VU5xp5f9PkiRpS1VjkDPFz | `work/missions/2026-11-17-carnet-retouches/maquettes/page2/index.html` |
 | Carnet greffe 2 sur son top 3 (par écran) | 17.11 | https://claude.ai/artifact/D8h6ehUMMcJkUbjD8APz9R | `work/missions/2026-11-17-carnet-retouches/greffe2/page/index.html` |
 | Carnet greffe 4 (créer, ajouter, modifier, supprimer) | 1 | https://claude.ai/artifact/H5XBqbxj77FqvrrpCUwoEp | greffe4/page/index.html |
+| Carnet greffe 5 (un champ, l’IA trie, l’achat d’abord) | 1 | https://claude.ai/artifact/66V9BWrVRuKfTKTd7B6RFy | greffe5/page/index.html |

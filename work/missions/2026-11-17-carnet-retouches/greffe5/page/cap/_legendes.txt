@@ -1,0 +1,245 @@
+== v01
+v01 · G5-1 · la structure v05 de bout en bout, qui se trie seule ¶ Achat de matériel d’abord : un lien collé devient un article lu, rangé dans son idée. En second, le carnet sert aussi de brouillon : une note en vrac, mise en forme. Tout ajout : coller ou taper, puis Ajouter.
+v01-1 390x844 | 0 · Décor figé · la liste · i06-1 / v05-1
+v01-2 390x844 | 1 · Créer · avant · v01-2, sans la flèche
+v01-3 390x844 | 1 · Créer · pendant · v02-2, une puce
+v01-4 390x844 | 1 · Créer · après · v05-3
+v01-5 390x844 | 2 · Ajouter · avant · E20g
+v01-6 390x844 | 2 · Texte · pendant · v05-5, une puce
+v01-7 390x844 | 2 · Texte · après · v05-3 + « rangé : » d’E06
+v01-8 390x844 | 3 · Lien · avant · coller, puis Ajouter
+v01-9 390x844 | 3 · Lien · pendant · carte E07a en squelette
+v01-10 390x844 | 3 · Lien · après · carte E07a remplie
+v01-11 390x844 | 3 · Lien illisible · après · reste une note
+v01-12 390x844 | 4 · Photo · avant · appareil du champ
+v01-13 390x844 | 4 · Photo · pendant · lecture de la photo
+v01-14 390x844 | 4 · Photo · après · v05-8
+v01-15 390x844 | 5 · Brouillon · pendant · une note en vrac, exemple
+v01-16 390x844 | 5 · Brouillon · après · rangé dans 2 carnets
+v01-17 390x844 | 6 · Modifier une note · avant · v02-12, ⋯ de la note
+v01-18 390x844 | 6 · Modifier une note · pendant · v01-11, cadre en place
+v01-19 390x844 | 6 · Modifier une note · après · v01-12
+v01-20 390x844 | 7 · Titre · avant · v02-14, ⋯ Renommer
+v01-21 390x844 | 7 · Titre · pendant · v01-13
+v01-22 390x844 | 7 · Titre · après · v01-14
+v01-23 390x844 | 8 · Supprimer une note · avant · v02-12, ⋯ de la note
+v01-24 390x844 | 8 · Supprimer une note · après · v02-13, Annuler à sa place
+v01-25 390x844 | 9 · Supprimer une idée · avant · v02-17
+v01-26 390x844 | 9 · Supprimer une idée · pendant · v02-18 + veille gardée
+v01-27 390x844 | 9 · Supprimer une idée · après · liste i06-1
+== v02
+
+v02-1 390x844 | 0Liste · avant· i06-1, figé
+v02-2 390x844 | 0′Liste vide· v01-2 sans la flèche
+v02-3 390x844 | 1Créer · pendant· v02-2, idée neuve
+v02-4 390x844 | 1Créer · après, nouvelle· v03-3, créé seul
+v02-5 390x844 | 1′Proche d'un carnet · pendant· v02-2
+v02-6 390x844 | 1′Proche d'un carnet · après· i06-1
+v02-7 390x844 | 1″Si l'IA se trompe· v02-2
+v02-8 390x844 | 2Ajouter · avant· E20g dans l’habit i06-4
+v02-9 390x844 | 2Texte · avant· fiche i06-4, Évier inox
+v02-10 390x844 | 2Texte · pendant· v06-5
+v02-11 390x844 | 2Texte · après· v06-5 rangé
+v02-12 390x844 | 3Lien · pendant, lecture…· v01-8, depuis la liste
+v02-13 390x844 | 3Lien · pendant, lu· v01-8 + E07a
+v02-14 390x844 | 3Lien · après· v01-9, dans la liste
+v02-15 390x844 | 3Lien · illisible· base : « lien sans aperçu »
+v02-16 390x844 | 4Photo · avant· appareil du champ
+v02-17 390x844 | 4Photo · pendant· lecture…
+v02-18 390x844 | 4Photo · après· v02-7
+v02-19 390x844 | 5Brouillon · pendant· cadre v02-2, second plan
+v02-20 390x844 | 5Brouillon · après· v03-3 + v05-3
+v02-21 390x844 | 6Modifier · avant· v03-11
+v02-22 390x844 | 6Modifier · pendant· v01-11
+v02-23 390x844 | 6Modifier · après· v01-12
+v02-24 390x844 | 6Titre · avant· v02-14
+v02-25 390x844 | 6Titre · pendant· v01-13
+v02-26 390x844 | 6Titre · après· v01-14
+v02-27 390x844 | 6Supprimer une note · avant· v02-12
+v02-28 390x844 | 6Supprimer une note · après· v02-13
+v02-29 390x844 | 6Supprimer l’idée · avant· v04-18
+v02-30 390x844 | 6Supprimer l’idée · pendant· v04-19
+v02-31 390x844 | 6Supprimer l’idée · après· liste i06-1
+== v03
+
+v03-1 390x844 | 1 · Créer · avant (liste v05-1)
+v03-2 390x844 | 1 · Créer · avant, premier usage (E00 + v01-2)
+v03-3 390x844 | 1 · Créer · pendant (v02-2) · 2 gestes : écrire, Créer
+v03-4 390x844 | 1 · Créer · pendant, un carnet proche (v02-2) · 2 gestes
+v03-5 390x844 | 1 · Créer · après (v05-3)
+v03-6 390x844 | 2 · Ajouter · avant (E20g : le carnet, un seul champ)
+v03-7 390x844 | 2 · Ajouter un texte · pendant (v01-6) · 2 gestes
+v03-8 390x844 | 2 · Ajouter un texte · après : la ligne en place
+v03-9 390x844 | 3 · Lien · collé (geste 1), Ajouter (geste 2)
+v03-10 390x844 | 3 · Lien · pendant : lecture de la page…
+v03-11 390x844 | 3 · Lien · après : rangé ici (E07a + v01-9)
+v03-12 390x844 | 3 · Lien · si la page ne se lit pas : il reste une note
+v03-13 390x844 | 4 · Photo · pendant (2 gestes : appareil, déclencher)
+v03-14 390x844 | 4 · Photo · après (v01-7) : rangée ici
+v03-15 390x844 | 5 · Note en vrac · pendant : l'IA la met en forme
+v03-16 390x844 | 5 · Note en vrac · après : rangée, texte d'origine dessous
+v03-17 390x844 | 6 · Modifier une note · avant : ··· de la ligne (v02-12)
+v03-18 390x844 | 6 · Modifier une note · pendant (v01-11) + aide de l'IA
+v03-19 390x844 | 6 · Modifier une note · après (v01-12)
+v03-20 390x844 | 7 · Renommer · avant : toucher ✎ du titre (v01-4)
+v03-21 390x844 | 7 · Renommer · pendant (v01-13)
+v03-22 390x844 | 7 · Renommer · après
+v03-23 390x844 | 8 · Supprimer une note · avant : ··· de la ligne (v02-12)
+v03-24 390x844 | 8 · Supprimer une note · après : le cadre gris, Annuler
+v03-25 390x844 | 9 · Supprimer une idée · avant : ··· (v02-17)
+v03-26 390x844 | 9 · Supprimer une idée · pendant (v02-18)
+v03-27 390x844 | 9 · Supprimer une idée · après : cadre gris
+== v04
+
+v04-1 390x844 | 01 Créer · avant · E00 + v01-2, sans la flèche
+v04-2 390x844 | 02 Créer · pendant · E01a + v02-2, plus tard, avec 3 carnets · 1 geste : ↑
+v04-3 390x844 | 02b Créer · proche · v02-2 « Déjà un carnet, proche » · 1 geste : Y ajouter
+v04-4 390x844 | 03 Créer · après · E01b sans bulle ni dépôt vide + rubriques v05-3
+v04-5 390x844 | 04 Ajouter · avant · E20g, figé : un seul champ, aucune tuile « quoi ? »
+v04-6 390x844 | 05 Texte · pendant · E06 · 1 geste : ↑
+v04-7 390x844 | 06 Texte · après · E06 : dernier dépôt, rangé, posé dans sa rubrique
+v04-8 390x844 | 07 Lien · collé · E07a automatique · 2 gestes : coller, ↑
+v04-9 390x844 | 08 Lien · lecture… · carte E07a en squelette
+v04-10 390x844 | 09 Lien · après · E07a + « rangé · Annuler » de v01-9
+v04-11 390x844 | 10 Second lien · honnête · E12 · « 1 ? » et « prix non lu »
+v04-12 390x844 | 11 Photo · lecture… · v02-7 dans l’habit de la base · 2 gestes : appareil, déclencheur
+v04-13 390x844 | 12 Photo · après · v02-7 : « ni prix ni vendeur »
+v04-14 390x844 | 13 Décor · liste · E17a, figé
+v04-15 390x844 | 14 Brouillon · pendant · note en vrac collée, en second · 1 geste : ↑
+v04-16 390x844 | 15 Brouillon · après · rangé en Brouillon, hors des carnets d’achat · « rangé » E06
+v04-17 390x844 | 16 Modifier · avant · v03-11 : feuille de la ligne
+v04-18 390x844 | 17 Modifier · pendant · v01-11 : se modifie ici, Enregistrer au champ
+v04-19 390x844 | 18 Modifier · après · v01-12 : Annuler dans la page
+v04-20 390x844 | 19 Titre · avant · v02-14 : ··· › Renommer
+v04-21 390x844 | 20 Titre · pendant · v01-13 : se renomme ici · la proposition en 1 toucher
+v04-22 390x844 | 21 Titre · après · bandeau de v01-12
+v04-23 390x844 | 22 Supprimer une note · avant · v02-12 : ··· de la ligne
+v04-24 390x844 | 23 Supprimer une note · après · Annuler à la place de la note
+v04-25 390x844 | 24 Supprimer une idée · avant · v02-17 : ··· › Supprimer le carnet
+v04-26 390x844 | 25 Supprimer une idée · pendant · v02-18 : la question dans la page, page grisée
+v04-27 390x844 | 26 Supprimer une idée · après · E17a, ligne « supprimé · Annuler »
+== v05
+
+v05-1 390x844 | 0 · La liste, lieu de travail · i06-1, figée
+v05-2 390x844 | 1a · Créer · avant · v01-2, sans la flèche
+v05-3 390x844 | 1b · Créer · pendant · v02-2, tel quel
+v05-4 390x844 | 1c · Créer · après · nouvelle ligne en tête d’Idée
+v05-5 390x844 | 1d · Créer · toucher la ligne · v05-3, tel quel
+v05-6 390x844 | 2a · Phrase · pendant · grammaire v02-2, depuis la liste
+v05-7 390x844 | 2b · Phrase · après · la ligne Évier inox s’éclaire
+v05-8 390x844 | 2c · Phrase · dans un carnet ouvert · v05-5, tel quel
+v05-9 390x844 | 3a · Lien · avant · lien collé dans le champ
+v05-10 390x844 | 3b · Lien · pendant · carte E07a « lecture… »
+v05-11 390x844 | 3c · Lien · après · rangé dans Ventilation
+v05-12 390x844 | 3d · Lien · illisible · reste une note
+v05-13 390x844 | 4a · Photo · pendant · lecture… au-dessus de la liste
+v05-14 390x844 | 4b · Photo · après · ligne Évier inox
+v05-15 390x844 | 4c · Photo · dans un carnet ouvert · v05-8, tel quel
+v05-16 390x844 | 5a · Note en vrac · pendant · grammaire v02-2
+v05-17 390x844 | 5b · Note en vrac · après · ligne Ventilation
+v05-18 390x844 | 5c · Note en vrac · au toucher · le texte d’origine
+v05-19 390x844 | 6a · Modifier · avant · v01-10, habit du carnet
+v05-20 390x844 | 6b · Modifier · pendant · v01-11
+v05-21 390x844 | 6c · Modifier · après · v01-12 + reclassée par l’IA
+v05-22 390x844 | 7a · Titre · avant · v02-14 (menu ⋯), habit du carnet
+v05-23 390x844 | 7b · Titre · pendant · v01-13, titre prérempli par l’IA
+v05-24 390x844 | 7c · Titre · après · v01-14
+v05-25 390x844 | 8a · Supprimer une note · avant · v01-10, doublon signalé
+v05-26 390x844 | 8b · Supprimer une note · pendant · v01-11, ✕ Supprimer
+v05-27 390x844 | 8c · Supprimer une note · après · v01-15 (note supprimée)
+v05-28 390x844 | 9a · Supprimer une idée · avant · v01-16
+v05-29 390x844 | 9b · Supprimer une idée · pendant · v01-17 + vérification de l’IA
+v05-30 390x844 | 9c · Supprimer une idée · après · liste i06-1, ligne fantôme
+== v06
+
+v06-1 390x844 | 1 · Créer · avant · liste v05-1, figée
+v06-2 390x844 | 1a · Créer · avant, liste vide · E00 + v01-2, sans la flèche
+v06-3 390x844 | 1b · Créer · pendant · v02-2
+v06-4 390x844 | 1c · Créer · après · v03-3, rubriques dans l’ordre d’achat
+v06-5 390x844 | 2a · Ajouter · avant · E20g, un seul champ
+v06-6 390x844 | 2b · Ajouter un texte · pendant · v05-5
+v06-7 390x844 | 2c · Ajouter un texte · après · i06-4, proposé par l’IA
+v06-8 390x844 | 3a · Lien · avant : le champ touché · premier plan
+v06-9 390x844 | 3b · Lien · pendant · E07a, « lecture… »
+v06-10 390x844 | 3c · Lien · après · E07a + v01-9
+v06-11 390x844 | 3d · Deuxième lien · après · v02-8, le tableau naît
+v06-12 390x844 | 3e · Lien illisible · après · reste une note
+v06-13 390x844 | 3f · Lien depuis la liste · pendant · v05-1, rien à choisir
+v06-14 390x844 | 3g · Lien depuis la liste · après · rangé dans une idée existante
+v06-15 390x844 | 4a · Photo · pendant · v02-8, ligne en lecture
+v06-16 390x844 | 4b · Photo · après · v02-8, « Votre photo », 2e
+v06-17 390x844 | 5a · Note en vrac, dans une idée · pendant · cadre v05-5
+v06-18 390x844 | 5b · Note en vrac, dans une idée · après · rubriques nées du texte, page défilée
+v06-19 390x844 | 5c · Brouillon · pendant · note du téléphone, collée depuis la liste
+v06-20 390x844 | 5d · Brouillon · après · une idée existante, et Brouillon pour le reste
+v06-21 390x844 | 5e · Brouillon · ouvert · en bas de la liste, sans pastille
+v06-22 390x844 | 6a · Modifier une note · avant · v03-11, l’IA propose
+v06-23 390x844 | 6b · Modifier une note · pendant · v01-11
+v06-24 390x844 | 6c · Modifier une note · après · v01-12
+v06-25 390x844 | 6d · Modifier le titre · avant · menu ⋯ de v02-14
+v06-26 390x844 | 6e · Modifier le titre · pendant · v01-13
+v06-27 390x844 | 6f · Modifier le titre · après · grammaire v01-12
+v06-28 390x844 | 7a · Supprimer une note · pendant · v02-12, ⋯ de la ligne
+v06-29 390x844 | 7b · Supprimer une note · après · la rubrique part avec
+v06-30 390x844 | 8a · Supprimer une idée · avant · v04-18
+v06-31 390x844 | 8b · Supprimer une idée · pendant · v04-19, page grisée
+v06-32 390x844 | 8c · Supprimer une idée · après · liste v05-1
+== v07
+Carnet · G5-7 · Annuler toujours au même endroit ¶ Parti pris : un seul bandeau, le fil, toujours à la même place, sous le titre (celle de v02-3). Il dit chaque action, de l'IA comme la vôtre : « Carnet créé », « Article rangé », « Note modifiée », « Note supprimée », avec Annuler, Changer ou Voir le texte. Jamais de toast, jamais d'Annuler ailleurs. L'achat de matériel d'abord (un lien collé devient un article rangé) ; la note en vrac, en second. L'IA range d'office dans le carnet qui existe déjà ; « Nouveau carnet » ne sert qu'à corriger. ¶ Ajouter quoi que ce soit : 2 gestes (écrire ou coller, puis envoyer). Données, vendeurs, prix et pages : exemple. Base ra+p5f, décor figé i06-1 ; seuls créer, ajouter, modifier, supprimer changent.
+v07-1 390x844 | 0 Liste des carnetsi06-1 · figé
+v07-2 390x844 | 1a Créer · avantv01-2 sans la flèche · E00
+v07-3 390x844 | 1b Créer · pendantv02-2
+v07-4 390x844 | 1c Créer · aprèsv02-3
+v07-5 390x844 | 1d Ranger dans un carnet existant · pendantv02-2 · même champ
+v07-6 390x844 | 1e Ranger dans un carnet existant · aprèsE20g · fil
+v07-7 390x844 | 2a Ajouter · avantE20g · « la moins pire »
+v07-8 390x844 | 2b Texte · pendantv06-5
+v07-9 390x844 | 2c Texte · aprèsfil G5-7
+v07-10 390x844 | 3a Lien · avantE20g · coller
+v07-11 390x844 | 3b Lien · pendantE07a en squelette
+v07-12 390x844 | 3c Lien · aprèsE07a · v01-8 · v01-9
+v07-13 390x844 | 3d Lien illisiblehonnête
+v07-14 390x844 | 4a Photo · pendantsquelette
+v07-15 390x844 | 4b Photo · aprèsv02-7
+v07-16 390x844 | 5a Note en vrac · pendantgrammaire v02-2
+v07-17 390x844 | 5b Note en vrac · aprèsv05-3 · E06
+v07-18 390x844 | 6a Modifier une note · pendantv01-11
+v07-19 390x844 | 6b Modifier une note · aprèsv01-12 · fil
+v07-20 390x844 | 6c Renommer · menuv02-14
+v07-21 390x844 | 6d Renommer · pendantv01-13
+v07-22 390x844 | 6e Renommer · aprèsfil
+v07-23 390x844 | 6f Supprimer une note · menuv02-12
+v07-24 390x844 | 6g Supprimer une note · aprèsfil
+v07-25 390x844 | 6h Supprimer une idée · menuv01-16
+v07-26 390x844 | 6i Supprimer une idée · confirmerv02-18
+v07-27 390x844 | 6j Supprimer une idée · aprèsliste i06-1 · fil
+== v08
+
+v08-1 390x844 | 01 · Décor · Carnets — v05-1 / i06-1, figé : une ligne par idée, groupes Idée, À comparer, Choisi ; le brouillon à part, en bas, sans pastille.
+v08-2 390x844 | 02 · Créer · avant — E00 + v01-2, sans la flèche « écrivez ou collez ici » : le champ en bas suffit.
+v08-3 390x844 | 03 · Créer · pendant — v02-2 : l'IA a déjà choisi « nouveau carnet » et signale le proche ; « Y ajouter en façon » corrige.Gestes : écrire, ↑ (1 geste)
+v08-4 390x844 | 04 · Créer · après — v05-3 « c'est top » : bandeau Annuler dans la page, rubriques vides.
+v08-5 390x844 | 05 · Ajouter · avant — E20g « la moins pire » : carnet plein, un seul champ. Aucune tuile « quoi ? ».
+v08-6 390x844 | 06 · Ajouter un texte · pendant — v01-6 : l'IA a déjà rangé la phrase ; le cadre s'ouvre dans la rubrique, ✕ annule.Gestes : écrire, ↑ (1 geste)
+v08-7 390x844 | 07 · Ajouter un texte · après — E06 : votre texte d'origine à un toucher ; Annuler, Déplacer, Changer : un toucher.
+v08-8 390x844 | 08 · Ajouter un texte · doublon — l'IA voit que la phrase répète une note : ↑ fusionne. « Garder à part » corrige.Gestes : écrire, ↑ (1 geste)
+v08-9 390x844 | 09 · Doublon · après — une note au lieu de deux ; vos deux textes à un toucher, Séparer les rend.
+v08-10 390x844 | 10 · Ajouter un lien · avant — premier plan : il colle le lien dans le même champ. Pas d'écran de lien à remplir.Gestes : coller, ↑ (2 gestes)
+v08-11 390x844 | 11 · Ajouter un lien · pendant — la carte d'article E07a se remplit : « lecture… », le lien en clair.
+v08-12 390x844 | 12 · Ajouter un lien · après — v01-9 + E07a : nom, vendeur, pays, prix et cote lus ; ce qui n'est pas lu est dit. Veille active.
+v08-13 390x844 | 13 · Lien · même modèle — h01-6 : l'IA reconnaît le même évier et le range comme 2e offre ; elle dit d'où elle le sait.
+v08-14 390x844 | 14 · Lien illisible — le lien reste une note, sans rien inventer ; « Relire la page » d'un toucher.
+v08-15 390x844 | 15 · Ajouter une photo · pendant — prise par l'appareil du champ ; l'IA la lit.Gestes : appareil, déclencher (2 gestes)
+v08-16 390x844 | 16 · Ajouter une photo · après — v05-8 : ce que l'IA voit, et ce qu'elle n'a pas lu : sans étiquette ni mètre, pas de cote.
+v08-17 390x844 | 17 · Brouillon · pendant (usage second) — une note brute de brasserie, sans ponctuation : l'IA la coupe en trois et nomme chaque ligne.Gestes : écrire, ↑ (1 geste)
+v08-18 390x844 | 18 · Brouillon · après — une rubrique nommée par catégorie ; les lignes neuves sur fond vert ; estimation d'après vos derniers prix ; le Citra déjà noté s'additionne d'un toucher.
+v08-19 390x844 | 19 · Modifier une note · avant — v03-11 (feuille de ligne), enrichie : l'IA a vu une note mal rangée et propose de la passer en critère.Passer : 1 toucher
+v08-20 390x844 | 20 · Modifier une note · pendant — v01-11 : le texte monte dans le champ du bas, au-dessus du clavier. ✕ Supprimer : même cadre.
+v08-21 390x844 | 21 · Modifier une note · après — v01-12 : Annuler à sa place ; l'IA confronte la note aux articles et repropose le critère.
+v08-22 390x844 | 22 · Supprimer une note · après — depuis ✕ Supprimer (écran 20) : la note laisse sa place à « Note supprimée · Annuler ». Pas de toast.Supprimer : 1 toucher
+v08-23 390x844 | 23 · Modifier le titre · avant — v02-14 : ··· Renommer.
+v08-24 390x844 | 24 · Modifier le titre · pendant — v01-13 ; au-dessus du champ, l'IA propose un titre tiré des articles et des façons : « Prendre » renomme.Gestes : Prendre ou ↑ (1 toucher)
+v08-25 390x844 | 25 · Modifier le titre · après — l'ancien titre reste dit ; Annuler le rend.
+v08-26 390x844 | 26 · Supprimer une idée · avant — v02-17 : ··· Supprimer le carnet. L'IA avait vu le doublon dès la création (écran 03).
+v08-27 390x844 | 27 · Supprimer une idée · pendant — v01-17 (carte rouge pointillée), compte de ce qui part et veille qui s'arrête (J19, v02-18), page et champ grisés (J20, v04-19).Déplacer puis Supprimer : 2 touchers
+v08-28 390x844 | 28 · Supprimer une idée · après — dans la liste, à sa place en tête des Idées : « supprimé · Annuler » ; Choisi et brouillon restent. Ses 2 articles en veille vivent dans Ventilation.
