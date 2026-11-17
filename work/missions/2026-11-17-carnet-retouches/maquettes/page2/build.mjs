@@ -17,7 +17,7 @@ let html = `<title>Carnet par écran · 17.11</title>
 ${CSS}</style>
 <div class="page">
 <h1>Carnet · par écran · 17.11</h1>
-<div id="a-choisir"><b>À choisir :</b> <span class="doux">une rangée par écran, chaque version côte à côte (glisse de côté). Touche ★ sous le meilleur écran de chaque rangée, ajoute une note si tu veux, puis Copier en bas. Touche une image pour l’agrandir. Le lot greffe (v01, v02, v04, v09 pour la vue du carnet, v10, v11, habit de l’app) tourne déjà ; tes ★ guideront la passe suivante.</span></div>
+<div id="a-choisir"><b>À choisir :</b> <span class="doux">une rangée par écran, chaque version côte à côte (glisse de côté). Sous chaque vignette, touche 1, 2 ou 3 pour ton top 3 de la rangée (un rang par écran ; retouche pour l’enlever), ajoute une note si tu veux, puis Copier en bas. Le podium s’affiche à côté du titre. Touche une image pour l’agrandir. Le lot greffe (v01, v02, v04, v09 pour la vue du carnet, v10, v11, habit de l’app) tourne déjà ; ton top 3 guidera la passe suivante.</span></div>
 <details class="lv"><summary>Les 12 versions : parti pris et note du critique</summary><div class="vers">
 ${vers.map((v) => `<div class="v"><b>${v.id}</b> <span class="doux">${AXE[v.id]}</span> ${esc(v.titre)}<span class="n">${v.note}/10</span><br><span class="doux">${esc(v.pp)}</span></div>`).join('\n')}
 </div></details>
@@ -25,16 +25,16 @@ ${vers.map((v) => `<div class="v"><b>${v.id}</b> <span class="doux">${AXE[v.id]}
 for (const [id, nom] of RANGS) {
   const ims = Object.keys(e).filter((k) => e[k].ecran === id).sort((a, b) => ordre(a).localeCompare(ordre(b)));
   if (!ims.length) continue;
-  html += `<section class="rang" id="${id}"><h2>${nom} <span class="doux">· ${ims.length}</span></h2><div class="bande">\n`;
+  html += `<section class="rang" id="${id}"><h2>${nom} <span class="doux">· ${ims.length}</span> <span class="podium"></span></h2><div class="bande">\n`;
   for (const k of ims) {
     const ver = k.startsWith('base') ? 'base' : k.slice(0, 3);
-    html += `<figure class="${ver === 'base' ? 'base' : ''}" data-cle="${id}|${k}"><button type="button" class="zoom" aria-label="Agrandir ${esc(k)}"><img src="img/${k}.webp" width="200" height="433" alt="${esc(ver + ' : ' + e[k].legende)}"></button><figcaption><span class="t">${ver} <span class="doux">· ${esc(e[k].legende)}</span></span><span class="act"><button type="button" class="etoile" aria-pressed="false" aria-label="Meilleur pour ${esc(nom)}">★</button><input type="text" placeholder="note" aria-label="Note sur ${esc(k)}"></span></figcaption></figure>\n`;
+    html += `<figure class="${ver === 'base' ? 'base' : ''}" data-cle="${id}|${k}"><button type="button" class="zoom" aria-label="Agrandir ${esc(k)}"><img src="img/${k}.webp" width="200" height="433" alt="${esc(ver + ' : ' + e[k].legende)}"></button><figcaption><span class="t">${ver} <span class="doux">· ${esc(e[k].legende)}</span></span><span class="act"><span class="rgs">${[1,2,3].map((n) => `<button type="button" class="rg" data-n="${n}" aria-pressed="false" aria-label="${n}e pour ${esc(nom)}">${n}</button>`).join('')}</span><input type="text" placeholder="note" aria-label="Note sur ${esc(k)}"></span></figcaption></figure>\n`;
   }
   html += `</div></section>\n`;
 }
 html += `<textarea id="sortie" readonly hidden aria-label="Tes choix à copier"></textarea>
 </div>
-<div class="pied"><button type="button" id="copier">Copier mes ★</button><span id="compte">0 ★</span></div>
+<div class="pied"><button type="button" id="copier">Copier mon top 3</button><span id="compte">0 rang donné</span></div>
 <div id="loupe" hidden><img alt=""></div>
 <script>
 ${JS}</script>
