@@ -126,7 +126,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
 
         {keg.notes && <p className="equipment-note"><span>Note · </span>{keg.notes}</p>}
       </FormNav>
-      <details className="equipment-disclosure equipment-management">
+      <details className="equipment-disclosure equipment-management" open>
         <summary>Gestion du fût</summary>
         {keg.state === 'propre' && <Button intent="secondary" size="sm" onClick={() => done(remettreALaver(keg, today))}>Remettre à laver</Button>}
         <Button intent="danger" size="sm" className="equipment-danger" onClick={onRemove} icon={<Trash2 size={14}/>}>Retirer du parc</Button>

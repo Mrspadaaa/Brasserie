@@ -87,7 +87,9 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const [repairAttempted, setRepairAttempted] = useState(false);
   const repairInput = useRef<HTMLSelectElement>(null);
   const counts = useMemo(() => comptesParEtat(kegs), [kegs]);
-  const resume = useMemo(() => phrasesResume(resumeParc(kegs)), [kegs]);
+  /* Un fût archivé plein garde sa bière en cave : ses litres restent dans « pleins en cave », dits à part (jamais « 0 L » à tort). */
+  const litresArchivesPleins = useMemo(() => archives.filter(k => k.state === 'plein').reduce((s, k) => s + (Number.isFinite(k.capacityL) ? k.capacityL : 0), 0), [archives]);
+  const resume = useMemo(() => phrasesResume(resumeParc(kegs), litresArchivesPleins), [kegs, litresArchivesPleins]);
   const range = useMemo(
     () => rangerParSections(filtre.length ? kegs.filter(k => filtre.includes(etatFut(k))) : kegs, jour),
     [kegs, filtre, jour]
@@ -148,6 +150,15 @@ export const KegBoard: React.FC<KegBoardProps> = ({
             )}
           </h3>
         )}
+        footer={
+          <ArchivesRepliables sorte="fut" className="mt-2 mb-24"
+            rangees={archives.map(k => ({ id: k.id, nom: `${k.id} · ${nombreFr(k.capacityL, 1)} L`, sous: k.state === 'plein' && k.batchRef ? `archivé · plein de ${k.batchRef}` : 'archivé · liens gardés' }))}
+            onRessortir={(id) => {
+              if (!banc) { StorageService.setArchivedEntity('fut', id, false); return; }
+              const k = tousLesFuts.find(x => x.id === id);
+              if (k) save({ ...k, archivedAt: null });
+            }}/>
+        }
         header={kegs.length > 0 && (
           <div className="keg-tete">
             <div className="keg-jauge-ligne">
@@ -226,13 +237,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
         }}
       />
 
-      <ArchivesRepliables sorte="fut" className="mt-2 mb-24"
-        rangees={archives.map(k => ({ id: k.id, nom: `${k.id} · ${nombreFr(k.capacityL, 1)} L`, sous: 'archivé · liens gardés' }))}
-        onRessortir={(id) => {
-          if (!banc) { StorageService.setArchivedEntity('fut', id, false); return; }
-          const k = tousLesFuts.find(x => x.id === id);
-          if (k) save({ ...k, archivedAt: null });
-        }}/>
+
 
       {selected && !selectedUnknown && !fill && (
         <KegFiche
@@ -269,7 +274,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
             </dl>
             {selected.notes && <p className="equipment-note"><span>Note · </span>{selected.notes}</p>}
           </FormNav>
-          <details className="equipment-disclosure equipment-management">
+          <details className="equipment-disclosure equipment-management" open>
             <summary>Gestion du fût</summary>
             <Button intent="danger" size="sm" className="equipment-danger" onClick={() => setConfirmDelete(true)} icon={<Trash2 size={14}/>}>Retirer du parc</Button>
           </details>

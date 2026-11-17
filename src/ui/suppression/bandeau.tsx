@@ -13,6 +13,11 @@ export const DUREE_BANDEAU_MS = 6000;
 let courant: { racine: Root; noeud: HTMLDivElement } | null = null;
 let minuteur: ReturnType<typeof setTimeout> | undefined;
 
+/** Un toucher ailleurs (une feuille qui s'ouvre, « Ressortir » par un autre chemin) referme le bandeau : il ne reste pas sur la feuille suivante. */
+const toucheAilleurs = (e: Event) => {
+  if (courant && e.target instanceof Node && !courant.noeud.contains(e.target)) effacerBandeau();
+};
+
 const Bandeau: React.FC<{ texte: string; geste: string; onGeste: () => void }> = ({ texte, geste, onGeste }) => (
   <div role="status" className="su-bandeau" data-testid="bandeau-suppression">
     <span>{texte}</span>
@@ -22,6 +27,7 @@ const Bandeau: React.FC<{ texte: string; geste: string; onGeste: () => void }> =
 
 export function effacerBandeau(): void {
   clearTimeout(minuteur);
+  if (typeof document !== 'undefined') document.removeEventListener('pointerdown', toucheAilleurs, true);
   if (!courant) return;
   const { racine, noeud } = courant;
   courant = null;
@@ -41,4 +47,6 @@ export function montrerBandeau(texte: string, geste: string, auGeste: () => void
   courant = { racine, noeud };
   racine.render(<Bandeau texte={texte} geste={geste} onGeste={() => { effacerBandeau(); auGeste(); }} />);
   minuteur = setTimeout(effacerBandeau, DUREE_BANDEAU_MS);
+  // Écouté après le geste qui l'a fait naître : ce toucher-là ne le ferme pas.
+  setTimeout(() => { if (courant?.noeud === noeud) document.addEventListener('pointerdown', toucheAilleurs, true); }, 0);
 }

@@ -80,3 +80,7 @@
 .su-arch-r .su-tx b{display:block;font-size:17px;color:var(--su-mut);overflow-wrap:anywhere}
 .su-arch-r .su-tx span{display:block;font-size:15px;color:var(--su-mut)}
 .su-ress{height:44px;padding:0 15px!important;border:1.5px solid var(--su-line2)!important;border-radius:999px;font-size:15px;font-weight:600;flex:none}
+
+/* Le bandeau a le même contraste aux deux thèmes (la critique : pâle et fin en cave) : fond sombre, texte clair et gras, fin liseré pour se détacher d'une page sombre. */
+.su-bandeau{background:#1a1613;color:#f5f0ea;font-weight:700;border:1.5px solid rgba(245,240,234,.35)}
+.su-bandeau button{background:rgba(245,240,234,.16)!important;color:#f5f0ea!important}
