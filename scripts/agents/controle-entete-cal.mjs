@@ -2,7 +2,8 @@
 // En-tête du calendrier : la courbe (plus grand svg au-dessus de la frise) fait au moins 80 px de haut,
 // et la bande des semaines (#fh : semaines, soldes, mouvements) au plus 40 px, sans disparaître (l'idée est bonne).
 // CAL-INFO-TROP (16.11 nuit) : « trop peu de place pour la frise, trop d'info inutile sur le graph, juste quel info avec date c'est tout » :
-// en-tête (tout ce qui est au-dessus de la frise) ≤ 180 px en portrait et ≤ 120 px en paysage, 12 textes au plus (14 en paysage), bande des semaines non comptée.
+// en-tête (tout ce qui est au-dessus de la frise) ≤ 180 px en portrait et ≤ 120 px en paysage. Le plafond de textes (12, 14) est retiré le 17.11 :
+// « graph » visait la bande des semaines, pas la courbe (« le graph avec toutes les infos était beaucoup mieux ») ; la bande se contrôle par controle-bande-semaine.mjs.
 // node scripts/agents/controle-entete-cal.mjs <page.html> [--paysage] [...]  → ENTETE OK | ENTETE ECHEC
 import { createRequire } from 'module'; import path from 'path'; import { pathToFileURL } from 'url';
 const req = createRequire('C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/optimistic-ptolemy-2d1278/package.json');
@@ -28,7 +29,7 @@ for (const f of fichiers) {
     return { items, courbe, bande: vis ? Math.round(fh.getBoundingClientRect().height) : 0, existe: !!vis, tete: Math.round(haut), ecart };
   });
   const TETE_MAX = pays ? 120 : 180, ITEMS_MAX = pays ? 14 : 12;
-  const bon = m.tete <= TETE_MAX && m.items <= ITEMS_MAX && m.ecart >= 12 && m.courbe >= COURBE_MIN && ((pays && !m.existe) || (m.existe && m.bande <= BANDE_MAX)); if (!bon) ko++;
+  const bon = m.tete <= TETE_MAX && m.ecart >= 12 && m.courbe >= COURBE_MIN && ((pays && !m.existe) || (m.existe && m.bande <= BANDE_MAX)); if (!bon) ko++;
   console.log(`${bon ? 'ok' : 'KO'} ${path.basename(f)} : courbe ${m.courbe} px (min ${COURBE_MIN}), bande des semaines ${m.existe ? m.bande + ' px' : 'absente'} (max ${BANDE_MAX}, présente), en-tête ${m.tete} px (max ${TETE_MAX}), ${m.items} textes (max ${ITEMS_MAX}), mois → bande ${m.ecart === 999 ? "sans mois au-dessus" : m.ecart + " px (min 12)"}`);
   await p.close();
 }

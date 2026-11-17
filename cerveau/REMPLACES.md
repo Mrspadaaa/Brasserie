@@ -31,3 +31,5 @@ Corriger chaque copie, ne pas la contourner.
 | `Créer « … » »\? sur chaque ligne\|bouton « Créer » par ligne` | une ligne d'ingrédient sans article devient d'office un nouvel article, picto « nouveau », sans bouton au repos (D275) | 2026-11-01 |
 
 - 02.11 : « aucun nouvel agent dès 98 % hebdo, arrêt à 99 % » (26.10) remplacé par « À 90% d'usage hebdo, terminé tes tâches » ([[fermeture-et-quota]]).
+
+- **17.11** — CAL-INFO-TROP « 12 textes au plus dans l'en-tête du calendrier » (controle-entete-cal.mjs) → retiré : « graph » visait la bande des semaines ; la courbe garde toutes ses infos, la bande montre la semaine seule et un bouton ± (CAL-BANDE-SEMAINE, controle-bande-semaine.mjs). Copies corrigées : controle-entete-cal.mjs, DEFAUTS-RECURRENTS.
