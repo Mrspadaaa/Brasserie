@@ -43,3 +43,8 @@ figure[data-rang="1"]{outline:3px solid #e2b23a;outline-offset:-1px}
 figure[data-rang="2"]{outline:3px solid #a9adb2;outline-offset:-1px}
 figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
 .podium{font-size:14px;font-weight:600;color:var(--accent);margin-left:6px}
+.rg{min-width:28px}
+.rg[data-n="4"][aria-pressed="true"]{background:#b9c7d8}
+.rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
+figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
+figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
