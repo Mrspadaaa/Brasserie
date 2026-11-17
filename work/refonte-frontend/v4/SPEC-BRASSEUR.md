@@ -1995,3 +1995,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 > Je pense que seul l'ajout de note/idée, modifications de note, création, suppression de note/idée doivent être revue, le reste c'est top
 
 Lecture : le parcours est jugé « top » sauf les gestes de création, d'ajout, de modification et de suppression des notes et des idées. Lot greffe4 sur ces seuls gestes ; le reste figé sur ses rangs (TOP3.md).
+- **17.11**, mot pour mot, avec une capture du calendrier jouable (le + volant noir entouré) : « Le bouton+ ici n'a pas du tout la bonne fonctionne, juste fix ça et tu peux faire le portage dans la vraie app. Avec tout ce qui a été retenue ECT... »
+  (lu : le + volant ouvrait directement la feuille d'ajout du calendrier, avec « S47 » dedans (refus i7). Sa règle du 15.11 : le + porte les actions de toujours, celles de l'écran en tête. Il devient le menu d'actions rapides de l'app, avec les gestes du calendrier en tête. Ensuite, le port dans l'app de tout ce qui est retenu : branche locale claude/port-calendrier-1711, depuis claude/ports-nuit-1611 ; mission 2026-11-17-port-calendrier.)
