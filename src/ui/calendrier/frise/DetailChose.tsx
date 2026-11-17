@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, ShoppingCart, Wheat, X } from 'lucide-react';
+import { Beer, Check, ChevronRight, Link2, ShoppingCart, Wheat, X } from 'lucide-react';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 
@@ -26,6 +26,8 @@ export interface DetailChoseProps {
   onFait?: () => void;
   onPoser?: () => void;
   onAccepter?: () => void;
+  /** Une vente prévue : « Facturer › » (E37, D-99). */
+  onFacturer?: () => void;
   onMettreDeCote?: (actif: boolean) => void;
 }
 
@@ -70,6 +72,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       ) : (
         <div className="cal-det-et">
           {semaine && <div><span>Semaine</span><b>{semaine}</b></div>}
+          {chose.debut && <div><span>Date</span><b>{jourLisible(chose.debut)}{chose.fin && chose.fin !== chose.debut ? ` → ${jourLisible(chose.fin)}` : ''}</b></div>}
           {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
           {chose.joursActifs ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
           {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
@@ -81,12 +84,16 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       {brassin && (commander
         ? <p className="cal-det-p"><ShoppingCart size={16} aria-hidden="true" />Il manque des courses : à acheter avant le <b>{jourLisible(commander.jour)}</b>.</p>
         : null)}
+      {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {chose.courses}</span></p>}
       {promesse && <p className="cal-det-p">{promesse}</p>}
+      {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
+      {chose.lie && <p className="cal-det-p" data-apercu-lien><Link2 size={16} aria-hidden="true" /><span><b>{chose.lie.texte}</b> · {chose.lie.apercu}</span></p>}
 
       <div className="cal-det-bt">
         {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}
         {props.onPoser && <button type="button" className="cal-b cal-b-pri" onClick={props.onPoser}>Poser</button>}
-        {!props.onPoser && !props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>}
+        {props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onFacturer}>Facturer<ChevronRight size={16} aria-hidden="true" /></button>}
+        {!props.onPoser && !props.onAccepter && !props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>}
         {brassin && props.onCommander && commander && <button type="button" className="cal-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" />Commander</button>}
         {brassin && props.onBudget && <button type="button" className="cal-b" onClick={props.onBudget}>Budget ›</button>}
         {props.onFait && <button type="button" className="cal-b" onClick={props.onFait}><Check size={16} aria-hidden="true" />Fait</button>}

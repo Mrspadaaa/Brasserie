@@ -89,8 +89,10 @@ export function usePointeur(options: OptionsPointeur) {
     const dx = e.clientX - s.x0;
     const dy = e.clientY - s.y0;
     const o = opts.current;
-    if (s.mode === 'appui') {
-      if (Math.abs(dy) > SEUIL_VERTICAL_PX && Math.abs(dy) > Math.abs(dx)) { stopMinuterie(); etat.current = null; return; }
+    /* f1-a au vrai toucher (CRITIQUE-2 n° 1) : un doigt qui a tenu 500 ms puis part de côté glisse quand même ; le menu ouvert se ferme
+       (`onDebutGlisse` ou le premier `onGlisse` le dit à l'appelant). Au-delà de 8 px avant 500 ms, c'est un glisser et le menu ne s'ouvre pas. */
+    if (s.mode === 'appui' || s.mode === 'long') {
+      if (s.mode === 'appui' && Math.abs(dy) > SEUIL_VERTICAL_PX && Math.abs(dy) > Math.abs(dx)) { stopMinuterie(); etat.current = null; return; }
       if (Math.abs(dx) > SEUIL_MOUVEMENT_PX) {
         stopMinuterie();
         const raison = o.refuseGlisse?.(s.cible) ?? null;

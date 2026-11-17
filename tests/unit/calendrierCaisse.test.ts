@@ -5,7 +5,7 @@ import { buildForecast } from '../../src/domain/finance/forecast';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { lundiDe, semainesDe } from '../../src/domain/calendrier';
 import {
-  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, soldeAuJour, soldeFinDeMois, type MiseDeCote
+  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, miseDeCoteA, miseDeCoteVisible, soldeAuJour, soldeFinDeMois, type MiseDeCote
 } from '../../src/domain/calendrierCaisse';
 import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 
@@ -146,5 +146,36 @@ describe('E02, E11 : lecture et aperçu', () => {
     expect(soldeAuJour(cc, '2027-12-31')).toBeNull();
     expect(semainesDe('2026-03-18', 3).map(s => s.debut)).toEqual(['2026-03-16', '2026-03-23', '2026-03-30']);
     expect(lundiDe('2026-03-22')).toBe('2026-03-16');
+  });
+});
+
+describe('E03 : la mise de côté nommée sur la courbe (z2s : « 1 140 mis de côté pour le frigo », CRITIQUE-2 n° 6 et 36)', () => {
+  // Le frigo de z2s : 1 800 mis de côté de S6 à S35 (30 semaines), payé en S35. Au creux de S24 : 1 800 × 19 / 30 = 1 140.
+  const frigo = { id: 'c-frigo', jour: '2027-09-01', centimes: -180000, nom: 'Frigo', choseId: 'c-frigo' };
+  const mise: MiseDeCote = { id: 'c-frigo', titre: 'Frigo', du: '2027-02-08', au: '2027-08-30', centimes: 180000 };
+  const avec = courbeCaisse({ depart: 500000, lundi0: '2026-11-16', mouvements: [frigo], mises: [mise] })!;
+  const sans = courbeCaisse({ depart: 500000, lundi0: '2026-11-16', mouvements: [frigo] })!;
+  const s24 = avec.semaines.findIndex(s => s.numero === 24 && s.lundi === '2027-06-14');
+
+  it('au creux de S24, 1 140 mis de côté pour Frigo ; la caisse ne bouge pas, le libre baisse d’autant (aucun double compte, A10)', () => {
+    expect(s24).toBe(30);
+    expect(miseDeCoteA(avec, s24)).toEqual({ index: 30, lundi: '2027-06-14', numero: 24, centimes: 114000, titres: ['Frigo'] });
+    expect(avec.semaines.map(s => s.caisse)).toEqual(sans.semaines.map(s => s.caisse));
+    expect(avec.semaines[s24].libre).toBe(sans.semaines[s24].caisse - 114000);
+    // Au paiement (S35), la caisse baisse une fois et la réserve est rendue : plus rien de mis de côté.
+    const s35 = avec.semaines.findIndex(s => s.lundi === '2027-08-30');
+    expect(avec.semaines[s35].reserve).toBe(0);
+    expect(avec.semaines[s35].libre).toBe(avec.semaines[s35].caisse);
+    expect(miseDeCoteA(avec, s35)).toBeNull();
+  });
+
+  it('la courbe nomme celle du creux ; sans rien mis de côté au creux, la semaine où la réserve est la plus haute ; sans mise, rien', () => {
+    expect(miseDeCoteVisible(avec, { index: s24 })?.centimes).toBe(114000);
+    const apres = miseDeCoteVisible(avec, { index: 45 })!;
+    expect(apres.lundi).toBe('2027-08-23');
+    expect(apres.centimes).toBe(174000);
+    expect(apres.titres).toEqual(['Frigo']);
+    expect(miseDeCoteVisible(sans, { index: s24 })).toBeNull();
+    expect(miseDeCoteVisible(avec, null)?.centimes).toBe(174000);
   });
 });

@@ -5,8 +5,9 @@ import type { FinancialPlan } from '../../src/domain/finance/types';
 import {
   RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
-  retardsDe, semainesDe, totalVoie, type Rangee
+  retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, type Rangee
 } from '../../src/domain/calendrier';
+import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
 /** Lundi 16 novembre 2026 : semaine ISO 47. */
@@ -209,7 +210,7 @@ describe('jalons d’un brassin (E25) : des écarts à la date de brassage, lus 
       ['brassage', 0, '2026-12-08'], ['fermentation', 1, '2026-12-09'], ['dry-hop', 5, '2026-12-13'], ['garde', 14, '2026-12-22'], ['conditionnement', 35, '2027-01-12']
     ]);
     expect(j.map(x => x.glissable)).toEqual(['barre', false, false, false, 'fin']);
-    expect(j.find(x => x.id === 'dry-hop')!.raison).toBe('Dry hop suit la recette du brassin');
+    expect(j.find(x => x.id === 'dry-hop')!.raison).toBe('Le dry hop suit la recette du brassin');
   });
   it('sans jours dans la recette : seulement le brassage, aucune fin inventée ; « commander avant » se pose quand des courses manquent', () => {
     const nu = lot({ id: 'LOT-8', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' });
@@ -319,8 +320,69 @@ describe('A3 : chaque source tombe dans sa rangée (un cas par ligne du tableau 
     expect(choseArgent(item('d', { date: '' }))).toBeNull();
     expect(choseArgent(item('p', { partial: ['prix'], planId: 'P' }), [plan()])).toMatchObject({ partiel: true, centimes: -10000 });
   });
-  it('les mouvements d’argent portent l’id de la ligne de la prévision (pour déplacer la courbe avec la barre)', () => {
-    expect(choseArgent(item('PLAN:2026-12-03', { planId: 'PLAN' }), [plan({ id: 'PLAN' })])).toMatchObject({ id: 'argent-PLAN:2026-12-03', mouvements: ['PLAN:2026-12-03'] });
+  it('les mouvements d’argent portent l’id de la ligne de la prévision ; la chose d’un plan unique a un id sans date (contrat L4)', () => {
+    expect(choseArgent(item('PLAN:2026-12-03', { planId: 'PLAN' }), [plan({ id: 'PLAN' })])).toMatchObject({ id: 'argent-PLAN', mouvements: ['PLAN:2026-12-03'] });
+  });
+});
+
+describe('CRITIQUE-2 n° 1 b, 2, 9, 11, 32 : id stable, jamais « J0 / 0 », budget du brassin, courses nommées, « lié à »', () => {
+  const item = (id: string, p: Partial<ForecastItem> = {}): ForecastItem => ({ id, date: '2026-12-03', label: 'Ligne', amountCents: 10000, direction: 'out', source: 'plan', category: 'divers', ...p });
+  const plan = (p: Partial<FinancialPlan> = {}): FinancialPlan => ({ id: 'P', title: 'Plan', date: '2026-12-03', amountCents: 10000, direction: 'out', category: 'divers', source: 'manual', status: 'active', createdAt: 'x', ...p });
+  const recette = { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 14 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 14 }] } as unknown as Batch['recipeSnapshot'];
+
+  it('l’id d’un plan manuel est identique après deplacer ; seule l’occurrence d’un récurrent garde sa date', () => {
+    const p = plan({ id: 'P-HOTTE', title: 'Hotte', date: '2026-11-30', amountCents: 90000 });
+    const avant = choseArgent(item('P-HOTTE:2026-11-30', { planId: 'P-HOTTE', date: '2026-11-30', amountCents: 90000 }), [p])!;
+    const r = deplacer(avant, 1, { aujourdhui: AUJOURDHUI, batches: [], plans: [p], courbe: null });
+    expect(r.ok).toBe(true);
+    const date = r.ok ? (r.ecritures[0] as { patch: { date: string } }).patch.date : '';
+    expect(date).toBe('2026-12-07');
+    const apres = choseArgent(item(`P-HOTTE:${date}`, { planId: 'P-HOTTE', date, amountCents: 90000 }), [{ ...p, date }])!;
+    expect(avant.id).toBe('argent-P-HOTTE');
+    expect(apres.id).toBe(avant.id);
+    expect(idChoseArgent({ id: 'L:2026-12-03', source: 'recurring', planId: 'L' })).toBe('argent-L:2026-12-03');
+  });
+
+  it('aucun « J0 / 0 » : brassin conditionné, en cuve sans recette, planifié sans recette ; avec la recette, « J0 / 28 · prête … »', () => {
+    const cond = choseBrassin(lot({ status: 'conditionne', bottlingDate: '2026-11-25' }), AUJOURDHUI)!;
+    expect(cond).toMatchObject({ conditionne: true, debut: '2026-11-25', detail: 'conditionné le 25 nov.' });
+    const enCuve = choseBrassin(lot({ status: 'fermentation' }), AUJOURDHUI)!;
+    const sansRecette = choseBrassin(lot({ id: 'P0', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' }), AUJOURDHUI)!;
+    const avecRecette = choseBrassin(lot({ id: 'P1', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026', recipeSnapshot: recette }), AUJOURDHUI)!;
+    for (const c of [cond, enCuve, sansRecette]) expect(texteDuree(c)).toBeNull();
+    expect(texteDuree(avecRecette)).toBe('J0 / 28 · prête 5 janv.');
+    for (const c of [cond, enCuve, sansRecette, avecRecette]) expect(texteDuree(c) ?? '').not.toMatch(/J0 \/ 0\b/);
+  });
+
+  it('le montant d’un brassin égale la somme de ses lignes brew ; ses courses de la semaine font UN caddie nommé, relié à lui', () => {
+    const b = choseBrassin(lot({ id: 'LOT-B', name: 'Blonde d’automne', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), AUJOURDHUI)!;
+    const lignes = [
+      item('brew:LOT-B:malt', { source: 'brew', batchId: 'LOT-B', amountCents: 12000, label: 'Blonde d’automne · malt', category: 'brassage', date: '2026-11-20' }),
+      item('brew:LOT-B:houblon', { source: 'brew', batchId: 'LOT-B', amountCents: 2800, label: 'Blonde d’automne · houblon', category: 'brassage', date: '2026-11-21' }),
+      item('brew:LOT-B:energie', { source: 'brew', batchId: 'LOT-B', amountCents: 0, label: 'Blonde d’automne · énergie', category: 'energie', date: '2026-11-22' })
+    ].map(i => choseArgent(i)!);
+    expect(budgetBrassin('LOT-B', [b, ...lignes])).toEqual({ centimes: -14800, partiel: true });
+    const prets = preparerChoses([b, ...lignes]);
+    expect(prets.find(c => c.id === b.id)).toMatchObject({ centimes: -14800, partiel: true });
+    /* sa maquette (as/p-repos) : « Blonde d'automne −148 », sans file de caddies ; les courses vivent dans le budget et le détail du brassin */
+    expect(prets.filter(c => c.rangee === 'achats' || c.brassinLie)).toHaveLength(0);
+    const blonde = prets.find(c => c.id === b.id)!;
+    expect(blonde.courses).toBe(`malt le 20 nov. ${francsSignes(-12000)}, houblon le 21 nov. ${francsSignes(-2800)}, énergie le 22 nov. (montant non renseigné)`);
+    expect(blonde.mouvements).toEqual(['brew:LOT-B:malt', 'brew:LOT-B:houblon', 'brew:LOT-B:energie']);
+    /* le brassin hors de la frise : UN caddie nommé, relié à lui (brassinLie), jamais anonyme */
+    const [caddie] = preparerChoses(lignes, { brassins: new Map([['LOT-B', 'Blonde d’automne']]) });
+    expect(caddie).toMatchObject({ rangee: 'brassins', brassinLie: 'LOT-B', debut: '2026-11-20', centimes: -14800, titre: 'Malt, houblon, énergie · Blonde d’automne' });
+    expect(budgetBrassin('LOT-X', [b])).toBeNull();
+    expect(prets.find(c => c.id === b.id)!.centimes).not.toBe(0);
+  });
+
+  it('une chose liée porte « lié à La Cigogne » et son aperçu ; sans lien, rien', () => {
+    const fete = choseCreative({ id: 'CR', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-14', liens: { clientId: 'CL' } } as CreativeItem)!;
+    const seule = choseCreative({ id: 'CR2', type: 'event', title: 'Fête', status: 'todo', date: '2026-12-14' } as CreativeItem)!;
+    const [a, s] = preparerChoses([fete, seule], { clients: new Map([['CL', 'La Cigogne']]) });
+    expect(a.lie).toMatchObject({ texte: 'lié à La Cigogne', client: 'La Cigogne' });
+    expect(a.lie!.apercu).toContain('La Cigogne · client');
+    expect(s.lie).toBeUndefined();
   });
 });
 

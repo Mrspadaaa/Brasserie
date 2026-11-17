@@ -6,6 +6,8 @@ import { periodeDeFenetre, type FenetreSemaines } from '../../src/ui/calendrier/
 import type { Periode } from '../../src/components/periode/periode';
 import { ajouterJours, francs, semainesDe, type Retard } from '../../src/domain/calendrier';
 import { courbeCaisse, courbeDecalee, creuxDepuis, type MouvementCaisse } from '../../src/domain/calendrierCaisse';
+import { HAUTEUR_MOIS, boiteEtiquette, boitesSeCroisent, creuxDe, geometrie, maxNoms, obstaclesCourbe, placerNoms } from '../../src/ui/calendrier/entete/Courbe';
+import { useOrientation } from '../../src/ui/calendrier/useOrientation';
 
 /**
  * L'en-tête du calendrier (lot B, E01 à E13). La courbe vient du domaine (`courbeCaisse`) : 52 semaines depuis le lundi 2026-11-16, des mouvements
@@ -381,6 +383,180 @@ describe('E09, E10 : plein écran et paysage', () => {
     expect(e.onPeriode).not.toHaveBeenCalled();
     rerender(<EnTeteCalendrier {...props} orientation="portrait" />);
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 6 });
+  });
+});
+
+describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () => {
+  // Les 8 mouvements de z2s, à leurs semaines (S13 Hotte … S35 Frigo), et le frigo mis de côté de S6 à S35.
+  const z2s: MouvementCaisse[] = [
+    { id: 'z13', jour: '2027-03-31', centimes: -90000, nom: 'Hotte' },
+    { id: 'z16', jour: '2027-04-21', centimes: 91000, nom: 'Marché de printemps' },
+    { id: 'z18', jour: '2027-05-05', centimes: -108000, nom: 'Six fûts inox' },
+    { id: 'z22', jour: '2027-06-02', centimes: -280000, nom: 'Embouteilleuse' },
+    { id: 'z26', jour: '2027-06-30', centimes: 214000, nom: 'Fête de village' },
+    { id: 'z31', jour: '2027-08-04', centimes: 110000, nom: 'Mariage' },
+    { id: 'z33', jour: '2027-08-18', centimes: 245000, nom: 'Festival' },
+    { id: 'z35', jour: '2027-09-01', centimes: -180000, nom: 'Frigo', choseId: 'c-frigo' }
+  ];
+  const frigo = [{ id: 'c-frigo', titre: 'Frigo', du: '2027-02-08', au: '2027-08-30', centimes: 180000 }];
+  const cz = courbeCaisse({ depart: 420000, lundi0: LUNDI0, mouvements: z2s, mises: frigo })!;
+  const g = geometrie(cz.semaines.flatMap(s => [s.libre, s.caisse]), 52, 390, 110, 4, 110 - HAUTEUR_MOIS);
+  // La boîte du chiffre clé (sa ligne, au-dessus du tracé) et le cadre de la fenêtre S47 – S52 avec son étiquette.
+  const cleBoite = { l: 12, r: 230, t: -28, b: 0 };
+  const cadre = { index: 0, nombre: 6, etiquette: 'S47 – S52' };
+  const etiquetteBoite = boiteEtiquette(cadre.etiquette, 0, g.x(6), g.bas);
+
+  it('placerNoms à 390 sur les 8 mouvements de z2s : au moins 6 noms, une ligne chacun, aucune boîte croisée, ni avec le chiffre clé ni avec l’étiquette de la fenêtre', () => {
+    const noms = placerNoms(cz.semaines, g, maxNoms(390), [cleBoite, ...obstaclesCourbe(g, cadre, creuxDe(cz.semaines))]);
+    const mouvementsNommes = noms.filter(e => e.genre === 'mouvement');
+    expect(mouvementsNommes.length).toBeGreaterThanOrEqual(6);
+    for (const e of mouvementsNommes) expect(e.montant).toMatch(/^[+−]\d/);
+    for (let a = 0; a < noms.length; a++) {
+      // Une ligne : 16 px de haut au plus, dans le tracé.
+      expect(noms[a].boite.b - noms[a].boite.t).toBeLessThanOrEqual(16);
+      expect(noms[a].boite.l).toBeGreaterThanOrEqual(0);
+      expect(noms[a].boite.r).toBeLessThanOrEqual(390);
+      expect(boitesSeCroisent(noms[a].boite, cleBoite)).toBe(false);
+      expect(boitesSeCroisent(noms[a].boite, etiquetteBoite)).toBe(false);
+      for (let b = a + 1; b < noms.length; b++) expect(boitesSeCroisent(noms[a].boite, noms[b].boite)).toBe(false);
+    }
+  });
+
+  it('un récurrent présent 4 fois (« Loyer du local −400 ») n’est nommé qu’une fois, à sa première semaine', () => {
+    const loyers: MouvementCaisse[] = [3, 7, 11, 16].map(k => ({ id: `l${k}`, jour: jour(k), centimes: -40000, nom: 'Loyer du local' }));
+    const c = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements: [...mouvements, ...loyers] })!;
+    const gg = geometrie(c.semaines.flatMap(s => [s.libre, s.caisse]), 52, 1280, 110, 4, 110 - HAUTEUR_MOIS);
+    const noms = placerNoms(c.semaines, gg, maxNoms(1280));
+    const loyer = noms.filter(e => e.nom === 'Loyer du local');
+    expect(loyer).toHaveLength(1);
+    expect(loyer[0].i).toBe(3);
+    expect(loyer[0].semaines).toHaveLength(4);
+    // Rendu, fenêtre posée après les loyers (S1 – S6) : le SVG ne l'écrit qu'une fois, et son titre dit les 4 fois.
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: c, creux: creuxDepuis(c) })} largeurColonne={1280 / 6}
+      periodeInitiale={periodeDeFenetre({ du: ajouterJours(LUNDI0, 7 * 7), semaines: 6 })} />);
+    const ecrits = Array.from(container.querySelectorAll('[data-nom-courbe]')).filter(t => /^Loyer du local/.test(t.textContent ?? ''));
+    expect(ecrits).toHaveLength(1);
+    expect(ecrits[0].textContent).toBe('Loyer du local −400');
+    expect(ecrits[0].parentElement!.querySelector('title')!.textContent).toBe('Loyer du local −400, 4 fois, dès S50');
+  });
+
+  it('le chiffre clé est un seul élément de ligne : « −2 308 CHF à dépenser · S43 », sans deuxième ligne', async () => {
+    const { container } = render(<Banc {...espions()} />);
+    const creux = creuxDepuis(courbe)!;
+    const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
+    expect(cle.children).toHaveLength(3);
+    expect(cle.textContent).toBe(`${francs(creux.centimes)}CHF à dépenser ·S${creux.numero}`);
+    expect(cle.querySelector('.ent-k-s')).toBeNull();
+    const fs = await import('node:fs');
+    const chemin = await import('node:path');
+    const css = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    const regle = css.match(/\n\.ent-k \{([^}]*)\}/)![1];
+    expect(regle).toContain('flex-wrap: nowrap');
+    expect(regle).toContain('white-space: nowrap');
+    expect(regle).toContain('height: 28px');
+  });
+
+  it('les noms rendus à 390 : au moins 6, chacun sur une ligne (aucun tspan qui passe à la ligne)', () => {
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: cz, creux: creuxDepuis(cz) })} />);
+    const noms = container.querySelectorAll('[data-nom-courbe]');
+    expect(noms.length).toBeGreaterThanOrEqual(6);
+    noms.forEach(n => n.querySelectorAll('tspan').forEach(t => { expect(t.getAttribute('dy')).toBeNull(); expect(t.getAttribute('x')).toBeNull(); }));
+  });
+});
+
+describe('CRITIQUE-2 n° 6 et 36 : la mise de côté sur la courbe', () => {
+  it('une courbe avec une mise de côté rend [data-mise-de-cote] et le texte « mis de côté »', () => {
+    const { container } = render(<Banc {...espions()} />);
+    expect(container.querySelector('[data-mise-de-cote]')).not.toBeNull();
+    const etiquette = container.querySelector('[data-mise-de-cote="etiquette"]') as Element;
+    expect(etiquette).not.toBeNull();
+    expect(etiquette.textContent).toMatch(/^[\d ]+ mis de côté( pour Frigo)?/);
+  });
+
+  it('sans mise de côté, ni hachures ni étiquette', () => {
+    const c = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements })!;
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: c, creux: creuxDepuis(c) })} />);
+    expect(container.querySelector('[data-mise-de-cote]')).toBeNull();
+    expect(container.textContent).not.toContain('mis de côté');
+  });
+});
+
+describe('CRITIQUE-2 n° 21, 22, 34 : le creux, la date d’une semaine, l’idée datée', () => {
+  it('un clic sur le chiffre clé fait voir « Le creux de S\\d+ : ses causes » et « Solde et réglages › »', () => {
+    render(<Banc {...espions()} />);
+    fireEvent.click(screen.getByRole('button', { name: /CHF à dépenser sans passer sous 0/ }));
+    expect(screen.getByText(/^Le creux de S\d+ : ses causes$/)).toBeVisible();
+    expect(screen.getByText('Solde et réglages ›')).toBeVisible();
+  });
+
+  it('un toucher sur S50 fait voir « S50, 7 – 13 déc. », un deuxième l’efface ; un appui long appelle onIdeeSemaine avec le lundi de S50', () => {
+    vi.useFakeTimers();
+    const onIdeeSemaine = vi.fn();
+    const { container } = render(<Banc {...espions()} onIdeeSemaine={onIdeeSemaine} />);
+    const s50 = within(bande(container)).getByText('S50').closest('button') as HTMLElement;
+    fireEvent.click(s50);
+    expect(screen.getByText('S50, 7 – 13 déc.')).toBeInTheDocument();
+    fireEvent.click(s50);
+    expect(screen.queryByText('S50, 7 – 13 déc.')).toBeNull();
+    fireEvent.pointerDown(s50, { pointerId: 4, clientX: 200, clientY: 180, button: 0 });
+    act(() => { vi.advanceTimersByTime(500); });
+    expect(onIdeeSemaine).toHaveBeenCalledWith('2026-12-07');
+  });
+
+  it('l’année : le cadre dit les mois (« nov. – oct. »), jamais « S47 – S45 » ; les mois en initiales sur une même ligne', () => {
+    const { container } = render(<Banc {...espions()} vueInitiale="annee" />);
+    const etiquette = container.querySelector('[data-cadre-etiquette]') as HTMLElement;
+    expect(etiquette.textContent).toBe('nov. – oct.');
+    expect(container.textContent).not.toMatch(/S47 – S45/);
+    const lettres = Array.from(container.querySelectorAll('[data-bande-annee] .ent-an-l')).map(e => e.textContent);
+    expect(lettres).toEqual(['N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O']);
+    // Chaque initiale est le premier enfant de sa colonne (même ligne de base), avant la valeur et la barre.
+    container.querySelectorAll('[data-bande-annee] .ent-an-m').forEach(m => expect(m.firstElementChild!.classList.contains('ent-an-l')).toBe(true));
+  });
+});
+
+describe('CRITIQUE-2 n° 26 : la rotation garde l’état de l’en-tête', () => {
+  it('matchMedia simulé : en tournant, ± reste ouvert, le détail du creux aussi, et l’en-tête n’est pas remonté', () => {
+    const ecouteurs = new Set<() => void>();
+    const mq = { matches: false, media: '', addEventListener: (_: string, f: () => void) => ecouteurs.add(f), removeEventListener: (_: string, f: () => void) => ecouteurs.delete(f) };
+    const avant = window.matchMedia;
+    Object.defineProperty(window, 'matchMedia', { value: () => mq, configurable: true, writable: true });
+    function Tournant() {
+      const orientation = useOrientation();
+      return <Banc {...espions()} orientation={orientation} />;
+    }
+    const { container } = render(<Tournant />);
+    const racine = container.querySelector('[data-calendrier-entete]');
+    fireEvent.click(screen.getByRole('button', { name: '±' }));
+    fireEvent.click(screen.getByRole('button', { name: /CHF à dépenser sans passer sous 0/ }));
+    expect(container.querySelector('.ent--portrait')).not.toBeNull();
+    act(() => { mq.matches = true; ecouteurs.forEach(f => f()); });
+    expect(container.querySelector('.ent--paysage')).not.toBeNull();
+    expect(container.querySelector('[data-calendrier-entete]')).toBe(racine);
+    expect(screen.getByRole('button', { name: '±' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText(/^Le creux de S\d+ : ses causes$/)).toBeInTheDocument();
+    // En paysage, 13 semaines dans la bande, ± toujours ouvert : les montants y sont.
+    expect(bande(container).textContent).toMatch(/[+−]\d/);
+    act(() => { mq.matches = false; ecouteurs.forEach(f => f()); });
+    expect(container.querySelector('.ent--portrait')).not.toBeNull();
+    expect(screen.getByRole('button', { name: '±' })).toHaveAttribute('aria-pressed', 'true');
+    Object.defineProperty(window, 'matchMedia', { value: avant, configurable: true, writable: true });
+  });
+});
+
+describe('CRITIQUE-2 n° 14 : le menu de la période, borné à l’écran et au-dessus du + volant', () => {
+  it('posé dans document.body, en position fixe, au-dessus du + volant (z-index 60 > 51) ; « Filtrer par type » y est', async () => {
+    const { container } = render(<Banc {...espions()} />);
+    fireEvent.click(screen.getByRole('button', { name: /6 sem/ }));
+    const menu = screen.getByRole('dialog', { name: 'Période et vue' });
+    expect(container.contains(menu)).toBe(false);
+    expect(menu.classList.contains('ent-menu--fixe')).toBe(true);
+    expect(menu.style.maxHeight).toMatch(/px$/);
+    expect(within(menu).getByRole('button', { name: 'Filtrer par type' })).toBeInTheDocument();
+    const fs = await import('node:fs');
+    const chemin = await import('node:path');
+    const css = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    expect(Number(css.match(/\.ent-menu\.ent-menu--fixe \{[^}]*z-index: (\d+)/)![1])).toBeGreaterThan(51);
   });
 });
 

@@ -1,0 +1,563 @@
+// Vision du calendrier porté (CRITIQUE-2 n° 21 à 42, MISSION § Vérification) : chaque état joué par un vrai geste, capturé, et dit.
+// « NE PERDS RIEN DANS LE PORTAGE, REGARDE BIEN TOUR CE QUI A ÉTÉ DEMANDER POUR CE CALENDRIER » (17.11).
+//
+// node scripts/agents/vision-calendrier.mjs <base> <dossier> [--configs m390,paysage,d1280] [--themes clair,cave] [--etats 01,05,56]
+//                                           [--sans-dev-local] [--sans-chrono]
+//   <base>    : le serveur Vite, ex. http://localhost:3017 (banc : <base>/?preview=calendrier ; app : <base>/?dev-local)
+//   <dossier> : où écrire `<config>-<thème>-<nn>-<état>.png` et RAPPORT.md
+//
+// Gestes réels : contact tactile CDP (Input.dispatchTouchEvent) à 390 × 844 et 844 × 390, souris à 1280 × 800. Les éléments se trouvent par
+// leur texte, leur rôle, leur aria-label (ou title) ou leur data-titre ; jamais par un id daté. Un état dont un élément ou le texte attendu manque
+// est dit « ABSENT » dans RAPPORT.md ; sa capture porte le suffixe « -ABSENT » : rien n'est capturé en silence.
+// Banc : fixture « banc — données simulées », en mémoire. /?dev-local : chaque requête vers Firestore est coupée avant de partir (rien n'est
+// écrit en ligne) ; les saisies portent « ZZ TEST — ». Gemini n'est jamais appelé.
+import { createRequire } from 'node:module';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const req = createRequire(import.meta.url);
+const puppeteer = req('puppeteer-core');
+const args = process.argv.slice(2);
+const pos = args.filter(a => !a.startsWith('--'));
+const opt = n => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : null; };
+if (pos.length < 2) { console.log('usage : node scripts/agents/vision-calendrier.mjs <base> <dossier> [--configs …] [--themes …] [--etats …]'); process.exit(2); }
+const BASE = pos[0].replace(/\/$/, '');
+const DOSSIER = pos[1];
+const BANC = `${BASE}/?preview=calendrier`;
+const APP = `${BASE}/?dev-local`;
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+mkdirSync(DOSSIER, { recursive: true });
+
+const CONFIGS = {
+  m390: { w: 390, h: 844, tactile: true },
+  paysage: { w: 844, h: 390, tactile: true },
+  d1280: { w: 1280, h: 800, tactile: false }
+};
+const choixConfigs = (opt('configs') || 'm390,paysage,d1280').split(',').filter(c => CONFIGS[c]);
+const choixThemes = (opt('themes') || 'clair,cave').split(',');
+const choixEtats = opt('etats') ? new Set(opt('etats').split(',')) : null;
+const attendre = ms => new Promise(r => setTimeout(r, ms));
+const vue = cfg => (cfg.tactile ? { width: cfg.w, height: cfg.h, isMobile: true, hasTouch: true, deviceScaleFactor: 1, isLandscape: cfg.w > cfg.h } : { width: cfg.w, height: cfg.h, isMobile: false, hasTouch: false, deviceScaleFactor: 1 });
+const reSrc = re => (re ? { s: re.source, f: re.flags } : null);
+
+const nav = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--lang=fr-CH'] });
+const nouveauContexte = () => (nav.createBrowserContext ? nav.createBrowserContext() : nav.createIncognitoBrowserContext());
+
+class Absent extends Error {}
+
+/* ------------------------------------------------------------------ la page et ses gestes */
+
+async function ouvrir(cfg, theme, url, { coupeFirestore = false } = {}) {
+  const ctx = await nouveauContexte();
+  const p = await ctx.newPage();
+  p.ctx = ctx; p.cfg = cfg; p.theme = theme; p.erreurs = []; p.coupees = 0; p.touchers = 0;
+  p.on('pageerror', e => p.erreurs.push(e.message));
+  p.on('console', m => { if (m.type() === 'error') p.erreurs.push(m.text().slice(0, 160)); });
+  if (coupeFirestore) {
+    await p.setRequestInterception(true);
+    p.on('request', r => {
+      if (/firestore\.googleapis\.com|firebaseio\.com|firebasestorage|cloudfunctions\.net|generativelanguage|aiplatform/.test(r.url())) { p.coupees++; r.abort(); } else r.continue();
+    });
+  }
+  await p.setViewport(vue(cfg));
+  await charger(p, url);
+  p.cdp = await p.target().createCDPSession();
+  return p;
+}
+async function charger(p, url) {
+  if (url) await p.goto(url, { waitUntil: 'load', timeout: 60000 }); else await p.reload({ waitUntil: 'load', timeout: 60000 });
+  await p.waitForSelector('[data-frise], [data-calendrier], nav', { timeout: 20000 }).catch(() => {});
+  await p.evaluate(t => document.documentElement.setAttribute('data-theme', t), p.theme);
+  await p.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
+  await attendre(900);
+}
+
+/** Trouve un élément visible par texte, rôle, aria-label (ou title), data-titre ; le fait venir à l'écran ; rend son centre. */
+async function trouver(p, spec, { defiler = true } = {}) {
+  const r = await p.evaluate((sp, def) => {
+    const RX = o => (o ? new RegExp(o.s, o.f) : null);
+    const texte = RX(sp.texte), aria = RX(sp.aria), nom = (e) => (e.getAttribute('aria-label') || e.getAttribute('title') || '');
+    const visible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
+    const norme = t => (t || '').replace(/\s+/g, ' ').trim();
+    let racines = [document];
+    if (sp.dans) {
+      const d = sp.dans;
+      const dAria = RX(d.aria), dTexte = RX(d.texte);
+      const selRole = r => r.split('|').map(x => `[role="${x}"]${x === 'dialog' ? ', dialog' : ''}`).join(', ');
+      racines = [...document.querySelectorAll(d.role ? selRole(d.role) : d.titre ? '[data-titre], [data-chose]' : '[aria-label], [title]')]
+        .filter(visible)
+        .filter(e => (!dAria || dAria.test(nom(e))) && (!dTexte || dTexte.test(norme(e.textContent))) && (!d.titre || e.getAttribute('data-titre') === d.titre || nom(e).startsWith(d.titre)));
+      if (d.dernier) racines = racines.slice(-1);
+      if (!racines.length) return { manque: `conteneur ${JSON.stringify(d)}` };
+    }
+    const ACT = 'button, a, [role="button"], [role="menuitem"], [role="tab"], [role="option"], [role="switch"], [role="checkbox"], summary, label, input, [tabindex]';
+    let cands = [];
+    for (const R of racines) {
+      let liste;
+      if (sp.titre) liste = [...R.querySelectorAll('[data-titre], [data-chose], [data-barre], [data-marque]')].filter(e => e.getAttribute('data-titre') === sp.titre || nom(e).startsWith(sp.titre));
+      else if (sp.data) liste = [...R.querySelectorAll(`[${sp.data}]`)];
+      else if (sp.role) liste = [...R.querySelectorAll(`[role="${sp.role}"]${sp.role === 'dialog' ? ', dialog' : sp.role === 'button' ? ', button' : ''}`)];
+      else liste = [...R.querySelectorAll('*')];
+      liste = liste.filter(visible);
+      if (aria) liste = liste.filter(e => aria.test(nom(e)));
+      if (texte) liste = liste.filter(e => texte.test(norme(e.textContent))).filter(e => ![...e.children].some(c => visible(c) && texte.test(norme(c.textContent))) || e.matches(ACT));
+      cands.push(...liste);
+    }
+    if (sp.sous) cands = cands.flatMap(e => [...e.querySelectorAll(sp.sous)].filter(visible));
+    cands = cands.map(e => (sp.texte && !sp.sous && !e.matches(ACT) ? (e.closest(ACT) || e) : e));
+    cands = [...new Set(cands)];
+    const e = cands[sp.index ?? 0];
+    if (!e) return { manque: JSON.stringify({ ...sp, texte: sp.texte && sp.texte.s, aria: sp.aria && sp.aria.s }) };
+    /* défiler seulement si la cible n'est pas déjà entière à l'écran (un défilement dans une feuille la fait bouger sous le doigt) */
+    const a = e.getBoundingClientRect();
+    if (def && (a.top < 0 || a.left < 0 || a.bottom > innerHeight || a.right > innerWidth)) e.scrollIntoView({ block: 'center', inline: 'nearest' });
+    const b = e.getBoundingClientRect();
+    return { x: b.left + b.width / 2, y: b.top + b.height / 2, g: b.left, d: b.right, h: b.top, w: b.width, t: norme(e.textContent).slice(0, 60) };
+  }, { ...spec, texte: reSrc(spec.texte), aria: reSrc(spec.aria), dans: spec.dans ? { ...spec.dans, aria: reSrc(spec.dans.aria), texte: reSrc(spec.dans.texte) } : null }, defiler);
+  if (r.manque) throw new Absent(`introuvable : ${r.manque}`);
+  /* scrollIntoView est synchrone : la position rendue est déjà celle d'après le défilement */
+  if (defiler) await attendre(250);
+  return r;
+}
+const existe = async (p, spec) => { try { await trouver(p, spec, { defiler: false }); return true; } catch { return false; } };
+
+const touche = (p, type, x, y) => p.cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1, radiusX: 4, radiusY: 4, force: 1 }] });
+async function appuyerXY(p, x, y, ms = 60) {
+  p.touchers++;
+  if (p.cfg.tactile) { await touche(p, 'touchStart', x, y); await attendre(ms); await touche(p, 'touchEnd'); }
+  else { await p.mouse.move(x, y); await p.mouse.down(); await attendre(ms); await p.mouse.up(); }
+  await attendre(450);
+}
+/** La cible relue jusqu'à ce qu'elle ne bouge plus (une feuille qui monte, un menu qui s'ouvre) : 1,5 s au plus. */
+async function trouverStable(p, spec) {
+  let r = await trouver(p, spec);
+  for (let i = 0; i < 6; i++) {
+    await attendre(200);
+    const s = await trouver(p, spec, { defiler: false });
+    if (Math.abs(s.x - r.x) < 1 && Math.abs(s.y - r.y) < 1) return s;
+    r = s;
+  }
+  return r;
+}
+const toucher = async (p, spec) => { const r = await trouverStable(p, spec); await appuyerXY(p, r.x, r.y); return r; };
+const appuiLong = async (p, spec, ms = 750) => { const r = await trouverStable(p, spec); await appuyerXY(p, r.x, r.y, ms); return r; };
+/** Glisser : le doigt se pose 180 ms (sous l'appui long), glisse en 300 ms ; `tenu` laisse le doigt posé (état « pendant »). */
+async function glisserXY(p, x, y, dx, dy = 0, { tenu = false } = {}) {
+  p.touchers++;
+  if (p.cfg.tactile) {
+    await touche(p, 'touchStart', x, y); await attendre(180);
+    for (let i = 1; i <= 12; i++) { await touche(p, 'touchMove', x + (dx * i) / 12, y + (dy * i) / 12); await attendre(25); }
+  } else {
+    await p.mouse.move(x, y); await p.mouse.down(); await attendre(180);
+    for (let i = 1; i <= 12; i++) { await p.mouse.move(x + (dx * i) / 12, y + (dy * i) / 12); await attendre(25); }
+  }
+  p.doigt = { x: x + dx, y: y + dy };
+  if (!tenu) await lacher(p); else await attendre(200);
+}
+async function lacher(p) {
+  await attendre(80);
+  if (p.cfg.tactile) await touche(p, 'touchEnd'); else await p.mouse.up();
+  p.doigt = null; await attendre(500);
+}
+const largeurColonne = p => p.evaluate(() => {
+  const f = document.querySelector('[data-frise]');
+  const v = f ? parseFloat(f.getAttribute('data-largeur-colonne')) : NaN;
+  return Number.isFinite(v) && v > 0 ? v : Math.max(40, innerWidth / 7);
+});
+/** Glisse une chose (par data-titre ou nom) de `n` colonnes ; avec `sous`, tire une partie (bord, jalon). */
+async function glisserChose(p, titre, n, { sous = null, tenu = false } = {}) {
+  const r = await trouver(p, sous ? { titre, sous } : { titre });
+  const lc = await largeurColonne(p);
+  /* la barre se prend là où le doigt ne tombe sur aucun jalon ni bord (un jalon tiré seul est un autre geste : E25) */
+  const x = sous ? r.x : await p.evaluate((g, d, y) => {
+    for (let x = g + 12; x <= d - 8; x += 3) {
+      const e = document.elementFromPoint(x, y);
+      if (e && e.closest('[data-barre]') && !e.closest('[data-jalon], [data-bord], [data-grip]')) return x;
+    }
+    return Math.min(d - 6, g + 20);
+  }, r.g, r.d, r.y);
+  await glisserXY(p, x, r.y, n * lc, 0, { tenu });
+}
+async function menuPeriode(p, choix) {
+  await toucher(p, { aria: /^Période/ });
+  if (choix) await toucher(p, { dans: { role: 'dialog', aria: /Période/ }, texte: choix });
+}
+const ajouterDans = (p, rangee) => toucher(p, { aria: new RegExp(`^Ajouter dans ${rangee}`) });
+/* la feuille ou la pile ouverte la plus haute (le + volant est un menu, la feuille d'ajout un dialogue) */
+const dansFeuille = texte => ({ dans: { role: 'dialog|menu', dernier: true }, texte });
+/* un bouton de la feuille (« Ajouter » est aussi le sous-titre de la feuille : le rôle tranche) */
+const boutonFeuille = texte => ({ ...dansFeuille(texte), role: 'button' });
+async function taper(p, texte) { await p.keyboard.type(texte, { delay: 10 }); await attendre(200); }
+async function tourner(p) {
+  const { w, h } = p.cfg;
+  p.cfg = { ...p.cfg, w: h, h: w };
+  await p.setViewport(vue(p.cfg)); await attendre(900);
+}
+/** Le texte visible et les noms accessibles des éléments visibles. */
+const lireTexte = p => p.evaluate(() => {
+  const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+  return `${document.body.innerText}\n${[...document.querySelectorAll('[aria-label]')].filter(vis).map(e => e.getAttribute('aria-label')).join('\n')}`;
+});
+
+/* ------------------------------------------------------------------ les états (§ Vérification, CRITIQUE-2 n° 21 à 42) */
+
+const RANGEES = ['Brassins', 'Fêtes', 'Ventes', 'Achats', 'Travaux', 'Activités', 'Papiers'];
+const LIGNES_PLUS = [
+  ['23a', 'brassins', /^Poser un brassin/, 'Brassins'], ['23b', 'fetes', /^Poser une fête/, 'Fêtes'], ['23c', 'ventes', /^Poser une vente/, 'Ventes'],
+  ['23d', 'achats', /^Prévoir un achat/, 'Achats'], ['23e', 'travaux', /^Prévoir des travaux/, 'Travaux'], ['23f', 'activites', /^Noter une activité/, 'Activités'],
+  ['23g', 'papiers', /^Prévoir un papier/, 'Papiers']
+];
+const sansRotation = cfg => (cfg.tactile ? null : 'la rotation ne concerne que le téléphone (E10) ; au 1280, la vue large est centrée');
+const fn = (f, dit) => Object.assign(f, { dit });
+
+const ETATS = [
+  { n: '01', nom: 'repos', geste: 'ouverture du banc', cave: true, jouer: async () => {}, attendu: [/banc — données simulées/, ...RANGEES.map(r => new RegExp(r)), /Marché de Noël/, /Frigo/] },
+  { n: '02', nom: 'plusminus', geste: 'toucher ±', cave: true, jouer: async p => { await toucher(p, { texte: /^±$/ }); },
+    attendu: [fn(async p => p.evaluate(() => { const b = document.querySelector('[aria-label^="Semaines"]') || document.querySelector('[data-bande-semaines]'); return !!b && /[−+]\s?\d/.test(b.textContent || ''); }), 'la bande montre des + et −')] },
+  { n: '03', nom: 'creux', geste: 'toucher le chiffre clé', jouer: async p => { await toucher(p, { aria: /à dépenser/ }); }, attendu: [/Le creux de S\d+/, /Solde et réglages/] },
+  { n: '04', nom: 'retards', geste: 'toucher le badge des retards', jouer: async p => { await toucher(p, { aria: /retard/i }); },
+    attendu: [/Saison de ferme/, /Hopfen/, /\d{1,2} (janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)/], interdit: [/en retard de \d+ ?j/, /depuis \d+ ?j/, /\bde \d+ j\b/] },
+  { n: '05', nom: 'menu-periode', geste: 'toucher la période', cave: true, jouer: async p => { await menuPeriode(p, null); },
+    attendu: [/6 sem\./, /3 mois/, /6 mois/, /\bAn\b/, /Liste/, /Trier les rangées/, /Filtrer par type/, /Sans date · \d/, /\d{1,2} \p{L}+\.? → \d{1,2} \p{L}+/u] },
+  { n: '06', nom: 'semaine-date', geste: 'toucher une semaine de la bande', jouer: async p => { await toucher(p, { dans: { aria: /^Semaines/ }, texte: /^S\d+$/, index: 2 }); },
+    attendu: [/S\d+, \d{1,2} ?[–-] ?\d{1,2} \p{L}+/u] },
+
+  { n: '07', nom: 'f1a-pendant', geste: 'glisser la Hotte de 2 colonnes, doigt tenu', jouer: async p => { await glisserChose(p, 'Hotte', 2, { tenu: true }); }, attendu: [/lâcher ici/], fin: lacher },
+  { n: '08', nom: 'f1a-apres', geste: 'glisser la Hotte de 2 colonnes, lâcher', jouer: async p => { await glisserChose(p, 'Hotte', 2); }, attendu: [/S\d+ : [−\d\s’']+ → [−\d\s’']+/, /Annuler/] },
+  { n: '09', nom: 'f2a-apres', geste: 'tirer le bord de la Blonde d’une colonne', jouer: async p => { await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-bord]' }); },
+    attendu: [/J\d+ \/ \d+/, /prête/, /promis|Annuler/], interdit: [/J0\s*\/\s*0(?!\d)/] },
+  { n: '10', nom: 'f4b-brassin', geste: 'toucher la Blonde', jouer: async p => { await toucher(p, { titre: 'Blonde d’automne' }); },
+    attendu: [/Ouvrir le brassin/, /Commander/, /Budget ›/, /Dry hop/i, /Garde/] },
+  { n: '11', nom: 'f5a-menu', geste: 'appui long sur la Hotte', cave: true, jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); },
+    attendu: [/Épingler/, /Étoile/, /Achats seul/, /Dupliquer/, /Lier/, /Retirer/, fn(async p => p.evaluate(() => {
+      const m = document.querySelector('[role="menu"]'); if (!m) return false;
+      const r = [...m.querySelectorAll('button, [role="menuitem"]')].find(b => /^Retirer/.test((b.textContent || '').trim())); if (!r) return false;
+      const q = r.getBoundingClientRect(); const e = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
+      return q.top >= 0 && q.bottom <= innerHeight && !!e && (r === e || r.contains(e));
+    }), 'Retirer dans l’écran et touchable')] },
+  { n: '12', nom: 'f5a-retirer', geste: 'appui long sur le Marché de Noël, puis Retirer', jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); },
+    attendu: [/Retirée? de S\d+/, /Sans date ›/, /Annuler/] },
+  { n: '13', nom: 'f5a-annuler', geste: 'Retirer le Marché de Noël, puis Annuler', jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); await toucher(p, { texte: /^Annuler$/ }); },
+    attendu: [fn(async p => existe(p, { titre: 'Marché de Noël' }), 'le Marché de Noël revient sur la frise')] },
+  { n: '14', nom: 'f6b-alerte', geste: 'glisser la Blonde de 2 colonnes (promesse La Cigogne)', jouer: async p => { await glisserChose(p, 'Blonde d’automne', 2); }, attendu: [/promis/, /Livrer le/] },
+  { n: '15', nom: 'f6b-livrer', geste: 'glisser la Blonde, puis Livrer le …', jouer: async p => { await glisserChose(p, 'Blonde d’automne', 2); await toucher(p, { texte: /^Livrer le/ }); }, attendu: [/La Cigogne/] },
+
+  { n: '16', nom: 'c1d-pendant', geste: 'tirer la poignée de fin jusqu’au bout, doigt tenu', jouer: async p => { await tirerPoignee(p, 1.0, true); }, attendu: [/S\d+ ?[–-] ?S\d+|l’année|An/] , fin: lacher },
+  { n: '17', nom: 'an', geste: 'tirer la poignée de fin jusqu’au bout, lâcher', cave: true, jouer: async p => { await tirerPoignee(p, 1.0, false); }, attendu: [/janv/, /juin/, /oct/] },
+  { n: '18', nom: 'marque-3mois', geste: 'période 3 mois', jouer: async p => { await menuPeriode(p, /^3 mois/); },
+    attendu: [fn(async p => p.evaluate(() => document.querySelectorAll('[data-marque]').length > 0), 'au moins une marque (chose de moins de 24 px)')] },
+  { n: '19', nom: 'marque-appui-long', geste: '3 mois, puis appui long sur une marque', jouer: async p => { await menuPeriode(p, /^3 mois/); await appuiLong(p, { data: 'data-marque' }); },
+    attendu: [fn(async p => p.evaluate(() => Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes')) <= 7), 'la vue 6 semaines revient')] },
+  { n: '20', nom: 'c2b-lecture', geste: 'glisser le doigt le long de la courbe, doigt tenu', jouer: async p => { const r = await trouver(p, { aria: /^Libre et caisse/ }); await glisserXY(p, r.g + 30, r.y, r.w * 0.4, 0, { tenu: true }); },
+    attendu: [/CHF · S\d+ · \d{1,2} \p{L}+/u], fin: lacher },
+  { n: '21', nom: 'c3a-graph', geste: 'appui long sur la courbe', jouer: async p => { await appuiLong(p, { aria: /^Libre et caisse/ }, 800); }, attendu: [/La courbe en grand|Revenir à la frise/] },
+
+  { n: '22', nom: 'plus-volant', geste: 'toucher le + volant', cave: true, jouer: async p => { await toucher(p, { aria: /^Actions rapides/ }); },
+    attendu: [/Sur\s+le calendrier/, /Partout/, /Poser un brassin/, /Noter une idée/, fn(async p => p.evaluate(() => {
+      const d = [...document.querySelectorAll('[role="dialog"], dialog, [role="menu"]')].filter(x => x.getBoundingClientRect().height > 0).pop();
+      if (!d) return { ok: false, dit: 'aucune pile ouverte' };
+      const dehors = [...d.querySelectorAll('button, [role="menuitem"]')].filter(b => b.getBoundingClientRect().height > 0)
+        .filter(b => { const r = b.getBoundingClientRect(); return r.top < -0.5 || r.bottom > innerHeight + 0.5 || r.left < -0.5 || r.right > innerWidth + 0.5; })
+        .map(b => (b.textContent || b.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 24));
+      return { ok: dehors.length === 0, dit: dehors.length ? `lignes hors de l’écran : ${dehors.join(' | ')}` : 'toutes les lignes dans l’écran' };
+    }), 'toutes les lignes dans l’écran')] },
+  ...LIGNES_PLUS.map(([n, id, ligne, titre]) => ({ n, nom: `feuille-${id}`, geste: `+ volant, puis « ${ligne.source.replace(/^\^/, '')} »`, cave: true,
+    jouer: async p => { await toucher(p, { aria: /^Actions rapides/ }); await toucher(p, dansFeuille(ligne)); },
+    attendu: [new RegExp(titre), /Ajouter/, fn(async p => p.evaluate(i => document.querySelector('[data-feuille-rangee]')?.getAttribute('data-feuille-rangee') === i, id), `feuille réglée sur ${titre}`)] })),
+  { n: '24', nom: 'pose-brassin', geste: '+ de Brassins, recette Porter d’hiver, Ajouter', jouer: async p => { await ajouterDans(p, 'Brassins'); await toucher(p, dansFeuille(/^Porter d’hiver$/)); await toucher(p, boutonFeuille(/^Ajouter/)); },
+    attendu: [/prête le/, /Annuler/] },
+  { n: '25', nom: 'pose-vente-probable', geste: 'toucher la vente probable Café du Pont', jouer: async p => { await toucher(p, { titre: 'Café du Pont' }); },
+    attendu: [/Café du Pont/, fn(async p => p.evaluate(() => ![...document.querySelectorAll('[data-probable]')].some(e => /^Café du Pont/.test(e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''))), 'la vente n’est plus en pointillé')] },
+  { n: '26', nom: 'pose-activite', geste: '+ d’Activités, nom récent, 3 j, Ajouter', jouer: async p => { await ajouterDans(p, 'Activités'); await toucher(p, dansFeuille(/^Inventaire du stock$|^Ranger la réserve$/)); await toucher(p, dansFeuille(/^3 j$/)); await toucher(p, boutonFeuille(/^Ajouter/)); },
+    attendu: [/Annuler/] },
+  { n: '27', nom: 'deux-ventes', geste: 'aller aux Ventes', jouer: async p => { await trouver(p, { titre: 'Café du Pont' }); },
+    attendu: [/Café du Pont/, /Épicerie du Bourg/, fn(async p => p.evaluate(() => {
+      const r = t => [...document.querySelectorAll('[data-chose]')].find(e => (e.getAttribute('data-titre') || e.getAttribute('aria-label') || '').startsWith(t))?.getBoundingClientRect();
+      const a = r('Café du Pont'), b = r('Épicerie du Bourg'); if (!a || !b) return false;
+      return !(a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
+    }), 'les deux ventes de la même semaine ne se chevauchent pas')] },
+
+  { n: '28', nom: 'rotation-geste', geste: 'glisser la Hotte, doigt tenu, puis tourner le téléphone', sansObjet: sansRotation,
+    jouer: async p => { await glisserChose(p, 'Hotte', 1, { tenu: true }); await tourner(p); }, attendu: [/lâcher ici|Annuler/], fin: lacher },
+  { n: '29', nom: 'rotation-apres-ajout', geste: 'ajouter le Marché de Noël par le + de Fêtes, puis tourner', sansObjet: sansRotation,
+    jouer: async p => { await ajouterDans(p, 'Fêtes'); await toucher(p, dansFeuille(/^Marché de Noël$/)); await toucher(p, boutonFeuille(/^Ajouter/)); await tourner(p); },
+    attendu: [fn(async p => p.evaluate(() => [...document.querySelectorAll('[data-chose]')].filter(e => /^Marché de Noël/.test(e.getAttribute('data-titre') || e.getAttribute('aria-label') || '')).length >= 2), 'la fête ajoutée est toujours là')] },
+  { n: '30', nom: 'plein-ecran', geste: 'toucher ⛶', jouer: async p => { await toucher(p, { aria: /^Plein écran/ }); },
+    attendu: [fn(async p => p.evaluate(() => !!document.fullscreenElement || /Tourne le téléphone/.test(document.body.innerText)), 'plein écran, ou l’invitation « Tourne le téléphone »')] },
+  { n: '31', nom: 'liste', geste: 'période, puis Liste', cave: true, jouer: async p => { await menuPeriode(p, /^Liste/); }, attendu: [/Sans date/, /Hotte/, /Marché de Noël/] },
+  { n: '32', nom: 'masquee-epinglee', geste: 'épingler la Hotte, puis masquer Achats', jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Épingler/ }); await toucher(p, { aria: /^Masquer Achats/ }); },
+    attendu: [/cachée/, fn(async p => existe(p, { titre: 'Hotte' }), 'la Hotte épinglée reste visible')] },
+
+  { n: '34', nom: 'brassin-planifie-glisse', geste: 'glisser le Porter d’hiver d’une colonne', jouer: async p => { await glisserChose(p, 'Porter d’hiver', 1); }, attendu: [/Annuler/, /S\d+/] },
+  { n: '35', nom: 'jalon-fin', geste: 'tirer le jalon de fin du Porter d’une colonne', jouer: async p => { await glisserChose(p, 'Porter d’hiver', 1, { sous: '[data-jalon="conditionnement"], [data-bord]' }); }, attendu: [/prête/, /Annuler/] },
+  { n: '36', nom: 'jalon-refuse', geste: 'tirer le jalon dry hop de la Blonde', jouer: async p => { await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-jalon="dry-hop"]' }); }, attendu: [/suit la recette du brassin/, /Ouvrir le brassin/] },
+  { n: '37', nom: 'mise-de-cote', geste: 'aucun (la courbe au repos)', jouer: async () => {}, attendu: [/mis de côté/] },
+  { n: '38', nom: 'travaux-fenetre', geste: '+ de Travaux, nom récent, S20 puis S40, 5 j', jouer: async p => { await fenetreTravaux(p); }, attendu: [/S20 → S40 · 21 sem\./] },
+  { n: '39', nom: 'travaux-posee', geste: 'fenêtre S20 → S40, 5 j, Ajouter, puis l’An', jouer: async p => { await fenetreTravaux(p); await toucher(p, boutonFeuille(/^Ajouter/)); await menuPeriode(p, /^An\b/); },
+    attendu: [/Sols : colle et joints|Rénovation/] },
+  { n: '40', nom: 'sans-date-poche', geste: 'période, puis « Sans date · n »', jouer: async p => { await menuPeriode(p, /^Sans date · \d/); }, attendu: [/Appeler l’assurance/] },
+  { n: '41', nom: 'poser', geste: 'poche, Appeler l’assurance, Poser', jouer: async p => { await menuPeriode(p, /^Sans date · \d/); await toucher(p, { texte: /Appeler l’assurance/ }); await toucher(p, { texte: /^Poser$/ }); }, attendu: [/Ajouter|Activités/] },
+  { n: '42', nom: 'reouverture', geste: 'épingler la Hotte, étoile au Marché de Noël, masquer Achats, descendre Brassins ; recharger',
+    jouer: async p => {
+      await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Épingler/ });
+      await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Étoile/ });
+      await toucher(p, { aria: /^Masquer Achats/ });
+      await menuPeriode(p, /^Trier les rangées/); await toucher(p, { aria: /^Descendre Brassins/ }); await p.keyboard.press('Escape'); await attendre(300);
+      await charger(p, null);
+    },
+    attendu: [/cachée/, fn(async p => existe(p, { titre: 'Hotte' }), 'Hotte épinglée visible'), fn(async p => existe(p, { aria: /^Étoile : Marché de Noël/ }), 'étoile du Marché de Noël sur la courbe'),
+      fn(async p => p.evaluate(() => { const r = [...document.querySelectorAll('section[data-rangee]')].map(s => s.getAttribute('data-rangee')); return r[0] !== 'brassins'; }), 'Brassins n’est plus en tête')] },
+  { n: '43', nom: 'plus-de-details', geste: '+ d’Achats, S50, Plus de détails ›', jouer: async p => { await ajouterDans(p, 'Achats'); await toucher(p, dansFeuille(/^S50$/)); await toucher(p, dansFeuille(/^Plus de détails/)); },
+    attendu: [/Prévoir une dépense/, /\d{1,2} \p{L}+/u] },
+  { n: '44', nom: 'propositions', geste: 'aller aux Brassins', jouer: async p => { await trouver(p, { aria: /^Ajouter dans Brassins/ }); },
+    attendu: [fn(async p => p.evaluate(() => document.querySelectorAll('[data-proposition="brassin-habituel"]').length > 0), 'brassin habituel en pointillé'),
+      fn(async p => p.evaluate(() => document.querySelectorAll('[data-proposition="echeance"]').length > 0 || /Loyer du local/.test(document.body.innerText)), 'échéance en pointillé'), /Café du Pont/] },
+  { n: '45', nom: 'propositions-acceptees', geste: 'toucher le Stout proposé, puis Ajouter', jouer: async p => { await toucher(p, { data: 'data-proposition="brassin-habituel"' }); await toucher(p, boutonFeuille(/^Ajouter/)); },
+    attendu: [/Annuler/, fn(async p => p.evaluate(() => document.querySelectorAll('[data-proposition="brassin-habituel"]').length === 0), 'la proposition est devenue un brassin plein')] },
+  { n: '46', nom: 'budget', geste: 'toucher la Blonde, puis Budget ›', jouer: async p => { await toucher(p, { titre: 'Blonde d’automne' }); await toucher(p, { texte: /^Budget ›/ }); }, attendu: [/budget/i] },
+
+  { n: '47', nom: 'etoile-courbe', geste: 'appui long sur le Marché de Noël, Étoile', jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Étoile/ }); },
+    attendu: [fn(async p => existe(p, { aria: /^Étoile : Marché de Noël/ }), 'l’étoile est sur la courbe')] },
+  { n: '48', nom: 'achats-seuls', geste: 'appui long sur la Hotte, « Achats seules »', jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Achats seules/ }); },
+    attendu: [/Tout afficher/, fn(async p => p.evaluate(() => document.querySelectorAll('section[data-rangee]').length <= 2), 'les 6 autres rangées sont filtrées')] },
+  { n: '49', nom: 'lier', geste: 'appui long sur la Hotte, Lier, Blonde d’automne', jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { texte: /^Blonde d’automne$/ }); },
+    attendu: [/lié|Lié/] },
+  { n: '50', nom: 'source-facture', geste: 'toucher la facture Brouwland', jouer: async p => { await toucher(p, { titre: 'Brouwland' }); }, attendu: [/Payé/] },
+  { n: '51', nom: 'source-vente', geste: 'toucher la vente Noël privés', jouer: async p => { await toucher(p, { titre: 'Noël privés' }); }, attendu: [/Facturer/] },
+  { n: '52', nom: 'source-tva', geste: 'toucher la TVA T4', jouer: async p => { await toucher(p, { titre: 'TVA T4' }); await toucherSiPresent(p, { texte: /Annuel|Ouvrir|›$/ }); }, attendu: [/TVA/, /Annuel|Finances/] },
+  { n: '53', nom: 'idee-noter', geste: '+ volant, Noter une idée, texte, Noter', jouer: async p => { await toucher(p, { aria: /^Actions rapides/ }); await toucher(p, dansFeuille(/^Noter une idée/)); await noterIdee(p, 'ZZ TEST — idée houblon'); },
+    attendu: [/idée|Idée/] },
+  { n: '54', nom: 'idee-bande', geste: 'appui long sur une semaine de la bande', jouer: async p => { await appuiLong(p, { dans: { aria: /^Semaines/ }, texte: /^S\d+$/, index: 3 }); }, attendu: [/L’idée, en quelques mots|Noter une idée/] },
+  { n: '55', nom: 'poignee-bout', geste: 'poignée de fin lâchée à mi-course, puis tirée au bout', jouer: async p => {
+      await tirerPoignee(p, 0.45, false);
+      const message = /Tire jusqu.au bout : l.année/.test(await lireTexte(p));
+      p.noteEtat = `message « Tire jusqu'au bout : l'année » après le lâcher à mi-course : ${message ? 'vu' : 'ABSENT'}`;
+      if (!message) throw new Absent('le message « Tire jusqu’au bout : l’année » n’apparaît pas au lâcher avant 80 %');
+      await tirerPoignee(p, 1.0, false);
+    }, attendu: [/janv/, /juin/] }
+];
+async function tirerPoignee(p, part, tenu) {
+  const r = await trouver(p, { aria: /^Poignée de fin/ });
+  const bord = await p.evaluate(() => { const s = [...document.querySelectorAll('svg')].map(x => x.getBoundingClientRect()).filter(b => b.width > 150).sort((a, b) => b.width - a.width)[0]; return s ? s.right : innerWidth; });
+  await glisserXY(p, r.x, r.y, Math.max(10, (bord - r.x) * part + (part >= 1 ? 6 : 0)), 0, { tenu });
+}
+async function fenetreTravaux(p) {
+  await ajouterDans(p, 'Travaux');
+  await toucher(p, dansFeuille(/^Sols : colle et joints$|^Rénovation/));
+  await toucher(p, dansFeuille(/^S20$/)); await toucher(p, dansFeuille(/^S40$/)); await toucher(p, dansFeuille(/^5 j$/));
+}
+async function toucherSiPresent(p, spec) { if (await existe(p, spec)) await toucher(p, spec); }
+/** L'idée datée (E36) : le champ « L’idée, en quelques mots » touché (le clavier s'ouvre : une idée s'écrit), le texte, puis le bouton de la feuille. */
+async function noterIdee(p, texte) {
+  await toucher(p, dansFeuille(/L’idée, en quelques mots/));
+  await taper(p, texte);
+  await toucher(p, boutonFeuille(/^(Noter|Ajouter|Enregistrer)/));
+}
+
+/* ------------------------------------------------------------------ jouer un état */
+
+const rapport = [];
+const chrono = [];
+const parcours = [];
+
+async function jugerAttendu(p, etat) {
+  const texte = await lireTexte(p);
+  const manques = [];
+  for (const a of etat.attendu || []) {
+    if (a instanceof RegExp) { if (!a.test(texte)) manques.push(`« ${a.source} »`); continue; }
+    const r = await a(p);
+    if (r && typeof r === 'object') { if (!r.ok) manques.push(`${a.dit} (${r.dit})`); }
+    else if (!r) manques.push(a.dit);
+  }
+  const interdits = (etat.interdit || []).filter(re => re.test(texte)).map(re => `« ${re.source} »`);
+  return { manques, interdits };
+}
+
+async function jouerEtat(cfgNom, theme, etat) {
+  const cfg = CONFIGS[cfgNom];
+  const base = `${cfgNom}-${theme}-${etat.n}-${etat.nom}`;
+  const so = etat.sansObjet ? etat.sansObjet(cfg) : null;
+  if (so) { rapport.push({ cfgNom, theme, n: etat.n, nom: etat.nom, geste: etat.geste, statut: 'SANS OBJET', dit: so, capture: '—' }); return; }
+  let p;
+  try {
+    p = await ouvrir(cfg, theme, BANC);
+    let statut = 'OK', dit = '';
+    try {
+      await etat.jouer(p);
+      await attendre(350);
+      const { manques, interdits } = await jugerAttendu(p, etat);
+      if (manques.length) { statut = 'ABSENT'; dit = `attendu non trouvé : ${manques.join(', ')}`; }
+      if (interdits.length) { statut = statut === 'OK' ? 'INTERDIT' : `${statut} + INTERDIT`; dit += `${dit ? ' ; ' : ''}texte refusé présent : ${interdits.join(', ')}`; }
+      if (!dit) dit = `attendu trouvé : ${(etat.attendu || []).map(a => (a instanceof RegExp ? `« ${a.source} »` : a.dit)).join(', ')}`;
+    } catch (e) {
+      statut = 'ABSENT'; dit = e instanceof Absent ? e.message : `erreur du geste : ${String(e.message || e).slice(0, 160)}`;
+    }
+    if (p.noteEtat) dit += ` (${p.noteEtat})`;
+    const nomFichier = `${base}${statut === 'OK' ? '' : '-ABSENT'}.png`;
+    await p.screenshot({ path: join(DOSSIER, nomFichier) });
+    if (etat.fin && p.doigt) await etat.fin(p).catch(() => {});
+    const err = p.erreurs.length ? ` ; ${p.erreurs.length} erreur(s) de console : ${p.erreurs[0]}` : '';
+    rapport.push({ cfgNom, theme, n: etat.n, nom: etat.nom, geste: etat.geste, statut, dit: dit + err, capture: nomFichier });
+    console.log(`${statut === 'OK' ? 'ok' : statut} ${base} : ${dit.slice(0, 140)}`);
+  } catch (e) {
+    rapport.push({ cfgNom, theme, n: etat.n, nom: etat.nom, geste: etat.geste, statut: 'ABSENT', dit: `page non ouverte : ${String(e.message || e).slice(0, 160)}`, capture: '—' });
+    console.log(`ABSENT ${base} : page non ouverte`);
+  } finally {
+    if (p) await p.ctx.close().catch(() => {});
+  }
+}
+
+/* ------------------------------------------------------------------ /?dev-local : l'onglet dans l'app, et ET-PER */
+
+async function ongletApp(p, nom) { await toucher(p, { dans: { aria: /^Navigation principale/ }, texte: new RegExp(`^${nom}$`) }); await attendre(800); }
+
+async function devLocal(cfgNom, theme) {
+  const cfg = CONFIGS[cfgNom];
+  /* 56 : Bord → Calendrier, données vides, 7 rangées, le + reste la voie d'ajout */
+  let p;
+  const base56 = `${cfgNom}-${theme}-56-dev-local-onglet`;
+  try {
+    p = await ouvrir(cfg, theme, APP, { coupeFirestore: true });
+    let statut = 'OK', dit;
+    try {
+      await ongletApp(p, 'Bord'); await ongletApp(p, 'Calendrier');
+      const m = await p.evaluate(() => ({
+        rangees: document.querySelectorAll('section[data-rangee]').length,
+        vides: (document.body.innerText.match(/\bvide\b/g) || []).length,
+        plus: !!document.querySelector('button[aria-label^="Actions rapides"]'),
+        exemple: /exemple/i.test(document.body.innerText)
+      }));
+      dit = `${m.rangees} rangées, ${m.vides} « vide », + volant ${m.plus ? 'présent' : 'absent'}, « exemple » ${m.exemple ? 'présent' : 'absent'}`;
+      if (m.rangees !== 7 || !m.plus || m.exemple) statut = 'ABSENT';
+    } catch (e) { statut = 'ABSENT'; dit = e instanceof Absent ? e.message : String(e.message || e).slice(0, 160); }
+    const f = `${base56}${statut === 'OK' ? '' : '-ABSENT'}.png`;
+    await p.screenshot({ path: join(DOSSIER, f) });
+    rapport.push({ cfgNom, theme, n: '56', nom: 'dev-local-onglet', geste: '/?dev-local, Bord puis Calendrier', statut, dit: `${dit} ; requêtes Firestore coupées : ${p.coupees}`, capture: f });
+    console.log(`${statut === 'OK' ? 'ok' : statut} ${base56} : ${dit}`);
+  } catch (e) {
+    rapport.push({ cfgNom, theme, n: '56', nom: 'dev-local-onglet', geste: '/?dev-local', statut: 'ABSENT', dit: `page non ouverte : ${String(e.message || e).slice(0, 160)}`, capture: '—' });
+  } finally { if (p) await p.ctx.close().catch(() => {}); }
+}
+
+/** ET-PER (n° 24, D-12 à D-14) : deux opérations « ZZ TEST » saisies par l'interface, 3 mois au calendrier, puis Finances filtre sur la plage. */
+async function etPer(cfgNom, theme) {
+  const cfg = CONFIGS[cfgNom];
+  const base33 = `${cfgNom}-${theme}-33-finances-plage`;
+  let p; const pas = [];
+  try {
+    p = await ouvrir(cfg, theme, APP, { coupeFirestore: true });
+    const auj = new Date();
+    const iso = d => d.toISOString().slice(0, 10);
+    const dans = iso(auj), hors = iso(new Date(auj.getTime() + 200 * 86400000));
+    for (const [libelle, jour] of [['ZZ TEST — dans la plage', dans], ['ZZ TEST — hors plage', hors]]) {
+      await toucher(p, { aria: /^Actions rapides/ });
+      await toucher(p, dansFeuille(/^Écriture/));
+      const rempli = await p.evaluate((lib, j) => {
+        const d = [...document.querySelectorAll('[role="dialog"], dialog')].filter(x => x.getBoundingClientRect().height > 0).pop();
+        if (!d) return 'aucune feuille';
+        const pose = (el, v) => { const s = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value').set; s.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
+        const champs = [...d.querySelectorAll('input, textarea')].filter(i => i.getBoundingClientRect().height > 0);
+        const texte = champs.find(i => (i.type === 'text' || i.tagName === 'TEXTAREA') && !/decimal|numeric/.test(i.inputMode) && !/date|jj/i.test(`${i.placeholder} ${i.name} ${i.getAttribute('aria-label') || ''}`));
+        const montant = champs.find(i => /decimal|numeric/.test(i.inputMode));
+        const date = champs.find(i => i.type === 'date') || champs.find(i => /date|jj/i.test(`${i.placeholder} ${i.name} ${i.getAttribute('aria-label') || ''}`));
+        if (!texte || !montant || !date) return `champs introuvables (texte ${!!texte}, montant ${!!montant}, date ${!!date})`;
+        pose(texte, lib); pose(montant, '12');
+        pose(date, date.type === 'date' ? j : `${j.slice(8, 10)}.${j.slice(5, 7)}.${j.slice(0, 4)}`);
+        return 'ok';
+      }, libelle, jour);
+      if (rempli !== 'ok') throw new Absent(`écriture « ${libelle} » : ${rempli}`);
+      await toucher(p, dansFeuille(/^(Enregistrer|Ajouter|Valider)/));
+      pas.push(`« ${libelle} » saisie le ${jour}`);
+    }
+    await ongletApp(p, 'Calendrier');
+    await menuPeriode(p, /^3 mois/); pas.push('3 mois au calendrier');
+    await p.keyboard.press('Escape'); await attendre(300);
+    await ongletApp(p, 'Finances'); pas.push('Finances ouvert');
+    const t = await lireTexte(p);
+    const plage = /\d{1,2} \p{L}+\.? → \d{1,2} \p{L}+/u.test(t), dansVu = /ZZ TEST — dans la plage/.test(t), horsVu = /ZZ TEST — hors plage/.test(t);
+    const ok = plage && dansVu && !horsVu;
+    const f = `${base33}${ok ? '' : '-ABSENT'}.png`;
+    await p.screenshot({ path: join(DOSSIER, f) });
+    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ')}`, statut: ok ? 'OK' : 'ABSENT',
+      dit: `plage affichée ${plage}, « dans la plage » listée ${dansVu}, « hors plage » listée ${horsVu} ; requêtes Firestore coupées : ${p.coupees}`, capture: f });
+  } catch (e) {
+    let f = '—';
+    if (p) { f = `${base33}-ABSENT.png`; await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {}); }
+    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ') || 'rien'}`, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
+  } finally { if (p) await p.ctx.close().catch(() => {}); }
+}
+
+/* ------------------------------------------------------------------ D-45 : 5 tâches chronométrées au banc (390 tactile, clair) */
+
+async function chronometrer() {
+  const taches = [
+    ['poser un brassin', async p => { await ajouterDans(p, 'Brassins'); await toucher(p, dansFeuille(/^Porter d’hiver$/)); await toucher(p, boutonFeuille(/^Ajouter/)); }, /Annuler/],
+    ['décaler une fête', async p => { await glisserChose(p, 'Marché de Noël', -1); }, /Annuler/],
+    ['voir le creux', async p => { await toucher(p, { aria: /à dépenser/ }); }, /Le creux de S\d+/],
+    ['masquer une rangée', async p => { await toucher(p, { aria: /^Masquer Achats/ }); }, /cachée/],
+    ['noter une idée', async p => { await toucher(p, { aria: /^Actions rapides/ }); await toucher(p, dansFeuille(/^Noter une idée/)); await noterIdee(p, 'ZZ TEST — idée'); }, /idée notée|Idée notée|carnet|Annuler/]
+  ];
+  for (const [nom, faire, attendu] of taches) {
+    let p;
+    try {
+      p = await ouvrir(CONFIGS.m390, 'clair', BANC);
+      p.touchers = 0;
+      const t0 = Date.now();
+      let ok = true, dit = '';
+      try { await faire(p); } catch (e) { ok = false; dit = e instanceof Absent ? e.message : String(e.message || e).slice(0, 120); }
+      let vu = false;
+      for (let i = 0; i < 20 && ok && !vu; i++) { vu = attendu.test(await lireTexte(p)); if (!vu) await attendre(100); }
+      const ms = Date.now() - t0;
+      chrono.push({ nom, touchers: p.touchers, ms, ok: ok && vu, dit: dit || (vu ? `« ${attendu.source} » vu` : `« ${attendu.source} » ABSENT`) });
+    } catch (e) { chrono.push({ nom, touchers: 0, ms: 0, ok: false, dit: String(e.message || e).slice(0, 120) }); }
+    finally { if (p) await p.ctx.close().catch(() => {}); }
+  }
+}
+
+/* ------------------------------------------------------------------ tout jouer */
+
+const garde = n => !choixEtats || choixEtats.has(n);
+try {
+  for (const cfgNom of choixConfigs) {
+    for (const theme of choixThemes) {
+      for (const etat of ETATS) {
+        if (!garde(etat.n)) continue;
+        if (theme !== 'clair' && !etat.cave) continue;
+        await jouerEtat(cfgNom, theme, etat);
+      }
+      if (theme === 'clair' && !args.includes('--sans-dev-local')) {
+        if (garde('56')) await devLocal(cfgNom, theme);
+        if (garde('33')) await etPer(cfgNom, theme);
+      }
+    }
+  }
+  if (!args.includes('--sans-chrono') && choixConfigs.includes('m390') && (!choixEtats || choixEtats.has('chrono'))) await chronometrer();
+} finally {
+  await nav.close();
+}
+
+/* ------------------------------------------------------------------ RAPPORT.md */
+
+const ordre = e => `${e.cfgNom}|${e.theme}|${e.n}`;
+rapport.sort((a, b) => ordre(a).localeCompare(ordre(b), 'fr', { numeric: true }));
+const absents = rapport.filter(r => r.statut !== 'OK' && r.statut !== 'SANS OBJET');
+const lignes = [
+  '# Vision 3 : le calendrier porté, état par état (vision-calendrier.mjs)',
+  '',
+  `Joué le ${new Date().toISOString().slice(0, 16).replace('T', ' ')} sur ${BASE}. Banc : ${BANC} (« banc — données simulées »). App : ${APP} (requêtes Firestore coupées avant de partir).`,
+  'Gestes : contact tactile CDP à 390 × 844 et 844 × 390, souris à 1280 × 800. Éléments trouvés par texte, rôle, aria-label ou data-titre.',
+  `Bilan : ${rapport.length} états joués, ${rapport.filter(r => r.statut === 'OK').length} OK, ${absents.length} ABSENT ou INTERDIT, ${rapport.filter(r => r.statut === 'SANS OBJET').length} sans objet.`,
+  '',
+  '| Config | Thème | État | Geste fait | Résultat | Ce qui a été trouvé | Capture |',
+  '|---|---|---|---|---|---|---|',
+  ...rapport.map(r => `| ${r.cfgNom} | ${r.theme} | ${r.n}-${r.nom} | ${r.geste} | ${r.statut} | ${r.dit.replace(/\|/g, '/')} | ${r.capture} |`),
+  ''
+];
+if (chrono.length) {
+  lignes.push('## D-45 : cinq tâches chronométrées au banc (390 tactile, clair)', '', '| Tâche | Touchers | Temps (ms, script) | Résultat |', '|---|---|---|---|',
+    ...chrono.map(c => `| ${c.nom} | ${c.touchers} | ${c.ms} | ${c.ok ? 'OK' : 'ABSENT'} : ${c.dit.replace(/\|/g, '/')} |`),
+    '', 'Le temps est celui du script (attentes de 450 ms après chaque toucher comprises) : il borne le nombre de gestes, pas la vitesse d’un brasseur.', '');
+}
+writeFileSync(join(DOSSIER, 'RAPPORT.md'), lignes.join('\n'));
+console.log(`VISION ${absents.length ? 'ABSENT' : 'OK'} : ${rapport.length} états, ${absents.length} ABSENT ou INTERDIT → ${join(DOSSIER, 'RAPPORT.md')}`);
+process.exit(0);

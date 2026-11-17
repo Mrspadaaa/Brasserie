@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type { FabIntent } from '../../domain/fabActions';
 import type { PlusCle, PlusEntree, PlusMenu, PlusTon } from '../../domain/plusEcran';
-import type { PlusPageAction, PlusPageDeclaration, PlusPageGenre } from '../../ui/plusPage';
+import { libelleCourt, type PlusPageAction, type PlusPageDeclaration, type PlusPageGenre } from '../../ui/plusPage';
 import './navigation.css';
 
 /**
@@ -61,6 +61,8 @@ interface Props {
   onPage?: (lancer: () => void) => () => void;
   onCompagnon: () => void;
   onConversations: () => void;
+  /** `deux-blocs` : téléphone couché, une page à beaucoup de gestes (le calendrier) ; « Partout » et « Sur … » côte à côte. Absent : la pile. */
+  disposition?: 'pile' | 'deux-blocs';
 }
 
 /** La couleur de rubrique d'une pilule : une classe, qui pose `--tc` (`navigation.css`). */
@@ -114,10 +116,13 @@ function ActionDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<
   /* une page qui a ses couleurs (le calendrier : une couleur de zone par rangée) les pose sur la ligne par `--tc` */
   const style = a.couleur ? ({ ['--tc' as string]: a.couleur } as React.CSSProperties) : undefined;
   if (a.plein) {
+    /* passe 10 : le libellé, puis sa précision dessous (« S47 · prête le 14 déc. ») ; la précision passe à la ligne plutôt que de perdre sa date */
     return (
-      <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style} className={`plus-pp plus-pp--pi ${TON.production}`}>
-        <b>{a.label}</b>
-        {a.hint && <small>{a.hint}</small>}
+      <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style}
+        className={`plus-pp plus-pp--pi ${TON.production}${a.hint ? ' !h-auto min-h-14 py-1.5' : ''}`}>
+        {a.hint
+          ? <span className="flex min-w-0 flex-col items-start leading-tight"><b>{a.label}</b><small className="!overflow-visible !whitespace-normal" data-plus-precision>{a.hint}</small></span>
+          : <b>{a.label}</b>}
         <span className="plus-pp-i" aria-hidden="true"><Icone size={22} /></span>
       </button>
     );
@@ -127,6 +132,19 @@ function ActionDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<
       className={`plus-pp plus-pp--ps ${TON.production}${a.genre === 'supprimer' ? ' plus-pp--danger' : ''}`}>
       <span className="plus-pp-t">{a.label}</span>
       {a.hint && <small>{a.hint}</small>}
+      <Pastille Icone={Icone} />
+    </button>
+  );
+}
+
+/** Une case de la pile en deux blocs (l-clair-ouvert, paysage) : le nom court (« Fête »), sa couleur ; le nom accessible reste le libellé entier. */
+function CaseDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<Props['onPage']> }) {
+  const Icone = a.icone ?? ICONES_PAGE[a.genre];
+  const style = a.couleur ? ({ ['--tc' as string]: a.couleur } as React.CSSProperties) : undefined;
+  return (
+    <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style} aria-label={a.label}
+      className={`plus-pp plus-pp--ps !h-10 ${TON.production}`}>
+      <span className="plus-pp-t">{libelleCourt(a)}</span>
       <Pastille Icone={Icone} />
     </button>
   );
@@ -147,11 +165,11 @@ function AllerA({ etapes, onPage }: { etapes: NonNullable<PlusPageDeclaration['e
 }
 
 /** Une pilule de « Partout » : un seul libellé par geste, le même aux deux largeurs (16.11) ; au 1280 il gagne sa lettre. */
-function Commun({ e, forme, seule, onChoisir }: { e: PlusEntree; forme: Props['forme']; seule: boolean; onChoisir: Props['onChoisir'] }) {
+function Commun({ e, forme, seule, onChoisir, bas }: { e: PlusEntree; forme: Props['forme']; seule: boolean; onChoisir: Props['onChoisir']; bas?: boolean }) {
   return (
     <button type="button" role="menuitem" tabIndex={-1} onClick={onChoisir(e.cle)}
       aria-label={`${e.hint ? `${e.court ?? e.label}, ${e.hint}` : (e.court ?? e.label)}${e.monte ? ', aussi en tête de la pile' : ''}`}
-      className={`plus-pp ${TON[e.ton]} ${seule ? 'plus-pp--seule' : ''} ${e.monte ? 'plus-pp--renvoi' : ''}`}>
+      className={`plus-pp ${TON[e.ton]} ${seule ? 'plus-pp--seule' : ''} ${e.monte ? 'plus-pp--renvoi' : ''}${bas ? ' !h-10' : ''}`}>
       <span className="plus-pp-t">{e.court ?? e.label}</span>
       {e.monte && <span className="plus-pp-r" aria-hidden="true">↑</span>}
       {forme === 'liste' && <Lettre lettre={e.lettre} />}
@@ -160,12 +178,12 @@ function Commun({ e, forme, seule, onChoisir }: { e: PlusEntree; forme: Props['f
   );
 }
 
-function Compagnon({ forme, compagnon, onCompagnon, seule }: Pick<Props, 'forme' | 'compagnon' | 'onCompagnon'> & { seule: boolean }) {
+function Compagnon({ forme, compagnon, onCompagnon, seule, bas }: Pick<Props, 'forme' | 'compagnon' | 'onCompagnon'> & { seule: boolean; bas?: boolean }) {
   const etat = compagnon.horsConnexion;
   const nom = `Compagnon brasseur${etat ? ', hors connexion' : ''} · ${compagnon.contexte}`;
   return (
     <button type="button" role="menuitem" tabIndex={-1} onClick={onCompagnon} aria-label={nom}
-      className={`plus-pp ${TON.neutre} ${seule ? 'plus-pp--seule' : ''}`}>
+      className={`plus-pp ${TON.neutre} ${seule ? 'plus-pp--seule' : ''}${bas ? ' !h-10' : ''}`}>
       <span className="plus-pp-t">Compagnon</span>
       {etat && (
         <small title="hors connexion"><CloudOff size={14} aria-hidden="true" /><span className="sr-only">hors connexion</span></small>
@@ -177,7 +195,7 @@ function Compagnon({ forme, compagnon, onCompagnon, seule }: Pick<Props, 'forme'
   );
 }
 
-export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, page, onPage, onCompagnon, onConversations }) => {
+export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, page, onPage, onCompagnon, onConversations, disposition = 'pile' }) => {
   /* « Partout » : toujours les mêmes gestes, dans le même ordre, sur tous les écrans (BUGS 34, 16.11). Un geste déjà monté en tête garde sa case, marquée ↑. */
   const partout = menu.partout;
   const avecLettre = forme === 'liste';
@@ -187,6 +205,46 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
   const enTete = !!menu.action || menu.autres.length > 0 || !!pageOuverte;
   /* Les pilules de « Partout » + le Compagnon : un nombre impair laisse la première seule, en haut à droite. */
   const impair = (partout.length + 1) % 2 === 1;
+  const grillePartout = (bas: boolean) => (
+    <div className="plus-pile-grille" data-zone="partout">
+      {partout.map((e, i) => <Commun key={e.cle} e={e} forme={forme} seule={impair && i === 0} onChoisir={onChoisir} bas={bas} />)}
+      <Compagnon forme={forme} compagnon={compagnon} onCompagnon={onCompagnon} seule={impair && partout.length === 0} bas={bas} />
+      {compagnon.conversations > 0 && (
+        <button type="button" role="menuitem" tabIndex={-1} onClick={onConversations} className="plus-pp plus-pp--large">
+          <MessagesSquare size={16} aria-hidden="true" className="shrink-0 text-cave-400" />
+          <span className="plus-pp-t">Mes conversations · {compagnon.conversations}</span>
+        </button>
+      )}
+    </div>
+  );
+
+  /* l-clair-ouvert (passe 10, paysage) : quand la hauteur manque, deux blocs côte à côte, rien coupé en haut. À droite, contre le +,
+     « Sur <page> » : ses gestes en cases de deux colonnes, le plein en bas ; à gauche, « Partout ». L'ordre du DOM garde le plein en
+     premier (focus à l'ouverture), puis les cases, puis « Partout ». */
+  if (disposition === 'deux-blocs' && pageOuverte && onPage) {
+    const pleins = pageOuverte.actions.filter(a => a.plein);
+    const cases = pageOuverte.actions.filter(a => !a.plein);
+    return (
+      <>
+        <div className="flex min-w-0 flex-1 flex-col-reverse gap-1.5" data-bloc="ecran">
+          <ActionPleine menu={menu} avecLettre={avecLettre} onChoisir={onChoisir} />
+          {pleins.map((a) => <ActionDeLaPage key={a.id} a={a} onPage={onPage} />)}
+          <div className="plus-pile-grille" data-zone="ecran-cases">
+            {cases.map((a, i) => (
+              <div key={a.id} className={cases.length % 2 === 1 && i === cases.length - 1 ? 'col-start-2' : undefined}><CaseDeLaPage a={a} onPage={onPage} /></div>
+            ))}
+          </div>
+          {menu.autres.map((e) => <ActionDeLEcran key={e.cle} e={e} avecLettre={avecLettre} onChoisir={onChoisir} />)}
+          <span className="plus-pile-zone" data-zone="ecran">Sur <em className={TON[menu.ton]}>{nom || 'cette page'}</em></span>
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col-reverse gap-1.5" data-bloc="partout">
+          {grillePartout(true)}
+          <span className="plus-pile-zone" data-zone="partout-titre">Partout</span>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <ActionPleine menu={menu} avecLettre={avecLettre} onChoisir={onChoisir} />
@@ -196,16 +254,7 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
       {enTete
         ? <span className="plus-pile-zone" data-zone="ecran">Sur <em className={TON[menu.ton]}>{nom || 'cette page'}</em></span>
         : nom && <span className="plus-pile-zone" data-zone="ecran">{nom} · rien à créer, le commun reste</span>}
-      <div className="plus-pile-grille" data-zone="partout">
-        {partout.map((e, i) => <Commun key={e.cle} e={e} forme={forme} seule={impair && i === 0} onChoisir={onChoisir} />)}
-        <Compagnon forme={forme} compagnon={compagnon} onCompagnon={onCompagnon} seule={impair && partout.length === 0} />
-        {compagnon.conversations > 0 && (
-          <button type="button" role="menuitem" tabIndex={-1} onClick={onConversations} className="plus-pp plus-pp--large">
-            <MessagesSquare size={16} aria-hidden="true" className="shrink-0 text-cave-400" />
-            <span className="plus-pp-t">Mes conversations · {compagnon.conversations}</span>
-          </button>
-        )}
-      </div>
+      {grillePartout(false)}
       <span className="plus-pile-zone" data-zone="partout-titre">Partout</span>
     </>
   );

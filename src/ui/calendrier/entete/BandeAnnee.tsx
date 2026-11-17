@@ -7,6 +7,8 @@ import { chf, moisDeSemaine, MOIS_MIN, type SoldeSemaine } from './Courbe';
  * courbe libre (la barre) : c'est le « jusqu'où ça descend » du mois, pas un total. Les rangées de l'année et leurs marques sont à la frise.
  */
 export interface MoisAnnee { mois: number; plusBas: number; semaines: number }
+/** Les initiales des mois, comme l'année du jouable (as c1-d) : douze colonnes de 30 px à 390 ne tiennent pas « janv. » ni « sept. ». */
+export const INITIALES = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'] as const;
 
 /** Les mois des semaines de la courbe, dans l'ordre, au plus 12 : le plus bas de la courbe libre de chacun. */
 export function moisDeLAnnee(courbe: readonly SoldeSemaine[]): MoisAnnee[] {
@@ -47,10 +49,14 @@ export function BandeAnnee({ courbe, mois: moisModele }: BandeAnneeProps) {
     <div className="ent-an" data-bande-annee role="img" aria-label={`L’année en ${mois.length} mois ; le creux : ${MOIS_MIN[mois[creux].mois].replace('.', '')}, ${chf(mois[creux].plusBas)} CHF`}
       style={{ ['--n' as string]: mois.length }}>
       {mois.map((m, k) => (
+        // Les initiales sur une même ligne de base, en haut (as c1-d : « N D J F… ») ; dessous, la barre posée au sol ; le creux est cerclé, son
+        // montant juste au-dessus du cercle (jamais collé au mois voisin).
         <div key={`${m.mois}-${k}`} className={k === creux ? 'ent-an-m ent-an-creux' : 'ent-an-m'} title={`${MOIS_MIN[m.mois]} : au plus bas ${chf(m.plusBas)} CHF`}>
-          <span className="ent-an-l">{MOIS_MIN[m.mois].replace('.', '')}</span>
-          {k === creux && <span className="ent-an-v">{chf(m.plusBas)}</span>}
-          <i style={{ height: k === creux ? 6 : Math.max(4, Math.round((Math.max(0, m.plusBas) / sommet) * 28)) }} />
+          <span className="ent-an-l" aria-hidden="true">{INITIALES[m.mois]}</span>
+          <span className="ent-an-z">
+            {k === creux && <span className="ent-an-v">{chf(m.plusBas)}</span>}
+            <span className="ent-an-b"><i style={{ height: k === creux ? 6 : Math.max(4, Math.round((Math.max(0, m.plusBas) / sommet) * 22)) }} /></span>
+          </span>
         </div>
       ))}
     </div>

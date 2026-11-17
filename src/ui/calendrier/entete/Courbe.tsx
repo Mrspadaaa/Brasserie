@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { ajouterJours, francs, francsSignes, jourLisible } from '../../../domain/calendrier';
 import type { SoldeSemaine } from '../../../domain/calendrierCaisse';
 
@@ -111,54 +111,167 @@ export const zoneEscalier = (haute: readonly number[], basse: readonly number[],
 
 /* ---------- placement des noms ---------- */
 
-export interface Etiquette { i: number; nom: string; montant: string; x: number; y: number; ancre: 'start' | 'end'; neg: boolean; deux: boolean }
 export interface Boite { l: number; r: number; t: number; b: number }
-const courtNom = (nom: string) => (nom.length > 18 ? `${nom.slice(0, 17).trim()}…` : nom);
-const largeurTexte = (t: string) => Math.ceil(t.length * 7.4) + 2;
-const croise = (a: Boite, b: Boite, m = 3) => !(a.r + m <= b.l || a.l >= b.r + m || a.b + m <= b.t || a.t >= b.b + m);
+/**
+ * Une étiquette posée. `genre: 'mouvement'` : « Frigo −1 800 » (nom en regular, montant en gras, comme z2s) ; `genre: 'mise'` : le carré hachuré
+ * et « 1 140 mis de côté pour Frigo ». Toujours sur UNE ligne (jamais un nom coupé). `repere` : le trait pointillé qui relie le nom à sa marche
+ * quand il en est loin (z2s).
+ */
+export interface Etiquette {
+  genre: 'mouvement' | 'mise';
+  i: number; nom: string; montant: string; x: number; y: number; neg: boolean;
+  boite: Boite;
+  /** Toutes les semaines où ce nom revient (un récurrent n'est nommé qu'une fois, D-183). */
+  semaines: number[];
+  repere: { x: number; y1: number; x2: number; y2: number } | null;
+}
+/** Hauteur d'une ligne de nom (texte de 14 px) et écart entre deux lignes. */
+export const LIGNE_NOM = 16;
+const PAS_LIGNE = 17;
+const croise = (a: Boite, b: Boite, m = 2) => !(a.r + m <= b.l || a.l >= b.r + m || a.b + m <= b.t || a.t >= b.b + m);
+export const boitesSeCroisent = (a: Boite, b: Boite): boolean => croise(a, b, 0);
+
+/* La largeur d'un texte de 14 px : mesurée par le canevas du navigateur (la police réelle de l'app), estimée hors navigateur (jsdom, tests). */
+let canevas: CanvasRenderingContext2D | null | undefined;
+function contexte(): CanvasRenderingContext2D | null {
+  if (canevas !== undefined) return canevas;
+  canevas = null;
+  try {
+    if (typeof document !== 'undefined' && typeof navigator !== 'undefined' && !/jsdom/i.test(navigator.userAgent)) canevas = document.createElement('canvas').getContext('2d');
+  } catch { canevas = null; }
+  return canevas;
+}
+export function largeurTexte(t: string, gras = false): number {
+  const c = contexte();
+  if (c) {
+    const famille = getComputedStyle(document.body).fontFamily || 'sans-serif';
+    c.font = `${gras ? 700 : 400} 14px ${famille}`;
+    return Math.ceil(c.measureText(t).width) + 4;
+  }
+  return Math.ceil(t.length * (gras ? 7.8 : 7.2)) + 4;
+}
+/** « Frigo −1 800 » : le nom en regular, une espace, le montant en gras. */
+const largeurNom = (nom: string, montant: string) => largeurTexte(`${nom} `) + largeurTexte(montant, true);
+
+export interface MisePlacee { i: number; centimes: number; titres: readonly string[] }
+/** Les deux textes de la mise de côté, le plus complet d'abord (z2s : « 1 140 mis de côté pour le frigo »). */
+export function textesMise(m: MisePlacee): string[] {
+  const pour = m.titres.length ? ` pour ${m.titres.join(', ')}` : '';
+  return [`${chf(m.centimes)} mis de côté${pour}`, `${chf(m.centimes)} mis de côté`];
+}
+/** Le carré hachuré de la mise de côté (12 px) et son écart au texte. */
+const CARRE_MISE = 16;
 
 /**
- * Noms posés par placement glouton en une dimension (méthode standard d'annotation) : les plus gros mouvements d'abord, chacun à côté de son
- * repère, au premier endroit qui ne touche ni un autre nom, ni la courbe, ni le bord. Deux formes, la plus courte d'abord : « Frigo −1 800 » sur
- * une ligne, puis le nom au-dessus du montant. Les trois plus gros ne se perdent jamais : faute de place nette, ils passent sur la courbe (leur
- * halo les garde lisibles). Un nom qui ne tient nulle part n'est pas posé : le repère reste et la lecture au doigt le nomme.
+ * Noms posés par placement glouton (méthode standard d'annotation, MISSION § État de l'art), comme z2s fait tenir 8 noms à 390 :
+ * - un mouvement n'est nommé qu'une fois : un récurrent (« Loyer du local », 12 fois) l'est à sa première semaine ;
+ * - texte de 14 px, nom en regular et montant en gras, sur UNE ligne, jamais coupé ;
+ * - les plus gros d'abord (la mise de côté vient après les deux plus gros), chacun sur la ligne la plus proche de sa marche, à côté d'elle ou
+ *   au-dessus, d'abord hors de la courbe, sinon sur elle (le halo du texte le garde lisible, comme z2s) ;
+ * - jamais sur un autre nom, ni sur une exclusion (le cadre de la fenêtre et son étiquette, le point du creux, le chiffre clé).
+ * Un nom qui ne tient nulle part n'est pas posé : sa marche reste et la lecture au doigt le nomme.
  */
-export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = []): Etiquette[] {
-  const tous: { i: number; nom: string; centimes: number }[] = [];
-  courbe.forEach((s, i) => s.mouvements.forEach(m => tous.push({ i, nom: m.nom, centimes: m.centimes })));
-  tous.sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes));
+export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = [], mise: MisePlacee | null = null): Etiquette[] {
+  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number; semaines: number[] };
+  const parNom = new Map<string, Article>();
+  courbe.forEach((s, i) => s.mouvements.forEach(m => {
+    // Un montant inconnu ou de moins d'un franc ne se nomme pas « 0 » (l'inconnu n'est jamais 0) : la frise le montre, sans chiffre.
+    if (Math.round(Math.abs(m.centimes) / 100) === 0) return;
+    const deja = parNom.get(m.nom);
+    if (deja) { if (!deja.semaines.includes(s.numero)) deja.semaines.push(s.numero); return; }
+    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero] });
+  }));
+  const articles = [...parNom.values()].sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes) || a.i - b.i);
+  if (mise && mise.centimes > 0) articles.splice(Math.min(2, articles.length), 0, { genre: 'mise', i: mise.i, nom: '', centimes: mise.centimes, semaines: [] });
+
   const pris: Boite[] = [...exclusions];
+  const places: Boite[] = [];
+  const traits: { x: number; y: number }[] = [];
+  const dans = (p: { x: number; y: number }, b: Boite, m: number) => p.x >= b.l - m && p.x <= b.r + m && p.y >= b.t - m && p.y <= b.b + m;
+  // Les points d'un trait, tous les 4 px, sans ses deux bouts (la marche et le bord du nom).
+  const pointsTrait = (x1: number, y1: number, x2: number, y2: number) => {
+    const n = Math.max(2, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 4));
+    return Array.from({ length: n - 1 }, (_, k) => ({ x: x1 + ((x2 - x1) * (k + 1)) / n, y: y1 + ((y2 - y1) * (k + 1)) / n }));
+  };
   const sortie: Etiquette[] = [];
   const lignes: number[] = [];
-  for (let y = g.haut + 14; y <= g.bas - 3; y += 17) lignes.push(y);
+  // La ligne de base d'un nom : sa boîte (le texte de 14 px) va de y − 11 à y + 3 ; deux lignes voisines, 17 px plus bas, laissent 3 px
+  // entre elles. La première ligne laisse libre le bord haut du cadre de la fenêtre.
+  for (let y = g.haut + 14; y + 3 <= g.bas - 3; y += PAS_LIGNE) lignes.push(y);
   const surLaCourbe = (b: Boite) => {
     const j0 = Math.max(0, Math.floor(b.l / g.unit)), j1 = Math.min(courbe.length - 1, Math.floor(b.r / g.unit));
     for (let j = j0; j <= j1; j++) for (const v of [courbe[j].libre, courbe[j].caisse]) { const yy = g.y(v); if (yy >= b.t - 2 && yy <= b.b + 2) return true; }
+    // Les marches verticales entre deux semaines.
+    for (let j = Math.max(1, j0); j <= j1; j++) {
+      const a = g.y(courbe[j - 1].libre), c = g.y(courbe[j].libre);
+      if (Math.min(a, c) <= b.b && Math.max(a, c) >= b.t && g.x(j) >= b.l && g.x(j) <= b.r) return true;
+    }
     return false;
   };
-  tous.forEach((m, rang) => {
-    if (sortie.length >= max) return;
-    const nom = courtNom(m.nom), montant = sg(m.centimes);
-    const xm = g.x(m.i), ymid = g.y(courbe[m.i].libre);
-    const options = lignes.slice().sort((a, b) => Math.abs(a - ymid) - Math.abs(b - ymid));
-    for (const souple of rang < 3 ? [false, true] : [false]) {
-      for (const deux of [false, true]) {
-        const w = deux ? Math.max(largeurTexte(nom), largeurTexte(montant)) : largeurTexte(`${nom} ${montant}`);
+
+  for (const m of articles) {
+    if (sortie.length >= max) break;
+    const s = courbe[m.i];
+    const xm = g.x(m.i) + (m.genre === 'mise' ? g.unit / 2 : 0);
+    const ymarche = m.i > 0 && m.genre === 'mouvement' ? (g.y(courbe[m.i - 1].libre) + g.y(s.libre)) / 2 : g.y(s.libre);
+    const formes = m.genre === 'mise'
+      ? textesMise({ i: m.i, centimes: m.centimes, titres: mise?.titres ?? [] }).map(t => ({ nom: t, montant: '', w: CARRE_MISE + largeurTexte(t) }))
+      : [{ nom: m.nom, montant: sg(m.centimes), w: largeurNom(m.nom, sg(m.centimes)) }];
+    const options = lignes.slice().sort((a, b) => Math.abs(a - 4 - ymarche) - Math.abs(b - 4 - ymarche));
+    let pose: Etiquette | null = null;
+    for (const souple of [false, true]) {
+      for (const f of formes) {
         for (const y of options) {
-          if (deux && y + 16 > g.bas - 1) continue;
-          for (const ancre of ['start', 'end'] as const) {
-            const l = ancre === 'start' ? xm + 5 : xm - 5 - w;
-            const bo: Boite = { l, r: l + w, t: y - 13, b: y + (deux ? 19 : 3) };
-            if (bo.l < 2 || bo.r > g.largeur - 2 || pris.some(p => croise(p, bo)) || (!souple && surLaCourbe(bo))) continue;
+          // À droite de la marche, à gauche, centré dessus, puis glissé le long de la ligne tant que la marche reste sous le nom (son trait
+          // pointillé reste vertical, comme z2s), puis poussé contre un bord.
+          const glisses: number[] = [];
+          for (let l = xm + 5 - 8; l > xm - 5 - f.w; l -= 8) glisses.push(l);
+          glisses.sort((a, b) => Math.abs(a + f.w / 2 - xm) - Math.abs(b + f.w / 2 - xm));
+          // En dernier, décalé de côté (une marche dans le cadre étroit de la fenêtre) : le trait pointillé la relie alors en biais.
+          const decales: number[] = [];
+          for (let k = 1; k <= 24; k++) decales.push(xm + 5 + 8 * k, xm - 5 - f.w - 8 * k);
+          for (const l0 of [xm + 5, xm - 5 - f.w, xm - f.w / 2, ...glisses, ...(souple ? decales : [])]) {
+            const l = Math.max(2, Math.min(g.largeur - 2 - f.w, l0));
+            const bo: Boite = { l, r: l + f.w, t: y - 11, b: y + 3 };
+            // Deux noms sur une même ligne gardent 8 px entre eux (on lit où l'un finit) ; les lignes voisines, 3 px.
+            if (bo.l < 2 || bo.r > g.largeur - 2 || pris.some(p => croise(p, bo) || (p.t < bo.b && bo.t < p.b && !(p.r + 8 <= bo.l || bo.r + 8 <= p.l))) || (!souple && surLaCourbe(bo))) continue;
+            // D'abord une place nette : ni sur la courbe, ni sur le trait d'un autre nom, et un trait qui ne traverse aucun nom. Sinon (souple),
+            // le halo du texte masque ce qu'il recouvre, comme dans z2s.
+            if (!souple && traits.some(p => dans(p, bo, 1))) continue;
+            const y2 = ymarche < bo.t ? bo.t : ymarche > bo.b ? bo.b : y - 4;
+            const x2 = xm < bo.l - 6 ? bo.l : xm > bo.r + 6 ? bo.r : xm;
+            const repere = Math.hypot(x2 - xm, y2 - ymarche) > 6 ? { x: xm, y1: ymarche, x2, y2 } : null;
+            const points = repere ? pointsTrait(repere.x, repere.y1, repere.x2, repere.y2) : [];
+            if (!souple && points.some(p => places.some(b => dans(p, b, 0)))) continue;
+            pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x: bo.l, y, neg: m.centimes < 0, boite: bo, semaines: m.semaines, repere };
             pris.push(bo);
-            sortie.push({ i: m.i, nom, montant, x: ancre === 'start' ? bo.l : bo.r, y, ancre, neg: m.centimes < 0, deux });
-            return;
+            places.push(bo);
+            traits.push(...points);
+            break;
           }
+          if (pose) break;
         }
+        if (pose) break;
       }
+      if (pose) break;
     }
-  });
+    if (pose) sortie.push(pose);
+  }
   return sortie;
+}
+
+/** L'étiquette de la fenêtre (« S47 – S52 », « nov. – oct. ») : une ligne si elle tient dans le cadre, sinon deux (« S47 – » puis « S52 », z2s). */
+export function lignesEtiquette(texte: string, largeurCadre: number): string[] {
+  if (largeurTexte(texte, true) <= largeurCadre - 6) return [texte];
+  const k = texte.indexOf(' – ');
+  return k < 0 ? [texte] : [`${texte.slice(0, k)} –`, texte.slice(k + 3)];
+}
+/** La boîte de l'étiquette de la fenêtre, centrée en bas du cadre (obstacle pour les noms). */
+export function boiteEtiquette(texte: string, gauche: number, largeurCadre: number, bas: number): Boite {
+  const lignes = lignesEtiquette(texte, largeurCadre);
+  const w = Math.max(...lignes.map(l => largeurTexte(l, true)));
+  const centre = gauche + largeurCadre / 2;
+  return { l: centre - w / 2, r: centre + w / 2, t: bas - 2 - lignes.length * LIGNE_NOM, b: bas };
 }
 
 /** Les étiquettes des mois, de gauche à droite, sans chevauchement (premier mot posé, les suivants s'ils tiennent). */
@@ -186,32 +299,50 @@ export interface CourbeProps {
   reference?: React.Ref<HTMLDivElement>;
   /** Poignées du doigt (usePointeurCourbe). */
   gestes?: React.HTMLAttributes<HTMLDivElement>;
-  /** La fenêtre posée sur la courbe : son étiquette (« S47 – S52 ») est un obstacle pour les noms. */
-  cadre?: { index: number; nombre: number };
+  /** La fenêtre posée sur la courbe : son cadre et son étiquette (« S47 – S52 », « nov. – oct. ») sont des obstacles pour les noms. */
+  cadre?: { index: number; nombre: number; etiquette?: string };
+  /** La mise de côté nommée sur la courbe (E03) : sa semaine, son montant, pour quoi. */
+  mise?: MisePlacee | null;
   /** La fenêtre posée sur la courbe. */
   children?: React.ReactNode;
 }
 
 /** Hauteur de la rangée des mois sous le tracé (texte de 14 px). */
 export const HAUTEUR_MOIS = 18;
+/** Au plus 8 noms, comme z2s, à 390 comme à 1280 : au-delà, « trop d'info sur le graph » (CRITIQUE-2 n° 10). */
+export const maxNoms = (largeur: number) => Math.max(4, Math.min(8, Math.floor(largeur / 48)));
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, children }: CourbeProps) {
+/** Les obstacles des noms : les bords du cadre (poignées comprises), son étiquette, et le point du creux. */
+export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { index: number; centimes: number } | null): Boite[] {
+  const obstacles: Boite[] = [];
+  if (cadre) {
+    const l = g.x(cadre.index), r = g.x(cadre.index + cadre.nombre);
+    for (const bord of [l, r]) obstacles.push({ l: bord - 8, r: bord + 8, t: g.haut, b: g.bas });
+    // Les bords haut et bas du cadre (2 px de trait).
+    obstacles.push({ l, r, t: g.haut, b: g.haut + 2 }, { l, r, t: g.bas - 2, b: g.bas });
+    if (cadre.etiquette) obstacles.push(boiteEtiquette(cadre.etiquette, l, r - l, g.bas));
+  }
+  if (creux) obstacles.push({ l: g.x(creux.index) + g.unit / 2 - 9, r: g.x(creux.index) + g.unit / 2 + 9, t: g.y(creux.centimes) - 9, b: g.y(creux.centimes) + 9 });
+  return obstacles;
+}
+
+export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, children }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+  // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
+  const [, setPolice] = useState(0);
+  useEffect(() => {
+    const f = typeof document !== 'undefined' ? (document as Document & { fonts?: FontFaceSet }).fonts : undefined;
+    let vivant = true;
+    f?.ready?.then(() => { if (vivant) setPolice(p => p + 1); }).catch(() => undefined);
+    return () => { vivant = false; };
+  }, []);
   const n = courbe.length;
   const g = geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, 4, hauteur - HAUTEUR_MOIS);
   const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
   const creux = creuxDe(courbe);
   const causes = creux ? causesDuCreux(courbe, creux.index) : null;
   const misDeCote = courbe.some(s => s.caisse - s.libre > 1);
-  // Obstacles pour les noms : l'étiquette du cadre (en bas à gauche de la fenêtre) et le point du creux.
-  const obstacles: Boite[] = [];
-  if (cadre) {
-    obstacles.push({ l: g.x(cadre.index), r: g.x(cadre.index) + Math.min(g.unit * cadre.nombre, 80), t: g.bas - 36, b: g.bas });
-    // Les deux bords du cadre (les poignées) : un nom ne passe pas dessus.
-    for (const bord of [g.x(cadre.index), g.x(cadre.index + cadre.nombre)]) obstacles.push({ l: bord - 8, r: bord + 8, t: g.haut, b: g.bas });
-  }
-  if (creux) obstacles.push({ l: g.x(creux.index) + g.unit / 2 - 9, r: g.x(creux.index) + g.unit / 2 + 9, t: g.y(creux.centimes) - 9, b: g.y(creux.centimes) + 9 });
-  const noms = placerNoms(courbe, g, Math.max(4, Math.floor(largeur / 48)), obstacles);
+  const noms = placerNoms(courbe, g, maxNoms(largeur), obstaclesCourbe(g, cadre, creux), mise);
   const mois = etiquettesMois(courbe, g);
   const y0 = g.y(0);
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
@@ -224,7 +355,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         </defs>
         {causes && creux && causes.causes.length > 0 && <rect className="ent-creux-zone" x={g.x(causes.debut)} y={g.haut} width={g.x(creux.index + 1) - g.x(causes.debut)} height={g.bas - g.haut} />}
         <path className="ent-aire" d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />
-        {misDeCote && <path className="ent-miscote" d={zoneEscalier(caisses, libres, g)} fill={`url(#h${uid})`} />}
+        {misDeCote && <path className="ent-miscote" data-mise-de-cote="zone" d={zoneEscalier(caisses, libres, g)} fill={`url(#h${uid})`} />}
         <line className="ent-zero" x1={0} x2={largeur} y1={y0} y2={y0} />
         <path className="ent-caisse" d={escalier(caisses, g)} />
         <path className="ent-libre" d={escalier(libres, g)} />
@@ -239,11 +370,24 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
           </g>
         )}
         {courbe.map((s, i) => <circle key={`p${s.lundi}`} className="ent-pt" data-point-semaine={s.numero} data-semaine={s.numero} cx={g.x(i) + g.unit / 2} cy={g.y(s.libre)} r={1.6} />)}
-        {noms.map(e => (
-          <text key={`${e.i}-${e.nom}`} className="ent-nom" x={e.x} y={e.y} textAnchor={e.ancre}>
-            {e.nom} <tspan className={e.neg ? 'ent-m' : 'ent-p'} {...(e.deux ? { x: e.x, dy: 16 } : {})}>{e.montant}</tspan>
-          </text>
+        {noms.map((e, k) => e.repere && (
+          <line key={`r${k}-${e.i}-${e.genre}`} className={e.genre === 'mise' ? 'ent-rep ent-rep-mise' : e.neg ? 'ent-rep ent-rep-neg' : 'ent-rep ent-rep-pos'} x1={e.repere.x} x2={e.repere.x2} y1={e.repere.y1} y2={e.repere.y2} />
         ))}
+        {noms.map(e => (e.genre === 'mise' ? (
+          <g key="mise" data-mise-de-cote="etiquette" className="ent-mdc">
+            <rect x={e.boite.l + 1} y={e.y - 11} width={12} height={12} fill={`url(#h${uid})`} className="ent-mdc-c" />
+            <text className="ent-nom ent-mdc-t" x={e.boite.l + CARRE_MISE} y={e.y}>{e.nom}</text>
+            <title>{`${mise ? textesMise(mise)[0] : e.nom}${courbe[e.i] ? `, en S${courbe[e.i].numero}` : ''}`}</title>
+          </g>
+        ) : (
+          // Le titre (la semaine, « 4 fois, dès S50 ») est à côté du texte, jamais dedans : le texte se lit « Frigo −1 800 », rien d'autre.
+          <g key={`${e.i}-${e.nom}`} className="ent-nom-g">
+            <text className="ent-nom" data-nom-courbe x={e.x} y={e.y}>
+              {e.nom} <tspan className={e.neg ? 'ent-m' : 'ent-p'}>{e.montant}</tspan>
+            </text>
+            <title>{`${e.nom} ${e.montant}, ${e.semaines.length > 1 ? `${e.semaines.length} fois, dès S${e.semaines[0]}` : `S${e.semaines[0]}`}`}</title>
+          </g>
+        )))}
         {creux && <circle className="ent-creux-pt" cx={g.x(creux.index) + g.unit / 2} cy={g.y(creux.centimes)} r={5.5} />}
         {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={hauteur - 3}>{m.texte}</text>)}
       </svg>

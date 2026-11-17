@@ -1,6 +1,7 @@
 import React from 'react';
 import { dateDeSemaine, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ICONE_RANGEE } from './Marque';
+import './feuille.css';
 
 /**
  * Vue liste (E40, D-204 ; « une vue pas calendrier avec juste des dates à venir serait bien utile ») : les mêmes choses, à venir, par date,
@@ -50,8 +51,11 @@ function Ligne({ c, selectionId, onChose, detail }: { c: ChoseCalendrier } & Pic
 
 export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui, ancre, selectionId, onChose, detail }) => {
   const poche = React.useRef<HTMLElement | null>(null);
+  /* ouverte sur la poche (« Sans date · n » du menu, « Sans date › » du message de Retirer) : la poche vient sous l'en-tête et prend le focus */
   React.useEffect(() => {
-    if (ancre === 'sans-date') poche.current?.scrollIntoView?.({ block: 'start' });
+    if (ancre !== 'sans-date' || !poche.current) return;
+    poche.current.scrollIntoView?.({ block: 'start' });
+    poche.current.focus({ preventScroll: true });
   }, [ancre]);
 
   const aVenir = React.useMemo(
@@ -75,7 +79,7 @@ export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui
         </section>
       ))}
       {sansDate.length > 0 && (
-        <section ref={poche} id="cal-sans-date" aria-label="Sans date" data-poche>
+        <section ref={poche} id="cal-sans-date" aria-label="Sans date" data-poche tabIndex={-1}>
           <h3 className="cal-li-mois">Sans date · {sansDate.length}</h3>
           <ul>{sansDate.map(c => <Ligne key={c.id} c={c} selectionId={selectionId} onChose={onChose} detail={detail} />)}</ul>
         </section>

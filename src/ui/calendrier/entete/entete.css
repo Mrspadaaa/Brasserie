@@ -1,6 +1,7 @@
 /* L'en-tête du calendrier (E01 à E13 ; z2s en portrait, w3s en paysage). Jetons de l'app (src/theme/themes.css) ; classes préfixées `ent-` (L26).
    Aucune couleur en dur : tout passe par `rgb(var(--jeton))`, donc par les deux thèmes (clair, cave). Textes de 14 px au moins (B9). */
-.ent {
+/* `.ent-port` : ce qui est posé hors de l'en-tête (le menu de la période, dans document.body) garde ses jetons. */
+.ent, .ent-port {
   --ent-ink: rgb(var(--cave-50));
   --ent-mut: rgb(var(--cave-400));
   --ent-line: rgb(var(--cave-800));
@@ -28,12 +29,12 @@
 .ent-r-autre, .ent-c-autre { --c: rgb(var(--cave-200)); }
 
 /* ---- la rangée du chiffre clé et des boutons ---- */
-.ent-t { display: flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 8px 0 12px; white-space: nowrap; }
-/* « 113 CHF à dépenser » puis « sans passer sous 0 · S24 » sur la ligne dessous : la phrase du brasseur en entier, rien de rogné (E01) */
-.ent-k { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 4px; row-gap: 0; flex: 1 1 auto; min-width: 0; height: 38px; line-height: 22px; text-align: left; color: var(--ent-mut); }
-.ent-k .ent-k-s { flex: 1 0 100%; font-size: 14px; line-height: 16px; font-weight: 500; color: var(--ent-mut); white-space: nowrap; }
+/* La ligne serrée au pixel (CRITIQUE-2 n° 7) : à 390, « −2 388 CHF à dépenser · S43 » et ses quatre boutons tiennent ensemble. */
+.ent-t { display: flex; align-items: center; gap: 3px; min-height: 28px; padding: 0 4px 0 10px; white-space: nowrap; }
+/* « 113 CHF à dépenser · S24 » sur UNE ligne au-dessus de la courbe, comme z2s (E01, D-181, CRITIQUE-2 n° 7) ; la courbe commence dessous. */
+.ent-k { display: flex; flex-wrap: nowrap; align-items: baseline; column-gap: 3px; flex: 1 1 auto; min-width: 0; height: 28px; line-height: 28px; text-align: left; white-space: nowrap; color: var(--ent-mut); }
 .ent-k-vide { height: 28px; }
-.ent-k b { flex: none; font-size: 22px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
+.ent-k b { flex: none; font-size: 21px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
 /* Faute de place, c'est la phrase qui se rogne (« CHF à dé… »), jamais le chiffre ni la semaine du creux. */
 .ent-k .ent-k-u { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
 .ent-k em { flex: none; font-style: normal; font-size: 14px; font-weight: 700; color: var(--ent-fin-t); }
@@ -42,11 +43,11 @@
 .ent-mb, .ent-per, .ent-ret-b, .ent-pl { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 14px; white-space: nowrap; color: var(--ent-ink); }
 .ent-mb::after, .ent-per::after, .ent-ret-b::after, .ent-pl::after, .ent-k::after { content: ''; position: absolute; inset: -6px -2px; }
 .ent-k { position: relative; }
-.ent-mb { min-width: 30px; padding: 0 6px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
+.ent-mb { min-width: 28px; padding: 0 5px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
 .ent-mb[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
-.ent-per { gap: 1px; padding: 0 3px 0 8px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
-.ent-ret-b { gap: 2px; min-width: 28px; padding: 0 6px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
-.ent-pl { width: 26px; background: transparent; }
+.ent-per { gap: 0; padding: 0 2px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
+.ent-pl { width: 24px; background: transparent; }
 .ent-lit { display: inline-flex; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; color: var(--ent-mut); }
 .ent-lit b { font-size: 24px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
 .ent-lit em { font-style: normal; font-weight: 700; color: var(--ent-ink); }
@@ -68,8 +69,15 @@
 .ent-creux-zone { fill: rgb(var(--alert) / 0.08); }
 .ent-creux-pt { fill: var(--ent-fin); stroke: rgb(var(--cave-950)); stroke-width: 2; }
 .ent-pt { fill: var(--ent-fin); opacity: 0.55; pointer-events: none; }
-.ent-nom { font-size: 14px; font-weight: 600; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+/* Les noms comme z2s : 14 px, nom en regular, montant en gras, halo de la couleur du fond (lisibles même posés sur la courbe). */
+.ent-nom { font-size: 14px; font-weight: 400; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; white-space: pre; }
 .ent-nom .ent-m, .ent-nom .ent-p { font-weight: 700; }
+.ent-rep { stroke-width: 1; stroke-dasharray: 2 2; pointer-events: none; }
+.ent-rep-neg { stroke: rgb(var(--alert)); }
+.ent-rep-pos { stroke: rgb(var(--hop)); }
+.ent-rep-mise { stroke: var(--ent-fin); }
+.ent-mdc-c { stroke: var(--ent-fin); stroke-width: 1.5; }
+.ent-nom.ent-mdc-t { font-weight: 700; fill: var(--ent-fin-t); }
 .ent-m { color: var(--ent-bad); fill: var(--ent-bad); }
 .ent-p { color: var(--ent-ok); fill: var(--ent-ok); }
 .ent-f { color: var(--ent-fin-t); font-weight: 700; }
@@ -82,7 +90,8 @@
 
 /* La fenêtre posée sur la courbe (les 18 px du bas sont la rangée des mois : HAUTEUR_MOIS). */
 .ent-cadre { position: absolute; top: 4px; bottom: 18px; box-sizing: border-box; border: 2px solid var(--ent-fin); border-radius: 6px; background: rgb(var(--area-finances) / 0.08); touch-action: none; }
-.ent-cadre-l { position: absolute; left: 3px; bottom: 1px; max-width: calc(100% - 6px); font-size: 14px; font-weight: 700; line-height: 16px; color: var(--ent-fin-t); pointer-events: none; }
+/* L'étiquette de la fenêtre, centrée en bas du cadre : une ligne si elle tient, sinon « S47 – » puis « S52 » (z2s), jamais trois. */
+.ent-cadre-l { position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 16px; white-space: nowrap; color: var(--ent-fin-t); pointer-events: none; }
 .ent-poi { position: absolute; top: 0; bottom: 0; width: 28px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; touch-action: none; cursor: ew-resize; }
 .ent-poi-debut { left: -14px; }
 .ent-poi-fin { right: -14px; }
@@ -110,14 +119,16 @@
 .ent-ic { display: inline-flex; gap: 2px; color: rgb(var(--attention-texte)); }
 
 /* L'année : douze mois, le creux cerclé avec son montant. */
-.ent-an { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); align-items: end; min-height: 56px; border-bottom: 1px solid var(--ent-line); }
-.ent-an-m { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; padding: 2px 0 4px; }
-.ent-an-l { font-size: 14px; font-weight: 600; line-height: 16px; color: var(--ent-mut); }
-.ent-an-v { font-size: 14px; font-weight: 800; line-height: 16px; color: var(--ent-bad); }
-.ent-an-m i { display: block; width: 70%; border-radius: 2px 2px 0 0; background: var(--ent-fin); opacity: 0.55; }
-.ent-an-v { white-space: nowrap; }
-.ent-an-creux { margin: 0 -6px; padding: 2px 6px 4px; border: 2px solid var(--ent-bad); border-radius: 12px; background: rgb(var(--cave-950)); }
-.ent-an-creux i { background: var(--ent-bad); opacity: 1; }
+/* Les initiales sur une même ligne de base (en haut), les barres posées au sol ; aucun escalier (CRITIQUE-2 n° 18, as c1-d). */
+.ent-an { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); align-items: stretch; border-bottom: 1px solid var(--ent-line); }
+.ent-an-m { display: flex; flex-direction: column; align-items: center; padding: 2px 0 3px; }
+.ent-an-l { height: 18px; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ent-mut); }
+.ent-an-z { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 40px; width: 100%; }
+.ent-an-v { font-size: 14px; font-weight: 800; line-height: 16px; white-space: nowrap; color: var(--ent-bad); }
+.ent-an-b { display: flex; align-items: flex-end; justify-content: center; width: 70%; height: 24px; }
+.ent-an-b i { display: block; width: 100%; border-radius: 2px 2px 0 0; background: var(--ent-fin); opacity: 0.55; }
+.ent-an-creux .ent-an-b { width: 26px; height: 18px; align-items: center; border: 2px solid var(--ent-bad); border-radius: 999px; }
+.ent-an-creux .ent-an-b i { width: 14px; background: var(--ent-bad); opacity: 1; }
 
 /* ---- ce qui se pose sur l'en-tête : détail du creux, menu, lecture, message ---- */
 .ent-pop, .ent-menu { position: absolute; z-index: 45; box-sizing: border-box; background: rgb(var(--cave-850)); color: var(--ent-ink); border: 1.5px solid var(--ent-line2); border-radius: 12px; box-shadow: var(--ombre-lift); padding: 8px 10px; font-size: 14px; line-height: 20px; }
@@ -133,7 +144,12 @@
 .ent-hyp { margin: 6px 0 2px; padding: 6px 0 0; list-style: none; border-top: 1px solid var(--ent-line); color: var(--ent-mut); }
 .ent-lien { display: inline-block; min-height: 28px; line-height: 28px; font-weight: 700; color: var(--ent-ink); text-decoration: underline; }
 
+.ent-pop-h { margin: 0 0 2px; font-size: 15px; font-weight: 700; line-height: 20px; color: var(--ent-ink); }
 .ent-menu { top: 34px; right: 8px; width: min(260px, calc(100% - 16px)); display: flex; flex-direction: column; gap: 2px; padding: 6px; }
+/* Posé dans document.body : fixe, au-dessus du + volant (z 51) et de la barre d'onglets, borné à l'écran, il défile s'il le faut. */
+.ent-menu.ent-menu--fixe { position: fixed; z-index: 60; width: min(260px, calc(100vw - 16px)); overflow-y: auto; overscroll-behavior: contain; }
+.ent-menu--paysage .ent-menu-l { min-height: 40px; }
+.ent-menu--paysage .ent-seg button { min-height: 36px; }
 .ent-menu-plage { margin: 0; padding: 2px 6px 4px; font-weight: 700; color: var(--ent-ink); }
 .ent-seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 3px; border-radius: 12px; background: rgb(var(--cave-900)); box-shadow: inset 0 0 0 1px var(--ent-line); }
 .ent-seg button { min-height: 40px; border-radius: 9px; padding: 0 4px; font-size: 14px; font-weight: 600; white-space: nowrap; color: var(--ent-ink); }

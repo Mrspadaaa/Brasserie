@@ -2,7 +2,7 @@ import type { Batch, Client, CreativeItem, FenetreCalendrier, Recipe } from '../
 import type { FinancialPlan } from './finance/types';
 import type { FinanceCategory } from '../types';
 import { isoDate } from './finance/ledger';
-import { ajouterJours, dimancheDe, ecartSemaines, etiquetteS, jourLisible, lundiDe, type ChoseCalendrier, type Rangee } from './calendrier';
+import { ajouterJours, dimancheDe, ecartSemaines, etiquetteS, francs, jourLisible, lundiDe, type ChoseCalendrier, type Rangee } from './calendrier';
 import type { Ecriture } from './calendrierGestes';
 
 /**
@@ -40,12 +40,20 @@ export interface BrouillonAjout {
   confirmeGrosseSomme?: boolean;
 }
 
+/**
+ * Une puce de la feuille. Un nom récent et un client portent le montant de leur dernière fois (`centimes`, valeur absolue, et son `signe`) :
+ * la toucher pose le nom ET le montant, sans clavier (E34, D-39, CAL-CLAV). Une puce `montant` donne un montant récent de la rangée.
+ */
 export type Puce =
   | { genre: 'recette'; id: string; libelle: string; recetteId: string }
   | { genre: 'temps'; id: string; libelle: string; jours: number }
-  | { genre: 'client'; id: string; libelle: string; clientId: string }
+  | { genre: 'client'; id: string; libelle: string; clientId: string; centimes?: number }
   | { genre: 'vente-probable'; id: string; libelle: string; planId: string; centimes?: number; clientId?: string }
-  | { genre: 'nom'; id: string; libelle: string };
+  | { genre: 'nom'; id: string; libelle: string; centimes?: number; signe?: '+' | '-' }
+  | { genre: 'montant'; id: string; libelle: string; centimes: number; signe: '+' | '-' };
+
+/** Au plus ce nombre de montants récents proposés en puces. */
+export const NB_MONTANTS_RECENTS = 4;
 
 export interface ContexteAjout {
   aujourdhui: string;
@@ -108,28 +116,61 @@ export function puces(rangee: Rangee, ctx: ContexteAjout): Puce[] {
   if (rangee === 'ventes') {
     const clients = ctx.clients.filter(c => !c.archivedAt).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
     const probables = ctx.plans.filter(p => p.direction === 'in' && p.status === 'draft').sort((a, b) => a.title.localeCompare(b.title, 'fr'));
+    /* le dernier montant vendu à ce client (une prévision de rentrée qui le nomme, non annulée) ; aucun : pas de montant proposé */
+    const dernierMontant = (clientId: string) => ctx.plans
+      .filter(p => p.clientId === clientId && p.direction === 'in' && p.status !== 'cancelled' && p.amountCents > 0)
+      .sort((a, b) => b.date.localeCompare(a.date))[0]?.amountCents;
     return [
       ...probables.map<Puce>(p => ({ genre: 'vente-probable', id: `probable-${p.id}`, libelle: p.title, planId: p.id, ...(p.amountCents > 0 ? { centimes: p.amountCents } : {}), ...(p.clientId ? { clientId: p.clientId } : {}) })),
-      ...clients.map<Puce>(c => ({ genre: 'client', id: `client-${c.id}`, libelle: c.name, clientId: c.id }))
+      ...clients.map<Puce>(c => { const m = dernierMontant(c.id); return { genre: 'client', id: `client-${c.id}`, libelle: c.name, clientId: c.id, ...(m ? { centimes: m } : {}) }; }),
+      ...montantsRecents(rangee, ctx)
     ];
   }
-  const vus = new Set<string>();
-  return ctx.choses.filter(c => c.rangee === rangee && !c.proposition && c.titre.trim()).sort((a, b) => b.debut.localeCompare(a.debut)).flatMap<Puce>(c => {
+  const vus = new Map<string, Extract<Puce, { genre: 'nom' }>>();
+  for (const c of recentes(rangee, ctx).filter(x => x.titre.trim())) {
     const cle = c.titre.trim().toLocaleLowerCase('fr');
-    if (vus.has(cle)) return [];
-    vus.add(cle);
-    return [{ genre: 'nom', id: `nom-${cle}`, libelle: c.titre.trim() }];
-  }).slice(0, 12);
+    const deja = vus.get(cle);
+    const montant = c.centimes !== undefined && c.centimes !== 0 ? { centimes: Math.abs(c.centimes), signe: c.centimes > 0 ? '+' as const : '-' as const } : null;
+    /* le montant de la dernière fois qui en avait un : une occurrence plus récente sans montant ne l'efface pas (l'inconnu n'est pas 0) */
+    if (!deja) vus.set(cle, { genre: 'nom', id: `nom-${cle}`, libelle: c.titre.trim(), ...(montant ?? {}) });
+    else if (deja.centimes === undefined && montant) vus.set(cle, { ...deja, ...montant });
+  }
+  return [...[...vus.values()].slice(0, 12), ...(aUnMontant(rangee) ? montantsRecents(rangee, ctx) : [])];
 }
 
-/** Toucher une puce règle le brouillon sans clavier. Retoucher la même puce de temps la lâche. */
+/** Les choses de la rangée, la plus tardive d'abord (hors propositions). */
+function recentes(rangee: Rangee, ctx: ContexteAjout): ChoseCalendrier[] {
+  return ctx.choses.filter(c => c.rangee === rangee && !c.proposition).slice().sort((a, b) => b.debut.localeCompare(a.debut));
+}
+
+/** « +1 180 », « −600 » : un montant signé, lisible. */
+export function libelleMontant(centimes: number, signe: '+' | '-'): string {
+  return `${signe === '+' ? '+' : '−'}${francs(centimes)}`;
+}
+
+/** Les montants récents de la rangée, distincts, la plus tardive d'abord : des puces qui posent le montant sans clavier. Aucun historique : aucune puce. */
+export function montantsRecents(rangee: Rangee, ctx: ContexteAjout): Puce[] {
+  const vus = new Set<number>();
+  const sortie: Puce[] = [];
+  for (const c of recentes(rangee, ctx)) {
+    if (c.centimes === undefined || c.centimes === 0 || vus.has(c.centimes)) continue;
+    vus.add(c.centimes);
+    const signe = c.centimes > 0 ? '+' as const : '-' as const;
+    sortie.push({ genre: 'montant', id: `montant-${c.centimes}`, libelle: libelleMontant(Math.abs(c.centimes), signe), centimes: Math.abs(c.centimes), signe });
+    if (sortie.length >= NB_MONTANTS_RECENTS) break;
+  }
+  return sortie;
+}
+
+/** Toucher une puce règle le brouillon sans clavier. Retoucher la même puce de temps la lâche. Un nom ou un client avec un montant connu le pose aussi. */
 export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
   switch (puce.genre) {
     case 'recette': return { ...b, recetteId: puce.recetteId, titre: puce.libelle };
     case 'temps': return { ...b, tempsEnCuve: b.tempsEnCuve === puce.jours ? undefined : puce.jours };
-    case 'client': return { ...b, clientId: puce.clientId, titre: puce.libelle, signe: '+' };
+    case 'client': return { ...b, clientId: puce.clientId, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
     case 'vente-probable': return { ...b, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}), ...(puce.clientId ? { clientId: puce.clientId } : {}) };
-    case 'nom': return { ...b, titre: puce.libelle };
+    case 'nom': return { ...b, titre: puce.libelle, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
+    case 'montant': return { ...b, centimes: puce.centimes, signe: puce.signe };
   }
 }
 
@@ -184,7 +225,7 @@ export function fenetreDuBrouillon(b: BrouillonAjout): FenetreCalendrier | null 
 }
 
 /** « Mettre de côté » ne se propose qu'à une chose avec une fenêtre et un montant (E03, C13). */
-export const peutMettreDeCote = (b: BrouillonAjout): boolean => (b.rangee === 'activites' || b.rangee === 'achats' || b.rangee === 'travaux') && !!b.fin && !!b.centimes;
+export const peutMettreDeCote = (b: BrouillonAjout): boolean => (b.rangee === 'activites' || b.rangee === 'achats' || b.rangee === 'travaux') && !!b.fin && !!b.centimes && b.signe === '-';
 
 export interface Confirmation { confirmer: true; plafond: number; texte: string }
 /** La garde ×10 : une somme au-delà de dix fois la plus grosse de la rangée demande confirmation. Sans somme connue dans la rangée, rien à comparer. */

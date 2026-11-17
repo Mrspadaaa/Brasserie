@@ -4,6 +4,7 @@ import type { FinanceTransaction, FinancialPlan, FinancialProfile } from '../../
 import { buildForecast } from '../../src/domain/finance/forecast';
 import { brassinsHabituels, echeancesProposees } from '../../src/domain/calendrierPropositions';
 import * as module from '../../src/domain/calendrierPropositions';
+import { texteDuree } from '../../src/domain/calendrier';
 
 const lot = (id: string, brewDate: string, p: Partial<Batch> = {}) =>
   ({ id, name: 'IPA maison', style: 'IPA', volumeL: 30, brewDate, status: 'termine', recipeRef: 'R-IPA', ...p }) as Batch;
@@ -17,6 +18,14 @@ describe('A14 : brassins habituels (E47 b)', () => {
     expect(sortie).toHaveLength(1);
     expect(sortie[0]).toMatchObject({ proposition: 'brassin-habituel', recipeRef: 'R-IPA', probable: true, rangee: 'brassins', debut: '2026-06-22', titre: 'IPA maison' });
     expect(sortie[0].detail).toContain('tous les 56 j');
+  });
+
+  it('CRITIQUE-2 n° 2 : la durée vient de la recette figée du dernier brassin ; sans elle, ni « J0 » ni « prête »', () => {
+    expect(texteDuree(brassinsHabituels(TROIS, JOUR)[0])).toBeNull();
+    const recette = { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 14 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 14 }] } as unknown as Batch['recipeSnapshot'];
+    const avec = brassinsHabituels([TROIS[0], TROIS[1], lot('LOT-3', '2026-04-28', { recipeSnapshot: recette })], JOUR)[0];
+    expect(avec).toMatchObject({ debut: '2026-06-22', preteLe: '2026-07-20', fin: '2026-07-20' });
+    expect(texteDuree(avec)).toBe('J0 / 28 · prête 20 juil.');
   });
   it('une recette brassée une seule fois ne rend rien (liste vide, jamais un intervalle de 0) ; deux brassages le même jour non plus', () => {
     expect(brassinsHabituels([TROIS[0]], JOUR)).toEqual([]);

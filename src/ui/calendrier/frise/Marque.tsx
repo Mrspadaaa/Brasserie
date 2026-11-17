@@ -1,6 +1,6 @@
 import React from 'react';
 import { Beer, FileText, Hammer, ListChecks, PartyPopper, ShoppingCart, TrendingUp } from 'lucide-react';
-import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
+import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 
 /**
@@ -30,13 +30,8 @@ export function nomAccessible(chose: ChoseCalendrier): string {
   return `${chose.titre}${propose}, ${jour}`;
 }
 
-/** « J0 / 28 · prête 14 déc. » : la durée d'un brassin dont la fin est connue (E25) ; jamais une fin inventée. */
-export function texteDuree(c: ChoseCalendrier): string | null {
-  if (c.source.genre !== 'batch' || c.finInconnue || c.proposition) return null;
-  const fin = c.preteLe ?? c.fin;
-  if (!fin || !c.debut) return null;
-  return `J0 / ${ecartJours(c.debut, fin)} · prête ${jourLisible(fin)}`;
-}
+/** « J0 / 28 · prête 14 déc. » : vit dans le domaine (jamais « J0 / 0 »), réexporté pour les vues. */
+export { texteDuree };
 
 /** Le nom et le montant à côté d'une marque. */
 export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number }
@@ -72,7 +67,7 @@ const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefin
 export const Marque: React.FC<MarqueProps> = props => {
   const { chose, centre, haut, hauteur = 28, largeurColonne, epinglee, etoilee, selectionnee, menuOuvert, libelle, decalage = 0, bornes } = props;
   const cible = React.useRef<HTMLButtonElement | null>(null);
-  const Icone = ICONE_RANGEE[chose.rangee];
+  const Icone = chose.brassinLie ? ShoppingCart : ICONE_RANGEE[chose.rangee];
   const commeBarre = !!bornes;
   const gestes = usePointeur({
     largeurColonne,
@@ -104,6 +99,9 @@ export const Marque: React.FC<MarqueProps> = props => {
         data-chose={chose.id}
         data-marque
         data-rangee={chose.rangee}
+        data-titre={chose.titre}
+        {...(chose.debut ? { 'data-semaine': etiquetteS(chose.debut) } : {})}
+        {...(chose.brassinLie ? { 'data-brassin-lie': chose.brassinLie } : {})}
         {...(chose.proposition ? { 'data-proposition': chose.proposition } : {})}
         {...(proposee ? { 'data-probable': '' } : {})}
         aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}`}
@@ -120,7 +118,7 @@ export const Marque: React.FC<MarqueProps> = props => {
       </button>
       {libelle && lbl && (
         <span className={`cal-lbl cal-lbl-${libelle.cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl} aria-hidden="true">
-          <span className="cal-lbl-t">{chose.titre}</span>
+          <span className="cal-lbl-t">{chose.etiquette ?? chose.titre}</span>
           {montant && <b className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
         </span>
       )}

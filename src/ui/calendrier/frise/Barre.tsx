@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
-import { ecartJours, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
+import { ecartJours, etiquetteS, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, nomAccessible, texteDuree } from './Marque';
 import { usePointeur } from './usePointeur';
 
@@ -96,6 +96,13 @@ export const Barre: React.FC<BarreProps> = props => {
   const segments = phases(chose.jalons, total);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
+  const duree = texteDuree(chose);
+  /* dans la barre : « J0 / 28 · prête 14 déc. » s'il tient, sinon « J0 / 28 » comme as/p-repos, à droite du nom quand le nom est dedans */
+  const labDedans = cote === 'dedans' ? ((chose.etiquette ?? chose.titre).length + (montant ? montant.length + 1 : 0)) * 7.6 + 8 : 0;
+  const courte = duree ? duree.split(' · ')[0] : null;
+  const dureeDedans = !duree || props.avecDuree ? null
+    : w - 16 - labDedans >= duree.length * 7.6 ? duree
+      : courte && w - 16 - labDedans >= courte.length * 7.6 ? courte : null;
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
@@ -114,9 +121,11 @@ export const Barre: React.FC<BarreProps> = props => {
         data-chose={chose.id}
         data-barre
         data-rangee={chose.rangee}
+        data-titre={chose.titre}
+        {...(chose.debut ? { 'data-semaine': etiquetteS(chose.debut) } : {})}
         {...(chose.proposition ? { 'data-proposition': chose.proposition } : {})}
         {...(proposee ? { 'data-probable': '' } : {})}
-        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}`}
+        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${duree ? `, ${duree}` : ''}${chose.lie ? `, ${chose.lie.texte}` : ''}${chose.courses ? `, courses : ${chose.courses}` : ''}`}
         aria-haspopup="menu"
         aria-expanded={menuOuvert || undefined}
         className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}
@@ -145,7 +154,9 @@ export const Barre: React.FC<BarreProps> = props => {
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
-        {etiquetteDuree && <em className="cal-duree">{etiquetteDuree}</em>}
+        {etiquetteDuree && <em className="cal-duree" data-duree>{etiquetteDuree}</em>}
+        {/* au repos, « J0 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
+        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans}</em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens) && (
           <span className="cal-badges" aria-hidden="true">
@@ -156,9 +167,10 @@ export const Barre: React.FC<BarreProps> = props => {
         )}
       </div>
       <span className={`cal-lbl cal-lbl-${cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace} aria-hidden="true">
-        <span className="cal-lbl-t">{chose.titre}</span>
+        <span className="cal-lbl-t">{chose.etiquette ?? chose.titre}</span>
         {montant && <b className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-        {props.avecDuree && texteDuree(chose) && <small className="cal-lbl-j">{texteDuree(chose)}</small>}
+        {props.avecDuree && duree && <small className="cal-lbl-j">{duree}</small>}
+        {chose.lie && <span className="cal-lie" data-lie>{chose.lie.texte}</span>}
       </span>
     </>
   );

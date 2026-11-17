@@ -351,6 +351,123 @@ export interface ChoseCalendrier {
   sansDate?: true;
   /** Fête ou activité faite : `status: 'done'` (jamais posée). */
   fait?: boolean;
+  /** Brassin conditionné : marqué à sa date de conditionnement, jamais une barre « J0 » (CRITIQUE-2 n° 2). */
+  conditionne?: true;
+  /** Les courses d'un brassin, regroupées dans Achats : l'id du brassin, relié par un trait (D-107, CRITIQUE-2 n° 11). */
+  brassinLie?: string;
+  /** Brassin : ses courses de la prévision (« malt le 20 nov. −120, énergie le 22 nov. (montant non renseigné) »), comptées dans son budget. */
+  courses?: string;
+  /** Le texte court montré à côté (« Malt, emballage ») ; le titre entier reste le nom accessible. */
+  etiquette?: string;
+  /** Pastille « lié à La Cigogne » et son aperçu sur place (E37, D-113). */
+  lie?: { texte: string; apercu: string; client?: string };
+}
+
+/**
+ * L'id d'une ligne de la prévision sur la frise. Stable après un déplacement (contrat L4) : un plan unique (manuel, TVA, projet) garde
+ * `argent-<planId>`, sans date ; seule l'occurrence d'un récurrent et une sortie dérivée gardent l'id daté de la prévision.
+ */
+export function idChoseArgent(item: Pick<ForecastItem, 'id' | 'source' | 'planId'>): string {
+  return item.planId && (item.source === 'plan' || item.source === 'equipment') ? `argent-${item.planId}` : `argent-${item.id}`;
+}
+
+/** « J0 / 28 · prête 14 déc. » : la durée d'un brassin dont la fin est connue (E25), jamais « J0 / 0 » ni une fin inventée (CRITIQUE-2 n° 2). */
+export function texteDuree(c: ChoseCalendrier): string | null {
+  const brassin = c.source.genre === 'batch' || c.proposition === 'brassin-habituel';
+  if (!brassin || c.finInconnue || c.conditionne || !c.preteLe || !c.debut) return null;
+  const n = ecartJours(c.debut, c.preteLe);
+  return n > 0 ? `J0 / ${n} · prête ${jourLisible(c.preteLe)}` : null;
+}
+
+/** Le budget d'un brassin (E24, CRITIQUE-2 n° 9) : la somme de ses lignes `brew` de la prévision, celle de `BrewBudgetSheet`. Inconnu : rien, jamais 0. */
+export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[]): { centimes: number; partiel: boolean } | null {
+  const lignes = choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)));
+  const chiffrees = lignes.filter(c => c.centimes !== undefined);
+  if (!chiffrees.length) return null;
+  return { centimes: chiffrees.reduce((s, c) => s + (c.centimes as number), 0), partiel: chiffrees.length < lignes.length || chiffrees.some(c => c.partiel) };
+}
+
+/**
+ * Prépare les choses pour la frise (pure) :
+ * - un brassin porte son budget (somme de ses lignes `brew`) ;
+ * - les sorties d'un même brassin dans la même semaine, rangée Achats, deviennent UN caddie nommé (« Malt, emballage · Blonde d'automne »),
+ *   relié à son brassin (`brassinLie`) : jamais une file de caddies anonymes (D-107) ;
+ * - une chose liée (`liens`) porte sa pastille « lié à … » et son aperçu (D-113), avec les noms de l'app.
+ */
+export function preparerChoses(
+  choses: readonly ChoseCalendrier[],
+  noms: { brassins?: ReadonlyMap<string, string>; clients?: ReadonlyMap<string, string> } = {}
+): ChoseCalendrier[] {
+  const brassins = new Map(choses.filter(c => c.source.genre === 'batch').map(c => [c.source.id, c]));
+  const groupes = new Map<string, ChoseCalendrier[]>();
+  const sortie: ChoseCalendrier[] = [];
+  for (const c of choses) {
+    const batchId = c.source.genre === 'prevision-brassin' && c.ouvre.ecran === 'brassin' ? c.ouvre.id : undefined;
+    if (c.rangee === 'achats' && batchId && c.debut) {
+      const cle = batchId;
+      groupes.set(cle, [...(groupes.get(cle) ?? []), c]);
+      continue;
+    }
+    sortie.push(c);
+  }
+  const coursesDe = new Map<string, { texte: string; mouvements: string[] }>();
+  for (const [batchId, lignes] of groupes) {
+    /* le brassin est sur la frise : ses courses entrent dans son budget et son détail (as/p-repos : « Blonde d'automne −148 », sans file de
+       caddies) ; leurs mouvements suivent sa barre quand on la glisse */
+    if (brassins.has(batchId)) {
+      coursesDe.set(batchId, {
+        texte: lignes.map(l => `${l.titre.split(' · ')[0].toLocaleLowerCase('fr')} le ${jourLisible(l.debut)}${l.centimes !== undefined ? ` ${francsSignes(l.centimes)}` : ' (montant non renseigné)'}`).join(', '),
+        mouvements: lignes.flatMap(l => l.mouvements ?? [])
+      });
+      continue;
+    }
+    const nomBrassin = noms.brassins?.get(batchId) ?? brassins.get(batchId)?.titre ?? lignes[0].titre.split(' · ').slice(1).join(' · ');
+    const quoi = [...new Set(lignes.map(l => l.titre.split(' · ')[0]).filter(Boolean))];
+    const etiquette = quoi.length ? `${quoi[0]}${quoi.length > 1 ? `, ${quoi.slice(1).map(q => q.toLocaleLowerCase('fr')).join(', ')}` : ''}` : 'Courses';
+    const chiffrees = lignes.filter(l => l.centimes !== undefined);
+    /* UN caddie par brassin, posé à sa première course ; chaque ligne et sa date restent dans le détail */
+    const debut = lignes.map(l => l.debut).sort()[0];
+    const fin = debut;
+    const { centimes: _c, partiel: _p, ...reste } = lignes[0];
+    void _c; void _p;
+    /* sa maquette (as/p-repos) pose le caddie sous la barre de son brassin, relié par un trait : il vit dans la rangée Brassins ; son montant
+       est déjà dans le budget du brassin, la pastille ne le recompte pas */
+    sortie.push({
+      ...reste,
+      rangee: 'brassins',
+      id: lignes.length === 1 ? lignes[0].id : `courses-${batchId}`,
+      titre: nomBrassin ? `${etiquette} · ${nomBrassin}` : etiquette, etiquette, debut, fin,
+      ...(chiffrees.length ? { centimes: chiffrees.reduce((s, l) => s + (l.centimes as number), 0) } : {}),
+      ...(chiffrees.length && (chiffrees.length < lignes.length || chiffrees.some(l => l.partiel)) ? { partiel: true as const } : {}),
+      detail: lignes.map(l => `${l.titre.split(' · ')[0]} le ${jourLisible(l.debut)}${l.centimes !== undefined ? ` ${francsSignes(l.centimes)}` : ' · montant non renseigné'}`).join(' ; '),
+      mouvements: lignes.flatMap(l => l.mouvements ?? []), brassinLie: batchId
+    });
+  }
+  return sortie.map(c => {
+    let suivante = c;
+    if (c.source.genre === 'batch' && !c.conditionne) {
+      const b = budgetBrassin(c.source.id, choses);
+      if (b) suivante = { ...suivante, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}) };
+    }
+    if (c.source.genre === 'batch') {
+      const k = coursesDe.get(c.source.id);
+      if (k) suivante = { ...suivante, courses: k.texte, mouvements: [...(suivante.mouvements ?? []), ...k.mouvements] };
+    }
+    if (c.liens && (c.liens.batchId || c.liens.clientId)) {
+      const client = c.liens.clientId ? noms.clients?.get(c.liens.clientId) : undefined;
+      const brassin = c.liens.batchId ? brassins.get(c.liens.batchId) : undefined;
+      const nomBrassin = c.liens.batchId ? (noms.brassins?.get(c.liens.batchId) ?? brassin?.titre) : undefined;
+      const cible = client ?? nomBrassin;
+      if (cible) {
+        const apercus = [
+          ...(client ? [`${client} · client`] : []),
+          ...(nomBrassin ? [`${nomBrassin}${brassin?.debut ? ` · brassage ${jourLisible(brassin.debut)}` : ''}${brassin?.preteLe ? ` · prête ${jourLisible(brassin.preteLe)}` : ''}`] : [])
+        ];
+        suivante = { ...suivante, lie: { texte: `lié à ${cible}`, apercu: apercus.join(' ; '), ...(client ? { client } : {}) } };
+      }
+    }
+    return suivante;
+  });
 }
 
 /** Le jour de brassage : le prévu pour un brassin planifié, le réel dès que le brassage a commencé. */
@@ -368,7 +485,8 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
   return jours ? { jour: ajouterJours(j0, jours), origine: 'recette' } : null;
 }
 
-const raisonRecette = (libelle: string) => `${libelle} suit la recette du brassin`;
+const ARTICLE: Record<string, string> = { Fermentation: 'La fermentation', 'Dry hop': 'Le dry hop', Garde: 'La garde' };
+const raisonRecette = (libelle: string) => `${ARTICLE[libelle] ?? libelle} suit la recette du brassin`;
 
 /**
  * Les jalons d'un brassin (E25), lus dans la recette figée : brassage, fermentation, dry hop (si la recette le date), garde, conditionnement.
@@ -416,7 +534,7 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
   if (batch.status === 'conditionne' || batch.status === 'termine') {
     const mis = isoDate(batch.bottlingDate);
     if (!mis) return null;
-    return { ...base, debut: mis, fin: mis, detail: 'conditionné', deplacable: { raison: 'Brassin conditionné : sa date est un fait, pas une prévision. Elle se corrige dans la fiche du brassin (Brassins).' } };
+    return { ...base, debut: mis, fin: mis, conditionne: true, detail: `conditionné le ${jourLisible(mis)}`, deplacable: { raison: 'Brassin conditionné : sa date est un fait, pas une prévision. Elle se corrige dans la fiche du brassin (Brassins).' } };
   }
   const j0 = jourZero(batch);
   if (!j0) return null;
@@ -532,7 +650,7 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
   const montant = item.amountCents > 0 ? { centimes: entree ? item.amountCents : -item.amountCents, ...(item.partial?.length ? { partiel: true as const } : {}) } : {};
   const notesDit = notes.length ? ` · ${notes.join(' · ')}` : '';
   return {
-    id: `argent-${item.id}`, rangee, titre, debut: f?.du ?? jour, fin: f?.au ?? jour, ...montant,
+    id: idChoseArgent(item), rangee, titre, debut: f?.du ?? jour, fin: f?.au ?? jour, ...montant,
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
     ...(plan?.batchId || plan?.clientId ? { liens: { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}) } } : {}),
     detail: `le ${jourLisible(jour)}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,

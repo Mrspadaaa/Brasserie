@@ -222,6 +222,40 @@ describe('C15 : la feuille Travaux : une fenêtre et des jours actifs, sans clav
   });
 });
 
+describe('CRITIQUE-2 (corr. 2, L2) : ventes sans chevauchement, caddies nommés, ajout qui réaffiche sa rangée', () => {
+  it('n° 40 : deux ventes de la même semaine ont des boîtes disjointes', () => {
+    const etat = etatBanc(JOUR);
+    etat.plans.push({ ...etat.plans.find(p => p.id === 'P-NOEL-PRIVES')!, id: 'P-NOEL-2', title: 'Noël entreprises' });
+    monter({ etat });
+    const boites = [...rangee('Ventes').querySelectorAll<HTMLElement>('[data-marque], [data-barre]')]
+      .filter(e => /^Noël/.test(e.getAttribute('aria-label') ?? ''))
+      .map(e => ({ g: parseFloat(e.style.left), h: parseFloat(e.style.top), l: parseFloat(e.style.width), t: parseFloat(e.style.height) }));
+    expect(boites).toHaveLength(2);
+    const [a, b] = boites;
+    expect(a.g + a.l <= b.g || b.g + b.l <= a.g || a.h + a.t <= b.h || b.h + b.t <= a.h).toBe(true);
+  });
+
+  it('n° 11 : aucune file de caddies anonymes dans Achats ; les courses d’un brassin se lisent sur sa barre, son caddie porte son nom', () => {
+    monter();
+    /* plus aucune sortie dérivée d'un brassin dans Achats (« Énergie · Saison de ferme ») */
+    expect([...rangee('Achats').querySelectorAll('[data-chose]')].filter(m => / · (Saison de ferme|Blonde d’automne|Porter d’hiver|IPA de printemps)/.test(m.getAttribute('aria-label') ?? ''))).toHaveLength(0);
+    const avecCourses = [...rangee('Brassins').querySelectorAll('[data-barre]')].filter(b => /courses : /.test(b.getAttribute('aria-label') ?? ''));
+    expect(avecCourses.length).toBeGreaterThan(0);
+    for (const c of [...document.querySelectorAll('[data-brassin-lie], [data-jalon="commander"]')]) expect(c.getAttribute('aria-label')).toMatch(/ · \S/);
+  });
+
+  it('n° 15 : un ajout dans une rangée masquée la réaffiche', async () => {
+    monter();
+    fireEvent.click(screen.getByRole('button', { name: 'Masquer Fêtes' }));
+    expect(screen.getAllByRole('button', { name: /^Afficher Fêtes/ }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter dans Fêtes' }));
+    const d = within(screen.getByRole('dialog'));
+    fireEvent.click(d.getByRole('button', { name: 'Marché de Noël' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Masquer Fêtes' })).toBeInTheDocument());
+  });
+});
+
 describe('C18 : propositions en pointillé, acceptées d’un toucher (E47)', () => {
   const stout = (n: number, jour: string): Batch => ({
     id: `LOT-S${n}`, name: 'Stout maison', style: 'Stout', volumeL: 100, brewDate: `${jour.slice(8)}.${jour.slice(5, 7)}.${jour.slice(0, 4)}`, status: 'conditionne', recipeRef: 'R-STOUT', gravityLog: [],

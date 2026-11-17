@@ -120,6 +120,29 @@ export function creuxDepuis(courbe: CourbeCaisse, depuis = 0): Creux | null {
   return creux;
 }
 
+/** Ce qui est mis de côté à une semaine, et pour quoi (E03, z2s : « 1 140 mis de côté pour le frigo »). */
+export interface MiseVisible { index: number; lundi: string; numero: number; centimes: number; titres: string[] }
+
+/** La mise de côté de la semaine `index` : son montant (la réserve de la courbe, A10) et les choses dont la fenêtre couvre cette semaine. */
+export function miseDeCoteA(courbe: CourbeCaisse, index: number): MiseVisible | null {
+  const s = courbe.semaines[index];
+  if (!s || s.reserve <= 0) return null;
+  const titres = courbe.mises.filter(m => lundiDe(m.du) <= s.lundi && s.lundi < lundiDe(m.au)).map(m => m.titre);
+  return { index, lundi: s.lundi, numero: s.numero, centimes: s.reserve, titres: [...new Set(titres)] };
+}
+
+/**
+ * La mise de côté que la courbe nomme : celle du creux, qui explique pourquoi le libre y est sous la caisse (z2s : 1 800 × 19/30 = 1 140 en
+ * S24) ; si rien n'est mis de côté au creux, la semaine où la réserve est la plus haute. `null` quand rien n'est mis de côté.
+ */
+export function miseDeCoteVisible(courbe: CourbeCaisse, creux: Pick<Creux, 'index'> | null): MiseVisible | null {
+  const auCreux = creux ? miseDeCoteA(courbe, creux.index) : null;
+  if (auCreux) return auCreux;
+  let haut = -1;
+  courbe.semaines.forEach((s, i) => { if (s.reserve > 0 && (haut < 0 || s.reserve > courbe.semaines[haut].reserve)) haut = i; });
+  return haut < 0 ? null : miseDeCoteA(courbe, haut);
+}
+
 export type LigneLecture = { genre: 'mouvement'; texte: string; centimes: number } | { genre: 'autres'; texte: string } | { genre: 'semaine'; texte: string; centimes: number };
 export interface LectureSemaine {
   index: number; lundi: string; dimanche: string; numero: number;

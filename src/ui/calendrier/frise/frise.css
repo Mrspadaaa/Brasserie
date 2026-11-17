@@ -14,6 +14,23 @@
 .cal-frise { position: relative; width: 100%; padding: 2px 0 4px; font-size: 14px; }
 .cal-rangee { position: relative; }
 .cal-rh { display: flex; align-items: center; gap: 6px; padding: 0; }
+/* paysage (E10, D-174) : le titre se pose sur la première ligne, à gauche ; les barres prennent la place libre à côté */
+.cal-rangee-l .cal-rh { position: absolute; left: 0; top: 0; z-index: 5; padding-right: 6px; border-radius: 0 0 8px 0; background: rgb(var(--cave-950)); }
+.cal-rangee-l .cal-conf { display: none; }
+/* E32 : « Livraison La Cigogne · S1 › », renvoi d'une vente hors de la vue */
+.cal-renvoi { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; margin-left: auto; padding: 0 8px; border-radius: 12px; border: 1.5px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.cal-renvoi::before { content: ''; position: absolute; inset: -10px -2px; }
+/* le trait pointillé d'un caddie à son brassin (D-107, as/p-repos) */
+.cal-traits { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+.cal-traits path { fill: none; stroke: rgb(var(--area-production)); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.75; }
+/* la pastille « lié à La Cigogne » (D-113) : se lit en 3 s, cède sa place au nom si elle manque */
+.cal-lie { flex: 0 10 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; border-radius: 9px; border: 1px solid var(--c); font-size: 14px; line-height: 16px; font-weight: 600; color: rgb(var(--cave-50)); background: rgb(var(--cave-900)); }
+.cal-duree.cal-duree-in { left: auto; right: 8px; top: 0; max-width: calc(100% - 16px); color: rgb(var(--cave-50)); opacity: 0.85; }
+.cal-renvoi { position: relative; }
+/* le caddie des courses d'un brassin, accroché sous sa barre (D-107) */
+.cal-caddie { position: absolute; z-index: 4; width: 20px; height: 20px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1.5px dashed rgb(var(--area-production)); background: rgb(var(--cave-900)); color: rgb(var(--area-production-texte)); }
+.cal-caddie::before { content: ''; position: absolute; inset: -10px; }
+.cal-caddie.cal-sel { box-shadow: 0 0 0 2px rgb(var(--cave-900)), 0 0 0 3.5px rgb(var(--area-production)); }
 .cal-nom { margin: 0; font-size: 14px; line-height: 18px; font-weight: 700; color: var(--ct); white-space: nowrap; }
 .cal-plus { position: relative; flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 6px; background: var(--c); color: rgb(var(--cave-950)); }
 .cal-paysage .cal-plus { width: 20px; height: 20px; }
@@ -88,7 +105,7 @@
 .cal-msg-b-pri { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
 
 /* le menu de l'appui long (f5-a) */
-.cal-menu { position: fixed; z-index: 44; box-sizing: border-box; padding: 8px; border: 1px solid rgb(var(--cave-600)); border-radius: 14px; background: rgb(var(--cave-850)); color: rgb(var(--cave-50)); box-shadow: 0 10px 30px rgb(var(--cave-950) / 0.4); font-size: 14px; max-height: calc(100dvh - 130px); overflow-y: auto; }
+.cal-menu { position: fixed; z-index: 60; box-sizing: border-box; padding: 8px; border: 1px solid rgb(var(--cave-600)); border-radius: 14px; background: rgb(var(--cave-850)); color: rgb(var(--cave-50)); box-shadow: 0 10px 30px rgb(var(--cave-950) / 0.4); font-size: 14px; max-height: calc(100dvh - 130px); overflow-y: auto; }
 .cal-m3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
 .cal-m3b { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 64px; padding: 6px 2px; border: 1px solid rgb(var(--cave-600)); border-radius: 10px; background: rgb(var(--cave-900)); color: inherit; font: inherit; text-align: center; }
 .cal-m3b small { font-size: 14px; line-height: 16px; color: rgb(var(--cave-200)); }

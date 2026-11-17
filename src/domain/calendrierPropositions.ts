@@ -47,8 +47,11 @@ export function brassinsHabituels(batches: readonly Batch[], jour: string): Chos
     const lundi = lundiDe(propose) < cetteSemaine ? cetteSemaine : lundiDe(propose);
     const recents = batches.filter(b => b.recipeRef === ref && !b.archivedAt && hasBrewStarted(b)).sort((a, b) => (isoDate(actualBrewDate(b)) ?? '').localeCompare(isoDate(actualBrewDate(a)) ?? ''));
     const nom = recents[0]?.name || ref;
+    /* la durée vient de la recette figée du dernier brassin de cette recette ; sans elle, ni « J0 » ni « prête » (CRITIQUE-2 n° 2) */
+    const enCuve = (recents[0]?.recipeSnapshot?.fermentation ?? []).reduce((s, e) => s + (Number.isFinite(e.days) && e.days > 0 ? e.days : 0), 0);
+    const prete = enCuve > 0 ? ajouterJours(lundi, enCuve) : null;
     sortie.push({
-      id: `proposition-brassin-${ref}`, rangee: 'brassins', titre: nom, debut: lundi, fin: lundi, probable: true, proposition: 'brassin-habituel', recipeRef: ref,
+      id: `proposition-brassin-${ref}`, rangee: 'brassins', titre: nom, debut: lundi, fin: prete ?? lundi, ...(prete ? { preteLe: prete } : {}), probable: true, proposition: 'brassin-habituel', recipeRef: ref,
       detail: `proposé vers le ${jourLisible(propose)} · tous les ${moyen} j (${jours.length} brassages)`,
       source: { genre: 'proposition', id: ref }, ouvre: { ecran: 'brassin' },
       deplacable: { raison: 'Une proposition se pose d’abord : touche-la pour l’ajouter, puis déplace le brassin.' }

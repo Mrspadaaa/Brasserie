@@ -169,3 +169,41 @@ describe('E36 et Modifier', () => {
     expect(versModification(b, { ...chose, source: { genre: 'facture', id: 'T' } })).toMatchObject({ ok: false });
   });
 });
+
+describe('E34, D-39 (CRITIQUE-2 n° 16) : le montant se choisit par puces, sans clavier', () => {
+  const fete = (id: string, titre: string, debut: string, centimes?: number): ChoseCalendrier => ({
+    id, rangee: 'fetes', titre, debut, fin: debut, source: { genre: 'creative', id, type: 'event' }, ouvre: { ecran: 'agenda' }, deplacable: true,
+    ...(centimes !== undefined ? { centimes } : {})
+  } as ChoseCalendrier);
+
+  it('la puce « Marché de Noël » propose 118000 centimes (+1 180) et les pose avec son nom ; une puce de montant récent pose le sien', () => {
+    const c = ctx({ choses: [fete('N', 'Marché de Noël', '2026-12-14', 118000), fete('V', 'Fête de village', '2026-06-01', 45000), fete('A', 'Apéro des voisins', '2026-05-25')] });
+    const liste = puces('fetes', c);
+    const noel = liste.find(p => p.genre === 'nom' && p.libelle === 'Marché de Noël');
+    expect(noel).toMatchObject({ centimes: 118000, signe: '+' });
+    const b = appliquerPuce({ ...brouillonVide('fetes', '2026-12-14'), signe: '-' }, noel!);
+    expect(b).toMatchObject({ titre: 'Marché de Noël', centimes: 118000, signe: '+' });
+    /* un nom sans montant connu ne pose rien : l'inconnu n'est pas 0 */
+    const apero = liste.find(p => p.libelle === 'Apéro des voisins')!;
+    expect(apero).not.toHaveProperty('centimes');
+    expect(appliquerPuce(brouillonVide('fetes'), apero)).not.toHaveProperty('centimes');
+    const montants = liste.filter(p => p.genre === 'montant');
+    expect(montants.map(p => p.libelle)).toEqual(['+1 180', '+450']);
+    expect(appliquerPuce(brouillonVide('fetes'), montants[1])).toMatchObject({ centimes: 45000, signe: '+' });
+  });
+
+  it('une dépense récente garde son signe ; un client pose son dernier montant ; sans historique, aucune puce de montant', () => {
+    const achat: ChoseCalendrier = { id: 'H', rangee: 'achats', titre: 'Hotte', debut: '2026-06-01', fin: '2026-06-01', centimes: -90000, source: { genre: 'plan', id: 'H', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan' }, deplacable: true };
+    expect(puces('achats', ctx({ choses: [achat] })).find(p => p.genre === 'montant')).toMatchObject({ centimes: 90000, signe: '-', libelle: '−900' });
+    const vendu = { id: 'P1', title: 'Fûts', date: '2026-04-01', amountCents: 26000, direction: 'in', category: 'recettes', source: 'manual', status: 'active', createdAt: '2026-04-01T00:00:00Z', clientId: 'CL-2' } as FinancialPlan;
+    const client = puces('ventes', ctx({ plans: [vendu] })).find(p => p.genre === 'client' && p.clientId === 'CL-2');
+    expect(client).toMatchObject({ centimes: 26000 });
+    expect(appliquerPuce(brouillonVide('ventes'), client!)).toMatchObject({ titre: 'Bar Central', centimes: 26000, signe: '+', clientId: 'CL-2' });
+    expect(puces('papiers', ctx()).filter(p => p.genre === 'montant')).toEqual([]);
+  });
+
+  it('« Mettre de côté » ne se propose qu’à une dépense avec fenêtre et montant', () => {
+    expect(peutMettreDeCote(travaux())).toBe(true);
+    expect(peutMettreDeCote({ ...travaux(), signe: '+' })).toBe(false);
+  });
+});

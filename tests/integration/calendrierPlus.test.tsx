@@ -70,7 +70,9 @@ describe('C6 : le + volant porte les gestes du calendrier, dans l’ordre de la 
     for (const [ligne] of ATTENDU) expect(textes.some(t => t.includes(ligne)), ligne).toBe(true);
     expect(menu.textContent).toMatch(/Sur\s*le calendrier/);
     expect(menu.textContent).toMatch(/Partout/);
-    expect(menu.textContent).not.toMatch(/\bS\d{2}\b/);
+    /* aucun « S47 » sur le + ni dans le nom d'une ligne (D-162) ; la précision du plein dit la semaine et « prête le … », comme la passe 10 */
+    const noms = [...menu.querySelectorAll('[role="menuitem"] b, [role="menuitem"] .plus-pp-t')].map(e => e.textContent ?? '').join(' | ');
+    expect(noms).not.toMatch(/\bS\d{1,2}\b/);
   });
 });
 
@@ -188,5 +190,94 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     const fichiers = (readdirSync(racine, { recursive: true }) as string[]).filter(f => /\.(ts|tsx)$/.test(f));
     const trouves = fichiers.filter(f => readFileSync(join(racine, f), 'utf8').includes('dateInitiale'));
     expect(trouves).toEqual([]);
+  });
+});
+
+describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blocs, rien coupé ; la précision garde sa date', () => {
+  const vraiMatchMedia = window.matchMedia;
+  const couche = (actif: boolean) => {
+    window.matchMedia = ((q: string) => ({
+      matches: actif && /landscape|max-height/.test(q), media: q, onchange: null,
+      addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined, dispatchEvent: () => false
+    })) as unknown as typeof window.matchMedia;
+  };
+  afterEach(() => { window.matchMedia = vraiMatchMedia; });
+  const LIGNES = ['Poser un brassin', 'Poser une fête', 'Poser une vente', 'Prévoir un achat', 'Prévoir des travaux', 'Noter une activité', 'Prévoir un papier', 'Noter une idée'];
+
+  it('844 × 390 (matchMedia simulé) : deux blocs côte à côte, « Sur le calendrier » et « Partout » ; ses lignes toutes dans le document, noms courts', () => {
+    couche(true);
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const menu = screen.getByRole('menu');
+    expect(menu).toHaveAttribute('data-plus-disposition', 'deux-blocs');
+    const blocs = [...menu.querySelectorAll(':scope > [data-bloc]')].map(b => b.getAttribute('data-bloc'));
+    expect(blocs).toEqual(['ecran', 'partout']);
+    const ecran = within(menu.querySelector('[data-bloc="ecran"]') as HTMLElement);
+    for (const ligne of LIGNES) expect(ecran.getByRole('menuitem', { name: new RegExp(`^${ligne}`) })).toBeInTheDocument();
+    expect(ecran.getByText('Fête')).toBeInTheDocument();
+    expect(ecran.getByText('Idée')).toBeInTheDocument();
+    expect(menu.querySelector('[data-bloc="ecran"]')!.textContent).toMatch(/Sur\s*le calendrier/);
+    const partout = within(menu.querySelector('[data-bloc="partout"]') as HTMLElement);
+    expect(partout.getByText('Partout')).toBeInTheDocument();
+    expect(partout.getAllByRole('menuitem').length).toBeGreaterThanOrEqual(2);
+    /* le plein est la première ligne du menu (focus à l'ouverture, contre le +) */
+    expect(menu.querySelector('[role="menuitem"]')!.textContent).toMatch(/^Poser un brassin/);
+    /* chaque ligne ouvre toujours la feuille de sa rangée */
+    fireEvent.click(ecran.getByRole('menuitem', { name: 'Prévoir des travaux' }));
+    expect(screen.getByRole('dialog', { name: 'Travaux' })).toBeInTheDocument();
+  });
+
+  it('portrait : la pile d’origine, sans deux blocs', () => {
+    couche(false);
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const menu = screen.getByRole('menu');
+    expect(menu).not.toHaveAttribute('data-plus-disposition');
+    expect(menu.querySelector('[data-bloc]')).toBeNull();
+  });
+
+  it('« Poser un brassin » : sa précision est sous le libellé, entière, avec la date de « prête le »', () => {
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const precision = screen.getByRole('menu').querySelector('[data-page-action="brassin"] [data-plus-precision]') as HTMLElement;
+    expect(precision.textContent).toMatch(/prête le \d{1,2} \S+/);
+    expect(precision.className).toContain('!whitespace-normal');
+  });
+});
+
+describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Travaux, Activités et Papiers, sans clavier, en 2 touchers', () => {
+  const CAS: Array<{ rangee: string; titre: string; puce: string; attendu: Record<string, unknown> }> = [
+    { rangee: 'ventes', titre: 'Ventes', puce: 'La Cigogne', attendu: { collection: 'financialPlans', patch: { title: 'La Cigogne', amountCents: 90000, direction: 'in', clientId: 'CL-CIGOGNE' } } },
+    { rangee: 'achats', titre: 'Achats', puce: 'Hotte', attendu: { collection: 'financialPlans', patch: { title: 'Hotte', amountCents: 90000, direction: 'out' } } },
+    { rangee: 'travaux', titre: 'Travaux', puce: 'Sols : colle et joints', attendu: { collection: 'financialPlans', patch: { title: 'Sols : colle et joints', amountCents: 32000, category: 'renovation' } } },
+    { rangee: 'activites', titre: 'Activités', puce: 'Inventaire du stock', attendu: { collection: 'creativeItems', patch: { title: 'Inventaire du stock', activite: true } } },
+    { rangee: 'papiers', titre: 'Papiers', puce: 'TVA T4', attendu: { collection: 'financialPlans', patch: { title: 'TVA T4', amountCents: 30000, direction: 'out' } } }
+  ];
+  for (const cas of CAS) {
+    it(`${cas.titre} : la puce « ${cas.puce} » (nom et montant), puis « Ajouter »`, async () => {
+      const { appels } = monter();
+      fireEvent.click(document.querySelector(`button[data-plus="${cas.rangee}"]`)!);
+      const d = dialogue(cas.titre);
+      let touchers = 0;
+      fireEvent.click(d.getByRole('button', { name: cas.puce })); touchers += 1;
+      fireEvent.click(d.getByRole('button', { name: /^Ajouter/ })); touchers += 1;
+      expect(touchers).toBeLessThanOrEqual(2);
+      await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
+      expect(appels[0]).toMatchObject(cas.attendu);
+      expect(document.querySelectorAll('input[type="number"]')).toHaveLength(0);
+    });
+  }
+
+  it('Achats : « Plus de détails › » ouvre Prévoir une dépense datée du lundi de la semaine choisie', () => {
+    function Harnais() {
+      const [date, setDate] = React.useState<string | null>(null);
+      return <><BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserDepense: setDate }} />{date && <PlanSheet date={date} onClose={() => setDate(null)} />}</>;
+    }
+    render(<Harnais />);
+    fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+    const d = dialogue('Travaux');
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S49/ }));
+    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
+    expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-30');
   });
 });

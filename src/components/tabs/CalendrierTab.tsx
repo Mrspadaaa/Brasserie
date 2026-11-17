@@ -19,8 +19,8 @@ import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE, ICONE_RANGEE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import {
-  RANGEES, ajouterJours, dateDeSemaine, ecartJours, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules,
-  type CibleOuverture, type ChoseCalendrier, type Rangee as IdRangee
+  RANGEES, ajouterJours, dateDeSemaine, ecartJours, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
 import {
@@ -28,7 +28,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, allonger, deplacer, dupliquer, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
+  accepterVente, alignerCourbe, allonger, deplacer, dupliquer, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
   type ContexteGestes, type Ecriture, type Message as MessageGeste, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -96,7 +96,17 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const port = useMemo(() => props.port ?? portParDefaut(), [props.port]);
   const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui });
   const don = props.donnees ?? lues;
-  const { modele, aujourdhui } = don;
+  const { modele: modeleLu, aujourdhui } = don;
+  /* les choses prêtes pour la frise : budget de chaque brassin, courses d'un brassin en un caddie relié, pastilles « lié à » ; la courbe
+     rattachée aux ids stables des choses (CRITIQUE-2 n° 1 b, 9, 11, 32) */
+  const nomsLiens = useMemo(() => ({
+    brassins: new Map(don.batches.map(b => [b.id, b.name || b.id] as const)),
+    clients: new Map(don.clients.map(c => [c.id, c.name] as const))
+  }), [don.batches, don.clients]);
+  const modele: ModeleCalendrier = useMemo(() => {
+    const prets = preparerChoses(modeleLu.choses, nomsLiens);
+    return { ...modeleLu, choses: prets, courbe: alignerCourbe(modeleLu.courbe, prets) };
+  }, [modeleLu, nomsLiens]);
   const orientation = useOrientation();
   const paysage = orientation === 'paysage';
   const premierLundi = lundiDe(aujourdhui);
@@ -216,7 +226,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const cible = lundiDe(ajouterJours(chose.debut, k * 7));
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
     setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k * 7) : null);
-    setMessage(null);
+    /* un glisser commencé ferme le menu ouvert et le détail (CRITIQUE-2 n° 1 a) */
+    setMessage(null); setMenu(null); setSelectionId(null);
   }, [modele.courbe]);
   const finGeste = useCallback(() => { setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
@@ -227,12 +238,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const textePrete = (chose: ChoseCalendrier, jours: number) => {
     const fin = chose.preteLe ?? chose.fin;
     const nouvelle = ajouterJours(fin, jours);
-    return chose.source.genre === 'batch' ? `J0 / ${ecartJours(chose.debut, nouvelle)} · prête ${jourLisible(nouvelle)}` : `${etiquetteS(chose.debut)} → ${etiquetteS(nouvelle)}`;
+    const n = ecartJours(chose.debut, nouvelle);
+    if (chose.source.genre !== 'batch') return `${etiquetteS(chose.debut)} → ${etiquetteS(nouvelle)}`;
+    return n > 0 ? `J0 / ${n} · prête ${jourLisible(nouvelle)}` : `prête ${jourLisible(nouvelle)}`;
   };
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours });
     setDuree({ id: chose.id, texte: textePrete(chose, jours) });
-    setMessage(null);
+    setMessage(null); setMenu(null);
   }, []);
   const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean) => {
     finGeste();
@@ -241,15 +254,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [ecrire, finGeste]);
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
+    /* E47, CRITIQUE-2 n° 38 : toucher une proposition l'accepte */
     if (chose.proposition === 'echeance') { onOpenFinances(); return; }
     if (chose.proposition === 'brassin-habituel') {
       const b = brouillonDepuisProposition(chose);
       if (b) { setMessage(null); setFeuille({ mode: 'ajouter', initial: b, sansPlusDeDetails: true, cle: ++compteur.current }); }
       return;
     }
+    if (chose.proposition === 'vente' && chose.source.genre === 'plan') { setSelectionId(null); void ecrire(accepterVente(chose, ctxRef.current)); return; }
+    /* E37, CRITIQUE-2 n° 39 : toucher ouvre la source. Une facture : sa pièce, où « Payé » se joue ; la TVA et la clôture : leur écran */
+    if (chose.source.genre === 'facture' && onOpenPiece) { setSelectionId(null); onOpenPiece(chose.source.id); return; }
+    if (chose.source.genre === 'plan' && chose.source.origine === 'tax') { setSelectionId(null); onOpenFinances(); return; }
     setMessage(null);
     setSelectionId(id => (id === chose.id ? null : chose.id));
-  }, [onOpenFinances]);
+  }, [onOpenFinances, onOpenPiece, ecrire]);
   const surAppuiLong = useCallback((chose: ChoseCalendrier, cible: HTMLElement) => {
     setMessage(null); setSelectionId(null);
     setMenu({ id: chose.id, ancre: cible });
@@ -282,18 +300,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ligne = (id: string, label: string, r: IdRangee, extra: { hint?: string; plein?: boolean } = {}) => ({
     id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_RANGEE[r], lancer: () => ouvrirFeuille(r), ...extra
   });
+  /* passe 10 (p-clair-ouvert) : « S47 · prête le 14 déc. », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12) */
+  const lundiPose = fenetre.du < premierLundi ? premierLundi : fenetre.du;
   usePlusPage({
     titre: 'le calendrier',
     surOnglets: true,
     actions: [
-      ligne('brassin', 'Poser un brassin', 'brassins', { plein: true, hint: `28 j en cuve · prête le ${jourLisible(ajouterJours(premierLundi, 28))}` }),
+      ligne('brassin', 'Poser un brassin', 'brassins', { plein: true, hint: `${etiquetteS(lundiPose)} · prête le ${jourLisible(ajouterJours(lundiPose, 28))}` }),
       ligne('fete', 'Poser une fête', 'fetes'),
       ligne('vente', 'Poser une vente', 'ventes'),
       ligne('achat', 'Prévoir un achat', 'achats'),
       ligne('travaux', 'Prévoir des travaux', 'travaux'),
       ligne('activite', 'Noter une activité', 'activites'),
       ligne('papier', 'Prévoir un papier', 'papiers'),
-      { id: 'idee', label: 'Noter une idée', genre: 'ajouter', lancer: () => ouvrirIdee() }
+      { id: 'idee', label: 'Noter une idée', genre: 'ajouter', hint: `en ${etiquetteS(lundiPose)}, dans le carnet`, lancer: () => ouvrirIdee(lundiPose) }
     ]
   });
 
@@ -315,15 +335,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (e.cible === 'plan' && modele.courbe) {
       const p = e.document;
       const signe = p.direction === 'in' ? 1 : -1;
-      effet = effetCaisse(modele.courbe, courbeAvec(modele.courbe, [{ id: p.id, jour: p.date, centimes: signe * p.amountCents, nom: p.title, choseId: `argent-${p.id}:${p.date}` }]));
+      effet = effetCaisse(modele.courbe, courbeAvec(modele.courbe, [{ id: p.id, jour: p.date, centimes: signe * p.amountCents, nom: p.title, choseId: `argent-${p.id}` }]));
     }
     const ok = await ecrire({
       ok: true, ecritures: [ecriture], effet, promesse: null, courbeApres: null,
       message: { texte: effet ? `${conv.resume} · ${effet.texte}` : conv.resume, action: 'Annuler', lecture: '' }
     });
-    if (ok) setFeuille(null);
+    if (ok) {
+      setFeuille(null);
+      /* un ajout dans une rangée masquée ou filtrée la réaffiche : « J'ajoute et je vois rien » (D-200, CRITIQUE-2 n° 15) */
+      if (masquees.includes(b.rangee)) setMasquees(masquees.filter(r => r !== b.rangee));
+      if (filtre && filtre !== b.rangee) setFiltre(null);
+    }
     return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
-  }, [feuille, ctxAjout, modele.courbe, ecrire]);
+  }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre]);
 
   const plusDeDetails = useCallback((b: BrouillonAjout) => {
     const lundi = b.debut ?? premierLundi;
@@ -361,7 +386,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
         } : {})}
         {...(editable && !sansDate ? { onModifier: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: brouillonDepuisChose(chose), chose, cle: ++compteur.current }); } } : {})}
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
-        {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
+        {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
+        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => { setSelectionId(null); onOpenFinances(); } } : {})}
         {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: premierLundi, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
         {...(editable ? { onMettreDeCote: (actif: boolean) => { void ecrire(mettreDeCote(chose, actif, ctxRef.current)); } } : {})}
@@ -390,6 +416,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
 
   const largeurColonne = mesure.largeurColonne;
+  /* au téléphone, aucun nom ni montant ne passe sous le + volant : sa zone, à droite, est réservée (D-135, passe10/p-clair-ferme) */
+  const reserveDroite = paysage || (mesure.largeur > 0 && mesure.largeur < 700) ? 76 : 0;
+  /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
+  const surRenvoi = (c: ChoseCalendrier) => {
+    const n = Math.max(2, fenetre.semaines);
+    const du = lundiDe(ajouterJours(c.debut, -7 * (n - 2)));
+    setVueEtat('semaines'); setMenu(null); setMessage(null);
+    setFenetre({ du: du < premierLundi ? premierLundi : du, semaines: fenetre.semaines });
+    setSelectionId(c.id);
+  };
   const liste = vue === 'liste';
   const graph = vue === 'graph';
 
@@ -471,6 +507,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
           etiquetteDuree={duree}
           detail={detail}
           onMesure={setMesure}
+          reserveDroite={reserveDroite}
+          onRenvoi={surRenvoi}
           onAjouter={ouvrirFeuille}
           onBasculerMasque={basculerMasque}
           onSixSemaines={surSixSemaines}

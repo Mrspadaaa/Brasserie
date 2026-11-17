@@ -26,6 +26,20 @@ export interface PlusPageAction {
   icone?: ComponentType<{ size?: number }>;
   /** La ligne en plein, contre le + (l'action première de l'écran). */
   plein?: boolean;
+  /** Le libellé court des cases de la pile en deux blocs (paysage, hauteur courte : « Fête », « Achat ») ; absent : dérivé du libellé. */
+  court?: string;
+}
+
+/** Une page qui déclare au moins ce nombre de gestes passe, quand la hauteur manque (téléphone couché), sa pile en deux blocs côte à côte. */
+export const SEUIL_DEUX_BLOCS = 6;
+
+/** « Poser une fête » → « Fête », « Prévoir des travaux » → « Travaux » : le nom de la chose, sans le verbe ni l'article. */
+export function libelleCourt(a: Pick<PlusPageAction, 'label' | 'court'>): string {
+  if (a.court) return a.court;
+  /* les articles longs d'abord : « une » avant « un », sinon « une fête » donnerait « E fête » */
+  const m = /^(?:Poser|Prévoir|Noter|Ajouter|Nouveau|Nouvelle)\s+(?:(?:une|un|des|les|le|la)\s+|l[’'])(.+)$/u.exec(a.label.trim());
+  if (!m) return a.label;
+  return m[1].charAt(0).toLocaleUpperCase('fr') + m[1].slice(1);
 }
 
 /** « Aller à » : une rangée de pastilles, une par étape, l'étape courante marquée. */

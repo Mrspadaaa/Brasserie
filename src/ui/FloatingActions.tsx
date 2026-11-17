@@ -6,8 +6,24 @@ import { PlusSheet } from '../components/navigation/PlusSheet';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
 import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
 import { useRail } from '../components/navigation/useRail';
-import { usePlusPageActions } from './plusPage';
+import { SEUIL_DEUX_BLOCS, usePlusPageActions } from './plusPage';
 import './floating-actions.css';
+
+/** Téléphone couché (844 × 390) : la même requête que la pile qui défile de `navigation.css`. Sans `matchMedia` : non. */
+const REQUETE_HAUTEUR_COURTE = '(orientation: landscape) and (max-height: 520px)';
+function useHauteurCourte(): boolean {
+  return React.useSyncExternalStore(
+    (l) => {
+      if (typeof window === 'undefined' || !window.matchMedia) return () => undefined;
+      const mq = window.matchMedia(REQUETE_HAUTEUR_COURTE);
+      mq.addEventListener?.('change', l);
+      window.addEventListener('resize', l);
+      return () => { mq.removeEventListener?.('change', l); window.removeEventListener('resize', l); };
+    },
+    () => (typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(REQUETE_HAUTEUR_COURTE).matches),
+    () => false
+  );
+}
 
 /**
  * Le geste d'action de l'application : un bouton, partout, et tout ce qu'on
@@ -156,6 +172,11 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const choisir = (cle: PlusCle | 'ecran') => choose(() => lancer(cle));
   /* b1r : ce que la page plein écran ouverte (l'assistant de recette) déclare passe en tête, contre le +. */
   const pagePlus = usePlusPageActions();
+  const pageMontree = anchor === 'page' || pagePlus?.surOnglets ? pagePlus : null;
+  /* l-clair-ouvert (passe 10) : téléphone couché, la pile d'une page à beaucoup de gestes (le calendrier : 8) ne tient plus en hauteur ;
+     elle passe en deux blocs côte à côte. Les autres écrans, et toute hauteur suffisante, gardent la pile. */
+  const hauteurCourte = useHauteurCourte();
+  const deuxBlocs = open && hauteurCourte && anchor === 'nav' && !!pageMontree && pageMontree.actions.length >= SEUIL_DEUX_BLOCS;
   const compagnon = {
     horsConnexion, attente: waiting, occupe: busy, contexte: companionLabel, conversations: jobs.length
   };
@@ -254,12 +275,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           data-plus-ecran={menu.ecran}
           onKeyDown={onKeyDown}
           data-sens={anchor === 'page' && placement === 'bottom' ? 'bas' : 'haut'}
-          className="plus-pile"
+          data-plus-disposition={deuxBlocs ? 'deux-blocs' : undefined}
+          className={deuxBlocs ? 'plus-pile !w-[min(620px,calc(100vw-24px))] !max-h-none !flex-row-reverse !items-end !gap-3 !overflow-visible' : 'plus-pile'}
         >
           {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
               pour rendre la main au bouton. */}
           <PlusSheet menu={menu} forme={anchor === 'nav' ? forme : 'feuille'} compagnon={compagnon}
-            onChoisir={choisir} page={anchor === 'page' || pagePlus?.surOnglets ? pagePlus : null} onPage={choose} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
+            onChoisir={choisir} page={pageMontree} onPage={choose} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations}
+            disposition={deuxBlocs ? 'deux-blocs' : 'pile'} />
         </div>
       )}
 

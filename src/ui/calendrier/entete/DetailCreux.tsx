@@ -37,6 +37,7 @@ export function DetailCreux({ courbe, index, hypotheses, onOuvrirFinances, onFer
   }, [onFermer]);
   return (
     <section ref={ref} className="ent-pop ent-creux" aria-label={`Le creux de S${s.numero} : ses causes`}>
+      <h3 className="ent-pop-h">{`Le creux de S${s.numero} : ses causes`}</h3>
       <p className="ent-pop-t">
         {causes.length ? `S${courbe[debut].numero} → S${s.numero}` : `S${s.numero}`} · <b className={s.libre < 0 ? 'ent-neg' : undefined}>{chf(s.libre)}</b> à dépenser
       </p>

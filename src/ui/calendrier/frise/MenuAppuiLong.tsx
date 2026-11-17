@@ -8,6 +8,11 @@ import type { ChoseCalendrier } from '../../../domain/calendrier';
  * Retirer enlève la date : la chose reste dans sa source, sans date, et Annuler la remet (L33 : on ne supprime jamais, on ne cascade jamais).
  */
 
+/** Sous cette marge du bas de l'écran vivent les onglets : le menu ne la touche pas. */
+export const BAS_RESERVE_PX = 64;
+/** Hauteur du menu quand rien ne se mesure (jsdom) : trois boutons, Dupliquer, Lier, Retirer. */
+export const HAUTEUR_REPLI_PX = 260;
+
 export interface LiensPossibles {
   brassins: ReadonlyArray<{ id: string; nom: string }>;
   clients: ReadonlyArray<{ id: string; nom: string }>;
@@ -58,14 +63,36 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ancre]);
 
-  const rect = ancre?.getBoundingClientRect();
-  const largeur = typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? 440 : Math.min(300, (typeof window !== 'undefined' ? window.innerWidth : 390) - 96);
-  const gauche = rect ? Math.max(8, Math.min((typeof window !== 'undefined' ? window.innerWidth : 390) - largeur - 8, rect.left + rect.width / 2 - largeur / 2)) : 88;
-  const haut = rect ? rect.bottom + 8 : 120;
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
+  const largeur = typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? 440 : Math.min(300, vw - 96);
+  const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut'; maxHeight?: number } | null>(null);
+  /* f5-a (CRITIQUE-2 n° 3) : sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; toujours dans l'écran, Retirer
+     compris. Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
+  React.useLayoutEffect(() => {
+    const rect = ancre?.getBoundingClientRect();
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 844;
+    const bas = vh - BAS_RESERVE_PX;
+    const mh = racine.current?.offsetHeight || HAUTEUR_REPLI_PX;
+    const left = rect ? Math.max(8, Math.min(vw - largeur - 8, rect.left + rect.width / 2 - largeur / 2)) : 88;
+    if (!rect) { setPos({ top: 120, left, cote: 'bas' }); return; }
+    const dessous = rect.bottom + 8, dessus = rect.top - 8 - mh;
+    if (dessous + mh <= bas) setPos({ top: dessous, left, cote: 'bas' });
+    else if (dessus >= 8) setPos({ top: dessus, left, cote: 'haut' });
+    else {
+      /* ni dessous ni dessus en entier : le côté le plus grand, avec sa hauteur bornée (le menu défile, l'écran non) */
+      const placeBas = bas - dessous, placeHaut = rect.top - 16;
+      if (placeBas >= placeHaut) setPos({ top: dessous, left, cote: 'bas', maxHeight: Math.max(120, placeBas) });
+      else setPos({ top: 8, left, cote: 'haut', maxHeight: Math.max(120, placeHaut) });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ancre, lier, largeur, vw]);
   const retirable = 'raison' in retirer ? null : retirer;
 
   return (
-    <div ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className="cal-menu" data-menu style={{ top: haut, left: gauche, width: largeur }}>
+    <div
+      ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}`} data-menu data-cote={pos?.cote ?? 'bas'}
+      style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, width: largeur, ...(pos?.maxHeight ? { maxHeight: pos.maxHeight } : {}), visibility: pos ? undefined : 'hidden' }}
+    >
       {!lier ? (
         <>
           <div className="cal-m3">

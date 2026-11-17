@@ -4,6 +4,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
+import { HAUTEUR_REPLI_PX } from '../../src/ui/calendrier/frise/MenuAppuiLong';
 
 const JOUR = '2026-11-16';
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
@@ -187,6 +188,129 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
     monter({ etat: { ...etatBanc(JOUR), items: etatBanc(JOUR).items.filter(i => i.id !== 'CR-SANS') } });
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     expect(document.body.textContent).not.toMatch(/Sans date/);
+  });
+});
+
+describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effets visibles, promesse, rotation', () => {
+  it('n° 1 : 12 px en 100 ms puis 2 colonnes : deplacer +2, « lâcher ici » sous le doigt, aucun menu ; l’id reste le même', async () => {
+    const { appels } = monter();
+    const b = barre(/^Hotte/);
+    const id = b.getAttribute('data-chose');
+    const lc = colonne();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    down(b, 100);
+    act(() => { vi.advanceTimersByTime(100); });
+    move(b, 112);
+    act(() => { vi.advanceTimersByTime(600); });
+    expect(screen.queryByRole('menu')).toBeNull();
+    move(b, 100 + 2 * lc);
+    expect(document.querySelector('[data-ici]')?.textContent).toMatch(/^S\d+ · .+ · lâcher ici$/);
+    expect(document.querySelector('[data-fantome]')).not.toBeNull();
+    up(b, 100 + 2 * lc);
+    vi.useRealTimers();
+    await waitFor(() => expect(appels).toHaveLength(1));
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', id: 'P-HOTTE', patch: { date: '2026-12-14' } });
+    expect(screen.queryByRole('menu')).toBeNull();
+    expect((await screen.findByRole('status')).textContent).toMatch(/S\d+ : [\d  −]+ → [\d  −]+/);
+    expect(id).toBe('argent-P-HOTTE');
+    await waitFor(() => expect(barre(/^Hotte, 14 déc/).getAttribute('data-chose')).toBe(id));
+  });
+
+  it('n° 1 a : un doigt qui a tenu 500 ms puis glisse ferme le menu et déplace la barre', async () => {
+    const { appels } = monter();
+    const b = barre(/^Hotte/);
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    down(b, 100);
+    act(() => { vi.advanceTimersByTime(500); });
+    vi.useRealTimers();
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    move(b, 100 + colonne());
+    expect(screen.queryByRole('menu')).toBeNull();
+    up(b, 100 + colonne());
+    await waitFor(() => expect(appels).toHaveLength(1));
+    expect(appels[0]).toMatchObject({ id: 'P-HOTTE', patch: { date: '2026-12-07' } });
+  });
+
+  it('n° 3 : un menu ancré en bas d’écran s’ouvre au-dessus de la barre ; Retirer reste dans l’écran', async () => {
+    monter();
+    const b = barre(/^Marché de Noël/);
+    const h = window.innerHeight;
+    vi.spyOn(b, 'getBoundingClientRect').mockReturnValue({ top: h - 40, bottom: h - 14, left: 120, right: 200, width: 80, height: 26, x: 120, y: h - 40, toJSON: () => ({}) } as DOMRect);
+    appuiLong(b);
+    const menu = await screen.findByRole('menu');
+    expect(menu).toHaveAttribute('data-cote', 'haut');
+    const top = parseFloat(menu.style.top);
+    expect(top).toBeGreaterThanOrEqual(8);
+    expect(top + HAUTEUR_REPLI_PX).toBeLessThanOrEqual(h - 40);
+    expect(within(menu).getByRole('menuitem', { name: /Retirer/ })).toBeInTheDocument();
+  });
+
+  it('n° 32 : Lier pose « lié à La Cigogne » ; Étoile marque la courbe ; Retirer fait voir « Retirée de S… · Sans date › »', async () => {
+    const { appels } = monter();
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Lier/ }));
+    fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: /La Cigogne/ }));
+    await waitFor(() => expect(appels.some(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')).toBe(true));
+    expect(await screen.findByText('lié à La Cigogne')).toBeInTheDocument();
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitemcheckbox', { name: /Étoile/ }));
+    expect(document.querySelector('[data-etoile-courbe]')).not.toBeNull();
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Retirer/ }));
+    await waitFor(() => expect(messages().map(m => m.textContent).join(' ')).toMatch(/Retirée de S\d+ · Sans date ›/));
+  });
+
+  it('n° 30 f2-a : tirer le bord de la Blonde fait voir « J0 / 35 » pendant et après, écrit finPrevue et ouvre l’alerte de la promesse', async () => {
+    const { appels } = monter();
+    const b = barre(/^Blonde d’automne, 23 nov/);
+    const grip = b.querySelector('[data-grip]')!;
+    const lc = colonne();
+    fireEvent.pointerDown(grip, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerMove(b, { clientX: 100 + lc, clientY: 10, pointerId: 1 });
+    expect(b.textContent).toMatch(/J0 \/ 35 · prête/);
+    fireEvent.pointerUp(b, { clientX: 100 + lc, clientY: 10, pointerId: 1 });
+    await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && typeof a.patch?.finPrevue === 'string')).toBe(true));
+    expect(await screen.findByRole('alert')).toHaveTextContent(/promis le .+ · prête le/);
+    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35/));
+  });
+
+  it('n° 33 f6-b : décaler la Blonde ouvre « Livrer le … » ; Livrer écrit la date de la vente ; hors de la vue, « Livraison La Cigogne · S53 › »', async () => {
+    const { appels } = monter();
+    glisser(barre(/^Blonde d’automne, 23 nov/), colonne());
+    const alerte = await screen.findByRole('alert');
+    fireEvent.click(within(alerte).getByRole('button', { name: /Livrer le/ }));
+    await waitFor(() => expect(appels.some(a => a.id === 'P-CIGOGNE' && a.patch?.date === '2026-12-29')).toBe(true));
+    const renvoi = await screen.findByRole('button', { name: /Livraison La Cigogne · S53/ });
+    fireEvent.click(renvoi);
+    await waitFor(() => expect(document.querySelector('[data-chose="argent-P-CIGOGNE"]')).not.toBeNull());
+  });
+
+  it('n° 26 : la feuille ouverte et la chose ajoutée survivent au passage portrait ↔ paysage (matchMedia simulé)', async () => {
+    let paysage = false;
+    const ecouteurs = new Set<() => void>();
+    const vrai = window.matchMedia;
+    window.matchMedia = ((q: string) => ({
+      get matches() { return paysage && /landscape/.test(q); }, media: q, onchange: null,
+      addEventListener: (_: string, f: () => void) => ecouteurs.add(f), removeEventListener: (_: string, f: () => void) => ecouteurs.delete(f),
+      addListener: () => undefined, removeListener: () => undefined, dispatchEvent: () => false
+    })) as unknown as typeof window.matchMedia;
+    try {
+      const { appels } = monter();
+      const tourner = (p: boolean) => act(() => { paysage = p; ecouteurs.forEach(f => f()); });
+      fireEvent.click(screen.getByRole('button', { name: 'Ajouter dans Fêtes' }));
+      await screen.findByRole('dialog');
+      tourner(true);
+      expect(document.querySelector('[data-calendrier]')).toHaveAttribute('data-orientation', 'paysage');
+      const d = within(screen.getByRole('dialog'));
+      fireEvent.click(d.getByRole('button', { name: 'Marché de Noël' }));
+      fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+      await waitFor(() => expect(appels.some(a => a.op === 'creer')).toBe(true));
+      const cree = appels.find(a => a.op === 'creer')!;
+      await waitFor(() => expect(document.querySelector(`[data-chose="creatif-${cree.id}"]`)).not.toBeNull());
+      tourner(false);
+      expect(document.querySelector('[data-calendrier]')).toHaveAttribute('data-orientation', 'portrait');
+      expect(document.querySelector(`[data-chose="creatif-${cree.id}"]`)).not.toBeNull();
+    } finally { window.matchMedia = vrai; }
   });
 });
 

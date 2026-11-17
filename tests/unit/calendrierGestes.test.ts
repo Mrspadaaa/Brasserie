@@ -146,7 +146,7 @@ describe('A9 (D-103) : le brassin planifié, ses jalons et le jalon de fin', () 
       expect('ecritures' in r).toBe(false);
     }
     const r = deplacer(chose, 1, ctx({ batches: [b] }), 'dry-hop');
-    expect(!r.ok && r.message.lecture).toBe('Dry hop suit la recette du brassin · Ouvrir le brassin ›');
+    expect(!r.ok && r.message.lecture).toBe('Le dry hop suit la recette du brassin · Ouvrir le brassin ›');
   });
   it('un brassin en cuve : le jour de brassage ne bouge pas (refus « en cuve »), seul le jalon de fin se glisse', () => {
     const b = blonde({ status: 'fermentation', brewDate: '30.11.2026', plannedBrewDate: '28.11.2026' });

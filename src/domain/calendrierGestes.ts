@@ -3,7 +3,7 @@ import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import {
-  ajouterJours, dimancheDe, ecartJours, etiquetteS, finDeBrassin, jalonsBrassin, jourLisible, lundiDe,
+  ajouterJours, dimancheDe, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -11,6 +11,20 @@ import {
   type CourbeCaisse, type EffetCaisse, type MiseDeCote, type MouvementCaisse
 } from './calendrierCaisse';
 import { enregistrementIdee } from './calendrierAjout';
+
+/**
+ * Rattache chaque mouvement de la courbe à la chose qui le porte (`chose.mouvements`) : l'id d'une chose est stable après un déplacement
+ * (`idChoseArgent`), et les caddies d'un brassin regroupés portent les mouvements de leurs lignes. L'aperçu du glisser, l'effet d'un geste
+ * et l'étoile suivent ainsi la bonne chose. Pure ; les montants ne changent pas.
+ */
+export function alignerCourbe(courbe: CourbeCaisse | null, choses: readonly ChoseCalendrier[]): CourbeCaisse | null {
+  if (!courbe) return courbe;
+  const par = new Map<string, string>();
+  for (const c of choses) for (const m of c.mouvements ?? []) par.set(m, c.id);
+  if (!par.size) return courbe;
+  const fixer = <T extends { id: string; choseId?: string }>(m: T): T => { const id = par.get(m.id); return id && id !== m.choseId ? { ...m, choseId: id } : m; };
+  return { ...courbe, mouvements: courbe.mouvements.map(fixer), semaines: courbe.semaines.map(s => ({ ...s, mouvements: s.mouvements.map(fixer) })) };
+}
 
 /**
  * Les gestes du calendrier (E25, E28 à E33), en fonctions pures : une intention (déplacer, allonger, dupliquer, retirer, livrer, mettre de côté,
@@ -185,7 +199,7 @@ export function livrer(promesse: Promesse, ctx: ContexteGestes): Resolution {
   if (!plan) return refus('Cette vente n’existe plus. Ouvre Finances.', { ecran: 'finances' });
   const date = isoDate(plan.date) ?? promesse.jourPromis;
   const jours = ecartJours(date, promesse.livrerLe);
-  const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, `argent-${plan.id}:${date}`, jours) : null;
+  const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, idChoseArgent({ id: `${plan.id}:${date}`, source: plan.recurrence ? 'recurring' : 'plan', planId: plan.id }), jours) : null;
   const effet = effetCaisse(avant, apres);
   return {
     ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { date: promesse.livrerLe, ...(plan.fenetre ? { fenetre: fenetreDecalee(plan.fenetre, jours) } : {}) } }],
@@ -287,7 +301,7 @@ export function accepterVente(chose: ChoseCalendrier, ctx: ContexteGestes): Reso
   const plan = planDe(chose, ctx);
   if (!plan || chose.source.genre !== 'plan' || plan.status !== 'draft') return refus('Cette vente n’est pas une vente probable.');
   const jour = isoDate(plan.date) ?? chose.debut;
-  const mouvement: MouvementCaisse = { id: `${plan.id}:${jour}`, jour, centimes: plan.amountCents, nom: plan.title, choseId: `argent-${plan.id}:${jour}` };
+  const mouvement: MouvementCaisse = { id: `${plan.id}:${jour}`, jour, centimes: plan.amountCents, nom: plan.title, choseId: idChoseArgent({ id: `${plan.id}:${jour}`, source: 'plan', planId: plan.id }) };
   const apres = ctx.courbe && plan.amountCents > 0 ? courbeAvec(ctx.courbe, [mouvement]) : ctx.courbe;
   const effet = effetCaisse(ctx.courbe, apres);
   return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { status: 'active' } }], effet, promesse: null, courbeApres: apres, message: annuler(effet ? `Vente acceptée · ${effet.texte}` : 'Vente acceptée') };

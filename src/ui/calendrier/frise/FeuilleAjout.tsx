@@ -1,19 +1,23 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aUneFenetre, aUnMontant, brouillonVide, choisirJours, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aUneFenetre, aUnMontant, brouillonVide, choisirJours, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { RANGEES, etiquetteS, francs, jourLisible, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
+import './feuille.css';
 
 /**
  * La feuille d'ajout (E34, E45 ; as passes 5 à 9, la feuille du + volant et du carré de rangée). Sans clavier pour les cas courants :
- * le choix de la rangée, des puces (recettes et temps en cuve, clients et ventes probables, noms récents), le signe à toucher, les
- * semaines qui défilent (le début, puis la fin, E45), les jours actifs en puces. Les champs (nom, CHF) restent pour le cas rare.
- * Tout le calcul est dans `domain/calendrierAjout.ts` ; cette feuille ne fait que le montrer et le régler.
+ * le choix de la rangée, des puces (recettes et temps en cuve, clients et ventes probables, noms récents avec leur montant), le signe et
+ * les montants récents à toucher, les semaines qui défilent (le début, puis la fin, E45), les jours actifs en puces. Les champs (nom, CHF)
+ * restent pour le cas rare. Tout le calcul est dans `domain/calendrierAjout.ts` ; cette feuille ne fait que le montrer et le régler.
+ *
+ * Mise en page (feuille.css) : au 1280, la feuille est centrée sur le contenu (à droite du rail), 620 px, comme la vue large (E10) ; en
+ * paysage, le corps se resserre et défile au-dessus du pied (Ajouter) qui reste fixe. Le Sheet des autres écrans ne change pas.
  */
 
 export type ResultatAjout = { ok: true } | { ok: false; raison: string; confirmer?: Confirmation };
@@ -23,7 +27,7 @@ export interface FeuilleAjoutProps {
   /** Le brouillon de départ : une rangée et une semaine préréglées, ou une proposition acceptée (E47), ou une chose à modifier. */
   initial: BrouillonAjout;
   contexte: ContexteAjout;
-  /** Les 52 semaines de la courbe : la rangée des semaines défile dessus (13 à l'écran, comme le jouable). */
+  /** Les 52 semaines de la courbe : la rangée des semaines défile dessus (13 à l'écran en paysage et au 1280). */
   semaines: readonly SemaineCalendrier[];
   /** La feuille ne propose pas « Plus de détails › » quand la semaine n'y passerait pas (une proposition de brassin habituel, E47 b). */
   sansPlusDeDetails?: boolean;
@@ -34,6 +38,30 @@ export interface FeuilleAjoutProps {
 }
 
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
+
+const PUCE = 'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850';
+
+/** Le montant qu'une puce pose avec elle (nom récent, client, vente probable) ; `null` : aucun montant connu, rien n'est inventé. */
+function montantDePuce(p: Puce): { texte: string; signe: '+' | '-' } | null {
+  if (p.genre === 'nom' && p.centimes) return { texte: libelleMontant(p.centimes, p.signe ?? '+'), signe: p.signe ?? '+' };
+  if ((p.genre === 'client' || p.genre === 'vente-probable') && p.centimes) return { texte: libelleMontant(p.centimes, '+'), signe: '+' };
+  return null;
+}
+
+/** Une puce de nom, de client ou de vente probable. Son nom accessible est son libellé ; le montant qu'elle pose la décrit. */
+function PuceNom({ p, choisie, onChoisir }: { p: Puce; choisie: boolean; onChoisir: () => void }) {
+  const id = useId();
+  const m = montantDePuce(p);
+  const nom = p.genre === 'vente-probable' ? `Vente probable : ${p.libelle}` : p.libelle;
+  return (
+    <button type="button" aria-pressed={choisie} onClick={onChoisir} data-puce={p.genre} className={PUCE}
+      {...(m ? { 'aria-label': nom, 'aria-describedby': id } : p.genre === 'vente-probable' ? { 'aria-label': nom } : {})}>
+      {p.genre === 'vente-probable' && <span className="text-xs text-cave-200" aria-hidden="true">probable</span>}
+      <span>{p.libelle}</span>
+      {m && <span id={id} className={`cal-f-m ${m.signe === '+' ? 'text-hop-texte' : 'text-alert-strong'}`}>{m.texte}</span>}
+    </button>
+  );
+}
 
 export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, contexte, semaines, sansPlusDeDetails, onPlusDeDetails, onAjouter, onFermer }) => {
   /* un brassin se pose avec son temps en cuve déjà choisi (28 j) : « prête le … » se lit d'emblée (D-22, D-39) */
@@ -51,6 +79,14 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const resume = resumeFenetre(b);
   const prete = preteLe(b);
 
+  /* la semaine choisie (préréglée, proposée : S26) est dans l'écran à l'ouverture, centrée dans la rangée qui défile (comme le jouable) */
+  useLayoutEffect(() => {
+    const rangee = rangeeSemaines.current;
+    const choisie = rangee?.querySelector<HTMLElement>('button[aria-pressed="true"]');
+    if (rangee && choisie) rangee.scrollLeft = Math.max(0, choisie.offsetLeft - (rangee.clientWidth - choisie.offsetWidth) / 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [b.rangee]);
+
   const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(suite); };
   const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(avecDefauts(brouillonVide(r, b.debut))); };
   const choisirPuce = (p: Puce) => regler(appliquerPuce(b, p));
@@ -61,6 +97,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
       case 'client': return b.clientId === p.clientId;
       case 'vente-probable': return b.titre === p.libelle;
       case 'nom': return b.titre.trim().toLocaleLowerCase('fr') === p.libelle.toLocaleLowerCase('fr');
+      case 'montant': return b.centimes === p.centimes && b.signe === p.signe;
     }
   };
 
@@ -76,6 +113,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const montrerPuces = (genres: Puce['genre'][]) => lesPuces.filter(p => genres.includes(p.genre));
   const puces1 = brassin ? montrerPuces(['recette']) : b.rangee === 'ventes' ? montrerPuces(['vente-probable', 'client']) : montrerPuces(['nom']);
   const temps = brassin ? montrerPuces(['temps']) : [];
+  const montants = argent ? montrerPuces(['montant']) : [];
   const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
 
   return (
@@ -84,8 +122,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
       onClose={onFermer}
       title={nomRangee(b.rangee)}
       subtitle={mode === 'modifier' ? 'Modifier' : 'Ajouter'}
+      className="cal-feuille lg:left-[var(--rail-width,88px)] lg:mx-auto lg:max-w-[620px] lg:rounded-t-sheet"
       footer={(
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" data-feuille-pied>
           {!sansPlusDeDetails && onPlusDeDetails && RANGEES_AVEC_DETAILS.includes(b.rangee) && (
             <button type="button" onClick={() => onPlusDeDetails(b)} className="min-h-11 shrink-0 rounded-control px-3 text-sm font-semibold text-cave-200 underline underline-offset-2">Plus de détails ›</button>
           )}
@@ -99,8 +138,8 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         </div>
       )}
     >
-      <div className="space-y-3 px-3 pb-3 text-sm" data-feuille-rangee={b.rangee} data-mode={mode}>
-        <div role="group" aria-label="Quoi" className="flex flex-wrap gap-1.5">
+      <div className="cal-feuille-corps space-y-3 px-3 pb-3 text-sm" data-feuille-rangee={b.rangee} data-mode={mode}>
+        <div role="group" aria-label="Quoi" data-feuille-quoi className="flex flex-wrap gap-1.5">
           {RANGEES.map(r => (
             <button
               key={r.id}
@@ -108,7 +147,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               aria-pressed={r.id === b.rangee}
               onClick={() => choisirRangee(r.id)}
               disabled={mode === 'modifier'}
-              className={`${CLASSE_TEINTE[r.id]} inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm font-semibold text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 disabled:opacity-60`}
+              className={`${CLASSE_TEINTE[r.id]} inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm font-semibold text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 disabled:opacity-60`}
             >
               <i aria-hidden="true" className="cal-pt-teinte" />{r.nom}
             </button>
@@ -116,36 +155,31 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         </div>
 
         {puces1.length > 0 && (
-          <div role="group" aria-label={brassin ? 'Recettes' : b.rangee === 'ventes' ? 'Clients et ventes probables' : 'Noms récents'} className="flex flex-wrap gap-1.5">
-            {puces1.map(p => (
-              <button key={p.id} type="button" aria-pressed={puceChoisie(p)} onClick={() => choisirPuce(p)}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850"
-                data-puce={p.genre}>
-                {p.genre === 'vente-probable' && <span className="text-xs text-cave-200">probable</span>}
-                <span>{p.libelle}</span>
-                {p.genre === 'vente-probable' && p.centimes !== undefined && <span className="font-mono text-hop-texte">+{francs(p.centimes)}</span>}
-              </button>
-            ))}
+          <div role="group" aria-label={brassin ? 'Recettes' : b.rangee === 'ventes' ? 'Clients et ventes probables' : 'Noms récents'} data-feuille-puces className="flex flex-wrap gap-1.5">
+            {puces1.map(p => <PuceNom key={p.id} p={p} choisie={puceChoisie(p)} onChoisir={() => choisirPuce(p)} />)}
           </div>
         )}
 
         {argent && (
-          <div className="flex items-end gap-2">
+          <div role="group" aria-label="Montant" data-feuille-montant className="flex flex-wrap items-center gap-1.5">
+            <span className="w-full text-sm text-cave-200">CHF{b.rangee === 'activites' ? ' (facultatif)' : ''}</span>
             <button
               type="button"
               aria-label={b.signe === '-' ? 'Dépense (toucher : rentrée)' : 'Rentrée (toucher : dépense)'}
               onClick={() => regler({ ...b, signe: b.signe === '-' ? '+' : '-' })}
               className={`min-h-10 w-10 shrink-0 rounded-control border-2 text-lg font-bold ${b.signe === '-' ? 'border-alert text-alert-strong' : 'border-hop text-hop-texte'}`}
             >{b.signe === '-' ? '−' : '+'}</button>
-            <label className="block flex-1">
-              <span className="mb-0.5 block text-sm text-cave-200">CHF{b.rangee === 'activites' ? ' (facultatif)' : ''}</span>
-              <ChampMontant
-                value={b.centimes !== undefined ? b.centimes / 100 : undefined}
-                onValue={v => regler({ ...b, centimes: v !== undefined && v > 0 ? Math.round(v * 100) : undefined })}
-                max={10_000_000} maxDecimales={2} aria-label="Montant en CHF" placeholder="CHF"
-                className="min-h-10 w-full rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
-              />
-            </label>
+            {montants.map(p => (
+              <button key={p.id} type="button" aria-pressed={puceChoisie(p)} onClick={() => choisirPuce(p)} data-puce="montant"
+                className={`${PUCE} cal-f-m ${p.genre === 'montant' && p.signe === '+' ? 'text-hop-texte' : 'text-alert-strong'}`}>{p.libelle}</button>
+            ))}
+            {/* le champ est le repli (un montant nouveau) : court, il ne prend pas la ligne */}
+            <ChampMontant
+              value={b.centimes !== undefined ? b.centimes / 100 : undefined}
+              onValue={v => regler({ ...b, centimes: v !== undefined && v > 0 ? Math.round(v * 100) : undefined })}
+              max={10_000_000} maxDecimales={2} aria-label="Montant en CHF" placeholder="CHF"
+              className="cal-f-chf min-h-10 w-28 rounded-control border border-cave-700 bg-cave-950 px-2 text-right text-base text-cave-50"
+            />
           </div>
         )}
 
@@ -166,14 +200,14 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             {resume && <b className="text-sm text-cave-50" data-fenetre>{resume}</b>}
             {!resume && b.debut && <span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(b.debut)}</span>}
           </div>
-          <div ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag className="flex gap-1 overflow-x-auto pb-1" style={{ touchAction: 'pan-x' }}>
+          <div ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag className="cal-f-semaines relative flex gap-1 overflow-x-auto pb-1" style={{ touchAction: 'pan-x' }}>
             {semaines.map(s => {
               const dans = !!b.debut && s.debut >= b.debut && (b.fin ? s.debut <= b.fin : s.debut === b.debut);
               return (
                 <button
                   key={s.debut} type="button" data-semaine={s.debut} aria-pressed={s.debut === b.debut || s.debut === b.fin} data-dans={dans ? '' : undefined}
                   onClick={() => regler(toucherSemaine(b, s.debut))}
-                  className="flex min-h-11 w-[calc((100%-48px)/13)] min-w-12 shrink-0 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 data-[dans]:bg-cave-850"
+                  className="cal-f-sem flex min-h-11 shrink-0 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 data-[dans]:bg-cave-850"
                 >
                   <b className="text-sm">S{s.numero}</b>
                   <small className="text-xs text-cave-200">{jourLisible(s.debut)}</small>

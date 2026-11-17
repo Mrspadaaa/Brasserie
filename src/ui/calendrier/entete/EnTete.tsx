@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { ChevronDown, Clock, Maximize2, Minimize2 } from 'lucide-react';
 import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
-import { creuxDepuis, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
+import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
-import { Courbe, CourbeZoom, HAUTEUR_MOIS, ajouterJours, chf, jourCourt } from './Courbe';
-import { Cadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from './Fenetre';
+import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine } from './Courbe';
+import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode } from './MenuPeriode';
@@ -65,7 +65,7 @@ export interface EnTeteCalendrierProps {
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
 const COLONNE_T = 214;
-const HAUTEUR_COURBE = { portrait: 100, paysage: 74 };
+const HAUTEUR_COURBE = { portrait: 110, paysage: 74 };
 const MESSAGE_ANNEE = 'Tire jusqu’au bout : l’année';
 const INVITATION = 'Tourne le téléphone : 13 semaines';
 
@@ -85,7 +85,7 @@ function useMesure(ref: React.RefObject<HTMLElement | null>): number {
   return w;
 }
 
-type Info = { genre: 'message' | 'invite' | 'date'; texte: string; colonne?: number; colonnes?: number };
+type Info = { genre: 'message' | 'invite' | 'date'; texte: string; colonne?: number; colonnes?: number; cle?: string };
 
 export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const { modele, fenetre, onFenetre, periode, onPeriode, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer } = props;
@@ -110,6 +110,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const racine = useRef<HTMLDivElement>(null);
   const cadreCourbe = useRef<HTMLDivElement>(null);
   const cadreGrande = useRef<HTMLDivElement>(null);
+  const boutonPeriode = useRef<HTMLButtonElement>(null);
   const mesure = useMesure(zone);
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
   const repli = paysage && !graph ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
@@ -264,15 +265,32 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, [modele.choses]);
   const nomsMisDeCote = useMemo(() => (modele.choses ?? []).filter(c => c.miseDeCote).map(c => c.titre), [modele.choses]);
 
+  // Un toucher sur une semaine donne sa date ; un deuxième toucher sur la même l'efface (E04, D-158).
   const touche = (lundi: string, colonne: number) => {
-    montrer({ genre: 'date', texte: dateDeSemaine(lundi), colonne, colonnes: Math.max(1, visibles.length) }, 3000);
+    if (info?.genre === 'date' && info.cle === lundi) {
+      if (minuterie.current) clearTimeout(minuterie.current);
+      minuterie.current = null;
+      setInfo(null);
+      return;
+    }
+    montrer({ genre: 'date', texte: dateDeSemaine(lundi), colonne, colonnes: Math.max(1, visibles.length), cle: lundi }, 3000);
   };
 
+  // La mise de côté nommée sur la courbe (E03) : celle du creux, sinon la plus haute (calendrierCaisse, A10).
+  const miseCourbe = useMemo(() => {
+    if (!base || apercuC) return null;
+    const m = miseDeCoteVisible(base, creux);
+    return m ? { i: m.index, centimes: m.centimes, titres: m.titres } : null;
+  }, [base, apercuC, creux]);
+  // Dans l'année, le cadre dit les mois (c1-d : « nov. – oct. »).
+  // Les douze mois de la bande de l'année (le premier, puis onze de plus : « nov. – oct. »), pas le treizième que touche la 52e semaine.
+  const etiquetteAnnee = total ? `${MOIS_MIN[moisDeSemaine(semainesTot[0].debut)]} – ${MOIS_MIN[(moisDeSemaine(semainesTot[0].debut) + 11) % 12]}` : undefined;
+
+  // Le chiffre clé sur UNE ligne, comme z2s (« 113 CHF à dépenser · S24 ») ; la phrase entière est dans son nom accessible (E01, D-181).
   const cle = courbe && creux ? (
     <button type="button" className="ent-k" data-ent-cle aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (S${creux.numero}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
-      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u"> CHF à dépenser</span>
-      <span className="ent-k-s">sans passer sous 0 · <em>{`S${creux.numero}`}</em></span>
+      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser ·</span><em>{`S${creux.numero}`}</em>
     </button>
   ) : <span className="ent-k ent-k-vide" />;
 
@@ -282,8 +300,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} /> : cle}
         <span className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
-          <button type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
-            {libelle}<ChevronDown size={16} strokeWidth={2.4} aria-hidden="true" />
+          <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
+            {libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
             <button type="button" className="ent-ret-b" aria-label={titreRetards(retards.length)} onClick={() => setRetardsOuverts(true)}><Clock size={16} strokeWidth={2.4} aria-hidden="true" />{retards.length}</button>
@@ -298,7 +316,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {graph && courbeC && courbe ? (
           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={cadreGrande} gestes={gestesGrande} />
         ) : courbe && base ? (
-          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={cadreCourbe} gestes={apercuC ? undefined : gestes} cadre={apercuC ? undefined : { index, nombre }}>
+          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={cadreCourbe} gestes={apercuC ? undefined : gestes} mise={miseCourbe}
+            cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>
                 <CourbeZoom avant={base.semaines.slice(index, index + nombre).map(s => s.libre)} apres={apercuC.semaines.slice(index, index + nombre).map(s => s.libre)} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} />
@@ -306,7 +325,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTropCourt={() => montrer({ genre: 'message', texte: MESSAGE_ANNEE }, 4000)} />
+                onTropCourt={() => montrer({ genre: 'message', texte: MESSAGE_ANNEE }, 4000)} etiquetteAnnee={etiquetteAnnee} />
             )}
           </Courbe>
         ) : base === null ? (
@@ -332,7 +351,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
-        <MenuPeriode plage={plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
+        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue('semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}

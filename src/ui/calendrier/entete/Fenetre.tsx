@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { bornes, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
-import { ajouterJours } from './Courbe';
+import { ajouterJours, lignesEtiquette } from './Courbe';
 
 /**
  * La fenêtre (E06, c1-d) : le cadre posé sur la courbe, ses deux poignées, l'étiquette « S47 – S52 » qui suit le doigt ; et le lien avec la
@@ -64,18 +64,30 @@ export interface CadreProps {
   onRevient?: () => void;
   /** Lâchée avant : la fenêtre revient et le message le dit. */
   onTropCourt?: () => void;
+  /** Dans l'année, l'étiquette dit les mois (« nov. – oct. »), jamais « S47 – S45 » (c1-d). */
+  etiquetteAnnee?: string;
 }
 
-export function Cadre({ numeros, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt }: CadreProps) {
+/** L'étiquette du cadre : les semaines, ou les mois dans l'année. */
+export function etiquetteCadre(numeros: readonly number[], index: number, nombre: number, annee: boolean, etiquetteAnnee?: string): string {
+  if (annee && etiquetteAnnee) return etiquetteAnnee;
+  const total = numeros.length;
+  return `S${numeros[index] ?? ''} – S${numeros[Math.min(total - 1, index + nombre - 1)] ?? ''}`;
+}
+
+export function Cadre({ numeros, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, etiquetteAnnee }: CadreProps) {
   const total = numeros.length;
   const unit = largeur / Math.max(1, total);
   const [drag, setDrag] = useState<{ index: number; nombre: number } | null>(null);
   const cur = drag ?? (annee ? { index: 0, nombre: total } : { index, nombre });
-  const etiquette = `S${numeros[cur.index] ?? ''} – S${numeros[Math.min(total - 1, cur.index + cur.nombre - 1)] ?? ''}`;
+  const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee);
+  const lignes = lignesEtiquette(etiquette, cur.nombre * unit);
 
   const demarrer = (genre: 'debut' | 'fin') => (e: React.PointerEvent<HTMLButtonElement>) => {
     if (e.button > 0 || total === 0) return;
     e.stopPropagation();
+    // Le doigt reste à la poignée même s'il sort du cadre (vrai toucher : Pointer Events, capture ; `touch-action: none` en CSS).
+    try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* jsdom, pointeur déjà levé */ }
     const id = e.pointerId, x0 = e.clientX;
     const gauche = index * unit, w0 = nombre * unit;
     let bouge = false, droite = gauche + w0, dernier = index;
@@ -120,7 +132,7 @@ export function Cadre({ numeros, index, nombre, largeur, annee, onChange, onAnne
   return (
     <div className="ent-cadre" role="group" aria-label={`Fenêtre : ${etiquette}`} data-annee={annee ? 'oui' : undefined} data-glisse={drag ? 'oui' : undefined}
       style={{ left: cur.index * unit, width: cur.nombre * unit }}>
-      <span className="ent-cadre-l">{etiquette}</span>
+      <span className="ent-cadre-l" data-cadre-etiquette>{lignes.map(l => <span key={l}>{l}</span>)}</span>
       <button type="button" className="ent-poi ent-poi-debut" aria-label={annee ? 'Revenir à la fenêtre d’avant' : `Poignée de début : déplacer la fenêtre, elle commence en S${numeros[cur.index]}`}
         onPointerDown={demarrer('debut')} onKeyDown={clavierDebut}><i aria-hidden="true" /></button>
       <button type="button" className="ent-poi ent-poi-fin" aria-label={annee ? 'Revenir à la fenêtre d’avant' : 'Poignée de fin : tirer jusqu’au bout pour l’année'}
