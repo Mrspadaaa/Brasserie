@@ -27,13 +27,21 @@ export const RAISONS = ['moins cher', 'plus proche', 'livre vite', 'qualité con
 export interface ReglagesFournisseurs {
   /** Nom absorbé → nom gardé. */
   reunis: Record<string, string>;
-  /** Pourquoi on l'a pris : les raisons touchées, et le jour (AAAA-MM-JJ). */
-  raisons: Record<string, { raisons: string[]; le: string }>;
+  /** « Tes choix ici » : pourquoi on l'a pris (raisons touchées), le jour (AAAA-MM-JJ), et en trois mots écrits à la main pour quoi, qui on a écarté, quand le revoir. */
+  raisons: Record<string, ChoixFournisseur>;
   /** « Pas maintenant » : la proposition de réunir se range en une ligne. */
   plusTard: string[];
+  /** « Nouveau fournisseur » : ajoutés à la main (nom, pays, site), avant toute facture. */
+  ajoutes: FournisseurAjoute[];
+  /** « Commande passée » : le jour de la commande, puis celui de la réception ; l'écart est le délai appris. Clés = `vendorKey`. */
+  commandes: Record<string, CommandePassee[]>;
 }
-export const REGLAGES_VIDES: ReglagesFournisseurs = { reunis: {}, raisons: {}, plusTard: [] };
+export interface ChoixFournisseur { raisons: string[]; le: string; pour?: string; ecartes?: string; revoir?: string }
+export interface FournisseurAjoute { nom: string; pays?: string; site?: string }
+export interface CommandePassee { le: string; recue?: string }
+export const REGLAGES_VIDES: ReglagesFournisseurs = { reunis: {}, raisons: {}, plusTard: [], ajoutes: [], commandes: {} };
 
+const JOUR_ISO = /^\d{4}-\d{2}-\d{2}$/;
 const estTexte = (v: unknown): v is string => typeof v === 'string' && v.length > 0;
 /** Ce que le stockage rend, validé : une valeur abîmée donne des réglages vides, jamais une erreur. */
 export function reglagesValides(v: unknown): ReglagesFournisseurs {
@@ -45,11 +53,41 @@ export function reglagesValides(v: unknown): ReglagesFournisseurs {
   if (o.raisons && typeof o.raisons === 'object') {
     for (const [k, r] of Object.entries(o.raisons as Record<string, unknown>)) {
       const x = r as { raisons?: unknown; le?: unknown };
-      if (Array.isArray(x?.raisons) && x.raisons.every(estTexte) && typeof x.le === 'string') raisons[k] = { raisons: x.raisons as string[], le: x.le };
+      if (Array.isArray(x?.raisons) && x.raisons.every(estTexte) && typeof x.le === 'string') {
+        const y = r as ChoixFournisseur;
+        raisons[k] = { raisons: x.raisons as string[], le: x.le, ...(estTexte(y.pour) ? { pour: y.pour } : {}), ...(estTexte(y.ecartes) ? { ecartes: y.ecartes } : {}), ...(estTexte(y.revoir) ? { revoir: y.revoir } : {}) };
+      }
     }
   }
   const plusTard = Array.isArray(o.plusTard) ? o.plusTard.filter(estTexte) : [];
-  return { reunis, raisons, plusTard };
+  const ajoutes: FournisseurAjoute[] = Array.isArray(o.ajoutes)
+    ? o.ajoutes.flatMap((a): FournisseurAjoute[] => {
+      const x = a as Partial<FournisseurAjoute>;
+      return estTexte(x?.nom) ? [{ nom: x.nom, ...(estTexte(x.pays) ? { pays: x.pays } : {}), ...(estTexte(x.site) ? { site: x.site } : {}) }] : [];
+    })
+    : [];
+  const commandes: Record<string, CommandePassee[]> = {};
+  if (o.commandes && typeof o.commandes === 'object') {
+    for (const [k, l] of Object.entries(o.commandes as Record<string, unknown>)) {
+      if (!Array.isArray(l)) continue;
+      const ok = l.flatMap((c): CommandePassee[] => {
+        const x = c as Partial<CommandePassee>;
+        return typeof x?.le === 'string' && JOUR_ISO.test(x.le) ? [{ le: x.le, ...(typeof x.recue === 'string' && JOUR_ISO.test(x.recue) ? { recue: x.recue } : {}) }] : [];
+      });
+      if (ok.length) commandes[k] = ok;
+    }
+  }
+  return { reunis, raisons, plusTard, ajoutes, commandes };
+}
+
+const MS_JOUR = 86_400_000;
+const jourUtc = (iso: string) => Date.parse(`${iso}T12:00:00Z`);
+/** Le délai appris : la médiane des jours entre une commande et sa réception ; `null` tant qu'aucune commande n'est reçue (jamais 0). */
+export function delaiAppris(commandes: CommandePassee[] | undefined): { jours: number; sur: number } | null {
+  const ecarts = (commandes ?? []).flatMap(c => c.recue ? [Math.round((jourUtc(c.recue) - jourUtc(c.le)) / MS_JOUR)] : []).filter(n => Number.isFinite(n) && n >= 0).sort((a, b) => a - b);
+  if (!ecarts.length) return null;
+  const m = ecarts.length >> 1;
+  return { jours: ecarts.length % 2 ? ecarts[m] : Math.round((ecarts[m - 1] + ecarts[m]) / 2), sur: ecarts.length };
 }
 
 /** Réunir des noms sous un nom gardé : les noms déjà réunis sous un nom absorbé le suivent. */
@@ -121,8 +159,14 @@ export interface FicheFournisseur {
   candidats: Candidat[];
   /** Vrai : ajouté depuis le stock, aucune facture. */
   sansFacture: boolean;
-  /** Le délai de commande à livraison : aucune date de commande n'est notée, donc inconnu (jamais 0). */
+  /** Le délai de la commande à chez soi, appris des commandes reçues ; `null` tant qu'aucune ne l'est (jamais 0). */
   delaiJours: number | null;
+  /** Combien de commandes reçues ont appris ce délai. */
+  delaiSur: number;
+  /** La commande passée et pas encore reçue (la plus récente), avec son jour. */
+  commandeOuverte: { index: number; le: string; date: string } | null;
+  /** Ajouté à la main : pays et site, quand il les a donnés. */
+  infos: { pays?: string; site?: string };
 }
 export interface LigneListe {
   cle: string; nom: string; factures: number; noms: number; sansFacture: boolean; delaiJours: number | null;
@@ -164,6 +208,16 @@ export function analyserFournisseurs(transactions: Transaction[], articlesStock:
     const g = groupes.get(cle) ?? { cle, ecrits: new Map(), txs: [] };
     if (!g.txs.length) g.ecrits.set(nom!, (g.ecrits.get(nom!) ?? 0) + 1);
     groupes.set(cle, g);
+  }
+  // Les fournisseurs ajoutés à la main : une fiche vide, avec ce qu'il en a dit.
+  const infosDe = new Map<string, { pays?: string; site?: string }>();
+  for (const a of reglages.ajoutes) {
+    const cle = vendorKey(a.nom);
+    if (!cle) continue;
+    const g = groupes.get(cle) ?? { cle, ecrits: new Map(), txs: [] };
+    if (!g.txs.length && !g.ecrits.size) g.ecrits.set(a.nom, 1);
+    groupes.set(cle, g);
+    infosDe.set(cle, { ...(a.pays ? { pays: a.pays } : {}), ...(a.site ? { site: a.site } : {}) });
   }
   const parRef = new Map(articlesStock.map(a => [a.ref, a]));
 
@@ -227,16 +281,23 @@ export function analyserFournisseurs(transactions: Transaction[], articlesStock:
     const caches = new Set<string>();
     for (const c of candidats) for (const p of prixParVue.get(c.cle) ?? []) if (!vus.has(`${p.cle}|${p.unite}`)) caches.add(`${p.cle}|${p.unite}`);
 
+    // Les commandes de la fiche et des noms réunis sous elle : le délai s'apprend sur toutes.
+    const commandes = v.groupes.flatMap(g => reglages.commandes[g.cle] ?? []);
+    const appris = delaiAppris(commandes);
+    const ouvertes = (reglages.commandes[v.cle] ?? []).map((c, index) => ({ c, index })).filter(x => !x.c.recue).sort((a, b) => b.c.le.localeCompare(a.c.le));
+    const commandeOuverte = ouvertes[0] ? { index: ouvertes[0].index, le: ouvertes[0].c.le, date: dateFiche(ouvertes[0].c.le) } : null;
     fiches.set(v.cle, {
       cle: v.cle, nom: v.nom, familles, aussiEcrit, factures, totalCents: factures.reduce((s, f) => s + f.cents, 0),
-      articles, articlesCaches: caches.size, candidats, sansFacture: v.txs.length === 0, delaiJours: null
+      articles, articlesCaches: caches.size, candidats, sansFacture: v.txs.length === 0,
+      delaiJours: appris?.jours ?? null, delaiSur: appris?.sur ?? 0, commandeOuverte, infos: infosDe.get(v.cle) ?? {}
     });
   }
 
   const plusFournis = (f: FicheFournisseur): FicheFournisseur | undefined => [...fiches.values()]
     .filter(o => o.candidats.some(c => c.cle === f.cle) && (o.factures.length > f.factures.length || (o.factures.length === f.factures.length && o.nom.localeCompare(f.nom, 'fr') < 0)))
     .sort((a, b) => b.factures.length - a.factures.length)[0];
-  const liste = [...fiches.values()].map(f => ({
+  // Une ligne par fournisseur : un nom proche d'un plus fourni se lit dans sa fiche (« Écrit de 3 façons »), pas en double ici ; seul un « Pas maintenant » le remet en liste.
+  const liste = [...fiches.values()].filter(f => { const o = plusFournis(f); return !o || reglages.plusTard.includes(o.cle); }).map(f => ({
     cle: f.cle, nom: f.nom, factures: f.factures.length, noms: 1 + f.candidats.length, sansFacture: f.sansFacture, delaiJours: f.delaiJours, procheDe: plusFournis(f)?.nom
   })).sort((a, b) => b.factures - a.factures || a.nom.localeCompare(b.nom, 'fr'));
   return { liste, fiches };

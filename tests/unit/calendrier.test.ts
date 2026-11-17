@@ -63,6 +63,30 @@ describe('voie Brassins', () => {
   });
 });
 
+describe('voie Brassins : la barre court jusqu’à la fin prévue par la recette', () => {
+  const etapes = [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 10 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 7 }];
+  it('brassé le 12.11, 17 jours prévus : fin le 29.11, soit S48', () => {
+    const ipa = evenementsBrassins([lot({ recipeSnapshot: { fermentation: etapes } as unknown as Batch['recipeSnapshot'] })], semaines, AUJOURDHUI, () => 4)[0];
+    expect(ipa).toMatchObject({ a: 0, b: 1 });
+    expect(ipa.detail).toContain('fin prévue le 29.11');
+  });
+  it('sans jours dans la recette, rien n’est inventé : la barre reste à la semaine courante', () => {
+    expect(evenementsBrassins([lot({})], semaines, AUJOURDHUI, () => 4)[0]).toMatchObject({ a: 0, b: 0 });
+  });
+  it('au-delà des six semaines, la barre va jusqu’au bord', () => {
+    const long = [{ kind: 'garde', name: 'Garde', tempC: 4, days: 90 }];
+    expect(evenementsBrassins([lot({ recipeSnapshot: { fermentation: long } as unknown as Batch['recipeSnapshot'] })], semaines, AUJOURDHUI, () => 4)[0].b).toBe(5);
+  });
+});
+
+describe('voie Achats : un titre court, le reste dans le détail', () => {
+  it('« Emballage · Triple d’automne » ; « date estimée » et « à compléter » passent au détail', () => {
+    const sortie = evenementsArgent([{ id: 'b1', date: '2026-11-24', label: 'Triple d’automne · emballage · date estimée · partiel, à compléter : emballage', amountCents: 5000, direction: 'out', source: 'brew', category: 'packaging', partial: ['emballage'] } as ForecastItem], semaines);
+    expect(sortie[0].titre).toBe('Emballage · Triple d’automne');
+    expect(sortie[0].detail).toBe('le 24.11 · date estimée · à compléter : emballage');
+  });
+});
+
 describe('voie Événements', () => {
   const item = (p: Partial<CreativeItem>): CreativeItem => ({ id: 'e1', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-12', ...p });
   it('seuls les événements datés, dans la fenêtre, pas faits', () => {

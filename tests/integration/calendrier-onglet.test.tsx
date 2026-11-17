@@ -7,6 +7,7 @@ import { BottomNav } from '../../src/components/BottomNav';
 import { plusMenuFor } from '../../src/domain/plusEcran';
 import { fabActionFor } from '../../src/domain/fabActions';
 import { semainesDe } from '../../src/domain/calendrier';
+import { usePlusPageActions } from '../../src/ui/plusPage';
 import { todayISO } from '../../src/domain/finance/ledger';
 
 afterEach(cleanup);
@@ -15,7 +16,8 @@ const aujourdhui = todayISO();
 const semaines = semainesDe(aujourdhui);
 const suisse = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 const props = (batches: Batch[]) => ({
-  transactions: [], batches, stockItems: [], onOpenBatch: vi.fn(), onOpenFinances: vi.fn(), onOpenAgenda: vi.fn()
+  transactions: [], batches, stockItems: [], onOpenBatch: vi.fn(), onOpenFinances: vi.fn(), onOpenAgenda: vi.fn(),
+  onOpenCourses: vi.fn(), onPoserBrassin: vi.fn(), onPoserFete: vi.fn(), onPoserDepense: vi.fn()
 });
 const planifie = (semaine: number): Batch => ({ id: 'B-040', name: 'Porter d’hiver', status: 'planifie', brewDate: '', plannedBrewDate: suisse(semaines[semaine].debut) } as unknown as Batch);
 
@@ -27,9 +29,18 @@ describe('Onglet Calendrier (onglet/v1)', () => {
     expect(screen.getByRole('button', { name: 'Calendrier' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('le + du Calendrier propose d’abord un brassin', () => {
-    expect(fabActionFor('calendrier').intent).toBe('newBatch');
+  it('le + du Calendrier : pas d’action pleine, ses trois gestes viennent de l’écran, avec la semaine touchée', () => {
+    expect(fabActionFor('calendrier').intent).toBe('quickAction');
     expect(plusMenuFor('calendrier').ecran).toBe('calendrier');
+    const p = props([]);
+    function Lecteur() { const decl = usePlusPageActions(); return <ul>{decl?.actions.map(a => <li key={a.id}>{a.label}</li>)}</ul>; }
+    render(<><CalendrierTab {...p} /><Lecteur /></>);
+    expect(screen.getByText(/^Poser un brassin en S\d+$/)).toBeInTheDocument();
+    expect(screen.getByText('Poser une fête ou un marché')).toBeInTheDocument();
+    expect(screen.getByText(/^Prévoir une dépense en S\d+$/)).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('tab')[2]);
+    const sem = semaines[2].numero;
+    expect(screen.getByText(`Poser un brassin en S${sem}`)).toBeInTheDocument();
   });
 
   it('sans rien de posé, l’écran le dit sans exemple inventé', () => {

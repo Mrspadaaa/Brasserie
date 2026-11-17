@@ -6,6 +6,10 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { buildForecast } from '../../domain/finance/forecast';
 import { formatCHF, todayISO } from '../../domain/finance/ledger';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
+import { fermentationReadings } from '../../domain/fermentationReadings';
+import { articlesACommander } from '../../domain/stockLevel';
+import { vueHorizon, etiquetteSemaine } from '../../domain/stock/horizon';
+import { usePlusPage } from '../../ui/plusPage';
 import {
   VOIES, duneSemaine, evenementsAgenda, evenementsArgent, evenementsBrassins, semainesDe, totalVoie,
   type EvenementCalendrier, type VoieCalendrier
@@ -27,10 +31,19 @@ interface CalendrierTabProps {
   onOpenBatch: (batchId: string) => void;
   onOpenFinances: () => void;
   onOpenAgenda: () => void;
+  /** Les courses (Stocks › Courses), pour la tâche « Commander pour… ». */
+  onOpenCourses: () => void;
+  /** Le + du calendrier : poser un brassin (le jour se choisit dans la feuille), une fête ou un marché (l'agenda), une dépense prévue. */
+  onPoserBrassin: () => void;
+  onPoserFete: () => void;
+  onPoserDepense: () => void;
 }
+
+interface TacheCalendrier { id: string; titre: string; detail: string; ouvrir: () => void }
 
 const lireFinance = () => FinanceService.snapshot();
 const lireAgenda = () => StorageService.getCreativeItems();
+const lireRecettes = () => StorageService.getRecipes();
 /** Voies repliées au-delà : une prévision peut compter des dizaines de lignes, l'écran reste lisible et rien n'est caché sans le dire. */
 const LIGNES_VISIBLES = 6;
 
@@ -45,11 +58,12 @@ const STYLE: Record<VoieCalendrier, { texte: string; point: string; barre: strin
 const montant = (centimes: number) => `${centimes < 0 ? '−' : '+'}${formatCHF(Math.abs(centimes)).replace(/^CHF\s?/, '')}`;
 const jourLong = (iso: string) => new Intl.DateTimeFormat('fr-CH', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
 
-export function CalendrierTab({ transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda }: CalendrierTabProps) {
+export function CalendrierTab({ transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda, onOpenCourses, onPoserBrassin, onPoserFete, onPoserDepense }: CalendrierTabProps) {
   const aujourdhui = todayISO();
   const semaines = useMemo(() => semainesDe(aujourdhui), [aujourdhui]);
   const finance = useStorageValue(lireFinance);
   const agenda = useStorageValue(lireAgenda);
+  const recettes = useStorageValue(lireRecettes);
   const [choisie, setChoisie] = useState(0);
   const [toutes, setToutes] = useState<Partial<Record<VoieCalendrier, boolean>>>({});
 
@@ -72,6 +86,34 @@ export function CalendrierTab({ transactions, batches, stockItems, onOpenBatch, 
   };
 
   const semaine = semaines[choisie];
+
+  /* Le + de l'écran (onglet/v1) : trois gestes sous « Sur Calendrier », avec la semaine touchée. Le jour exact se choisit dans la feuille qui s'ouvre. */
+  usePlusPage({
+    titre: 'Calendrier',
+    surOnglets: true,
+    actions: [
+      { id: 'brassin', label: `Poser un brassin en S${semaine.numero}`, hint: 'tu choisis le jour', genre: 'brasser', lancer: onPoserBrassin },
+      { id: 'fete', label: 'Poser une fête ou un marché', genre: 'ajouter', lancer: onPoserFete },
+      { id: 'depense', label: `Prévoir une dépense en S${semaine.numero}`, hint: 'à saisir', genre: 'ajouter', lancer: onPoserDepense }
+    ]
+  });
+
+  /* Ce qui est dû, avec son cercle : lu des mêmes données que le Bord et les Stocks, jamais inventé. Une tâche disparaît quand sa cause disparaît. */
+  const taches = useMemo<TacheCalendrier[]>(() => {
+    const liste: TacheCalendrier[] = [];
+    for (const b of batches) {
+      if (b.status !== 'fermentation' || b.archivedAt) continue;
+      if (fermentationReadings(b).latest === undefined) liste.push({ id: `densite-${b.id}`, titre: `Mesurer la densité de ${b.id}`, detail: `${b.name} · aucune densité relevée`, ouvrir: () => onOpenBatch(b.id) });
+    }
+    const vue = vueHorizon(articlesACommander(stockItems, batches, recettes), batches, aujourdhui);
+    if (vue.brassin && vue.comptes.brassin > 0) {
+      liste.push({
+        id: 'courses', titre: `Commander pour ${vue.brassin.nom}`,
+        detail: `${vue.comptes.brassin} article${vue.comptes.brassin > 1 ? 's' : ''} avant ${etiquetteSemaine(vue.limiteBrassin)}`, ouvrir: onOpenCourses
+      });
+    }
+    return liste;
+  }, [batches, stockItems, recettes, aujourdhui, onOpenBatch, onOpenCourses]);
   const dansLaSemaine = duneSemaine(evenements, choisie);
   const vide = evenements.length === 0;
 
@@ -90,8 +132,17 @@ export function CalendrierTab({ transactions, batches, stockItems, onOpenBatch, 
           )}
         </div>
         <div className="divide-y divide-cave-800 border-t border-cave-800">
-          {vide && <p className="px-3 py-4 text-center text-base text-cave-200"><b className="mb-1 block text-cave-50">Rien de posé sur ces 6 semaines.</b>Un brassin, une fête ou une dépense se pose avec le +.</p>}
-          {!vide && dansLaSemaine.length === 0 && <p className="px-3 py-4 text-center text-base text-cave-200">Rien cette semaine.</p>}
+          {choisie === 0 && taches.map(t => (
+            <button key={t.id} type="button" onClick={t.ouvrir} data-tache className="flex min-h-[52px] w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-cave-850">
+              <span aria-hidden="true" className="h-6 w-6 shrink-0 rounded-full border-2 border-cave-400" />
+              <span className="min-w-0 flex-1">
+                <b className="block text-base font-semibold text-cave-50">{t.titre}</b>
+                <span className="block text-sm text-cave-200">{t.detail}</span>
+              </span>
+            </button>
+          ))}
+          {vide && taches.length === 0 && <p className="px-3 py-4 text-center text-base text-cave-200"><b className="mb-1 block text-cave-50">Rien de posé sur ces 6 semaines.</b>Un brassin, une fête ou une dépense se pose avec le +.</p>}
+          {!vide && dansLaSemaine.length === 0 && (choisie > 0 || taches.length === 0) && <p className="px-3 py-4 text-center text-base text-cave-200">Rien cette semaine.</p>}
           {dansLaSemaine.map(e => (
             <button key={e.id} type="button" onClick={() => ouvrir(e)} className="flex min-h-[52px] w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-cave-850">
               <span aria-hidden="true" className={`h-3.5 w-3.5 shrink-0 rounded-full ${STYLE[e.voie].point}`} />

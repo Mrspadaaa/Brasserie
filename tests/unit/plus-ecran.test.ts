@@ -25,7 +25,7 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
 
   it('l’action de l’écran est la bonne sur les 15 écrans (BX-4 : aucune sur Volumes ni Impôt bière)', () => {
     const attendu: Record<EcranId, string | null> = {
-      bord: 'Nouvelle écriture', finances: 'Nouvelle écriture', calendrier: 'Nouveau brassin', brassins: 'Nouveau brassin', recettes: 'Nouvelle recette', atelier: 'Nouvelle idée',
+      bord: 'Nouvelle écriture', finances: 'Nouvelle écriture', calendrier: null, brassins: 'Nouveau brassin', recettes: 'Nouvelle recette', atelier: 'Nouvelle idée',
       volumes: null, stock: 'Nouvel article', courses: 'Copier la liste', futs: 'Nouveau fût', materiel: 'Nouveau matériel',
       houblons: 'Nouvelle variété', clients: 'Nouveau client', impot: null, tarifs: 'Nouveau tarif'
     };

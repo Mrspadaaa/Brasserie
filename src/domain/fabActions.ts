@@ -78,7 +78,8 @@ const ACTIONS: {
   dashboard: NEW_TRANSACTION,
   finances: NEW_TRANSACTION,
   // Calendrier (onglet/v1, 16.11) : ce qui se pose dans le temps est d'abord un brassin ; écriture, facture et vente restent sous « Partout ».
-  calendrier: A('newBatch', 'Nouveau brassin', 'Planifier ou lancer'),
+  // Les trois gestes (brassin, fête, dépense) viennent de l'écran lui-même (`usePlusPage`), avec la semaine touchée : pas d'action pleine ici.
+  calendrier: A('quickAction', 'Saisie rapide'),
 
   production: {
     batches: B('newBatch', 'Nouveau brassin', 'Brassin', 'Sur Brassins'),

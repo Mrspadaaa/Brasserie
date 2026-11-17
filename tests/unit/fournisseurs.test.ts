@@ -1,7 +1,7 @@
 // Fiche fournisseur (maquette fournisseur/v1) : règles pures. Fixtures simulées.
 import { describe, expect, it } from 'vitest';
 import {
-  analyserFournisseurs, apresReunion, nomDeAdresseWeb, preuveMemeNom, REGLAGES_VIDES, reglagesValides, resoudre, reunir, tendance
+  analyserFournisseurs, apresReunion, delaiAppris, nomDeAdresseWeb, preuveMemeNom, REGLAGES_VIDES, reglagesValides, resoudre, reunir, tendance
 } from '../../src/domain/fournisseurs';
 import { vendorKey } from '../../src/domain/finance/duplicates';
 import type { StockItem, Transaction } from '../../src/types';
@@ -63,17 +63,40 @@ describe('analyserFournisseurs', () => {
       ['brouwland.com', 1, 'même nom, écrit comme une adresse web']
     ]);
   });
-  it('la liste garde chaque nom en ligne ; le moins fourni dit de qui il semble l’écriture', () => {
+  it('la liste n’a qu’une ligne par fournisseur : les noms proches se lisent dans la fiche', () => {
     const l = Object.fromEntries(a.liste.map(x => [x.nom, x]));
     expect(l['Brouwland'].procheDe).toBeUndefined();
     expect(l['Brouwland'].noms).toBe(3);
+    expect(l['brouwland.com']).toBeUndefined();
+    expect(l['Brouwland Belgique']).toBeUndefined();
+    expect(l['Hopsteiner'].procheDe).toBeUndefined();
+    // la fiche du nom proche existe toujours (une facture n'est jamais perdue)
+    expect(a.fiches.has(vendorKey('brouwland.com'))).toBe(true);
+  });
+  it('« Pas maintenant » remet les noms proches en ligne, avec de qui ils semblent l’écriture', () => {
+    const b = analyserFournisseurs(TX, STOCK, { ...REGLAGES_VIDES, plusTard: [vendorKey('Brouwland')] });
+    const l = Object.fromEntries(b.liste.map(x => [x.nom, x]));
     expect(l['brouwland.com'].procheDe).toBe('Brouwland');
     expect(l['Brouwland Belgique'].procheDe).toBe('Brouwland');
-    expect(l['Hopsteiner'].procheDe).toBeUndefined();
   });
-  it('le délai est inconnu, jamais 0', () => {
+  it('le délai est inconnu, jamais 0, tant qu’aucune commande n’est reçue', () => {
     expect(brouwland.delaiJours).toBeNull();
     expect(a.liste.every(l => l.delaiJours === null)).toBe(true);
+    expect(delaiAppris(undefined)).toBeNull();
+    expect(delaiAppris([{ le: '2026-11-10' }])).toBeNull();
+  });
+  it('le délai s’apprend des commandes reçues (médiane) ; la commande ouverte se dit', () => {
+    expect(delaiAppris([{ le: '2026-11-01', recue: '2026-11-07' }, { le: '2026-11-10', recue: '2026-11-19' }, { le: '2026-11-20', recue: '2026-11-26' }])).toEqual({ jours: 6, sur: 3 });
+    const k = vendorKey('Brouwland');
+    const f = analyserFournisseurs(TX, STOCK, { ...REGLAGES_VIDES, commandes: { [k]: [{ le: '2026-11-01', recue: '2026-11-08' }, { le: '2026-11-16' }] } }).fiches.get(k)!;
+    expect(f.delaiJours).toBe(7);
+    expect(f.delaiSur).toBe(1);
+    expect(f.commandeOuverte).toMatchObject({ index: 1, le: '2026-11-16' });
+  });
+  it('un fournisseur ajouté à la main a sa fiche, avec pays et site', () => {
+    const f = analyserFournisseurs(TX, STOCK, { ...REGLAGES_VIDES, ajoutes: [{ nom: 'Moulin Rey', pays: 'Suisse', site: 'moulinrey.ch' }] }).fiches.get(vendorKey('Moulin Rey'))!;
+    expect(f.sansFacture).toBe(true);
+    expect(f.infos).toEqual({ pays: 'Suisse', site: 'moulinrey.ch' });
   });
   it('le fournisseur du stock sans facture a sa fiche vide', () => {
     const lac = a.fiches.get(vendorKey('Malterie du Lac'))!;
@@ -137,7 +160,9 @@ describe('apresReunion, tendance, réglages', () => {
     expect(reglagesValides(null)).toEqual(REGLAGES_VIDES);
     expect(reglagesValides('x')).toEqual(REGLAGES_VIDES);
     expect(reglagesValides({ reunis: { a: 'b', c: 3, d: 'd' }, raisons: { a: { raisons: ['x'], le: '2026-11-16' }, b: { raisons: 3 } }, plusTard: ['a', 4] }))
-      .toEqual({ reunis: { a: 'b' }, raisons: { a: { raisons: ['x'], le: '2026-11-16' } }, plusTard: ['a'] });
+      .toEqual({ reunis: { a: 'b' }, raisons: { a: { raisons: ['x'], le: '2026-11-16' } }, plusTard: ['a'], ajoutes: [], commandes: {} });
+    expect(reglagesValides({ ajoutes: [{ nom: 'X', pays: 3 }, 4], commandes: { k: [{ le: '2026-11-01', recue: 'hier' }, { le: 'x' }] } }))
+      .toEqual({ reunis: {}, raisons: {}, plusTard: [], ajoutes: [{ nom: 'X' }], commandes: { k: [{ le: '2026-11-01' }] } });
   });
   it('un cycle de renvois ne boucle pas ; les noms déjà réunis suivent', () => {
     expect(resoudre('a', { a: 'b', b: 'a' })).toBe('b');

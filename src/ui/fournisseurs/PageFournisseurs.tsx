@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, ChevronDown, ChevronLeft, GitMerge, ScanLine, X } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BellRing, Check, ChevronDown, ChevronLeft, GitMerge, ScanLine, X } from 'lucide-react';
 import type { StockItem, Transaction } from '../../types';
 import { Sheet } from '../Sheet';
 import { montantChf, todayISO } from '../../domain/finance/ledger';
+import { vendorKey } from '../../domain/finance/duplicates';
+import { usePlusPage } from '../plusPage';
 import {
   analyserFournisseurs, apresReunion, RAISONS, reunir, tendance,
   type ArticlePaye, type FicheFournisseur, type TendancePrix
@@ -28,6 +30,8 @@ interface Props {
 
 const chf = (cents: number) => montantChf(cents / 100);
 const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? 's' : ''}`;
+/** « kg » se lit « par kg » ; un conditionnement de la ligne de facture (« sac 25 kg ») se lit tel quel. */
+const parUnite = (u: string) => (/^[\p{L}µ.]+$/u.test(u) ? `par ${u}` : u);
 
 const Courbe: React.FC<{ points: Array<{ cents: number }>; sens: TendancePrix['sens'] }> = ({ points, sens }) => {
   if (points.length < 2) return <svg width="78" height="34" aria-hidden="true"><circle cx="66" cy="17" r="5" fill="var(--fo-mut)" /></svg>;
@@ -55,7 +59,7 @@ const Article: React.FC<{ a: ArticlePaye; ouvert: boolean; onToggle: () => void;
   return (
     <>
       <button type="button" className="fo-art" aria-expanded={ouvert} onClick={onToggle}>
-        <span className="fo-an"><b>{a.nom}</b><i>par {a.unite} · {dernier.date}</i></span>
+        <span className="fo-an"><b>{a.nom}</b><i>{parUnite(a.unite)} · {dernier.date}</i></span>
         <Courbe points={a.points} sens={t.sens} />
         <span className="fo-ap"><b className="fo-num">{chf(dernier.cents)}</b><Ecart t={t} /></span>
       </button>
@@ -65,7 +69,7 @@ const Article: React.FC<{ a: ArticlePaye; ouvert: boolean; onToggle: () => void;
             <div key={`${p.iso}-${i}`} className="fo-hr"><span>{p.date}{p.nom && p.nom !== nomGarde ? <em>{p.nom}</em> : null}</span><b className="fo-num">{chf(p.cents)}</b></div>
           ))}
           {a.ailleurs.length > 0 && (
-            <div className="fo-ail">Ailleurs : {a.ailleurs.map((x, i) => <React.Fragment key={x.fournisseur}>{i > 0 ? ' · ' : ''}{x.fournisseur} : <b className="fo-num">{chf(x.cents)}</b> en {x.date}</React.Fragment>)}</div>
+            <div className="fo-ail">Ailleurs : {a.ailleurs.map((x, i) => <React.Fragment key={x.fournisseur}>{i > 0 ? ' · ' : ''}{x.fournisseur} : <b className="fo-num">{chf(x.cents)}</b> le {x.date}</React.Fragment>)}</div>
           )}
         </div>
       )}
@@ -86,6 +90,11 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
   const [fait, setFait] = useState<{ texte: string; annuler: () => void } | null>(null);
   const [choix, setChoix] = useState<string[]>([]);
   const [modifie, setModifie] = useState(false);
+  const [pour, setPour] = useState('');
+  const [ecartes, setEcartes] = useState('');
+  const [revoir, setRevoir] = useState('');
+  const [nouveau, setNouveau] = useState<{ nom: string; pays: string; site: string } | null>(null);
+  const refChoix = useRef<HTMLElement>(null);
 
   const fiche: FicheFournisseur | undefined = cle ? analyse.fiches.get(cle) : undefined;
   // Une fiche qui n'existe plus (nom réuni ailleurs) renvoie à la liste.
@@ -103,13 +112,15 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
   }, [cle, onBack]);
 
   const gardees = cle ? reglages.raisons[cle] : undefined;
-  useEffect(() => { setChoix(gardees?.raisons ?? []); }, [cle, gardees]);
+  useEffect(() => { setChoix(gardees?.raisons ?? []); setPour(gardees?.pour ?? ''); setEcartes(gardees?.ecartes ?? ''); setRevoir(gardees?.revoir ?? ''); }, [cle, gardees]);
 
   const ouvrirFeuille = () => { if (!fiche) return; setCochees(fiche.candidats.map(c => c.cle)); setFeuille(true); };
   const reunirNoms = () => {
     if (!fiche) return;
     const avant = reglages;
-    regler(reunir(reglages, fiche.cle, cochees));
+    const reuni = reunir(reglages, fiche.cle, cochees);
+    // Un nom décoché reste séparé : il reprend sa ligne dans la liste (« proche de … »), il n'y disparaît pas.
+    regler(cochees.length < fiche.candidats.length ? { ...reuni, plusTard: [...new Set([...reuni.plusTard, fiche.cle])] } : reuni);
     setFeuille(false);
     setFait({ texte: `${cochees.length + 1} noms réunis sous ${fiche.nom}`, annuler: () => { regler(avant); setFait(null); } });
   };
@@ -117,10 +128,75 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
   const garderRaisons = () => {
     if (!fiche) return;
     const avant = reglages;
-    regler({ ...reglages, raisons: { ...reglages.raisons, [fiche.cle]: { raisons: choix, le: todayISO() } } });
+    const net = (t: string) => t.trim();
+    regler({ ...reglages, raisons: { ...reglages.raisons, [fiche.cle]: {
+      raisons: choix, le: todayISO(),
+      ...(net(pour) ? { pour: net(pour) } : {}), ...(net(ecartes) ? { ecartes: net(ecartes) } : {}), ...(net(revoir) ? { revoir: net(revoir) } : {})
+    } } });
     setModifie(false);
-    setFait({ texte: 'Raisons gardées sur la fiche', annuler: () => { regler(avant); setFait(null); } });
+    setFait({ texte: 'Choix gardé sur la fiche', annuler: () => { regler(avant); setFait(null); } });
   };
+
+  /* « Commande passée » : le jour de la commande ; « Reçue » : celui de la livraison. L'écart devient le délai, appris sur les vraies commandes. */
+  const commander = () => {
+    if (!fiche) return;
+    const avant = reglages;
+    regler({ ...reglages, commandes: { ...reglages.commandes, [fiche.cle]: [...(reglages.commandes[fiche.cle] ?? []), { le: todayISO() }] } });
+    setFait({ texte: 'Commande notée : tu notes sa réception ici', annuler: () => { regler(avant); setFait(null); } });
+    window.scrollTo?.(0, 0);
+  };
+  const recevoir = () => {
+    if (!fiche?.commandeOuverte) return;
+    const avant = reglages, i = fiche.commandeOuverte.index;
+    const liste = (reglages.commandes[fiche.cle] ?? []).map((c, k) => (k === i ? { ...c, recue: todayISO() } : c));
+    regler({ ...reglages, commandes: { ...reglages.commandes, [fiche.cle]: liste } });
+    setFait({ texte: 'Réception notée', annuler: () => { regler(avant); setFait(null); } });
+  };
+  const noterChoix = () => {
+    setModifie(true);
+    window.setTimeout(() => refChoix.current?.scrollIntoView?.({ block: 'start', behavior: 'smooth' }), 60);
+  };
+  const ajouterFournisseur = () => {
+    if (!nouveau || !nouveau.nom.trim()) return;
+    const nom = nouveau.nom.trim(), k = vendorKey(nom);
+    if (!k) return;
+    const deja = analyse.fiches.has(k) || reglages.ajoutes.some(a => vendorKey(a.nom) === k);
+    if (!deja) regler({ ...reglages, ajoutes: [...reglages.ajoutes, { nom, ...(nouveau.pays.trim() ? { pays: nouveau.pays.trim() } : {}), ...(nouveau.site.trim() ? { site: nouveau.site.trim() } : {}) }] });
+    setNouveau(null);
+    ouvrir(k);
+  };
+  /* Le + des onglets, ici : les gestes de cette page (maquette : « Nouveau fournisseur » sur la liste ; sur la fiche « Sur Brouwland »). */
+  usePlusPage({
+    titre: fiche ? fiche.nom : 'Fournisseurs',
+    surOnglets: true,
+    actions: fiche
+      ? [
+        { id: 'pourquoi', label: 'Pourquoi lui', hint: 'tes raisons', genre: 'modifier', lancer: noterChoix },
+        { id: 'commande', label: 'Commande passée', genre: 'ajouter', lancer: commander },
+        { id: 'facture', label: `Facture de ${fiche.nom}`, genre: 'ajouter', lancer: onScanner }
+      ]
+      : [{ id: 'nouveau', label: 'Nouveau fournisseur', hint: 'nom, pays, site', genre: 'ajouter', lancer: () => setNouveau({ nom: '', pays: '', site: '' }) }]
+  });
+  const feuilleNouveau = (
+    <Sheet
+      open={nouveau !== null}
+      onClose={() => setNouveau(null)}
+      title="Nouveau fournisseur"
+      subtitle="Il arrive avec ses factures ; ici tu le poses d'avance."
+      footer={<div className="fo fo-pied"><div className="fo-act">
+        <button type="button" className="fo-btn fo-bsec" onClick={() => setNouveau(null)}>Annuler</button>
+        <button type="button" className="fo-btn fo-pri" disabled={!nouveau?.nom.trim()} onClick={ajouterFournisseur}>Ajouter</button>
+      </div></div>}
+    >
+      <div className="fo fo-feuille">
+        {(['nom', 'pays', 'site'] as const).map(champ => (
+          <label key={champ} className="fo-champ"><span>{champ === 'nom' ? 'Nom' : champ === 'pays' ? 'Pays (facultatif)' : 'Site web (facultatif)'}</span>
+            <input value={nouveau?.[champ] ?? ''} autoComplete="off" onChange={e => setNouveau(n => (n ? { ...n, [champ]: e.target.value } : n))} />
+          </label>
+        ))}
+      </div>
+    </Sheet>
+  );
 
   /* ---------- la liste ---------- */
   if (!fiche) {
@@ -133,10 +209,11 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
         ) : analyse.liste.map(l => (
           <button key={l.cle} type="button" className="fo-fo" data-fournisseur={l.cle} onClick={() => ouvrir(l.cle)}>
             <span className="fo-t"><b>{l.nom}</b><i>{l.sansFacture ? 'aucune facture encore' : pluriel(l.factures, 'facture')}{l.procheDe ? ` · proche de ${l.procheDe}` : l.noms > 1 ? ` · ${l.noms} noms` : ''}</i></span>
-            <span className="fo-d fo-num" title="Délai de livraison : pas encore noté">{l.delaiJours === null ? '? j' : `${l.delaiJours} j`}</span>
+            {l.delaiJours !== null && <span className="fo-d fo-num" title="Délai de la commande à chez toi, appris de tes commandes reçues">{l.delaiJours} j</span>}
           </button>
         ))}
         {fait && <div className="fo-okb" role="status"><span>{fait.texte}</span></div>}
+        {feuilleNouveau}
       </section>
     );
   }
@@ -155,7 +232,7 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
       <header className="fo-top"><button type="button" className="fo-back" onClick={retour}><ChevronLeft aria-hidden="true" />Fournisseurs</button></header>
       <section className="fo-id">
         <h1>{fiche.nom}</h1>
-        <p>{fiche.sansFacture ? 'ajouté depuis le stock' : `${pluriel(fiche.factures.length, 'facture')}${fiche.familles.length ? ` · ${fiche.familles.join(', ')}` : ''}`}</p>
+        <p>{fiche.sansFacture ? (fiche.infos.pays || fiche.infos.site ? 'ajouté à la main' : 'ajouté depuis le stock') : `${pluriel(fiche.factures.length, 'facture')}${fiche.familles.length ? ` · ${fiche.familles.join(', ')}` : ''}`}{[fiche.infos.pays, fiche.infos.site].filter(Boolean).map(x => ` · ${x}`).join('')}</p>
         {fiche.aussiEcrit.length > 0 && <p className="fo-aussi"><Check aria-hidden="true" /><span>aussi écrit {fiche.aussiEcrit.join(', ')}</span></p>}
       </section>
 
@@ -179,11 +256,19 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
         </div>
       )}
 
-      <section className="fo-sec">
-        <div className="fo-delh"><b className="fo-q">? j</b><span>de la commande à chez toi</span></div>
-        <div className="fo-trk"><div className="fo-ax" />{[0, 3, 6, 9, 12].map(t => <span key={t} className="fo-tk" style={{ left: `${(t / 12) * 100}%` }}>{t}{t === 12 ? ' j' : ''}</span>)}</div>
-        <p className="fo-dcap">Inconnu : l’app ne note pas encore la date de commande.</p>
-      </section>
+      {fiche.delaiJours !== null && (
+        <section className="fo-sec">
+          <div className="fo-delh"><b className="fo-num">{fiche.delaiJours} j</b><span>de la commande à chez toi</span></div>
+          <div className="fo-trk"><div className="fo-ax" /><div className="fo-med" style={{ left: `${(Math.min(fiche.delaiJours, 12) / 12) * 100}%` }} />{[0, 3, 6, 9, 12].map(t => <span key={t} className="fo-tk" style={{ left: `${(t / 12) * 100}%` }}>{t}{t === 12 ? ' j' : ''}</span>)}</div>
+          <p className="fo-dcap">d’après {pluriel(fiche.delaiSur, 'commande')} reçue{fiche.delaiSur > 1 ? 's' : ''}</p>
+        </section>
+      )}
+      {fiche.commandeOuverte && (
+        <div className="fo-cmd"><span>Commande du <b>{fiche.commandeOuverte.date}</b> · pas encore reçue</span><button type="button" className="fo-btn fo-bsec" onClick={recevoir}>Reçue aujourd’hui</button></div>
+      )}
+      {fiche.delaiJours === null && !fiche.commandeOuverte && (
+        <p className="fo-delinc">Délai de livraison : <b>inconnu</b> · il s’apprend avec « Commande passée », dans le +.</p>
+      )}
 
       <section className="fo-sec">
         <h2 className="fo-h2">Ce que tu paies ici<span>CHF, dernier prix</span></h2>
@@ -210,19 +295,24 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
             </>}
       </section>
 
-      <section className="fo-sec">
-        <h2 className="fo-h2">Pourquoi ce fournisseur ?<span>{enEdition ? 'touche tes raisons' : 'tes raisons'}</span></h2>
+      <section className="fo-sec" ref={refChoix}>
+        <h2 className="fo-h2">{enEdition ? 'Pourquoi ce fournisseur ?' : 'Tes choix ici'}<span>{enEdition ? 'touche tes raisons' : ''}</span></h2>
         {enEdition ? (
           <>
             <div className="fo-chips" role="group" aria-label="Tes raisons">
               {RAISONS.map(r => <button key={r} type="button" aria-pressed={choix.includes(r)} onClick={() => setChoix(c => c.includes(r) ? c.filter(x => x !== r) : [...c, r])}>{r}</button>)}
             </div>
-            <button type="button" className="fo-btn fo-bsec" disabled={nbRaisons === 0} onClick={garderRaisons}>Garder {nbRaisons ? pluriel(nbRaisons, 'raison') : 'ces raisons'}</button>
+            <label className="fo-champ"><span>Pour quoi ? (facultatif)</span><input value={pour} placeholder="ex. malts de base" onChange={e => setPour(e.target.value)} /></label>
+            <label className="fo-champ"><span>Écartés (facultatif)</span><input value={ecartes} placeholder="ex. Malzmühle Schmitt" onChange={e => setEcartes(e.target.value)} /></label>
+            <label className="fo-champ"><span>À revoir si… (facultatif)</span><input value={revoir} placeholder="ex. le port dépasse 60 CHF" onChange={e => setRevoir(e.target.value)} /></label>
+            <button type="button" className="fo-btn fo-bsec" disabled={nbRaisons === 0 && !pour.trim() && !ecartes.trim() && !revoir.trim()} onClick={garderRaisons}>Garder {nbRaisons ? pluriel(nbRaisons, 'raison') : 'ces raisons'}</button>
           </>
         ) : (
           <div className="fo-ch">
-            <div className="fo-cht"><b>Tes raisons</b><span>{gardees ? new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${gardees.le}T12:00:00`)) : ''}</span></div>
+            <div className="fo-cht"><b>{gardees?.pour ?? 'Tes raisons'}</b><span>{gardees ? new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${gardees.le}T12:00:00`)) : ''}</span></div>
             <div className="fo-chips">{gardees!.raisons.map(r => <i key={r}>{r}</i>)}</div>
+            {gardees?.ecartes && <p>écartés : {gardees.ecartes}</p>}
+            {gardees?.revoir && <p className="fo-rev"><BellRing aria-hidden="true" />à revoir si {gardees.revoir}</p>}
             <button type="button" className="fo-lien" onClick={() => setModifie(true)}>Modifier</button>
           </div>
         )}
@@ -231,6 +321,7 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
       <Sheet
         open={feuille}
         onClose={() => setFeuille(false)}
+        bare
         title="Un seul fournisseur ?"
         subtitle={`Ces noms semblent être ${fiche.nom}. Décoche ceux qui n’en sont pas.`}
         footer={
@@ -241,6 +332,8 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
         }
       >
         <div className="fo fo-feuille">
+          <div className="fo-fh"><h2>Un seul fournisseur ?</h2><button type="button" aria-label="Fermer" onClick={() => setFeuille(false)}><X aria-hidden="true" /></button></div>
+          <p className="fo-fsub">Ces noms semblent être {fiche.nom}. Décoche ceux qui n’en sont pas.</p>
           <div className="fo-nm fo-garde" aria-label={`${fiche.nom}, nom gardé`}>
             <span className="fo-box"><Check aria-hidden="true" /></span>
             <span><b>{fiche.nom}</b><i className="fo-num">{pluriel(fiche.factures.length, 'facture')} · {chf(fiche.totalCents)} CHF</i><em>nom gardé</em></span>
@@ -258,6 +351,7 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
           <p className="fo-note">Les factures gardent leur nom d’origine. Tu pourras annuler.</p>
         </div>
       </Sheet>
+      {feuilleNouveau}
     </section>
   );
 };

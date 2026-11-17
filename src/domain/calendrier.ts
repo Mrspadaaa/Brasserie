@@ -84,6 +84,26 @@ export function indexSemaine(semaines: readonly SemaineCalendrier[], jour: strin
 
 const jourCourt = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}`;
 
+/** Les jours que la recette prévoit à la fermentation et à la garde (somme des étapes) ; `null` quand la recette n'en dit rien (jamais 0). */
+function joursPrevus(batch: Batch): number | null {
+  const etapes = batch.recipeSnapshot?.fermentation ?? [];
+  const total = etapes.reduce((s, e) => s + (Number.isFinite(e.days) && e.days > 0 ? e.days : 0), 0);
+  return total > 0 ? total : null;
+}
+
+/** « Emballage · Triple d'automne » : le titre court d'une ligne de prévision de brassin ; le reste (« date estimée », « à compléter ») va dans le détail. */
+function titreCourtArgent(item: ForecastItem): { titre: string; notes: string[] } {
+  const parts = item.label.split(' · ').map(s => s.trim()).filter(Boolean);
+  if (item.source !== 'brew' || parts.length < 2) return { titre: item.label, notes: [] };
+  const [brassin, categorie, ...reste] = parts;
+  // Le titre dit le premier mot de la catégorie (« Énergie · Porter fumé ») ; son nom entier passe au détail.
+  const court = categorie.split(' ')[0];
+  return {
+    titre: `${court.charAt(0).toUpperCase()}${court.slice(1)} · ${brassin}`,
+    notes: [...(court !== categorie ? [categorie] : []), ...reste.map(r => r.replace(/^partiel,?\s*/i, '')).filter(Boolean)]
+  };
+}
+
 /**
  * Brassins : un brassin planifié pose une barre à sa semaine de brassage ; un brassin en cuve (fermentation, garde) occupe la semaine
  * courante avec son âge (« en cuve · J+4 ») — on ne sait pas quand il sera fini, aucune fin n'est inventée ; un brassin conditionné dans
@@ -104,9 +124,14 @@ export function evenementsBrassins(batches: readonly Batch[], semaines: readonly
       const age = joursDepuis(batch);
       const brasse = isoDate(actualBrewDate(batch));
       const brasseDansLaSemaine = brasse && indexSemaine(semaines, brasse) === 0;
+      // La barre court jusqu'à la fin prévue (jour brassé + jours de la recette) ; sans recette qui les dise, elle reste à la semaine courante.
+      const jours = joursPrevus(batch);
+      const fin = brasse && jours ? versIso(utc(brasse) + jours * JOUR) : null;
+      const iFin = fin ? (fin > semaines[semaines.length - 1].debut && indexSemaine(semaines, fin) === null ? semaines.length - 1 : indexSemaine(semaines, fin)) : null;
+      const b = iFin !== null && iFin > 0 ? iFin : 0;
       sortie.push({
-        id: `brassin-${batch.id}`, voie: 'brassins', titre: nom, batchId: batch.id, a: 0, b: 0,
-        detail: `${batch.status === 'garde' ? 'en garde' : 'en cuve'}${age !== undefined ? ` · J+${age}` : ''}${brasseDansLaSemaine && brasse ? ` · brassé le ${jourCourt(brasse)}` : ''}`
+        id: `brassin-${batch.id}`, voie: 'brassins', titre: nom, batchId: batch.id, a: 0, b,
+        detail: `${batch.status === 'garde' ? 'en garde' : 'en cuve'}${age !== undefined ? ` · J+${age}` : ''}${brasseDansLaSemaine && brasse ? ` · brassé le ${jourCourt(brasse)}` : ''}${fin && b > 0 ? ` · fin prévue le ${jourCourt(fin)}` : ''}`
       });
       continue;
     }
@@ -141,14 +166,16 @@ export function evenementsArgent(items: readonly ForecastItem[], semaines: reado
     const i = indexSemaine(semaines, item.date);
     if (i === null) continue;
     const entree = item.direction === 'in';
+    const { titre, notes } = titreCourtArgent(item);
+    const notesDit = notes.length ? ` · ${notes.join(' · ')}` : '';
     // Une ligne datée à 0 CHF est un coût que la fiche ne connaît pas encore : on ne l'écrit pas « +0,00 » (l'inconnu n'est jamais 0).
     if (!item.amountCents) {
-      sortie.push({ id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre: item.label, detail: `le ${jourCourt(item.date)} · montant non renseigné`, a: i, b: i });
+      sortie.push({ id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre, detail: `le ${jourCourt(item.date)} · montant non renseigné${notesDit}`, a: i, b: i });
       continue;
     }
     sortie.push({
-      id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre: item.label,
-      detail: `le ${jourCourt(item.date)}${item.partial?.length ? ' · montant partiel' : ''}`, a: i, b: i,
+      id: `argent-${item.id}`, voie: entree ? 'ventes' : 'achats', titre,
+      detail: `le ${jourCourt(item.date)}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`, a: i, b: i,
       centimes: entree ? item.amountCents : -item.amountCents, ...(item.partial?.length ? { partiel: true } : {})
     });
   }

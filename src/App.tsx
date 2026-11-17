@@ -27,7 +27,7 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
-import { plusMenuFor, type PlusCle } from './domain/plusEcran';
+import { plusMenuFor, plusMenuPage, type PlusCle } from './domain/plusEcran';
 import { joursDepuisBrassage } from './domain/productionInsights';
 import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
 import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
@@ -1265,6 +1265,13 @@ export const App: React.FC = () => {
               setActiveTab('production');
             }}
             onOpenFinances={() => setActiveTab('finances')}
+            onOpenCourses={() => runPlus('courses')}
+            onPoserBrassin={() => setQuickAction('brew-batch', actionLauncherRef.current)}
+            onPoserFete={() => {
+              setLabSectionRequest({ section: 'event', at: Date.now() });
+              navigateToCreativeLab();
+            }}
+            onPoserDepense={() => setQuickAction('quick-expense', actionLauncherRef.current)}
             onOpenAgenda={() => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();
@@ -1339,9 +1346,11 @@ export const App: React.FC = () => {
           sur les onglets, le bouton ne flotte pas au-dessus du contenu défilant. */}
       <div className="app-bottom-dock">
         <BottomNav
-          activeTab={activeTab}
+          // Fournisseurs s'ouvre depuis Plus, sous Finances (maquette fournisseur/v1) : c'est l'onglet marqué, pas celui d'où l'on venait.
+          activeTab={fournisseursOuvert ? 'finances' : activeTab}
           onChangeTab={(tab) => {
             // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
+            setFournisseursOuvert(false);
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}
@@ -1359,9 +1368,9 @@ export const App: React.FC = () => {
         launcherRef={actionLauncherRef}
         // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
         // sommaire des saisies que le menu liste déjà en clair.
-        action={view.view === 'tabs' && fabAction.intent !== 'quickAction' ? fabAction : null}
+        action={view.view === 'tabs' && !fournisseursOuvert && fabAction.intent !== 'quickAction' ? fabAction : null}
         onAction={runFabAction}
-        menu={view.view === 'tabs' ? plusMenu : undefined}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
         onPlus={runPlus}
         horsConnexion={horsConnexion}
         companionLabel={companionLabel}
@@ -1422,7 +1431,7 @@ export const App: React.FC = () => {
         open={isPaletteOpen}
         onOpenChange={setIsPaletteOpen}
         groups={commandGroups}
-        menu={view.view === 'tabs' ? plusMenu : undefined}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
         onGeste={runPlus}
         onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
         onAllerA={allerA}

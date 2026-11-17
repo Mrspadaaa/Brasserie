@@ -5,7 +5,8 @@ import type { StockItem, Transaction } from '../../src/types';
 import { PageFournisseurs } from '../../src/ui/fournisseurs/PageFournisseurs';
 import '../../src/index.css';
 
-const ligne = (ref: string, desc: string, prix: number, unite = 'kg') =>
+// Les malts s'achètent au sac : la ligne de facture dit « sac 25 kg », pas « kg » (critique fournisseur n° 7).
+const ligne = (ref: string, desc: string, prix: number, unite = ref === 'pils' || ref === 'munich' ? 'sac 25 kg' : 'kg') =>
   ({ id: `${ref}-${prix}`, description: desc, kind: 'ingredient', amountCents: prix * 10, quantity: 10, unit: unite, unitPriceCents: prix, stockItemRef: ref });
 const depense = (id: string, date: string, vendor: string, cents: number, lignes: unknown[] = []): Transaction => ({
   id, date, description: `Achat ${vendor}`, amountHT: cents / 100, tvaRate: 0, tvaAmount: 0, amountTTC: cents / 100, category: 'matieres', subcategory: '',

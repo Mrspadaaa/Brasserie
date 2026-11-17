@@ -34,21 +34,21 @@ beforeEach(() => { localStorage.clear(); StorageService.clearMemoryCache(); wind
 afterEach(cleanup);
 
 describe('Fournisseurs', () => {
-  it('la liste dit les factures, les noms à réunir et le délai inconnu ; le fournisseur du stock se dit sans facture', () => {
+  it('la liste dit les factures et les noms à réunir, une ligne par fournisseur, sans « ? j » ; le fournisseur du stock se dit sans facture', () => {
     monter();
     const brouwland = screen.getAllByRole('button').find(b => b.textContent?.startsWith('Brouwland') && b.textContent.includes('2 factures'))!;
     expect(brouwland.textContent).toContain('3 noms');
-    expect(brouwland.textContent).toContain('? j');
+    expect(brouwland.textContent).not.toContain('? j');
     expect(screen.getByText('aucune facture encore')).toBeTruthy();
-    // les noms proches restent des lignes (rien n'est caché) et disent de qui ils semblent l'écriture
-    expect(screen.getAllByText('1 facture · proche de Brouwland', { selector: 'i' })).toHaveLength(2);
+    // une ligne par fournisseur : les noms proches se lisent dans sa fiche, pas en double dans la liste
+    expect(screen.queryAllByText('1 facture · proche de Brouwland', { selector: 'i' })).toHaveLength(0);
   });
 
   it('la fiche : le délai inconnu, le dernier prix et son écart, la courbe ouvre l\'historique', () => {
     monter();
     fireEvent.click(screen.getByText('2 factures · 3 noms').closest('button')!);
     expect(screen.getByRole('heading', { name: 'Brouwland' })).toBeTruthy();
-    expect(screen.getByText(/Inconnu : l’app ne note pas encore/)).toBeTruthy();
+    expect(screen.getByText(/s’apprend avec « Commande passée »/)).toBeTruthy();
     const art = screen.getByText('Malt Pilsner').closest('button')!;
     expect(art.textContent).toContain('37,80');
     expect(art.textContent).toContain('+1,30 ↑');
@@ -62,7 +62,7 @@ describe('Fournisseurs', () => {
     fireEvent.click(screen.getByText('2 factures · 3 noms').closest('button')!);
     fireEvent.click(screen.getByText('Voir et réunir').closest('button')!);
     const feuille = screen.getByRole('dialog');
-    expect(within(feuille).getByText('Un seul fournisseur ?')).toBeTruthy();
+    expect(within(feuille).getAllByText('Un seul fournisseur ?').length).toBeGreaterThan(0);
     expect(within(feuille).getByText('même nom, un mot en plus')).toBeTruthy();
     expect(within(feuille).getByText('même nom, écrit comme une adresse web')).toBeTruthy();
     expect(within(feuille).getByText(/1 fiche · 4 factures/)).toBeTruthy();
@@ -97,8 +97,9 @@ describe('Fournisseurs', () => {
     fireEvent.click(screen.getByText('moins cher'));
     fireEvent.click(screen.getByText('livre vite'));
     fireEvent.click(screen.getByText('Garder 2 raisons'));
-    expect(screen.getByRole('status').textContent).toContain('Raisons gardées');
+    expect(screen.getByRole('status').textContent).toContain('Choix gardé');
     expect(screen.getByText('Tes raisons')).toBeTruthy();
+    expect(screen.getByText('Tes choix ici')).toBeTruthy();
     fireEvent.click(within(screen.getByRole('status')).getByText('Annuler'));
     expect(screen.getByText('Garder ces raisons')).toBeTruthy();
   });

@@ -210,15 +210,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     */}
     <h1 className="sr-only">À la brasserie</h1>
 
-    <button type="button" onClick={() => onNavigateTab('calendrier')} aria-label="Cette semaine au calendrier" aria-describedby="bord-cal-resume" className="flex min-h-[52px] w-full items-center gap-2 rounded-panel border border-area-production/30 bg-cave-900 px-3 py-2 text-left hover:bg-cave-850">
-      <Calendar size={18} className="shrink-0 text-area-production" aria-hidden="true" />
-      <span className="min-w-0 flex-1">
-        <span className="block text-base font-semibold text-cave-50">Cette semaine au calendrier</span>
-        <span id="bord-cal-resume" className="block truncate text-sm text-cave-200">{cetteSemaine.length ? `${cetteSemaine[0].titre} · ${cetteSemaine[0].detail}${cetteSemaine.length > 1 ? ` · +${cetteSemaine.length - 1}` : ''}` : 'Brassins, événements et échéances des six semaines'}</span>
-      </span>
-      <ChevronRight size={18} className="shrink-0 text-cave-400" aria-hidden="true" />
-    </button>
-
     <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="dashboard-production" className="order-1 min-w-0 rounded-panel border border-area-production/30 bg-cave-900">
           <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-production/10 px-2">
@@ -338,6 +329,16 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <span className="text-xs text-cave-200">{pendingEvents.length} à faire</span>
             <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Gérer<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
+          {/* Onglet/v1 : « Bord ne bouge pas » — le calendrier se lit d'une ligne dans la carte Agenda, sans carte de plus ni rien déplacé. */}
+          <button type="button" onClick={() => onNavigateTab('calendrier')} aria-label="Cette semaine au calendrier" aria-describedby="bord-cal-resume" className="flex min-h-[52px] w-full items-center gap-2 border-b border-cave-800 px-2 py-1 text-left hover:bg-cave-850">
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-cave-50">Cette semaine au calendrier</span>
+              <span id="bord-cal-resume" className="block truncate text-xs text-cave-200">{cetteSemaine.length
+                ? `${cetteSemaine.length} cette semaine : ${cetteSemaine.slice(0, 2).map(e => e.titre).join(', ')}${cetteSemaine.length > 2 ? '…' : ''}`
+                : 'rien de posé · voir les six semaines'}</span>
+            </span>
+            <ChevronRight size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
+          </button>
           {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
           <div className="divide-y divide-cave-800">
             {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">

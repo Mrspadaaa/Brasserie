@@ -19,10 +19,10 @@
 .fo-btn:active{transform:scale(.97)}
 .fo-id{padding:4px 0 0}.fo-id h1{margin:0;font-size:34px;line-height:1.05;font-weight:800;letter-spacing:-.5px;overflow-wrap:anywhere}.fo-id p{margin:4px 0 0;font-size:16px;color:var(--fo-mut)}
 .fo-id .fo-aussi{display:flex;gap:6px;align-items:flex-start;margin:6px 0 0;font-size:15px;color:var(--fo-ok)}.fo-aussi svg{width:18px;height:18px;margin-top:1px}
-.fo-fus{display:block;width:100%;margin:10px 0 0;padding:10px 12px 12px;border:1.5px dashed var(--fo-att);border-radius:14px;background:var(--fo-attbg)}
+.fo button.fo-fus{display:block;width:100%;margin:10px 0 0;padding:10px 12px 12px;border:1.5px dashed var(--fo-att);border-radius:14px;background:var(--fo-attbg)}
 .fo-fust{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--fo-att)}.fo-fust svg{width:20px;height:20px}
 .fo-fusd{display:block;margin-top:2px;font-size:15px}
-.fo-fusn{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.fo-fusn i{font-style:normal;font-size:15px;border:1.5px dashed var(--fo-line2);background:var(--fo-bg);border-radius:8px;padding:3px 8px}
+.fo-fusn{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.fo-fusn i{font-style:normal;font-size:15px;border:1.5px dashed var(--fo-line2);background:var(--fo-bg);border-radius:8px;padding:3px 8px;color:var(--fo-ink)}
 .fo-fusb{display:inline-flex;align-items:center;margin-top:10px;height:44px;padding:0 16px;border-radius:12px;background:var(--fo-att);color:var(--fo-bg);font-weight:700;font-size:17px}
 .fo-tard{display:flex!important;align-items:center;gap:8px;margin:8px 0 0;min-height:44px;font-size:15px;color:var(--fo-att)!important;font-weight:600}.fo-tard svg{width:20px;height:20px}
 .fo-sec{margin:16px 0 0}
@@ -75,3 +75,19 @@
 .fo-pied{padding:0}
 .fo-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.fo-act .fo-btn{padding:0 10px!important}
 @media (prefers-reduced-motion:reduce){.fo *{transition:none!important}}
+
+/* Le délai : connu, il se lit sur l'axe ; inconnu, une ligne discrète (rien n'est tracé qui ne soit su). */
+.fo-med{position:absolute;top:0;height:44px;width:0;border-left:2px dotted var(--fo-fin)}
+.fo-delh b:not(.fo-q){color:var(--fo-fin)}
+.fo-delinc{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px 0;border-top:1px solid var(--fo-line);font-size:15px;color:var(--fo-mut)}.fo-delinc b{color:var(--fo-ink)}
+.fo-cmd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 0;padding:8px 8px 8px 12px;border:1.5px solid var(--fo-fin);border-radius:12px;font-size:16px}.fo-cmd b{color:var(--fo-fin)}
+.fo-cmd .fo-btn{min-height:44px;font-size:16px}
+/* Tes choix ici : le choix daté, ses raisons, qui on a écarté, quand le revoir. */
+.fo-ch p{margin:8px 0 0;font-size:15px;color:var(--fo-mut)}.fo-rev{display:flex;gap:6px;align-items:center;color:var(--fo-att)!important}.fo-rev svg{width:18px;height:18px}
+.fo-champ{display:block;margin:10px 0 0}.fo-champ span{display:block;font-size:15px;color:var(--fo-mut);margin-bottom:3px}
+.fo .fo-champ input{width:100%;min-height:48px;padding:0 12px;border:1.5px solid var(--fo-line2);border-radius:12px;background:var(--fo-bg);color:var(--fo-ink);font:inherit;font-size:16px}
+/* Feuille « Un seul fournisseur ? » : le grand titre de la maquette, sans l'en-tête générique. */
+.fo-fh{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:2px 2px 0}
+.fo-fh h2{margin:0;font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-.3px}
+.fo .fo-fh button{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:var(--fo-mut)}.fo-fh svg{width:22px;height:22px}
+.fo-fsub{margin:4px 2px 8px;font-size:16px;color:var(--fo-mut)}
