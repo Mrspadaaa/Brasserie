@@ -2023,3 +2023,9 @@ Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où i
 > (à « Je déploie dès qu'il n'y a plus de bloquant, ou tout de suite tel quel ? ») Ah non dès que c'est bon, mais pas besoin de mettre la maquette jouable à jour
 
 Lecture : accord de déployer le port du calendrier (branche claude/port-calendrier-1711) dès 0 bloquant à la critique ; le jouable (as/) n'est plus mis à jour.
+
+### 17.11 — Carnet : mettre en forme ses notes
+
+> (capture : note de téléphone « Sol local » : « Rouleau qui pousse plutôt qui absorbe. / 2 couches, petit pinceau ou plus facile. Tout jetter... / Plus gros seau ? / Petit récipient pour transférer ») En gros ça doit mettre en forme, mes note pour la brasserie, mais pas que des achats, surtout les achats mais par exemple :
+
+Lecture (L01, règle et non exemple) : le carnet reçoit ses notes brutes de brasserie, telles qu'il les tape sur son téléphone, et l'IA les met en forme : surtout des achats, mais aussi des travaux, des conseils, des questions ouvertes, des choses à faire. Capture : `work/missions/2026-11-17-carnet-retouches/greffe5/ref/note-sol-local.jpg`.
