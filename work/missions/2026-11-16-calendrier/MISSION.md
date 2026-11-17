@@ -53,6 +53,7 @@ Classement par une critique Opus (5 candidates et des greffes), passe 2, revues 
 | Mode graph (g4b g2b g3b) | 17.11 nuit | https://claude.ai/artifact/EdifyzyYTXsS6aGoPRgwuP | `work/missions/2026-11-16-calendrier/page16/index.html` |
 | En-tête sobre (s1 s4 ; t1 t3) | 17.11 nuit | https://claude.ai/artifact/8RuCpADH7fFuYgNyPf53tz | `work/missions/2026-11-16-calendrier/page18/index.html` |
 | Carnet ra+p5f assemblé, joué de zéro | 17.11 nuit | https://claude.ai/artifact/NkQVVR9yk5MGt7NmaAuuc2 | `work/missions/2026-11-16-carnet-decision/page7/index.html` |
+| Travaux de nuit (page du matin) | 17.11 matin | https://claude.ai/artifact/Tig5UpJM2KajF8tsWE1B8H | `work/missions/2026-11-16-calendrier/matin/index.html` |
 | Gestes des liens (L9 L1 L4 L29 L14) | 16.11 nuit | https://claude.ai/artifact/GWus9iVdYSBKtM2mBt1kb6 | `work/missions/2026-11-16-liens-app/page-inter/index.html` |
 | Calendrier cd1 (g-d1 complété) | 16.11 | https://claude.ai/artifact/4Asn377oaJjCegYuo16uP6 | `work/missions/2026-11-16-calendrier/page7/index.html` |
 | Carnet ra ou p5f, finis | 16.11 | https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL | `work/missions/2026-11-16-carnet-decision/page5/index.html` |
