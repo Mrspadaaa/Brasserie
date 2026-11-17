@@ -2042,3 +2042,9 @@ Lecture : même règle que « Sol local » : notes brutes et courtes, sans ponct
 > Sol local » comme référence mais c'est juste un cas particulier, en gros ça sera beaucoup utilisé comme brouillon mais aussi pour de l'achat matériel et tout
 
 Lecture : le carnet sert d'abord de brouillon de brasserie (notes en vrac, très souvent), et aussi aux achats de matériel ; « Sol local » n'est qu'un cas particulier, pas un modèle.
+
+### 17.11 — Carnet : le focus
+
+> Non focus sur l'achat de matériel mais ça peut aussi être utilisé comme brouillon
+
+Lecture (corrige la précédente) : le carnet reste centré sur l'achat de matériel ; le brouillon est un usage secondaire, à permettre sans le mettre en avant.
