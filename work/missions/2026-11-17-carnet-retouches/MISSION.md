@@ -7,3 +7,4 @@ Base : ra+p5f (work/missions/2026-11-16-carnet-decision/ra-p5f/proto.html). Crit
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Carnet, 12 maquettes vers 9 | 17.11 | https://claude.ai/artifact/6LY3CH33xqPTRSw3QLTruZ | `work/missions/2026-11-17-carnet-retouches/maquettes/page/index.html` |
+| Carnet par écran (★ et notes) | 17.11 | https://claude.ai/artifact/VU5xp5f9PkiRpS1VjkDPFz | `work/missions/2026-11-17-carnet-retouches/maquettes/page2/index.html` |

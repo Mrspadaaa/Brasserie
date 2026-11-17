@@ -1,0 +1,278 @@
+{
+ "base-E00-vide": {
+  "ecran": "vide",
+  "legende": "Aucun carnet encore, champ idée"
+ },
+ "base-E01b-carnet-cree": {
+  "ecran": "ajouter-a",
+  "legende": "Carnet créé, coller lien, clavier"
+ },
+ "base-E12b-articles": {
+  "ecran": "articles",
+  "legende": "Feuille Articles 6 cartes"
+ },
+ "base-E14a-oxygene": {
+  "ecran": "comparer",
+  "legende": "Critère oxygène capté, barres classées"
+ },
+ "base-E15-dispo": {
+  "ecran": "article",
+  "legende": "Fiche article, surveiller, Choisir celui-ci"
+ },
+ "base-E17a-liste": {
+  "ecran": "liste",
+  "legende": "Liste carnets, Embouteillage choisi"
+ },
+ "v01-1": {
+  "ecran": "articles",
+  "legende": "Feuille Articles, carte 1re ouverte"
+ },
+ "v01-2": {
+  "ecran": "article",
+  "legende": "Détail article, surveiller, Choisir"
+ },
+ "v01-3": {
+  "ecran": "comparer",
+  "legende": "Côte à côte, compromis, écartés"
+ },
+ "v01-4": {
+  "ecran": "liste",
+  "legende": "Autres carnets en cartes, mots"
+ },
+ "v01-5": {
+  "ecran": "liste",
+  "legende": "Autres carnets, glossaire du carnet"
+ },
+ "v02-1": {
+  "ecran": "comparer",
+  "legende": "Critère O2 et rangs, jauges"
+ },
+ "v02-2": {
+  "ecran": "article",
+  "legende": "Rang 1 déplié, vendeurs, valeurs"
+ },
+ "v02-3": {
+  "ecran": "choisi",
+  "legende": "Choisir cette machine, vendeur, pourquoi"
+ },
+ "v02-4": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, lignes À venir"
+ },
+ "v02-5": {
+  "ecran": "choisi",
+  "legende": "Feuille Pourquoi ce choix"
+ },
+ "v02-6": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir, ligne ajoutée"
+ },
+ "v03-1": {
+  "ecran": "carnet",
+  "legende": "Carnet: critère, façons, 5 rangs"
+ },
+ "v03-2": {
+  "ecran": "article",
+  "legende": "Carte n°1 ouverte, vendeurs, Choisir"
+ },
+ "v03-3": {
+  "ecran": "article",
+  "legende": "Rangs valeurs, veille, début Comparer"
+ },
+ "v03-4": {
+  "ecran": "comparer",
+  "legende": "Tableau côte à côte, meilleur en vert"
+ },
+ "v03-5": {
+  "ecran": "choisi",
+  "legende": "Feuille Choisir cette machine, raisons"
+ },
+ "v03-6": {
+  "ecran": "choisi",
+  "legende": "Pas maintenant, carnet après choix"
+ },
+ "v03-7": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés et pourquoi"
+ },
+ "v04-1": {
+  "ecran": "carnet",
+  "legende": "Carnet comparaison, article ouvert sur place"
+ },
+ "v04-2": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, pourquoi, 4 autres"
+ },
+ "v04-3": {
+  "ecran": "choisi",
+  "legende": "Feuille Pourquoi ce choix, jauges"
+ },
+ "v05-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par étape, Nouveau carnet"
+ },
+ "v05-2": {
+  "ecran": "ajouter",
+  "legende": "Nouveau carnet, champ, clavier"
+ },
+ "v05-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf Évier inox, note"
+ },
+ "v05-4": {
+  "ecran": "ajouter-a",
+  "legende": "Ajouter ici, voix, ranger dans"
+ },
+ "v05-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé, objet avant rangement"
+ },
+ "v05-6": {
+  "ecran": "carnet",
+  "legende": "Façons, retenir/écarter, raisons"
+ },
+ "v06-1": {
+  "ecran": "ajouter",
+  "legende": "Idée saisie, nouveau carnet ou Ventilation"
+ },
+ "v06-2": {
+  "ecran": "ajouter-a",
+  "legende": "Photo déposée, ranger comme"
+ },
+ "v06-3": {
+  "ecran": "articles",
+  "legende": "Articles, bandeau rangée, Annuler"
+ },
+ "v06-4": {
+  "ecran": "ajouter-a",
+  "legende": "Menu + : Article Façon Critère Note"
+ },
+ "v06-5": {
+  "ecran": "ajouter-a",
+  "legende": "Voix en cours d'écoute"
+ },
+ "v06-6": {
+  "ecran": "ajouter-a",
+  "legende": "Note vocale, ranger comme critère"
+ },
+ "v06-7": {
+  "ecran": "ajouter-a",
+  "legende": "Lien sans aperçu, nommer, veille"
+ },
+ "v07-1": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé, Où ? Nouveau carnet"
+ },
+ "v07-2": {
+  "ecran": "ajouter-a",
+  "legende": "Phrase devient critère, clavier"
+ },
+ "v07-3": {
+  "ecran": "ajouter-a",
+  "legende": "Note vocale en cours, va atterrir"
+ },
+ "v07-4": {
+  "ecran": "ajouter-a",
+  "legende": "Photo lue, valeurs à cocher"
+ },
+ "v07-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien sans aperçu, photo ou seul"
+ },
+ "v07-6": {
+  "ecran": "ajouter-a",
+  "legende": "Façons IA, phrase atterrit, clavier"
+ },
+ "v08-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par étape colorées"
+ },
+ "v08-2": {
+  "ecran": "ajouter",
+  "legende": "Tireuse 4 becs, arrive ici, Créer"
+ },
+ "v08-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf, critère et façons proposés"
+ },
+ "v08-4": {
+  "ecran": "ajouter-a",
+  "legende": "Façon tapée, Va dans, clavier"
+ },
+ "v08-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien article, Va dans Article"
+ },
+ "v08-6": {
+  "ecran": "ajouter-a",
+  "legende": "Voix, relecture, Arrêter"
+ },
+ "v08-7": {
+  "ecran": "ajouter-a",
+  "legende": "Photo avant l'envoi, Juste/Corriger"
+ },
+ "v08-8": {
+  "ecran": "a-venir",
+  "legende": "À venir, remplisseuse, Ouvrir carnet"
+ },
+ "v09-1": {
+  "ecran": "liste",
+  "legende": "Carnets groupés par étape, Chercher"
+ },
+ "v09-2": {
+  "ecran": "articles",
+  "legende": "Articles groupés par façon, À compléter"
+ },
+ "v09-3": {
+  "ecran": "choisi",
+  "legende": "Embouteillage choisi, Envoyer dans À venir"
+ },
+ "v10-1": {
+  "ecran": "liste",
+  "legende": "Carnets avec veille, Coller un lien"
+ },
+ "v10-2": {
+  "ecran": "ajouter",
+  "legende": "Va dans, champ, clavier, Noter"
+ },
+ "v10-3": {
+  "ecran": "carnet",
+  "legende": "fiche en cours"
+ },
+ "v10-4": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "v10-5": {
+  "ecran": "a-venir",
+  "legende": "À venir, ce qui est parti"
+ },
+ "v11-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "v11-2": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "v11-3": {
+  "ecran": "carnet",
+  "legende": "fiche en cours"
+ },
+ "v11-4": {
+  "ecran": "ajouter",
+  "legende": "+ touché"
+ },
+ "v12-1": {
+  "ecran": "liste",
+  "legende": "carnets et À venir sur un écran"
+ },
+ "v12-2": {
+  "ecran": "carnet",
+  "legende": "deux façons, critère, Retenir"
+ },
+ "v12-3": {
+  "ecran": "choisi",
+  "legende": "choisi, pourquoi, écartés"
+ }
+}
