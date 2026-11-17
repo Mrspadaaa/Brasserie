@@ -48,3 +48,6 @@ figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
 .rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
 figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
 figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
+.crit{margin:-4px 0 8px;font-size:14px;color:var(--doux)}
+.cr{display:inline-block;min-width:26px;padding:0 5px;border-radius:6px;background:#2f4f6f;color:#fff;font-size:14px;font-weight:700;text-align:center;line-height:20px}
+.pq{font-size:14px;color:var(--doux);line-height:1.3}

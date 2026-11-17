@@ -7,6 +7,9 @@ const vers = [...old.matchAll(/<h3><span class="nom">(v\d\d)<\/span>\s*([^<]+)<\
 if (vers.length !== 12) throw new Error('versions ' + vers.length);
 const I = JSON.parse(fs.readFileSync(new URL('./greffe3.json', import.meta.url), 'utf8'));
 const H = JSON.parse(fs.readFileSync(new URL('./greffe2.json', import.meta.url), 'utf8'));
+const CRIT = JSON.parse(fs.readFileSync(new URL('./critique-classement.json', import.meta.url), 'utf8'));
+const critDe = (id, k) => (CRIT[id] || []).find((x) => x.cle === k);
+const critLigne = (id) => { const p = {}; (CRIT[id] || []).forEach((x) => (p[x.rang] = p[x.rang] || []).push(x.cle)); return Object.keys(p).sort().map((n) => n + ' ' + p[n].join(', ')).join(' · '); };
 const GREFFE = ['g01','g02','g03','g04','g05','g06'];
 const AXE = { v01: 'A', v02: 'A', v03: 'A', v04: 'A', v05: 'B', v06: 'B', v07: 'B', v08: 'B', v09: 'C', v10: 'C', v11: 'C', v12: 'C' };
 const RANGS = [['liste', 'Liste des carnets'], ['vide', 'Premier usage, liste vide'], ['ajouter', 'Ajouter une idée'], ['carnet', 'Un carnet ouvert'], ['ajouter-a', 'Ajouter à une idée (lien, photo, texte)'], ['articles', 'Cartes d’article'], ['article', 'Un article ouvert'], ['comparer', 'Comparer sur le critère'], ['choisi', 'Choisir, choisi, pourquoi'], ['a-venir', 'À venir et Réalisés']];
@@ -31,10 +34,10 @@ ${H.map((v) => `<div class="v"><b>${v.id}</b> <span class="doux">sur ton top 3</
 for (const [id, nom] of RANGS) {
   const ims = Object.keys(e).filter((k) => e[k].ecran === id).sort((a, b) => ordre(a).localeCompare(ordre(b)));
   if (!ims.length) continue;
-  html += `<section class="rang" id="${id}"><h2>${nom} <span class="doux">· ${ims.length}</span> <span class="podium"></span></h2><div class="bande">\n`;
+  html += `<section class="rang" id="${id}"><h2>${nom} <span class="doux">· ${ims.length}</span> <span class="podium"></span></h2>${CRIT[id] ? `<p class="crit">Le critique, à l’aveugle : ${critLigne(id)}</p>` : ""}<div class="bande">\n`;
   for (const k of ims) {
     const ver = k.startsWith('base') ? 'base' : k.slice(0, 3);
-    html += `<figure class="${ver === 'base' ? 'base' : ''}" data-cle="${id}|${k}"><button type="button" class="zoom" aria-label="Agrandir ${esc(k)}"><img src="img/${k}.webp" width="200" height="433" alt="${esc(ver + ' : ' + e[k].legende)}"></button><figcaption><span class="t">${ver} <span class="doux">· ${esc(e[k].legende)}</span></span><span class="act"><span class="rgs">${[1,2,3,4,5].map((n) => `<button type="button" class="rg" data-n="${n}" aria-pressed="false" aria-label="${n}e pour ${esc(nom)}">${n}</button>`).join('')}</span><input type="text" placeholder="note" aria-label="Note sur ${esc(k)}"></span></figcaption></figure>\n`;
+    html += `<figure class="${ver === 'base' ? 'base' : ''}" data-cle="${id}|${k}"><button type="button" class="zoom" aria-label="Agrandir ${esc(k)}"><img src="img/${k}.webp" width="200" height="433" alt="${esc(ver + ' : ' + e[k].legende)}"></button><figcaption><span class="t">${critDe(id, k) ? `<span class="cr" title="${esc(critDe(id, k).pourquoi || "")}">C${critDe(id, k).rang}</span> ` : ""}${ver} <span class="doux">· ${esc(e[k].legende)}</span></span><span class="act"><span class="rgs">${[1,2,3,4,5].map((n) => `<button type="button" class="rg" data-n="${n}" aria-pressed="false" aria-label="${n}e pour ${esc(nom)}">${n}</button>`).join('')}</span><input type="text" placeholder="note" aria-label="Note sur ${esc(k)}"></span>${critDe(id, k) && critDe(id, k).pourquoi ? `<span class="pq">${esc(critDe(id, k).pourquoi)}</span>` : ""}</figcaption></figure>\n`;
   }
   html += `</div></section>\n`;
 }
