@@ -1,0 +1,77 @@
+{
+ "l-sheet": {
+  "vw": 844,
+  "sh": 840,
+  "over": [
+   [
+    "as-sh as-sh-choisi as-sh-in",
+    840,
+    1008,
+    0
+   ]
+  ],
+  "docW": 844
+ },
+ "l-apresSaisie": [],
+ "l-pose": {
+  "toast": {
+   "x": 8,
+   "y": 189,
+   "r": 265,
+   "b": 235,
+   "txt": "S49 : 4 132 → 4 262Annuler"
+  },
+  "n": [
+   {
+    "t": "Café du PontB… +130",
+    "x": 97,
+    "y": 241,
+    "r": 242,
+    "b": 285
+   }
+  ]
+ },
+ "l-defile": [
+  "lr:Commande groupée de ",
+  "lt:Travauxvide, cachée",
+  "g2-c:"
+ ],
+ "p-sheet": {
+  "vw": 390,
+  "sh": 390,
+  "over": [
+   [
+    "as-sh-s as-sh-sd",
+    358,
+    800,
+    35
+   ]
+  ],
+  "docW": 390
+ },
+ "p-apresSaisie": [
+  [
+   "as-sh-s as-sh-sd",
+   35
+  ]
+ ],
+ "p-pose": {
+  "toast": {
+   "x": 8,
+   "y": 734,
+   "r": 282,
+   "b": 780,
+   "txt": "S49 : 4 132 → 204 262Annuler"
+  },
+  "n": [
+   {
+    "t": "Café du PonBa… +200 130",
+    "x": 76,
+    "y": 466,
+    "r": 253,
+    "b": 510
+   }
+  ]
+ },
+ "p-defile": []
+}

@@ -1,0 +1,1072 @@
+{
+ "p-repos": "ok",
+ "p-repos.err": [],
+ "p-blonde": {
+  "em": "J0 / 35 · prête 28 déc.",
+  "emDedans": true,
+  "al": "3 fûts promis le 15 déc. · prête le 28 déc.La Cigogne · la Blonde brassée dès le 23 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 29 déc.Annuler",
+  "barreVueApresF2a": true,
+  "barreVue": true
+ },
+ "p-blonde.err": [],
+ "p-fab": {
+  "av": {
+   "nouv": null,
+   "pill": "−324",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-brassage cutr as-nouv as-neuf : Blonde d’automne −420",
+   "pill": "−744",
+   "tete": "−307",
+   "chev": [],
+   "toast": "Prête le 4 janv. · S50 : 5 120 → 4 700Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+  "ecartChariot": 12
+ },
+ "p-fab.err": [],
+ "p-r-brassage": {
+  "av": {
+   "nouv": null,
+   "pill": "−324",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-brassage as-nouv as-neuf : Saison de printemps −100",
+   "pill": "−424",
+   "tete": "13",
+   "chev": [],
+   "toast": "Prête le 14 déc. · S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Saison de printemps−100Brassagelun. 16 nov.En cuve17 nov. → 7 déc.Prête14 déc.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "−324",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Saison de printemps · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": true
+  },
+  "apUndo": {
+   "nouv": "bar k-brassage as-nouv as-neuf : Saison de printemps −100",
+   "pill": "−424",
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-brassage.err": [],
+ "p-r-vente": {
+  "av": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "k17-p as-nouv as-neuf : +130",
+   "pill": "+1 030",
+   "tete": "243",
+   "chev": [],
+   "toast": "S50 : 5 120 → 5 250Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Café du Pont+130VentesS50Livraison10 déc.Libre S505 250ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Café du Pont · S50 : 5 250 → 5 120Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "k17-p as-nouv as-neuf : +130",
+   "pill": "+1 030",
+   "tete": "243",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-vente.err": [],
+ "p-r-evenement": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-evenement etroit as-nouv as-neuf : Apéro des voisins +100",
+   "pill": null,
+   "tete": "213",
+   "chev": [],
+   "toast": "S47 : 4 032 → 4 132Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Apéro des voisins+100FêtesS47Lelun. 16 nov.Libre S474 132ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Apéro des voisins · S47 : 4 132 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": true
+  },
+  "apUndo": {
+   "nouv": "bar k-evenement etroit as-nouv as-neuf : Apéro des voisins +100",
+   "pill": null,
+   "tete": "213",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-evenement.err": [],
+ "p-r-achat": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Houblon Citra 1 kg−100AchatsS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Houblon Citra 1 kg · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": true
+  },
+  "apUndo": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-achat.err": [],
+ "p-r-renovation": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-renovation etroit as-nouv as-neuf : Peinture de la cave −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Peinture de la cave−100TravauxS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Peinture de la cave · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": true
+  },
+  "apUndo": {
+   "nouv": "bar k-renovation etroit as-nouv as-neuf : Peinture de la cave −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-renovation.err": [],
+ "p-r-activite": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-activite etroit as-nouv as-neuf : Nettoyer les fûts 1 j",
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Nettoyer les fûts en S47Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Nettoyer les fûtsActivitésS47Dès lelun. 16 nov.Durée1 jModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Nettoyer les fûtsAnnuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-activite etroit as-nouv as-neuf : Nettoyer les fûts 1 j",
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-activite.err": [],
+ "p-r-charge": {
+  "av": {
+   "nouv": null,
+   "pill": "−806",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-charge etroit as-nouv as-neuf : Facture Brouwland −100",
+   "pill": "−906",
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Facture Brouwland−100PapiersS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "−806",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Facture Brouwland · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": true
+  },
+  "apUndo": {
+   "nouv": "bar k-charge etroit as-nouv as-neuf : Facture Brouwland −100",
+   "pill": "−906",
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-r-charge.err": [],
+ "p-hors": {
+  "nsem": 13,
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "as-hors as-nouv as-neuf : Malt de janvier−540S2",
+   "pill": null,
+   "tete": "−427",
+   "chev": [],
+   "toast": "Hors vue, en S2 · S2 : 4 766 → 4 226Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Malt de janvier−540AchatsS2Lelun. 11 janv.Libre S24 226ModifierRetirer"
+ },
+ "p-hors.err": [],
+ "p-autre": {
+  "t": {
+   "txt": "Ranger la réserve : S48 → S49Annuler",
+   "coupe": false,
+   "surNav": false,
+   "h": 46
+  },
+  "c": {
+   "txt": "Charge fixe : elle se règle dans Finances",
+   "coupe": false,
+   "surNav": false,
+   "h": 46
+  }
+ },
+ "p-autre.err": [],
+ "l-repos": "ok",
+ "l-repos.err": [],
+ "l-blonde": {
+  "em": "J0 / 35 · prête 28 déc.",
+  "emDedans": true,
+  "al": "3 fûts promis le 15 déc. · prête le 28 déc.La Cigogne · la Blonde brassée dès le 23 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 29 déc.Annuler",
+  "barreVueApresF2a": true,
+  "barreVue": true
+ },
+ "l-blonde.err": [],
+ "l-fab": {
+  "av": {
+   "nouv": null,
+   "pill": "−556",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-brassage as-nouv as-neuf : Blonde d’automne −420",
+   "pill": "−976",
+   "tete": "−307",
+   "chev": [],
+   "toast": "Prête le 4 janv. · S50 : 5 120 → 4 700Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+  "ecartChariot": 12
+ },
+ "l-fab.err": [],
+ "l-r-brassage": {
+  "av": {
+   "nouv": null,
+   "pill": "−556",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-brassage as-nouv as-neuf : Saison de printemps −100",
+   "pill": "−656",
+   "tete": "13",
+   "chev": [],
+   "toast": "Prête le 14 déc. · S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Saison de printemps−100Brassagelun. 16 nov.En cuve17 nov. → 7 déc.Prête14 déc.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "−556",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Saison de printemps · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-brassage as-nouv as-neuf : Saison de printemps −100",
+   "pill": "−656",
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-brassage.err": [],
+ "l-r-vente": {
+  "av": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "k17-p as-nouv as-neuf : +130",
+   "pill": "+1 030",
+   "tete": "243",
+   "chev": [],
+   "toast": "S50 : 5 120 → 5 250Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Café du Pont+130VentesS50Livraison10 déc.Libre S505 250ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Café du Pont · S50 : 5 250 → 5 120Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "k17-p as-nouv as-neuf : +130",
+   "pill": "+1 030",
+   "tete": "243",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-vente.err": [],
+ "l-r-evenement": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-evenement etroit as-nouv as-neuf : Apéro des voisins +100",
+   "pill": null,
+   "tete": "213",
+   "chev": [],
+   "toast": "S47 : 4 032 → 4 132Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Apéro des voisins+100FêtesS47Lelun. 16 nov.Libre S474 132ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Apéro des voisins · S47 : 4 132 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-evenement etroit as-nouv as-neuf : Apéro des voisins +100",
+   "pill": null,
+   "tete": "213",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-evenement.err": [],
+ "l-r-achat": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Houblon Citra 1 kg−100AchatsS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Houblon Citra 1 kg · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-achat.err": [],
+ "l-r-renovation": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-renovation etroit as-nouv as-neuf : Peinture de la cave −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Peinture de la cave−100TravauxS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Peinture de la cave · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-renovation etroit as-nouv as-neuf : Peinture de la cave −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-renovation.err": [],
+ "l-r-activite": {
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-activite etroit as-nouv as-neuf : Nettoyer les fûts 1 j",
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Nettoyer les fûts en S47Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Nettoyer les fûtsActivitésS47Dès lelun. 16 nov.Durée1 jModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Nettoyer les fûtsAnnuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-activite etroit as-nouv as-neuf : Nettoyer les fûts 1 j",
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-activite.err": [],
+ "l-r-charge": {
+  "av": {
+   "nouv": null,
+   "pill": "−1 986",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-charge etroit as-nouv as-neuf : Facture Brouwland −100",
+   "pill": "−2 086",
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 : 4 032 → 3 932Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Facture Brouwland−100PapiersS47Lelun. 16 nov.Libre S473 932ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "−1 986",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Facture Brouwland · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-charge etroit as-nouv as-neuf : Facture Brouwland −100",
+   "pill": "−2 086",
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-r-charge.err": [],
+ "l-hors": {
+  "nsem": 13,
+  "av": {
+   "nouv": null,
+   "pill": null,
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Malt de janvier −540",
+   "pill": null,
+   "tete": "−427",
+   "chev": [],
+   "toast": "S2 : 4 766 → 4 226Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "det": "Malt de janvier−540AchatsS2Lelun. 11 janv.Libre S24 226ModifierRetirer"
+ },
+ "l-hors.err": [],
+ "l-autre": {
+  "t": {
+   "txt": "Ranger la réserve : S48 → S49Annuler",
+   "coupe": false,
+   "surNav": false,
+   "h": 46
+  },
+  "c": {
+   "txt": "Charge fixe : elle se règle dans Finances",
+   "coupe": false,
+   "surNav": false,
+   "h": 44
+  }
+ },
+ "l-autre.err": [],
+ "p-sombre-fab": "ok",
+ "p-sombre-fab.err": [],
+ "p-z-deuxventes": {
+  "av": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "k17-p as-nouv as-neuf : +200",
+   "pill": "+1 100",
+   "tete": "313",
+   "chev": [],
+   "toast": "S49 : 4 132 → 4 332Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "pins": [
+   {
+    "t": "+260",
+    "l": 149,
+    "r": 180,
+    "y": 373,
+    "b": 416
+   },
+   {
+    "t": "",
+    "l": 213,
+    "r": 239,
+    "y": 373,
+    "b": 399
+   },
+   {
+    "t": "3",
+    "l": 274,
+    "r": 300,
+    "y": 373,
+    "b": 416
+   },
+   {
+    "t": "+200",
+    "l": 149,
+    "r": 180,
+    "y": 464,
+    "b": 507
+   }
+  ],
+  "chevPins": [],
+  "det": "Bar du Lac+200VentesS49Livraisonlun. 30 nov.Libre S494 332ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Bar du Lac · S49 : 4 332 → 4 132Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "pinsApresRetrait": [
+   {
+    "t": "+260",
+    "l": 149,
+    "r": 180,
+    "y": 309,
+    "b": 352
+   },
+   {
+    "t": "",
+    "l": 213,
+    "r": 239,
+    "y": 309,
+    "b": 335
+   },
+   {
+    "t": "3",
+    "l": 274,
+    "r": 300,
+    "y": 309,
+    "b": 352
+   }
+  ]
+ },
+ "p-z-deuxventes.err": [],
+ "p-z-modifie": {
+  "mod": true,
+  "m": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 → S51 · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "p-z-modifie.err": [],
+ "p-z-livrer": {
+  "al": "3 fûts promis le 15 déc. · prête le 28 déc.La Cigogne · la Blonde brassée dès le 23 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 29 déc.Annuler",
+  "toast": "La Cigogne : 29 déc. · S53, hors vueAnnuler",
+  "toastSurNav": false,
+  "renvoi": "La Cigogne3 fûtsS53",
+  "renvoiVu": true,
+  "pinVu": false,
+  "pin": "3 fûts à La Cigogne, 29 déc.",
+  "det": "3 fûts · La CigogneVentesS53Livraisonmar. 29 déc.Blonde prête28 déc."
+ },
+ "p-z-livrer.err": [],
+ "p-z-ouvrir": {
+  "nouv": "bar k-brassage cutr as-nouv : Blonde d’automne −420",
+  "pill": "−744",
+  "tete": "−307",
+  "chev": [],
+  "toast": "Ouvre la fiche Blonde d’automne (Brassins)",
+  "toastSurNav": false,
+  "toastSurFrise": [],
+  "toastCoupe": false
+ },
+ "p-z-ouvrir.err": [],
+ "p-z-depart": {
+  "avant": {
+   "y": 427,
+   "s": 0,
+   "t": true
+  },
+  "apres": {
+   "y": 427,
+   "s": 0,
+   "t": false
+  },
+  "ongletsLibres": true
+ },
+ "p-z-depart.err": [],
+ "l-z-deuxventes": {
+  "av": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  },
+  "ap": {
+   "nouv": "k17-p as-nouv as-neuf : +200",
+   "pill": "+1 100",
+   "tete": "313",
+   "chev": [],
+   "toast": "S49 : 4 132 → 4 332Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "pins": [
+   {
+    "t": "+260",
+    "l": 154,
+    "r": 185,
+    "y": 146,
+    "b": 189
+   },
+   {
+    "t": "",
+    "l": 220,
+    "r": 246,
+    "y": 146,
+    "b": 172
+   },
+   {
+    "t": "3",
+    "l": 283,
+    "r": 309,
+    "y": 146,
+    "b": 189
+   },
+   {
+    "t": "+200",
+    "l": 154,
+    "r": 185,
+    "y": 237,
+    "b": 280
+   }
+  ],
+  "chevPins": [],
+  "det": "Bar du Lac+200VentesS49Livraisonlun. 30 nov.Libre S494 332ModifierRetirer",
+  "apRet": {
+   "nouv": null,
+   "pill": "+900",
+   "tete": "113",
+   "chev": [],
+   "toast": "Retiré : Bar du Lac · S49 : 4 332 → 4 132Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "pinsApresRetrait": [
+   {
+    "t": "+260",
+    "l": 154,
+    "r": 185,
+    "y": 19,
+    "b": 62
+   },
+   {
+    "t": "",
+    "l": 220,
+    "r": 246,
+    "y": 19,
+    "b": 45
+   },
+   {
+    "t": "3",
+    "l": 283,
+    "r": 309,
+    "y": 19,
+    "b": 62
+   }
+  ]
+ },
+ "l-z-deuxventes.err": [],
+ "l-z-modifie": {
+  "mod": true,
+  "m": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": "S47 → S51 · S47 : 3 932 → 4 032Annuler",
+   "toastSurNav": false,
+   "toastSurFrise": [],
+   "toastCoupe": false
+  },
+  "apUndo": {
+   "nouv": "bar k-achat etroit as-nouv as-neuf : Houblon Citra 1 kg −100",
+   "pill": null,
+   "tete": "13",
+   "chev": [],
+   "toast": null,
+   "toastSurNav": null,
+   "toastSurFrise": null,
+   "toastCoupe": null
+  }
+ },
+ "l-z-modifie.err": [],
+ "l-z-livrer": {
+  "al": "3 fûts promis le 15 déc. · prête le 28 déc.La Cigogne · la Blonde brassée dès le 23 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 29 déc.Annuler",
+  "toast": "La Cigogne : 29 déc.Annuler",
+  "toastSurNav": false,
+  "renvoi": null,
+  "renvoiVu": null,
+  "pinVu": true,
+  "pin": "3 fûts à La Cigogne, 29 déc.",
+  "det": null
+ },
+ "l-z-livrer.err": [],
+ "l-z-ouvrir": {
+  "nouv": "bar k-brassage as-nouv : Blonde d’automne −420",
+  "pill": "−976",
+  "tete": "−307",
+  "chev": [],
+  "toast": "Ouvre la fiche Blonde d’automne (Brassins)",
+  "toastSurNav": false,
+  "toastSurFrise": [],
+  "toastCoupe": false
+ },
+ "l-z-ouvrir.err": [],
+ "l-z-depart": {
+  "avant": {
+   "y": 175,
+   "s": 254,
+   "t": true
+  },
+  "apres": {
+   "y": 175,
+   "s": 254,
+   "t": false
+  },
+  "ongletsLibres": true
+ },
+ "l-z-depart.err": [],
+ "rotation": "ok",
+ "rotation.err": [],
+ "l-sombre-livrer": "La Cigogne : 29 déc.Annuler",
+ "l-sombre-livrer.err": [],
+ "p-sombre-deuxventes": "ok",
+ "p-sombre-deuxventes.err": []
+}

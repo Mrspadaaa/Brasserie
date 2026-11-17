@@ -117,3 +117,132 @@ Reste à voir :
   passent en défilant. Le nom l'emporte sur la colonne.
 - 6 sem. portrait : un nom écrit dans sa barre (« Noël privés +640 », fin à 316 px) reste dans sa barre, comme la base ; il passe sous le + en défilant.
 - f6-b portrait pendant : les hachures du fantôme passent sur « Blonde d'automne −148 », lisible.
+
+## Passe 5 (17.11, ses mots : « Trop d'info quand on bouge qqch, ça devient illisible... Les boutons+ (général) et ajout fonctionne pas »)
+Défauts CAL-GESTE-BRUIT et CAL-PLUS-MORT. Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copies de la passe 4 : scratchpad
+`as-gestes.passe4.*`), assemblés par `src/build.mjs`.
+
+**Contrôles écrits avant la correction** (`scripts/agents/`) : `controle-plus-agit.mjs` (le + volant et le + du carré de chaque rangée, 390 tactile,
+page neuve à chaque toucher : feuille avec champ ou choix, déjà sur sa rangée, ou élément posé ; zéro case « + » visible) et `controle-geste-bruit.mjs`
+(f6-b seul, puis f1-a suivi de f6-b : 1 message au plus, 2 lignes au plus hors boutons, aucun texte sur un autre, le fantôme sur aucun texte).
+Témoins négatifs sur l'état de la passe 4 : `TEMOINS-1711.txt` — PLUS-AGIT ECHEC (16/16 KO : rien d'ouvert, 12 cases « + » par rangée) ;
+BRUIT ECHEC (alerte sur 3 lignes, 2 messages empilés après f1-a puis f6-b, fantôme sur « Blonde d'automne »).
+
+| # | Correction | Preuve |
+|---|---|---|
+| 1 | Un seul message : le bandeau ferme l'alerte, l'alerte ferme le bandeau (plus de « Blonde d'automne : 2… Annuler » sous une alerte) | p-f1a-puis-f6b, l-… : 1 message |
+| 2 | L'alerte de promesse remplace le bandeau, avec Annuler dedans : « **3 fûts promis le 15 déc.** · prête le 4 janv. » puis [Livrer le 5 janv.] [Annuler] ; La Cigogne, la date de brassage et la ligne Caisse (S47 4 032 → 4 180) passent dans le détail, au toucher de la ligne (chevron) ; même forme pour f2-a | p-f6b-apres, p-f6b-detail, p-f2a-apres ; paysage : alerte ≤ 560 px |
+| 3 | Fantôme : simple contour pointillé, premier enfant de la rangée (z 0), sous les barres et les noms, sans hachures | p-f6b-pendant, p-f1a-pendant |
+| 4 | Pastille de date seulement si elle ne touche ni texte, ni repère, ni barre, ni le bord | p-f6b-apres : « 15 déc. » posée, rien dessous |
+| 5 | + volant : feuille d'ajout (Brassin, Vente, Fête, Achat, Travaux, Activité, Papier ; puis Nom, CHF sauf Activité, la semaine ; « Ajouter en S49 ») ; Ajouter pose une barre d'une semaine dans sa rangée, première ligne libre pour elle et son nom, la caisse suit, bandeau « S49 : 4 132 → 4 070 · Annuler » | p-plus-feuille, -rempli, -pose (Houblon Citra 1 kg −62 en Achats, tête 113 → 51) |
+| 6 | + du carré : la même feuille, déjà sur sa rangée ; Ventes propose la vente probable du repère pointillé (Café du Pont, 1 fût · 10 déc., +130, S50) ; Ajouter la pose et retire le repère pointillé | p-ventes-feuille, -pose (S50 : 5 120 → 5 250) ; p-activites-* (sans montant, « 1 j ») |
+| 7 | Plus aucune case pointillée : l'ouverture de rangée de la base (k14-ouv, `.ps`) est neutralisée ; le + volant n'a pas bougé | controle-plus-agit : 0 case ; controle-plus-rangees OK |
+
+Rejoué au doigt par `cap/passe5/jouer.mjs` : 14 parcours, 390 × 844 tactile et 844 × 390, clair, plus la feuille et f6-b en cave ; **0 erreur de page**
+(`cap/passe5/_jeu.json`). Captures `cap/passe5/` toutes ouvertes (planches `_p5-f6b`, `_p5-plus`, `_p5-p2`, `_p5-p3`, `_p5-l`, `_p5-l2`, `_p5-l3`).
+
+### Contrôles (depuis la racine, sortie complète : `cap/passe5/_controles.txt`)
+- controle-plus-agit cal.html cal-paysage.html : **PLUS-AGIT OK** (16/16)
+- controle-geste-bruit cal.html cal-paysage.html : **BRUIT OK** (6/6)
+- controle-bande-semaine cal.html : **BANDE OK** ; cal-paysage.html --paysage : **BANDE OK**
+- controle-entete-cal cal.html : **ENTETE OK**
+- controle-plus-rangees cal.html : **PLUS OK**
+
+Reste à voir :
+- le fantôme, simple contour sous la barre, se lit peu quand la barre ne s'est déplacée que d'une semaine (il dépasse d'une semaine à gauche) ;
+- après « Livrer le 5 janv. », le repère des 3 fûts part en S53, hors des 6 semaines (comme en passe 4) ;
+- en paysage, le bandeau du bas recouvre parfois un repère de la rangée Ventes (+260) tant qu'il est là (7 s) ;
+- la feuille ne propose une chose probable que pour Ventes (seule donnée probable de l'exemple) ; une barre posée par le + n'a pas de détail de brassin au toucher.
+
+## Passe 6 (17.11, CRITIQUE5 : 11 problèmes, 5 bloquants ; ses mots : « Trop d'info quand on bouge qqch… Les boutons+ (général) et ajout fonctionne pas »)
+Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copies de la passe 5 : `%TEMP%/as-gestes.passe5.*`), assemblés par `src/build.mjs`.
+
+| # | Correction | Preuve (cap/passe6/_jeu.json) |
+|---|---|---|
+| 1 | La durée tirée (f2-a) est retenue sur la barre (`data-as-du`) ; après un décalage, la barre redit « J0 / 35 · prête 28 déc. », même date que l'alerte ; si le texte ne tient pas dans l'écran, « J0 / 35 » seul | p/l-blonde : em = alerte, emDedans true ; p-f2a-f6b, l-f2a-f6b |
+| 2 | Toucher une chose ajoutée ouvre son détail : brassin comme le Porter (brassage, en cuve, prête ; stock « à vérifier ») ; vente, fête, achat, travaux, activité, papier : semaine, date, libre de la semaine ; Modifier (la feuille, pré-remplie) et Retirer (avec Annuler) | det non vide sur les 14 parcours + et fab ; p-fab-touche, p-r-*-touche, l-fab-touche |
+| 3 | La pastille de la rangée suit ajout, retrait, Annuler et la copie de f5-a (dans la vue seulement : « solde confirmé S47 – S52 ») | Brassins −324 → −424, Ventes +900 → +1 030, Papiers −806 → −906 (paysage −1 986 → −2 086), retour exact après Retirer |
+| 4 | Pose sans chevauchement : la chose et son nom évitent barres, noms, repères, liens et titres (celui de la rangée et celui de la suivante, Fêtes remonte de 26 px), 8 px de marge ; sinon une ligne neuve sous les repères de la rangée (les liens commande/promesse restent attachés) | chev = [] sur les 28 poses ; l-r-achat-pose : Houblon Citra sous Frigo, plus sur « + Achats » |
+| 5 | Un brassin a sa recette (puces des recettes), son temps en cuve (21, 28, 35, 42 j ; « prête le 4 janv. » en direct dans la feuille) et sa barre : brassage, garde, conditionnement sur la durée, coupée au bord comme le Porter | p-fab-rempli, p-fab-pose (Blonde d'automne S50, 28 j, prête le 4 janv.) |
+| 6 | Messages sur deux lignes au plus, jamais coupés | « Ranger la réserve : S48 → S49 », « Charge fixe : elle se règle dans Finances » entiers (p/l-autre-t, -c) |
+| 7 | Paysage : l'alerte se pose au bout de la rangée de la barre bougée, en une rangée (texte, Livrer, Annuler) ; la vue ne descend jamais au point de cacher la barre (bas de la bande des semaines collée) | barreVue true après f2-a et après f6-b (p et l) ; l-f2a-apres, l-f2a-f6b |
+| 8 | Le message (Annuler) se pose sur la barre d'onglets, comme le toast de la base en paysage (`body.land .toast{bottom:12px}`) ; il ne couvre plus la frise | toastSurNav true sur toutes les poses |
+| 9 | La feuille propose 13 semaines (S47 → S6) en portrait aussi, qui défilent ; hors des 6 semaines, la chose se pose (caisse, pastille hors vue inchangée) et un renvoi « Malt de janvier −540 S2 › » au bord droit de sa rangée l'ouvre | p-hors-feuille, p-hors-pose, p-hors-touche |
+| 10 | Une vente est une pastille, comme les livraisons : la vente probable choisie devient pleine à sa place (bouteille, +130) ; une autre vente, une pastille neuve | p/l-r-vente-pose |
+| 11 | Le brassin en S50 se pose sous le chariot du Porter avec 12 px d'écart, avant le titre Fêtes | ecartChariot 12 ; p-fab-pose |
+
+Rejoué au doigt par `cap/passe6/jouer.mjs` : 22 parcours par sens (390 × 844 tactile, 844 × 390), clair, plus la cave ; **0 erreur de page**.
+Captures `cap/passe6/` ouvertes sur les planches `_p6-p1` à `_p6-p3`, `_p6-l1` à `_p6-l4`.
+
+### Contrôles (depuis la racine, sortie : `cap/passe6/_controles.txt`)
+- controle-plus-agit cal.html cal-paysage.html : **PLUS-AGIT OK**
+- controle-geste-bruit cal.html cal-paysage.html : **BRUIT OK**
+- controle-bande-semaine cal.html : **BANDE OK** ; cal-paysage.html --paysage : **BANDE OK**
+- controle-entete-cal cal.html : **ENTETE OK**
+- controle-plus-rangees cal.html : **PLUS OK**
+
+Reste à voir :
+- le message sur la barre d'onglets cache Bord, Finances et Calendrier pendant 7 s (choix : la frise d'abord) ;
+- en portrait, l'alerte reste dans Ventes, près de la promesse (comme en passe 5) ; en paysage, elle passe sous la Blonde ;
+- une chose posée hors vue n'entre pas dans la pastille (« solde S47 – S52 ») ; l'année ouverte avant l'ajout ne la montre qu'en la rouvrant ;
+- deux ventes la même semaine : deux pastilles côte à côte, non décalées.
+
+## Passe 7 (17.11, RECONTROLE6 : 4 problèmes, 1 bloquant ; et la rotation, ses mots : « Ça forcé pas à renverser le téléphone ??? Ça devrait si non c'est pas vraiment utilisable ? »)
+Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copies de la passe 6 : `%TEMP%/as-gestes.passe6.*`), assemblés par `src/build.mjs`, qui écrit aussi `pub/portrait.html` et `pub/paysage.html` (`<html data-vue>`).
+
+| # | Correction | Preuve (cap/passe7/_jeu.json) |
+|---|---|---|
+| 1 | Deux ventes la même semaine : la pastille neuve ne se pose jamais sur une autre (ni sur un nom, un lien, une barre, 3 px) ; sinon une ligne dessous, dans sa semaine ; la ligne se retire avec elle. Le jeu mesure les pastilles neuves contre les pastilles posées | p/l-z-deuxventes : +260 y 373–416, +200 y 464–507, chevPins [] ; Ventes +900 → +1 100 → +900 après Retirer ; toucher : détail (Bar du Lac, S49, lun. 30 nov.) |
+| 2 | Modifier : le message se calcule sur toute la courbe, première semaine qui bouge : « S47 → S51 · S47 : 3 932 → 4 032 » ; un ajout simple dit aussi sa première semaine changée | p/l-z-modifie |
+| 3 | Le message suit le geste dans la frise, au bout de la rangée de la chose touchée (comme l'alerte) ; à gauche du + volant ; juste sous la chose si le bout de rangée reste sous les onglets ; Ouvrir et Commander ferment le détail d'abord. Il ne couvre ni la frise ni la barre d'onglets ; quand il part (7 s), la chose ne bouge pas à l'écran | toastSurNav false et toastSurFrise [] sur les 34 poses ; p/l-z-depart : y 427 → 427 (p), 175 → 175 (l), onglets libres pendant le message ; aucun message coupé |
+| 4 | Livrer hors des 6 semaines (portrait) : la pastille devient un renvoi « La Cigogne 3 fûts S53 › » au bord de Ventes (comme « Malt de janvier −540 S2 › »), qui ouvre son détail (S53, mar. 29 déc., Blonde prête 28 déc.) ; Annuler remet la pastille | p-z-livrer, p-z-livrer-touche ; paysage : S53 dans la vue, pastille déplacée (l-z-livrer) |
+| 5 | Le message d'un brassin posé : « Prête le 4 janv. · S50 : 5 120 → 4 700 » (le nom est sur la barre), deux lignes au plus | p-fab-pose |
+| B | `pub/calendrier.html` : une adresse, deux cadres (portrait 100vmin × 100vmax, paysage 100vmax × 100vmin), l'un visible selon `matchMedia('(orientation: landscape)')`, au changement, sans recharger ni recalculer | `scripts/agents/controle-rotation.mjs` : ROTATION OK ; témoin `pub/portrait.html` : ROTATION ECHEC ; rot-portrait, rot-paysage, rot-retour |
+
+Rejoué au doigt par `cap/passe7/jouer.mjs` (passe 6 entière + 5 parcours z par sens + rotation + cave) : **0 erreur de page**, 0 faute mesurée. Planches ouvertes : `_p7a` à `_p7e`, rot-paysage.
+
+### Contrôles (depuis la racine, sortie : `cap/passe7/_controles.txt`)
+- controle-plus-agit cal.html : **PLUS-AGIT OK** (paysage aussi)
+- controle-geste-bruit cal.html : **BRUIT OK** (paysage aussi)
+- controle-bande-semaine cal.html : **BANDE OK** (paysage --paysage aussi)
+- controle-entete-cal cal.html : **ENTETE OK**
+- controle-plus-rangees cal.html : **PLUS OK**
+- controle-rotation pub/calendrier.html : **ROTATION OK** ; témoin pub/portrait.html : ROTATION ECHEC (attendu)
+
+Reste à voir :
+- le message dans la rangée pousse les rangées du dessous de sa hauteur (≈ 56 px) pendant 7 s ;
+- « S47 → S51 · S47 : … » redit S47 quand la chose part de la semaine qui bouge ;
+- la deuxième pastille d'une semaine agrandit la rangée Ventes d'une ligne (46 px).
+
+## Passe 8 (17.11, CRITIQUE7 : 3 problèmes, 2 bloquants ; et les restes de RECONTROLE6)
+Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copies de la passe 7 hors du dossier), assemblés par `src/build.mjs` ; `pub/calendrier.html` réécrit.
+
+| # | Correction | Preuve |
+|---|---|---|
+| 1 | **Un seul calendrier.** Chaque vue écrit ses données à chaque changement (sessionStorage commun + message au cadre parent, qui garde le dernier état et le passe à l'autre vue, puis à la vue qui redevient visible) ; chaque vue relit l'état reçu, au redimensionnement (on tourne) et quand elle redevient visible, et redessine à sa largeur. État : courbe, choses posées, barres de la base (semaine, durée, retrait, copies, marques), livraison promise, écarts des pastilles (chaque vue compte ses semaines), rangées masquées | `controle-rotation.mjs` étendu (poser un papier et décaler la Blonde en hauteur, tourner, vérifier chose, pastille, tête, Blonde ; puis l'inverse) : ROTATION OK ; témoin passe 7 : ROTATION ECHEC (TEMOINS-1711.txt). Jeu : tête 313 en hauteur → 313 en largeur → 223 au retour avec l'achat posé en largeur |
+| 2 | 1280 × 800 : la vue en largeur reste à 844 px, centrée (marges au fond du thème) ; hauteurs en 100dvh | `controle-bande-semaine.mjs --large` (nouveau : chaque semaine de la bande au centre de sa colonne) : BANDE OK ; témoin passe 7 : S48 à x 157 pour la colonne 75–138, BANDE ECHEC |
+| 3 | Le message se pose par-dessus la frise (fixe), sans réserver de hauteur : près de la chose là où il ne cache aucun texte, sinon en bas au-dessus des onglets ; sous les onglets et à gauche du + volant ; il part dès qu'on ouvre un détail, un menu ou la feuille | `controle-geste-bruit.mjs` étendu (rangées à la même place, message hors des onglets) : BRUIT OK ; témoin passe 7 : « rangées poussées de 60 px ». Jeu : rangées [185…609] identiques avant et après f1-a |
+| 4 | Deux ventes la même semaine : la pastille neuve porte son nom (« Bar du Lac +200 »), une ligne dessous (pas de 50 px, place laissée au titre suivant) | geste-bruit « deux ventes en S49 » : ok ; témoin passe 7 : pastilles sans nom |
+| 5 | Modifier : « Stand au marché : S49 → S51 » (plus de semaine redite) | 07-p-modifier |
+| 6 | Livrer hors des 6 semaines : renvoi « Livraison La Cigogne · S1 › » (la Blonde décalée de 3 semaines est prête le 4 janv.) ; en largeur la pastille est dans la vue | 03-p-livrer-renvoi, 08b-l-ventes |
+| 7 | Brassin posé : jauge et « J0 / 28 · prête 4 janv. » comme la Blonde ; la feuille a un signe à toucher (+ rentrée, − dépense : « Stand au marché −150 ») ; vente posée nommée | 04-p-brassin, 05a-p-feuille-moins, 05-p-fete-moins, 06-p-deux-ventes |
+
+Contrôles (sorties : `cap/passe8/_controles.txt`) : ROTATION OK, PLUS-AGIT OK, BRUIT OK (portrait et paysage), BANDE OK (portrait, paysage 844 seul et en cadre, 1280), ENTETE OK, PLUS OK. `controle-entete-cal --paysage` sur `cal-paysage.html` : ECHEC identique à la passe 7 (en-tête 182 px, base inchangée, hors de cette passe).
+Rejoué au doigt par `cap/passe8/jouer.mjs` : une session sur `pub/calendrier.html`, 390 tactile → 844 × 390 → 390 → 1280 × 800, puis la cave dans les trois ; **0 erreur de page** ; 20 captures, toutes ouvertes (planches `cap/_p8a` à `_p8i`).
+Reste à voir : la page seule `cal-paysage.html` ouverte en 1280 reste dessinée pour 844 (la vue de l'adresse unique est bornée) ; sur un vrai téléphone, la hauteur 100dvh avec la barre d'adresse.
+
+## Passe 9 (17.11, CRITIQUE8 : 6 problèmes, 3 bloquants)
+Base z2s et gestes retenus intacts ; tout dans `src/as-gestes.js` et `.css` (copie de la passe 8 hors du dossier), assemblés par `src/build.mjs` ; `pub/` réécrit.
+
+| # | Correction | Preuve |
+|---|---|---|
+| 1 | Le message part dès que la frise défile (24 px) ; son texte laisse passer le doigt (seul Annuler se touche) ; il évite la chose annoncée (poids 400) et les + des rangées (poids 200), avec plus de places essayées le long de la rangée, et jamais au-dessus du bas de la bande des semaines | geste-bruit n° 7 (nouveau : vente posée, puis on défile par pas de 30 px jusqu'à 450 px) : « parti » ; témoin passe 8 : KO « message sur −312 en défilant ». Jeu : les 7 + agissent (18 à 28), 0 erreur ; 48-l-fab-pose : message à droite de la barre posée, aucun nom couvert |
+| 2 | Feuille en 844 × 390 : la ligne du montant rétrécit (`.as-fmr` min-width 0), les semaines défilent dans leur bande dans les deux sens, plus de scrollIntoView | plus-agit (nouveau) : largeur 840 pour 840, glisse 0 px, titre entier (cal.html et cal-paysage.html) ; témoin : 1008 pour 840, glisse 168 px, titre coupé. m-l-feuille-vente, 47, 49 |
+| 3 | Les points des jours actifs vivent dans la piste (en % de sa largeur) : même place à 844 et 1280, jamais sous « J0 / … » | geste-bruit n° 8 (nouveau, 844 × 390) : 4 points, 0 sur le texte ; 58-d-1280 et 51-l-f2a |
+| 4 | Feuille Vente : champs vides, Café du Pont reste une puce qu'on touche ; un champ rempli se sélectionne au toucher ; plus de 10 fois la plus grosse somme de la rangée : une ligne d'alerte et « Oui, 200 130 CHF en S47 » à confirmer | plus-agit (nouveau) : champs « / », 200 130 → feuille gardée, alerte ; témoin : « Café du Pont / 130 », posée sans alerte |
+| 5 | Une étiquette de barre qui touche une autre barre passe de l'autre côté de sa barre, sinon dedans ; elle revient quand la voie est libre | geste-bruit n° 8 : aucune étiquette dans une autre barre ; témoin : « IPA houblon à cru −232 » dans la Blonde. 48, 51, 58 : IPA dans sa barre |
+| 6 | Au bord de la vue, la date passe dans l'étiquette : « Blonde d’automne −380 · prête 18 janv. » ; la barre est replacée avec son étiquette allongée | plus-agit (nouveau) : brassin S52 « J0 / 28 Saison · prête 18 janv. » ; témoin : « J0 / 28 Saison ». 54-p-retour-milieu |
+
+Contrôles (sortie : `cap/passe9/_controles.txt`) : ROTATION OK, PLUS-AGIT OK, BRUIT OK, BANDE OK, ENTETE OK, PLUS OK. Témoins passe 8 (copie hors du dossier) : BRUIT ECHEC et PLUS-AGIT ECHEC sur chaque point neuf.
+Rejoué au doigt par `cap/passe9/jouer.mjs` (le jeu de la critique 8 ; la vente du + de Ventes touche la puce Café du Pont, comme le brasseur) et `mesure.mjs` : 58 + 6 captures, **0 erreur de page**, planches `_p9a` à `_p9f` ouvertes.
+Reste à voir : en hauteur, le message posé en bas couvre parfois une pastille de Papiers (−312) jusqu'au premier défilement ; c2-b pousse toujours la frise (doute de la critique 8).

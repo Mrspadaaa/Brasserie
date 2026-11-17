@@ -1,0 +1,15 @@
+ok cal.html + volant : feuille (0 champ(s), 8 choix, pressé « rien ») ; cases « + » visibles : 0
+ok cal.html + Brassins : feuille (2 champ(s), 15 choix, pressé « Brassin / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Fêtes : feuille (2 champ(s), 15 choix, pressé « Fête / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Ventes : feuille (2 champ(s), 16 choix, pressé « Vente / Café du Pont 1 fût · 10 déc.+130 / S507 déc. ») ; cases « + » visibles : 0
+ok cal.html + Achats : feuille (2 champ(s), 15 choix, pressé « Achat / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Travaux : feuille (2 champ(s), 15 choix, pressé « Travaux / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Activités : feuille (1 champ(s), 15 choix, pressé « Activité / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Papiers : feuille (2 champ(s), 15 choix, pressé « Papier / S4716 nov. ») ; cases « + » visibles : 0
+PLUS-AGIT OK
+exit 0
+ok cal.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+ok cal.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler
+ok cal.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+BRUIT OK
+exit 0

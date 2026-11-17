@@ -1,0 +1,48 @@
+# Témoins négatifs, 17.11, sur as/cal.html et as/cal-paysage.html AVANT la passe 5 (état de la passe 4)
+
+$ node scripts/agents/controle-plus-agit.mjs as/cal.html as/cal-paysage.html
+KO cal.html + volant : rien d’ouvert ni de posé ; cases « + » visibles : 0
+KO cal.html + Brassins : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Fêtes : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Ventes : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Achats : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Travaux : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Activités : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal.html + Papiers : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + volant : rien d’ouvert ni de posé ; cases « + » visibles : 0
+KO cal-paysage.html + Brassins : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Fêtes : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Ventes : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Achats : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Travaux : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Activités : rien d’ouvert ni de posé ; cases « + » visibles : 12
+KO cal-paysage.html + Papiers : rien d’ouvert ni de posé ; cases « + » visibles : 12
+PLUS-AGIT ECHEC
+EXIT 1
+
+$ node scripts/agents/controle-geste-bruit.mjs as/cal.html as/cal-paysage.html
+KO cal.html f6-b, après f6-b : messages [3 l.] 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. → message sur 3 lignes « 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. » ; fantôme sur : Blonde d’automne
+ok cal.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler
+KO cal.html f1-a puis f6-b, après f6-b : messages [3 l.] 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. | [1 l.] S51 : 5 064 → 4 524Annuler → 2 messages ; message sur 3 lignes « 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. » ; fantôme sur : Blonde d’automne
+KO cal-paysage.html f6-b, après f6-b : messages [3 l.] 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. → message sur 3 lignes « 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. » ; fantôme sur : Blonde d’automne
+ok cal-paysage.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler
+KO cal-paysage.html f1-a puis f6-b, après f6-b : messages [3 l.] 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. | [1 l.] S51 : 5 064 → 4 524Annuler → 2 messages ; message sur 3 lignes « 3 fûts promis à La Cigogne le 15 déc. La Blonde, brassée dès le 7 déc. » ; fantôme sur : Blonde d’automne
+BRUIT ECHEC
+EXIT 1
+
+# Témoins négatifs, passe 8 (17.11), sur la passe 7 (sources d'avant la passe 8, rebâties hors du dossier) : chaque contrôle étendu échoue avant la correction
+
+$ node scripts/agents/controle-rotation.mjs pub/calendrier.html   (passe 7, avant correction)
+ok calendrier.html : 390×844 → portrait 390×844 (cadre portrait.html) ; 844×390 → paysage 844×390 (cadre paysage.html) ; 390×844 → portrait 390×844 (cadre portrait.html)
+KO calendrier.html état commun : hauteur : tête −187, Papiers -300 ; tourné en largeur : tête 113, Papiers +0, Blonde +0 sem., 0 chose(s) ; revenu en hauteur : tête −187, Papiers -300, Blonde +3 sem., 1 chose(s) → tourné en largeur : tête 113 (avant de tourner −187) ; tourné en largeur : pastille Papiers +0 (avant -300) ; tourné en largeur : Blonde décalée de +0 sem. (avant +3) ; tourné en largeur : « ZZ rotation P » absent ; largeur : geste non joué (choses 1, Blonde +0) ; revenu en hauteur : tête −187 (avant de tourner −87) ; revenu en hauteur : pastille Papiers -300 (avant -200) ; revenu en hauteur : Blonde décalée de +3 sem. (avant +0) ; revenu en hauteur : « ZZ rotation L » absent
+ROTATION ECHEC
+
+$ controle-bande-semaine --large pub/calendrier.html (passe 7)
+KO calendrier.html : repos « S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 » (0 icône(s)) ; bouton présent, ± montre les mouvements ; 13 semaine(s) sur leur colonne (vue de 1280 px) ← décalées : S48 à x 157, colonne 75–138, S49 à x 254, colonne 138–201, S50 à x 350, colonne 201–264, S51 à x 447, colonne 264–327
+BANDE ECHEC
+$ controle-geste-bruit cal.html (passe 7)
+ok cal.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+KO cal.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler → rangées poussées de 60 px
+ok cal.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+KO cal.html deux ventes en S49 : pastilles « +260 » «  » « 3 » « +200 » « +150 » → pastille sans nom : Bar du Lac ; pastille sans nom : Épicerie Rolle
+BRUIT ECHEC

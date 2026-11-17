@@ -1,0 +1,98 @@
+{
+ "p-f6b": {
+  "al": "3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler",
+  "tag": "block",
+  "det": "La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangée",
+  "livrer": "La Cigogne : 5 janv.Annuler",
+  "msg": 1
+ },
+ "p-f6b.err": [],
+ "p-f1a": {
+  "t1": "S51 : 5 064 → 4 524Annuler",
+  "apres": [
+   "as-al"
+  ]
+ },
+ "p-f1a.err": [],
+ "p-f2a": {
+  "al": "3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler",
+  "toast": ""
+ },
+ "p-f2a.err": [],
+ "p-plus": {
+  "ok": "Ajouter en S49",
+  "pose": [
+   {
+    "t": "Houblon Citra 1 kg −62",
+    "l": "122px",
+    "top": "36px",
+    "lbl": "lbl ri"
+   }
+  ],
+  "toast": "S49 : 4 132 → 4 070Annuler",
+  "tete": "51CHF à dépenser ·S24"
+ },
+ "p-plus.err": [],
+ "p-ventes": {
+  "ok": "Ajouter en S50",
+  "pose": "Café du Pont +130",
+  "pin": true,
+  "toast": "S50 : 5 120 → 5 250Annuler"
+ },
+ "p-ventes.err": [],
+ "p-activites": {
+  "pose": "Nettoyer les fûts 1 j",
+  "toast": "Posé en S48Annuler"
+ },
+ "p-activites.err": [],
+ "l-f6b": {
+  "al": "3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler",
+  "tag": "block",
+  "det": "La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangée",
+  "livrer": "La Cigogne : 5 janv.Annuler",
+  "msg": 1
+ },
+ "l-f6b.err": [],
+ "l-f1a": {
+  "t1": "S51 : 5 064 → 4 524Annuler",
+  "apres": [
+   "as-al"
+  ]
+ },
+ "l-f1a.err": [],
+ "l-f2a": {
+  "al": "3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler",
+  "toast": ""
+ },
+ "l-f2a.err": [],
+ "l-plus": {
+  "ok": "Ajouter en S49",
+  "pose": [
+   {
+    "t": "Houblon Citra 1 kg −62",
+    "l": "126.154px",
+    "top": "36px",
+    "lbl": "lbl ri"
+   }
+  ],
+  "toast": "S49 : 4 132 → 4 070Annuler",
+  "tete": "51CHF à dépenser ·S24"
+ },
+ "l-plus.err": [],
+ "l-ventes": {
+  "ok": "Ajouter en S50",
+  "pose": "Café du Pont +130",
+  "pin": true,
+  "toast": "S50 : 5 120 → 5 250Annuler"
+ },
+ "l-ventes.err": [],
+ "l-activites": {
+  "pose": "Nettoyer les fûts 1 j",
+  "toast": "Posé en S48Annuler"
+ },
+ "l-activites.err": [],
+ "p-sombre-feuille": "ok",
+ "p-sombre-feuille.err": [],
+ "p-sombre-f6b": "ok",
+ "p-sombre-f6b.err": []
+}
