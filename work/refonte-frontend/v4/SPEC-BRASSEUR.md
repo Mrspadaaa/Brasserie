@@ -2085,3 +2085,10 @@ Lecture : le carnet est d'abord un fil de chat (il écrit ce qu'il veut, l'IA me
 > Mode nuit activé.
 
 Lecture : le port (calendrier, puis carnet) part en ligne dès 0 bloquant, puis se teste sur la version en ligne (lecture seule, actionneurs sur « ZZ TEST — … » retirés ensuite) ; en cas de blocage, passer par une autre session ou trouver une solution, sans l'attendre.
+
+### 17.11 (soir) — Tout mettre en ligne
+
+> Ensuite je le mets en ligne (le front seulement)
+> Pourquoi que le front ? Non tout ??
+
+Lecture : le port (calendrier, carnet) part en ligne en entier : front, fonctions touchées par le port (dont l'IA du carnet) et règles Firestore si le port en a besoin. Restent exclues dispatchBrewerHopAdviceV1 et notifyBrewerHopAdviceAnswerV1 (interdit antérieur, non levé).
