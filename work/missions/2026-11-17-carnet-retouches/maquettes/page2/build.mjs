@@ -40,4 +40,6 @@ html += `<textarea id="sortie" readonly hidden aria-label="Tes choix à copier">
 ${JS}</script>
 `;
 fs.writeFileSync(new URL('./index.html', import.meta.url), html);
+const vs = vers.map((v) => v.id); const trous = RANGS.map(([id]) => [id, vs.filter((v) => !Object.keys(e).some((k) => k.startsWith(v) && e[k].ecran === id))]).filter(([, m]) => m.length);
+console.log(trous.length ? 'PARCOURS ECHEC : ' + trous.map(([id, m]) => id + ' sans ' + m.join(',')).join(' ; ') : 'PARCOURS OK');
 console.log('versions', vers.length, 'figures', (html.match(/<figure /g) || []).length);

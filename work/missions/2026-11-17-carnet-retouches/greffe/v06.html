@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet v06 · greffe R6 — v09 au plus léger, critère en segment</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* v06 · greffe R6 (17.11). Socle v09 (liste, fiche en cours, fiche choisie), habit corrigé sur ref-app (en-tête L'Affinée,
+   ‹ Nov. ›, loupe bordée, avatars G/A, segment à onglet noir, retour bleu, grand titre noir, + carré noir, onglets aux
+   couleurs de zone). Écrans greffés : v11-4 (ajouter), v01 (Évier neuf, compromis), v04-1 (article ouvert), v02-1
+   (critère en segment, côte à côte), v02-3 (choisir), v04-3 (pourquoi), v02-6 (À venir au Calendrier).
+   Tailles : 30 (grand titre), 18 (titres de feuille et de section), 16 (noms, prix, corps), 14 (le reste). Rayons : 10, 14, cercle. */
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#DDDDDD;--line2:#BFBFBF;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--stkd:#3B5420;--fin:#1F64A3;--cal:#C87A2C;--bra:#A0522D;--evt:#6A4FB0;--straw:#F2C14E;--att:#9C7020;
+  --stkbg:color-mix(in srgb,#4C6B2A 9%,#FFFFFF);--stkbg2:color-mix(in srgb,#4C6B2A 15%,#F5F5F5)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--s2);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.3}
+body{width:100vw;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+p{margin:0}
+.g6-rail{display:flex;gap:28px;align-items:flex-start;width:100vw;overflow-x:auto;padding:0 28px 32px 0}
+.g6-col{flex:none;width:390px}
+.g6-cap{margin:10px 6px 0;font-size:14px;color:var(--txt)}
+.g6-cap b{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:600;margin-right:4px}
+.g6-scr{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.g6-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.g6-m{font-family:"IBM Plex Mono",Consolas,Menlo,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:0}
+.th{display:inline-block;width:.28em}
+
+/* en-tête de l'app (ref-app) */
+.g6-bar{display:flex;align-items:center;gap:8px;height:48px;padding:0 10px 0 8px;border-bottom:1px solid var(--line);background:var(--bg)}
+.g6-logo{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--ink)}
+.g6-logo svg{width:22px;height:22px}
+.g6-nom{font-size:16px;font-weight:500;color:var(--ink)}
+.g6-mois{margin-left:auto;display:flex;align-items:stretch;height:36px;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.g6-mois span{display:grid;place-items:center;width:32px;color:var(--ink)}
+.g6-mois span .g6-i{width:16px;height:16px}
+.g6-mois b{display:grid;place-items:center;padding:0 9px;font-size:14px;font-weight:600;border-left:1px solid var(--line2);border-right:1px solid var(--line2)}
+.g6-lou{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--s1);color:var(--ink)}
+.g6-lou .g6-i{width:18px;height:18px}
+.g6-av{position:relative;display:flex}
+.g6-av span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-size:14px;font-weight:700}
+.g6-av span:first-child{background:var(--ink);color:#fff;z-index:1}
+.g6-av span:last-child{margin-left:-6px;background:#E3E3E3;color:var(--ink)}
+.g6-av:after{content:"";position:absolute;right:-1px;top:-1px;width:8px;height:8px;border-radius:50%;background:var(--ink);border:2px solid #fff}
+
+/* segment Stocks et sous-segment, au style Étagère / Recompter */
+.g6-seg{display:flex;gap:2px;margin:8px 12px 0;padding:3px;border-radius:12px;background:var(--s1);border:1px solid var(--line)}
+.g6-seg a{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:9px;font-size:15px;font-weight:500;color:var(--txt);white-space:nowrap}
+.g6-seg a.on{background:var(--ink);color:#fff;font-weight:600}
+.g6-sous{display:flex;margin:8px 12px 0;padding:3px;border-radius:999px;background:var(--s2)}
+.g6-sous a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:32px;border-radius:999px;font-size:15px;font-weight:600;color:var(--txt)}
+.g6-sous a.on{background:var(--ink);color:#fff}
+.g6-sous .n{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500;font-size:14px}
+
+/* groupes, panneaux, rangées (v09) */
+.g6-list{padding:0 14px}
+.g6-h{display:flex;align-items:center;gap:6px;margin:12px 0 6px}
+.g6-h .t{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:var(--stkbg2);font-size:14px;font-weight:700;color:var(--stkd)}
+.g6-h .t .n{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500;color:var(--stk)}
+.g6-h .r{margin-left:auto;font-size:14px;color:var(--mut)}
+.g6-h.off .t{background:var(--s1);color:var(--txt)}
+.g6-h.off .t .n{color:var(--mut)}
+.g6-pan{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg)}
+.g6-row{display:flex;align-items:center;gap:12px;min-height:66px;padding:9px 12px;position:relative}
+.g6-row+.g6-row,.g6-pan>*+*{border-top:1px solid var(--line)}
+.g6-vg{flex:none;width:52px;height:52px;border-radius:10px;overflow:hidden;display:grid;place-items:center;position:relative}
+.g6-vg>svg{width:100%;height:100%;display:block}
+.g6-vg.pic{background:var(--stkbg2);color:var(--stkd)}
+.g6-vg.pic>svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.g6-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.g6-tx b{font-size:16px;font-weight:600;line-height:1.22;color:var(--ink)}
+.g6-tx span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-tx .q{font-style:italic;color:var(--txt);white-space:normal}
+.g6-tx .nx{color:var(--txt)}.g6-tx .nx em{font-style:normal;font-weight:600;color:var(--stkd)}
+.g6-tx .why{color:var(--txt)}
+.g6-tx .ve{display:inline-flex;align-items:center;gap:4px}
+.g6-tx .ve .g6-i{width:16px;height:16px}
+.g6-tx .cv{color:var(--txt)}
+.g6-tx .cv .g6-m{font-weight:600;color:var(--ink)}
+.g6-tx .cv .best{color:var(--stk)}
+.g6-tx .cv .nv{color:var(--att)}
+.g6-fig{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
+.g6-fig .p{font-size:16px;font-weight:600;color:var(--ink)}
+.g6-fig .u,.g6-fig .d{font-size:14px;color:var(--mut)}
+.g6-go{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--stk);font-size:14px;font-weight:600;color:var(--stkd)}
+.g6-go .g6-i{width:16px;height:16px}
+.g6-avl{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px 0 76px;border-top:1px dashed var(--line);font-size:14px;font-weight:600;color:var(--stkd)}
+.g6-avl .g6-i{width:16px;height:16px}
+.g6-avl .go{margin-left:auto;display:inline-flex;align-items:center;gap:2px}
+.g6-ex{margin:10px 2px 0;font-size:14px;color:var(--mut)}
+.g6-off .g6-tx b{color:var(--txt)}
+.g6-off .g6-fig .p{color:var(--mut);font-weight:500}
+.g6-off .g6-vg{opacity:.75}
+.g6-off .g6-row{min-height:54px;padding:6px 12px}
+.g6-off .g6-vg{width:40px;height:40px}
+.g6-rk{position:absolute;left:-1px;top:-1px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:0 0 8px 0;background:var(--ink);color:#fff;font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:600;line-height:1}
+.g6-rk.best{background:var(--stk)}
+.g6-rk.q{background:#fff;color:var(--att);border:1px dashed var(--att)}
+.g6-neuf{background:var(--stkbg)}
+.g6-neuf:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--stk)}
+.g6-dep{display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px 0 76px;background:var(--stkbg);font-size:14px;color:var(--stkd)}
+.g6-dep .g6-i{width:16px;height:16px}
+.g6-dep a{margin-left:auto;font-weight:600;color:var(--fin)}
+
+/* fiche : retour bleu, grand titre noir (ref-app « ‹ Fournisseurs », « Brouwland ») */
+.g6-back{display:flex;align-items:center;gap:2px;height:40px;padding:0 10px;font-size:16px;color:var(--fin)}
+.g6-back .g6-i{width:18px;height:18px}
+.g6-back .st{margin-left:auto;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--stkbg2);font-size:14px;font-weight:600;color:var(--stkd)}
+.g6-ti{margin:0 16px;font-size:30px;font-weight:700;line-height:1.08;letter-spacing:-.015em;color:var(--ink)}
+.g6-ti.long{font-size:28px}
+.g6-sub{margin:4px 16px 0;font-size:16px;color:var(--mut)}
+.g6-kv{display:flex;gap:8px;margin:8px 16px 0;font-size:15px;color:var(--txt)}
+.g6-kv>span:first-child{flex:none;color:var(--mut)}
+.g6-kv b{font-weight:600}
+.g6-kv em{font-style:normal;font-weight:600;color:var(--stkd)}
+
+/* critère proposé par l'IA, en segment (I3, v02-1) */
+.g6-crit{margin:10px 14px 0;padding:10px 10px 8px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
+.g6-crit p{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--txt)}
+.g6-crit p .g6-i{width:18px;height:18px;color:var(--stk)}
+.g6-crit p b{font-weight:600;color:var(--ink)}
+.g6-cs{display:flex;gap:2px;margin-top:8px;padding:3px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.g6-cs a{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:8px;font-size:14px;font-weight:600;color:var(--txt)}
+.g6-cs a.on{background:var(--ink);color:#fff}
+
+/* champ (C8) et + carré noir de l'app */
+.g6-dock{position:absolute;left:0;right:0;bottom:56px;height:68px;padding:0 12px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 28%);z-index:32}
+.g6-in{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:48px;padding:0 12px 0 14px;border-radius:14px;border:1px solid var(--line2);background:var(--bg);box-shadow:0 4px 12px -9px rgba(0,0,0,.35)}
+.g6-in .ph{flex:1;min-width:0;font-size:16px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-in .val{flex:1;min-width:0;font-size:16px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-in .val:after{content:"";display:inline-block;width:2px;height:18px;margin-left:1px;vertical-align:-3px;background:var(--fin)}
+.g6-in .g6-i{width:18px;height:18px;color:var(--mut)}
+.g6-dock .sp{flex:none;width:56px}
+.g6-fab{position:absolute;right:12px;bottom:64px;z-index:33;display:grid;place-items:center;width:54px;height:54px;border-radius:15px;background:var(--ink);color:#fff;box-shadow:0 8px 18px -6px rgba(0,0,0,.5)}
+.g6-fab .g6-i{width:26px;height:26px;stroke-width:2.4}
+
+/* saisie au clavier (v11-4) */
+.g6-cmp{position:absolute;left:0;right:0;bottom:252px;z-index:40;padding:8px 12px 10px;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -10px 24px -18px rgba(0,0,0,.45)}
+.g6-cmp .lab{font-size:14px;color:var(--mut);margin:0 2px 7px}
+.g6-cmp .lab b{font-weight:700;color:var(--stkd)}
+.g6-cmp .ln{display:flex;align-items:center;gap:8px}
+.g6-cmp .g6-in{border-color:var(--stk);box-shadow:0 0 0 1px var(--stk)}
+.g6-env{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:var(--ink);color:#fff}
+.g6-kb{position:absolute;left:0;right:0;bottom:0;height:252px;z-index:40;background:#D3D6DB;padding:8px 3px 0}
+.g6-kr{display:flex;justify-content:center;gap:6px;margin-bottom:11px}
+.g6-kr span{display:grid;place-items:center;width:32px;height:44px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8E9298;font-size:20px;color:var(--ink)}
+.g6-kr span.w{width:44px;background:#ADB2BA;font-size:16px}
+.g6-kr span.sp{width:190px;font-size:15px;color:var(--txt)}
+.g6-kr span.e{width:72px;background:#ADB2BA;font-size:15px}
+
+/* barre d'onglets de l'app, icônes aux couleurs de zone */
+.g6-tab{position:absolute;left:0;bottom:0;width:390px;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.g6-tab a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:var(--txt)}
+.g6-tab a .g6-i{color:var(--z,var(--txt))}
+.g6-tab a.on{background:color-mix(in srgb,var(--z) 11%,#F5F5F5);font-weight:600;color:var(--ink);box-shadow:inset 0 3px 0 var(--z)}
+.g6-tab .bdg{position:absolute;top:3px;left:calc(50% + 4px);display:grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:999px;background:var(--fin);color:#fff;font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:600;border:2px solid var(--s1)}
+
+/* Évier neuf (v01 annexe) */
+.g6-empty{margin:14px 14px 0;padding:14px;border:1.5px dashed var(--line2);border-radius:14px;font-size:16px;color:var(--txt)}
+.g6-ia{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--s1);font-size:15px;color:var(--txt)}
+.g6-ia .g6-i{width:18px;height:18px;color:var(--stk)}
+.g6-ia>span{flex:1 1 230px}
+.g6-ia .act{display:flex;gap:8px;flex-basis:100%}
+.g6-bt{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 16px;border-radius:10px;font-size:16px;font-weight:600;border:1px solid var(--line2);color:var(--ink);background:var(--bg)}
+.g6-bt.pl{background:var(--stk);border-color:var(--stk);color:#fff}
+.g6-bt.vt{border-color:var(--stk);color:var(--stkd)}
+.g6-bt .g6-i{width:18px;height:18px}
+
+/* article ouvert sur place (v04-1) */
+.g6-open{position:relative;border:1.5px solid var(--ink);border-radius:14px;padding:10px 12px 12px;background:var(--bg)}
+.g6-hero{display:flex;gap:12px}
+.g6-hero .g6-vg{width:96px;height:84px;border-radius:10px}
+.g6-hero>div{flex:1;min-width:0}
+.g6-hero .hn{font-size:17px;font-weight:700;line-height:1.2}
+.g6-hero .hs{font-size:14px;color:var(--mut)}
+.g6-hero .hp{margin-top:4px;font-size:18px;font-weight:600}
+.g6-hero .hp small{font-family:"Source Sans 3",sans-serif;font-size:14px;font-weight:400;color:var(--mut)}
+.g6-fold{position:absolute;right:12px;top:10px;display:inline-flex;align-items:center;gap:2px;font-size:14px;font-weight:600;color:var(--fin)}
+.g6-fold .g6-i{width:16px;height:16px}
+.g6-key{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;padding:8px 6px;border-radius:10px;background:var(--s1)}
+.g6-key div{display:flex;flex-direction:column;gap:1px}
+.g6-key .g6-m{font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap}
+.g6-key span:last-child{font-size:14px;color:var(--mut)}
+.g6-vend{margin-top:8px;border:1px solid var(--line);border-radius:10px}
+.g6-vr{display:flex;align-items:center;gap:8px;min-height:48px;padding:4px 6px 4px 10px}
+.g6-vr+.g6-vr{border-top:1px solid var(--line)}
+.g6-vr .vn{flex:1;min-width:0;display:flex;flex-direction:column}
+.g6-vr .vn b{font-size:15px;font-weight:600}
+.g6-vr .vn span{font-size:14px;color:var(--mut)}
+.g6-vr .vn .ok{color:var(--stkd);font-weight:600}
+.g6-vr .g6-m{font-size:16px;font-weight:600}
+.g6-vr .g6-m s{display:block;font-size:14px;font-weight:500;color:var(--mut);text-align:right}
+.g6-ext{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:var(--fin)}
+.g6-ext .g6-i{width:18px;height:18px}
+.g6-rw{margin-top:10px}
+.g6-rw .hd{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;color:var(--txt)}
+.g6-rw .hd b{display:inline-flex;align-items:center;gap:4px;font-size:15px;font-weight:600;color:var(--ink)}
+.g6-rw .hd b .g6-i{width:16px;height:16px;color:var(--stk)}
+.g6-rw .hd .g6-m{font-weight:600;color:var(--ink)}
+.g6-rw .bn{display:flex;justify-content:space-between;font-size:14px;color:var(--mut)}
+.g6-rule{position:relative;height:16px;margin:2px 0}
+.g6-rule:before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;border-radius:1px;background:var(--line)}
+.g6-dot{z-index:2;position:absolute;top:4px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--bg);border:2px solid #999}
+.g6-dot.out{border-style:dotted}
+.g6-dot.me{top:2px;width:12px;height:12px;margin-left:-6px;border:0;background:var(--ink);box-shadow:0 0 0 2px var(--bg)}
+.g6-rng{position:absolute;top:3px;height:10px;border-radius:5px;background:var(--stk);box-shadow:0 0 0 2px var(--bg)}
+.g6-src{margin-top:6px;font-size:14px;color:var(--txt)}
+.g6-more{display:flex;align-items:center;gap:8px;margin-top:8px;min-height:40px;font-size:14px;color:var(--txt)}
+.g6-more .g6-i{width:16px;height:16px}
+.g6-more .lk{display:inline-flex;align-items:center;gap:2px;font-weight:600;color:var(--fin)}
+.g6-more .vw{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--stkd);font-weight:600}
+.g6-tg{flex:none;position:relative;width:40px;height:24px;border-radius:999px;background:var(--stk)}
+.g6-tg:after{content:"";position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.g6-act{display:flex;gap:8px;margin-top:8px}
+.g6-act .g6-bt{height:48px}
+.g6-act .g6-bt.pl{flex:1}
+
+/* côte à côte (v02-1) et compromis (v01) */
+.g6-sec{display:flex;align-items:baseline;justify-content:space-between;margin:16px 2px 4px}
+.g6-sec b{font-size:18px;font-weight:700}
+.g6-sec span{font-size:14px;color:var(--mut)}
+.g6-tb{width:100%;border-collapse:collapse;font-size:14px}
+.g6-tb th{height:30px;font-weight:600;color:var(--mut);text-align:right;border-bottom:1px solid var(--line2);white-space:nowrap}
+.g6-tb th:first-child,.g6-tb td:first-child{text-align:left}
+.g6-tb th+th,.g6-tb td+td{padding-left:8px}
+.g6-tb td{height:36px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--txt)}
+.g6-tb td.g6-m{font-size:14px;font-weight:500;color:var(--ink)}
+.g6-tb td.b{color:var(--stk);font-weight:600}
+.g6-tb td.q{color:var(--att);font-weight:600}
+.g6-tb td .rk{display:inline-block;width:18px;font-family:"IBM Plex Mono",Consolas,monospace;font-weight:600;color:var(--mut)}
+.g6-tb td.ok{color:var(--stkd);font-weight:600}
+.g6-cpr{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--stkbg);font-size:15px;color:var(--txt)}
+.g6-cpr b{font-weight:700;color:var(--stkd)}
+
+/* feuilles (v02-3, v04-3) */
+.g6-dim{position:absolute;inset:0;z-index:35;background:rgba(17,17,17,.38)}
+.g6-sh{position:absolute;left:0;right:0;z-index:41;background:var(--bg);border-radius:20px 20px 0 0;padding:6px 14px 14px;box-shadow:0 -12px 32px -16px rgba(0,0,0,.5)}
+.g6-hdl{width:40px;height:5px;margin:0 auto 8px;border-radius:3px;background:var(--line2)}
+.g6-shh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.g6-shh b{font-size:20px;font-weight:700}
+.g6-shh .g6-bt{height:36px;padding:0 12px;font-size:15px}
+.g6-shs{font-size:14px;color:var(--mut)}
+.g6-lb{margin:12px 2px 6px;font-size:16px;font-weight:700}
+.g6-lb span{font-weight:400;font-size:14px;color:var(--mut)}
+.g6-rad{display:flex;align-items:center;gap:10px;min-height:54px;padding:6px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:6px}
+.g6-rad>i{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.g6-rad.sel{border:1.5px solid var(--ink)}
+.g6-rad.sel>i{border:6px solid var(--ink)}
+.g6-rad .vn{flex:1;display:flex;flex-direction:column}
+.g6-rad .vn b{font-size:15px;font-weight:600}
+.g6-rad .vn span{font-size:14px;color:var(--mut)}
+.g6-rad .g6-m{font-size:16px;font-weight:600}
+.g6-ta{padding:10px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--s1);font-size:16px;color:var(--ink)}
+.g6-hint{margin:6px 2px 0;font-size:14px;color:var(--mut)}
+.g6-part{display:flex;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s1);font-size:14px;color:var(--txt)}
+.g6-part .g6-i{color:var(--cal)}
+.g6-part b{display:block;font-size:16px;font-weight:600;color:var(--ink)}
+.g6-cta{display:flex;align-items:center;justify-content:center;gap:8px;height:52px;border-radius:12px;background:var(--stk);color:#fff;font-size:17px;font-weight:700}
+.g6-pq{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px;color:var(--txt)}
+.g6-pq .g6-i{width:18px;height:18px;margin-top:1px}
+.g6-pq .y{color:var(--stk)}.g6-pq .n{color:var(--mut)}
+.g6-pq b{font-weight:600;color:var(--ink)}
+
+/* À venir au Calendrier (v02-6) */
+.g6-avc{margin:6px 14px 0;padding:10px 12px 12px;border:1.5px solid var(--ink);border-radius:14px}
+.g6-avc .tp{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;color:var(--mut)}
+.g6-avc .tp b{font-weight:700;color:var(--stkd)}
+.g6-avc .md{display:flex;gap:10px;align-items:center;margin-top:8px}
+.g6-avc .md .g6-vg{width:56px;height:52px}
+.g6-avc .md b{display:block;font-size:16px;font-weight:700}
+.g6-avc .md span{font-size:14px;color:var(--mut)}
+.g6-avc .md .g6-m{font-size:15px;font-weight:600;color:var(--ink)}
+.g6-avc .bts{display:flex;gap:8px;margin-top:10px}
+.g6-avc .bts .g6-bt{flex:1;height:44px}
+.g6-ag{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 4px;border-bottom:1px solid var(--line)}
+.g6-ag .dt{flex:none;width:68px;font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;color:var(--txt)}
+.g6-ag .pt{flex:none;width:12px;height:12px;border-radius:3px}
+.g6-ag .tx{flex:1;display:flex;flex-direction:column}
+.g6-ag .tx b{font-size:16px;font-weight:600}
+.g6-ag .tx span{font-size:14px;color:var(--mut)}
+.g6-ag .g6-i{width:18px;height:18px;color:var(--mut)}
+.g6-sl{margin:14px 16px 4px;font-size:16px;font-weight:700}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="lg" viewBox="0 0 24 24"><path d="M6.5 8h9.5v11a2 2 0 0 1-2 2H8.5a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M16 10.5h1.8a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2H16" fill="none" stroke="#F2C14E" stroke-width="1.8"/><path d="M6 8.6a2.6 2.6 0 0 1 1.6-4.2 3.2 3.2 0 0 1 5.6-.6 2.7 2.7 0 0 1 3.4 4.8z" fill="#FFFFFF"/><path d="M9.5 12v6M13 12v6" stroke="#C87A2C" stroke-width="1.4"/></symbol>
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-cal-in" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<!-- photos d'aperçu : dessins de la base ra+p5f et de v09 (l'app montrera l'image de la page) -->
+<symbol id="ph-iso4p" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="18" y="14" width="64" height="22" rx="3" fill="#9aa7b2"/><circle cx="76" cy="20" r="4" fill="#2f7d6b"/><g fill="#55616b"><rect x="23" y="36" width="3" height="8"/><rect x="40.3" y="36" width="3" height="8"/><rect x="57.7" y="36" width="3" height="8"/><rect x="75" y="36" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="20" y="50" width="7" height="20" rx="2"/><rect x="22" y="44" width="3" height="7"/><rect x="37.3" y="50" width="7" height="20" rx="2"/><rect x="39.3" y="44" width="3" height="7"/><rect x="54.7" y="50" width="7" height="20" rx="2"/><rect x="56.7" y="44" width="3" height="7"/><rect x="72" y="50" width="7" height="20" rx="2"/><rect x="74" y="44" width="3" height="7"/></g><rect x="14" y="72" width="72" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-iso2" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e4e1da"/><rect x="28" y="14" width="44" height="20" rx="3" fill="#9aa7b2"/><g fill="#55616b"><rect x="38" y="34" width="3" height="8"/><rect x="59" y="34" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="35.5" y="48" width="7" height="20" rx="2"/><rect x="37.5" y="42" width="3" height="7"/><rect x="56.5" y="48" width="7" height="20" rx="2"/><rect x="58.5" y="42" width="3" height="7"/></g><rect x="20" y="70" width="60" height="6" rx="2" fill="#8a6a44"/></symbol>
+<symbol id="ph-semi" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e3e8ea"/><rect x="18" y="16" width="64" height="18" rx="3" fill="#a7b2ba"/><path d="M70 16l10-8" stroke="#c0392b" stroke-width="3"/><g fill="#55616b"><rect x="23" y="34" width="3" height="8"/><rect x="40.3" y="34" width="3" height="8"/><rect x="57.7" y="34" width="3" height="8"/><rect x="75" y="34" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="20" y="48" width="7" height="20" rx="2"/><rect x="37.3" y="48" width="7" height="20" rx="2"/><rect x="54.7" y="48" width="7" height="20" rx="2"/><rect x="72" y="48" width="7" height="20" rx="2"/></g><rect x="14" y="70" width="72" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-iso1" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="34.5" y="14" width="31" height="22" rx="3" fill="#9aa7b2"/><rect x="49" y="36" width="3" height="8" fill="#55616b"/><rect x="46" y="50" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="48" y="44" width="3" height="7" fill="#6a4a2a"/><rect x="30.5" y="72" width="39" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-mono" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="15" y="14" width="70" height="22" rx="3" fill="#9aa7b2"/><g fill="#55616b"><rect x="20" y="36" width="3" height="8"/><rect x="31.6" y="36" width="3" height="8"/><rect x="43.2" y="36" width="3" height="8"/><rect x="54.8" y="36" width="3" height="8"/><rect x="66.4" y="36" width="3" height="8"/><rect x="78" y="36" width="3" height="8"/></g><g fill="#6a4a2a"><rect x="17" y="50" width="7" height="20" rx="2"/><rect x="28.6" y="50" width="7" height="20" rx="2"/><rect x="40.2" y="50" width="7" height="20" rx="2"/><rect x="51.8" y="50" width="7" height="20" rx="2"/><rect x="63.4" y="50" width="7" height="20" rx="2"/><rect x="75" y="50" width="7" height="20" rx="2"/></g><rect x="11" y="72" width="78" height="5" rx="2" fill="#55616b"/></symbol>
+<symbol id="ph-chambre" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2ecf3"/><rect x="18" y="14" width="64" height="62" rx="3" fill="#c9d6df" stroke="#7e93a3" stroke-width="2"/><rect x="40" y="26" width="22" height="46" rx="2" fill="#f4f8fb" stroke="#7e93a3" stroke-width="2"/><rect x="56" y="46" width="3" height="8" fill="#55616b"/><path d="M24 20h10M24 25h10" stroke="#7e93a3" stroke-width="2"/></symbol>
+<symbol id="ph-hotte" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e9e9e6"/><path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-hotte2" viewBox="0 0 100 88"><rect width="100" height="88" fill="#ecebe7"/><path d="M8 50 24 28h52l16 22z" fill="#c4c9cd" stroke="#6d757b" stroke-width="2"/><rect x="40" y="8" width="20" height="20" fill="#9aa1a7"/><rect x="14" y="50" width="72" height="5" fill="#8d959b"/><path d="M28 68c6-6 6-10 0-14M50 70c6-6 6-10 0-14M72 68c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-extr" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="44" r="4" fill="#4c6b2a"/></symbol>
+<symbol id="ph-extr2" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="8" y="34" width="84" height="20" rx="3" fill="#b9c2b5" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="18" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 32v24M38 44h24" stroke="#4c6b2a" stroke-width="4" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="g6-rail">
+
+<!-- ======================= 1 · LISTE DES CARNETS (v09-1) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Liste des carnets">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<nav class="g6-seg" aria-label="Vue des stocks"><a href="#">Articles</a><a href="#">Courses</a><a href="#">Fûts</a><a href="#" class="on" aria-current="page">Matériel</a><a href="#">Houblons</a></nav>
+<nav class="g6-sous" aria-label="Vue du matériel"><a href="#">À venir <span class="n">1</span></a><a href="#" class="on" aria-current="page">Carnets <span class="n">4</span></a><a href="#">Réalisés</a></nav>
+
+<main class="g6-list">
+  <div class="g6-h"><span class="t">À comparer <span class="n">1</span></span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> avis du ferblantier</span><span class="ve">2 façons · 5 articles · <svg class="g6-i"><use href="#i-eye"/></svg>1 en veille</span></span>
+      <span class="g6-fig"><span class="d">dès</span><span class="p g6-m">420</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+
+  <div class="g6-h"><span class="t">Idée <span class="n">1</span></span><span class="r">pas encore d'article</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg pic"><svg viewBox="0 0 40 40"><path d="M4 18h32"/><path d="M6 18v9a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-9"/><path d="M20 18v12"/><path d="M20 18V9h7v4"/></svg></span>
+      <span class="g6-tx"><b>Évier inox</b><span class="q">« 2&nbsp;bacs pour laver les&nbsp;fûts&nbsp;»</span></span>
+      <span class="g6-go"><svg class="g6-i"><use href="#i-search"/></svg>Chercher</span>
+    </a>
+  </div>
+
+  <div class="g6-h"><span class="t">Choisi <span class="n">2</span></span></div>
+  <div class="g6-pan">
+    <div>
+      <a class="g6-row" href="#">
+        <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+        <span class="g6-tx"><b>Embouteillage</b><span class="why">oxygène le plus bas, SAV suisse</span><span>le 17 nov. · Brassage Romandie</span></span>
+        <span class="g6-fig"><span class="p g6-m">11<i class="th"></i>700</span><span class="u">CHF</span></span>
+      </a>
+      <a class="g6-avl" href="#"><svg class="g6-i"><use href="#i-cal-in"/></svg>Dans À venir depuis le 17 nov.<span class="go">Voir<svg class="g6-i"><use href="#i-right"/></svg></span></a>
+    </div>
+    <div>
+      <a class="g6-row" href="#">
+        <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-chambre"/></svg></span>
+        <span class="g6-tx"><b>Frigo de garde pour fûts</b><span class="why">tient 2 °C en été, 6 fûts</span><span>le 10 oct. · Froid Léman</span></span>
+        <span class="g6-fig"><span class="p g6-m">4<i class="th"></i>900</span><span class="u">CHF</span></span>
+      </a>
+    </div>
+  </div>
+  <p class="g6-ex">Fournisseurs, prix et photos : exemple</p>
+</main>
+
+<div class="g6-dock"><div class="g6-in"><span class="ph">Une idée, un besoin, un lien…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>1</b>Carnets · la vue v09, à l'habit de l'app</p>
+</div>
+
+<!-- ======================= 2 · NOUVELLE IDÉE (v11-4 réemployé) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Nouvelle idée, clavier ouvert">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<nav class="g6-seg" aria-label="Vue des stocks"><a href="#">Articles</a><a href="#">Courses</a><a href="#">Fûts</a><a href="#" class="on">Matériel</a><a href="#">Houblons</a></nav>
+<nav class="g6-sous" aria-label="Vue du matériel"><a href="#">À venir <span class="n">1</span></a><a href="#" class="on">Carnets <span class="n">3</span></a><a href="#">Réalisés</a></nav>
+<main class="g6-list">
+  <div class="g6-h"><span class="t">À comparer <span class="n">1</span></span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> avis du ferblantier</span><span class="ve">2 façons · 5 articles · <svg class="g6-i"><use href="#i-eye"/></svg>1 en veille</span></span>
+      <span class="g6-fig"><span class="d">dès</span><span class="p g6-m">420</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+  <div class="g6-h"><span class="t">Choisi <span class="n">2</span></span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="g6-tx"><b>Embouteillage</b><span class="why">oxygène le plus bas, SAV suisse</span><span>le 17 nov. · Brassage Romandie</span></span>
+      <span class="g6-fig"><span class="p g6-m">11<i class="th"></i>700</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-cmp">
+  <p class="lab"><b>Nouvelle idée</b> · un besoin, un objet, un lien</p>
+  <div class="ln"><div class="g6-in"><span class="val">Évier inox, 2 bacs pour laver les fûts</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="g6-env" aria-label="Envoyer"><svg class="g6-i"><use href="#i-send"/></svg></span></div>
+</div>
+<div class="g6-kb" aria-hidden="true">
+  <div class="g6-kr"><span>a</span><span>z</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span></div>
+  <div class="g6-kr"><span>q</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span><span>l</span><span>m</span></div>
+  <div class="g6-kr"><span class="w">⇧</span><span>w</span><span>x</span><span>c</span><span>v</span><span>b</span><span>n</span><span>'</span><span class="w">⌫</span></div>
+  <div class="g6-kr"><span class="e">123</span><span class="sp">espace</span><span class="e">envoi</span></div>
+</div>
+</section>
+<p class="g6-cap"><b>2</b>Nouvelle idée · la liste reste au-dessus, le champ dit ce qu'il crée</p>
+</div>
+
+<!-- ======================= 3 · ÉVIER NEUF (v01 annexe) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Carnet neuf, Évier inox">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">Idée</span></a>
+<h1 class="g6-ti">Évier inox</h1>
+<p class="g6-sub">nouveau, rien encore · noté le 17 nov.</p>
+<div class="g6-kv"><span>Votre note</span><span class="q" style="font-style:italic">« 2 bacs pour laver les fûts »</span></div>
+
+<div class="g6-empty">
+  Collez le lien d'un évier dans le champ : sa carte se range ici, classée.
+  <div class="g6-ia"><svg class="g6-i"><use href="#i-spark"/></svg><span><b>L'IA propose</b> ce qui compte : un bac assez profond pour un fût de 20 L.</span><span class="act"><a class="g6-bt pl" href="#">Garder</a><a class="g6-bt" href="#">Autre</a></span></div>
+</div>
+
+<div class="g6-list">
+  <div class="g6-h"><span class="t">Ou laisser chercher</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg pic"><svg viewBox="0 0 24 24" style="width:26px;height:26px"><use href="#i-search"/></svg></span>
+      <span class="g6-tx"><b>Éviers inox 2 bacs</b><span>3 à 5 offres, en Suisse d'abord</span></span>
+      <span class="g6-go">Chercher</span>
+    </a>
+  </div>
+  <div class="g6-h"><span class="t">Les mots du carnet</span></div>
+  <div class="g6-pan" style="padding:4px 12px;font-size:15px;color:var(--txt)">
+    <p style="padding:7px 0"><b style="font-weight:600;color:var(--ink)">Façon</b> : une manière de résoudre l'idée (2 bacs sur pieds, bac et douchette…). Chaque article en suit une.</p>
+    <p style="padding:7px 0;border-top:1px solid var(--line)"><b style="font-weight:600;color:var(--ink)">Ce qui compte</b> : la valeur qui classe les articles, proposée par l'IA, gardée par vous.</p>
+    <p style="padding:7px 0;border-top:1px solid var(--line)"><b style="font-weight:600;color:var(--ink)">Écarté</b> : laissé de côté, toujours visible, avec sa raison.</p>
+  </div>
+  <p class="g6-ex">Vendeurs et prix : exemple</p>
+</div>
+
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Évier inox…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>3</b>Évier inox, carnet neuf · une aide, l'IA propose ce qui compte</p>
+</div>
+
+<!-- ======================= 4 · FICHE EN COURS : VENTILATION (v09-2 + I3) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Fiche en cours, Ventilation">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<h1 class="g6-ti long">Ventilation de la salle de brassage</h1>
+<div class="g6-crit">
+  <p><svg class="g6-i"><use href="#i-target"/></svg>L'IA propose : <b>capter la buée à la source</b></p>
+  <div class="g6-cs" role="tablist" aria-label="Classer par"><a href="#" class="on">Buée</a><a href="#">Prix</a><a href="#">Bruit</a><a href="#">Débit</a></div>
+</div>
+<div class="g6-kv"><span>Ensuite</span><span>avis du ferblantier : hotte ou extracteur</span></div>
+
+<main class="g6-list">
+  <div class="g6-h"><span class="t">Hotte inox + extracteur <span class="n">2</span></span><span class="r">dès 1<i class="th"></i>450 CHF</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Hotte murale 100 cm</b><span>Gastro Lüftung · DE · en stock</span><span class="ve"><svg class="g6-i"><use href="#i-eye"/></svg>veille tous les 3 jours</span></span>
+      <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>450</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte2"/></svg></span>
+      <span class="g6-tx"><b>Hotte inox 120 cm + moteur</b><span>Inox Broye · CH · sur commande</span></span>
+      <span class="g6-fig"><span class="p g6-m">2<i class="th"></i>600</span></span>
+    </a>
+  </div>
+  <div class="g6-h"><span class="t">Extracteur mural seul <span class="n">2</span></span><span class="r">dès 420 CHF</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-extr"/></svg></span>
+      <span class="g6-tx"><b>Extracteur mural hélicoïde</b><span>Ventil Jura · CH · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">420</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-extr2"/></svg></span>
+      <span class="g6-tx"><b>Extracteur centrifuge en ligne</b><span>Aéro Rhône · FR · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">690</span></span>
+    </a>
+  </div>
+  <div class="g6-h"><span class="t">À compléter <span class="n">1</span></span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg pic"><svg viewBox="0 0 24 24" style="width:24px;height:24px"><use href="#i-link"/></svg></span>
+      <span class="g6-tx"><b>Lien sans aperçu</b><span>nom et prix à saisir</span></span>
+      <span class="g6-go">Compléter</span>
+    </a>
+  </div>
+</main>
+
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Ventilation…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>4</b>Ventilation, en cours · ce qui compte en segment, proposé par l'IA</p>
+</div>
+
+<!-- ======================= 5 · AJOUTER À VENTILATION (v11-4) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Ajouter à Ventilation, clavier ouvert">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<h1 class="g6-ti long">Ventilation de la salle de brassage</h1>
+<div class="g6-crit">
+  <p><svg class="g6-i"><use href="#i-target"/></svg>L'IA propose : <b>capter la buée à la source</b></p>
+  <div class="g6-cs" aria-label="Classer par"><a href="#" class="on">Buée</a><a href="#">Prix</a><a href="#">Bruit</a><a href="#">Débit</a></div>
+</div>
+<main class="g6-list">
+  <div class="g6-h"><span class="t">Hotte inox + extracteur <span class="n">2</span></span><span class="r">dès 1<i class="th"></i>450 CHF</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Hotte murale 100 cm</b><span>Gastro Lüftung · DE · en stock</span><span class="ve"><svg class="g6-i"><use href="#i-eye"/></svg>veille tous les 3 jours</span></span>
+      <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>450</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-cmp">
+  <p class="lab">Ajouter à <b>Ventilation</b> · une note, un lien, une photo</p>
+  <div class="ln"><div class="g6-in"><span class="val">inox-broye.ch/hotte-murale-150</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="g6-env" aria-label="Envoyer"><svg class="g6-i"><use href="#i-send"/></svg></span></div>
+</div>
+<div class="g6-kb" aria-hidden="true">
+  <div class="g6-kr"><span>a</span><span>z</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span></div>
+  <div class="g6-kr"><span>q</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span><span>l</span><span>m</span></div>
+  <div class="g6-kr"><span class="w">⇧</span><span>w</span><span>x</span><span>c</span><span>v</span><span>b</span><span>n</span><span>'</span><span class="w">⌫</span></div>
+  <div class="g6-kr"><span class="e">123</span><span class="sp">espace</span><span class="e">envoi</span></div>
+</div>
+</section>
+<p class="g6-cap"><b>5</b>Ajouter à Ventilation · la cible dite avant le geste, un lien collé</p>
+</div>
+
+<!-- ======================= 6 · LE LIEN DEVIENT UNE RANGÉE (v09-2) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Lien collé, rangé dans la fiche">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<h1 class="g6-ti long">Ventilation de la salle de brassage</h1>
+<div class="g6-crit">
+  <p><svg class="g6-i"><use href="#i-target"/></svg>L'IA propose : <b>capter la buée à la source</b></p>
+  <div class="g6-cs" aria-label="Classer par"><a href="#" class="on">Buée</a><a href="#">Prix</a><a href="#">Bruit</a><a href="#">Débit</a></div>
+</div>
+<div class="g6-kv"><span>Ensuite</span><span>avis du ferblantier : hotte ou extracteur</span></div>
+<main class="g6-list">
+  <div class="g6-h"><span class="t">Hotte inox + extracteur <span class="n">3</span></span><span class="r">dès 1<i class="th"></i>450 CHF</span></div>
+  <div class="g6-pan">
+    <div>
+      <a class="g6-row g6-neuf" href="#">
+        <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte2"/></svg></span>
+        <span class="g6-tx"><b>Hotte murale 150 cm, filtres</b><span>Inox Broye · CH · en stock</span></span>
+        <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>980</span></span>
+      </a>
+      <div class="g6-dep"><svg class="g6-i"><use href="#i-check"/></svg>lue sur la page, rangée ici à l'instant<a href="#">Déplacer</a></div>
+    </div>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Hotte murale 100 cm</b><span>Gastro Lüftung · DE · en stock</span><span class="ve"><svg class="g6-i"><use href="#i-eye"/></svg>veille tous les 3 jours</span></span>
+      <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>450</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte2"/></svg></span>
+      <span class="g6-tx"><b>Hotte inox 120 cm + moteur</b><span>Inox Broye · CH · sur commande</span></span>
+      <span class="g6-fig"><span class="p g6-m">2<i class="th"></i>600</span></span>
+    </a>
+  </div>
+  <div class="g6-h"><span class="t">Extracteur mural seul <span class="n">2</span></span><span class="r">dès 420 CHF</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-extr"/></svg></span>
+      <span class="g6-tx"><b>Extracteur mural hélicoïde</b><span>Ventil Jura · CH · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">420</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Ventilation…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>6</b>Le lien collé devient une rangée, dans son groupe ; on peut la déplacer</p>
+</div>
+
+<!-- ======================= 7 · FICHE EN COURS : EMBOUTEILLAGE (v09-2 + I3, pré-sélection v02-1) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Fiche en cours, Embouteillage">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<h1 class="g6-ti">Embouteillage</h1>
+<p class="g6-sub">2 façons · 7 articles · 5 machines</p>
+<div class="g6-crit">
+  <p><svg class="g6-i"><use href="#i-target"/></svg>L'IA propose : <b>le moins d'oxygène capté</b></p>
+  <div class="g6-cs" aria-label="Classer par"><a href="#" class="on">Oxygène</a><a href="#">Prix</a><a href="#">Cadence</a><a href="#">Délai</a></div>
+</div>
+<div class="g6-kv"><span>Ensuite</span><span>choisir la machine et son vendeur</span></div>
+<main class="g6-list">
+  <div class="g6-h"><span class="t">Isobarique <span class="n">5</span></span><span class="r">du moins au plus d'oxygène</span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg><span class="g6-rk best">1</span></span>
+      <span class="g6-tx"><b>4 becs pré-évacuation</b><span class="cv"><span class="g6-m best">40 ppb</span> · 3 vendeurs · en stock</span></span>
+      <span class="g6-fig"><span class="d">dès</span><span class="p g6-m">11<i class="th"></i>400</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-mono"/></svg><span class="g6-rk">2</span></span>
+      <span class="g6-tx"><b>Monobloc 6 becs</b><span class="cv"><span class="g6-m">50 ppb</span> · IT · délai à demander</span></span>
+      <span class="g6-fig"><span class="p g6-m">21<i class="th"></i>500</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-semi"/></svg><span class="g6-rk q">?</span></span>
+      <span class="g6-tx"><b>4 becs semi-auto</b><span class="cv"><span class="g6-m nv">?</span> 70–110 selon l'IA · 6 sem.</span></span>
+      <span class="g6-fig"><span class="p g6-m">6<i class="th"></i>400</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso2"/></svg><span class="g6-rk q">?</span></span>
+      <span class="g6-tx"><b>2 becs de table</b><span class="cv"><span class="g6-m nv">?</span> 100–160 selon l'IA · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>850</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso1"/></svg><span class="g6-rk q">?</span></span>
+      <span class="g6-tx"><b>Contre-pression manuelle 1 bec</b><span class="cv"><span class="g6-m nv">?</span> 150–300 selon l'IA · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">190</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Embouteillage…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>7</b>Embouteillage, avant le choix · l'IA pré-sélectionne Oxygène, la valeur sur chaque rangée</p>
+</div>
+
+<!-- ======================= 8 · MÊME FICHE, PLUS BAS : CÔTE À CÔTE (v02-1) + COMPROMIS (v01) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Fiche Embouteillage défilée, côte à côte">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<main class="g6-list">
+  <div class="g6-pan" style="margin-top:8px;border-top-left-radius:0;border-top-right-radius:0;border-top:0">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso2"/></svg><span class="g6-rk q">?</span></span>
+      <span class="g6-tx"><b>2 becs de table</b><span class="cv"><span class="g6-m nv">?</span> 100–160 selon l'IA · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">1<i class="th"></i>850</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso1"/></svg><span class="g6-rk q">?</span></span>
+      <span class="g6-tx"><b>Contre-pression manuelle 1 bec</b><span class="cv"><span class="g6-m nv">?</span> 150–300 selon l'IA · en stock</span></span>
+      <span class="g6-fig"><span class="p g6-m">190</span></span>
+    </a>
+  </div>
+  <div class="g6-h off"><span class="t">Par gravité <span class="n">0</span></span><span class="r">écartée</span></div>
+  <div class="g6-pan g6-off">
+    <div class="g6-row">
+      <span class="g6-vg pic"><svg viewBox="0 0 40 40"><path d="M12 6h16v14H12z"/><path d="M20 20v5"/><path d="M17 30v-3h6v3M16 36V30h8v6"/></svg></span>
+      <span class="g6-tx"><b>Remplir par écoulement</b><span>la bière prend l'air</span></span>
+      <a class="g6-go" href="#">Reprendre</a>
+    </div>
+  </div>
+
+  <div class="g6-sec"><b>Côte à côte</b><span>les 5, sans réglage</span></div>
+  <table class="g6-tb">
+    <thead><tr><th>Machine</th><th>O₂ ppb</th><th>Prix CHF</th><th>bt/h</th><th>Délai</th></tr></thead>
+    <tbody>
+      <tr><td><span class="rk">1</span>Iso 4 becs</td><td class="g6-m b">40</td><td class="g6-m">11<i class="th"></i>400</td><td class="g6-m">400</td><td class="ok">en stock</td></tr>
+      <tr><td><span class="rk">2</span>Monobloc 6</td><td class="g6-m">50</td><td class="g6-m">21<i class="th"></i>500</td><td class="g6-m b">900</td><td>à demander</td></tr>
+      <tr><td><span class="rk">?</span>Semi-auto 4</td><td class="g6-m q">?</td><td class="g6-m">6<i class="th"></i>400</td><td class="g6-m">250</td><td>6 sem.</td></tr>
+      <tr><td><span class="rk">?</span>Table 2 becs</td><td class="g6-m q">?</td><td class="g6-m">1<i class="th"></i>850</td><td class="g6-m">120</td><td class="ok">en stock</td></tr>
+      <tr><td><span class="rk">?</span>Manuelle 1 bec</td><td class="g6-m q">?</td><td class="g6-m b">190</td><td class="g6-m">60</td><td class="ok">en stock</td></tr>
+    </tbody>
+  </table>
+  <p class="g6-ex" style="margin-top:6px">? : non publié par le vendeur ; l'IA donne une fourchette</p>
+  <p class="g6-cpr"><b>Compromis :</b> le semi-auto, 6<i class="th"></i>400 CHF, soit 5<i class="th"></i>000 CHF de moins que la 1re ; mais son oxygène n'est pas publié (70–110 ppb selon l'IA).</p>
+</main>
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Embouteillage…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>8</b>Même fiche, plus bas · côte à côte sous les groupes, puis le compromis</p>
+</div>
+
+<!-- ======================= 9 · ARTICLE OUVERT SUR PLACE (v04-1) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Article ouvert sur place">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<main class="g6-list">
+  <div class="g6-h"><span class="t">Isobarique <span class="n">5</span></span><span class="r">du moins au plus d'oxygène</span></div>
+  <section class="g6-open" aria-label="4 becs pré-évacuation, ouvert">
+    <div class="g6-hero">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg><span class="g6-rk best">1</span></span>
+      <div>
+        <div class="hn" style="padding-right:72px">4 becs pré-évacuation</div>
+        <div class="hs">Même machine, 3 vendeurs</div>
+        <div class="hp"><small>dès</small> <span class="g6-m">11<i class="th"></i>400 CHF</span></div>
+      </div>
+      <a class="g6-fold" href="#">Replier<svg class="g6-i"><use href="#i-up"/></svg></a>
+    </div>
+    <div class="g6-key">
+      <div><span class="g6-m">4</span><span>becs</span></div>
+      <div><span class="g6-m">400 bt/h</span><span>cadence</span></div>
+      <div><span class="g6-m">0–3 bar</span><span>pression</span></div>
+      <div><span class="g6-m">120×70</span><span>cm au sol</span></div>
+    </div>
+    <div class="g6-vend">
+      <div class="g6-vr"><div class="vn"><b>Abfülltechnik West · DE</b><span class="ok">en stock · SAV en Allemagne</span></div><span class="g6-m">11<i class="th"></i>400</span><a class="g6-ext" href="#" aria-label="Ouvrir la page"><svg class="g6-i"><use href="#i-ext"/></svg></a></div>
+      <div class="g6-vr"><div class="vn"><b>Getränketechnik Ost · AT</b><span>en stock · SAV en Autriche</span></div><span class="g6-m">11<i class="th"></i>600</span><a class="g6-ext" href="#" aria-label="Ouvrir la page"><svg class="g6-i"><use href="#i-ext"/></svg></a></div>
+      <div class="g6-vr"><div class="vn"><b>Brassage Romandie · CH</b><span>en stock · SAV en Suisse</span></div><span class="g6-m">11<i class="th"></i>700<s>12<i class="th"></i>300</s></span><a class="g6-ext" href="#" aria-label="Ouvrir la page"><svg class="g6-i"><use href="#i-ext"/></svg></a></div>
+    </div>
+    <div class="g6-rw">
+      <div class="hd"><b><svg class="g6-i"><use href="#i-target"/></svg>Oxygène capté</b><span><span class="g6-m">40 ppb</span> annoncé · 1er sur 5</span></div>
+      <div class="g6-rule"><span class="g6-dot" style="left:16.7%"></span><span class="g6-dot out" style="left:30%"></span><span class="g6-dot out" style="left:43.3%"></span><span class="g6-dot out" style="left:75%"></span><span class="g6-rng" style="left:11%;width:5%"></span></div>
+      <div class="bn"><span>‹ mieux · <span class="g6-m">0</span></span><span class="g6-m">300 ppb</span></div>
+    </div>
+    <div class="g6-rw">
+      <div class="hd"><b>Prix</b><span><span class="g6-m">11<i class="th"></i>400</span> · 4e sur 5</span></div>
+      <div class="g6-rule"><span class="g6-dot" style="left:1%"></span><span class="g6-dot" style="left:7.4%"></span><span class="g6-dot" style="left:25.6%"></span><span class="g6-dot" style="left:86%"></span><span class="g6-dot me" style="left:45.6%"></span></div>
+      <div class="bn"><span>‹ moins cher · <span class="g6-m">0</span></span><span class="g6-m">25<i class="th"></i>000 CHF</span></div>
+    </div>
+    <div class="g6-more"><span class="lk">5 autres valeurs<svg class="g6-i"><use href="#i-down"/></svg></span><span class="vw"><svg class="g6-i"><use href="#i-eye"/></svg>Veille tous les 3 jours</span><span class="g6-tg" role="switch" aria-checked="true" aria-label="Veille du prix et du stock"></span></div>
+    <div class="g6-act"><a class="g6-bt pl" href="#">Choisir cette machine</a><a class="g6-bt" href="#">Écarter</a></div>
+  </section>
+  <div class="g6-pan" style="margin-top:8px">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-mono"/></svg><span class="g6-rk">2</span></span>
+      <span class="g6-tx"><b>Monobloc 6 becs</b><span class="cv"><span class="g6-m">50 ppb</span> · IT · délai à demander</span></span>
+      <span class="g6-fig"><span class="p g6-m">21<i class="th"></i>500</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Embouteillage…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>9</b>L'article s'ouvre sur place · photo, valeurs, vendeurs, place parmi les 5, Écarter</p>
+</div>
+
+<!-- ======================= 10 · CHOISIR (v02-3, feuille) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Choisir, feuille">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">À comparer</span></a>
+<div class="g6-dim"></div>
+<div class="g6-sh" style="top:58px;bottom:56px">
+  <div class="g6-hdl"></div>
+  <div class="g6-shh"><div><b>Choisir cette machine</b><div class="g6-shs">Embouteillage</div></div><a class="g6-bt" href="#">Fermer</a></div>
+  <div class="g6-row" style="padding:10px 0 4px;min-height:0">
+    <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+    <span class="g6-tx"><b>Isobarique 4 becs pré-évacuation</b><span class="cv"><span class="g6-m best">40 ppb</span> · le plus bas des 5</span></span>
+  </div>
+  <p class="g6-lb">Chez quel vendeur ?</p>
+  <div class="g6-rad"><i></i><div class="vn"><b>Abfülltechnik West · DE</b><span>en stock · SAV en Allemagne</span></div><span class="g6-m">11<i class="th"></i>400</span></div>
+  <div class="g6-rad"><i></i><div class="vn"><b>Getränketechnik Ost · AT</b><span>en stock · SAV en Autriche</span></div><span class="g6-m">11<i class="th"></i>600</span></div>
+  <div class="g6-rad sel"><i></i><div class="vn"><b>Brassage Romandie · CH</b><span>en stock · SAV en Suisse</span></div><span class="g6-m">11<i class="th"></i>700</span></div>
+  <p class="g6-lb">Pourquoi <span>· proposé par l'IA, à corriger si besoin</span></p>
+  <div class="g6-ta">Le moins d'oxygène capté (40 ppb). SAV en Suisse, pour 300 CHF de plus.</div>
+  <p class="g6-hint">Un mot suffit. Les 4 autres machines restent dans le carnet, écartées avec leur raison.</p>
+  <p class="g6-lb">Part dans À venir</p>
+  <div class="g6-part"><svg class="g6-i"><use href="#i-cal-in"/></svg><div><b>Commander l'isobarique 4 becs</b>11<i class="th"></i>700 CHF · Brassage Romandie · en stock<br>lien de la page et pourquoi joints · date à fixer</div></div>
+  <a class="g6-cta" href="#" style="margin-top:12px"><svg class="g6-i"><use href="#i-check"/></svg>Choisir et mettre dans À venir</a>
+</div>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>10</b>Choisir · une feuille : le vendeur, le pourquoi pré-rempli, ce qui part</p>
+</div>
+
+<!-- ======================= 11 · FICHE CHOISIE (v09-3) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Fiche choisie, Embouteillage">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">Choisi le 17 nov.</span></a>
+<h1 class="g6-ti">Embouteillage</h1>
+<main class="g6-list">
+  <div class="g6-pan" style="margin-top:10px">
+    <a class="g6-row" href="#" style="align-items:flex-start;padding:12px">
+      <span class="g6-vg" style="width:88px;height:80px"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="g6-tx" style="gap:2px"><b>Isobarique 4 becs pré-évacuation</b><span>Brassage Romandie · CH · en stock</span><span class="g6-m" style="font-size:18px;font-weight:600;color:var(--ink)">11<i class="th"></i>700 CHF</span></span>
+    </a>
+    <div style="padding:10px 12px;font-size:15px;color:var(--txt)"><b style="font-weight:600;color:var(--stkd)">Pourquoi :</b> oxygène le plus bas à 4 becs, SAV en Suisse. La veille l'a trouvé 600 CHF moins cher. <a href="#" style="font-weight:600;color:var(--fin);white-space:nowrap">Pourquoi ce choix ›</a></div>
+    <a class="g6-avl" href="#" style="padding-left:12px"><svg class="g6-i"><use href="#i-cal-in"/></svg>Dans À venir depuis le 17 nov.<span class="go">Voir<svg class="g6-i"><use href="#i-right"/></svg></span></a>
+  </div>
+  <div class="g6-kv" style="margin:8px 2px 0"><span>Ce qui comptait</span><span><b>le moins d'oxygène capté</b></span></div>
+
+  <div class="g6-h off"><span class="t">Écartés <span class="n">5</span></span><span class="r">et pourquoi</span></div>
+  <div class="g6-pan g6-off">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span>
+      <span class="g6-tx"><b>Même machine, DE et AT</b><span>SAV à l'étranger</span></span>
+      <span class="g6-fig"><span class="p g6-m">11<i class="th"></i>400</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-mono"/></svg></span>
+      <span class="g6-tx"><b>Monobloc 6 becs</b><span>double prix, cadence inutile</span></span>
+      <span class="g6-fig"><span class="p g6-m">21<i class="th"></i>500</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-semi"/></svg></span>
+      <span class="g6-tx"><b>4 becs semi-auto</b><span>oxygène non publié, 6 semaines</span></span>
+      <span class="g6-fig"><span class="p g6-m">6<i class="th"></i>400</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso1"/></svg></span>
+      <span class="g6-tx"><b>Manuelle 1 bec, table 2 becs</b><span>cadence trop basse pour 300 L</span></span>
+      <span class="g6-fig"><span class="d">dès</span><span class="p g6-m">190</span></span>
+    </a>
+    <a class="g6-row" href="#">
+      <span class="g6-vg pic"><svg viewBox="0 0 40 40"><path d="M12 6h16v14H12z"/><path d="M20 20v5"/><path d="M17 30v-3h6v3M16 36V30h8v6"/></svg></span>
+      <span class="g6-tx"><b>Par gravité</b><span>trop d'oxygène capté</span></span>
+    </a>
+  </div>
+</main>
+<div class="g6-dock"><div class="g6-in"><span class="ph">Ajouter à Embouteillage…</span><svg class="g6-i"><use href="#i-cam"/></svg><svg class="g6-i"><use href="#i-mic"/></svg></div><span class="sp"></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>11</b>Choisi · l'objet, son prix, son pourquoi, ses écartés avec leur raison</p>
+</div>
+
+<!-- ======================= 12 · POURQUOI CE CHOIX (v04-3, feuille) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="Pourquoi ce choix, feuille">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<a class="g6-back" href="#"><svg class="g6-i"><use href="#i-left"/></svg>Carnets<span class="st">Choisi le 17 nov.</span></a>
+<h1 class="g6-ti">Embouteillage</h1>
+<div class="g6-list"><div class="g6-pan" style="margin-top:10px"><div class="g6-row" style="align-items:flex-start;padding:12px"><span class="g6-vg" style="width:88px;height:80px"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span><span class="g6-tx"><b>Isobarique 4 becs pré-évacuation</b><span>Brassage Romandie · CH</span><span class="g6-m" style="font-size:18px;font-weight:600;color:var(--ink)">11<i class="th"></i>700 CHF</span></span></div></div></div>
+<div class="g6-dim"></div>
+<div class="g6-sh" style="top:278px;bottom:0">
+  <div class="g6-hdl"></div>
+  <div class="g6-shh"><b>Pourquoi ce choix</b><a class="g6-bt" href="#">Fermer</a></div>
+  <p style="margin-top:8px;font-size:16px;color:var(--ink)">Le moins d'oxygène capté au remplissage parmi les 5 : <b class="g6-m">40 ppb</b> annoncé, et le SAV en Suisse.</p>
+  <div class="g6-rw">
+    <div class="hd"><b><svg class="g6-i"><use href="#i-target"/></svg>Oxygène capté</b><span><span class="g6-m">40 ppb</span> · 1er sur 5</span></div>
+    <div class="g6-rule"><span class="g6-dot" style="left:16.7%"></span><span class="g6-dot out" style="left:30%"></span><span class="g6-dot out" style="left:43.3%"></span><span class="g6-dot out" style="left:75%"></span><span class="g6-rng" style="left:11%;width:5%"></span></div>
+    <div class="bn"><span>‹ mieux · <span class="g6-m">0</span></span><span class="g6-m">300 ppb</span></div>
+  </div>
+  <div class="g6-rw" style="margin-bottom:8px">
+    <div class="hd"><b>Prix</b><span><span class="g6-m">11<i class="th"></i>700</span> · 4e sur 5</span></div>
+    <div class="g6-rule"><span class="g6-dot" style="left:1%"></span><span class="g6-dot" style="left:7.4%"></span><span class="g6-dot" style="left:25.6%"></span><span class="g6-dot" style="left:86%"></span><span class="g6-dot me" style="left:46.8%"></span></div>
+    <div class="bn"><span>‹ moins cher · <span class="g6-m">0</span></span><span class="g6-m">25<i class="th"></i>000 CHF</span></div>
+  </div>
+  <div class="g6-pq"><svg class="g6-i y"><use href="#i-target"/></svg><span><b>Ce qui compte</b> : le moins d'oxygène capté, proposé par l'IA et gardé le 12 nov.</span></div>
+  <div class="g6-pq"><svg class="g6-i y"><use href="#i-check"/></svg><span><b>Isobarique</b> : la mousse tient ; à la gravité, la bière prend l'air.</span></div>
+  <div class="g6-pq"><svg class="g6-i y"><use href="#i-check"/></svg><span><b>Brassage Romandie</b> : SAV en Suisse, 300 CHF de plus qu'en Allemagne.</span></div>
+  <div class="g6-pq"><svg class="g6-i n"><use href="#i-x"/></svg><span><b>Le semi-auto</b> ne publie pas son oxygène : écart incertain, pour 5<i class="th"></i>300 CHF de moins.</span></div>
+  <p class="g6-hint" style="border-top:1px solid var(--line);padding-top:8px">Valeurs annoncées par les vendeurs, pas mesurées chez nous. <a href="#" style="font-weight:600;color:var(--fin)">Voir dans À venir ›</a></p>
+</div>
+</section>
+<p class="g6-cap"><b>12</b>Pourquoi ce choix · une phrase, deux règles, puis les raisons</p>
+</div>
+
+<!-- ======================= 13 · À VENIR, AU CALENDRIER (v02-6) ======================= -->
+<div class="g6-col">
+<section class="g6-scr" aria-label="À venir au Calendrier">
+<header class="g6-bar"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#lg"/></svg></span><span class="g6-nom">L'Affinée</span><span class="g6-mois"><span><svg class="g6-i"><use href="#i-left"/></svg></span><b>Nov.</b><span><svg class="g6-i"><use href="#i-right"/></svg></span></span><span class="g6-lou" aria-label="Chercher"><svg class="g6-i"><use href="#i-search"/></svg></span><span class="g6-av"><span>G</span><span>A</span></span></header>
+<nav class="g6-sous" aria-label="Vue du calendrier" style="margin-top:10px"><a href="#" class="on">À venir <span class="n">5</span></a><a href="#">Réalisés <span class="n">12</span></a></nav>
+<p class="g6-sl">Sans date</p>
+<div class="g6-avc">
+  <div class="tp"><b>Ajouté le 17 nov.</b><span>du carnet Embouteillage</span></div>
+  <div class="md"><span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-iso4p"/></svg></span><div><b>Commander l'isobarique 4 becs</b><span><span class="g6-m">11<i class="th"></i>700 CHF</span> · Brassage Romandie · en stock</span></div></div>
+  <div class="bts"><a class="g6-bt pl" href="#" style="background:var(--cal);border-color:var(--cal)">Fixer la date</a><a class="g6-bt" href="#">Ouvrir le carnet</a></div>
+</div>
+<p class="g6-sl">Cette semaine et après</p>
+<div style="margin:0 12px">
+  <a class="g6-ag" href="#"><span class="dt">ven. 20</span><span class="pt" style="background:var(--bra)"></span><span class="tx"><b>Brassin · IPA Nelson</b><span>200 L · cuve 2</span></span><svg class="g6-i"><use href="#i-right"/></svg></a>
+  <a class="g6-ag" href="#"><span class="dt">mar. 24</span><span class="pt" style="background:var(--fin)"></span><span class="tx"><b>Livraison malt</b><span>Pale Ale 75 kg</span></span><svg class="g6-i"><use href="#i-right"/></svg></a>
+  <a class="g6-ag" href="#"><span class="dt">ven. 27</span><span class="pt" style="background:var(--bra)"></span><span class="tx"><b>Mise en bouteille · Blanche</b><span>180 L</span></span><svg class="g6-i"><use href="#i-right"/></svg></a>
+  <a class="g6-ag" href="#"><span class="dt">mer. 2</span><span class="pt" style="background:var(--evt)"></span><span class="tx"><b>Marché de Noël</b><span>déc. · stand</span></span><svg class="g6-i"><use href="#i-right"/></svg></a>
+</div>
+<p class="g6-ex" style="margin:10px 16px 0">Vendeur, prix et agenda : exemple</p>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#i-plus"/></svg></a>
+<nav class="g6-tab" aria-label="Navigation"><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-bord"/></svg>Bord</a><a href="#" style="--z:#1F64A3"><svg class="g6-i"><use href="#i-wallet"/></svg>Finances</a><a href="#" class="on" style="--z:#C87A2C"><svg class="g6-i"><use href="#i-cal"/></svg>Calendrier</a><a href="#" style="--z:#A0522D"><svg class="g6-i"><use href="#i-beer"/></svg>Brassins</a><a href="#" style="--z:#4C6B2A"><svg class="g6-i"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#" style="--z:#333333"><svg class="g6-i"><use href="#i-users"/></svg>Clients</a></nav>
+</section>
+<p class="g6-cap"><b>13</b>Dans À venir, au Calendrier · d'où ça vient, fixer la date, rouvrir</p>
+</div>
+
+</div>
+</body>
+</html>

@@ -608,6 +608,11 @@
           "work/missions/2026-11-17-carnet-retouches/maquettes/v10.html",
           "work/missions/2026-11-17-carnet-retouches/maquettes/v11.html"
         ]
+      },
+      "top3": {
+        "date": "2026-11-17",
+        "fichier": "work/missions/2026-11-17-carnet-retouches/TOP3.md",
+        "images": "work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/"
       }
     },
     "calendriers-section": {
