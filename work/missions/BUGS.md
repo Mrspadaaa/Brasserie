@@ -107,6 +107,10 @@ Lire :
 | work/missions/2026-11-17-port-calendrier/vision-2/RAPPORT.md | PC | 42 | 0 | 50229052b114 |
 | work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-4/cave-complet/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-m390.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-paysage-d1280.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT.md | PC | 0 | 0 | en cours |
 
 Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPPORT.md` (MV : seulement 45 captures et des JSON bruts) ; à verser dès qu'il existe. Les rapports TE (27 constats à cette heure) et BT (en cours, « tableau écran × actionneurs » encore vide) s'écrivent encore : relancer le contrôle pour les suivants. Le rapport AM (audit de code seul, aucun Chrome) numérote A1 à A11, B1 à B22, C1 à C18, D1 à D22 : ici AM-1 à AM-11, AM-12 à AM-33, AM-34 à AM-51, AM-52 à AM-73, dans cet ordre, la colonne « source » redonne le numéro du rapport.
 
