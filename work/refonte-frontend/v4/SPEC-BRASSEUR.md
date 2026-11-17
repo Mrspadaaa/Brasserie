@@ -2017,3 +2017,9 @@ Lecture : le parcours est jugé « top » sauf les gestes de création, d'ajout,
 > Il y a trop besoin d'action et pas assez d'aide de l'ai....
 
 Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où il tape ou colle n'importe quoi (texte, lien, photo) ; l'IA trie, construit et catégorise toute seule (article, façon, critère, note ; idée existante ou nouvelle ; titre ; lien lu en fiche), comme la structure v05-3. Plus de tuiles « quoi ? » à choisir, plus d'écran de lien à remplir, plus de flèche « écrivez ou collez ici ». L'IA propose, il corrige d'un toucher (Annuler, déplacer). Gardés : v01-2 (sans la flèche), v02-2, v05-3 ; modifier v01-11, v01-12, v03-11 ; titre v01-13, v02-14 ; supprimer une note v02-12 ; supprimer une idée v01-16, v01-17, v02-17, v02-18, v04-18, v04-19. Lot greffe5.
+
+### 17.11 — Calendrier, déploiement du port
+
+> (à « Je déploie dès qu'il n'y a plus de bloquant, ou tout de suite tel quel ? ») Ah non dès que c'est bon, mais pas besoin de mettre la maquette jouable à jour
+
+Lecture : accord de déployer le port du calendrier (branche claude/port-calendrier-1711) dès 0 bloquant à la critique ; le jouable (as/) n'est plus mis à jour.
