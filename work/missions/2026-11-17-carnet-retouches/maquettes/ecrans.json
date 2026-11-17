@@ -274,5 +274,305 @@
  "v12-3": {
   "ecran": "choisi",
   "legende": "choisi, pourquoi, écartés"
+ },
+ "g01-1": {
+  "ecran": "liste",
+  "legende": "liste v09"
+ },
+ "g01-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter, sur v09"
+ },
+ "g01-3": {
+  "ecran": "carnet",
+  "legende": "carnet neuf, vide"
+ },
+ "g01-4": {
+  "ecran": "carnet",
+  "legende": "fiche à trancher"
+ },
+ "g01-5": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "g01-6": {
+  "ecran": "ajouter-a",
+  "legende": "lien collé, rangée neuve"
+ },
+ "g01-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "g01-8": {
+  "ecran": "comparer",
+  "legende": "côte à côte"
+ },
+ "g01-9": {
+  "ecran": "choisi",
+  "legende": "choisir sur place"
+ },
+ "g01-10": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "g01-11": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "g01-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, sans violet"
+ },
+ "g01-13": {
+  "ecran": "choisi",
+  "legende": "écarter, reprendre"
+ },
+ "g04-1": {
+  "ecran": "liste",
+  "legende": "liste v09"
+ },
+ "g04-2": {
+  "ecran": "ajouter",
+  "legende": "noter une idée"
+ },
+ "g04-3": {
+  "ecran": "carnet",
+  "legende": "carnet neuf"
+ },
+ "g04-4": {
+  "ecran": "carnet",
+  "legende": "fiche à trancher"
+ },
+ "g04-5": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "g04-6": {
+  "ecran": "ajouter-a",
+  "legende": "lien collé, sa rangée"
+ },
+ "g04-7": {
+  "ecran": "article",
+  "legende": "article ouvert défilé"
+ },
+ "g04-8": {
+  "ecran": "comparer",
+  "legende": "côte à côte, tableau"
+ },
+ "g04-9": {
+  "ecran": "choisi",
+  "legende": "choisir"
+ },
+ "g04-10": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "g04-11": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "g04-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, sans violet"
+ },
+ "g02-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g02-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g02-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, critère proposé IA"
+ },
+ "g02-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles groupés"
+ },
+ "g02-5": {
+  "ecran": "ajouter-a",
+  "legende": "Note ajoutée à Ventilation"
+ },
+ "g02-6": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g02-7": {
+  "ecran": "articles",
+  "legende": "Cartes défilées, choisir ou écarter"
+ },
+ "g02-8": {
+  "ecran": "comparer",
+  "legende": "Tableau côte à côte"
+ },
+ "g02-9": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g02-10": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g02-11": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g02-12": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ },
+ "g03-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g03-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g03-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, Chercher des éviers"
+ },
+ "g03-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles"
+ },
+ "g03-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé vers Ventilation"
+ },
+ "g03-6": {
+  "ecran": "articles",
+  "legende": "Lien rangé, nouvelle carte"
+ },
+ "g03-7": {
+  "ecran": "article",
+  "legende": "Feuille article, 1re sur 5"
+ },
+ "g03-8": {
+  "ecran": "article",
+  "legende": "Article, valeurs, veille, choisir"
+ },
+ "g03-9": {
+  "ecran": "comparer",
+  "legende": "Autres cartes, côte à côte"
+ },
+ "g03-10": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g03-11": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g03-12": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g03-13": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ },
+ "g05-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g05-2": {
+  "ecran": "ajouter",
+  "legende": "+ touché, Nouveau carnet, clavier"
+ },
+ "g05-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf Évier, IA propose"
+ },
+ "g05-4": {
+  "ecran": "articles",
+  "legende": "Carnet Ventilation, articles par façon"
+ },
+ "g05-5": {
+  "ecran": "ajouter-a",
+  "legende": "+ dans Ventilation, lien collé"
+ },
+ "g05-6": {
+  "ecran": "articles",
+  "legende": "Lien noté, nouvelle rangée"
+ },
+ "g05-7": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g05-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte, 5 machines"
+ },
+ "g05-9": {
+  "ecran": "choisi",
+  "legende": "Bouton Choisir chez, Écarter"
+ },
+ "g05-10": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g05-11": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g05-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "g06-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets, vue v09"
+ },
+ "g06-2": {
+  "ecran": "ajouter",
+  "legende": "Nouvelle idée, champ au clavier"
+ },
+ "g06-3": {
+  "ecran": "carnet",
+  "legende": "Évier inox, carnet neuf"
+ },
+ "g06-4": {
+  "ecran": "articles",
+  "legende": "Ventilation, critère et groupes"
+ },
+ "g06-5": {
+  "ecran": "ajouter-a",
+  "legende": "Ajouter à Ventilation, lien"
+ },
+ "g06-6": {
+  "ecran": "articles",
+  "legende": "Lien devenu rangée, Déplacer"
+ },
+ "g06-7": {
+  "ecran": "articles",
+  "legende": "Embouteillage, classement par oxygène"
+ },
+ "g06-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte sous groupes"
+ },
+ "g06-9": {
+  "ecran": "article",
+  "legende": "Article ouvert sur place"
+ },
+ "g06-10": {
+  "ecran": "choisi",
+  "legende": "Feuille Choisir cette machine"
+ },
+ "g06-11": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g06-12": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g06-13": {
+  "ecran": "a-venir",
+  "legende": "À venir au Calendrier"
  }
 }
