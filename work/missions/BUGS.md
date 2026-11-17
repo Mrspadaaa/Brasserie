@@ -105,6 +105,8 @@ Lire :
 | work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md | LR3 | 9 | 3 |  |
 | work/missions/2026-11-17-port-calendrier/vision-1/RAPPORT.md | PC | 0 | 0 | 9ce65bb39fb7 |
 | work/missions/2026-11-17-port-calendrier/vision-2/RAPPORT.md | PC | 42 | 0 | 50229052b114 |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md | PC | 0 | 0 | en cours |
 
 Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPPORT.md` (MV : seulement 45 captures et des JSON bruts) ; à verser dès qu'il existe. Les rapports TE (27 constats à cette heure) et BT (en cours, « tableau écran × actionneurs » encore vide) s'écrivent encore : relancer le contrôle pour les suivants. Le rapport AM (audit de code seul, aucun Chrome) numérote A1 à A11, B1 à B22, C1 à C18, D1 à D22 : ici AM-1 à AM-11, AM-12 à AM-33, AM-34 à AM-51, AM-52 à AM-73, dans cet ordre, la colonne « source » redonne le numéro du rapport.
 
@@ -939,9 +941,9 @@ Source : vision-2 jugée par work/missions/2026-11-17-port-calendrier/CRITIQUE-2
 
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
-| PC-1 | CRITIQUE-2 n° 1 | Calendrier (port, banc local) | Le glisser f1-a reste sans effet dans les 6 runs (captures 09 et 10). | G | en cours — correction tour 2 | | |
-| PC-2 | CRITIQUE-2 n° 2 | Calendrier (port, banc local) | « Stout maison J0 / 0 · prête 25 nov. » : un brassin à 0 jour en cuve. On le voit sur m390-04, 05 et 06, sur tout le paysage et sur toutes les captures d1280. C'est une valeur fausse, qui heurte le métier. | G | en cours — correction tour 2 | | |
-| PC-3 | CRITIQUE-2 n° 3 | Calendrier (port, banc local) | Le menu f5-a cache « Retirer », et le + volant passe par-dessus. | G | en cours — correction tour 2 | | |
+| PC-1 | CRITIQUE-2 n° 1 | Calendrier (port, banc local) | Le glisser f1-a reste sans effet dans les 6 runs (captures 09 et 10). | G | corrigé | ff57424a | auto : commit ff57424a « PC-1 : le jour de brassage déstocke le malt même si la levure est inconnue (la l » |
+| PC-2 | CRITIQUE-2 n° 2 | Calendrier (port, banc local) | « Stout maison J0 / 0 · prête 25 nov. » : un brassin à 0 jour en cuve. On le voit sur m390-04, 05 et 06, sur tout le paysage et sur toutes les captures d1280. C'est une valeur fausse, qui heurte le métier. | G | corrigé | 1414eed2 | auto : commit 1414eed2 « PC-2 (c) : un achat dont l'article est supprimé s'annule, l'écart de stock est d » |
+| PC-3 | CRITIQUE-2 n° 3 | Calendrier (port, banc local) | Le menu f5-a cache « Retirer », et le + volant passe par-dessus. | G | corrigé | 3131bed3 | auto : commit 3131bed3 « PC-3 : liste du Combobox dans le flux (5 lignes) en feuille courte au téléphone  » |
 | PC-4 | CRITIQUE-2 n° 4 | Calendrier (port, banc local) | En paysage, le + volant est coupé en haut (paysage-clair-15 et paysage-cave-15). « Partout », « Noter une idée » et « Prévoir un papier » sortent de l'écran. Sa maquette `l-clair-ouvert` range tout sur deux colonnes visibles. C'est un écart à sa maquette (n° 1 | G | en cours — correction tour 2 | | |
 | PC-5 | CRITIQUE-2 n° 5 | Calendrier (port, banc local) | Le paysage n'est pas compact. Au repos (paysage-01), on ne voit que Brassins et le titre Fêtes ; la rangée Brassins mesure environ 140 px. Le contrôle PAYS est KO : la rangée médiane fait 74 px, pour 48 au plus. Retenu manquant : D-174, E10. | B | en cours — correction tour 2 | | |
 | PC-6 | CRITIQUE-2 n° 6 | Calendrier (port, banc local) | La mise de côté n'apparaît nulle part sur la courbe. Aucune capture ne montre de hachures ni de « 1 140 mis de côté ». Retenu manquant : E03, D-8, D-117 (n° 7 de la critique 1, inchangé). | B | en cours — correction tour 2 | | |
