@@ -2071,3 +2071,9 @@ Lecture : confirme le but de greffe 5 (un seul champ texte, l'IA met en forme, t
 > J'ai l'impression que ça classe pas super super. Mais tu peux implémenter comme tell avec les meilleures fonction de version....
 
 Lecture (L01) : aucune version ne s'impose ; il accorde le port dans l'app tel quel, en prenant pour chaque geste la mieux classée et en y greffant les meilleures fonctions des autres versions. Le reste du parcours reste figé sur le 3e classement (ecrans_choisis.figes).
+
+### 17.11 — Carnet : un chat
+
+> En gros, un chat, et ça met en forme, c'est tout et ça permet de comparer les idée, en gros
+
+Lecture : le carnet est d'abord un fil de chat (il écrit ce qu'il veut, l'IA met en forme, trie, range dans les idées) ; ses autres fonctions se réduisent à comparer les idées. Moins d'écrans de gestes, l'IA fait le travail. S'applique au port du carnet (work/missions/2026-11-17-port-carnet).
