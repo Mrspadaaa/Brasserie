@@ -128,7 +128,7 @@ try {
     await p.click('button[data-plus="fetes"]'); await attendre(500);
     await p.evaluate(() => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => /^Marché de Noël$/.test((b.textContent || '').trim()))?.click(); });
     await attendre(200);
-    await p.evaluate(() => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'Ajouter')?.click(); });
+    await p.evaluate(() => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => /^Ajouter( en S\d+)?$/.test((b.textContent || '').trim()))?.click(); });
     await attendre(700);
     const compte = () => p.evaluate(() => [...document.querySelectorAll('[data-chose]')].filter(e => /^Marché de Noël/.test(e.getAttribute('aria-label') || '')).length);
     const avant = await compte();

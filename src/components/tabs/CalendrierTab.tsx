@@ -16,10 +16,10 @@ import { MenuAppuiLong } from '../../ui/calendrier/frise/MenuAppuiLong';
 import { DetailChose } from '../../ui/calendrier/frise/DetailChose';
 import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/FeuilleAjout';
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
-import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
+import { CLASSE_TEINTE, ICONE_RANGEE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import {
-  RANGEES, ajouterJours, dateDeSemaine, ecartJours, etiquetteS, jourLisible, lundiDe, nomRangee,
+  RANGEES, ajouterJours, dateDeSemaine, ecartJours, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules,
   type CibleOuverture, type ChoseCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
@@ -274,17 +274,25 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [fenetre.du, premierLundi]);
   const ouvrirIdee = useCallback((lundi?: string) => { setMessage(null); setMenu(null); setIdee(lundi ?? premierLundi); }, [premierLundi]);
 
+  /* passe 10 : une ligne par rangée, de la couleur et du picto de la rangée ; Poser un brassin en plein, avec sa semaine et « prête le … » (le + lui-même ne porte aucun « S47 », D-206) */
+  const COULEUR_RANGEE: Record<IdRangee, string> = {
+    brassins: 'rgb(var(--area-production))', fetes: 'rgb(var(--area-agenda))', ventes: 'rgb(var(--hop))', achats: 'rgb(var(--area-finances))',
+    travaux: 'rgb(var(--area-stocks))', activites: 'rgb(var(--attention))', papiers: 'rgb(var(--cave-200))'
+  };
+  const ligne = (id: string, label: string, r: IdRangee, extra: { hint?: string; plein?: boolean } = {}) => ({
+    id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_RANGEE[r], lancer: () => ouvrirFeuille(r), ...extra
+  });
   usePlusPage({
-    titre: 'Calendrier',
+    titre: 'le calendrier',
     surOnglets: true,
     actions: [
-      { id: 'brassin', label: 'Poser un brassin', genre: 'brasser', lancer: () => ouvrirFeuille('brassins') },
-      { id: 'fete', label: 'Poser une fête', genre: 'ajouter', lancer: () => ouvrirFeuille('fetes') },
-      { id: 'vente', label: 'Poser une vente', genre: 'ajouter', lancer: () => ouvrirFeuille('ventes') },
-      { id: 'achat', label: 'Prévoir un achat', genre: 'ajouter', lancer: () => ouvrirFeuille('achats') },
-      { id: 'travaux', label: 'Prévoir des travaux', genre: 'ajouter', lancer: () => ouvrirFeuille('travaux') },
-      { id: 'activite', label: 'Noter une activité', genre: 'ajouter', lancer: () => ouvrirFeuille('activites') },
-      { id: 'papier', label: 'Prévoir un papier', genre: 'ajouter', lancer: () => ouvrirFeuille('papiers') },
+      ligne('brassin', 'Poser un brassin', 'brassins', { plein: true, hint: `28 j en cuve · prête le ${jourLisible(ajouterJours(premierLundi, 28))}` }),
+      ligne('fete', 'Poser une fête', 'fetes'),
+      ligne('vente', 'Poser une vente', 'ventes'),
+      ligne('achat', 'Prévoir un achat', 'achats'),
+      ligne('travaux', 'Prévoir des travaux', 'travaux'),
+      ligne('activite', 'Noter une activité', 'activites'),
+      ligne('papier', 'Prévoir un papier', 'papiers'),
       { id: 'idee', label: 'Noter une idée', genre: 'ajouter', lancer: () => ouvrirIdee() }
     ]
   });
@@ -420,7 +428,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
       {filtre && (
         <p className="cal-filtre" data-filtre>
-          <b>{nomRangee(filtre)} seules</b>
+          <b>{nomSeules(filtre)}</b>
           <button type="button" className="cal-b" onClick={() => setFiltre(null)}>Tout afficher</button>
         </p>
       )}
@@ -474,13 +482,17 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
       {menu && chosesMenu && (() => {
         const c = chosesMenu;
-        const prochain = ajouterJours(lundiDe(c.debut), 7);
+        /* jamais une semaine que la barre occupe déjà (« Dupliquer en S47 » sur ce qui est en S47 n'a pas de sens) : la semaine après sa fin ; un brassin se duplique sur la semaine qui suit son jour de brassage, au plus tôt la semaine prochaine */
+        const apresFin = ajouterJours(lundiDe(c.fin || c.debut), 7);
+        const prochain = c.source.genre === 'batch' ? (() => { const s = ajouterJours(lundiDe(c.debut), 7), p = ajouterJours(premierLundi, 7); return s < p ? p : s; })() : apresFin;
         const dup = dupliquer(c, prochain, ctxGestes);
         const ret = retirer(c, ctxGestes);
         return (
           <MenuAppuiLong
             chose={c}
-            nomRangee={nomRangee(c.rangee)}
+            nomRangee={nomSeules(c.rangee)}
+            onOuvrirSource={() => { setMenu(null); ouvrir(c.ouvre); }}
+            libelleSource={LIBELLE_LIEN[c.ouvre.ecran]}
             ancre={menu.ancre}
             epinglee={epingles.includes(c.id)}
             etoilee={etoiles.includes(c.id)}
@@ -503,7 +515,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
             }}
             onSeules={() => {
               setFiltre(c.rangee); setMenu(null);
-              montrer({ role: 'status', texte: `${nomRangee(c.rangee)} seules`, annuler: () => { setFiltre(null); setMessage(null); } });
+              montrer({ role: 'status', texte: nomSeules(c.rangee), annuler: () => { setFiltre(null); setMessage(null); } });
             }}
             onDupliquer={() => { setMenu(null); void ecrire(dup); }}
             onLier={(liens, nom) => { setMenu(null); void ecrire(lier(c, liens, ctxGestes)).then(ok => { if (ok) void 0; void nom; }); }}
@@ -547,7 +559,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         <Sheet open onClose={() => setPanneau(null)} title="Filtrer par type">
           <div className="flex flex-wrap gap-2 px-3 pb-3" role="group" aria-label="Type">
             {RANGEES.map(r => (
-              <button key={r.id} type="button" aria-pressed={filtre === r.id} className={`cal-b ${CLASSE_TEINTE[r.id]}`} onClick={() => { setFiltre(r.id); setPanneau(null); }}>{r.nom} seules</button>
+              <button key={r.id} type="button" aria-pressed={filtre === r.id} className={`cal-b ${CLASSE_TEINTE[r.id]}`} onClick={() => { setFiltre(r.id); setPanneau(null); }}>{nomSeules(r.id)}</button>
             ))}
             <button type="button" className="cal-b" onClick={() => { setFiltre(null); setPanneau(null); }}>Tout afficher</button>
           </div>
@@ -569,7 +581,7 @@ function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; se
       onClose={onFermer}
       title="Noter une idée"
       subtitle={`en ${etiquetteS(semaine)}`}
-      footer={<button type="button" className="min-h-11 w-full rounded-control bg-cave-50 px-4 text-base font-bold text-cave-950" onClick={async () => setRefus(await onNoter(titre, semaine))}>Noter</button>}
+      footer={<button type="button" className="cal-cta min-h-11 w-full rounded-control px-4 text-base font-bold" onClick={async () => setRefus(await onNoter(titre, semaine))}>Noter</button>}
     >
       <div className="space-y-3 px-3 pb-3 text-sm">
         <label className="block">

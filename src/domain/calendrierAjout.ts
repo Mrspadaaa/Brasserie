@@ -64,7 +64,7 @@ export interface ContexteAjout {
 const idPar = (ctx: ContexteAjout, prefixe: string) => (ctx.nouvelId ?? ((p: string) => `${p}-${globalThis.crypto.randomUUID()}`))(prefixe);
 
 /** Les rangées où le montant s'écrit avec un signe à toucher. */
-const RANGEES_ARGENT: readonly Rangee[] = ['ventes', 'achats', 'travaux', 'activites', 'papiers'];
+const RANGEES_ARGENT: readonly Rangee[] = ['fetes', 'ventes', 'achats', 'travaux', 'activites', 'papiers'];
 /** Les rangées qui se posent sur une fenêtre de semaines (E45). Brassins : la fin vient du temps en cuve. Ventes et Papiers : une date seule. */
 const RANGEES_FENETRE: readonly Rangee[] = ['fetes', 'achats', 'travaux', 'activites'];
 
@@ -244,7 +244,7 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
     const document: CreativeItem = {
       id: idPar(ctx, 'CR'), type: 'event', title: b.titre.trim(), status: 'todo', date: lundiDe(debut),
       ...(b.rangee === 'activites' ? { activite: true as const } : {}),
-      ...(b.rangee === 'activites' && b.centimes ? { estimatedCost: b.centimes / 100 } : {}),
+      ...(b.centimes ? (b.rangee === 'fetes' && b.signe === '+' ? { estimatedRevenue: b.centimes / 100 } : { estimatedCost: b.centimes / 100 }) : {}),
       ...(fenetre ? { fenetre } : {}), ...(b.liens ? { liens: b.liens } : {})
     };
     return { ok: true, enregistrement: { cible: 'creative', collection: 'creativeItems', document }, resume: `${document.title} · ${etiquetteS(debut)}` };
@@ -284,7 +284,9 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier): { o
   if (chose.source.genre === 'creative') {
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: chose.source.id, patch: {
       title: b.titre.trim(), date: fenetre?.du ?? lundiDe(debut), fenetre: fenetre ?? undefined,
-      ...(chose.rangee === 'activites' ? { estimatedCost: b.centimes ? b.centimes / 100 : undefined } : {})
+      ...(chose.rangee === 'fetes'
+        ? (b.signe === '+' ? { estimatedRevenue: b.centimes ? b.centimes / 100 : undefined, estimatedCost: undefined } : { estimatedCost: b.centimes ? b.centimes / 100 : undefined, estimatedRevenue: undefined })
+        : { estimatedCost: b.centimes ? b.centimes / 100 : undefined })
     } }] };
   }
   if (chose.source.genre === 'plan' && chose.source.origine === 'manual') {

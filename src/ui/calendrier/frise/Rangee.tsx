@@ -2,7 +2,7 @@ import React from 'react';
 import { Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, ecartJours, estMarque, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, type BarreProps, type CoteEtiquette } from './Barre';
-import { CLASSE_TEINTE, Marque } from './Marque';
+import { CLASSE_TEINTE, Marque, texteDuree } from './Marque';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -25,22 +25,34 @@ export function positionDans(colonnes: readonly Colonne[], chose: { debut: strin
 }
 
 export interface Mesures { ligne: number; barre: number; titre: number }
-export const MESURES_PORTRAIT: Mesures = { ligne: 40, barre: 30, titre: 26 };
-export const MESURES_PAYSAGE: Mesures = { ligne: 30, barre: 24, titre: 18 };
+/* E43 : en portrait, 6 rangées d'un coup d'œil (une ligne de 32 px porte une barre de 26 px et un texte de 14 px) ; en paysage, 48 px au plus la rangée médiane. */
+export const MESURES_PORTRAIT: Mesures = { ligne: 30, barre: 26, titre: 24 };
+export const MESURES_PAYSAGE: Mesures = { ligne: 26, barre: 22, titre: 20 };
 
 export interface Disposition {
   chose: ChoseCalendrier;
   a: number; b: number;
   gauche: number; largeur: number;
   ligne: number;
+  /** Une icône ronde : trop petite pour une barre (E27), pastille de vente (E26) ou sortie dérivée sans montant. */
   marque: boolean;
+  /** Trop petite à cette échelle : l'appui long ouvre les 6 semaines. Sinon la marque se glisse et s'ouvre en menu comme une barre. */
+  petite: boolean;
+  /** La marque porte son nom et son montant à côté (E13, E26). */
+  avecLibelle: boolean;
+  /** Le texte « J0 / n · prête le … » tient à côté du nom d'un brassin. */
+  duree: boolean;
   cote: CoteEtiquette;
   place: number;
 }
 
 const CHAR_PX = 7.6;
 const montantTexte = (c: ChoseCalendrier): string => (c.rangee === 'activites' && c.joursActifs ? `${c.joursActifs} j` : c.centimes !== undefined ? francsSignes(c.centimes) : '');
-export const largeurEtiquette = (c: ChoseCalendrier): number => Math.ceil((c.titre.length + (montantTexte(c) ? montantTexte(c).length + 1 : 0)) * CHAR_PX) + 4;
+
+export const largeurEtiquette = (c: ChoseCalendrier): number => Math.ceil((c.titre.length + (montantTexte(c) ? montantTexte(c).length + 1 : 0) + (texteDuree(c) ? texteDuree(c)!.length + 2 : 0)) * CHAR_PX) + 4;
+
+/** Une sortie dérivée d'un brassin (énergie, emballage) dont le montant n'est pas renseigné : une icône, son nom vient au toucher (CAL-INFO-TROP). */
+const deriveSansMontant = (c: ChoseCalendrier): boolean => c.source.genre === 'prevision-brassin' && c.centimes === undefined;
 
 /** Pose les choses d'une rangée sans qu'une barre ni un nom en touche un autre. Pure : `largeur` et `largeurColonne` viennent de la mesure. */
 export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[], largeurColonne: number, largeur: number): { items: Disposition[]; lignes: number } {
@@ -63,28 +75,48 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       const g = Math.max(0, xDuJour(c.debut)), d = Math.min(colonnes.length * largeurColonne, xDuJour(ajouterJours(c.fin || c.debut, 1)));
       gauche = g + 1; w = Math.max(0, d - g - 2);
     }
-    const marque = estMarque(w);
+    const petite = estMarque(w);
+    const pastilleVente = c.rangee === 'ventes' && p.a === p.b && !c.proposition;
+    const marque = petite || pastilleVente || deriveSansMontant(c);
+    const avecLibelle = marque && !deriveSansMontant(c);
     let cote: CoteEtiquette = 'dedans', place = 0, x0 = gauche, x1 = gauche + (marque ? 28 : w);
     if (marque) {
       const centre = auJour ? gauche + w / 2 : (p.a + 0.5) * largeurColonne;
       gauche = centre - 14;
       x0 = gauche; x1 = centre + 14;
+      if (avecLibelle) {
+        const lab = largeurEtiquette(c);
+        const libreG = gauche, libreD = largeur - (centre + 14);
+        if (libreD >= libreG) { cote = 'droite'; place = Math.min(lab, Math.max(0, libreD - 8)); x1 = centre + 14 + 6 + place; }
+        else { cote = 'gauche'; place = Math.min(lab, Math.max(0, libreG - 8)); x0 = gauche - 6 - place; }
+      }
     } else {
       const lab = largeurEtiquette(c);
       const libreG = gauche, libreD = largeur - (gauche + w);
-      if (w - 16 >= lab && !c.proposition) { cote = 'dedans'; place = w - 16; }
+      /* un brassin garde sa barre nette (piste de phases et jalons) : son nom vient à côté ; dessus seulement s'il n'y a presque plus de place à côté */
+      const batch = c.source.genre === 'batch';
+      if (!c.proposition && (batch ? Math.max(libreG, libreD) < 90 : w - 16 >= lab)) { cote = 'dedans'; place = Math.max(0, w - 16); }
       else if (libreD >= libreG) { cote = 'droite'; place = Math.min(lab, Math.max(0, libreD - 8)); x1 = gauche + w + 6 + place; }
       else { cote = 'gauche'; place = Math.min(lab, Math.max(0, libreG - 8)); x0 = gauche - 6 - place; }
     }
     let ligne = 0;
     while (lignes[ligne]?.some(([a, b]) => x0 < b + 6 && x1 > a - 6)) ligne++;
+    /* E43 : plutôt qu'ouvrir une ligne de plus, le nom se rogne (…) pour tenir sur une ligne déjà ouverte ; il se lit en entier au toucher */
+    const court = largeur > 700 ? 64 : 96;
+    if (ligne >= lignes.length && lignes.length > 0 && cote !== 'dedans' && place > court && (!marque || avecLibelle)) {
+      const [y0, y1] = cote === 'droite' ? [x0, x1 - place + court] : [x1 - 0 - (x1 - x0) + (place - court), x1];
+      const l = lignes.findIndex(ln => !ln.some(([a, b]) => y0 < b + 6 && y1 > a - 6));
+      if (l >= 0) { ligne = l; place = court; x0 = y0; x1 = y1; }
+    }
     (lignes[ligne] ||= []).push([x0, x1]);
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, cote, place });
+    /* « J0 / 28 · prête 7 déc. » ne se montre que s'il tient en entier à côté du nom (jamais coupé en deux) */
+    const duree = !marque && !!texteDuree(c) && cote !== 'dedans' && place >= largeurEtiquette(c) - 4;
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite, avecLibelle, duree, cote, place });
   }
   return { items, lignes: lignes.length };
 }
 
-export interface Pastille { texte: string; lecture: string; part: number; solde: number | null }
+export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; debut: string; fin: string }
 /** E23 : « Ventes, confirmé de S47 à S52 : 2 choses, solde +900 ». Ce qui n'est pas chiffré est dit en mots, jamais compté 0. */
 export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[]): Pastille {
   const dedans = choses.filter(c => positionDans(colonnes, c));
@@ -103,8 +135,10 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   else if (n) morceaux.push('solde non renseigné');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
   if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}`);
-  const texte = rangee === 'activites' ? (fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0) ? `${fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0)} j` : n ? `${n}` : '') : solde !== null ? francsSignes(solde) : n ? `${n}` : '';
-  return { texte, lecture: morceaux.join(', '), part: solde === null ? 0 : Math.abs(solde), solde };
+  /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) */
+  const nbVu = dedans.length;
+  const texte = rangee === 'activites' ? (fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0) ? `${fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0)} j` : nbVu ? `${nbVu}` : '') : solde !== null ? francsSignes(solde) : nbVu ? `${nbVu}` : '';
+  return { texte, lecture: morceaux.join(', '), part: solde === null ? 0 : Math.abs(solde), solde, debut: premier, fin: dernier };
 }
 
 export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
@@ -165,6 +199,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
           <Plus size={16} strokeWidth={3} aria-hidden="true" />
         </button>
         <h3 className="cal-nom">{nom}</h3>
+        {/* gi2 : l'œil est collé au titre, puis la pastille r2-c (remplie en proportion, avec son montant) et ce qu'elle compte */}
+        {cause !== 'filtre' && (
+          <button type="button" className="cal-oeil" aria-pressed={masquee} aria-label={masquee ? `Afficher ${nom}` : `Masquer ${nom}`} onClick={() => props.onBasculerMasque(id)}>
+            {masquee ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+          </button>
+        )}
         {masquee && cause === 'oeil' ? (
           <button type="button" className="cal-cachees" aria-label={`Afficher ${nom}${cachees ? ` : ${cachees} chose${cachees > 1 ? 's' : ''} cachée${cachees > 1 ? 's' : ''}` : ''}`} onClick={() => props.onBasculerMasque(id)}>
             {cachees ? `${cachees} chose${cachees > 1 ? 's' : ''} cachée${cachees > 1 ? 's' : ''}` : 'masquée'}
@@ -175,19 +215,17 @@ export const Rangee: React.FC<RangeeProps> = props => {
           <span className="cal-vide">vide</span>
         ) : (
           <span className="cal-pastille" role="img" aria-label={p.lecture} data-pastille={id}>
-            <i className="cal-pastille-fond"><i style={{ width: `${parts}%` }} /></i>
-            <span className="cal-pastille-t">{p.texte}</span>
+            <span className="cal-pastille-p">
+              <i className="cal-pastille-fond" style={{ width: `${parts}%` }} />
+              <span className="cal-pastille-t">{p.texte}</span>
+            </span>
+            <span className="cal-conf">confirmé {p.debut}–{p.fin}</span>
           </span>
-        )}
-        {cause !== 'filtre' && (
-          <button type="button" className="cal-oeil" aria-pressed={masquee} aria-label={masquee ? `Afficher ${nom}` : `Masquer ${nom}`} onClick={() => props.onBasculerMasque(id)}>
-            {masquee ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
-          </button>
         )}
       </header>
       {hauteurLane > 0 && (
         <div className="cal-lane" style={{ height: hauteurLane }} data-lane={id}>
-          {fantome && !fantome.marque && (
+          {fantome && !fantome.petite && (
             <i className="cal-fantome cal-pointille" aria-hidden="true" data-fantome style={{ left: fantome.gauche, width: fantome.largeur, top: fantome.ligne * mesures.ligne + 2, height: mesures.barre }} />
           )}
           {items.map(d => {
@@ -195,17 +233,22 @@ export const Rangee: React.FC<RangeeProps> = props => {
             const top = d.ligne * mesures.ligne + 2;
             const surDrag = drag && drag.id === c.id;
             if (d.marque) {
+              const commeBarre = !d.petite;
               return (
                 <Marque
-                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} largeurColonne={auJour ? 0 : largeurColonne}
-                  epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id}
+                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={mesures.barre + 2} largeurColonne={auJour ? 0 : largeurColonne}
+                  epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id}
+                  libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place } : undefined}
+                  decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
+                  bornes={commeBarre ? [-d.a, colonnes.length - 1 - d.a] : undefined}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
+                  {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong, onGlisse: props.barre.onGlisse, onLacheGlisse: props.barre.onLacheGlisse, onRefus: (ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison) } : {})}
                 />
               );
             }
             return (
               <Barre
-                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={mesures.barre} cote={d.cote} placeEtiquette={d.place}
+                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={mesures.barre} cote={d.cote} placeEtiquette={d.place} avecDuree={d.duree}
                 largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}

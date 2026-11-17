@@ -29,7 +29,10 @@
 
 /* ---- la rangée du chiffre clé et des boutons ---- */
 .ent-t { display: flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 8px 0 12px; white-space: nowrap; }
-.ent-k { display: flex; align-items: baseline; gap: 4px; flex: 1 1 auto; min-width: 0; height: 28px; line-height: 28px; text-align: left; color: var(--ent-mut); }
+/* « 113 CHF à dépenser » puis « sans passer sous 0 · S24 » sur la ligne dessous : la phrase du brasseur en entier, rien de rogné (E01) */
+.ent-k { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 4px; row-gap: 0; flex: 1 1 auto; min-width: 0; height: 38px; line-height: 22px; text-align: left; color: var(--ent-mut); }
+.ent-k .ent-k-s { flex: 1 0 100%; font-size: 14px; line-height: 16px; font-weight: 500; color: var(--ent-mut); white-space: nowrap; }
+.ent-k-vide { height: 28px; }
 .ent-k b { flex: none; font-size: 22px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
 /* Faute de place, c'est la phrase qui se rogne (« CHF à dé… »), jamais le chiffre ni la semaine du creux. */
 .ent-k .ent-k-u { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
@@ -100,7 +103,7 @@
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
 .ent-bz { margin-top: 12px; }
 .ent-bd { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); border-bottom: 1px solid var(--ent-line); }
-.ent-bd-c { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 34px; padding: 0; color: var(--ent-mut); -webkit-touch-callout: none; user-select: none; }
+.ent-bd-c { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 28px; padding: 0; color: var(--ent-mut); -webkit-touch-callout: none; user-select: none; }
 .ent-sem { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); }
 .ent-bd-c[data-courant] .ent-sem { color: var(--ent-ink); font-weight: 700; }
 .ent-bd-m { display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 18px; padding-bottom: 2px; }

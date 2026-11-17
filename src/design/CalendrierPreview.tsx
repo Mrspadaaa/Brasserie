@@ -40,8 +40,8 @@ const plan = (p: Partial<FinancialPlan> & Pick<FinancialPlan, 'id' | 'title' | '
   direction: 'out', category: 'divers', source: 'manual', status: 'active', createdAt: '2026-01-02T08:00:00.000Z', ...p
 } as FinancialPlan);
 
-const facture = (id: string, dueDate: string, cents: number, kind: 'expense' | 'income', date: string): FinanceTransaction => ({
-  id, date, description: id, category: kind === 'income' ? 'recettes' : 'brassage', subcategory: 'x', amountHT: cents / 100, amountTTC: cents / 100, tvaAmount: 0, tvaRate: 0,
+const facture = (id: string, dueDate: string, cents: number, kind: 'expense' | 'income', date: string, nom: string = id): FinanceTransaction => ({
+  id, date, description: nom, category: kind === 'income' ? 'recettes' : 'brassage', subcategory: 'x', amountHT: cents / 100, amountTTC: cents / 100, tvaAmount: 0, tvaRate: 0,
   finance: { version: 1, kind, amountCents: cents, lines: [], paymentStatus: 'unpaid', dueDate }
 }) as unknown as FinanceTransaction;
 
@@ -89,7 +89,7 @@ export function etatBanc(aujourdhui: string): EtatBanc {
     plan({ id: 'P-CIGOGNE', title: '3 fûts La Cigogne', date: ajouterJours(s(1), 30), amountCents: 90000, direction: 'in', category: 'recettes', batchId: 'LOT-BLONDE', clientId: 'CL-CIGOGNE' } as Partial<FinancialPlan> as never),
     plan({ id: 'P-CAFE', title: 'Café du Pont, 1 fût', date: s(3), amountCents: 13000, direction: 'in', category: 'recettes', status: 'draft' })
   ];
-  const transactions = [facture('F-BROUWLAND', s(2, 2), 42000, 'expense', ajouterJours(L, -9)), facture('F-LAC', s(6), 120000, 'income', ajouterJours(L, -5))] as unknown as Transaction[];
+  const transactions = [facture('F-BROUWLAND', s(2, 2), 42000, 'expense', ajouterJours(L, -9), 'Brouwland · malt'), facture('F-LAC', s(6), 120000, 'income', ajouterJours(L, -5), 'Facture Café du Lac')] as unknown as Transaction[];
   const recettes = [recette('R-BLONDE', 'Blonde d’automne', 'Blonde'), recette('R-PORTER', 'Porter d’hiver', 'Porter'), recette('R-STOUT', 'Stout maison', 'Stout')];
   const clients = [{ id: 'CL-CIGOGNE', name: 'La Cigogne', type: 'Pro', contact: '' }, { id: 'CL-PONT', name: 'Café du Pont', type: 'Pro', contact: '' }] as unknown as Client[];
   return { batches, plans, items, recettes, clients, transactions };
@@ -158,7 +158,8 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50" data-banc-calendrier>
       <p className="px-3 pt-1 text-sm text-cave-200" data-banc>banc — données simulées</p>
-      <main className="mx-auto w-full max-w-[1280px] px-2">
+      {/* le même conteneur que le <main> de l'app : la barre latérale du 1280 a sa place, la vue large est centrée (E10) */}
+      <main data-floating-actions-gap="nav" className="mx-auto w-full max-w-4xl px-2 xs:px-3 min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]">
         <CalendrierTab
           transactions={e.transactions} batches={e.batches} stockItems={[]}
           onOpenBatch={rien} onOpenFinances={rien} onOpenAgenda={rien} onOpenCourses={rien} onPoserBrassin={rien} onPoserFete={rien} onPoserDepense={rien}

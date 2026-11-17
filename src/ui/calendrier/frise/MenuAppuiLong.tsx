@@ -1,5 +1,5 @@
 import React from 'react';
-import { Copy, Filter, Link2, Pin, Star, Trash2 } from 'lucide-react';
+import { Copy, ExternalLink, Filter, Link2, Pin, Star, Trash2 } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
 
 /**
@@ -33,6 +33,9 @@ export interface MenuAppuiLongProps {
   onDupliquer: () => void;
   onLier: (liens: { batchId?: string; clientId?: string }, nom: string) => void;
   onRetirer: () => void;
+  /** Quand Retirer est refusé (un brassin, une charge fixe) : un bouton ouvre la source, où la chose se règle. */
+  onOuvrirSource?: () => void;
+  libelleSource?: string;
   onFermer: () => void;
 }
 
@@ -73,7 +76,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
               <Star size={20} aria-hidden="true" />Étoile<small>sur la courbe</small>
             </button>
             <button type="button" role="menuitem" onClick={props.onSeules} className="cal-m3b">
-              <Filter size={20} aria-hidden="true" />{nomRangee} seules<small>{autresRangees} rangée{autresRangees > 1 ? 's' : ''} masquée{autresRangees > 1 ? 's' : ''}</small>
+              <Filter size={20} aria-hidden="true" />{nomRangee}<small>{autresRangees} rangée{autresRangees > 1 ? 's' : ''} masquée{autresRangees > 1 ? 's' : ''}</small>
             </button>
           </div>
           {dupliquer && (
@@ -89,7 +92,14 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
               <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <em>{retirable.effet}</em>}
             </button>
           ) : (
-            <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>
+            <>
+              <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>
+              {props.onOuvrirSource && (
+                <button type="button" role="menuitem" onClick={props.onOuvrirSource} className="cal-ml">
+                  <ExternalLink size={20} aria-hidden="true" /><span>{props.libelleSource ?? 'Ouvrir ›'}</span>
+                </button>
+              )}
+            </>
           )}
         </>
       ) : (

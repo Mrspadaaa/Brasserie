@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, nomAccessible } from './Marque';
+import { CLASSE_TEINTE, nomAccessible, texteDuree } from './Marque';
 import { usePointeur } from './usePointeur';
 
 /**
@@ -22,6 +22,8 @@ export interface BarreProps {
   cote: CoteEtiquette;
   /** Place de l'étiquette côté libre, en px. */
   placeEtiquette: number;
+  /** « J0 / n · prête le … » à côté du nom d'un brassin, quand il tient en entier. */
+  avecDuree?: boolean;
   largeurColonne: number;
   /** Pas permis pour le glisser : `[min, max]` en semaines. */
   bornes: [number, number];
@@ -156,6 +158,7 @@ export const Barre: React.FC<BarreProps> = props => {
       <span className={`cal-lbl cal-lbl-${cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace} aria-hidden="true">
         <span className="cal-lbl-t">{chose.titre}</span>
         {montant && <b className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+        {props.avecDuree && texteDuree(chose) && <small className="cal-lbl-j">{texteDuree(chose)}</small>}
       </span>
     </>
   );

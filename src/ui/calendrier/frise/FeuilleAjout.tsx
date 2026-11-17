@@ -36,7 +36,9 @@ export interface FeuilleAjoutProps {
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
 
 export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, contexte, semaines, sansPlusDeDetails, onPlusDeDetails, onAjouter, onFermer }) => {
-  const [b, setB] = useState<BrouillonAjout>(initial);
+  /* un brassin se pose avec son temps en cuve déjà choisi (28 j) : « prête le … » se lit d'emblée (D-22, D-39) */
+  const avecDefauts = (x: BrouillonAjout): BrouillonAjout => (mode === 'ajouter' && x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x);
+  const [b, setB] = useState<BrouillonAjout>(() => avecDefauts(initial));
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [refus, setRefus] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -50,7 +52,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const prete = preteLe(b);
 
   const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(suite); };
-  const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(brouillonVide(r, b.debut)); };
+  const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(avecDefauts(brouillonVide(r, b.debut))); };
   const choisirPuce = (p: Puce) => regler(appliquerPuce(b, p));
   const puceChoisie = (p: Puce): boolean => {
     switch (p.genre) {
@@ -74,7 +76,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const montrerPuces = (genres: Puce['genre'][]) => lesPuces.filter(p => genres.includes(p.genre));
   const puces1 = brassin ? montrerPuces(['recette']) : b.rangee === 'ventes' ? montrerPuces(['vente-probable', 'client']) : montrerPuces(['nom']);
   const temps = brassin ? montrerPuces(['temps']) : [];
-  const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : 'Ajouter';
+  const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
 
   return (
     <Sheet
@@ -92,7 +94,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             data-ajouter
             onClick={() => ajouter(confirmation ? { ...b, confirmeGrosseSomme: true } : b)}
             disabled={enCours}
-            className="ml-auto min-h-11 flex-1 rounded-control bg-cave-50 px-4 text-base font-bold text-cave-950 disabled:opacity-50"
+            className="cal-cta ml-auto min-h-11 flex-1 rounded-control px-4 text-base font-bold disabled:opacity-50"
           >{libelleAjouter}</button>
         </div>
       )}
@@ -125,16 +127,6 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               </button>
             ))}
           </div>
-        )}
-
-        {!brassin && (
-          <label className="block">
-            <span className="mb-0.5 block text-sm text-cave-200">Nom</span>
-            <Input
-              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value })} enterKeyHint="done"
-              className="min-h-10 w-full rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
-            />
-          </label>
         )}
 
         {argent && (
@@ -206,6 +198,17 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             type="button" aria-pressed={!!b.miseDeCote} onClick={() => regler({ ...b, miseDeCote: !b.miseDeCote })}
             className="min-h-10 w-full rounded-control border border-cave-700 px-3 text-left text-sm font-semibold text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850"
           >Mettre de côté <small className="font-normal text-cave-200">· au fil des semaines, rendu au paiement</small></button>
+        )}
+
+        {/* le nom au clavier est le cas rare : il vient en dernier, après les puces, le signe, les semaines (CAL-CLAV, D-22, D-39) */}
+        {!brassin && (
+          <label className="block">
+            <span className="mb-0.5 block text-sm text-cave-200">{puces1.length > 0 ? 'Autre nom' : 'Nom'}</span>
+            <Input
+              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value })} enterKeyHint="done"
+              className="min-h-10 w-full rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
+            />
+          </label>
         )}
 
         {confirmation && <p data-confirmation className="rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50"><b className="font-semibold">{francs(b.centimes ?? 0)} CHF</b> : {confirmation.texte}</p>}

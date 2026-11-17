@@ -192,7 +192,7 @@ describe('C15 : la feuille Travaux : une fenêtre et des jours actifs, sans clav
     expect(champ).toHaveAttribute('inputmode', 'decimal');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '600' } }); fireEvent.blur(champ);
     expect(document.querySelectorAll('input[type="number"]')).toHaveLength(0);
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.some(a => a.op === 'creer' && a.collection === 'financialPlans')).toBe(true));
     const plan = appels.find(a => a.op === 'creer')!.patch as { fenetre: unknown; amountCents: number; category: string; date: string };
     expect(plan.fenetre).toEqual({ du: '2027-05-17', au: '2027-10-10', joursActifs: 5 });
@@ -246,7 +246,7 @@ describe('C18 : propositions en pointillé, acceptées d’un toucher (E47)', ()
     expect(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S26/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: /Plus de détails/ })).toBeNull();
     expect(document.querySelector('[data-quick-action], [role="dialog"][aria-label="Nouvelle action"]')).toBeNull();
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels.find(a => a.op === 'creer')!.patch).toMatchObject({ recipeRef: 'R-STOUT', plannedBrewDate: '2026-06-22' });
     await waitFor(() => expect(document.querySelector('[data-proposition="brassin-habituel"]')).toBeNull());

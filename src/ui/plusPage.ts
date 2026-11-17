@@ -1,4 +1,4 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore, type ComponentType } from 'react';
 
 /**
  * Ce qu'une page plein écran met en tête du menu du « + » (b1r, 15.11 : « certaines actions doivent toujours être possible, juste
@@ -21,6 +21,11 @@ export interface PlusPageAction {
   hint?: string;
   genre: PlusPageGenre;
   lancer: () => void;
+  /** Une couleur propre à la ligne (une valeur CSS, posée sur `--tc`) et son icône : le calendrier donne à chaque rangée sa couleur de zone. */
+  couleur?: string;
+  icone?: ComponentType<{ size?: number }>;
+  /** La ligne en plein, contre le + (l'action première de l'écran). */
+  plein?: boolean;
 }
 
 /** « Aller à » : une rangée de pastilles, une par étape, l'étape courante marquée. */

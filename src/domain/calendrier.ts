@@ -213,6 +213,8 @@ export const RANGEES: ReadonlyArray<{ id: Rangee; nom: string }> = [
   { id: 'papiers', nom: 'Papiers' }
 ];
 export const nomRangee = (id: Rangee): string => RANGEES.find(r => r.id === id)?.nom ?? id;
+/** « Fêtes seules », « Brassins seuls » : l'accord suit le genre du nom. */
+export const nomSeules = (id: Rangee): string => `${nomRangee(id)} ${id === 'fetes' || id === 'ventes' || id === 'activites' ? 'seules' : 'seuls'}`;
 
 const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const;
 
@@ -449,7 +451,11 @@ export function choseCreative(item: CreativeItem): ChoseCalendrier | null {
   if (!jour) return null;
   const f = fenetreLue(item.fenetre);
   const activite = item.type !== 'event' || item.activite === true;
-  const cout = activite && typeof item.estimatedCost === 'number' && item.estimatedCost > 0 ? -Math.round(item.estimatedCost * 100) : undefined;
+  /* un montant écrit sur la chose : une dépense estimée (−), ou pour une fête la rentrée estimée (+) ; sinon inconnu, jamais 0 */
+  const cout = activite
+    ? (typeof item.estimatedCost === 'number' && item.estimatedCost > 0 ? -Math.round(item.estimatedCost * 100) : undefined)
+    : typeof item.estimatedRevenue === 'number' && item.estimatedRevenue > 0 ? Math.round(item.estimatedRevenue * 100)
+      : typeof item.estimatedCost === 'number' && item.estimatedCost > 0 ? -Math.round(item.estimatedCost * 100) : undefined;
   return {
     id: `creatif-${item.id}`, rangee: activite ? 'activites' : 'fetes', titre: item.title, debut: f?.du ?? jour, fin: f?.au ?? jour,
     ...(cout !== undefined ? { centimes: cout } : {}), ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}),

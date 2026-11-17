@@ -68,7 +68,7 @@ describe('C6 : le + volant porte les gestes du calendrier, dans l’ordre de la 
     const menu = screen.getByRole('menu');
     const textes = [...menu.querySelectorAll('[role="menuitem"]')].map(i => i.textContent ?? '');
     for (const [ligne] of ATTENDU) expect(textes.some(t => t.includes(ligne)), ligne).toBe(true);
-    expect(menu.textContent).toMatch(/Sur\s*Calendrier/);
+    expect(menu.textContent).toMatch(/Sur\s*le calendrier/);
     expect(menu.textContent).toMatch(/Partout/);
     expect(menu.textContent).not.toMatch(/\bS\d{2}\b/);
   });
@@ -83,7 +83,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     const d = dialogue('Fêtes');
     let touchers = 0;
     fireEvent.click(d.getByRole('button', { name: 'Fête de village' })); touchers += 1;
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' })); touchers += 1;
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ })); touchers += 1;
     expect(touchers).toBeLessThanOrEqual(2);
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'creativeItems', patch: { type: 'event', title: 'Fête de village', date: '2026-11-16' } });
@@ -95,7 +95,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     ouvrir('ventes');
     const d = dialogue('Ventes');
     fireEvent.click(d.getByRole('button', { name: /Café du Pont, 1 fût/ }));
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Café du Pont, 1 fût', amountCents: 13000, direction: 'in', status: 'draft' } });
     expect(document.querySelectorAll('input[type="number"]')).toHaveLength(0);
@@ -106,7 +106,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     ouvrir('brassins');
     const d = dialogue('Brassins');
     fireEvent.click(d.getByRole('button', { name: 'Porter d’hiver' }));
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'batches', patch: { recipeRef: 'R-PORTER', status: 'planifie', plannedBrewDate: '2026-11-16' } });
   });
@@ -118,7 +118,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     fireEvent.click(d.getByRole('button', { name: 'Hotte' }));
     const champ = d.getByLabelText('Montant en CHF');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '90000' } }); fireEvent.blur(champ);
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     expect(await screen.findByText(/plus de 10 fois/)).toBeInTheDocument();
     expect(appels).toHaveLength(0);
     fireEvent.click(d.getByRole('button', { name: /^Oui, 90 000 CHF/ }));
@@ -141,7 +141,7 @@ describe('C13 (D-117) : « Mettre de côté » ne crée aucun plan dans Finances
     const mise = d.getByRole('button', { name: /Mettre de côté/ });
     fireEvent.click(mise);
     expect(mise).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(d.getByRole('button', { name: 'Ajouter' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'creativeItems', patch: { fenetre: { du: '2027-05-17', au: '2027-10-10', miseDeCote: true } } });
     expect(appels.filter(a => a.collection === 'financialPlans')).toHaveLength(0);

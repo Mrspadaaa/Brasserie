@@ -977,6 +977,8 @@ export interface CreativeItem {
   description?: string;
   status: 'idea' | 'research' | 'quote' | 'validated' | 'todo' | 'done';
   estimatedCost?: number;
+  /** Une fête : la rentrée estimée (le calendrier la lit en « + ») ; optionnelle, sans migration (« nouveau, à valider »). */
+  estimatedRevenue?: number;
   targetPrice?: number;
   date?: string;
   notes?: string;

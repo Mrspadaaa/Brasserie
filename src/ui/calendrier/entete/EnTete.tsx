@@ -271,7 +271,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const cle = courbe && creux ? (
     <button type="button" className="ent-k" data-ent-cle aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (S${creux.numero}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
-      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u"> CHF à dépenser ·</span> <em>{`S${creux.numero}`}</em>
+      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u"> CHF à dépenser</span>
+      <span className="ent-k-s">sans passer sous 0 · <em>{`S${creux.numero}`}</em></span>
     </button>
   ) : <span className="ent-k ent-k-vide" />;
 

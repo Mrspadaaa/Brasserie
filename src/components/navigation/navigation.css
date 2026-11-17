@@ -363,5 +363,13 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   }
 }
 
+/* Téléphone à l'horizontale (844 × 390) : la pile ne sort plus de l'écran. Elle défile (la ligne contre le + reste visible, `column-reverse`), ses lignes sont plus basses. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .plus-pile { max-height: calc(100dvh - 150px); overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+  .plus-pile .plus-pp--ps { height: 40px; }
+  .plus-pile .plus-pp--pi { height: 46px; }
+  .plus-pile .plus-pp-i { transform: scale(0.92); }
+}
+
 /* Pastille C (16.11) : la pastille de Stocks est bleue comme le chiffre clé qu'elle répète ; le texte prend la couleur de la page (blanc en clair, encre en cave). */
 .pastille-stocks { background: rgb(var(--area-finances)); color: rgb(var(--cave-950)); }

@@ -74,7 +74,7 @@ const nomEcran = (chemin: string) => chemin.split(' › ').pop() ?? '';
 
 const Lettre: React.FC<{ lettre: string }> = ({ lettre }) => <kbd aria-hidden="true">{lettre}</kbd>;
 
-const Pastille: React.FC<{ Icone: typeof Plus; spin?: boolean }> = ({ Icone, spin }) => (
+const Pastille: React.FC<{ Icone: React.ComponentType<{ size?: number; className?: string }>; spin?: boolean }> = ({ Icone, spin }) => (
   <span className="plus-pp-i" aria-hidden="true">
     <Icone size={18} className={spin ? 'motion-safe:animate-spin' : undefined} />
   </span>
@@ -110,12 +110,24 @@ function ActionDeLEcran({ e, avecLettre, onChoisir }: { e: PlusEntree; avecLettr
 /** Une action de la page ouverte (l'assistant, la page d'une recette) : pilule large, teinte de Brassins, comme les autres actions de l'écran ;
  *  « Supprimer » : bord et icône rouges (comme le bouton du bas de la page de la recette). */
 function ActionDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<Props['onPage']> }) {
+  const Icone = a.icone ?? ICONES_PAGE[a.genre];
+  /* une page qui a ses couleurs (le calendrier : une couleur de zone par rangée) les pose sur la ligne par `--tc` */
+  const style = a.couleur ? ({ ['--tc' as string]: a.couleur } as React.CSSProperties) : undefined;
+  if (a.plein) {
+    return (
+      <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style} className={`plus-pp plus-pp--pi ${TON.production}`}>
+        <b>{a.label}</b>
+        {a.hint && <small>{a.hint}</small>}
+        <span className="plus-pp-i" aria-hidden="true"><Icone size={22} /></span>
+      </button>
+    );
+  }
   return (
-    <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)}
+    <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style}
       className={`plus-pp plus-pp--ps ${TON.production}${a.genre === 'supprimer' ? ' plus-pp--danger' : ''}`}>
       <span className="plus-pp-t">{a.label}</span>
       {a.hint && <small>{a.hint}</small>}
-      <Pastille Icone={ICONES_PAGE[a.genre]} />
+      <Pastille Icone={Icone} />
     </button>
   );
 }
