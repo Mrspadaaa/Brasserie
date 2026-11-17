@@ -5,7 +5,8 @@ import type { FinancialPlan } from '../../src/domain/finance/types';
 import {
   RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
-  retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee
+  retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee,
+  semaineAvecAn, choseCoutAVenir, COUT_A_VENIR
 } from '../../src/domain/calendrier';
 import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
@@ -164,9 +165,15 @@ describe('sept rangées, semaines, année, échelle', () => {
     expect(francs(-54000)).toBe('−540');
     expect(francs(0)).toBe('0');
   });
-  it('l’année en 12 mois, le mois d’un jour', () => {
+  it('l’année : les mois de toutes les semaines de la courbe (13 quand la 52e tombe dans un treizième), le mois d’un jour', () => {
+    // CRITIQUE-5 n° 2 : 52 semaines depuis S47 2026 ; la dernière (lundi 8 nov. 2027, jeudi 11 nov.) est en novembre 2027.
     const mois = anneeEnMois(AUJOURDHUI);
-    expect(mois).toHaveLength(12);
+    expect(mois).toHaveLength(13);
+    expect(mois[12]).toMatchObject({ debut: '2027-11-01', fin: '2027-11-30', annee: 2027, mois: 11 });
+    // 13 semaines : de S47 2026 à S7 2027 (jeudi 11 févr.) : nov., déc., janv., févr.
+    expect(anneeEnMois(AUJOURDHUI, 13).map(m => m.court)).toEqual(['nov.', 'déc.', 'janv.', 'févr.']);
+    // Une semaine courante dont le jeudi est encore en octobre : l'année commence en octobre.
+    expect(anneeEnMois('2026-11-01')[0]).toMatchObject({ debut: '2026-10-01', court: 'oct.' });
     expect(mois[0]).toMatchObject({ debut: '2026-11-01', fin: '2026-11-30', court: 'nov.' });
     expect(mois[2]).toMatchObject({ debut: '2027-01-01', annee: 2027, mois: 1 });
     expect(mois[11]).toMatchObject({ debut: '2027-10-01', fin: '2027-10-31' });
@@ -526,5 +533,23 @@ describe('CRITIQUE-4, doute IPA J8 : J0 est le jour du brassage', () => {
     expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-09')).toBe('J0 / 28 · prête 7 déc.');
     expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-16')).toBe('J7 / 28 · prête 7 déc.');
     expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-17')).toBe('J8 / 28 · prête 7 déc.');
+    // CRITIQUE-5 n° 1 : pas brassé, jamais de « Jn », même quand le jour prévu est passé.
+    expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-17', false)).toBe('J0 / 28 · prête 7 déc.');
+  });
+});
+
+describe('CRITIQUE-5 n° 2, 19 : la semaine avec son année, le coût à venir', () => {
+  it('« S44 2027 » vu de S47 2026 ; « S50 » dans la même année ; l’année ISO est celle du jeudi', () => {
+    expect(semaineAvecAn('2027-11-01', '2026-11-16')).toBe('S44 2027');
+    expect(semaineAvecAn('2026-12-07', '2026-11-16')).toBe('S50');
+    // S53 2026 (lundi 28 déc. 2026, jeudi 31 déc.) est de 2026 ; S1 2027 commence le 4 janv. 2027.
+    expect(semaineAvecAn('2026-12-28', '2026-11-16')).toBe('S53');
+    expect(semaineAvecAn('2027-01-04', '2026-11-16')).toBe('S1 2027');
+  });
+  it('choseCoutAVenir : partiel, coutAVenir, « … · coût à venir », sans centimes', () => {
+    const c = choseBrassin(lot({ id: 'LOT-F', name: 'Blonde', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026' }), '2026-11-16')!;
+    const v = choseCoutAVenir({ ...c, centimes: 0 });
+    expect(v).toMatchObject({ coutAVenir: true, partiel: true, etiquette: `Blonde · ${COUT_A_VENIR}` });
+    expect('centimes' in v).toBe(false);
   });
 });

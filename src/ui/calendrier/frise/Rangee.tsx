@@ -2,16 +2,16 @@ import React from 'react';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, ecartJours, estMarque, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, formesDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
-import { CLASSE_TEINTE, Marque, dureeVue, largeurPastilleLie, largeurTexte } from './Marque';
+import { CLASSE_TEINTE, Marque, dureeVue, largeurPastilleLie, largeurTexte, type ModeDeuxLignes } from './Marque';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
  * la pastille r2-c (E23), l'œil qui masque (E22). Sa mise en page est une fonction pure (`disposer`) : une chose se pose sur la première
  * ligne où ni elle ni son nom ne en touchent une autre (E26 : deux ventes de la même semaine ne se chevauchent pas).
  *
- * Le nom (CRITIQUE-3 n° 31) : entier dans la barre s'il y tient, sinon entier du côté libre (E24), sur une ligne déjà ouverte ; puis, hors
- * paysage, sur deux lignes à côté de la barre ; sinon une ligne de plus. Il n'est raccourci (jamais sous son montant et dix lettres) qu'en
- * paysage, où la rangée reste compacte (E10, D-174 : 48 px au plus la rangée médiane). Rien ne se pose sous le + volant (`reserveDroite`).
+ * Le nom (CRITIQUE-3 n° 31, CRITIQUE-5 n° 14) : entier dans la barre s'il y tient, sinon entier du côté libre (E24), sur une ligne déjà ouverte ;
+ * puis, hors paysage, sur deux lignes (nom et montant, puis la pastille « lié à ») ; sinon sur une ligne libre de la rangée. Il n'est raccourci
+ * (jamais sous son montant et dix lettres) que si la piste est plus étroite que lui. Rien ne se pose sous le + volant (`reserveDroite`).
  * Le caddie des courses (jalon « commander ») et le renvoi « Livraison La Cigogne · S2 › » se posent comme les autres choses, sans
  * chevauchement (n° 21, n° 22) ; le renvoi en bout de rangée, jamais sur la ligne du titre.
  * En 3 mois, 6 mois et An (`vueLarge`), une chose de moins de 24 px devient une marque (E27) ; en 6 semaines, un brassin est toujours une
@@ -49,8 +49,8 @@ export interface Disposition {
   petite: boolean;
   /** La marque porte son nom et son montant à côté (E13, E26). */
   avecLibelle: boolean;
-  /** Le texte « J7 / n · prête le … » tient à côté du nom d'un brassin. */
-  duree: boolean;
+  /** La durée d'un brassin posée à côté de son nom, entière (« J7 / 28 · prête 7 déc. ») ou courte (« J7 / 28 ») ; `null` : dans la barre ou rien. */
+  duree: string | null;
   cote: CoteEtiquette;
   place: number;
   /** Le nom passe sur deux lignes à côté de la barre (n° 31). */
@@ -70,29 +70,44 @@ const parties = (c: ChoseCalendrier, lieCourt: boolean): number => {
 };
 const debutNom = (t: string, lettres: number): string => (t.length > lettres ? `${t.slice(0, lettres)}…` : t);
 
-export const largeurEtiquette = (c: ChoseCalendrier, avecDuree = true, lieCourt = false): number => {
-  const d = avecDuree ? dureeVue(c) : null;
+/**
+ * La largeur de l'étiquette posée à côté : le nom, son montant, sa pastille « lié à », et la durée d'un brassin (`duree` : la forme montrée,
+ * entière ou courte ; `null` : sans durée). Par défaut, la durée entière.
+ */
+export const largeurEtiquette = (c: ChoseCalendrier, avecDuree: boolean | string | null = true, lieCourt = false): number => {
+  const d = typeof avecDuree === 'string' ? avecDuree : avecDuree ? dureeVue(c) : null;
   return Math.ceil(largeurTexte(texteVu(c), 600) + parties(c, lieCourt) + (d ? largeurTexte(d, 500) + 8 : 0)) + 6;
 };
-/** Le moins qu'une étiquette garde : son montant entier et dix lettres de son nom (« Facture Ca… +1 200 »), jamais « F. ». */
+/** Le moins qu'une étiquette garde quand la piste entière manque : son montant entier et dix lettres de son nom, jamais « F. ». */
 export const largeurEtiquetteMin = (c: ChoseCalendrier, lieCourt = false): number =>
   Math.ceil(largeurTexte(debutNom(texteVu(c), 10), 600) + parties(c, lieCourt)) + 10;
-
-/** Paysage seulement (D-174) : six lettres et le montant entier, plutôt qu'une ligne de plus ; le nom entier reste au toucher et au lecteur. */
-const largeurEtiquetteCompacte = (c: ChoseCalendrier, lettres: number, lieCourt: boolean): number =>
-  Math.ceil(largeurTexte(debutNom(texteVu(c), lettres), 600) + parties(c, lieCourt)) + 6;
+/** Deux lignes (CRITIQUE-5 n° 26) : `nom`, le nom et son montant puis la pastille « lié à » ; `nomSeul`, le nom puis le montant et la pastille. */
+const largeurDeuxLignes = (c: ChoseCalendrier, lieCourt: boolean, mode: 'nom' | 'nomSeul'): number => {
+  const m = montantBarre(c);
+  const lm = m ? largeurTexte(m, 700) + 6 : 0, ll = c.lie ? largeurPastilleLie(c.lie, lieCourt) : 0, ln = largeurTexte(texteVu(c), 600);
+  return Math.ceil(mode === 'nom' ? Math.max(ln + lm, ll) : Math.max(ln, lm + ll)) + 8;
+};
 
 /** Une sortie dérivée d'un brassin dont le montant n'est pas renseigné : une icône, son nom vient au toucher (CAL-INFO-TROP). */
 const deriveSansMontant = (c: ChoseCalendrier): boolean => c.source.genre === 'prevision-brassin' && c.centimes === undefined;
 /** Un brassin de la rangée Brassins (ni ses courses, ni un brassin conditionné, qui est un fait marqué à sa date). */
 const estBrassin = (c: ChoseCalendrier): boolean => c.rangee === 'brassins' && !c.brassinLie && !c.conditionne;
 
-/** « Malt, houblon · Stout maison » : les articles qui manquent (lot A, `articles`), sinon « Courses ». `court` : les articles seuls (n° 22). */
+/** Le nom court d'un brassin : son premier mot (« Blonde » pour « Blonde d'automne »), sinon son nom entier. */
+export const nomCourtBrassin = (titre: string): string => {
+  const mot = titre.trim().split(/\s+/)[0] ?? '';
+  return mot.length >= 3 ? mot : titre;
+};
+
+/**
+ * Le texte du caddie d'un brassin (CRITIQUE-5 n° 32) : il nomme toujours le brassin, puis ce qui manque (lot A, `articles`), sinon « courses » :
+ * « Blonde d'automne · malt pilsner, saaz » ; `court` : « Blonde · malt pilsner, saaz ». Jamais les articles sans le brassin.
+ */
 export function texteCaddie(c: ChoseCalendrier, j: JalonBrassin, court = false): string {
   const articles = (j as JalonBrassin & { articles?: unknown }).articles;
   const liste = Array.isArray(articles) ? articles.filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
-  const quoi = liste.length ? liste.map((x, i) => (i === 0 ? x.charAt(0).toLocaleUpperCase('fr') + x.slice(1) : x.toLocaleLowerCase('fr'))).join(', ') : 'Courses';
-  return court ? (liste.length ? quoi : `Courses · ${c.titre}`) : `${quoi} · ${c.titre}`;
+  const quoi = liste.length ? liste.map(x => x.trim().toLocaleLowerCase('fr')).join(', ') : 'courses';
+  return `${court ? nomCourtBrassin(c.titre) : c.titre} · ${quoi}`;
 }
 
 export interface OptionsDisposer {
@@ -100,13 +115,8 @@ export interface OptionsDisposer {
   reserveDroite?: number;
   /** Paysage : la largeur que le titre occupe sur la première ligne, à gauche. */
   zoneTitre?: number;
-  /** Paysage, et le téléphone en 6 semaines : un nom se raccourcit jusqu'à son minimum plutôt qu'ouvrir une ligne (D-174, E43), puis
-   *  s'allonge dans la place restée libre. */
-  compact?: boolean;
-  /** Avec `compact` : essayer d'abord le nom entier du côté libre (portrait) ; sinon la plus petite emprise d'abord (paysage). */
-  entierDabord?: boolean;
-  /** Avec `compact` : les lettres que garde un nom raccourci (6 en paysage, 10 au téléphone), toujours avec son montant. */
-  lettresMin?: number;
+  /** Paysage (E10) : une ligne de 20 px ne porte pas deux lignes de texte ; sans place sur une ligne ouverte, le caddie se pose seul. */
+  paysage?: boolean;
   /** 3 mois, 6 mois, An : une chose de moins de 24 px devient une marque, et son appui long ouvre les 6 semaines. */
   vueLarge?: boolean;
   /** Les largeurs des renvois posés en bout de rangée (E32). */
@@ -116,18 +126,25 @@ export interface OptionsDisposer {
 }
 
 /**
- * Un nom sur deux lignes à côté de son objet (CRITIQUE-3 n° 31, CRITIQUE-4 n° 24) : `nom`, le nom seul sur la première ligne et son montant et sa
- * pastille « lié à » sur la seconde (rien ne coupe le nom ni la pastille) ; `flot`, le texte qui passe à la ligne (sans pastille). `false` : une ligne.
+ * Un nom sur deux lignes à côté de son objet, seulement pour une chose liée (CRITIQUE-3 n° 31, CRITIQUE-5 n° 26) : `nom`, le nom et son montant
+ * insécables, puis la pastille « lié à » seule ; `nomSeul`, si nom et montant ensemble seraient coupés, le nom entier puis montant et pastille.
+ * CRITIQUE-5 n° 28 : plus aucun texte en flot (« Hotte / −900 ») ; `false` : une ligne.
  */
-export type DeuxLignes = false | 'nom' | 'flot';
+export type DeuxLignes = ModeDeuxLignes;
 
 interface Candidat { cote: CoteEtiquette; place: number; x0: number; x1: number; deux?: DeuxLignes }
 
-/** Pose les choses d'une rangée sans qu'une barre ni un nom en touche un autre. Pure : `largeur` et `largeurColonne` viennent de la mesure. */
+/**
+ * Pose les choses d'une rangée sans qu'une barre ni un nom en touche un autre. Pure : `largeur` et `largeurColonne` viennent de la mesure.
+ *
+ * CRITIQUE-5 n° 14 (E24, D-10) : un nom n'est jamais coupé quand la place existe. Dans l'ordre : dans la barre avec sa durée ; entier du côté
+ * libre (droite, puis gauche) sur une ligne déjà ouverte ; sans sa durée ; dans la barre sans durée ; sur deux lignes (nom et montant, puis la
+ * pastille « lié à ») ; sinon sur une ligne libre de la rangée, au-dessous. Il n'est raccourci que si la piste entière, d'un côté de son objet,
+ * est plus étroite que lui. N° 23 : faute de place, c'est « · prête … » qui cède, jamais les espaces de « J0 / 28 ».
+ */
 export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[], largeurColonne: number, largeur: number, options: OptionsDisposer = {}): { items: Disposition[]; lignes: number; caddies: PlaceCaddie[]; renvois: Array<{ ligne: number; x: number }> } {
   const reserve = Math.max(0, options.reserveDroite ?? 0);
-  const compact = !!options.compact, vueLarge = !!options.vueLarge;
-  const entierDabord = !!options.entierDabord, lettres = options.lettresMin ?? 6;
+  const paysage = !!options.paysage, vueLarge = !!options.vueLarge;
   const lieCourt = !!options.lieCourt;
   const bord = largeur - reserve;
   const places = choses.flatMap(c => { const p = positionDans(colonnes, c); return p ? [{ c, p }] : []; })
@@ -135,7 +152,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const lignes: Array<Array<[number, number]>> = [];
   if (options.zoneTitre && options.zoneTitre > 0) lignes.push([[-1000, options.zoneTitre]]);
   const items: Disposition[] = [];
-  const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; w: number; marque: boolean; labNom: number; dureeMin: number }>();
+  const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; labCourt: number; labNom: number; w: number; marque: boolean; dureeMin: number; formes: string[] }>();
   /* l'année (colonnes d'un mois) : la chose garde sa vraie durée, au jour près ; en semaines, elle prend ses colonnes entières */
   const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   const xDuJour = (iso: string): number => {
@@ -151,28 +168,24 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     for (const palier of paliers) for (const l of ordre) for (const c of palier) if (libre(l, c.x0, c.x1)) return { ligne: l, c };
     return { ligne: lignes.length, c: neuve };
   };
-  /** Les places d'un nom à côté d'un objet [o0, o1] : entier (droite, gauche), puis sur deux lignes (hors paysage) ou raccourci (paysage). */
   /**
-   * Les places d'un nom à côté d'un objet [o0, o1] : entier avec sa durée (`lab`), entier sans elle (`labNom`, la durée reste dans la barre),
-   * sur deux lignes (`deuxNom` : le nom, puis montant et pastille ; sinon le texte en flot, sans pastille), raccourci (`min`).
+   * Les places d'un texte de largeur `l` à côté d'un objet [o0, o1], du côté libre : à droite, puis à gauche ; jamais sous le + volant
+   * (`bord`), jamais hors de la frise. `deux` : sur deux lignes « nom ».
    */
-  const cotes = (o0: number, o1: number, lab: number, min: number, labNom = lab, deuxNom = 0, flot = true): { entiers: Candidat[]; entiersNom: Candidat[]; repli: Candidat[]; deux: Candidat[]; meilleur: Candidat } => {
+  const aCote = (o0: number, o1: number, l: number, deux: DeuxLignes = false): Candidat[] => {
     const libreG = o0 - 8, libreD = bord - o1 - 8;
-    /* n° 15 : même au pire, un nom (et sa pastille « lié à ») s'arrête au bord de la frise, jamais hors de l'écran */
+    return [
+      ...(l > 0 && libreD >= l ? [{ cote: 'droite' as const, place: l, x0: o0, x1: o1 + 6 + l, deux }] : []),
+      ...(l > 0 && libreG >= l ? [{ cote: 'gauche' as const, place: l, x0: o0 - 6 - l, x1: o1, deux }] : [])
+    ];
+  };
+  /** Le dernier recours, quand la piste d'un côté est plus étroite que le nom : le côté le plus large, raccourci (jamais sous `min`). */
+  const auPlusLarge = (o0: number, o1: number, l: number, min: number): Candidat => {
+    const libreG = o0 - 8, libreD = bord - o1 - 8;
     const durD = Math.max(0, largeur - o1 - 8), durG = Math.max(0, o0 - 4);
-    const droite = (place: number, deux: DeuxLignes = false): Candidat => { const p = Math.min(place, durD); return { cote: 'droite', place: p, x0: o0, x1: o1 + 6 + p, deux }; };
-    const gauche = (place: number, deux: DeuxLignes = false): Candidat => { const p = Math.min(place, durG); return { cote: 'gauche', place: p, x0: o0 - 6 - p, x1: o1, deux }; };
-    const entiers = [...(libreD >= lab ? [droite(lab)] : []), ...(libreG >= lab ? [gauche(lab)] : [])];
-    const entiersNom = labNom < lab ? [...(libreD >= labNom ? [droite(labNom)] : []), ...(libreG >= labNom ? [gauche(labNom)] : [])] : [];
-    /* sur deux lignes à côté de la barre (n° 31) : le nom entier puis le reste (`nom`), sinon la moitié du texte et un jeu (`flot`) */
-    const moitie = Math.max(Math.min(min, labNom), Math.ceil(labNom / 2) + 14);
-    const deux: Candidat[] = deuxNom > 0
-      ? [...(libreD >= deuxNom ? [droite(deuxNom, 'nom')] : []), ...(libreG >= deuxNom ? [gauche(deuxNom, 'nom')] : [])]
-      : [];
-    if (!deux.length && flot) deux.push(...(libreD >= moitie ? [droite(Math.min(lab, libreD), 'flot')] : []), ...(libreG >= moitie ? [gauche(Math.min(lab, libreG), 'flot')] : []));
-    const courts: Candidat[] = [...(libreD >= min ? [droite(Math.min(lab, libreD))] : []), ...(libreG >= min ? [gauche(Math.min(lab, libreG))] : [])];
-    const meilleur = entiers[0] ?? (libreD >= libreG ? droite(Math.max(min, Math.min(lab, libreD))) : gauche(Math.max(min, Math.min(lab, libreG))));
-    return { entiers, entiersNom, repli: compact ? courts : deux, deux, meilleur };
+    return libreD >= libreG
+      ? { cote: 'droite', place: Math.min(Math.max(min, Math.min(l, libreD)), durD), x0: o0, x1: o1 + 6 + Math.min(Math.max(min, Math.min(l, libreD)), durD) }
+      : { cote: 'gauche', place: Math.min(Math.max(min, Math.min(l, libreG)), durG), x0: o0 - 6 - Math.min(Math.max(min, Math.min(l, libreG)), durG), x1: o1 };
   };
 
   for (const { c, p } of places) {
@@ -187,22 +200,20 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     const pastilleVente = c.rangee === 'ventes' && p.a === p.b && !c.proposition;
     /* n° 19 : en 6 semaines, un brassin n'est jamais une icône ; ses courses et un brassin conditionné le sont */
     const marque = (tropPetite && (vueLarge || !brassin)) || pastilleVente || (deriveSansMontant(c) && !brassin) || !!c.conditionne || !!c.brassinLie;
-    /* le caddie d'un brassin : son nom vient au toucher en 3 mois, 6 mois et An ; en 6 semaines il le porte (« Malt, houblon · Stout maison ») */
+    /* le caddie d'un brassin : son nom vient au toucher en 3 mois, 6 mois et An ; en 6 semaines il le porte */
     const avecLibelle = marque && !(deriveSansMontant(c) && !brassin) && !(c.brassinLie && vueLarge);
-    const lab = largeurEtiquette(c, true, lieCourt), min = Math.min(lab, largeurEtiquetteMin(c, lieCourt));
-    /* le nom et son montant, sans la durée (dans la barre, ou à côté quand la barre garde la durée) */
-    const labDedans = largeurEtiquette(c, false, lieCourt);
-    /* CRITIQUE-4 n° 21 et 24 : un brassin garde dans sa barre sa durée avec « prête » (« J0/28 · prête 21 déc. ») à côté de son nom entier ; si
-       les deux n'y tiennent pas, son nom passe à côté, entier, et la barre garde la durée ; le nom n'est jamais rogné pour la durée */
-    const duree = dureeVue(c);
-    /* la forme visée dans la barre : « J0/28 · prête 21 déc. » (la plus courte qui garde J et « prête »), sinon la durée telle quelle */
+    /* la durée d'un brassin : entière, puis courte (« J0 / 28 », « pas brassée ») ; le nom ne cède jamais pour elle */
+    const duree = marque ? null : dureeVue(c);
     const formes = duree ? formesDuree(duree) : [];
-    const dureeVisee = formes.length > 2 ? formes[1] : formes[0];
-    const dureeMin = !marque && dureeVisee ? Math.ceil(largeurTexte(dureeVisee, 600)) + 8 : 0;
-    /* le nom gardé à dix lettres et son montant, avec la durée visée : dernier recours dans la barre, avant de laisser la durée */
-    const labDix = Math.ceil(largeurTexte(debutNom(texteVu(c), 10), 600) + parties(c, lieCourt)) + 6;
-    /* deux lignes « nom » : le nom seul, puis le montant et la pastille « lié à » */
-    const deuxNom = Math.ceil(Math.max(largeurTexte(texteVu(c), 600), parties(c, lieCourt))) + 8;
+    const courte = formes.length > 1 ? formes[formes.length - 1] : null;
+    const lab = largeurEtiquette(c, duree, lieCourt);
+    const labCourt = courte ? largeurEtiquette(c, courte, lieCourt) : lab;
+    const labNom = largeurEtiquette(c, false, lieCourt);
+    const min = Math.min(labNom, largeurEtiquetteMin(c, lieCourt));
+    const dureeMin = formes.length ? Math.ceil(largeurTexte(formes[formes.length - 1], 600)) + 8 : 0;
+    /* deux lignes « nom » : seulement pour une chose liée (la pastille passe dessous), et jamais en paysage (une ligne de 20 px) */
+    const deuxNom = c.lie && !paysage ? largeurDeuxLignes(c, lieCourt, 'nom') : 0;
+    const deuxSeul = c.lie && !paysage ? largeurDeuxLignes(c, lieCourt, 'nomSeul') : 0;
     let o0 = gauche, o1 = gauche + w;
     if (marque) {
       const centre = auJour ? gauche + w / 2 : (p.a + 0.5) * largeurColonne;
@@ -211,76 +222,55 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     }
     const objet: Candidat = { cote: 'dedans', place: 0, x0: o0, x1: o1 };
     const dedans = (ok: boolean): Candidat[] => (!marque && ok ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1 }] : []);
-    const dedansDuree = dedans(w - 16 >= labDedans + dureeMin);
-    const dedansDureeDix = dureeMin ? dedans(w - 16 >= labDix + dureeMin) : [];
-    const dedansEntier = dedans(w - 16 >= labDedans);
     let choix: { ligne: number; c: Candidat };
     if (marque && !avecLibelle) choix = poser([[objet]], objet);
-    else if (compact) {
-      /* paysage (E10, D-174) : d'abord la plus petite emprise (le nom entier dans la barre, ou six lettres et le montant contre elle), pour
-         ne pas ouvrir de ligne ; le nom s'allonge ensuite dans la place laissée libre (plus bas) */
-      const mini = Math.min(lab, largeurEtiquetteCompacte(c, lettres, lieCourt));
-      const dedansCourt = dedans(w - 16 >= mini);
-      const libreG = o0 - 8, libreD = bord - o1 - 8;
-      const cotesMini: Candidat[] = [
-        ...(libreD >= mini ? [{ cote: 'droite' as const, place: mini, x0: o0, x1: o1 + 6 + mini }] : []),
-        ...(libreG >= mini ? [{ cote: 'gauche' as const, place: mini, x0: o0 - 6 - mini, x1: o1 }] : [])
-      ];
-      const { entiers, entiersNom, deux, meilleur } = cotes(o0, o1, lab, min, labDedans, deuxNom, !c.lie);
-      /* au téléphone en portrait : le nom entier du côté libre d'abord (E24), puis sur deux lignes à côté (CRITIQUE-4 n° 24 : jamais coupé si la
-         place libre suffit), raccourci seulement plutôt qu'une ligne de plus (E43) */
-      const paliers = entierDabord
-        ? [dedansDuree, entiers, entiersNom, dedansDureeDix, dedansEntier, deux, cotesMini, dedansCourt]
-        : [dedansDuree, entiers, entiersNom, dedansDureeDix, dedansEntier, cotesMini, dedansCourt];
-      const neuve = dedansDuree[0] ?? dedansDureeDix[0] ?? dedansEntier[0] ?? (entierDabord ? entiers[0] ?? entiersNom[0] ?? deux[0] : undefined) ?? cotesMini[0] ?? dedansCourt[0] ?? meilleur;
-      choix = poser(paliers, neuve);
-    } else {
-      const { entiers, entiersNom, deux, meilleur } = cotes(o0, o1, lab, min, labDedans, deuxNom, !c.lie);
-      const dedansCourt = dedans(w - 16 >= min);
-      /* une proposition garde son nom à côté (pointillé lisible) ; un brassin long garde le sien dedans, avec sa durée */
+    else {
+      const dedansDuree = dedans(w - 16 >= labNom + dureeMin);
+      const dedansEntier = dedans(w - 16 >= labNom);
+      const entiers = aCote(o0, o1, lab), courts = labCourt < lab ? aCote(o0, o1, labCourt) : [], noms = labNom < labCourt ? aCote(o0, o1, labNom) : [];
+      /* n° 26 : nom et montant ensemble d'abord ; le nom seul en tête (montant dessous) seulement si ensemble ils seraient coupés */
+      const deux = deuxNom > 0 && deuxNom < labNom ? aCote(o0, o1, deuxNom, 'nom') : [];
+      if (!deux.length && deuxSeul > 0 && deuxSeul < labNom) deux.push(...aCote(o0, o1, deuxSeul, 'nomSeul'));
+      /* une proposition garde son nom à côté (pointillé lisible) ; un brassin garde le sien dedans, avec sa durée (as/p-repos) */
       const premier = c.proposition ? [...entiers, ...dedansDuree] : [...dedansDuree, ...entiers];
-      /* une ligne neuve : le nom entier ; sinon (la place manque même seule) sur deux lignes, ou dans la barre, ou au plus large */
-      const neuve = premier[0] ?? entiersNom[0] ?? dedansDureeDix[0] ?? dedansEntier[0] ?? deux[0] ?? dedansCourt[0] ?? meilleur;
-      choix = poser([premier, entiersNom, dedansDureeDix, dedansEntier, deux], neuve);
+      /* CRITIQUE-5 n° 1 et 23 : un brassin dont la durée entière ne tient pas sur une ligne la garde sur deux, hors paysage (as/cap/p-repos :
+         « Blonde d'automne −148 », puis « J0 / 28 ») : « Saison de ferme −137 », puis « pas brassée · prête le 15 déc. » */
+      const deuxDuree = !paysage && formes.length && !c.lie ? aCote(o0, o1, Math.ceil(Math.max(labNom - 6, largeurTexte(formes[0], 500))) + 8, 'duree') : [];
+      const paliers = [premier, deuxDuree, courts, noms, dedansEntier, deux];      /* aucune ligne ouverte n'a la place : une ligne libre au-dessous, où le nom tient entier ; sinon (la piste est trop étroite) au plus large */
+      const neuve = premier[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? auPlusLarge(o0, o1, labNom, min);
+      choix = poser(paliers, neuve);
     }
     const { ligne, c: k } = choix;
     const emprise: [number, number] = [k.x0, k.x1];
     (lignes[ligne] ||= []).push(emprise);
-    emprises.set(c.id, { emprise, o0, o1, lab, w, marque, labNom: labDedans, dureeMin });
+    emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, marque, dureeMin, formes });
     const leCote = marque && !avecLibelle ? 'dedans' : k.cote;
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: false, cote: leCote, place: k.place, deuxLignes: k.deux ?? false });
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false });
   }
 
-  /* paysage : chaque nom raccourci s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord
-     ceux de droite, puis ceux de gauche ; un nom qui tiendrait mieux dans sa barre y retourne */
-  if (compact) {
-    for (const passe of ['droite', 'gauche'] as const) {
-      for (const d of items) {
-        const e = emprises.get(d.chose.id);
-        if (!e || d.cote !== passe || d.place >= e.lab) continue;
-        const autres = (lignes[d.ligne] ?? []).filter(x => x !== e.emprise);
-        if (passe === 'droite') {
-          const suivant = Math.min(bord, ...autres.filter(([a]) => a >= e.o1).map(([a]) => a - 6));
-          const x1 = Math.min(e.o1 + 6 + e.lab, suivant);
-          d.place = Math.max(d.place, x1 - e.o1 - 6);
-          e.emprise[1] = e.o1 + 6 + d.place;
-        } else {
-          const precedent = Math.max(0, ...autres.filter(([, b]) => b <= e.o0).map(([, b]) => b + 6));
-          const x0 = Math.max(e.o0 - 6 - e.lab, precedent);
-          d.place = Math.max(d.place, e.o0 - 6 - x0);
-          e.emprise[0] = e.o0 - 6 - d.place;
-        }
-        if (d.place >= e.lab) d.deuxLignes = false;
-        /* un nom qui tiendrait mieux dans sa barre y retourne, si la barre garde aussi la durée d'un brassin (n° 21) */
-        const tientDedans = e.w - 16 > d.place && (e.dureeMin === 0 || e.w - 16 >= e.labNom + e.dureeMin);
-        if (!e.marque && tientDedans && d.place < e.lab && d.place < e.labNom) { d.cote = 'dedans'; d.place = e.w - 16; d.deuxLignes = false; e.emprise[0] = e.o0; e.emprise[1] = e.o1; }
+  /* chaque étiquette posée à côté s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord celles
+     de droite, puis celles de gauche : un nom raccourci y retrouve des lettres, un nom entier y gagne sa durée */
+  for (const passe of ['droite', 'gauche'] as const) {
+    for (const d of items) {
+      const e = emprises.get(d.chose.id);
+      if (!e || d.cote !== passe || d.deuxLignes || d.place >= e.lab) continue;
+      const autres = (lignes[d.ligne] ?? []).filter(x => x !== e.emprise);
+      if (passe === 'droite') {
+        const suivant = Math.min(bord, ...autres.filter(([a]) => a >= e.o1).map(([a]) => a - 6));
+        d.place = Math.max(d.place, Math.min(e.o1 + 6 + e.lab, suivant) - e.o1 - 6);
+        e.emprise[1] = e.o1 + 6 + d.place;
+      } else {
+        const precedent = Math.max(0, ...autres.filter(([, b]) => b <= e.o0).map(([, b]) => b + 6));
+        d.place = Math.max(d.place, e.o0 - 6 - Math.max(e.o0 - 6 - e.lab, precedent));
+        e.emprise[0] = e.o0 - 6 - d.place;
       }
     }
   }
-  /* « J7 / 28 · prête 7 déc. » ne se montre à côté que s'il tient en entier (jamais coupé, n° 30) ; sinon il vit dans la barre */
+  /* « J7 / 28 · prête 7 déc. » à côté du nom s'il tient entier, sinon « J7 / 28 » ; jamais coupé (n° 30) ; sinon il vit dans la barre */
   for (const d of items) {
     const e = emprises.get(d.chose.id);
-    d.duree = !!e && !d.marque && !!dureeVue(d.chose) && d.cote !== 'dedans' && !d.deuxLignes && d.place >= e.lab - 4;
+    if (!e || e.marque || !e.formes.length || d.cote === 'dedans' || d.deuxLignes) continue;
+    d.duree = d.place >= e.lab - 4 ? e.formes[0] : e.formes.length > 1 && d.place >= e.labCourt - 4 ? e.formes[e.formes.length - 1] : null;
   }
 
   /* n° 22 : le caddie d'un brassin (jalon « commander ») se pose comme une chose, d'abord sur la ligne de son brassin */
@@ -298,17 +288,15 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     let texteVuCaddie: string | null = null;
     if (!texte) pose = poser([[seul]], seul, d.ligne);
     else {
-      /* CRITIQUE-4 n° 22 : en 6 semaines, au téléphone en portrait comme au 1280, le caddie porte son nom : « Malt pilsner, saaz · Blonde
-         d'automne », sinon ses articles seuls (« Malt pilsner, saaz »), quitte à ouvrir une ligne. En paysage seulement, sans place sur une ligne
-         ouverte, le caddie seul (son nom au toucher) plutôt qu'une ligne de plus (E10). */
+      /* CRITIQUE-5 n° 32 : en 6 semaines, le caddie nomme toujours son brassin : « Blonde d'automne · malt pilsner, saaz », sinon
+         « Blonde · malt pilsner, saaz », quitte à ouvrir une ligne. En paysage seulement, sans place sur une ligne ouverte, le caddie seul
+         (son nom au toucher) plutôt qu'une ligne de plus (E10). */
       const court = texteCaddie(d.chose, j, true);
       const mesure = (t: string) => Math.ceil(largeurTexte(t, 500)) + 6;
       const lab = mesure(texte), labCourt = mesure(court);
-      const plein = cotes(o0, o1, lab, lab).entiers;
-      const bref = cotes(o0, o1, labCourt, labCourt);
-      const paliers = compact && !entierDabord ? [plein, bref.entiers, [seul]] : [plein, bref.entiers];
-      pose = poser(paliers, plein[0] ?? bref.entiers[0] ?? bref.meilleur, d.ligne);
-      if (pose.c.deux) pose = { ...pose, c: { ...pose.c, deux: false as const } };
+      const plein = aCote(o0, o1, lab), bref = aCote(o0, o1, labCourt);
+      const paliers = paysage ? [plein, bref, [seul]] : [plein, bref];
+      pose = poser(paliers, plein[0] ?? bref[0] ?? auPlusLarge(o0, o1, labCourt, labCourt), d.ligne);
       if (pose.c.cote !== 'dedans') texteVuCaddie = pose.c.place >= lab ? texte : court;
     }
     (lignes[pose.ligne] ||= []).push([pose.c.x0, pose.c.x1]);
@@ -336,21 +324,28 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   const fermes = dedans.filter(c => !c.probable && !c.proposition);
   const probables = dedans.length - fermes.length;
   const chiffrees = fermes.filter(c => c.centimes !== undefined);
-  const sansMontant = fermes.length - chiffrees.length;
+  /* CRITIQUE-5 n° 19 (E23) : un brassin posé sans budget (`coutAVenir`) ou au montant incomplet (`partiel`) a un coût à venir, dit en mots */
+  const aVenir = fermes.filter(c => c.coutAVenir || c.partiel);
+  const sansMontant = fermes.filter(c => c.centimes === undefined && !c.coutAVenir && !c.partiel).length;
   const solde = chiffrees.length ? chiffrees.reduce((s, c) => s + (c.centimes as number), 0) : null;
   const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
   const n = fermes.length;
-  const morceaux = [`${nomRangee(rangee)}, confirmé de ${premier} à ${dernier} : ${n} chose${n > 1 ? 's' : ''}`];
+  const nChoses = (k: number) => `${k} chose${k > 1 ? 's' : ''}`;
+  const morceaux = [`${nomRangee(rangee)}, confirmé de ${premier} à ${dernier} : ${nChoses(n)}`];
   const jours = fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0);
   if (rangee === 'activites') {
     if (jours) morceaux.push(`${jours} j`);
   } else if (solde !== null) morceaux.push(`solde ${francsSignes(solde)}`);
-  else if (n) morceaux.push('solde non renseigné');
+  else if (n && !aVenir.length) morceaux.push('solde non renseigné');
+  if (aVenir.length) morceaux.push('coût à venir');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
   if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}`);
-  /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) */
+  /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) ;
+     jamais un chiffre seul (« 1 ») : « 1 chose », ou « coût à venir » quand c'est le coût qui manque */
   const nbVu = dedans.length;
-  const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? `${nbVu}` : '') : solde !== null ? francsSignes(solde) : nbVu ? `${nbVu}` : '';
+  const enMots = aVenir.length ? 'coût à venir' : nbVu ? nChoses(nbVu) : '';
+  const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
+    : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}` : enMots;
   return { texte, lecture: morceaux.join(', '), part: solde === null ? 0 : Math.abs(solde), solde, debut: premier, fin: dernier };
 }
 
@@ -455,10 +450,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const lieCourt = largeur < 700 || vueLarge;
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
     () => disposer(montrees, colonnes, largeurColonne, largeur, {
-      reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois,
-      /* compact : le paysage (E10), et le téléphone en 6 semaines au repos (E43 : 6 rangées d'un coup d'œil) ; en 3 mois et au 1280, les
-         noms restent entiers, sur deux lignes au besoin (n° 31) */
-      compact: paysage || (!vueLarge && largeur < 700), entierDabord: !paysage, lettresMin: paysage ? 6 : 10, lieCourt
+      /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
+      reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [montrees, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt]
@@ -529,7 +522,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
             }
             return (
               <Barre
-                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={mesures.barre} cote={d.cote} placeEtiquette={d.place} avecDuree={d.duree} deuxLignes={d.deuxLignes}
+                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={mesures.barre} cote={d.cote} placeEtiquette={d.place} dureeACote={d.duree} deuxLignes={d.deuxLignes}
                 largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}

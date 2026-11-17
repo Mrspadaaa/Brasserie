@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronRight, Undo2 } from 'lucide-react';
 import '../message.css';
 
@@ -9,8 +10,12 @@ import '../message.css';
  * Il part au premier défilement de 24 px, à un nouveau geste, à l'ouverture d'un détail, d'un menu, d'une feuille, et au changement de vue.
  *
  * Place : une bande basse, au-dessus des onglets et à gauche du + volant ; l'alerte d'une promesse prend toute la largeur au-dessus du +, son
- * texte entier sur une ligne et ses boutons sur la suivante. Son texte laisse passer le doigt (`pointer-events: none` hors des boutons). Il ne
- * couvre aucun titre de rangée : s'il en croise un, il remonte au-dessus.
+ * texte entier sur une ligne et ses boutons sur la suivante. Son texte laisse passer le doigt (`pointer-events: none` hors des boutons).
+ *
+ * CRITIQUE-5 n° 5 (E31, E33, D-114) : le lien n'est jamais coupé. Il passe avec les boutons (« Finances › », forme courte, puis « Annuler ») ;
+ * le texte et son effet (« Annulé · S49 : 1 088 → 1 988 ») tiennent la première ligne, les boutons la seconde quand la place manque.
+ * N° 13 (E33, D-200) : jamais sur un nom de rangée ni de chose. Il cherche une bande libre (au-dessus des onglets, puis plus haut jusque sous
+ * l'en-tête) ; faute de place, il déplace la vue : il entre au pied de l'en-tête collé, dans son flux, et la frise descend de sa hauteur.
  */
 
 export interface MessageCal {
@@ -36,7 +41,7 @@ export const DUREE_MESSAGE_MS = 7000;
 
 /**
  * CRITIQUE-4 n° 13 b (E33) : l'effet chiffré (« S47 : 3 510 → 3 640 ») n'est jamais coupé. Le texte se sépare en son nom (« Café du Pont, 1 fût ·
- * S47 · vente confirmée »), qui cède le premier (une ligne, points de suite), et son effet, entier sur la seconde ligne avec le lien.
+ * S47 · vente confirmée »), qui cède le premier (une ligne, points de suite), et son effet, entier.
  */
 export function separerEffet(texte: string): { nom: string; effet: string | null } {
   const morceaux = texte.split(' · ');
@@ -44,6 +49,9 @@ export function separerEffet(texte: string): { nom: string; effet: string | null
   if (i < 0 || morceaux.length < 2) return { nom: texte, effet: null };
   return { nom: morceaux.filter((_, k) => k !== i).join(' · '), effet: morceaux[i].trim() };
 }
+
+/** N° 5 : la forme courte d'un lien du message (« dans Finances › » devient « Finances › ») : elle tient avec « Annuler » à 390. */
+export const lienCourt = (texte: string): string => texte.replace(/^dans\s+/i, '');
 
 /** La boîte du texte d'un titre (le h3 peut être plus large que son mot). */
 const texteDe = (t: Element): DOMRect => {
@@ -54,11 +62,27 @@ const texteDe = (t: Element): DOMRect => {
   return r.width > 0 ? r : t.getBoundingClientRect();
 };
 /* les noms que le message ne couvre jamais (E33) : titres de rangée, noms et montants des choses, pastilles, renvois */
-const TITRES = '[data-rangee] .cal-nom';
-const NOMS = '[data-rangee] .cal-nom, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi';
+const TITRES = '[data-nom-rangee], [data-rangee] .cal-nom';
+export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi`;
+
+type Boite = { top: number; bottom: number; left: number; right: number };
+const decaler = (r: Boite, dx: number, dy: number): Boite => ({ top: r.top + dy, bottom: r.bottom + dy, left: r.left + dx, right: r.right + dx });
 
 export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS }) => {
   const [detailOuvert, setDetailOuvert] = React.useState(false);
+  /* n° 13 : l'en-tête collé où le message est entré faute de bande libre ; `null` : il flotte à sa place */
+  const [entete, setEntete] = React.useState<Element | null>(null);
+  const idPose = React.useRef<number | undefined>(undefined);
+  if (idPose.current !== message?.id) { idPose.current = message?.id; if (entete) setEntete(null); }
+  /* l'ancrage du défilement de la page, coupé le temps que le message vit dans l'en-tête, puis rendu tel quel */
+  const ancrage = React.useRef<{ el: HTMLElement; avant: string } | null>(null);
+  React.useEffect(() => {
+    if (entete) return undefined;
+    const a = ancrage.current;
+    if (a) { a.el.style.overflowAnchor = a.avant; ancrage.current = null; }
+    return undefined;
+  }, [entete]);
+  React.useEffect(() => () => { const a = ancrage.current; if (a) a.el.style.overflowAnchor = a.avant; }, []);
   const racine = React.useRef<HTMLDivElement>(null);
   const fermer = React.useRef(onFermer);
   fermer.current = onFermer;
@@ -73,31 +97,35 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     return () => clearTimeout(t);
   }, [id, dureeMs, attend]);
 
-  /* jamais sur un titre de rangée. S'il en croise un : il se pousse à droite de la colonne des titres (paysage, 1280), sinon il remonte juste
-     au-dessus (au plus trois titres, jamais au-dessus du milieu de l'écran). Recalculé à la rotation et au redimensionnement. */
+  /* Jamais sur un nom (n° 13). Ordre : sa place (bande basse) ; à droite de la colonne des titres (paysage, 1280) ; la première bande libre en
+     remontant jusque sous l'en-tête, avec des décalages de côté ; faute de place, il entre au pied de l'en-tête collé et la frise descend
+     d'autant. Recalculé à la rotation, au redimensionnement et après le rendu d'une écriture. */
   React.useLayoutEffect(() => {
     const el = racine.current;
-    if (!el || id === undefined) return undefined;
+    if (!el || id === undefined || entete) return undefined;
     const placer = () => {
-      el.style.transform = ''; el.style.left = '';
-      let r = el.getBoundingClientRect();
-      if (r.height === 0) return;
-      const vus = (sel: string) => [...document.querySelectorAll(sel)].filter(t => !el.contains(t)).map(texteDe).filter(t => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < window.innerHeight);
-      const noms = vus(NOMS);
-      const touche = (b: DOMRect, dy: number, dx = 0) => noms.some(t => t.top < b.bottom - dy + 2 && t.bottom > b.top - dy - 2 && t.left < b.right + dx + 2 && t.right > b.left + dx - 2);
-      if (!touche(r, 0)) return;
+      if (!el.isConnected) return;
+      el.style.transform = ''; el.style.left = ''; delete el.dataset.place;
+      let r: Boite = el.getBoundingClientRect();
+      if (r.bottom - r.top === 0) return;
+      const vh = window.innerHeight;
+      const boites = [...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe)
+        .filter(t => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < vh);
+      const touche = (b: Boite) => boites.some(t => t.top < b.bottom + 2 && t.bottom > b.top - 2 && t.left < b.right + 2 && t.right > b.left - 2);
+      if (!touche(r)) { el.dataset.place = 'bas'; return; }
       /* paysage, 1280 : à droite de la colonne des titres, s'il y a la place et qu'aucun nom n'y est */
-      const titres = vus(TITRES);
+      const titres = [...document.querySelectorAll(TITRES)].filter(t => !el.contains(t)).map(texteDe).filter(t => t.width > 0 && t.height > 0);
       const croisent = titres.filter(t => t.top < r.bottom && t.bottom > r.top && t.left < r.right && t.right > r.left);
       if (croisent.length) {
         const gauche = Math.max(...croisent.map(t => t.right)) + 8;
         if (r.right - gauche >= 220) {
           el.style.left = Math.round(gauche) + 'px';
           r = el.getBoundingClientRect();
-          if (!touche(r, 0)) return;
+          if (!touche(r)) { el.dataset.place = 'cote'; return; }
+          el.style.left = '';
+          r = el.getBoundingClientRect();
         }
       }
-      /* sinon il remonte jusqu'à la première bande libre de noms, jamais sur l'en-tête collé ; sans bande libre, il reste en bas */
       const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
       const plafond = Math.max(8, entete && entete.height > 0 ? entete.bottom + 4 : 8);
       /* au 1280 et en paysage, la place libre peut être à côté : chaque hauteur essaie aussi des décalages de côté, dans l'écran */
@@ -105,43 +133,46 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       const decalages = [0];
       for (let d = 24; d <= Math.max(-dxMin, dxMax); d += 24) { if (d <= dxMax) decalages.push(d); if (-d >= dxMin) decalages.push(-d); }
       for (let dy = 0; r.top - dy >= plafond; dy += 4) {
-        const dx = decalages.find(x => !touche(r, dy, x));
-        if (dx !== undefined) { el.style.transform = `translate(${dx}px, -${dy}px)`; return; }
+        const dx = decalages.find(x => !touche(decaler(r, x, -dy)));
+        if (dx !== undefined) { el.style.transform = `translate(${dx}px, -${dy}px)`; el.dataset.place = 'bande'; return; }
       }
-      el.style.left = '';
+      /* faute de place : la vue se déplace. Le message entre au pied de l'en-tête collé (dans son flux) : l'en-tête grandit de sa hauteur et
+         la frise passe dessous, décalée d'autant ; aucun nom n'est couvert, la position du défilement ne change pas (le départ à 24 px tient) */
+      const zone = document.querySelector('[data-entete-zone]');
+      if (zone) {
+        /* sans ancrage du défilement : le navigateur ne compense pas la croissance de l'en-tête en défilant (ce défilement chasserait le message) */
+        const page = document.scrollingElement as HTMLElement | null;
+        if (page && !ancrage.current) { ancrage.current = { el: page, avant: page.style.overflowAnchor }; page.style.overflowAnchor = 'none'; }
+        el.dataset.place = 'sous-entete'; setEntete(zone); return;
+      }
+      el.dataset.place = 'sur-nom';
     };
     /* à la rotation, et après une écriture (la frise se remet en page après le message : Livrer, Annuler), on replace après son rendu */
     const minuteries: Array<ReturnType<typeof setTimeout>> = [];
-    const surTaille = () => { placer(); minuteries.push(setTimeout(placer, 150), setTimeout(placer, 500)); };
-    surTaille();
+    placer();
+    minuteries.push(setTimeout(placer, 150), setTimeout(placer, 500));
+    const surTaille = () => { placer(); minuteries.push(setTimeout(placer, 150)); };
     window.addEventListener('resize', surTaille);
     return () => { window.removeEventListener('resize', surTaille); minuteries.forEach(clearTimeout); };
-  }, [id]);
+  }, [id, entete]);
 
   if (!message) return null;
   const { role, texte, lien, annuler, livrer, detail } = message;
   const { nom, effet } = separerEffet(texte);
-  const boutonLien = lien && (
-    <>
-      <span className="cal-msg-sep"> · </span>
-      <button type="button" className="cal-msg-lien" onClick={e => { e.stopPropagation(); lien.agir(); }}>{lien.texte}</button>
-    </>
-  );
-  /* avec un effet chiffré : le nom sur une ligne (il cède), l'effet entier et le lien sur la seconde ; sinon le texte sur deux lignes au plus */
+  /* avec un effet chiffré : le nom cède (points de suite), « · S49 : 1 088 → 1 988 » reste entier ; sinon le texte, deux lignes au plus */
   const corps = effet ? (
     <>
-      <span className="cal-msg-t cal-msg-nom" data-msg-texte>{nom}<span className="sr-only"> · </span></span>
-      <span className="cal-msg-effet" data-msg-effet>{effet}{boutonLien}</span>
+      <span className="cal-msg-t cal-msg-nom" data-msg-texte>{nom}</span>
+      <span className="cal-msg-sep-v"> · </span>
+      <span className="cal-msg-effet" data-msg-effet>{effet}</span>
     </>
-  ) : (
-    <>
-      <span className="cal-msg-t" data-msg-texte>{texte}</span>
-      {boutonLien}
-    </>
-  );
-  return (
-    <div ref={racine} role={role} className={`cal-msg${role === 'alert' ? ' cal-msg-alerte' : ''}`} data-message data-msg-origine={message.origine ?? 'calendrier'}>
-      <div className="cal-msg-l">
+  ) : <span className="cal-msg-t" data-msg-texte>{texte}</span>;
+  const boite = (
+    <div
+      ref={racine} role={role} className={`cal-msg${role === 'alert' ? ' cal-msg-alerte' : ''}${entete ? ' cal-msg-entete' : ''}`} data-message
+      data-msg-origine={message.origine ?? 'calendrier'} data-place={entete ? 'sous-entete' : undefined}
+    >
+      <div className={`cal-msg-l${effet ? ' cal-msg-l-effet' : ''}`}>
         {detail ? (
           <button type="button" className={`cal-msg-ligne${effet ? ' cal-msg-2l' : ''}`} aria-expanded={detailOuvert} onClick={() => setDetailOuvert(o => !o)}>
             {corps}
@@ -150,8 +181,14 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
         ) : <p className={`cal-msg-ligne${effet ? ' cal-msg-2l' : ''}`}>{corps}</p>}
         {detail && detailOuvert && <small className="cal-msg-detail">{detail}</small>}
       </div>
-      {(livrer || annuler) && (
-        <div className="cal-msg-bt">
+      {(lien || livrer || annuler) && (
+        <div className="cal-msg-bt" data-msg-boutons>
+          {lien && (
+            <>
+              <span className="sr-only"> · </span>
+              <button type="button" className="cal-msg-lien" data-msg-lien aria-label={lien.texte} onClick={e => { e.stopPropagation(); lien.agir(); }}>{lienCourt(lien.texte)}</button>
+            </>
+          )}
           {livrer && <button type="button" className="cal-msg-b cal-msg-b-pri" onClick={livrer.agir}>{livrer.texte}</button>}
           {annuler && (
             <>
@@ -163,4 +200,6 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       )}
     </div>
   );
+  /* au pied de l'en-tête collé (n° 13) : dans son flux, la frise passe dessous */
+  return entete && entete.isConnected ? createPortal(boite, entete) : boite;
 };

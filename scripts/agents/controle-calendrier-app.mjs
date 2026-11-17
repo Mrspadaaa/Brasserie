@@ -452,9 +452,9 @@ try {
     await p.evaluate(() => { window.__jeton = 'portrait-1'; });
     await p.evaluate(() => document.querySelector('button[data-plus="fetes"]').scrollIntoView({ block: 'center' }));
     await p.click('button[data-plus="fetes"]'); await attendre(500);
-    await p.evaluate(src => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
+    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
     await attendre(200);
-    await p.evaluate(src => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.ajouter.source);
+    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.ajouter.source);
     await attendre(700);
     const compte = () => p.evaluate(src => [...document.querySelectorAll('[data-chose]')].filter(e => new RegExp(src).test(e.getAttribute('aria-label') || '')).length, RE.marcheNoelDebut.source);
     const avant = await compte();

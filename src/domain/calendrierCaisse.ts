@@ -120,6 +120,31 @@ export function creuxDepuis(courbe: CourbeCaisse, depuis = 0): Creux | null {
   return creux;
 }
 
+/**
+ * « ensuite 1 782 dès S26 · 4 359 dès S33 » (E01, D-180, base cd1 `.cd-ens`) : les paliers suivants de « à dépenser sans passer sous 0 ». Après
+ * le creux, le minimum du libre sur les semaines qui restent ne fait que monter ; chaque palier est ce minimum, valable dès la semaine qui suit
+ * le palier d'avant (la dernière semaine où il est atteint). Pure ; au plus `nombre` paliers, aucun palier égal au précédent.
+ */
+export interface Palier { index: number; lundi: string; numero: number; centimes: number }
+export function paliersApres(courbe: { semaines: readonly SoldeSemaine[] }, creux: number, nombre = 2): Palier[] {
+  const s = courbe.semaines;
+  const sortie: Palier[] = [];
+  let bas = s[creux]?.libre;
+  if (bas === undefined) return sortie;
+  // La dernière semaine où le creux est atteint : le palier suivant vaut dès la semaine d'après.
+  let fin = creux;
+  for (let i = creux + 1; i < s.length && s[i].libre === bas; i++) fin = i;
+  while (sortie.length < nombre && fin + 1 < s.length) {
+    const debut = fin + 1;
+    let min = s[debut].libre, ou = debut;
+    for (let i = debut; i < s.length; i++) if (s[i].libre <= min) { min = s[i].libre; ou = i; }
+    if (min > bas) sortie.push({ index: debut, lundi: s[debut].lundi, numero: s[debut].numero, centimes: min });
+    bas = min;
+    fin = ou;
+  }
+  return sortie;
+}
+
 /** Ce qui est mis de côté à une semaine, et pour quoi (E03, z2s : « 1 140 mis de côté pour le frigo »). */
 export interface MiseVisible { index: number; lundi: string; numero: number; centimes: number; titres: string[] }
 

@@ -3,7 +3,7 @@ import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import {
-  ajouterJours, dimancheDe, dureeBrassin, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
+  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -159,11 +159,16 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   if (!batch) return refus('Ce brassin n’existe plus. Rouvre la liste des brassins.');
   if (batch.status === 'conditionne' || batch.status === 'termine' || batch.status === 'annule') return refus(chose.deplacable === true ? 'Ce brassin est fini.' : (chose.deplacable as { raison: string }).raison, chose.ouvre);
   const debut = chose.debut;
-  const finActuelle = chose.preteLe ?? chose.fin;
+  /*
+   * CRITIQUE-5 n° 1 : un brassin pas brassé n'a pas de « Jn ». Tirer son bord écrit `finPrevue` = sa fin prévue (finPrevue écrite, sinon jour
+   * prévu + cycle de la recette, `pretePrevue`) + l'allongement ; la durée dit « pas brassée · prête le … ».
+   */
+  const pasBrassee = !!chose.pasBrassee;
+  const finActuelle = pasBrassee ? (chose.pretePrevue ?? finDeBrassin(batch)?.jour ?? chose.fin) : (chose.preteLe ?? chose.fin);
   const nouvelle = decale(finActuelle, jours);
   if (nouvelle <= debut) return refus('Un brassin dure au moins un jour : tire moins loin.');
   const promesse = promesseTouchee(ctx.plans, batch.id, nouvelle);
-  const duree = dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
+  const duree = pasBrassee ? dureePasBrassee(nouvelle) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
   return {
     ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { finPrevue: nouvelle } }], effet: null, promesse, courbeApres: ctx.courbe,
     message: annuler(parJalon ? `${chose.titre} : prête le ${jourLisible(nouvelle)}` : `${chose.titre} : ${duree}`)
@@ -173,10 +178,17 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
 /**
  * f2-a (E29, CRITIQUE-3 n° 30) : la chose d'un brassin telle qu'elle sera après avoir tiré son bord de `jours` jours : `fin`, `preteLe` et `duree`
  * recalculés (« J7 / 35 · prête 14 déc. »). L'aperçu pendant le geste et le texte après l'écriture disent la même chose. Pure : le jour est un
- * paramètre. Une chose qui n'est pas un brassin, ou un brassin pas brassé (aucune fin), revient telle quelle.
+ * paramètre. Une chose qui n'est pas un brassin revient telle quelle. Un brassin pas brassé (CRITIQUE-5 n° 1) : sa barre s'allonge d'autant
+ * (`fin`, jamais avant aujourd'hui), `pretePrevue` aussi, et sa durée dit « pas brassée · prête le … », jamais « Jn ».
  */
 export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui: string): ChoseCalendrier {
-  if (chose.source.genre !== 'batch' || chose.pasBrassee || chose.conditionne || !chose.debut) return chose;
+  if (chose.source.genre !== 'batch' || chose.conditionne || !chose.debut) return chose;
+  if (chose.pasBrassee) {
+    const prete = decale(chose.pretePrevue ?? chose.fin, jours);
+    if (prete <= chose.debut) return chose;
+    const fin = decale(chose.fin, jours);
+    return { ...chose, fin: fin > aujourdhui ? fin : aujourdhui, pretePrevue: prete, duree: dureePasBrassee(prete) };
+  }
   const nouvelle = decale(chose.preteLe ?? chose.fin, jours);
   if (nouvelle <= chose.debut) return chose;
   const duree = dureeBrassin(chose.debut, nouvelle, aujourdhui);

@@ -49,6 +49,14 @@ const ETAPE: Record<Exclude<JalonId, 'commander'>, { libelle: string; Icone: typ
 /** Une date sans point final doublé : « 22 nov. » se suit d'un deux-points, d'une virgule ou de rien, jamais de « . ». */
 const date = (iso: string): string => jourLisible(iso);
 
+/** Le détail sans son morceau « le 10 déc. » quand c'est la date de la chose (déjà dite par « Date ») ; `undefined` s'il ne reste rien. */
+export function sansLaDate(detail: string | undefined, debut: string | undefined): string | undefined {
+  if (!detail || !debut) return detail || undefined;
+  const jour = date(debut);
+  const reste = detail.split(' · ').filter(m => m.trim() !== `le ${jour}` && m.trim() !== jour).join(' · ').trim();
+  return reste || undefined;
+}
+
 /** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
 function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
   const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
@@ -93,6 +101,9 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const frais = texteFrais(chose);
   const duree = brassin ? dureeVue(chose) : null;
   const pasBrassee = champ(chose, 'pasBrassee') === true;
+  /* CRITIQUE-5 n° 31 : la date se lit une fois. Hors d'un brassin, « Date 10 déc. » est déjà dans la grille : le morceau « le 10 déc. » du
+     détail part (le reste du détail, une note ou « montant non renseigné », reste). */
+  const detailSansDate = brassin ? chose.detail : sansLaDate(chose.detail, chose.debut);
 
   return (
     <div role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
@@ -122,7 +133,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </div>
       )}
 
-      {chose.detail && <p className="cal-det-p">{chose.detail}</p>}
+      {detailSansDate && <p className="cal-det-p">{detailSansDate}</p>}
       {brassin && commander && (
         <p className="cal-det-p" data-manque>
           <ShoppingCart size={16} aria-hidden="true" />

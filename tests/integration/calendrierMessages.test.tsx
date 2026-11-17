@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 import { sansPointDouble, textePromesse } from '../../src/components/tabs/CalendrierTab';
@@ -166,5 +166,143 @@ describe('CRITIQUE-4 (lot q2-frise) : le bandeau garde son effet entier ; l’al
     rerender(<Message message={{ id: 2, role: 'status', texte: 'S51 : 5 064 → 4 524', annuler: () => undefined }} onFermer={fermer} />);
     act(() => { vi.advanceTimersByTime(7100); });
     expect(fermer).toHaveBeenCalledTimes(1);
+  });
+});
+
+/* ---------- CRITIQUE-5 n° 5 (E31, E33, D-114) et n° 13 (E33, D-200) ---------- */
+
+describe('CRITIQUE-5 n° 5 : le message de Retirer d’un plan manuel garde son lien entier', () => {
+  it('« Annulé · S49 : 1 088 → 1 988 » sur la ligne du texte ; « Finances › » (forme courte) et « Annuler » avec les boutons', () => {
+    const agir = vi.fn();
+    render(<Message message={{ id: 1, role: 'status', texte: 'Annulé · S49 : 1 088 → 1 988', lien: { texte: 'dans Finances ›', agir }, annuler: () => undefined }} onFermer={() => undefined} />);
+    const m = screen.getByRole('status');
+    const ligne = m.querySelector('.cal-msg-ligne')!;
+    /* la ligne du texte : le nom et l'effet entier, sans le lien (rien ne peut le couper au milieu d'un mot) */
+    expect(ligne.textContent).toBe('Annulé · S49 : 1 088 → 1 988');
+    expect(ligne.querySelector('button')).toBeNull();
+    const boutons = m.querySelector('[data-msg-boutons]')!;
+    const lien = screen.getByRole('button', { name: 'dans Finances ›' });
+    expect(boutons.contains(lien)).toBe(true);
+    expect(lien.textContent).toBe('Finances ›');
+    expect(boutons.textContent).toMatch(/Finances › · Annuler$/);
+    expect(m.textContent).toBe('Annulé · S49 : 1 088 → 1 988 · Finances › · Annuler');
+    fireEvent.click(lien);
+    expect(agir).toHaveBeenCalledTimes(1);
+  });
+
+  it('au banc, Retirer d’un plan manuel (Hotte) : « Annulé · S… : a → b », le lien « Finances › » entier, « Annuler »', async () => {
+    monter();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const b = barre(/^Hotte/);
+    fireEvent.pointerDown(b, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    act(() => { vi.advanceTimersByTime(500); });
+    vi.useRealTimers();
+    fireEvent.pointerUp(b, { clientX: 100, clientY: 10, pointerId: 1 });
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Retirer/ }));
+    const m = await screen.findByRole('status');
+    expect(m.querySelector('.cal-msg-ligne')!.textContent).toMatch(/^Annulé · S\d+ : [\d\s −]+ → [\d\s −]+$/);
+    expect(within(m).getByRole('button', { name: /Finances ›/ }).textContent).toBe('Finances ›');
+    expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
+  });
+});
+
+describe('CRITIQUE-5 n° 13 : aucun message sur un nom de rangée ou de chose', () => {
+  type R = { top: number; left: number; width: number; height: number };
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+  };
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  let espion: ReturnType<typeof vi.spyOn> | null = null;
+  afterEach(() => { espion?.mockRestore(); espion = null; taille(W0, H0); document.body.innerHTML = ''; });
+
+  /**
+   * Un faux écran : l'en-tête collé, une frise (qui défile ou non) avec ses noms de rangée et ses étiquettes, et la place du message (sa bande
+   * basse, le CSS ne s'appliquant pas sous jsdom). Les rectangles se lisent dans `data-r` ; ceux de la frise suivent son défilement ; celui du
+   * message suit son `transform` et son `left`.
+   */
+  const ecran = (o: { entete: number; noms: R[]; etiquettes: R[]; message: R; defile?: number }) => {
+    const e = document.createElement('div'); e.setAttribute('data-entete-zone', ''); e.dataset.r = JSON.stringify({ top: 0, left: 0, width: window.innerWidth, height: o.entete });
+    const frise = document.createElement('div'); frise.setAttribute('data-frise', '');
+    let haut = 0;
+    if (o.defile) {
+      frise.style.overflowY = 'auto';
+      Object.defineProperty(frise, 'scrollHeight', { configurable: true, value: 3000 });
+      Object.defineProperty(frise, 'clientHeight', { configurable: true, value: 3000 - o.defile });
+      Object.defineProperty(frise, 'scrollTop', { configurable: true, get: () => haut, set: (v: number) => { haut = v; } });
+    }
+    for (const r of o.noms) {
+      const s = document.createElement('section'); s.setAttribute('data-rangee', '');
+      const h = document.createElement('h3'); h.className = 'cal-nom'; h.textContent = 'Rangée'; h.dataset.r = JSON.stringify(r); h.dataset.defile = '';
+      s.appendChild(h); frise.appendChild(s);
+    }
+    for (const r of o.etiquettes) {
+      const t = document.createElement('span'); t.className = 'cal-lbl-t'; t.textContent = 'Chose'; t.dataset.r = JSON.stringify(r); t.dataset.defile = '';
+      frise.appendChild(t);
+    }
+    document.body.append(e, frise);
+    espion = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      let r: R = { top: 0, left: 0, width: 0, height: 0 };
+      if (this.hasAttribute('data-message')) {
+        r = { ...o.message };
+        const t = /translate(?:Y)?\((-?[\d.]+)px(?:, (-?[\d.]+)px)?\)/.exec(this.style.transform);
+        if (t) { if (/translateY/.test(this.style.transform)) r.top += Number(t[1]); else { r.left += Number(t[1]); r.top += Number(t[2] ?? 0); } }
+        if (this.style.left) { const g = parseFloat(this.style.left); r.width -= g - r.left; r.left = g; }
+      } else if (this.dataset.r) {
+        r = JSON.parse(this.dataset.r) as R;
+        if (this.dataset.defile !== undefined) r = { ...r, top: r.top - haut };
+      }
+      return { ...r, bottom: r.top + r.height, right: r.left + r.width, x: r.left, y: r.top, toJSON: () => ({}) } as DOMRect;
+    });
+    return { frise, defile: () => haut };
+  };
+  const rect = (el: Element) => el.getBoundingClientRect();
+  const croise = (a: DOMRect, b: DOMRect) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const surUnNom = () => {
+    const m = document.querySelector('[data-message]')!;
+    return [...document.querySelectorAll('[data-nom-rangee], [data-rangee] .cal-nom, [data-frise] .cal-lbl-t')].filter(n => croise(rect(m), rect(n)));
+  };
+  const bandeau = (texte = 'Hotte : S50 · S50 : 5 120 → 4 220') => render(<Message message={{ id: 1, role: 'status', texte, annuler: () => undefined }} onFermer={() => undefined} />);
+
+  it('390 × 844 : le bandeau couvrait « Inventaire du stock » ; il monte dans la première bande libre, sous l’en-tête au plus haut', () => {
+    taille(390, 844);
+    ecran({
+      entete: 430,
+      noms: [{ top: 440, left: 24, width: 110, height: 24 }, { top: 640, left: 24, width: 110, height: 24 }],
+      etiquettes: [{ top: 700, left: 140, width: 180, height: 40 }, { top: 520, left: 140, width: 180, height: 20 }],
+      message: { top: 700, left: 8, width: 298, height: 48 }
+    });
+    bandeau();
+    expect(surUnNom()).toHaveLength(0);
+    expect(rect(document.querySelector('[data-message]')!).top).toBeGreaterThanOrEqual(430);
+  });
+
+  it('844 × 390 (paysage) : l’alerte f6-b, posée sur Fêtes et Ventes, se place dans une bande libre', () => {
+    taille(844, 390);
+    ecran({
+      entete: 120,
+      noms: [{ top: 130, left: 12, width: 70, height: 20 }, { top: 230, left: 12, width: 70, height: 20 }, { top: 280, left: 12, width: 70, height: 20 }],
+      etiquettes: [{ top: 236, left: 300, width: 200, height: 20 }, { top: 160, left: 200, width: 200, height: 20 }],
+      message: { top: 280, left: 8, width: 760, height: 48 }
+    });
+    render(<Message message={{ id: 1, role: 'alert', texte: '3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv.', livrer: { texte: 'Livrer le 5 janv.', agir: () => undefined }, annuler: () => undefined }} onFermer={() => undefined} />);
+    expect(surUnNom()).toHaveLength(0);
+  });
+
+  it('390 × 844, aucune bande libre (« Tourne le téléphone » sur les Papiers) : il entre au pied de l’en-tête collé, dans son flux, la frise passe dessous', () => {
+    taille(390, 844);
+    /* des noms partout entre l'en-tête et les onglets */
+    const noms: R[] = [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: R[] = [];
+    for (let top = 436; top < 844; top += 30) etiquettes.push({ top, left: 20, width: 300, height: 26 });
+    ecran({ entete: 430, noms, etiquettes, message: { top: 700, left: 8, width: 298, height: 40 } });
+    const { rerender } = render(<Message message={{ id: 1, role: 'status', texte: 'Tourne le téléphone : 13 semaines', origine: 'entete' }} onFermer={() => undefined} />);
+    const m = document.querySelector('[data-message]')!;
+    expect(m.closest('[data-entete-zone]')).not.toBeNull();
+    expect(m).toHaveAttribute('data-place', 'sous-entete');
+    expect(m).toHaveClass('cal-msg-entete');
+    /* le message suivant reprend sa place flottante, puis cherche à nouveau */
+    rerender(<Message message={{ id: 2, role: 'status', texte: 'S51 : 5 064 → 4 524', annuler: () => undefined }} onFermer={() => undefined} />);
+    expect(screen.getByRole('status').textContent).toMatch(/^S51 : 5 064 → 4 524/);
+    expect(document.querySelectorAll('[data-message]')).toHaveLength(1);
   });
 });

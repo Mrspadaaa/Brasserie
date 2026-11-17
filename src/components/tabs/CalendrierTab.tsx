@@ -48,14 +48,20 @@ interface CalendrierTabProps {
   onOpenBatch: (batchId: string) => void;
   onOpenFinances: () => void;
   onOpenAgenda: () => void;
-  /** Les courses (Stocks › Courses), pour « Commander ». */
-  onOpenCourses: () => void;
+  /**
+   * Les courses (Stocks › Courses), pour « Commander ». `batchId` : le brassin dont on part (f4-b) ; l'app ouvre alors les Courses sur une
+   * fenêtre qui contient sa semaine de brassage (CRITIQUE-5 n° 17, D-191).
+   */
+  onOpenCourses: (batchId?: string) => void;
   /** « Plus de détails › » d'un brassin : la quick action de l'app. */
   onPoserBrassin: () => void;
   /** Reçoit le lundi (aaaa-mm-jj) : « Plus de détails › » d'une fête. */
   onPoserFete: (lundi: string) => void;
-  /** Reçoit le lundi : « Plus de détails › » d'un achat, d'un travail ou d'un papier ouvre Prévoir une dépense (PlanSheet, `date`). */
-  onPoserDepense: (lundi: string) => void;
+  /**
+   * Reçoit le lundi et la rangée : « Plus de détails › » d'un achat, d'un travail ou d'un papier ouvre Prévoir une dépense (PlanSheet, `date`),
+   * avec la catégorie de sa rangée (CRITIQUE-5 n° 3, D-68 : un achat ne s'ouvre plus en « Charges fixes », qui le rangeait dans Papiers).
+   */
+  onPoserDepense: (lundi: string, rangee: IdRangee) => void;
   /** LA période de l'app (E07, ET-PER) : le calendrier l'écrit, Finances la lit. */
   periode?: Periode;
   onPeriode?: (periode: Periode) => void;
@@ -439,7 +445,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setFeuille(null);
     if (b.rangee === 'brassins') onPoserBrassin();
     else if (b.rangee === 'fetes') onPoserFete(lundi);
-    else onPoserDepense(lundi);
+    else onPoserDepense(lundi, b.rangee);
   }, [premierLundi, onPoserBrassin, onPoserFete, onPoserDepense]);
 
   const idee_ecrire = useCallback(async (titre: string, lundi: string): Promise<string | null> => {
@@ -465,7 +471,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         onFermer={() => setSelectionId(null)}
         onOuvrir={() => { setSelectionId(null); ouvrir(chose.ouvre); }}
         {...(chose.source.genre === 'batch' ? {
-          onCommander: () => { setSelectionId(null); onOpenCourses(); },
+          onCommander: () => { const id = (chose.source as { id: string }).id; setSelectionId(null); onOpenCourses(id); },
           ...(onOuvrirBudget ? { onBudget: () => { const id = (chose.source as { id: string }).id; setSelectionId(null); onOuvrirBudget(id); } } : {})
         } : {})}
         {...(editable && !sansDate ? { onModifier: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: brouillonDepuisChose(chose), chose, cle: ++compteur.current }); } } : {})}

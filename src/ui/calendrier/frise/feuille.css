@@ -27,6 +27,16 @@
   .cal-f-sem { min-height: 40px; }
 }
 
+/* « Lier à un brassin, un client » (f5-a, D-126, CRITIQUE-5 n° 6) : des puces groupées, sans clavier, 44 px au doigt */
+.cal-lier-g { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 2px 6px; }
+.cal-lier-t { width: 100%; font-size: 14px; font-weight: 600; color: rgb(var(--cave-200)); }
+.cal-lier-p {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; max-width: 100%; padding: 0 12px; border-radius: 22px;
+  border: 1.5px solid rgb(var(--cave-600)); background: transparent; color: rgb(var(--cave-50)); font-size: 15px; font-weight: 600;
+}
+.cal-lier-p > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-lier-p:active { background: rgb(var(--cave-700)); }
+
 /* La vue Liste ouverte sur la poche « Sans date » : la poche s'arrête sous l'en-tête collé, pas dessous. */
 .cal-liste [data-poche] { scroll-margin-top: 200px; }
 .cal-liste [data-poche]:focus { outline: none; }

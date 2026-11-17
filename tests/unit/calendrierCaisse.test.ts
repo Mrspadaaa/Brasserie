@@ -5,7 +5,7 @@ import { buildForecast } from '../../src/domain/finance/forecast';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { lundiDe, semainesDe } from '../../src/domain/calendrier';
 import {
-  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, mouvementsDeSemaine, miseDeCoteA, miseDeCoteVisible, soldeAuJour, soldeFinDeMois, type MiseDeCote
+  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, mouvementsDeSemaine, miseDeCoteA, miseDeCoteVisible, paliersApres, soldeAuJour, soldeFinDeMois, type MiseDeCote
 } from '../../src/domain/calendrierCaisse';
 import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 
@@ -212,3 +212,52 @@ describe('CRITIQUE-3 n° 32 : le creux ne dit que sa semaine ; la tendance de Fi
     expect(tendance.source).toContain('Finances');
   });
 });
+
+describe('CRITIQUE-5 : le modèle (n° 4, 19, 24, 25, 30)', () => {
+  it('n° 4 : une facture due le 10 nov., le 17 nov. : la chose garde son échéance et dit « en retard » (la prévision la compte à aujourd’hui)', () => {
+    const modele = construireModele(entrees(500000, { aujourdhui: '2026-11-17', transactions: [facture('F-HOP', '2026-11-10', 26000)] as unknown as Transaction[], plans: [], batches: [] }));
+    const c = modele.choses.find(x => x.id === 'argent-invoice:F-HOP')!;
+    expect(c).toBeDefined();
+    expect(c.debut).toBe('2026-11-17');
+    expect(c.echeance).toBe('2026-11-10');
+    expect(c.enRetard).toBe(true);
+    expect(c.detail).toMatch(/^échéance le 10 nov\. · en retard/);
+    // Une facture due plus tard n'est pas en retard et n'a pas d'échéance à part.
+    const plusTard = construireModele(entrees(500000, { aujourdhui: '2026-11-17', plans: [], batches: [] })).choses.find(x => x.id === 'argent-invoice:F-OUT')!;
+    expect(plusTard.enRetard).toBeUndefined();
+    expect(plusTard.echeance).toBeUndefined();
+  });
+  it('n° 25 : le retard d’une facture dit « 260 CHF », en francs entiers, sans centimes', () => {
+    const modele = construireModele(entrees(500000, { aujourdhui: '2026-11-17', transactions: [facture('F-HOP', '2026-11-10', 26000)] as unknown as Transaction[], plans: [], batches: [] }));
+    const r = modele.retards.find(x => x.genre === 'facture')!;
+    expect(r.detail).toBe('échéance le 10 nov. · 260 CHF');
+    expect(modele.retards.map(x => x.detail).join(' ')).not.toMatch(/\d,\d\d/);
+  });
+  it('n° 24 : un calendrier vide n’a aucun retard (aucune pastille ⏰), solde connu ou non', () => {
+    for (const depart of [500000, null]) {
+      const vide = construireModele(entrees(depart, { transactions: [], plans: [], batches: [], items: [] }));
+      expect(vide.retards).toEqual([]);
+      expect(vide.icones.filter(i => i.genre === 'retard')).toEqual([]);
+    }
+  });
+  it('n° 19 : un brassin planifié sans coût estimable porte « coût à venir » et partiel, jamais 0 ni rien', () => {
+    const modele = construireModele(entrees(500000, { transactions: [], plans: [] }));
+    const porter = modele.choses.find(x => x.id === 'brassin-LOT-7')!;
+    expect(porter.centimes).toBeUndefined();
+    expect(porter).toMatchObject({ coutAVenir: true, partiel: true, etiquette: 'Porter · coût à venir' });
+  });
+  it('n° 30 : « ensuite… » : les paliers suivants de « à dépenser » après le creux, dès la semaine qui suit chaque palier', () => {
+    // Libre : 500, 300, 100 (creux S1-S2), 100, 400, 250, 900, 900 ; ensuite 250 dès S4, puis 900 dès S6.
+    const lundi0 = '2026-11-16';
+    const jour = (i: number) => ajouterJoursIso(lundi0, i * 7 + 1);
+    const pas = [-20000, -20000, 0, 30000, -15000, 65000, 0];
+    const courbe = courbeCaisse({ depart: 50000, lundi0, nbSemaines: 8, mouvements: pas.map((c, i) => ({ id: `m${i}`, jour: jour(i + 1), centimes: c, nom: `M${i}` })).filter(m => m.centimes !== 0) })!;
+    expect(courbe.semaines.map(s => s.libre)).toEqual([50000, 30000, 10000, 10000, 40000, 25000, 90000, 90000]);
+    const creux = creuxDepuis(courbe)!;
+    expect(creux.index).toBe(2);
+    expect(paliersApres(courbe, creux.index).map(p => [p.index, p.centimes])).toEqual([[4, 25000], [6, 90000]]);
+    expect(paliersApres(courbe, 7)).toEqual([]);
+  });
+});
+
+const ajouterJoursIso = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);

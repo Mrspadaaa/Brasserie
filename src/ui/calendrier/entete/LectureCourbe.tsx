@@ -42,9 +42,11 @@ export function LectureDetail({ courbe, index, rangeeDe, libre = false }: Lectur
   let k = 0;
   const lignes = l.lignes.filter(x => x.genre !== 'semaine');
   const semaine = l.lignes.find(x => x.genre === 'semaine');
+  const semaineDite = semaine && semaine.genre === 'semaine' && s.mouvements.length > 0 ? semaine : null;
   return (
     <div className="ent-det" role="group" aria-label={`Détail de ${l.date}`}>
-      <div className="ent-det-t"><b>{l.date}</b>{libre ? <span>libre <b>{chf(l.libre)}</b></span> : null}</div>
+      {/* Sa maquette (as p-c2b-pendant) : « S12 · 22 → 28 mars » à gauche, « la semaine −487 » à droite, sur la même ligne */}
+      <div className="ent-det-t"><b>{l.date}</b>{libre ? <span>libre <b>{chf(l.libre)}</b></span> : semaineDite ? <span className="ent-det-s">la semaine <b className={classeMv(semaineDite.centimes)}>{sg(semaineDite.centimes)}</b></span> : null}</div>
       <div className="ent-det-l">
         {lignes.map((ligne, n) => {
           if (ligne.genre === 'autres') return <span key={`a${n}`} className="ent-det-reste">{ligne.texte}</span>;
@@ -53,9 +55,12 @@ export function LectureDetail({ courbe, index, rangeeDe, libre = false }: Lectur
             <span key={m.id} className={`ent-det-mv ent-r-${classeRangee(rangeeDe?.(m))}`}><i aria-hidden="true" />{m.nom} <b className={classeMv(m.centimes)}>{sg(m.centimes)}</b></span>
           ) : null;
         })}
-        {!s.mouvements.length && <span className="ent-det-reste">rien cette semaine</span>}
+        {/* CRITIQUE-5 n° 15 : la tendance de Finances se nomme (« tendance −250 ») ; « rien cette semaine » seulement quand rien ne bouge */}
+        {s.tendance !== 0 && <span className="ent-det-reste ent-det-tend" data-tendance>tendance <b className={classeMv(s.tendance)}>{sg(s.tendance)}</b></span>}
+        {!s.mouvements.length && s.tendance === 0 && <span className="ent-det-reste">rien cette semaine</span>}
       </div>
-      {semaine && semaine.genre === 'semaine' && <div className="ent-det-s"><span>la semaine</span><b className={classeMv(semaine.centimes)}>{sg(semaine.centimes)}</b></div>}
+      {/* « la semaine » quand il y a des mouvements nommés : seule, la tendance se dit déjà au-dessus (jamais deux fois le même montant) */}
+      {libre && semaineDite && <div className="ent-det-s"><span>la semaine</span><b className={classeMv(semaineDite.centimes)}>{sg(semaineDite.centimes)}</b></div>}
     </div>
   );
 }

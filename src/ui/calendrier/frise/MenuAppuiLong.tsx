@@ -1,6 +1,7 @@
 import React from 'react';
 import { Copy, ExternalLink, Filter, Link2, Pin, Star, Trash2 } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
+import './feuille.css';
 
 /**
  * f5-a (E31) : l'appui long sur une barre ouvre un menu sous elle. Épingler (la chose reste visible si sa rangée est masquée), Étoile (sur la
@@ -129,40 +130,46 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     const centre = (r: DOMRect) => Math.max(8, Math.min(vw - largeur - 8, r.left + r.width / 2 - largeur / 2));
     let rect = ancre?.getBoundingClientRect();
     if (!rect) { setPos({ top: Math.max(haut, bas - mh), left: Math.max(8, (vw - largeur) / 2), cote: 'haut', maxHeight: bas - haut }); return; }
-    const essai = (r: DOMRect) => {
-      if (r.bottom + 6 >= haut && r.bottom + 6 + mh <= bas) return { top: r.bottom + 6, left: centre(r), cote: 'bas' as const };
-      if (r.top - 6 - mh >= haut) return { top: r.top - 6 - mh, left: centre(r), cote: 'haut' as const };
+    /* CRITIQUE-5 n° 12 (E31, D-192) : le menu ne recouvre jamais le rectangle de la chose tenue (Hotte reste visible). Ordre : sous elle ; la
+       page défile pour la poser juste sous l'en-tête, le menu dessous (sa maquette, p-f5a-apres et l-f5a-apres) ; au-dessus d'elle ; à côté
+       d'elle ; en dernier recours, dans la plus grande bande libre au-dessus ou au-dessous, plus bas de hauteur (le menu défile en lui-même).
+       À côté, à droite d'abord (la colonne des noms de rangée est à gauche). */
+    const dessous = (r: DOMRect) => (r.bottom + 6 >= haut && r.bottom + 6 + mh <= bas ? { top: r.bottom + 6, left: centre(r), cote: 'bas' as const } : null);
+    const dessus = (r: DOMRect) => (r.top - 6 - mh >= haut ? { top: r.top - 6 - mh, left: centre(r), cote: 'haut' as const } : null);
+    const aCote = (r: DOMRect) => {
+      /* plus étroit s'il le faut (400 px au moins : deux colonnes, l'effet passe sous son action) */
+      const top = Math.max(haut, Math.min(bas - mh, r.top + r.height / 2 - mh / 2));
+      const libreD = vw - r.right - 16, libreG = r.left - 16;
+      const min = Math.min(largeur, 400);
+      if (libreD >= min) { const w = Math.min(largeur, libreD); return { top, left: r.right + 8, cote: 'cote' as const, largeur: w, maxHeight: bas - top }; }
+      if (libreG >= min) { const w = Math.min(largeur, libreG); return { top, left: r.left - 8 - w, cote: 'cote' as const, largeur: w, maxHeight: bas - top }; }
       return null;
     };
-    let place = essai(rect);
-    if (!place) {
-      /* défiler : la barre juste sous l'en-tête, le menu dessous */
+    const defiler = () => {
+      /* la barre juste sous l'en-tête : le menu se pose dessous */
       const conteneur = conteneurDefilant(ancre);
-      const delta = Math.round(rect.top - haut);
-      if (conteneur && delta !== 0) {
-        conteneur.scrollTop += delta;
-        rect = ancre!.getBoundingClientRect();
-        place = essai(rect);
-      }
-    }
+      const delta = Math.round(rect!.top - haut);
+      if (!conteneur || delta === 0) return null;
+      conteneur.scrollTop += delta;
+      rect = ancre!.getBoundingClientRect();
+      return dessous(rect);
+    };
+    /* sa maquette d'abord (sous la barre, la page défilée au besoin), puis au-dessus ; à côté quand ni l'un ni l'autre ne tient (le paysage) */
+    const place = dessous(rect) ?? defiler() ?? dessus(rect) ?? aCote(rect);
     if (place) { setPos(place); return; }
-    /* à côté de la barre, à sa hauteur, entre l'en-tête et les onglets ; plus étroit s'il le faut (400 px au moins : deux colonnes, l'effet
-       passe sous son action), jamais sur elle */
-    const top = Math.max(haut, Math.min(bas - mh, rect.top + rect.height / 2 - mh / 2));
-    const libreD = vw - rect.right - 16, libreG = rect.left - 16;
-    const cote = Math.max(libreD, libreG);
-    if (cote >= Math.min(largeur, 400)) {
-      const w = Math.min(largeur, cote);
-      setPos({ top, left: libreD >= libreG ? rect.right + 8 : rect.left - 8 - w, cote: 'cote', largeur: w, maxHeight: bas - top });
-      return;
-    }
-    if (mh <= bas - haut) {
-      const placeBas = bas - rect.bottom, placeHaut = rect.top - haut;
-      setPos({ top: placeBas >= placeHaut ? bas - mh : haut, left: centre(rect), cote: placeBas >= placeHaut ? 'bas' : 'haut' });
-    } else setPos({ top: haut, left: centre(rect), cote: 'haut', maxHeight: bas - haut });
+    /* la plus grande bande libre, au-dessus ou au-dessous de la chose tenue, jamais sur elle */
+    const r = rect;
+    const placeBas = bas - (r.bottom + 6), placeHaut = r.top - 6 - haut;
+    if (placeBas >= placeHaut) setPos({ top: Math.max(haut, r.bottom + 6), left: centre(r), cote: 'bas', maxHeight: Math.max(0, placeBas) });
+    else setPos({ top: Math.max(haut, r.top - 6 - Math.min(mh, placeHaut)), left: centre(r), cote: 'haut', maxHeight: Math.max(0, placeHaut) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ancre, lier, largeur, vw, paysage]);
   const retirable = 'raison' in retirer ? null : retirer;
+  /* un brassin ne se lie pas à lui-même ; deux brassins du même nom (« Stout maison » brassée quatre fois) : un seul bouton, le dernier de la
+     liste, le plus récent dans l'ordre de l'app (demande au lot 4 : ne passer que les brassins planifiés ou en cuve) */
+  const brassinsLiables = liens.brassins
+    .filter(b => b.id !== (chose.source.genre === 'batch' ? chose.source.id : ''))
+    .filter((b, i, l) => l.map(x => x.nom).lastIndexOf(b.nom) === i);
 
   const epingler = (
     <button type="button" role="menuitemcheckbox" aria-checked={epinglee} {...agir(props.onEpingler)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
@@ -227,20 +234,30 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
         )
       ) : (
         <>
+          {/* CRITIQUE-5 n° 6 (D-126, E37) : des puces, sans clavier, groupées (brassins, puis clients) ; un toucher pose la liaison, la pastille
+              « lié à … » vient sur la barre et le message dit « Liée à … · Annuler » */}
           <p className="cal-mn">Lier <b>{chose.titre}</b> à :</p>
-          <div className={paysage ? 'cal-m2 cal-m2-liens' : undefined}>
-            {liens.brassins.filter(b => b.id !== (chose.source.genre === 'batch' ? chose.source.id : '')).map(b => (
-              <button key={b.id} type="button" role="menuitem" {...agir(() => props.onLier({ batchId: b.id }, b.nom))} className="cal-ml">
-                <Link2 size={20} aria-hidden="true" /><span>{b.nom}</span><em>brassin</em>
-              </button>
-            ))}
-            {liens.clients.map(c => (
-              <button key={c.id} type="button" role="menuitem" {...agir(() => props.onLier({ clientId: c.id }, c.nom))} className="cal-ml">
-                <Link2 size={20} aria-hidden="true" /><span>{c.nom}</span><em>client</em>
-              </button>
-            ))}
-          </div>
-          {!liens.brassins.length && !liens.clients.length && <p className="cal-mn">Aucun brassin ni client à lier pour l’instant.</p>}
+          {brassinsLiables.length > 0 && (
+            <div role="group" aria-label="Brassins" className="cal-lier-g" data-lier="brassins">
+              <span className="cal-lier-t">Brassins</span>
+              {brassinsLiables.map(b => (
+                <button key={b.id} type="button" role="menuitem" {...agir(() => props.onLier({ batchId: b.id }, b.nom))} className="cal-lier-p" data-lier-id={b.id}>
+                  <Link2 size={16} aria-hidden="true" /><span>{b.nom}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {liens.clients.length > 0 && (
+            <div role="group" aria-label="Clients" className="cal-lier-g" data-lier="clients">
+              <span className="cal-lier-t">Clients</span>
+              {liens.clients.map(c => (
+                <button key={c.id} type="button" role="menuitem" {...agir(() => props.onLier({ clientId: c.id }, c.nom))} className="cal-lier-p" data-lier-id={c.id}>
+                  <Link2 size={16} aria-hidden="true" /><span>{c.nom}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {!brassinsLiables.length && !liens.clients.length && <p className="cal-mn">Aucun brassin ni client à lier pour l’instant.</p>}
         </>
       )}
     </div>

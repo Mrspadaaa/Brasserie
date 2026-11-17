@@ -63,7 +63,8 @@ describe('C3 : glisser une barre l’écrit dans sa source, avec son message et 
   it('une charge fixe ne bouge pas : le message dit où la régler et renvoie à Finances', async () => {
     const onOpenFinances = vi.fn();
     const { appels } = monter({ callbacks: { onOpenFinances } });
-    glisser(barre(/^Loyer du local, proposé, 26 nov/), 2 * colonne());
+    /* CRITIQUE-5 n° 21 : une échéance récurrente se nomme « à payer » (lot 2) */
+    glisser(barre(/^Loyer du local, (?:à payer|proposé), 26 nov/), 2 * colonne());
     const m = await screen.findByRole('status');
     expect(m.textContent).toMatch(/Finances/);
     fireEvent.click(within(m).getByRole('button', { name: /Finances ›/ }));
@@ -276,7 +277,8 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && typeof a.patch?.finPrevue === 'string')).toBe(true));
     expect(await screen.findByRole('alert')).toHaveTextContent(/promis (à .+ )?le .+ · prête le/);
     /* CRITIQUE-4 n° 21 (E29) : après f2-a, la barre dit aussi « prête » (forme courte permise « J0/35 · prête … ») */
-    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/prête \d/));
+    /* CRITIQUE-5 n° 23 (lot 2) : faute de place (jsdom ne mesure rien), « · prête … » cède sur la barre ; le nom accessible le garde entier */
+    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35/));
     expect(barre(/^Blonde d’automne/).getAttribute('aria-label')).toMatch(/J0 \/ 35 · prête \d/);
   });
 
@@ -520,5 +522,134 @@ describe('CRITIQUE-4 (lot q2-frise) : jalon et milieu, marque en paysage, Livrer
     const caddies = document.querySelectorAll('[data-caddie]');
     expect(caddies.length).toBeGreaterThan(0);
     expect(document.querySelectorAll('.cal-lbl-caddie')).toHaveLength(caddies.length);
+  });
+});
+
+/* ---------- CRITIQUE-5 n° 6 (D-126, E31, E37) et n° 12 (E31, D-192) ---------- */
+
+describe('CRITIQUE-5 n° 6 : Lier à un brassin, atteint par l’appui long, se voit et s’annule', () => {
+  const CHOSE: ChoseCalendrier = {
+    id: 'CR-NOEL', rangee: 'fetes', titre: 'Marché de Noël', debut: '2026-12-21', fin: '2026-12-21', centimes: 118000,
+    source: { genre: 'creative', id: 'CR-NOEL', type: 'event' } as ChoseCalendrier['source'], ouvre: { ecran: 'agenda', id: 'CR-NOEL' }, deplacable: true
+  };
+  const tape = (el: Element) => { fireEvent.pointerDown(el, { pointerId: 2, button: 0 }); fireEvent.pointerUp(el, { pointerId: 2, button: 0 }); };
+
+  it('le menu : « Lier à un brassin, un client » ouvre des puces (Brassins, Clients) ; « Stout maison » appelle onLier({ batchId })', () => {
+    const onLier = vi.fn();
+    const a = document.createElement('div'); document.body.appendChild(a);
+    render(
+      <MenuAppuiLong
+        chose={CHOSE} nomRangee="Fêtes seules" ancre={a} epinglee={false} etoilee={false} autresRangees={6} dupliquer={null} retirer={{}}
+        liens={{ brassins: [{ id: 'LOT-STOUT-1', nom: 'Stout maison' }, { id: 'LOT-STOUT-4', nom: 'Stout maison' }, { id: 'LOT-BLONDE', nom: 'Blonde d’automne' }], clients: [{ id: 'CL-CIGOGNE', nom: 'La Cigogne' }] }}
+        onEpingler={vi.fn()} onEtoile={vi.fn()} onSeules={vi.fn()} onDupliquer={vi.fn()} onLier={onLier} onRetirer={vi.fn()} onFermer={vi.fn()}
+      />
+    );
+    tape(screen.getByRole('menuitem', { name: /Lier à un brassin, un client/ }));
+    const brassins = screen.getByRole('group', { name: 'Brassins' });
+    /* deux « Stout maison » : un seul bouton, le plus récent */
+    expect(within(brassins).getAllByRole('menuitem').map(b => b.textContent)).toEqual(['Stout maison', 'Blonde d’automne']);
+    expect(within(screen.getByRole('group', { name: 'Clients' })).getByRole('menuitem', { name: 'La Cigogne' })).toBeInTheDocument();
+    expect(document.querySelectorAll('[role="menu"] input')).toHaveLength(0);
+    tape(within(brassins).getByRole('menuitem', { name: 'Stout maison' }));
+    expect(onLier).toHaveBeenCalledTimes(1);
+    expect(onLier).toHaveBeenCalledWith({ batchId: 'LOT-STOUT-4' }, 'Stout maison');
+  });
+
+  it('le parcours au banc : appui long, Lier, Stout maison : la source reçoit { batchId }, la barre porte « lié à Stout maison », le message dit « Liée à Stout maison · Annuler » ; Annuler écrit l’inverse', async () => {
+    const { appels } = monter();
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Lier/ }));
+    const puce = within(screen.getByRole('group', { name: 'Brassins' })).getByRole('menuitem', { name: 'Stout maison' });
+    fireEvent.click(puce);
+    await waitFor(() => expect(appels.some(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')).toBe(true));
+    const pose = appels.find(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')!;
+    const liens = (pose.patch as { liens?: { batchId?: string } }).liens;
+    expect(liens?.batchId).toMatch(/^LOT-STOUT/);
+    await waitFor(() => expect(barre(/^Marché de Noël/).getAttribute('aria-label')).toMatch(/lié à Stout maison/));
+    const m = await screen.findByRole('status');
+    expect(m.textContent).toMatch(/Liée à Stout maison · Annuler/);
+    /* Annuler n'écoute qu'après 400 ms (le doigt du menu) */
+    await new Promise(r => setTimeout(r, 450));
+    fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(appels.filter(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')).toHaveLength(2));
+    const inverse = appels.filter(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')[1];
+    expect((inverse.patch as { liens?: { batchId?: string } }).liens?.batchId).toBeUndefined();
+    await waitFor(() => expect(barre(/^Marché de Noël/).getAttribute('aria-label') ?? '').not.toMatch(/lié à Stout/));
+  });
+});
+
+describe('CRITIQUE-5 n° 12 : le menu ne recouvre jamais la chose tenue', () => {
+  const CHOSE: ChoseCalendrier = {
+    id: 'P-HOTTE', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000,
+    source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual' } as ChoseCalendrier['source'], ouvre: { ecran: 'plan', id: 'P-HOTTE' }, deplacable: true
+  };
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+  };
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  afterEach(() => { taille(W0, H0); document.body.innerHTML = ''; });
+  const boite = (el: Element, r: { top: number; left: number; width: number; height: number }) =>
+    vi.spyOn(el, 'getBoundingClientRect').mockImplementation(() => ({ ...r, bottom: r.top + r.height, right: r.left + r.width, x: r.left, y: r.top, toJSON: () => ({}) } as DOMRect));
+  /** L'en-tête collé (courbe et bande) : le menu ne s'y pose jamais. */
+  const entete = (bas: number) => { const e = document.createElement('div'); e.setAttribute('data-entete-zone', ''); document.body.appendChild(e); boite(e, { top: 0, left: 0, width: window.innerWidth, height: bas }); };
+  /** La barre tenue, dans un conteneur qui défile (ou non) : son rectangle suit le défilement. */
+  const barreTenue = (r: { top: number; left: number; width: number; height: number }, defile: number) => {
+    const conteneur = document.createElement('div');
+    conteneur.style.overflowY = 'auto';
+    let haut = 0;
+    Object.defineProperty(conteneur, 'scrollTop', { configurable: true, get: () => haut, set: (v: number) => { haut = v; } });
+    Object.defineProperty(conteneur, 'scrollHeight', { configurable: true, value: 2000 });
+    Object.defineProperty(conteneur, 'clientHeight', { configurable: true, value: 2000 - defile });
+    const el = document.createElement('div');
+    conteneur.appendChild(el); document.body.appendChild(conteneur);
+    vi.spyOn(el, 'getBoundingClientRect').mockImplementation(() => {
+      const top = r.top - conteneur.scrollTop;
+      return { top, bottom: top + r.height, left: r.left, right: r.left + r.width, width: r.width, height: r.height, x: r.left, y: top, toJSON: () => ({}) } as DOMRect;
+    });
+    return el;
+  };
+  const ouvrir = (a: HTMLElement) => render(
+    <MenuAppuiLong
+      chose={CHOSE} nomRangee="Achats seules" ancre={a} epinglee={false} etoilee={false} autresRangees={6} dupliquer={{ libelle: 'S50', effet: 'S50 : 1 154 → 254' }} retirer={{ effet: 'S49 : 1 088 → 1 988' }}
+      liens={{ brassins: [], clients: [] }}
+      onEpingler={vi.fn()} onEtoile={vi.fn()} onSeules={vi.fn()} onDupliquer={vi.fn()} onLier={vi.fn()} onRetirer={vi.fn()} onFermer={vi.fn()}
+    />
+  );
+  const rectMenu = () => {
+    const m = screen.getByRole('menu') as HTMLElement;
+    const top = parseFloat(m.style.top), left = parseFloat(m.style.left), w = parseFloat(m.style.width);
+    const h = Math.min(m.style.maxHeight ? parseFloat(m.style.maxHeight) : Infinity, m.getAttribute('data-colonnes') === '2' ? HAUTEUR_REPLI_PAYSAGE_PX : HAUTEUR_REPLI_PX);
+    return { top, bottom: top + h, left, right: left + w };
+  };
+  const croise = (a: { top: number; bottom: number; left: number; right: number }, b: DOMRect) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+  it('390 × 844, Hotte bas dans la frise, la page défile : la barre vient sous l’en-tête, le menu dessous, sans la recouvrir', () => {
+    taille(390, 844); entete(430);
+    const a = barreTenue({ top: 620, left: 136, width: 120, height: 40 }, 600);
+    ouvrir(a);
+    const m = screen.getByRole('menu');
+    expect(m).toHaveAttribute('data-cote', 'bas');
+    expect(croise(rectMenu(), a.getBoundingClientRect())).toBe(false);
+    expect(rectMenu().top).toBeGreaterThanOrEqual(430);
+    expect(rectMenu().bottom).toBeLessThanOrEqual(844 - 64);
+  });
+
+  it('390 × 844, rien ne défile : jamais sur la barre (au-dessus ou au-dessous, borné à la place libre)', () => {
+    taille(390, 844); entete(430);
+    const a = barreTenue({ top: 600, left: 136, width: 120, height: 40 }, 0);
+    ouvrir(a);
+    expect(croise(rectMenu(), a.getBoundingClientRect())).toBe(false);
+    expect(rectMenu().top).toBeGreaterThanOrEqual(430);
+  });
+
+  it('844 × 390 (paysage) : à côté de la barre, à droite, sans la recouvrir', () => {
+    taille(844, 390); entete(120);
+    const a = barreTenue({ top: 200, left: 210, width: 110, height: 30 }, 0);
+    ouvrir(a);
+    const m = screen.getByRole('menu');
+    expect(m).toHaveAttribute('data-cote', 'cote');
+    expect(croise(rectMenu(), a.getBoundingClientRect())).toBe(false);
+    expect(rectMenu().left).toBeGreaterThanOrEqual(a.getBoundingClientRect().right);
   });
 });

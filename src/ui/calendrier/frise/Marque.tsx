@@ -85,11 +85,14 @@ export const CLASSE_TEINTE: Record<Rangee, string> = {
   brassins: 'cal-t-brassins', fetes: 'cal-t-fetes', ventes: 'cal-t-ventes', achats: 'cal-t-achats', travaux: 'cal-t-travaux', activites: 'cal-t-activites', papiers: 'cal-t-papiers'
 };
 
-/** Le nom lu à l'écran : « Frigo, 14 déc., S51 ». Jamais seulement une icône. */
+/**
+ * Le nom lu à l'écran : « Frigo, 14 déc., S51 ». Jamais seulement une icône. CRITIQUE-5 n° 21 (E47 c) : une échéance récurrente (le loyer) est
+ * « à payer », jamais « proposé » ; « proposé » reste à la vente probable et au brassin habituel.
+ */
 export function nomAccessible(chose: ChoseCalendrier): string {
   const jour = chose.debut ? `${jourLisible(chose.debut)}, ${etiquetteS(chose.debut)}` : 'sans date';
-  const propose = chose.proposition || chose.probable ? ', proposé' : '';
-  return `${chose.titre}${propose}, ${jour}`;
+  const etat = chose.proposition === 'echeance' ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
+  return `${chose.titre}${etat}, ${jour}`;
 }
 
 /** « J0 / 28 · prête 14 déc. » : vit dans le domaine (jamais « J0 / 0 »), réexporté pour les vues. */
@@ -112,8 +115,26 @@ export function dureeVue(c: ChoseCalendrier): string | null {
   return c.source.genre === 'batch' || c.source.genre === 'prevision-brassin' ? 'durée inconnue' : null;
 }
 
-/** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines : « Malt, houblon · Stout maison »). */
-export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; /** n° 24 : sur deux lignes (le nom, puis montant et pastille). */ deux?: false | 'nom' | 'flot' }
+/**
+ * Deux lignes à côté d'un objet, pour une chose liée (CRITIQUE-5 n° 26) : `nom`, le nom et son montant insécables, puis la pastille « lié à »
+ * seule ; `nomSeul` (quand nom et montant ensemble seraient coupés, au téléphone), le nom entier, puis le montant et la pastille.
+ */
+export type ModeDeuxLignes = false | 'nom' | 'nomSeul' | 'duree';
+
+/** Le contenu d'une étiquette posée à côté (barre ou marque) : nom, montant, durée d'un brassin, pastille « lié à », sur une ligne ou deux. */
+export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt }: { chose: ChoseCalendrier; nom: string; montant: string | null; duree?: string | null; deux?: ModeDeuxLignes; lieCourt?: boolean }) {
+  const m = montant ? <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b> : null;
+  const lie = chose.lie ? <PastilleLie lie={chose.lie} court={lieCourt} /> : null;
+  const t = <span className="cal-lbl-t" aria-hidden="true">{nom}</span>;
+  if (deux === 'nom') return <><span className="cal-lbl-l1">{t}{m}</span>{lie && <span className="cal-lbl-l2">{lie}</span>}</>;
+  if (deux === 'nomSeul') return <>{t}<span className="cal-lbl-l2">{m}{lie}</span></>;
+  /* un brassin (as/cap/p-repos : « Blonde d'automne −148 » puis « J0 / 28 ») : le nom et son montant, puis sa durée entière dessous */
+  if (deux === 'duree') return <><span className="cal-lbl-l1">{t}{m}{lie}</span>{duree && <span className="cal-lbl-l2"><small aria-hidden="true" className="cal-lbl-j">{duree}</small></span>}</>;
+  return <>{t}{m}{duree && <small aria-hidden="true" className="cal-lbl-j">{duree}</small>}{lie}</>;
+}
+
+/** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines). */
+export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes }
 
 export interface MarqueProps {
   chose: ChoseCalendrier;
@@ -199,19 +220,8 @@ export const Marque: React.FC<MarqueProps> = props => {
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
       </button>
       {libelle && lbl && (
-        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux === 'nom' ? ' cal-lbl-2n' : libelle.deux ? ' cal-lbl-2' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
-          <span className="cal-lbl-t" aria-hidden="true">{libelle.texte ?? chose.etiquette ?? chose.titre}</span>
-          {libelle.deux === 'nom' ? (
-            <span className="cal-lbl-l2">
-              {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-              {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
-            </span>
-          ) : (
-            <>
-              {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-              {chose.lie && <PastilleLie lie={chose.lie} court={props.lieCourt} />}
-            </>
-          )}
+        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
+          <ContenuEtiquette chose={chose} nom={libelle.texte ?? chose.etiquette ?? chose.titre} montant={montant} deux={libelle.deux} lieCourt={props.lieCourt} />
         </span>
       )}
     </>

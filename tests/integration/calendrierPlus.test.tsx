@@ -19,6 +19,8 @@ import { PlanSheet } from '../../src/ui/finance/FinanceForms';
 import { StorageService } from '../../src/services/storage';
 import { usePlusPageActions } from '../../src/ui/plusPage';
 import type { FinancialProfile } from '../../src/domain/finance/types';
+import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
+import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
 const JOUR = '2026-11-16';
 const profilConnu: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-01-01', amountCents: 400_000, confirmed: true } } as FinancialProfile;
@@ -176,6 +178,28 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
     expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-07');
+  });
+
+  it('CRITIQUE-5 n° 3 (D-68, E34) : depuis Achats S50, « Plus de détails › » rend le lundi de S50 ET la rangée Achats (la catégorie en vient)', () => {
+    const onPoserDepense = vi.fn();
+    monter({ callbacks: { onPoserDepense } });
+    fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
+    const d = dialogue('Achats');
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
+    expect(onPoserDepense).toHaveBeenCalledTimes(1);
+    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-07', 'achats');
+  });
+
+  it('CRITIQUE-5 n° 3 : une prévision manuelle « Brassage » tombe dans Achats, jamais dans Papiers ; « Charges fixes » tombe dans Papiers (le défaut d’avant)', () => {
+    const p = (id: string, category: string) => ({ id, title: `ZZ TEST — ${id}`, date: '2026-12-07', amountCents: 24000, direction: 'out', category, source: 'manual', status: 'active', createdAt: '2026-11-16T08:00:00.000Z' });
+    const m = construireModele({
+      aujourdhui: JOUR, transactions: [], payments: [], plans: [p('houblon', 'brassage'), p('loyer', 'chargesFixes')] as never, profile: profilConnu, assets: [], batches: [],
+      stockItems: [], items: [], recettes: [], reglages: REGLAGES_VIDES, lignesCourses: []
+    });
+    const rangeeDe = (titre: string) => m.choses.find(c => c.titre === titre)?.rangee;
+    expect(rangeeDe('ZZ TEST — houblon')).toBe('achats');
+    expect(rangeeDe('ZZ TEST — loyer')).toBe('papiers');
   });
 
   it('ouverte depuis Finances sans date, elle garde la date du jour', () => {

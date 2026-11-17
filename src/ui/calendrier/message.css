@@ -9,19 +9,24 @@
   pointer-events: none;
 }
 .cal-msg[data-message] button { pointer-events: auto; }
-.cal-msg[data-message] .cal-msg-l { flex: 1; min-width: 0; }
+/* CRITIQUE-5 n° 5 (E31, E33, D-114) : le texte, puis les boutons (lien court « Finances › », Annuler). S'ils ne tiennent pas sur sa ligne, les
+   boutons passent entiers à la seconde : le lien n'est jamais coupé, deux lignes pour « Annulé · S49 : 1 088 → 1 988 » à 390. */
+.cal-msg[data-message]:not(.cal-msg-alerte) { flex-wrap: wrap; row-gap: 2px; }
+.cal-msg[data-message] .cal-msg-l { flex: 1 1 8rem; min-width: 0; }
+/* avec un effet chiffré, le texte demande sa largeur entière : s'il ne tient pas à côté des boutons, ce sont eux qui passent dessous */
+.cal-msg[data-message] .cal-msg-l.cal-msg-l-effet { flex-basis: auto; }
 .cal-msg[data-message] .cal-msg-ligne {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
-/* CRITIQUE-4 n° 13 b : avec un effet chiffré, deux lignes fixes. Le nom cède (points de suite) ; l'effet « S47 : 3 510 → 3 640 » reste entier. */
-/* une seule ligne quand le nom et l'effet y tiennent (paysage, 1280), sinon l'effet passe entier à la seconde */
-.cal-msg[data-message] .cal-msg-ligne.cal-msg-2l { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
-.cal-msg[data-message] .cal-msg-2l .cal-msg-nom { display: block; flex: 0 1 auto; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* CRITIQUE-4 n° 13 b : une ligne. Le nom cède (points de suite) ; « · S47 : 3 510 → 3 640 » reste entier. */
+.cal-msg[data-message] .cal-msg-ligne.cal-msg-2l { display: flex; flex-wrap: nowrap; align-items: baseline; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-nom { display: block; flex: 0 1 auto; min-width: 2.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-sep-v { flex: none; white-space: pre; }
 .cal-msg[data-message] .cal-msg-2l .cal-msg-effet { display: block; flex: none; white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; }
-/* n° 20 : chaque bouton du message se touche sur 44 px au moins */
+.cal-msg[data-message] .cal-msg-bt { margin-left: auto; align-items: center; }
+/* n° 20 : chaque bouton du message se touche sur 44 px au moins ; le lien aussi, entier, sans retour à la ligne */
 .cal-msg[data-message] .cal-msg-b { min-height: 44px; }
-.cal-msg[data-message] .cal-msg-lien { position: relative; }
-.cal-msg[data-message] .cal-msg-lien::before { content: ''; position: absolute; inset: -13px -4px; }
+.cal-msg[data-message] .cal-msg-lien { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0 6px; white-space: nowrap; }
 
 /* f6-b : l'alerte d'une promesse, sur toute la largeur au-dessus du + volant ; le texte entier sur la première ligne, Livrer et Annuler sur la
    seconde (passe 8, 03-p-f6b-alerte). */
@@ -30,7 +35,9 @@
   bottom: calc(var(--main-navigation-height, 2.5rem) + 84px + env(safe-area-inset-bottom, 0px));
 }
 .cal-msg-alerte[data-message] .cal-msg-ligne { font-size: 14px; letter-spacing: -0.1px; }
-.cal-msg-alerte[data-message] .cal-msg-bt { justify-content: flex-start; }
+.cal-msg-alerte[data-message] .cal-msg-bt { justify-content: flex-start; margin-left: 0; }
+/* l'alerte est en colonne : son texte garde sa hauteur (une base de 12rem serait une hauteur) */
+.cal-msg-alerte[data-message] .cal-msg-l { flex: none; }
 
 /* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) : l'alerte reste en bas, à gauche du + volant, son texte et ses boutons sur une ligne */
 @media (orientation: landscape) and (max-height: 520px) {
@@ -38,6 +45,7 @@
     right: 84px; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 760px;
     bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
   }
+  .cal-msg-alerte[data-message] .cal-msg-l { flex: 1 1 auto; min-width: 0; }
 }
 
 /* paysage et grand écran : à côté du rail, jamais dessus */
@@ -58,3 +66,10 @@
 }
 .cal-tri-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .cal-tri-seg small { align-self: center; padding: 0 6px 0 4px; font-size: 14px; color: rgb(var(--cave-200)); }
+
+/* CRITIQUE-5 n° 13 (E33, D-200) : faute de bande libre de noms, le message entre au pied de l'en-tête collé, dans son flux. L'en-tête grandit
+   de sa hauteur et la frise passe dessous : aucun nom n'est couvert. */
+.cal-msg[data-message].cal-msg-entete {
+  position: relative; z-index: auto; left: auto; right: auto; bottom: auto; width: auto; max-width: none; transform: none;
+  margin: 4px 8px 6px;
+}

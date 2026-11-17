@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Clock, Maximize2, Minimize2 } from 'lucide-react';
 import type { Periode } from '../../../components/periode/periode';
-import { dateDeSemaine, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
+import { dateDeSemaine, lundiDe, semaineAvecAn, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, type Boite, type EtoileCourbe } from './Courbe';
-import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
+import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
@@ -84,7 +84,7 @@ const HAUTEUR_COURBE = { portrait: 110, paysage: 90 };
 const HAUTEUR_GRANDE_TEL = 250;
 /** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
 const RESERVE_GRANDE = 44 + 70 + 34 + 16;
-/** Au-delà de cette largeur (tablette, ordinateur), la grande courbe prend toute la hauteur de la zone de la frise (CRITIQUE-4 n° 27). */
+/** Au-delà de cette largeur (tablette, ordinateur), rien à tourner : aucune invitation « Tourne le téléphone » (CRITIQUE-4 n° 19). */
 const LARGE_PX = 700;
 /** « 16 nov. » ; avec l'année quand la plage change d'année (« 16 nov. 2026 → 14 nov. 2027 », CRITIQUE-4 n° 26). */
 const plageDe = (du: string, au: string): string => {
@@ -145,8 +145,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // La grande courbe : en paysage, la hauteur de l'écran moins l'en-tête ; au téléphone en portrait, celle de sa maquette ; plus large, toute la
   // hauteur de la zone de la frise jusqu'au bas de l'écran (ou au haut de la barre d'onglets), moins son titre, le détail et la légende.
   const [hautDispo, setHautDispo] = useState(0);
+  // CRITIQUE-5 n° 16 : au téléphone aussi, la courbe prend la hauteur disponible (plus de moitié basse vide), sans descendre sous sa maquette.
   useLayoutEffect(() => {
-    if (!graph || paysage || typeof window === 'undefined' || window.innerWidth < LARGE_PX) { setHautDispo(0); return undefined; }
+    if (!graph || paysage || typeof window === 'undefined') { setHautDispo(0); return undefined; }
     const mesurer = () => {
       const haut = zone.current?.getBoundingClientRect().top ?? 0;
       setHautDispo(Math.round(hautDesOnglets() - haut - RESERVE_GRANDE));
@@ -344,7 +345,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const sansDate = modele.sansDate?.length ?? 0;
   const premiereSemaine = visibles[0]?.debut ?? fenetre.du;
   const plage = plageDe(premiereSemaine, ajouterJours(premiereSemaine, nombre * 7 - 1));
-  const libelle = libelleDuree(nombre, annee);
+  const libelle = total ? libellePeriode(periode, { du: semainesTot[index]?.debut ?? fenetre.du, semaines: nombre }, semainesTot[0].debut, total, annee) : libelleDuree(nombre, annee);
   // La rangée d'un mouvement (sa couleur) et les noms mis de côté viennent des choses du modèle.
   const rangeeDe = useMemo(() => {
     const parMouvement = new Map<string, string>();
@@ -396,7 +397,14 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, [base, apercuC, creux]);
   // Dans l'année, le cadre dit les mois (c1-d : « nov. – oct. »).
   // Les douze mois de la bande de l'année (le premier, puis onze de plus : « nov. – oct. »), pas le treizième que touche la 52e semaine.
-  const etiquetteAnnee = total ? `${MOIS_MIN[moisDeSemaine(semainesTot[0].debut)]} – ${MOIS_MIN[(moisDeSemaine(semainesTot[0].debut) + 11) % 12]}` : undefined;
+  // CRITIQUE-5 n° 2 : la bande couvre toutes les semaines (13 mois quand la dernière tombe dans un treizième) ; le cadre nomme le premier et le
+  // dernier mois, chacun celui du jeudi de sa semaine, l'année du dernier quand elle change (« nov. – nov. 2027 »).
+  const etiquetteAnnee = total ? (() => {
+    // `moisDeSemaine` lit le jeudi d'un lundi ; l'année se lit sur ce même jeudi.
+    const premier = semainesTot[0].debut, dernier = semainesTot[total - 1].debut;
+    const an = (lundi: string) => ajouterJours(lundi, 3).slice(0, 4);
+    return `${MOIS_MIN[moisDeSemaine(premier)]} – ${MOIS_MIN[moisDeSemaine(dernier)]}${an(dernier) !== an(premier) ? ` ${an(dernier)}` : ''}`;
+  })() : undefined;
   const lundis = useMemo(() => semainesTot.map(s => s.debut), [semainesTot]);
 
   // Les choses étoilées, sur leur marche (E31, CRITIQUE-3 n° 23) : le nom de leur mouvement sur la courbe, sinon leur titre à leur semaine.
@@ -421,10 +429,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [tirage, setTirage] = useState<Boite | null>(null);
 
   // Le chiffre clé sur UNE ligne, comme z2s (« 113 CHF à dépenser · S24 ») ; la phrase entière est dans son nom accessible (E01, D-181).
+  // CRITIQUE-5 n° 2 : la semaine du creux porte son année quand elle n'est pas celle d'aujourd'hui (« S44 2027 », jamais une S44 lue au passé).
+  const semaineCreux = creux ? semaineAvecAn(creux.lundi, semainesTot[0]?.debut ?? creux.lundi) : '';
   const cle = courbe && creux ? (
     <button type="button" className="ent-k" data-ent-cle aria-expanded={creuxOuvert}
-      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (S${creux.numero}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
-      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser ·</span><em>{`S${creux.numero}`}</em>
+      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
+      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser ·</span><em>{semaineCreux}</em>
     </button>
   ) : <span className="ent-k ent-k-vide" />;
 
@@ -464,16 +474,20 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             )}
           </Courbe>
         ) : base === null ? (
+          // CRITIQUE-5 n° 24 : la phrase et le lien dans un seul élément en ligne ; enfants directs d'une boîte flex, l'espace finale de la
+          // phrase était retirée au rendu (« dansFinances › Solde »).
           <p className="ent-inconnu">
-            Solde de départ inconnu : à régler dans{' '}
-            <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>Finances › Solde</a>
+            <span>
+              Solde de départ inconnu : à régler dans{' '}
+              <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>Finances › Solde</a>
+            </span>
           </p>
         ) : null}
       </div>
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} /> : (
+          {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} creux={creux} /> : (
             <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine} />
           )}
           {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}
@@ -489,7 +503,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {info && info.genre !== 'date' && <p className={`ent-info ent-info--${info.genre}`} data-info={info.genre}>{info.texte}</p>}
       </div>
 
-      {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
+      {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} dates={paysage} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
         <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue('semaines')} onSansDate={() => onVue('liste', 'sans-date')}

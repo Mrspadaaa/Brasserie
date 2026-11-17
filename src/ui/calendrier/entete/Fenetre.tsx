@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { bornes, type Periode } from '../../../components/periode/periode';
+import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
 import { ajouterJours, largeurTexte, lignesEtiquette, type Boite } from './Courbe';
 
@@ -46,6 +46,19 @@ export function libelleDuree(semaines: number, annee: boolean): string {
   if (semaines === 13) return '3 mois';
   if (semaines === 26) return '6 mois';
   return `${semaines} sem.`;
+}
+
+/**
+ * Le texte du bouton de période (CRITIQUE-5 n° 18, E07 ET-PER) : la période de l'app est la même partout. Quand elle est un mois, un trimestre
+ * ou une année (réglée dans la barre de l'app ou Finances) et que la fenêtre montre ses semaines, le bouton dit le même libellé que la barre
+ * (`etiquetteCourte` : « Nov. », « T4 », « 2026 ») ; sinon, les formes du calendrier (« 6 sem. », « 3 mois », « 6 mois », « An »).
+ */
+export function libellePeriode(periode: Periode | undefined, fenetre: FenetreSemaines, premierLundi: string, total: number, annee: boolean): string {
+  if (!annee && periode && (periode.genre === 'mois' || periode.genre === 'trimestre' || periode.genre === 'annee')) {
+    const f = fenetreDePeriode(periode, premierLundi, total);
+    if (f && f.du === fenetre.du && f.semaines === fenetre.semaines) return etiquetteCourte(periode);
+  }
+  return libelleDuree(fenetre.semaines, annee);
 }
 
 export interface CadreProps {

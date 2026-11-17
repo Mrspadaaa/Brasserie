@@ -1,7 +1,10 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import type { Batch } from '../../src/types';
+import type { Batch, StockItem } from '../../src/types';
+import { articlesACommander } from '../../src/domain/stockLevel';
+import { indiceSemaine, lignesDeReglage, vueHorizon } from '../../src/domain/stock/horizon';
+import { aujourdhuiLocal } from '../../src/ui/stock/useHorizonStock';
 import { CalendrierTab } from '../../src/components/tabs/CalendrierTab';
 import { BottomNav } from '../../src/components/BottomNav';
 import { plusMenuFor } from '../../src/domain/plusEcran';
@@ -24,6 +27,13 @@ vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: () => null }));
 vi.mock('../../src/ui/BrewerActivity', () => ({ BrewerActivity: () => null }));
 vi.mock('../../src/ui/PersistenceStatus', () => ({ PersistenceStatus: () => null }));
 vi.mock('../../src/ui/CommandPalette', () => ({ CommandPalette: () => null }));
+/* CRITIQUE-5 n° 3 : on lit ce que l'App passe à la feuille « Prévoir une dépense » (la vraie feuille est rendue, rien n'est remplacé). */
+const vu = vi.hoisted(() => ({ planSheet: [] as Array<Record<string, unknown>> }));
+vi.mock('../../src/ui/finance/prevision/PlanSheetC', async importOriginal => {
+  const orig = await importOriginal<typeof import('../../src/ui/finance/prevision/PlanSheetC')>();
+  const { createElement } = await import('react');
+  return { ...orig, PlanSheetC: (p: Record<string, unknown>) => { vu.planSheet.push(p); return createElement(orig.PlanSheetC as never, p as never); } };
+});
 
 beforeEach(() => {
   localStorage.clear();
@@ -266,6 +276,63 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     const plan = within(await screen.findByRole('dialog', { name: 'Prévoir une dépense' }, { timeout: 10000 }));
     expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(lundiS50);
     expect(document.body.textContent).not.toMatch(/l’app ouvrirait/);
+    /* CRITIQUE-5 n° 3 (D-68) : l'App passe la catégorie d'achat de matières (« Brassage »), jamais « Charges fixes » (rangée Papiers) */
+    expect(vu.planSheet[vu.planSheet.length - 1]).toMatchObject({ date: lundiS50, categorie: 'brassage' });
+  }, 40000);
+
+  /* La sélection visible exige que PlanSheetC lise `categorie` : fichier hors de la voie (RESULTAT.md, DÉCISION 1). */
+  it.todo('CRITIQUE-5 n° 3 : PlanSheet ouverte depuis Achats montre « Brassage » dans la pastille Catégorie (attend la DÉCISION 1 : PlanSheetC lit `categorie`)');
+
+  /*
+   * CRITIQUE-5 n° 17 (D-191, E25) : « Commander » d'un brassin à qui il manque du malt ouvre des Courses qui le listent, jamais « Rien à
+   * commander ». Deux écritures de date : ISO (lue par horizon.ts : la fenêtre va de la semaine en cours à celle du brassin) et à la suisse,
+   * « 07.12.2026 », celle qu'écrivent planRecipeBatch et QuickActionModal (normalizeBrewDate) et qu'horizon.ts ne lit pas : ses courses
+   * tombent au seuil, « Tout » les montre (DÉCISION 2 du RESULTAT : horizon.ts à corriger hors de cette voie).
+   */
+  const jouerCommander = async (suisse: boolean) => {
+    const aujourdhui = todayISO();
+    const iso = (n: number) => ajouterJours(lundiDe(aujourdhui), 7 * n);
+    const date = (n: number) => (suisse ? iso(n).split('-').reverse().join('.') : iso(n));
+    const brassinDe = (id: string, name: string, semaines: number, snapshot: Record<string, unknown>) => ({
+      id, name, style: 'Test', volumeL: 100, brewDate: '', status: 'planifie', gravityLog: [], recipeSnapshot: { ...recetteDeBanc(), ...snapshot, name }, plannedBrewDate: date(semaines)
+    }) as unknown as Batch;
+    /* le brassin dont on part : en S+3, il lui manque 5 kg de « Pale » (0 au stock) ; un autre brassin, sans besoin, est planifié avant lui en S+1 :
+       l'horizon par défaut des Courses (« avant le prochain brassin ») s'arrêtait à S+1 et disait « Rien à commander » (le témoin, plus bas) */
+    const loin = brassinDe('LOT-LOIN', 'ZZ TEST — Porter lointain', 3, {});
+    const proche = brassinDe('LOT-PROCHE', 'ZZ TEST — Blonde proche', 1, { fermentables: [], hops: [], yeast: undefined, adjuncts: [] });
+    const malt = { id: 'ST-PALE', ref: 'ST-PALE', name: 'Pale', category: 'Malt', unit: 'kg', currentStock: 0, minStock: 0 } as unknown as StockItem;
+    const temoin = vueHorizon(articlesACommander([malt], [loin, proche], []), [loin, proche], aujourdhuiLocal());
+    expect(lignesDeReglage(temoin, 'brassin')).toHaveLength(0);
+    expect(lignesDeReglage(temoin, 'tout').map(l => l.item.name)).toEqual(['Pale']);
+    StorageService.setUiState('stocks_horizon', 'brassin');
+
+    window.history.replaceState(null, '', '/?dev-local');
+    vi.spyOn(StorageService, 'startSync').mockImplementation(() => {});
+    vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
+    vi.spyOn(StorageService, 'getConfig').mockReturnValue(defaultConfig);
+    vi.spyOn(StorageService, 'getBatches').mockImplementation(() => [loin, proche]);
+    vi.spyOn(StorageService, 'getStocks').mockImplementation(() => ({ rawMaterials: [malt], cleaning: [], equipment: [], kegs: [] }));
+    const { App } = await import('../../src/App');
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Calendrier' }));
+    const barre = await screen.findByRole('button', { name: /^ZZ TEST — Porter lointain/ }, { timeout: 10000 });
+    fireEvent.pointerDown(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerUp(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.click(await screen.findByRole('button', { name: /^Commander/ }));
+    await waitFor(() => expect(document.querySelector('[data-calendrier]')).toBeNull(), { timeout: 10000 });
+    await waitFor(() => expect(document.body.textContent, (document.body.textContent ?? '').slice(0, 1500)).toMatch(/Pale/), { timeout: 10000 });
+    expect(document.body.textContent).not.toMatch(/Rien à commander/);
+    return StorageService.getUiState<unknown>('stocks_horizon', null);
+  };
+
+  it('CRITIQUE-5 n° 17 : date ISO — la fenêtre des Courses va de la semaine en cours à celle du brassin', async () => {
+    const horizon = await jouerCommander(false);
+    const courante = indiceSemaine(Math.floor(Date.parse(`${aujourdhuiLocal()}T00:00:00Z`) / 86400000));
+    expect(horizon).toEqual({ de: courante, a: courante + 3 });
+  }, 40000);
+
+  it('CRITIQUE-5 n° 17 : date à la suisse (celle de l’app) — « Tout », qui contient les courses du brassin', async () => {
+    expect(await jouerCommander(true)).toBe('tout');
   }, 40000);
 });
 

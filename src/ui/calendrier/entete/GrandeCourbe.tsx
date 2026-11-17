@@ -19,7 +19,13 @@ export const NOMS_RANGEES: Record<string, string> = {
   brassin: 'Brassins', fete: 'Fêtes', vente: 'Ventes', achat: 'Achats', travaux: 'Travaux', activite: 'Activités', papier: 'Papiers'
 };
 
-/** La rangée du plus gros mouvement d'une semaine ; `autre` quand elle n'a rien de nommé. */
+/** La classe du trait de la caisse dans la grande courbe : ni `ent-c-<rangée>`, ni le gris de Papiers (CRITIQUE-5 n° 16). */
+export const CLASSE_CAISSE = 'ent-caisse ent-gc-caisse';
+
+/**
+ * La rangée du plus gros mouvement d'une semaine ; `autre` (neutre) quand elle n'a rien de nommé. La tendance de Finances n'est jamais un
+ * mouvement nommé (`SoldeSemaine.mouvements` l'exclut) : une semaine à tendance seule reste neutre.
+ */
 export function rangeeDeSemaine(s: SoldeSemaine, rangeeDe?: (m: MouvementNomme) => string | undefined): string {
   let gros: MouvementNomme | null = null;
   for (const m of s.mouvements) if (!gros || Math.abs(m.centimes) > Math.abs(gros.centimes)) gros = m;
@@ -129,7 +135,7 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
   return (
     <section className={paysage ? 'ent-gc ent-gc--cote' : 'ent-gc'} aria-label="La courbe en grand" data-vue="graph">
       <div className="ent-gc-h">
-        <div className="ent-gc-t">Libre, sur l’année<span>caisse en gris</span></div>
+        <div className="ent-gc-t">Libre, sur l’année</div>
         <button type="button" className="ent-x" aria-label="Revenir à la frise" onClick={e => { e.stopPropagation(); onFermer(); }}><X size={20} aria-hidden="true" /></button>
       </div>
       <div className="ent-gc-c">
@@ -140,7 +146,8 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
               <g key={v}><line className={v === 0 ? 'ent-grad ent-grad-zero' : 'ent-grad'} x1={g.xl} x2={largSvg - MARGE_D} y1={g.y(v)} y2={g.y(v)} /><text className="ent-axe" x={g.xl - 6} y={g.y(v) + 5} textAnchor="end">{chf(v)}</text></g>
             ))}
             {g.lo < 0 && !ticks.includes(0) && <line className="ent-grad ent-grad-zero" x1={g.xl} x2={largSvg - MARGE_D} y1={y0} y2={y0} />}
-            <path className="ent-caisse" d={escalier(courbe.map(s => s.caisse), g)} />
+            {/* CRITIQUE-5 n° 16 : la caisse en pointillé, d'un jeton qui n'est la couleur d'aucune rangée ni un gris voisin de Papiers (`--repere`) */}
+            <path className={CLASSE_CAISSE} data-caisse d={escalier(courbe.map(s => s.caisse), g)} />
             {courbe.map((s, i) => (
               <path key={s.lundi} className={`ent-sgm ent-c-${rangees[i]}`} d={`${i > 0 ? `M${g.x(i).toFixed(1)} ${g.y(courbe[i - 1].libre).toFixed(1)}V${g.y(s.libre).toFixed(1)}` : `M${g.x(i).toFixed(1)} ${g.y(s.libre).toFixed(1)}`}H${g.x(i + 1).toFixed(1)}`} />
             ))}
@@ -167,11 +174,11 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
         </div>
         {lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
       </div>
-      {presentes.length > 0 && (
-        <ul className="ent-leg" aria-label="Les couleurs sont celles des rangées">
-          {presentes.map(r => <li key={r} className={`ent-r-${r}`}><i aria-hidden="true" />{NOMS_RANGEES[r]}</li>)}
-        </ul>
-      )}
+      {/* La légende, une fois : la caisse, puis les seules couleurs de rangée présentes sur le tracé (E12, analyse g4b) */}
+      <ul className="ent-leg" aria-label="Légende : la caisse, et les couleurs des rangées">
+        <li className="ent-leg-caisse" data-legende="caisse"><i aria-hidden="true" />caisse</li>
+        {presentes.map(r => <li key={r} className={`ent-r-${r}`} data-legende={r}><i aria-hidden="true" />{NOMS_RANGEES[r]}</li>)}
+      </ul>
     </section>
   );
 }

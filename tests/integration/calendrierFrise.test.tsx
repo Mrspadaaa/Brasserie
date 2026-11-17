@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
-import { ajouterJours, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../src/domain/calendrier';
+import { ajouterJours, anneeEnMois, etiquetteS, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../src/domain/calendrier';
+import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
+import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
+import { disposer, largeurEtiquette, pastille, texteCaddie, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
+import { Barre, formesDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
+import { largeurTexte, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
 import { DetailChose } from '../../src/ui/calendrier/frise/DetailChose';
 import { VueListe } from '../../src/ui/calendrier/frise/VueListe';
@@ -108,7 +113,9 @@ describe('C8 : une barre de moins de 24 px devient une marque (3 mois, 6 mois, A
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^An/ }));
     expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('annee');
-    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('12');
+    /* CRITIQUE-5 n° 2 (lot 1) : les mois de toutes les semaines de la courbe : douze, ou treize quand la dernière semaine y tombe */
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe(String(anneeEnMois(JOUR).length));
+    expect(anneeEnMois(JOUR).length).toBeGreaterThanOrEqual(12);
     expect(marqueHotte()).not.toBeNull();
     for (const b of document.querySelectorAll<HTMLElement>('[data-barre]')) expect(parseFloat(b.style.width)).toBeGreaterThanOrEqual(24);
   });
@@ -484,5 +491,183 @@ describe('CRITIQUE-4 (lot q3-donnees) : Lier, filtre, fenêtre au pied, vente ha
     await waitFor(() => expect(appels.some(a => a.op === 'creer' && a.collection === 'financialPlans')).toBe(true));
     expect(appels.find(a => a.op === 'creer')!.patch).toMatchObject({ amountCents: 13000, direction: 'in', clientId: 'CL-PONT', title: 'Café du Pont, 1 fût' });
     expect(screen.queryByText(/Indique un montant/)).toBeNull();
+  });
+});
+
+/* ---------- CRITIQUE-5 (tour 5, lot lot2-frise-rangees) ---------- */
+
+/** Les choses du banc, telles que l'onglet les pose (la fixture de la vraie app, `construireModele`). */
+function chosesDuBanc(jour = JOUR): ChoseCalendrier[] {
+  const e = etatBanc(jour);
+  const profile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 403200, confirmed: true } };
+  return construireModele({
+    aujourdhui: jour, transactions: e.transactions, payments: e.paiements ?? [], plans: e.plans, profile: profile as never, assets: [], batches: e.batches, stockItems: [],
+    items: e.items, recettes: e.recettes, reglages: e.reglages ?? REGLAGES_VIDES, lignesCourses: e.lignesCourses ?? []
+  } as never).choses;
+}
+/** n semaines, du lundi du jour : les colonnes de la frise. */
+const semainesDe = (n: number): Colonne[] => Array.from({ length: n }, (_, i) => {
+  const debut = ajouterJours(L, i * 7);
+  return { debut, fin: ajouterJours(debut, 6), etiquette: etiquetteS(debut) };
+});
+
+describe('CRITIQUE-5 (lot2-frise-rangees) : noms entiers, durée, pastille, échéance, caddie', () => {
+  /* les largeurs simulées : la piste à 390 (portrait, 6 semaines), en paysage 844 × 390 (13 semaines) et au 1280 (6 semaines) */
+  const VUES = [
+    { nom: 'm390', largeur: 366, n: 6, paysage: false, reserve: 76 },
+    { nom: 'paysage', largeur: 740, n: 13, paysage: true, reserve: 76 },
+    { nom: 'd1280', largeur: 872, n: 6, paysage: false, reserve: 0 }
+  ] as const;
+
+  it('n° 14, 26, 28 : aucun nom n’est coupé quand la piste a la place ; nom et montant restent ensemble ; rien ne passe le bord droit', () => {
+    const choses = chosesDuBanc();
+    const noms = ['Blonde d’automne', 'Ambrée maison', 'Café du Pont, 1 fût', 'IPA de printemps', 'Saison de ferme', 'Livraison Brouwland', '3 fûts La Cigogne', 'Hotte', 'Commande groupée de malt'];
+    for (const vue of VUES) {
+      const colonnes = semainesDe(vue.n);
+      const lc = vue.largeur / vue.n;
+      const vueLarge = vue.n > 6;
+      const lieCourt = vue.largeur < 700 || vueLarge;
+      const bord = vue.largeur - vue.reserve;
+      const vus = new Set<string>();
+      for (const r of ['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites', 'papiers'] as const) {
+        const dedans = choses.filter(c => c.rangee === r);
+        const { items } = disposer(dedans, colonnes, lc, vue.largeur, { reserveDroite: vue.reserve, paysage: vue.paysage, vueLarge, lieCourt });
+        for (const d of items) {
+          if (d.marque && !d.avecLibelle) continue;
+          const c = d.chose;
+          vus.add(c.titre);
+          const o0 = d.gauche, o1 = d.gauche + d.largeur;
+          const m = montantBarre(c);
+          /* nom + montant (+ pastille), sans la durée : ce qui ne doit jamais être coupé */
+          const besoin = largeurEtiquette(c, false, lieCourt);
+          const nomMontant = largeurTexte(c.etiquette ?? c.titre, 600) + (m ? largeurTexte(m, 700) + 6 : 0);
+          const placeLibre = Math.max(bord - o1 - 8, o0 - 8, d.marque ? 0 : d.largeur - 16);
+          const ctx = `${vue.nom} · ${c.titre} · ${d.cote} ${Math.round(d.place)} / ${Math.round(besoin)}`;
+          /* n° 28 : plus aucun texte en flot ; deux lignes seulement pour une chose liée */
+          expect(d.deuxLignes === false || !!c.lie || (d.deuxLignes === 'duree' && c.rangee === 'brassins' && !vue.paysage), ctx).toBe(true);
+          if (placeLibre < besoin) continue;
+          if (d.cote === 'dedans') expect(d.largeur - 16, ctx).toBeGreaterThanOrEqual(besoin - 1);
+          else if (d.deuxLignes === 'nom' || d.deuxLignes === 'duree') expect(d.place, ctx).toBeGreaterThanOrEqual(nomMontant);
+          else if (d.deuxLignes === 'nomSeul') expect(d.place, ctx).toBeGreaterThanOrEqual(largeurTexte(c.etiquette ?? c.titre, 600));
+          else expect(d.place, ctx).toBeGreaterThanOrEqual(besoin - 4);
+          /* n° 28 : l'étiquette posée à droite s'arrête avant le bord (le + volant compris) */
+          if (d.cote === 'droite') expect((d.marque ? d.gauche + 28 : o1) + 6 + d.place, ctx).toBeLessThanOrEqual(bord + 1);
+        }
+      }
+      /* les noms de la critique sont bien jugés dans cette vue (sinon le test ne prouverait rien) */
+      for (const n of noms) if (choses.some(c => c.titre === n && c.debut <= colonnes[colonnes.length - 1].fin && (c.fin || c.debut) >= colonnes[0].debut)) expect(vus.has(n), `${vue.nom} : ${n}`).toBe(true);
+    }
+  });
+
+  it('n° 14 : sur le banc à 390, chaque étiquette visible a la largeur de son nom et de son montant (jamais « … »)', () => {
+    monter();
+    /* les noms de la critique (m390-01, m390-25) ; jsdom estime 7,6 px par lettre, plus large que la police : un nom plus long que la moitié
+       de la piste peut y manquer de place, ce que le test de `disposer` ci-dessus juge avec la place libre */
+    const critique = /^(Blonde d’automne|Ambrée maison|Café du Pont, 1 fût|IPA de printemps|Saison de ferme|Livraison Brouwland|Hotte|Commande groupée de malt|Stout maison|Porter d’hiver|Marché de Noël|Noël privés|Inventaire du stock)$/;
+    const etiquettes = [...document.querySelectorAll<HTMLElement>('.cal-lbl')].filter(l => !l.classList.contains('cal-lbl-caddie') && critique.test(l.querySelector('.cal-lbl-t')?.textContent ?? ''));
+    expect(etiquettes.length).toBeGreaterThan(8);
+    for (const l of etiquettes) {
+      const nom = l.querySelector('.cal-lbl-t')?.textContent ?? '';
+      const m = l.querySelector('.cal-lbl-m')?.textContent ?? '';
+      const max = parseFloat(l.style.maxWidth);
+      /* deux lignes « nomSeul » : le montant est sur la seconde ligne, la première ne porte que le nom */
+      const montantDessous = !!l.querySelector('.cal-lbl-l2 .cal-lbl-m');
+      const besoin = largeurTexte(nom, 600) + (m && !montantDessous ? largeurTexte(m, 700) + 6 : 0);
+      expect(nom.endsWith('…'), nom).toBe(false);
+      /* la place libre de la piste, mesurée sur l'objet de l'étiquette (sa barre ou sa marque, juste avant elle) */
+      const objet = l.previousElementSibling as HTMLElement;
+      const o0 = parseFloat(objet.style.left), w = parseFloat(objet.style.width), bord = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur'));
+      const placeLibre = Math.max(bord - (o0 + w) - 8, o0 - 8, objet.hasAttribute('data-barre') ? w - 16 : 0);
+      if (placeLibre < besoin) continue;
+      expect(max, `${nom} ${m}`).toBeGreaterThanOrEqual(besoin);
+    }
+  });
+
+  it('n° 23 : une seule forme de durée, « J0 / 28 » avec ses espaces, pour deux brassins de longueurs différentes ; « · prête … » cède d’abord', () => {
+    expect(formesDuree('J0 / 28 · prête 21 déc.')).toEqual(['J0 / 28 · prête 21 déc.', 'J0 / 28']);
+    expect(formesDuree('J8 / 28 · prête 7 déc.')).toEqual(['J8 / 28 · prête 7 déc.', 'J8 / 28']);
+    expect(formesDuree('pas brassée · prête le 24 nov.')).toEqual(['pas brassée · prête le 24 nov.', 'pas brassée']);
+    monter();
+    const durees = [...document.querySelectorAll('[data-duree], .cal-lbl-j')].map(e => e.textContent ?? '').filter(t => /^J\d/.test(t));
+    const brassins = new Set([...document.querySelectorAll('[data-duree], .cal-lbl-j')].filter(e => /^J\d/.test(e.textContent ?? '')).map(e => e.closest('[data-chose]')?.getAttribute('data-chose') ?? e.parentElement?.previousElementSibling?.getAttribute('data-chose') ?? '?'));
+    expect(durees.length).toBeGreaterThanOrEqual(2);
+    expect(brassins.size).toBeGreaterThanOrEqual(2);
+    for (const t of durees) {
+      expect(t).toMatch(/^J\d+ \/ \d+/);
+      expect(t).not.toMatch(/J\d+\/\d+/);
+    }
+  });
+
+  it('n° 19 (E23) : une rangée dont un brassin a un coût à venir le dit en mots, jamais « 1 » seul', () => {
+    const colonnes = semainesDe(6);
+    const base: ChoseCalendrier = {
+      id: 'brassin-ZZ', rangee: 'brassins', titre: 'ZZ TEST — Blonde du banc', debut: ajouterJours(L, 7), fin: ajouterJours(L, 34),
+      source: { genre: 'batch', id: 'ZZ', statut: 'planifie' }, ouvre: { ecran: 'brassin', id: 'ZZ' }, deplacable: true
+    } as ChoseCalendrier;
+    for (const c of [{ ...base, coutAVenir: true as const }, { ...base, partiel: true }, { ...base, coutAVenir: true as const, partiel: true }]) {
+      const p = pastille('brassins', [c], colonnes);
+      expect(p.texte).toBe('coût à venir');
+      expect(p.lecture).toMatch(/coût à venir/);
+      expect(p.lecture).not.toMatch(/0 CHF|solde 0/);
+    }
+    /* avec un brassin chiffré à côté : le montant, puis « + coût à venir » */
+    const chiffre = { ...base, id: 'brassin-Y', titre: 'Stout', centimes: -14200 };
+    expect(pastille('brassins', [chiffre, { ...base, coutAVenir: true as const }], colonnes).texte).toMatch(/^−142 \+ coût à venir$/);
+    /* jamais un chiffre seul : une chose sans montant se compte en mots */
+    const sans = pastille('activites', [{ ...base, rangee: 'activites', source: { genre: 'creative', id: 'A', type: 'event' } } as ChoseCalendrier], colonnes);
+    expect(sans.texte).toBe('1 chose');
+    expect(sans.texte).not.toMatch(/^\d+$/);
+  });
+
+  it('n° 21 (E47 c) : le loyer récurrent se dit « à payer », jamais « proposé » ; la vente probable reste « proposé »', () => {
+    const loyer = { id: 'argent-loyer', rangee: 'papiers', titre: 'Loyer du local', debut: ajouterJours(L, 10), fin: ajouterJours(L, 10), proposition: 'echeance', source: { genre: 'plan', id: 'P', origine: 'recurring', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: { raison: 'x' } } as ChoseCalendrier;
+    expect(nomAccessible(loyer)).toMatch(/^Loyer du local, à payer, /);
+    expect(nomAccessible(loyer)).not.toMatch(/proposé/);
+    expect(nomAccessible({ ...loyer, proposition: 'vente' })).toMatch(/proposé/);
+    expect(nomAccessible({ ...loyer, proposition: 'brassin-habituel' })).toMatch(/proposé/);
+    monter();
+    const surFrise = [...document.querySelectorAll('[data-proposition="echeance"]')];
+    expect(surFrise.length).toBeGreaterThan(0);
+    for (const e of surFrise) {
+      expect(e.getAttribute('aria-label')).toMatch(/à payer/);
+      expect(e.getAttribute('aria-label')).not.toMatch(/proposé/);
+    }
+    const vente = document.querySelector('[data-proposition="vente"]');
+    expect(vente?.getAttribute('aria-label')).toMatch(/proposé/);
+  });
+
+  it('n° 26 : deux lignes « nom » : le nom et son montant ensemble sur la première ligne, la pastille « lié à » seule sur la seconde', () => {
+    const vente = { id: 'argent-cig', rangee: 'ventes', titre: '3 fûts La Cigogne', debut: ajouterJours(L, 30), fin: ajouterJours(L, 30), centimes: 90000, lie: { texte: 'lié à La Cigogne', apercu: 'La Cigogne · client', client: 'La Cigogne' }, source: { genre: 'plan', id: 'P', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as ChoseCalendrier;
+    const rien = () => undefined;
+    render(<div style={{ position: 'relative' }}><Barre chose={vente} gauche={200} largeur={60} haut={0} hauteur={26} cote="gauche" placeEtiquette={200} deuxLignes="nom" largeurColonne={60} bornes={[0, 0]} onToucher={rien} onAppuiLong={rien} onGlisse={rien} onLacheGlisse={rien} onBord={rien} onLacheBord={rien} onRefus={rien} /></div>);
+    const l1 = document.querySelector('.cal-lbl-l1')!, l2 = document.querySelector('.cal-lbl-l2')!;
+    expect(l1.textContent).toBe('3 fûts La Cigogne+900');
+    expect(l2.querySelector('.cal-lbl-m')).toBeNull();
+    expect(l2.querySelector('[data-lie]')).not.toBeNull();
+  });
+
+  it('n° 32 : le caddie nomme toujours son brassin, en entier ou court (« Blonde · malt pilsner, saaz ») ; sur le banc à 390 aussi', () => {
+    const chose = { titre: 'Blonde d’automne' } as ChoseCalendrier;
+    const jalon = { id: 'commander', libelle: 'Commander', jour: L, ecart: -5, glissable: false, articles: ['Malt pilsner', 'Saaz'] } as JalonBrassin;
+    expect(texteCaddie(chose, jalon)).toBe('Blonde d’automne · malt pilsner, saaz');
+    expect(texteCaddie(chose, jalon, true)).toBe('Blonde · malt pilsner, saaz');
+    expect(texteCaddie(chose, { ...jalon, articles: undefined }, true)).toBe('Blonde · courses');
+    monter();
+    const caddies = [...document.querySelectorAll('.cal-lbl-caddie')].map(e => e.textContent ?? '');
+    expect(caddies.length).toBeGreaterThan(0);
+    for (const t of caddies) expect(t).toMatch(/^(Blonde|Stout|Porter|IPA|Saison)\b.* · /);
+  });
+
+  it('n° 1 (E29) : pendant f2-a, la durée tirée qui ne tient pas dans une barre courte se lit entière, à côté de la barre', () => {
+    const saison = { id: 'brassin-LOT-SAISON', rangee: 'brassins', titre: 'Saison de ferme', debut: ajouterJours(L, -6), fin: L, pasBrassee: true, duree: 'pas brassée · prévue le 10 nov.', source: { genre: 'batch', id: 'LOT-SAISON', statut: 'planifie' }, ouvre: { ecran: 'brassin', id: 'LOT-SAISON' }, deplacable: true } as ChoseCalendrier;
+    const rien = () => undefined;
+    render(<div style={{ position: 'relative' }}><Barre chose={saison} gauche={2} largeur={56} haut={0} hauteur={26} cote="droite" placeEtiquette={200} largeurColonne={60} bornes={[0, 5]} allongement={60} etiquetteDuree="pas brassée · prête le 24 nov." onToucher={rien} onAppuiLong={rien} onGlisse={rien} onLacheGlisse={rien} onBord={rien} onLacheBord={rien} onRefus={rien} /></div>);
+    const barre = document.querySelector('[data-chose="brassin-LOT-SAISON"]') as HTMLElement;
+    /* la barre s'allonge à l'image : sa largeur + l'allongement d'une colonne */
+    expect(parseFloat(barre.style.width)).toBe(116);
+    const em = barre.querySelector('em[data-duree]')!;
+    expect(em.textContent).toBe('pas brassée · prête le 24 nov.');
+    expect(em.classList.contains('cal-duree-hors')).toBe(true);
+    expect(em.textContent).not.toMatch(/J\d/);
   });
 });

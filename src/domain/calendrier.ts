@@ -1,7 +1,7 @@
 import type { Batch, CreativeItem, FenetreCalendrier } from '../types';
 import type { ForecastItem } from './finance/forecast';
 import type { FinancialPlan } from './finance/types';
-import { formatCHF, isoDate } from './finance/ledger';
+import { isoDate } from './finance/ledger';
 import { actualBrewDate, hasBrewStarted, plannedBrewDate, plannedDateIsPast } from './batchSchedule';
 import { delaiAppris, type ReglagesFournisseurs } from './fournisseurs';
 import type { CourbeCaisse, Creux } from './calendrierCaisse';
@@ -257,15 +257,21 @@ export function fenetreSemaines(semaines: readonly SemaineCalendrier[], debut: n
 }
 
 export interface MoisCalendrier { index: number; debut: string; fin: string; annee: number; mois: number; court: string }
-/** L'année en douze mois à partir du mois de `aujourdhui` (c1-d, E13). */
-export function anneeEnMois(aujourdhui: string): MoisCalendrier[] {
-  const a = Number(aujourdhui.slice(0, 4)), m = Number(aujourdhui.slice(5, 7)) - 1;
-  return Array.from({ length: 12 }, (_, index) => {
+/**
+ * L'année (c1-d, E13) : les mois de toutes les semaines de la courbe, chaque semaine rangée dans le mois de son jeudi (ISO 8601). Douze mois en
+ * général, treize quand la dernière des `nombreSemaines` semaines tombe dans le treizième (CRITIQUE-5 n° 2 : le creux de S44 2027 y est).
+ */
+export function anneeEnMois(aujourdhui: string, nombreSemaines = NB_SEMAINES_COURBE): MoisCalendrier[] {
+  const jeudi0 = ajouterJours(lundiDe(aujourdhui), 3);
+  const jeudiN = ajouterJours(jeudi0, (Math.max(1, nombreSemaines) - 1) * 7);
+  const a = Number(jeudi0.slice(0, 4)), m = Number(jeudi0.slice(5, 7)) - 1;
+  const longueur = (Number(jeudiN.slice(0, 4)) - a) * 12 + Number(jeudiN.slice(5, 7)) - 1 - m + 1;
+  return Array.from({ length: longueur }, (_, index) => {
     const premier = new Date(Date.UTC(a, m + index, 1)), dernier = new Date(Date.UTC(a, m + index + 1, 0));
     return { index, debut: versIso(premier.getTime()), fin: versIso(dernier.getTime()), annee: premier.getUTCFullYear(), mois: premier.getUTCMonth() + 1, court: MOIS_COURTS[premier.getUTCMonth()] };
   });
 }
-/** Le mois qui contient `jour` ; `null` hors des douze mois. */
+/** Le mois qui contient `jour` ; `null` hors des mois de l'année. */
 export function indexMois(mois: readonly MoisCalendrier[], jour: string): number | null {
   const i = mois.findIndex(m => jour >= m.debut && jour <= m.fin);
   return i < 0 ? null : i;
@@ -387,6 +393,15 @@ export interface ChoseCalendrier {
   duree?: string;
   /** Brassin planifié dont le jour de brassage est passé sans brassage : ni « J », ni « prête le » (CRITIQUE-3 n° 1). */
   pasBrassee?: true;
+  /**
+   * Brassin pas brassé (`pasBrassee`) : le jour où il serait prêt, ISO = `finPrevue` écrite, sinon jour prévu + cycle de la recette (CRITIQUE-5
+   * n° 1). C'est la base de « pas brassée · prête le … » quand on tire son bord ; absent quand la recette ne donne aucun jour.
+   */
+  pretePrevue?: string;
+  /** Facture en retard (CRITIQUE-5 n° 4) : sa vraie échéance, ISO. `debut` reste le jour où la prévision la compte (aujourd'hui). */
+  echeance?: string;
+  /** Facture dont l'échéance est passée sans paiement (CRITIQUE-5 n° 4, E40) : la Liste la met en tête de « En cours » avec « en retard ». */
+  enRetard?: true;
   /** Brassin : ses frais de la prévision (« énergie et nettoyage le 23 nov. · montant non renseigné ; emballage le 7 déc. · −45 »), comptés dans son budget. */
   frais?: string;
   /** Ligne de prévision d'un brassin : son poste (courses, frais, impôt). */
@@ -420,11 +435,24 @@ export function texteDuree(c: ChoseCalendrier): string | null {
  * « J7 / 28 · prête 7 déc. » : J = jours depuis le brassage, borné à [0, n] ; `null` quand la fin n'est pas après le brassage (jamais « J0 / 0 »).
  * Pure : `aujourdhui` est un paramètre.
  */
-export function dureeBrassin(brassage: string, prete: string, aujourdhui: string): string | null {
+export function dureeBrassin(brassage: string, prete: string, aujourdhui: string, brasse = true): string | null {
   const n = ecartJours(brassage, prete);
   if (!(n > 0)) return null;
-  const j = Math.max(0, Math.min(n, ecartJours(brassage, aujourdhui)));
+  /* CRITIQUE-5 n° 1 : pas de « Jn » tant que le brassin n'est pas brassé (`brewDate`/`actualBrewDate` vides) : J reste 0 */
+  const j = brasse ? Math.max(0, Math.min(n, ecartJours(brassage, aujourdhui))) : 0;
   return `J${j} / ${n} · prête ${jourLisible(prete)}`;
+}
+
+/** « pas brassée · prête le 1 déc. » : un brassin pas brassé dont on a tiré le bord (CRITIQUE-5 n° 1). Jamais de « J ». */
+export const dureePasBrassee = (prete: string): string => `pas brassée · prête le ${jourLisible(prete)}`;
+
+/**
+ * La semaine dite avec son année quand elle n'est pas celle de la semaine de référence (CRITIQUE-5 n° 2) : « S44 2027 » vu de S47 2026,
+ * « S50 » dans la même année ISO. L'année est celle du jeudi de la semaine (ISO 8601).
+ */
+export function semaineAvecAn(lundi: string, reference: string): string {
+  const an = (iso: string) => ajouterJours(lundiDe(iso), 3).slice(0, 4);
+  return an(lundi) === an(reference) ? etiquetteS(lundi) : `${etiquetteS(lundi)} ${an(lundi)}`;
 }
 
 /** Le poste d'une ligne de prévision d'un brassin, lu dans son id stable (`brew:<lot>:achats|frais|emballage|impot`, `brewForecast.ts`), sinon dans son libellé. */
@@ -455,6 +483,19 @@ export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[
     return e && Number.isFinite(e.centimes) && e.centimes !== 0 ? { centimes: e.centimes, partiel: e.partiel || lignes.length > 0 } : null;
   }
   return { centimes: chiffrees.reduce((s, c) => s + (c.centimes as number), 0), partiel: chiffrees.length < lignes.length || chiffrees.some(c => c.partiel) };
+}
+
+/** Le mot d'un coût qu'on ne sait pas encore estimer (E23, D-22) : jamais rien, jamais 0. */
+export const COUT_A_VENIR = 'coût à venir';
+
+/**
+ * Un brassin à venir dont le coût n'est pas estimable (aucune ligne chiffrée, aucune estimation de `BrewBudgetSheet`) : `partiel`, `coutAVenir`
+ * et l'étiquette « Blonde · coût à venir », sans `centimes` (CRITIQUE-4 n° 2, CRITIQUE-5 n° 19). Un brassin commencé n'a rien à annoncer.
+ */
+export function choseCoutAVenir(c: ChoseCalendrier): ChoseCalendrier {
+  const { centimes: _c, ...reste } = c;
+  void _c;
+  return { ...reste, coutAVenir: true, partiel: true, etiquette: `${c.titre} · ${COUT_A_VENIR}` };
 }
 
 /** « malt pilsner, Saaz le 16 nov. · −76 » : une ligne de prévision d'un brassin dite en clair, sans point ajouté après la date (CRITIQUE-3 n° 37). */
@@ -648,20 +689,28 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
   const j0 = jourZero(batch);
   if (!j0) return null;
   const fin = finDeBrassin(batch);
-  if (batch.status === 'planifie' && !demarre) {
+  /* CRITIQUE-5 n° 1 : sans jour de brassage réel (`brewDate`/`actualBrewDate` vides), un brassin n'est pas en cuve, quel que soit son statut */
+  if (!demarre) {
     /*
-     * CRITIQUE-3 n° 1 : planifié, jour passé, pas brassé (la Saison prévue le 10 nov.). Il ne se dit ni « J0 » ni « prête le » : rien n'est en
+     * CRITIQUE-3 n° 1 : planifié, jour passé, pas brassé (la Saison prévue le 10 nov.). Il ne se dit ni « J0 » ni « Jn » : rien n'est en
      * cuve. Il reste visible cette semaine (de son jour prévu à aujourd'hui), avec son seul jalon de brassage, qui se glisse pour le replanifier.
+     * CRITIQUE-5 n° 1 : son bord se tire. `finPrevue` écrite au-delà du cycle de la recette allonge sa barre d'autant (après aujourd'hui) et
+     * sa durée dit « pas brassée · prête le … » ; sans `finPrevue`, « pas brassée · prévue le … ».
      */
     if (j0 < aujourdhui) {
       const brassage = jalonsBrassin(batch).filter(j => j.id === 'brassage');
+      const jours = joursPrevus(batch);
+      const recette = jours ? ajouterJours(j0, jours) : null;
+      const ecrite = fin?.origine === 'finPrevue' ? fin.jour : null;
+      const allonge = ecrite ? Math.max(0, recette ? ecartJours(recette, ecrite) : ecartJours(aujourdhui, ecrite)) : 0;
       return {
         /* sa durée dit « pas brassée · prévue le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
-        ...base, debut: j0, fin: aujourdhui, pasBrassee: true, duree: `pas brassée · prévue le ${jourLisible(j0)}`,
+        ...base, debut: j0, fin: ajouterJours(aujourdhui, allonge), pasBrassee: true, ...(fin ? { pretePrevue: fin.jour } : {}),
+        duree: ecrite ? dureePasBrassee(ecrite) : `pas brassée · prévue le ${jourLisible(j0)}`,
         detail: `pas brassée · brassage prévu le ${jourLisible(j0)}`, jalons: brassage, deplacable: true
       };
     }
-    const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui) : null;
+    const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui, false) : null;
     return { ...base, debut: j0, fin: fin?.jour ?? j0, ...(fin ? { preteLe: fin.jour } : {}), ...(duree ? { duree } : {}), detail: 'planifié', jalons: jalonsBrassin(batch, options), deplacable: true };
   }
   /* en cuve : J = jours depuis le brassage réel, borné à [0, n] (« J7 / 28 · prête 7 déc. ») ; fin inconnue : « J7 », sans fin inventée */
@@ -739,7 +788,7 @@ const raisonFinances = (quoi: string, ou: string) => `${quoi} se règle dans ${o
  * Les lignes datées de la prévision de Finances (hors tendance) : Ventes (entrées), Achats (plan, brassin), Travaux (matériel, rénovation,
  * projets de matériel), Papiers (factures à payer, récurrentes, TVA et clôture). Une ligne à 0 CHF n'a pas de `centimes`.
  */
-export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] = []): ChoseCalendrier | null {
+export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] = [], echeances?: ReadonlyMap<string, string>): ChoseCalendrier | null {
   if (item.source === 'trend') return null;
   const jour = isoDate(item.date);
   if (!jour) return null;
@@ -747,8 +796,12 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
   const entree = item.direction === 'in';
   const { titre, notes } = titreCourtArgent(item);
   let rangee: Rangee, source: SourceChose, ouvre: CibleOuverture, deplacable: ChoseCalendrier['deplacable'];
+  let retard: { echeance: string; enRetard: true } | null = null;
   if (item.source === 'invoice') {
     const tx = item.id.replace(/^invoice:/, '');
+    /* CRITIQUE-5 n° 4 : la prévision compte une facture échue à aujourd'hui ; la chose garde sa vraie échéance (`echeances` : id de la pièce → ISO) */
+    const due = isoDate(echeances?.get(tx));
+    if (due && due < jour) retard = { echeance: due, enRetard: true };
     rangee = entree ? 'ventes' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
     deplacable = { raison: raisonFinances('Une facture', 'la facture (Finances › Opérations)') };
   } else if (item.source === 'brew') {
@@ -782,7 +835,8 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
     ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
     ...(plan?.batchId || plan?.clientId ? { liens: { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}) } } : {}),
-    detail: `le ${jourLisible(jour)}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
+    ...(retard ?? {}),
+    detail: `${retard ? `échéance le ${jourLisible(retard.echeance)} · en retard` : `le ${jourLisible(jour)}`}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
     source, ouvre, deplacable, mouvements: [item.id]
   };
 }
@@ -886,7 +940,7 @@ export function retardsDe(e: EntreeRetards): Retard[] {
   for (const r of e.restes) {
     const echeance = isoDate(r.echeance ?? undefined);
     if (!r.enRetard || !passe(echeance)) continue;
-    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle || 'Pièce sans nom', detail: `échéance le ${jourLisible(echeance)} · ${formatCHF(r.cents)}`, jour: echeance, ouvre: { ecran: 'piece', id: r.id } });
+    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle || 'Pièce sans nom', detail: `échéance le ${jourLisible(echeance)} · ${francs(r.cents)} CHF`, jour: echeance, ouvre: { ecran: 'piece', id: r.id } });
   }
   for (const b of e.batches) {
     if (b.archivedAt || b.status !== 'planifie') continue;

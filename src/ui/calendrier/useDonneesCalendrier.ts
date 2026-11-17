@@ -16,7 +16,7 @@ import { planBrewBatchId } from '../../domain/finance/brewForecast';
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, francs, francsSignes, iconesIdees, jourLisible,
+  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, francs, francsSignes, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
 } from '../../domain/calendrier';
@@ -164,7 +164,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     const avecCourses = choseBrassin(b, aujourdhui, { commanderLe, articles });
     return avecCourses ? [avecCourses] : [];
   });
-  const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
+  /* CRITIQUE-5 n° 4 : la vraie échéance de chaque facture, pour qu'une facture échue garde sa date (la prévision la compte à aujourd'hui) */
+  const echeances = new Map(e.transactions.flatMap(t => (t.finance?.dueDate ? [[t.id, t.finance.dueDate] as [string, string]] : [])));
+  const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances);return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
@@ -178,7 +180,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     const commence = !!batch && !pasCommence(batch);
     const b = budgetBrassin(c.source.id, posees, estimations);
     /* CRITIQUE-4 n° 2 : sans budget, un brassin à venir dit « coût à venir » en mots, sans `centimes` (jamais 0) ; un brassin commencé n'a rien à dire */
-    if (!b) return commence ? c : { ...c, coutAVenir: true, etiquette: `${c.titre} · coût à venir` };
+    if (!b) return commence ? c : choseCoutAVenir(c);
     const repris = reprise.repris.get(c.source.id);
     return {
       ...c, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}),
