@@ -5,7 +5,8 @@ import type { ForecastItem } from '../../src/domain/finance/forecast';
 import { rescheduleBatchPatch } from '../../src/domain/batchSchedule';
 import { choseArgent, choseBrassin, choseCreative, choseVenteProbable, jalonsBrassin, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { courbeCaisse, type CourbeCaisse } from '../../src/domain/calendrierCaisse';
-import { accepterVente, allonger, deplacer, dupliquer, ecartsDeJalons, fait, lier, livrer, mettreDeCote, noterIdee, peutDeplacer, promesseTouchee, resoudre, retirer, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
+import { accepterVente, allonger, choseAllongee, deplacer, dupliquer, dureeAllongee, ecartsDeJalons, fait, lier, livrer, mettreDeCote, noterIdee, peutDeplacer, promesseTouchee, resoudre, retirer, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
+import { texteDuree } from '../../src/domain/calendrier';
 
 const AUJOURDHUI = '2026-11-16';
 const etapes = (primaire: number, garde: number) => [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: primaire }, { kind: 'garde', name: 'Garde', tempC: 4, days: garde }];
@@ -231,5 +232,23 @@ describe('A10, retirer, dupliquer, accepter, fait, lier : les écritures et leur
     const { courbe, chose, p } = courbeMalt();
     const messages = [deplacer(chose, -1, ctx({ plans: [p], courbe })), retirer(chose, ctx({ plans: [p], courbe })), dupliquer(chose, '2026-11-30', ctx({ plans: [p], courbe }))].map(r => r.message.lecture);
     for (const m of messages) expect(m.length).toBeLessThan(140);
+  });
+});
+
+describe('CRITIQUE-3 n° 30 : après allonger, la durée garde « J / n · prête le … »', () => {
+  it('t3 : brassée le 9 nov., 28 j, allongée de 7 j le 16 nov. : « J7 / 35 · prête 14 déc. », dans l’aperçu, le message et la chose relue', () => {
+    const ipa = { id: 'LOT-IPA', name: 'IPA de printemps', style: 'IPA', volumeL: 100, brewDate: '09.11.2026', actualBrewDate: '09.11.2026', status: 'fermentation', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+    const chose = choseBrassin(ipa, AUJOURDHUI)!;
+    expect(chose.duree).toBe('J7 / 28 · prête 7 déc.');
+    expect(dureeAllongee(chose, 7, AUJOURDHUI)).toBe('J7 / 35 · prête 14 déc.');
+    expect(choseAllongee(chose, 7, AUJOURDHUI)).toMatchObject({ fin: '2026-12-14', preteLe: '2026-12-14', duree: 'J7 / 35 · prête 14 déc.' });
+    const r = bien(allonger(chose, 7, ctx({ batches: [ipa] })));
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-IPA', patch: { finPrevue: '2026-12-14' } }]);
+    expect(r.message.texte).toBe('IPA de printemps : J7 / 35 · prête 14 déc.');
+    /* la chose relue après l'écriture dit la même chose */
+    expect(texteDuree(choseBrassin({ ...ipa, finPrevue: '2026-12-14' } as Batch, AUJOURDHUI)!)).toBe('J7 / 35 · prête 14 déc.');
+    /* un brassin pas brassé ne s'allonge pas d'ici : sa chose reste telle quelle */
+    const saison = choseBrassin({ ...ipa, id: 'LOT-S', status: 'planifie', brewDate: '', actualBrewDate: undefined, plannedBrewDate: '10.11.2026' } as unknown as Batch, AUJOURDHUI)!;
+    expect(choseAllongee(saison, 7, AUJOURDHUI)).toBe(saison);
   });
 });

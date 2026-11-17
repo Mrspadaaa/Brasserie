@@ -38,6 +38,8 @@ export interface BrouillonAjout {
   clientId?: string;
   liens?: { batchId?: string; clientId?: string };
   confirmeGrosseSomme?: boolean;
+  /** La vente probable choisie par sa puce : « Ajouter » l'ACCEPTE (même id, brouillon → confirmée), il n'en crée pas une autre (CRITIQUE-3 n° 8). */
+  planProbableId?: string;
 }
 
 /**
@@ -162,14 +164,22 @@ export function montantsRecents(rangee: Rangee, ctx: ContexteAjout): Puce[] {
   return sortie;
 }
 
+const sansProbable = (b: BrouillonAjout): BrouillonAjout => { const { planProbableId: _p, ...reste } = b; void _p; return reste; };
+
+/**
+ * Le jour où se pose une chose de la semaine `lundi` : le lundi, sauf dans la semaine courante, où c'est aujourd'hui. Une chose posée « cette
+ * semaine » n'est jamais déjà passée : elle ne crée ni retard ni « pas brassée » (CRITIQUE-3 n° 34, doute ⏰2 → ⏰4).
+ */
+export const jourPose = (lundi: string, aujourdhui: string): string => (lundi < aujourdhui && lundiDe(aujourdhui) === lundiDe(lundi) ? aujourdhui : lundi);
+
 /** Toucher une puce règle le brouillon sans clavier. Retoucher la même puce de temps la lâche. Un nom ou un client avec un montant connu le pose aussi. */
 export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
   switch (puce.genre) {
     case 'recette': return { ...b, recetteId: puce.recetteId, titre: puce.libelle };
     case 'temps': return { ...b, tempsEnCuve: b.tempsEnCuve === puce.jours ? undefined : puce.jours };
-    case 'client': return { ...b, clientId: puce.clientId, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
-    case 'vente-probable': return { ...b, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}), ...(puce.clientId ? { clientId: puce.clientId } : {}) };
-    case 'nom': return { ...b, titre: puce.libelle, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
+    case 'client': return { ...sansProbable(b), clientId: puce.clientId, titre: puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
+    case 'vente-probable': return { ...b, titre: puce.libelle, signe: '+', planProbableId: puce.planId, ...(puce.centimes ? { centimes: puce.centimes } : {}), ...(puce.clientId ? { clientId: puce.clientId } : {}) };
+    case 'nom': return { ...sansProbable(b), titre: puce.libelle, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
     case 'montant': return { ...b, centimes: puce.centimes, signe: puce.signe };
   }
 }
@@ -208,10 +218,10 @@ export function choisirJours(b: BrouillonAjout, jours: number): BrouillonAjout {
   return { ...b, joursActifs: b.joursActifs === jours ? undefined : jours };
 }
 
-/** « prête le 21 déc. », en direct, pour un brassin avec un temps en cuve. */
-export function preteLe(b: BrouillonAjout): string | null {
+/** « prête le 21 déc. », en direct, pour un brassin avec un temps en cuve. Dans la semaine courante, compté depuis `aujourdhui` (le jour où il se pose). */
+export function preteLe(b: BrouillonAjout, aujourdhui?: string): string | null {
   if (b.rangee !== 'brassins' || !b.debut || !b.tempsEnCuve) return null;
-  return `prête le ${jourLisible(ajouterJours(b.debut, b.tempsEnCuve))}`;
+  return `prête le ${jourLisible(ajouterJours(aujourdhui ? jourPose(b.debut, aujourdhui) : b.debut, b.tempsEnCuve))}`;
 }
 
 /** La fenêtre écrite : du lundi du début au dimanche de la fin ; jours actifs seulement si une puce est touchée. Sans fin ni jours actifs : aucune fenêtre. */
@@ -251,7 +261,7 @@ export function valider(b: BrouillonAjout): Validation {
 export type Enregistrement =
   | { cible: 'batch'; collection: 'batches'; document: Batch; recetteId: string }
   | { cible: 'creative'; collection: 'creativeItems'; document: CreativeItem }
-  | { cible: 'plan'; collection: 'financialPlans'; document: FinancialPlan };
+  | { cible: 'plan'; collection: 'financialPlans'; document: FinancialPlan; /** Le document existe déjà (une vente probable acceptée) : il est remplacé, et Annuler le remet tel qu'avant. */ remplace?: true };
 
 export type Conversion = { ok: true; enregistrement: Enregistrement; resume: string } | { ok: false; raison: string; confirmer?: Confirmation };
 
@@ -274,16 +284,17 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
   if (b.rangee === 'brassins') {
     const recette = ctx.recettes.find(r => r.id === b.recetteId);
     if (!recette) return { ok: false, raison: 'Cette recette n’existe plus.' };
+    const jour = jourPose(debut, ctx.aujourdhui);
     const document: Batch = {
-      id: (ctx.idBrassin ?? (() => idPar(ctx, 'LOT')))(), brewDate: '', plannedBrewDate: debut, name: recette.name, style: recette.style, volumeL: recette.volumeL,
+      id: (ctx.idBrassin ?? (() => idPar(ctx, 'LOT')))(), brewDate: '', plannedBrewDate: jour, name: recette.name, style: recette.style, volumeL: recette.volumeL,
       status: 'planifie', stockAccountingVersion: 1, recipeRef: recette.id, gravityLog: [],
-      ...(b.tempsEnCuve ? { finPrevue: ajouterJours(debut, b.tempsEnCuve) } : {})
+      ...(b.tempsEnCuve ? { finPrevue: ajouterJours(jour, b.tempsEnCuve) } : {})
     };
-    return { ok: true, enregistrement: { cible: 'batch', collection: 'batches', document, recetteId: recette.id }, resume: `${recette.name} · ${etiquetteS(debut)}${b.tempsEnCuve ? ` · ${preteLe(b)}` : ''}` };
+    return { ok: true, enregistrement: { cible: 'batch', collection: 'batches', document, recetteId: recette.id }, resume: `${recette.name} · ${etiquetteS(debut)}${b.tempsEnCuve ? ` · prête le ${jourLisible(ajouterJours(jour, b.tempsEnCuve))}` : ''}` };
   }
   if (b.rangee === 'fetes' || b.rangee === 'activites') {
     const document: CreativeItem = {
-      id: idPar(ctx, 'CR'), type: 'event', title: b.titre.trim(), status: 'todo', date: lundiDe(debut),
+      id: idPar(ctx, 'CR'), type: 'event', title: b.titre.trim(), status: 'todo', date: fenetre ? lundiDe(debut) : jourPose(lundiDe(debut), ctx.aujourdhui),
       ...(b.rangee === 'activites' ? { activite: true as const } : {}),
       ...(b.centimes ? (b.rangee === 'fetes' && b.signe === '+' ? { estimatedRevenue: b.centimes / 100 } : { estimatedCost: b.centimes / 100 }) : {}),
       ...(fenetre ? { fenetre } : {}), ...(b.liens ? { liens: b.liens } : {})
@@ -291,10 +302,23 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
     return { ok: true, enregistrement: { cible: 'creative', collection: 'creativeItems', document }, resume: `${document.title} · ${etiquetteS(debut)}` };
   }
   if (!b.centimes || b.centimes <= 0) return { ok: false, raison: 'Indique un montant : un montant inconnu n’est pas 0.' };
-  const du = fenetre?.du ?? lundiDe(debut);
+  const du = fenetre?.du ?? jourPose(lundiDe(debut), ctx.aujourdhui);
+  const date = fenetre?.miseDeCote ? fenetre.au : du;
+  /*
+   * CRITIQUE-3 n° 8 : « Ajouter » enregistre une vente CONFIRMÉE (elle compte dans Ventes et dans la caisse), une seule fois. Choisie par la puce
+   * d'une vente probable, elle accepte ce brouillon (même id, `draft` → `active`) au lieu d'en créer un autre à côté.
+   */
+  const probable = b.rangee === 'ventes' && b.planProbableId ? ctx.plans.find(p => p.id === b.planProbableId && p.status === 'draft') : undefined;
+  if (probable) {
+    const document: FinancialPlan = {
+      ...probable, title: b.titre.trim() || probable.title, date, amountCents: Math.round(b.centimes), direction: 'in', status: 'active',
+      ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {})
+    };
+    return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document, remplace: true }, resume: `${document.title} · ${etiquetteS(document.date)} · vente confirmée` };
+  }
   const document: FinancialPlan = {
-    id: idPar(ctx, 'PLAN'), title: b.titre.trim(), date: fenetre?.miseDeCote ? fenetre.au : du, amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out',
-    category: CATEGORIE[b.rangee] ?? 'divers', source: 'manual', status: b.rangee === 'ventes' ? 'draft' : 'active', createdAt: ctx.maintenant ?? `${ctx.aujourdhui}T12:00:00.000Z`,
+    id: idPar(ctx, 'PLAN'), title: b.titre.trim(), date, amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out',
+    category: CATEGORIE[b.rangee] ?? 'divers', source: 'manual', status: 'active', createdAt: ctx.maintenant ?? `${ctx.aujourdhui}T12:00:00.000Z`,
     ...(fenetre ? { fenetre } : {}), ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {})
   };
   return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document }, resume: `${document.title} · ${etiquetteS(document.date)}` };

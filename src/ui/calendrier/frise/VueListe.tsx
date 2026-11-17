@@ -1,6 +1,6 @@
 import React from 'react';
 import { dateDeSemaine, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, ICONE_RANGEE } from './Marque';
+import { CLASSE_TEINTE, ICONE_RANGEE, dureeVue } from './Marque';
 import './feuille.css';
 
 /**
@@ -25,10 +25,18 @@ export interface VueListeProps {
 
 const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? francsSignes(c.centimes) : c.joursActifs ? `${c.joursActifs} j` : null);
 
+/** « Décembre 2026 » : la majuscule est écrite, aucun text-transform (« Sans Date », CRITIQUE-3 n° 37). */
+function nomMois(cle: string): string {
+  const mois = jourLisible(`${cle}-01`).split(' ').slice(1).join(' ');
+  return `${mois.charAt(0).toLocaleUpperCase('fr')}${mois.slice(1)} ${cle.slice(0, 4)}`;
+}
+
 function Ligne({ c, selectionId, onChose, detail }: { c: ChoseCalendrier } & Pick<VueListeProps, 'selectionId' | 'onChose' | 'detail'>) {
   const Icone = ICONE_RANGEE[c.rangee];
   const montant = montantDe(c);
   const proposee = !!(c.proposition || c.probable);
+  /* un brassin : « J7 / 28 · prête 7 déc. » (ou « durée inconnue »), comme sur la frise */
+  const duree = dureeVue(c);
   return (
     <li className={`cal-li ${CLASSE_TEINTE[c.rangee]}`} data-liste-chose={c.id}>
       <button
@@ -40,7 +48,7 @@ function Ligne({ c, selectionId, onChose, detail }: { c: ChoseCalendrier } & Pic
         <span className="cal-li-i" aria-hidden="true"><Icone size={18} /></span>
         <span className="cal-li-t">
           <b>{c.titre}{proposee ? ' · proposé' : ''}</b>
-          <small>{nomRangee(c.rangee)}{c.debut ? ` · ${dateDeSemaine(c.debut)}` : ''}</small>
+          <small>{nomRangee(c.rangee)}{duree ? ` · ${duree}` : c.debut ? ` · ${dateDeSemaine(c.debut)}` : ''}</small>
         </span>
         {montant && <span className={`cal-li-m${c.centimes !== undefined && c.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</span>}
       </button>
@@ -58,11 +66,16 @@ export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui
     poche.current.focus({ preventScroll: true });
   }, [ancre]);
 
-  const aVenir = React.useMemo(
-    () => choses.filter(c => c.debut && (c.fin || c.debut) >= aujourdhui).slice().sort((a, b) => a.debut.localeCompare(b.debut) || a.titre.localeCompare(b.titre, 'fr')),
+  /* CRITIQUE-3 n° 35 : ce qui a commencé et court encore (un brassin en cuve) va dans « En cours », en tête ; « À venir » commence
+     aujourd'hui. Les brassins d'abord, puis par date. */
+  const parDate = (a: ChoseCalendrier, b: ChoseCalendrier) => a.debut.localeCompare(b.debut) || a.titre.localeCompare(b.titre, 'fr');
+  const enCours = React.useMemo(
+    () => choses.filter(c => c.debut && c.debut < aujourdhui && (c.fin || c.debut) >= aujourdhui).slice()
+      .sort((a, b) => Number(b.rangee === 'brassins') - Number(a.rangee === 'brassins') || parDate(a, b)),
     [choses, aujourdhui]
   );
-  /* par date : un titre de jour quand le mois change, jamais une grille */
+  const aVenir = React.useMemo(() => choses.filter(c => c.debut && c.debut >= aujourdhui).slice().sort(parDate), [choses, aujourdhui]);
+  /* par date : un titre quand le mois change, jamais une grille */
   const groupes = React.useMemo(() => {
     const m = new Map<string, ChoseCalendrier[]>();
     for (const c of aVenir) { const cle = c.debut.slice(0, 7); m.set(cle, [...(m.get(cle) ?? []), c]); }
@@ -71,10 +84,17 @@ export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui
 
   return (
     <div className="cal-liste" data-vue-liste>
-      {groupes.length === 0 && <p className="cal-li-vide">Rien à venir. Le + pose un brassin, une fête, une vente…</p>}
+      {groupes.length === 0 && enCours.length === 0 && <p className="cal-li-vide">Rien à venir. Le + pose un brassin, une fête, une vente…</p>}
+      {enCours.length > 0 && (
+        <section aria-label="En cours" data-en-cours>
+          <h3 className="cal-li-mois">En cours · {enCours.length}</h3>
+          <ul>{enCours.map(c => <Ligne key={c.id} c={c} selectionId={selectionId} onChose={onChose} detail={detail} />)}</ul>
+        </section>
+      )}
+      {groupes.length > 0 && <h3 className="cal-li-tete" data-a-venir>À venir</h3>}
       {groupes.map(([cle, lignes]) => (
-        <section key={cle} aria-label={cle}>
-          <h3 className="cal-li-mois">{jourLisible(`${cle}-01`).split(' ').slice(1).join(' ')} {cle.slice(0, 4)}</h3>
+        <section key={cle} aria-label={cle} data-a-venir-mois={cle}>
+          <h3 className="cal-li-mois">{nomMois(cle)}</h3>
           <ul>{lignes.map(c => <Ligne key={c.id} c={c} selectionId={selectionId} onChose={onChose} detail={detail} />)}</ul>
         </section>
       ))}

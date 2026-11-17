@@ -12,10 +12,11 @@ import { fermentationReadings } from '../../domain/fermentationReadings';
 import { articlesACommander } from '../../domain/stockLevel';
 import { etiquetteSemaine, vueHorizon, type LigneHorizon } from '../../domain/stock/horizon';
 import type { ReglagesFournisseurs } from '../../domain/fournisseurs';
+import { planBrewBatchId } from '../../domain/finance/brewForecast';
 import {
-  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, francs, iconesIdees, livraisonsAttendues,
-  lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
-  type ChoseCalendrier, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
+  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, francs, francsSignes, iconesIdees,
+  livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
+  type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
 } from '../../domain/calendrier';
 import { courbeCaisse, creuxDepuis, type MiseDeCote, type MouvementCaisse } from '../../domain/calendrierCaisse';
 import { brassinsHabituels, echeancesProposees } from '../../domain/calendrierPropositions';
@@ -52,6 +53,27 @@ function misesDe(choses: readonly ChoseCalendrier[]): MiseDeCote[] {
 
 const dansLaFenetre = (semaines: ModeleCalendrier['semaines']) => (c: ChoseCalendrier) => positionChose(semaines, c) !== null;
 
+/**
+ * Les estimations enregistrées par `BrewBudgetSheet` (« Prévoir » : un plan `brew` qui porte `brewEstimate`), par brassin : l'argent à sortir
+ * (`cashRequiredTTC`), sinon le montant du plan. Incomplète (`complete: false`) : partielle. Un plan annulé ne compte pas.
+ */
+export function estimationsBudget(plans: readonly FinancialPlan[]): Map<string, EstimationBudget> {
+  const sortie = new Map<string, EstimationBudget & { le: string }>();
+  for (const p of plans) {
+    if (p.source !== 'brew' || p.status === 'cancelled' || p.direction !== 'out') continue;
+    const batchId = planBrewBatchId(p);
+    if (!batchId) continue;
+    const snap = p.brewEstimate as { cashRequiredTTC?: number; complete?: boolean; createdAt?: string } | undefined;
+    const centimes = typeof snap?.cashRequiredTTC === 'number' && Number.isFinite(snap.cashRequiredTTC) && snap.cashRequiredTTC > 0 ? Math.round(snap.cashRequiredTTC * 100) : p.amountCents > 0 ? p.amountCents : 0;
+    if (!centimes) continue;
+    const le = snap?.createdAt ?? p.createdAt ?? '';
+    const avant = sortie.get(batchId);
+    if (avant && avant.le > le) continue;
+    sortie.set(batchId, { centimes: -centimes, partiel: snap?.complete === false, le });
+  }
+  return new Map([...sortie].map(([id, { centimes, partiel }]) => [id, { centimes, partiel }]));
+}
+
 export function construireModele(e: EntreesModele): ModeleCalendrier {
   const { aujourdhui } = e;
   const lundi0 = lundiDe(aujourdhui);
@@ -62,23 +84,36 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   });
   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
 
-  const manques = new Map<string, number>();
+  /* les articles qui manquent pour chaque brassin, lus dans les courses de l'app (`vueHorizon`) : leurs noms, jamais inventés (n° 2, n° 19) */
+  const manques = new Map<string, string[]>();
   for (const l of e.lignesCourses ?? []) {
     if (l.semaine === null) continue;
-    for (const s of l.sources) if (s.genre === 'brassin') manques.set(s.id, (manques.get(s.id) ?? 0) + 1);
+    const nom = l.item?.name?.trim();
+    for (const s of l.sources) if (s.genre === 'brassin') manques.set(s.id, [...(manques.get(s.id) ?? []), ...(nom ? [nom] : [])]);
   }
+  const commandes: Array<{ batchId: string; nom: string; avantLe: string; articles: string[] }> = [];
   const brassins = e.batches.flatMap(b => {
     const chose = choseBrassin(b, aujourdhui);
-    if (!chose || !(manques.get(b.id) ?? 0)) return chose ? [chose] : [];
+    if (!chose || chose.pasBrassee || !manques.has(b.id)) return chose ? [chose] : [];
     const avant = chose.jalons?.find(j => j.id === 'brassage')?.jour;
-    const avecCourses = choseBrassin(b, aujourdhui, { commanderLe: avant ? ajouterJours(avant, -1) : null });
+    const articles = [...new Set(manques.get(b.id) ?? [])];
+    const commanderLe = avant ? ajouterJours(avant, -1) : null;
+    if (commanderLe) commandes.push({ batchId: b.id, nom: b.name || b.id, avantLe: commanderLe, articles });
+    const avecCourses = choseBrassin(b, aujourdhui, { commanderLe, articles });
     return avecCourses ? [avecCourses] : [];
   });
   const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
-  const choses = [...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin].filter(dansLaFenetre(semaines));
+  const posees = [...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin].filter(dansLaFenetre(semaines));
+  /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
+  const estimations = estimationsBudget(e.plans);
+  const choses = posees.map(c => {
+    if (c.source.genre !== 'batch' || c.conditionne) return c;
+    const b = budgetBrassin(c.source.id, posees, estimations);
+    return b ? { ...c, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}) } : c;
+  });
 
   const titreDe = new Map(choses.map(c => [c.id, c.titre]));
   const mouvements: MouvementCaisse[] = prevision.items.map(i => ({
@@ -89,12 +124,18 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
 
   const synthese = periodeSynthese({ transactions: e.transactions, payments: e.payments, mois: null, aujourdhui, assets: e.assets });
   const sansDensite = e.batches.filter(b => b.status === 'fermentation' && !b.archivedAt && fermentationReadings(b).latest === undefined);
-  const retards = retardsDe({ aujourdhui, restes: [...synthese.aPayer, ...synthese.aEncaisser], batches: e.batches, items: e.items, sansDensite, courses: e.courses });
+  /* n° 34 : seulement ce qui est vraiment en retard, nommé et daté ; les courses comptent quand le jour où il fallait commander est passé */
+  const retards = retardsDe({ aujourdhui, restes: [...synthese.aPayer, ...synthese.aEncaisser], batches: e.batches, items: e.items, sansDensite, commandes, courses: e.courses ?? null });
 
   const hypotheses: HypotheseCaisse[] = [];
   if (prevision.openingCashCents !== null) hypotheses.push({ id: 'depart', texte: `Solde de départ : ${francs(prevision.openingCashCents)} CHF`, source: 'Finances › Solde', ouvre: { ecran: 'solde' } });
-  const mensuelles = prevision.months.map(m => m.projectedCents).filter(n => n > 0);
-  if (mensuelles.length) hypotheses.push({ id: 'tendance', texte: `Autres dépenses : −${francs(Math.round(mensuelles.reduce((s, n) => s + n, 0) / mensuelles.length))} par mois (tendance de Finances)`, source: 'Finances', ouvre: { ecran: 'finances' } });
+  /* n° 32, E01 : la tendance de Finances (lignes `trend` de la prévision), par mois, avec sa source ; sans tendance, rien */
+  const tendance = new Map<string, number>();
+  for (const i of prevision.items) if (i.source === 'trend') tendance.set(i.date.slice(0, 7), (tendance.get(i.date.slice(0, 7)) ?? 0) + (i.direction === 'in' ? i.amountCents : -i.amountCents));
+  if (tendance.size) {
+    const parMois = Math.round([...tendance.values()].reduce((s, n) => s + n, 0) / tendance.size);
+    if (parMois !== 0) hypotheses.push({ id: 'tendance', texte: `Tendance de Finances : ${francsSignes(parMois)} CHF/mois`, source: 'Finances › Prévision (moyenne des mois passés)', ouvre: { ecran: 'finances' } });
+  }
 
   const icones: IconeSemaine[] = [
     ...iconesIdees(e.items),

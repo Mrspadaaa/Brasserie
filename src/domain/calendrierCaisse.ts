@@ -155,11 +155,30 @@ export interface LectureSemaine {
   lignes: LigneLecture[];
 }
 
+/**
+ * Les mouvements de la semaine `index` SEULE (le creux, E01 ; la lecture au doigt, E11), chacun une fois : ceux qui portent le même nom sont
+ * regroupés avec leur somme (« Loyer du local −400 » une fois, jamais une ligne par mois ni par semaine précédente ; CRITIQUE-3 n° 32). Du plus gros
+ * au plus petit ; la tendance n'y est pas (c'est une hypothèse). Une semaine hors de la courbe : liste vide.
+ */
+export function mouvementsDeSemaine(courbe: CourbeCaisse, index: number): MouvementNomme[] {
+  const s = courbe.semaines[index];
+  if (!s) return [];
+  const parNom = new Map<string, MouvementNomme>();
+  for (const m of s.mouvements) {
+    const cle = m.nom.trim().toLocaleLowerCase('fr');
+    const deja = parNom.get(cle);
+    if (!deja) { parNom.set(cle, { ...m }); continue; }
+    const centimes = deja.centimes + m.centimes;
+    parNom.set(cle, { ...deja, centimes, jour: deja.jour < m.jour ? deja.jour : m.jour, libelle: libelleMouvement(deja.nom, centimes) });
+  }
+  return [...parNom.values()].filter(m => m.centimes !== 0).sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes) || a.id.localeCompare(b.id));
+}
+
 /** E11 : ce que lit le doigt sur la semaine `i`. */
 export function lectureSemaine(courbe: CourbeCaisse, index: number): LectureSemaine | null {
   const s = courbe.semaines[index];
   if (!s) return null;
-  const mouvements = s.mouvements;
+  const mouvements = mouvementsDeSemaine(courbe, index);
   const lignes: LigneLecture[] = [];
   const montrees = mouvements.length <= 2 ? mouvements : mouvements.slice(0, 1);
   for (const m of montrees) lignes.push({ genre: 'mouvement', texte: m.libelle, centimes: m.centimes });

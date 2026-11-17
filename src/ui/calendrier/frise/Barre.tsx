@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, nomAccessible, texteDuree } from './Marque';
+import { CLASSE_TEINTE, PastilleLie, dureeVue, nomAccessible } from './Marque';
 import { usePointeur } from './usePointeur';
 
 /**
  * Une barre de la frise (E24 à E32). Elle porte ses gestes : toucher (le détail), appui long (le menu), glisser (déplacer en direct, f1-a),
  * tirer le bord (allonger, f2-a). Un brassin y montre ses phases et ses jalons (E25) ; les jours actifs sont des points posés en % de la piste
- * (E24, E45) ; une chose proposée est en pointillé (E26, E47). L'étiquette (nom, montant) vit à côté, du côté libre.
+ * (E24, E45) ; une chose proposée est en pointillé (E26, E47). L'étiquette (nom, montant) vit à côté, du côté libre, ou dans la barre.
  * Le calcul des écritures n'est pas ici : la barre dit ce que le doigt a fait, `CalendrierTab` écrit.
+ *
+ * CRITIQUE-3 n° 27 : le nom posé dans la barre a un fond, les ronds des jalons passent dessous, jamais dessus. N° 30 : « J7 / 35 · prête
+ * 21 déc. » n'est jamais coupé (entier, ou sa forme courte « J7 / 35 »). N° 13 : la pastille « lié à … » se touche (aperçu sur place).
  */
 
 export type CoteEtiquette = 'dedans' | 'gauche' | 'droite';
@@ -22,6 +25,8 @@ export interface BarreProps {
   cote: CoteEtiquette;
   /** Place de l'étiquette côté libre, en px. */
   placeEtiquette: number;
+  /** Le nom passe sur deux lignes à côté de la barre (3 mois, quand la rangée le permet : n° 31). */
+  deuxLignes?: boolean;
   /** « J0 / n · prête le … » à côté du nom d'un brassin, quand il tient en entier. */
   avecDuree?: boolean;
   largeurColonne: number;
@@ -44,6 +49,8 @@ export interface BarreProps {
   onLacheBord: (chose: ChoseCalendrier, jours: number, annule: boolean) => void;
   onRefus: (chose: ChoseCalendrier, raison: string, jalon?: JalonBrassin) => void;
 }
+
+export { PastilleLie };
 
 const montantDe = (chose: ChoseCalendrier): string | null => {
   if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignes(chose.centimes)}` : ''}` : chose.centimes ? francsSignes(chose.centimes) : null;
@@ -96,9 +103,9 @@ export const Barre: React.FC<BarreProps> = props => {
   const segments = phases(chose.jalons, total);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
-  const duree = texteDuree(chose);
-  /* dans la barre : « J0 / 28 · prête 14 déc. » s'il tient, sinon « J0 / 28 » comme as/p-repos, à droite du nom quand le nom est dedans */
-  const labDedans = cote === 'dedans' ? ((chose.etiquette ?? chose.titre).length + (montant ? montant.length + 1 : 0)) * 7.6 + 8 : 0;
+  const duree = dureeVue(chose);
+  /* dans la barre : la durée entière si elle tient, sinon sa forme courte (« J7 / 28 »), jamais coupée ; à droite du nom quand le nom est dedans */
+  const labDedans = cote === 'dedans' ? ((chose.etiquette ?? chose.titre).length + (montant ? montant.length + 1 : 0)) * 7.6 + 12 : 0;
   const courte = duree ? duree.split(' · ')[0] : null;
   const dureeDedans = !duree || props.avecDuree ? null
     : w - 16 - labDedans >= duree.length * 7.6 ? duree
@@ -109,8 +116,8 @@ export const Barre: React.FC<BarreProps> = props => {
     ? { right: `calc(100% - ${gauche + decalage}px + 6px)` }
     : cote === 'droite'
       ? { left: gauche + w + decalage + 6 }
-      : { left: gauche + decalage + 8, maxWidth: Math.max(0, w - 16) };
-  const lblPlace = { ...lblStyle, top: haut, height: hauteur, maxWidth: cote === 'dedans' ? Math.max(0, w - 16) : Math.max(40, placeEtiquette) };
+      : { left: gauche + decalage + 6, maxWidth: Math.max(0, w - 12) };
+  const lblPlace = { ...lblStyle, top: haut, height: hauteur, maxWidth: cote === 'dedans' ? Math.max(0, w - 12) : Math.max(40, placeEtiquette) };
 
   return (
     <>
@@ -119,6 +126,7 @@ export const Barre: React.FC<BarreProps> = props => {
         role="button"
         tabIndex={0}
         data-chose={chose.id}
+        data-chose-id={chose.id}
         data-barre
         data-rangee={chose.rangee}
         data-titre={chose.titre}
@@ -155,7 +163,7 @@ export const Barre: React.FC<BarreProps> = props => {
           </span>
         )}
         {etiquetteDuree && <em className="cal-duree" data-duree>{etiquetteDuree}</em>}
-        {/* au repos, « J0 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
+        {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
         {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans}</em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens) && (
@@ -166,11 +174,11 @@ export const Barre: React.FC<BarreProps> = props => {
           </span>
         )}
       </div>
-      <span className={`cal-lbl cal-lbl-${cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace} aria-hidden="true">
-        <span className="cal-lbl-t">{chose.etiquette ?? chose.titre}</span>
-        {montant && <b className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
-        {props.avecDuree && duree && <small className="cal-lbl-j">{duree}</small>}
-        {chose.lie && <span className="cal-lie" data-lie>{chose.lie.texte}</span>}
+      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
+        <span className="cal-lbl-t" aria-hidden="true">{chose.etiquette ?? chose.titre}</span>
+        {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+        {props.avecDuree && duree && <small aria-hidden="true" className="cal-lbl-j">{duree}</small>}
+        {chose.lie && <PastilleLie lie={chose.lie} />}
       </span>
     </>
   );

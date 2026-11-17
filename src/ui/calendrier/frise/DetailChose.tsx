@@ -1,13 +1,14 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, Link2, ShoppingCart, Wheat, X } from 'lucide-react';
-import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
-import { CLASSE_TEINTE } from './Marque';
+import { Beer, Check, ChevronRight, FlaskConical, Leaf, Link2, Package, Receipt, ShoppingCart, Snowflake, Wheat, X } from 'lucide-react';
+import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
+import { CLASSE_TEINTE, champ, dureeVue } from './Marque';
 
 /**
- * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées, les courses qui manquent, « Ouvrir le
- * brassin », « Commander », « Budget › » (D-71, nouveau, à valider). Une autre chose : sa semaine, sa date, le libre de la semaine, avec
- * Modifier et Retirer, et « Fait » pour une activité (D-93). Dans la poche « Sans date » (E46) : « Poser » et « Fait ». × fait 44 px.
- * Jamais « en retard de N j » (D-19) : des dates.
+ * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées avec leurs icônes (brassage, fermentation,
+ * dry hop, garde, conditionnement, lues dans les jalons de la recette figée, E25, D-191), les courses qui manquent, nommées (« Il manque malt,
+ * houblon : à acheter avant le 22 nov. »), « Ouvrir le brassin », « Commander », « Budget › » (D-71, nouveau, à valider). Une autre chose :
+ * sa semaine, sa date, le libre de la semaine, avec Modifier et Retirer, et « Fait » pour une activité (D-93). Dans la poche « Sans date »
+ * (E46) : « Poser » et « Fait ». × fait 44 px. Jamais « en retard de N j » (D-19) : des dates. Jamais « 22 nov. . » (CRITIQUE-3 n° 37).
  */
 
 export interface DetailChoseProps {
@@ -36,17 +37,48 @@ const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
   atelier: 'Ouvrir dans l’atelier', materiel: 'Ouvrir dans le matériel', courses: 'Ouvrir les courses', fournisseur: 'Ouvrir le fournisseur', solde: 'Ouvrir Solde'
 };
 
-/** Les trois temps d'un brassin, lus dans ses jalons : brassage, en cuve, prête (f4-b). */
-function etapes(jalons: readonly JalonBrassin[] | undefined, chose: ChoseCalendrier) {
-  const par = (id: JalonBrassin['id']) => jalons?.find(j => j.id === id);
-  const brassage = par('brassage')?.jour ?? chose.debut;
-  const cuve = par('fermentation')?.jour ?? par('garde')?.jour;
-  const prete = par('conditionnement')?.jour ?? chose.preteLe ?? chose.fin;
-  return [
-    { id: 'brassage', libelle: 'Brassage', jour: brassage, icone: <Wheat size={16} aria-hidden="true" /> },
-    ...(cuve && cuve !== brassage ? [{ id: 'cuve', libelle: 'En cuve', jour: cuve, icone: <Beer size={16} aria-hidden="true" /> }] : []),
-    { id: 'prete', libelle: chose.finInconnue ? 'Fin' : 'Prête', jour: chose.finInconnue ? '' : prete, icone: <Check size={16} aria-hidden="true" /> }
-  ];
+/** Le nom d'une étape du brassin, celui que le brasseur emploie (E25). */
+const ETAPE: Record<Exclude<JalonId, 'commander'>, { libelle: string; Icone: typeof Wheat }> = {
+  brassage: { libelle: 'Brassage', Icone: Wheat },
+  fermentation: { libelle: 'Fermentation', Icone: FlaskConical },
+  'dry-hop': { libelle: 'Dry hop', Icone: Leaf },
+  garde: { libelle: 'Garde', Icone: Snowflake },
+  conditionnement: { libelle: 'Conditionnement', Icone: Package }
+};
+
+/** Une date sans point final doublé : « 22 nov. » se suit d'un deux-points, d'une virgule ou de rien, jamais de « . ». */
+const date = (iso: string): string => jourLisible(iso);
+
+/** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
+function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
+  const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
+    .slice().sort((a, b) => a.ecart - b.ecart);
+  const lignes = jalons.map((j): { id: string; libelle: string; jour: string; icone: React.ReactNode } => {
+    const { libelle, Icone } = ETAPE[j.id];
+    return { id: j.id, libelle, jour: j.jour, icone: <Icone size={16} aria-hidden="true" /> };
+  });
+  if (!lignes.some(l => l.id === 'brassage') && chose.debut) lignes.unshift({ id: 'brassage', libelle: 'Brassage', jour: chose.debut, icone: <Wheat size={16} aria-hidden="true" /> });
+  if (!lignes.some(l => l.id === 'conditionnement')) {
+    const prete = chose.finInconnue ? '' : chose.preteLe ?? '';
+    lignes.push({ id: 'prete', libelle: 'Prête', jour: prete, icone: <Check size={16} aria-hidden="true" /> });
+  }
+  return lignes;
+}
+
+/** « malt, houblon » : les articles qui manquent (lot A, `commander.articles`) ; vide s'ils ne sont pas connus. */
+function articlesManquants(j: JalonBrassin | undefined): string {
+  const a = j ? (j as JalonBrassin & { articles?: unknown }).articles : undefined;
+  const liste = Array.isArray(a) ? a.filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
+  return liste.map(x => x.trim().toLocaleLowerCase('fr')).join(', ');
+}
+
+/** Les frais d'une chose (lot A, `frais`) : un texte, une liste ou des centimes ; rien d'inventé. */
+function texteFrais(c: ChoseCalendrier): string | null {
+  const f = champ(c, 'frais');
+  if (typeof f === 'string' && f.trim()) return f.trim();
+  if (Array.isArray(f)) { const l = f.filter((x): x is string => typeof x === 'string' && !!x.trim()); return l.length ? l.join(', ') : null; }
+  if (typeof f === 'number' && Number.isFinite(f)) return francsSignes(f);
+  return null;
 }
 
 export const DetailChose: React.FC<DetailChoseProps> = props => {
@@ -57,6 +89,10 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const semaine = chose.debut ? dateDeSemaine(lundiDe(chose.debut)) : null;
   const peutMiseDeCote = !!(chose.fenetre && chose.centimes && !brassin && (chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')));
   const proposition = !!chose.proposition;
+  const articles = articlesManquants(commander);
+  const frais = texteFrais(chose);
+  const duree = brassin ? dureeVue(chose) : null;
+  const pasBrassee = champ(chose, 'pasBrassee') === true;
 
   return (
     <div role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
@@ -64,15 +100,21 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
 
       {brassin ? (
-        <div className="cal-det-et">
-          {etapes(chose.jalons, chose).map(e => (
-            <div key={e.id}><span>{e.icone}{e.libelle}</span><b>{e.jour ? jourLisible(e.jour) : 'à préciser'}</b></div>
-          ))}
-        </div>
+        <>
+          {duree && <p className="cal-det-d" data-duree-detail><Beer size={16} aria-hidden="true" />{duree}</p>}
+          <div className="cal-det-et cal-det-etapes" data-etapes>
+            {etapes(chose).map(e => (
+              <div key={e.id} data-etape={e.id}>
+                <span>{e.icone}{e.libelle}</span>
+                <b>{e.jour ? date(e.jour) : 'à préciser'}{e.id === 'brassage' && pasBrassee ? ' · pas brassée' : ''}</b>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <div className="cal-det-et">
           {semaine && <div><span>Semaine</span><b>{semaine}</b></div>}
-          {chose.debut && <div><span>Date</span><b>{jourLisible(chose.debut)}{chose.fin && chose.fin !== chose.debut ? ` → ${jourLisible(chose.fin)}` : ''}</b></div>}
+          {chose.debut && <div><span>Date</span><b>{date(chose.debut)}{chose.fin && chose.fin !== chose.debut ? ` → ${date(chose.fin)}` : ''}</b></div>}
           {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
           {chose.joursActifs ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
           {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
@@ -81,10 +123,14 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       )}
 
       {chose.detail && <p className="cal-det-p">{chose.detail}</p>}
-      {brassin && (commander
-        ? <p className="cal-det-p"><ShoppingCart size={16} aria-hidden="true" />Il manque des courses : à acheter avant le <b>{jourLisible(commander.jour)}</b>.</p>
-        : null)}
+      {brassin && commander && (
+        <p className="cal-det-p" data-manque>
+          <ShoppingCart size={16} aria-hidden="true" />
+          <span>Il manque {articles ? <b>{articles}</b> : 'des courses'} : à acheter avant le <b>{date(commander.jour)}</b></span>
+        </p>
+      )}
       {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {chose.courses}</span></p>}
+      {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {frais}</span></p>}
       {promesse && <p className="cal-det-p">{promesse}</p>}
       {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
       {chose.lie && <p className="cal-det-p" data-apercu-lien><Link2 size={16} aria-hidden="true" /><span><b>{chose.lie.texte}</b> · {chose.lie.apercu}</span></p>}

@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
-import { ajouterJours, lundiDe } from '../../src/domain/calendrier';
+import { ajouterJours, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../src/domain/calendrier';
+import { Frise } from '../../src/ui/calendrier/frise/Frise';
+import { DetailChose } from '../../src/ui/calendrier/frise/DetailChose';
+import { VueListe } from '../../src/ui/calendrier/frise/VueListe';
 import type { Batch, Recipe } from '../../src/types';
 
 const JOUR = '2026-11-16';
@@ -130,19 +133,22 @@ describe('C14 : épingles, étoiles, rangées masquées, ordre : gardés ; le fi
     fireEvent.click(screen.getByRole('button', { name: 'Masquer Achats' }));
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /Trier les rangées/ }));
-    fireEvent.click(within(screen.getByRole('dialog', { name: 'Trier les rangées' })).getByRole('button', { name: 'Monter Papiers' }));
+    /* le segment de critères (k15) : « Date » range les rangées et le critère reste gardé */
+    fireEvent.click(within(document.querySelector('[data-tri-seg]') as HTMLElement).getByRole('button', { name: 'Date' }));
     expect(StorageService.getUiState<string[]>('calendrier_epingles', [])).toEqual([expect.stringMatching(/Marché de Noël|CR-NOEL/)]);
     expect(StorageService.getUiState<string[]>('calendrier_etoiles', [])).toHaveLength(1);
     expect(StorageService.getUiState<string[]>('calendrier_masquees', [])).toEqual(['achats']);
     const ordre = StorageService.getUiState<string[]>('calendrier_ordre', []);
-    expect(ordre.indexOf('papiers')).toBe(5);
+    expect(ordre).toHaveLength(7);
+    const ordreNoms = [...document.querySelectorAll('section[data-rangee] > header h3')].map(h => h.textContent);
     unmount(); cleanup();
 
     monter();
     const noms = [...document.querySelectorAll('section[data-rangee] > header h3')].map(h => h.textContent);
-    expect(noms).toEqual(['Brassins', 'Fêtes', 'Ventes', 'Achats', 'Travaux', 'Papiers', 'Activités']);
+    expect(noms).toEqual(ordreNoms);
     expect(within(rangee('Achats')).getByRole('button', { name: /Afficher Achats : \d+ chose/ })).toBeInTheDocument();
-    expect(document.querySelector('[data-etoile-courbe]')).not.toBeNull();
+    /* l'étoile revient sur la marque ; sa ligne sur la courbe est prouvée par les tests b6 de l'en-tête (jsdom n'y mesure aucune largeur) */
+    expect(screen.getByRole('button', { name: /^Noël privés/ }).querySelector('.cal-etoile, .lucide-star')).not.toBeNull();
     expect(screen.getByRole('button', { name: /^Marché de Noël/ }).className).toContain('cal-epi');
   });
 
@@ -301,5 +307,105 @@ describe('C18 : propositions en pointillé, acceptées d’un toucher (E47)', ()
     expect(e).not.toBeNull();
     toucher(e);
     expect(onOpenFinances).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('CRITIQUE-3 (lot t3-c-frise) : marque, détail, pastille « lié à », liste, feuille', () => {
+  const treize = Array.from({ length: 13 }, (_, i) => ({ debut: ajouterJours(L, 7 * i), fin: ajouterJours(L, 7 * i + 6), etiquette: `S${47 + i}` }));
+  const chose = (p: Partial<ChoseCalendrier> & Pick<ChoseCalendrier, 'id' | 'rangee' | 'titre' | 'debut' | 'fin'>): ChoseCalendrier => ({
+    source: { genre: 'creative', id: p.id, type: 'event' } as ChoseCalendrier['source'], ouvre: { ecran: 'agenda', id: p.id }, deplacable: true, ...p
+  });
+  const frise = (choses: ChoseCalendrier[], extra: Partial<React.ComponentProps<typeof Frise>> = {}) => {
+    const barre = { onToucher: vi.fn(), onAppuiLong: vi.fn(), onGlisse: vi.fn(), onLacheGlisse: vi.fn(), onBord: vi.fn(), onLacheBord: vi.fn(), onRefus: vi.fn() };
+    render(
+      <Frise
+        choses={choses} colonnes={treize} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={844}
+        onAjouter={vi.fn()} onBasculerMasque={vi.fn()} barre={barre} {...extra}
+      />
+    );
+    return barre;
+  };
+
+  it('c3 (n° 5, D-199) : en 3 mois, l’appui long sur une marque appelle onSixSemaines avec la chose, sans menu ; le toucher court donne son nom', () => {
+    const vente = chose({ id: 'V-CIGOGNE', rangee: 'ventes', titre: '3 fûts La Cigogne', debut: ajouterJours(L, 35), fin: ajouterJours(L, 35), centimes: 90000 });
+    const onSixSemaines = vi.fn();
+    const barre = frise([vente], { onSixSemaines });
+    const m = document.querySelector('[data-marque][data-chose="V-CIGOGNE"]')!;
+    expect(m).not.toBeNull();
+    expect(m.getAttribute('aria-label')).toMatch(/^3 fûts La Cigogne/);
+    appuiLong(m);
+    expect(onSixSemaines).toHaveBeenCalledTimes(1);
+    expect(onSixSemaines).toHaveBeenCalledWith(vente);
+    expect(barre.onAppuiLong).not.toHaveBeenCalled();
+    toucher(m);
+    expect(barre.onToucher).toHaveBeenCalledTimes(1);
+    /* sans la prop : rien, ni menu ni vue */
+    cleanup();
+    const b2 = frise([vente]);
+    appuiLong(document.querySelector('[data-marque][data-chose="V-CIGOGNE"]')!);
+    expect(b2.onAppuiLong).not.toHaveBeenCalled();
+  });
+
+  it('c4 (n° 2) : le détail d’un brassin liste ses 5 étapes datées, nomme les courses qui manquent, sans « . . »', () => {
+    const j = (id: JalonBrassin['id'], libelle: string, ecart: number): JalonBrassin => ({ id, libelle, jour: ajouterJours('2026-11-09', ecart), ecart, glissable: id === 'conditionnement' ? 'fin' : id === 'brassage' ? 'barre' : false });
+    const commander = { ...j('commander', 'Commander', -5), articles: ['Malt', 'Houblon'] } as JalonBrassin;
+    const ipa = chose({
+      id: 'brassin-IPA', rangee: 'brassins', titre: 'IPA de printemps', debut: '2026-11-09', fin: '2026-12-07', preteLe: '2026-12-07',
+      source: { genre: 'batch', id: 'IPA', statut: 'fermenting' } as ChoseCalendrier['source'], ouvre: { ecran: 'brassin', id: 'IPA' },
+      jalons: [j('brassage', 'Brassage', 0), j('fermentation', 'Fermentation', 1), j('dry-hop', 'Dry hop', 7), j('garde', 'Garde', 14), j('conditionnement', 'Conditionnement', 28), commander]
+    });
+    const { container } = render(<DetailChose chose={ipa} onFermer={vi.fn()} onOuvrir={vi.fn()} onCommander={vi.fn()} />);
+    for (const nom of ['Brassage', 'Fermentation', 'Dry hop', 'Garde', 'Conditionnement']) expect(within(container).getByText(nom)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/[Mm]alt, houblon/);
+    expect(container.textContent).toMatch(/Il manque malt, houblon : à acheter avant le 4 nov\./);
+    expect(container.textContent).not.toMatch(/\. \.|\.\./);
+    cleanup();
+    const sans = { ...ipa, jalons: [j('brassage', 'Brassage', 0), j('commander', 'Commander', -5)] };
+    const r2 = render(<DetailChose chose={sans} onFermer={vi.fn()} onOuvrir={vi.fn()} />);
+    expect(r2.container.textContent).toMatch(/Il manque des courses : à acheter avant le 4 nov\.(?!\s*\.)/);
+    expect(r2.container.textContent).not.toMatch(/\. \.|\.\./);
+  });
+
+  it('c5 (n° 13) : une chose liée porte la pastille « lié à La Cigogne », qui se touche et montre l’aperçu sur place', () => {
+    const fete = chose({ id: 'CR-NOEL', rangee: 'fetes', titre: 'Marché de Noël', debut: ajouterJours(L, 35), fin: ajouterJours(L, 35), centimes: 118000, lie: { texte: 'lié à La Cigogne', apercu: 'La Cigogne · client · 3 fûts', client: 'La Cigogne' } });
+    const barre = frise([fete], { paysage: false, colonnes: treize.slice(0, 6) });
+    const p = screen.getByRole('button', { name: 'lié à La Cigogne : aperçu' });
+    expect(p).toHaveTextContent('lié à La Cigogne');
+    fireEvent.click(p);
+    expect(screen.getByRole('note')).toHaveTextContent('La Cigogne · client · 3 fûts');
+    expect(barre.onToucher).not.toHaveBeenCalled();
+  });
+
+  it('c6 (n° 35, n° 37) : la Liste met le brassin en cuve dans « En cours », « À venir » commence aujourd’hui ; « Sans date · 1 »', () => {
+    const ipa = chose({ id: 'brassin-IPA', rangee: 'brassins', titre: 'IPA de printemps', debut: '2026-11-09', fin: '2026-12-07', preteLe: '2026-12-07', source: { genre: 'batch', id: 'IPA', statut: 'fermenting' } as ChoseCalendrier['source'] });
+    const fete = chose({ id: 'CR-NOEL', rangee: 'fetes', titre: 'Marché de Noël', debut: '2026-12-21', fin: '2026-12-21' });
+    const poche = chose({ id: 'CR-ASSU', rangee: 'activites', titre: 'Appeler l’assurance', debut: '', fin: '', sansDate: true });
+    render(<VueListe choses={[ipa, fete]} sansDate={[poche]} aujourdhui={JOUR} onChose={vi.fn()} />);
+    const aVenir = [...document.querySelectorAll('[data-a-venir-mois] [data-liste-chose]')].map(e => e.getAttribute('data-liste-chose'));
+    expect(aVenir[0]).toBe('CR-NOEL');
+    expect(aVenir).not.toContain('brassin-IPA');
+    expect(document.querySelector('[data-en-cours] [data-liste-chose="brassin-IPA"]')).not.toBeNull();
+    expect(screen.getByText('Sans date · 1')).toBeInTheDocument();
+    expect(screen.queryByText(/Sans Date/)).toBeNull();
+  });
+
+  it('c7 (n° 28, E34) : à 390, la feuille d’ajout montre 13 semaines dans sa largeur, cases de 24 px au moins, et défile jusqu’à S20 et au-delà', () => {
+    const W0 = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 390 });
+    try {
+      monter({ callbacks: { periode: plage(52) } });
+      fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+      const groupe = dialogue('Travaux').getByRole('group', { name: 'Semaine' });
+      expect(groupe).toHaveAttribute('data-visibles', '13');
+      const cases = [...groupe.querySelectorAll<HTMLElement>('button[data-semaine]')];
+      expect(cases.length).toBeGreaterThanOrEqual(52);
+      const w = parseFloat(cases[0].style.width);
+      expect(w).toBeGreaterThanOrEqual(24);
+      expect(13 * w + 12 * 4).toBeLessThanOrEqual(390 - 24);
+      expect(within(groupe).getByRole('button', { name: /^S20,/ })).toBeInTheDocument();
+      expect(within(groupe).getByRole('button', { name: /^S40,/ })).toBeInTheDocument();
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: W0 });
+    }
   });
 });

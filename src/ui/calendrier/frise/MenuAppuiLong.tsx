@@ -6,12 +6,19 @@ import type { ChoseCalendrier } from '../../../domain/calendrier';
  * f5-a (E31) : l'appui long sur une barre ouvre un menu sous elle. Épingler (la chose reste visible si sa rangée est masquée), Étoile (sur la
  * courbe), « <Rangée> seules » (filtre de la visite), Dupliquer avec son effet, Lier à un brassin ou un client, Retirer avec son effet.
  * Retirer enlève la date : la chose reste dans sa source, sans date, et Annuler la remet (L33 : on ne supprime jamais, on ne cascade jamais).
+ *
+ * CRITIQUE-3 n° 3 : le doigt qui se lève après l'appui long ne choisit rien. Une action ne s'exécute que sur un appui puis un lâcher, tous
+ * deux sur elle, après l'ouverture du menu ; le clavier (Entrée, Espace : un `click` sans pointeur) agit aussi.
+ * CRITIQUE-3 n° 4 (D-192) : en paysage, deux colonnes (Épingler, Étoile, « X seules » | Dupliquer, Lier, Retirer), sous la barre ou
+ * au-dessus, bornées à l'écran : les six actions se voient sans défiler.
  */
 
 /** Sous cette marge du bas de l'écran vivent les onglets : le menu ne la touche pas. */
 export const BAS_RESERVE_PX = 64;
 /** Hauteur du menu quand rien ne se mesure (jsdom) : trois boutons, Dupliquer, Lier, Retirer. */
 export const HAUTEUR_REPLI_PX = 260;
+/** En paysage : trois lignes de 48 px sur deux colonnes, et la marge. */
+export const HAUTEUR_REPLI_PAYSAGE_PX = 3 * 48 + 2 * 4 + 18;
 
 export interface LiensPossibles {
   brassins: ReadonlyArray<{ id: string; nom: string }>;
@@ -44,10 +51,16 @@ export interface MenuAppuiLongProps {
   onFermer: () => void;
 }
 
+/** Le téléphone tourné (844 × 390) : plus large que haut, et bas (comme la règle `orientation: landscape and max-height: 520px` de la feuille). */
+const enPaysage = (): boolean => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerHeight <= 520;
+
 export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   const { chose, nomRangee, ancre, epinglee, etoilee, autresRangees, dupliquer, retirer, liens } = props;
   const [lier, setLier] = React.useState(false);
   const racine = React.useRef<HTMLDivElement | null>(null);
+  /* l'action « armée » : celle sur laquelle un doigt s'est posé APRÈS l'ouverture du menu (n° 3) */
+  const arme = React.useRef<Element | null>(null);
+  const faitAuPointeur = React.useRef(0);
 
   React.useEffect(() => {
     const dehors = (e: PointerEvent) => {
@@ -63,85 +76,126 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ancre]);
 
+  /** Les gestes d'une action : appui puis lâcher sur elle (le lâcher de l'appui long ne compte pas), ou le clavier. */
+  const agir = (faire: () => void) => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => { if (e.button <= 0) arme.current = e.currentTarget; },
+    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
+      const ok = arme.current === e.currentTarget;
+      arme.current = null;
+      if (!ok) return;
+      faitAuPointeur.current = Date.now();
+      faire();
+    },
+    onPointerCancel: () => { arme.current = null; },
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+      /* un `click` de pointeur (detail ≥ 1) a déjà agi au lâcher, ou vient du lâcher de l'appui long : il ne fait rien */
+      if (e.detail > 0) return;
+      if (Date.now() - faitAuPointeur.current < 400) return;
+      faire();
+    }
+  });
+
+  const paysage = enPaysage();
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
-  const largeur = typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? 440 : Math.min(300, vw - 96);
+  const largeur = paysage ? Math.min(600, vw - 32) : vw > 700 ? 440 : Math.min(300, vw - 96);
   const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut'; maxHeight?: number } | null>(null);
-  /* f5-a (CRITIQUE-2 n° 3) : sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; toujours dans l'écran, Retirer
-     compris. Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
+  /* sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; sinon borné à l'écran, au plus près de la barre.
+     Jamais une hauteur fixe (n° 4). Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
   React.useLayoutEffect(() => {
     const rect = ancre?.getBoundingClientRect();
     const vh = typeof window !== 'undefined' ? window.innerHeight : 844;
     const bas = vh - BAS_RESERVE_PX;
-    const mh = racine.current?.offsetHeight || HAUTEUR_REPLI_PX;
-    const left = rect ? Math.max(8, Math.min(vw - largeur - 8, rect.left + rect.width / 2 - largeur / 2)) : 88;
-    if (!rect) { setPos({ top: 120, left, cote: 'bas' }); return; }
-    const dessous = rect.bottom + 8, dessus = rect.top - 8 - mh;
+    const mh = racine.current?.offsetHeight || (paysage && !lier ? HAUTEUR_REPLI_PAYSAGE_PX : HAUTEUR_REPLI_PX);
+    const left = rect ? Math.max(8, Math.min(vw - largeur - 8, rect.left + rect.width / 2 - largeur / 2)) : Math.max(8, (vw - largeur) / 2);
+    if (!rect) { setPos({ top: Math.max(8, bas - mh), left, cote: 'haut', maxHeight: bas - 8 }); return; }
+    const dessous = rect.bottom + 6, dessus = rect.top - 6 - mh;
     if (dessous + mh <= bas) setPos({ top: dessous, left, cote: 'bas' });
     else if (dessus >= 8) setPos({ top: dessus, left, cote: 'haut' });
-    else {
-      /* ni dessous ni dessus en entier : le côté le plus grand, avec sa hauteur bornée (le menu défile, l'écran non) */
-      const placeBas = bas - dessous, placeHaut = rect.top - 16;
-      if (placeBas >= placeHaut) setPos({ top: dessous, left, cote: 'bas', maxHeight: Math.max(120, placeBas) });
-      else setPos({ top: 8, left, cote: 'haut', maxHeight: Math.max(120, placeHaut) });
-    }
+    else if (mh <= bas - 8) {
+      /* ni dessous ni dessus en entier : le menu entier, collé au bord qui la touche le moins (il couvre un bout de la barre, jamais une action) */
+      const placeBas = bas - rect.bottom, placeHaut = rect.top;
+      setPos({ top: placeBas >= placeHaut ? bas - mh : 8, left, cote: placeBas >= placeHaut ? 'bas' : 'haut' });
+    } else setPos({ top: 8, left, cote: 'haut', maxHeight: bas - 8 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ancre, lier, largeur, vw]);
+  }, [ancre, lier, largeur, vw, paysage]);
   const retirable = 'raison' in retirer ? null : retirer;
+
+  const epingler = (
+    <button type="button" role="menuitemcheckbox" aria-checked={epinglee} {...agir(props.onEpingler)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Pin size={20} aria-hidden="true" />{paysage ? <span>Épingler <small>reste visible</small></span> : <>Épingler<small>reste visible, rangée masquée</small></>}
+    </button>
+  );
+  const etoile = (
+    <button type="button" role="menuitemcheckbox" aria-checked={etoilee} {...agir(props.onEtoile)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Star size={20} aria-hidden="true" />{paysage ? <span>Étoile <small>sur la courbe</small></span> : <>Étoile<small>sur la courbe</small></>}
+    </button>
+  );
+  const masquees = `${autresRangees} rangée${autresRangees > 1 ? 's' : ''} masquée${autresRangees > 1 ? 's' : ''}`;
+  const seules = (
+    <button type="button" role="menuitem" {...agir(props.onSeules)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Filter size={20} aria-hidden="true" />{paysage ? <span>{nomRangee} <small>{masquees}</small></span> : <>{nomRangee}<small>{masquees}</small></>}
+    </button>
+  );
+  const droite = (
+    <>
+      {dupliquer && (
+        <button type="button" role="menuitem" {...agir(props.onDupliquer)} className="cal-ml">
+          <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <em>{dupliquer.effet}</em>}
+        </button>
+      )}
+      <button type="button" role="menuitem" {...agir(() => setLier(true))} className="cal-ml">
+        <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client</span>
+      </button>
+      {retirable ? (
+        <button type="button" role="menuitem" {...agir(props.onRetirer)} className="cal-ml cal-ml-ret">
+          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <em>{retirable.effet}</em>}
+        </button>
+      ) : (
+        <>
+          <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>
+          {props.onOuvrirSource && (
+            <button type="button" role="menuitem" {...agir(props.onOuvrirSource)} className="cal-ml">
+              <ExternalLink size={20} aria-hidden="true" /><span>{props.libelleSource ?? 'Ouvrir ›'}</span>
+            </button>
+          )}
+        </>
+      )}
+    </>
+  );
 
   return (
     <div
-      ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}`} data-menu data-cote={pos?.cote ?? 'bas'}
+      ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}${paysage ? ' cal-menu-l' : ''}`} data-menu
+      data-cote={pos?.cote ?? 'bas'} data-colonnes={paysage && !lier ? '2' : '1'}
       style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, width: largeur, ...(pos?.maxHeight ? { maxHeight: pos.maxHeight } : {}), visibility: pos ? undefined : 'hidden' }}
     >
       {!lier ? (
-        <>
-          <div className="cal-m3">
-            <button type="button" role="menuitemcheckbox" aria-checked={epinglee} onClick={props.onEpingler} className="cal-m3b">
-              <Pin size={20} aria-hidden="true" />Épingler<small>reste visible, rangée masquée</small>
-            </button>
-            <button type="button" role="menuitemcheckbox" aria-checked={etoilee} onClick={props.onEtoile} className="cal-m3b">
-              <Star size={20} aria-hidden="true" />Étoile<small>sur la courbe</small>
-            </button>
-            <button type="button" role="menuitem" onClick={props.onSeules} className="cal-m3b">
-              <Filter size={20} aria-hidden="true" />{nomRangee}<small>{autresRangees} rangée{autresRangees > 1 ? 's' : ''} masquée{autresRangees > 1 ? 's' : ''}</small>
-            </button>
+        paysage ? (
+          <div className="cal-m2">
+            <div className="cal-m2c">{epingler}{etoile}{seules}</div>
+            <div className="cal-m2c">{droite}</div>
           </div>
-          {dupliquer && (
-            <button type="button" role="menuitem" onClick={props.onDupliquer} className="cal-ml">
-              <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <em>{dupliquer.effet}</em>}
-            </button>
-          )}
-          <button type="button" role="menuitem" onClick={() => setLier(true)} className="cal-ml">
-            <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client</span>
-          </button>
-          {retirable ? (
-            <button type="button" role="menuitem" onClick={props.onRetirer} className="cal-ml cal-ml-ret">
-              <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <em>{retirable.effet}</em>}
-            </button>
-          ) : (
-            <>
-              <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>
-              {props.onOuvrirSource && (
-                <button type="button" role="menuitem" onClick={props.onOuvrirSource} className="cal-ml">
-                  <ExternalLink size={20} aria-hidden="true" /><span>{props.libelleSource ?? 'Ouvrir ›'}</span>
-                </button>
-              )}
-            </>
-          )}
-        </>
+        ) : (
+          <>
+            <div className="cal-m3">{epingler}{etoile}{seules}</div>
+            {droite}
+          </>
+        )
       ) : (
         <>
           <p className="cal-mn">Lier <b>{chose.titre}</b> à :</p>
-          {liens.brassins.filter(b => b.id !== (chose.source.genre === 'batch' ? chose.source.id : '')).map(b => (
-            <button key={b.id} type="button" role="menuitem" onClick={() => props.onLier({ batchId: b.id }, b.nom)} className="cal-ml">
-              <Link2 size={20} aria-hidden="true" /><span>{b.nom}</span><em>brassin</em>
-            </button>
-          ))}
-          {liens.clients.map(c => (
-            <button key={c.id} type="button" role="menuitem" onClick={() => props.onLier({ clientId: c.id }, c.nom)} className="cal-ml">
-              <Link2 size={20} aria-hidden="true" /><span>{c.nom}</span><em>client</em>
-            </button>
-          ))}
+          <div className={paysage ? 'cal-m2 cal-m2-liens' : undefined}>
+            {liens.brassins.filter(b => b.id !== (chose.source.genre === 'batch' ? chose.source.id : '')).map(b => (
+              <button key={b.id} type="button" role="menuitem" {...agir(() => props.onLier({ batchId: b.id }, b.nom))} className="cal-ml">
+                <Link2 size={20} aria-hidden="true" /><span>{b.nom}</span><em>brassin</em>
+              </button>
+            ))}
+            {liens.clients.map(c => (
+              <button key={c.id} type="button" role="menuitem" {...agir(() => props.onLier({ clientId: c.id }, c.nom))} className="cal-ml">
+                <Link2 size={20} aria-hidden="true" /><span>{c.nom}</span><em>client</em>
+              </button>
+            ))}
+          </div>
           {!liens.brassins.length && !liens.clients.length && <p className="cal-mn">Aucun brassin ni client à lier pour l’instant.</p>}
         </>
       )}

@@ -99,8 +99,8 @@ function titreCourtArgent(item: ForecastItem): { titre: string; notes: string[] 
   const parts = item.label.split(' · ').map(s => s.trim()).filter(Boolean);
   if (item.source !== 'brew' || parts.length < 2) return { titre: item.label, notes: [] };
   const [brassin, categorie, ...reste] = parts;
-  // Le titre dit le premier mot de la catégorie (« Énergie · Porter fumé ») ; son nom entier passe au détail.
-  const court = categorie.split(' ')[0];
+  // Le titre dit le poste entier (« Énergie et nettoyage · Porter fumé », CRITIQUE-3 n° 2 : l'énergie n'est pas une course, son nom reste entier).
+  const court = categorie;
   return {
     titre: `${court.charAt(0).toUpperCase()}${court.slice(1)} · ${brassin}`,
     notes: [...(court !== categorie ? [categorie] : []), ...reste.map(r => r.replace(/^partiel,?\s*/i, '')).filter(Boolean)]
@@ -315,7 +315,14 @@ export interface JalonBrassin {
   /** `'barre'` : se glisse avec la barre ; `'fin'` : écrit `finPrevue` ; `false` : suit la recette (voir `raison`). */
   glissable: 'barre' | 'fin' | false;
   raison?: string;
+  /** Jalon « commander » : les articles qui manquent, lus dans les courses de l'app (`vueHorizon`), jamais inventés. Absent quand on ne les connaît pas. */
+  articles?: string[];
+  /** Jalon « commander » : son titre lisible, « Malt pilsner, Saaz · Blonde d’automne » (CRITIQUE-3 n° 19). */
+  titre?: string;
 }
+
+/** Une ligne de prévision d'un brassin (`source: 'brew'`) : ses ingrédients (courses), ses frais (énergie, nettoyage, emballage) ou l'impôt. */
+export type PosteBrassin = 'courses' | 'frais' | 'impot';
 
 export interface ChoseCalendrier {
   id: string; rangee: Rangee; titre: string;
@@ -361,6 +368,19 @@ export interface ChoseCalendrier {
   etiquette?: string;
   /** Pastille « lié à La Cigogne » et son aperçu sur place (E37, D-113). */
   lie?: { texte: string; apercu: string; client?: string };
+  /**
+   * Brassin : le texte de sa durée, rendu tel quel par `texteDuree` (CRITIQUE-3 n° 1). En cuve : « J7 / 28 · prête 7 déc. » (J = jours depuis le
+   * brassage réel) ; planifié : « J0 / 28 · prête 5 janv. » ; planifié dont le jour est passé sans brassage : « pas brassée · prévue le 10 nov. ».
+   */
+  duree?: string;
+  /** Brassin planifié dont le jour de brassage est passé sans brassage : ni « J », ni « prête le » (CRITIQUE-3 n° 1). */
+  pasBrassee?: true;
+  /** Brassin : ses frais de la prévision (« énergie et nettoyage le 23 nov. · montant non renseigné ; emballage le 7 déc. · −45 »), comptés dans son budget. */
+  frais?: string;
+  /** Ligne de prévision d'un brassin : son poste (courses, frais, impôt). */
+  posteBrassin?: PosteBrassin;
+  /** Ligne « courses » d'un brassin : les ingrédients à acheter, lus dans la prévision (`lines`), jamais inventés. */
+  articles?: string[];
 }
 
 /**
@@ -371,20 +391,65 @@ export function idChoseArgent(item: Pick<ForecastItem, 'id' | 'source' | 'planId
   return item.planId && (item.source === 'plan' || item.source === 'equipment') ? `argent-${item.planId}` : `argent-${item.id}`;
 }
 
-/** « J0 / 28 · prête 14 déc. » : la durée d'un brassin dont la fin est connue (E25), jamais « J0 / 0 » ni une fin inventée (CRITIQUE-2 n° 2). */
+/**
+ * La durée d'un brassin (E25, E29) : le champ `duree` posé par `choseBrassin` (« J7 / 28 · prête 7 déc. », « pas brassée · prévue le 10 nov. ») ;
+ * à défaut (proposition, chose recalculée), « J0 / n · prête … » depuis son début. Jamais « J0 / 0 » ni une fin inventée (CRITIQUE-2 n° 2).
+ */
 export function texteDuree(c: ChoseCalendrier): string | null {
   const brassin = c.source.genre === 'batch' || c.proposition === 'brassin-habituel';
-  if (!brassin || c.finInconnue || c.conditionne || !c.preteLe || !c.debut) return null;
+  if (!brassin || c.conditionne) return null;
+  if (c.duree) return c.duree;
+  if (c.finInconnue || c.pasBrassee || !c.preteLe || !c.debut) return null;
   const n = ecartJours(c.debut, c.preteLe);
   return n > 0 ? `J0 / ${n} · prête ${jourLisible(c.preteLe)}` : null;
 }
 
-/** Le budget d'un brassin (E24, CRITIQUE-2 n° 9) : la somme de ses lignes `brew` de la prévision, celle de `BrewBudgetSheet`. Inconnu : rien, jamais 0. */
-export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[]): { centimes: number; partiel: boolean } | null {
-  const lignes = choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)));
+/**
+ * « J7 / 28 · prête 7 déc. » : J = jours depuis le brassage, borné à [0, n] ; `null` quand la fin n'est pas après le brassage (jamais « J0 / 0 »).
+ * Pure : `aujourdhui` est un paramètre.
+ */
+export function dureeBrassin(brassage: string, prete: string, aujourdhui: string): string | null {
+  const n = ecartJours(brassage, prete);
+  if (!(n > 0)) return null;
+  const j = Math.max(0, Math.min(n, ecartJours(brassage, aujourdhui)));
+  return `J${j} / ${n} · prête ${jourLisible(prete)}`;
+}
+
+/** Le poste d'une ligne de prévision d'un brassin, lu dans son id stable (`brew:<lot>:achats|frais|emballage|impot`, `brewForecast.ts`), sinon dans son libellé. */
+export function posteBrassin(item: Pick<ForecastItem, 'id' | 'label'>): PosteBrassin {
+  const suffixe = item.id.split(':').pop() ?? '';
+  if (suffixe === 'impot') return 'impot';
+  if (suffixe === 'achats') return 'courses';
+  if (suffixe === 'frais' || suffixe === 'emballage') return 'frais';
+  const l = item.label.toLocaleLowerCase('fr');
+  if (/imp[oô]t/.test(l)) return 'impot';
+  if (/[eé]nergie|nettoyage|emballage|conditionnement|co2|électricité|electricite|gaz/.test(l)) return 'frais';
+  return 'courses';
+}
+
+/** Une estimation enregistrée par `BrewBudgetSheet` (plan `brew` avec `brewEstimate`) : l'argent à sortir du brassin. */
+export interface EstimationBudget { centimes: number; partiel: boolean }
+
+/**
+ * Le budget d'un brassin (E24, CRITIQUE-2 n° 9, CRITIQUE-3 n° 9) : la somme de ses courses et de ses frais dans la prévision, la même estimation que
+ * `BrewBudgetSheet` (`estimateBrewBudget`, découpée par `brewForecast.ts`). L'impôt sur la bière n'en fait pas partie : il est dans Papiers. Quand
+ * aucune ligne n'est chiffrée, l'estimation enregistrée de `BrewBudgetSheet` (`estimations`) la remplace. Rien de connu : `null`, jamais 0.
+ */
+export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[], estimations?: ReadonlyMap<string, EstimationBudget>): { centimes: number; partiel: boolean } | null {
+  const lignes = choses.filter(c => c.source.genre === 'prevision-brassin' && c.posteBrassin !== 'impot' && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)));
   const chiffrees = lignes.filter(c => c.centimes !== undefined);
-  if (!chiffrees.length) return null;
+  if (!chiffrees.length) {
+    const e = estimations?.get(batchId);
+    return e && Number.isFinite(e.centimes) && e.centimes !== 0 ? { centimes: e.centimes, partiel: e.partiel || lignes.length > 0 } : null;
+  }
   return { centimes: chiffrees.reduce((s, c) => s + (c.centimes as number), 0), partiel: chiffrees.length < lignes.length || chiffrees.some(c => c.partiel) };
+}
+
+/** « malt pilsner, Saaz le 16 nov. · −76 » : une ligne de prévision d'un brassin dite en clair, sans point ajouté après la date (CRITIQUE-3 n° 37). */
+function texteLigneBrassin(l: ChoseCalendrier): string {
+  const poste = (l.titre.split(' · ')[0] || 'frais').toLocaleLowerCase('fr');
+  const quoi = l.articles?.length ? l.articles.join(', ') : poste === 'achats' ? 'ingrédients' : poste;
+  return `${quoi} le ${jourLisible(l.debut)} · ${l.centimes !== undefined ? francsSignes(l.centimes) : 'montant non renseigné'}`;
 }
 
 /**
@@ -396,13 +461,21 @@ export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[
  */
 export function preparerChoses(
   choses: readonly ChoseCalendrier[],
-  noms: { brassins?: ReadonlyMap<string, string>; clients?: ReadonlyMap<string, string> } = {}
+  noms: { brassins?: ReadonlyMap<string, string>; clients?: ReadonlyMap<string, string> } = {},
+  /** Les estimations enregistrées par `BrewBudgetSheet`, par brassin : le budget quand aucune ligne de la prévision n'est chiffrée (n° 9). */
+  estimations?: ReadonlyMap<string, EstimationBudget>
 ): ChoseCalendrier[] {
   const brassins = new Map(choses.filter(c => c.source.genre === 'batch').map(c => [c.source.id, c]));
   const groupes = new Map<string, ChoseCalendrier[]>();
+  const impots = new Map<string, ChoseCalendrier[]>();
   const sortie: ChoseCalendrier[] = [];
   for (const c of choses) {
     const batchId = c.source.genre === 'prevision-brassin' && c.ouvre.ecran === 'brassin' ? c.ouvre.id : undefined;
+    /* CRITIQUE-3 n° 2 : l'impôt sur la bière se déclare par période, pour tous les brassins conditionnés : UNE échéance dans Papiers */
+    if (c.source.genre === 'prevision-brassin' && c.posteBrassin === 'impot' && c.debut) {
+      impots.set(c.debut, [...(impots.get(c.debut) ?? []), c]);
+      continue;
+    }
     if (c.rangee === 'achats' && batchId && c.debut) {
       const cle = batchId;
       groupes.set(cle, [...(groupes.get(cle) ?? []), c]);
@@ -410,13 +483,15 @@ export function preparerChoses(
     }
     sortie.push(c);
   }
-  const coursesDe = new Map<string, { texte: string; mouvements: string[] }>();
+  const coursesDe = new Map<string, { courses?: string; frais?: string; mouvements: string[] }>();
   for (const [batchId, lignes] of groupes) {
-    /* le brassin est sur la frise : ses courses entrent dans son budget et son détail (as/p-repos : « Blonde d'automne −148 », sans file de
-       caddies) ; leurs mouvements suivent sa barre quand on la glisse */
+    /* le brassin est sur la frise : ses courses (ingrédients) et ses frais (énergie, nettoyage, emballage) entrent dans son budget et son détail
+       (as/p-repos : « Blonde d'automne −148 », sans file de caddies) ; leurs mouvements suivent sa barre quand on la glisse */
     if (brassins.has(batchId)) {
+      const courses = lignes.filter(l => l.posteBrassin !== 'frais'), frais = lignes.filter(l => l.posteBrassin === 'frais');
       coursesDe.set(batchId, {
-        texte: lignes.map(l => `${l.titre.split(' · ')[0].toLocaleLowerCase('fr')} le ${jourLisible(l.debut)}${l.centimes !== undefined ? ` ${francsSignes(l.centimes)}` : ' (montant non renseigné)'}`).join(', '),
+        ...(courses.length ? { courses: courses.map(texteLigneBrassin).join(' ; ') } : {}),
+        ...(frais.length ? { frais: frais.map(texteLigneBrassin).join(' ; ') } : {}),
         mouvements: lignes.flatMap(l => l.mouvements ?? [])
       });
       continue;
@@ -443,15 +518,32 @@ export function preparerChoses(
       mouvements: lignes.flatMap(l => l.mouvements ?? []), brassinLie: batchId
     });
   }
+  for (const [jour, lignes] of impots) {
+    const nomDe = (l: ChoseCalendrier) => (l.ouvre.id ? noms.brassins?.get(l.ouvre.id) ?? brassins.get(l.ouvre.id)?.titre : undefined) ?? l.titre.split(' · ').slice(1).join(' · ');
+    const chiffrees = lignes.filter(l => l.centimes !== undefined);
+    const seul = lignes.length === 1 ? lignes[0] : null;
+    sortie.push({
+      id: seul ? seul.id : `impot-${jour}`, rangee: 'papiers', posteBrassin: 'impot',
+      titre: seul ? `Impôt sur la bière · ${nomDe(seul)}` : `Impôt sur la bière · ${lignes.length} brassins`,
+      debut: jour, fin: jour,
+      ...(chiffrees.length ? { centimes: chiffrees.reduce((s, l) => s + (l.centimes as number), 0) } : {}),
+      ...(chiffrees.length && (chiffrees.length < lignes.length || chiffrees.some(l => l.partiel)) ? { partiel: true as const } : {}),
+      detail: `échéance estimée le ${jourLisible(jour)} ; ${lignes.map(l => `${nomDe(l)} · ${l.centimes !== undefined ? francsSignes(l.centimes) : 'montant non renseigné'}`).join(' ; ')}`,
+      source: { genre: 'prevision-brassin', id: seul ? seul.source.id : `impot-${jour}` },
+      ouvre: seul ? seul.ouvre : { ecran: 'finances' },
+      deplacable: { raison: 'L’impôt sur la bière suit le conditionnement de ses brassins : à régler dans le coût du brassin (Brassins).' },
+      mouvements: lignes.flatMap(l => l.mouvements ?? [])
+    });
+  }
   return sortie.map(c => {
     let suivante = c;
     if (c.source.genre === 'batch' && !c.conditionne) {
-      const b = budgetBrassin(c.source.id, choses);
+      const b = budgetBrassin(c.source.id, choses, estimations);
       if (b) suivante = { ...suivante, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}) };
     }
     if (c.source.genre === 'batch') {
       const k = coursesDe.get(c.source.id);
-      if (k) suivante = { ...suivante, courses: k.texte, mouvements: [...(suivante.mouvements ?? []), ...k.mouvements] };
+      if (k) suivante = { ...suivante, ...(k.courses ? { courses: k.courses } : {}), ...(k.frais ? { frais: k.frais } : {}), mouvements: [...(suivante.mouvements ?? []), ...k.mouvements] };
     }
     if (c.liens && (c.liens.batchId || c.liens.clientId)) {
       const client = c.liens.clientId ? noms.clients?.get(c.liens.clientId) : undefined;
@@ -493,7 +585,7 @@ const raisonRecette = (libelle: string) => `${ARTICLE[libelle] ?? libelle} suit 
  * Ce sont des écarts à la date de brassage ; « commander avant le … » s'y ajoute quand des courses manquent (`commanderLe`, ISO).
  * Aucune date n'est inventée : sans jours dans la recette, il ne reste que le brassage (et la fin, si `finPrevue` la dit).
  */
-export function jalonsBrassin(batch: Batch, options: { commanderLe?: string | null } = {}): JalonBrassin[] {
+export function jalonsBrassin(batch: Batch, options: { commanderLe?: string | null; articles?: readonly string[] } = {}): JalonBrassin[] {
   const j0 = jourZero(batch);
   if (!j0) return [];
   const demarre = hasBrewStarted(batch);
@@ -521,13 +613,18 @@ export function jalonsBrassin(batch: Batch, options: { commanderLe?: string | nu
   if (ecartFin !== null && ecartFin > 0) jalons.push({ id: 'conditionnement', libelle: 'Conditionnement', jour: fin!.jour, ecart: ecartFin, glissable: 'fin' });
   if (options.commanderLe) {
     const ecart = ecartJours(j0, options.commanderLe);
-    if (ecart < 0) jalons.push({ id: 'commander', libelle: 'Commander', jour: options.commanderLe, ecart, glissable: false, raison: 'Ce jalon se calcule des courses' });
+    const articles = [...new Set((options.articles ?? []).map(a => a.trim()).filter(Boolean))];
+    const nom = batch.name || batch.id;
+    if (ecart < 0) jalons.push({
+      id: 'commander', libelle: 'Commander', jour: options.commanderLe, ecart, glissable: false, raison: 'Ce jalon se calcule des courses',
+      titre: articles.length ? `${articles.join(', ')} · ${nom}` : `Courses · ${nom}`, ...(articles.length ? { articles } : {})
+    });
   }
   return jalons.sort((a, b) => a.ecart - b.ecart);
 }
 
 /** Brassin : une barre de son jour de brassage à « prête le » (E25). `null` : annulé, archivé, ou sans date connue. */
-export function choseBrassin(batch: Batch, aujourdhui: string, options: { commanderLe?: string | null } = {}): ChoseCalendrier | null {
+export function choseBrassin(batch: Batch, aujourdhui: string, options: { commanderLe?: string | null; articles?: readonly string[] } = {}): ChoseCalendrier | null {
   if (batch.status === 'annule' || batch.archivedAt) return null;
   const demarre = hasBrewStarted(batch);
   const base = { id: `brassin-${batch.id}`, rangee: 'brassins' as const, titre: batch.name || batch.id, source: { genre: 'batch' as const, id: batch.id, statut: batch.status }, ouvre: { ecran: 'brassin' as const, id: batch.id } };
@@ -540,10 +637,25 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
   if (!j0) return null;
   const fin = finDeBrassin(batch);
   if (batch.status === 'planifie' && !demarre) {
-    return { ...base, debut: j0, fin: fin?.jour ?? j0, ...(fin ? { preteLe: fin.jour } : {}), detail: 'planifié', jalons: jalonsBrassin(batch, options), deplacable: true };
+    /*
+     * CRITIQUE-3 n° 1 : planifié, jour passé, pas brassé (la Saison prévue le 10 nov.). Il ne se dit ni « J0 » ni « prête le » : rien n'est en
+     * cuve. Il reste visible cette semaine (de son jour prévu à aujourd'hui), avec son seul jalon de brassage, qui se glisse pour le replanifier.
+     */
+    if (j0 < aujourdhui) {
+      const brassage = jalonsBrassin(batch).filter(j => j.id === 'brassage');
+      return {
+        /* sa durée dit « pas brassée · prévue le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
+        ...base, debut: j0, fin: aujourdhui, pasBrassee: true, duree: `pas brassée · prévue le ${jourLisible(j0)}`,
+        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}`, jalons: brassage, deplacable: true
+      };
+    }
+    const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui) : null;
+    return { ...base, debut: j0, fin: fin?.jour ?? j0, ...(fin ? { preteLe: fin.jour } : {}), ...(duree ? { duree } : {}), detail: 'planifié', jalons: jalonsBrassin(batch, options), deplacable: true };
   }
+  /* en cuve : J = jours depuis le brassage réel, borné à [0, n] (« J7 / 28 · prête 7 déc. ») ; fin inconnue : « J7 », sans fin inventée */
+  const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui) : `J${Math.max(0, ecartJours(j0, aujourdhui))} · fin non renseignée`;
   return {
-    ...base, debut: j0, fin: fin?.jour ?? (aujourdhui > j0 ? aujourdhui : j0), ...(fin ? { preteLe: fin.jour } : { finInconnue: true as const }),
+    ...base, debut: j0, fin: fin?.jour ?? (aujourdhui > j0 ? aujourdhui : j0), ...(fin ? { preteLe: fin.jour } : { finInconnue: true as const }), ...(duree ? { duree } : {}),
     detail: batch.status === 'garde' ? 'en garde' : 'en cuve', jalons: jalonsBrassin(batch, options),
     deplacable: { raison: 'Brassin en cuve : le jour de brassage ne bouge pas. Seul le jalon de fin se glisse.' }
   };
@@ -628,7 +740,8 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
     rangee = entree ? 'ventes' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
     deplacable = { raison: raisonFinances('Une facture', 'la facture (Finances › Opérations)') };
   } else if (item.source === 'brew') {
-    rangee = entree ? 'ventes' : CATEGORIES_TRAVAUX.includes(item.category) ? 'travaux' : 'achats'; source = { genre: 'prevision-brassin', id: item.batchId ?? item.planId ?? item.id };
+    /* CRITIQUE-3 n° 2 : l'impôt sur la bière n'est ni une course ni un frais du brassin, il va dans Papiers (§ Données) */
+    rangee = entree ? 'ventes' : posteBrassin(item) === 'impot' ? 'papiers' : CATEGORIES_TRAVAUX.includes(item.category) ? 'travaux' : 'achats'; source = { genre: 'prevision-brassin', id: item.batchId ?? item.planId ?? item.id };
     ouvre = item.batchId ? { ecran: 'brassin', id: item.batchId } : { ecran: 'finances' };
     deplacable = { raison: 'Cette sortie suit la date de son brassin : à régler dans Brassins.' };
   } else if (item.source === 'equipment') {
@@ -649,8 +762,12 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
   const f = item.source === 'plan' ? fenetreLue(plan?.fenetre) : null;
   const montant = item.amountCents > 0 ? { centimes: entree ? item.amountCents : -item.amountCents, ...(item.partial?.length ? { partiel: true as const } : {}) } : {};
   const notesDit = notes.length ? ` · ${notes.join(' · ')}` : '';
+  const poste = item.source === 'brew' && !entree ? posteBrassin(item) : undefined;
+  /* les ingrédients à acheter, lus dans la prévision (une ligne par ingrédient chiffré) ; inconnus : rien, jamais inventés */
+  const articles = poste === 'courses' ? [...new Set((item.lines ?? []).map(l => l.label.trim()).filter(Boolean))] : [];
   return {
     id: idChoseArgent(item), rangee, titre, debut: f?.du ?? jour, fin: f?.au ?? jour, ...montant,
+    ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
     ...(plan?.batchId || plan?.clientId ? { liens: { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}) } } : {}),
     detail: `le ${jourLisible(jour)}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
@@ -739,30 +856,54 @@ export interface EntreeRetards {
   items: readonly CreativeItem[];
   /** Brassins en fermentation sans densité relevée (le domaine de la fermentation les compte). */
   sansDensite?: readonly Batch[];
-  /** `vueHorizon(...)` : « Commander pour X avant S49 ». */
-  courses?: { nom: string; nombre: number; avant: string } | null;
+  /** `vueHorizon(...)` : « Commander pour X avant S49 ». Compté seulement quand `avantLe` (ISO) est passé : avant, ce n'est pas un retard. */
+  courses?: { nom: string; nombre: number; avant: string; avantLe?: string } | null;
+  /** Les courses qui manquent pour un brassin, avec le jour où il fallait commander (le jalon « commander ») et les articles. */
+  commandes?: ReadonlyArray<{ batchId: string; nom: string; avantLe: string; articles?: readonly string[] }>;
 }
 
-/** E08 : ce qui est en retard, avec des dates (« échéance le 3 nov. »), jamais un compteur de jours. */
+/**
+ * E08, CRITIQUE-3 n° 34 : ce qui est VRAIMENT en retard, chaque retard nommé et daté (« échéance le 3 nov. »), jamais un compteur de jours :
+ * un dû non payé dont l'échéance est passée, un brassin planifié dont le jour est passé sans brassage, une tâche ou une activité datée passée et
+ * pas faite (la fin de sa fenêtre passée, s'il en a une), une densité jamais relevée sur un brassin brassé avant aujourd'hui, des courses à
+ * commander avant un jour passé. Rien de daté ni de passé : rien. Un calendrier vide rend 0 retard ; une chose posée dans le futur n'en crée aucun.
+ */
 export function retardsDe(e: EntreeRetards): Retard[] {
   const sortie: Retard[] = [];
+  const passe = (jour: string | null | undefined): jour is string => !!jour && jour < e.aujourdhui;
   for (const r of e.restes) {
-    if (!r.enRetard || !r.echeance) continue;
-    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle, detail: `échéance le ${jourLisible(r.echeance)} · ${formatCHF(r.cents)}`, jour: r.echeance, ouvre: { ecran: 'piece', id: r.id } });
+    const echeance = isoDate(r.echeance ?? undefined);
+    if (!r.enRetard || !passe(echeance)) continue;
+    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle || 'Pièce sans nom', detail: `échéance le ${jourLisible(echeance)} · ${formatCHF(r.cents)}`, jour: echeance, ouvre: { ecran: 'piece', id: r.id } });
   }
   for (const b of e.batches) {
     if (b.archivedAt || b.status !== 'planifie') continue;
     const prevu = isoDate(plannedBrewDate(b));
-    if (!prevu || !plannedDateIsPast(b, Date.parse(`${e.aujourdhui}T12:00:00Z`))) continue;
-    sortie.push({ id: `brassin-${b.id}`, genre: 'brassin', titre: b.name || b.id, detail: `brassage prévu le ${jourLisible(prevu)}`, jour: prevu, ouvre: { ecran: 'brassin', id: b.id } });
+    if (!passe(prevu) || !plannedDateIsPast(b, Date.parse(`${e.aujourdhui}T12:00:00Z`))) continue;
+    sortie.push({ id: `brassin-${b.id}`, genre: 'brassin', titre: b.name || b.id, detail: `pas brassée · brassage prévu le ${jourLisible(prevu)}`, jour: prevu, ouvre: { ecran: 'brassin', id: b.id } });
   }
   for (const t of e.items) {
+    if (t.type !== 'event' || t.status === 'done' || (t as { archivedAt?: string | null }).archivedAt) continue;
     const jour = isoDate(t.date);
-    if (t.type !== 'event' || t.status === 'done' || !jour || jour >= e.aujourdhui) continue;
-    sortie.push({ id: `tache-${t.id}`, genre: 'tache', titre: t.title, detail: `prévue le ${jourLisible(jour)}`, jour, ouvre: { ecran: 'agenda', id: t.id } });
+    const fin = fenetreLue(t.fenetre)?.au ?? jour;
+    if (!jour || !passe(fin) || !t.title?.trim()) continue;
+    sortie.push({ id: `tache-${t.id}`, genre: 'tache', titre: t.title, detail: fin !== jour ? `prévue du ${jourLisible(jour)} au ${jourLisible(fin)}` : `prévue le ${jourLisible(jour)}`, jour: fin, ouvre: { ecran: 'agenda', id: t.id } });
   }
-  for (const b of e.sansDensite ?? []) sortie.push({ id: `densite-${b.id}`, genre: 'densite', titre: `Mesurer la densité de ${b.id}`, detail: `${b.name} · aucune densité relevée`, jour: null, ouvre: { ecran: 'brassin', id: b.id } });
-  if (e.courses && e.courses.nombre > 0) sortie.push({ id: 'courses', genre: 'courses', titre: `Commander pour ${e.courses.nom}`, detail: `${e.courses.nombre} article${e.courses.nombre > 1 ? 's' : ''} avant ${e.courses.avant}`, jour: null, ouvre: { ecran: 'courses' } });
-  // Les retards datés d'abord, du plus ancien ; ceux qui n'ont pas de date gardent leur ordre (densité, courses).
-  return sortie.sort((a, b) => (a.jour ?? '9999').localeCompare(b.jour ?? '9999') || (a.jour ? a.id.localeCompare(b.id) : 0));
+  for (const b of e.sansDensite ?? []) {
+    const brasse = isoDate(actualBrewDate(b));
+    if (!passe(brasse)) continue;
+    sortie.push({ id: `densite-${b.id}`, genre: 'densite', titre: `Mesurer la densité : ${b.name || b.id}`, detail: `brassé le ${jourLisible(brasse)} · aucune densité relevée`, jour: brasse, ouvre: { ecran: 'brassin', id: b.id } });
+  }
+  for (const c of e.commandes ?? []) {
+    const avant = isoDate(c.avantLe);
+    if (!passe(avant)) continue;
+    const quoi = c.articles?.length ? ` · ${c.articles.join(', ')}` : '';
+    sortie.push({ id: `courses-${c.batchId}`, genre: 'courses', titre: `Commander pour ${c.nom}`, detail: `à commander avant le ${jourLisible(avant)}${quoi}`, jour: avant, ouvre: { ecran: 'courses' } });
+  }
+  const avantLe = isoDate(e.courses?.avantLe);
+  if (e.courses && e.courses.nombre > 0 && passe(avantLe) && !sortie.some(r => r.genre === 'courses')) {
+    sortie.push({ id: 'courses', genre: 'courses', titre: `Commander pour ${e.courses.nom}`, detail: `${e.courses.nombre} article${e.courses.nombre > 1 ? 's' : ''} à commander avant le ${jourLisible(avantLe)}`, jour: avantLe, ouvre: { ecran: 'courses' } });
+  }
+  // Du plus ancien au plus récent ; à jour égal, l'ordre des ids.
+  return sortie.sort((a, b) => (a.jour ?? '9999').localeCompare(b.jour ?? '9999') || a.id.localeCompare(b.id));
 }

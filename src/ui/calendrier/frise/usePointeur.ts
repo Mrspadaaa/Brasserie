@@ -112,12 +112,16 @@ export function usePointeur(options: OptionsPointeur) {
     }
   }, []);
 
+  /* CRITIQUE-3 n° 3 : le lâcher d'un appui long n'agit jamais. Le `click` que le navigateur émet après ce lâcher est avalé ici ; le menu,
+     de son côté, n'exécute une action que sur un appui ET un lâcher faits dans le menu après son ouverture (MenuAppuiLong). */
+  const avalerClic = useRef(0);
   const fin = useCallback((e: React.PointerEvent<HTMLElement>, annule: boolean) => {
     const s = etat.current;
     if (!s || e.pointerId !== s.id) return;
     stopMinuterie();
     etat.current = null;
     const o = opts.current;
+    if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') avalerClic.current = Date.now();
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);
     else if (s.mode === 'bord') o.onLacheBord?.(s.k, annule);
     else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.();
@@ -127,6 +131,9 @@ export function usePointeur(options: OptionsPointeur) {
   const onPointerCancel = useCallback((e: React.PointerEvent<HTMLElement>) => fin(e, true), [fin]);
   /* l'appui long ne doit pas ouvrir le menu du navigateur */
   const onContextMenu = useCallback((e: React.SyntheticEvent) => e.preventDefault(), []);
+  const onClickCapture = useCallback((e: React.MouseEvent) => {
+    if (avalerClic.current && Date.now() - avalerClic.current < 800) { avalerClic.current = 0; e.preventDefault(); e.stopPropagation(); }
+  }, []);
 
-  return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onContextMenu };
+  return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onContextMenu, onClickCapture };
 }

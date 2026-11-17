@@ -38,6 +38,8 @@ export interface FeuilleAjoutProps {
 }
 
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
+/** L'écart entre deux cases de semaine, en px. */
+const ECART_SEMAINES = 4;
 
 const PUCE = 'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850';
 
@@ -79,13 +81,31 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const resume = resumeFenetre(b);
   const prete = preteLe(b);
 
+  /* E34, CRITIQUE-3 n° 28 : 13 semaines à l'écran, à 390 aussi (cases de 24 px au moins, la ligne entière se touche), et la rangée défile
+     sur les 52 semaines de la courbe. La largeur se mesure ; sans mesure (jsdom), celle de la fenêtre moins les marges de la feuille. */
+  const [largeurSemaines, setLargeurSemaines] = useState(0);
+  useLayoutEffect(() => {
+    const el = rangeeSemaines.current;
+    if (!el) return undefined;
+    const lire = () => { if (el.clientWidth > 0) setLargeurSemaines(el.clientWidth); };
+    lire();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(lire);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const largeurVue = largeurSemaines || (typeof window !== 'undefined' ? Math.max(0, Math.min(window.innerWidth, 620) - 24) : 366);
+  const caseSemaine = Math.max(24, Math.floor((largeurVue - 12 * ECART_SEMAINES) / 13));
+  const semainesVisibles = Math.min(semaines.length, Math.floor((largeurVue + ECART_SEMAINES) / (caseSemaine + ECART_SEMAINES)));
+  const casesEtroites = caseSemaine < 44;
+
   /* la semaine choisie (préréglée, proposée : S26) est dans l'écran à l'ouverture, centrée dans la rangée qui défile (comme le jouable) */
   useLayoutEffect(() => {
     const rangee = rangeeSemaines.current;
     const choisie = rangee?.querySelector<HTMLElement>('button[aria-pressed="true"]');
     if (rangee && choisie) rangee.scrollLeft = Math.max(0, choisie.offsetLeft - (rangee.clientWidth - choisie.offsetWidth) / 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [b.rangee]);
+  }, [b.rangee, caseSemaine]);
 
   const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(suite); };
   const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(avecDefauts(brouillonVide(r, b.debut))); };
@@ -200,17 +220,24 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             {resume && <b className="text-sm text-cave-50" data-fenetre>{resume}</b>}
             {!resume && b.debut && <span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(b.debut)}</span>}
           </div>
-          <div ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag className="cal-f-semaines relative flex gap-1 overflow-x-auto pb-1" style={{ touchAction: 'pan-x' }}>
+          <div
+            ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}
+            className={`cal-f-semaines relative flex overflow-x-auto pb-1${casesEtroites ? ' cal-f-etroit' : ''}`} style={{ touchAction: 'pan-x', gap: ECART_SEMAINES }}
+          >
             {semaines.map(s => {
               const dans = !!b.debut && s.debut >= b.debut && (b.fin ? s.debut <= b.fin : s.debut === b.debut);
+              const jour = jourLisible(s.debut);
               return (
                 <button
                   key={s.debut} type="button" data-semaine={s.debut} aria-pressed={s.debut === b.debut || s.debut === b.fin} data-dans={dans ? '' : undefined}
+                  aria-label={`S${s.numero}, ${jour}`}
                   onClick={() => regler(toucherSemaine(b, s.debut))}
+                  style={{ width: caseSemaine, minWidth: caseSemaine }}
                   className="cal-f-sem flex min-h-11 shrink-0 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 data-[dans]:bg-cave-850"
                 >
-                  <b className="text-sm">S{s.numero}</b>
-                  <small className="text-xs text-cave-200">{jourLisible(s.debut)}</small>
+                  <b className="cal-f-sem-n">S{s.numero}</b>
+                  {/* étroite (390) : le jour du mois seul ; le mois se lit au-dessus (« S50, 7 déc. ») */}
+                  <small className="cal-f-sem-j">{casesEtroites ? Number(s.debut.slice(8)) : jour}</small>
                 </button>
               );
             })}

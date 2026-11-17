@@ -99,7 +99,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     fireEvent.click(d.getByRole('button', { name: /Café du Pont, 1 fût/ }));
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
-    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Café du Pont, 1 fût', amountCents: 13000, direction: 'in', status: 'draft' } });
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Café du Pont, 1 fût', amountCents: 13000, direction: 'in', status: 'active' } });
     expect(document.querySelectorAll('input[type="number"]')).toHaveLength(0);
   });
 

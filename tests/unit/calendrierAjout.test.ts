@@ -106,7 +106,8 @@ describe('A7 : puces proposées, garde ×10 (E34)', () => {
     const b = appliquerPuce(brouillonVide('ventes', S20), p[0]);
     expect(b).toMatchObject({ titre: '3 fûts La Cigogne', centimes: 90000, signe: '+', clientId: 'CL-3' });
     const e = reussi(toucherSemaine({ ...appliquerPuce(brouillonVide('ventes', S20), p[1]), centimes: 12000 }, S20));
-    expect(plan(e)).toMatchObject({ direction: 'in', status: 'draft', category: 'recettes', clientId: 'CL-2', amountCents: 12000 });
+    /* CRITIQUE-3 n° 8 : « Ajouter » enregistre une vente confirmée (elle compte), jamais un brouillon de plus en pointillé */
+    expect(plan(e)).toMatchObject({ direction: 'in', status: 'active', category: 'recettes', clientId: 'CL-2', amountCents: 12000 });
   });
   it('les noms récents de la rangée viennent des choses posées ; rien n’est inventé quand l’historique est vide', () => {
     const chose = (id: string, titre: string, debut: string): ChoseCalendrier => ({ id, rangee: 'achats', titre, debut, fin: debut, source: { genre: 'plan', id, origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan' }, deplacable: true });

@@ -4,7 +4,8 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
-import { HAUTEUR_REPLI_PX } from '../../src/ui/calendrier/frise/MenuAppuiLong';
+import { HAUTEUR_REPLI_PAYSAGE_PX, HAUTEUR_REPLI_PX, MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
+import type { ChoseCalendrier } from '../../src/domain/calendrier';
 
 const JOUR = '2026-11-16';
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
@@ -100,7 +101,8 @@ describe('C5 (BRUIT) : un seul message à la fois', () => {
     glisser(barre(/^Blonde d’automne, 23 nov/), colonne());
     const alerte = await screen.findByRole('alert');
     expect(messages()).toHaveLength(1);
-    expect(alerte.textContent).toMatch(/3 fûts La Cigogne promis le 23 déc\. · prête le 28 déc\./);
+    /* CRITIQUE-3 n° 20 (lot t3-d) : « 3 fûts promis à La Cigogne le … » ; sans client connu, la phrase du domaine */
+    expect(alerte.textContent).toMatch(/3 fûts (La Cigogne promis|promis à La Cigogne) le 23 déc\. · prête le 28 déc\./);
     expect(within(alerte).getByRole('button', { name: /Livrer le 29 déc\./ })).toBeInTheDocument();
     expect(alerte.querySelectorAll('.cal-msg-ligne')).toHaveLength(1);
     fireEvent.click(within(alerte).getByRole('button', { name: /Livrer le/ }));
@@ -251,10 +253,12 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Lier/ }));
     fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: /La Cigogne/ }));
     await waitFor(() => expect(appels.some(a => a.collection === 'creativeItems' && a.id === 'CR-NOEL')).toBe(true));
-    expect(await screen.findByText('lié à La Cigogne')).toBeInTheDocument();
+    /* la pastille est celle du Marché de Noël (une autre chose de la fixture peut déjà être liée à La Cigogne) */
+    await waitFor(() => expect(barre(/^Marché de Noël/).getAttribute('aria-label')).toMatch(/lié à La Cigogne/));
+    expect(within(document.querySelector('section[data-rangee="fetes"]') as HTMLElement).getByRole('button', { name: 'lié à La Cigogne : aperçu' })).toBeInTheDocument();
     appuiLong(barre(/^Marché de Noël/));
     fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitemcheckbox', { name: /Étoile/ }));
-    expect(document.querySelector('[data-etoile-courbe]')).not.toBeNull();
+    await waitFor(() => expect(barre(/^Marché de Noël/).querySelector('.cal-etoile, .lucide-star')).not.toBeNull());
     appuiLong(barre(/^Marché de Noël/));
     fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Retirer/ }));
     await waitFor(() => expect(messages().map(m => m.textContent).join(' ')).toMatch(/Retirée de S\d+ · Sans date ›/));
@@ -270,7 +274,7 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     expect(b.textContent).toMatch(/J0 \/ 35 · prête/);
     fireEvent.pointerUp(b, { clientX: 100 + lc, clientY: 10, pointerId: 1 });
     await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && typeof a.patch?.finPrevue === 'string')).toBe(true));
-    expect(await screen.findByRole('alert')).toHaveTextContent(/promis le .+ · prête le/);
+    expect(await screen.findByRole('alert')).toHaveTextContent(/promis (à .+ )?le .+ · prête le/);
     await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35/));
   });
 
@@ -324,5 +328,94 @@ describe('C19 (D-71) : « Budget › » d’un brassin', () => {
     fireEvent.click(d.getByRole('button', { name: 'Budget ›' }));
     expect(onOuvrirBudget).toHaveBeenCalledTimes(1);
     expect(onOuvrirBudget).toHaveBeenCalledWith('LOT-BLONDE');
+  });
+});
+
+describe('CRITIQUE-3 (lot t3-c-frise) : le menu de l’appui long', () => {
+  const CHOSE: ChoseCalendrier = {
+    id: 'CR-NOEL', rangee: 'fetes', titre: 'Marché de Noël', debut: '2026-12-21', fin: '2026-12-21', centimes: 118000,
+    source: { genre: 'creative', id: 'CR-NOEL', type: 'event' } as ChoseCalendrier['source'], ouvre: { ecran: 'agenda', id: 'CR-NOEL' }, deplacable: true
+  };
+  const espions = () => ({ onEpingler: vi.fn(), onEtoile: vi.fn(), onSeules: vi.fn(), onDupliquer: vi.fn(), onLier: vi.fn(), onRetirer: vi.fn(), onFermer: vi.fn() });
+  const ancre = (r: { top: number; bottom: number; left: number; width: number }) => {
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ ...r, right: r.left + r.width, height: r.bottom - r.top, x: r.left, y: r.top, toJSON: () => ({}) } as DOMRect);
+    return el;
+  };
+  const menu = (cb: ReturnType<typeof espions>, a: HTMLElement) => render(
+    <MenuAppuiLong
+      chose={CHOSE} nomRangee="Fêtes seules" ancre={a} epinglee={false} etoilee={false} autresRangees={6}
+      dupliquer={{ libelle: 'S52' }} retirer={{}} liens={{ brassins: [{ id: 'LOT-BLONDE', nom: 'Blonde d’automne' }], clients: [{ id: 'CL-CIGOGNE', nom: 'La Cigogne' }] }}
+      {...cb}
+    />
+  );
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+  };
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  afterEach(() => taille(W0, H0));
+  const tape = (el: Element) => { fireEvent.pointerDown(el, { pointerId: 2, button: 0 }); fireEvent.pointerUp(el, { pointerId: 2, button: 0 }); };
+
+  it('c1 (n° 3) : l’appui long de 500 ms puis le lâcher au même point ouvrent le menu sans rien choisir ; un toucher sur « Étoile » l’exécute une fois', async () => {
+    monter();
+    const b = barre(/^Marché de Noël/);
+    appuiLong(b);
+    const m = await screen.findByRole('menu');
+    /* le navigateur envoie le `click` du lâcher sur l'action qui se trouve sous le doigt : il ne fait rien */
+    const etoile = within(m).getByRole('menuitemcheckbox', { name: /Étoile/ });
+    fireEvent.pointerUp(etoile, { pointerId: 1, button: 0 });
+    fireEvent.click(etoile, { detail: 1 });
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(StorageService.getUiState<string[]>('calendrier_etoiles', [])).toEqual([]);
+    expect(StorageService.getUiState<string[]>('calendrier_epingles', [])).toEqual([]);
+    expect(barre(/^Marché de Noël/)).toBeInTheDocument();
+    /* un appui puis un lâcher sur « Étoile », après l'ouverture : une fois, et le click qui suit ne la rejoue pas */
+    tape(etoile);
+    fireEvent.click(etoile, { detail: 1 });
+    await waitFor(() => expect(StorageService.getUiState<string[]>('calendrier_etoiles', [])).toHaveLength(1));
+
+    const cb = espions();
+    cleanup();
+    menu(cb, ancre({ top: 300, bottom: 326, left: 100, width: 120 }));
+    const e = screen.getByRole('menuitemcheckbox', { name: /Étoile/ });
+    fireEvent.pointerUp(e, { pointerId: 1, button: 0 });
+    fireEvent.click(e, { detail: 1 });
+    expect(cb.onEtoile).not.toHaveBeenCalled();
+    expect(cb.onEpingler).not.toHaveBeenCalled();
+    expect(cb.onRetirer).not.toHaveBeenCalled();
+    tape(e);
+    fireEvent.click(e, { detail: 1 });
+    expect(cb.onEtoile).toHaveBeenCalledTimes(1);
+  });
+
+  it('c2 (n° 4) : en paysage (844 × 390), deux colonnes, sous ou sur la barre, les six actions dans l’écran sans défiler', () => {
+    taille(844, 390);
+    const cb = espions();
+    menu(cb, ancre({ top: 250, bottom: 270, left: 600, width: 120 }));
+    const m = screen.getByRole('menu');
+    expect(m).toHaveAttribute('data-colonnes', '2');
+    const actions = [...m.querySelectorAll('[role^="menuitem"]')].map(x => x.textContent ?? '');
+    expect(actions).toHaveLength(6);
+    expect(actions.join('|')).toMatch(/Épingler.*Étoile.*Fêtes seules.*Dupliquer en S52.*Lier à un brassin, un client.*Retirer/);
+    expect(m.querySelectorAll('.cal-m2c')).toHaveLength(2);
+    const top = parseFloat(m.style.top);
+    expect(top).toBeGreaterThanOrEqual(8);
+    expect(top + HAUTEUR_REPLI_PAYSAGE_PX).toBeLessThanOrEqual(390 - 64);
+    /* au-dessus de la barre (dessous, il passerait sous les onglets), jamais à un top fixe */
+    expect(m).toHaveAttribute('data-cote', 'haut');
+    expect(top + HAUTEUR_REPLI_PAYSAGE_PX).toBeLessThanOrEqual(250);
+    expect(m.style.maxHeight).toBe('');
+  });
+
+  it('c5 (n° 13) : « Lier » ouvre la liste des brassins et des clients ; « La Cigogne » appelle onLier({ clientId })', () => {
+    const cb = espions();
+    menu(cb, ancre({ top: 200, bottom: 226, left: 100, width: 120 }));
+    tape(screen.getByRole('menuitem', { name: /Lier/ }));
+    expect(screen.getByRole('menuitem', { name: /Blonde d’automne/ })).toBeInTheDocument();
+    tape(screen.getByRole('menuitem', { name: /La Cigogne/ }));
+    expect(cb.onLier).toHaveBeenCalledTimes(1);
+    expect(cb.onLier).toHaveBeenCalledWith({ clientId: 'CL-CIGOGNE' }, 'La Cigogne');
   });
 });

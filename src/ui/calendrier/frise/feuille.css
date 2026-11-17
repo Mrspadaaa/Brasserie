@@ -3,14 +3,18 @@
  * le Sheet des autres écrans ne change pas. La frise garde frise.css.
  */
 
-/* les montants (puces, noms récents) : chiffres alignés, comme la frise */
-.cal-f-m { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+/* les montants (puces, noms récents) : la police de l'app, chiffres alignés (CRITIQUE-3 n° 36 : plus de chasse fixe) */
+.cal-f-m { font-variant-numeric: tabular-nums; }
 
-/* les semaines défilent sur 52 : 13 tiennent dans la largeur dès qu'elle le permet (paysage, 1280), 48 px au moins au doigt */
+/* les semaines défilent sur 52 : 13 à l'écran partout, 390 compris (n° 28) ; la largeur d'une case est posée par la feuille (24 px au moins),
+   la case prend toute la hauteur de la ligne au doigt */
 .cal-f-semaines { scroll-snap-type: x proximity; scrollbar-width: thin; }
-.cal-f-sem { width: calc((100% - 48px) / 13); min-width: 48px; scroll-snap-align: start; }
+.cal-f-sem { box-sizing: border-box; padding: 0; scroll-snap-align: start; }
+.cal-f-sem-n { font-size: 14px; line-height: 18px; font-weight: 700; }
+.cal-f-sem-j { font-size: 12px; line-height: 14px; color: rgb(var(--cave-200)); white-space: nowrap; }
+.cal-f-etroit .cal-f-sem { min-height: 48px; border-radius: 8px; }
+.cal-f-etroit .cal-f-sem-n { font-size: 12px; letter-spacing: -0.02em; }
 @media (min-width: 1024px) {
-  .cal-f-sem { min-width: 40px; }
   /* au 1280 le champ CHF reste court : un repli, pas une ligne de 1 200 px */
   .cal-feuille .cal-f-chf { width: 8rem; }
 }

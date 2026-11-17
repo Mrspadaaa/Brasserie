@@ -3,7 +3,7 @@ import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import {
-  ajouterJours, dimancheDe, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
+  ajouterJours, dimancheDe, dureeBrassin, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -163,11 +163,33 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   const nouvelle = decale(finActuelle, jours);
   if (nouvelle <= debut) return refus('Un brassin dure au moins un jour : tire moins loin.');
   const promesse = promesseTouchee(ctx.plans, batch.id, nouvelle);
-  const duree = ecartJours(debut, nouvelle);
+  const duree = dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
   return {
     ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { finPrevue: nouvelle } }], effet: null, promesse, courbeApres: ctx.courbe,
-    message: annuler(parJalon ? `${chose.titre} : prête le ${jourLisible(nouvelle)}` : `${chose.titre} : J0 / ${duree}, prête le ${jourLisible(nouvelle)}`)
+    message: annuler(parJalon ? `${chose.titre} : prête le ${jourLisible(nouvelle)}` : `${chose.titre} : ${duree}`)
   };
+}
+
+/**
+ * f2-a (E29, CRITIQUE-3 n° 30) : la chose d'un brassin telle qu'elle sera après avoir tiré son bord de `jours` jours : `fin`, `preteLe` et `duree`
+ * recalculés (« J7 / 35 · prête 14 déc. »). L'aperçu pendant le geste et le texte après l'écriture disent la même chose. Pure : le jour est un
+ * paramètre. Une chose qui n'est pas un brassin, ou un brassin pas brassé (aucune fin), revient telle quelle.
+ */
+export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui: string): ChoseCalendrier {
+  if (chose.source.genre !== 'batch' || chose.pasBrassee || chose.conditionne || !chose.debut) return chose;
+  const nouvelle = decale(chose.preteLe ?? chose.fin, jours);
+  if (nouvelle <= chose.debut) return chose;
+  const duree = dureeBrassin(chose.debut, nouvelle, aujourdhui);
+  const { finInconnue: _f, ...reste } = chose;
+  void _f;
+  return { ...reste, fin: nouvelle, preteLe: nouvelle, ...(duree ? { duree } : {}) };
+}
+
+/** Le texte de l'aperçu de f2-a : « J7 / 35 · prête 14 déc. » pour un brassin, « S47 → S50 » pour le reste. */
+export function dureeAllongee(chose: ChoseCalendrier, jours: number, aujourdhui: string): string {
+  if (chose.source.genre !== 'batch') return `${etiquetteS(chose.debut)} → ${etiquetteS(dimancheDe(decale(chose.fenetre?.au ?? chose.fin, jours)))}`;
+  const apres = choseAllongee(chose, jours, aujourdhui);
+  return apres.duree ?? (apres.preteLe ? `prête ${jourLisible(apres.preteLe)}` : chose.duree ?? '');
 }
 
 /**

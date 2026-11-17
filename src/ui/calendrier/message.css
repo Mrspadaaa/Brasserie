@@ -1,0 +1,43 @@
+/* Le message du calendrier (E33, D-200) : un seul canal, une bande basse au-dessus des onglets, à gauche du + volant.
+   Sélecteurs `[data-message]` : ils passent devant les règles `.cal-msg` de frise.css, sans les toucher. */
+.cal-msg[data-message] {
+  position: fixed; z-index: 45; left: 8px; right: 84px;
+  bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
+  max-width: 560px; display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 14px;
+  font-size: 14px; line-height: 18px;
+  /* le texte laisse passer le doigt ; seuls ses liens et boutons se touchent */
+  pointer-events: none;
+}
+.cal-msg[data-message] button { pointer-events: auto; }
+.cal-msg[data-message] .cal-msg-l { flex: 1; min-width: 0; }
+.cal-msg[data-message] .cal-msg-ligne {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+
+/* f6-b : l'alerte d'une promesse, sur toute la largeur au-dessus du + volant ; le texte entier sur la première ligne, Livrer et Annuler sur la
+   seconde (passe 8, 03-p-f6b-alerte). */
+.cal-msg-alerte[data-message] {
+  right: 8px; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px 8px 12px;
+  bottom: calc(var(--main-navigation-height, 2.5rem) + 84px + env(safe-area-inset-bottom, 0px));
+}
+.cal-msg-alerte[data-message] .cal-msg-ligne { font-size: 14px; letter-spacing: -0.1px; }
+.cal-msg-alerte[data-message] .cal-msg-bt { justify-content: flex-start; }
+
+/* paysage et grand écran : à côté du rail, jamais dessus */
+@media (min-width: 1024px) {
+  .cal-msg[data-message] { left: calc(var(--rail-width, 88px) + 16px); }
+  .cal-msg-alerte[data-message] { right: auto; width: min(560px, calc(100vw - var(--rail-width, 88px) - 120px)); bottom: calc(var(--main-navigation-height, 0px) + 16px); }
+}
+
+/* « Trier les rangées » (k15 du jouable) : le critère choisi, un court instant, à droite sous l'en-tête */
+.cal-tri-seg {
+  position: sticky; z-index: 31; top: var(--cal-entete-h, 0px); margin-left: auto; width: max-content;
+  display: flex; gap: 2px; padding: 3px; border-radius: 12px;
+  background: rgb(var(--cave-900)); border: 1.5px solid rgb(var(--cave-700)); box-shadow: 0 8px 20px rgb(var(--cave-950) / 0.24);
+}
+.cal-tri-seg button {
+  min-height: 36px; padding: 0 12px; border-radius: 9px; font-size: 15px; font-weight: 600; color: rgb(var(--cave-50));
+  background: transparent; border: 0; white-space: nowrap;
+}
+.cal-tri-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.cal-tri-seg small { align-self: center; padding: 0 6px 0 4px; font-size: 14px; color: rgb(var(--cave-200)); }

@@ -6,6 +6,7 @@ import { REGLAGES_VIDES, type ReglagesFournisseurs } from '../domain/fournisseur
 import { indiceSemaine, type LigneHorizon } from '../domain/stock/horizon';
 import { plusMenuFor } from '../domain/plusEcran';
 import { ajouterJours, lundiDe, numeroSemaine } from '../domain/calendrier';
+import { brewBudgetDemands } from '../domain/finance/brewBudget';
 import { BottomNav } from '../components/BottomNav';
 import { CalendrierTab } from '../components/tabs/CalendrierTab';
 import { FloatingActions } from '../ui/FloatingActions';
@@ -52,11 +53,66 @@ const facture = (id: string, dueDate: string, cents: number, kind: 'expense' | '
 
 const recette = (id: string, name: string, style: string): Recipe => ({ id, name, style, volumeL: 100, ingredients: [] } as unknown as Recipe);
 
-const brassin = (id: string, name: string, plannedBrewDate: string, jours: { primaire: number; garde: number }, extra: Partial<Batch> = {}): Batch => ({
-  id, name, style: name, volumeL: 100, brewDate: '', plannedBrewDate: suisse(plannedBrewDate), status: 'planifie', gravityLog: [],
-  recipeSnapshot: { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: jours.primaire }, { kind: 'garde', name: 'Garde', tempC: 4, days: jours.garde }] },
+/**
+ * Une recette figée réaliste pour 100 L (banc — données simulées) : ses malts, ses houblons (dry hop daté au jour `dryHop` s'il y en a un), sa
+ * levure, sa densité visée, et sa fermentation (primaire puis garde, avec leurs jours). Les jalons Brassage, Fermentation, Dry hop, Garde et
+ * Conditionnement en sont lus (E25, D-191), et le budget du brassin en est estimé (`estimateBrewBudget`, n° 9).
+ */
+interface RecetteBanc {
+  recetteId: string; og: number;
+  malts: Array<[string, number]>; houblons: Array<[string, number]>; dryHop?: { nom: string; g: number; jour: number };
+  levure: [string, number]; primaire: number; garde: number;
+}
+const RECETTES_BANC: Record<string, RecetteBanc> = {
+  blonde: { recetteId: 'R-BLONDE', og: 1.048, malts: [['Malt pilsner', 20], ['Malt munich', 2]], houblons: [['Saaz', 250]], dryHop: { nom: 'Saaz', g: 300, jour: 7 }, levure: ['SafAle K-97', 2], primaire: 14, garde: 14 },
+  porter: { recetteId: 'R-PORTER', og: 1.056, malts: [['Malt pale ale', 19], ['Malt chocolat', 1.5], ['Malt crystal 150', 1.5]], houblons: [['Fuggles', 350]], levure: ['SafAle S-04', 2], primaire: 14, garde: 21 },
+  ipa: { recetteId: 'R-IPA', og: 1.062, malts: [['Malt pale ale', 22], ['Flocons d’avoine', 2]], houblons: [['Citra', 200]], dryHop: { nom: 'Citra', g: 600, jour: 6 }, levure: ['SafAle US-05', 2], primaire: 14, garde: 14 },
+  saison: { recetteId: 'R-SAISON', og: 1.054, malts: [['Malt pilsner', 18], ['Malt de froment', 3]], houblons: [['Styrian Goldings', 300]], levure: ['Belle Saison', 2], primaire: 14, garde: 14 },
+  stout: { recetteId: 'R-STOUT', og: 1.060, malts: [['Malt pale ale', 18], ['Orge torréfiée', 2], ['Flocons d’orge', 2]], houblons: [['East Kent Goldings', 300]], levure: ['SafAle S-04', 2], primaire: 14, garde: 14 },
+  ambree: { recetteId: 'R-AMBREE', og: 1.052, malts: [['Malt pale ale', 18], ['Malt crystal 60', 2]], houblons: [['Hallertau Tradition', 300]], levure: ['SafAle S-04', 2], primaire: 14, garde: 14 }
+};
+/** Prix des ingrédients (banc — données simulées), au kg, au g ou au sachet. */
+const PRIX_BANC: Record<string, { amount: number; quantity: number; unit: string }> = {
+  'Malt pilsner': { amount: 1.55, quantity: 1, unit: 'kg' }, 'Malt munich': { amount: 1.8, quantity: 1, unit: 'kg' }, 'Malt pale ale': { amount: 1.6, quantity: 1, unit: 'kg' },
+  'Malt chocolat': { amount: 3.2, quantity: 1, unit: 'kg' }, 'Malt crystal 150': { amount: 2.6, quantity: 1, unit: 'kg' }, 'Malt crystal 60': { amount: 2.4, quantity: 1, unit: 'kg' },
+  'Malt de froment': { amount: 1.7, quantity: 1, unit: 'kg' }, 'Flocons d’avoine': { amount: 2.2, quantity: 1, unit: 'kg' }, 'Orge torréfiée': { amount: 3.4, quantity: 1, unit: 'kg' },
+  'Flocons d’orge': { amount: 2.1, quantity: 1, unit: 'kg' }, Saaz: { amount: 7.5, quantity: 100, unit: 'g' }, Fuggles: { amount: 6, quantity: 100, unit: 'g' },
+  Citra: { amount: 9.5, quantity: 100, unit: 'g' }, 'Styrian Goldings': { amount: 6.5, quantity: 100, unit: 'g' }, 'East Kent Goldings': { amount: 7, quantity: 100, unit: 'g' },
+  'Hallertau Tradition': { amount: 6.5, quantity: 100, unit: 'g' }, 'SafAle K-97': { amount: 6.5, quantity: 1, unit: 'sachet' }, 'SafAle S-04': { amount: 5.9, quantity: 1, unit: 'sachet' },
+  'SafAle US-05': { amount: 6.2, quantity: 1, unit: 'sachet' }, 'Belle Saison': { amount: 7.9, quantity: 1, unit: 'sachet' }
+};
+
+const snapshotDe = (nom: string, r: RecetteBanc) => ({
+  name: nom, sourceRecipeId: r.recetteId, volumeL: 100, ogTarget: r.og,
+  fermentables: r.malts.map(([name, weightKg]) => ({ name, weightKg, kind: 'grain' })),
+  hops: [...r.houblons.map(([name, weightG]) => ({ name, weightG, stage: 'boil', time: 60 })), ...(r.dryHop ? [{ name: r.dryHop.nom, weightG: r.dryHop.g, stage: 'dryHop', dayOffset: r.dryHop.jour }] : [])],
+  yeast: { name: r.levure[0], qty: r.levure[1], unit: 'sachet' },
+  fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: r.primaire }, { kind: 'garde', name: 'Garde', tempC: 4, days: r.garde }]
+});
+
+const brassin = (id: string, name: string, plannedBrewDate: string, r: RecetteBanc, extra: Partial<Batch> = {}): Batch => ({
+  id, name, style: name, volumeL: 100, brewDate: '', plannedBrewDate: suisse(plannedBrewDate), status: 'planifie', gravityLog: [], recipeRef: r.recetteId, stockAccountingVersion: 1,
+  recipeSnapshot: snapshotDe(name, r),
   ...extra
 } as unknown as Batch);
+
+/**
+ * L'estimation que `BrewBudgetSheet` aurait enregistrée pour ce brassin (« Prévoir ») : les prix de ses ingrédients, ses frais (énergie,
+ * nettoyage, emballage) et ses litres nets saisis (l'impôt se calcule). `buildForecast` en tire les sorties du brassin : courses, frais, impôt.
+ */
+function planBudget(batch: Batch, le: string): FinancialPlan {
+  const prices = Object.fromEntries(brewBudgetDemands(batch.recipeSnapshot as never).flatMap(d => {
+    const p = PRIX_BANC[d.name];
+    return p ? [[d.key, { ...p, basis: 'TTC', tvaRate: 0, source: 'manual', date: '2026-10-01' }]] : [];
+  }));
+  const brewEstimate = {
+    id: `EST-${batch.id}`, createdAt: `${le}T08:00:00.000Z`, batchId: batch.id, recipeId: batch.recipeRef, title: batch.name, brewDate: le, volumeL: 100, netVolumeL: 95, netVolumeSource: 'saisi',
+    recipeSnapshot: batch.recipeSnapshot, bindings: {}, prices, cashTreatments: {},
+    settings: { costs: { energy: { enabled: true, amountTTC: 18 }, cleaning: { enabled: true, amountTTC: 6 }, packaging: { enabled: true, amountTTC: 45 } } },
+    lines: [], ingredientsCost: 0, purchasesTTC: 0, operatingCashTTC: 0, operatingCost: 0, cashRequiredTTC: 0, fixedAllocation: 0, depreciationAllocation: 0, totalCost: 0, costPerL: null, complete: false, issues: []
+  };
+  return plan({ id: `P-BREW-${batch.id}`, title: `${batch.name} · budget`, date: le, amountCents: 0, category: 'brassage', source: 'brew', batchId: batch.id, brewEstimate } as Partial<FinancialPlan> as never);
+}
 
 /**
  * Le lundi de la prochaine semaine ISO numéro `n` (S50, S6…), dans les 53 semaines qui suivent `lundi` ; à défaut `null`.
@@ -90,25 +146,36 @@ const isoDe = (suisseOuIso: string | undefined): string | null => {
 export function etatBanc(aujourdhui: string): EtatBanc {
   const L = lundiDe(aujourdhui);
   const s = (n: number, j = 0) => ajouterJours(L, n * 7 + j);
-  /* n° 37 : la recette figée date un dry hop (J7) et une garde (après 14 j de primaire) ; n° 9 : son budget vient d'une ligne `brew` (P-BREW-BLONDE) */
-  const blonde = brassin('LOT-BLONDE', 'Blonde d’automne', s(1), { primaire: 14, garde: 14 }, { recipeRef: 'R-BLONDE' });
-  (blonde.recipeSnapshot as { hops?: unknown[] }).hops = [{ name: 'Saaz', stage: 'dryHop', dayOffset: 7, amount: 300, unit: 'g' }];
-  const porter = brassin('LOT-PORTER', 'Porter d’hiver', s(3), { primaire: 14, garde: 21 }, { recipeRef: 'R-PORTER' });
-  /* n° 2 : en cuve depuis S-1, avec sa recette (14 + 14 j) : « J7 / 28 » est connu ; une densité relevée (pas de retard « densité ») */
-  const ipa = brassin('LOT-IPA', 'IPA de printemps', s(-1), { primaire: 14, garde: 14 }, {
-    status: 'fermentation', brewDate: suisse(s(-1)), actualBrewDate: suisse(s(-1)), recipeRef: 'R-IPA',
+  /* n° 37 : la recette figée date un dry hop (J7) et une garde (après 14 j de primaire) ; n° 9 : son budget vient de son estimation (planBudget) */
+  const blonde = brassin('LOT-BLONDE', 'Blonde d’automne', s(1), RECETTES_BANC.blonde);
+  const porter = brassin('LOT-PORTER', 'Porter d’hiver', s(3), RECETTES_BANC.porter);
+  /* CRITIQUE-3 n° 1 : en cuve depuis le lundi de S-1, avec sa recette (14 + 14 j) : le lundi suivant, « J7 / 28 » ; une densité relevée (aucun retard « densité ») */
+  const ipa = brassin('LOT-IPA', 'IPA de printemps', s(-1), RECETTES_BANC.ipa, {
+    status: 'fermentation', brewDate: suisse(s(-1)), actualBrewDate: suisse(s(-1)),
     gravityLog: [{ date: s(-1, 2), sg: 1.031, tempC: 19 }]
   } as Partial<Batch>);
-  /* n° 25 : un vrai retard, un brassin planifié dont le jour est passé */
-  const saison = brassin('LOT-SAISON', 'Saison de ferme', s(-1, 1), { primaire: 14, garde: 14 }, { recipeRef: 'R-SAISON' });
-  /* trois brassages d'une même recette à 56 jours d'écart, le dernier il y a 20 jours : le brassin habituel est proposé 36 jours plus tard */
-  const dernier = ajouterJours(aujourdhui, -20);
-  const stout = (n: number, jour: string): Batch => ({
-    id: `LOT-STOUT-${n}`, name: 'Stout maison', style: 'Stout', volumeL: 100, brewDate: suisse(jour), plannedBrewDate: suisse(jour), status: 'conditionne', bottlingDate: suisse(ajouterJours(jour, 28)),
-    recipeRef: 'R-STOUT', gravityLog: []
-  } as unknown as Batch);
-  /* n° 38 : Stout maison brassée 3 fois (brassin habituel proposé) */
-  const batches = [blonde, porter, ipa, saison, stout(1, ajouterJours(dernier, -112)), stout(2, ajouterJours(dernier, -56)), stout(3, dernier)];
+  /* n° 25, CRITIQUE-3 n° 1 : un vrai retard, un brassin planifié dont le jour est passé sans brassage : « pas brassée », ni J ni « prête le » */
+  const saison = brassin('LOT-SAISON', 'Saison de ferme', s(-1, 1), RECETTES_BANC.saison);
+  /*
+   * CRITIQUE-3 n° 18 et 19 : Stout maison brassée 3 fois tous les 56 jours (conditionnés, leurs dates passées), et la 4e est PLANIFIÉE en S+1 avec
+   * sa recette (une barre « J0 / 28 · prête … ») : aucune proposition de Stout (E47 b). Avant, la 3e était « conditionnée » à une date future
+   * (une icône en S+1) et rien n'était planifié : la proposition en S+5 était juste selon la règle, la fixture était absurde.
+   */
+  const stoutConditionne = (n: number, jour: string): Batch => brassin(`LOT-STOUT-${n}`, 'Stout maison', jour, RECETTES_BANC.stout, {
+    brewDate: suisse(jour), actualBrewDate: suisse(jour), status: 'conditionne', bottlingDate: suisse(ajouterJours(jour, 28))
+  } as Partial<Batch>);
+  const dernierStout = ajouterJours(aujourdhui, -48);
+  const stout = brassin('LOT-STOUT-4', 'Stout maison', s(1, 2), RECETTES_BANC.stout);
+  /* E47 b gardé : l'Ambrée maison, brassée 2 fois à 70 j d'écart, la dernière il y a 35 j, rien de planifié : proposée 35 j plus tard */
+  const dernierAmbree = ajouterJours(aujourdhui, -35);
+  const ambree = (n: number, jour: string): Batch => brassin(`LOT-AMBREE-${n}`, 'Ambrée maison', jour, RECETTES_BANC.ambree, {
+    brewDate: suisse(jour), actualBrewDate: suisse(jour), status: 'conditionne', bottlingDate: suisse(ajouterJours(jour, 28))
+  } as Partial<Batch>);
+  const batches = [
+    blonde, porter, ipa, saison, stout,
+    stoutConditionne(1, ajouterJours(dernierStout, -112)), stoutConditionne(2, ajouterJours(dernierStout, -56)), stoutConditionne(3, dernierStout),
+    ambree(1, ajouterJours(dernierAmbree, -70)), ambree(2, dernierAmbree)
+  ];
 
   /* n° 34 : l'idée datée tombe en S50 ; n° 6 et 36 : le frigo se met de côté de S6 à S35 (repli sur des semaines relatives si l'horizon ne les a pas) */
   const s50 = prochaineSemaine(L, 50) ?? s(3);
@@ -132,8 +199,8 @@ export function etatBanc(aujourdhui: string): EtatBanc {
     plan({ id: 'P-FRIGO', title: 'Frigo', date: frigoFin, amountCents: 180000, category: 'materiel', fenetre: { du: s6, au: frigoFin, miseDeCote: true } }),
     plan({ id: 'P-SOLS', title: 'Sols : colle et joints', date: s(14), amountCents: 32000, category: 'renovation', fenetre: { du: s(14), au: ajouterJours(s(16), 6), joursActifs: 5 } }),
     plan({ id: 'P-MALT', title: 'Commande groupée de malt', date: s(4), amountCents: 54000 }),
-    /* n° 9 : la sortie de matières de la Blonde (prévision de brassin, source `brew`) : son budget */
-    plan({ id: 'P-BREW-BLONDE', title: 'Blonde d’automne · matières', date: s(1), amountCents: 14800, category: 'brassage', source: 'brew', batchId: 'LOT-BLONDE' } as Partial<FinancialPlan> as never),
+    /* n° 9 : chaque brassin non conditionné a son estimation de BrewBudgetSheet : la prévision en tire ses courses, ses frais et son impôt */
+    ...[blonde, porter, ipa, saison, stout].map(b => planBudget(b, ajouterJours(L, -10))),
     /* n° 38 : une échéance récurrente non payée */
     plan({ id: 'P-LOYER', title: 'Loyer du local', date: s(1, 3), amountCents: 40000, category: 'chargesFixes', source: 'recurring', recurrence: { frequency: 'monthly' } } as Partial<FinancialPlan> as never),
     /* n° 39 : la TVA T4 */
@@ -154,7 +221,7 @@ export function etatBanc(aujourdhui: string): EtatBanc {
   ] as unknown as Transaction[];
   const recettes = [
     recette('R-BLONDE', 'Blonde d’automne', 'Blonde'), recette('R-PORTER', 'Porter d’hiver', 'Porter'), recette('R-STOUT', 'Stout maison', 'Stout'),
-    recette('R-IPA', 'IPA de printemps', 'IPA'), recette('R-SAISON', 'Saison de ferme', 'Saison')
+    recette('R-IPA', 'IPA de printemps', 'IPA'), recette('R-SAISON', 'Saison de ferme', 'Saison'), recette('R-AMBREE', 'Ambrée maison', 'Ambrée')
   ];
   const clients = [
     { id: 'CL-CIGOGNE', name: 'La Cigogne', type: 'Pro', contact: '' }, { id: 'CL-PONT', name: 'Café du Pont', type: 'Pro', contact: '' },
@@ -192,7 +259,10 @@ export function creerPortMemoire(lire: () => EtatBanc, ecrire: (suivant: EtatBan
     creer: (collection, document) => {
       onAppel?.({ op: 'creer', collection, id: document.id, patch: document });
       const e = lire();
-      ecrire({ ...e, [cle(collection)]: [...(e[cle(collection)] as unknown as unknown[]), document] });
+      /* comme l'app (savePlan, updateBatch) : un id qui existe déjà est remplacé, jamais doublé (une vente probable acceptée, CRITIQUE-3 n° 8) */
+      const liste = e[cle(collection)] as unknown as Array<{ id: string }>;
+      const suivante = liste.some(d => d.id === document.id) ? liste.map(d => (d.id === document.id ? document : d)) : [...liste, document];
+      ecrire({ ...e, [cle(collection)]: suivante });
     },
     supprimer: (collection, id) => {
       onAppel?.({ op: 'supprimer', collection, id });

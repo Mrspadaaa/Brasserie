@@ -35,7 +35,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
         return (
-          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-courant={decalage + k === 0 ? 'oui' : undefined}
+          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-courant={decalage + k === 0 ? 'oui' : undefined}
             aria-label={`${dateDeSemaine(s.debut)}${mouvements && v !== null ? ` ; mouvement ${sg(v)}` : ''}${mouvements && idee ? ' ; idée du carnet' : ''}${mouvements && retard ? ' ; en retard' : ''}`}
             onPointerDown={e => {
               if (e.button > 0 || !onIdeeSemaine) return;

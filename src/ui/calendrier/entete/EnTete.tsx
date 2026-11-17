@@ -6,8 +6,8 @@ import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme 
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
-import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine } from './Courbe';
-import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from './Fenetre';
+import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, type Boite, type EtoileCourbe } from './Courbe';
+import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode } from './MenuPeriode';
@@ -60,7 +60,17 @@ export interface EnTeteCalendrierProps {
   /** « Trier les rangées » et « Filtrer par type » du menu : le geste vit dans la frise (E39). */
   onTrier?: () => void;
   onFiltrer?: () => void;
+  /**
+   * Le canal unique des messages de l'onglet (E33, D-200) : « Tire jusqu'au bout : l'année » (`annee`, après un lâcher de poignée avant 80 %) et
+   * « Tourne le téléphone : 13 semaines » (`invite`). `null` : retirer le message de l'en-tête s'il est encore celui qui s'affiche (arrivée dans
+   * l'An, courbe en grand, rotation). Sans ce rappel, l'en-tête les montre lui-même, comme avant.
+   */
+  onMessage?: (m: MessageEnTete | null) => void;
+  /** Les ids des choses étoilées (E31, `calendrier_etoiles`) : chacune se voit sur sa marche de la courbe, « ★ Hotte −900 ». */
+  etoiles?: readonly string[];
 }
+
+export interface MessageEnTete { genre: 'annee' | 'invite'; texte: string }
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
@@ -88,7 +98,7 @@ function useMesure(ref: React.RefObject<HTMLElement | null>): number {
 type Info = { genre: 'message' | 'invite' | 'date'; texte: string; colonne?: number; colonnes?: number; cle?: string };
 
 export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
-  const { modele, fenetre, onFenetre, periode, onPeriode, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer } = props;
+  const { modele, fenetre, onFenetre, periode, onPeriode, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer, onMessage, etoiles } = props;
   const paysage = orientation === 'paysage';
   const graph = vue === 'graph';
   const annee = vue === 'annee';
@@ -136,6 +146,25 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, []);
   useEffect(() => () => { if (minuterie.current) clearTimeout(minuterie.current); }, []);
 
+  // ---- Les messages : par le canal unique de l'onglet (onMessage), sinon ici comme avant (E33, CRITIQUE-3 n° 7) ----
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
+  const emis = useRef<MessageEnTete['genre'] | null>(null);
+  const dire = useCallback((m: MessageEnTete) => {
+    const canal = onMessageRef.current;
+    if (canal) { emis.current = m.genre; canal(m); return; }
+    montrer({ genre: m.genre === 'annee' ? 'message' : 'invite', texte: m.texte }, m.genre === 'annee' ? 4000 : null);
+  }, [montrer]);
+  /** Retire le message de l'en-tête (`genre` donné : seulement celui-là). */
+  const taire = useCallback((genre?: MessageEnTete['genre']) => {
+    const canal = onMessageRef.current;
+    if (canal) {
+      if (emis.current && (!genre || emis.current === genre)) { emis.current = null; canal(null); }
+      return;
+    }
+    setInfo(i => (i && i.genre !== 'date' && (!genre || (genre === 'annee' ? i.genre === 'message' : i.genre === 'invite')) ? null : i));
+  }, []);
+
   // ---- La période de l'app et la fenêtre sont la même chose (E07, ET-PER, les deux sens) ----
   const fenRef = useRef(fenetre);
   fenRef.current = fenetre;
@@ -158,7 +187,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (orientationVue.current === orientation) return;
     orientationVue.current = orientation;
     if (orientation === 'paysage') {
-      setInfo(i => (i?.genre === 'invite' ? null : i));
+      taire('invite');
       const f = (total ? fenetreDePeriode(periode, semainesTot[0].debut, total) : null) ?? fenRef.current;
       avantPaysage.current = f;
       if (f.semaines < 13) onFenetre({ du: f.du, semaines: 13 });
@@ -179,7 +208,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (plein) { await sortirPleinEcran(); setPlein(false); return; }
     const r = await entrerPleinEcran(document.documentElement);
     setPlein(estPleinEcran());
-    if (r === 'invite' && !paysage) montrer({ genre: 'invite', texte: INVITATION }, null);
+    if (r === 'invite' && !paysage) dire({ genre: 'invite', texte: INVITATION });
   };
 
   // ---- Le doigt sur la courbe : lire (c2-b), appui long (c3-a) ----
@@ -202,20 +231,44 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       if (vue === 'graph') return;
       vueAvant.current = vue;
       setLecture(i);
+      taire();
       onVue('graph');
     }
   });
   const gestesGrande = { ...gestes, onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => { gestes.onPointerDown(e); setLecture(indexSous(e.clientX)); } };
+  // Sur la petite courbe, seules les deux zones de prise (44 px) tirent la fenêtre ; tout autre doigt lit la semaine (c2-b, CRITIQUE-3 n° 6).
+  // La décision se prend ici, par la géométrie, pas par la cible du toucher (l'ajustement tactile la rabat sur le bouton voisin).
+  const prise = useRef<PriseCadre | null>(null);
+  const gestesCourbe = {
+    ...gestes,
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+      const z = prise.current;
+      if (z && e.button <= 0) {
+        const r = cadreCourbe.current?.getBoundingClientRect();
+        const x = (e.clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
+        const dans = (zz: { l: number; w: number }) => x >= Math.max(0, zz.l) && x <= zz.l + zz.w;
+        const genre = dans(z.zones.fin) ? 'fin' : dans(z.zones.debut) ? 'debut' : null;
+        if (genre) { if (lecture !== null) setLecture(null); z.tirer(genre, e); return; }
+      }
+      gestes.onPointerDown(e);
+    }
+  };
 
   const fermerLecture = () => { setLecture(null); if (vue === 'graph') onVue(vueAvant.current === 'graph' ? 'semaines' : vueAvant.current); };
   const fermerRef = useRef(fermerLecture);
   fermerRef.current = fermerLecture;
+  // La lecture (c2-b) reste après le doigt levé, comme le jouable ; la courbe en grand (c3-a) aussi, jusqu'au × (E12, CRITIQUE-3 n° 25).
+  // Un toucher hors de l'en-tête ferme la lecture ; un toucher hors de la courbe ferme la courbe en grand.
   useEffect(() => {
-    if (lecture === null) return undefined;
-    const dehors = (e: PointerEvent) => { if (racine.current && e.target instanceof Node && racine.current.contains(e.target)) return; fermerRef.current(); };
+    if (lecture === null && !graph) return undefined;
+    const dehors = (e: PointerEvent) => {
+      const dedans = graph ? zone.current : racine.current;
+      if (dedans && e.target instanceof Node && dedans.contains(e.target)) return;
+      fermerRef.current();
+    };
     document.addEventListener('pointerdown', dehors, true);
     return () => document.removeEventListener('pointerdown', dehors, true);
-  }, [lecture]);
+  }, [lecture, graph]);
   const premiereLecture = useRef(true);
   useEffect(() => {
     if (premiereLecture.current) { premiereLecture.current = false; return; }
@@ -227,6 +280,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const versAnnee = () => {
     if (!total) return;
     fenAvantAnnee.current = fenetre;
+    taire('annee');
     onVue('annee');
     ecrire({ du: semainesTot[0].debut, semaines: Math.min(SEMAINES_ANNEE, total) });
   };
@@ -266,7 +320,30 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const nomsMisDeCote = useMemo(() => (modele.choses ?? []).filter(c => c.miseDeCote).map(c => c.titre), [modele.choses]);
 
   // Un toucher sur une semaine donne sa date ; un deuxième toucher sur la même l'efface (E04, D-158).
+  // La bulle part au prochain toucher hors d'elle (la frise comprise, avant que son geste ne commence), au premier défilement de 24 px, à
+  // l'ouverture d'un détail et au début d'un glisser (E33, CRITIQUE-3 n° 7). Le toucher qui l'a chassée sur sa propre semaine ne la rouvre pas.
+  const bulle = useRef<HTMLParagraphElement>(null);
+  const chassee = useRef<{ lundi: string; t: number } | null>(null);
+  const dateOuverte = info?.genre === 'date';
+  useEffect(() => {
+    if (!dateOuverte) return undefined;
+    const y0 = window.scrollY;
+    const fermer = () => { if (minuterie.current) clearTimeout(minuterie.current); minuterie.current = null; setInfo(i => (i?.genre === 'date' ? null : i)); };
+    const touche0 = (e: PointerEvent) => {
+      if (bulle.current && e.target instanceof Node && bulle.current.contains(e.target)) return;
+      const lundi = e.target instanceof Element ? e.target.closest<HTMLElement>('[data-lundi]')?.dataset.lundi : undefined;
+      chassee.current = lundi ? { lundi, t: Date.now() } : null;
+      fermer();
+    };
+    const defile = () => { if (Math.abs(window.scrollY - y0) > 24) fermer(); };
+    document.addEventListener('pointerdown', touche0, true);
+    window.addEventListener('scroll', defile, { passive: true, capture: true });
+    return () => { document.removeEventListener('pointerdown', touche0, true); window.removeEventListener('scroll', defile, true); };
+  }, [dateOuverte]);
   const touche = (lundi: string, colonne: number) => {
+    const c = chassee.current;
+    chassee.current = null;
+    if (c && c.lundi === lundi && Date.now() - c.t < 1500) return;
     if (info?.genre === 'date' && info.cle === lundi) {
       if (minuterie.current) clearTimeout(minuterie.current);
       minuterie.current = null;
@@ -285,6 +362,28 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // Dans l'année, le cadre dit les mois (c1-d : « nov. – oct. »).
   // Les douze mois de la bande de l'année (le premier, puis onze de plus : « nov. – oct. »), pas le treizième que touche la 52e semaine.
   const etiquetteAnnee = total ? `${MOIS_MIN[moisDeSemaine(semainesTot[0].debut)]} – ${MOIS_MIN[(moisDeSemaine(semainesTot[0].debut) + 11) % 12]}` : undefined;
+  const lundis = useMemo(() => semainesTot.map(s => s.debut), [semainesTot]);
+
+  // Les choses étoilées, sur leur marche (E31, CRITIQUE-3 n° 23) : le nom de leur mouvement sur la courbe, sinon leur titre à leur semaine.
+  const etoilesCourbe = useMemo<EtoileCourbe[]>(() => {
+    if (!base || !etoiles?.length) return [];
+    const sem = base.semaines;
+    return etoiles.flatMap(id => {
+      const c = (modele.choses ?? []).find(x => x.id === id);
+      if (!c) return [];
+      const ids = new Set(c.mouvements ?? []);
+      for (let i = 0; i < sem.length; i++) {
+        const m = sem[i].mouvements.find(mv => ids.has(mv.id) || mv.choseId === id);
+        if (m) return [{ nom: m.nom, i }];
+      }
+      const debut = (c as { debut?: string }).debut;
+      const i = debut ? sem.findIndex(s => s.lundi === lundiDe(debut)) : -1;
+      return i >= 0 ? [{ nom: c.titre, i }] : [];
+    });
+  }, [base, etoiles, modele.choses]);
+
+  // Pendant le tirage d'une poignée, l'étiquette qui suit le doigt efface les noms qu'elle couvrirait (CRITIQUE-3 n° 24).
+  const [tirage, setTirage] = useState<Boite | null>(null);
 
   // Le chiffre clé sur UNE ligne, comme z2s (« 113 CHF à dépenser · S24 ») ; la phrase entière est dans son nom accessible (E01, D-181).
   const cle = courbe && creux ? (
@@ -316,21 +415,23 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {graph && courbeC && courbe ? (
           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={cadreGrande} gestes={gestesGrande} />
         ) : courbe && base ? (
-          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={cadreCourbe} gestes={apercuC ? undefined : gestes} mise={miseCourbe}
-            cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee) }}>
+          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={cadreCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
+            mois={!annee} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
+            cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>
                 <CourbeZoom avant={base.semaines.slice(index, index + nombre).map(s => s.libre)} apres={apercuC.semaines.slice(index, index + nombre).map(s => s.libre)} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} />
               </div>
             ) : (
-              <Cadre numeros={semainesTot.map(s => s.numero)} index={index} nombre={nombre} largeur={largeur} annee={annee}
+              <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTropCourt={() => montrer({ genre: 'message', texte: MESSAGE_ANNEE }, 4000)} etiquetteAnnee={etiquetteAnnee} />
+                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} />
             )}
           </Courbe>
         ) : base === null ? (
           <p className="ent-inconnu">
-            Solde de départ inconnu : à régler dans <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>Finances › Solde</a>
+            Solde de départ inconnu : à régler dans{' '}
+            <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>Finances › Solde</a>
           </p>
         ) : null}
       </div>
@@ -340,13 +441,17 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} /> : (
             <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine} />
           )}
+          {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}
+          <div className="ent-live ent-live-date" aria-live="polite">
+            {info?.genre === 'date' && <p ref={bulle} className="ent-info ent-info--date" data-info="date"
+              style={{ left: `clamp(80px, ${(((info.colonne ?? 0) + 0.5) / (info.colonnes ?? 1)) * 100}%, calc(100% - 80px))` }}>{info.texte}</p>}
+          </div>
         </div>
       )}
 
       {lecture !== null && !graph && courbeC && <div className="ent-lu"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} /></div>}
       <div className="ent-live" aria-live="polite">
-        {info && <p className={`ent-info ent-info--${info.genre}`} data-info={info.genre}
-          style={info.genre === 'date' ? { left: `clamp(80px, ${(((info.colonne ?? 0) + 0.5) / (info.colonnes ?? 1)) * 100}%, calc(100% - 80px))` } : undefined}>{info.texte}</p>}
+        {info && info.genre !== 'date' && <p className={`ent-info ent-info--${info.genre}`} data-info={info.genre}>{info.texte}</p>}
       </div>
 
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}

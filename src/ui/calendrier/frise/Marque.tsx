@@ -4,6 +4,24 @@ import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier
 import { usePointeur } from './usePointeur';
 
 /**
+ * La pastille « lié à La Cigogne » (E37, D-113, D-126) : lisible en 3 s (14 px), elle se touche et montre l'aperçu sur place
+ * (`lie.apercu` : « La Cigogne · client ; Blonde d'automne · prête 21 déc. »). Elle vit à côté du nom, hors des gestes de la barre.
+ */
+export function PastilleLie({ lie }: { lie: NonNullable<ChoseCalendrier['lie']> }) {
+  const [ouvert, setOuvert] = React.useState(false);
+  return (
+    <span className="cal-lie-z">
+      <button
+        type="button" className="cal-lie" data-lie aria-expanded={ouvert} aria-label={`${lie.texte} : aperçu`}
+        onPointerDown={e => e.stopPropagation()}
+        onClick={e => { e.stopPropagation(); setOuvert(o => !o); }}
+      >{lie.texte}</button>
+      {ouvert && <span role="note" className="cal-lie-ap" data-apercu-lien>{lie.apercu}</span>}
+    </span>
+  );
+}
+
+/**
  * La marque (E27, D-198, D-199 ; « les évènements sont trop petits, peut-être utiliser une icône ») : en 3 mois, 6 mois et An, une chose
  * qui ferait moins de 24 px de large devient l'icône de sa rangée, avec un vrai nom pour le lecteur d'écran. Son nom vient aussi au
  * toucher (le détail). Un appui long ouvre la vue 6 semaines centrée sur sa semaine, où elle se déplace (f1-a).
@@ -33,8 +51,25 @@ export function nomAccessible(chose: ChoseCalendrier): string {
 /** « J0 / 28 · prête 14 déc. » : vit dans le domaine (jamais « J0 / 0 »), réexporté pour les vues. */
 export { texteDuree };
 
-/** Le nom et le montant à côté d'une marque. */
-export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number }
+/** Un champ que le lot A ajoute (`duree`, `pasBrassee`, `frais`) : lu en optionnel, sans supposer son type. */
+export const champ = (c: object, k: string): unknown => (c as Record<string, unknown>)[k];
+
+/**
+ * La durée montrée d'un brassin (CRITIQUE-3 n° 19, n° 30) : celle du domaine (« J7 / 28 · prête 7 déc. »), « pas brassée » quand la date
+ * prévue est passée sans brassage, sinon « durée inconnue ». Jamais une fin inventée ; rien pour ce qui n'est pas un brassin.
+ */
+export function dureeVue(c: ChoseCalendrier): string | null {
+  const d = champ(c, 'duree');
+  if (typeof d === 'string' && d.trim()) return d;
+  const t = texteDuree(c);
+  if (t) return t;
+  if (c.rangee !== 'brassins' || c.brassinLie || c.conditionne || c.proposition || c.probable) return null;
+  if (champ(c, 'pasBrassee') === true) return 'pas brassée';
+  return c.source.genre === 'batch' || c.source.genre === 'prevision-brassin' ? 'durée inconnue' : null;
+}
+
+/** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines : « Malt, houblon · Stout maison »). */
+export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string }
 
 export interface MarqueProps {
   chose: ChoseCalendrier;
@@ -54,8 +89,8 @@ export interface MarqueProps {
   /** Pas permis pour le glisser, en semaines ; présent : la pastille se glisse et s'ouvre en menu comme une barre. */
   bornes?: [number, number];
   onToucher: (chose: ChoseCalendrier, cible: HTMLElement) => void;
-  /** Appui long d'une marque trop petite : la vue 6 semaines centrée sur cette chose. */
-  onSixSemaines: (chose: ChoseCalendrier) => void;
+  /** Appui long d'une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur cette chose (E27, D-199). Absent : rien. */
+  onSixSemaines?: (chose: ChoseCalendrier) => void;
   onAppuiLong?: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onGlisse?: (chose: ChoseCalendrier, k: number) => void;
   onLacheGlisse?: (chose: ChoseCalendrier, k: number, annule: boolean) => void;
@@ -77,7 +112,7 @@ export const Marque: React.FC<MarqueProps> = props => {
     onToucher: () => cible.current && props.onToucher(chose, cible.current),
     onAppuiLong: () => {
       if (commeBarre && cible.current && props.onAppuiLong) props.onAppuiLong(chose, cible.current);
-      else props.onSixSemaines(chose);
+      else props.onSixSemaines?.(chose);
     },
     onGlisse: k => props.onGlisse?.(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse?.(chose, k, annule)
@@ -97,6 +132,7 @@ export const Marque: React.FC<MarqueProps> = props => {
         ref={cible}
         type="button"
         data-chose={chose.id}
+        data-chose-id={chose.id}
         data-marque
         data-rangee={chose.rangee}
         data-titre={chose.titre}
@@ -117,9 +153,10 @@ export const Marque: React.FC<MarqueProps> = props => {
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
       </button>
       {libelle && lbl && (
-        <span className={`cal-lbl cal-lbl-${libelle.cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl} aria-hidden="true">
-          <span className="cal-lbl-t">{chose.etiquette ?? chose.titre}</span>
-          {montant && <b className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+        <span className={`cal-lbl cal-lbl-${libelle.cote} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
+          <span className="cal-lbl-t" aria-hidden="true">{libelle.texte ?? chose.etiquette ?? chose.titre}</span>
+          {montant && <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b>}
+          {chose.lie && <PastilleLie lie={chose.lie} />}
         </span>
       )}
     </>

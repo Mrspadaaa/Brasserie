@@ -20,7 +20,7 @@ export function LectureTete({ courbe, index }: LectureProps) {
     <span className="ent-lit" aria-live="polite">
       <b className={l.libre < 0 ? 'ent-neg' : undefined}>{chf(l.libre)}</b>
       <span className="ent-lit-u"> CHF ·</span> <em>{`S${l.numero} · ${jourCourt(l.lundi)}`}</em>
-      {l.variation !== 0 && <i className={classeMv(l.variation)}>{sg(l.variation)}</i>}
+      {l.variation !== 0 && <>{' '}<i className={classeMv(l.variation)}>{sg(l.variation)}</i></>}
     </span>
   );
 }

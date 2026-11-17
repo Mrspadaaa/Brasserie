@@ -92,11 +92,18 @@
 .ent-cadre { position: absolute; top: 4px; bottom: 18px; box-sizing: border-box; border: 2px solid var(--ent-fin); border-radius: 6px; background: rgb(var(--area-finances) / 0.08); touch-action: none; }
 /* L'étiquette de la fenêtre, centrée en bas du cadre : une ligne si elle tient, sinon « S47 – » puis « S52 » (z2s), jamais trois. */
 .ent-cadre-l { position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 16px; white-space: nowrap; color: var(--ent-fin-t); pointer-events: none; }
-.ent-poi { position: absolute; top: 0; bottom: 0; width: 28px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; touch-action: none; cursor: ew-resize; }
-.ent-poi-debut { left: -14px; }
-.ent-poi-fin { right: -14px; }
-.ent-poi i { display: block; width: 6px; height: 28px; border-radius: 3px; background: var(--ent-fin); }
+/* Les poignées : une zone de prise de 44 px posée en px de la courbe (Fenetre.tsx, zonesPoignees), qui déborde surtout DEHORS du cadre ; la barre
+   visible reste sur le bord. L'intérieur du cadre est à la lecture (c2-b, CRITIQUE-3 n° 6). */
+/* Le bouton ne reçoit pas le doigt : c'est la courbe qui décide par la géométrie (EnTete, PriseCadre). Il reste pour le clavier (focus, flèches). */
+.ent-poi { position: absolute; top: 4px; bottom: 18px; z-index: 1; padding: 0; background: transparent; touch-action: none; pointer-events: none; }
+.ent-poi i { position: absolute; top: 50%; display: block; width: 6px; height: 28px; margin-top: -14px; border-radius: 3px; background: var(--ent-fin); }
 .ent-cadre[data-glisse] { background: rgb(var(--area-finances) / 0.16); }
+/* Pendant le tirage, l'étiquette suit le doigt en haut de la courbe (jamais sur « 1 740 mis de côté », n° 24) ; les noms qu'elle couvrirait
+   s'effacent le temps du geste. */
+.ent-cadre-tir { position: absolute; top: 0; z-index: 2; box-sizing: border-box; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 20px; white-space: nowrap; color: var(--ent-fin-t); background: rgb(var(--cave-950)); border: 1.5px solid var(--ent-fin); border-radius: 11px; pointer-events: none; }
+.ent-nom-cache { visibility: hidden; }
+/* L'étoile d'une chose (E31) : collée à son nom, dans la couleur du texte de l'app. */
+.ent-nom .ent-etoile { font-weight: 700; fill: rgb(var(--cave-50)); }
 
 /* La courbe zoomée pendant un geste de la frise : l'avant en pointillé, l'après en plein, l'écart en rouge ou en vert. */
 .ent-zoom-c { position: absolute; left: 0; top: 0; width: 100%; z-index: 2; background: rgb(var(--cave-950)); }
@@ -110,7 +117,7 @@
 .ent-zleg { font-size: 14px; font-weight: 600; fill: var(--ent-ink); }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
-.ent-bz { margin-top: 12px; }
+.ent-bz { position: relative; margin-top: 12px; }
 .ent-bd { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); border-bottom: 1px solid var(--ent-line); }
 .ent-bd-c { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 28px; padding: 0; color: var(--ent-mut); -webkit-touch-callout: none; user-select: none; }
 .ent-sem { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); }
@@ -169,7 +176,9 @@
 
 .ent-live { position: absolute; left: 0; right: 0; top: 100%; z-index: 46; pointer-events: none; }
 .ent-info { margin: 4px 0 0 8px; display: inline-block; max-width: calc(100% - 16px); padding: 4px 10px; border-radius: 999px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-size: 14px; font-weight: 700; line-height: 20px; }
-.ent-info--date { position: absolute; margin: 4px 0 0; transform: translateX(-50%); white-space: nowrap; }
+/* La date d'une semaine (i3) : posée au-dessus de la bande, dans l'en-tête (sur la rangée des mois), jamais sur la frise. */
+.ent-live.ent-live-date { top: auto; bottom: 100%; height: 0; }
+.ent-info--date { position: absolute; bottom: 2px; margin: 0; transform: translateX(-50%); white-space: nowrap; }
 
 /* ---- la courbe en grand (c3-a) et le mode graph ---- */
 .ent-gc-h { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; }

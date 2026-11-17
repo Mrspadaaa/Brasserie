@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import type { Batch, CreativeItem } from '../../src/types';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
-import { choseBrassin, choseCreative, type ChoseCalendrier } from '../../src/domain/calendrier';
-import { deplacer, dupliquer, mettreDeCote, noterIdee, retirer, type Collection, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
-import { brouillonDepuisProposition, ecritureDeAjout, versEnregistrement } from '../../src/domain/calendrierAjout';
+import { choseBrassin, choseCreative, preparerChoses, texteDuree, type ChoseCalendrier } from '../../src/domain/calendrier';
+import { accepterVente, deplacer, dupliquer, lier, mettreDeCote, noterIdee, retirer, type Collection, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
+import { appliquerPuce, brouillonDepuisProposition, brouillonVide, ecritureDeAjout, puces, toucherSemaine, versEnregistrement } from '../../src/domain/calendrierAjout';
+import { creerPortMemoire, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { brassinsHabituels } from '../../src/domain/calendrierPropositions';
 import { rescheduleBatchPatch } from '../../src/domain/batchSchedule';
 import { appliquer, type Document, type PortEcritures } from '../../src/ui/calendrier/ecritures';
@@ -207,5 +208,129 @@ describe('dupliquer : l’inverse retire la copie, jamais l’original', () => {
     expect(m.tout('creativeItems')[1]).toMatchObject({ date: '2026-12-19', title: 'Marché de Noël', status: 'todo' }); // même jour de la semaine, une semaine plus tard
     await faite.annuler();
     expect(m.tout('creativeItems')).toEqual([fete]);
+  });
+});
+
+describe('CRITIQUE-3 n° 8 et 13 : une vente posée compte une fois ; Lier écrit, se relit, s’annule', () => {
+  const ventes = (mod: ReturnType<typeof modeleDe>) => mod.choses.filter(c => c.rangee === 'ventes');
+  const ctxAjout = (m: ReturnType<typeof memoire>) => ({ aujourdhui: AUJOURDHUI, recettes: [], clients: [{ id: 'CL-PONT', name: 'Café du Pont' }], plans: m.tout('financialPlans') as unknown as FinancialPlan[], choses: modeleDe(m).choses, nouvelId: (x: string) => `${x}-NEW`, maintenant: '2026-11-16T10:00:00.000Z' });
+  const probable: FinancialPlan = { id: 'P-CAFE', title: 'Café du Pont, 1 fût', date: '2026-12-07', amountCents: 13000, direction: 'in', category: 'recettes', source: 'manual', status: 'draft', createdAt: 'x', clientId: 'CL-PONT' };
+
+  it('t5 : Ajouter une vente puis relire le modèle : une seule chose Ventes, pleine, comptée ; Annuler la retire', async () => {
+    const m = memoire({});
+    const b = { ...appliquerPuce(brouillonVide('ventes', '2026-12-07'), puces('ventes', ctxAjout(m)).find(p => p.genre === 'client')!), centimes: 13000, debutChoisi: true };
+    const conv = versEnregistrement(b, ctxAjout(m));
+    if (!('enregistrement' in conv)) throw new Error(conv.raison);
+    const faite = await appliquer([ecritureDeAjout(conv.enregistrement)], m);
+    const apres = ventes(modeleDe(m));
+    expect(apres).toHaveLength(1);
+    expect(apres[0]).toMatchObject({ titre: 'Café du Pont', centimes: 13000 });
+    expect(apres[0].probable).toBeUndefined();
+    await faite.annuler();
+    expect(ventes(modeleDe(m))).toHaveLength(0);
+  });
+
+  it('t5 : choisir la puce d’une vente probable l’ACCEPTE (même id, pleine, comptée) au lieu d’en créer une autre ; Annuler la remet en pointillé', async () => {
+    const m = memoire({ financialPlans: [probable as unknown as Document] });
+    expect(ventes(modeleDe(m))).toMatchObject([{ id: 'plan-P-CAFE', probable: true }]);
+    const puce = puces('ventes', ctxAjout(m)).find(p => p.genre === 'vente-probable')!;
+    const conv = versEnregistrement(toucherSemaine(appliquerPuce(brouillonVide('ventes', '2026-12-07'), puce), '2026-12-07'), ctxAjout(m));
+    if (!('enregistrement' in conv)) throw new Error(conv.raison);
+    expect(conv.enregistrement.document.id).toBe('P-CAFE');
+    /* la même écriture que CalendrierTab : une création, qui remplace le brouillon de même id */
+    const faite = await appliquer([{ op: 'creer', collection: 'financialPlans', document: conv.enregistrement.document as unknown as Document & { id: string } }], m);
+    expect(m.tout('financialPlans')).toHaveLength(1);
+    expect(m.tout('financialPlans')[0]).toMatchObject({ id: 'P-CAFE', status: 'active' });
+    const apres = ventes(modeleDe(m));
+    expect(apres).toHaveLength(1);
+    expect(apres[0]).toMatchObject({ id: 'argent-P-CAFE', centimes: 13000 });
+    expect(apres[0].probable).toBeUndefined();
+    /* la vente acceptée n'est plus proposée en puce : on ne peut pas la poser deux fois */
+    expect(puces('ventes', ctxAjout(m)).some(p => p.genre === 'vente-probable')).toBe(false);
+    await faite.annuler();
+    expect(m.tout('financialPlans')).toEqual([probable]);
+  });
+
+  it('t5 : toucher la pointillée (accepterVente) la rend pleine, même id ; Annuler la remet en brouillon', async () => {
+    const m = memoire({ financialPlans: [probable as unknown as Document] });
+    const chose = ventes(modeleDe(m))[0];
+    const faite = await appliquer(ok(accepterVente(chose, ctxDe(m))).ecritures, m);
+    expect(m.tout('financialPlans')).toEqual([{ ...probable, status: 'active' }]);
+    expect(ventes(modeleDe(m))).toMatchObject([{ id: 'argent-P-CAFE', centimes: 13000 }]);
+    expect(ventes(modeleDe(m))[0].probable).toBeUndefined();
+    await faite.annuler();
+    expect(m.tout('financialPlans')).toEqual([probable]);
+  });
+
+  it('t9 : Lier une fête à La Cigogne, puis Annuler : « lié à La Cigogne » présent puis absent, l’objet identique (toEqual)', async () => {
+    const m = memoire({ creativeItems: [fete as unknown as Document], financialPlans: [{ ...probable, status: 'active' } as unknown as Document] });
+    const noms = { clients: new Map([['CL-CIGOGNE', 'La Cigogne']]) };
+    const lu = () => preparerChoses(modeleDe(m).choses, noms);
+    const chose = lu().find(c => c.id === 'creatif-CR-1')!;
+    expect(chose.lie).toBeUndefined();
+    const faite = await appliquer(ok(lier(chose, { clientId: 'CL-CIGOGNE' }, ctxDe(m))).ecritures, m);
+    expect(m.tout('creativeItems')[0]).toMatchObject({ liens: { clientId: 'CL-CIGOGNE' } });
+    expect(lu().find(c => c.id === 'creatif-CR-1')!.lie).toMatchObject({ texte: 'lié à La Cigogne' });
+    await faite.annuler();
+    expect(m.tout('creativeItems')).toEqual([fete]);
+    expect(lu().find(c => c.id === 'creatif-CR-1')!.lie).toBeUndefined();
+    /* un plan manuel porte clientId, et son inverse le retire */
+    const vente = lu().find(c => c.id === 'argent-P-CAFE')!;
+    const f2 = await appliquer(ok(lier(vente, { clientId: 'CL-CIGOGNE' }, ctxDe(m))).ecritures, m);
+    expect(lu().find(c => c.id === 'argent-P-CAFE')!.lie).toMatchObject({ texte: 'lié à La Cigogne' });
+    await f2.annuler();
+    expect(m.tout('financialPlans')).toEqual([{ ...probable, status: 'active' }]);
+  });
+});
+
+describe('Banc (?preview=calendrier) : la fixture et son port disent la même chose que l’app (CRITIQUE-3 n° 1, 2, 8, 9, 18, 19)', () => {
+  const modeleBanc = (e: EtatBanc) => construireModele({
+    aujourdhui: AUJOURDHUI, transactions: e.transactions, payments: [], plans: e.plans, profile, assets: [], batches: e.batches, stockItems: [],
+    items: e.items, recettes: e.recettes, reglages: e.reglages ?? REGLAGES_VIDES, lignesCourses: e.lignesCourses ?? []
+  });
+
+  it('la rangée Brassins au repos : IPA « J7 / 28 », Saison « pas brassée », Stout en barre, un montant sur chaque brassin, aucune proposition de Stout', () => {
+    const mod = modeleBanc(etatBanc(AUJOURDHUI));
+    const prets = preparerChoses(mod.choses);
+    const de = (id: string) => prets.find(c => c.id === id)!;
+    expect(texteDuree(de('brassin-LOT-IPA'))).toBe('J7 / 28 · prête 7 déc.');
+    expect(texteDuree(de('brassin-LOT-SAISON'))).toBe('pas brassée · prévue le 10 nov.');
+    const stout = de('brassin-LOT-STOUT-4');
+    expect(stout).toMatchObject({ debut: '2026-11-25', preteLe: '2026-12-23' });
+    expect(texteDuree(stout)).toBe('J0 / 28 · prête 23 déc.');
+    expect(prets.some(c => c.proposition === 'brassin-habituel' && c.recipeRef === 'R-STOUT')).toBe(false);
+    expect(prets.filter(c => c.proposition === 'brassin-habituel').map(c => c.recipeRef)).toEqual(['R-AMBREE']);
+    for (const id of ['LOT-BLONDE', 'LOT-PORTER', 'LOT-IPA', 'LOT-SAISON', 'LOT-STOUT-4']) expect(de(`brassin-${id}`).centimes ?? 0).toBeLessThan(0);
+    /* les étapes de la Blonde : brassage, fermentation, dry hop, garde, conditionnement, et « commander » avec ses articles */
+    const blonde = de('brassin-LOT-BLONDE');
+    expect(blonde.jalons!.map(j => j.id)).toEqual(['commander', 'brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement']);
+    expect(blonde.jalons!.find(j => j.id === 'commander')!.articles).toEqual(['Malt pilsner', 'Saaz']);
+    expect(blonde.courses).toMatch(/Malt pilsner/);
+    expect(blonde.courses).not.toMatch(/énergie|emballage|impôt/);
+    expect(blonde.frais).toMatch(/énergie et nettoyage/);
+    expect(blonde.frais).toMatch(/emballage/);
+    /* l'impôt sur la bière : dans Papiers, jamais dans les courses ni le budget */
+    const impots = prets.filter(c => c.posteBrassin === 'impot');
+    expect(impots.length).toBeGreaterThan(0);
+    for (const i of impots) expect(i.rangee).toBe('papiers');
+    /* retards : la Saison pas brassée et la facture Hopfen, nommés et datés ; rien sans date */
+    expect(mod.retards.map(r => r.id).sort()).toEqual(['brassin-LOT-SAISON', 'reste-F-HOPFEN']);
+  });
+
+  it('le port du banc : Ajouter une vente probable l’accepte (une seule vente, pleine) ; Annuler la remet', async () => {
+    let etat = etatBanc(AUJOURDHUI);
+    const port = creerPortMemoire(() => etat, s => { etat = s; });
+    const ctx = { aujourdhui: AUJOURDHUI, recettes: etat.recettes, clients: etat.clients.map(c => ({ id: c.id, name: c.name })), plans: etat.plans, choses: modeleBanc(etat).choses, nouvelId: (x: string) => `${x}-NEW` };
+    const puce = puces('ventes', ctx).find(p => p.genre === 'vente-probable' && p.planId === 'P-CAFE')!;
+    const conv = versEnregistrement(toucherSemaine(appliquerPuce(brouillonVide('ventes', '2026-12-07'), puce), '2026-12-07'), ctx);
+    if (!('enregistrement' in conv)) throw new Error(conv.raison);
+    const faite = await appliquer([ecritureDeAjout(conv.enregistrement)], port);
+    const cafe = preparerChoses(modeleBanc(etat).choses).filter(c => c.titre.startsWith('Café du Pont'));
+    expect(cafe).toHaveLength(1);
+    expect(cafe[0]).toMatchObject({ id: 'argent-P-CAFE', centimes: 13000 });
+    expect(cafe[0].probable).toBeUndefined();
+    expect(etat.plans.filter(p => p.id === 'P-CAFE')).toHaveLength(1);
+    await faite.annuler();
+    expect(etat.plans.find(p => p.id === 'P-CAFE')!.status).toBe('draft');
   });
 });

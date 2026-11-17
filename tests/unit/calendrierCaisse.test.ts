@@ -5,7 +5,7 @@ import { buildForecast } from '../../src/domain/finance/forecast';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { lundiDe, semainesDe } from '../../src/domain/calendrier';
 import {
-  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, miseDeCoteA, miseDeCoteVisible, soldeAuJour, soldeFinDeMois, type MiseDeCote
+  courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, mouvementsDeSemaine, miseDeCoteA, miseDeCoteVisible, soldeAuJour, soldeFinDeMois, type MiseDeCote
 } from '../../src/domain/calendrierCaisse';
 import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 
@@ -177,5 +177,38 @@ describe('E03 : la mise de côté nommée sur la courbe (z2s : « 1 140 mis de c
     expect(apres.titres).toEqual(['Frigo']);
     expect(miseDeCoteVisible(sans, { index: s24 })).toBeNull();
     expect(miseDeCoteVisible(avec, null)?.centimes).toBe(174000);
+  });
+});
+
+describe('CRITIQUE-3 n° 32 : le creux ne dit que sa semaine ; la tendance de Finances dans les hypothèses', () => {
+  it('t7 : un loyer mensuel ne figure qu’une fois dans la semaine du creux ; deux lignes du même nom sont regroupées avec leur somme', () => {
+    const courbe = courbeCaisse({
+      depart: 100000, lundi0: '2026-11-16', nbSemaines: 26, mouvements: [
+        ...['2026-11-27', '2026-12-27', '2027-01-27', '2027-02-27', '2027-03-27'].map((jour, i) => ({ id: `L:${i}`, jour, centimes: -40000, nom: 'Loyer du local' })),
+        { id: 'H', jour: '2027-03-23', centimes: -90000, nom: 'Hotte' },
+        { id: 'E1', jour: '2027-03-22', centimes: -1500, nom: 'Énergie · Porter' }, { id: 'E2', jour: '2027-03-24', centimes: -1500, nom: 'Énergie · Porter' }
+      ]
+    })!;
+    const creux = creuxDepuis(courbe, 0)!;
+    const lignes = mouvementsDeSemaine(courbe, creux.index);
+    expect(lignes.filter(m => m.nom === 'Loyer du local')).toHaveLength(1);
+    expect(lignes.map(m => m.libelle)).toEqual(['Hotte −900', 'Loyer du local −400', 'Énergie · Porter −30']);
+    /* rien d'une autre semaine : la somme des lignes est la variation de la semaine */
+    expect(lignes.reduce((s, m) => s + m.centimes, 0)).toBe(courbe.semaines[creux.index].variation);
+    expect(mouvementsDeSemaine(courbe, 99)).toEqual([]);
+    expect(lectureSemaine(courbe, creux.index)!.lignes[0]).toMatchObject({ genre: 'mouvement', texte: 'Hotte −900' });
+  });
+
+  it('la tendance de Finances (lignes « trend ») entre dans les hypothèses avec sa source ; sans tendance, rien', () => {
+    const sans = construireModele(entrees(500000));
+    expect(sans.hypotheses.map(h => h.id)).toEqual(['depart']);
+    /* cinq mois de charges courantes payées (catégorie suivie par la tendance de Finances, TREND_CATEGORIES) */
+    const historique = ['2026-06-10', '2026-07-10', '2026-08-10', '2026-09-10', '2026-10-10'].map((d, i) => ({ ...facture(`H${i}`, d, 60000), date: d, category: 'chargesFixes', finance: { version: 1, kind: 'expense', amountCents: 60000, lines: [], paymentStatus: 'paid', dueDate: d } }) as unknown as FinanceTransaction);
+    /* sans plan de charges fixes qui couvrirait déjà la catégorie (le loyer de la fixture la couvre) */
+    const avec = construireModele(entrees(500000, { plans: [], transactions: historique as unknown as Transaction[], profile: { ...profile(500000), historyCompleteFrom: '2026-05-01' } }));
+    const tendance = avec.hypotheses.find(h => h.id === 'tendance')!;
+    expect(tendance).toBeDefined();
+    expect(tendance.texte).toMatch(/^Tendance de Finances : [−+][\d ]+ CHF\/mois$/);
+    expect(tendance.source).toContain('Finances');
   });
 });

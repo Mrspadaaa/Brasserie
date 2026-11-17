@@ -19,7 +19,7 @@ import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE, ICONE_RANGEE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import {
-  RANGEES, ajouterJours, dateDeSemaine, ecartJours, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, ajouterJours, dateDeSemaine, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
@@ -28,8 +28,8 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, dupliquer, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
-  type ContexteGestes, type Ecriture, type Message as MessageGeste, type Resolution
+  accepterVente, alignerCourbe, allonger, deplacer, dupliquer, dureeAllongee, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
+  type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
 /**
@@ -87,6 +87,55 @@ function useEtatGarde<T>(cle: string, defaut: T): [T, (valeur: T) => void] {
 }
 
 const LIBELLE_LIEN: Partial<Record<CibleOuverture['ecran'], string>> = { finances: 'Finances ›', plan: 'Finances ›', brassin: 'Ouvrir le brassin ›', piece: 'Ouvrir la pièce ›', courses: 'Les courses ›', solde: 'Finances ›' };
+
+/** « déc.. » et « nov. . » deviennent « déc. » et « nov. » : une abréviation qui finit une phrase ne double pas son point (CRITIQUE-3 n° 37). */
+export function sansPointDouble(texte: string): string {
+  return texte.replace(/\.(?:\s*\.)+/g, () => '.');
+}
+
+/** Une semaine dite en phrase : « S52, 21 – 27 déc. » suivi d'une phrase, sans « déc.. ». */
+const phraseSemaine = (lundi: string, suite: string) => sansPointDouble(`${dateDeSemaine(lundi)}. ${suite}`);
+
+/**
+ * f6-b (E32, CRITIQUE-3 n° 20) : « 3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv. », composé depuis la promesse du domaine. Le client
+ * vient de `clientId` ; s'il manque ou est inconnu, la phrase du domaine reste (« 3 fûts La Cigogne promis le … »), sans rien inventer.
+ */
+export function textePromesse(p: Promesse, clients: ReadonlyArray<{ id: string; name: string }>): string {
+  const client = p.clientId ? clients.find(c => c.id === p.clientId)?.name?.trim() : undefined;
+  if (!client) return sansPointDouble(p.texte);
+  const titre = p.titre.trim();
+  const i = titre.toLocaleLowerCase('fr').indexOf(client.toLocaleLowerCase('fr'));
+  const quoi = (i >= 0 ? `${titre.slice(0, i)} ${titre.slice(i + client.length)}` : titre).replace(/\s+/g, ' ').replace(/[\s,·–-]+$/, '').trim() || titre;
+  return sansPointDouble(`${quoi} promis à ${client} le ${jourLisible(p.jourPromis)} · prête le ${jourLisible(p.preteLe)}`);
+}
+
+type CritereTri = 'urgent' | 'date' | 'montant';
+const CRITERES_TRI: readonly CritereTri[] = ['urgent', 'date', 'montant'];
+const NOM_CRITERE: Record<CritereTri, string> = { urgent: 'Urgent', date: 'Date', montant: 'Montant' };
+
+/**
+ * « Trier les rangées » (k15 du jouable, `k15Ordre`) : sans critère, l'ordre par genre ; « Urgent » met d'abord les rangées en retard, puis
+ * celle dont la prochaine chose de la fenêtre arrive le plus tôt ; « Date » la première chose qui commence ; « Montant » la plus grosse somme,
+ * les rangées sans montant en dernier. Égalité : l'ordre par genre.
+ */
+export function ordreSelon(critere: CritereTri | null, choses: readonly ChoseCalendrier[], retards: ReadonlyArray<{ id: string }>, du: string, au: string): IdRangee[] {
+  const base = RANGEES.map(r => r.id);
+  if (!critere) return base;
+  const enRetard = new Set(retards.map(r => r.id));
+  const score = new Map<IdRangee, number>();
+  base.forEach(r => {
+    const dans = choses.filter(c => c.rangee === r && !c.sansDate && !c.fait && c.debut && c.debut <= au && (c.fin || c.debut) >= du);
+    const jour = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 86400000;
+    let v: number;
+    if (critere === 'urgent') {
+      v = dans.reduce((m, c) => Math.min(m, jour(c.debut > du ? c.debut : du)), 1e9);
+      if (choses.some(c => c.rangee === r && (enRetard.has(c.id) || enRetard.has((c.source as { id?: string }).id ?? '')))) v = -1e9;
+    } else if (critere === 'date') v = dans.reduce((m, c) => Math.min(m, jour(c.debut)), 1e9);
+    else v = dans.some(c => c.centimes != null) ? -dans.reduce((m, c) => Math.max(m, Math.abs(c.centimes ?? 0)), 0) : 1e12;
+    score.set(r, v);
+  });
+  return [...base].sort((a, b) => (score.get(a)! - score.get(b)!) || base.indexOf(a) - base.indexOf(b));
+}
 
 interface FeuilleEtat { mode: 'ajouter' | 'modifier'; initial: BrouillonAjout; chose?: ChoseCalendrier; sansPlusDeDetails?: boolean; cle: number }
 type Panneau = 'tri' | 'filtre' | null;
@@ -154,6 +203,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ctxGestes: ContexteGestes = useMemo(() => ({ aujourdhui, batches: don.batches, plans: don.plans, courbe: modele.courbe }), [aujourdhui, don.batches, don.plans, modele.courbe]);
   const ctxRef = useRef(ctxGestes);
   ctxRef.current = ctxGestes;
+  const ctxClients = useRef(don.clients);
+  ctxClients.current = don.clients;
   const ctxAjout: ContexteAjout = useMemo(() => ({ aujourdhui, recettes: don.recettes, clients: don.clients, plans: don.plans, choses: modele.choses }), [aujourdhui, don.recettes, don.clients, don.plans, modele.choses]);
 
   /* ---------- les colonnes de la frise : des semaines, ou les douze mois de l'année ---------- */
@@ -164,16 +215,44 @@ export function CalendrierTab(props: CalendrierTabProps) {
     return modele.semaines.slice(i, i + Math.max(1, fenetre.semaines)).map(s => ({ debut: s.debut, fin: ajouterJours(s.debut, 6), etiquette: `S${s.numero}` }));
   }, [annee, modele.mois, modele.semaines, fenetre]);
 
-  /* ---------- le message : un seul à la fois, qui part au premier défilement de 24 px ---------- */
-  const montrer = useCallback((m: Omit<MessageCal, 'id'>) => { compteur.current += 1; setMessage({ ...m, id: compteur.current }); }, []);
+  /* ---------- le message : UN canal pour tout l'onglet (E33, D-200, CRITIQUE-3 n° 7) ----------
+     Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
+     nouveau toucher hors de lui (frise, courbe, bande, + volant, onglets), à l'ouverture d'un détail, d'un menu, d'une feuille, et au
+     changement de vue. L'en-tête passe par le même canal (`onMessage`) : jamais deux messages à la fois. */
+  const montrer = useCallback((m: Omit<MessageCal, 'id'>) => { compteur.current += 1; setMessage({ ...m, texte: sansPointDouble(m.texte), id: compteur.current }); }, []);
   const fermerMessage = useCallback(() => setMessage(null), []);
+  const racine = useRef<HTMLDivElement>(null);
+  const idMessage = message?.id;
   useEffect(() => {
-    if (!message) return undefined;
-    const y0 = typeof window !== 'undefined' ? window.scrollY : 0;
-    const suit = () => { if (Math.abs(window.scrollY - y0) > 24) setMessage(null); };
-    window.addEventListener('scroll', suit, { passive: true, capture: true });
-    return () => window.removeEventListener('scroll', suit, true);
-  }, [message]);
+    if (idMessage === undefined || typeof window === 'undefined') return undefined;
+    /* les positions de départ : la page, et chaque conteneur défilant de l'onglet (la frise) */
+    const depart = new Map<EventTarget, { x: number; y: number }>([[document, { x: window.scrollX, y: window.scrollY }]]);
+    racine.current?.querySelectorAll<HTMLElement>('*').forEach(el => {
+      if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) depart.set(el, { x: el.scrollLeft, y: el.scrollTop });
+    });
+    const position = (t: EventTarget) => (t instanceof Element ? { x: t.scrollLeft, y: t.scrollTop } : { x: window.scrollX, y: window.scrollY });
+    const surDefilement = (e: Event) => {
+      /* la page défile (cible : document ou window) ou un conteneur de l'onglet */
+      const t: EventTarget = e.target instanceof Element ? e.target : document;
+      const d = depart.get(t);
+      if (!d) { if (t instanceof Element && racine.current?.contains(t)) depart.set(t, position(t)); return; }
+      const p = position(t);
+      if (Math.abs(p.y - d.y) >= 24 || Math.abs(p.x - d.x) >= 24) setMessage(null);
+    };
+    const surToucher = (e: PointerEvent) => {
+      const t = e.target as Element | null;
+      if (t && t.closest && t.closest('[data-message]')) return;
+      setMessage(null);
+    };
+    window.addEventListener('scroll', surDefilement, { passive: true, capture: true });
+    document.addEventListener('pointerdown', surToucher, true);
+    return () => { window.removeEventListener('scroll', surDefilement, true); document.removeEventListener('pointerdown', surToucher, true); };
+  }, [idMessage]);
+  /* l'en-tête (« Tire jusqu'au bout : l'année », « Tourne le téléphone : 13 semaines ») parle par ce canal ; son retrait ne chasse que lui */
+  const surMessageEnTete = useCallback((m: { genre: 'annee' | 'invite'; texte: string } | null) => {
+    if (m) montrer({ role: 'status', texte: m.texte, origine: 'entete' });
+    else setMessage(cur => (cur?.origine === 'entete' ? null : cur));
+  }, [montrer]);
 
   const ouvrir = useCallback((cible: CibleOuverture) => {
     if (cible.ecran === 'brassin' && cible.id) onOpenBatch(cible.id);
@@ -211,7 +290,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (res.promesse) {
       const p = res.promesse;
       montrer({
-        role: 'alert', texte: p.texte, annuler,
+        role: 'alert', texte: textePromesse(p, ctxClients.current), annuler,
         livrer: { texte: `Livrer le ${jourLisible(p.livrerLe)}`, agir: () => { void ecrire(livrer(p, ctxRef.current)); } },
         ...(res.effet ? { detail: `Caisse : ${res.effet.texte}` } : {})
       });
@@ -235,18 +314,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (annule || k === 0) return;
     void ecrire(deplacer(chose, k, ctxRef.current));
   }, [ecrire, finGeste]);
-  const textePrete = (chose: ChoseCalendrier, jours: number) => {
-    const fin = chose.preteLe ?? chose.fin;
-    const nouvelle = ajouterJours(fin, jours);
-    const n = ecartJours(chose.debut, nouvelle);
-    if (chose.source.genre !== 'batch') return `${etiquetteS(chose.debut)} → ${etiquetteS(nouvelle)}`;
-    return n > 0 ? `J0 / ${n} · prête ${jourLisible(nouvelle)}` : `prête ${jourLisible(nouvelle)}`;
-  };
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours });
-    setDuree({ id: chose.id, texte: textePrete(chose, jours) });
+    setDuree({ id: chose.id, texte: dureeAllongee(chose, jours, aujourdhui) });
     setMessage(null); setMenu(null);
-  }, []);
+  }, [aujourdhui]);
   const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean) => {
     finGeste();
     if (annule || jours === 0) return;
@@ -272,12 +344,18 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setSelectionId(null);
     setMenu({ id: chose.id, ancre: cible });
   }, []);
+  /* D-199, E27, CRITIQUE-3 n° 5 : l'appui long sur une marque (3 mois, 6 mois, An) ouvre 6 semaines centrées sur sa semaine (deux avant, trois
+     après), la chose choisie et prête au glisser f1-a. C'est la période de l'app qui change (onPeriode), pas un affichage local : sinon la
+     période de 3 mois remettrait aussitôt la fenêtre à 13 semaines. */
   const surSixSemaines = useCallback((chose: ChoseCalendrier) => {
     const debut = lundiDe(ajouterJours(chose.debut, -14));
-    setVueEtat('semaines');
-    setFenetre({ du: debut < premierLundi ? premierLundi : debut, semaines: 6 });
-    setMenu(null); setSelectionId(chose.id);
-  }, [premierLundi]);
+    const fen: FenetreSemaines = { du: debut < premierLundi ? premierLundi : debut, semaines: 6 };
+    setMessage(null); setMenu(null);
+    setVueEtat('semaines'); setAncreListe(undefined);
+    setFenetre(fen);
+    onPeriode(periodeDeFenetre(fen));
+    setSelectionId(chose.id);
+  }, [premierLundi, onPeriode]);
   const surRefus = useCallback((chose: ChoseCalendrier, raison: string, jalon?: unknown) => { refuser(raison, chose, !!jalon); }, [refuser]);
 
   /* ---------- masquer, épingler, étoiler, filtrer, trier (E22, E31, E39) ---------- */
@@ -295,7 +373,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* passe 10 : une ligne par rangée, de la couleur et du picto de la rangée ; Poser un brassin en plein, avec sa semaine et « prête le … » (le + lui-même ne porte aucun « S47 », D-206) */
   const COULEUR_RANGEE: Record<IdRangee, string> = {
     brassins: 'rgb(var(--area-production))', fetes: 'rgb(var(--area-agenda))', ventes: 'rgb(var(--hop))', achats: 'rgb(var(--area-finances))',
-    travaux: 'rgb(var(--area-stocks))', activites: 'rgb(var(--attention))', papiers: 'rgb(var(--cave-200))'
+    travaux: 'rgb(var(--attention))', activites: 'rgb(var(--water))', papiers: 'rgb(var(--cave-400))'
   };
   const ligne = (id: string, label: string, r: IdRangee, extra: { hint?: string; plein?: boolean } = {}) => ({
     id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_RANGEE[r], lancer: () => ouvrirFeuille(r), ...extra
@@ -343,9 +421,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
     });
     if (ok) {
       setFeuille(null);
-      /* un ajout dans une rangée masquée ou filtrée la réaffiche : « J'ajoute et je vois rien » (D-200, CRITIQUE-2 n° 15) */
-      if (masquees.includes(b.rangee)) setMasquees(masquees.filter(r => r !== b.rangee));
-      if (filtre && filtre !== b.rangee) setFiltre(null);
+      /* un ajout dans une rangée masquée ou filtrée la réaffiche, et le message le dit : « J'ajoute et je vois rien » (D-200, CRITIQUE-2 n° 15) */
+      const etaitMasquee = masquees.includes(b.rangee);
+      const etaitFiltree = !!filtre && filtre !== b.rangee;
+      if (etaitMasquee) setMasquees(masquees.filter(r => r !== b.rangee));
+      if (etaitFiltree) setFiltre(null);
+      if (etaitMasquee || etaitFiltree) setMessage(m => (m ? { ...m, texte: sansPointDouble(`${m.texte} · rangée ${nomRangee(b.rangee)} réaffichée`) } : m));
     }
     return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
   }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre]);
@@ -396,24 +477,32 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
 
   /* ---------- l'en-tête (lot B) : tout vient du modèle ---------- */
-  const etoilesSurCourbe = useMemo(() => {
-    if (annee) return [];
-    return etoiles.flatMap(id => {
-      const c = choses.find(x => x.id === id);
-      const p = c ? positionDans(colonnes, c) : null;
-      return c && p ? [{ id, titre: c.titre, numero: etiquetteS(c.debut), colonne: p.a }] : [];
-    });
-  }, [etoiles, choses, colonnes, annee]);
 
-  const surVue = useCallback((v: VueCalendrier, ancre?: 'sans-date') => { setVueEtat(v); setAncreListe(v === 'liste' ? ancre : undefined); setSelectionId(null); setMenu(null); }, []);
+  const surVue = useCallback((v: VueCalendrier, ancre?: 'sans-date') => { setMessage(null); setVueEtat(v); setAncreListe(v === 'liste' ? ancre : undefined); setSelectionId(null); setMenu(null); }, []);
 
-  /* ---------- le tri des rangées et le filtre par type (menu période, E07) ---------- */
-  const deplacerRangee = (r: IdRangee, sens: -1 | 1) => {
-    const i = ordre.indexOf(r), j = i + sens;
-    if (j < 0 || j >= ordre.length) return;
-    const suivant = [...ordre]; [suivant[i], suivant[j]] = [suivant[j], suivant[i]];
-    setOrdre(suivant);
+  /* ---------- le tri des rangées (k15 du jouable) et le filtre par type (menu période, E07, E39) ----------
+     « Trier les rangées » : chaque toucher passe au critère suivant (genre → Urgent → Date → Montant → genre), les rangées se rangent, et le
+     critère s'affiche un court instant à droite sous l'en-tête (3,5 s), où un toucher le choisit directement. L'ordre obtenu est gardé
+     (`calendrier_ordre`) : il revient à la réouverture. */
+  const [critere, setCritere] = useState<CritereTri | null>(null);
+  const [segTri, setSegTri] = useState(false);
+  const minuterieTri = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (minuterieTri.current) clearTimeout(minuterieTri.current); }, []);
+  const choisirTri = (c: CritereTri | null) => {
+    setCritere(c);
+    const fin = colonnes.length ? colonnes[colonnes.length - 1].fin : ajouterJours(fenetre.du, fenetre.semaines * 7 - 1);
+    setOrdre(ordreSelon(c, choses, modele.retards, colonnes[0]?.debut ?? fenetre.du, fin));
+    setSegTri(true);
+    if (minuterieTri.current) clearTimeout(minuterieTri.current);
+    minuterieTri.current = setTimeout(() => setSegTri(false), 3500);
   };
+  const trierSuivant = () => {
+    setMessage(null); setPanneau(null);
+    const i = critere ? CRITERES_TRI.indexOf(critere) : -1;
+    choisirTri(i < CRITERES_TRI.length - 1 ? CRITERES_TRI[i + 1] : null);
+  };
+  /* « Achats seuls · 6 rangées masquées · Tout afficher » : les autres rangées sont masquées, sauf leurs choses épinglées (D-5, D-34) */
+  const rangeesSousFiltre = filtre ? ordre.filter(r => r !== filtre).length : 0;
 
   const largeurColonne = mesure.largeurColonne;
   /* au téléphone, aucun nom ni montant ne passe sous le + volant : sa zone, à droite, est réservée (D-135, passe10/p-clair-ferme) */
@@ -430,7 +519,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const graph = vue === 'graph';
 
   return (
-    <div className={`cal-tab space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+6.5rem)] text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
+    <div ref={racine} className={`cal-tab space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+6.5rem)] text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
       <div className="cal-entete-zone sticky top-0 z-30 bg-cave-950" data-entete-zone>
@@ -450,22 +539,27 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onOuvrirFinances={onOpenFinances}
           onOuvrirRetard={r => ouvrir(r.ouvre)}
           onIdeeSemaine={ouvrirIdee}
-          onTrier={() => setPanneau('tri')}
-          onFiltrer={() => setPanneau('filtre')}
+          onTrier={trierSuivant}
+          onFiltrer={() => { setMessage(null); setPanneau('filtre'); }}
+          onMessage={surMessageEnTete}
+          etoiles={etoiles}
         />
-        {etoilesSurCourbe.length > 0 && (
-          <div className="cal-etoiles" aria-hidden={false} data-etoiles-courbe>
-            {etoilesSurCourbe.map(e => (
-              <span key={e.id} data-etoile-courbe={e.id} role="img" aria-label={`Étoile : ${e.titre}, ${e.numero}`} className="cal-etoile-c" style={{ left: `${((e.colonne + 0.5) / Math.max(1, colonnes.length)) * 100}%` }}>★</span>
-            ))}
-          </div>
-        )}
       </div>
+
+      {segTri && (
+        <div className="cal-tri-seg" role="group" aria-label="Trier les rangées" data-tri-seg data-critere={critere ?? 'genre'}>
+          {!critere && <small>par genre</small>}
+          {CRITERES_TRI.map(c => (
+            <button key={c} type="button" aria-pressed={critere === c} onClick={() => choisirTri(critere === c ? null : c)}>{NOM_CRITERE[c]}</button>
+          ))}
+        </div>
+      )}
 
       {filtre && (
         <p className="cal-filtre" data-filtre>
           <b>{nomSeules(filtre)}</b>
-          <button type="button" className="cal-b" onClick={() => setFiltre(null)}>Tout afficher</button>
+          {rangeesSousFiltre > 0 && <span> · {rangeesSousFiltre} rangée{rangeesSousFiltre > 1 ? 's' : ''} masquée{rangeesSousFiltre > 1 ? 's' : ''} · </span>}
+          <button type="button" className="cal-b" onClick={() => { setMessage(null); setFiltre(null); }}>Tout afficher</button>
         </p>
       )}
 
@@ -579,20 +673,6 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
       {idee !== null && <FeuilleIdee lundi={idee} semaines={modele.semaines} onNoter={idee_ecrire} onFermer={() => setIdee(null)} />}
 
-      {panneau === 'tri' && (
-        <Sheet open onClose={() => setPanneau(null)} title="Trier les rangées">
-          <ol className="cal-tri px-3 pb-3" aria-label="Ordre des rangées">
-            {ordre.map((r, i) => (
-              <li key={r} className={`cal-tri-l ${CLASSE_TEINTE[r]}`}>
-                <i className="cal-pt-teinte" aria-hidden="true" />
-                <span className="flex-1">{nomRangee(r)}</span>
-                <button type="button" className="cal-b" aria-label={`Monter ${nomRangee(r)}`} disabled={i === 0} onClick={() => deplacerRangee(r, -1)}>↑</button>
-                <button type="button" className="cal-b" aria-label={`Descendre ${nomRangee(r)}`} disabled={i === ordre.length - 1} onClick={() => deplacerRangee(r, 1)}>↓</button>
-              </li>
-            ))}
-          </ol>
-        </Sheet>
-      )}
       {panneau === 'filtre' && (
         <Sheet open onClose={() => setPanneau(null)} title="Filtrer par type">
           <div className="flex flex-wrap gap-2 px-3 pb-3" role="group" aria-label="Type">
@@ -634,7 +714,7 @@ function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; se
             </button>
           ))}
         </div>
-        <p className="text-sm text-cave-200">{dateDeSemaine(semaine)}. Elle arrive dans le carnet.</p>
+        <p className="text-sm text-cave-200">{phraseSemaine(semaine, 'Elle arrive dans le carnet.')}</p>
         {refus && <p className="text-sm text-alert-strong">{refus}</p>}
       </div>
     </Sheet>

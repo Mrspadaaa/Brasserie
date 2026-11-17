@@ -1,5 +1,5 @@
 import React from 'react';
-import { RANGEES, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { RANGEES, ecartJours, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import './frise.css';
 
@@ -12,7 +12,11 @@ import './frise.css';
  * Dans les deux cas une chose épinglée reste visible (D-36, D-37).
  *
  * Les courses d'un brassin (caddies d'Achats) sont reliées à leur brassin par un trait pointillé, comme dans sa maquette (as/p-repos, D-107).
- * Une vente liée à un brassin visible, mais hors de la vue, laisse un renvoi « Livraison La Cigogne · S1 › » dans Ventes (E32).
+ * Une vente liée à un brassin visible, mais hors de la vue, laisse un renvoi « Livraison La Cigogne · S1 › » dans Ventes (E32), posé en
+ * bout de rangée (CRITIQUE-3 n° 21).
+ *
+ * Contrat (lot t3-d) : `onSixSemaines?: (chose) => void` est appelé par l'appui long d'une marque en 3 mois, 6 mois ou An ; `vueLarge?`
+ * dit si la vue est l'une de ces trois (sinon déduit des colonnes).
  */
 
 export const ORDRE_PAR_DEFAUT: readonly IdRangee[] = RANGEES.map(r => r.id);
@@ -50,8 +54,13 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   detail?: (chose: ChoseCalendrier) => React.ReactNode;
   /** Largeur de repli quand rien ne se mesure (jsdom). */
   largeurRepli?: number;
-  /** Largeur, à droite, où aucun nom ne se pose : la zone du + volant au téléphone (D-135). */
+  /** Largeur, à droite, où aucun nom ne se pose : la zone du + volant au téléphone (D-135). En paysage, réservée sur toute la hauteur (n° 27). */
   reserveDroite?: number;
+  /**
+   * 3 mois, 6 mois, An (E27, D-199) : une chose de moins de 24 px devient une marque, et l'appui long sur une marque appelle `onSixSemaines`
+   * au lieu du menu. Absent : déduit des colonnes (des mois, ou plus de 6 semaines ; plus de 13 en paysage, dont la vue de base a 13 semaines).
+   */
+  vueLarge?: boolean;
   /** La largeur mesurée et celle d'une colonne : partagées avec la courbe. */
   onMesure?: (m: { largeur: number; largeurColonne: number }) => void;
 }
@@ -121,6 +130,8 @@ export const Frise: React.FC<FriseProps> = props => {
 
   const largeur = mesuree || largeurRepli;
   const n = Math.max(1, colonnes.length);
+  const enMois = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  const vueLarge = props.vueLarge ?? (enMois || colonnes.length > (paysage ? 13 : 6));
   const largeurColonne = largeur / n;
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);
@@ -167,7 +178,8 @@ export const Frise: React.FC<FriseProps> = props => {
             largeur={largeur}
             mesures={mesures}
             paysage={paysage}
-            reserveDroite={idsSousFab.includes(r) ? reserveDroite : 0}
+            reserveDroite={paysage || idsSousFab.includes(r) ? reserveDroite : 0}
+            vueLarge={vueLarge}
             masquee={masquee}
             cause={masqueeParOeil ? 'oeil' : filtreeParFiltre ? 'filtre' : null}
             epingles={epingles}

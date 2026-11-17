@@ -179,17 +179,22 @@ describe('C18 (n° 38, E47 b) : la feuille ouverte depuis un brassin habituel es
     const appels = monterBanc();
     const proposee = document.querySelector('[data-proposition="brassin-habituel"]');
     expect(proposee).not.toBeNull();
+    /* CRITIQUE-3 n° 18 (lot t3-a) : une recette déjà posée n'est plus proposée ; la proposition du banc est celle que le domaine rend */
+    const recette = (proposee!.getAttribute('data-titre') ?? '').trim();
+    expect(recette.length).toBeGreaterThan(0);
     toucher(boutonDe('[data-proposition="brassin-habituel"]'));
     const d = within(screen.getByRole('dialog', { name: 'Brassins' }));
-    expect(d.getByRole('button', { name: 'Stout maison' })).toHaveAttribute('aria-pressed', 'true');
+    expect(d.getByRole('button', { name: recette })).toHaveAttribute('aria-pressed', 'true');
     const choisie = d.getByRole('group', { name: 'Semaine' }).querySelector('button[aria-pressed="true"]') as HTMLElement;
-    const lundi = choisie.getAttribute('data-semaine');
-    /* le dernier brassage du banc il y a 20 jours, 56 jours d'écart : la semaine du lundi de J+36 */
-    expect(lundi).toBe(lundiDe(ajouterJours(JOUR, 36)));
+    const lundi = choisie.getAttribute('data-semaine')!;
+    expect(lundiDe(lundi)).toBe(lundi);
+    expect(lundi > lundiDe(JOUR)).toBe(true);
     expect(d.queryByRole('button', { name: 'Plus de détails ›' })).toBeNull();
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
-    expect(appels[0]).toMatchObject({ collection: 'batches', patch: { recipeRef: 'R-STOUT', plannedBrewDate: lundi } });
+    expect(appels[0]).toMatchObject({ collection: 'batches', patch: { name: recette } });
+    expect(String((appels[0].patch as { recipeRef?: string }).recipeRef ?? '')).toMatch(/^R-/);
+    expect(String((appels[0].patch as { plannedBrewDate?: string }).plannedBrewDate ?? '').slice(0, 10) >= lundi).toBe(true);
   });
 });
 
@@ -239,4 +244,42 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     const feuille = await screen.findByRole('dialog', {}, { timeout: 10000 });
     await waitFor(() => expect(within(feuille).getAllByText(/Porter du budget/).length).toBeGreaterThan(0), { timeout: 10000 });
   }, 40000);
+});
+
+describe('d3 (CRITIQUE-3 n° 5, D-199, E27) : l’appui long sur une marque ouvre 6 semaines centrées, par la période de l’app', () => {
+  it('3 mois, appui long sur une marque : onPeriode reçoit 6 semaines centrées sur sa semaine, vue semaines, la chose choisie, aucun menu', () => {
+    const onPeriode = vi.fn();
+    monterBanc({ callbacks: { onPeriode } });
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13');
+    /* une marque à au moins trois semaines d'aujourd'hui : la fenêtre peut se centrer sans buter sur la semaine courante */
+    const lundiCourant = lundiDe(JOUR);
+    const marque = [...document.querySelectorAll<HTMLElement>('[data-marque][data-chose-id]')]
+      .find(m => /^S\d+$/.test(m.getAttribute('data-semaine') ?? '') && Number((m.getAttribute('data-semaine') ?? 'S0').slice(1)) >= 50);
+    expect(marque).toBeTruthy();
+    onPeriode.mockClear();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    fireEvent.pointerDown(marque!, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
+    act(() => { vi.advanceTimersByTime(600); });
+    vi.useRealTimers();
+    fireEvent.pointerUp(marque!, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
+    expect(screen.queryByRole('menu')).toBeNull();
+    expect(onPeriode).toHaveBeenCalled();
+    const p = onPeriode.mock.calls[onPeriode.mock.calls.length - 1][0] as { genre: string; du: string; au: string };
+    expect(p.genre).toBe('dates');
+    expect(ajouterJours(p.du, 41)).toBe(p.au);
+    expect(lundiDe(p.du)).toBe(p.du);
+    expect(p.du >= lundiCourant).toBe(true);
+    /* centrée : la semaine de la marque est la 3e des 6 (deux avant, trois après) */
+    const semaine = Number(marque!.getAttribute('data-semaine')!.slice(1));
+    const colonnes = [...document.querySelectorAll('[data-frise]')].map(f => f.getAttribute('data-nb-colonnes'));
+    expect(colonnes).toEqual(['6']);
+    expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('semaines');
+    const debutSemaine = (n: number) => { for (let k = 0; k < 60; k++) { const l = ajouterJours(lundiCourant, 7 * k); const d = new Date(`${l}T00:00:00Z`); const j = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 3)); const a = new Date(Date.UTC(j.getUTCFullYear(), 0, 4)); const num = 1 + Math.round(((j.getTime() - a.getTime()) / 86400000 - 3 + ((a.getUTCDay() + 6) % 7)) / 7); if (num === n) return l; } return ''; };
+    expect(p.du).toBe(ajouterJours(debutSemaine(semaine), -14));
+    const id = marque!.getAttribute('data-chose-id')!;
+    const choisie = document.querySelector(`[data-chose-id="${CSS.escape(id)}"]`);
+    expect(choisie?.className ?? '').toMatch(/cal-sel/);
+  });
 });

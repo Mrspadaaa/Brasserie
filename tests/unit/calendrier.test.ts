@@ -349,7 +349,9 @@ describe('CRITIQUE-2 n° 1 b, 2, 9, 11, 32 : id stable, jamais « J0 / 0 », bud
     const enCuve = choseBrassin(lot({ status: 'fermentation' }), AUJOURDHUI)!;
     const sansRecette = choseBrassin(lot({ id: 'P0', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' }), AUJOURDHUI)!;
     const avecRecette = choseBrassin(lot({ id: 'P1', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026', recipeSnapshot: recette }), AUJOURDHUI)!;
-    for (const c of [cond, enCuve, sansRecette]) expect(texteDuree(c)).toBeNull();
+    for (const c of [cond, sansRecette]) expect(texteDuree(c)).toBeNull();
+    /* CRITIQUE-3 n° 1 : en cuve sans fin écrite, son âge réel (brassé le 12.11, le 16.11 : J4), jamais une fin inventée */
+    expect(texteDuree(enCuve)).toBe('J4 · fin non renseignée');
     expect(texteDuree(avecRecette)).toBe('J0 / 28 · prête 5 janv.');
     for (const c of [cond, enCuve, sansRecette, avecRecette]) expect(texteDuree(c) ?? '').not.toMatch(/J0 \/ 0\b/);
   });
@@ -367,7 +369,9 @@ describe('CRITIQUE-2 n° 1 b, 2, 9, 11, 32 : id stable, jamais « J0 / 0 », bud
     /* sa maquette (as/p-repos) : « Blonde d'automne −148 », sans file de caddies ; les courses vivent dans le budget et le détail du brassin */
     expect(prets.filter(c => c.rangee === 'achats' || c.brassinLie)).toHaveLength(0);
     const blonde = prets.find(c => c.id === b.id)!;
-    expect(blonde.courses).toBe(`malt le 20 nov. ${francsSignes(-12000)}, houblon le 21 nov. ${francsSignes(-2800)}, énergie le 22 nov. (montant non renseigné)`);
+    /* CRITIQUE-3 n° 2 : les ingrédients sont des courses, l'énergie est un frais du brassin */
+    expect(blonde.courses).toBe(`malt le 20 nov. · ${francsSignes(-12000)} ; houblon le 21 nov. · ${francsSignes(-2800)}`);
+    expect(blonde.frais).toBe('énergie le 22 nov. · montant non renseigné');
     expect(blonde.mouvements).toEqual(['brew:LOT-B:malt', 'brew:LOT-B:houblon', 'brew:LOT-B:energie']);
     /* le brassin hors de la frise : UN caddie nommé, relié à lui (brassinLie), jamais anonyme */
     const [caddie] = preparerChoses(lignes, { brassins: new Map([['LOT-B', 'Blonde d’automne']]) });
@@ -393,13 +397,114 @@ describe('E08 : « en retard » se dit avec des dates, jamais « en retard de 7 
       restes: [{ id: 'F1', libelle: 'Weyermann', cents: 42000, echeance: '2026-11-03', enRetard: true }, { id: 'F2', libelle: 'Futur', cents: 1000, echeance: '2026-12-03', enRetard: false }, { id: 'F3', libelle: 'Sans échéance', cents: 1000, echeance: null, enRetard: true }],
       batches: [lot({ id: 'LOT-P', name: 'Porter', status: 'planifie', brewDate: '', plannedBrewDate: '05.11.2026' }), lot({ id: 'LOT-OK', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' })],
       items: [{ id: 'CR', type: 'event', title: 'Appeler la commune', status: 'todo', date: '2026-11-09' }, { id: 'CR2', type: 'event', title: 'Fait', status: 'done', date: '2026-11-01' }],
-      sansDensite: [lot({ id: 'LOT-D', name: 'IPA' })], courses: { nom: 'Porter', nombre: 3, avant: 'S49' }
+      sansDensite: [lot({ id: 'LOT-D', name: 'IPA' })], courses: { nom: 'Porter', nombre: 3, avant: 'S49', avantLe: '2026-11-04' }
     });
-    expect(r.map(x => x.genre)).toEqual(['facture', 'brassin', 'tache', 'densite', 'courses']);
+    /* CRITIQUE-3 n° 34 : chaque retard est nommé et daté, du plus ancien au plus récent */
+    expect(r.map(x => x.genre)).toEqual(['facture', 'courses', 'brassin', 'tache', 'densite']);
     expect(r[0].detail).toContain('échéance le 3 nov.');
-    expect(r[1].detail).toBe('brassage prévu le 5 nov.');
-    expect(r[4]).toMatchObject({ titre: 'Commander pour Porter', detail: '3 articles avant S49', jour: null });
+    expect(r[2].detail).toBe('pas brassée · brassage prévu le 5 nov.');
+    expect(r[1]).toMatchObject({ titre: 'Commander pour Porter', detail: '3 articles à commander avant le 4 nov.', jour: '2026-11-04' });
+    expect(r[4]).toMatchObject({ titre: 'Mesurer la densité : IPA', detail: 'brassé le 12 nov. · aucune densité relevée', jour: '2026-11-12' });
+    for (const x of r) expect(x.jour).not.toBeNull();
     for (const x of r) expect(`${x.titre} ${x.detail}`).not.toMatch(/depuis \d+ ?j|de \d+ ?j\b|retard de/i);
     expect(retardsDe({ aujourdhui: AUJOURDHUI, restes: [], batches: [], items: [] })).toEqual([]);
+  });
+});
+
+describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, budget, retards', () => {
+  const recette = { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 14 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 14 }] } as unknown as Batch['recipeSnapshot'];
+  const ligne = (suffixe: string, label: string, date: string, amountCents: number, p: Partial<ForecastItem> = {}): ForecastItem =>
+    ({ id: `brew:LOT-B:${suffixe}`, date, label, amountCents, direction: 'out', source: 'brew', category: 'brassage', batchId: 'LOT-B', ...p });
+
+  it('t1 : brassée le 9 nov., recette de 28 j, le 16 nov. : « J7 / 28 · prête 7 déc. »', () => {
+    const c = choseBrassin(lot({ id: 'LOT-IPA', status: 'fermentation', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
+    expect(texteDuree(c)).toBe('J7 / 28 · prête 7 déc.');
+    expect(c.preteLe).toBe('2026-12-07');
+    /* J borné : après la fin, J = n ; jamais au-delà */
+    expect(texteDuree(choseBrassin(lot({ status: 'garde', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-12-20')!)).toBe('J28 / 28 · prête 7 déc.');
+  });
+
+  it('t2 : planifiée le 10 nov., pas brassée, le 16 nov. : « pas brassée », ni « prête », ni « J0 » ; un planifié futur garde « J0 / n »', () => {
+    const c = choseBrassin(lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
+    expect(c.pasBrassee).toBe(true);
+    const t = texteDuree(c)!;
+    expect(t).toContain('pas brassée');
+    expect(t).toBe('pas brassée · prévue le 10 nov.');
+    expect(t).not.toMatch(/prête|J0/);
+    expect(c.preteLe).toBeUndefined();
+    /* visible cette semaine (de son jour prévu à aujourd'hui), avec son seul jalon de brassage */
+    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-11-16', deplacable: true });
+    expect(c.jalons?.map(j => j.id)).toEqual(['brassage']);
+    const futur = choseBrassin(lot({ id: 'LOT-F', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
+    expect(texteDuree(futur)).toBe('J0 / 28 · prête 21 déc.');
+    expect(futur.pasBrassee).toBeUndefined();
+  });
+
+  it('t4 : énergie, emballage, impôt, malt : les courses n’ont que le malt, les frais l’énergie et l’emballage, l’impôt va dans Papiers', () => {
+    const b = choseBrassin(lot({ id: 'LOT-B', name: 'Blonde d’automne', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), '2026-11-16', { commanderLe: '2026-11-22', articles: ['Malt pilsner', 'Saaz'] })!;
+    const lignes = [
+      ligne('frais', 'Blonde d’automne · énergie et nettoyage', '2026-11-23', 0, { partial: ['énergie'] }),
+      ligne('emballage', 'Blonde d’automne · emballage · date estimée', '2026-12-07', 4500),
+      ligne('impot', 'Blonde d’automne · impôt sur la bière', '2027-01-30', 1800),
+      ligne('achats', 'Blonde d’automne · achats', '2026-11-16', 7600, { lines: [{ label: 'Malt pilsner', amountCents: 3100, origin: 'prix saisi' }, { label: 'Saaz', amountCents: 4500, origin: 'prix saisi' }] })
+    ].map(i => choseArgent(i)!);
+    expect(lignes.map(l => l.posteBrassin)).toEqual(['frais', 'frais', 'impot', 'courses']);
+    const prets = preparerChoses([b, ...lignes]);
+    const blonde = prets.find(c => c.id === b.id)!;
+    expect(blonde.courses).toBe(`Malt pilsner, Saaz le 16 nov. · ${francsSignes(-7600)}`);
+    expect(blonde.courses).not.toMatch(/énergie|emballage|impôt/);
+    expect(blonde.frais).toContain('énergie');
+    expect(blonde.frais).toContain('emballage');
+    expect(blonde.frais).toBe(`énergie et nettoyage le 23 nov. · montant non renseigné ; emballage le 7 déc. · ${francsSignes(-4500)}`);
+    expect(blonde.frais).not.toMatch(/impôt/);
+    /* le budget : courses et frais, sans l'impôt ; partiel, puisque l'énergie n'est pas chiffrée */
+    expect(blonde).toMatchObject({ centimes: -12100, partiel: true });
+    const impot = prets.filter(c => c.posteBrassin === 'impot');
+    expect(impot).toHaveLength(1);
+    expect(impot[0]).toMatchObject({ rangee: 'papiers', titre: 'Impôt sur la bière · Blonde d’automne', centimes: -1800, debut: '2027-01-30' });
+    /* le jalon « commander » nomme les articles qui manquent (lus dans les courses de l'app) */
+    const commander = blonde.jalons!.find(j => j.id === 'commander')!;
+    expect(commander.articles).toEqual(['Malt pilsner', 'Saaz']);
+    expect(commander.titre).toBe('Malt pilsner, Saaz · Blonde d’automne');
+    expect(choseBrassin(lot({ id: 'LOT-C', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), '2026-11-16', { commanderLe: '2026-11-22' })!.jalons!.find(j => j.id === 'commander')!.articles).toBeUndefined();
+    /* aucune date suivie d'un point ajouté (« 22 nov. . », « déc.. ») */
+    const textes = prets.flatMap(c => [c.courses, c.frais, c.detail, c.duree, texteDuree(c)]).filter((x): x is string => !!x);
+    expect(textes.length).toBeGreaterThan(3);
+    for (const x of textes) { expect(x).not.toMatch(/\.\s\./); expect(x).not.toMatch(/\.\./); }
+  });
+
+  it('t4 bis : deux impôts à la même échéance font UNE ligne de Papiers, avec leur somme', () => {
+    const a = choseArgent(ligne('impot', 'Blonde · impôt sur la bière', '2027-01-30', 1800))!;
+    const c = choseArgent({ ...ligne('impot', 'Porter · impôt sur la bière', '2027-01-30', 0, { partial: ['impôt (densité)'] }), id: 'brew:LOT-P:impot', batchId: 'LOT-P' })!;
+    const [impot] = preparerChoses([a, c]);
+    expect(impot).toMatchObject({ rangee: 'papiers', titre: 'Impôt sur la bière · 2 brassins', centimes: -1800, partiel: true });
+    expect(impot.detail).toContain('montant non renseigné');
+    expect(impot.mouvements).toEqual(['brew:LOT-B:impot', 'brew:LOT-P:impot']);
+  });
+
+  it('t8 : un calendrier vide n’a aucun retard ; une chose posée dans le futur n’en crée aucun', () => {
+    expect(retardsDe({ aujourdhui: AUJOURDHUI, restes: [], batches: [], items: [], sansDensite: [], commandes: [], courses: null })).toHaveLength(0);
+    /* des courses dont le jour n'est pas passé, une densité d'un brassin brassé aujourd'hui, une tâche de demain, une fenêtre en cours : rien */
+    expect(retardsDe({
+      aujourdhui: AUJOURDHUI, restes: [], batches: [lot({ id: 'LOT-F', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026' })],
+      items: [{ id: 'CR', type: 'event', title: 'Ranger', status: 'todo', date: '2026-11-17', activite: true }, { id: 'CR2', type: 'event', title: 'Fenêtre', status: 'todo', date: '2026-11-09', activite: true, fenetre: { du: '2026-11-09', au: '2026-11-22' } }],
+      sansDensite: [lot({ id: 'LOT-J', brewDate: '16.11.2026', actualBrewDate: '16.11.2026' })],
+      commandes: [{ batchId: 'LOT-F', nom: 'Porter', avantLe: '2026-11-22', articles: ['Malt'] }], courses: { nom: 'Porter', nombre: 2, avant: 'S48' }
+    })).toEqual([]);
+  });
+
+  it('t10 : le budget d’un brassin dont seule l’estimation de BrewBudgetSheet donne un coût ; sans aucune source, pas de centimes', () => {
+    const b = choseBrassin(lot({ id: 'LOT-B', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
+    const nonChiffrees = [ligne('frais', 'Blonde · énergie et nettoyage', '2026-11-23', 0, { partial: ['énergie'] })].map(i => choseArgent(i)!);
+    const estimations = new Map([['LOT-B', { centimes: -14800, partiel: false }]]);
+    const avec = budgetBrassin('LOT-B', [b, ...nonChiffrees], estimations)!;
+    expect(Math.abs(avec.centimes)).toBeGreaterThan(0);
+    expect(avec).toEqual({ centimes: -14800, partiel: true });
+    expect(preparerChoses([b, ...nonChiffrees], {}, estimations).find(c => c.id === b.id)!.centimes).toBe(-14800);
+    /* sans aucune source : ni centimes, ni partiel (la frise dit « budget ? », jamais 0) */
+    expect(budgetBrassin('LOT-B', [b, ...nonChiffrees])).toBeNull();
+    const seul = preparerChoses([b, ...nonChiffrees]).find(c => c.id === b.id)!;
+    expect(seul.centimes).toBeUndefined();
+    expect(seul.partiel).toBeUndefined();
   });
 });
