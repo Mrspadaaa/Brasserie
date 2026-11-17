@@ -62,3 +62,17 @@ describe('Onglet Calendrier (onglet/v1)', () => {
     expect(screen.getByText('Rien cette semaine.')).toBeInTheDocument();
   });
 });
+
+describe('Calendrier : « Prévoir une dépense » et « Poser une fête » reçoivent la semaine touchée (recontrôle de la nuit 16.11)', () => {
+  function Gestes() { const decl = usePlusPageActions(); return <ul>{decl?.actions.map(a => <li key={a.id}><button type="button" onClick={a.lancer}>{a.label}</button></li>)}</ul>; }
+  it('S+3 touchée : la dépense et la fête reçoivent le lundi de S+3, jamais aujourd’hui', () => {
+    const p = props([]);
+    render(<><CalendrierTab {...p} /><Gestes /></>);
+    fireEvent.click(screen.getAllByRole('tab')[3]);
+    fireEvent.click(screen.getByRole('button', { name: `Prévoir une dépense en S${semaines[3].numero}` }));
+    expect(p.onPoserDepense).toHaveBeenCalledWith(semaines[3].debut);
+    fireEvent.click(screen.getByRole('button', { name: 'Poser une fête ou un marché' }));
+    expect(p.onPoserFete).toHaveBeenCalledWith(semaines[3].debut);
+    expect(semaines[3].debut).not.toBe(aujourdhui);
+  });
+});

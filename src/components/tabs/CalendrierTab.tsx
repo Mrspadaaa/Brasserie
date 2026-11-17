@@ -35,8 +35,10 @@ interface CalendrierTabProps {
   onOpenCourses: () => void;
   /** Le + du calendrier : poser un brassin (le jour se choisit dans la feuille), une fête ou un marché (l'agenda), une dépense prévue. */
   onPoserBrassin: () => void;
-  onPoserFete: () => void;
-  onPoserDepense: () => void;
+  /** Reçoit le lundi (aaaa-mm-jj) de la semaine touchée. */
+  onPoserFete: (lundi: string) => void;
+  /** Reçoit le lundi (aaaa-mm-jj) de la semaine touchée : la dépense se prévoit à cette date, jamais payée. */
+  onPoserDepense: (lundi: string) => void;
 }
 
 interface TacheCalendrier { id: string; titre: string; detail: string; ouvrir: () => void }
@@ -93,8 +95,8 @@ export function CalendrierTab({ transactions, batches, stockItems, onOpenBatch, 
     surOnglets: true,
     actions: [
       { id: 'brassin', label: `Poser un brassin en S${semaine.numero}`, hint: 'tu choisis le jour', genre: 'brasser', lancer: onPoserBrassin },
-      { id: 'fete', label: 'Poser une fête ou un marché', genre: 'ajouter', lancer: onPoserFete },
-      { id: 'depense', label: `Prévoir une dépense en S${semaine.numero}`, hint: 'à saisir', genre: 'ajouter', lancer: onPoserDepense }
+      { id: 'fete', label: 'Poser une fête ou un marché', genre: 'ajouter', lancer: () => onPoserFete(semaine.debut) },
+      { id: 'depense', label: `Prévoir une dépense en S${semaine.numero}`, hint: 'à saisir', genre: 'ajouter', lancer: () => onPoserDepense(semaine.debut) }
     ]
   });
 
