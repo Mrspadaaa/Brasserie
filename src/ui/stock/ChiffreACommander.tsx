@@ -60,7 +60,7 @@ export function ChiffreACommander({ vue, horizon, onHorizon, onOuvrir, onCommand
   // « pastille et chiffre comptent … » : le raccourci garde sa phrase, une fenêtre libre dit ce qu'elle prend.
   const dit = raccourci || fen.a === 0
     ? `pastille et chiffre comptent jusqu’à`
-    : `pastille et chiffre comptent ${fen.a === fen.b ? `${nomPosition(fen.a)} seule` : fen.b === POSITION_SEUIL ? `de ${nomPosition(fen.a)} au seuil` : `de ${nomPosition(fen.a)} à ${nomPosition(fen.b)}`}`;
+    : `pastille et chiffre comptent ${fen.a === fen.b ? (vue.colonnes[fen.a].semaine === null ? 'le seuil seul' : `${nomPosition(fen.a)} seule`) : fen.b === POSITION_SEUIL ? `de ${nomPosition(fen.a)} au seuil` : `de ${nomPosition(fen.a)} à ${nomPosition(fen.b)}`}`;
   const precision = !raccourci && fen.a === 0 ? ` ${nomPosition(fen.b)}` : '';
   const titre = raccourci === 'tout' ? 'Tout, par urgence'
     : raccourci ? `Avant ${etiquetteSemaine(raccourci === 'brassin' ? vue.limiteBrassin : vue.limiteSix)}, par semaine`
@@ -117,7 +117,7 @@ export function ChiffreACommander({ vue, horizon, onHorizon, onOuvrir, onCommand
       </div>
 
       {rien
-        ? <p className="cac-vide" role="status"><b>Rien à commander</b><span>la pastille disparaît · rien au seuil, rien de daté</span></p>
+        ? <p className="cac-vide" role="status"><b>Rien à commander</b><span>rien au seuil, rien de daté dans cette fenêtre</span></p>
         : <>
           <div className="cac-reglage">
             <p className="cac-lab"><span className="cac-mp" aria-hidden="true">{n}</span>{dit}{precision}</p>

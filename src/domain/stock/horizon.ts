@@ -211,7 +211,7 @@ const nomColonne = (vue: VueHorizon, p: number) => vue.colonnes[p]?.semaine == n
 export function libelleFenetre(vue: VueHorizon, f: Fenetre): string {
   if (f.a === f.b) return nomColonne(vue, f.a);
   if (f.a === 0) return `jusqu’à ${nomColonne(vue, f.b)}`;
-  if (f.b === POSITION_SEUIL) return `${nomColonne(vue, f.a)} → seuil`;
+  if (f.b === POSITION_SEUIL) return `de ${nomColonne(vue, f.a)} au seuil`;
   return `${nomColonne(vue, f.a)}–${nomColonne(vue, f.b)}`;
 }
 

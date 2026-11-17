@@ -58,7 +58,7 @@ describe('la somme d’une fenêtre de l’histogramme', () => {
     expect(libelleFenetre(vue, { a: 3, b: 3 })).toBe('S50');
     expect(sommeFenetre(vue, { a: 4, b: 6 })).toBe(4); // S51 + les 3 du seuil
     expect(noms(lignesDeFenetre(vue, { a: 4, b: 6 }))).toEqual(['CO₂', 'Gypse', 'Saaz', 'Simcoe']);
-    expect(libelleFenetre(vue, { a: 4, b: 6 })).toBe('S51 → seuil');
+    expect(libelleFenetre(vue, { a: 4, b: 6 })).toBe('de S51 au seuil');
     expect(sommeFenetre(vue, { a: 6, b: 6 })).toBe(3);
     expect(libelleFenetre(vue, { a: 6, b: 6 })).toBe('seuil');
   });
@@ -96,7 +96,7 @@ describe('les raccourcis restent des fenêtres', () => {
     expect(fenetreDeReglage(vue, garde)).toEqual({ a: 4, b: 6 });
     expect(compteDeReglage(vue, garde)).toBe(4);
     expect(lignesDeReglage(vue, 'six')).toHaveLength(vue.comptes.six);
-    expect(phraseReglage(vue, garde)).toBe('S51 → seuil');
+    expect(phraseReglage(vue, garde)).toBe('de S51 au seuil');
     expect(phraseReglage(vue, 'tout')).toBe('tout, seuil compris');
   });
 

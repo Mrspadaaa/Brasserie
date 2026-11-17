@@ -11,7 +11,9 @@
 .cac-seg button{min-height:52px;padding:2px 4px;font-size:14px;line-height:1.15;border-left:1px solid rgb(var(--cave-800));color:rgb(var(--cave-texte-400))}
 .cac-seg button:first-child{border-left:0}
 .cac-seg button b{display:block;font-size:19px;color:inherit}
-.cac-seg button.on{background:rgb(var(--cave-50));color:rgb(var(--cave-950))}
+.cac-seg button.on{background:rgb(var(--ebc-straw));color:rgb(var(--cave-950))}
+/* Grand écran : le bloc garde la largeur d'un téléphone large, les poignées restent près des barres. */
+@media (min-width:768px){.cac{max-width:560px}}
 /* La fenêtre réglable : la zone reçoit le geste (pan-y : le défilement vertical reste à la page), l'histogramme dessine, le cadre et les poignées se posent par calcul sur la même grille (7 colonnes, écart 6, marge 2). */
 .cac-prise{margin:8px -10px 0;padding:8px 10px 0;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
 .cac-prise.drag{cursor:grabbing}
@@ -44,7 +46,9 @@
 .cac-sb em.cac-seuil{color:rgb(var(--attention-texte))}
 .cac-q{font:15px "IBM Plex Mono",ui-monospace,monospace;white-space:nowrap;font-variant-numeric:tabular-nums}
 .cac-plus{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
-.cac-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;background:rgb(var(--cave-50));color:rgb(var(--cave-950));font-size:17px;font-weight:700}
+.cac-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;border-radius:12px;background:rgb(var(--ebc-straw));color:rgb(var(--cave-950));font-size:17px;font-weight:700}
+/* Téléphone : le + volant (58 px + 12 px de marge) se pose à côté du bouton, jamais dessus (maquette : marge droite de 82 px). */
+@media (max-width:767px){.cac-cta{width:calc(100% - 62px);margin-right:auto}}
 .cac-vide{display:flex;flex-direction:column;gap:2px;margin:12px 0 0;padding:16px 14px;border:1.5px dashed rgb(var(--cave-700));border-radius:14px;font-size:14px;color:rgb(var(--cave-texte-400))}
 .cac-vide b{font-size:16px;color:rgb(var(--cave-texte-50))}
 @media (prefers-reduced-motion:reduce){.cac *{transition:none!important}}
