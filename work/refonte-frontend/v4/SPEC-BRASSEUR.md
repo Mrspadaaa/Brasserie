@@ -2052,3 +2052,22 @@ Lecture (corrige la précédente) : le carnet reste centré sur l'achat de maté
 > (17.11) Oui je note mes trucs en gros juste un champs text et ensuite l'ai met en forme, trie, structure ECT... C'est clair ?
 
 Lecture : confirme le but de greffe 5 (un seul champ texte, l'IA met en forme, trie, structure).
+
+### 17.11 — Carnet, classement de greffe 5
+
+> Carnet greffe 5, classement par écran
+> Créer · avant : 1 v03-2, v04-1 · 2 v07-2, v08-2
+> Créer · pendant : 2 v08-3 · 3 v04-2, v06-3, v07-3 · 4 v07-5
+> Créer · après : 2 v04-4 · 3 v01-4, v02-4 · 4 v05-4
+> Ajouter · avant : 2 v03-6 · 3 v04-5, v07-7 · 4 v02-8, v02-9
+> Texte · pendant : 2 v02-10 · 3 v03-7 · 4 v08-8
+> Texte · après : 3 v01-7, v03-8, v05-7, v08-7
+> Lien · avant : 2 v07-10 · 3 v03-9, v08-10
+> Lien · pendant : 2 v01-9, v02-12, v03-10 · 3 v04-9, v05-10, v06-9 · 4 v08-11
+> Lien · après : 1 v06-10 · 2 v03-11, v06-11 · 3 v06-14 · 4 v04-10
+> Note en vrac · pendant : 3 v01-15, v02-19, v06-17
+> Note en vrac · après : 3 v01-16 · 4 base-E06
+>
+> J'ai l'impression que ça classe pas super super. Mais tu peux implémenter comme tell avec les meilleures fonction de version....
+
+Lecture (L01) : aucune version ne s'impose ; il accorde le port dans l'app tel quel, en prenant pour chaque geste la mieux classée et en y greffant les meilleures fonctions des autres versions. Le reste du parcours reste figé sur le 3e classement (ecrans_choisis.figes).

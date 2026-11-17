@@ -63,3 +63,21 @@ Supprimer une idée : 2 v01-16, v01-17, v02-17, v02-18, v04-18, v04-19
 « Il y a trop besoin d'action et pas assez d'aide de l'ai.... »
 
 Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où il tape ou colle n'importe quoi (texte, lien, photo) ; l'IA trie, construit et catégorise toute seule (article, façon, critère, note ; idée existante ou nouvelle ; titre ; lien lu en fiche), comme la structure v05-3. Plus de tuiles « quoi ? » à choisir, plus d'écran de lien à remplir, plus de flèche « écrivez ou collez ici ». L'IA propose, il corrige d'un toucher (Annuler, déplacer). Gardés : v01-2 (sans la flèche), v02-2, v05-3 ; modifier v01-11, v01-12, v03-11 ; titre v01-13, v02-14 ; supprimer une note v02-12 ; supprimer une idée v01-16, v01-17, v02-17, v02-18, v04-18, v04-19. Lot greffe5.
+
+## Classement de greffe 5 (17.11), mot pour mot
+
+Créer · avant : 1 v03-2, v04-1 · 2 v07-2, v08-2
+Créer · pendant : 2 v08-3 · 3 v04-2, v06-3, v07-3 · 4 v07-5
+Créer · après : 2 v04-4 · 3 v01-4, v02-4 · 4 v05-4
+Ajouter · avant : 2 v03-6 · 3 v04-5, v07-7 · 4 v02-8, v02-9
+Texte · pendant : 2 v02-10 · 3 v03-7 · 4 v08-8
+Texte · après : 3 v01-7, v03-8, v05-7, v08-7
+Lien · avant : 2 v07-10 · 3 v03-9, v08-10
+Lien · pendant : 2 v01-9, v02-12, v03-10 · 3 v04-9, v05-10, v06-9 · 4 v08-11
+Lien · après : 1 v06-10 · 2 v03-11, v06-11 · 3 v06-14 · 4 v04-10
+Note en vrac · pendant : 3 v01-15, v02-19, v06-17
+Note en vrac · après : 3 v01-16 · 4 base-E06
+
+« J'ai l'impression que ça classe pas super super. Mais tu peux implémenter comme tell avec les meilleures fonction de version.... »
+
+Lecture (L01) : aucune version ne s'impose ; il accorde le port dans l'app tel quel, en prenant pour chaque geste la mieux classée et en y greffant les meilleures fonctions des autres versions. Le reste du parcours reste figé sur le 3e classement (ecrans_choisis.figes).
