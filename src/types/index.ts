@@ -720,6 +720,8 @@ export interface Batch {
   fg?: string;
   abv?: string;
   bottlingDate?: string;
+  /** Calendrier (17.11) : fin prévue du cycle (ISO), écrite en tirant le bord de la barre ; absente = la recette fait foi. `''` = effacée. */
+  finPrevue?: string;
   status: BatchStatus;
   recipeRef?: string;
   /** Volume réellement récolté en cuve le jour du brassage (mesuré). */
@@ -980,4 +982,13 @@ export interface CreativeItem {
   notes?: string;
   contactName?: string;
   contactPhone?: string;
+  /** Calendrier (17.11) : une chose qui s'étale du lundi `du` au dimanche `au`, avec ses jours actifs et, si elle a un montant, sa mise de côté. Optionnel, sans migration. */
+  fenetre?: FenetreCalendrier;
+  /** Calendrier : ce à quoi la chose est liée (un brassin, un client), par identifiant. */
+  liens?: { batchId?: string; clientId?: string };
+  /** Calendrier : une activité (comptée en jours, sans CHF obligatoire), rangée Activités plutôt que Fêtes. */
+  activite?: boolean;
 }
+
+/** Une fenêtre du calendrier : `du` (lundi) et `au` (dimanche) en ISO ; `joursActifs` absent = inconnu (jamais 0) ; `miseDeCote` : le montant se met de côté au fil des semaines. */
+export interface FenetreCalendrier { du: string; au: string; joursActifs?: number; miseDeCote?: boolean }

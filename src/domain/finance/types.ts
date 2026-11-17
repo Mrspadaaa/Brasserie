@@ -1,4 +1,4 @@
-import type { FinanceCategory, Transaction } from '../../types';
+import type { FenetreCalendrier, FinanceCategory, Transaction } from '../../types';
 
 /** CHF money is stored as integer cents. Legacy fields are never rewritten by an adapter. */
 export type FinanceKind = 'expense' | 'income' | 'contribution' | 'withdrawal' | 'refund';
@@ -107,6 +107,10 @@ export interface FinancialPlan {
   recurrence?: { frequency: 'monthly' | 'quarterly' | 'yearly'; endDate?: string };
   vendor?: string;
   batchId?: string;
+  /** Calendrier (17.11) : le plan s'étale du lundi `du` au dimanche `au` ; avec `miseDeCote`, le montant se met de côté (courbe libre) et tombe à `au`. Optionnel. */
+  fenetre?: FenetreCalendrier;
+  /** Calendrier : le client d'une vente probable. Optionnel. */
+  clientId?: string;
   notes?: string;
   /** A saved estimate is documentary; it never books an expense or changes stock. */
   brewEstimate?: unknown;

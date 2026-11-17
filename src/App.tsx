@@ -93,6 +93,7 @@ const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ d
 const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
 const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
 const PlanSheet = lazy(() => import('./ui/finance/FinanceForms').then(module => ({ default: module.PlanSheet })));
+const BrewBudgetDialog = lazy(() => import('./ui/finance/BrewBudgetDialog').then(module => ({ default: module.BrewBudgetDialog })));
 const CalendrierTab = lazy(() => import('./components/tabs/CalendrierTab').then(module => ({ default: module.CalendrierTab })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
 const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
@@ -273,6 +274,8 @@ export const App: React.FC = () => {
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
   const [prevoirDepense, setPrevoirDepense] = useState<{ date: string } | null>(null);
+  /** Calendrier, « Budget › » d'un brassin (D-71) : la feuille de budget existante, sur le brassin de cet id. */
+  const [budgetBrassinId, setBudgetBrassinId] = useState<string | null>(null);
   useEffect(() => {
     if (activeTab !== 'finances') setFinanceOpenRequest(null);
   }, [activeTab]);
@@ -1275,6 +1278,10 @@ export const App: React.FC = () => {
               navigateToCreativeLab();
             }}
             onPoserDepense={(lundi) => setPrevoirDepense({ date: lundi })}
+            periode={globalTimeFilter}
+            onPeriode={(p) => setGlobalTimeFilter(p)}
+            onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
+            onOpenPiece={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
             onOpenAgenda={() => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();
@@ -1386,6 +1393,7 @@ export const App: React.FC = () => {
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
       {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
+      {budgetBrassinId && batches.some(b => b.id === budgetBrassinId) && <React.Suspense fallback={null}><BrewBudgetDialog batch={batches.find(b => b.id === budgetBrassinId)} onClose={() => setBudgetBrassinId(null)} /></React.Suspense>}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}
         initialScreen={quickAction ?? 'menu'}

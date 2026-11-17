@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Batch, CreativeItem } from '../../src/types';
 import type { ForecastItem } from '../../src/domain/finance/forecast';
+import type { FinancialPlan } from '../../src/domain/finance/types';
 import {
-  duneSemaine, evenementsAgenda, evenementsArgent, evenementsBrassins, indexSemaine, lundiDe, numeroSemaine, semainesDe, totalVoie
+  RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
+  evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
+  retardsDe, semainesDe, totalVoie, type Rangee
 } from '../../src/domain/calendrier';
+import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
 /** Lundi 16 novembre 2026 : semaine ISO 47. */
 const AUJOURDHUI = '2026-11-16';
@@ -134,5 +138,206 @@ describe('voies Ventes et Achats', () => {
     expect(duneSemaine(sortie, 1).map(e => e.id)).toEqual(['argent-f1']);
     expect(duneSemaine(sortie, 2).map(e => e.id)).toEqual(['argent-f5']); // 3 déc. : semaine du 30.11
     expect(duneSemaine(sortie, 3)).toHaveLength(0);
+  });
+});
+
+/* ====================== Port du calendrier retenu (17.11) ====================== */
+
+describe('sept rangées, semaines, année, échelle', () => {
+  it('sept rangées, dans l’ordre de la frise, avec leur nom en clair', () => {
+    expect(RANGEES.map(r => r.id)).toEqual(['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites', 'papiers']);
+    expect(RANGEES.map(r => r.nom)).toEqual(['Brassins', 'Fêtes', 'Ventes', 'Achats', 'Travaux', 'Activités', 'Papiers']);
+  });
+  it('52 semaines, une fenêtre de n semaines bornée, la date d’une semaine (i3)', () => {
+    const toutes = semainesDe(AUJOURDHUI, 52);
+    expect(toutes).toHaveLength(52);
+    expect(toutes[51].debut).toBe('2027-11-08');
+    expect(fenetreSemaines(toutes, 10, 13).map(s => s.index)).toEqual(Array.from({ length: 13 }, (_, i) => 10 + i));
+    expect(fenetreSemaines(toutes, 99, 13)[0].index).toBe(39);
+    expect(fenetreSemaines(toutes, -4, 6)[0].index).toBe(0);
+    expect(dateDeSemaine('2026-12-07')).toBe('S50, 7 – 13 déc.');
+    expect(dateDeSemaine('2026-11-30')).toBe('S49, 30 nov. – 6 déc.');
+    expect(dimancheDe('2026-12-09')).toBe('2026-12-13');
+    expect(ecartSemaines('2026-05-14', '2026-09-30')).toBe(20);
+    expect(francs(506400)).toBe('5 064');
+    expect(francs(-54000)).toBe('−540');
+    expect(francs(0)).toBe('0');
+  });
+  it('l’année en 12 mois, le mois d’un jour', () => {
+    const mois = anneeEnMois(AUJOURDHUI);
+    expect(mois).toHaveLength(12);
+    expect(mois[0]).toMatchObject({ debut: '2026-11-01', fin: '2026-11-30', court: 'nov.' });
+    expect(mois[2]).toMatchObject({ debut: '2027-01-01', annee: 2027, mois: 1 });
+    expect(mois[11]).toMatchObject({ debut: '2027-10-01', fin: '2027-10-31' });
+    expect(indexMois(mois, '2026-12-24')).toBe(1);
+    expect(indexMois(mois, '2028-01-01')).toBeNull();
+  });
+  it('une échelle partagée par la courbe et la frise, et la marque sous 24 px', () => {
+    const e = echelleSemaines(13, 390);
+    expect(e.largeurColonne).toBe(30);
+    expect([e.x(2), e.centre(2)]).toEqual([60, 75]);
+    expect([e.indexAuX(0), e.indexAuX(95), e.indexAuX(389), e.indexAuX(9999), e.indexAuX(-5)]).toEqual([0, 3, 12, 12, 0]);
+    expect(echelleSemaines(0, 100).nbColonnes).toBe(1);
+    expect(estMarque(23.9)).toBe(true);
+    expect(estMarque(24)).toBe(false);
+    expect(estMarque(0)).toBe(true);
+    // une chose d'un jour en 6 mois (26 colonnes sur 390 px = 15 px) est une marque, en 6 semaines (65 px) une barre
+    expect(estMarque(echelleSemaines(26, 390).largeurColonne)).toBe(true);
+    expect(estMarque(echelleSemaines(6, 390).largeurColonne)).toBe(false);
+  });
+  it('la position d’une chose dans la fenêtre : coupée aux bords, absente hors fenêtre', () => {
+    const six = semainesDe(AUJOURDHUI, 6);
+    expect(positionChose(six, { debut: '2026-11-18', fin: '2026-11-18' })).toEqual({ a: 0, b: 0, coupeAGauche: false, coupeADroite: false });
+    expect(positionChose(six, { debut: '2026-11-01', fin: '2026-11-25' })).toEqual({ a: 0, b: 1, coupeAGauche: true, coupeADroite: false });
+    expect(positionChose(six, { debut: '2026-12-22', fin: '2027-03-01' })).toEqual({ a: 5, b: 5, coupeAGauche: false, coupeADroite: true });
+    expect(positionChose(six, { debut: '2026-12-20', fin: '2026-12-20' })).toMatchObject({ a: 4, b: 4 }); // le dimanche appartient à sa semaine
+    expect(positionChose(six, { debut: '2027-01-10', fin: '2027-01-11' })).toBeNull();
+    expect(positionChose(six, { debut: '', fin: '' })).toBeNull();
+  });
+});
+
+const recette = (primaire: number, garde: number, dry?: number) => ({
+  fermentation: [{ kind: 'primaire', name: 'P', tempC: 19, days: primaire }, { kind: 'garde', name: 'G', tempC: 4, days: garde }],
+  hops: dry === undefined ? [] : [{ name: 'Citra', alpha: 12, weightG: 30, stage: 'dryHop', dayOffset: dry }]
+}) as unknown as Batch['recipeSnapshot'];
+
+describe('jalons d’un brassin (E25) : des écarts à la date de brassage, lus dans la recette figée', () => {
+  const planifie = lot({ id: 'LOT-9', name: 'Blonde', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026', recipeSnapshot: recette(14, 21, 5) });
+  it('brassage, fermentation, dry hop, garde, conditionnement ; seule la barre et la fin se glissent', () => {
+    const j = jalonsBrassin(planifie);
+    expect(j.map(x => [x.id, x.ecart, x.jour])).toEqual([
+      ['brassage', 0, '2026-12-08'], ['fermentation', 1, '2026-12-09'], ['dry-hop', 5, '2026-12-13'], ['garde', 14, '2026-12-22'], ['conditionnement', 35, '2027-01-12']
+    ]);
+    expect(j.map(x => x.glissable)).toEqual(['barre', false, false, false, 'fin']);
+    expect(j.find(x => x.id === 'dry-hop')!.raison).toBe('Dry hop suit la recette du brassin');
+  });
+  it('sans jours dans la recette : seulement le brassage, aucune fin inventée ; « commander avant » se pose quand des courses manquent', () => {
+    const nu = lot({ id: 'LOT-8', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' });
+    expect(jalonsBrassin(nu).map(x => x.id)).toEqual(['brassage']);
+    expect(finDeBrassin(nu)).toBeNull();
+    expect(jalonsBrassin(planifie, { commanderLe: '2026-12-07' }).map(x => [x.id, x.ecart])[0]).toEqual(['commander', -1]);
+    expect(jalonsBrassin(lot({ status: 'planifie', brewDate: '', plannedBrewDate: '' }))).toEqual([]);
+  });
+  it('une fin écrite (finPrevue) raccourcit la garde : les jalons au-delà disparaissent', () => {
+    const court = { ...planifie, finPrevue: '2026-12-20' };
+    expect(finDeBrassin(court)).toEqual({ jour: '2026-12-20', origine: 'finPrevue' });
+    expect(jalonsBrassin(court).map(x => [x.id, x.ecart])).toEqual([['brassage', 0], ['fermentation', 1], ['dry-hop', 5], ['conditionnement', 12]]);
+    expect(finDeBrassin({ ...planifie, finPrevue: '' })).toMatchObject({ origine: 'recette' });
+  });
+  it('en cuve, le jour de brassage ne se glisse pas ; sans fin écrite nulle part, la barre court jusqu’à aujourd’hui', () => {
+    const encuve = lot({ id: 'LOT-3', status: 'fermentation', brewDate: '12.11.2026' });
+    const chose = choseBrassin(encuve, AUJOURDHUI)!;
+    expect(chose).toMatchObject({ debut: '2026-11-12', fin: AUJOURDHUI, finInconnue: true, rangee: 'brassins' });
+    expect(chose.preteLe).toBeUndefined();
+    expect(typeof chose.deplacable === 'object' && chose.deplacable.raison).toContain('en cuve');
+    expect(chose.jalons![0]).toMatchObject({ id: 'brassage', glissable: false });
+  });
+});
+
+describe('A3 : chaque source tombe dans sa rangée (un cas par ligne du tableau « Données »)', () => {
+  const item = (id: string, p: Partial<ForecastItem> = {}): ForecastItem => ({ id, date: '2026-12-03', label: 'Ligne', amountCents: 10000, direction: 'out', source: 'plan', category: 'divers', ...p });
+  const plan = (p: Partial<FinancialPlan> = {}): FinancialPlan => ({ id: 'P', title: 'Plan', date: '2026-12-03', amountCents: 10000, direction: 'out', category: 'divers', source: 'manual', status: 'active', createdAt: 'x', ...p });
+  const rangeeDe = (i: ForecastItem, plans: FinancialPlan[] = []): Rangee | null => choseArgent(i, plans)?.rangee ?? null;
+
+  it('Brassins : planifié, en cuve ou en garde, conditionné (et annulé ou archivé : rien)', () => {
+    expect(choseBrassin(lot({ id: 'P1', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' }), AUJOURDHUI)).toMatchObject({ rangee: 'brassins', debut: '2026-12-08', fin: '2026-12-08' });
+    expect(choseBrassin(lot({ status: 'garde' }), AUJOURDHUI)?.rangee).toBe('brassins');
+    expect(choseBrassin(lot({ status: 'conditionne', bottlingDate: '2026-11-20' }), AUJOURDHUI)).toMatchObject({ debut: '2026-11-20', fin: '2026-11-20' });
+    expect(choseBrassin(lot({ status: 'conditionne' }), AUJOURDHUI)).toBeNull(); // pas de date de conditionnement connue
+    expect(choseBrassin(lot({ status: 'annule' }), AUJOURDHUI)).toBeNull();
+    expect(choseBrassin(lot({ archivedAt: '2026-11-01' }), AUJOURDHUI)).toBeNull();
+    expect(choseBrassin(lot({ status: 'planifie', brewDate: '', plannedBrewDate: '' }), AUJOURDHUI)).toBeNull();
+  });
+  it('Fêtes : un event daté, pas fait ; une fête dure un jour sauf avec une fenêtre', () => {
+    const f: CreativeItem = { id: 'e', type: 'event', title: 'Marché', status: 'todo', date: '2026-12-12' };
+    expect(choseCreative(f)).toMatchObject({ rangee: 'fetes', debut: '2026-12-12', fin: '2026-12-12', id: 'creatif-e' });
+    expect(choseCreative({ ...f, date: '12.12.2026' })?.debut).toBe('2026-12-12');
+    expect(choseCreative({ ...f, fenetre: { du: '2026-12-07', au: '2026-12-13', joursActifs: 2 } })).toMatchObject({ debut: '2026-12-07', fin: '2026-12-13', joursActifs: 2 });
+    expect(choseCreative({ ...f, status: 'done' })).toBeNull();
+    expect(choseCreative({ ...f, date: undefined })).toBeNull();
+    expect(choseCreative({ ...f, date: 'bientôt' })).toBeNull();
+  });
+  it('Ventes : une entrée datée de la prévision ; une vente probable (plan in brouillon) en pointillé', () => {
+    expect(rangeeDe(item('i', { direction: 'in', source: 'invoice' }))).toBe('ventes');
+    expect(rangeeDe(item('p', { direction: 'in', planId: 'PV' }), [plan({ id: 'PV', direction: 'in', category: 'recettes' })])).toBe('ventes');
+    const probable = choseVenteProbable(plan({ id: 'PV', title: 'Café du Pont', direction: 'in', status: 'draft', amountCents: 90000, batchId: 'LOT-5', clientId: 'CL-1' }))!;
+    expect(probable).toMatchObject({ rangee: 'ventes', probable: true, proposition: 'vente', centimes: 90000, liens: { batchId: 'LOT-5', clientId: 'CL-1' } });
+    expect(choseVenteProbable(plan({ direction: 'in', status: 'active' }))).toBeNull();
+    expect(choseVenteProbable(plan({ direction: 'out', status: 'draft' }))).toBeNull();
+  });
+  it('Achats : plan et sortie de brassin hors matériel et rénovation ; la livraison attendue vient du délai appris', () => {
+    expect(rangeeDe(item('a', { planId: 'P' }), [plan()])).toBe('achats');
+    expect(rangeeDe(item('b', { source: 'brew', batchId: 'LOT-5', category: 'brassage' }))).toBe('achats');
+    const reglages = { ...REGLAGES_VIDES, commandes: { weyermann: [{ le: '2026-11-10', recue: '2026-11-17' }, { le: '2026-11-18' }, { le: '2026-11-01', recue: '2026-11-08' }], maltsfr: [{ le: '2026-11-12' }] } };
+    const l = livraisonsAttendues(reglages);
+    expect(l).toHaveLength(1); // sans délai appris (maltsfr), rien n'est posé
+    expect(l[0]).toMatchObject({ rangee: 'achats', titre: 'Livraison Weyermann', debut: '2026-11-25' });
+    expect('centimes' in l[0]).toBe(false); // un montant que la commande ne dit pas n'est pas 0
+    expect(livraisonsAttendues(REGLAGES_VIDES)).toEqual([]);
+  });
+  it('Travaux : matériel, rénovation et projet de matériel (D-69)', () => {
+    expect(rangeeDe(item('t', { planId: 'P', category: 'renovation' }), [plan({ category: 'renovation' })])).toBe('travaux');
+    expect(rangeeDe(item('m', { planId: 'P', category: 'materiel' }), [plan({ category: 'materiel' })])).toBe('travaux');
+    expect(choseArgent(item('e', { source: 'equipment', category: 'materiel', planId: 'UP' }))).toMatchObject({ rangee: 'travaux', source: { genre: 'projet-materiel', id: 'UP' }, ouvre: { ecran: 'materiel' } });
+  });
+  it('Activités : un item daté, pas un event (ou marqué activité), pas fait ; en jours, sans CHF sauf estimatedCost', () => {
+    const base: CreativeItem = { id: 'x', type: 'prospect', title: 'Prospection', status: 'todo', date: '2026-12-03' };
+    expect(choseCreative(base)).toMatchObject({ rangee: 'activites' });
+    expect('centimes' in choseCreative(base)!).toBe(false);
+    expect(choseCreative({ ...base, type: 'event', activite: true, fenetre: { du: '2026-12-01', au: '2026-12-13', joursActifs: 3 }, estimatedCost: 120 })).toMatchObject({ rangee: 'activites', joursActifs: 3, centimes: -12000 });
+    expect(choseCreative({ ...base, estimatedCost: 0 })!.centimes).toBeUndefined();
+    expect(choseCreative({ ...base, type: 'recipe-idea' })).toBeNull();
+    expect(choseCreative({ ...base, type: 'equipment' })).toBeNull(); // arrive par son plan (Travaux)
+  });
+  it('Papiers : factures à payer, récurrentes (toute catégorie), TVA et clôture (plan tax)', () => {
+    expect(rangeeDe(item('invoice:T1', { source: 'invoice' }))).toBe('papiers');
+    expect(choseArgent(item('invoice:T1', { source: 'invoice' }))).toMatchObject({ source: { genre: 'facture', id: 'T1' }, ouvre: { ecran: 'piece', id: 'T1' } });
+    expect(rangeeDe(item('r', { source: 'recurring', planId: 'R', category: 'materiel' }))).toBe('papiers');
+    expect(rangeeDe(item('l', { source: 'recurring', planId: 'R', category: 'chargesFixes' }))).toBe('papiers');
+    expect(rangeeDe(item('tva', { planId: 'T' }), [plan({ id: 'T', source: 'tax', category: 'chargesFixes' })])).toBe('papiers');
+    expect(rangeeDe(item('ch', { planId: 'C', category: 'chargesFixes' }), [plan({ id: 'C', category: 'chargesFixes' })])).toBe('papiers');
+  });
+  it('Idées datées : une icône de la semaine, jamais une rangée ; sans date ou faite, rien', () => {
+    const idee: CreativeItem = { id: 'i', type: 'recipe-idea', title: 'Bière au sapin', status: 'idea', date: '2026-12-10' };
+    expect(iconesIdees([idee, { ...idee, id: 'j', date: undefined }, { ...idee, id: 'k', status: 'done' }])).toEqual([
+      { id: 'idee-i', lundi: '2026-12-07', numero: 50, genre: 'idee', titre: 'Bière au sapin', ouvre: { ecran: 'atelier', id: 'i' } }
+    ]);
+    expect(choseCreative(idee)).toBeNull();
+  });
+  it('Sans date : un CreativeItem sans date, ni idée de recette ni fait', () => {
+    const t: CreativeItem = { id: 't', type: 'event', title: 'Commander', status: 'todo' };
+    expect(choseSansDate(t)).toMatchObject({ sansDate: true, debut: '', fin: '' });
+    expect(choseSansDate({ ...t, type: 'recipe-idea' })).toBeNull();
+    expect(choseSansDate({ ...t, status: 'done' })).toBeNull();
+    expect(choseSansDate({ ...t, date: '2026-12-01' })).toBeNull();
+  });
+  it('la tendance n’est jamais une chose ; une ligne à 0 CHF n’a pas de centimes ; une chose sans date n’est pas posée', () => {
+    expect(choseArgent(item('t', { source: 'trend' }))).toBeNull();
+    const zero = choseArgent(item('z', { amountCents: 0, planId: 'P' }), [plan()])!;
+    expect('centimes' in zero).toBe(false);
+    expect(zero.detail).toContain('montant non renseigné');
+    expect(choseArgent(item('d', { date: '' }))).toBeNull();
+    expect(choseArgent(item('p', { partial: ['prix'], planId: 'P' }), [plan()])).toMatchObject({ partiel: true, centimes: -10000 });
+  });
+  it('les mouvements d’argent portent l’id de la ligne de la prévision (pour déplacer la courbe avec la barre)', () => {
+    expect(choseArgent(item('PLAN:2026-12-03', { planId: 'PLAN' }), [plan({ id: 'PLAN' })])).toMatchObject({ id: 'argent-PLAN:2026-12-03', mouvements: ['PLAN:2026-12-03'] });
+  });
+});
+
+describe('E08 : « en retard » se dit avec des dates, jamais « en retard de 7 j »', () => {
+  it('factures, brassins planifiés passés, tâches passées, densité et courses : une date ou rien', () => {
+    const r = retardsDe({
+      aujourdhui: AUJOURDHUI,
+      restes: [{ id: 'F1', libelle: 'Weyermann', cents: 42000, echeance: '2026-11-03', enRetard: true }, { id: 'F2', libelle: 'Futur', cents: 1000, echeance: '2026-12-03', enRetard: false }, { id: 'F3', libelle: 'Sans échéance', cents: 1000, echeance: null, enRetard: true }],
+      batches: [lot({ id: 'LOT-P', name: 'Porter', status: 'planifie', brewDate: '', plannedBrewDate: '05.11.2026' }), lot({ id: 'LOT-OK', status: 'planifie', brewDate: '', plannedBrewDate: '08.12.2026' })],
+      items: [{ id: 'CR', type: 'event', title: 'Appeler la commune', status: 'todo', date: '2026-11-09' }, { id: 'CR2', type: 'event', title: 'Fait', status: 'done', date: '2026-11-01' }],
+      sansDensite: [lot({ id: 'LOT-D', name: 'IPA' })], courses: { nom: 'Porter', nombre: 3, avant: 'S49' }
+    });
+    expect(r.map(x => x.genre)).toEqual(['facture', 'brassin', 'tache', 'densite', 'courses']);
+    expect(r[0].detail).toContain('échéance le 3 nov.');
+    expect(r[1].detail).toBe('brassage prévu le 5 nov.');
+    expect(r[4]).toMatchObject({ titre: 'Commander pour Porter', detail: '3 articles avant S49', jour: null });
+    for (const x of r) expect(`${x.titre} ${x.detail}`).not.toMatch(/depuis \d+ ?j|de \d+ ?j\b|retard de/i);
+    expect(retardsDe({ aujourdhui: AUJOURDHUI, restes: [], batches: [], items: [] })).toEqual([]);
   });
 });
