@@ -119,7 +119,7 @@ if (candidates.length) {
     `${CADRE}
 
 Écris À LA MAIN (pas de script générateur) la page de choix ${dossier}/page/index.html : une page par choix (L24, D126), la base ${base.proto} en référence à côté,
-puis les ${candidates.length} versions candidates en mini maquettes côte à côte, chacune nommée, son parti pris en une ligne, et sa note du critique.
+puis les ${candidates.length} versions candidates. DISPOSITION PAR ÉCRAN (17.11 : « la disposition des artefacts est difficile à comparer et prendre des notes des meilleurs vue ») : une rangée par écran du parcours (liste, ouvert, ajouter, ajouter à, carte, fiche ouverte, comparer, choisi, À venir… selon le chantier), et dans chaque rangée la base puis chaque version, vignettes de même hauteur, défilement horizontal, nom de version sur chaque vignette ; une version sans cet écran : case « — ». Sous chaque vignette, une étoile « meilleur » à toucher et une note courte ; en bas, un bouton Copier qui rend « écran : v.. ★ · note » ligne par ligne (localStorage pour garder les notes, dans un try). En tête, une ligne par version : son parti pris et sa note du critique.
 Candidates (seules ces versions, contrôle OK) :\n- ${candidates.join('\n- ')}
 JAMAIS ces versions écartées au contrôle :\n- ${ecartees.join('\n- ') || 'aucune'}
 Contrôle la page avec node work/refonte-frontend/v4/tournoi/outils/controle-page-choix.mjs et node scripts/agents/verifier-page.mjs ${dossier}/page/index.html --page-lot --captures ${dossier}/page/cap, ouvre les captures. Ne publie rien.`,
