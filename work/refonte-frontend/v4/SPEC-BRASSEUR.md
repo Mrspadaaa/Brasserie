@@ -2154,3 +2154,7 @@ Lecture corrigée : une prévision (plan sur une période) reste une barre de la
 > Pariel pour les autres type de tâche c'est compris ?
 
 Règle (ses exemples l'illustrent, L01) : dans toutes les rangées, ce qui dure (foire, prévision, brassin, travaux sur plusieurs jours) est une barre ; ce qui arrive un jour (vente à un client, achat ponctuel ou non prévu, papier dû un jour, activité d'un jour) est un jalon (icône à sa date), même pendant une barre de la même période.
+
+> une icône posée à sa date, même au milieu d'une barre de la même période -> pas sûr ça risque d'être illisible, SI c'est lié à l'événement ok, SI non c'est une ligne à part comme sur l'image envoyé
+
+Placement du jalon : lié à une barre (ex. la tireuse pour la foire) → posé sur cette barre ; non lié (ex. Dédé, hors foire) → sur sa propre ligne de la rangée, comme sur jalons-18-11.jpg, jamais sur une barre qui ne le concerne pas.
