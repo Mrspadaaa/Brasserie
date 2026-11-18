@@ -57,13 +57,6 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Rôles : pilote, auteur, conseil
 - Contrôle : `systeme.mjs mission` refuse une mission de code sans « ## État de l'art » (problème type, examiné, décision)
 
-### L30 — Une boucle de correction a un périmètre figé et une sortie datée
-- Erreur : 17 et 18.11, port du calendrier : 12 tours, « 0 bloquant » jamais atteint (1, 2, 2, 1 bloquants), environ 1,5 M de jetons par tour ; rien en ligne. « ça fait longtemps que ça bug fix... Il y a pas un problème à ce niveau ? »
-- Cause : chaque critique rejuge tout l'écran sur des captures neuves et trouve de nouveaux défauts ; lots parallèles qui se cassent entre eux ; preuves manquantes du harnais comptées en bloquants.
-- Faire : figer la liste au premier tour ; les tours suivants ne jugent que cette liste et les régressions ; un défaut neuf va au registre, pas à la boucle. Trois tours au plus, puis mise en ligne si aucun bloquant ne touche données ou geste principal ; le reste se corrige en ligne, depuis le registre.
-- Rôles : pilote, critique
-- Contrôle : aucun ; à mécaniser dans les scripts de boucle
-
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
@@ -106,7 +99,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21 : 130 à 350 k jetons par auteur. 09.11 : 10 relances : « pas pour du va et vient inutile !!! ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, retour sans format.
-- Faire : maxTurns par agent, Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Peu de chantiers à la fois ; ne pas changer de méthode en cours de lot (16.11 : « Beaucoup de travail dans le vide »). Statique ne veut pas dire sans critique ni pressé ; la base reste son choix inscrit, jamais la dernière itération (16.11 : « ce qui a été choisi … a été enlevé »). Explorer en mini maquettes statiques nombreuses ; le jouable après son choix (16.11, [[fil-de-fer-d-abord]]).
+- Faire : maxTurns par agent, Haiku pour le mécanique (rejeux, captures), Sonnet pour le code, Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Peu de chantiers à la fois ; ne pas changer de méthode en cours de lot (16.11 : « Beaucoup de travail dans le vide »). Maquettes : [[maquettes-16-11]]. Boucle de correction : liste figée au 1er tour, puis elle seule et les régressions ; défaut neuf au registre ; 3 tours au plus, puis en ligne si aucun bloquant ne touche données ou geste principal (18.11 : « Il y a pas un problème à ce niveau ? »).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns ; `.claude/hooks/garde-jetons.mjs` (3e relance, brief incomplet)
 
