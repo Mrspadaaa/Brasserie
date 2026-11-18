@@ -165,8 +165,9 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     const evenements = (l.evenements ?? []).filter(e => e.id !== soi);
     return [
       { cle: 'brassins' as const, titre: 'Brassins', puces: brassins },
-      { cle: 'clients' as const, titre: 'Clients', puces: l.clients },
-      { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements }
+      /* décision du pilote (18.11, doute du lot A) : Brassins, puis Fêtes et activités, puis Clients */
+      { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements },
+      { cle: 'clients' as const, titre: 'Clients', puces: l.clients }
     ].filter(g => g.puces.length > 0);
   })();
   const commander = chose.jalons?.find(j => j.id === 'commander');

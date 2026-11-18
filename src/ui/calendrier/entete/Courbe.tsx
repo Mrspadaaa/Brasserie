@@ -126,6 +126,15 @@ function escalierInverse(valeurs: readonly number[], g: Geo, debut = 0): string 
   }
   return d;
 }
+/**
+ * D387, D388 : la même échelle en y, mais chaque semaine posée sur ses bords lus dans la frise (`alignement.ts`) ; `unit` est leur largeur moyenne.
+ * Au-delà des bords donnés, x reste au dernier bord.
+ */
+export function avecAbscisses(g: Geo, abscisses: readonly number[]): Geo {
+  const n = Math.max(1, abscisses.length - 1);
+  const x = (i: number) => abscisses[Math.max(0, Math.min(abscisses.length - 1, i))] ?? 0;
+  return { ...g, unit: (x(n) - x(0)) / n, x };
+}
 export const zoneEscalier = (haute: readonly number[], basse: readonly number[], g: Geo, debut = 0) => `${escalier(haute, g, debut)}${escalierInverse(basse, g, debut)}Z`;
 
 /* ---------- placement des noms ---------- */
@@ -380,6 +389,10 @@ export interface CourbeProps {
    * sont sous la courbe (z2s, portrait).
    */
   moisEnHaut?: boolean;
+  /** D387 : les bords des semaines lus dans la frise (n + 1 valeurs, px de la courbe) ; absent : largeur / n. */
+  abscisses?: readonly number[];
+  /** D387 : le creux à marquer (index dans `courbe`) quand la courbe n'est qu'une part de l'année ; `null` : il est hors de la part. */
+  creuxIndex?: number | null;
 }
 
 /** Hauteur de la rangée des mois posée en haut (paysage, w3s) : le tracé commence dessous. */
@@ -408,7 +421,7 @@ export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { in
   return obstacles;
 }
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false }: CourbeProps) {
+export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, creuxIndex }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -419,13 +432,16 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
     return () => { vivant = false; };
   }, []);
   const n = courbe.length;
-  const g = moisEnHaut
+  const g0 = moisEnHaut
     ? geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, HAUTEUR_MOIS_HAUT, hauteur - 2)
     : geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, 4, hauteur - HAUTEUR_MOIS);
+  const g = abscisses && abscisses.length === n + 1 ? avecAbscisses(g0, abscisses) : g0;
   // La ligne de base des mois : en haut (w3s) ou sous le tracé (z2s).
   const yMois = moisEnHaut ? 13 : hauteur - 3;
   const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
-  const creux = creuxDe(courbe);
+  const creux = creuxIndex === undefined ? creuxDe(courbe)
+    : creuxIndex === null || !courbe[creuxIndex] ? null
+      : { index: creuxIndex, numero: courbe[creuxIndex].numero, lundi: courbe[creuxIndex].lundi, centimes: courbe[creuxIndex].libre };
   const causes = creux ? causesDuCreux(courbe, creux.index) : null;
   const misDeCote = courbe.some(s => s.caisse - s.libre > 1);
   const mois = avecMois ? etiquettesMois(courbe, g) : [];
@@ -440,7 +456,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const marquesEtoiles = (etoiles ?? []).filter(e => courbe[e.i] && !noms.some(x => x.etoile && x.i === e.i))
     .map(e => ({ ...e, x: g.x(e.i) + g.unit / 2, y: Math.max(g.haut + 14, Math.min(g.bas - 2, g.y(courbe[e.i].libre) - 5)) }));
   return (
-    <div ref={reference} className="ent-cb" style={{ height: hauteur }} {...gestes}>
+    <div ref={reference} className="ent-cb" style={{ height: hauteur }} data-courbe-alignee={abscisses ? '' : undefined} data-courbe-semaines={courbe.map(s => s.numero).join(' ')} {...gestes}>
       <svg className="ent-svg" width={largeur} height={hauteur} viewBox={`0 0 ${largeur} ${hauteur}`} role="img"
         aria-label={`Libre et caisse sur ${n} semaines${creux ? ` ; au plus serré en S${creux.numero} : ${chf(creux.centimes)} CHF` : ''} ; les mouvements sont nommés avec leur montant`}>
         <defs>
@@ -533,39 +549,74 @@ export interface CourbeZoomProps {
   apres: readonly number[];
   largeur: number;
   hauteur: number;
+  /** D388 : les bords des semaines lus dans la frise (n + 1 valeurs) ; absent : largeur / n. */
+  abscisses?: readonly number[];
+  /**
+   * D388 (jouable paysage, `as-gestes.js` `zoom`) : la ligne sous la courbe, « - - avant — si tu lâches en S51 : S50 5 120 → 4 480 », l'écart
+   * (« −640 ») sur la première semaine qui change, la colonne d'arrivée éclairée. Index dans les colonnes montrées ; numéros de semaine pour le texte.
+   */
+  lacher?: { colonne: number | null; numero: number | null; change: { colonne: number | null; numero: number; avant: number; apres: number } | null };
 }
+
+/** La hauteur de la ligne « avant / si tu lâches » sous la courbe zoomée (jouable : 26 px). */
+export const HAUTEUR_LIGNE_ZOOM = 26;
 
 /** Pas d'axe « rond » le plus petit qui garde au plus 2,2 graduations dans l'écart (reprise du jouable, en centimes). */
 const PAS = [10000, 20000, 25000, 50000, 100000, 200000, 250000, 500000, 1000000];
-export function CourbeZoom({ avant, apres, largeur, hauteur }: CourbeZoomProps) {
+export function CourbeZoom({ avant, apres, largeur, hauteur, abscisses, lacher }: CourbeZoomProps) {
   const n = Math.min(avant.length, apres.length);
   const tout = [...avant.slice(0, n), ...apres.slice(0, n)];
   const lo0 = Math.min(...tout), hi0 = Math.max(...tout);
   const pas = PAS.find(p => (hi0 - lo0) / p <= 2.2) ?? 1000000;
   const lo = Math.floor(lo0 / pas) * pas - pas * 0.35, hi = Math.ceil(hi0 / pas) * pas + pas * 0.15;
-  const haut = 20, bas = hauteur - 4;
+  // Avec la ligne du jouable sous la courbe, la légende ne prend plus le haut du dessin : le tracé part de 6 px, comme le jouable.
+  const ligne = !!lacher;
+  const h = ligne ? Math.max(40, hauteur - HAUTEUR_LIGNE_ZOOM) : hauteur;
+  const haut = ligne ? 6 : 20, bas = h - 4;
   const unit = largeur / Math.max(1, n);
-  const g: Geo = { largeur, hauteur, haut, bas, unit, lo, hi, x: i => i * unit, y: v => bas - ((v - lo) / (hi - lo)) * (bas - haut) };
+  const g0: Geo = { largeur, hauteur: h, haut, bas, unit, lo, hi, x: i => i * unit, y: v => bas - ((v - lo) / (hi - lo)) * (bas - haut) };
+  const g = abscisses && abscisses.length === n + 1 ? avecAbscisses(g0, abscisses) : g0;
+  const x0 = g.x(0), xn = g.x(n);
   const graduations: number[] = [];
   for (let v = Math.ceil(lo / pas) * pas; v <= hi; v += pas) graduations.push(v);
-  return (
-    <svg className="ent-svg ent-zoom" width={largeur} height={hauteur} viewBox={`0 0 ${largeur} ${hauteur}`} role="img" aria-label="La courbe zoomée sur les semaines visibles : avant en pointillé, après en plein">
+  const ch = lacher?.change ?? null;
+  const ecart = ch && ch.colonne !== null && ch.colonne >= 0 && ch.colonne < n ? (() => {
+    const d = ch.apres - ch.avant, ya = g.y(ch.apres), yb = g.y(ch.avant);
+    const ty = Math.max(15, Math.min(h - 3, d < 0 ? Math.max(ya, yb) + 18 : Math.min(ya, yb) - 6));
+    return { d, x: (g.x(ch.colonne) + g.x(ch.colonne + 1)) / 2, y: ty };
+  })() : null;
+  const cl = lacher && lacher.colonne !== null && lacher.colonne >= 0 && lacher.colonne < n ? lacher.colonne : null;
+  const svg = (
+    <svg className="ent-svg ent-zoom" width={largeur} height={h} viewBox={`0 0 ${largeur} ${h}`} role="img" aria-label="La courbe zoomée sur les semaines visibles : avant en pointillé, après en plein">
+      {cl !== null && <rect className="ent-zlache" data-zoom-lache x={g.x(cl)} y={0} width={g.x(cl + 1) - g.x(cl)} height={h} />}
+      {ligne && Array.from({ length: n - 1 }, (_, i) => i + 1).map(i => <line key={`c${i}`} className="ent-zcol" x1={g.x(i)} x2={g.x(i)} y1={0} y2={h} />)}
       {Array.from({ length: n }, (_, i) => i).filter(i => apres[i] !== avant[i]).map(i => {
         const y1 = g.y(avant[i]), y2 = g.y(apres[i]);
-        return <rect key={i} className={apres[i] < avant[i] ? 'ent-ecart ent-ecart-neg' : 'ent-ecart ent-ecart-pos'} x={g.x(i)} y={Math.min(y1, y2)} width={unit} height={Math.abs(y2 - y1)} />;
+        return <rect key={i} className={apres[i] < avant[i] ? 'ent-ecart ent-ecart-neg' : 'ent-ecart ent-ecart-pos'} x={g.x(i)} y={Math.min(y1, y2)} width={g.x(i + 1) - g.x(i)} height={Math.abs(y2 - y1)} />;
       })}
-      {graduations.map(v => <line key={v} className="ent-grad" x1={0} x2={largeur} y1={g.y(v)} y2={g.y(v)} />)}
-      <path className="ent-aire" d={`${escalier(apres.slice(0, n), g)}V${hauteur}H0Z`} />
+      {graduations.map(v => <line key={v} className="ent-grad" x1={x0} x2={xn} y1={g.y(v)} y2={g.y(v)} />)}
+      <path className="ent-aire" d={`${escalier(apres.slice(0, n), g)}V${h}H${x0.toFixed(1)}Z`} />
       <path className="ent-avant" d={escalier(avant.slice(0, n), g)} />
       <path className="ent-apres" d={escalier(apres.slice(0, n), g)} />
-      {placerAxe(graduations, [avant.slice(0, n), apres.slice(0, n)], g, boiteLegende(largeur)).map(a => (
+      {placerAxe(graduations, [avant.slice(0, n), apres.slice(0, n)], g, ligne ? null : boiteLegende(largeur)).map(a => (
         <g key={`t${a.v}`} className="ent-axe-g" data-axe={a.v}>
           <rect className="ent-axe-fond" x={a.boite.l} y={a.boite.t} width={a.boite.r - a.boite.l} height={a.boite.b - a.boite.t} rx={3} />
           <text className="ent-axe" x={a.x} y={a.y}>{chf(a.v)}</text>
         </g>
       ))}
-      <text className="ent-zleg" x={largeur - 4} y={14} textAnchor="end"><tspan className="ent-leg-av">{LEGENDE_AVANT}</tspan>  <tspan className="ent-leg-ap">{LEGENDE_APRES}</tspan></text>
+      {ecart && ecart.d !== 0 && <text className={`ent-zd ${ecart.d < 0 ? 'ent-zd-neg' : 'ent-zd-pos'}`} data-zoom-ecart x={ecart.x} y={ecart.y} textAnchor="middle">{sg(ecart.d)}</text>}
+      {!ligne && <text className="ent-zleg" x={largeur - 4} y={14} textAnchor="end"><tspan className="ent-leg-av">{LEGENDE_AVANT}</tspan>  <tspan className="ent-leg-ap">{LEGENDE_APRES}</tspan></text>}
     </svg>
+  );
+  if (!lacher) return svg;
+  return (
+    <>
+      {svg}
+      <p className="ent-zl" data-zoom-ligne>
+        <span><i className="ent-zav" aria-hidden="true" />avant</span>
+        <span><i className="ent-zap" aria-hidden="true" />si tu lâches{lacher.numero !== null ? ` en S${lacher.numero}` : ''}{ch ? <>{' : '}{ch.numero !== lacher.numero ? `S${ch.numero} ` : ''}{chf(ch.avant)} → <b>{chf(ch.apres)}</b></> : null}</span>
+      </p>
+    </>
   );
 }
 

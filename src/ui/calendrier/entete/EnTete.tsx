@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Clock, Maximize2, Minimize2 } from 'lucide-react';
+import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
+import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
@@ -34,7 +35,7 @@ export type VueCalendrier = 'semaines' | 'annee' | 'graph' | 'liste';
 export type ModeleEnTete = Pick<ModeleCalendrier, 'semaines' | 'courbe' | 'creux' | 'retards' | 'sansDate' | 'icones'> & Partial<Pick<ModeleCalendrier, 'mois' | 'choses' | 'hypotheses'>>;
 
 /** La courbe recalculée pendant un geste de la frise (E02) : une `CourbeCaisse` (`courbeDecalee`, `courbeSans`…). */
-export type ApercuCourbe = CourbeCaisse | { courbe: CourbeCaisse };
+export type ApercuCourbe = CourbeCaisse | { courbe: CourbeCaisse; /** D388 : le jour où la chose tomberait si on lâchait (« si tu lâches en S51 »). */ lache?: string };
 
 export interface EnTeteCalendrierProps {
   modele: ModeleEnTete;
@@ -80,6 +81,16 @@ export interface EnTeteCalendrierProps {
   deplie?: string | null;
   onDeplier?: (lundi: string | null) => void;
   aujourdhui?: string;
+  /**
+   * D387 (le brasseur, 18.11 : « juste un bouton qui match les deux ou pas genre un toggle switch ») : l'interrupteur de l'en-tête. Allumé, la
+   * courbe se trace sur les colonnes de la frise (même x pour une même date, toutes périodes, vue Jour comprise) ; éteint, l'année avec le cadre.
+   * Le chiffre « à dépenser » garde sa règle (le creux de toute la courbe). Sans `onAligne`, pas d'interrupteur.
+   */
+  aligne?: boolean;
+  onAligne?: (aligne: boolean) => void;
+  /** D389 : « un bouton qui peut cacher le graph » ; cachée, seule la bande de l'axe reste sous la tête. Sans `onCourbeCachee`, pas de bouton. */
+  courbeCachee?: boolean;
+  onCourbeCachee?: (cachee: boolean) => void;
 }
 
 export interface MessageEnTete { genre: 'annee' | 'invite'; texte: string }
@@ -133,6 +144,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const liste = vue === 'liste';
   const base = modele.courbe;
   const apercuC: CourbeCaisse | null = apercu ? ('semaines' in apercu ? apercu : apercu.courbe) : null;
+  const lache = apercu && !('semaines' in apercu) ? apercu.lache ?? null : null;
+  const cachee = !!props.courbeCachee && !!props.onCourbeCachee && !graph;
   const courbeC = apercuC ?? base;
   const courbe = courbeC?.semaines ?? null;
 
@@ -162,6 +175,36 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const repli = paysage && !graph ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
   const largeur = mesure || repli;
   const hauteur = paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
+
+  // ---- D387, D388 : la courbe posée sur les colonnes de la frise (interrupteur allumé, ou pendant un glisser, comme le jouable) ----
+  const alignee = !!props.aligne && !!props.onAligne && !graph && !liste && !cachee && !!base;
+  const zoomee = !!apercuC && !graph && !cachee && !!base;
+  const [frise, setFrise] = useState<{ decalage: number; largeur: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!alignee && !zoomee) return undefined;
+    const lireFrise = () => (racine.current?.closest('[data-calendrier]') ?? document).querySelector<HTMLElement>('[data-frise]');
+    const mesurer = () => {
+      const rz = zone.current?.getBoundingClientRect(), rf = lireFrise()?.getBoundingClientRect();
+      // Le bord gauche de la frise moins celui de la courbe : 0 en portrait, négatif en paysage (la colonne du chiffre est à gauche de la courbe).
+      const suivant = rz && rf && rf.width > 0 ? { decalage: Math.round((rf.left - rz.left) * 10) / 10, largeur: Math.round(rf.width * 10) / 10 } : null;
+      setFrise(p => ((p && suivant && p.decalage === suivant.decalage && p.largeur === suivant.largeur) || (!p && !suivant) ? p : suivant));
+    };
+    mesurer();
+    window.addEventListener('resize', mesurer);
+    const f = lireFrise();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(mesurer) : null;
+    if (ro && f) ro.observe(f);
+    if (ro && zone.current) ro.observe(zone.current);
+    return () => { window.removeEventListener('resize', mesurer); ro?.disconnect(); };
+  }, [alignee, zoomee, orientation, props.colonnes]);
+  const lundiDebut = visibles[0]?.debut ?? fenetre.du;
+  const alignement = useMemo(() => {
+    if ((!alignee && !zoomee) || !base) return null;
+    const cols = props.colonnes?.length ? props.colonnes : colonnesDeSemaines(base.semaines.slice(index, index + nombre).map(s => s.lundi));
+    const lf = frise?.largeur ?? largeur;
+    return alignerSemaines(base.semaines.map(s => s.lundi), cols, lf / Math.max(1, cols.length), frise?.decalage ?? 0, largeur);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alignee, zoomee, base, props.colonnes, index, nombre, lundiDebut, frise, largeur]);
   // La grande courbe : en paysage, la hauteur de l'écran moins l'en-tête ; au téléphone en portrait, celle de sa maquette ; plus large, toute la
   // hauteur de la zone de la frise jusqu'au bas de l'écran (ou au haut de la barre d'onglets), moins son titre, le détail et la légende.
   const [hautDispo, setHautDispo] = useState(0);
@@ -287,6 +330,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       return clamp(Math.floor((((clientX - (r?.left ?? 0)) * (r && r.width ? l / r.width : 1)) - g.xl) / g.unit), 0, n - 1);
     }
     const r = cadreCourbe.current?.getBoundingClientRect();
+    if (alignement && !apercuC) {
+      const x = (clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
+      return clamp(alignement.debut + semaineSous(alignement, x), 0, n - 1);
+    }
     return clamp(Math.floor((((clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1)) / (largeur / n))), 0, n - 1);
   };
   const { props: gestes, attacher } = usePointeurCourbe({
@@ -311,7 +358,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const gestesCourbe = {
     ...gestes,
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
-      const z = prise.current;
+      // Alignée (D387), la courbe n'a pas de cadre : aucune prise à tirer.
+      const z = alignement ? null : prise.current;
       if (z && e.button <= 0) {
         const r = cadreCourbe.current?.getBoundingClientRect();
         const x = (e.clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
@@ -510,17 +558,52 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     </button>
   ) : <span className="ent-k ent-k-vide" />;
 
+  // D387, D388 : la part de la courbe posée sur la frise (index `d` à `d + m` de l'année) ; le creux, la mise de côté et les étoiles s'y décalent.
+  const vueAl = alignement && base ? (() => {
+    const d = alignement.debut, m = alignement.abscisses.length - 1;
+    const dedans = (i: number) => i >= d && i < d + m;
+    return {
+      d, m, sem: base.semaines.slice(d, d + m), ap: zoomee && apercuC ? apercuC.semaines.slice(d, d + m) : null,
+      creuxIndex: creux && dedans(creux.index) ? creux.index - d : null,
+      mise: miseCourbe && dedans(miseCourbe.i) ? { ...miseCourbe, i: miseCourbe.i - d } : null,
+      etoiles: etoilesCourbe.filter(e => dedans(e.i)).map(e => ({ ...e, i: e.i - d }))
+    };
+  })() : null;
+  // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
+  const lacherZoom = vueAl?.ap && base && apercuC ? (() => {
+    const av = base.semaines, ap = apercuC.semaines;
+    let ich = -1;
+    for (let i = 0; i < Math.min(av.length, ap.length); i++) if (av[i].libre !== ap[i].libre) { ich = i; break; }
+    const il = lache ? av.findIndex(s => s.lundi === lundiDe(lache)) : -1;
+    return {
+      colonne: il >= 0 ? il - vueAl.d : null, numero: il >= 0 ? av[il].numero : null,
+      change: ich >= 0 ? { colonne: ich - vueAl.d, numero: av[ich].numero, avant: av[ich].libre, apres: ap[ich].libre } : null
+    };
+  })() : undefined;
+
   return (
     <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
       <div className="ent-t" onPointerDownCapture={versCourbe}>
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
         <span ref={boutonsTete} className="ent-t-b">
+          {props.onAligne && base && !graph && !liste && !cachee && (
+            <button type="button" role="switch" className="ent-al" data-ent-aligne aria-checked={!!props.aligne} aria-label="Aligner la courbe sur la frise"
+              title={props.aligne ? 'La courbe suit la frise ; éteint, elle montre l’année' : 'Aligner la courbe sur la frise'} onClick={() => props.onAligne?.(!props.aligne)}>
+              <span className="ent-al-piste" aria-hidden="true"><span className="ent-al-pt" /></span>
+            </button>
+          )}
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
             {props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
             <button type="button" className="ent-ret-b" aria-label={titreRetards(retards.length)} onClick={() => setRetardsOuverts(true)}><Clock size={16} strokeWidth={2.4} aria-hidden="true" />{retards.length}</button>
+          )}
+          {props.onCourbeCachee && base && !graph && (
+            <button type="button" className="ent-cc" data-ent-cacher aria-pressed={cachee} aria-label={cachee ? 'Montrer la courbe' : 'Cacher la courbe'}
+              title={cachee ? 'Montrer la courbe' : 'Cacher la courbe : le calendrier prend la place'} onClick={() => props.onCourbeCachee?.(!props.courbeCachee)}>
+              {cachee ? <ChartLine size={17} strokeWidth={2.2} aria-hidden="true" /> : <EyeOff size={17} strokeWidth={2.2} aria-hidden="true" />}
+            </button>
           )}
           <button type="button" className="ent-pl" aria-label={plein ? 'Quitter le plein écran' : 'Plein écran'} onClick={() => { void basculerPlein(); }}>
             {plein ? <Minimize2 size={18} aria-hidden="true" /> : <Maximize2 size={18} aria-hidden="true" />}
@@ -531,6 +614,16 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       <div ref={zone} className="ent-cbz">
         {graph && courbeC && courbe ? (
           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
+        ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
+          <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
+            curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
+            mise={vueAl.mise} mois moisEnHaut={paysage} etoiles={vueAl.etoiles}>
+            {vueAl.ap && (
+              <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
+                <CourbeZoom avant={vueAl.sem.map(s => s.libre)} apres={vueAl.ap.map(s => s.libre)} abscisses={alignement.abscisses} largeur={largeur} hauteur={hauteur} lacher={lacherZoom} />
+              </div>
+            )}
+          </Courbe>
         ) : courbe && base ? (
           <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
             mois={!annee} moisEnHaut={paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}

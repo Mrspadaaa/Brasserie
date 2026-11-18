@@ -236,7 +236,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [message, setMessage] = useState<MessageCal | null>(null);
   const [drag, setDrag] = useState<DragEtat | null>(null);
   const [ici, setIci] = useState<string | null>(null);
-  const [apercuLundi, setApercu] = useState<ReturnType<typeof courbeDecalee> | null>(null);
+  const [apercuLundi, setApercu] = useState<{ courbe: ReturnType<typeof courbeDecalee>; lache: string } | null>(null);
+  /* D387 (interrupteur : courbe alignée sur la frise) et D389 (courbe cachée) : des choix gardés par appareil */
+  const [courbeAlignee, setCourbeAlignee] = useEtatGarde<boolean>('calendrier_courbe_alignee', false);
+  const [courbeCachee, setCourbeCachee] = useEtatGarde<boolean>('calendrier_courbe_cachee', false);
   const [duree, setDuree] = useState<{ id: string; texte: string } | null>(null);
   const [mesure, setMesure] = useState({ largeur: 0, largeurColonne: 0 });
   /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine à chaque ouverture (« semaine par default », #202) ; la semaine dépliée (C) */
@@ -394,7 +397,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const r = auJour ? cibleJour(chose, k) : null;
     if (auJour) {
       setIci(k === 0 || !r || r.jours === 0 ? null : `${jourLisible(r.cible)} · lâcher ici`);
-      setApercu(k !== 0 && r && r.jours !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, r.jours) : null);
+      setApercu(k !== 0 && r && r.jours !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, r.jours), lache: r.cible } : null);
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
@@ -402,13 +405,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (estPonctuel(chose)) {
       const jour = ajouterJours(chose.debut, k);
       setIci(k === 0 ? null : `${etiquetteS(jour)} · ${jourLisible(jour)} · lâcher ici`);
-      setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k) : null);
+      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k), lache: jour } : null);
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
     const cible = lundiDe(ajouterJours(chose.debut, k * 7));
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
-    setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k * 7) : null);
+    setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k * 7), lache: cible } : null);
     /* un glisser commencé ferme le menu ouvert et le détail (CRITIQUE-2 n° 1 a) */
     setMessage(null); setMenu(null); setSelectionId(null);
   }, [modele.courbe]);
@@ -783,6 +786,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onFiltrer={() => { setMessage(null); setPanneau('filtre'); }}
           onMessage={surMessageEnTete}
           etoiles={etoiles}
+          aligne={courbeAlignee}
+          onAligne={setCourbeAlignee}
+          courbeCachee={courbeCachee}
+          onCourbeCachee={setCourbeCachee}
         />
       </div>
 

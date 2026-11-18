@@ -143,6 +143,29 @@
 /* CRITIQUE-11 n° 6 : le chiffre d'axe de la courbe zoomée sur un fond du thème, posé hors du tracé (placerAxe) : aucune ligne ne le barre. */
 .ent-axe-fond { fill: rgb(var(--cave-950)); opacity: 0.85; pointer-events: none; }
 .ent-zleg { font-size: 14px; font-weight: 600; fill: var(--ent-ink); }
+/* D388 (jouable paysage, as-gestes.css .as-zoom) : la colonne d'arrivée éclairée, les traits des colonnes, l'écart, la ligne « avant / si tu lâches ». */
+.ent-zlache { fill: var(--ent-ok); opacity: 0.13; }
+.ent-zcol { stroke: var(--ent-line); stroke-width: 1; }
+.ent-zd { font-size: 16px; font-weight: 800; paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; font-variant-numeric: tabular-nums; }
+.ent-zd-neg { fill: var(--ent-bad); }
+.ent-zd-pos { fill: var(--ent-ok); }
+.ent-zl { height: 26px; margin: 0; display: flex; gap: 14px; align-items: center; padding: 0 12px; font-size: 14px; color: var(--ent-mut); white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; }
+.ent-zl b { color: var(--ent-ink); font-weight: 800; }
+.ent-zl i { display: inline-block; width: 20px; height: 0; vertical-align: middle; margin-right: 6px; }
+.ent-zl .ent-zav { border-top: 2px dashed var(--ent-ink); }
+.ent-zl .ent-zap { border-top: 3.5px solid var(--ent-fin); }
+/* D387 : l'interrupteur « courbe alignée sur la frise » ; D389 : le bouton qui cache la courbe. Doigt de 44 px par le ::after, comme les autres. */
+.ent-al, .ent-cc { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--ent-ink); background: transparent; }
+.ent-al::after, .ent-cc::after { content: ''; position: absolute; inset: -6px -2px; }
+.ent--portrait .ent-al::after, .ent--portrait .ent-cc::after { inset: -16px -2px 0; }
+.ent-al { width: 34px; }
+.ent-al-piste { position: relative; width: 32px; height: 18px; border-radius: 9px; border: 1.5px solid var(--ent-line2); background: rgb(var(--cave-900)); transition: background-color 0.15s; }
+.ent-al-pt { position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: rgb(var(--cave-400)); transition: transform 0.15s; }
+.ent-al[aria-checked='true'] .ent-al-piste { background: var(--ent-fin); border-color: var(--ent-fin); }
+.ent-al[aria-checked='true'] .ent-al-pt { transform: translateX(14px); background: rgb(var(--cave-50)); }
+.ent-cc { width: 26px; }
+.ent-cc[aria-pressed='true'] { color: var(--ent-fin-t); }
+.ent[data-doigt='oui'] .ent-al:focus-visible, .ent[data-doigt='oui'] .ent-cc:focus-visible { outline: none; }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
 .ent-bz { position: relative; margin-top: 12px; }
