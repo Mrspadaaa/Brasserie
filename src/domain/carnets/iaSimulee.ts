@@ -11,6 +11,7 @@ import type { ContexteRangerCarnet, PageLue } from '../../../functions/src/carne
 import { liensDuTexte, sansAccents } from './ia';
 import { fixtureCarnets } from './fixture';
 import { prixLus } from './modele';
+import { analyserLigne, genreLocal, mettreEnForme, quantitesDe, sansPrefixeBanc } from './analyseLocale';
 
 type Brut = Record<string, unknown>;
 export interface ReponseSimulee { lignes: Brut[]; exemple: true }
@@ -62,7 +63,7 @@ export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 
     valeurs: [{ nom: 'débit', valeur: '40', unite: 'L/min' }, { nom: 'température max', valeur: '90', unite: '°C' }, { nom: 'tient 80 °C', valeur: 'oui' }]
   },
   'exemple.invalid/pompe-magnetique': {
-    statut: 'lue', nom: 'Pompe magnétique 12 V', prix: 245, devise: 'CHF', dispo: 'en-stock',
+    statut: 'lue', nom: 'Pompe magnétique 12 V', prix: 245, devise: 'CHF', dispo: 'en-stock', vendeur: 'Aimant Exemple',
     valeurs: [{ nom: 'débit', valeur: '25', unite: 'L/min' }, { nom: 'température max', valeur: '100', unite: '°C' }, { nom: 'tient 80 °C', valeur: 'oui' }]
   },
   'exemple.invalid/evier-riviera': {
@@ -73,8 +74,25 @@ export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 
     statut: 'lue', nom: 'Évier inox sur pieds 1 bac', prix: 890, devise: 'CHF', dispo: 'en-stock', vendeur: 'Gastro Exemple',
     valeurs: [{ nom: 'fond de bac', valeur: '32', unite: 'cm' }, { nom: 'bacs', valeur: '1' }]
   },
-  'exemple.invalid/plaque-froid/echangeur-30': { statut: 'lue', nom: 'Échangeur à plaques 30 plaques', prix: 320, devise: 'CHF', vendeur: 'Froid Exemple' }
+  'exemple.invalid/plaque-froid/echangeur-30': {
+    statut: 'lue', nom: 'Échangeur à plaques 30 plaques', prix: 320, devise: 'CHF', dispo: 'en-stock', vendeur: 'Froid Exemple',
+    valeurs: [{ nom: 'plaques', valeur: '30' }, { nom: 'débit', valeur: '20', unite: 'L/min' }]
+  }
 };
+
+/**
+ * P8 : ce qu'une page simulée dit lu. Chaque caractéristique a sa valeur (et son unité quand elle en a une) ; aucune caractéristique
+ * sans valeur ; chaque nom une seule fois. Sert au banc et aux tests (une page qui manquerait à ces règles est une faute du banc).
+ */
+export function caracteristiquesLues(page: Pick<PageLue, 'valeurs'>): Array<{ nom: string; valeur: string; unite?: string }> {
+  const vus = new Set<string>();
+  return (page.valeurs ?? []).filter((v) => {
+    const cle = sansAccents(v.nom);
+    if (!v.valeur.trim() || vus.has(cle)) return false;
+    vus.add(cle);
+    return true;
+  });
+}
 
 /** `exemple.invalid/hotte-140` : la clé d'une adresse (sans schéma, sans `www.`, sans `/` final, sans requête). `null` si illisible. */
 export function cleUrl(url: string): string | null {
@@ -218,8 +236,38 @@ function motDe(texte: string, motif: RegExp): string | undefined {
 /** Les lignes d'un message : retours à la ligne, « ; », puces. */
 const morceauxDe = (texte: string): string[] => texte.split(/\n|;|•/).map((l) => l.replace(/^[-*\s]+/, '').trim()).filter(Boolean).slice(0, 12);
 
+/**
+ * Un critère du banc. `texte` : fixe, ou tiré de la phrase. La valeur que la phrase écrit dans l'unité de la caractéristique est gardée
+ * (P7, P44) : « … : 1 200 m³/h au moins » (sens), ou « … (38 cm) » (`valeur: 'entre-parentheses'`). Jamais un nombre absent de la phrase.
+ */
+interface CritereBanc {
+  quand: RegExp;
+  sauf?: RegExp;
+  texte: string | ((phrase: string) => string);
+  valeur?: 'sens' | 'entre-parentheses';
+  caracteristique: { nom: string; unite?: string; sens: 'plus' | 'moins' | 'oui-non' };
+}
+
+/** Le morceau de la phrase (entre virgules) qui contient `motif`, avec son article : « buées au-dessus de la cuve » → « les buées au-dessus de la cuve ». */
+function segmentDe(phrase: string, motif: RegExp, defaut: string): string {
+  const seg = sansPrefixeBanc(phrase).split(/[,;:]/).map((s) => s.trim()).find((s) => motif.test(s));
+  if (!seg) return defaut;
+  const nu = seg.replace(/^(?:les|la|le|des|de la|du)\s+/i, '');
+  return `${/^\S+s\b/.test(nu) ? 'les' : 'la'} ${nu.charAt(0).toLowerCase()}${nu.slice(1)}`;
+}
+
+/** Le texte d'un critère du banc, avec la valeur que la phrase donne dans son unité. */
+function texteCritere(k: CritereBanc, phrase: string): string {
+  const base = typeof k.texte === 'string' ? k.texte : k.texte(phrase);
+  const u = k.caracteristique.unite;
+  const q = u ? quantitesDe(phrase).find((x) => x.unite === u) : undefined;
+  if (!q) return base;
+  if (k.valeur === 'entre-parentheses') return `${base} (${q.texte} ${u})`;
+  return `${base}${base.includes(':') ? ',' : ' :'} ${q.texte} ${u} ${k.caracteristique.sens === 'moins' ? 'au plus' : 'au moins'}`;
+}
+
 /** Les catégories du banc : chacune a ses caractéristiques (R30 : générique côté app, la variété vient de la réponse). */
-const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres: Array<{ quand: RegExp; texte: string; caracteristique: Brut }> }> = [
+const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres: CritereBanc[] }> = [
   {
     motif: /frigo|chambre froide|refroidi|garder au froid/, carnet: /frigo|froid/, neuf: 'Frigo pour les fûts',
     criteres: [
@@ -228,15 +276,19 @@ const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres:
     ]
   },
   {
-    motif: /ventil|hotte|extract|condensation|buee/, carnet: /ventil|hotte/, neuf: 'Ventilation de la salle de brassage',
+    motif: /ventil|hotte|extract|condensation|buee|gaine/, carnet: /ventil|hotte/, neuf: 'Ventilation de la salle de brassage',
     criteres: [
-      { quand: /condensation|buee|plafond/, texte: 'Plus de condensation au plafond', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' } },
+      /* P15 : « plus de condensation au plafond » dit une gêne ; il n'en veut plus. Le critère dit l'inverse, et ce qui le mesure (débit). */
+      { quand: /condensation|plafond/, texte: 'Moins de condensation au plafond : capter la buée', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' } },
+      /* P7 : « buées au-dessus de la cuve, 1 200 m³/h » → « Capter les buées au-dessus de la cuve : 1 200 m³/h au moins » */
+      { quand: /buee/, sauf: /condensation|plafond/, texte: (phrase) => `Capter ${segmentDe(phrase, /bu[ée]es?/i, 'la buée')}`, caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' } },
       { quand: /bruit|calme/, texte: 'Pas trop de bruit', caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' } }
     ]
   },
   {
     motif: /evier|bac\b|bacs\b|laver/, carnet: /evier/, neuf: 'Évier inox',
-    criteres: [{ quand: /fut|fond|bac|couche/, texte: 'Un fût de 30 L couché entre dans le bac', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' } }]
+    /* P44 : la reformulation G9 garde le nombre de sa phrase (« (38 cm) ») */
+    criteres: [{ quand: /fut|fond|bac|couche/, texte: 'Un fût de 30 L couché entre dans le bac', valeur: 'entre-parentheses', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' } }]
   },
   {
     motif: /embouteill|bouteille|oxygene|isobar/, carnet: /embouteill/, neuf: 'Embouteillage',
@@ -317,14 +369,31 @@ function aides(texte: string, t: string, ctx: ContexteRangerCarnet): ReponseSimu
   return null;
 }
 
-const genreDe = (ligne: string): string => {
-  const t = sansAccents(ligne);
-  if (/\?\s*$/.test(ligne)) return 'question';
-  if (/acheter|commander|\bprix\b|chf|fr\.|€/.test(t)) return 'a-acheter';
-  if (/penser a|conseil|astuce|plutot/.test(t)) return 'conseil';
-  if (/^(appeler|demander|verifier|mesurer|nettoyer|monter|poser|prevoir|faire|ajouter|regarder|changer)\b/.test(t)) return 'a-faire';
-  return 'note';
-};
+/** Les objets que le modèle reconnaît comme des achats quand la ligne les nomme en tête (« robinet à pédale », « 2 bacs inox »). */
+const OBJETS = /^(?:(?:un|une|des|le|la|les|deux|trois|\d+e?)\s+)*(?:robinet|gaine|filtre|bac|bacs|hotte|seau|rouleau|pinceau|tuyau|vanne|joint|raccord|ventilateur|extracteur|moteur|pompe|fut|futs|cuve|douchette|evier|houblon|levures?|recipient)\b/;
+/** Un libellé en tête qui dit le genre (« Ajoute : », « À faire : », « Question : »). */
+const LIBELLES_GENRE: Array<[RegExp, string]> = [[/^(?:ajoute|ajouter|a acheter|acheter|achats?)$/, 'a-acheter'], [/^(?:a faire|todo|faire)$/, 'a-faire'], [/^questions?$/, 'question'], [/^(?:conseils?|astuces?)$/, 'conseil']];
+
+/**
+ * Une ligne d'une note en vrac, mise en forme comme le ferait le modèle (P11, D-123) : sans préfixe de test, sans libellé de carnet ni de
+ * genre en tête (« évier : robinet à pédale » → « Robinet à pédale »), l'infinitif en tête, une majuscule ; son genre, « note » en dernier.
+ */
+function formerLigne(ligne: string): { texte: string; genre: string } {
+  let t = sansPrefixeBanc(ligne).trim();
+  let indice: string | undefined;
+  const lib = /^([^:]{2,30}?)\s*:\s*(.+)$/.exec(t);
+  if (lib) {
+    const l = sansAccents(lib[1]).trim();
+    indice = LIBELLES_GENRE.find(([re]) => re.test(l))?.[1];
+    if (indice || CATEGORIES.some((c) => c.motif.test(l))) t = lib[2].trim();
+  }
+  const forme = mettreEnForme(t);
+  const texte = forme.charAt(0).toLocaleUpperCase('fr-CH') + forme.slice(1);
+  const local = genreLocal(texte);
+  const genre = local === 'question' ? 'question' : indice ?? (local === 'note' && OBJETS.test(sansAccents(texte)) ? 'a-acheter' : local);
+  return { texte, genre };
+}
+const ACHAT_D_ABORD = (a: Brut, b: Brut) => Number(b.genre === 'a-acheter') - Number(a.genre === 'a-acheter');
 
 /**
  * La réponse simulée, telle que le modèle la rendrait (forme du schéma). Ordre : notes `ref/`, aides, liens, catégories, puis
@@ -380,18 +449,58 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
       ...rangement(ctx, cible, neuf ?? page.nom ?? page.domaine, mot, true)
     });
   }
+  // P10, P23 (D-35, D-24) : un carnet sans critère reçoit son 2e article lu → la caractéristique commune lue, proposée (pas rangée).
+  const proposee = cible && !cible.criteres.length && cible.articles.length >= 1 && liens.length
+    ? communeLue(liens.map((u) => (ctx.pages ?? []).find((p) => p.url === u) ?? pageSimulee(u)), cible.articles) : null;
+  if (proposee) lignes.push({ sorte: 'critere', propose: true, carnetId: cible!.id, ...proposee });
   if (categorie) {
     const ou = rangement(ctx, cible, neuf ?? categorie.neuf, mot, !!liens.length);
     if (!cible) lignes.push({ sorte: 'idee', texte: texte.trim().split('\n')[0].slice(0, 120), titre: neuf ?? categorie.neuf, ...ou });
     /* « Ce qui compte, tiré de votre phrase » : seulement ce que la phrase dit, toutes catégories nommées comprises (« rangement du
        frigo, plus de condensation au plafond » → la condensation, pas « garder au froid ») */
     for (const cat of CATEGORIES.filter((c) => c.motif.test(t))) {
-      for (const k of cat.criteres) if (k.quand.test(t)) lignes.push({ sorte: 'critere', texte: k.texte, caracteristique: k.caracteristique, ...ou });
+      for (const k of cat.criteres) {
+        if (k.quand.test(t) && !k.sauf?.test(t)) lignes.push({ sorte: 'critere', texte: texteCritere(k, texte), caracteristique: k.caracteristique, ...ou });
+      }
     }
     if (lignes.length) return reponse(lignes.slice(0, 12));
   }
   if (lignes.length) return reponse(lignes);
+  // P4 (G5) : une phrase qui porte un critère (« Moulin à malt : 2 cylindres, 150 kg/h minimum ») → l'idée à son titre, le critère seul.
+  if (morceaux.length === 1) {
+    const l = analyserLigne(morceaux[0]);
+    if (l.sorte === 'critere') {
+      const ici = ouvert(ctx);
+      const titre = /^([^:]{2,60}?)\s*:/.exec(sansPrefixeBanc(morceaux[0]).trim())?.[1]?.trim();
+      const ou = rangement(ctx, ici, titre ?? morceaux[0].slice(0, 60));
+      const critere: Brut = { sorte: 'critere', texte: l.texte, ...ou };
+      return reponse(ici ? [critere] : [{ sorte: 'idee', texte: morceaux[0], titre: titre ?? morceaux[0].slice(0, 60), ...ou }, critere]);
+    }
+  }
   return decoupe(ctx, morceaux);
+}
+
+/** Ce qui se dit « le moins possible » (le reste : le plus possible). */
+const MOINS_EST_MIEUX = /bruit|prix|poids|consommation|oxygene|delai|encombrement|precision/;
+
+/**
+ * La caractéristique numérique lue à la fois sur une page du message et sur un article déjà dans le carnet, même nom et même unité ;
+ * la première de la page. `null` s'il n'y en a pas (rien d'inventé).
+ */
+function communeLue(pages: ReadonlyArray<Pick<PageLue, 'valeurs'> & { statut?: PageLue['statut'] }>, articles: Carnet['articles']): { texte: string; caracteristique: Brut } | null {
+  const lues = articles.flatMap((a) => Object.entries(a.valeurs ?? {}).map(([nom, v]) => ({ nom: sansAccents(nom), unite: /^\s*[\d'’   .,]+\s*(.*)$/.exec(v)?.[1]?.trim() ?? '' })));
+  for (const p of pages) {
+    // les pages du contexte sont déjà les pages lues (sans statut) ; une page simulée dit son statut
+    if (p.statut !== undefined && p.statut !== 'lue') continue;
+    for (const v of p.valeurs ?? []) {
+      if (!v.unite || !/^\s*\d/.test(v.valeur)) continue;
+      if (!lues.some((x) => x.nom === sansAccents(v.nom) && x.unite === v.unite)) continue;
+      const sens = MOINS_EST_MIEUX.test(sansAccents(v.nom)) ? 'moins' : 'plus';
+      const nom = v.nom.charAt(0).toLocaleUpperCase('fr-CH') + v.nom.slice(1);
+      return { texte: `${nom} : le plus ${sens === 'plus' ? 'haut' : 'bas'} (${v.unite})`, caracteristique: { nom: v.nom, unite: v.unite, sens } };
+    }
+  }
+  return null;
 }
 
 /**
@@ -401,16 +510,19 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
  */
 function decoupe(ctx: ContexteRangerCarnet, morceaux: string[]): ReponseSimulee {
   const ici = ouvert(ctx);
+  // Achats en tête (R35, D-128), dans les deux cas ; tri stable.
   if (ici || morceaux.length <= 1) {
     const ou = rangement(ctx, ici, morceaux[0].slice(0, 60));
-    return reponse(morceaux.map((m) => ({ sorte: 'note', genre: genreDe(m), texte: m, ...ou })));
+    return reponse(morceaux.map((m) => ({ sorte: 'note', ...formerLigne(m), ...ou })).sort(ACHAT_D_ABORD));
   }
   let neuf: string | null = null;
   return reponse(morceaux.map((m) => {
     const tm = sansAccents(m);
     const categorie = CATEGORIES.find((c) => c.motif.test(tm));
     const c = categorie ? par(ctx, categorie.carnet) : undefined;
+    const f = formerLigne(m);
+    // le titre d'un carnet neuf reste sa phrase (« votre phrase en titre », R11), préfixe de test compris
     if (!c) neuf ??= m.slice(0, 60);
-    return { sorte: 'note', genre: genreDe(m), texte: m, ...rangement(ctx, c, neuf ?? m.slice(0, 60), categorie ? motDe(m, categorie.motif) : undefined) };
-  }));
+    return { sorte: 'note', ...f, ...rangement(ctx, c, neuf ?? m.slice(0, 60), categorie ? motDe(m, categorie.motif) : undefined) };
+  }).sort(ACHAT_D_ABORD));
 }

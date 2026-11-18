@@ -31,7 +31,11 @@ export function avecArticle(nom: string, sens?: Caracteristique['sens']): string
 
 /* ---------- colonnes et valeurs ---------- */
 
-export interface Colonne { nom: string; unite?: string; sens: Caracteristique['sens']; critereId?: string }
+/**
+ * Une colonne : la caractéristique d'un critère (`critereId`, `critereTexte`), ou une valeur lue sur au moins 2 articles (`lue`, sens
+ * 'texte' : montrée, jamais classée, car son sens n'est dit par aucun critère).
+ */
+export interface Colonne { nom: string; unite?: string; sens: Caracteristique['sens']; critereId?: string; critereTexte?: string; lue?: boolean }
 /** La colonne du prix (sens moins), comparée seulement entre prix connus de même devise. */
 export const COLONNE_PRIX = 'prix';
 
@@ -43,9 +47,45 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
     const car = k.caracteristique;
     if (!car || vues.has(normaliser(car.nom))) continue;
     vues.add(normaliser(car.nom));
-    sortie.push({ nom: car.nom, ...(car.unite ? { unite: car.unite } : {}), sens: car.sens, critereId: k.id });
+    sortie.push({ nom: car.nom, ...(car.unite ? { unite: car.unite } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte });
   }
   return sortie;
+}
+
+/**
+ * Les valeurs lues sur au moins 2 articles (débit, °C…) qu'aucun critère ne porte encore : elles entrent en colonnes (P10), dans l'ordre
+ * de leur première lecture, avec l'unité la plus lue. Sens 'texte' : affichées, pas classées (aucun critère ne dit si plus vaut mieux).
+ */
+export function colonnesLues(articles: readonly Article[], deja: readonly Colonne[]): Colonne[] {
+  const vues = new Set(deja.map(k => normaliser(k.nom)));
+  const comptes = new Map<string, { nom: string; n: number; unites: Map<string, number> }>();
+  for (const a of articles) for (const [nom, v] of Object.entries(a.valeurs)) {
+    const cle = normaliser(nom);
+    if (!cle || vues.has(cle) || v === undefined || v.valeur === '') continue;
+    const c = comptes.get(cle) ?? { nom, n: 0, unites: new Map<string, number>() };
+    c.n += 1;
+    const u = v.unite ?? '';
+    c.unites.set(u, (c.unites.get(u) ?? 0) + 1);
+    comptes.set(cle, c);
+  }
+  const sortie: Colonne[] = [];
+  for (const c of comptes.values()) {
+    if (c.n < 2) continue;
+    const unite = [...c.unites.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
+    sortie.push({ nom: c.nom, ...(unite ? { unite } : {}), sens: 'texte', lue: true });
+  }
+  return sortie;
+}
+
+/** Un lien dont la page n'est pas lue et dont rien n'est connu (ni prix, ni valeur) : il se relit, il ne se classe pas (P6). */
+export function estARelire(a: Article): boolean {
+  return a.lecture !== 'lue' && a.prixCentimes === undefined && Object.keys(a.valeurs).length === 0;
+}
+
+/** Les articles à relire d'un carnet (hors écartés), dans leur ordre d'arrivée. */
+export function aRelireDe(c: CarnetDoc | Donnees): Article[] {
+  const d = donnees(c);
+  return d.articles.filter(a => estARelire(a) && raisonEcarte(d, a) === null);
 }
 
 /** La valeur d'un article pour une colonne ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). */
@@ -76,8 +116,17 @@ export function nombreDe(valeur: Valeur['valeur']): number | null {
   return null;
 }
 
-/** « écarté : <raison> », sans répéter « <façon> écartée » quand la raison le dit déjà. */
+/**
+ * « écarté : <raison> » (P41) : le nom se dit une fois, à côté (« Ventilateur de plafond 130 cm · écarté : brasse la buée sans la
+ * sortir ») ; une raison qui commence déjà par « écarté » n'est pas doublée ; sans raison : « écarté ».
+ */
 export function libelleEcarte(raison: string): string {
+  const r = raison.trim();
+  if (!r) return 'écarté';
+  return /^écartée?(\s|:|$)/i.test(r) || / écartée( |:|$)/.test(r) ? r : `écarté : ${r}`;
+}
+/** L'ancienne règle (raison « <façon> écartée : … »), gardée pour les raisons écrites avant la correction 4. */
+export function libelleEcarteAncien(raison: string): string {
   return / \u00e9cart\u00e9e( |:|$)/.test(raison) ? raison : `écarté : ${raison}`;
 }
 
@@ -105,27 +154,64 @@ export interface LigneTableau {
   ecarte?: { raison: string };
 }
 
-export interface Tableau { colonnes: Colonne[]; lignes: LigneTableau[]; rangePar: string | null }
+/**
+ * Le tableau de Comparer. `colonnes` : celles des critères, puis les valeurs lues sur au moins 2 articles (`lue`). `lignes` : les articles
+ * en lice, classés, puis les écartés. `aRelire` : les liens dont la page n'est pas lue et dont rien n'est connu, jamais classés (P6 ;
+ * contrat lu par l'IA et le carnet). `rangePar` : la règle même du classement, en mots (« tient 80 °C d'abord, puis le débit, puis le
+ * prix ») ; `null` si rien ne classe.
+ */
+export interface Tableau { colonnes: Colonne[]; lignes: LigneTableau[]; rangePar: string | null; aRelire: Article[] }
 
-/** La raison d'un article écarté : écarté au choix, sinon sa façon écartée ; `null` s'il ne l'est pas. */
+/**
+ * La raison d'un article écarté : écarté au choix, sinon sa façon écartée ; `null` s'il ne l'est pas. Le nom de l'article se dit à côté
+ * (P41) : la raison ne le répète pas. La façon se nomme seulement quand le nom de l'article ne la contient pas (« façon gravité, la
+ * mousse monte »).
+ */
 function raisonEcarte(c: Donnees, a: Article): string | null {
   const auChoix = c.choix?.ecartes.find(e => e.articleId === a.id);
-  if (auChoix) return auChoix.raison || 'écarté';
+  if (auChoix) return auChoix.raison?.trim() || 'écarté';
   const facon = a.faconId ? c.facons.find(f => f.id === a.faconId) : undefined;
-  if (facon?.etat === 'ecartee') return facon.raison ? `${facon.nom} écartée : ${facon.raison}` : `${facon.nom} écartée`;
-  return null;
+  if (facon?.etat !== 'ecartee') return null;
+  const raison = facon.raison?.trim();
+  const nomme = normaliser(nomArticle(a)).includes(normaliser(facon.nom));
+  if (nomme) return raison || 'façon écartée';
+  const facNom = facon.nom.charAt(0).toLowerCase() + facon.nom.slice(1);
+  return raison ? `façon ${facNom}, ${raison}` : `façon ${facNom} écartée`;
 }
 
-/** L'ordre des articles non écartés : lexicographique sur les colonnes, dans l'ordre des critères ; stable. */
-function trier(articles: readonly Article[], colonnes: readonly Colonne[]): Article[] {
-  const triables = colonnes.filter(k => k.sens !== 'texte');
+/** Les clés de classement, dans l'ordre : les caractéristiques des critères (sens connu), puis le prix s'il départage (même devise). */
+type Cle = { sorte: 'colonne'; colonne: Colonne } | { sorte: 'prix' };
+
+/** Le prix classe s'il est connu sur au moins 2 articles en lice, tous dans la même devise ; sinon il ne dit rien de sûr. */
+function prixClasse(enLice: readonly Article[]): boolean {
+  const connus = enLice.filter(a => a.prixCentimes !== undefined && Number.isFinite(a.prixCentimes));
+  return connus.length >= 2 && new Set(connus.map(a => a.devise ?? 'CHF')).size === 1;
+}
+
+function clesDe(colonnes: readonly Colonne[], enLice: readonly Article[]): Cle[] {
+  const cles: Cle[] = colonnes.filter(k => k.critereId && k.sens !== 'texte').map(colonne => ({ sorte: 'colonne' as const, colonne }));
+  if (prixClasse(enLice)) cles.push({ sorte: 'prix' });
+  return cles;
+}
+
+/** L'ordre des articles en lice : lexicographique sur les clés (critères, puis prix croissant) ; inconnu après connu ; stable. */
+function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
   return [...articles].sort((a, b) => {
-    for (const k of triables) {
-      const d = comparerSur(ordonnable(valeurDe(a, k), k.sens), ordonnable(valeurDe(b, k), k.sens), k.sens);
+    for (const k of cles) {
+      const d = k.sorte === 'prix'
+        ? comparerSur(a.prixCentimes ?? null, b.prixCentimes ?? null, 'moins')
+        : comparerSur(ordonnable(valeurDe(a, k.colonne), k.colonne.sens), ordonnable(valeurDe(b, k.colonne), k.colonne.sens), k.colonne.sens);
       if (d !== 0) return d;
     }
     return 0;
   });
+}
+
+/** La règle en mots, tirée des clés mêmes du tri : ce qu'affiche l'en-tête est ce qui classe (P32). */
+function rangeParCles(cles: readonly Cle[]): string | null {
+  const noms = cles.map(k => (k.sorte === 'prix' ? 'le prix' : avecArticle(k.colonne.nom, k.colonne.sens)));
+  if (!noms.length) return null;
+  return noms.length === 1 ? noms[0] : `${noms[0]} d'abord, ${noms.slice(1).map(n => `puis ${n}`).join(', ')}`;
 }
 
 const prixComparable = (a: Article, b: Article): boolean => a.prixCentimes !== undefined && b.prixCentimes !== undefined && (a.devise ?? 'CHF') === (b.devise ?? 'CHF');
@@ -151,20 +237,31 @@ export function moinsBienPartout(article: Article, autres: readonly Article[], c
   return autres.some(b => b.id !== article.id && domine(article, b, colonnes));
 }
 
-/** « tient 80 °C d'abord, puis le débit » ; `null` sans caractéristique ordonnable. */
+/**
+ * « tient 80 °C d'abord, puis le débit, puis le prix » : la règle même du tri de `tableau` (P32), prix compris quand il départage ;
+ * `null` si rien ne classe.
+ */
 export function rangePar(c: CarnetDoc | Donnees): string | null {
-  const noms = colonnesDe(c).filter(k => k.sens !== 'texte').map(k => avecArticle(k.nom, k.sens));
-  if (!noms.length) return null;
-  return noms.length === 1 ? noms[0] : `${noms[0]} d'abord, ${noms.slice(1).map(n => `puis ${n}`).join(', ')}`;
+  const d = donnees(c);
+  const enLice = d.articles.filter(a => raisonEcarte(d, a) === null && !estARelire(a));
+  return rangeParCles(clesDe(colonnesDe(d), enLice));
 }
 
-/** Le tableau de Comparer : absent à 0 ou 1 article, présent dès le 2e (G20). Écartés à la fin, avec leur raison (D-52). */
+/**
+ * Le tableau de Comparer : absent à 0 ou 1 article, présent dès le 2e (G20). Écartés à la fin, avec leur raison (D-52). Un lien non lu
+ * et sans valeur n'y entre pas : il va dans `aRelire` (P6).
+ */
 export function tableau(c: CarnetDoc | Donnees): Tableau | null {
   const d = donnees(c);
   if (d.articles.length < 2) return null;
-  const colonnes = colonnesDe(d);
+  const aRelire = aRelireDe(d);
+  const relire = new Set(aRelire.map(a => a.id));
   const ecartes = d.articles.filter(a => raisonEcarte(d, a) !== null);
-  const enLice = trier(d.articles.filter(a => raisonEcarte(d, a) === null), colonnes);
+  const libres = d.articles.filter(a => raisonEcarte(d, a) === null && !relire.has(a.id));
+  const criteres = colonnesDe(d);
+  const colonnes = [...criteres, ...colonnesLues([...libres, ...ecartes], criteres)];
+  const cles = clesDe(criteres, libres);
+  const enLice = trier(libres, cles);
   /* L4-4 : deux colonnes, deux lignes ou deux candidats de la bulle G8 ne se nomment jamais pareil */
   const ordre = [...enLice, ...ecartes];
   const noms = new Map(nomsDistincts(ordre).map((n, i) => [ordre[i].id, n]));
@@ -179,7 +276,183 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
       ...(raison !== null ? { ecarte: { raison } } : {})
     };
   };
-  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangePar(d) };
+  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire };
+}
+
+/* ---------- places, compromis, pourquoi (P14, P16, P17) : calcul local, chaque nombre vient du tableau ---------- */
+
+/** « 1 800 », « 2,5 » : un nombre lisible (espace avant les milliers) ; une chaîne reste telle quelle ; un booléen : « oui » ou « non ». */
+export function nombreTexte(v: Valeur['valeur'] | number): string {
+  if (typeof v === 'boolean') return v ? 'oui' : 'non';
+  if (typeof v === 'string') { const n = nombreDe(v); return n === null ? v.trim() : nombreTexte(n); }
+  if (!Number.isFinite(v)) return '';
+  const [e, dec] = String(Math.abs(v)).split('.');
+  const groupe = e.length > 3 ? e.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : e;
+  return `${v < 0 ? '−' : ''}${groupe}${dec ? `,${dec}` : ''}`;
+}
+
+/** « 2 600 CHF » ; `null` si le prix est inconnu (jamais 0). */
+export function prixTexte(centimes: number | undefined, devise?: string): string | null {
+  if (centimes === undefined || !Number.isFinite(centimes)) return null;
+  const f = centimes / 100;
+  return `${nombreTexte(Number.isInteger(f) ? f : Math.round(f * 100) / 100)} ${devise ?? 'CHF'}`;
+}
+
+/** La place d'un article sur une colonne (ou le prix), parmi les articles en lice dont la valeur est connue. */
+export interface Place {
+  /** Nom de la colonne (« débit », « prix »). */
+  nom: string;
+  unite?: string;
+  sens: Colonne['sens'];
+  /** La valeur dite (« 1 800 m³/h », « 2 600 CHF », « oui »). */
+  texte: string;
+  /** Rang (1 = le meilleur) ; absent si la colonne ne classe pas (sens texte) ou si la valeur est inconnue. */
+  rang?: number;
+  exAequo?: boolean;
+  /** Le nombre d'articles en lice dont la valeur est connue. */
+  sur: number;
+  /** Pour la réglette : la valeur, la meilleure et la pire connues, et toutes les valeurs connues (rangs). */
+  valeur?: number;
+  meilleure?: number;
+  pire?: number;
+  toutes?: number[];
+  critere: boolean;
+}
+
+function lignesEnLice(t: Tableau): LigneTableau[] { return t.lignes.filter(l => l.rang !== null); }
+
+/** Le nombre ordonnable d'une cellule (oui = 1, non = 0) ; `null` si inconnue. */
+function nombreCellule(l: LigneTableau, k: Colonne): number | null {
+  return ordonnable(l.cellules[k.nom], k.sens === 'texte' ? 'plus' : k.sens);
+}
+
+function placeSur(t: Tableau, l: LigneTableau, nom: string, unite: string | undefined, sens: Colonne['sens'], lire: (x: LigneTableau) => number | null, texte: string | null, critere: boolean): Place | null {
+  if (texte === null) return null;
+  const connues = lignesEnLice(t).map(lire).filter((n): n is number => n !== null);
+  const v = lire(l);
+  const base: Place = { nom, ...(unite ? { unite } : {}), sens, texte, sur: connues.length, critere };
+  if (v === null || sens === 'texte' || l.rang === null) return base;
+  const mieux = (a: number, b: number) => (sens === 'moins' ? a < b : a > b);
+  const rang = 1 + connues.filter(x => mieux(x, v)).length;
+  const exAequo = connues.filter(x => x === v).length > 1;
+  const meilleure = sens === 'moins' ? Math.min(...connues) : Math.max(...connues);
+  const pire = sens === 'moins' ? Math.max(...connues) : Math.min(...connues);
+  return { ...base, rang, ...(exAequo ? { exAequo } : {}), valeur: v, meilleure, pire, toutes: connues };
+}
+
+/** Les places d'un article : chaque colonne connue (critères, valeurs lues), et le prix ; dans l'ordre de Comparer (critères, prix, lues). */
+export function placesDe(t: Tableau, articleId: string): Place[] {
+  const l = t.lignes.find(x => x.articleId === articleId);
+  if (!l) return [];
+  const sortie: Place[] = [];
+  const devise = t.lignes.find(x => x.devise)?.devise ?? 'CHF';
+  const deCol = (k: Colonne) => {
+    const v = l.cellules[k.nom];
+    const texte = v ? `${nombreTexte(v.valeur)}${v.unite && typeof v.valeur !== 'boolean' ? ` ${v.unite}` : ''}` : null;
+    return placeSur(t, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId);
+  };
+  for (const k of t.colonnes.filter(x => x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
+  const prix = placeSur(t, l, 'prix', devise, 'moins', x => x.prixCentimes ?? null, prixTexte(l.prixCentimes, l.devise), false);
+  if (prix) sortie.push(prix);
+  for (const k of t.colonnes.filter(x => !x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
+  return sortie;
+}
+
+const rangF = (n: number) => (n === 1 ? 'la 1re' : `la ${n}e`);
+const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** « débit 1 800 m³/h », « tient 80 °C : oui » : une valeur avec le nom de sa colonne. */
+function dite(p: Place): string {
+  if (p.nom === 'prix') return p.texte;
+  /* une valeur oui-non, même lue sans critère (« tient 80 °C : oui »), se dit sans article */
+  return p.sens === 'oui-non' || /^(oui|non)$/.test(p.texte) ? `${p.nom} : ${p.texte}` : `${avecArticle(p.nom, p.sens)} ${p.texte}`;
+}
+
+/**
+ * Le compromis, calculé sur le tableau (P14, g01-8 « Compromis : la 1re, … ») quand l'IA n'en a pas dit. Parmi les articles en lice qui
+ * tiennent les mêmes critères oui-non que la 1re et coûtent moins, celui qui perd le moins sur le premier critère chiffré : « la 2e,
+ * 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ». Aucun moins cher : la 1re, et pourquoi.
+ * Rien d'inventé : chaque valeur vient du tableau ; `null` à moins de 2 articles en lice.
+ */
+export function compromisDe(t: Tableau | null): string | null {
+  if (!t) return null;
+  const L = lignesEnLice(t);
+  if (L.length < 2) return null;
+  const premier = L[0];
+  const criteres = t.colonnes.filter(k => k.critereId && k.sens !== 'texte');
+  const ouiNon = criteres.filter(k => k.sens === 'oui-non');
+  const chiffre = criteres.find(k => k.sens === 'plus' || k.sens === 'moins');
+  const memeDevise = (x: LigneTableau) => (x.devise ?? 'CHF') === (premier.devise ?? 'CHF');
+  const p1 = premier.prixCentimes;
+  const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
+  const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; return v ? `${nombreTexte(v.valeur)}${unite(k)}` : null; };
+  if (p1 !== undefined) {
+    const candidats = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
+      && ouiNon.every(k => nombreCellule(x, k) !== null && nombreCellule(x, k) === nombreCellule(premier, k)));
+    if (candidats.length) {
+      const perte = (x: LigneTableau) => {
+        if (!chiffre) return 0;
+        const a = nombreCellule(x, chiffre), b = nombreCellule(premier, chiffre);
+        return a === null || b === null ? Number.POSITIVE_INFINITY : Math.abs(a - b);
+      };
+      const c = [...candidats].sort((x, y) => perte(x) - perte(y) || x.prixCentimes! - y.prixCentimes!)[0];
+      const parts = [`${rangF(c.rang!)}, ${prixTexte(c.prixCentimes, c.devise)}, soit ${prixTexte(p1 - c.prixCentimes!, c.devise)} de moins que la 1re`];
+      if (chiffre) {
+        const vc = val(c, chiffre), v1 = val(premier, chiffre);
+        if (vc && v1 && vc !== v1) parts.push(`${avecArticle(chiffre.nom, chiffre.sens)} ${vc} au lieu de ${v1}`);
+        else if (vc && v1) parts.push(`${avecArticle(chiffre.nom, chiffre.sens)} ${vc}, comme la 1re`);
+      }
+      for (const k of ouiNon) parts.push(`${k.nom} : ${nombreTexte(nombreCellule(c, k) === 1)}, comme la 1re`);
+      return parts.join(' ; ');
+    }
+  }
+  /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant */
+  const dits: string[] = [];
+  for (const k of criteres) { const v = val(premier, k); if (v) dits.push(k.sens === 'oui-non' ? `${k.nom} : ${v}` : `${avecArticle(k.nom, k.sens)} ${v}`); }
+  const prix = prixTexte(p1, premier.devise);
+  const deuxieme = L[1];
+  if (prix) {
+    const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
+    const moinsCher = autres.length > 0 && autres.every(x => x.prixCentimes! >= p1!);
+    dits.push(moinsCher ? `${prix}, la moins chère` : prix);
+  } else dits.push('prix non lu');
+  if (!criteres.length && deuxieme) {
+    /* rangé par le prix seul : la 1re est la moins chère ; les valeurs lues se citent, sans jugement (leur sens n'est dit par aucun critère) */
+    const ecart = p1 !== undefined && deuxieme.prixCentimes !== undefined && memeDevise(deuxieme) ? prixTexte(deuxieme.prixCentimes - p1, premier.devise) : null;
+    if (ecart) dits.push(`${ecart} de moins que la 2e`);
+    for (const k of t.colonnes.filter(x => x.lue)) {
+      const a = val(premier, k), b = val(deuxieme, k);
+      if (a && b && a !== b) dits.push(/^(oui|non)$/.test(a) ? `${k.nom} : ${a} contre ${b}` : `${avecArticle(k.nom)} ${a} contre ${b}`);
+    }
+  }
+  return `la 1re, ${dits.join(' ; ')}`;
+}
+
+/**
+ * Le pourquoi proposé à Choisir (P16) et redit sous « Pourquoi ce choix » (P17) : les valeurs et les rangs de l'article, calculés sur
+ * le tableau. « Tient 80 °C : oui ; le débit 1 800 m³/h, 1er sur 3 ; 2 600 CHF, 4e sur 4 au prix ; en stock, Inox Broye (CH). »
+ * Modifiable par lui ; `null` si l'article n'est pas dans le tableau.
+ */
+export function pourquoiDe(c: CarnetDoc | Donnees, articleId: string): string | null {
+  const d = donnees(c);
+  const t = tableau(d);
+  const a = d.articles.find(x => x.id === articleId);
+  if (!a) return null;
+  const parts: string[] = [];
+  if (t && t.lignes.some(l => l.articleId === articleId)) {
+    for (const p of placesDe(t, articleId)) {
+      if (p.nom === 'prix') { parts.push(`${p.texte}${p.rang && p.sur > 1 ? `, ${ordinal(p.rang)} sur ${p.sur} au prix` : ''}`); continue; }
+      if (!p.critere && !p.rang) { parts.push(dite(p)); continue; }
+      parts.push(`${dite(p)}${p.rang && p.sur > 1 && p.sens !== 'oui-non' ? `, ${ordinal(p.rang)} sur ${p.sur}${p.exAequo ? ' ex aequo' : ''}` : ''}`);
+    }
+  } else {
+    const prix = prixTexte(a.prixCentimes, a.devise);
+    if (prix) parts.push(prix);
+  }
+  const chez = [a.dispo, a.vendeur ? `${a.vendeur}${a.pays ? ` (${a.pays})` : ''}` : null].filter(Boolean).join(', ');
+  if (chez) parts.push(chez);
+  if (!parts.length) return null;
+  return `${majuscule(parts.join(' ; '))}.`;
 }
 
 /** Statut après un dépôt : Choisi reste Choisi ; sinon d'après le contenu (Idée → À comparer au 1er article). */

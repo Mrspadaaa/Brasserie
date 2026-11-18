@@ -9,8 +9,8 @@
  * raison (« Écartés · n », p2:h04-7), jamais une case vide ; un lien dont la page n'est pas lue s'écrit « Lien sans aperçu » (R04).
  */
 import React from 'react';
-import { ChevronLeft, Scale } from 'lucide-react';
-import { nombreDe, type Tableau } from '../../domain/carnets/comparer';
+import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
+import { compromisDe, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import './carnets-decider.css';
 
@@ -21,9 +21,16 @@ type LigneT = Tableau['lignes'][number];
 /** Une colonne affichée : les caractéristiques des critères, puis le prix (sens moins, même devise). */
 export interface ColonneVue { cle: string; nom: string; unite?: string; sens: Sens; critere: boolean }
 
+/**
+ * Les colonnes dans l'ordre de g01-8 : les caractéristiques des critères (la 1re, celle qui classe d'abord, est `critere`), puis le prix,
+ * puis les valeurs lues sur au moins 2 articles (débit, °C : P10), montrées sans être classées.
+ */
 export function colonnesVue(t: Tableau): ColonneVue[] {
-  const cols: ColonneVue[] = t.colonnes.map((c, i) => ({ cle: c.nom, nom: c.nom, unite: c.unite, sens: c.sens, critere: i === 0 }));
+  const vue = (c: Tableau['colonnes'][number], critere: boolean): ColonneVue => ({ cle: c.nom, nom: c.nom, unite: c.unite, sens: c.sens, critere });
+  const deCriteres = t.colonnes.filter(c => c.critereId);
+  const cols: ColonneVue[] = deCriteres.map((c, i) => vue(c, i === 0));
   if (t.lignes.some(l => l.prixCentimes !== undefined)) cols.push({ cle: '__prix', nom: 'prix', unite: t.lignes.find(l => l.devise)?.devise ?? 'CHF', sens: 'moins', critere: false });
+  for (const c of t.colonnes.filter(x => !x.critereId)) cols.push(vue(c, false));
   return cols;
 }
 
@@ -96,8 +103,10 @@ export interface ComparerProps {
   photos?: Record<string, string | undefined>;
   /** Vendeurs et prix de la fixture : « exemple » (le simulé est marqué). */
   exemple?: boolean;
-  /** « Compromis : … » (de l'IA, cité seulement s'il existe ; jamais inventé ici). */
+  /** « Compromis : … » de l'IA ; sans elle, `compromisDe(tableau)` le calcule sur place (picto local, Q19). */
   compromis?: string;
+  /** Le picto de chaque article (lot B), par id, quand il n'a pas de photo : jamais un picto générique. */
+  pictos?: Record<string, React.ReactNode>;
   onRetour: () => void;
   onOuvrirArticle?: (articleId: string) => void;
   onChoisir?: () => void;
@@ -130,13 +139,41 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
   return [ref, suite];
 }
 
+/**
+ * Le critère qui classe d'abord (P32) : la 1re colonne de critère du tableau ; le critère passé en props s'il est celui-là (avec son
+ * origine), sinon le texte du critère de la colonne. Aucun critère ne classe : `null` (l'en-tête dit alors « rangé par : le prix »).
+ */
+export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte: string; origine?: CritereV['origine'] } | null {
+  const col = t?.colonnes.find(c => c.critereId && c.sens !== 'texte');
+  if (!col) return null;
+  if (critere && critere.id === col.critereId) return { texte: critere.texte, origine: critere.origine };
+  return { texte: col.critereTexte ?? col.nom };
+}
+
+/** Les valeurs du tableau sont-elles celles de l'exemple (fixture) ? Une seule cellule « exemple » suffit à le dire. */
+function deLExemple(t: Tableau): boolean {
+  return t.lignes.some(l => Object.values(l.cellules).some(v => v?.origine === 'exemple'));
+}
+
+/** La vignette d'une colonne (g01-8) : la photo, sinon le picto de l'objet (lot B) ; sinon rien, jamais un cube générique. */
+function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode }) {
+  if (photo) return <img src={photo} alt="" className="cn-vignette cn-cmp-vignette" />;
+  if (picto) return <span className="cn-vignette cn-cmp-vignette cn-vignette-vide" aria-hidden>{picto}</span>;
+  return null;
+}
+
 export function Comparer(p: ComparerProps) {
   const t = p.tableau;
   const actifs = t ? t.lignes.filter(l => !l.ecarte) : [];
   const ecartes = t ? t.lignes.filter(l => l.ecarte) : [];
   const ordre = [...actifs, ...ecartes];
   const cols = t ? colonnesVue(t) : [];
+  const aRelire = t?.aRelire ?? [];
   const [zone, suite] = useSuiteADroite();
+  const classe = critereQuiClasse(t, p.critere);
+  const compromisLocal = p.compromis ? null : compromisDe(t);
+  /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6) */
+  const naissant = !t || ordre.length < 2;
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
@@ -145,11 +182,14 @@ export function Comparer(p: ComparerProps) {
         <span className={`cn-pastille cn-statut-${p.statut}`}>{STATUT_LIBELLE[p.statut]}</span>
       </div>
       <h2 className="cn-titre">{p.titre}</h2>
-      {p.critere && (
-        <p className="cn-mut">Ce qui compte <b className="cn-encre">{p.critere.texte}</b>{p.critere.origine === 'ia' ? ' · proposé par l\'IA' : ''}</p>
+      {classe && (
+        <p className="cn-mut cn-cmp-critere">Ce qui compte <b className="cn-encre">{classe.texte}</b>{classe.origine === 'ia' ? ' · proposé par l\'IA' : ''}</p>
       )}
-      {!t ? (
-        <p className="cn-vide">Le tableau naît au 2e article : collez un 2e lien dans le champ.</p>
+      {naissant ? (
+        <>
+          <p className="cn-vide">Le tableau naît au 2e article lu : collez un 2e lien dans le champ.</p>
+          <ARelire articles={aRelire} />
+        </>
       ) : (
         <>
           <div className="cn-entete-groupe">
@@ -168,10 +208,10 @@ export function Comparer(p: ComparerProps) {
                     const sa = apercuLigne(l, p.nonLus);
                     return (
                       <th key={l.articleId} scope="col" className={l.ecarte ? 'cn-ecarte' : undefined} data-apercu={sa ? 'aucun' : undefined}>
-                        <button type="button" className="cn-col-tete" onClick={() => p.onOuvrirArticle?.(l.articleId)} disabled={!p.onOuvrirArticle}>
-                          {p.photos?.[l.articleId] ? <img src={p.photos[l.articleId]} alt="" className="cn-vignette" /> : null}
+                        <button type="button" className="cn-col-tete" onClick={() => p.onOuvrirArticle?.(l.articleId)} disabled={!p.onOuvrirArticle} title={sa ? undefined : l.nom}>
+                          <Vignette photo={p.photos?.[l.articleId]} picto={p.pictos?.[l.articleId]} />
                           <b>{l.ecarte ? 'écarté' : l.rang ? rangTexte(l.rang) : ''}</b>
-                          <span>{sa ? sa.titre : l.nom}</span>
+                          <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
                           {l.moinsBienPartout && <span className="cn-pastille cn-pastille-att">moins bien partout</span>}
                         </button>
@@ -202,7 +242,14 @@ export function Comparer(p: ComparerProps) {
           </div>
           </div>
           {suite > 0 && <p className="cn-suite-indice" aria-hidden>→ {suite} de plus</p>}
-          {p.compromis && <p className="cn-encart"><Scale size={18} role="img" aria-label="Compromis" /> <span><Provenance origine="ia" /> {p.compromis}</span></p>}
+          {/* g01-8 : « Compromis : la 1re, … », de l'IA, sinon calculé sur place avec les valeurs du tableau (picto local, pas le ✻ : Q19). */}
+          {(p.compromis || compromisLocal) && (
+            <p className="cn-encart cn-compromis" data-source={p.compromis ? 'ia' : 'locale'}>
+              <Scale size={20} role="img" aria-label="Compromis" className="cn-ok" />
+              <span><b>Compromis :</b> {p.compromis ?? compromisLocal} <Provenance origine={p.compromis ? 'ia' : 'locale'} /></span>
+            </p>
+          )}
+          <p className="cn-mut cn-annonce">Valeurs annoncées par les vendeurs{p.exemple || (t && deLExemple(t)) ? <> · <Provenance origine="exemple" /></> : null}</p>
           {/* La ligne « Écarté » (D-52) : chaque écarté, son nom et sa raison, lisibles sans défiler (p2:h04-7) ; aucun écarté, aucune ligne. */}
           {ecartes.length > 0 && (
             <table className="cn-ecartes" aria-label={`Écartés, ${ecartes.length}`}>
@@ -213,17 +260,39 @@ export function Comparer(p: ComparerProps) {
                   return (
                     <tr key={l.articleId}>
                       <th scope="row">{sa ? `${sa.titre} · ${sa.sous}` : l.nom}</th>
-                      <td className="cn-ecarte cn-ecarte-raison">{l.ecarte!.raison.trim() || 'sans raison notée'}</td>
+                      <td className="cn-ecarte cn-ecarte-raison">{libelleEcarte(l.ecarte!.raison)}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           )}
-          {p.exemple && <p className="cn-mut">Valeurs annoncées par les vendeurs · <Provenance origine="exemple" /></p>}
+          <ARelire articles={aRelire} />
           {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={p.onChoisir}>Choisir</button>}
         </>
       )}
     </article>
+  );
+}
+
+/**
+ * Les liens à relire (P6, h05-3) : « ? Lien sans aperçu · <domaine> · à relire · Ouvrir ↗ ». Jamais classés, jamais une colonne
+ * « – – – ». Aucun : rien.
+ */
+export function ARelire({ articles }: { articles: readonly { id: string; url?: string; domaine?: string; lecture?: string }[] }) {
+  if (!articles.length) return null;
+  return (
+    <ul className="cn-a-relire" aria-label={`À relire, ${articles.length}`}>
+      {articles.map(a => {
+        const domaine = domaineDe(a);
+        return (
+          <li key={a.id}>
+            <span className="cn-a-relire-q" aria-hidden>?</span>
+            <span className="cn-sp"><b>Lien sans aperçu</b><span className="cn-mut">{domaine ? `${domaine} · ` : ''}{a.lecture === 'en-cours' || a.lecture === 'a-lire' ? 'lecture…' : 'à relire'}</span></span>
+            {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir ${domaine ?? 'le lien'}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
+          </li>
+        );
+      })}
+    </ul>
   );
 }

@@ -75,8 +75,8 @@
 .cn-statut-validated { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-entete-groupe { display: flex; align-items: center; gap: 8px; min-height: 32px; }
 .cn-groupe { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; background: var(--c-zonebg); color: var(--c-zonet); font-weight: 700; font-size: 15px; }
-.cn-groupe.cn-statut-research { background: var(--c-attbg); color: var(--c-att); }
-.cn-groupe.cn-statut-idea { background: var(--c-s2); color: var(--c-ink2); }
+/* P43 (g05-1) : les pastilles de groupe de la liste sont toutes vertes (À comparer compris) ; l'en-tête du carnet garde sa teinte (i06-4) */
+.cn-groupe.cn-statut-research, .cn-groupe.cn-statut-idea { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-groupe-bloc { display: flex; flex-direction: column; gap: 8px; }
 
 /* Liste des carnets (R01) */
@@ -339,4 +339,120 @@
   /* Comparer est un tableau : sur grand écran il prend la place qu'il faut pour que tout tienne, écartés compris (d1280-2). */
   .cn-page.cn-comparer { max-width: 920px; }
   .cn-champ-zone { max-width: 760px; margin: 0 auto; }
+}
+
+/* ---------- Correction 4, lot B : figés liste, carnet, articles (P1 à P43) ---------- */
+/* P1 : pictos d'objet (pictos.tsx) ; tailles de vignette */
+.cn-picto { display: block; }
+.cn-vignette-petite { width: 40px; height: 40px; border-radius: 10px; }
+.cn-vignette-grande { width: 72px; height: 72px; border-radius: 14px; }
+.cn-vignette-lien { display: grid; place-items: center; color: var(--c-mut); background: transparent; border: 1.5px dashed var(--c-line2); }
+.cn-vignette-fiche { width: 100%; height: 160px; border-radius: 0; background: transparent; }
+/* P43 : « 3 façons · 6 articles · 1 en veille » sur une ligne à 390 */
+.cn-compte-ligne { white-space: nowrap; font-size: 14px; letter-spacing: -.01em; }
+.cn-oeil { margin-left: 4px; }
+.cn-liste .cn-carnet-corps { gap: 10px; padding: 12px 10px; }
+.cn-liste .cn-carnet-prix { min-width: 0; }
+/* P2 : liste vide (i02-2) */
+.cn-premier { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 4px 12px; padding: 14px 16px; border: 2px dashed var(--c-zone); border-radius: 12px; background: var(--c-zonebg); }
+.cn-premier-titre { font-size: 18px; font-weight: 600; color: var(--c-mut); }
+.cn-premier-ici { color: var(--c-zonet); font-weight: 600; }
+.cn-premier-sous { grid-column: 1 / -1; }
+.cn-garde-titre { font-size: 17px; font-weight: 700; padding-bottom: 6px; }
+.cn-garde ul { display: flex; flex-direction: column; }
+.cn-garde li { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 0; border-top: 1px solid var(--c-line); }
+.cn-garde-ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--c-zonebg); color: var(--c-zonet); flex: none; }
+/* la zone qui défile s'arrête au haut du champ (le champ vit hors d'elle) : 14 px suffisent pour que la flèche touche le champ */
+.cn-bulle-champ { position: sticky; bottom: 14px; margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--c-zone); color: rgb(var(--cave-950)); max-width: min(420px, 80%); z-index: 2; }
+.cn-bulle-champ::after { content: ''; position: absolute; left: 32px; bottom: -9px; border: 9px solid transparent; border-bottom: 0; border-top-color: var(--c-zone); }
+.cn-bulle-champ b { color: inherit; }
+.cn-bulle-petit { font-size: 14px; }
+.cn-puce-bulle { min-height: 40px; border-color: rgb(var(--cave-950) / .55) !important; color: inherit; background: rgb(var(--cave-950) / .08); }
+/* la bulle se pose juste au-dessus du champ : la page vide descend jusqu'à lui ; si l'en-tête est plus haut, la bulle reste collée (sticky) */
+.cn-vide-page { min-height: calc(100dvh - 60px); }
+/* P27 : carnet tout juste créé (g5:v04-4) */
+.cn-etapes { display: inline-flex; align-items: center; gap: 4px; }
+.cn-etapes > span:not(.cn-lien-texte) { width: 8px; height: 8px; border-radius: 999px; background: var(--c-line2); }
+.cn-etapes > span.cn-etape-on { background: var(--c-lien); }
+.cn-lien-texte { color: var(--c-lien); font-weight: 600; margin-left: 4px; }
+.cn-encadre-idee { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: var(--c-attbg); border: 1px solid rgb(var(--attention) / .35); font-size: 17px; }
+.cn-rubrique-ligne { padding: 6px 0; border-bottom: 1px solid var(--c-line); }
+/* P5, P38 : tableau du carnet (h05-3) */
+.cn-tab { display: flex; flex-direction: column; gap: 12px; }
+.cn-tab-bloc { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; background: var(--c-bg); }
+.cn-tab-retenue { border-color: var(--c-zone); }
+.cn-tab-ecartee { opacity: .85; }
+.cn-tab-facon { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--c-s1); }
+.cn-tab-facon > .cn-sp { display: flex; flex-direction: column; }
+.cn-tab-facon b { font-size: 16px; }
+.cn-tab-facon .cn-pastille { white-space: normal; text-align: center; max-width: 52%; padding-top: 4px; padding-bottom: 4px; }
+.cn-pastille-neutre { background: var(--c-s2); color: var(--c-ink2); }
+.cn-tab-etendue { font-size: 14px; }
+.cn-tab-ligne { display: grid; align-items: center; gap: 6px; width: 100%; min-height: 56px; padding: 8px 10px 8px 8px; border-top: 1px solid var(--c-line); text-align: left; }
+.cn-tab-ligne .cn-vignette-petite { width: 34px; height: 34px; border-radius: 9px; }
+.cn-tab-cols { min-height: 32px; padding-top: 4px; padding-bottom: 4px; font-size: 14px; }
+.cn-tab-rangart { grid-column: 1 / span 3; padding-left: 4px; }
+.cn-tab-num { text-align: right; white-space: nowrap; }
+.cn-tab-nom { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.cn-tab-nom > .cn-mut { font-size: 14px; }
+.cn-tab-ligne .cn-meilleur { color: var(--c-zonet); font-weight: 700; }
+.cn-tab-relire-ligne { grid-template-columns: 32px 40px minmax(0, 1fr) auto; border-top: 0; }
+.cn-tab-relire-ligne + .cn-tab-relire-ligne { border-top: 1px solid var(--c-line); }
+.cn-tab-ouvrir { justify-self: end; }
+.cn-action-vert { background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; }
+.cn-separe { align-items: center; background: var(--c-zonebg); border-color: rgb(var(--area-stocks) / .35); }
+.cn-tete-bouton { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+/* P12 : feuille des cartes (h03-5) */
+.cn-voile { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; background: rgb(0 0 0 / .38); }
+.cn-feuille-cartes { --c-bg: rgb(var(--cave-950)); width: 100%; max-width: 760px; max-height: 88dvh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px 16px 24px; border-radius: 20px 20px 0 0; background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); }
+.cn-poignee { align-self: center; width: 40px; height: 5px; border-radius: 999px; background: rgb(var(--cave-700)); }
+.cn-feuille-cartes-tete { display: flex; align-items: center; gap: 8px; }
+.cn-feuille-cartes-tete h3 { font-size: 20px; }
+.cn-classees { display: flex; flex-direction: column; gap: 10px; }
+.cn-classee { border: 1px solid rgb(var(--cave-800)); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.cn-classee-corps { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; }
+.cn-classee-photo { position: relative; padding: 6px 0 0 6px; }
+.cn-classee-rang { position: absolute; top: -4px; left: -6px; background: rgb(var(--cave-950)); }
+.cn-classee-rang.cn-rang-1 { background: rgb(var(--area-stocks)); }
+.cn-classee-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cn-classee-tx b { font-size: 17px; font-weight: 600; }
+.cn-classee-val { display: flex; flex-direction: column; align-items: flex-end; }
+.cn-classee-gros { font-size: 26px; font-weight: 700; line-height: 1.1; }
+.cn-classee-pied { display: flex; align-items: center; gap: 10px; }
+.cn-classee-carac { font-size: 14px; max-width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cn-reglette { position: relative; flex: 1; height: 4px; border-radius: 999px; background: rgb(var(--cave-800)); }
+.cn-reglette-plein { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgb(var(--area-stocks)); }
+.cn-reglette-rond { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 999px; background: rgb(var(--area-stocks)); }
+.cn-classee.cn-ecarte { background: rgb(var(--cave-900)); }
+.cn-classee-relire { padding: 0; }
+.cn-dispo { font-weight: 600; }
+/* P8 : carte après lien (g5:v06-10) */
+.cn-article-grand { align-items: flex-start; }
+.cn-article-nom { font-size: 17px; }
+/* P13 : fiche (h01-6) */
+.cn-fiche-picto { display: grid; place-items: center; color: var(--c-zonet); background: var(--c-s2); }
+.cn-heros .cn-mesure-val { font-size: 34px; }
+.cn-offres { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 14px; overflow: hidden; }
+.cn-offres .cn-offre { border: 0; border-radius: 0; }
+.cn-offres .cn-offre + .cn-offre { border-top: 1px solid var(--c-line); }
+.cn-offre-moi { background: var(--c-s1); }
+.cn-offre-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.cn-offre-corps .cn-sp { display: flex; flex-direction: column; }
+.cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--c-line2); flex: none; }
+.cn-radio-on { border: 6px solid var(--c-ink); }
+.cn-carac-rang { font-weight: 700; }
+/* P11 : genre des notes (G22) */
+.cn-genre-a-acheter.cn-note-picto { background: var(--c-zonebg); color: var(--c-zonet); }
+.cn-genre-question.cn-note-picto { background: var(--c-iabg); color: var(--c-ia); }
+.cn-genre-conseil.cn-note-picto { background: var(--c-attbg); color: var(--c-att); }
+.cn-genre-note.cn-note-picto { background: var(--c-s2); color: var(--c-ink2); }
+.cn-picto-question { font-weight: 800; font-size: 18px; }
+.cn-genre-mot { font-weight: 600; color: var(--c-ink2); }
+/* P21 : photo rangée, « non lue » */
+.cn-photo-cadre { position: relative; display: block; }
+.cn-photo-etat { position: absolute; left: 6px; bottom: 6px; padding: 2px 8px; border-radius: 8px; background: var(--c-bg); font-size: 14px; color: var(--c-ink2); }
+@media (min-width: 900px) {
+  .cn-tab { --cn-col: 88px; }
+  .cn-voile { align-items: center; }
+  .cn-feuille-cartes { border-radius: 20px; }
 }

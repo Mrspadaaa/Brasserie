@@ -8,15 +8,16 @@ const F = fixtureCarnets();
 const doc = (id: string) => F.find(i => i.id === id)!;
 
 describe('modèle : lecture tolérante', () => {
-  /* 11 messages : ZZ-MSG-V3 (G29, correction 1), puis ZZ-MSG-D1 et D2 du Densimètre (choix revu, état 29, correction 3). */
-  it('la fixture se relit telle quelle (5 idées, 11 messages), titres « ZZ TEST — … »', () => {
+  /* 13 messages : ZZ-MSG-V3 (G29, correction 1), ZZ-MSG-D1 et D2 du Densimètre (choix revu, état 29, correction 3), ZZ-MSG-V4 (note
+     qui ressemble à un critère, P19) et ZZ-MSG-X1 (le carnet proche de Ventilation, P20 ; correction 4). */
+  it('la fixture se relit telle quelle (6 idées, 13 messages), titres « ZZ TEST — … »', () => {
     expect(lireCarnets(F).map(c => c.title)).toEqual([
       'ZZ TEST — Ventilation de la salle de brassage', 'ZZ TEST — Évier inox', 'ZZ TEST — Embouteillage', 'ZZ TEST — Frigo de garde pour fûts',
-      'ZZ TEST — Densimètre de paillasse'
+      'ZZ TEST — Densimètre de paillasse', 'ZZ TEST — Extracteur pour la salle de fermentation'
     ]);
     for (const c of lireCarnets(F)) expect(c).toEqual(doc(c.id));
-    expect(F.filter(i => lireMessage(i))).toHaveLength(11);
-    expect(lireCarnets(F).map(c => c.status)).toEqual(['research', 'idea', 'validated', 'validated', 'validated']);
+    expect(F.filter(i => lireMessage(i))).toHaveLength(13);
+    expect(lireCarnets(F).map(c => c.status)).toEqual(['research', 'idea', 'validated', 'validated', 'validated', 'idea']);
   });
 
   it('état 29 (R34) : un carnet « ZZ TEST » au choix revu, l’ancien choix lisible ; titres stables du rejeu (TITRES_BANC)', () => {
@@ -77,7 +78,7 @@ describe('modèle : lecture tolérante', () => {
 describe('filDe (A12)', () => {
   it('ordre chronologique, tout le fil', () => {
     const fil = filDe(F, null);
-    expect(fil).toHaveLength(11);
+    expect(fil).toHaveLength(13);
     const dates = fil.map(e => e.message.carnetMessage.le);
     expect([...dates].sort()).toEqual(dates);
     expect(fil[0].message.id).toBe('ZZ-MSG-F1');

@@ -93,7 +93,8 @@ export const RANGER_CARNET_SCHEMA = S({
       doublonDe: str,
       commeCritere: { type: 'BOOLEAN', nullable: true },
       regrouperAvec: { type: 'ARRAY', items: { type: 'STRING' }, nullable: true },
-      titrePropose: str
+      titrePropose: str,
+      propose: { type: 'BOOLEAN', nullable: true }
     }, ['sorte', 'texte'])
   }
 }, ['lignes']);
@@ -117,8 +118,17 @@ Rends « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord
     c'est mieux), "moins", "oui-non" ou "texte". Choisis la grandeur selon la catégorie de l'objet, pas selon un modèle fixe.
   • "facon" : une manière de faire (une solution), sans produit précis.
   • "article" : un produit précis, souvent un lien. « url » telle qu'écrite dans le texte ; « titre » = nom du produit.
-  • "note" : le reste. « genre » : "a-acheter", "a-faire" (commence par un verbe), "question", "conseil" ou "note".
-« texte » reprend ses mots, mis en forme (orthographe, une ligne claire), jamais une idée qu'il n'a pas écrite.
+  • "note" : le reste. « genre » de chaque ligne, "note" seulement en dernier recours : "a-acheter" (une chose à acheter,
+    même sans le mot acheter : « filtre à air G4, 2 pièces »), "a-faire" (un geste), "question" (un doute, un « ? »), "conseil".
+« texte » reprend ses mots, mis en forme (orthographe, une ligne claire, majuscule), jamais une idée qu'il n'a pas écrite :
+  • sans le préfixe « ZZ TEST — » ni un libellé de carnet en tête (« cave : robinet à pédale » → « Robinet à pédale ») ;
+  • un geste commence par son verbe à l'infinitif (« faut appeler le ferblantier » → « Appeler le ferblantier ») ;
+  • un critère garde seulement ce qui se mesure ou se vérifie, sans le titre de l'idée (« Moulin à malt : 2 cylindres, 150 kg/h
+    minimum » → « 2 cylindres, 150 kg/h minimum ») et avec chacun de ses nombres et unités (« Un fût de 30 L couché entre dans le
+    bac (38 cm) ») ; une valeur se dit avec son sens (« 1 200 m³/h au moins ») ;
+  • « plus de X » qui dit une gêne (condensation, bruit, odeur, fuite) veut dire « n'en plus avoir » : reformule « Moins de X » ou
+    « Pas de X », jamais « Plus de X » ;
+  • aucune phrase recopiée telle quelle quand elle se met en forme.
 
 Rangement : « carnetId » = l'id d'un des « carnets » si la ligne en parle clairement ; sinon « carnetNeuf » = un titre court pour
 une idée nouvelle, et « raisonCarnet » dit en quelques mots pourquoi (« aucun carnet n'en parle »). Depuis un carnet ouvert, une
@@ -134,7 +144,10 @@ Aides (seulement quand c'est sûr, sinon nul) :
   • « consequence » (sur un critère, un article ou une note) : ce que ce dépôt change pour comparer, en une phrase, avec seulement
     des noms et des nombres présents dans le texte ou dans le carnet.
   • « titrePropose » (sur une ligne "idee" avec « carnetId ») : un meilleur titre pour ce carnet, 60 caractères au plus, si le
-    message le précise ; jamais le titre actuel.`,
+    message le précise ; jamais le titre actuel.
+  • « propose » (sur un "critere" avec « carnetId » et « caracteristique ») : true quand ce carnet n'a encore aucun critère et que
+    l'article du message est au moins son 2e : propose la caractéristique lue sur ces articles (dans « pages » et « articles »),
+    avec la même unité, qui les départage le mieux (« débit », « m³/h », "plus"). Elle n'est pas rangée : il l'accepte d'un toucher.`,
   schema: RANGER_CARNET_SCHEMA
 };
 
@@ -165,6 +178,7 @@ export function assainirRangerCarnet(data: unknown): { lignes: Array<Record<stri
       if (k && typeof k === 'object' && chaine(k.nom, 60) && SENS.has(k.sens as string))
         out.caracteristique = { nom: chaine(k.nom, 60), sens: k.sens, ...(chaine(k.unite, 12) ? { unite: chaine(k.unite, 12) } : {}) };
       if (r.commeCritere === true) out.commeCritere = true;
+      if (r.propose === true) out.propose = true;
       if (Array.isArray(r.regrouperAvec)) {
         const ids = r.regrouperAvec.filter((x): x is string => typeof x === 'string' && x.trim() !== '').map((x) => x.trim()).slice(0, 12);
         if (ids.length) out.regrouperAvec = ids;

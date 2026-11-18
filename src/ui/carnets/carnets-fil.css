@@ -1,0 +1,56 @@
+/*
+ * Carnet d'idées : le fil, le champ et les gestes (correction du tour 4, lot D). Classes préfixées `cnf-` (L26) ; `carnets.css` reste
+ * au lot B. Importé par CarnetsVue.tsx et EtatIA.tsx.
+ */
+
+/* P29, P30, P31 (R27, G7) : le champ prend toute la largeur de la colonne. Dans la vue en colonne (`.cn`, flex), des marges auto
+   réduisaient la zone à son contenu (270 px à 1280) ; `width: 100%` la rend à la colonne, centrée et bornée comme la page. */
+[data-carnets] > .cn-champ-zone { width: 100%; box-sizing: border-box; flex: none; }
+@media (min-width: 900px) {
+  [data-carnets] > .cn-champ-zone { max-width: 760px; margin-left: auto; margin-right: auto; padding-right: 12px; }
+}
+
+/* P37 : clavier ouvert, la bulle G8 et « Coller » sur une seule ligne ; chacune se tronque plutôt que de prendre deux lignes. */
+.cnf-aides { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.cnf-aides > .cn-coller { align-self: flex-start; }
+.cnf-aides-ligne { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.cnf-aides-ligne > .cn-bulle { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 55%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
+.cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
+
+/* P28 (R09, g5:v03-2) : Créer · avant */
+.cnf-avant { display: flex; flex-direction: column; gap: 10px; }
+.cnf-avant-phrase { color: var(--c-ink); font-size: 15px; line-height: 21px; }
+.cnf-fantome { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px dashed var(--c-line2); border-radius: 12px; opacity: .8; }
+.cnf-fantome-photo { width: 36px; height: 36px; flex: none; border-radius: 8px; background: var(--c-s1); border: 1px solid var(--c-line); }
+.cnf-exemples { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* P33 (R20) : « Se modifie ici » prend la place de la note modifiée (la ligne de note juste avant le cadre ne s'affiche plus). */
+.cn-note:has(+ .cnf-cadre-modifier) { display: none; }
+.cnf-modifie-texte { font-weight: 400; color: var(--c-ink2); font-style: italic; }
+
+/* P9 (R25) : le lien rangé, en clair, et « Ouvrir ↗ » */
+.cnf-bandeau-lien { display: flex; align-items: center; gap: 10px; margin-top: 4px; min-width: 0; }
+.cnf-lien-clair { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; color: var(--c-ink2); font-size: 14px; }
+.cnf-ouvrir { flex: none; min-height: 44px; display: inline-flex; align-items: center; }
+
+/* P22, P36 : l'avis de l'IA dans le bandeau même ; l'échec se distingue de « L'IA range… » (aucune roue, filet orangé) */
+.cnf-avis { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--c-line); color: var(--c-ink2); font-size: 14px; line-height: 20px; }
+.cnf-avis > svg { flex: none; margin-top: 2px; }
+.cnf-avis[data-avis="echec"] { color: var(--c-warn, #a15c00); }
+.cnf-avis-detail { color: var(--c-ink2); }
+.cn-etat[data-etat="echec"] { border: 1px solid var(--c-warn, #a15c00); color: var(--c-ink); background: var(--c-s1); }
+
+/* P23 (D-35) : les puces que l'IA propose, un toucher les range */
+.cnf-proposees { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.cnf-proposee { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 4px 2px 12px; border: 1px dashed var(--c-ia); border-radius: 12px; background: var(--c-iabg); color: var(--c-ink); }
+.cnf-proposee-ia { color: var(--c-ia); flex: none; }
+.cnf-proposee-texte { flex: 1 1 auto; min-width: 0; }
+.cnf-proposee .cn-x { flex: none; min-width: 44px; min-height: 44px; font-size: 20px; color: var(--c-mut); }
+
+/* P11 (g5:v01-16) : type ▾ et carnet ▾ ; le choix natif couvre la puce, un toucher l'ouvre */
+.cnf-choix { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; min-height: 36px; max-width: 100%; box-sizing: border-box; }
+.cnf-choix > span:not([aria-hidden]) { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cnf-choix > select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.cnf-choix:focus-within { outline: 2px solid var(--c-zone); outline-offset: 2px; }

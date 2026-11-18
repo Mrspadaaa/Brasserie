@@ -33,11 +33,24 @@ export const PHRASE_TITRE_PROPOSE = 'surtout la buée de la cuve pendant l’éb
  */
 export const PHRASE_DOUBLON = 'attendre l’avis du ferblantier sur la hotte';
 
+/** P15 : le critère de Ventilation tiré de « plus de condensation au plafond » (il n'en veut plus). */
+export const CRITERE_CONDENSATION = 'Moins de condensation au plafond : capter la buée';
+/** P19 : la note de Ventilation qui ressemble à un critère (G25 à G27). */
+export const NOTE_COMME_CRITERE = 'il faudrait au moins 1 500 m³/h';
+
+/**
+ * P11 (R19, R36, g5:v01-16) : une note en vrac à coller depuis la liste, comme celles de son téléphone : un geste, une question, un achat,
+ * dans deux carnets (Évier, Ventilation). L'IA (simulée) et le repli local la rendent typée, mise en forme, l'achat en tête.
+ */
+export const NOTE_VRAC_BANC = 'ZZ TEST — demander au ferblantier le diamètre d’évacuation de l’évier, jeudi\nhotte 120 cm trop large pour la salle ?\ngaine alu Ø 150 mm, 2 pièces';
+
 export const ID_VENTILATION = 'ZZ-CARNET-VENTILATION';
 export const ID_EVIER = 'ZZ-CARNET-EVIER';
 export const ID_EMBOUTEILLAGE = 'ZZ-CARNET-EMBOUTEILLAGE';
 export const ID_FRIGO = 'ZZ-CARNET-FRIGO';
 export const ID_DENSIMETRE = 'ZZ-CARNET-DENSIMETRE';
+/** P20 (G35) : le carnet proche de Ventilation, qui reçoit ses articles en veille quand on la supprime. */
+export const ID_EXTRACTION = 'ZZ-CARNET-EXTRACTION';
 export const ID_PLAN_FRIGO = 'ZZ-PLAN-FRIGO';
 export const ID_PLAN_EMBOUTEILLAGE = 'ZZ-PLAN-EMBOUTEILLAGE';
 
@@ -57,7 +70,9 @@ function ventilation(): CarnetDoc {
   return carnet(ID_VENTILATION, 'Ventilation de la salle de brassage', 'research', {
     creeLe: '2026-11-02T08:00:00.000Z', phrase: 'buées au-dessus de la cuve',
     criteres: [
-      { id: 'ZZ-V-K1', texte: 'plus de condensation au plafond', origine: 'vous', messageId: 'ZZ-MSG-V1' },
+      /* P15 : sa phrase « plus de condensation au plafond » dit une gêne ; le critère dit ce qu'il veut (la phrase reste dans ZZ-MSG-V1, R25).
+         Sans caractéristique : c'est lui que G8 propose pour trancher entre les deux façons (« capte la buée / ne la capte pas »). */
+      { id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, origine: 'vous', messageId: 'ZZ-MSG-V1' },
       { id: 'ZZ-V-K2', texte: 'tient 80 °C', caracteristique: { nom: 'tient 80 °C', sens: 'oui-non' }, origine: 'exemple' },
       { id: 'ZZ-V-K3', texte: 'le débit', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' }, origine: 'exemple' }
     ],
@@ -77,7 +92,9 @@ function ventilation(): CarnetDoc {
     ].map(a => ({ ...a, origine: 'exemple' as const })),
     notes: [
       { id: 'ZZ-V-N1', texte: 'attendre l’avis du ferblantier', genre: 'a-faire', messageId: 'ZZ-MSG-V2' },
-      { id: 'ZZ-V-N2', texte: PHRASE_TITRE_PROPOSE, genre: 'note', messageId: 'ZZ-MSG-V3' }
+      { id: 'ZZ-V-N2', texte: PHRASE_TITRE_PROPOSE, genre: 'note', messageId: 'ZZ-MSG-V3' },
+      // P19 : une note qui ressemble à un critère (G25 à G27, « Ressemble à un critère · Passer »).
+      { id: 'ZZ-V-N3', texte: NOTE_COMME_CRITERE, genre: 'note', messageId: 'ZZ-MSG-V4' }
     ],
     photos: []
   });
@@ -185,6 +202,17 @@ function densimetre(): CarnetDoc {
   });
 }
 
+/**
+ * P20 (G35, R23, g4:v02-18) : une idée proche de Ventilation (même nom de façon, même salle), sans article : « N articles en veille : les
+ * déplacer dans Extraction… · Déplacer » a sa cible quand on supprime Ventilation (`carnetProche`).
+ */
+function extraction(): CarnetDoc {
+  return carnet(ID_EXTRACTION, 'Extracteur pour la salle de fermentation', 'idea', {
+    creeLe: '2026-11-16T08:00:00.000Z', phrase: 'sortir le CO₂ de la salle de fermentation avec un extracteur mural',
+    criteres: [], facons: [{ id: 'ZZ-X-F1', nom: 'Extracteur mural seul', etat: 'ouverte', origine: 'exemple' }], articles: [], notes: [], photos: []
+  });
+}
+
 function messages(): MessageDoc[] {
   return [
     message('ZZ-MSG-B1', 'embouteillage', '2026-10-20T08:00:00.000Z', 'liste', [{ carnetId: ID_EMBOUTEILLAGE, cible: 'carnet', id: ID_EMBOUTEILLAGE }]),
@@ -192,10 +220,13 @@ function messages(): MessageDoc[] {
     message('ZZ-MSG-B3', 'il faut minimiser l’oxygène', '2026-10-22T08:00:00.000Z', ID_EMBOUTEILLAGE, [{ carnetId: ID_EMBOUTEILLAGE, cible: 'critere', id: 'ZZ-B-K1' }]),
     message('ZZ-MSG-F1', 'frigo de garde pour fûts', '2026-09-30T08:00:00.000Z', 'liste', [{ carnetId: ID_FRIGO, cible: 'carnet', id: ID_FRIGO }]),
     message('ZZ-MSG-F2', 'la porte du local fait 80 cm', '2026-10-01T08:00:00.000Z', ID_FRIGO, [{ carnetId: ID_FRIGO, cible: 'note', id: 'ZZ-F-N1' }, { carnetId: ID_FRIGO, cible: 'critere', id: 'ZZ-F-K2' }]),
-    message('ZZ-MSG-V1', 'buées au-dessus de la cuve', '2026-11-02T08:00:00.000Z', 'liste', [{ carnetId: ID_VENTILATION, cible: 'carnet', id: ID_VENTILATION }, { carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K1' }]),
+    // P15 : sa phrase d'origine, « plus de condensation au plafond » comprise, reste dans le message (R25) ; le critère K1 la met en forme.
+    message('ZZ-MSG-V1', 'buées au-dessus de la cuve, plus de condensation au plafond', '2026-11-02T08:00:00.000Z', 'liste', [{ carnetId: ID_VENTILATION, cible: 'carnet', id: ID_VENTILATION }, { carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K1' }]),
     message('ZZ-MSG-V2', 'attendre l’avis du ferblantier', '2026-11-12T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N1' }]),
     message('ZZ-MSG-V3', PHRASE_TITRE_PROPOSE, '2026-11-14T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N2' }],
       { carnetId: ID_VENTILATION, titre: TITRE_PROPOSE_VENTILATION }),
+    message('ZZ-MSG-V4', NOTE_COMME_CRITERE, '2026-11-15T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N3' }]),
+    message('ZZ-MSG-X1', 'sortir le CO₂ de la salle de fermentation avec un extracteur mural', '2026-11-16T08:00:00.000Z', 'liste', [{ carnetId: ID_EXTRACTION, cible: 'carnet', id: ID_EXTRACTION }]),
     message('ZZ-MSG-E1', '2 bacs pour laver les fûts', '2026-11-15T17:00:00.000Z', 'liste', [{ carnetId: ID_EVIER, cible: 'carnet', id: ID_EVIER }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K1' }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K2' }]),
     message('ZZ-MSG-D1', 'mesurer la densité finale au millième près', '2026-10-05T08:00:00.000Z', 'liste', [{ carnetId: ID_DENSIMETRE, cible: 'carnet', id: ID_DENSIMETRE }, { carnetId: ID_DENSIMETRE, cible: 'critere', id: 'ZZ-D-K1' }]),
     message('ZZ-MSG-D2', 'le portable dérive de 2 millièmes au bout d’une heure', '2026-11-09T08:00:00.000Z', ID_DENSIMETRE, [{ carnetId: ID_DENSIMETRE, cible: 'note', id: 'ZZ-D-N1' }, { carnetId: ID_DENSIMETRE, cible: 'critere', id: 'ZZ-D-K2' }])
@@ -260,7 +291,7 @@ export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
     v.carnet.articles = v.carnet.articles.filter(a => garde.has(a.id));
     v.carnet.facons = v.carnet.facons.filter(f => f.etat !== 'ecartee');
   }
-  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), ...messages()])) as CreativeItem[];
+  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...messages()])) as CreativeItem[];
 }
 
 const planDe = (id: string, titre: string, carnetId: string, cents: number, vendor: string, createdAt: string): FinancialPlan => ({

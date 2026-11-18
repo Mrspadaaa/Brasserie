@@ -15,14 +15,17 @@ import { ArrowDown, GitFork, Pencil, Trash2, X } from 'lucide-react';
 import { lienCourt } from './ChampCarnet';
 import { Provenance, type AidesV, type Origine } from './EtatIA';
 
-export interface DoublonV { le: string; onGarderAPart: () => void }
+/** G11 : la note répétée ; `le` vide quand sa date est inconnue (rien d'inventé : son texte la nomme alors). */
+export interface DoublonV { le: string; texte?: string; onGarderAPart: () => void }
 export interface RegrouperV { avec: string; onRegrouper: () => void }
 
 export type CadreV =
+  /* P28 (R09) : Créer · avant, g5:v03-2 ; G1 (g5:v04-1) les exemples touchables ; G2 (g5:v07-2) « Une note en vrac marche aussi. » */
+  | { sorte: 'avant'; exemples: string[]; onExemple: (texte: string) => void }
   | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void } | null; raisonNeuf?: string; ceQuiCompte?: string }
   | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string }
   | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
-  | { sorte: 'modifier'; onSupprimer: () => void };
+  | { sorte: 'modifier'; texte?: string; onSupprimer: () => void };
 
 export interface CadreArriveeProps {
   cadre: CadreV;
@@ -63,10 +66,28 @@ function useVisibleALArrivee<T extends HTMLElement>(cle: string): React.RefObjec
 export function CadreArrivee(p: CadreArriveeProps) {
   const cle = `${p.cadre.sorte}${p.cadre.sorte === 'lien' ? `:${p.cadre.phase}` : ''}${p.consequence ? ':g9' : ''}`;
   const ref = useVisibleALArrivee<HTMLDivElement>(cle);
-  return <div ref={ref} className="cn-cadre-bloc"><CadreContenu {...p} /></div>;
+  return <div ref={ref} className={`cn-cadre-bloc cnf-cadre-${p.cadre.sorte}`} data-cadre={p.cadre.sorte}><CadreContenu {...p} /></div>;
 }
 
 function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrouper }: CadreArriveeProps) {
+  if (c.sorte === 'avant') {
+    /* le doigt sur une puce ne retire pas le focus du champ (le cadre resterait sinon le temps du toucher seulement) */
+    const garder = (e: React.SyntheticEvent) => e.preventDefault();
+    return (
+      <section className="cn-cadre cnf-avant" aria-label="Créer un carnet">
+        <p className="cnf-avant-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo, son prix, et on le surveille.</p>
+        <div className="cnf-fantome" aria-hidden>
+          <span className="cnf-fantome-photo" />
+          <span className="cn-sp"><b>Évier inox, 2 bacs</b><span className="cn-mut"> · exemple</span></span>
+          <span className="cn-vert"><ArrowDown size={16} aria-hidden /> arrive ici</span>
+        </div>
+        <div className="cnf-exemples" role="group" aria-label="Exemples">
+          {c.exemples.map(t => <button key={t} type="button" className="cn-puce" onMouseDown={garder} onClick={() => c.onExemple(t)}>{t}</button>)}
+        </div>
+        <p className="cn-mut">Une note en vrac marche aussi.</p>
+      </section>
+    );
+  }
   if (c.sorte === 'creer') {
     return (
       <section className="cn-cadre" aria-label="Arrive ici">
@@ -96,7 +117,7 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
           {c.compareSur && <p className="cn-mut">comparé sur {c.compareSur}</p>}
           {aides?.doublon && doublon && (
             <div className="cn-aide">
-              <span className="cn-sp"><Provenance origine="ia" /> Même chose que la note du {doublon.le} : elles seront fusionnées</span>
+              <span className="cn-sp"><Provenance origine="ia" /> Même chose que la note {doublon.le ? `du ${doublon.le}` : `« ${doublon.texte ?? ''} »`} : elles seront fusionnées</span>
               <button type="button" className="cn-puce" onClick={doublon.onGarderAPart}>Garder à part</button>
             </div>
           )}
@@ -145,6 +166,8 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
         <button type="button" className="cn-lien cn-rouge" onClick={c.onSupprimer}><Trash2 size={16} aria-hidden /> Supprimer</button>
         <Croix onAnnuler={onAnnuler} />
       </div>
+      {c.texte && <p className="cn-cadre-titre cnf-modifie-texte">{c.texte}</p>}
+      <p className="cn-mut">Le texte est dans le champ du bas : modifiez, puis Enregistrer.</p>
       {aides?.regrouper && regrouper && (
         <div className="cn-aide">
           <span className="cn-sp"><Provenance origine="ia" /> Même visite : {regrouper.avec}</span>

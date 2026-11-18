@@ -30,11 +30,21 @@ const read = () => {
 };
 
 /** R08 (h05-9) : la carte d'un plan venu d'un carnet dit d'où il vient. « Ouvrir le carnet » le rouvre ; carnet supprimé : la ligne le dit, sans Ouvrir. */
-function LigneCarnet({ plan, present, onOuvrir }: { plan: FinancialPlan; present: boolean; onOuvrir?: (id: string) => void }) {
+function LigneCarnet({ plan, present, onOuvrir, compact }: { plan: FinancialPlan; present: boolean; onOuvrir?: (id: string) => void; compact?: boolean }) {
   const u = plan.upgrade;
   if (!u?.sourceCarnetId) return null;
   const le = isoDate(plan.createdAt);
   const titre = u.sourceCarnetTitre?.trim();
+  /* P39 (h05-9) : dans la liste des suivants, l'origine tient sur une ligne et s'ouvre d'un toucher ; le bouton « Ouvrir le carnet »
+     ne se montre qu'une fois, sur la carte du prochain achat (et sur chaque carte de Réalisés). */
+  if (compact) {
+    const libelle = `${titre ? `du carnet ${titre}` : 'd’un carnet'}${present ? '' : ' · supprimé'}`;
+    return <div className="flex min-w-0 items-center pb-1 pl-1 text-sm" data-carnet={u.sourceCarnetId}>
+      {present && onOuvrir
+        ? <button type="button" className="finance-link min-h-11 min-w-0 max-w-full truncate text-left" aria-label={`Ouvrir le carnet ${titre ?? ''}`.trim()} onClick={() => onOuvrir(u.sourceCarnetId!)}><span className="truncate">{libelle}</span><ChevronRight size={16} aria-hidden/></button>
+        : <span className="truncate text-cave-200">{libelle}</span>}
+    </div>;
+  }
   return <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-1 text-sm" data-carnet={u.sourceCarnetId}>
     <span className="min-w-0 flex-1 text-cave-200">
       {le && <b className="text-cave-50">Ajouté le {new Date(`${le}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })}</b>}
@@ -279,10 +289,11 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
             {/* Constat 7 (16.11) : la ligne sans prix a, comme les autres, son « + mois » et son crayon ; sans prix, le mois se pose mais rien n'entre dans les prévisions. */}
             <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : '+ mois'}</button>
             <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
-            <button type="button" className="kh-rmain" onClick={() => setFiche(plan.id)}><span className="kh-nm"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
+            {/* P39 : à 390, le prix passe sous le nom ; le nom prend la largeur et tient entier sur 2 lignes. */}
+            <button type="button" className="kh-rmain max-[639px]:!flex-col max-[639px]:!items-start max-[639px]:!gap-0" onClick={() => setFiche(plan.id)}><span className="kh-nm max-[639px]:w-full"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
             {!d.budgetKnown && <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
             <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
-          </div><LigneCarnet plan={plan} present={!!plan.upgrade?.sourceCarnetId && carnetIds.has(plan.upgrade.sourceCarnetId)} onOuvrir={onOpenCarnet}/>
+          </div><LigneCarnet compact plan={plan} present={!!plan.upgrade?.sourceCarnetId && carnetIds.has(plan.upgrade.sourceCarnetId)} onOuvrir={onOpenCarnet}/>
           {picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
           {ouvert && <PanneauEtape plan={plan} contacts={contacts} fournisseurs={fournisseurs} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
@@ -323,7 +334,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   };
   const open = (plan: FinancialPlan | null) => onOpenProject ? onOpenProject(plan) : setEditing(plan);
   const handled = React.useRef<number>(undefined);
-  React.useEffect(() => { if (createRequest?.kind === 'newIdea' && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
+  React.useEffect(() => { if ((createRequest?.kind === 'newIdea' || createRequest?.kind === 'newBesoin') && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
   const projects = useMemo(() => data.plans.filter(isUpgradePlan), [data.plans]);
   /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
   const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
@@ -412,8 +423,10 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     <p className="finance-muted">Priorise tes équipements et choisis les achats à inclure dans tes prévisions.</p>
     <div className="upgrade-toolbar"><button className="finance-action" onClick={() => open(null)}><Plus size={18}/>Ajouter un projet</button></div>
     </>}
-    {vue && <div className="flex min-h-11 items-center justify-end gap-2">
-      {scope === 'future' && createRequest === undefined && <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>}
+    {/* P39 (h05-9, R28) : dans Stocks › Matériel, le + volant porte « Ajouter un besoin » (StocksTab le passe en `createRequest`) ;
+        aucun « + Besoin » de plus dans la page. Seul, hors du segment, l'écran garde le sien. */}
+    {vue && (scope !== 'future' || createRequest === undefined && !onVue) && <div className="flex min-h-11 items-center justify-end gap-2">
+      {scope === 'future' && createRequest === undefined && !onVue && <button type="button" className="kh-new" aria-label="Ajouter un besoin" onClick={() => open(null)}><Plus size={20}/>Besoin</button>}
       {scope === 'completed' && <button type="button" className="finance-link min-h-11 text-sm" onClick={() => setArchives(true)}>Archives<ChevronRight size={16}/></button>}
       {scope === 'archived' && <button type="button" className="finance-link min-h-11 text-sm" onClick={() => setArchives(false)}>Réalisés<ChevronRight size={16}/></button>}
     </div>}

@@ -1,15 +1,20 @@
 /**
- * La carte d'article (R04, figés p2:h03-5 et p2:h06-5 ; CARNET-CARTE-MUETTE) : image ou picto, nom, d'où il vient, prix,
- * la mesure qui compte pour le critère avec son rang, l'état de lecture. La bascule de veille vit dans la fiche (R31, MISSION
- * « Rangé derrière ») : la carte dit seulement « veille demandée » quand il l'a allumée.
- * Variante `complete` (R17, g5:v06-10) : la carte rangée après un lien, avec sa ligne « Veille du prix, tous les 3 jours »
- * (même libellé, même place que la maquette ; éteinte à la naissance) et « ✻ lu sur la page : … · tient 80 °C : oui ».
+ * La carte d'article (R04, figés p2:h03-5 et p2:h06-5 ; CARNET-CARTE-MUETTE) : photo ou picto de l'objet (pictos.tsx), nom, d'où il
+ * vient, prix avec sa devise, la mesure qui compte pour le critère avec son rang, l'état de lecture.
+ * - `CarteArticle` (liste) : la ligne compacte ; la bascule de veille vit dans la fiche (R31) et la carte dit « veille demandée ».
+ * - Variante `complete` (R17, g5:v06-10) : la carte rangée après un lien. Photo, nom, « domaine · pays · exemple », les
+ *   caractéristiques lues **avec leur valeur** (« 40 L/min · jusqu'à 90 °C »), « 690 CHF » et la dispo en pastille ; la ligne « Veille du
+ *   prix, tous les 3 jours » (éteinte à la naissance) ; « lu sur la page : nom, prix, photo, débit · tient 80 °C : oui », le verdict
+ *   écrit une fois.
+ * - `CarteClassee` (R04, h03-5) : la grande carte de la feuille « Articles » : rang sur la photo, nom, vendeur · pays, prix et délai,
+ *   la valeur du critère en gros, la réglette de la caractéristique et « Veiller ».
  * Une valeur inconnue n'est jamais rendue 0 : elle est absente, ou dite « non publié ».
  */
 import React from 'react';
-import { ExternalLink, Eye, Link2, Package } from 'lucide-react';
+import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { libelleEcarte } from '../../domain/carnets/comparer';
-import { montant, Provenance, rangTexte, valeurTexte, type ArticleV, type CritereV } from './EtatIA';
+import { montant, Provenance, rangTexte, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
+import { VignetteObjet } from './pictos';
 
 export interface CarteArticleProps {
   article: ArticleV;
@@ -17,6 +22,8 @@ export interface CarteArticleProps {
   critere?: CritereV;
   rang?: number;
   faconNom?: string;
+  /** Titre du carnet : dernier recours du picto. */
+  carnetTitre?: string;
   /** Écarté : grisé, à la fin, avec sa raison (D-52). */
   ecarte?: { raison: string };
   variante?: 'liste' | 'complete';
@@ -36,9 +43,42 @@ export function mesureCritere(article: ArticleV, critere?: CritereV): { texte: s
   return { texte: t, unite: v?.unite ?? c.unite };
 }
 
-function Vignette({ article }: { article: ArticleV }) {
-  if (article.photo) return <img className="cn-vignette" src={article.photo} alt="" loading="lazy" />;
-  return <span className="cn-vignette cn-vignette-vide" aria-hidden>{article.lecture === 'illisible' ? <Link2 size={22} /> : <Package size={22} />}</span>;
+/** Un prix lisible : « 690 CHF » ; inconnu : null. */
+export function prixAvecDevise(a: Pick<ArticleV, 'prixCentimes' | 'devise'>): string | null {
+  const m = montant(a.prixCentimes);
+  return m ? `${m} ${a.devise ?? 'CHF'}` : null;
+}
+
+/** Marqué « exemple » : un article du banc ou de la fixture (origine, valeurs, ou lien vers le domaine réservé `.invalid`). */
+export function estExemple(a: ArticleV): boolean {
+  return a.origine === 'exemple' || Object.values(a.valeurs).some(v => v.origine === 'exemple') || /\.invalid$/i.test(a.domaine ?? '');
+}
+
+/** Le nom de la caractéristique que dit le verdict (« tient 80 °C : oui » → « tient 80 °C ») ; null sans verdict. */
+function sujetDuVerdict(verdict?: string): string | null {
+  if (!verdict) return null;
+  const i = verdict.lastIndexOf(' : ');
+  return i > 0 ? verdict.slice(0, i).trim() : null;
+}
+
+/** « 40 L/min · jusqu'à 90 °C » : chaque valeur lue avec son unité ; une valeur sans unité porte son nom ; le sujet du verdict exclu. */
+export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | null): string[] {
+  return Object.entries(valeurs).flatMap(([nom, v]) => {
+    if (sauf && nom === sauf) return [];
+    /* un nombre lu en texte (« 2000 ») se dit comme un nombre (« 2 000 ») */
+    const n = typeof v.valeur === 'string' ? nombreValeur(v) : null;
+    const t = valeurTexte(n !== null ? { ...v, valeur: n } : v);
+    if (t === null) return [];
+    if (typeof v.valeur === 'boolean') return [`${nom} : ${t}`];
+    return [v.unite ? `${t} ${v.unite}` : `${nom} ${t}`];
+  });
+}
+
+function Vignette({ article, faconNom, carnetTitre, classe }: { article: ArticleV; faconNom?: string; carnetTitre?: string; classe?: string }) {
+  if (!article.photo && (article.lecture === 'illisible' || (article.lecture !== 'lue' && !article.nom))) {
+    return <span className={`cn-vignette cn-vignette-lien${classe ? ` ${classe}` : ''}`} aria-hidden><Link2 size={22} /></span>;
+  }
+  return <VignetteObjet photo={article.photo} mots={[article.nom, faconNom, carnetTitre]} classe={classe} />;
 }
 
 export function CarteArticle(p: CarteArticleProps) {
@@ -64,13 +104,48 @@ export function CarteArticle(p: CarteArticleProps) {
     );
   }
 
+  if (p.variante === 'complete') {
+    /* g5:v06-10 : le verdict écrit une fois (pas dans les valeurs, pas dans « lu sur la page ») */
+    const sujet = sujetDuVerdict(p.verdict);
+    const valeurs = valeursLues(a.valeurs, sujet);
+    const lu = (p.luSurPage ?? []).filter(x => x !== sujet);
+    const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
+    return (
+      <div className="cn-article-complet">
+        <div className="cn-article cn-article-grand">
+          <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
+          <div className="cn-article-tx">
+            <b className="cn-article-nom">{a.nom}</b>
+            {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
+            {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres">{valeurs.join(' · ')}</span>}
+            {(prix || a.dispo) && (
+              <span className="cn-ligne cn-article-pied">
+                {prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {devise}</span>}
+                {a.dispo && <span className="cn-pastille cn-pastille-vert">{a.dispo}</span>}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="cn-veille-ligne">
+          <Eye size={18} aria-hidden />
+          <span className="cn-sp">Veille du prix, tous les 3 jours</span>
+          <Bascule active={veilleDemandee} onChange={v => p.onVeille?.(v)} etiquette="Veille du prix, tous les 3 jours" />
+        </div>
+        {veilleDemandee && !a.veille?.releveLe && <p className="cn-mut cn-veille-etat">demandée · pas encore relevée</p>}
+        {(lu.length > 0 || p.verdict) && (
+          <p className="cn-mut cn-lu"><Provenance origine={estExemple(a) ? 'ia' : 'page'} /> lu sur la page{lu.length ? ` : ${lu.join(', ')}` : ''}{p.verdict ? <> · <b className="cn-encre">{p.verdict}</b></> : null}</p>
+        )}
+      </div>
+    );
+  }
+
   const origine = [a.vendeur, a.pays].filter(Boolean).join(' · ') || a.domaine;
   const corps = (
     <>
       {p.rang !== undefined && !p.ecarte && <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span>}
-      <Vignette article={a} />
+      <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
       <div className="cn-article-tx">
-        <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <span className="cn-mono cn-prix">{prix}</span>}</span>
+        <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> <span className="cn-mut">{devise}</span></span>}</span>
         <span className="cn-mut">
           {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, a.dispo].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
@@ -88,26 +163,69 @@ export function CarteArticle(p: CarteArticleProps) {
     </>
   );
 
-  if (p.variante === 'complete') {
-    return (
-      <div className="cn-article-complet">
-        <div className="cn-article">{corps}</div>
-        <div className="cn-veille-ligne">
-          <Eye size={18} aria-hidden />
-          <span className="cn-sp">Veille du prix, tous les 3 jours</span>
-          <Bascule active={veilleDemandee} onChange={v => p.onVeille?.(v)} etiquette="Veille du prix, tous les 3 jours" />
-        </div>
-        {veilleDemandee && !a.veille?.releveLe && <p className="cn-mut cn-veille-etat">demandée · pas encore relevée</p>}
-        {(p.luSurPage?.length || p.verdict) && (
-          <p className="cn-mut cn-lu"><Provenance origine={a.origine === 'exemple' ? 'ia' : 'page'} /> lu sur la page : {p.luSurPage?.join(', ')}{p.verdict ? ` · ${p.verdict}` : ''}</p>
-        )}
-      </div>
-    );
-  }
-
   return p.onOuvrir
     ? <button type="button" className={`cn-article${p.ecarte ? ' cn-ecarte' : ''}`} onClick={p.onOuvrir}>{corps}</button>
     : <div className={`cn-article${p.ecarte ? ' cn-ecarte' : ''}`}>{corps}</div>;
+}
+
+export interface CarteClasseeProps {
+  article: ArticleV;
+  rang?: number | null;
+  /** La caractéristique qui classe (nom, unité, sens), et les valeurs connues des articles en lice pour la réglette. */
+  carac?: { nom: string; unite?: string; sens: string };
+  bornes?: { min: number; max: number } | null;
+  faconNom?: string;
+  carnetTitre?: string;
+  ecarte?: { raison: string };
+  onOuvrir: () => void;
+  onVeille?: (active: boolean) => void;
+}
+
+/** Nombre d'une valeur (oui-non exclu) ; null si inconnue. */
+export function nombreValeur(v?: ValeurV): number | null {
+  if (!v || typeof v.valeur === 'boolean') return null;
+  if (typeof v.valeur === 'number') return Number.isFinite(v.valeur) ? v.valeur : null;
+  const n = Number(String(v.valeur).replace(/[\s  ']/g, '').replace(',', '.'));
+  return Number.isFinite(n) ? n : null;
+}
+
+/** La grande carte de la feuille « Articles » (h03-5) : un toucher l'ouvre ; « Veiller » bascule la veille sans l'ouvrir. */
+export function CarteClassee(p: CarteClasseeProps) {
+  const a = p.article;
+  const v = p.carac ? a.valeurs[p.carac.nom] : undefined;
+  const t = valeurTexte(v);
+  const n = nombreValeur(v);
+  const pos = n !== null && p.bornes ? (p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min)) : null;
+  const prix = montant(a.prixCentimes);
+  const qui = [a.vendeur ?? a.domaine, a.pays].filter(Boolean).join(' · ');
+  return (
+    <div className={`cn-classee${p.ecarte ? ' cn-ecarte' : ''}`}>
+      <button type="button" className="cn-classee-corps" onClick={p.onOuvrir} aria-label={`${a.nom ?? 'Article'}${p.rang ? `, ${rangTexte(p.rang)}` : ''}`}>
+        <span className="cn-classee-photo">
+          <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
+          {p.rang ? <span className={`cn-rang cn-classee-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span> : null}
+        </span>
+        <span className="cn-classee-tx">
+          <b className="cn-deux-lignes">{a.nom}</b>
+          {/* « exemple » se dit une fois, au pied de la feuille (h06-5 « Vendeurs, prix et photos : exemple ») */}
+          <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}</span>
+          {(prix || a.dispo) && <span>{prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {a.devise ?? 'CHF'}</span>}{a.dispo && <span className={`cn-dispo${/stock/i.test(a.dispo) ? ' cn-vert' : ' cn-att'}`}> {a.dispo}</span>}</span>}
+        </span>
+        <span className="cn-classee-val">
+          {t !== null ? <><span className="cn-mono cn-classee-gros">{t}</span>{(v?.unite ?? p.carac?.unite) && <span className="cn-mut">{v?.unite ?? p.carac?.unite}</span>}</>
+            : p.carac ? <span className="cn-mut">non publié</span> : null}
+        </span>
+      </button>
+      <div className="cn-classee-pied">
+        {p.carac && <span className="cn-mut cn-classee-carac">{p.carac.nom}</span>}
+        <span className="cn-reglette" aria-hidden>
+          {pos !== null && <><span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} /></>}
+        </span>
+        <span>Veiller</span>
+        <Bascule active={!!a.veille?.active} onChange={x => p.onVeille?.(x)} etiquette={`Veiller ${a.nom ?? ''}`.trim()} />
+      </div>
+    </div>
+  );
 }
 
 /** Interrupteur (role switch), cible 44 px ; éteint par défaut, seul son toucher l'allume (R31). */

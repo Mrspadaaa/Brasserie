@@ -10,6 +10,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Calculator, Check, Link2, WifiOff, X } from 'lucide-react';
 import './carnets.css';
+import './carnets-fil.css';
 
 export type Origine = 'vous' | 'ia' | 'page' | 'locale' | 'exemple';
 export type Sens = 'plus' | 'moins' | 'oui-non' | 'texte';

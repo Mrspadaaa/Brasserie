@@ -31,6 +31,8 @@ export interface ChampCarnetProps {
   onColler?: () => void;
   /** Le champ prend le focus : la vue lit alors le presse-papier (R15, G14). */
   onFocusChamp?: () => void;
+  /** Le champ perd le focus (Créer · avant se replie, P28). */
+  onBlurChamp?: () => void;
   suggestion?: SuggestionCritere | null;
   vaDans?: VaDans | null;
   /** Grisé pendant la confirmation de suppression d'une idée (G34). */
@@ -122,21 +124,28 @@ export function ChampCarnet(p: ChampCarnetProps) {
 
   return (
     <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
-      {montrerBulle && p.suggestion && (
-        <button
-          type="button"
-          className="cn-bulle"
-          onMouseDown={e => e.preventDefault()}
-          onClick={() => p.onChange(`${p.suggestion!.critere} : `)}
-        >
-          <PictoLocal />
-          <span>Le critère « {p.suggestion.critere} » peut trancher entre {p.suggestion.a} et {p.suggestion.b}</span>
-        </button>
-      )}
-      {p.coller && !plein && (
-        <button type="button" className="cn-puce cn-coller" onMouseDown={e => e.preventDefault()} onClick={p.onColler}>
-          Coller : <span className="cn-mono">{lienCourt(p.coller)}</span>
-        </button>
+      {/* P37 (R27, CARNET-CLAV) : clavier ouvert, la bulle G8 et la puce « Coller » tiennent ensemble sur une ligne (`.cnf-aides-ligne`),
+          pour laisser au carnet le plus de hauteur ; clavier fermé, chacune sa ligne. */}
+      {(montrerBulle || (p.coller && !plein)) && (
+        <div className={inset ? 'cnf-aides-ligne' : 'cnf-aides'}>
+          {montrerBulle && p.suggestion && (
+            <button
+              type="button"
+              className="cn-bulle"
+              onMouseDown={e => e.preventDefault()}
+              onClick={() => p.onChange(`${p.suggestion!.critere} : `)}
+              title={`Le critère « ${p.suggestion.critere} » peut trancher entre ${p.suggestion.a} et ${p.suggestion.b}`}
+            >
+              <PictoLocal />
+              <span>Le critère « {p.suggestion.critere} » peut trancher entre {p.suggestion.a} et {p.suggestion.b}</span>
+            </button>
+          )}
+          {p.coller && !plein && (
+            <button type="button" className="cn-puce cn-coller" onMouseDown={e => e.preventDefault()} onClick={p.onColler}>
+              Coller : <span className="cn-mono">{lienCourt(p.coller)}</span>
+            </button>
+          )}
+        </div>
       )}
       {p.vaDans && plein && (
         <div className="cn-vadans" role="group" aria-label="Va dans">
@@ -169,7 +178,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
           placeholder={placeholder}
           disabled={p.desactive}
           onFocus={() => { setFocus(true); p.onFocusChamp?.(); }}
-          onBlur={() => setFocus(false)}
+          onBlur={() => { setFocus(false); p.onBlurChamp?.(); }}
           onChange={e => p.onChange(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {

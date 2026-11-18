@@ -10,7 +10,8 @@
  * pas de parc.
  *
  * Paramètres, et l'état qu'ils ouvrent :
- * - `&vide=1` : aucun carnet (Créer · avant, p2:i02-2) ;
+ * - `&vide=1` : aucun carnet (Créer · avant, p2:i02-2) ; `&zero=1` : le même départ vide, pour jouer le scénario D-63 de zéro (créer,
+ *   puis frigo, ventilation, évier) ;
  * - `&hors-ligne=1` : hors ligne, rangé sur l'appareil ;
  * - `&ia=eteint` : sans IA (analyse locale seule) ; `&ia=echec` : l'IA simulée tombe en panne ; `&ia=lent` : elle met 4 s, et la
  *   lecture d'une page aussi ;
@@ -86,7 +87,8 @@ export function lireParametresBanc(search: string): ParametresBanc {
         : q.get('adr') === '1' ? ID_FRIGO
           : undefined;
   return {
-    vide: q.get('vide') === '1',
+    /* `&zero=1` (D-63, P24) : son scénario de zéro, sans fixture : aucun carnet, aucun plan, aucune dépense ; tout naît de ses gestes */
+    vide: q.get('vide') === '1' || q.get('zero') === '1',
     horsLigne: q.get('hors-ligne') === '1',
     mode: q.get('ia') === 'eteint' ? 'eteint' : 'simule',
     realise: q.get('realise') === '1' || retient === 'realise',

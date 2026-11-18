@@ -117,7 +117,8 @@ describe('P6 — écartés et carnet réduit à 1 ou 2 articles', () => {
     const derniere = t.lignes[t.lignes.length - 1];
     expect(derniere.articleId).toBe('ZZ-V-A6');
     expect(derniere.rang).toBeNull();
-    expect(derniere.ecarte?.raison).toBe('Ventilateur de plafond écartée : brasse la buée sans la sortir');
+    // P41 (corr4, comparer.ts) : la raison seule ; le nom se dit une fois, à côté (plus de « Ventilateur de plafond écartée : … »)
+    expect(derniere.ecarte?.raison).toBe('brasse la buée sans la sortir');
     expect(t.lignes.filter(l => l.ecarte)).toHaveLength(1);
   });
 

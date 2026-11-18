@@ -7,11 +7,17 @@
  *   (correction d'un toucher, rangée derrière), puis « › Texte d'origine » : son message, tel quel (R25).
  */
 import React from 'react';
-import { CircleHelp, FileText, Lightbulb, ListTodo, ShoppingBasket } from 'lucide-react';
+import { CircleHelp, FileText, GitFork, Lightbulb, ListTodo, ShoppingBasket, Target } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { GENRE_LIBELLE, Provenance, type GenreNote, type Origine } from './EtatIA';
 
-export interface LigneVracV { id: string; texte: string; genre: GenreNote; carnetId?: string; carnetTitre: string; neuf?: boolean }
+/** Le type d'une ligne : un genre de note, ou un critère, une façon (une ligne de la note peut devenir l'un d'eux). */
+export type TypeLigneVrac = GenreNote | 'critere' | 'facon';
+export interface LigneVracV {
+  id: string; texte: string; genre: TypeLigneVrac; carnetId?: string; carnetTitre: string; neuf?: boolean;
+  /** Ce que la ligne est devenue dans son carnet (corriger le carnet la déplace telle quelle). */
+  cible?: 'note' | 'critere' | 'facon' | 'article';
+}
 
 export interface NoteEnVracProps {
   etat: 'pendant' | 'apres';
@@ -21,18 +27,24 @@ export interface NoteEnVracProps {
   /** Dans un carnet ouvert : « Rattaché à <carnet> · Autre carnet » (G22). */
   rattacheA?: string;
   onAutreCarnet?: () => void;
-  onChangerGenre?: (ligneId: string) => void;
-  onChangerCarnet?: (ligneId: string) => void;
+  /** P11 (g5:v01-16) : type ▾, un toucher ouvre le choix ; seules les notes changent de genre. */
+  onChangerGenre?: (ligneId: string, genre: GenreNote) => void;
+  /** P11 : carnet ▾ ; `carnets` : les carnets où la ligne peut aller. */
+  onChangerCarnet?: (ligneId: string, carnetId: string) => void;
+  carnets?: { id: string; titre: string }[];
   onAnnuler: () => void;
   /** Le nombre de carnets distincts, quand l'appelant le tient du plan (pendant) ou des effets (après) ; sinon compté sur les lignes. */
   nbCarnets?: number;
 }
 
-const ORDRE: GenreNote[] = ['a-acheter', 'a-faire', 'question', 'conseil', 'note'];
-const PICTO: Record<GenreNote, React.ReactNode> = {
+const ORDRE: TypeLigneVrac[] = ['a-acheter', 'a-faire', 'question', 'critere', 'facon', 'conseil', 'note'];
+const PICTO: Record<TypeLigneVrac, React.ReactNode> = {
   'a-acheter': <ShoppingBasket size={16} aria-hidden />, 'a-faire': <ListTodo size={16} aria-hidden />,
   question: <CircleHelp size={16} aria-hidden />, conseil: <Lightbulb size={16} aria-hidden />, note: <FileText size={16} aria-hidden />,
+  critere: <Target size={16} aria-hidden />, facon: <GitFork size={16} aria-hidden />,
 };
+const LIBELLE: Record<TypeLigneVrac, string> = { ...GENRE_LIBELLE, critere: 'critère', facon: 'façon' };
+const GENRES: GenreNote[] = ['a-faire', 'question', 'a-acheter', 'conseil', 'note'];
 
 /** Achats en tête (D-128), puis à faire, questions, conseils, notes ; ordre stable dans chaque type. */
 export function trierLignes(lignes: LigneVracV[]): LigneVracV[] {
@@ -85,13 +97,29 @@ export function NoteEnVrac(p: NoteEnVracProps) {
       <ul className="cn-vrac-lignes">
         {lignes.map(l => (
           <li key={l.id} className="cn-vrac-ligne">
-            {p.etat === 'apres' && p.onChangerGenre
-              ? <button type="button" className={`cn-genre cn-genre-${l.genre}`} onClick={() => p.onChangerGenre!(l.id)}>{PICTO[l.genre]} {GENRE_LIBELLE[l.genre]} ▾</button>
-              : <span className={`cn-genre cn-genre-${l.genre}`}>{PICTO[l.genre]} {GENRE_LIBELLE[l.genre]}</span>}
+            {/* P11 (g5:v01-16) : type ▾, un toucher ouvre le choix natif ; une note seule change de genre */}
+            {p.etat === 'apres' && p.onChangerGenre && (l.cible ?? 'note') === 'note'
+              ? (
+                <label className={`cn-genre cn-genre-${l.genre} cnf-choix`}>
+                  {PICTO[l.genre]} <span>{LIBELLE[l.genre]}</span> <span aria-hidden>▾</span>
+                  <select aria-label={`Type de « ${l.texte} »`} value={l.genre} onChange={e => p.onChangerGenre!(l.id, e.target.value as GenreNote)}>
+                    {GENRES.map(g => <option key={g} value={g}>{GENRE_LIBELLE[g]}</option>)}
+                  </select>
+                </label>
+              )
+              : <span className={`cn-genre cn-genre-${l.genre}`}>{PICTO[l.genre]} {LIBELLE[l.genre]}{p.etat === 'apres' ? ' ' : ''}</span>}
             <div className="cn-sp">
               <p>{l.texte}</p>
-              {p.etat === 'apres' && p.onChangerCarnet
-                ? <button type="button" className="cn-puce" onClick={() => p.onChangerCarnet!(l.id)}>{libelleCarnet(l)} ▾</button>
+              {p.etat === 'apres' && p.onChangerCarnet && l.carnetId && p.carnets?.length
+                ? (
+                  <label className="cn-puce cnf-choix">
+                    <span>→ {libelleCarnet(l)}</span> <span aria-hidden>▾</span>
+                    <select aria-label={`Carnet de « ${l.texte} »`} value={l.carnetId} onChange={e => p.onChangerCarnet!(l.id, e.target.value)}>
+                      {!p.carnets.some(c => c.id === l.carnetId) && <option value={l.carnetId}>{libelleCarnet(l)}</option>}
+                      {p.carnets.map(c => <option key={c.id} value={c.id}>{c.titre}</option>)}
+                    </select>
+                  </label>
+                )
                 : !p.rattacheA && <p className="cn-mut">→ {libelleCarnet(l)}{l.neuf && p.etat === 'pendant' ? ' · aucun carnet proche' : ''}</p>}
             </div>
           </li>

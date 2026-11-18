@@ -246,7 +246,8 @@ describe('corr2-L1 : la découpe annoncée est celle appliquée (planVrac, versL
     const cs = lireCarnets(fixtureCarnets());
     const plan = (note: string) => planVrac(analyserTexte(note), t => rattacher(t, cs));
     const m390 = plan('ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi');
-    expect(m390.lignes.map(l => l.carnetId ?? `neuf:${l.titre}`)).toEqual([ID_EVIER, 'neuf:ZZ TEST — ajouter le sel', 'neuf:ZZ TEST — ajouter le sel']);
+    /* critique 4 (lot A, P4, P11) : l'analyse locale met la ligne en forme (préfixe du banc retiré, majuscule) ; le carnet neuf en prend le titre */
+    expect(m390.lignes.map(l => l.carnetId ?? `neuf:${l.titre}`)).toEqual([ID_EVIER, 'neuf:Ajouter le sel', 'neuf:Ajouter le sel']);
     expect(m390.carnets).toBe(2);
     const rejeu = plan('ZZ TEST — évier : 2 bacs inox de 40 cm\nventilation : hotte 120 cm au-dessus de la cuve\névier : robinet à pédale');
     expect(rejeu.lignes.map(l => l.carnetId)).toEqual([ID_EVIER, ID_VENTILATION, ID_EVIER]);

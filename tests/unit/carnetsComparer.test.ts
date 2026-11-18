@@ -21,10 +21,13 @@ describe('Comparer (A9), 12 cas', () => {
   });
   it('4. fixture Ventilation : tient 80 °C d’abord, puis le débit ; ordre attendu', () => {
     const t = tableau(V)!;
-    /* oui d'abord (A1 1800, A2 1200), puis non (A3 1500), puis inconnu (A4 1100), puis le lien sans valeur (A5), puis l'écarté (A6) */
-    expect(t.lignes.map(l => l.articleId)).toEqual(['ZZ-V-A1', 'ZZ-V-A2', 'ZZ-V-A3', 'ZZ-V-A4', 'ZZ-V-A5', 'ZZ-V-A6']);
-    expect(rangePar(V)).toBe('tient 80 °C d\'abord, puis le débit');
-    expect(t.rangePar).toBe('tient 80 °C d\'abord, puis le débit');
+    /* oui d'abord (A1 1800, A2 1200), puis non (A3 1500), puis inconnu (A4 1100), puis l'écarté (A6) ; le lien non lu et sans valeur (A5)
+       n'est pas classé : il est à relire (correction 4, P6) */
+    expect(t.lignes.map(l => l.articleId)).toEqual(['ZZ-V-A1', 'ZZ-V-A2', 'ZZ-V-A3', 'ZZ-V-A4', 'ZZ-V-A6']);
+    expect(t.aRelire.map(a => a.id)).toEqual(['ZZ-V-A5']);
+    /* P32 : la règle dite est la règle du tri, prix compris (il départage en dernier) */
+    expect(rangePar(V)).toBe('tient 80 °C d\'abord, puis le débit, puis le prix');
+    expect(t.rangePar).toBe('tient 80 °C d\'abord, puis le débit, puis le prix');
     expect(t.colonnes.map(k => k.nom)).toEqual(['tient 80 °C', 'débit']);
   });
   it('5. un débit inconnu se range après les débits connus ; sa cellule est vide, jamais 0', () => {
@@ -53,7 +56,8 @@ describe('Comparer (A9), 12 cas', () => {
     expect(fin[0].ecarte!.raison).toBe('cadence trop basse pour 300 L');
     const avecFaconEcartee = avec(B, { choix: undefined, articles: [...B.carnet.articles.slice(0, 2), { ...B.carnet.articles[2], faconId: 'ZZ-B-F1' }] });
     const t2 = tableau(avecFaconEcartee)!;
-    expect(t2.lignes.at(-1)).toMatchObject({ articleId: 'ZZ-B-A3', rang: null, ecarte: { raison: 'Gravité écartée : trop d’oxygène capté' } });
+    /* P41 : la raison ne répète pas le nom ; la façon se nomme, car le nom de l'article ne la contient pas */
+    expect(t2.lignes.at(-1)).toMatchObject({ articleId: 'ZZ-B-A3', rang: null, ecarte: { raison: 'façon gravité, trop d’oxygène capté' } });
   });
   it('9. statutApres : idea devient research au 1er article ; validated reste validated', () => {
     const E = carnet(ID_EVIER);
@@ -92,10 +96,13 @@ describe('Comparer (A9), 12 cas', () => {
 
 describe('G8 et G9, calcul local (A13, R44, R45)', () => {
   it('critereQuiTranche sur Ventilation : le critère sans caractéristique et les deux façons ouvertes', () => {
-    const t = critereQuiTranche(carnet(ID_VENTILATION))!;
-    expect(t.critere.texte).toBe('plus de condensation au plafond');
+    const V = carnet(ID_VENTILATION);
+    const t = critereQuiTranche(V)!;
+    /* le texte du 1er critère vient de la fixture (lot A le corrige en correction 4, P15) : il n'est pas répété ici */
+    const premier = V.carnet.criteres.find(k => !k.caracteristique)!.texte;
+    expect(t.critere.texte).toBe(premier);
     expect(t.entre).toEqual(['Hotte inox + extracteur', 'Extracteur mural seul']);
-    expect(texteTranche(t)).toBe('Le critère « plus de condensation au plafond » peut trancher entre Hotte inox + extracteur et Extracteur mural seul');
+    expect(texteTranche(t)).toBe(`Le critère « ${premier} » peut trancher entre Hotte inox + extracteur et Extracteur mural seul`);
   });
   it('un seul candidat : null ; une façon écartée n’est jamais proposée', () => {
     const V = carnet(ID_VENTILATION);
@@ -145,7 +152,8 @@ describe('G8 (R44), corr. 2 L4-4 : deux candidats ne se nomment jamais pareil', 
   const sansFacons = (articles: Article[]) => avec(V, { facons: [], articles, choix: undefined });
 
   it('deux articles au même domaine, sans nom lu : le domaine et un bout du chemin, dans la bulle', () => {
-    const t = critereQuiTranche(sansFacons([sansNom('X1', 'https://exemple.test/hottes/hotte-inox-120'), sansNom('X2', 'https://www.exemple.test/extracteur-mural.html')]))!;
+    /* un prix connu (tapé par lui) : ils se comparent ; sans rien de connu, ils seraient à relire (P6), jamais classés */
+    const t = critereQuiTranche(sansFacons([sansNom('X1', 'https://exemple.test/hottes/hotte-inox-120', { prixCentimes: 100000 }), sansNom('X2', 'https://www.exemple.test/extracteur-mural.html', { prixCentimes: 120000 })]))!;
     expect(t).not.toBeNull();
     expect(t.entre).toEqual(['exemple.test/hotte-inox-120', 'exemple.test/extracteur-mural']);
     expect(texteTranche(t)).not.toContain('exemple.test et exemple.test');

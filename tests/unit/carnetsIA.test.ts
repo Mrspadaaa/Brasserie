@@ -278,7 +278,8 @@ describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note 
     expect(g29?.titrePropose).toBe('ZZ TEST — Évier inox 2 bacs');
     // « Ce qui compte, tiré de votre phrase » : ce que la phrase dit (la condensation), pas « garder au froid » qu'elle ne dit pas
     const k = simuler('ZZ TEST — rangement du frigo, plus de condensation au plafond', null, []).filter((x) => x.sorte === 'critere').map((x) => x.texte);
-    expect(k).toEqual(['Plus de condensation au plafond']);
+    // P15 : « plus de condensation » dit une gêne ; le critère dit l'inverse
+    expect(k).toEqual(['Moins de condensation au plafond : capter la buée']);
     // sans préfixe, rien n'est ajouté
     expect(simuler('chambre froide pour garder 6 fûts', null, [EVIER]).find((x) => x.sorte === 'idee')?.titre).toBe('Frigo pour les fûts');
   });

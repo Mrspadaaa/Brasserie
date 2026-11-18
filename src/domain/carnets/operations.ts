@@ -12,10 +12,11 @@ import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../fin
 import { estRealise } from '../finance/upgradeRing';
 import { statutApres } from './comparer';
 import { memeTexte } from './doublons';
+import { normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
-  type GenreNote, type MessageDoc, type Note, type Origine, type Rangement, type Valeur
+  type GenreNote, type MessageDoc, type Note, type Origine, type PropositionCritere, type Rangement, type Valeur
 } from './modele';
 
 export type EcritureCarnet = { op: 'put'; doc: CreativeItem } | { op: 'remove'; id: string };
@@ -91,7 +92,8 @@ function suivreEffet(b: Brouillon, de: { carnetId: string; cible: CibleEffet; id
 export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carnetNeuf: { id: string; titre: string }; carnetId?: undefined };
 
 export type LigneARanger = Destination & (
-  | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine }
+  /** `propose` (P10, P23) : un critère que l'IA propose ; `ranger` ne l'écrit pas, il reste sur le message (`propositions`). */
+  | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; propose?: true }
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
     sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; devise?: string; vendeur?: string; pays?: string;
@@ -117,6 +119,15 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
         if (!deja.raison && l.raison) deja.raison = l.raison;
         if (!deja.caracteristique && l.caracteristique) deja.caracteristique = copie(l.caracteristique);
         return null;
+      }
+      /* P7 : un critère qui précise une caractéristique déjà là (même nom et unité, ou même unité lue dans la phrase) se fond dans le critère
+         existant, s'il n'est pas de ses mots à lui (`origine: 'vous'` reste intact). L'effet garde le critère d'avant. */
+      const cible = critereAPreciser(d.criteres, l);
+      if (cible) {
+        const fusion = sansIndefinis({ texte: cible.texte, origine: cible.origine, messageId: cible.messageId });
+        cible.texte = l.texte; cible.origine = l.origine; cible.messageId = messageId;
+        if (!cible.raison && l.raison) cible.raison = l.raison;
+        return { carnetId: c.id, cible: 'critere', id: cible.id, fusion };
       }
       const k: Critere = sansIndefinis({ id: l.id ?? nouvelIdCarnet('CRIT'), texte: l.texte, raison: l.raison, caracteristique: l.caracteristique, origine: l.origine, messageId });
       d.criteres.push(k); return { carnetId: c.id, cible: 'critere', id: k.id };
@@ -146,11 +157,33 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
   }
 }
 
-function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly LigneARanger[]): { effets: EffetMessage[]; carnets: Set<string>; crees: number } | string {
+/** Les unités écrites dans un texte (« 1 200 m³/h » → m³/h), liste fermée de `analyseLocale`. */
+const unitesDe = (texte: string): Set<string> => new Set(quantitesDe(texte).map(q => q.unite));
+const nomNormal = (t: string) => normaliser(t);
+
+/** P7 : le critère qu'une ligne précise (même caractéristique), hors des critères qu'il a écrits lui-même ; sinon `undefined`. */
+function critereAPreciser(criteres: readonly Critere[], l: Extract<LigneARanger, { sorte: 'critere' }>): Critere | undefined {
+  const libres = criteres.filter(k => k.caracteristique?.unite && k.origine !== 'vous');
+  if (l.caracteristique?.unite) {
+    const nom = nomNormal(l.caracteristique.nom);
+    return libres.find(k => k.caracteristique!.unite === l.caracteristique!.unite && nomNormal(k.caracteristique!.nom) === nom);
+  }
+  if (l.caracteristique) return undefined;
+  const unites = unitesDe(l.texte);
+  return unites.size === 1 ? libres.find(k => unites.has(k.caracteristique!.unite!)) : undefined;
+}
+
+function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly LigneARanger[]): { effets: EffetMessage[]; carnets: Set<string>; crees: number; propositions: PropositionCritere[] } | string {
   const effets: EffetMessage[] = [];
   const carnets = new Set<string>();
+  const propositions: PropositionCritere[] = [];
   let crees = 0;
   for (const l of lignes) {
+    /* P10, P23 : un critère proposé n'est pas écrit ; il reste sur le message, à accepter d'un toucher. */
+    if (l.sorte === 'critere' && l.propose) {
+      if (l.carnetId) propositions.push(sansIndefinis({ carnetId: l.carnetId, texte: l.texte, caracteristique: l.caracteristique ? copie(l.caracteristique) : undefined, origine: l.origine }));
+      continue;
+    }
     let c: CarnetDoc | null;
     if (l.carnetNeuf) {
       c = b.carnet(l.carnetNeuf.id);
@@ -171,7 +204,7 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
     carnets.add(c.id);
     poser(b, c);
   }
-  return { effets, carnets, crees };
+  return { effets, carnets, crees, propositions };
 }
 
 function avisRangement(lignes: number, carnets: number, crees: number): string {
@@ -192,10 +225,13 @@ export function ranger(etat: Etat, args: { message: MessageARanger; lignes: read
   const m = args.message;
   const doc: MessageDoc = {
     id: m.id, type: 'carnet-message', title: m.texte, status: 'done',
-    carnetMessage: sansIndefinis({ texte: m.texte, le: m.le, depuis: m.depuis, rangement: m.rangement, effets: r.effets, titrePropose: m.titrePropose ? { ...m.titrePropose } : undefined })
+    carnetMessage: sansIndefinis({
+      texte: m.texte, le: m.le, depuis: m.depuis, rangement: m.rangement, effets: r.effets, titrePropose: m.titrePropose ? { ...m.titrePropose } : undefined,
+      propositions: r.propositions.length ? r.propositions : undefined
+    })
   };
   b.ecrire(doc);
-  const nbLignes = args.lignes.filter(l => l.sorte !== 'idee').length;
+  const nbLignes = args.lignes.filter(l => l.sorte !== 'idee' && !(l.sorte === 'critere' && l.propose)).length;
   return b.resultat(avisRangement(Math.max(nbLignes, 1), r.carnets.size, r.crees));
 }
 
@@ -230,7 +266,14 @@ export function remplacerRangement(etat: Etat, args: { messageId: string; lignes
   for (const e of m.carnetMessage.effets) {
     if (e.cible === 'carnet') continue;
     const c = b.carnet(e.carnetId);
-    if (c && retirerElement(c, e.cible, e.id)) poser(b, c);
+    if (!c) continue;
+    /* P7 : un critère précisé par ce message retrouve son texte d'avant ; il n'est pas retiré (il existait avant le message). */
+    if (e.fusion) {
+      const k = c.carnet.criteres.find(x => x.id === e.id);
+      if (k) { Object.assign(k, { texte: e.fusion.texte, origine: e.fusion.origine }); if (e.fusion.messageId) k.messageId = e.fusion.messageId; else delete k.messageId; poser(b, c); }
+      continue;
+    }
+    if (retirerElement(c, e.cible, e.id)) poser(b, c);
   }
   for (const id of crees) {
     const c = b.carnet(id);
@@ -239,9 +282,30 @@ export function remplacerRangement(etat: Etat, args: { messageId: string; lignes
   }
   const r = rangerDans(b, { id: m.id, texte: m.carnetMessage.texte, le: m.carnetMessage.le, depuis: m.carnetMessage.depuis, rangement: args.rangement }, args.lignes);
   if (typeof r === 'string') return refus(r);
-  b.ecrire({ ...m, carnetMessage: sansIndefinis({ ...m.carnetMessage, rangement: args.rangement, effets: r.effets, titrePropose: args.titrePropose ? { ...args.titrePropose } : m.carnetMessage.titrePropose }) });
-  const nb = args.lignes.filter(l => l.sorte !== 'idee').length;
+  b.ecrire({ ...m, carnetMessage: sansIndefinis({
+    ...m.carnetMessage, rangement: args.rangement, effets: r.effets, titrePropose: args.titrePropose ? { ...args.titrePropose } : m.carnetMessage.titrePropose,
+    propositions: r.propositions.length ? r.propositions : undefined
+  }) });
+  const nb = args.lignes.filter(l => l.sorte !== 'idee' && !(l.sorte === 'critere' && l.propose)).length;
   return b.resultat(avisRangement(Math.max(nb, 1), r.carnets.size, r.crees));
+}
+
+/**
+ * P10, P23 (D-35) : accepter d'un toucher le critère que l'IA a proposé sur un message. Il est rangé comme une ligne ordinaire (sans
+ * `propose`), son effet s'ajoute au message et la proposition le quitte. Une écriture annulable.
+ */
+export function accepterProposition(etat: Etat, args: { messageId: string; index: number }): Resultat {
+  const m = lireMessage(etat.find(d => d.id === args.messageId));
+  const p = m?.carnetMessage.propositions?.[args.index];
+  if (!m || !p) return refus('Proposition introuvable.');
+  const b = new Brouillon(etat);
+  const c = b.carnet(p.carnetId);
+  if (!c) return refus('Ce carnet n’existe plus.');
+  const e = ajouterLigne(c, sansIndefinis({ carnetId: p.carnetId, sorte: 'critere' as const, texte: p.texte, caracteristique: p.caracteristique ? copie(p.caracteristique) : undefined, origine: p.origine }), m.id);
+  poser(b, c);
+  const reste = (m.carnetMessage.propositions ?? []).filter((_, i) => i !== args.index);
+  b.ecrire({ ...m, carnetMessage: sansIndefinis({ ...m.carnetMessage, effets: e ? [...m.carnetMessage.effets, e] : m.carnetMessage.effets, propositions: reste.length ? reste : undefined }) });
+  return b.resultat('✓ Ajouté à Ce qui compte');
 }
 
 /* ---------- déplacer, changer de genre ou de sorte ---------- */

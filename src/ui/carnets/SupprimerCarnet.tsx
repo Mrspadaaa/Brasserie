@@ -8,7 +8,7 @@
  * même liste (jamais de l'IA), picto local. G34 (champ et + grisés, page grisée) est tenu par le conteneur.
  */
 import React from 'react';
-import { Archive, Trash2 } from 'lucide-react';
+import { Archive, ArrowRightToLine, Trash2 } from 'lucide-react';
 import { PictoLocal, type ContenuCarnetV } from './EtatIA';
 import './carnets-decider.css';
 
@@ -56,14 +56,15 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
       <h3 className="cn-sous">Supprimer le carnet {p.titre} ?</h3>
       <p>
         {part ? <>Il part avec <b>{part}</b>.</> : 'Il est vide.'}
-        {enVeille ? ' La veille du prix, tous les 3 jours, s\'arrête.' : ''}
+        {enVeille ? ` La veille du prix, tous les 3 jours, s'arrête${enVeille > 1 ? ` pour les ${enVeille}` : ''}.` : ''}
       </p>
       {n > 0 && (
         <div className="cn-liens-retiennent">
           <p><b>{n} lien{n > 1 ? 's' : ''} le reti{n > 1 ? 'ennent' : 'ent'}</b></p>
+          {/* P42 : le plan se nomme une fois, sur toute la largeur (2 lignes au plus à 390), son réglage dessous ; pas de « À venir · » en tête. */}
           {p.liens.map(l => (
             <div key={`${l.sorte}:${l.planId}`} className="cn-lien-retient">
-              <span className="cn-sp">{l.sorte === 'plan-a-venir' ? 'À venir' : 'Réalisés'} · {l.libelle}</span>
+              <span className="cn-lien-retient-tx"><b>{l.libelle}</b><span className="cn-mut"> · plan {l.sorte === 'plan-a-venir' ? 'dans À venir' : 'réalisé'}</span></span>
               {l.reglage === 'detacher'
                 ? <button type="button" className="cn-second" onClick={() => p.onDetacher(l.planId)}>Garder le plan sans ce carnet</button>
                 : <button type="button" className="cn-second" onClick={() => p.onArchiver(l.planId)}><Archive size={16} aria-hidden /> Archiver</button>}
@@ -71,10 +72,12 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
           ))}
         </div>
       )}
+      {/* G35 (g5:v08-27) : proposé avant, sans bloquer ; calcul local (rattacher.ts), picto local. */}
       {enVeille > 0 && p.proche && (
-        <div className="cn-aide">
-          <span className="cn-sp"><PictoLocal /> {enVeille} article{enVeille > 1 ? 's' : ''} en veille : les déplacer dans {p.proche.titre}</span>
-          <button type="button" className="cn-puce" onClick={p.proche.onDeplacer}>Déplacer</button>
+        <div className="cn-aide cn-g35">
+          <PictoLocal />
+          <span className="cn-sp">{enVeille} article{enVeille > 1 ? 's' : ''} en veille : les déplacer dans {p.proche.titre}</span>
+          <button type="button" className="cn-puce cn-g35-bouton" onClick={p.proche.onDeplacer}><ArrowRightToLine size={18} aria-hidden /> Déplacer</button>
         </div>
       )}
       {n === 0 && <p className="cn-mut"><PictoLocal /> ni dans À venir, ni en commande</p>}

@@ -84,8 +84,10 @@ const NOMBRE = String.raw`\d{1,3}(?:['’   ]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.
 const TIRET = String.raw`[.,]?\s?[–—-]{1,2}`;
 const DEVISE_AVANT = String.raw`(CHF|SFr\.?|Fr\.|€|EUR)`;
 const DEVISE_APRES = String.raw`(CHF|SFr\.?|Fr\.|francs?|€|EUR|euros?)`;
+/* P40 (décision pilote) : une devise placée AVANT le nombre ne compte que si elle n'est pas collée à une lettre ; « moteur 189,90 CHF »
+   ne se lit pas « eur 189,90 » (la fin de « moteur »), mais « 189,90 CHF » par le motif suivant. */
 const MOTIFS_PRIX: { re: RegExp; nombre: number; devise: number | null }[] = [
-  { re: new RegExp(String.raw`${DEVISE_AVANT}\s?(${NOMBRE})(?:${TIRET})?(?![\d])`, 'gi'), nombre: 2, devise: 1 },
+  { re: new RegExp(String.raw`(?<!\p{L})${DEVISE_AVANT}\s?(${NOMBRE})(?:${TIRET})?(?![\d])`, 'giu'), nombre: 2, devise: 1 },
   { re: new RegExp(String.raw`(?<![\d.,'’])(${NOMBRE})(?:${TIRET})?\s?${DEVISE_APRES}(?![a-zà-ÿ])`, 'gi'), nombre: 1, devise: 2 },
   { re: new RegExp(String.raw`(?<![\d.,'’])(${NOMBRE})\s?[.,]\s?[–—-]{1,2}(?![\d])`, 'g'), nombre: 1, devise: null }
 ];
@@ -158,15 +160,58 @@ export function quantitesDe(texte: string): Quantite[] {
 
 const PAS_VERBES = new Set(['pour', 'entre', 'notre', 'votre', 'autre', 'contre', 'leur', 'premier', 'dernier', 'hier', 'fer', 'mer', 'cher', 'super', 'hiver', 'quatre', 'litre', 'metre', 'filtre', 'centre', 'cidre', 'sucre', 'ordre', 'titre', 'chiffre', 'nombre', 'cadre', 'poudre', 'vitre', 'lettre', 'plutot', 'desir', 'plaisir', 'loisir', 'avenir', 'soir', 'noir', 'espoir', 'tiroir', 'miroir', 'couloir', 'reservoir', 'arrosoir', 'entonnoir', 'comptoir', 'pressoir', 'laminoir', 'evier', 'panier', 'papier', 'acier', 'atelier', 'calendrier', 'fournisseur', 'boucher', 'boulanger', 'rocher', 'plancher', 'escalier', 'dossier', 'fichier', 'cahier', 'clavier', 'collier', 'levier', 'quartier', 'chantier', 'sentier', 'mobilier', 'premiere', 'derniere', 'bière', 'biere', 'verre']);
 
-/** Le genre d'une ligne, par mots-clés : achat, question, conseil, à faire (verbe en tête), sinon note. */
+/** Un nombre de pièces (« 2 pièces », « 3 pcs », « x2 », « 2x ») ou un diamètre (« Ø 150 ») : la ligne désigne une chose à acheter. */
+const PIECES = /\b\d+\s?(?:pieces?|pcs|pce|x)\b|\bx\s?\d+\b/;
+const DIAMETRE = /[Øø⌀]\s?\d/;
+
+/**
+ * Le genre d'une ligne, par mots-clés : question, achat dit (acheter, prix, lien), conseil, à faire (verbe en tête), achat devinée (pièces,
+ * diamètre), sinon note. Le préfixe des données de test « ZZ TEST — » est ignoré (P11, P22).
+ */
 export function genreLocal(ligne: string, indices: { prix?: boolean; url?: boolean } = {}): GenreNote {
-  const n = normaliser(ligne);
-  if (/\?\s*$/.test(ligne.trim()) || /^(est ce|faut il|combien|pourquoi|quel|quelle|comment)\b/.test(n)) return 'question';
+  const brut = sansPrefixeBanc(ligne);
+  const n = normaliser(brut);
+  if (/\?\s*$/.test(brut.trim()) || /^(est ce|faut il|combien|pourquoi|quel|quelle|comment)\b/.test(n)) return 'question';
   if (indices.prix || indices.url || /\b(acheter|achat|achats|commander|commande|racheter|devis|prix|budget)\b/.test(n)) return 'a-acheter';
   if (/^(penser a|pense a|conseil|astuce|attention|eviter|ne pas)\b/.test(n) || /\bconseil\b/.test(n)) return 'conseil';
   const premier = n.split(' ')[0] ?? '';
   if (premier.length > 3 && /(er|ir|re)$/.test(premier) && !PAS_VERBES.has(premier)) return 'a-faire';
+  if (PIECES.test(n) || DIAMETRE.test(brut)) return 'a-acheter';
   return 'note';
+}
+
+/* ---------- mise en forme (P4, P7, P11 : l'aperçu et le repli rangent une ligne propre, jamais la phrase brute) ---------- */
+
+/** Le préfixe des données de test (L05). Il reste sur le message et le titre du carnet, jamais dans une ligne rangée. */
+const PREFIXE_BANC = /^\s*ZZ TEST\s*[—–-]\s*/i;
+export const sansPrefixeBanc = (t: string): string => t.replace(PREFIXE_BANC, '');
+const majuscule = (t: string): string => (t ? t.charAt(0).toLocaleUpperCase('fr-CH') + t.slice(1) : t);
+
+/** Les tournures qui annoncent un geste : « il faut appeler », « penser à commander » → « Appeler », « Commander » (infinitif en tête). */
+const ANNONCE_GESTE = /^(?:il\s+faut\s+que\s+je\s+|il\s+faudrait\s+|il\s+faut\s+|faut\s+|je\s+dois\s+|on\s+doit\s+|je\s+vais\s+|penser\s+à\s+|pense\s+à\s+|ne\s+pas\s+oublier\s+de\s+|n[’']oublie\s+pas\s+de\s+)/i;
+
+/** Une ligne mise en forme : sans préfixe de test, l'infinitif en tête quand une tournure l'annonce, une majuscule si elle a changé. */
+export function mettreEnForme(ligne: string): string {
+  const sans = sansPrefixeBanc(ligne).trim();
+  const m = ANNONCE_GESTE.exec(sans);
+  const reste = m ? sans.slice(m[0].length) : sans;
+  const verbe = normaliser(reste).split(' ')[0] ?? '';
+  const t = m && verbe.length > 3 && /(er|ir|re)$/.test(verbe) && !PAS_VERBES.has(verbe) ? reste : sans;
+  return t === ligne.trim() ? t : majuscule(t);
+}
+
+/**
+ * Le critère d'une ligne : la partie qui se mesure, sans titre ni préfixe (P4, G5). « ZZ TEST — Moulin à malt : 2 cylindres, 150 kg/h
+ * minimum » → « 2 cylindres, 150 kg/h minimum » ; « buées au-dessus de la cuve, 1 200 m³/h » → « Buées au-dessus de la cuve : 1 200 m³/h ».
+ * `seule` : la ligne est tout le message ; dans une note en vrac, le libellé « cave : » reste (il dit où ranger la ligne).
+ */
+export function critereDe(ligne: string, seule = true): string {
+  const t = mettreEnForme(ligne);
+  const deux = /^([^:]{2,60}?)\s*:\s*(.+)$/.exec(t);
+  if (seule && deux && (/\d/.test(deux[2]) || MOTS_CRITERE.test(normaliser(deux[2])))) return deux[2].trim();
+  const virgule = /^([^,:\d]{3,}?),\s*(\d[\d'’   .,]*\s?\S.*)$/.exec(t);
+  if (virgule && quantitesDe(virgule[2]).length > 0) return `${majuscule(virgule[1].trim())} : ${virgule[2].trim()}`;
+  return t;
 }
 
 const MOTS_CRITERE = /\b(minimum|maximum|mini|maxi|min|max|au moins|au plus|il faut|faut que|doit|doivent|pas plus de|pas moins de|tient|tenir|supporte|minimiser|maximiser|eviter)\b/;
@@ -175,7 +220,10 @@ export type SorteLocale = 'article' | 'critere' | 'note';
 
 /** Une ligne analysée en local. `origine: 'locale'` : picto distinct du ✻ de l'IA (Q19). */
 export interface LigneLocale {
+  /** La ligne mise en forme (sans préfixe de test ; pour un critère, la partie mesurable seule : P4, P7). */
   texte: string;
+  /** La ligne telle qu'il l'a tapée (le message la garde aussi, R25). */
+  phrase: string;
   sorte: SorteLocale;
   genre: GenreNote;
   url?: string;
@@ -187,7 +235,7 @@ export interface LigneLocale {
 }
 
 /** Analyse une ligne : lien, prix, quantités, genre, sorte (lien ou prix → article ; mots de seuil ou quantité seule → critère ; sinon note). */
-export function analyserLigne(texte: string): LigneLocale {
+export function analyserLigne(texte: string, seule = true): LigneLocale {
   const lien = urlsDe(texte)[0];
   const prix = prixDe(texte);
   const quantites = quantitesDe(texte);
@@ -196,8 +244,9 @@ export function analyserLigne(texte: string): LigneLocale {
   const sorte: SorteLocale = lien || prix ? 'article'
     : genre !== 'question' && genre !== 'a-acheter' && (MOTS_CRITERE.test(n) || (quantites.length > 0 && genre === 'note')) ? 'critere'
       : 'note';
+  const forme = sorte === 'critere' ? critereDe(texte, seule) : mettreEnForme(texte);
   return {
-    texte, sorte, genre, quantites, origine: 'locale',
+    texte: forme, phrase: texte, sorte, genre, quantites, origine: 'locale',
     ...(lien ? { url: lien.url, domaine: lien.domaine } : {}),
     ...(prix ? { prixCentimes: prix.centimes, devise: prix.devise } : {})
   };
@@ -221,9 +270,13 @@ export function vaDansDe(texte: string): RubriqueVaDans | null {
   return lignes[0].sorte;
 }
 
-/** Analyse d'un message entier : une ligne analysée par ligne découpée. Instantané, sans réseau. */
+const estAchat = (l: LigneLocale) => l.sorte === 'article' || l.genre === 'a-acheter';
+
+/** Analyse d'un message entier : une ligne analysée par ligne découpée, les achats en tête (R35, tri stable). Instantané, sans réseau. */
 export function analyserTexte(texte: string): LigneLocale[] {
-  return decouper(texte).map(analyserLigne);
+  const lignes = decouper(texte);
+  const analysees = lignes.map(l => analyserLigne(l, lignes.length === 1));
+  return analysees.map((l, i) => [l, i] as const).sort(([a, i], [b, j]) => Number(estAchat(b)) - Number(estAchat(a)) || i - j).map(([l]) => l);
 }
 
 /** Les nombres écrits dans un texte (pour vérifier qu'aucun nombre n'est inventé). Milliers recollés. */

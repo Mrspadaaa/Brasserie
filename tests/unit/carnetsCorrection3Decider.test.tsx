@@ -37,7 +37,8 @@ describe('P4 · Comparer à 390 : suite à droite visible, ligne « Écarté » 
     const bloc = container.querySelector('table.cn-ecartes')!;
     expect(bloc.querySelector('caption')!.textContent).toBe('Écartés · 1');
     expect(bloc.querySelector('th')!.textContent).toBe('Extracteur centrifuge');
-    expect(bloc.querySelector('td.cn-ecarte-raison')!.textContent).toBe('ne capte pas la buée');
+    /* correction 4, P41 : « écarté : <raison> », le nom une fois (dans le th) */
+    expect(bloc.querySelector('td.cn-ecarte-raison')!.textContent).toBe('écarté : ne capte pas la buée');
     /* plus de rangée « Écarté » dans le tableau, où les colonnes en lice restaient vides */
     const lignesTableau = [...container.querySelectorAll('table.cn-tableau-comparer tbody tr')];
     expect(lignesTableau.map(tr => tr.querySelector('th')!.textContent)).not.toContain('Écarté');

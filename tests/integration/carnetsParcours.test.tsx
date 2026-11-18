@@ -317,7 +317,7 @@ describe('corr2-L1 (vision 2 : d1280-1, m390-1, m390-2, L4-7, d1280-3) : ce que 
     const note = 'ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi';
     fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: note } });
     const lire = () => [...e.vue.container.querySelectorAll('.cn-vrac-ligne')].map(li => ({
-      texte: li.querySelector('.cn-sp > p')!.textContent!, cible: li.querySelector('.cn-sp > p.cn-mut')!.textContent!.replace(' · aucun carnet proche', '')
+      texte: li.querySelector('.cn-sp > p')!.textContent!, cible: (li.querySelector('.cn-sp > p.cn-mut') ?? li.querySelector('.cn-sp > label.cn-puce > span'))!.textContent!.replace(' · aucun carnet proche', '')
     }));
     const tete = e.vue.container.querySelector('.cn-vrac .cn-cadre-tete')!.textContent!;
     const mPendant = Number(/(\d+) carnets?/.exec(tete)![1]);

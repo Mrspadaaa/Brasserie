@@ -9,7 +9,7 @@
  * Le temps d'affichage (5 s au moins) est tenu par le conteneur ; ce composant ne disparaît pas seul.
  */
 import React, { useEffect, useRef } from 'react';
-import { Check, Undo2 } from 'lucide-react';
+import { Calculator, Check, TriangleAlert, Undo2, WifiOff } from 'lucide-react';
 import { PictoLocal, Provenance } from './EtatIA';
 
 /** La fin de la ligne citée sous « ✓ Carnet créé » : d'où vient le titre. Seule la phrase écrite par lui est « votre phrase en titre ». */
@@ -32,6 +32,10 @@ export interface ArticleRangeV { nom: string; detail?: string; prix?: string; ex
 export type BandeauV =
   | { sorte: 'cree'; phrase: string; titreDe?: TitreDe }
   | { sorte: 'range' }
+  /* P9 (R25) : un lien seul dont la page n'a pas été lue : lequel, en clair, et « page non lue · Ouvrir ↗ » */
+  | { sorte: 'lien'; url: string; lu: boolean; ici?: boolean }
+  /* P21 : une photo rangée */
+  | { sorte: 'photo'; ici?: boolean }
   | { sorte: 'article'; faconNom?: string }
   | { sorte: 'deuxieme'; nom: string; rang: number; faconsNees?: number }
   | { sorte: 'ailleurs'; carnet: string; raison?: string; onDeplacer?: () => void; cite?: string; article?: ArticleRangeV }
@@ -48,6 +52,8 @@ export function texteBandeau(b: BandeauV): string {
   switch (b.sorte) {
     case 'cree': return '✓ Carnet créé, en tête des Carnets';
     case 'range': return '✓ Rangé ici, à l\'instant';
+    case 'lien': return b.lu ? '✓ Lien rangé ici' : '✓ Lien rangé ici · page non lue';
+    case 'photo': return '✓ Photo rangée ici';
     case 'article': return b.faconNom ? `✓ Article rangé ici, dans ${b.faconNom}` : '✓ Article rangé ici, à l\'instant';
     case 'deuxieme': return `${b.nom} rangé, ${b.rang === 1 ? '1er' : `${b.rang}e`}`;
     case 'ailleurs': return `Rangé dans ${b.carnet}, à l'instant`;
@@ -76,7 +82,7 @@ function useAmeneEnVue<T extends HTMLElement>(): React.RefObject<T | null> {
   return ref;
 }
 
-export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLigne }: {
+export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLigne, avis, detail }: {
   bandeau: BandeauV;
   onAnnuler: () => void;
   consequence?: ConsequenceV | null;
@@ -84,13 +90,19 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
   aideConsequence?: boolean;
   /** Rendu à la place de l'élément (note supprimée, carnet supprimé) : sans cadre vert. */
   enLigne?: boolean;
+  /**
+   * P22, P36 : l'IA n'a pas mis en forme (éteinte, hors ligne, en échec). L'avis se lit dans le bandeau même, picto local, sans roue :
+   * une seule ligne d'état. `detail` : ce qui a été rangé, et où.
+   */
+  avis?: { sorte: 'eteint' | 'hors-ligne' | 'echec'; texte: string } | null;
+  detail?: string;
 }) {
   const b = bandeau;
   const avecCoche = b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme';
   const texte = texteBandeau(b).replace(/^✓ /, '');
   const ref = useAmeneEnVue<HTMLDivElement>();
   return (
-    <div ref={ref} className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}`} role="status" data-sorte={b.sorte}>
+    <div ref={ref} className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}${avis ? ' cnf-bandeau-avis' : ''}`} role="status" data-sorte={b.sorte} data-avis={avis?.sorte}>
       <div className="cn-bandeau-tete">
         {avecCoche && <Check size={18} aria-hidden className="cn-ok" />}
         <span className="cn-sp">
@@ -104,6 +116,18 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
         </button>
       </div>
       {b.sorte === 'cree' && <p className="cn-cite">« {b.phrase} » · {ORIGINE_TITRE[b.titreDe ?? 'phrase']}</p>}
+      {b.sorte === 'lien' && (
+        <p className="cnf-bandeau-lien">
+          <span className="cn-mono cnf-lien-clair">{b.url.replace(/^https?:\/\//i, '').replace(/^www\./i, '')}</span>
+          <a className="cn-lien cnf-ouvrir" href={b.url} target="_blank" rel="noopener noreferrer">Ouvrir ↗</a>
+        </p>
+      )}
+      {avis && (
+        <p className="cnf-avis" data-avis={avis.sorte}>
+          {avis.sorte === 'hors-ligne' ? <WifiOff size={16} aria-hidden /> : avis.sorte === 'echec' ? <TriangleAlert size={16} aria-hidden /> : <Calculator size={16} aria-hidden />}
+          <span className="cn-sp">{avis.texte}{detail ? <span className="cnf-avis-detail"> — {detail}</span> : null}</span>
+        </p>
+      )}
       {b.sorte === 'deuxieme' && b.faconsNees ? <p className="cn-mut">{b.faconsNees} façons nées des {b.faconsNees} articles</p> : null}
       {b.sorte === 'ailleurs' && b.article && (
         <p className="cn-bandeau-article">

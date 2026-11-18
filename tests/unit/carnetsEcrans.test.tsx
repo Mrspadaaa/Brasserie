@@ -145,12 +145,13 @@ describe('C1 · écrans figés', () => {
     expect(container.textContent).not.toContain('CHF');
     sansZeroInvente(container);
   });
-  it('R02 liste vide, geste 1 : phrase d’achat, carte fantôme, puces exemples (G1), brouillon en second (G2)', () => {
+  it('R02 liste vide (i02-2, corr. 4 P2) : cadre « Votre premier carnet s’affichera ici », « Un carnet garde », bulle ; G1, G2', () => {
     const onExemple = vi.fn();
     const { container } = render(<ListeCarnets carnets={[]} onOuvrir={rien} onExemple={onExemple} />);
-    expect(container.textContent).toContain('Collez le lien d\'un objet ou notez un besoin');
-    expect(container.textContent).toContain('arrive ici');
-    expect(container.textContent).toContain('Aucun carnet encore.');
+    expect(container.textContent).toContain('Votre premier carnet');
+    expect(container.textContent).toContain("s'affichera ici");
+    expect(container.textContent).toContain('Un carnet garde');
+    expect(container.textContent).toContain('Écrivez ici un besoin');
     expect(container.textContent).toContain('Une note en vrac marche aussi.');
     fireEvent.click(screen.getByRole('button', { name: 'Frigo de garde' }));
     expect(onExemple).toHaveBeenCalledWith('Frigo de garde');
@@ -162,7 +163,8 @@ describe('C1 · écrans figés', () => {
     expect(screen.getByRole('heading', { name: 'Ventilation de la salle de brassage' })).toBeTruthy();
     /* P11 : deux critères, « Ce qui compte » et la provenance une fois en tête, puis une ligne courte par critère */
     expect(container.textContent).toContain("Ce qui compte, proposé par l'IA :capter la buée à la source");
-    expect(container.textContent).toContain('Hotte + extracteur ou Extracteur mural ?');
+    /* corr. 4 P5 (h05-3) : les façons sont dans le tableau, chacune avec sa pastille sur le critère */
+    expect(container.querySelector('.cn-tab-facon')?.textContent).toContain('Hotte + extracteur');
     expect(container.textContent).toContain('capte la buée');
     expect(container.textContent).toContain('1 sans aperçu');
     expect(screen.getByRole('button', { name: /Comparer côte à côte/ })).toBeTruthy();
@@ -285,7 +287,10 @@ describe('Gestes : créer, ajouter, lien, note en vrac (R09 à R19)', () => {
     expect(container.textContent).toContain("aucune : l'IA les cherche");
     expect(container.textContent).toContain('aucun : collez un lien');
     expect(container.textContent).toContain('Le champ en bas range tout ici');
-    expect(container.textContent).not.toContain('Photos');
+    /* corr. 4 P27 (g5:v04-4) : l'encadré d'état en entier, et « Photos · aucune » dans cet état seulement */
+    expect(container.textContent).toContain('Idée · 17 nov.');
+    expect(container.textContent).toContain("Ensuite : l'IA cherche les façons");
+    expect(container.textContent).toContain('Photos · aucune');
     fireEvent.click(screen.getByRole('button', { name: /Annuler/ }));
     expect(onAnnuler).toHaveBeenCalled();
     cleanup();
@@ -388,8 +393,9 @@ describe('Gestes : créer, ajouter, lien, note en vrac (R09 à R19)', () => {
     expect(r3.container.textContent).toContain('✓ 3 lignes rangées dans 2 carnets');
     expect(r3.container.textContent).toContain("Texte d'origine");
     expect(r3.container.textContent).toContain('ferblantier jeudi / hotte trop large ? / gaine 150');
-    fireEvent.click(screen.getByRole('button', { name: /à acheter ▾/ }));
-    expect(onGenre).toHaveBeenCalledWith('l3');
+    /* corr. 4, lot voisin (NoteEnVrac) : type ▾ = choix natif, une note change de genre d'un toucher */
+    fireEvent.change(screen.getByRole('combobox', { name: /Type de « Gaine alu Ø 150 mm »/ }), { target: { value: 'question' } });
+    expect(onGenre).toHaveBeenCalledWith('l3', 'question');
   });
   it('R19 : sur la liste, les lignes ajoutées « +2 · question, à acheter »', () => {
     const { container } = render(<ListeCarnets carnets={TOUS} ajouts={{ 'zz-ventil': ['question', 'a-acheter'] }} onOuvrir={rien} />);
@@ -460,7 +466,8 @@ describe('C6 · G8, G29, pastilles, G30, G32', () => {
     const r = render(<ChampCarnet valeur="" onChange={onChange} onEnvoyer={rien} titreCarnet="Ventilation" suggestion={{ critere: 'plus de condensation au plafond', a: 'Hotte inox + extracteur', b: 'Extracteur mural seul' }} />);
     fireEvent.focus(screen.getByRole('textbox'));
     const bulle = screen.getByRole('button', { name: /peut trancher entre/ });
-    expect(bulle.textContent).toContain('Le critère « plus de condensation au plafond » peut trancher entre Hotte inox + extracteur et Extracteur mural seul');
+    /* la bulle cite le critère passé en props, tel quel */
+    expect(bulle.textContent).toMatch(/Le critère « plus de condensation au plafond » peut trancher entre Hotte inox \+ extracteur et Extracteur mural seul/);
     expect(bulle.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(bulle.textContent).not.toContain('✻');
     fireEvent.click(bulle);
@@ -583,7 +590,7 @@ describe('C6 · Suppression v2 (D-47b) et veille (R31)', () => {
   it('G35 « n articles en veille : les déplacer dans <carnet> · Déplacer », picto local', () => {
     const onDeplacer = vi.fn();
     const r = render(<SupprimerCarnet {...base} contenu={k} liens={[]} proche={{ titre: 'Ventilation', onDeplacer }} />);
-    const g35 = screen.getByText(/1 article en veille : les déplacer dans Ventilation/);
+    const g35 = screen.getByText((_, el) => !!el?.classList.contains('cn-sp') && /1 article en veille : les déplacer dans Ventilation/.test(el.textContent ?? '')).parentElement!;
     expect(g35.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(g35.textContent).not.toContain('✻');
     fireEvent.click(screen.getByRole('button', { name: 'Déplacer' }));
@@ -616,12 +623,14 @@ describe('C6 · Suppression v2 (D-47b) et veille (R31)', () => {
 });
 
 describe('Photos, état de l’IA, valeurs', () => {
-  it('Photos masquée vide ; vignette « photo non lue »', () => {
+  it('Photos masquée vide ; vignette « non lue » (corr. 4 P21)', () => {
     const r = render(<Photos photos={[]} />);
     expect(r.container.textContent).toBe('');
     r.unmount();
     const r2 = render(<Photos photos={[{ id: 'p', jpeg: 'data:image/jpeg;base64,AAAA', le: '2026-11-17' }]} />);
-    expect(r2.container.textContent).toContain('photo non lue');
+    expect(r2.container.querySelector('img')).toBeTruthy();
+    expect(r2.container.textContent).toContain('non lue');
+    expect(screen.getByRole('button', { name: /non lue/ })).toBeTruthy();
   });
   it('photo.ts : 1 280 px au plus, proportions gardées, jamais agrandie ; poids d’une URL de données', () => {
     expect(dimensionsCible(4000, 3000)).toEqual({ largeur: 1280, hauteur: 960 });
@@ -700,7 +709,9 @@ describe('Correction 1, lot L2 : le champ dans le vrai conteneur (fixture, magas
     expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
     fireEvent.focus(champ());
     const bulle = screen.getByRole('button', { name: /peut trancher entre/ });
-    expect(bulle.textContent).toContain('Le critère « plus de condensation au plafond » peut trancher entre Hotte inox + extracteur et Extracteur mural seul');
+    /* corr. 4 (lot A, critique 15) : la fixture dit désormais ce qu'il veut ; la bulle cite le critère tel quel */
+    expect(bulle.textContent).toMatch(/Le critère « [^»]+ » peut trancher entre Hotte inox \+ extracteur et Extracteur mural seul/);
+    expect(bulle.textContent).not.toMatch(/plus de condensation/i);
     expect(bulle.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(bulle.textContent).not.toContain('✻');
   });
@@ -751,7 +762,8 @@ describe('Corr. 2 (L2) : phrase en titre, Comparer, Choisi, cadre visible', () =
     const tetes = [...container.querySelectorAll('thead th')].map(th => th.textContent ?? '');
     expect(tetes[tetes.length - 1]).toMatch(/^écarté/);
     const raisons = [...container.querySelectorAll('td.cn-ecarte-raison')].map(td => td.textContent);
-    expect(raisons[raisons.length - 1]).toBe('ne capte pas la buée');
+    /* corr. 4 (lot C, P41) : la raison se dit « écarté : … », sans répéter le nom */
+    expect(raisons[raisons.length - 1]).toMatch(/^(écarté : )?ne capte pas la buée$/);
     /* jsdom ne mesure pas : aucune suite à droite annoncée à tort */
     expect(cadre.hasAttribute('data-suite')).toBe(false);
   });

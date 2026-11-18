@@ -207,6 +207,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    */
   const [equipmentSheet, setEquipmentSheet] = useLiveSelection(stocks.equipment, 'ref');
   const [purchasingEquipment, setPurchasingEquipment] = useState(false);
+  /** « Ajouter un besoin » demandé par le + volant sur À venir (P39) : transmis à l'UpgradeWorkspace, qui ouvre sa feuille. */
+  const [besoinDemande, setBesoinDemande] = useState<{ kind: string; at: number } | null>(null);
   // Matériel (za3) : à ≥ 1024 px la fiche s'ouvre à côté de la liste (premier appareil à traiter par défaut), en dessous dans la feuille.
   const [grandEcran, setGrandEcran] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 1024px)').matches);
   useEffect(() => {
@@ -300,6 +302,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         setAddingKegs(true);
         break;
       case 'newEquipment':
+        // P39 (h05-9, R28) : sur Matériel › À venir, le + volant ajoute un besoin (l'action de l'écran) ; ailleurs, l'achat de matériel.
+        if (subTab === 'materiel' && segMateriel === 'avenir') { setBesoinDemande({ kind: 'newBesoin', at: createRequest.at }); break; }
         setPurchasingEquipment(true);
         break;
       case 'newIdea':
@@ -737,6 +741,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'materiel' && (segMateriel === 'avenir' || segMateriel === 'realises') && (
         <div className="min-h-0 flex-1 overflow-y-auto">
           <UpgradeWorkspace vue={segMateriel === 'avenir' ? 'future' : 'completed'} onVue={(v) => setSegMateriel(v === 'future' ? 'avenir' : 'realises')}
+            createRequest={besoinDemande} onCreateRequestHandled={() => setBesoinDemande(null)}
             onOpenCarnet={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now() }); }} />
         </div>
       )}

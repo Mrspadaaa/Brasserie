@@ -75,9 +75,9 @@ describe('P8 (R11) : « ✓ Carnet créé · ↺ Annuler » agit même si l’IA
     expect(document.contains(avant)).toBe(true);
     expect(boutonAnnuler()).toBe(avant);
     expect(avant.closest('.cn-bandeau')).toBe(bandeauAvant);
-    /* P10 : l'état en cours est devenu « ✓ Rangé », à la même place, sans ✻ */
+    /* P25, P26 (critique 4) : une seule ligne d'état ; « ✓ Carnet créé » est l'état, ni roue ni « ✓ Rangé » en double */
     expect(document.querySelector('.cn-etat[data-etat="en-cours"]')).toBeNull();
-    expect(document.querySelector('.cn-etat[data-etat="range"]')?.textContent).toContain('Rangé');
+    expect(document.querySelectorAll('.cn-etat').length).toBe(0);
     fireEvent.click(avant);
     await attendre();
     expect(nb()).toBe(nb0);

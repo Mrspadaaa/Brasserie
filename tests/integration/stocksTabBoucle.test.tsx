@@ -80,12 +80,13 @@ describe('Stocks › Matériel : le compte d’À venir et la colonne d’À ven
     expect(colonne.textContent).not.toContain('plan annulé');
   });
 
-  it('À venir est dans la colonne des cartes de Carnets : mêmes marges que `.cn-page` (carnets.css), « + Besoin » dedans (d1280-4)', async () => {
+  it('À venir est dans la colonne des cartes de Carnets : mêmes marges que `.cn-page` (carnets.css), le + volant porte « Ajouter un besoin », pas de « + Besoin » dedans (d1280-4, P39)', async () => {
     monterMateriel('avenir');
     await act(async () => { await new Promise(resolve => setTimeout(resolve, 50)); });
     const colonne = document.querySelector('[data-colonne-materiel]') as HTMLElement;
     expect(colonne.className).toBe(COLONNE_MATERIEL);
-    expect(within(colonne).getByRole('button', { name: 'Ajouter un besoin' })).toBeInTheDocument();
+    // P39 (h05-9, R28) : un seul + (le + volant, qui demande « Ajouter un besoin ») ; aucun « + Besoin » dans la colonne.
+    expect(within(colonne).queryByRole('button', { name: 'Ajouter un besoin' })).toBeNull();
     // `.cn-page` : padding 8 px 12 px 16 px ; dès 900 px, 760 px de large et centrée. La colonne d'À venir dit la même chose en Tailwind.
     const css = readFileSync(resolve(__dirname, '../../src/ui/carnets/carnets.css'), 'utf8');
     expect(css).toMatch(/\.cn-page \{[^}]*padding: 8px 12px 16px;/);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_VENTILATION } from '../../src/domain/carnets/fixture';
+import { CRITERE_CONDENSATION, fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_VENTILATION } from '../../src/domain/carnets/fixture';
 import { lireCarnet, lireMessage, type CarnetDoc } from '../../src/domain/carnets/modele';
 import {
   basculerVeille, changerGenre, changerSorte, choisir, creerCarnet, deplacer, deplacerArticles, fusionnerNotes, garderAPart, modifierLigne, modifierNote,
@@ -31,12 +31,12 @@ const carnet = (items: CreativeItem[], id: string): CarnetDoc => lireCarnet(item
 
 describe('P11 : un critère au même texte normalisé ne fait qu’une ligne', () => {
   const message = (id: string, texte: string) => ({ id, texte, le: LE, depuis: ID_VENTILATION, rangement: 'locale' as const });
-  it('ranger « Plus de condensation au plafond » : aucune ligne de plus, la source ZZ-MSG-V1 gardée, annulable', () => {
+  it('ranger « Moins de condensation au plafond : capter la buée » : aucune ligne de plus, la source ZZ-MSG-V1 gardée, annulable', () => {
     const etat = fixtureCarnets();
-    const r = ok(ranger(etat, { message: message('M-P11', 'Plus de condensation au plafond'), lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Plus de condensation au plafond', origine: 'locale' }] }));
+    const r = ok(ranger(etat, { message: message('M-P11', CRITERE_CONDENSATION), lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: 'moins de condensation au plafond : capter la buée.', origine: 'locale' }] }));
     const apres = allerRetour(etat, r);
     const k = carnet(apres, ID_VENTILATION).carnet.criteres;
-    expect(k.filter(x => /condensation/i.test(x.texte))).toEqual([{ id: 'ZZ-V-K1', texte: 'plus de condensation au plafond', origine: 'vous', messageId: 'ZZ-MSG-V1' }]);
+    expect(k.filter(x => /condensation/i.test(x.texte))).toEqual([{ id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, origine: 'vous', messageId: 'ZZ-MSG-V1' }]);
     expect(k.length).toBe(3);
     /* le message est gardé (R25), sans effet qui pointerait vers l'ancien critère : l'annuler ne le retire pas */
     expect(lireMessage(apres.find(i => i.id === 'M-P11'))!.carnetMessage.effets.filter(e => e.cible === 'critere')).toEqual([]);
@@ -56,7 +56,7 @@ describe('P11 : un critère au même texte normalisé ne fait qu’une ligne', (
     const etat = fixtureCarnets();
     const r1 = ok(ranger(etat, { message: message('M-P11c', 'plafond'), lignes: [{ carnetId: ID_VENTILATION, sorte: 'note', texte: 'plafond' }] }));
     const m = magasinMemoire(etat); m.appliquer(r1.ecritures);
-    const r2 = ok(remplacerRangement(m.lire(), { messageId: 'M-P11c', rangement: 'ia', lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Plus de condensation au plafond', origine: 'ia' }] }));
+    const r2 = ok(remplacerRangement(m.lire(), { messageId: 'M-P11c', rangement: 'ia', lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: CRITERE_CONDENSATION, origine: 'ia' }] }));
     m.appliquer(r2.ecritures);
     const c = carnet(m.lire(), ID_VENTILATION).carnet;
     expect(c.criteres.filter(x => /condensation/i.test(x.texte)).map(x => x.id)).toEqual(['ZZ-V-K1']);
@@ -133,7 +133,7 @@ describe('opérations : chaque intention a son inverse (A2)', () => {
     const a = allerRetour(F, changerSorte(F, { carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N1', vers: 'facon' }));
     expect(carnet(a, ID_VENTILATION).carnet.facons.at(-1)).toMatchObject({ id: 'ZZ-V-N1', nom: 'attendre l’avis du ferblantier', etat: 'ouverte' });
     const b = allerRetour(F, changerSorte(F, { carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K1', vers: 'note' }));
-    expect(carnet(b, ID_VENTILATION).carnet.notes.at(-1)).toMatchObject({ id: 'ZZ-V-K1', texte: 'plus de condensation au plafond', messageId: 'ZZ-MSG-V1' });
+    expect(carnet(b, ID_VENTILATION).carnet.notes.at(-1)).toMatchObject({ id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, messageId: 'ZZ-MSG-V1' });
   });
 
   it('modifier une note (modifieeLe), un critère ; supprimer une note : le message reste', () => {

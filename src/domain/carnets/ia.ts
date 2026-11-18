@@ -45,6 +45,11 @@ export interface LigneCarnet {
   commeCritere?: true;
   regrouperAvec?: string[];
   titrePropose?: string;
+  /**
+   * P10, P23 (D-35, D-24) : un critère que l'IA propose sans l'écrire (la caractéristique commune lue sur les deux premiers articles d'un
+   * carnet qui n'a pas de critère). `ranger` le garde sur le message ; l'accepter = le ranger sans `propose` (`accepterProposition`).
+   */
+  propose?: true;
   /** La page lue du lien de la ligne, telle que `lireLien` l'a rendue. */
   page?: PageLue;
   origine: 'ia' | 'exemple';
@@ -250,6 +255,12 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
         const ids = [...new Set(r.regrouperAvec.filter((x): x is string => typeof x === 'string').map((x) => x.trim()))];
         if (ids.length && ids.every((id) => notesConnues.has(id))) ligne.regrouperAvec = ids;
       }
+    }
+    // P10, P23 : une proposition n'existe que sur un critère d'un carnet connu, avec sa caractéristique (sinon rien à comparer).
+    // Une proposition mal formée est retirée : jamais écrite comme si elle était acceptée.
+    if (r.propose === true) {
+      if (sorte !== 'critere' || !connu || !ligne.caracteristique) continue;
+      ligne.propose = true;
     }
     const propose = chaine(r.titrePropose, 200);
     if (propose && sorte === 'idee' && connu && propose.length <= TITRE_MAX && !memeTitre(propose, parId.get(idDemande!)!.titre))

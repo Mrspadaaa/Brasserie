@@ -11,7 +11,7 @@
  */
 import type { CreativeItem } from '../../types';
 import { lundiDe } from '../calendrier';
-import { prixTousDe, urlsDe } from './analyseLocale';
+import { analyserLigne, prixTousDe, urlsDe } from './analyseLocale';
 
 export const VERSION_CARNET = 1 as const;
 
@@ -104,8 +104,18 @@ export interface DonneesCarnet {
 export type CibleEffet = 'carnet' | 'critere' | 'facon' | 'article' | 'note' | 'photo';
 export const CIBLES_EFFET: readonly CibleEffet[] = ['carnet', 'critere', 'facon', 'article', 'note', 'photo'];
 
-/** Ce qu'un message a rangé. `carnetSupprime` : le carnet a été supprimé depuis ; le message reste (L33). */
-export interface EffetMessage { carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true }
+/**
+ * Ce qu'un message a rangé. `carnetSupprime` : le carnet a été supprimé depuis ; le message reste (L33).
+ * `fusion` (P7) : le message a précisé un critère déjà là, de même caractéristique (« le débit » → « … : 1 200 m³/h au moins ») ; l'effet
+ * garde le critère d'avant, que `remplacerRangement` remet au lieu de retirer le critère.
+ */
+export interface EffetMessage { carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true; fusion?: { texte: string; origine: Origine; messageId?: string } }
+
+/**
+ * P10, P23 (D-35, D-24) : un critère que l'IA propose sans l'écrire (la caractéristique commune lue sur deux articles). Il reste sur le
+ * message ; « accepter » (`accepterProposition`) le range comme une ligne ordinaire.
+ */
+export interface PropositionCritere { carnetId: string; texte: string; caracteristique?: Caracteristique; origine: Origine }
 
 export type Rangement = 'ia' | 'locale' | 'simulee' | 'brut';
 
@@ -119,6 +129,8 @@ export interface DonneesMessage {
   titrePropose?: { carnetId: string; titre: string; applique?: boolean };
   /** G11 : « Garder à part » touché ; la proposition de fusion ne revient pas pour ce message. */
   gardeAPart?: true;
+  /** P10, P23 : les critères proposés par l'IA, pas encore acceptés. */
+  propositions?: PropositionCritere[];
 }
 
 export type StatutCarnet = 'idea' | 'research' | 'validated';
@@ -247,14 +259,23 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
   if (!estObjet(m) || typeof m.texte !== 'string' || typeof m.le !== 'string' || !texteNonVide(m.depuis)) return null;
   const effets = Array.isArray(m.effets)
     ? m.effets.filter((e): e is EffetMessage => estObjet(e) && texteNonVide(e.carnetId) && CIBLES_EFFET.includes(e.cible as CibleEffet) && texteNonVide(e.id))
-      .map(e => sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined }))
+      .map(e => {
+        const f = (e as { fusion?: unknown }).fusion;
+        const fusion = estObjet(f) && typeof f.texte === 'string' && typeof f.origine === 'string'
+          ? sansIndefinis({ texte: f.texte, origine: f.origine as Origine, messageId: texteNonVide(f.messageId) ? f.messageId : undefined }) : undefined;
+        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion });
+      })
     : [];
   const t = m.titrePropose;
   const titrePropose = estObjet(t) && texteNonVide(t.carnetId) && texteNonVide(t.titre)
     ? sansIndefinis({ carnetId: t.carnetId, titre: t.titre, applique: t.applique === true ? true : undefined }) : undefined;
+  const propositions = Array.isArray(m.propositions)
+    ? m.propositions.filter((p): p is PropositionCritere => estObjet(p) && texteNonVide(p.carnetId) && texteNonVide(p.texte) && typeof p.origine === 'string')
+      .map(p => sansIndefinis({ carnetId: p.carnetId, texte: p.texte, origine: p.origine, caracteristique: estObjet(p.caracteristique) ? { ...p.caracteristique } : undefined }))
+    : [];
   const carnetMessage: DonneesMessage = sansIndefinis({
     texte: m.texte, le: m.le, depuis: m.depuis, rangement: RANGEMENTS.includes(m.rangement as Rangement) ? (m.rangement as Rangement) : 'brut', effets, titrePropose,
-    gardeAPart: m.gardeAPart === true ? (true as const) : undefined
+    gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined
   });
   return { ...item, type: 'carnet-message', carnetMessage };
 }
@@ -332,31 +353,14 @@ const AVANT_PRIX = /(?:^|\s)(?:au prix de|à partir de|prix|à|a|pour|de|dès|en
 const APRES_PRIX = /^\s*(?:la pièce|pièces?|pce|pc|\/\s*pièce|l['’]unité|chacune?|HT|TTC)(?=$|[\s.,;:!?)])/i;
 const PREFIXE_TEST = /^ZZ TEST\s*[—–-]\s*/i;
 const MARQUE_TEST_SEULE = /^ZZ TEST(?:\s*[—–-]\s*)?/i;
-const DEVISE_COLLEE = /^(?:CHF|SFr\.?|Fr\.|EUR)\s?/i;
-const DEVISE_SUIVANTE = /^\s?(?:CHF|SFr\.?|Fr\.|francs?|€|EUR|euros?)(?!\p{L})/iu;
-
 export interface PrixLu { centimes: number; devise: 'CHF' | 'EUR'; debut: number; fin: number }
 
 /**
- * Les prix d'un texte (`prixTousDe`, § État de l'art), corrigés d'un cas : « moteur 189,90 CHF » se lit « eur 189,90 », en euros, la
- * devise collée à la fin d'un mot. Le mot reste un mot : le prix est le nombre suivi de sa vraie devise (« 189,90 CHF ») ; sans devise
- * après (« moteur 190 »), ce n'est pas un prix.
+ * Les prix d'un texte : `prixTousDe` (§ État de l'art), qui ne lit plus une devise collée à la fin d'un mot (P40, « moteur 189,90 CHF »
+ * → 189,90 CHF). Appelants inchangés.
  */
 export function prixLus(texte: string): PrixLu[] {
-  const sortie: PrixLu[] = [];
-  for (const p of prixTousDe(texte)) {
-    let { debut, fin, devise } = p;
-    const collee = debut > 0 && /\p{L}/u.test(texte[debut - 1]) ? DEVISE_COLLEE.exec(texte.slice(debut)) : null;
-    if (collee) {
-      const suite = DEVISE_SUIVANTE.exec(texte.slice(fin));
-      if (!suite) continue;
-      debut += collee[0].length;
-      fin += suite[0].length;
-      devise = /€|eur/i.test(suite[0]) ? 'EUR' : 'CHF';
-    }
-    sortie.push({ centimes: p.centimes, devise, debut, fin });
-  }
-  return sortie;
+  return prixTousDe(texte).map(({ centimes, devise, debut, fin }) => ({ centimes, devise, debut, fin }));
 }
 
 /**
@@ -413,6 +417,9 @@ export function titreDePhrase(phrase: string): string {
     const prefixe = PREFIXE_TEST.exec(ligne)?.[0] ?? '';
     titre = lien ? `${prefixe}${lien.domaine}` : ligne;
   }
+  /* P4 (G5, g5:v01-4) : « Moulin à malt : 2 cylindres, 150 kg/h minimum » → titre « Moulin à malt » ; le critère va dans Ce qui compte. */
+  const deux = /^(.{2,60}?)\s*:\s*(.+)$/u.exec(titre);
+  if (deux && /\p{L}/u.test(deux[1].replace(MARQUE_TEST_SEULE, '')) && analyserLigne(deux[2]).sorte === 'critere') titre = deux[1].trim();
   return titre.length > 120 ? `${titre.slice(0, 119).trimEnd()}…` : titre;
 }
 
