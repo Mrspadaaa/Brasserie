@@ -38,7 +38,7 @@ import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './dom
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 import { articlesACommander } from './domain/stockLevel';
-import { compteDeReglage, vueHorizon } from './domain/stock/horizon';
+import { compteDeReglage, lignesDeReglage, prochainBrassin, SEMAINES_FENETRE, vueHorizon, type Reglage } from './domain/stock/horizon';
 import { useHorizonStock, aujourdhuiLocal } from './ui/stock/useHorizonStock';
 import { formatLitres } from './domain/recipeMetrics';
 
@@ -64,8 +64,9 @@ import {
   GanttTask, 
   BudgetLine, 
   PricingItem, 
-  AuditLog, 
-  CreativeItem 
+  AuditLog,
+  CreativeItem,
+  FinanceCategory
 } from './types';
 import { FirebaseAuthService } from './services/firebaseAuth';
 import { etatConnexions, etatReglages } from './components/plus/etats';
@@ -292,7 +293,7 @@ export const App: React.FC = () => {
   }, [ouvrirCarnet]);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
-  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string } | null>(null);
+  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string; categorie?: FinanceCategory } | null>(null);
   /** Calendrier, « Budget › » d'un brassin (D-71) : la feuille de budget existante, sur le brassin de cet id. */
   const [budgetBrassinId, setBudgetBrassinId] = useState<string | null>(null);
   useEffect(() => {
@@ -579,7 +580,7 @@ export const App: React.FC = () => {
   // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
   // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
   // Pastille C (16.11) : le même horizon « S49 · 6 sem. · Tout » règle le chiffre clé du Stocks et cette pastille (domain/stock/horizon.ts).
-  const [horizonStock] = useHorizonStock();
+  const [horizonStock, reglerHorizonStock] = useHorizonStock();
   const criticalStockCount = useMemo(() => {
     const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, aujourdhuiLocal());
     return compteDeReglage(vue, horizonStock);
@@ -1294,13 +1295,32 @@ export const App: React.FC = () => {
               setActiveTab('production');
             }}
             onOpenFinances={() => setActiveTab('finances')}
-            onOpenCourses={() => runPlus('courses')}
+            onOpenCourses={(batchId) => {
+              /* CRITIQUE-5 n° 17 (D-191, E25) : « Commander » d'un brassin planifié ouvre les Courses sur une fenêtre qui contient ses courses.
+                 Si le réglage de Stocks (`stocks_horizon`) les montre déjà, il ne change pas. Sinon : de la semaine en cours à celle du
+                 brassin, quand ses courses y tombent ; à défaut, « Tout ». Ce défaut couvre aussi la date à la suisse (« 07.12.2026 », écrite
+                 par `normalizeBrewDate`) que `horizon.ts` ne lit pas : les courses de ce brassin y tombent au seuil (RESULTAT, DÉCISION 2). */
+              const b = batchId ? batches.find(x => x.id === batchId) : undefined;
+              if (b && b.status === 'planifie') {
+                const jour = aujourdhuiLocal();
+                const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, jour);
+                const siennes = (r: Reglage) => lignesDeReglage(vue, r).some(l => l.sources.some(s => s.genre === 'brassin' && s.id === b.id));
+                const sien = prochainBrassin([b], jour);
+                const fenetre: Reglage | null = sien && sien.semaine - vue.courante <= SEMAINES_FENETRE - 1 ? { de: vue.courante, a: sien.semaine } : null;
+                if (!siennes(horizonStock)) reglerHorizonStock(fenetre && siennes(fenetre) ? fenetre : 'tout');
+              }
+              runPlus('courses');
+            }}
             onPoserBrassin={() => setQuickAction('brew-batch', actionLauncherRef.current)}
             onPoserFete={(lundi) => {
               setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi });
               navigateToCreativeLab();
             }}
-            onPoserDepense={(lundi) => setPrevoirDepense({ date: lundi })}
+            onPoserDepense={(lundi, _rangee, categorie) => {
+              /* CRITIQUE-6 n° 3 (D-68, E34) : la catégorie vient de la rangée d'où l'on part (`CATEGORIE_DE_RANGEE` du calendrier) ; un achat
+                 de matières est « Brassage » (rangé dans Achats), jamais « Charges fixes » (Papiers). PlanSheet la pose dans la prévision neuve. */
+              setPrevoirDepense({ date: lundi, ...(categorie ? { categorie } : {}) });
+            }}
             periode={globalTimeFilter}
             onPeriode={(p) => setGlobalTimeFilter(p)}
             onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
@@ -1418,7 +1438,7 @@ export const App: React.FC = () => {
       />}
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
-      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
+      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} {...(prevoirDepense.categorie ? { categorie: prevoirDepense.categorie } : {})} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
       {budgetBrassinId && batches.some(b => b.id === budgetBrassinId) && <React.Suspense fallback={null}><BrewBudgetDialog batch={batches.find(b => b.id === budgetBrassinId)} onClose={() => setBudgetBrassinId(null)} /></React.Suspense>}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { RANGEES, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { RANGEES, ecartJours, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import './frise.css';
 
@@ -12,7 +12,11 @@ import './frise.css';
  * Dans les deux cas une chose épinglée reste visible (D-36, D-37).
  *
  * Les courses d'un brassin (caddies d'Achats) sont reliées à leur brassin par un trait pointillé, comme dans sa maquette (as/p-repos, D-107).
- * Une vente liée à un brassin visible, mais hors de la vue, laisse un renvoi « Livraison La Cigogne · S1 › » dans Ventes (E32).
+ * Une vente liée à un brassin visible, mais hors de la vue, laisse un renvoi « Livraison La Cigogne · S1 › » dans Ventes (E32), posé en
+ * bout de rangée (CRITIQUE-3 n° 21).
+ *
+ * Contrat (lot t3-d) : `onSixSemaines?: (chose) => void` est appelé par l'appui long d'une marque en 3 mois, 6 mois ou An ; `vueLarge?`
+ * dit si la vue est l'une de ces trois (sinon déduit des colonnes).
  */
 
 export const ORDRE_PAR_DEFAUT: readonly IdRangee[] = RANGEES.map(r => r.id);
@@ -48,10 +52,17 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   menuId?: string | null;
   /** Le détail de la chose choisie, posé sous sa rangée. */
   detail?: (chose: ChoseCalendrier) => React.ReactNode;
+  /** CRITIQUE-13 n° 1 : l'alerte f6-b et la rangée de la vente promise, où elle se pose dans le flux (sous la vente, elle pousse la suite). */
+  alerte?: { rangee: IdRangee; noeud: React.ReactNode } | null;
   /** Largeur de repli quand rien ne se mesure (jsdom). */
   largeurRepli?: number;
-  /** Largeur, à droite, où aucun nom ne se pose : la zone du + volant au téléphone (D-135). */
+  /** Largeur, à droite, où aucun nom ne se pose : la zone du + volant au téléphone (D-135). En paysage, réservée sur toute la hauteur (n° 27). */
   reserveDroite?: number;
+  /**
+   * 3 mois, 6 mois, An (E27, D-199) : une chose de moins de 24 px devient une marque, et l'appui long sur une marque appelle `onSixSemaines`
+   * au lieu du menu. Absent : déduit des colonnes (des mois, ou plus de 6 semaines, en paysage aussi : CRITIQUE-4 n° 4).
+   */
+  vueLarge?: boolean;
   /** La largeur mesurée et celle d'une colonne : partagées avec la courbe. */
   onMesure?: (m: { largeur: number; largeurColonne: number }) => void;
 }
@@ -101,26 +112,60 @@ export const Frise: React.FC<FriseProps> = props => {
   /* D-135 (CRITIQUE-2 n° 13) : au repos, les rangées qui passent à la hauteur du + volant gardent leurs noms hors de sa zone ; mesuré après
      le rendu, une rangée ajoutée n'est jamais retirée tant que la mise en page ne change pas (pas d'oscillation) */
   const cleMise = `${paysage}|${colonnes.map(c => c.debut).join(',')}|${choses.length}|${masquees.join(',')}|${filtre ?? ''}`;
-  const [sousFab, setSousFab] = React.useState<{ cle: string; ids: IdRangee[] }>({ cle: '', ids: [] });
+  const [sousFab, setSousFab] = React.useState<{ cle: string; ids: IdRangee[]; reserve: number }>({ cle: '', ids: [], reserve: 0 });
   const idsSousFab = sousFab.cle === cleMise ? sousFab.ids : [];
-  React.useLayoutEffect(() => {
+  /*
+   * CRITIQUE-7 n° 7 : « Brouwland · malt −42 », son 0 sous le + après la rotation revenue en portrait. Le + est fixe : la rangée qui passe sous
+   * lui change quand la page défile ou tourne, sans nouveau rendu de la frise. La mesure se refait donc aussi au repos du défilement, au
+   * changement de taille et d'orientation. La zone gardée est celle du + mesuré (du bord gauche du + moins 8 px au bord droit de la frise),
+   * jamais moins que `reserveDroite`. Une rangée gardée le reste tant que la mise en page ne change pas : un nom ne saute pas d'un côté à
+   * l'autre en défilant (pas d'oscillation).
+   */
+  const sousFabRef = React.useRef({ cle: cleMise, ids: idsSousFab, reserve: sousFab.reserve });
+  sousFabRef.current = { cle: cleMise, ids: idsSousFab, reserve: sousFab.cle === cleMise ? sousFab.reserve : 0 };
+  const mesurerSousFab = React.useCallback(() => {
     const el = zone.current;
     if (!el || !reserveDroite || typeof document === 'undefined') return;
-    const fab = [...document.querySelectorAll<HTMLElement>('.floating-actions button')].find(b => /Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
+    const fab = [...document.querySelectorAll<HTMLElement>('button[aria-label]')].find(b => /^Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
     const f = fab?.getBoundingClientRect();
     if (!f || !f.height) return;
+    const { cle, ids, reserve } = sousFabRef.current;
+    const z = el.getBoundingClientRect();
+    const zoneFab = z.width > 0 ? Math.ceil(z.right - (f.left - 8)) : 0;
     const ajout: IdRangee[] = [];
     el.querySelectorAll<HTMLElement>('section[data-rangee]').forEach(s => {
       const r = s.getBoundingClientRect();
-      const haut = r.top + window.scrollY, bas = r.bottom + window.scrollY;
       const id = s.getAttribute('data-rangee') as IdRangee;
-      if (bas > f.top - 4 && haut < f.bottom + 4 && !idsSousFab.includes(id)) ajout.push(id);
+      /* le + et la rangée sont mesurés dans le même repère (l'écran) : la rangée passe-t-elle à sa hauteur, maintenant ? */
+      if (r.bottom > f.top - 4 && r.top < f.bottom + 4 && !ids.includes(id)) ajout.push(id);
     });
-    if (ajout.length) setSousFab({ cle: cleMise, ids: [...idsSousFab, ...ajout] });
-  });
+    const nouvelle = Math.max(reserve, zoneFab > 0 && zoneFab < (z.width || Infinity) ? zoneFab : 0);
+    if (ajout.length || nouvelle > reserve) setSousFab({ cle, ids: [...ids, ...ajout], reserve: nouvelle });
+  }, [reserveDroite]);
+  React.useLayoutEffect(() => { mesurerSousFab(); });
+  React.useEffect(() => {
+    if (!reserveDroite || typeof window === 'undefined') return undefined;
+    let t: ReturnType<typeof setTimeout> | null = null;
+    /* au repos du défilement (120 ms sans bouger), et après une rotation, le temps que la page se repose */
+    const plusTard = () => { if (t) clearTimeout(t); t = setTimeout(() => { t = null; mesurerSousFab(); }, 120); };
+    window.addEventListener('scroll', plusTard, { passive: true, capture: true });
+    window.addEventListener('resize', plusTard);
+    window.addEventListener('orientationchange', plusTard);
+    return () => {
+      if (t) clearTimeout(t);
+      window.removeEventListener('scroll', plusTard, { capture: true });
+      window.removeEventListener('resize', plusTard);
+      window.removeEventListener('orientationchange', plusTard);
+    };
+  }, [reserveDroite, mesurerSousFab]);
+  const reserveSousFab = Math.max(reserveDroite, sousFab.cle === cleMise ? sousFab.reserve : 0);
 
   const largeur = mesuree || largeurRepli;
   const n = Math.max(1, colonnes.length);
+  const enMois = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  /* CRITIQUE-4 n° 4 (D-199, E27) : le paysage montre 13 semaines, c'est déjà une vue large. Plus de 6 semaines, au téléphone comme tourné :
+     une marque prend l'appui long et ouvre les 6 semaines centrées sur elle, jamais le menu f5-a (qui reste aux barres et aux 6 semaines). */
+  const vueLarge = props.vueLarge ?? (enMois || colonnes.length > 6);
   const largeurColonne = largeur / n;
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);
@@ -143,6 +188,10 @@ export const Frise: React.FC<FriseProps> = props => {
       data-nb-colonnes={n}
       data-largeur-colonne={largeurColonne.toFixed(2)}
       data-largeur={largeur}
+      /* CRITIQUE-10, doute m22 : le cadre de focus (pastille « lié à », barres, marques) est pour le clavier seul ; après un toucher, aucun cadre
+         (comme la bande des semaines, `data-doigt`). La touche suivante du clavier le rend. */
+      onPointerDownCapture={e => e.currentTarget.setAttribute('data-doigt', '')}
+      onKeyDownCapture={e => e.currentTarget.removeAttribute('data-doigt')}
     >
       {traits.length > 0 && (
         <svg className="cal-traits" aria-hidden="true" data-traits>
@@ -167,7 +216,8 @@ export const Frise: React.FC<FriseProps> = props => {
             largeur={largeur}
             mesures={mesures}
             paysage={paysage}
-            reserveDroite={idsSousFab.includes(r) ? reserveDroite : 0}
+            reserveDroite={paysage ? reserveDroite : idsSousFab.includes(r) ? reserveSousFab : 0}
+            vueLarge={vueLarge}
             masquee={masquee}
             cause={masqueeParOeil ? 'oeil' : filtreeParFiltre ? 'filtre' : null}
             epingles={epingles}
@@ -185,6 +235,7 @@ export const Frise: React.FC<FriseProps> = props => {
             barre={props.barre}
             onSixSemaines={props.onSixSemaines}
             detail={selection && selection.rangee === r && detail ? detail(selection) : undefined}
+            alerte={props.alerte && props.alerte.rangee === r && !masquee ? props.alerte.noeud : undefined}
           />
         );
       })}

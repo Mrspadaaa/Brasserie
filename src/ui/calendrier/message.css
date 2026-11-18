@@ -1,0 +1,73 @@
+/* Le message du calendrier (E33, D-200) : un seul canal. Sa place (CRITIQUE-12 n° 1, règle n° 1 : celle de sa maquette, `as-gestes.js`
+   `toast`) est posée par `Message.tsx` (`left`, `top`) : près de la chose touchée là où il ne cache aucun texte, sinon en bas, au-dessus des
+   onglets, à gauche du + volant. Par-dessus la frise (fixe), sans réserver de hauteur : rien ne bouge quand il vient ni quand il part.
+   Ci-dessous, la place sans script (bande basse à gauche du +), que le script remplace.
+   Sélecteurs `[data-message]` : ils passent devant les règles `.cal-msg` de frise.css, sans les toucher. */
+.cal-msg[data-message] {
+  position: fixed; z-index: 45; left: 8px; right: 84px;
+  bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
+  max-width: 560px; display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 14px;
+  font-size: 14px; line-height: 18px; box-sizing: border-box;
+  /* le texte laisse passer le doigt ; seuls ses liens et boutons se touchent */
+  pointer-events: none;
+}
+.cal-msg[data-message] button { pointer-events: auto; }
+/* CRITIQUE-5 n° 5 (E31, E33, D-114) : le texte, puis les boutons (lien court « Finances › », Annuler). S'ils ne tiennent pas sur sa ligne, les
+   boutons passent entiers à la seconde : le lien n'est jamais coupé, deux lignes pour « Annulé · S49 : 1 088 → 1 988 » à 390. */
+.cal-msg[data-message]:not(.cal-msg-alerte) { flex-wrap: wrap; row-gap: 2px; }
+.cal-msg[data-message] .cal-msg-l { flex: 1 1 8rem; min-width: 0; }
+/* avec un effet chiffré, le texte demande sa largeur entière : s'il ne tient pas à côté des boutons, ce sont eux qui passent dessous */
+.cal-msg[data-message] .cal-msg-l.cal-msg-l-effet { flex-basis: auto; }
+.cal-msg[data-message] .cal-msg-ligne {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+/* CRITIQUE-4 n° 13 b : une ligne. Le nom cède (points de suite) ; « · S47 : 3 510 → 3 640 » reste entier. */
+.cal-msg[data-message] .cal-msg-ligne.cal-msg-2l { display: flex; flex-wrap: nowrap; align-items: baseline; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-nom { display: block; flex: 0 1 auto; min-width: 2.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-sep-v { flex: none; white-space: pre; }
+.cal-msg[data-message] .cal-msg-2l .cal-msg-effet { display: block; flex: none; white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cal-msg[data-message] .cal-msg-bt { margin-left: auto; align-items: center; }
+/* n° 20 : chaque bouton du message se touche sur 44 px au moins ; le lien aussi, entier, sans retour à la ligne */
+.cal-msg[data-message] .cal-msg-b { min-height: 44px; }
+.cal-msg[data-message] .cal-msg-lien { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0 6px; white-space: nowrap; }
+
+/* f6-b : l'alerte d'une promesse ; le texte entier sur la première ligne, Livrer et Annuler sur la seconde (passe 8, 03-p-f6b-alerte). Au
+   téléphone en hauteur, elle prend la largeur (le script pose `width`) : sous la vente promise, ou en bas au-dessus du + volant. */
+.cal-msg-alerte[data-message] {
+  right: 8px; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px 8px 12px;
+  bottom: calc(var(--main-navigation-height, 2.5rem) + 84px + env(safe-area-inset-bottom, 0px));
+}
+.cal-msg-alerte[data-message] .cal-msg-ligne { font-size: 14px; letter-spacing: -0.1px; }
+.cal-msg-alerte[data-message] .cal-msg-bt { justify-content: flex-start; margin-left: 0; }
+/* l'alerte est en colonne : son texte garde sa hauteur (une base de 12rem serait une hauteur) */
+.cal-msg-alerte[data-message] .cal-msg-l { flex: none; }
+
+/* CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b posée dans la frise, sous la vente promise, dans le flux. Elle prend la
+   largeur de la frise et pousse la rangée suivante : rien n'est caché, ni la vente dont elle parle, ni le titre Achats. */
+.cal-msg[data-message][data-flux] {
+  position: relative; z-index: 2; inset: auto; width: auto; max-width: none; margin: 8px 8px 10px; box-shadow: none;
+}
+
+/* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) et le grand écran : l'alerte à gauche du + volant, son texte et ses boutons sur une ligne */
+@media (orientation: landscape) and (max-height: 520px), (min-width: 1024px) {
+  .cal-msg-alerte[data-message] { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; }
+  .cal-msg-alerte[data-message] .cal-msg-l { flex: 1 1 auto; min-width: 0; }
+}
+
+/* « Trier les rangées » (k15 du jouable) : le critère choisi, un court instant, à droite sous l'en-tête */
+.cal-tri-seg {
+  position: sticky; z-index: 31; top: var(--cal-entete-h, 0px); margin-left: auto; width: max-content;
+  display: flex; gap: 2px; padding: 3px; border-radius: 12px;
+  background: rgb(var(--cave-900)); border: 1.5px solid rgb(var(--cave-700)); box-shadow: 0 8px 20px rgb(var(--cave-950) / 0.24);
+}
+.cal-tri-seg button {
+  min-height: 36px; padding: 0 12px; border-radius: 9px; font-size: 15px; font-weight: 600; color: rgb(var(--cave-50));
+  background: transparent; border: 0; white-space: nowrap;
+}
+.cal-tri-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.cal-tri-seg small { align-self: center; padding: 0 6px 0 4px; font-size: 14px; color: rgb(var(--cave-200)); }
+
+/* CRITIQUE-11 n° 4 (E31, D-192) : dans le menu d'appui long, un effet en mots passe entier sous son action ; l'action et son effet tiennent deux
+   lignes au plus. (Le menu vit dans frise.css, au lot de la frise : seule cette règle est ici.) */
+.cal-ml.cal-ml-mots { flex-wrap: wrap; row-gap: 0; padding-top: 4px; padding-bottom: 4px; }
+.cal-ml.cal-ml-mots > em { flex-basis: 100%; padding-left: 30px; line-height: 18px; font-size: 14px; }

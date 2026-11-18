@@ -28,6 +28,9 @@ export interface PlusPageAction {
   plein?: boolean;
   /** Le libellé court des cases de la pile en deux blocs (paysage, hauteur courte : « Fête », « Achat ») ; absent : dérivé du libellé. */
   court?: string;
+  /** La case de la pile en deux blocs garde la précision (`hint`) sous le nom court, comme en portrait (« Idée · en S47, dans le carnet », E36,
+   *  CRITIQUE-6 n° 19). Absent : la case n'a que son nom court, comme avant (les autres écrans ne changent pas). */
+  precisionEnCase?: boolean;
 }
 
 /** Une page qui déclare au moins ce nombre de gestes passe, quand la hauteur manque (téléphone couché), sa pile en deux blocs côte à côte. */

@@ -11,7 +11,7 @@
 //   BANDE         au repos, la bande ne contient que « S\d+ » (la semaine seule : ni solde, ni mouvement, ni icône)
 //   PLUS          les carrés + des sept rangées forment une colonne (x à 2 px près) et sont des boutons
 //   PLUS-AGIT     chaque carré ouvre la feuille d'ajout déjà réglée sur sa rangée
-//   BRUIT         après f1-a puis f6-b : un seul role="status" ou "alert", deux lignes au plus
+//   BRUIT         après f1-a puis f6-b : un seul role="status" ou "alert", deux lignes au plus ; message à sa place (pres|bas), 0 intersection (CRITIQUE-12 n° 1)
 //   FAB           le + volant dans le tiers droit, de 4 à 24 px au-dessus des onglets
 //   ROTATION      390 × 844 → 844 × 390 → 390 × 844 : une chose ajoutée reste, sans recharger
 //   PAYS          en paysage : 13 semaines, en-tête de 120 px au plus, rangée médiane de 48 px au plus
@@ -21,10 +21,24 @@
 //   GLISSE        f1-a par un vrai toucher CDP à 390 et par la souris à 1280 : la barre de la Hotte change de semaine et « Annuler » apparaît (n° 1)
 //   MENU-BORNE    le menu f5-a, Retirer compris, est dans l'écran, au-dessus des onglets et du + (n° 3)
 //   FAB-RECOUVRE  aucune étiquette de barre ne croise le rectangle du + au repos, à 390 et en paysage (n° 13)
+//   RESERVE       revenu en portrait après la rotation et défilé au bout, la dernière rangée finit 12 px au moins au-dessus du + (CRITIQUE-7 n° 7)
 //   TETE-LISIBLE  la boîte du chiffre clé ne croise aucun texte de la courbe (n° 7)
 //   NOMS-390      au moins 6 mouvements nommés avec leur montant sur la courbe à 390 (n° 8, z2s en nomme 8)
 //   MONTANT       la Blonde et le Marché de Noël ont un montant (n° 9)
 //   PLUS-PAYSAGE  toutes les lignes du + volant ouvert sont dans 844 × 390 (n° 4)
+// Ajouts de la correction 11 (CRITIQUE-11, lot corr11-D) :
+//   BANDE-LISTE        Liste en An à 390 : aucun libellé de la bande n'en chevauche un autre (ou la Liste masque la bande) (n° 1)
+//   CLIC-APRES-GLISSE  6 mois à 390 : le bord de la Blonde tiré de 14 px au doigt ; la rangée Brassins reste visible (n° 2)
+// Ajouts de la correction 4 (CRITIQUE-4, lot q4-app) :
+//   MESSAGE-NOM    la bulle « lâcher ici », le message de f1-a et celui de la vente acceptée : sur aucun nom, jamais tronqués (n° 13 a, b)
+//   NOMS-COUPES    aucun nom de chose coupé quand la place libre à sa droite suffit (n° 24), à 390, en paysage, à 1280
+//   LIE-DANS-ECRAN chaque pastille « lié à » dans l'écran, avec un nom lisible, non coupée (n° 15), à 390 en 6 sem. et 3 mois, à 1280
+//   COURBE-PAYS    en 844 × 390 : courbe d'au moins 70 px, en-tête de 120 px au plus (n° 11)
+//   MENU-PAYS      renforcé : le menu f5-a ne se pose ni sur l'en-tête ni sur la chose tenue (n° 12, E31)
+//   BANC-FEUILLE   au banc, « Budget › » ouvre une feuille en bas marquée « banc », fermée par × ; aucune ligne du banc sur l'en-tête ;
+//                  le renvoi de Retirer vers Finances n'est jamais visible avec le bandeau Annuler (n° 13 c)
+//   Témoin : sur 21e0260c (arbre de travail du 17.11 au soir, lots q1 à q3 en cours), LIE-DANS-ECRAN et BANC-FEUILLE à KO, CAL-APP ECHEC ;
+//   MESSAGE-NOM et NOMS-COUPES y passaient déjà (corrections q2 en cours dans l'arbre) : leur témoin reste à rejouer sur 21e0260c propre.
 // Témoins négatifs (L13) : l'onglet v1 de `claude/ports-nuit-1611` rend CAL-APP ECHEC (pas de rangées, pas de carrés +) ; e4bdc173 (avant la
 // correction 2) rend CAL-APP ECHEC avec J0, GLISSE ou MENU-BORNE, TETE-LISIBLE, NOMS-390 et PAYS à KO.
 import { createRequire } from 'node:module';
@@ -48,7 +62,31 @@ export const RE = {
   /** Un montant signé, précédé d'un blanc, d'une virgule ou d'un point médian : « , −148 », « +1 180 » ; jamais le tiret de « S47 – S52 ». */
   montantSigne: /(^|[\s,·(])[−+-]\s?\d/,
   chiffreCle: /à dépenser/,
-  actionsRapides: /^Actions rapides/
+  actionsRapides: /^Actions rapides/,
+  /** CRITIQUE-3 n° 1 : un « J0 » sur un brassin déjà en cuve ; « J10 », « J07 » ne sont pas visés. */
+  jourZero: /(^|[^\d])J0(?!\d)/,
+  ipa: /^IPA de printemps/,
+  /** CRITIQUE-3 n° 2 : ni l'impôt ni l'énergie ne sont des courses. */
+  pasDesCourses: /imp[ôo]t|[ée]nergie/i,
+  poigneeFin: /^Poignée de fin/,
+  /* CRITIQUE-4 (tour 4, lot q4-app) */
+  lacherIci: /lâcher ici/,
+  /** n° 13 c : l'ancienne ligne du banc, posée sur l'en-tête. */
+  bancLigne: /^banc — l’app ouvrirait/,
+  /** n° 13 c : la feuille du banc dit qu'elle est le banc. */
+  bancFeuille: /\bbanc\b/,
+  budgetLien: /^Budget ›$/,
+  /** Le lien du message de Retirer vers Finances (« … · dans Finances › »). */
+  financesLien: /Finances ›$/,
+  /** n° 15 : une pastille « lié à » sans nom lisible : « lié … », « lié à … », « lié à » seul. */
+  lieSansNom: /^lié( à)?\s*…?$/,
+  fermer: /^Fermer/,
+  cafeDuPont: /^Café du Pont/,
+  /** CRITIQUE-11 n° 1 et 2 : les lignes du menu de période. */
+  periodeAn: /^An\b/,
+  periodeListe: /^Liste\b/,
+  /** « 4 choses cachées » : une rangée masquée. */
+  cachee: /\d+ choses? cachées?/
 };
 
 const CAS_REGEX = [
@@ -66,7 +104,22 @@ const CAS_REGEX = [
   ['mouvementNomme', ['Frigo −1 800', 'TVA T4 −300', 'Marché de Noël +1 180', 'Hotte -900'], ['−1 800', 'S47 – S52', 'Frigo', '113 CHF à dépenser']],
   ['montantSigne', ['Blonde d’automne, 23 nov., −148', 'Marché de Noël +1 180', '−900'], ['Blonde d’automne, 23 nov. – 21 déc.', 'S47 – S52', 'J0 / 28']],
   ['chiffreCle', ['113 CHF à dépenser sans passer sous 0 (S24)'], ['à payer']],
-  ['actionsRapides', ['Actions rapides', 'Actions rapides : Calendrier'], ['Les actions rapides']]
+  ['actionsRapides', ['Actions rapides', 'Actions rapides : Calendrier'], ['Les actions rapides']],
+  ['jourZero', ['J0 / 28 · prête 7 déc.', 'IPA de printemps, J0', 'J0'], ['J7 / 28', 'J10 / 28', 'J07', 'SJ0x'.replace('x', '1')]],
+  ['ipa', ['IPA de printemps, 9 nov.'], ['Une IPA de printemps', 'IPA brume']],
+  ['pasDesCourses', ['énergie le 23 nov.', 'impôt le 30 janv.', 'Energie', 'impot'], ['malt pilsner 12 kg', 'Saaz 300 g']],
+  ['poigneeFin', ['Poignée de fin : tirer jusqu’au bout pour l’année'], ['Poignée de début : déplacer la fenêtre']],
+  ['lacherIci', ['S51 · 14 déc. · lâcher ici'], ['lâcher', 'Lâcher ici']],
+  ['bancLigne', ['banc — l’app ouvrirait : le budget du brassin Stout maison'], ['banc — données simulées', 'Le banc — l’app ouvrirait']],
+  ['bancFeuille', ['banc — l’app ouvrirait', 'Budget (banc)'], ['bancs publics', 'Abanc']],
+  ['budgetLien', ['Budget ›'], ['Budget', 'Budget › du brassin']],
+  ['financesLien', ['dans Finances ›', 'Finances ›'], ['Finances', 'Finances › Solde']],
+  ['lieSansNom', ['lié …', 'lié à …', 'lié à', 'lié'], ['lié à La Cigogne', 'La Cigogne', 'lié à Épicerie du Bourg']],
+  ['fermer', ['Fermer', 'Fermer la feuille'], ['Refermer', 'Ne pas fermer']],
+  ['cafeDuPont', ['Café du Pont, 1 fût', 'Café du Pont'], ['Le Café du Pont']],
+  ['periodeAn', ['An', 'An · 52 semaines'], ['Annuler', 'Ans', '6 mois']],
+  ['periodeListe', ['Liste', 'Liste · par mois'], ['La Liste', 'Lister']],
+  ['cachee', ['6 choses cachées', '1 chose cachée'], ['cachée', 'choses cachées']]
 ];
 
 if (process.argv.includes('--test-regex')) {
@@ -116,6 +169,11 @@ async function glisser(p, sel, nomRe, colonnes) {
     e.scrollIntoView({ block: 'center' });
     const r = e.getBoundingClientRect();
     const lc = parseFloat(document.querySelector('[data-frise]').getAttribute('data-largeur-colonne'));
+    /* une prise sur la barre elle-même, jamais sur un jalon ni un bord (le jalon intermédiaire refuse le glisser, D-103) */
+    for (const fy of [0.3, 0.5, 0.15]) for (let x = r.left + 20; x < r.right - 12; x += 8) {
+      const d = document.elementFromPoint(x, r.top + r.height * fy);
+      if (d && (d === e || e.contains(d)) && !d.closest('[data-jalon], [data-bord], .cal-jalon')) return { x, y: r.top + r.height * fy, lc };
+    }
     return { x: r.left + Math.min(r.width / 2, 20), y: r.top + r.height / 2, lc };
   }, sel, nomRe);
   if (!c) return false;
@@ -123,6 +181,36 @@ async function glisser(p, sel, nomRe, colonnes) {
   for (let i = 1; i <= 6; i++) { await p.mouse.move(c.x + (colonnes * c.lc * i) / 6, c.y); await attendre(15); }
   await p.mouse.up(); await attendre(350);
   return true;
+}
+
+/*
+ * CRITIQUE-12 n° 1 (même mesure que l'état M1 à M7 de vision-calendrier.mjs) : la boîte de `[data-message]`, son `data-place` (∈ {pres, bas} :
+ * « près de la chose là où il ne cache aucun texte, sinon en bas au-dessus des onglets ; … à gauche du + volant », as/JOURNAL.md l. 224), ses
+ * intersections avec chaque nom de NOMS_MESSAGE (lu dans Message.tsx servi par Vite, sinon la copie) et avec le + ; jamais au-dessus du titre
+ * de la première rangée visible.
+ */
+const NOMS_MESSAGE_REPLI = '[data-nom-rangee], [data-rangee] .cal-nom, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi';
+async function placeMessage(p) {
+  const sel = await p.evaluate(async repli => {
+    try { const m = await import('/src/ui/calendrier/frise/Message.tsx'); return typeof m.NOMS_MESSAGE === 'string' && m.NOMS_MESSAGE ? m.NOMS_MESSAGE : repli; } catch { return repli; }
+  }, NOMS_MESSAGE_REPLI);
+  return p.evaluate(s => {
+    const m = [...document.querySelectorAll('[data-message]')].find(e => e.getBoundingClientRect().height > 0);
+    if (!m) return { ok: false, dit: 'aucun message' };
+    const M = m.getBoundingClientRect(); const place = m.dataset.place || '(aucune)';
+    const boite = e => { const r = document.createRange(); r.selectNodeContents(e); const q = r.getBoundingClientRect(); return q.width > 0 ? q : e.getBoundingClientRect(); };
+    const coupe = q => q.width > 0 && q.height > 0 && q.left < M.right - 1 && q.right > M.left + 1 && q.top < M.bottom - 1 && q.bottom > M.top + 1;
+    const croise = [...document.querySelectorAll(s)].filter(e => !m.contains(e) && !e.contains(m)).filter(e => coupe(boite(e))).map(e => (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 24));
+    const fab = document.querySelector('button[aria-label^="Actions rapides"]');
+    if (fab && coupe(fab.getBoundingClientRect())) croise.push('le +');
+    const z = document.querySelector('[data-entete-zone]'); const bas = z ? z.getBoundingClientRect().bottom : 0;
+    const titres = [...document.querySelectorAll('[data-nom-rangee], [data-rangee] .cal-nom')].map(boite).filter(q => q.width > 0 && q.top >= bas - 1 && q.bottom <= innerHeight);
+    const premier = titres.length ? Math.min(...titres.map(q => q.top)) : null;
+    const auDessus = premier !== null && M.top < premier - 1;
+    const placeOk = place === 'pres' || place === 'bas';
+    const ok = croise.length === 0 && placeOk && !auDessus;
+    return { ok, dit: `MESSAGE ${ok ? 'OK' : 'ECHEC'} (place « ${place} »${placeOk ? '' : ' hors de {pres, bas}'}${auDessus ? `, au-dessus de la première rangée (${Math.round(M.top)} < ${Math.round(premier)} px)` : ''}, ${croise.length} intersection(s)${croise.length ? ` : ${[...new Set(croise)].slice(0, 5).join(' | ')}` : ''})` };
+  }, sel);
 }
 
 /* ---- gestes tactiles réels (CDP Input.dispatchTouchEvent) ---- */
@@ -153,6 +241,11 @@ const lireBarre = (p, titre) => p.evaluate(t => {
   const lane = b.closest('[data-lane]') || b.parentElement;
   const l = lane.getBoundingClientRect();
   const sem = b.getAttribute('data-semaine') ?? (Number.isFinite(lc) && lc > 0 ? `col${Math.round((r.left - l.left) / lc)}` : null);
+  /* la prise : sur la barre, hors jalon et hors bord */
+  for (const fy of [0.3, 0.5, 0.15]) for (let x = r.left + 20; x < r.right - 12; x += 8) {
+    const d = document.elementFromPoint(x, r.top + r.height * fy);
+    if (d && (d === b || b.contains(d)) && !d.closest('[data-jalon], [data-bord], .cal-jalon')) return { x, y: r.top + r.height * fy, lc, sem, haut: r.top, bas: r.bottom };
+  }
   return { x: r.left + Math.min(r.width / 2, 20), y: r.top + r.height / 2, lc, sem, haut: r.top, bas: r.bottom };
 }, titre);
 const amenerBarre = (p, titre) => p.evaluate(t => {
@@ -301,17 +394,22 @@ try {
     note('PLUS-AGIT', ouverts === 7 && plus.length === 7, `${ouverts}/${plus.length} carrés ouvrent la feuille sur leur rangée${faux.length ? ` (${faux.join(', ')})` : ''}`);
     await p.close();
 
-    /* BRUIT : f1-a (un achat glissé) puis f6-b (un brassin lié à une vente promise) */
+    /* BRUIT : f1-a (un achat glissé) puis f6-b (un brassin lié à une vente promise). CRITIQUE-12 n° 1 (bloquant) : après chacun, le message à
+       sa place (`data-place` ∈ {pres, bas}), 0 intersection avec NOMS_MESSAGE (Message.tsx) ni le +, jamais au-dessus de la première rangée */
     p = await page(390, 844);
     const f1 = await glisser(p, '[data-barre]', RE.hotte.source, 1);
+    await attendre(700);
+    const placeF1 = await placeMessage(p);
     const f6 = await glisser(p, '[data-barre]', RE.blonde.source, 1);
+    await attendre(700);
+    const placeF6 = await placeMessage(p);
     const msg = await p.evaluate(() => {
       const m = [...document.querySelectorAll('[role="status"], [role="alert"]')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
       const ligne = document.querySelector('.cal-msg-ligne');
       const lh = ligne ? parseFloat(getComputedStyle(ligne).lineHeight) || 18 : 18;
       return { n: m.length, roles: m.map(e => e.getAttribute('role')), lignes: ligne ? Math.round(ligne.getBoundingClientRect().height / lh) : 0 };
     });
-    note('BRUIT', f1 && f6 && msg.n === 1 && msg.lignes <= 2, `${msg.n} message(s) [${msg.roles.join(',')}], ${msg.lignes} ligne(s)${f1 && f6 ? '' : ' (geste non joué : barre introuvable)'}`);
+    note('BRUIT', f1 && f6 && msg.n === 1 && msg.lignes <= 2 && placeF1.ok && placeF6.ok, `${msg.n} message(s) [${msg.roles.join(',')}], ${msg.lignes} ligne(s)${f1 && f6 ? '' : ' (geste non joué : barre introuvable)'} ; f1-a ${placeF1.dit} ; f6-b ${placeF6.dit}`);
     await p.close();
 
     /* GLISSE (390, toucher réel) : la Hotte glissée de 2 colonnes change de semaine, « Annuler » apparaît */
@@ -340,7 +438,9 @@ try {
       const nv = document.querySelector('nav[aria-label="Navigation principale"]');
       const N = nv ? nv.getBoundingClientRect().top : innerHeight;
       const r = b.getBoundingClientRect();
-      if (pl === 'repos') { if (r.top < 0 || r.bottom > N) b.scrollIntoView({ block: 'nearest' }); }
+      /* vision 11 : `scrollIntoView({ block: 'nearest' })` laissait la barre sous les onglets collés (818–844 px, onglets à 804) : l'appui long
+         tombait sur la barre d'onglets. La barre est ramenée au milieu de la place au-dessus des onglets. */
+      if (pl === 'repos') { if (r.top < 0 || r.bottom > N) window.scrollBy(0, r.top + r.height / 2 - N / 2); }
       else window.scrollBy(0, r.bottom - (N - 80));
       return true;
     }, 'Hotte', place);
@@ -401,9 +501,9 @@ try {
     await p.evaluate(() => { window.__jeton = 'portrait-1'; });
     await p.evaluate(() => document.querySelector('button[data-plus="fetes"]').scrollIntoView({ block: 'center' }));
     await p.click('button[data-plus="fetes"]'); await attendre(500);
-    await p.evaluate(src => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
+    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.getAttribute('aria-label') || b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
     await attendre(200);
-    await p.evaluate(src => { const d = document.querySelector('[role="dialog"]'); [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.ajouter.source);
+    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.ajouter.source);
     await attendre(700);
     const compte = () => p.evaluate(src => [...document.querySelectorAll('[data-chose]')].filter(e => new RegExp(src).test(e.getAttribute('aria-label') || '')).length, RE.marcheNoelDebut.source);
     const avant = await compte();
@@ -423,6 +523,24 @@ try {
     }
     const garde = avant >= 2 && vues.every(v => v.n === avant && v.jeton === 'portrait-1') && vues[0].o === 'paysage' && vues[1].o === 'portrait';
     note('ROTATION', garde, `la chose ajoutée : ${avant} avant, ${vues.map(v => `${v.n} en ${v.o}`).join(', ')} ; page non rechargée ${vues.every(v => v.jeton === 'portrait-1')}`);
+    /* RESERVE (CRITIQUE-7 n° 7) : revenu en portrait après la rotation, défilé jusqu'en bas, la dernière rangée finit au moins 12 px au-dessus
+       du + volant : rien ne reste sous le bouton une fois la page au bout (une feuille restée ouverte cache le + : on la ferme d'abord) */
+    for (let k = 0; k < 2; k++) { await p.keyboard.press('Escape').catch(() => {}); await attendre(300); }
+    const reserve = await p.evaluate(async () => {
+      const cal = document.querySelector('[data-calendrier]');
+      const f = document.querySelector('button[aria-label^="Actions rapides"]');
+      if (!cal || !f) return null;
+      let s = cal.parentElement;
+      while (s && s !== document.body && !(s.scrollHeight > s.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(s).overflowY))) s = s.parentElement;
+      if (s && s !== document.body) s.scrollTop = s.scrollHeight; else window.scrollTo(0, document.documentElement.scrollHeight);
+      await new Promise(r => setTimeout(r, 300));
+      const secs = [...cal.querySelectorAll('section[data-rangee]')];
+      const der = secs[secs.length - 1];
+      if (!der) return null;
+      const r = f.getBoundingClientRect();
+      return { ecart: Math.round(r.top - der.getBoundingClientRect().bottom), haut: Math.round(r.height), pb: getComputedStyle(cal).paddingBottom, rangee: der.getAttribute('data-rangee') };
+    });
+    note('RESERVE', !!reserve && reserve.ecart >= 12, reserve ? `au bout du défilement, la rangée ${reserve.rangee} finit ${reserve.ecart} px au-dessus du + (${reserve.haut} px de haut) ; réserve basse ${reserve.pb}` : 'calendrier ou + introuvable');
     await p.close();
 
     /* Paysage 844 × 390, chargé tel quel : J0, FAB-RECOUVRE, PLUS-PAYSAGE */
@@ -463,7 +581,385 @@ try {
     note('BARRE-PETITE', petit.cols === 26 && (petit.min === null || petit.min >= 24) && petit.marques > 0 && petit.nommees === petit.marques, `${petit.cols} semaines : ${petit.barres} barres (la plus étroite ${petit.min} px, min 24), ${petit.marques} marques dont ${petit.nommees} nommées`);
     if (p.erreurs.length) note('ERREURS', false, `${p.erreurs.length} erreur(s) de page : ${p.erreurs[0]}`);
     await p.close();
+
+    /* ---------- CRITIQUE-3 (tour 3, lot t3-d) : six contrôles qui échouent sur 40d11da1 (L13) ---------- */
+
+    /** Les messages visibles (role status|alert, hors lecteurs d'écran) et ceux qui recouvrent un titre de rangée. */
+    const lireMessages = q => q.evaluate(() => {
+      const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none' && r.bottom > 0 && r.top < innerHeight; };
+      const m = [...document.querySelectorAll('[role="status"], [role="alert"]')].filter(vis).filter(e => !e.closest('.sr-only'));
+      const titres = [...document.querySelectorAll('[data-rangee] .cal-nom, section[data-rangee] h3')].filter(vis);
+      const sur = [];
+      for (const e of m) {
+        const R = e.getBoundingClientRect();
+        for (const t of titres) {
+          const g = document.createRange(); g.selectNodeContents(t); const T0 = g.getBoundingClientRect(); const T = T0.width > 0 ? T0 : t.getBoundingClientRect();
+          if (R.left < T.right - 1 && R.right > T.left + 1 && R.top < T.bottom - 1 && R.bottom > T.top + 1) sur.push(`${(e.textContent || '').trim().slice(0, 24)} sur ${(t.textContent || '').trim()}`);
+        }
+      }
+      return { n: m.length, textes: m.map(e => (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 32)), sur };
+    });
+    const ditMsg = (o, r) => `${o} : ${r.n} message(s)${r.n ? ` [${r.textes.join(' | ')}]` : ''}${r.sur.length ? `, sur un titre (${r.sur.join(' ; ')})` : ''}`;
+
+    /* BRUIT-SUITE (390 × 844 tactile) : f1-a, puis la poignée de fin tirée à mi-chemin et lâchée, puis la rotation ; à chaque état, au plus un
+       message, et aucun sur un titre de rangée (« Brassins » compris ; n° 7, D-200, E33) */
+    let q = await page(390, 844);
+    const suite = [];
+    if (await amenerBarre(q, 'Hotte')) {
+      await attendre(300);
+      const a = await lireBarre(q, 'Hotte');
+      await glisserTactileXY(q, a.x, a.y, a.lc);
+      suite.push(['f1-a', await lireMessages(q)]);
+      const pg = await q.evaluate(src => {
+        window.scrollTo(0, 0);
+        const ps = [...document.querySelectorAll('[data-poignee]')];
+        const b = ps.find(x => new RegExp(src).test(x.getAttribute('aria-label') || '')) || ps[ps.length - 1];
+        const bande = document.querySelector('[data-bande-semaines]');
+        if (!b || !bande) return null;
+        const r = b.getBoundingClientRect(), B = bande.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2, reste: B.right - (r.left + r.width / 2) };
+      }, RE.poigneeFin.source);
+      if (pg) {
+        await attendre(200);
+        await touche(q, 'touchStart', pg.x, pg.y); await attendre(POSE_MS);
+        for (let i = 1; i <= 10; i++) { await touche(q, 'touchMove', pg.x + (pg.reste * 0.5 * i) / 10, pg.y); await attendre(25); }
+        await touche(q, 'touchEnd'); await attendre(500);
+        suite.push(['poignée lâchée à 50 %', await lireMessages(q)]);
+      } else suite.push(['poignée', { n: 9, textes: ['poignée de fin introuvable'], sur: [] }]);
+      await q.setViewport(ecran(844, 390)); await attendre(800);
+      suite.push(['rotation', await lireMessages(q)]);
+    } else suite.push(['f1-a', { n: 9, textes: ['barre Hotte introuvable'], sur: [] }]);
+    note('BRUIT-SUITE', suite.every(([, r]) => r.n <= 1 && r.sur.length === 0), suite.map(([o, r]) => ditMsg(o, r)).join(' ; '));
+    await q.close();
+
+    /* JOUR (banc) : l'IPA de printemps, en cuve depuis S-1, n'affiche pas « J0 » (n° 1) */
+    q = await page(390, 844);
+    const ipa = await q.evaluate((srcI, srcJ) => {
+      const b = [...document.querySelectorAll('[data-barre], [data-marque]')].find(x => new RegExp(srcI).test(x.getAttribute('data-titre') || x.getAttribute('aria-label') || ''));
+      if (!b) return null;
+      const t = `${b.getAttribute('aria-label') || ''} ${b.textContent || ''}`.replace(/\s+/g, ' ');
+      return { t: t.trim().slice(0, 80), j0: new RegExp(srcJ).test(t) };
+    }, RE.ipa.source, RE.jourZero.source);
+    note('JOUR', !!ipa && !ipa.j0, ipa ? `IPA de printemps : « ${ipa.t} »${ipa.j0 ? ' contient J0' : ''}` : 'barre de l’IPA de printemps introuvable');
+
+    /* COURSES (390) : le détail f4-b de la Blonde ne range ni l'impôt ni l'énergie dans ses courses (n° 2) */
+    const blondeB = await amenerBarre(q, 'Blonde d’automne') ? await lireBarre(q, 'Blonde d’automne') : null;
+    let courses = { ok: false, dit: 'barre de la Blonde introuvable' };
+    if (blondeB) {
+      await toucherXY(q, blondeB.x, blondeB.y);
+      courses = await q.evaluate(src => {
+        const d = document.querySelector('[data-detail]');
+        if (!d) return { ok: false, dit: 'aucun détail f4-b après le toucher' };
+        /* la ligne des courses seule (`data-courses`), sinon le texte qui suit « Courses » jusqu'à la ligne suivante */
+        const ligne = d.querySelector('[data-courses]');
+        const t = ((ligne || d).textContent || '').replace(/\s+/g, ' ');
+        const i = t.indexOf('Courses');
+        if (i < 0) return { ok: true, dit: 'aucune ligne « Courses » dans le détail' };
+        const apres = ligne ? t.slice(i) : t.slice(i, i + 160);
+        const faux = new RegExp(src, 'i').test(apres);
+        return { ok: !faux, dit: `« ${apres.slice(0, 90)} »${faux ? ' : impôt ou énergie dans les courses' : ''}` };
+      }, RE.pasDesCourses.source);
+    }
+    note('COURSES', courses.ok, courses.dit);
+    await q.close();
+
+    /* MARQUE-6S (390, 3 mois) : un appui long réel sur une marque ouvre la vue 6 semaines, aucun menu (n° 5, D-199, E27) */
+    q = await page(390, 844);
+    await q.click('[data-ent-periode]'); await attendre(300);
+    await q.evaluate(() => { const d = document.querySelector('[role="dialog"][aria-label="Période et vue"]'); [...d.querySelectorAll('button')].find(b => /^3 mois/.test((b.textContent || '').trim()))?.click(); });
+    await attendre(700);
+    const mq = await q.evaluate(() => {
+      const ms = [...document.querySelectorAll('[data-marque]')];
+      const m = ms.find(x => { const n = Number((x.getAttribute('data-semaine') || 'S0').slice(1)); return n >= 50 || (n > 0 && n < 20); }) || ms[0];
+      if (!m) return null;
+      m.scrollIntoView({ block: 'center' });
+      const r = m.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, nom: (m.getAttribute('aria-label') || '').slice(0, 40), cols: Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes')) };
+    });
+    let six = { ok: false, dit: 'aucune marque en 3 mois' };
+    if (mq) {
+      await attendre(300);
+      await appuiLongXY(q, mq.x, mq.y);
+      const apres = await q.evaluate(() => ({ cols: Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes')), menu: !!document.querySelector('[role="menu"]') }));
+      six = { ok: mq.cols === 13 && apres.cols === 6 && !apres.menu, dit: `« ${mq.nom} » : ${mq.cols} → ${apres.cols} semaines, menu ${apres.menu ? 'ouvert' : 'aucun'}` };
+    }
+    note('MARQUE-6S', six.ok, six.dit);
+    await q.close();
+
+    /* MENU-PAYS (844 × 390) : les six actions du menu f5-a dans l'écran (n° 4, D-192, E31) ; COMPACT-PAYS : rangée médiane ≤ 48 px (n° 10, D-174) */
+    q = await page(844, 390);
+    const compact = await q.evaluate(() => {
+      const hs = [...document.querySelectorAll('section[data-rangee]')].map(s => s.getBoundingClientRect().height).sort((a, b) => a - b);
+      return { n: hs.length, mediane: Math.round(hs[Math.floor(hs.length / 2)] || 0) };
+    });
+    note('COMPACT-PAYS', compact.n === 7 && compact.mediane > 0 && compact.mediane <= 48, `${compact.n} rangées, médiane ${compact.mediane} px (max 48)`);
+    let menuPays = { ok: false, dit: 'barre Hotte introuvable' };
+    if (await amenerBarre(q, 'Hotte')) {
+      await attendre(300);
+      const a = await lireBarre(q, 'Hotte');
+      await appuiLongXY(q, a.x, a.y);
+      /* dans l'écran, touchable (rien posé dessus : en-tête collant, +, onglets), et près de sa barre (« loin de la Hotte », n° 4) */
+      menuPays = await q.evaluate((haut, bas) => {
+        const m = document.querySelector('[role="menu"]');
+        if (!m) return { ok: false, dit: 'aucun menu après l’appui long' };
+        const M = m.getBoundingClientRect();
+        const acts = [...m.querySelectorAll('[role="menuitem"], button')].filter(b => (b.textContent || '').trim() && !/^Fermer$/.test(b.getAttribute('aria-label') || ''));
+        const noms = acts.map(b => (b.textContent || '').replace(/\s+/g, ' ').trim().split(' ')[0]);
+        const dehors = acts.filter(b => {
+          const r = b.getBoundingClientRect();
+          if (r.height < 1 || r.top < -0.5 || r.left < -0.5 || r.bottom > innerHeight + 0.5 || r.right > innerWidth + 0.5) return true;
+          const d = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return !d || !(d === b || b.contains(d));
+        }).map(b => (b.textContent || '').trim().slice(0, 16));
+        const ecart = M.top >= bas - 2 ? Math.round(M.top - bas) : M.bottom <= haut + 2 ? Math.round(haut - M.bottom) : 0;
+        const pres = ecart <= 48;
+        /* CRITIQUE-4 n° 12 (E31) : le menu ne se pose ni sur l'en-tête ni sur la chose tenue */
+        const coupe = (A, B) => A.left < B.right - 1 && A.right > B.left + 1 && A.top < B.bottom - 1 && A.bottom > B.top + 1;
+        const zone = document.querySelector('[data-entete-zone]');
+        const surEntete = !!zone && coupe(M, zone.getBoundingClientRect());
+        const barre = [...document.querySelectorAll('[data-barre]')].find(x => x.getAttribute('data-titre') === 'Hotte' || (x.getAttribute('aria-label') || '').startsWith('Hotte'));
+        const surBarre = !!barre && coupe(M, barre.getBoundingClientRect());
+        return { ok: acts.length >= 6 && dehors.length === 0 && pres && !surEntete && !surBarre, dit: `${acts.length} action(s) (${noms.join(', ')}), ${dehors.length} hors de ${innerWidth} × ${innerHeight} ou couverte(s)${dehors.length ? ` (${dehors.join(' | ')})` : ''} ; menu ${Math.round(M.top)}–${Math.round(M.bottom)} px, barre ${Math.round(haut)}–${Math.round(bas)} px, écart ${ecart} px (max 48) ; sur l’en-tête ${surEntete}, sur la Hotte tenue ${surBarre}` };
+      }, a.haut, a.bas);
+    }
+    note('MENU-PAYS', menuPays.ok, menuPays.dit);
+    await q.close();
+
+    /* ---------- CRITIQUE-4 (tour 4, lot q4-app) : six contrôles, témoin sur 21e0260c (L13) ---------- */
+
+    /** Les rectangles des noms posés (titres des choses, titres des rangées), hors de la chose `sauf` (celle qu'on tient). */
+    const NOMS_SRC = `(sauf) => {
+      const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none' && r.bottom > 0 && r.top < innerHeight; };
+      const out = [];
+      for (const e of document.querySelectorAll('[data-chose] .cal-lbl-t, section[data-rangee] h3, [data-rangee] .cal-nom')) {
+        if (!vis(e)) continue;
+        const c = e.closest('[data-chose]');
+        if (sauf && c && ((c.getAttribute('data-titre') || '') === sauf || (c.getAttribute('aria-label') || '').startsWith(sauf))) continue;
+        const g = document.createRange(); g.selectNodeContents(e);
+        for (const r of g.getClientRects()) if (r.width > 1) out.push({ t: (e.textContent || '').trim().slice(0, 24), l: r.left, r: r.right, h: r.top, b: r.bottom });
+      }
+      return out;
+    }`;
+    /** Les messages visibles et la bulle du glisser : sur quel nom ils se posent, et s'ils sont tronqués. */
+    const lireMessagesNoms = (q, sauf, srcIci) => q.evaluate((src, s, srcI) => {
+      const noms = (0, eval)(src)(s);
+      const vis = e => { const r = e.getBoundingClientRect(); const st = getComputedStyle(e); return r.width > 1 && r.height > 1 && st.visibility !== 'hidden' && st.display !== 'none' && r.bottom > 0 && r.top < innerHeight; };
+      const boites = [...document.querySelectorAll('[role="status"], [role="alert"]')].filter(vis).filter(e => !e.closest('.sr-only') && (e.textContent || '').trim());
+      /* la bulle « lâcher ici » : l'élément qui porte ce texte en propre */
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) if (new RegExp(srcI).test(n.textContent) && n.parentElement && vis(n.parentElement) && !boites.includes(n.parentElement)) boites.push(n.parentElement);
+      const res = [];
+      for (const m of boites) {
+        const R = m.getBoundingClientRect();
+        const sur = noms.filter(x => R.left < x.r - 1 && R.right > x.l + 1 && R.top < x.b - 1 && R.bottom > x.h + 1).map(x => x.t);
+        const tronque = [m, ...m.querySelectorAll('*')].some(e => vis(e) && e.scrollWidth > e.clientWidth + 1 && /hidden|clip/.test(getComputedStyle(e).overflowX)) || /…\s*$/.test((m.textContent || '').trim());
+        res.push({ t: (m.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40), sur: [...new Set(sur)], tronque });
+      }
+      return res;
+    }, NOMS_SRC, sauf, srcIci);
+    const okMessages = l => l.every(m => m.sur.length === 0 && !m.tronque);
+    const ditMessages = (o, l) => `${o} : ${l.length ? l.map(m => `« ${m.t} »${m.sur.length ? ` sur ${m.sur.join(', ')}` : ''}${m.tronque ? ' tronqué' : ''}`).join(' ; ') : 'aucun message'}`;
+
+    /* MESSAGE-NOM (390 tactile, n° 13 a et b, E33, D-200) : la bulle « lâcher ici » pendant f1-a, le message après, et le bandeau de la vente
+       acceptée (Café du Pont) ne se posent sur aucun nom et ne sont pas tronqués */
+    q = await page(390, 844);
+    const mn = [];
+    if (await amenerBarre(q, 'Hotte')) {
+      await attendre(300);
+      const a = await lireBarre(q, 'Hotte');
+      await touche(q, 'touchStart', a.x, a.y); await attendre(POSE_MS);
+      for (let i = 1; i <= 12; i++) { await touche(q, 'touchMove', a.x + (2 * a.lc * i) / 12, a.y); await attendre(25); }
+      await attendre(200);
+      const pendant = await lireMessagesNoms(q, 'Hotte', RE.lacherIci.source);
+      mn.push(['f1-a pendant', pendant, pendant.some(m => RE.lacherIci.test(m.t))]);
+      await touche(q, 'touchEnd'); await attendre(500);
+      mn.push(['f1-a après', await lireMessagesNoms(q, 'Hotte', RE.lacherIci.source), true]);
+    } else mn.push(['f1-a', [{ t: 'barre Hotte introuvable', sur: ['?'], tronque: true }], false]);
+    await q.close();
+    q = await page(390, 844);
+    if (await amenerBarre(q, 'Café du Pont')) {
+      await attendre(300);
+      const c = await lireBarre(q, 'Café du Pont');
+      await toucherXY(q, c.x, c.y);
+      const l = await lireMessagesNoms(q, 'Café du Pont', RE.lacherIci.source);
+      mn.push(['vente acceptée', l, l.some(m => RE.cafeDuPont.test(m.t) || /vente/i.test(m.t))]);
+    } else mn.push(['vente', [{ t: 'Café du Pont introuvable', sur: ['?'], tronque: true }], false]);
+    await q.close();
+    note('MESSAGE-NOM', mn.every(([, l, vu]) => vu && okMessages(l)), mn.map(([o, l, vu]) => `${ditMessages(o, l)}${vu ? '' : ' (message attendu non vu)'}`).join(' ; '));
+
+    /* NOMS-COUPES (n° 24) : aucun nom de chose coupé (« … » ou débordement masqué) quand la place libre à sa droite, dans sa rangée,
+       suffit à l'écrire entier ; à 390, en paysage et à 1280 */
+    const coupes = [];
+    for (const [w, h, v] of [[390, 844, ecran(390, 844)], [844, 390, ecran(844, 390)], [1280, 800, bureau(1280, 800)]]) {
+      q = await page(w, h, v);
+      const c = await q.evaluate(() => {
+        const cv = document.createElement('canvas').getContext('2d');
+        const largeur = (el, t) => { const s = getComputedStyle(el); cv.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`; return cv.measureText(t).width; };
+        const choses = [...document.querySelectorAll('[data-chose]')].map(e => ({ e, R: e.getBoundingClientRect() })).filter(x => x.R.width > 0);
+        const out = [];
+        for (const lbl of document.querySelectorAll('[data-chose] .cal-lbl-t')) {
+          const L = lbl.getBoundingClientRect(); if (L.width < 1 || L.bottom < 0 || L.top > innerHeight) continue;
+          const c = lbl.closest('[data-chose]');
+          const entier = (c.getAttribute('data-titre') || '').trim(); if (!entier) continue;
+          const vu = (lbl.textContent || '').trim();
+          const debord = lbl.scrollWidth > lbl.clientWidth + 1;
+          if (!debord && !/…$/.test(vu) && vu.length >= entier.length) continue;
+          const manque = Math.max(0, largeur(lbl, entier) - L.width);
+          const R = c.getBoundingClientRect();
+          const sec = c.closest('section[data-rangee]'); const S = sec ? sec.getBoundingClientRect() : { right: innerWidth };
+          const voisins = choses.filter(x => x.e !== c && !c.contains(x.e) && !x.e.contains(c) && x.R.top < R.bottom - 2 && x.R.bottom > R.top + 2 && x.R.left >= L.right - 1).map(x => x.R.left);
+          const limite = Math.min(S.right, innerWidth, ...voisins);
+          const place = limite - L.right;
+          if (manque > 0 && place >= manque + 4) out.push(`« ${vu} » (${Math.round(manque)} px manquent, ${Math.round(place)} libres)`);
+        }
+        return out;
+      });
+      coupes.push([`${w}`, c]);
+      await q.close();
+    }
+    note('NOMS-COUPES', coupes.every(([, c]) => c.length === 0), coupes.map(([o, c]) => `${o} : ${c.length}${c.length ? ` (${c.slice(0, 3).join(' ; ')})` : ''}`).join(' ; '));
+
+    /* LIE-DANS-ECRAN (n° 15, E37) : chaque pastille « lié à » est dans l'écran, porte un nom lisible et n'est pas coupée ; 390 en 6 sem. et en
+       3 mois, 1280 */
+    const lies = [];
+    for (const [o, w, h, v, trois] of [['390', 390, 844, ecran(390, 844), false], ['390 3 mois', 390, 844, ecran(390, 844), true], ['1280', 1280, 800, bureau(1280, 800), false]]) {
+      q = await page(w, h, v);
+      if (trois) {
+        await q.click('[data-ent-periode]'); await attendre(300);
+        await q.evaluate(() => { const d = document.querySelector('[role="dialog"][aria-label="Période et vue"]'); [...d.querySelectorAll('button')].find(b => /^3 mois/.test((b.textContent || '').trim()))?.click(); });
+        await attendre(700);
+      }
+      const l = await q.evaluate(src => [...document.querySelectorAll('[data-lie]')].map(e => {
+        const r = e.getBoundingClientRect();
+        if (r.width < 1) return null;
+        const t = (e.textContent || '').replace(/\s+/g, ' ').trim();
+        const dehors = r.left < -0.5 || r.right > innerWidth + 0.5;
+        const coupe = [e, ...e.querySelectorAll('*')].some(x => x.scrollWidth > x.clientWidth + 1 && /hidden|clip/.test(getComputedStyle(x).overflowX));
+        const sansNom = new RegExp(src).test(t) || !/\p{L}{3,}/u.test(t.replace(/^lié( à)?/, ''));
+        return { t: t.slice(0, 30), ok: !dehors && !coupe && !sansNom, dit: `${dehors ? 'hors écran ' : ''}${coupe ? 'coupée ' : ''}${sansNom ? 'sans nom' : ''}`.trim() };
+      }).filter(Boolean), RE.lieSansNom.source);
+      lies.push([o, l]);
+      await q.close();
+    }
+    note('LIE-DANS-ECRAN', lies.every(([, l]) => l.length > 0 && l.every(x => x.ok)), lies.map(([o, l]) => `${o} : ${l.length} pastille(s)${l.filter(x => !x.ok).length ? ` dont ${l.filter(x => !x.ok).map(x => `« ${x.t} » ${x.dit}`).slice(0, 3).join(', ')}` : ', toutes lisibles'}`).join(' ; '));
+
+    /* COURBE-PAYS (n° 11, E02, D-183) : en 844 × 390, la courbe garde au moins 70 px et l'en-tête 120 px au plus */
+    q = await page(844, 390);
+    const cp = await q.evaluate(() => {
+      const zone = document.querySelector('[data-entete-zone]');
+      const svg = [...document.querySelectorAll('[data-calendrier-entete] svg')].map(s => s.getBoundingClientRect()).filter(r => r.width > 150);
+      return { courbe: Math.max(0, ...svg.map(r => Math.round(r.height))), tete: zone ? Math.round(zone.getBoundingClientRect().height) : 0 };
+    });
+    note('COURBE-PAYS', cp.courbe >= 70 && cp.tete > 0 && cp.tete <= 120, `courbe ${cp.courbe} px (min 70), en-tête ${cp.tete} px (max 120)`);
+    await q.close();
+
+    /* BANC-FEUILLE (n° 13 c, E33) : « Budget › » au banc ouvre une feuille en bas, marquée « banc », fermée par × (44 px) ; aucune ligne du banc
+       sur l'en-tête ; le renvoi de Retirer (« dans Finances › ») n'est jamais visible en même temps que le bandeau Annuler */
+    const lireBanc = q2 => q2.evaluate((srcL, srcB, srcF) => {
+      const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none'; };
+      const zone = document.querySelector('[data-entete-zone]'); const Z = zone && vis(zone) ? zone.getBoundingClientRect() : null;
+      const coupe = (A, B) => A.left < B.right - 1 && A.right > B.left + 1 && A.top < B.bottom - 1 && A.bottom > B.top + 1;
+      const lignes = [...document.querySelectorAll('body *')].filter(e => vis(e) && [...e.childNodes].some(n => n.nodeType === 3 && new RegExp(srcL).test(n.textContent.trim())));
+      const surTete = lignes.filter(e => Z && coupe(e.getBoundingClientRect(), Z)).length;
+      const d = [...document.querySelectorAll('[role="dialog"], dialog')].filter(vis).find(x => new RegExp(srcB).test(x.textContent || ''));
+      const D = d ? d.getBoundingClientRect() : null;
+      const x = d ? [...d.querySelectorAll('button')].find(b => new RegExp(srcF).test(b.getAttribute('aria-label') || b.textContent.trim())) : null;
+      const X = x ? x.getBoundingClientRect() : null;
+      const annuler = [...document.querySelectorAll('button')].filter(vis).some(b => /^Annuler$/.test((b.textContent || '').trim()) && !(d && d.contains(b)));
+      return { lignes: lignes.length, surTete, feuille: !!d, enBas: !!D && D.bottom >= innerHeight - 2 && D.top > innerHeight * 0.2, texte: d ? (d.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70) : '',
+        x: X ? { cx: X.left + X.width / 2, cy: X.top + X.height / 2, w: Math.round(X.width), h: Math.round(X.height) } : null, annuler };
+    }, RE.bancLigne.source, RE.bancFeuille.source, RE.fermer.source);
+    const bf = [];
+    q = await page(390, 844);
+    if (await amenerBarre(q, 'Blonde d’automne')) {
+      await attendre(300);
+      const b = await lireBarre(q, 'Blonde d’automne');
+      await toucherXY(q, b.x, b.y);
+      const lien = await q.evaluate(src => { const e = [...document.querySelectorAll('button')].find(x => new RegExp(src).test((x.textContent || '').trim())); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, RE.budgetLien.source);
+      if (lien) {
+        await attendre(250); await toucherXY(q, lien.x, lien.y); await attendre(400);
+        const s = await lireBanc(q);
+        let ferme = false;
+        if (s.x) { await toucherXY(q, s.x.cx, s.x.cy); await attendre(400); ferme = !(await lireBanc(q)).feuille; }
+        /* le × est celui de la vraie feuille de l'app (`Sheet`) : sa taille est dite, pas jugée ici */
+        bf.push(['Budget ›', s.feuille && s.enBas && s.surTete === 0 && !!s.x && ferme,
+          `feuille ${s.feuille ? `« ${s.texte} »` : 'absente'}, en bas ${s.enBas}, ${s.surTete} ligne(s) du banc sur l’en-tête, × ${s.x ? `${s.x.w} × ${s.x.h} px` : 'absent'}, fermée par × ${ferme}`]);
+      } else bf.push(['Budget ›', false, 'lien « Budget › » absent du détail de la Blonde']);
+    } else bf.push(['Budget ›', false, 'barre de la Blonde introuvable']);
+    await q.close();
+    q = await page(390, 844);
+    if (await amenerBarre(q, 'Hotte')) {
+      await attendre(300);
+      const a = await lireBarre(q, 'Hotte');
+      await appuiLongXY(q, a.x, a.y);
+      const ret = await q.evaluate(src => { const m = document.querySelector('[role="menu"]'); const e = m && [...m.querySelectorAll('button, [role="menuitem"]')].find(x => new RegExp(src).test((x.textContent || '').trim())); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, RE.retirer.source);
+      if (ret) {
+        await toucherXY(q, ret.x, ret.y); await attendre(700);
+        const lien = await q.evaluate(src => { const e = [...document.querySelectorAll('[role="status"] button, [role="status"] a, [role="alert"] button')].find(x => new RegExp(src).test((x.textContent || '').trim())); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, RE.financesLien.source);
+        if (lien) {
+          await toucherXY(q, lien.x, lien.y);
+          let s = await lireBanc(q);
+          for (let i = 0; i < 8 && !s.feuille; i++) { await attendre(250); s = await lireBanc(q); }
+          bf.push(['Retirer › Finances', s.feuille && s.surTete === 0 && !s.annuler, `feuille ${s.feuille ? `« ${s.texte} »` : 'absente'}, ${s.surTete} ligne(s) sur l’en-tête, Annuler visible en même temps ${s.annuler}`]);
+        } else bf.push(['Retirer › Finances', false, 'lien « … Finances › » absent du message de Retirer']);
+      } else bf.push(['Retirer › Finances', false, 'Retirer absent du menu']);
+    } else bf.push(['Retirer › Finances', false, 'barre Hotte introuvable']);
+    await q.close();
+    note('BANC-FEUILLE', bf.every(([, ok]) => ok), bf.map(([o, , d]) => `${o} : ${d}`).join(' ; '));
   } else await p.close();
+
+  /* ---- CRITIQUE-11 n° 1 (E04, E13, E40) : BANDE-LISTE, la Liste en An à 390 ; aucun libellé de la bande n'en chevauche un autre (ou pas de bande) ---- */
+  const choisirPeriode = async (q, re) => {
+    await q.click('[data-ent-periode]'); await attendre(300);
+    const ok = await q.evaluate(src => { const d = document.querySelector('[role="dialog"][aria-label="Période et vue"]'); const b = d && [...d.querySelectorAll('button')].find(x => new RegExp(src).test((x.textContent || '').trim())); if (b) b.click(); return !!b; }, re.source);
+    await attendre(300); await q.keyboard.press('Escape').catch(() => {}); await attendre(300);
+    return ok;
+  };
+  {
+    const q = await page(390, 844);
+    const an = await choisirPeriode(q, RE.periodeAn), liste = await choisirPeriode(q, RE.periodeListe);
+    await q.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
+    const r = await q.evaluate(() => {
+      const vis = e => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+      if (!document.querySelector('[data-vue-liste]')) return { ok: false, dit: 'la Liste ne s’ouvre pas' };
+      const zones = [...document.querySelectorAll('[data-bande-semaines], [aria-label^="L’année en"], [aria-label^="Semaines"]')].filter(vis);
+      if (!zones.length) return { ok: true, dit: 'la Liste masque la bande' };
+      const els = [...new Set(zones.flatMap(z => [...z.querySelectorAll('*')]))].filter(e => e.children.length === 0 && (e.textContent || '').trim() && vis(e));
+      const boite = e => { if (e instanceof SVGElement) return e.getBoundingClientRect(); const g = document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); };
+      const b = els.map(e => { const q = boite(e); return { t: (e.textContent || '').trim(), g: q.left, d: q.right, h: q.top, b: q.bottom }; }).filter(o => o.d > o.g);
+      const chev = [];
+      for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) { const a = b[i], c = b[j]; if (a.g < c.d - 0.5 && c.g < a.d - 0.5 && a.h < c.b - 0.5 && c.h < a.b - 0.5) chev.push(`${a.t}/${c.t}`); }
+      return { ok: b.length > 0 && chev.length === 0, dit: `${b.length} libellé(s) « ${b.map(o => o.t).join(' ').slice(0, 80)} » ; ${chev.length ? `${chev.length} chevauchement(s) : ${chev.slice(0, 5).join(', ')}` : 'aucun chevauchement'}` };
+    });
+    note('BANDE-LISTE', an && liste && r.ok, `menu An ${an ? 'choisi' : 'ABSENT'}, Liste ${liste ? 'choisie' : 'ABSENTE'} ; ${r.dit}`);
+    await q.close();
+  }
+
+  /* ---- CRITIQUE-11 n° 2 (E29, E22, E33) : CLIC-APRES-GLISSE, en 6 mois à 390 ; le bord de la Blonde tiré de 14 px au doigt ; au lâcher, la rangée
+     Brassins reste visible (le clic qui suit un petit glissé ne touche pas l'œil) ---- */
+  {
+    const q = await page(390, 844);
+    const six = await choisirPeriode(q, RE.sixMois);
+    const bord = await q.evaluate(() => {
+      const b = [...document.querySelectorAll('[data-barre]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith('Blonde'));
+      const e = b && b.querySelector('[data-bord]'); if (!e) return null;
+      e.scrollIntoView({ block: 'center' });
+      const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, avant: Math.round(b.getBoundingClientRect().width) };
+    });
+    if (!bord) note('CLIC-APRES-GLISSE', false, `bord de la Blonde introuvable (6 mois ${six ? 'choisi' : 'ABSENT'})`);
+    else {
+      await attendre(300);
+      await glisserTactileXY(q, bord.x, bord.y, 14);
+      await attendre(600);
+      const r = await q.evaluate(src => {
+        const s = document.querySelector('section[data-rangee="brassins"]'); const t = (s?.textContent || '').replace(/\s+/g, ' ');
+        const b = [...document.querySelectorAll('section[data-rangee="brassins"] [data-barre]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith('Blonde'));
+        return { cachee: new RegExp(src).test(t), blonde: b ? Math.round(b.getBoundingClientRect().width) : 0, rangee: !!s };
+      }, RE.cachee.source);
+      note('CLIC-APRES-GLISSE', six && r.rangee && !r.cachee && r.blonde > 0, `6 mois ${six ? 'choisi' : 'ABSENT'} ; bord tiré de 14 px ; rangée Brassins ${r.rangee ? (r.cachee ? 'MASQUÉE (« choses cachées »)' : 'visible') : 'absente'} ; Blonde ${bord.avant} → ${r.blonde} px`);
+    }
+    await q.close();
+  }
 } catch (e) {
   note('EXECUTION', false, String(e && e.message ? e.message : e));
 } finally {

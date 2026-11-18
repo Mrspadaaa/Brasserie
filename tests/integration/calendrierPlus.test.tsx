@@ -15,10 +15,14 @@ vi.mock('../../src/services/financeService', () => {
   return { FinanceService };
 });
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
+import { resumeSansSemaine } from '../../src/components/tabs/CalendrierTab';
 import { PlanSheet } from '../../src/ui/finance/FinanceForms';
 import { StorageService } from '../../src/services/storage';
 import { usePlusPageActions } from '../../src/ui/plusPage';
 import type { FinancialProfile } from '../../src/domain/finance/types';
+import type { FinanceCategory } from '../../src/types';
+import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
+import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
 const JOUR = '2026-11-16';
 const profilConnu: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-01-01', amountCents: 400_000, confirmed: true } } as FinancialProfile;
@@ -99,7 +103,7 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     fireEvent.click(d.getByRole('button', { name: /Café du Pont, 1 fût/ }));
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
-    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Café du Pont, 1 fût', amountCents: 13000, direction: 'in', status: 'draft' } });
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Café du Pont, 1 fût', amountCents: 13000, direction: 'in', status: 'active' } });
     expect(document.querySelectorAll('input[type="number"]')).toHaveLength(0);
   });
 
@@ -111,6 +115,34 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'batches', patch: { recipeRef: 'R-PORTER', status: 'planifie', plannedBrewDate: '2026-11-16' } });
+  });
+
+  it('CRITIQUE-7 (A6) : le message d’une pose dit la semaine une seule fois (« Café du Pont, 1 fût · S47 : a → b », jamais « S47 · S47 : »)', async () => {
+    const { appels } = monter();
+    const messages: string[] = [];
+    for (const [rangee, puce] of [['ventes', /Café du Pont, 1 fût/], ['ventes', /^La Cigogne/], ['fetes', /^Fête de village$/]] as const) {
+      ouvrir(rangee);
+      const d = dialogue(rangee === 'ventes' ? 'Ventes' : 'Fêtes');
+      fireEvent.click(d.getAllByRole('button', { name: puce })[0]);
+      const n = appels.filter(a => a.op === 'creer').length;
+      fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+      await waitFor(() => expect(appels.filter(a => a.op === 'creer').length).toBe(n + 1));
+      const statut = await screen.findByText(/Annuler/, { selector: '[role="status"] *, [role="status"]' }).catch(() => null);
+      messages.push((statut?.closest('[role="status"]') ?? document.querySelector('[role="status"]'))?.textContent ?? '');
+    }
+    /* au moins une pose avec effet sur la caisse (la vente probable) : sinon le test ne prouverait rien */
+    expect(messages.some(m => /S\d+ : [−\d\s’']+ → [−\d\s’']+/.test(m))).toBe(true);
+    for (const m of messages) {
+      const semaines = m.match(/\bS\d{1,2}\b/g) ?? [];
+      expect(new Set(semaines).size, `message « ${m} »`).toBe(semaines.length);
+    }
+  });
+
+  it('resumeSansSemaine : la semaine du résumé part quand l’effet la dit ; le reste (« vente confirmée ») reste', () => {
+    expect(resumeSansSemaine('3 fûts La Cigogne · S47', 'S47 : 3 268 → 4 168')).toBe('3 fûts La Cigogne');
+    expect(resumeSansSemaine('Café du Pont · S2 ’27 · vente confirmée', 'S2 : 100 → 230')).toBe('Café du Pont · vente confirmée');
+    expect(resumeSansSemaine('Hotte · S49', 'S50 : 1 → 2')).toBe('Hotte · S49');
+    expect(resumeSansSemaine('S47 · S47', 'S47 : 1 → 2')).toBe('S47');
   });
 
   it('une somme au-delà de 10 fois la plus grosse de la rangée demande confirmation', async () => {
@@ -178,6 +210,68 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-07');
   });
 
+  it('CRITIQUE-5 n° 3 (D-68, E34) : depuis Achats S50, « Plus de détails › » rend le lundi de S50 ET la rangée Achats (la catégorie en vient)', () => {
+    const onPoserDepense = vi.fn();
+    monter({ callbacks: { onPoserDepense } });
+    fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
+    const d = dialogue('Achats');
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
+    expect(onPoserDepense).toHaveBeenCalledTimes(1);
+    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-07', 'achats', 'brassage');
+  });
+
+  it('CRITIQUE-6 n° 3 (D-68, E34, E38) : Achats S50 › Plus de détails › Enregistrer : le service des plans reçoit « brassage » et le lundi de S50, jamais « Charges fixes »', async () => {
+    /* le fil exact du bloc calendrier d'App.tsx : `onPoserDepense={(lundi, _rangee, categorie) => setPrevoirDepense({ date: lundi, categorie })}` */
+    function Harnais() {
+      const [p, setP] = React.useState<{ date: string; categorie?: FinanceCategory } | null>(null);
+      return <><BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserDepense: (date, _r, categorie) => setP({ date, ...(categorie ? { categorie } : {}) }) }} />
+        {p && <PlanSheet date={p.date} {...(p.categorie ? { categorie: p.categorie } : {})} onClose={() => setP(null)} />}</>;
+    }
+    render(<Harnais />);
+    fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
+    const d = dialogue('Achats');
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
+    const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
+    /* la pastille de catégorie le dit avant l'enregistrement : « Brassage » */
+    expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('brassage');
+    fireEvent.change(plan.getByPlaceholderText(/Loyer, commande de malt/), { target: { value: 'ZZ TEST — houblon Citra' } });
+    const montant = plan.getByLabelText('Montant (CHF)');
+    fireEvent.change(montant, { target: { value: '240' } });
+    fireEvent.blur(montant);
+    fireEvent.click(plan.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(etat.savePlan).toHaveBeenCalledTimes(1));
+    const ecrit = etat.savePlan.mock.calls[0][0] as { category: string; date: string; amountCents: number; source: string };
+    expect(ecrit).toMatchObject({ category: 'brassage', date: '2026-12-07', amountCents: 24000, source: 'manual' });
+    /* relu par le calendrier : il tombe dans Achats */
+    const m = construireModele({
+      aujourdhui: JOUR, transactions: [], payments: [], plans: [ecrit] as never, profile: profilConnu, assets: [], batches: [],
+      stockItems: [], items: [], recettes: [], reglages: REGLAGES_VIDES, lignesCourses: []
+    });
+    expect(m.choses.find(c => c.titre === 'ZZ TEST — houblon Citra')?.rangee).toBe('achats');
+  });
+
+  it('CRITIQUE-6 n° 3 : ouverte depuis Finances (sans date ni catégorie), la prévision neuve reste « Charges fixes », datée du jour (C17 tenu)', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-15T10:00:00Z'));
+    render(<PlanSheet onClose={() => undefined} />);
+    const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
+    expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('chargesFixes');
+    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-15');
+  });
+
+  it('CRITIQUE-5 n° 3 : une prévision manuelle « Brassage » tombe dans Achats, jamais dans Papiers ; « Charges fixes » tombe dans Papiers (le défaut d’avant)', () => {
+    const p = (id: string, category: string) => ({ id, title: `ZZ TEST — ${id}`, date: '2026-12-07', amountCents: 24000, direction: 'out', category, source: 'manual', status: 'active', createdAt: '2026-11-16T08:00:00.000Z' });
+    const m = construireModele({
+      aujourdhui: JOUR, transactions: [], payments: [], plans: [p('houblon', 'brassage'), p('loyer', 'chargesFixes')] as never, profile: profilConnu, assets: [], batches: [],
+      stockItems: [], items: [], recettes: [], reglages: REGLAGES_VIDES, lignesCourses: []
+    });
+    const rangeeDe = (titre: string) => m.choses.find(c => c.titre === titre)?.rangee;
+    expect(rangeeDe('ZZ TEST — houblon')).toBe('achats');
+    expect(rangeeDe('ZZ TEST — loyer')).toBe('papiers');
+  });
+
   it('ouverte depuis Finances sans date, elle garde la date du jour', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-11-15T10:00:00Z'));
@@ -227,6 +321,20 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
     expect(screen.getByRole('dialog', { name: 'Travaux' })).toBeInTheDocument();
   });
 
+  it('CRITIQUE-6 n° 19 (E36) : en paysage, la case « Idée » garde « en S47, dans le carnet » sous son nom court, comme en portrait ; les autres cases n’ont que leur nom', () => {
+    couche(true);
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const ecran = screen.getByRole('menu').querySelector('[data-bloc="ecran"]') as HTMLElement;
+    const idee = ecran.querySelector('[data-page-action="idee"]') as HTMLElement;
+    expect(idee.textContent).toMatch(/^Idée/);
+    expect(idee.querySelector('[data-plus-precision]')!.textContent).toMatch(/^en S47, dans le carnet$/);
+    expect(idee.getAttribute('aria-label')).toBe('Noter une idée en S47, dans le carnet');
+    for (const id of ['fete', 'vente', 'achat', 'travaux', 'activite', 'papier']) {
+      expect(ecran.querySelector(`[data-page-action="${id}"] [data-plus-precision]`)).toBeNull();
+    }
+  });
+
   it('portrait : la pile d’origine, sans deux blocs', () => {
     couche(false);
     render(<BancCalendrier aujourdhui={JOUR} />);
@@ -234,6 +342,14 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
     const menu = screen.getByRole('menu');
     expect(menu).not.toHaveAttribute('data-plus-disposition');
     expect(menu.querySelector('[data-bloc]')).toBeNull();
+  });
+
+  it('CRITIQUE-7 n° 4 : le 18 nov., « Poser un brassin S47 · prête le 16 déc. » (brassé au plus tôt aujourd’hui + 28 j), plus le 14 déc. compté depuis le lundi', () => {
+    render(<BancCalendrier aujourdhui="2026-11-18" />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const precision = screen.getByRole('menu').querySelector('[data-page-action="brassin"] [data-plus-precision]') as HTMLElement;
+    expect(precision.textContent).toMatch(/^S47 · prête le 16 déc\.?$/);
+    expect(precision.textContent).not.toMatch(/14 déc/);
   });
 
   it('« Poser un brassin » : sa précision est sous le libellé, entière, avec la date de « prête le »', () => {
@@ -247,7 +363,7 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
 
 describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Travaux, Activités et Papiers, sans clavier, en 2 touchers', () => {
   const CAS: Array<{ rangee: string; titre: string; puce: string; attendu: Record<string, unknown> }> = [
-    { rangee: 'ventes', titre: 'Ventes', puce: 'La Cigogne', attendu: { collection: 'financialPlans', patch: { title: 'La Cigogne', amountCents: 90000, direction: 'in', clientId: 'CL-CIGOGNE' } } },
+    { rangee: 'ventes', titre: 'Ventes', puce: 'La Cigogne', attendu: { collection: 'financialPlans', patch: { title: expect.stringMatching(/La Cigogne$/), amountCents: 90000, direction: 'in', clientId: 'CL-CIGOGNE' } } },
     { rangee: 'achats', titre: 'Achats', puce: 'Hotte', attendu: { collection: 'financialPlans', patch: { title: 'Hotte', amountCents: 90000, direction: 'out' } } },
     { rangee: 'travaux', titre: 'Travaux', puce: 'Sols : colle et joints', attendu: { collection: 'financialPlans', patch: { title: 'Sols : colle et joints', amountCents: 32000, category: 'renovation' } } },
     { rangee: 'activites', titre: 'Activités', puce: 'Inventaire du stock', attendu: { collection: 'creativeItems', patch: { title: 'Inventaire du stock', activite: true } } },
@@ -279,5 +395,35 @@ describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Trav
     fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S49/ }));
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-30');
+  });
+});
+
+/*
+ * Doute de CRITIQUE-12 (E35, D-15 à D-18) : les pictos du + volant « Sur le calendrier » sont ceux de sa maquette
+ * (`as/cap/passe10/p-clair-ouvert.png` ; symboles de `as/cal.html`, `PA_CAL` de `as-gestes.js`). Ordre et libellés inchangés.
+ */
+describe('Doute CRITIQUE-12 : chaque ligne du + volant porte le picto de sa maquette', () => {
+  const PICTO: Array<[string, string]> = [
+    ['Poser un brassin', 'i-beer'], ['Poser une fête', 'i-fete'], ['Poser une vente', 'i-vente'], ['Prévoir un achat', 'i-k17cart'],
+    ['Prévoir des travaux', 'i-outil'], ['Noter une activité', 'i-jour'], ['Prévoir un papier', 'i-doc']
+  ];
+  function LecteurPictos() {
+    const decl = usePlusPageActions();
+    return <ul data-pictos>{decl?.actions.map(a => { const I = a.icone; return <li key={a.id} data-label={a.label}>{I ? <I size={20} /> : null}</li>; })}</ul>;
+  }
+  it('les sept lignes de rangée, dans l’ordre de la frise, avec i-beer, i-fete, i-vente, i-k17cart, i-outil, i-jour, i-doc', () => {
+    render(<><BancCalendrier aujourdhui={JOUR} /><LecteurPictos /></>);
+    const lignes = [...document.querySelectorAll('[data-pictos] li')].slice(0, 7);
+    expect(lignes.map(l => [l.getAttribute('data-label'), l.querySelector('svg')?.getAttribute('data-picto')])).toEqual(PICTO);
+  });
+  it('dans la pile ouverte par le + de l’app, chaque ligne montre son picto (fête : l’agenda, travaux : la clé, activité : le jour)', () => {
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const menu = screen.getByRole('menu');
+    for (const [ligne, picto] of PICTO) {
+      const item = [...menu.querySelectorAll('[role="menuitem"]')].find(i => (i.textContent ?? '').includes(ligne));
+      expect(item, ligne).toBeTruthy();
+      expect(item!.querySelector(`svg[data-picto="${picto}"]`), ligne).not.toBeNull();
+    }
   });
 });

@@ -97,7 +97,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
       <ProofResendPanel transaction={tx}/>
       {aJustificatif
         ? <div className="fiche-pj"><FileCheck2 size={18} aria-hidden="true"/><span>{tx.finance?.sourceDocumentType==='receipt'?'ticket':tx.finance?.sourceDocumentType==='credit_note'?'avoir':'facture'}{nomPiece&&<> · <em>{nomPiece}</em></>}</span><DocumentProofLink transaction={tx} className="fiche-voir"/></div>
-        : !tx.finance?.proofUpload&&<div className="fiche-pj fiche-pj-sans"><FileText size={18} aria-hidden="true" strokeDasharray="3 2.4"/><span>Sans justificatif</span></div>}
+        : !tx.finance?.proofUpload&&<div className="fiche-pj fiche-pj-sans"><FileText size={18} aria-hidden="true" strokeDasharray="3 2.4"/><span>Sans justificatif</span>{!voided&&<label className="fiche-pj-normal"><input type="checkbox" checked={!!tx.finance?.proofNotNeeded} onChange={e=>update({proofNotNeeded:e.target.checked})}/>c’est normal</label>}</div>}
       {/* ⚠️ Le détail d'un achat est l'endroit où le brasseur se demande « il m'en reste combien ? ». Le segment ou la rangée qui sait de quel
           article elle parle y renvoie directement : sans ce lien il fallait retenir le nom, changer d'onglet et le rechercher dans l'inventaire. */}
       <FactureLignes lines={lines} onOpenStockItem={onOpenStockItem}/>

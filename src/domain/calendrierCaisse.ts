@@ -120,6 +120,31 @@ export function creuxDepuis(courbe: CourbeCaisse, depuis = 0): Creux | null {
   return creux;
 }
 
+/**
+ * « ensuite 1 782 dès S26 · 4 359 dès S33 » (E01, D-180, base cd1 `.cd-ens`) : les paliers suivants de « à dépenser sans passer sous 0 ». Après
+ * le creux, le minimum du libre sur les semaines qui restent ne fait que monter ; chaque palier est ce minimum, valable dès la semaine qui suit
+ * le palier d'avant (la dernière semaine où il est atteint). Pure ; au plus `nombre` paliers, aucun palier égal au précédent.
+ */
+export interface Palier { index: number; lundi: string; numero: number; centimes: number }
+export function paliersApres(courbe: { semaines: readonly SoldeSemaine[] }, creux: number, nombre = 2): Palier[] {
+  const s = courbe.semaines;
+  const sortie: Palier[] = [];
+  let bas = s[creux]?.libre;
+  if (bas === undefined) return sortie;
+  // La dernière semaine où le creux est atteint : le palier suivant vaut dès la semaine d'après.
+  let fin = creux;
+  for (let i = creux + 1; i < s.length && s[i].libre === bas; i++) fin = i;
+  while (sortie.length < nombre && fin + 1 < s.length) {
+    const debut = fin + 1;
+    let min = s[debut].libre, ou = debut;
+    for (let i = debut; i < s.length; i++) if (s[i].libre <= min) { min = s[i].libre; ou = i; }
+    if (min > bas) sortie.push({ index: debut, lundi: s[debut].lundi, numero: s[debut].numero, centimes: min });
+    bas = min;
+    fin = ou;
+  }
+  return sortie;
+}
+
 /** Ce qui est mis de côté à une semaine, et pour quoi (E03, z2s : « 1 140 mis de côté pour le frigo »). */
 export interface MiseVisible { index: number; lundi: string; numero: number; centimes: number; titres: string[] }
 
@@ -155,11 +180,30 @@ export interface LectureSemaine {
   lignes: LigneLecture[];
 }
 
+/**
+ * Les mouvements de la semaine `index` SEULE (le creux, E01 ; la lecture au doigt, E11), chacun une fois : ceux qui portent le même nom sont
+ * regroupés avec leur somme (« Loyer du local −400 » une fois, jamais une ligne par mois ni par semaine précédente ; CRITIQUE-3 n° 32). Du plus gros
+ * au plus petit ; la tendance n'y est pas (c'est une hypothèse). Une semaine hors de la courbe : liste vide.
+ */
+export function mouvementsDeSemaine(courbe: CourbeCaisse, index: number): MouvementNomme[] {
+  const s = courbe.semaines[index];
+  if (!s) return [];
+  const parNom = new Map<string, MouvementNomme>();
+  for (const m of s.mouvements) {
+    const cle = m.nom.trim().toLocaleLowerCase('fr');
+    const deja = parNom.get(cle);
+    if (!deja) { parNom.set(cle, { ...m }); continue; }
+    const centimes = deja.centimes + m.centimes;
+    parNom.set(cle, { ...deja, centimes, jour: deja.jour < m.jour ? deja.jour : m.jour, libelle: libelleMouvement(deja.nom, centimes) });
+  }
+  return [...parNom.values()].filter(m => m.centimes !== 0).sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes) || a.id.localeCompare(b.id));
+}
+
 /** E11 : ce que lit le doigt sur la semaine `i`. */
 export function lectureSemaine(courbe: CourbeCaisse, index: number): LectureSemaine | null {
   const s = courbe.semaines[index];
   if (!s) return null;
-  const mouvements = s.mouvements;
+  const mouvements = mouvementsDeSemaine(courbe, index);
   const lignes: LigneLecture[] = [];
   const montrees = mouvements.length <= 2 ? mouvements : mouvements.slice(0, 1);
   for (const m of montrees) lignes.push({ genre: 'mouvement', texte: m.libelle, centimes: m.centimes });

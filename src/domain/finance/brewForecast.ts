@@ -72,6 +72,55 @@ export function finDePeriode(iso: string, periode: 'trimestre' | 'annee'): strin
 }
 const jjmmaaaa = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 const plusTard = (a: string, b: string) => a > b ? a : b;
+const ecartJours = (de: string, a: string) => Math.round((aUtc(a).getTime() - aUtc(de).getTime()) / 86_400_000);
+
+/**
+ * Jours du brassage au conditionnement, la règle du calendrier (`finDeBrassin`) : `finPrevue` écrite et pas avant le brassage, sinon la somme
+ * des jours de la recette figée (fermentation, garde) ; `null` si rien ne la dit (le délai par défaut s'applique, jamais 0).
+ */
+export function joursDuCycle(batch: Batch, jourBrassage: string): number | null {
+  const fin = brewBudgetDateKey(batch.finPrevue ?? '');
+  if (fin && fin >= jourBrassage) return ecartJours(jourBrassage, fin);
+  const total = (batch.recipeSnapshot?.fermentation ?? []).reduce((s, e) => s + (Number.isFinite(e.days) && e.days > 0 ? e.days : 0), 0);
+  return total > 0 ? total : null;
+}
+
+export interface DatesSortiesBrassin {
+  /** Jour de brassage lu (prévu ou réel), ISO. */
+  jour: string;
+  commence: boolean;
+  /** Conditionnement : `bottlingDate`, sinon brassage (ramené à `asOf` s'il est passé sans brassage) + cycle (`joursDuCycle`, sinon le délai). */
+  conditionnement: string;
+  conditionnementEstime: boolean;
+  /** Les dates des quatre sorties, déjà ramenées à `asOf` au plus tôt (celles des items). */
+  achats: string; frais: string; emballage: string; impot: string;
+}
+
+/**
+ * Les dates des sorties d'un brassin (pure, le jour en paramètre) : une seule règle pour la prévision de Finances et pour le calendrier, qui la
+ * rejoue quand on glisse ou duplique un brassin (A2). `null` quand la date de brassage est illisible.
+ */
+export function datesSortiesBrassin(batch: Batch, asOf: string, reglagesPartiels?: Partial<ReglagesBrewForecast>): DatesSortiesBrassin | null {
+  const reglages = { ...REGLAGES_BREW_FORECAST_DEFAUT, ...reglagesPartiels };
+  const jour = brewBudgetDateKey(batchDisplayDate(batch) ?? '');
+  if (!jour) return null;
+  const commence = batch.status !== 'planifie' || hasBrewStarted(batch);
+  /*
+   * CRITIQUE-9 n° 4 (E38, L14) : le conditionnement est le jalon « prête » du calendrier (`preteAuPlusTot`), la même date des deux côtés (A2).
+   * `bottlingDate` réelle, sinon brassage + cycle : `finPrevue` écrite (tirer le bord), sinon la somme des jours de la recette figée, sinon le
+   * délai par défaut. Un brassin pas commencé dont le jour est passé sera brassé au plus tôt aujourd'hui : le cycle part de là, comme ses courses.
+   */
+  const reel = brewBudgetDateKey(batch.bottlingDate ?? '');
+  const conditionnement = reel ?? ajouterJours(commence ? jour : plusTard(asOf, jour), joursDuCycle(batch, jour) ?? reglages.delaiConditionnementJours);
+  const date = (iso: string) => plusTard(asOf, iso);
+  return {
+    jour, commence, conditionnement, conditionnementEstime: !reel,
+    achats: date(ajouterJours(jour, -reglages.delaiAchatJours)), frais: date(jour),
+    /* l'emballage est l'achat des contenants (bouteilles, capsules, fûts) : une semaine avant le conditionnement */
+    emballage: date(ajouterJours(conditionnement, -reglages.delaiEmballageJours)),
+    impot: date(ajouterJours(finDePeriode(conditionnement, reglages.periodeImpot), reglages.delaiPaiementImpotJours))
+  };
+}
 
 /** Identifiant du brassin auquel un plan « brew » se rapporte (champ du plan, sinon son instantané). */
 export function planBrewBatchId(plan: FinancialPlan): string | undefined {
@@ -194,11 +243,9 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
     const manqueEmballage = emballage === null ? ['emballage'] : [];
     const manqueImpot = impot === null ? [net ? 'impôt (densité)' : 'impôt (litres nets)'] : [];
 
-    const conditionnement = brewBudgetDateKey(batch.bottlingDate ?? '') ?? ajouterJours(jour, reglages.delaiConditionnementJours);
-    const dateConditionnementEstimee = !brewBudgetDateKey(batch.bottlingDate ?? '');
-    const dateAchats = ajouterJours(jour, -reglages.delaiAchatJours);
-    const dateEmballage = ajouterJours(conditionnement, -reglages.delaiEmballageJours);
-    const dateImpot = ajouterJours(finDePeriode(conditionnement, reglages.periodeImpot), reglages.delaiPaiementImpotJours);
+    /* CRITIQUE-9 n° 4 : les dates viennent de la règle partagée avec le calendrier (conditionnement = son jalon « prête ») */
+    const dates = datesSortiesBrassin(batch, asOf, reglages)!;
+    const dateConditionnementEstimee = dates.conditionnementEstime;
 
     const mesItems: ForecastItem[] = [];
     const ajouter = (suffixe: string, nom: string, date: string, montantC: number, manque: string[], lines: LigneOrigine[], estimee: boolean) => {
@@ -211,16 +258,16 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
     };
     const origine = (p?: { source: string; note?: string }) => p?.source === 'invoice' ? `dernier prix de facture${p.note ? ` (${p.note})` : ''}` : p?.source === 'quote' ? 'devis' : 'prix saisi';
     if (!commence) {
-      ajouter('achats', 'achats', dateAchats, achatsC, manqueAchats,
+      ajouter('achats', 'achats', dates.achats, achatsC, manqueAchats,
         snapshot.lines.filter(l => (l.purchaseTTC ?? 0) > 0).map(l => ({ label: l.name, amountCents: cents(l.purchaseTTC!), origin: `${origine(l.price)} · manque ${Math.round(l.missing * 1000) / 1000} ${l.unit} au stock` })), false);
       const lignesFrais: LigneOrigine[] = [];
       if (energie) lignesFrais.push({ label: BREW_COST_LABELS.energy, amountCents: cents(energie), origin: 'réglage du brassin' });
       if (nettoyage) lignesFrais.push({ label: BREW_COST_LABELS.cleaning, amountCents: cents(nettoyage), origin: 'réglage du brassin' });
-      ajouter('frais', 'énergie et nettoyage', jour, fraisC, manqueFrais, lignesFrais, false);
+      ajouter('frais', 'énergie et nettoyage', dates.frais, fraisC, manqueFrais, lignesFrais, false);
     }
-    ajouter('emballage', 'emballage', dateEmballage, cents(emballage ?? 0), manqueEmballage,
+    ajouter('emballage', 'emballage', dates.emballage, cents(emballage ?? 0), manqueEmballage,
       emballage ? [{ label: BREW_COST_LABELS.packaging, amountCents: cents(emballage), origin: 'réglage du brassin' }] : [], dateConditionnementEstimee);
-    ajouter('impot', 'impôt sur la bière', dateImpot, cents(impot ?? 0), manqueImpot,
+    ajouter('impot', 'impôt sur la bière', dates.impot, cents(impot ?? 0), manqueImpot,
       impot ? [{ label: BREW_COST_LABELS.beerTax, amountCents: cents(impot), origin: snapshot.beerTaxSource === 'calcule' ? (densite === 'cible' ? 'calculé sur la densité cible de la recette (estimé)' : 'calculé sur la densité du brassin') : 'montant saisi' }] : [], true);
 
     const partiel = [...(commence ? [] : [...manqueAchats, ...manqueFrais]), ...manqueEmballage, ...manqueImpot];

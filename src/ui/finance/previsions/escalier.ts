@@ -74,8 +74,15 @@ export function nomProjet(titre: string, max = 14): string {
   return signes.length <= max ? nom : `${signes.slice(0, Math.max(1, max - 1)).join('').trimEnd()}…`;
 }
 /** Le mot posé sur une étiquette : « dépenses » pour la tendance, le nom du projet tel quel, sinon le mot-clé de p5b. */
+/**
+ * Test en ligne du calendrier 1, n° 5 (18.11) : « ZZ TEST — achat calendrier », posé au calendrier, se lisait « TEST » ; on ne reconnaissait
+ * pas sa ligne. Comme un projet (constat 26), un plan daté que le brasseur a nommé lui-même (`plan` : achat, vente, charge prévus) se lit en
+ * entier, tel qu'écrit ; seul un nom de plus de 32 signes est raccourci par la fin. Les placements mesurent sa largeur (`placerEtiquettes`).
+ */
+export const NOM_PLAN_MAX = 32;
 export const motEtiquette = (item: { source: string; label: string }): string =>
-  item.source === 'trend' ? 'dépenses' : item.source === 'equipment' ? nomProjet(item.label) : motCle(item.label, item.source === 'brew');
+  item.source === 'trend' ? 'dépenses' : item.source === 'equipment' ? nomProjet(item.label)
+    : item.source === 'plan' ? nomProjet(item.label, NOM_PLAN_MAX) : motCle(item.label, item.source === 'brew');
 
 /**
  * Au-delà de 10 sorties, une récurrence (même plan, même montant, au moins 3 fois) se regroupe en une seule étiquette (« loyer −400 ×9, le 25 »),

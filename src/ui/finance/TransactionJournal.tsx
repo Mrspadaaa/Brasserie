@@ -29,7 +29,7 @@ export const CATEGORIE_A_PART = 'apart';
 const libelleCategorie = (c: string): string => c === CATEGORIE_A_PART ? 'Matériel · à part' : CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ?? c;
 const estAPart = (t: Transaction): boolean => t.category === 'materiel' || t.category === 'renovation'
   || !!t.finance?.lines.some(l => l.kind === 'equipment' && l.capitalTreatment !== 'expense');
-export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId;
+export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId && !t.finance?.proofNotNeeded;
 
 export type JournalScope = 'current' | 'archives' | 'all';
 export type JournalFilter = 'all' | 'due' | 'late' | 'payable' | 'receivable' | 'review' | 'proof' | 'undated' | 'unknown' | 'void' | 'doublon';

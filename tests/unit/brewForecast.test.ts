@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Batch, Recipe, StockItem } from '../../src/types';
 import { demandKey, estimateBrewBudget, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewPrice } from '../../src/domain/finance/brewBudget';
-import { ajouterJours, estimerBrassinsPlanifies, finDePeriode, planBrewBatchId } from '../../src/domain/finance/brewForecast';
+import { ajouterJours, datesSortiesBrassin, estimerBrassinsPlanifies, finDePeriode, joursDuCycle, planBrewBatchId } from '../../src/domain/finance/brewForecast';
+import { preteAuPlusTot } from '../../src/domain/calendrier';
 import { buildForecast } from '../../src/domain/finance/forecast';
 import type { FinanceTransaction, FinancialAsset, FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
 
@@ -332,5 +333,39 @@ describe('temps de calcul (L20) : 10 brassins planifiés, 2 000 factures, 150 ar
   // Seuil décidé (20 ms) pour un grand livre réaliste (60 factures portent les articles du brassin) ; le cas lourd (300) n'a qu'une garde large.
   it('grand livre réaliste : sous 20 ms', () => { expect(mesurer(60)).toBeLessThan(20); });
   it('grand livre lourd : mesuré, garde large contre l’explosion', () => { expect(mesurer(300)).toBeLessThan(250); });
+});
+
+describe('CRITIQUE-9 n° 4 : l’emballage (achat des contenants) est daté une semaine avant le jalon « prête » du calendrier', () => {
+  /* Saison planifiée le 10 nov. 2026, pas brassée ; aujourd'hui le 18 nov. ; 28 j en cuve dans la recette figée */
+  const JOUR = '2026-11-18';
+  const vingtHuit = recette({ fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 22, days: 14 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 14 }] });
+  const saison = (patch: Partial<Batch> = {}, r: Recipe = vingtHuit) => planifie({ plannedBrewDate: '10.11.2026', ...patch }, r);
+  const dates = (b: Batch) => estimerBrassinsPlanifies(base({ batches: [b], asOf: JOUR })).items.map(i => [i.id, i.date]);
+
+  it('brassage passé ramené au 18 nov. + 28 j : conditionnement le 16 déc., emballage le 9 déc. (plus le 24 nov.), comme « prête » du calendrier', () => {
+    expect(datesSortiesBrassin(saison(), JOUR)).toMatchObject({ jour: '2026-11-10', conditionnement: '2026-12-16', emballage: '2026-12-09', achats: JOUR, frais: JOUR, conditionnementEstime: true });
+    expect(dates(saison())).toEqual([['brew:B1:achats', JOUR], ['brew:B1:frais', JOUR], ['brew:B1:emballage', '2026-12-09'], ['brew:B1:impot', '2027-01-30']]);
+    /* la même date que le jalon « prête » de la frise (A2 : Finances et calendrier d'accord) */
+    expect(preteAuPlusTot(saison(), JOUR)).toBe('2026-12-16');
+  });
+  it('finPrevue écrite (bord tiré de 6 j) : le conditionnement la suit, ramené comme « prête »', () => {
+    const b = saison({ finPrevue: '2026-12-14' });
+    expect(datesSortiesBrassin(b, JOUR)!.conditionnement).toBe(preteAuPlusTot(b, JOUR));
+    expect(datesSortiesBrassin(b, JOUR)).toMatchObject({ conditionnement: '2026-12-22', emballage: '2026-12-15' });
+  });
+  it('bottlingDate posée : inchangée, et pas « estimée »', () => {
+    const b = saison({ status: 'garde', brewDate: '10.11.2026', bottlingDate: '20.12.2026' });
+    expect(datesSortiesBrassin(b, JOUR)).toMatchObject({ conditionnement: '2026-12-20', emballage: '2026-12-13', conditionnementEstime: false });
+    expect(dates(b)).toEqual([['brew:B1:emballage', '2026-12-13'], ['brew:B1:impot', '2027-01-30']]);
+  });
+  it('brassin commencé : le cycle part du jour réellement brassé (jamais ramené)', () => {
+    const b = saison({ status: 'fermentation', brewDate: '10.11.2026' });
+    expect(datesSortiesBrassin(b, JOUR)).toMatchObject({ conditionnement: '2026-12-08', emballage: '2026-12-01' });
+    expect(preteAuPlusTot(b, JOUR)).toBe('2026-12-08');
+  });
+  it('sans jours dans la recette : le délai par défaut (21 j) depuis la date ramenée', () => {
+    expect(datesSortiesBrassin(saison({}, recette()), JOUR)).toMatchObject({ conditionnement: '2026-12-09', emballage: '2026-12-02' });
+    expect(joursDuCycle(saison({}, recette()), '2026-11-10')).toBeNull();
+  });
 });
 

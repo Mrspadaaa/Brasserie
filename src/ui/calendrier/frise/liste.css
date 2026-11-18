@@ -1,0 +1,9 @@
+/*
+ * La vue Liste (E40, E46) : ses règles propres, hors de frise.css (lot 2).
+ * CRITIQUE-5 n° 4 et 22 : « en retard » et « pas brassée » se lisent en rouge, en tête de « En cours ».
+ */
+.cal-liste .cal-li-retard { font-weight: 700; color: rgb(var(--alert-strong-texte, var(--alert-strong))); }
+/* CRITIQUE-11 n° 7 (E40) : une date, une plage, « prête 7 déc. » ne se coupent jamais ; seuls les « · » entre elles passent à la ligne */
+.cal-liste .cal-nowrap { white-space: nowrap; }
+/* n° 27 : la réserve du + volant (sa hauteur mesurée) est posée en `padding-bottom` par VueListe : la dernière ligne garde son montant
+   lisible au-dessus du + */

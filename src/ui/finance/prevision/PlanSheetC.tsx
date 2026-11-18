@@ -95,11 +95,12 @@ function Marches({ effet, planId, asOf, signe }: { effet: EffetPrevision; planId
 }
 
 /** Une prévision neuve : prévue (active, à payer), datée de `date` (ex. le lundi de la semaine touchée au Calendrier), sinon d'aujourd'hui. Jamais une écriture payée. */
-export const previsionNeuve = (asOf: string, date?: string): FinancialPlan => ({ id: idFor('PREV'), title: '', date: date && isoDate(date) ? date : asOf, amountCents: 0, direction: 'out', category: 'chargesFixes', source: 'manual', status: 'active', createdAt: new Date().toISOString() });
+export const previsionNeuve = (asOf: string, date?: string, categorie: FinanceCategory = 'chargesFixes'): FinancialPlan => ({ id: idFor('PREV'), title: '', date: date && isoDate(date) ? date : asOf, amountCents: 0, direction: 'out', category: categorie, source: 'manual', status: 'active', createdAt: new Date().toISOString() });
 
-export function PlanSheetC({ plan, onClose, date }: { plan?: FinancialPlan; onClose: () => void; date?: string }) {
+/** `categorie` : la catégorie d'une prévision neuve (le Calendrier : Achats → Brassage ; CRITIQUE-6 n° 3, D-68). Sans elle, « Charges fixes » comme avant. */
+export function PlanSheetC({ plan, onClose, date, categorie }: { plan?: FinancialPlan; onClose: () => void; date?: string; categorie?: FinanceCategory }) {
   const donnees = useStorageValue(lire), asOf = todayISO();
-  const [draft, setDraft] = useState<FinancialPlan>(() => plan ?? previsionNeuve(asOf, date));
+  const [draft, setDraft] = useState<FinancialPlan>(() => plan ?? previsionNeuve(asOf, date, categorie));
   const field = <K extends keyof FinancialPlan>(key: K, value: FinancialPlan[K]) => setDraft(d => ({ ...d, [key]: value }));
   const frequence = draft.recurrence?.frequency ?? 'none', valide = draft.amountCents > 0 && !!isoDate(draft.date);
   const effet = useMemo(() => effetDeLaPrevision({ ...draft, title: draft.title.trim() || 'Prévision', amountCents: valide ? draft.amountCents : 0 }, asOf, donnees),

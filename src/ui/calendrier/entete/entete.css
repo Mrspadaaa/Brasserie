@@ -17,6 +17,9 @@
   line-height: 1.25;
   font-variant-numeric: tabular-nums;
 }
+/* L'en-tête collé couvre aussi la gouttière de la page (12 px de chaque côté) : les bouts des barres de la frise (poignées orange des brassins)
+   ne passent plus à droite de la courbe quand la frise défile dessous (CRITIQUE-4 n° 25, m390-07, 08, 16). */
+.ent { box-shadow: -16px 0 0 rgb(var(--cave-950)), 16px 0 0 rgb(var(--cave-950)); }
 
 /* Les couleurs de rangée (zones de l'app) : l'étiquette du détail, le segment de la grande courbe, la fine bande, la légende. */
 .ent-r-brassin, .ent-c-brassin { --c: rgb(var(--area-production)); }
@@ -26,7 +29,8 @@
 .ent-r-travaux, .ent-c-travaux { --c: rgb(var(--attention)); }
 .ent-r-activite, .ent-c-activite { --c: rgb(var(--water)); }
 .ent-r-papier, .ent-c-papier { --c: rgb(var(--cave-400)); }
-.ent-r-autre, .ent-c-autre { --c: rgb(var(--cave-200)); }
+/* Neutre (semaine sans mouvement nommé, tendance seule) : `--marque`, jamais une couleur de rangée ni le noir de la caisse (CRITIQUE-5 n° 16). */
+.ent-r-autre, .ent-c-autre { --c: rgb(var(--marque)); }
 
 /* ---- la rangée du chiffre clé et des boutons ---- */
 /* La ligne serrée au pixel (CRITIQUE-2 n° 7) : à 390, « −2 388 CHF à dépenser · S43 » et ses quatre boutons tiennent ensemble. */
@@ -35,20 +39,35 @@
 .ent-k { display: flex; flex-wrap: nowrap; align-items: baseline; column-gap: 3px; flex: 1 1 auto; min-width: 0; height: 28px; line-height: 28px; text-align: left; white-space: nowrap; color: var(--ent-mut); }
 .ent-k-vide { height: 28px; }
 .ent-k b { flex: none; font-size: 21px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
-/* Faute de place, c'est la phrase qui se rogne (« CHF à dé… »), jamais le chiffre ni la semaine du creux. */
-.ent-k .ent-k-u { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
+/* CRITIQUE-6 n° 1 : rien ne se rogne (D-114, E33), ni « CHF à dépenser » ni la semaine. Quand la ligne ne tient pas, `data-empile` (mesuré dans
+   EnTete) pose la semaine sous « CHF à dépenser », à droite du chiffre : deux lignes de 14 px dans la hauteur de la rangée (E43). */
+.ent-k .ent-k-u { flex: none; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
 .ent-k em { flex: none; font-style: normal; font-size: 14px; font-weight: 700; color: var(--ent-fin-t); }
+.ent-k[data-empile] { display: grid; grid-template-columns: auto auto; grid-template-rows: 14px 14px; column-gap: 4px; align-content: center; justify-content: start; height: 28px; line-height: 14px; }
+.ent-k[data-empile] b { grid-row: 1 / 3; align-self: center; line-height: 28px; }
+.ent-k[data-empile] .ent-k-u { grid-column: 2; grid-row: 1; line-height: 14px; }
+.ent-k[data-empile] em { grid-column: 2; grid-row: 2; line-height: 14px; }
+.ent-k[data-empile] .ent-k-sep { display: none; }
 .ent b.ent-neg, .ent .ent-k b.ent-neg { color: var(--ent-bad); }
 .ent-t-b { flex: none; margin-left: auto; display: flex; align-items: center; gap: 3px; }
 .ent-mb, .ent-per, .ent-ret-b, .ent-pl { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 14px; white-space: nowrap; color: var(--ent-ink); }
 .ent-mb::after, .ent-per::after, .ent-ret-b::after, .ent-pl::after, .ent-k::after { content: ''; position: absolute; inset: -6px -2px; }
 .ent-k { position: relative; }
+/* CRITIQUE-10 n° 6 (E11, D-195) : en portrait, la courbe commence juste sous les boutons ; leur zone de toucher (44 px de haut) monte au-dessus
+   d'eux et s'arrête au haut de la courbe, jamais dessous : un doigt qui lit la courbe ne touche jamais ± (calendrierEntete.test). */
+.ent--portrait .ent-mb::after, .ent--portrait .ent-per::after, .ent--portrait .ent-ret-b::after, .ent--portrait .ent-pl::after, .ent--portrait .ent-k::after { inset: -16px -2px 0; }
+/* Doute m27 : après un toucher, aucun cadre de focus sur les boutons de tête ; au clavier, l'anneau `:focus-visible` revient (EnTete, data-doigt). */
+.ent[data-doigt] .ent-t button:focus-visible { outline: none; }
 .ent-mb { min-width: 28px; padding: 0 5px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
 .ent-mb[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
 .ent-per { gap: 0; padding: 0 2px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
 .ent-pl { width: 24px; background: transparent; }
-.ent-lit { display: inline-flex; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; color: var(--ent-mut); }
+.ent-lit { display: inline-flex; flex: 1 1 auto; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; white-space: nowrap; overflow: hidden; color: var(--ent-mut); }
+.ent-lit b, .ent-lit em, .ent-lit i { flex: none; }
+/* CRITIQUE-7 n° 5 : aucun morceau ne rétrécit (ni « … ») ; la tête choisit la forme la plus longue qui tient (LectureTete, as/cal.html). */
+.ent-lit-u { flex: none; }
+.ent-lit-d { flex: none; color: var(--ent-ink); font-weight: 700; }
 .ent-lit b { font-size: 24px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
 .ent-lit em { font-style: normal; font-weight: 700; color: var(--ent-ink); }
 .ent-lit i { font-style: normal; font-weight: 700; font-size: 16px; margin-left: 2px; }
@@ -82,7 +101,11 @@
 .ent-p { color: var(--ent-ok); fill: var(--ent-ok); }
 .ent-f { color: var(--ent-fin-t); font-weight: 700; }
 .ent-mois { font-size: 14px; fill: var(--ent-mut); pointer-events: none; }
-.ent-curseur line { stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
+/* Le trait « |déc. » des mois posés en haut (w3s). */
+.ent-mois-t { stroke: var(--ent-line2); stroke-width: 1; pointer-events: none; }
+/* Le fond de l'étiquette du creux dans la grande courbe : aucun tracé ne la barre (CRITIQUE-4 n° 27). */
+.ent-gc-fond { fill: rgb(var(--cave-950)); opacity: 0.92; pointer-events: none; }
+.ent-curseur line, .ent-curseur path { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
 .ent-cur-anneau { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .ent-cur-pt { fill: rgb(var(--cave-50)); stroke: rgb(var(--cave-950)); stroke-width: 2; }
 .ent-cur-s { font-size: 14px; font-weight: 700; fill: rgb(var(--cave-50)); }
@@ -92,11 +115,21 @@
 .ent-cadre { position: absolute; top: 4px; bottom: 18px; box-sizing: border-box; border: 2px solid var(--ent-fin); border-radius: 6px; background: rgb(var(--area-finances) / 0.08); touch-action: none; }
 /* L'étiquette de la fenêtre, centrée en bas du cadre : une ligne si elle tient, sinon « S47 – » puis « S52 » (z2s), jamais trois. */
 .ent-cadre-l { position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 16px; white-space: nowrap; color: var(--ent-fin-t); pointer-events: none; }
-.ent-poi { position: absolute; top: 0; bottom: 0; width: 28px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; touch-action: none; cursor: ew-resize; }
-.ent-poi-debut { left: -14px; }
-.ent-poi-fin { right: -14px; }
-.ent-poi i { display: block; width: 6px; height: 28px; border-radius: 3px; background: var(--ent-fin); }
+/* Les poignées : une zone de prise de 44 px posée en px de la courbe (Fenetre.tsx, zonesPoignees), qui déborde surtout DEHORS du cadre ; la barre
+   visible reste sur le bord. L'intérieur du cadre est à la lecture (c2-b, CRITIQUE-3 n° 6). */
+/* Le bouton ne reçoit pas le doigt : c'est la courbe qui décide par la géométrie (EnTete, PriseCadre). Il reste pour le clavier (focus, flèches). */
+.ent-poi { position: absolute; top: 4px; bottom: 18px; z-index: 1; padding: 0; background: transparent; touch-action: none; pointer-events: none; }
+.ent-poi i { position: absolute; top: 50%; display: block; width: 6px; height: 28px; margin-top: -14px; border-radius: 3px; background: var(--ent-fin); }
 .ent-cadre[data-glisse] { background: rgb(var(--area-finances) / 0.16); }
+/* Pendant le tirage, l'étiquette suit le doigt en haut de la courbe (jamais sur « 1 740 mis de côté », n° 24) ; les noms qu'elle couvrirait
+   s'effacent le temps du geste. */
+.ent-cadre-tir { position: absolute; top: 0; z-index: 2; box-sizing: border-box; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 20px; white-space: nowrap; color: var(--ent-fin-t); background: rgb(var(--cave-950)); border: 1.5px solid var(--ent-fin); border-radius: 11px; pointer-events: none; }
+.ent-nom-cache { visibility: hidden; }
+/* L'étoile d'une chose (E31) : collée à son nom, dans la couleur du texte de l'app. */
+.ent-nom .ent-etoile { font-weight: 700; fill: rgb(var(--cave-50)); }
+/* CRITIQUE-6 n° 9 : la ★ seule d'une chose dont le nom n'a pas de place, posée au-dessus du cadre de la fenêtre (z-order), sur sa marche. */
+.ent-etoiles-dessus { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
+.ent-etoile-mq { font-size: 18px; font-weight: 700; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
 
 /* La courbe zoomée pendant un geste de la frise : l'avant en pointillé, l'après en plein, l'écart en rouge ou en vert. */
 .ent-zoom-c { position: absolute; left: 0; top: 0; width: 100%; z-index: 2; background: rgb(var(--cave-950)); }
@@ -107,14 +140,20 @@
 .ent-avant { fill: none; stroke: var(--ent-ink); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.8; }
 .ent-apres { fill: none; stroke: var(--ent-fin); stroke-width: 3.5; }
 .ent-axe { font-size: 14px; fill: var(--ent-mut); pointer-events: none; }
+/* CRITIQUE-11 n° 6 : le chiffre d'axe de la courbe zoomée sur un fond du thème, posé hors du tracé (placerAxe) : aucune ligne ne le barre. */
+.ent-axe-fond { fill: rgb(var(--cave-950)); opacity: 0.85; pointer-events: none; }
 .ent-zleg { font-size: 14px; font-weight: 600; fill: var(--ent-ink); }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
-.ent-bz { margin-top: 12px; }
+.ent-bz { position: relative; margin-top: 12px; }
 .ent-bd { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); border-bottom: 1px solid var(--ent-line); }
 .ent-bd-c { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 28px; padding: 0; color: var(--ent-mut); -webkit-touch-callout: none; user-select: none; }
 .ent-sem { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); }
+/* CRITIQUE-7 n° 1 : une étiquette sur 2 ou 4 semaines (ou le mois) déborde de sa colonne étroite, centrée, sans se couper ni toucher sa voisine. */
+.ent-sem--pas { white-space: nowrap; }
 .ent-bd-c[data-courant] .ent-sem { color: var(--ent-ink); font-weight: 700; }
+/* CRITIQUE-9 (doute m390-11) : l'anneau de focus d'une colonne est pour le clavier seul ; après un toucher, aucun cadre (BandeSemaines, data-doigt). */
+.ent-bd[data-doigt] .ent-bd-c:focus-visible { outline: none; }
 .ent-bd-m { display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 18px; padding-bottom: 2px; }
 .ent-ic { display: inline-flex; gap: 2px; color: rgb(var(--attention-texte)); }
 
@@ -134,10 +173,14 @@
 .ent-pop, .ent-menu { position: absolute; z-index: 45; box-sizing: border-box; background: rgb(var(--cave-850)); color: var(--ent-ink); border: 1.5px solid var(--ent-line2); border-radius: 12px; box-shadow: var(--ombre-lift); padding: 8px 10px; font-size: 14px; line-height: 20px; }
 .ent-pop { left: 8px; right: 8px; top: 34px; }
 .ent--paysage .ent-pop { right: auto; width: min(380px, calc(100% - 16px)); }
+/* En paysage, le détail du creux défile dans la hauteur de l'écran : « Solde et réglages › » reste atteignable au-dessus des onglets. */
+.ent--paysage .ent-pop.ent-creux { max-height: calc(100dvh - 120px); overflow-y: auto; overscroll-behavior: contain; }
 .ent-pop-t { margin: 0 0 2px; color: var(--ent-mut); }
 .ent-pop-t b { color: var(--ent-fin-t); }
 .ent-pop-v { margin: 0; color: var(--ent-mut); }
 .ent-pop-l { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 6px; white-space: nowrap; }
+/* Une semaine d'une autre année (« S44 ’27 ») : la colonne s'élargit pour toutes les lignes du détail. */
+.ent-creux--an .ent-pop-l { grid-template-columns: 60px minmax(0, 1fr) auto; }
 .ent-pop-l .ent-w { color: var(--ent-mut); }
 .ent-pop-l .ent-nm { overflow: hidden; text-overflow: ellipsis; }
 .ent-hach-ico { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; border: 1.5px solid var(--ent-fin); background: repeating-linear-gradient(45deg, var(--ent-fin) 0 2px, transparent 2px 5px); }
@@ -157,7 +200,17 @@
 .ent-menu-l { min-height: 44px; padding: 0 8px; border-radius: 8px; text-align: left; font-size: 14px; font-weight: 600; color: var(--ent-ink); }
 .ent-menu-l:active, .ent-menu-l:hover { background: rgb(var(--cave-900)); }
 
-.ent-lu { position: absolute; left: 0; right: 0; top: 100%; z-index: 44; padding: 4px 12px 6px; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line); }
+/* c2-b (CRITIQUE-5 n° 15) : le détail vit dans l'en-tête, qui s'étire pendant la lecture (as p-c2b-pendant) ; il ne recouvre plus la frise. */
+.ent-lu { position: static; padding: 4px 12px 6px; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line); }
+.ent--paysage .ent-lu { grid-column: 1 / -1; }
+.ent-lu .ent-det-l { flex-direction: column; align-items: flex-start; }
+.ent-det-t .ent-det-s { white-space: nowrap; }
+.ent-ens { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 4px 0 0; color: var(--ent-mut); }
+.ent-ens i { font-style: normal; white-space: nowrap; color: var(--ent-ink); }
+.ent-ens b { color: var(--ent-fin-t); }
+/* Sans palier : « ensuite · fin de l'horizon, le 14 nov. 2027 » se lit d'une traite, à la suite du mot. */
+.ent-ens[data-ensuite-fin] { display: block; }
+.ent-ens[data-ensuite-fin] i { white-space: normal; }
 .ent-det { display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 20px; color: var(--ent-ink); }
 .ent-det-t { display: flex; justify-content: space-between; gap: 8px; }
 .ent-det-t span { color: var(--ent-mut); }
@@ -169,7 +222,9 @@
 
 .ent-live { position: absolute; left: 0; right: 0; top: 100%; z-index: 46; pointer-events: none; }
 .ent-info { margin: 4px 0 0 8px; display: inline-block; max-width: calc(100% - 16px); padding: 4px 10px; border-radius: 999px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-size: 14px; font-weight: 700; line-height: 20px; }
-.ent-info--date { position: absolute; margin: 4px 0 0; transform: translateX(-50%); white-space: nowrap; }
+/* La date d'une semaine (i3) : posée au-dessus de la bande, dans l'en-tête (sur la rangée des mois), jamais sur la frise. */
+.ent-live.ent-live-date { top: auto; bottom: 100%; height: 0; }
+.ent-info--date { position: absolute; bottom: 2px; margin: 0; transform: translateX(-50%); white-space: nowrap; }
 
 /* ---- la courbe en grand (c3-a) et le mode graph ---- */
 .ent-gc-h { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; }
@@ -181,11 +236,25 @@
 .ent-gc-d { padding: 4px 12px 4px 0; }
 .ent-gc:not(.ent-gc--cote) .ent-gc-d { padding: 4px 12px; }
 .ent-sgm { fill: none; stroke: var(--c, rgb(var(--cave-600))); stroke-width: 3; }
+/* CRITIQUE-6 n° 12 : une semaine sans mouvement nommé reste neutre, en trait fin (jamais un deuxième gris épais à côté de Papiers), et la
+   légende la nomme. */
+.ent-sgm.ent-c-autre { stroke-width: 1.5; }
+.ent-leg .ent-leg-autre i { width: 16px; height: 0; border-radius: 0; background: none; border-top: 1.5px solid var(--c); }
 .ent-creux-m { fill: var(--ent-ink); font-weight: 800; }
 .ent-bd-fin { fill: var(--c, rgb(var(--cave-600))); opacity: 0.85; }
 .ent-leg { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0; padding: 4px 12px 6px; list-style: none; }
-.ent-leg li { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--ent-ink); }
+.ent-leg li { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--ent-ink); white-space: nowrap; }
+/* CRITIQUE-12 n° 5 (E12, E35) : en portrait, le + volant reste à sa place (D-17) et la légende ne passe jamais dessous. Sa première ligne finit
+   au-dessus du + (hautLegende) et va jusqu'au bord du + ; la dernière, à sa hauteur, finit par une réserve de la largeur du + : 4 px de la
+   réserve et l'écart de 8 px font les 12 px laissés à sa gauche. Un terme ne se coupe jamais (nowrap) : la légende passe à la ligne entre eux. */
+.ent-leg--plus { column-gap: 8px; padding-right: 0; }
+.ent-leg--plus::after { content: ''; flex: 0 0 calc(var(--plus-cote, 56px) + 4px); }
+/* La place du détail de la semaine, fixe en portrait (PLACE_DETAIL) : la légende ne bouge pas sous le doigt ni ne passe sous les onglets. */
+.ent-gc-dp { min-height: 94px; }
 .ent-leg i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+/* La caisse de la grande courbe (CRITIQUE-5 n° 16) : `--repere`, en pointillé ; aucune rangée ne l'a, ce n'est pas le gris de Papiers. */
+.ent-gs .ent-gc-caisse { stroke: rgb(var(--repere)); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.ent-leg .ent-leg-caisse i { width: 16px; height: 0; border-radius: 0; background: none; border-top: 2px dashed rgb(var(--repere)); }
 
 /* ---- la liste des retards (dans la feuille de l'app : jetons directs, hors de .ent) ---- */
 .ent-ret { margin: 0; padding: 0 0 8px; list-style: none; }
@@ -201,9 +270,18 @@
 .ent--paysage { display: grid; grid-template-columns: 214px minmax(0, 1fr); grid-template-areas: 't c' 'b b'; align-items: start; }
 .ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; padding: 2px 8px 0 12px; }
 .ent--paysage .ent-t-b { margin-left: 0; }
+/* CRITIQUE-6 n° 14 : le chiffre clé reste dans sa colonne (214 px) ; s'il ne tient pas en ligne, la semaine passe dessous (data-empile),
+   jamais sur la courbe, ni sous le bord du cadre, ni sous l'axe de la courbe zoomée. */
+.ent--paysage .ent-k { align-self: stretch; max-width: 100%; }
+/* c3-a en paysage : la légende dans la colonne du détail, à côté de la courbe (paysage-21 n'en avait pas). */
+.ent-gc-cote { display: flex; flex-direction: column; min-width: 0; }
+.ent-gc-cote .ent-leg { padding: 6px 12px 4px 0; }
 .ent--paysage .ent-cbz { grid-area: c; min-width: 0; }
-.ent--paysage .ent-bz { grid-area: b; margin-top: 12px; }
-.ent--paysage .ent-bd-c { min-height: 30px; }
+/* Les mois sont EN HAUT de la courbe (w3s) : la bande vient juste dessous, 4 px ; ses cases font 24 px (la date au toucher s'étend par ::after).
+   Le tracé garde 70 px, l'en-tête 120 px au plus (E02, E10, CRITIQUE-4 n° 11). */
+.ent--paysage .ent-bz { grid-area: b; margin-top: 4px; }
+.ent--paysage .ent-bd-c { min-height: 24px; }
+.ent--paysage .ent-cadre, .ent--paysage .ent-poi { top: 18px; bottom: 2px; }
 .ent--paysage .ent-lit { white-space: normal; height: auto; line-height: 20px; }
 .ent--paysage .ent-lit b { font-size: 20px; }
 .ent--paysage[data-vue='graph'] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c'; }

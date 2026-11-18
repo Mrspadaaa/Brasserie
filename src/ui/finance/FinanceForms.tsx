@@ -44,7 +44,8 @@ export { Field, FormSheet };
 /** Solde et paramètres = m4pf-c (voie s2c) : la feuille vit dans `profil/`. `parametres` : le renvoi « Tendance à calculer » ou « Production annuelle » amène sur les cartes des réglages. */
 export function ProfileSheet(props:{profile:FinancialProfile;onClose:()=>void;parametres?:boolean}) { return <ProfilEffets {...props}/>; }
 /** Ajouter une prévision = m3pr-c (voie s2) : la feuille vit dans `prevision/`. */
-export function PlanSheet(props:{plan?:FinancialPlan;onClose:()=>void;date?:string}) { return <PlanSheetC {...props}/>; }
+/** `categorie` (facultative) : la catégorie d'une prévision neuve, ouverte depuis une rangée du Calendrier (Achats → Brassage, Travaux → Local et travaux, Papiers → Charges fixes ; CRITIQUE-5 n° 3, D-68). Sans elle, rien ne change. */
+export function PlanSheet(props:{plan?:FinancialPlan;onClose:()=>void;date?:string;categorie?:FinanceCategory}) { return <PlanSheetC {...props}/>; }
 /** Bien amorti = m3im-c (voie s2c) : la feuille vit dans `bien/`. `initial` : préremplissage d'un matériel neuf (l'achat que l'Annuel propose de passer au registre) ; rien n'est enregistré sans le geste du brasseur. */
 export function AssetSheet(props:{asset?:FinancialAsset;initial?:Partial<FinancialAsset>;onClose:()=>void}) { return <BienCuve {...props}/>; }
 /** Une ligne d'inventaire dont la valeur n'est pas encore saisie n'a PAS de valeur (jamais 0 pour un inconnu) : le champ reste vide, l'enregistrement la refuse. `propositions` : valeurs estimées (dernière facture), offertes par « Utiliser », jamais écrites seules. */

@@ -77,3 +77,20 @@ describe('A14 : échéances (E47 c)', () => {
     expect(autres.every(i => i.proposition === undefined)).toBe(true);
   });
 });
+
+describe('CRITIQUE-3 n° 18 : un brassin déjà planifié de la même recette, après le dernier brassage : aucune proposition', () => {
+  it('t6 : planifié par recipeRef (date suisse ou ISO), ou par la seule version figée (sourceRecipeId) : liste vide', () => {
+    expect(brassinsHabituels(TROIS, JOUR)).toHaveLength(1);
+    const parRef = lot('LOT-4', '', { status: 'planifie', plannedBrewDate: '22.06.2026' });
+    expect(brassinsHabituels([...TROIS, parRef], JOUR)).toEqual([]);
+    expect(brassinsHabituels([...TROIS, { ...parRef, plannedBrewDate: '2026-06-22' } as Batch], JOUR)).toEqual([]);
+    /* un brassin posé par une autre voie (import, copie) qui ne porte que sa version figée est bien de la même recette */
+    const parVersion = { ...parRef, recipeRef: undefined, recipeSnapshot: { sourceRecipeId: 'R-IPA', fermentation: [] } } as unknown as Batch;
+    expect(brassinsHabituels([...TROIS, parVersion], JOUR)).toEqual([]);
+    /* ses brassages comptent aussi pour la moyenne : brassés par version figée seule, ils proposent la recette */
+    const sansRef = TROIS.map(b => ({ ...b, recipeRef: undefined, recipeSnapshot: { sourceRecipeId: 'R-IPA', fermentation: [] } }) as unknown as Batch);
+    expect(brassinsHabituels(sansRef, JOUR).map(p => p.recipeRef)).toEqual(['R-IPA']);
+    /* un planifié AVANT le dernier brassage (jamais brassé) n'empêche rien */
+    expect(brassinsHabituels([...TROIS, lot('LOT-0', '', { status: 'planifie', plannedBrewDate: '01.04.2026' })], JOUR)).toHaveLength(1);
+  });
+});

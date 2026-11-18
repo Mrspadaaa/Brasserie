@@ -39,7 +39,8 @@ function inverseDe(e: Ecriture, avant: Document | undefined): Ecriture | null {
     if (!avant) return null;
     return { op: 'patch', collection: e.collection, id: e.id, patch: Object.fromEntries(Object.keys(e.patch).map(k => [k, avant[k]])) };
   }
-  if (e.op === 'creer') return { op: 'supprimer', collection: e.collection, id: e.document.id };
+  /* une création sur un id qui existe déjà REMPLACE le document (une vente probable acceptée, CRITIQUE-3 n° 8) : Annuler remet celui d'avant */
+  if (e.op === 'creer') return avant ? { op: 'creer', collection: e.collection, document: avant as Document & { id: string } } : { op: 'supprimer', collection: e.collection, id: e.document.id };
   return avant ? { op: 'creer', collection: e.collection, document: avant as Document & { id: string } } : null;
 }
 
@@ -57,7 +58,7 @@ export async function appliquer(ecritures: readonly Ecriture[], port: PortEcritu
   try {
     for (const e of ecritures) {
       const id = e.op === 'creer' ? e.document.id : e.id;
-      const avant = e.op === 'creer' ? undefined : port.lire(e.collection, id);
+      const avant = port.lire(e.collection, id);
       const inverse = inverseDe(e, avant ? structuredClone(avant) : undefined);
       await jouer(e, port);
       faites.push(e);
@@ -109,6 +110,9 @@ export function portParDefaut(): PortEcritures {
       FinanceService.savePlan(suivant);
     },
     creer(collection, document, recetteId) {
+      /* un id qui existe déjà : on remplace (vente probable acceptée, Annuler d'un remplacement), jamais un doublon */
+      if (collection === 'batches' && StorageService.getBatches().some(b => b.id === document.id)) { StorageService.updateBatch(document as unknown as Batch); return; }
+      if (collection === 'creativeItems' && StorageService.getCreativeItems().some(i => i.id === document.id)) { StorageService.updateCreativeItem(document as unknown as CreativeItem); return; }
       if (collection === 'batches') {
         const batch = document as unknown as Batch;
         const recette = recetteId ? StorageService.getRecipes().find((r: Recipe) => r.id === recetteId) : undefined;

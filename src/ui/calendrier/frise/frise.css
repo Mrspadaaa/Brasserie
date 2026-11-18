@@ -3,9 +3,10 @@
 .cal-t-fetes { --c: rgb(var(--area-agenda)); --ct: rgb(var(--area-agenda-texte)); }
 .cal-t-ventes { --c: rgb(var(--hop)); --ct: rgb(var(--hop-texte)); }
 .cal-t-achats { --c: rgb(var(--area-finances)); --ct: rgb(var(--area-finances-texte)); }
-.cal-t-travaux { --c: rgb(var(--area-stocks)); --ct: rgb(var(--area-stocks-texte)); }
-.cal-t-activites { --c: rgb(var(--attention)); --ct: rgb(var(--attention-texte)); }
-.cal-t-papiers { --c: rgb(var(--cave-200)); --ct: rgb(var(--cave-200)); }
+/* CRITIQUE-3 n° 26 (E42) : la table de entete.css, une couleur par rangée (Ventes hop, Travaux attention : plus jamais le même vert) */
+.cal-t-travaux { --c: rgb(var(--attention)); --ct: rgb(var(--attention-texte)); }
+.cal-t-activites { --c: rgb(var(--water)); --ct: rgb(var(--water-texte)); }
+.cal-t-papiers { --c: rgb(var(--cave-400)); --ct: rgb(var(--cave-200)); }
 
 .cal-pt-teinte { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
 .cal-neg { color: rgb(var(--alert-strong-texte, var(--alert-strong))); }
@@ -18,15 +19,28 @@
 .cal-rangee-l .cal-rh { position: absolute; left: 0; top: 0; z-index: 5; padding-right: 6px; border-radius: 0 0 8px 0; background: rgb(var(--cave-950)); }
 .cal-rangee-l .cal-conf { display: none; }
 /* E32 : « Livraison La Cigogne · S1 › », renvoi d'une vente hors de la vue */
-.cal-renvoi { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; margin-left: auto; padding: 0 8px; border-radius: 12px; border: 1.5px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; font-weight: 700; white-space: nowrap; }
+/* n° 21 : en bout de rangée, dans la piste (position posée par `disposer`), jamais sur la ligne du titre */
+.cal-renvoi { position: absolute; z-index: 4; box-sizing: border-box; display: inline-flex; align-items: center; gap: 2px; height: 24px; padding: 0 8px; overflow: hidden; border-radius: 12px; border: 1.5px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 700; white-space: nowrap; }
 .cal-renvoi::before { content: ''; position: absolute; inset: -10px -2px; }
 /* le trait pointillé d'un caddie à son brassin (D-107, as/p-repos) */
 .cal-traits { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
 .cal-traits path { fill: none; stroke: rgb(var(--area-production)); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.75; }
 /* la pastille « lié à La Cigogne » (D-113) : se lit en 3 s, cède sa place au nom si elle manque */
-.cal-lie { flex: 0 10 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; border-radius: 9px; border: 1px solid var(--c); font-size: 14px; line-height: 16px; font-weight: 600; color: rgb(var(--cave-50)); background: rgb(var(--cave-900)); }
+/* CRITIQUE-4 n° 15 : l'icône lien et le nom, jamais « lié … » : la pastille ne rétrécit pas, le nom de la chose cède avant elle */
+.cal-lie { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border-radius: 9px; border: 1px solid var(--c); font-size: 14px; line-height: 16px; font-weight: 600; color: rgb(var(--cave-50)); background: rgb(var(--cave-900)); }
 .cal-duree.cal-duree-in { left: auto; right: 8px; top: 0; max-width: calc(100% - 16px); color: rgb(var(--cave-50)); opacity: 0.85; }
-.cal-renvoi { position: relative; }
+/* la pastille « lié à » se touche (n° 13) : elle sort du nom, qui ne prend pas le doigt ; son aperçu s'ouvre sur place, sous elle */
+.cal-lie-z { position: relative; flex: none; display: inline-flex; pointer-events: auto; }
+button.cal-lie { white-space: nowrap; }
+button.cal-lie > svg { flex: none; }
+/* en ligne 1, n° 1 (« C’est quoi ces deux paniers ? ») : à court de place, la pastille du lien cède avant le nom (vu au banc en 3 mois :
+   « 3 fûts La Cigogne » rendu à 0 px derrière « Blonde d’automne ») ; elle garde son icône, son nom finit en points de suite */
+.cal-lbl .cal-lie-z { flex: 0 1000 auto; min-width: 28px; }
+.cal-lbl .cal-lie-z > button.cal-lie { flex: 0 1 auto; min-width: 0; }
+.cal-lbl button.cal-lie > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
+.cal-lbl:has(.cal-lie-ap) { overflow: visible; z-index: 8; }
+.cal-lie-ap { position: absolute; left: 0; top: calc(100% + 4px); z-index: 8; width: max-content; max-width: 280px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 500; white-space: normal; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
 /* le caddie des courses d'un brassin, accroché sous sa barre (D-107) */
 .cal-caddie { position: absolute; z-index: 4; width: 20px; height: 20px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1.5px dashed rgb(var(--area-production)); background: rgb(var(--cave-900)); color: rgb(var(--area-production-texte)); }
 .cal-caddie::before { content: ''; position: absolute; inset: -10px; }
@@ -48,6 +62,10 @@
 .cal-pastille-fond { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--c) 55%, transparent); }
 .cal-pastille-t { position: relative; font-size: 14px; font-weight: 700; color: rgb(var(--cave-50)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cal-conf { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: rgb(var(--cave-200)); }
+/* CRITIQUE-12 n° 2 (E23) : une estimation hors courbe (une fête du carnet) : la même pastille r2-c, en pointillé comme ce qui n'est pas ferme (E26) */
+.cal-pastille-estime { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent); }
+.cal-pastille-estime::after { content: ''; position: absolute; inset: 0; border: 1px dashed rgb(var(--cave-200)); border-radius: inherit; pointer-events: none; }
+.cal-pastille-estime .cal-pastille-fond { background: color-mix(in srgb, var(--c) 25%, transparent); }
 
 .cal-lane { position: relative; background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(var(--cw) - 1px), rgb(var(--cave-800)) calc(var(--cw) - 1px), rgb(var(--cave-800)) var(--cw)); }
 
@@ -58,35 +76,80 @@
 .cal-barre.cal-sel, .cal-marque.cal-sel { box-shadow: 0 0 0 2px rgb(var(--cave-900)), 0 0 0 3.5px var(--c); }
 .cal-barre.cal-coupee { border-right-style: dotted; }
 .cal-fantome { position: absolute; z-index: 1; pointer-events: none; box-sizing: border-box; border: 2px dashed var(--c); border-radius: 7px; background: transparent; }
-.cal-ici { position: absolute; z-index: 7; transform: translateX(-50%); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; white-space: nowrap; pointer-events: none; }
+/* la bulle « lâcher ici » : posée par BulleIci (Rangee.tsx), hors des noms et dans la frise (CRITIQUE-4 n° 13 a) */
+.cal-ici { position: absolute; z-index: 7; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; white-space: nowrap; pointer-events: none; }
 
 .cal-lbl { position: absolute; z-index: 3; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; pointer-events: none; font-size: 14px; line-height: 18px; font-weight: 600; color: rgb(var(--cave-50)); }
 .cal-lbl-gauche { justify-content: flex-end; }
 .cal-lbl-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* CRITIQUE-6 n° 6 et 17 : une ligne d'un nom posé sur deux lignes (`disposer` lui a donné sa place) ne se coupe jamais */
+.cal-lbl-t.cal-lbl-ent { flex: none; overflow: visible; text-overflow: clip; }
 .cal-lbl-m { flex: none; font-weight: 700; color: var(--ct); font-variant-numeric: tabular-nums; }
 .cal-lbl-dedans.cal-t-brassins { align-items: flex-start; line-height: 16px; }
-.cal-lbl-j { flex: 0 0.01 auto; min-width: 0; overflow: hidden; margin-left: 2px; font-size: 14px; font-weight: 500; color: rgb(var(--cave-200)); }
+/* n° 30 : la durée n'est jamais coupée (posée à côté seulement quand elle tient entière) */
+.cal-lbl-j { flex: none; margin-left: 2px; font-size: 14px; font-weight: 500; color: rgb(var(--cave-200)); }
+/* n° 27 : le nom posé dans la barre a le fond de la barre ; les ronds des jalons passent dessous, jamais dessus */
+.cal-lbl-dedans .cal-lbl-t, .cal-lbl-dedans .cal-lbl-m { position: relative; padding: 0 3px; border-radius: 4px; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-950))); }
+.cal-barre .cal-duree-in { z-index: 3; width: max-content; left: auto; padding: 0 3px; border-radius: 4px; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-950))); }
+/* CRITIQUE-5 n° 26 et 28 : deux lignes « nom » seulement pour une chose liée : le nom et son montant, insécables, puis la pastille « lié à » ;
+   plus aucun texte en flot (« Hotte / −900 ») */
+.cal-lbl-2n { flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px; line-height: 14px; }
+.cal-lbl-2n.cal-lbl-gauche { align-items: flex-end; }
+.cal-lbl-l1 { display: flex; align-items: center; gap: 6px; max-width: 100%; min-width: 0; white-space: nowrap; }
+.cal-lbl-l2 { display: flex; align-items: center; gap: 6px; }
+.cal-lbl-2n .cal-lie { line-height: 13px; }
+.cal-lbl-2n .cal-lbl-j { margin-left: 0; line-height: 14px; }
+/* f2-a : le temps du geste, l'étiquette cède sa place à la durée tirée (Barre.tsx, `cal-duree-hors`) */
+.cal-lbl.cal-lbl-cede { visibility: hidden; }
+/* le nom du caddie d'un brassin, en 6 semaines (n° 19) */
+.cal-lbl-caddie { --c: rgb(var(--area-production)); --ct: rgb(var(--area-production-texte)); font-weight: 500; color: rgb(var(--cave-200)); }
 .cal-lbl-m.cal-neg { color: rgb(var(--alert-strong)); }
 
-.cal-piste { position: absolute; left: 0; right: 0; bottom: 3px; height: 5px; }
+/* CRITIQUE-4 n° 17 (E25, D-103) : la piste des phases et ses jalons sont posés sur le bord bas de la barre. La zone de prise d'un jalon fait
+   24 px de large au plus, centrée sur son icône, et n'atteint jamais le milieu de la barre : saisie par son milieu, la barre se déplace. */
+.cal-piste { position: absolute; left: 0; right: 0; bottom: -3px; height: 5px; }
+.cal-paysage .cal-piste { bottom: -2px; height: 4px; }
 .cal-ph { position: absolute; top: 0; height: 5px; border-radius: 3px; background: var(--c); }
 .cal-ph-fermentation { opacity: 0.6; }
 .cal-ph-garde { opacity: 0.4; }
 .cal-ph-dry-hop { opacity: 0.8; }
-.cal-jalon { position: absolute; bottom: 0; z-index: 2; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; border: 2px solid var(--c); background: rgb(var(--cave-950)); }
-.cal-jalon::before { content: ''; position: absolute; inset: -8px; }
-.cal-jalon[data-glissable='false'] { opacity: 0.8; }
+/* CRITIQUE-5 n° 29 : le centre de l'icône est borné à sa barre (`--x` posé par Barre.tsx) : aucune demi-icône hors de la grille, ni à droite ni à gauche.
+   CAL-POINTS-MUETS (18.11, « plutot utiliser des mini icone. et une couleur pour le type de procédé ») : chaque étape est un mini picto dans un
+   disque de la couleur de son procédé (`--e`, posé par Barre.tsx depuis etapes.ts), cerné du fond pour se détacher de la barre. Les zones de
+   prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
+.cal-jalon { position: absolute; left: clamp(8px, var(--x, 0%), calc(100% - 8px)); bottom: -7px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: rgb(var(--cave-950)); font-style: normal; }
+.cal-jalon > svg { width: 10px; height: 10px; pointer-events: none; }
+.cal-jalon::before { content: ''; position: absolute; inset: 0 -4px -4px; }
+.cal-paysage .cal-jalon { left: clamp(7px, var(--x, 0%), calc(100% - 7px)); bottom: -6px; width: 14px; height: 14px; margin-left: -7px; border-width: 1px; }
+.cal-paysage .cal-jalon > svg { width: 9px; height: 9px; }
+.cal-paysage .cal-jalon::before { inset: 0 -5px -2px; }
+/* CRITIQUE-5 n° 11 (D-103, E25) : le jalon de fin se saisit au doigt : une zone de prise de 44 px de large, invisible, posée au-dessus de la poignée
+   du bord (même geste : écrire `finPrevue`). En hauteur, elle reste dans la ligne de sa barre (30 px de pas) : jamais sur le jalon de la barre du
+   dessus ni de celle du dessous. Le milieu de la barre reste à la barre (glisser). */
+.cal-jalon[data-glissable='fin'] { z-index: 4; }
+.cal-jalon[data-glissable='fin']::before { inset: -13px -14px -3px; }
+.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15px -2px; }
+/* CAL-POINTS-MUETS (18.11) : l'icône touchée est cerclée de sa couleur, et sa bulle « Fermentation · 23 nov. » se pose sous la barre, jamais dessus */
+.cal-jalon.cal-jalon-vu { z-index: 5; box-shadow: 0 0 0 2px var(--e, var(--c)); transform: scale(1.15); }
+.cal-point-bulle { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); top: calc(100% + 10px); z-index: 9; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: 260px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--e, var(--c)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
+.cal-point-bulle > svg { flex: none; color: var(--e, var(--c)); }
+/* la bulle passe au-dessus de la barre et du nom de la ligne du dessous (vu au banc à 390 : « Stout maison » la coupait) */
+.cal-barre:has(.cal-point-bulle) { z-index: 10; }
 .cal-pts { position: absolute; left: 6px; right: 6px; top: 3px; height: 7px; pointer-events: none; }
 .cal-pts > i { position: absolute; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: rgb(var(--cave-50)); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); }
 .cal-duree { position: absolute; left: 8px; right: 8px; top: 1px; font-style: normal; font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; color: rgb(var(--cave-50)); }
+/* f2-a (CRITIQUE-5 n° 1) : la durée tirée qui ne tient pas dans la barre se lit entière, juste à sa droite, le temps du geste */
+.cal-duree.cal-duree-hors { left: calc(100% + 6px); right: auto; top: 0; width: max-content; overflow: visible; padding: 0 6px; border-radius: 6px; border: 1px solid var(--c); background: rgb(var(--cave-900)); }
 .cal-grip { position: absolute; top: 0; right: -3px; z-index: 3; width: 8px; height: 100%; cursor: ew-resize; touch-action: none; }
-.cal-grip::before { content: ''; position: absolute; inset: -8px -12px; }
+/* CRITIQUE-5 n° 11 : la poignée ne déborde pas en hauteur (elle prenait le jalon de fin de la barre du dessus) */
+.cal-grip::before { content: ''; position: absolute; inset: -2px -12px; }
 .cal-grip::after { content: ''; position: absolute; top: 25%; bottom: 25%; left: 3px; width: 2px; border-radius: 1px; background: var(--c); }
 .cal-badges { position: absolute; top: -9px; right: -4px; display: flex; gap: 2px; padding: 1px 3px; border-radius: 9px; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); pointer-events: none; }
 .cal-commander { position: absolute; z-index: 4; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); }
 
 .cal-marque.cal-glisse { z-index: 6; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.35); }
-.cal-marque { position: absolute; z-index: 2; width: 28px; height: 28px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 22%, rgb(var(--cave-900))); color: var(--ct); touch-action: pan-y; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+/* n° 4 : la marque passe au-dessus des barres voisines : son appui long est à elle (les 6 semaines), jamais au menu d'une barre */
+.cal-marque { position: absolute; z-index: 3; width: 28px; height: 28px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 22%, rgb(var(--cave-900))); color: var(--ct); touch-action: pan-y; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .cal-marque::before { content: ''; position: absolute; inset: -8px; }
 .cal-etoile { position: absolute; top: -9px; right: -7px; font-size: 14px; line-height: 1; color: rgb(var(--attention)); }
 
@@ -107,24 +170,54 @@
 /* le menu de l'appui long (f5-a) */
 .cal-menu { position: fixed; z-index: 60; box-sizing: border-box; padding: 8px; border: 1px solid rgb(var(--cave-600)); border-radius: 14px; background: rgb(var(--cave-850)); color: rgb(var(--cave-50)); box-shadow: 0 10px 30px rgb(var(--cave-950) / 0.4); font-size: 14px; max-height: calc(100dvh - 130px); overflow-y: auto; }
 .cal-m3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+/* paysage (n° 4, D-192) : deux colonnes, Épingler, Étoile, « X seules » | Dupliquer, Lier, Retirer ; les six se voient sans défiler */
+.cal-menu-l { padding: 6px 8px; }
+.cal-m2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10px; }
+.cal-m2c { display: flex; flex-direction: column; min-width: 0; }
+.cal-m2c > .cal-ml:first-child { border-top: 0; }
+.cal-menu-l .cal-ml { min-height: 46px; gap: 8px; }
+.cal-menu-l .cal-ml > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-menu-l .cal-ml small { font-size: 14px; color: rgb(var(--cave-200)); }
+.cal-menu-l .cal-ml[aria-checked='true'] { box-shadow: inset 3px 0 0 rgb(var(--cave-50)); }
+.cal-m2-liens > .cal-ml:nth-child(-n + 2) { border-top: 0; }
+/* CRITIQUE-4 n° 12 : posé à côté de la barre (paysage), plus étroit : l'effet passe sous son action, rien n'est coupé */
+.cal-menu-etroit .cal-ml { flex-wrap: wrap; row-gap: 0; padding-top: 2px; padding-bottom: 2px; }
+.cal-menu-etroit .cal-ml > em { flex-basis: 100%; padding-left: 28px; line-height: 16px; }
 .cal-m3b { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 64px; padding: 6px 2px; border: 1px solid rgb(var(--cave-600)); border-radius: 10px; background: rgb(var(--cave-900)); color: inherit; font: inherit; text-align: center; }
 .cal-m3b small { font-size: 14px; line-height: 16px; color: rgb(var(--cave-200)); }
 .cal-m3b[aria-checked='true'] { border-color: rgb(var(--cave-50)); box-shadow: inset 0 0 0 1px rgb(var(--cave-50)); }
 .cal-ml { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 6px; border: 0; border-top: 1px solid rgb(var(--cave-700)); background: none; color: inherit; font: inherit; text-align: left; }
 .cal-ml > span { flex: 1; }
+/* CRITIQUE-10 n° 5 (E31) : l'effet de Dupliquer et de Retirer (« S50 : 1 244 → 344 », « coût à venir ») est entier, sur une ligne : l'action
+   et son effet tiennent deux lignes au plus (menu étroit : l'effet passe sous l'action) */
+.cal-ml > em { flex: none; white-space: nowrap; }
 .cal-ml > em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 14px; }
+/* CRITIQUE-12 n° 2 (E31, D-192) : l'effet en mots, sous son action, tient deux lignes au plus à 390 : le montant d'un bloc, en gras, puis
+   l'explication (« ne change pas la courbe (pas dans Finances) »), qui passe à la ligne entre ses mots */
+.cal-ml.cal-ml-mots > em { white-space: normal; font-weight: 500; }
+.cal-ml.cal-ml-mots > em > .cal-ml-m { font-weight: 700; white-space: nowrap; }
 .cal-ml-ret, .cal-ml-ret > em { color: rgb(var(--alert-strong)); }
 .cal-mn { margin: 4px 6px 6px; color: rgb(var(--cave-200)); font-size: 14px; }
 
 /* le détail sous la barre (f4-b) */
 .cal-det { position: relative; margin: 6px 0 10px; padding: 12px; border: 1.5px solid color-mix(in srgb, var(--c) 65%, transparent); border-radius: 12px; background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 20px; }
 .cal-det-h { margin: 0 48px 10px 0; font-size: 18px; line-height: 24px; font-weight: 700; }
-.cal-det-h > span { margin-left: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px; }
+.cal-det-h > span { margin-left: 8px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.cal-det-d { display: flex; align-items: center; gap: 6px; margin: -4px 0 8px; font-weight: 600; color: rgb(var(--cave-200)); }
+/* f4-b : une case par étape (brassage, fermentation, dry hop, garde, conditionnement) ; trois par ligne à 390 */
+.cal-det-et.cal-det-etapes { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); row-gap: 8px; }
+.cal-det-et span > svg { flex: none; }
 .cal-det-x { position: absolute; top: 4px; right: 4px; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 22px; background: none; color: inherit; }
 .cal-det-et { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(var(--cave-700)); }
 .cal-det-et span { display: flex; align-items: center; gap: 4px; color: rgb(var(--cave-200)); }
 .cal-det-et b { display: block; font-variant-numeric: tabular-nums; }
+/* CRITIQUE-10 n° 4 : la plage d'une semaine est insécable ; sa colonne (1fr, au moins sa largeur) la porte entière */
+.cal-det-et .cal-nowrap { white-space: nowrap; }
+/* CRITIQUE-12 n° 3 : chaque date du détail (« prête 21 déc. ») est d'un bloc ; la ligne se coupe entre les morceaux « · » */
+.cal-det .cal-nowrap { white-space: nowrap; }
 .cal-det-p { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px; }
+/* CRITIQUE-10 n° 7 : la pastille « lié à … » du détail, la même que sur la frise, sur la ligne de son aperçu */
+.cal-det-lie .cal-lie { min-height: 20px; white-space: nowrap; }
 .cal-det-bt { display: flex; flex-wrap: wrap; gap: 8px; }
 .cal-b { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1.5px solid rgb(var(--cave-600)); background: transparent; color: inherit; font: inherit; font-weight: 700; }
 .cal-b-pri { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
@@ -135,12 +228,29 @@
 
 /* la vue liste (E40) et la poche « Sans date » (E46) */
 .cal-liste { padding: 4px 0 8px; font-size: 14px; }
-.cal-li-mois { margin: 10px 0 4px; font-size: 14px; font-weight: 700; color: rgb(var(--cave-200)); text-transform: capitalize; }
+.cal-li-mois { margin: 10px 0 4px; font-size: 14px; font-weight: 700; color: rgb(var(--cave-200)); }
+.cal-li-tete { margin: 14px 0 0; font-size: 16px; font-weight: 700; color: rgb(var(--cave-50)); }
 .cal-liste ul { margin: 0; padding: 0; list-style: none; }
 .cal-li-b { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 4px 6px; border: 0; border-top: 1px solid rgb(var(--cave-800)); background: none; color: rgb(var(--cave-50)); text-align: left; }
 .cal-li-i { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--c); color: var(--ct); }
 .cal-li-t { flex: 1; min-width: 0; }
 .cal-li-t b { display: block; font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cal-li-t small { display: block; font-size: 14px; color: rgb(var(--cave-200)); }
-.cal-li-m { flex: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px; font-variant-numeric: tabular-nums; }
+.cal-li-m { flex: none; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .cal-li-vide { padding: 16px 4px; text-align: center; color: rgb(var(--cave-200)); }
+
+/* CRITIQUE-9 n° 3 (E25, E29, as/cap/p-repos) : la barre haute d'un brassin, le nom en haut, « J0 / 28 · prête 21 déc. » en bas à droite, sur
+   la piste des phases ; sinon la phrase sur la ligne sous la barre. Jamais « J0 / 28 » seul quand la phrase a une place. */
+.cal-barre-2l .cal-duree, .cal-barre-2l .cal-duree.cal-duree-in { top: auto; bottom: 6px; }
+/* CRITIQUE-10 n° 2 (E24, D-9, option a) : les jours actifs sur leur propre ligne, sous le nom ; le nom (ligne du haut) ne couvre aucun point */
+.cal-pts.cal-pts-bas { top: auto; bottom: 8px; }
+.cal-lbl-sous { align-items: center; }
+.cal-lbl-sous .cal-lbl-j { margin-left: 0; }
+/* CRITIQUE-9 n° 10 (D-113, D-126) : l'icône lien d'une chose sans place pour sa pastille se touche ; posée au coin de la barre, hors d'elle */
+.cal-lie-coin { position: absolute; z-index: 4; display: inline-flex; pointer-events: auto; }
+/* le bouton se pose sur l'icône du badge (dessinée par la barre) : transparent, sa zone de prise s'étend vers le haut et la gauche, pas sur le bord */
+.cal-lie.cal-lie-icone { width: 20px; height: 20px; padding: 0; border-color: transparent; background: transparent; }
+.cal-lie.cal-lie-icone::before { inset: -8px -2px -2px -8px; }
+.cal-lie.cal-lie-icone:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }
+/* CRITIQUE-10, doute m22 : après un toucher dans la frise, aucun cadre de focus (pastille, barre, marque, détail) ; au clavier, il revient */
+.cal-frise[data-doigt] :focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }

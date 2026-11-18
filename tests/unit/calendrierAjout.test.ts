@@ -9,6 +9,7 @@ import {
 import { brassinsHabituels } from '../../src/domain/calendrierPropositions';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
+import { etatBanc } from '../../src/design/CalendrierPreview';
 
 const S20 = '2026-05-11', S40 = '2026-09-28';
 const ctx = (p: Partial<ContexteAjout> = {}): ContexteAjout => ({
@@ -106,7 +107,8 @@ describe('A7 : puces proposées, garde ×10 (E34)', () => {
     const b = appliquerPuce(brouillonVide('ventes', S20), p[0]);
     expect(b).toMatchObject({ titre: '3 fûts La Cigogne', centimes: 90000, signe: '+', clientId: 'CL-3' });
     const e = reussi(toucherSemaine({ ...appliquerPuce(brouillonVide('ventes', S20), p[1]), centimes: 12000 }, S20));
-    expect(plan(e)).toMatchObject({ direction: 'in', status: 'draft', category: 'recettes', clientId: 'CL-2', amountCents: 12000 });
+    /* CRITIQUE-3 n° 8 : « Ajouter » enregistre une vente confirmée (elle compte), jamais un brouillon de plus en pointillé */
+    expect(plan(e)).toMatchObject({ direction: 'in', status: 'active', category: 'recettes', clientId: 'CL-2', amountCents: 12000 });
   });
   it('les noms récents de la rangée viennent des choses posées ; rien n’est inventé quand l’historique est vide', () => {
     const chose = (id: string, titre: string, debut: string): ChoseCalendrier => ({ id, rangee: 'achats', titre, debut, fin: debut, source: { genre: 'plan', id, origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan' }, deplacable: true });
@@ -209,5 +211,107 @@ describe('E34, D-39 (CRITIQUE-2 n° 16) : le montant se choisit par puces, sans 
   it('« Mettre de côté » ne se propose qu’à une dépense avec fenêtre et montant', () => {
     expect(peutMettreDeCote(travaux())).toBe(true);
     expect(peutMettreDeCote({ ...travaux(), signe: '+' })).toBe(false);
+  });
+});
+
+describe('CRITIQUE-4 n° 2 (E23, E24) : un brassin posé par la feuille porte le coût de sa recette', () => {
+  const JOUR = '2026-11-16';
+  const profil: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 403200, confirmed: true } } as FinancialProfile;
+  const modeleDe = (e: ReturnType<typeof etatBanc>) => construireModele({ aujourdhui: JOUR, transactions: e.transactions, payments: [], plans: e.plans, profile: profil, assets: [], batches: e.batches, stockItems: [], items: e.items, recettes: e.recettes, reglages: REGLAGES_VIDES, lignesCourses: [] } as never);
+  const poser = (e: ReturnType<typeof etatBanc>, recetteId: string, id: string) => {
+    const c: ContexteAjout = { aujourdhui: JOUR, recettes: e.recettes, clients: e.clients, plans: e.plans, choses: [], idBrassin: () => id, nouvelId: p => `${p}-T`, maintenant: `${JOUR}T10:00:00.000Z` };
+    const r = versEnregistrement({ ...brouillonVide('brassins', JOUR), recetteId, debutChoisi: true, tempsEnCuve: 21 }, c);
+    if (!('enregistrement' in r) || r.enregistrement.cible !== 'batch') throw new Error('brassin attendu');
+    return { ...e, batches: [...e.batches, r.enregistrement.document] };
+  };
+  const brassinDe = (m: ReturnType<typeof modeleDe>, id: string) => m.choses.find(c => c.source.genre === 'batch' && c.source.id === id);
+
+  it('la Blonde posée en S47 vaut le budget de LOT-BLONDE (même voie : la prévision), et le chiffre clé baisse de toutes ses sorties', () => {
+    const e = etatBanc(JOUR);
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-BLONDE', 'LOT-NEUF'));
+    const reference = brassinDe(apres, 'LOT-BLONDE');
+    const neuve = brassinDe(apres, 'LOT-NEUF');
+    expect(reference?.centimes).toBeLessThan(0);
+    expect(neuve?.centimes).toBe(reference?.centimes);
+    expect(neuve?.coutAVenir).toBeUndefined();
+    expect(neuve?.budgetRepris).toMatch(/budget de la recette, repris de Blonde d’automne/);
+    /* toutes ses sorties (courses, frais, emballage dans Achats ; impôt dans Papiers) entrent dans la courbe : le chiffre clé baisse d'autant */
+    const sorties = apres.choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === 'LOT-NEUF' || (c.ouvre.ecran === 'brassin' && c.ouvre.id === 'LOT-NEUF')))
+      .reduce((s, c) => s + (c.centimes ?? 0), 0);
+    expect(sorties).toBeLessThanOrEqual(neuve!.centimes!);
+    expect(apres.creux!.centimes).toBe(avant.creux!.centimes + sorties);
+    expect(apres.creux!.centimes).toBeLessThanOrEqual(avant.creux!.centimes + neuve!.centimes!);
+    /* l'hypothèse le dit : Finances ne le compte pas tant que Budget › ne l'a pas enregistré */
+    expect(apres.hypotheses.map(h => h.texte).join(' | ')).toMatch(/Blonde d’automne : −\d[\d ]* CHF, budget repris de sa recette, pas encore dans Finances/);
+    /* rien n'est écrit : les plans de l'app ne changent pas */
+    expect(poser(e, 'R-BLONDE', 'LOT-NEUF').plans).toEqual(e.plans);
+  });
+
+  it('CRITIQUE-6, doute −165 / −141 : le Porter posé (état 24) baisse le chiffre clé de son budget (courses, frais) PLUS son impôt sur la bière, rangé dans Papiers', () => {
+    const e = etatBanc(JOUR);
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-PORTER', 'LOT-NEUF'));
+    const neuf = brassinDe(apres, 'LOT-NEUF')!;
+    const lignes = apres.choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === 'LOT-NEUF' || (c.ouvre.ecran === 'brassin' && c.ouvre.id === 'LOT-NEUF')));
+    const impot = lignes.filter(c => c.posteBrassin === 'impot').reduce((s, c) => s + (c.centimes ?? 0), 0);
+    const toutes = lignes.reduce((s, c) => s + (c.centimes ?? 0), 0);
+    expect(impot).toBeLessThan(0);
+    expect(lignes.filter(c => c.posteBrassin === 'impot').every(c => c.rangee === 'papiers')).toBe(true);
+    /* la barre dit le budget (sans l'impôt) ; la courbe baisse de toutes ses sorties : l'écart est exactement l'impôt */
+    expect(neuf.centimes).toBe(toutes - impot);
+    expect(apres.creux!.centimes - avant.creux!.centimes).toBe(toutes);
+    expect(toutes - neuf.centimes!).toBe(impot);
+    console.info(`doute-165 : budget ${neuf.centimes} ; impôt ${impot} ; total ${toutes} ; creux ${avant.creux!.centimes} → ${apres.creux!.centimes}`);
+  });
+
+  it('une recette sans aucun budget : « coût à venir » en mots, pas de clé centimes (jamais 0), la caisse ne bouge pas', () => {
+    const e0 = etatBanc(JOUR);
+    const e = { ...e0, recettes: [...e0.recettes, { id: 'R-NEUVE', name: 'Bière neuve', style: 'Pale', volumeL: 100, ingredients: [] } as never] };
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-NEUVE', 'LOT-RIEN'));
+    const c = brassinDe(apres, 'LOT-RIEN');
+    expect(c).toBeDefined();
+    expect('centimes' in (c as object)).toBe(false);
+    expect(c?.coutAVenir).toBe(true);
+    expect(c?.etiquette).toBe('Bière neuve · coût à venir');
+    expect(apres.creux!.centimes).toBe(avant.creux!.centimes);
+  });
+
+  it('doute IPA −45 : un brassin en cuve n’a plus que son reste à sortir (l’emballage), et la barre le dit « reste »', () => {
+    const m = modeleDe(etatBanc(JOUR));
+    const ipa = brassinDe(m, 'LOT-IPA');
+    expect(ipa?.reste).toBe(true);
+    expect(ipa?.etiquette).toBeUndefined();
+    expect(ipa?.centimes).toBe(-4500);
+  });
+});
+
+describe('CRITIQUE-7 n° 4 et décision (a) : un brassin posé cette semaine est prêt depuis aujourd’hui ; un achat posé est de matières', () => {
+  const JOUR = '2026-11-18';
+  const c = ctx({ aujourdhui: JOUR, maintenant: '2026-11-18T10:00:00.000Z' });
+
+  it('n° 4 : posé en S47 le 18 nov. avec 28 j : « prête le 16 déc. » (feuille et résumé), jamais « 14 déc. » ; plannedBrewDate et finPrevue le disent', () => {
+    let b = brouillonVide('brassins', '2026-11-16');
+    b = appliquerPuce(b, puces('brassins', c).find(x => x.genre === 'recette')!);
+    b = appliquerPuce(b, puces('brassins', c).find(x => x.libelle === '28 j')!);
+    /* la feuille, en direct (le lot C passe `aujourdhui`) */
+    expect(preteLe(b, JOUR)).toBe('prête le 16 déc.');
+    expect(preteLe(b, JOUR)).not.toContain('14 déc.');
+    /* le résumé de pose (message après « Ajouter ») */
+    const r = versEnregistrement({ ...b, debutChoisi: true }, c);
+    if (!('enregistrement' in r)) throw new Error(r.raison);
+    expect(r.resume).toBe('IPA maison · S47 · prête le 16 déc.');
+    expect(r.enregistrement.document).toMatchObject({ plannedBrewDate: JOUR, finPrevue: '2026-12-16' });
+    /* une semaine future : depuis son lundi (S48 : 23 nov. + 28 j = 21 déc.) */
+    const futur = { ...b, debut: '2026-11-23' };
+    expect(preteLe(futur, JOUR)).toBe('prête le 21 déc.');
+    const rf = versEnregistrement({ ...futur, debutChoisi: true }, c);
+    expect('resume' in rf && rf.resume).toBe('IPA maison · S48 · prête le 21 déc.');
+  });
+
+  it('décision (a) : un achat posé par la feuille est un FinancialPlan manuel de catégorie `brassage` (la rangée Achats le relit)', () => {
+    const b: BrouillonAjout = { ...brouillonVide('achats', '2026-11-30'), titre: 'ZZ TEST — houblon Citra', signe: '-', centimes: 24000, debutChoisi: true };
+    expect(plan(reussi(b, c))).toMatchObject({ category: 'brassage', source: 'manual', direction: 'out', amountCents: 24000, date: '2026-11-30' });
   });
 });

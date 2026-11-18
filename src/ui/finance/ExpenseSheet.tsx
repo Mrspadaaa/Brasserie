@@ -1717,6 +1717,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     <Field label="Pour quoi ?" htmlFor="purchase-description">{descriptionChamp}</Field>
     <Rubriques items={itemsRub}/>
     {phraseRecu}
+    {/* 18.11 : « cette coche peut être utilisé lors que l'entrée d'une facture à la main aussi » : seulement sans document joint. */}
+    {!draft.proofDataUrl&&!attachment?<label className="flex min-h-11 items-center gap-2 px-1 text-sm text-cave-200"><input type="checkbox" className="h-5 w-5 shrink-0 accent-[rgb(var(--ebc-straw))]" checked={!!draft.proofNotNeeded} onChange={e=>patch({proofNotNeeded:e.target.checked})}/>Sans justificatif, c’est normal</label>:null}
   </fieldset>;
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!saving)fermer();}} dismissible={!saving} labelledBy={titleId} size="xl" plein>
