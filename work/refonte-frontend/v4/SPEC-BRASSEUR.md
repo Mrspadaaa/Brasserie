@@ -2177,3 +2177,9 @@ Ajout au choix : au toucher d'une barre, ses jalons liés s'allument et les autr
 > Pas besoin d'avoir autant de place, la stout maison est au bon format, juste un mini espace entre les évènements(brassin)
 
 Captures : work/missions/2026-11-18-choix-calendrier/brasseur/barres-hautes-18-11.jpg (croix sur l'espace vide des barres hautes), work/missions/2026-11-18-choix-calendrier/brasseur/stout-bon-format-18-11.jpg (le bon format). Lecture : toutes les barres de brassin prennent le format de « Stout maison » (nom, montant et « J0 / 28 · prête … » sur une ligne, puis le pied d'étapes), avec un mini espace entre deux brassins.
+
+### Effacer les messages de test, tester sur la vraie app (18.11)
+
+> effacer les messages de test orphelins dans la base ; oui
+>
+> Et bien tester sur la vrai app surtout !!
