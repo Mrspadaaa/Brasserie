@@ -128,7 +128,9 @@ type Annonce =
   /* Critique 5, n° 7 : `vues` et `carnets`, la découpe telle que le pendant « ✻ L'IA découpe votre note » la montre */
   | { sorte: 'vrac'; lignes: { texte: string; dest: Destination }[]; vues: LigneVracV[]; carnets: number }
   /* Critique 5, n° 3 et 6 : écrit dans un carnet ouvert, tout va dans le carnet annoncé (l'ouvert, ou celui que le cadre a nommé) */
-  | { sorte: 'ici'; carnetId: string };
+  /* Critique 7, n° 3 : `rubrique` : la puce « Va dans » cochée d'avance à l'envoi (Ce qui compte, Note, Façon) ; l'IA met en forme, la
+     rubrique annoncée tient */
+  | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans };
 const memeTexte = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
 
 /**
@@ -227,6 +229,21 @@ export function depuisLocale(l: LigneLocale, dest: Destination): LigneARanger {
 }
 
 /** Une ligne validée de l'IA (ou de la simulation, « exemple »), rangée vers sa destination. Ce qu'elle ne lit pas reste absent. */
+/**
+ * Critique 7, n° 3 (R13, R14 ; D-134, D-135) : ce que le cadre a annoncé est ce qui se fait. Une ligne de l'IA (note, critère, façon) d'un
+ * message d'une ligne passe dans la rubrique annoncée ; son texte mis en forme et sa caractéristique sont gardés. Un article reste un article.
+ */
+export function versRubrique(l: LigneCarnet, rubrique: RubriqueVaDans, phrase: string): LigneCarnet {
+  /* une proposition de l'IA (« ✻ Comparer sur le débit · Ajouter ») n'est pas sa phrase : elle reste proposée */
+  if (l.propose || l.sorte === rubrique || !['note', 'critere', 'facon'].includes(l.sorte)) return l;
+  if (rubrique === 'critere') {
+    const texte = l.sorte === 'note' && memeTexte(l.texte, phrase) ? analyserLigne(phrase).texte : l.texte;
+    return { ...l, sorte: 'critere', texte, source: 'phrase', genre: undefined };
+  }
+  if (rubrique === 'facon') return { ...l, sorte: 'facon', titre: l.titre ?? l.texte, genre: undefined };
+  return { ...l, sorte: 'note', genre: l.genre ?? 'note' };
+}
+
 export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
   const origine = l.origine;
   switch (l.sorte) {
@@ -451,7 +468,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       /* n° 3 : le carnet annoncé par le cadre (l'ouvert, ou celui qu'il a nommé, corrigé ou non d'un toucher) */
       const ici = depuis ? destEnvoi.current ?? depuis : null;
       destEnvoi.current = null;
-      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici } : null;
+      const rubrique = ici && !force ? vaDansDe(txt) : null;
+      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}) } : null;
       if (ici && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
         const l0 = lignes[0];
         const ligne: LigneARanger = force === 'critere' ? { carnetId: ici, sorte: 'critere', texte: l0.texte, origine: 'vous' }
@@ -538,7 +556,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       } else if (an?.sorte === 'ici') {
         /* n° 3 et 6 : l'IA met en forme (critère, façon, article lu, note) ; elle ne range ni ailleurs ni dans un carnet neuf */
         const dest: Destination = { carnetId: an.carnetId };
-        aRanger = lignes.filter(l => l.sorte !== 'idee').map(l => depuisIA(l, dest));
+        aRanger = lignes.filter(l => l.sorte !== 'idee').map(l => depuisIA(an.rubrique ? versRubrique(l, an.rubrique, txt) : l, dest));
         const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
         if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
         if (!aRanger.length) {

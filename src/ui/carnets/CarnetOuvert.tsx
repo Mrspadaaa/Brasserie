@@ -22,7 +22,7 @@ import { CalendarCheck, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, Extern
 import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
 import { colonnesVue, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
-import { avecArticle, domaineEtChemin, libelleEcarte, passe, texteMoinsBienQue } from '../../domain/carnets/comparer';
+import { avecArticle, domaineEtChemin, libelleCaracteristique, libelleEcarte, passe, texteMoinsBienQue } from '../../domain/carnets/comparer';
 import { uniquesParTexte } from '../../domain/carnets/doublons';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV, type GenreNote, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
@@ -564,8 +564,16 @@ function colonnesCarnet(t: TableauV): ColonneVue[] {
   return [valeur, prix].filter((x): x is ColonneVue => !!x);
 }
 
-/** En-tête court, sur une ligne : l'unité si elle existe (« m³/h », « CHF »), sinon le premier mot du nom. */
-function enteteCourt(c: ColonneVue): string {
+/**
+ * En-tête court : l'unité si elle suffit (« m³/h », « CHF »), sinon le premier mot du nom. Critique 7, n° 4 (L14) : une température ne
+ * se lit jamais à l'unité seule (« °C 43 » sur un frigo) ; elle dit ce qu'elle mesure, en abrégé, au-dessus de l'unité (« amb. max / °C »).
+ */
+export function enteteCourt(c: Pick<ColonneVue, 'nom' | 'unite'>): string {
+  if (c.unite === '°C') {
+    const quoi = libelleCaracteristique(c.nom).replace(/^temp[ée]rature\s*/i, '').trim().split(/\s+/).filter(Boolean)
+      .map(m => (m.length > 5 ? `${m.slice(0, 3)}.` : m)).join(' ');
+    return quoi ? `${quoi} °C` : '°C';
+  }
   if (c.unite) return c.unite;
   const mot = c.nom.split(/\s+/)[0] ?? c.nom;
   return mot.length > 9 ? `${mot.slice(0, 8)}.` : mot;

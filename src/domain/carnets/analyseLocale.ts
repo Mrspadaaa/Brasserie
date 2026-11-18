@@ -56,9 +56,51 @@ const ETIQUETTE = /^[^:.!?\d]{2,40}?\s?:\s*\S/u;
  * doivent porter leur étiquette ; sinon la ligne reste entière (« Fr. 189,90 », « env. 30 L » ne coupent rien).
  */
 export function phrasesEtiquetees(ligne: string): string[] {
-  const parts = ligne.split(/(?<=[.!?])\s+(?=\S)/).map(s => s.trim()).filter(Boolean);
-  if (parts.length < 2 || !parts.every(s => ETIQUETTE.test(sansPrefixeBanc(s)))) return [ligne];
-  return parts.map(s => s.replace(/\.\s*$/, '').trim());
+  const parts = phrasesDe(ligne);
+  if (parts.length < 2) return [ligne];
+  if (parts.every(s => ETIQUETTE.test(sansPrefixeBanc(s)))) return parts.map(s => s.replace(/\.\s*$/, '').trim());
+  /* Critique 7, n° 1 (390 clair-22 ; R18, D-139) : « Sachets de levure x2. Prochain brassage mardi. Tient 80 °C pour la hotte. » est une note
+     en vrac tapée sur une ligne. Une phrase qui suit la précédente sans objet à elle (« Doit tenir 80 °C. », « 1 800 m³/h. ») la complète ;
+     les autres font chacune leur ligne. Une seule idée (« Hotte inox 120 cm. Doit tenir 80 °C. ») reste entière. */
+  const groupes: string[] = [];
+  for (const p of parts) {
+    if (groupes.length && completePrecedente(p)) groupes[groupes.length - 1] += ` ${p}`;
+    else groupes.push(p);
+  }
+  return groupes.length < 2 ? [ligne] : groupes.map(s => s.replace(/\.\s*$/, '').trim());
+}
+
+/** Les abréviations qui finissent par un point sans finir la phrase (« Fr. 189,90 », « env. 30 L », « p. ex. »). */
+const ABREVIATION = /(?:^|[\s(])(?:fr|sfr|env|ca|cf|max|min|mini|maxi|ex|p|n|no|nr|art|réf|ref|vol|st|ste|mt|dr|resp|etc)\.$/i;
+
+/**
+ * Les phrases d'une ligne : coupure après « . ! ? » suivis d'une espace et d'une majuscule ou d'un chiffre ; jamais après une abréviation
+ * (`ABREVIATION`) ni un nombre seul (« 2. »). Méthode des segmenteurs de phrases (règles de fin de phrase et liste d'abréviations) ;
+ * `Intl.Segmenter` n'est pas dans la cible ES2020 du projet et coupe « Fr. 189,90 CHF ».
+ */
+export function phrasesDe(ligne: string): string[] {
+  const parts: string[] = [];
+  let debut = 0;
+  for (const m of ligne.matchAll(/[.!?]+\s+(?=[\p{Lu}\d])/gu)) {
+    const fin = (m.index ?? 0) + m[0].length;
+    const avant = ligne.slice(debut, (m.index ?? 0) + m[0].trimEnd().length);
+    if (/[.]$/.test(avant) && (ABREVIATION.test(avant) || /(?:^|\s)\d+\.$/.test(avant))) continue;
+    parts.push(avant.trim());
+    debut = fin;
+  }
+  parts.push(ligne.slice(debut).trim());
+  return parts.filter(Boolean);
+}
+
+/** Une phrase qui complète la précédente : elle commence par un renvoi ou une exigence sans sujet (« Doit… », « Elle… », « Avec… »),
+ *  ou par une mesure (« 1 800 m³/h minimum »), et ne nomme pas son propre objet (« … pour la hotte »). */
+const RENVOI = /^(?:il|elle|ils|elles|ce|cette|ces|ca|cela|c|doit|doivent|devra|tient|tiennent|supporte|resiste|faut|il faut|avec|sans|et|mais|ou|donc|aussi|pas|plutot|sinon|ideal|ideale|idealement|de preference|dont|en|y|on|le tout|soit|meme)\b/;
+function completePrecedente(phrase: string): boolean {
+  const n = normaliser(sansPrefixeBanc(phrase));
+  if (/\bpour (?:la|le|les|l) \p{L}{3,}/u.test(n)) return false;
+  if (RENVOI.test(n)) return true;
+  const q = quantitesDe(phrase)[0];
+  return !!q && normaliser(phrase).startsWith(normaliser(q.texte)) && !/^\d+\s+(?!(?:cm|mm|kg|l|w|kw|db|bar|m3|m)\b)\p{L}{3,}/u.test(n);
 }
 
 /* ---------- URL ---------- */
@@ -216,6 +258,9 @@ export const TITRE_BRASSIN = 'Prochain brassin';
  */
 export function objetDe(ligne: string): string {
   const t = sansPrefixeBanc(ligne).trim();
+  /* critique 7, n° 1 et 2 : « Tient 80 °C pour la hotte » parle de la hotte ; son objet est la hotte, jamais « Tient » */
+  const pour = RENVOI.test(normaliser(t)) ? /\bpour\s+(?:la|le|les|l['’])\s*([^,.;:!?()]{3,40})/i.exec(t) : null;
+  if (pour) return majuscule(pour[1].trim());
   const lib = /^([^:]{2,40}?)\s*:\s*\S/.exec(t);
   let o = lib && /\p{L}/u.test(lib[1]) && !genreDEtiquette(t) ? lib[1] : lib && genreDEtiquette(t) ? t.slice(lib[0].length - 1) : t.split(/[,;?!(]/)[0];
   o = o.trim()
