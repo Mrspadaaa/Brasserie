@@ -15,6 +15,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const dist = process.argv[2];
+// 18.11 : un .env de banc (banc-calendrier-fictif) a cassé la connexion en ligne. Avant de garder les morceaux
+// (et donc avant tout déploiement par ce chemin), le build doit viser le seul projet brasserie-l-affinee.
+{
+  const dossier = path.join(dist, 'assets');
+  const projets = new Set();
+  for (const n of fs.readdirSync(dossier).filter((x) => x.endsWith('.js'))) {
+    for (const m of fs.readFileSync(path.join(dossier, n), 'utf8').matchAll(/(?:projectId|VITE_FIREBASE_PROJECT_ID):"([a-z0-9-]+)"/g)) projets.add(m[1]);
+  }
+  if (!projets.has('brasserie-l-affinee') || projets.size > 1) {
+    console.error(`PROJET FIREBASE FAUX — ${[...projets].join(', ') || 'aucun'} dans le build : copier le .env de production, refaire le build, ne pas déployer.`);
+    process.exit(1);
+  }
+}
 const site = (process.argv.includes('--site') ? process.argv[process.argv.indexOf('--site') + 1] : 'https://brasserie-l-affinee.web.app').replace(/\/$/, '');
 if (!dist || !fs.existsSync(path.join(dist, 'index.html'))) { console.error('usage : garder-morceaux.mjs <dist>'); process.exit(2); }
 
