@@ -403,7 +403,8 @@ export const aiTask = onCall(
     }
 
     // Le texte de l'utilisateur est celui du banc de l'enrichissement (`geminiBody.ts`) : une seule écriture.
-    const userText = userTextOf(instruction, rangerCarnet ? contexteCarnet : context);
+    // Le carnet y passe aussi, avec son contexte compacté (carnetIA.ts).
+    const userText = rangerCarnet ? userTextOf(instruction, contexteCarnet) : userTextOf(instruction, context);
 
     if (!userText && !file) {
       throw new HttpsError('invalid-argument', 'Ni données ni pièce jointe à traiter.');
