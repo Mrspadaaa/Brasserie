@@ -2195,3 +2195,8 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/fil-sur-info-18-11.
 > C'est pas très logique...
 
 Capture : work/missions/2026-11-18-choix-calendrier/brasseur/ (courbe déc.→oct., frise S47–S52). Lecture : la courbe et la frise doivent partager le même axe de temps ; reste à montrer comment (mini maquettes), le chiffre « à dépenser » gardant son sens.
+
+> Non plutôt juste un bouton qui match les deux ou pas genre un toggle switch
+> Pas de mini maquettes
+
+Choix : un interrupteur aligne ou non la courbe sur la frise (même axe de temps quand il est allumé) ; éteint, la courbe garde l'année avec le cadre de la période. Sans maquette.
