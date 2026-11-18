@@ -62,6 +62,8 @@ export interface TransactionFinance {
   paymentDateBasis?: 'document_date' | 'typed';
   /** L'envoi du justificatif au Drive en arrière-plan (d3c). Posé tant que `proofDocumentId` ne l'est pas ; Firestore ne reçoit que `queued` et `failed`. */
   proofUpload?: ProofUpload;
+  /** « Sans justificatif, c’est normal » (brasseur, 18.11) : coché sur la fiche, la pièce ne compte plus comme sans justificatif (ligne, filtre, compteurs, Annuel). */
+  proofNotNeeded?: boolean;
 }
 /** `sending` est transitoire et `voided` interdit d'écriture (dépense annulée) : ces deux états vivent seulement dans le job local. */
 export type ProofUploadState = 'queued' | 'sending' | 'failed' | 'voided';
@@ -250,6 +252,8 @@ export interface AnnualDocument {
   hasProof: boolean; vendor: string; proofDocumentId?: string; proofFileName?: string;
   proofSource?: 'document' | 'legacy-inline' | 'external'; proofUrl?: string;
   required?: boolean;
+  /** Sans justificatif, coché « c’est normal » sur la fiche. */
+  proofNotNeeded?: boolean;
 }
 export interface TaxCopyField {
   id: string; label: string; destination: string; code?: string; amountCents: number | null;

@@ -1805,3 +1805,5 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
 - **15.11**, mot pour mot, sur la page des choix (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c Pour le workflow, relancer avec plusieurs agent , , c'est mal target »
   (lu : Finances, 8 vues choisies. Simplicité (les parcours) : mal ciblé, à relancer avec plusieurs agents en parallèle, à partir de ses vrais parcours et de ses mots, pas de parcours supposés.)
   (lu, pilote Finances : m4bb-a est portée en premier plan de la feuille du budget (choix du brassin, piles « quand tu paies ») ; le flux c3a, son choix du 09.11, reste à un toucher, rien n'est retiré.)
+- **18.11**, mot pour mot, Finances : « Parfois j'ai des entrée sans justificatif, je veux juste une coche que je puisse coché pour ces cas là pour ne pas être flaggé comme dans justificatif. C'est normal »
+  (lu : sur la fiche (m5fo-a), la case « Sans justificatif » porte une coche « c’est normal » ; cochée, la pièce sort du filtre, du « + pièce », des compteurs et de l'Annuel ; l'export dit « Sans justificatif (normal) ».)

@@ -124,6 +124,7 @@ export function pieceDe(tx: Transaction): Piece {
   if (!rangee) {
     if (envoi && (envoi.state === 'queued' || envoi.state === 'sending')) return { texte: 'envoi en cours', manque: false };
     if (envoi?.state === 'failed') return { texte: 'à renvoyer', manque: true };
+    if (tx.finance?.proofNotNeeded) return { texte: 'sans pièce', manque: false };
     return { texte: 'sans pièce', manque: true };
   }
   const genre = ({ invoice: 'facture', receipt: 'ticket', credit_note: 'avoir' } as Record<string, string>)[tx.finance?.sourceDocumentType ?? ''] ?? 'pièce';

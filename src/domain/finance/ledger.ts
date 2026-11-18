@@ -179,7 +179,7 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     if (kind === 'contribution') result.contributionCents += amount;
     if (kind === 'withdrawal') result.withdrawalCents += amount;
     if (kind === 'refund') direction === 'in' ? result.expenseCents -= amount : result.incomeCents -= amount;
-    if ((kind === 'expense' || kind === 'income') && !tx.proofUrl && !tx.finance?.proofDocumentId) result.missingProofCount++;
+    if ((kind === 'expense' || kind === 'income') && justificatifManquant(tx)) result.missingProofCount++;
     const state = paymentState(tx, payments, transactions, asOf);
     if (state.state === 'unknown') {
       result.unknownPaymentCount++;
@@ -226,6 +226,10 @@ export function validateFinanceTransaction(tx: FinanceTransaction): void {
  * FN-37 : la créance née d'un trop-payé (« À récupérer », ou « À rembourser » pour une recette, voir `creanceDeTropPaye`) est de l'argent sorti à récupérer,
  * pas une charge ; l'avoir qui la solde ne réduit donc aucun poste. Ni l'une ni l'autre n'entre dans « dépensé » ni dans l'Annuel ; la caisse, elle, les voit (ce sont des paiements).
  */
+/** Une pièce sans justificatif rangé, que le brasseur n’a pas cochée « c’est normal » (18.11). */
+export function justificatifManquant(tx: FinanceTransaction): boolean {
+  return !tx.proofUrl && !tx.finance?.proofDocumentId && !tx.finance?.proofNotNeeded;
+}
 export function estCreanceTropPaye(tx: { subcategory?: string }): boolean {
   return tx.subcategory === 'À récupérer' || tx.subcategory === 'À rembourser';
 }
